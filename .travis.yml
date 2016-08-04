@@ -1,0 +1,44 @@
+# http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: false
+
+# http://docs.travis-ci.com/user/languages/javascript-with-nodejs/
+language: node_js
+node_js:
+  - "5.1.1"
+
+# https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+
+git:
+  submodules: false
+
+cache:
+  directories:
+    - node_modules
+    - electron/node_modules
+
+# http://docs.travis-ci.com/user/build-lifecycle/
+install:
+  - npm install
+
+# http://docs.travis-ci.com/user/build-lifecycle/
+before_script:
+  - export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
+
+# http://docs.travis-ci.com/user/pull-requests/
+script:
+  - npm test
+
+notifications:
+  email: false
+
+branches:
+  only:
+    - master

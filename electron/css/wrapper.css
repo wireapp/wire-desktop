@@ -1,0 +1,54 @@
+/*
+ * Wire
+ * Copyright (C) 2016 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
+/* OVERWRITE WEBAPP STYLES */
+
+body.os-mac * {
+  cursor: default !important;
+}
+
+body.os-mac .text,
+body.os-mac textarea,
+body.os-mac input[type="text"]:not(.search-input) {
+  cursor: text !important;
+}
+
+body.os-mac .text a {
+  cursor: pointer !important;
+}
+
+.search-header {
+  margin-top: 48px !important;
+}
+
+.app {
+  -webkit-user-select: none;
+}
+
+.drag-region {
+  position: fixed;
+  width: 100%;
+  height: 40px;
+  top: 0;
+  left: 0;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+  pointer-events: none;
+  z-index: 1000000;
+}

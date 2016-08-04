@@ -1,0 +1,7 @@
+project_identifier: wire-cs
+base_path: .
+
+files:
+  -
+    source: '/electron/locale/strings.js'
+    translation: '/electron/locale/strings-%two_letters_code%.js'

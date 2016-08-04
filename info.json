@@ -1,0 +1,15 @@
+{
+  "name": "Wire",
+  "nameInternal": "WireInternal",
+  "description": "Wire",
+  "version": "2.9",
+  "build": "2643",
+  "copyright": "© Wire Swiss GmbH",
+  "updateWinUrlInternal": "https://wire-app.wire.com/win/internal/",
+  "updateWinUrlProd": "https://wire-app.wire.com/win/prod/",
+  "sign": {
+    "internal": "Developer ID Application: Zeta Project Inc.  (T69V8N5973)",
+    "app": "3rd Party Mac Developer Application: Wire Swiss GmbH (EDF3JCE8BC)",
+    "package": "3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)"
+  }
+}

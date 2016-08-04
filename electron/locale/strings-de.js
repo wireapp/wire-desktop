@@ -1,0 +1,58 @@
+'use strict';
+
+let string = {};
+
+string.menuConversation = 'Unterhaltung';
+string.menuStart = 'Unterhaltung beginnen';
+string.menuEdit = 'Bearbeiten';
+string.menuWindow = 'Fenster';
+string.menuView = 'Ansicht';
+string.menuHelp = 'Hilfe';
+string.menuStartup = 'Wire beim Windows-Start ausführen';
+string.menuLocale = 'Sprache';
+string.menuLocaleLangEn = 'Englisch';
+string.menuLocaleLangDe = 'Deutsch';
+string.menuAbout = 'Über Wire';
+string.menuSignOut = 'Ausloggen';
+string.menuPing = 'Ping';
+string.menuCall = 'Anruf';
+string.menuVideoCall = 'Videoanruf';
+string.menuPeople = 'Unterhaltungsübersicht';
+string.menuAddPeople = 'Kontakte hinzufügen...';
+string.menuArchive = 'Archivieren';
+string.menuUnarchive = 'Dearchivieren';
+string.menuMute = 'Stummschalten';
+string.menuUnmute = 'Benachrichtigen';
+string.menuLeave = 'Verlassen';
+string.menuDelete = 'Löschen';
+string.menuBlock = 'Blockieren';
+string.menuUndo = 'Rückgängig';
+string.menuRedo = 'Wiederholen';
+string.menuCut = 'Ausschneiden';
+string.menuCopy = 'Kopieren';
+string.menuPaste = 'Einfügen';
+string.menuSelectAll = 'Alles auswählen';
+string.menuMinimize = 'Minimieren';
+string.menuClose = 'Schließen';
+string.menuNextConversation = 'Nächste Unterhaltung';
+string.menuPreviousConversation = 'Vorherige Unterhaltung';
+string.menuFullScreen = 'Vollbild';
+string.menuLegal = 'Datenschutz u. AGB';
+string.menuPrivacy = 'Privatsphäre';
+string.menuLicense = 'Lizenzen';
+string.menuSupport = 'Hilfe';
+string.menuWireURL = 'Wire.com';
+string.menuPreferences = 'Einstellungen';
+string.menuServices = 'Services';
+string.menuHideWire = 'Wire ausblenden';
+string.menuHideOthers = 'Andere ausblenden';
+string.menuShowAll = 'Alle anzeigen';
+string.menuSettings = 'Einstellungen';
+string.menuQuit = 'Wire beenden';
+string.menuShowHide = 'Menü ein-/ausblenden';
+string.menuSavePictureAs = 'Bild speichern unter...';
+
+string.restartLocale = 'Bitte starte Wire erneut, um diese Einstellung zu übernehmen.';
+string.restartLater = 'Später';
+
+module.exports = string;

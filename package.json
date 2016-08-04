@@ -1,0 +1,31 @@
+{
+  "name": "wire-desktop",
+  "private": true,
+  "scripts": {
+    "preinstall": "cd electron && npm install",
+    "install": "npm run rebuild-native-modules",
+    "start": "electron electron --debug=5858 --devtools --enable-logging",
+    "staging": "electron electron --debug=5858 --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
+    "prod": "electron electron --debug=5858 --devtools --enable-logging --env=https://app.wire.com",
+    "localhost": "electron electron --debug=5858 --devtools --enable-logging --env=http://localhost:8888",
+    "test": "eslint electron && electron-mocha tests",
+    "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wireapp/wire-desktop.git"
+  },
+  "devDependencies": {
+    "electron-mocha": "2.3.1",
+    "electron-packager": "7.3.0",
+    "electron-prebuilt": "1.3.1",
+    "electron-rebuild": "1.1.5",
+    "eslint": "3.1.1",
+    "grunt": "1.0.1",
+    "grunt-contrib-clean": "1.0.0",
+    "grunt-electron-installer": "2.1.0",
+    "grunt-git": "1.0.0",
+    "grunt-github-changes": "0.1.0",
+    "load-grunt-tasks": "3.5.0"
+  }
+}

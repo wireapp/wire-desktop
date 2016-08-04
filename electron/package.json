@@ -1,0 +1,26 @@
+{
+  "name": "wireinternal",
+  "productName": "WireInternal",
+  "description": "Electron wrapper for Wire",
+  "version": "2.9.2643",
+  "main": "main.js",
+  "updateWinUrl": "https://wire-app.wire.com/win/internal/",
+  "environment": "internal",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wireapp/wire-desktop.git"
+  },
+  "dependencies": {
+    "googleapis": "2.1.6",
+    "image-type": "2.1.0",
+    "minimist": "1.2.0",
+    "open-graph": "0.1.6",
+    "raygun": "0.8.5",
+    "request": "2.74.0",
+    "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
+  },
+  "optionalDependencies": {
+    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#1.0.1"
+  }
+}
