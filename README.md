@@ -40,7 +40,7 @@ grunt osx-prod
 # Build for Windows
 grunt win-prod
 
-# Build for Linux (experimental)
+# Build for Linux (experimental and unsupported)
 grunt linux
 
 # Trigger Windows and OS X builds
