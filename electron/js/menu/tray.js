@@ -31,7 +31,7 @@ let appIcon = null;
 
 module.exports = {
   createTrayIcon: function() {
-    if (process.platform === 'darwin') {
+    if (process.platform !== 'win32') {
       return;
     }
 
