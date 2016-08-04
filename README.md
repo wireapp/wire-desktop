@@ -19,7 +19,7 @@ No license is granted to the Wire trademark and its associated logos, all of whi
 ## Wire Desktop
 
 Cross plattform desktop app, simply wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp).
-Based on GitHub's [Electron](https://github.com/atom/electron).
+Based on [Electron](http://electron.atom.io).
 
 ### Clone
 
@@ -33,7 +33,6 @@ npm install
 ### Tasks
 
 ```shell
-
 # Build for OS X
 grunt osx-prod
 
@@ -48,7 +47,6 @@ grunt release
 ```
 
 ### Run
-
 
 ```shell
 npm start
