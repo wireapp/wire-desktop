@@ -39,6 +39,10 @@ module.exports = (grunt) ->
       linux: 'wrap/**/<%= info.name %>-linux*'
       pkg: '*.pkg'
 
+    'update-keys':
+      options:
+        config: 'electron/js/config.js'
+
     productbuild:
       options:
         sign:
@@ -209,6 +213,20 @@ module.exports = (grunt) ->
       else
         done()
 
+  grunt.registerTask 'update-keys', ->
+    options = @options()
+
+    config_string = grunt.file.read options.config
+
+    if config_string?
+      config_string
+        .replace "RAYGUN_API_KEY: ''", "RAYGUN_API_KEY: '#{process.env.RAYGUN_API_KEY}'"
+        .replace "GOOGLE_CLIENT_ID: ''", "GOOGLE_CLIENT_ID: '#{process.env.GOOGLE_CLIENT_ID}'"
+        .replace "GOOGLE_CLIENT_SECRET: ''", "GOOGLE_CLIENT_SECRET: '#{process.env.GOOGLE_CLIENT_SECRET}'"
+      grunt.file.write options.config, config_string
+    else
+      grunt.warn 'Failed updating keys in config'
+
   grunt.registerTask 'productbuild', 'Build Mac Appstore package', ->
     execSync = require('child_process').execSync
     options = @options()
@@ -234,10 +252,10 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release',   ['build-inc', 'gitcommit', 'gittag', 'gitpush']
 
-  grunt.registerTask 'osx',       ['clean:osx', 'release-internal', 'electron:osx_internal']
-  grunt.registerTask 'osx-prod',  ['clean:osx', 'release-prod', 'electron:osx_prod', 'productbuild']
+  grunt.registerTask 'osx',       ['clean:osx', 'update-keys', 'release-internal', 'electron:osx_internal']
+  grunt.registerTask 'osx-prod',  ['clean:osx', 'update-keys', 'release-prod', 'electron:osx_prod', 'productbuild']
 
-  grunt.registerTask 'win',       ['clean:win', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
-  grunt.registerTask 'win-prod',  ['clean:win', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
+  grunt.registerTask 'win',       ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
+  grunt.registerTask 'win-prod',  ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
   grunt.registerTask 'linux',     ['clean:linux', 'release-internal', 'electron:linux']
