@@ -54,11 +54,11 @@ let config = {
     'de'
   ],
 
-  RAYGUN_API_KEY: '',
+  RAYGUN_API_KEY: 'undefined',
 
   GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
-  GOOGLE_CLIENT_ID: '',
-  GOOGLE_CLIENT_SECRET: '',
+  GOOGLE_CLIENT_ID: 'undefined',
+  GOOGLE_CLIENT_SECRET: 'undefined',
 
   CONSOLE_LOG: 'console.log'
 };

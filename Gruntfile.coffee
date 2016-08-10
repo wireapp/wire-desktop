@@ -219,11 +219,11 @@ module.exports = (grunt) ->
     config_string = grunt.file.read options.config
 
     if config_string?
-      config_string
+      new_config_string = config_string
         .replace "RAYGUN_API_KEY: ''", "RAYGUN_API_KEY: '#{process.env.RAYGUN_API_KEY}'"
         .replace "GOOGLE_CLIENT_ID: ''", "GOOGLE_CLIENT_ID: '#{process.env.GOOGLE_CLIENT_ID}'"
         .replace "GOOGLE_CLIENT_SECRET: ''", "GOOGLE_CLIENT_SECRET: '#{process.env.GOOGLE_CLIENT_SECRET}'"
-      grunt.file.write options.config, config_string
+      grunt.file.write options.config, new_config_string
     else
       grunt.warn 'Failed updating keys in config'
 
