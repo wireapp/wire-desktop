@@ -24,6 +24,7 @@ const {remote, ipcRenderer} = require('electron');
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 const locale = require('./../../locale/locale');
+const customContext = require('./custom-context');
 
 // Default
 // =================================================================
@@ -99,39 +100,44 @@ var image_menu = Menu.buildFromTemplate([{
   }
 }]);
 
-window.addEventListener('contextmenu', function (e) {
-  const element = e.target;
+window.addEventListener('contextmenu', function (event) {
+  const element = event.target;
 
   if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
-    e.preventDefault();
+    event.preventDefault();
     text_menu.popup(remote.getCurrentWindow());
   } else if (element.classList.contains('center-column')) {
     var id = element.getAttribute('data-uie-uid');
     if (createConversationMenu(id)) {
-      e.preventDefault();
+      event.preventDefault();
     }
   } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
-    e.preventDefault();
+    event.preventDefault();
     image_menu.image = element.src;
     image_menu.popup(remote.getCurrentWindow());
   } else if (element.classList.contains('text') || element.nodeName === 'A') {
-    e.preventDefault();
+    event.preventDefault();
     default_menu.popup(remote.getCurrentWindow());
   }
 
 }, false);
 
-window.addEventListener('click', function(e) {
-  const element = e.target;
+window.addEventListener('click', function(event) {
+  const element = event.target;
 
   if (element.classList.contains('icon-more') && element.parentElement.previousElementSibling) {
     // get center-column
     const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
     if (createConversationMenu(id)) {
-      e.stopPropagation();
-      e.preventDefault();
+      event.stopPropagation();
     }
   }
+}, true);
+
+window.addEventListener(z.components.ContextMenuEvent.CONTEXT_MENU, function(event) {
+  const element = event.target;
+  customContext.fromElement(element).popup(remote.getCurrentWindow());
+  event.stopPropagation();
 }, true);
 
 
