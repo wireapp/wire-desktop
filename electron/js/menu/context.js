@@ -134,7 +134,7 @@ window.addEventListener('click', function(event) {
   }
 }, true);
 
-window.addEventListener(z.components.ContextMenuEvent.CONTEXT_MENU, function(event) {
+window.addEventListener('z.components.ContextMenuEvent::CONTEXT_MENU', function(event) {
   const element = event.target;
   customContext.fromElement(element).popup(remote.getCurrentWindow());
   event.stopPropagation();
