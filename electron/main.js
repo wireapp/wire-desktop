@@ -102,7 +102,7 @@ ipcMain.once('load-webapp', function(event, online) {
 
 ipcMain.on('loaded', function() {
   if (process.platform === 'linux') {
-      util.resizeLinux(main);
+    util.resizeLinux(main);
   } else {
     var size = main.getSize();
     if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
