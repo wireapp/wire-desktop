@@ -53,6 +53,16 @@ module.exports = {
     win.center();
   },
 
+  resizeLinux: function(win) {
+    win.setMenuBarVisibility(true);
+    win.setFullScreen(false);
+    win.setMinimumSize(config.MIN_WIDTH_MAIN, config.MIN_HEIGHT_MAIN);
+    win.setSize(config.DEFAULT_WIDTH_MAIN, config.DEFAULT_HEIGHT_MAIN);
+    win.setResizable(true);
+    win.setMaximizable(true);
+    win.center();
+  },
+
   updateBadge: function(win) {
     setTimeout(function() {
       var count = (/\(([0-9]+)\)/).exec(win.getTitle() || win.webContents.getTitle());
