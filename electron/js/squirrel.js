@@ -181,7 +181,7 @@ function handleSquirrelEvent(shouldQuit, callback) {
       });
       return true;
     case '--squirrel-updated':
-      // TODO (lipis): don't createStartup shortcutin the next prod release
+      // TODO (lipis): don't createStartup shortcut in the next prod release
       updateDesktopShortcut(function() {
         updateTaskbarShortcut(function() {
           updateStartupShortcut(function() {
@@ -211,5 +211,5 @@ module.exports = {
   handleSquirrelEvent: handleSquirrelEvent,
   createStartupShortcut: createStartupShortcut,
   removeStartupShortcut: removeStartupShortcut,
-  startupLinkExists: startupLinkExists,
+  startupLinkExists: startupLinkExists
 };

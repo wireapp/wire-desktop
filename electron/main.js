@@ -156,7 +156,7 @@ function showMainWindow() {
     main.webContents.openDevTools();
   }
 
-  if (!argv.startup && !is_update) {
+  if (!argv.startup) {
     setTimeout(function() {
       main.show();
     }, 800);
@@ -262,9 +262,11 @@ app.on('before-quit', function() {
 });
 
 app.on('ready', function() {
-  Menu.setApplicationMenu(systemMenu);
-  tray.createTrayIcon();
-  showMainWindow();
+  if (!is_update) {
+    Menu.setApplicationMenu(systemMenu);
+    tray.createTrayIcon();
+    showMainWindow();
+  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////
