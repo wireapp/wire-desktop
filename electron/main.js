@@ -145,8 +145,9 @@ function showMainWindow() {
     }
   });
 
-  main.setFullScreen(init.restore('fullscreen', false));
-  if (!main.isFullScreen()) {
+  if (init.restore('fullscreen', false)) {
+    main.setFullScreen(true);
+  } else {
     main.setBounds(init.restore('bounds', main.getBounds()));
   }
 
