@@ -24,16 +24,10 @@ const {app, BrowserWindow, Menu, Tray} = require('electron');
 const path = require('path');
 const config = require('./../config');
 
-var iconExt = null;
-if (process.platform === 'win32') {
-  iconExt = 'ico'
-}
-else {
-  iconExt = 'png'
-}
+const iconExt = (process.platform === 'win32') ? 'ico' : 'png'
 
-const iconPath = path.join(app.getAppPath(), 'img', ('tray.'+iconExt));
-const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.'+iconExt));
+const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
+const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
 
 let appIcon = null;
 
