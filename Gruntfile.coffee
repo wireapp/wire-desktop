@@ -259,3 +259,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'win-prod',  ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
   grunt.registerTask 'linux',     ['clean:linux', 'release-internal', 'electron:linux']
+  grunt.registerTask 'lin-prod',  ['clean:linux', 'update-keys', 'release-prod', 'electron:linux']
