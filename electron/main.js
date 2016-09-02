@@ -128,6 +128,9 @@ ipcMain.on('google-auth-request', function(event) {
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
 ///////////////////////////////////////////////////////////////////////////////
+
+const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
+
 function showMainWindow() {
   main = new BrowserWindow({
     'titleBarStyle': 'hidden-inset',
@@ -138,7 +141,7 @@ function showMainWindow() {
     'minHeight': config.MIN_HEIGHT_MAIN,
     'show': false,
     'autoHideMenuBar': false,
-    'icon': path.join(app.getAppPath(), 'img', 'wire.ico'),
+    'icon': path.join(app.getAppPath(), 'img', ('wire.' + iconExt)),
     'webPreferences': {
       'nodeIntegration': false,
       'preload': PRELOAD_JS
@@ -221,7 +224,7 @@ function showMainWindow() {
   });
 
   main.webContents.on('crashed', function() {
-    main.reload();
+    process.crash();
   });
 }
 
