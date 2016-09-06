@@ -56,10 +56,12 @@ module.exports = {
   },
 
   useDefaultIcon: function() {
+    if (appIcon == null) return;
     appIcon.setImage(iconPath);
   },
 
   useBadgeIcon: function() {
+    if (appIcon == null) return;
     appIcon.setImage(iconBadgePath);
   }
 };
