@@ -224,7 +224,7 @@ function showMainWindow() {
   });
 
   main.webContents.on('crashed', function() {
-    process.crash();
+    main.reload();
   });
 }
 
