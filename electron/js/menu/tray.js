@@ -51,7 +51,8 @@ module.exports = {
     appIcon.setToolTip(config.NAME);
     appIcon.setContextMenu(contextMenu);
     appIcon.on('click', function () {
-      BrowserWindow.getAllWindows()[0].show();
+      if (BrowserWindow.getAllWindows()[0].isFocused()) BrowserWindow.getAllWindows()[0].hide();
+      else BrowserWindow.getAllWindows()[0].show();
     });
   },
 
