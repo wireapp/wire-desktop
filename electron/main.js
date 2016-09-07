@@ -41,6 +41,8 @@ const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const SPLASH_HTML = 'file://' + path.join(APP_PATH, 'html', 'splash.html');
 const ABOUT_HTML = 'file://' + path.join(APP_PATH, 'html', 'about.html');
+const ICON = 'wire.' + ((process.platform === 'win32') ? 'ico' : 'png');
+const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
 let main;
 let raygunClient;
@@ -129,8 +131,6 @@ ipcMain.on('google-auth-request', function(event) {
 // APP Windows
 ///////////////////////////////////////////////////////////////////////////////
 
-const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
-
 function showMainWindow() {
   main = new BrowserWindow({
     'titleBarStyle': 'hidden-inset',
@@ -141,7 +141,7 @@ function showMainWindow() {
     'minHeight': config.MIN_HEIGHT_MAIN,
     'show': false,
     'autoHideMenuBar': false,
-    'icon': path.join(app.getAppPath(), 'img', ('wire.' + iconExt)),
+    'icon': ICON_PATH,
     'webPreferences': {
       'nodeIntegration': false,
       'preload': PRELOAD_JS
