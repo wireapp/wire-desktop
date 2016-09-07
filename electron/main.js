@@ -214,7 +214,7 @@ function showMainWindow() {
       init.save('bounds', main.getBounds());
     }
 
-    if ((process.platform === 'darwin' || process.platform === 'win32') && !quitting) {
+    if (!quitting) {
       event.preventDefault();
       main.hide();
     }
