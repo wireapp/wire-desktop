@@ -24,14 +24,16 @@ const {app, BrowserWindow, Menu, Tray} = require('electron');
 const path = require('path');
 const config = require('./../config');
 
-const iconPath = path.join(app.getAppPath(), 'img', 'tray.ico');
-const iconBadgePath = path.join(app.getAppPath(), 'img', 'tray.badge.ico');
+const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
+
+const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
+const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
 
 let appIcon = null;
 
 module.exports = {
   createTrayIcon: function() {
-    if (process.platform !== 'win32') {
+    if (process.platform === 'darwin') {
       return;
     }
 
@@ -54,10 +56,12 @@ module.exports = {
   },
 
   useDefaultIcon: function() {
+    if (appIcon == null) return;
     appIcon.setImage(iconPath);
   },
 
   useBadgeIcon: function() {
+    if (appIcon == null) return;
     appIcon.setImage(iconBadgePath);
   }
 };

@@ -58,14 +58,10 @@ module.exports = {
       var count = (/\(([0-9]+)\)/).exec(win.getTitle() || win.webContents.getTitle());
       if (process.platform === 'darwin') {
         app.dock.setBadge(count ? count[1] : '');
-      }
-
-      if (process.platform === 'win32') {
-        if (count) {
-          tray.useBadgeIcon();
-        } else {
-          tray.useDefaultIcon();
-        }
+      } else if (count) {
+        tray.useBadgeIcon();
+      } else {
+        tray.useDefaultIcon();
       }
     }, 50);
   },
