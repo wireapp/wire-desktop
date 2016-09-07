@@ -250,12 +250,13 @@ module.exports = (grunt) ->
     execSync "productbuild --component '#{options.dir}' /Applications --sign '#{options.sign.package}' '#{options.name}.pkg'"
 
 
-  grunt.registerTask 'release',   ['build-inc', 'gitcommit', 'gittag', 'gitpush']
+  grunt.registerTask 'release',    ['build-inc', 'gitcommit', 'gittag', 'gitpush']
 
-  grunt.registerTask 'osx',       ['clean:osx', 'update-keys', 'release-internal', 'electron:osx_internal']
-  grunt.registerTask 'osx-prod',  ['clean:osx', 'update-keys', 'release-prod', 'electron:osx_prod', 'productbuild']
+  grunt.registerTask 'osx',        ['clean:osx', 'update-keys', 'release-internal', 'electron:osx_internal']
+  grunt.registerTask 'osx-prod',   ['clean:osx', 'update-keys', 'release-prod', 'electron:osx_prod', 'productbuild']
 
-  grunt.registerTask 'win',       ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
-  grunt.registerTask 'win-prod',  ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
+  grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
+  grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',     ['clean:linux', 'release-internal', 'electron:linux']
+  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'electron:linux']
+  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electron:linux']
