@@ -32,7 +32,7 @@ module.exports = (function() {
     let data = {};
     try {
       data = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
-    } catch (e) {
+    } catch (error) {
       console.log(INIT_JSON, 'not found!');
     }
     data[name] = value;
@@ -43,13 +43,13 @@ module.exports = (function() {
     try {
       const data = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
       return data[name] || defaultValue;
-    } catch (e) {
+    } catch (error) {
       return defaultValue;
     }
   }
 
   return {
     save,
-    restore
+    restore,
   };
 }());

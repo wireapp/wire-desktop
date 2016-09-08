@@ -20,10 +20,8 @@
 'use strict';
 
 module.exports = {
-
   fromBuffer: function (mimetype, buffer) {
     let bufferBase64encoded = Buffer.from(buffer).toString('base64');
     return 'data:' + mimetype + ';base64,' + bufferBase64encoded;
-  }
-
+  },
 };

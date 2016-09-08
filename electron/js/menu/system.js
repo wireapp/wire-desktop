@@ -41,7 +41,7 @@ function sendAction(action) {
 }
 
 var separatorTemplate = {
-  type: 'separator'
+  type: 'separator',
 };
 
 var localeTemplate = {
@@ -52,15 +52,15 @@ var localeTemplate = {
       type: 'radio',
       click: function() {
         changeLocale('en');
-      }
+      },
     }, {
       i18n: 'menuLocaleLangDe',
       type: 'radio',
       click: function() {
         changeLocale('de');
-      }
-    }
-  ]
+      },
+    },
+  ],
 };
 
 var startupTemplate = {
@@ -74,17 +74,17 @@ var startupTemplate = {
     } else {
       squirrel.removeStartupShortcut();
     }
-  }
+  },
 };
 
 var aboutTemplate = {
   i18n: 'menuAbout',
-  click: function() {menu.emit('about-wire');}
+  click: function() {menu.emit('about-wire');},
 };
 
 var signOutTemplate = {
   i18n: 'menuSignOut',
-  click: function() {sendAction('sign-out');}
+  click: function() {sendAction('sign-out');},
 };
 
 var conversationTemplate = {
@@ -93,44 +93,44 @@ var conversationTemplate = {
     {
       i18n: 'menuStart',
       accelerator: 'CmdOrCtrl+N',
-      click: function() {sendAction('conversation-start');}
+      click: function() {sendAction('conversation-start');},
     }, separatorTemplate, {
       i18n: 'menuPing',
       accelerator: 'CmdOrCtrl+K',
-      click: function() {sendAction('conversation-ping');}
+      click: function() {sendAction('conversation-ping');},
     }, {
       i18n: 'menuCall',
-      click: function() {sendAction('conversation-call');}
+      click: function() {sendAction('conversation-call');},
     }, {
       i18n: 'menuVideoCall',
-      click: function() {sendAction('conversation-video-call');}
+      click: function() {sendAction('conversation-video-call');},
     }, separatorTemplate, {
       i18n: 'menuPeople',
       accelerator: 'CmdOrCtrl+I',
-      click: function() {sendAction('conversation-people');}
+      click: function() {sendAction('conversation-people');},
     }, {
       i18n: 'menuAddPeople',
       accelerator: 'Shift+CmdOrCtrl+K',
-      click: function() {sendAction('conversation-add-people');}
+      click: function() {sendAction('conversation-add-people');},
     }, separatorTemplate, {
       i18n: 'menuArchive',
       accelerator: 'CmdOrCtrl+D',
-      click: function() {sendAction('conversation-archive');}
+      click: function() {sendAction('conversation-archive');},
     }, {
       i18n: 'menuMute',
       accelerator: 'Alt+CmdOrCtrl+S',
-      click: function() {sendAction('conversation-silence');}
+      click: function() {sendAction('conversation-silence');},
     }, {
       i18n: 'menuDelete',
-      click: function() {sendAction('conversation-delete');}
-    }
-  ]
+      click: function() {sendAction('conversation-delete');},
+    },
+  ],
 };
 
 var showWireTemplate = {
   label: config.NAME,
   accelerator: 'CmdOrCtrl+1',
-  click: function() {BrowserWindow.getAllWindows()[0].show();}
+  click: function() {BrowserWindow.getAllWindows()[0].show();},
 };
 
 var toggleMenuTemplate = {
@@ -142,7 +142,7 @@ var toggleMenuTemplate = {
       getBrowserWindow().setAutoHideMenuBar(true);
       getBrowserWindow().setMenuBarVisibility(false);
     }
-  }
+  },
 };
 
 var toggleFullScreenTemplate = {
@@ -151,7 +151,7 @@ var toggleFullScreenTemplate = {
   accelerator: 'Alt+Command+F',
   click: function() {
     getBrowserWindow().setFullScreen(!getBrowserWindow().isFullScreen());
-  }
+  },
 };
 
 
@@ -165,8 +165,8 @@ var editTemplate = {
     {i18n: 'menuCopy', role: 'copy'},
     {i18n: 'menuPaste', role: 'paste'},
     separatorTemplate,
-    {i18n: 'menuSelectAll', role: 'selectall'}
-  ]
+    {i18n: 'menuSelectAll', role: 'selectall'},
+  ],
 };
 
 var windowTemplate = {
@@ -175,20 +175,20 @@ var windowTemplate = {
   submenu: [
     {
       i18n: 'menuMinimize',
-      role: 'minimize'
+      role: 'minimize',
     }, {
       i18n: 'menuClose',
-      role: 'close'
+      role: 'close',
     }, separatorTemplate, {
       i18n: 'menuNextConversation',
       accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
-      click: function() {sendAction('conversation-next');}
+      click: function() {sendAction('conversation-next');},
     }, {
       i18n: 'menuPreviousConversation',
       accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
-      click: function() {sendAction('conversation-prev');}
-    }
-  ]
+      click: function() {sendAction('conversation-prev');},
+    },
+  ],
 };
 
 var helpTemplate = {
@@ -197,21 +197,21 @@ var helpTemplate = {
   submenu: [
     {
       i18n: 'menuLegal',
-      click: function() {shell.openExternal(config.WIRE_LEGAL);}
+      click: function() {shell.openExternal(config.WIRE_LEGAL);},
     }, {
       i18n: 'menuPrivacy',
-      click: function() {shell.openExternal(config.WIRE_PRIVACY);}
+      click: function() {shell.openExternal(config.WIRE_PRIVACY);},
     }, {
       i18n: 'menuLicense',
-      click: function() {shell.openExternal(config.WIRE_LICENSES);}
+      click: function() {shell.openExternal(config.WIRE_LICENSES);},
     }, {
       i18n: 'menuSupport',
-      click: function() {shell.openExternal(config.WIRE_SUPPORT);}
+      click: function() {shell.openExternal(config.WIRE_SUPPORT);},
     }, {
       i18n: 'menuWireURL',
-      click: function() {shell.openExternal(config.WIRE);}
-    }
-  ]
+      click: function() {shell.openExternal(config.WIRE);},
+    },
+  ],
 };
 
 var darwinTemplate = {
@@ -221,31 +221,31 @@ var darwinTemplate = {
     separatorTemplate, {
       i18n: 'menuPreferences',
       accelerator: 'Command+,',
-      click: function() {sendAction('profile-settings-show');}
+      click: function() {sendAction('profile-settings-show');},
     },
     separatorTemplate,
     localeTemplate,
     {
       i18n: 'menuServices',
       role: 'services',
-      submenu: []
+      submenu: [],
     }, separatorTemplate, {
       i18n: 'menuHideWire',
-      role: 'hide'
+      role: 'hide',
     }, {
       i18n: 'menuHideOthers',
-      role: 'hideothers'
+      role: 'hideothers',
     }, {
       i18n: 'menuShowAll',
-      role: 'unhide'
+      role: 'unhide',
     },
     separatorTemplate,
     signOutTemplate, {
       i18n: 'menuQuit',
       accelerator: 'Command+Q',
-      selector: 'terminate:'
-    }
-  ]
+      selector: 'terminate:',
+    },
+  ],
 };
 
 var win32Template = {
@@ -254,7 +254,7 @@ var win32Template = {
     {
       i18n: 'menuSettings',
       accelerator: 'Ctrl+,',
-      click: function() {sendAction('profile-settings-show');}
+      click: function() {sendAction('profile-settings-show');},
     },
     localeTemplate,
     startupTemplate,
@@ -262,16 +262,16 @@ var win32Template = {
     signOutTemplate, {
       i18n: 'menuQuit',
       accelerator: 'Alt+F4',
-      click: function() {app.quit();}
-    }
-  ]
+      click: function() {app.quit();},
+    },
+  ],
 };
 
 menuTemplate = [
   conversationTemplate,
   editTemplate,
   windowTemplate,
-  helpTemplate
+  helpTemplate,
 ];
 
 if (process.platform === 'darwin') {
@@ -327,7 +327,7 @@ function changeLocale(language) {
     type: 'info',
     title: 'Restart needed',
     message: locale[language].restartLocale,
-    buttons: [locale[language].restartLater, locale[language].menuQuit]
+    buttons: [locale[language].restartLater, locale[language].menuQuit],
   }, function(response) {
     if (response == 1) {
       app.quit();

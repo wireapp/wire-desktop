@@ -24,7 +24,6 @@ const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 
 module.exports = {
-
   fromElement: function(contextMenuElement) {
     let menu = new Menu();
     let elements = contextMenuElement.querySelectorAll('[data-context-action]');
@@ -37,12 +36,11 @@ module.exports = {
           let data = contextMenuElement.getAttribute('data-context-data');
           let action = element.getAttribute('data-context-action');
           amplify.publish(z.event.WebApp.CONTEXT_MENU, tag, action, data);
-        }
+        },
       });
       menu.append(menuItem);
     });
 
     return menu;
-  }
-
+  },
 };

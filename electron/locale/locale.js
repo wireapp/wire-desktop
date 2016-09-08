@@ -60,5 +60,5 @@ module.exports = {
   'de': de,
   getCurrent: getCurrent,
   getText: getText,
-  setLocale: setLocale
+  setLocale: setLocale,
 };
