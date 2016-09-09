@@ -20,6 +20,7 @@
 'use strict';
 
 const {ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const pkg = require('./../package.json');
 
 webFrame.setZoomLevelLimits(1, 1);
 
@@ -74,11 +75,13 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
   window.notification_icon = config.notification_icon;
   window.winston = require('winston');
 
-  winston.add(winston.transports.File, {
-    filename: config.logging_file,
-    handleExceptions: true
-  });
-  winston.remove(winston.transports.Console);
+  winston
+    .add(winston.transports.File, {
+      filename: config.logging_file,
+      handleExceptions: true,
+    })
+    .remove(winston.transports.Console)
+    .info(pkg.productName, 'Version', pkg.version);
 
   require('./menu/context');
 
