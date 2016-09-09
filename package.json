@@ -21,7 +21,6 @@
     "electron-prebuilt": "1.2.8",
     "electron-rebuild": "1.2.1",
     "eslint": "3.4.0",
-    "eslint-config-google": "^0.6.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-electron-installer": "2.1.0",
