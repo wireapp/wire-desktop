@@ -37,6 +37,12 @@ def get_locale(filename):
 for filename in os.listdir(root):
   locale = get_locale(filename)
   if locale:
+    if locale not in ['de']:
+      file_to_delete = os.path.join(root, filename)
+      print('Removing unsupported locale "%s" (%s)' % (locale, file_to_delete))
+      os.remove(file_to_delete)
+      continue
+
     with open(os.path.join(root, filename), 'r') as f:
       source = f.read()
 
