@@ -21,6 +21,7 @@
 
 import os
 import re
+import sys
 
 os.system('crowdin-cli-py upload sources')
 os.system('crowdin-cli-py download')
@@ -37,7 +38,7 @@ def get_locale(filename):
 for filename in os.listdir(root):
   locale = get_locale(filename)
   if locale:
-    if locale not in ['de']:
+    if locale not in ['de', 'ru']:
       file_to_delete = os.path.join(root, filename)
       print('Removing unsupported locale "%s" (%s)' % (locale, file_to_delete))
       os.remove(file_to_delete)
