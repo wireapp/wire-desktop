@@ -73,5 +73,5 @@ module.exports = {
       }
     }
     return false;
-  }
+  },
 };

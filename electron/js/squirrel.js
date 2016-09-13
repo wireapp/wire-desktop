@@ -211,5 +211,5 @@ module.exports = {
   handleSquirrelEvent: handleSquirrelEvent,
   createStartupShortcut: createStartupShortcut,
   removeStartupShortcut: removeStartupShortcut,
-  startupLinkExists: startupLinkExists
+  startupLinkExists: startupLinkExists,
 };

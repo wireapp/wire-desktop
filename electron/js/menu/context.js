@@ -37,7 +37,7 @@ var text_menu = Menu.buildFromTemplate([
   {label: locale.getText('menuCopy'), role: 'copy'},
   {label: locale.getText('menuPaste'), role: 'paste'},
   {type: 'separator'},
-  {label: locale.getText('menuSelectAll'), role: 'selectall'}
+  {label: locale.getText('menuSelectAll'), role: 'selectall'},
 ]);
 
 // Conversation
@@ -46,49 +46,49 @@ var silence = new MenuItem({
   label: locale.getText('menuMute'),
   click: function () {
     wire.app.view.conversation_list.click_on_mute_action();
-  }
+  },
 });
 
 var notify = new MenuItem({
   label: locale.getText('menuUnmute'),
   click: function () {
     wire.app.view.conversation_list.click_on_mute_action();
-  }
+  },
 });
 
 var archive = new MenuItem({
   label: locale.getText('menuArchive'),
   click: function() {
     wire.app.view.conversation_list.click_on_archive_action();
-  }
+  },
 });
 
 var unarchive = new MenuItem({
   label: locale.getText('menuUnarchive'),
   click: function() {
     wire.app.view.conversation_list.click_on_unarchive_action();
-  }
+  },
 });
 
 var clear = new MenuItem({
   label: locale.getText('menuDelete'),
   click: function() {
     wire.app.view.conversation_list.click_on_clear_action();
-  }
+  },
 });
 
 var leave = new MenuItem({
   label: locale.getText('menuLeave'),
   click: function() {
     wire.app.view.conversation_list.click_on_leave_action();
-  }
+  },
 });
 
 var block = new MenuItem({
   label: locale.getText('menuBlock'),
   click: function() {
     wire.app.view.conversation_list.click_on_block_action();
-  }
+  },
 });
 
 // Images
@@ -97,7 +97,7 @@ var image_menu = Menu.buildFromTemplate([{
   label: locale.getText('menuSavePictureAs'),
   click: function() {
     savePicture(image_menu.file, image_menu.image);
-  }
+  },
 }]);
 
 window.addEventListener('contextmenu', function (event) {

@@ -49,7 +49,7 @@ let raygunClient;
 let about;
 let enteredWebapp = false;
 let quitting = false;
-let is_update = false;
+let isUpdate = false;
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
 let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.INTERNAL_URL);
@@ -57,9 +57,7 @@ let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.IN
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
 ///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({
-  apiKey: config.RAYGUN_API_KEY
-});
+raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEYgit});
 
 raygunClient.onBeforeSend(function(payload) {
   delete payload.details.machineName;
@@ -143,8 +141,8 @@ function showMainWindow() {
     'icon': ICON_PATH,
     'webPreferences': {
       'nodeIntegration': false,
-      'preload': PRELOAD_JS
-    }
+      'preload': PRELOAD_JS,
+    },
   });
 
   if (init.restore('fullscreen', false)) {
@@ -165,11 +163,11 @@ function showMainWindow() {
     }, 800);
   }
 
-  main.webContents.on('will-navigate', function(e, url) {
+  main.webContents.on('will-navigate', function(event, url) {
     // Prevent links like www.wire.com without blank target:
     // to be opened inside the wrapper
     if (util.openInExternalWindow(url)) {
-      e.preventDefault();
+      event.preventDefault();
       shell.openExternal(url);
       return;
     }
@@ -177,7 +175,7 @@ function showMainWindow() {
     // Prevent Redirect for Drag and Drop on embeds
     // or when no internet is present
     if (url.includes('file://')) {
-      e.preventDefault();
+      event.preventDefault();
     }
 
     // Resize the window for auth
@@ -193,17 +191,15 @@ function showMainWindow() {
 
   main.webContents.on('dom-ready', function() {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
-
     if (enteredWebapp) {
       main.webContents.send('webapp-loaded', {
         electron_version: app.getVersion(),
         notification_icon: path.join(app.getAppPath(), 'img', 'notification.png'),
-        logging_file: path.join(app.getPath('userData'), config.CONSOLE_LOG)
+        logging_file: path.join(app.getPath('userData'), config.CONSOLE_LOG),
       });
     } else {
       main.webContents.send('splash-screen-loaded');
     }
-
   });
 
   main.on('page-title-updated', function() {
@@ -234,7 +230,7 @@ function showAboutWindow() {
       'width': 304,
       'height': 208,
       'resizable': false,
-      'fullscreen': false
+      'fullscreen': false,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
@@ -265,7 +261,7 @@ app.on('before-quit', function() {
 });
 
 app.on('ready', function() {
-  if (!is_update) {
+  if (!isUpdate) {
     Menu.setApplicationMenu(systemMenu);
     tray.createTrayIcon();
     showMainWindow();
@@ -282,10 +278,10 @@ systemMenu.on('about-wire', function() {
 ///////////////////////////////////////////////////////////////////////////////
 // Delete the console.log
 ///////////////////////////////////////////////////////////////////////////////
-let console_log = path.join(app.getPath('userData'), config.CONSOLE_LOG);
-fs.stat(console_log, function(err, stats) {
+let consoleLog = path.join(app.getPath('userData'), config.CONSOLE_LOG);
+fs.stat(consoleLog, function(err, stats) {
   if (!err) {
-    fs.rename(console_log, console_log.replace('.log', '.old'));
+    fs.rename(consoleLog, consoleLog.replace('.log', '.old'));
   }
 });
 
@@ -296,6 +292,6 @@ fs.stat(console_log, function(err, stats) {
 if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit, function(squirrelEvent) {
-    is_update = squirrelEvent === '--squirrel-updated';
+    isUpdate = squirrelEvent === '--squirrel-updated';
   });
 }

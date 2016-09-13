@@ -41,11 +41,11 @@ module.exports = {
     var contextMenu = Menu.buildFromTemplate([
       {
         label: 'Open ' + config.NAME,
-        click: function() {BrowserWindow.getAllWindows()[0].show();}
+        click: function() {BrowserWindow.getAllWindows()[0].show();},
       }, {
         label: 'Quit',
-        click: function() {app.quit();}
-      }
+        click: function() {app.quit();},
+      },
     ]);
 
     appIcon.setToolTip(config.NAME);
@@ -63,5 +63,5 @@ module.exports = {
   useBadgeIcon: function() {
     if (appIcon == null) return;
     appIcon.setImage(iconBadgePath);
-  }
+  },
 };

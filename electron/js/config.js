@@ -46,12 +46,12 @@ let config = {
 
   WHITE_LIST: [
     'https://www.wire.com/',
-    'https://wire.com/'
+    'https://wire.com/',
   ],
 
   LOCALE: [
     'en',
-    'de'
+    'de',
   ],
 
   RAYGUN_API_KEY: '',
@@ -60,7 +60,7 @@ let config = {
   GOOGLE_CLIENT_ID: '',
   GOOGLE_CLIENT_SECRET: '',
 
-  CONSOLE_LOG: 'console.log'
+  CONSOLE_LOG: 'console.log',
 };
 
 config.ENVIRONMENT = pkg.environment;

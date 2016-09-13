@@ -28,54 +28,54 @@ function getBrowserWindow() {
 
 var reloadTemplate = {
   label: 'Reload',
-  click: function() {getBrowserWindow().reload();}
+  click: function() {getBrowserWindow().reload();},
 };
 
 var devToolsTemplate = {
   label: 'Toggle DevTools',
   accelerator: 'Alt+CmdOrCtrl+I',
-  click: function() {getBrowserWindow().toggleDevTools();}
+  click: function() {getBrowserWindow().toggleDevTools();},
 };
 
 var devProductionTemplate = {
   label: 'Production',
-  click: function() {getBrowserWindow().loadURL(config.PRODUCTION_URL);}
+  click: function() {getBrowserWindow().loadURL(config.PRODUCTION_URL);},
 };
 
 var devStagingTemplate = {
   label: 'Staging',
-  click: function() {getBrowserWindow().loadURL(config.STAGING_URL);}
+  click: function() {getBrowserWindow().loadURL(config.STAGING_URL);},
 };
 
 var devDevTemplate = {
   label: 'Dev',
-  click: function() {getBrowserWindow().loadURL(config.DEV_URL);}
+  click: function() {getBrowserWindow().loadURL(config.DEV_URL);},
 };
 
 var devEdgeTemplate = {
   label: 'Edge',
-  click: function() {getBrowserWindow().loadURL(config.EDGE_URL);}
+  click: function() {getBrowserWindow().loadURL(config.EDGE_URL);},
 };
 
 var devLocalhostTemplate = {
   label: 'Localhost',
-  click: function() {getBrowserWindow().loadURL(config.LOCALHOST_URL);}
+  click: function() {getBrowserWindow().loadURL(config.LOCALHOST_URL);},
 };
 
 var versionTemplate = {
-  label: 'Wire Version ' + config.VERSION
+  label: 'Wire Version ' + config.VERSION,
 };
 
 var chromeVersionTemplate = {
-  label: 'Chrome Version ' + process.versions.chrome
+  label: 'Chrome Version ' + process.versions.chrome,
 };
 
 var electronVersionTemplate = {
-  label: 'Electron Version ' + process.versions.electron
+  label: 'Electron Version ' + process.versions.electron,
 };
 
 var separatorTemplate = {
-  type: 'separator'
+  type: 'separator',
 };
 
 let menuTemplate = {
@@ -93,8 +93,8 @@ let menuTemplate = {
     separatorTemplate,
     versionTemplate,
     chromeVersionTemplate,
-    electronVersionTemplate
-  ]
+    electronVersionTemplate,
+  ],
 };
 
 module.exports = new MenuItem(menuTemplate);

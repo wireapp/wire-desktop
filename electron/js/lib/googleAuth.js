@@ -33,11 +33,7 @@ function getAuthenticationUrl(scopes, clientId, clientSecret) {
     clientSecret,
     'urn:ietf:wg:oauth:2.0:oob'
   );
-
-  const url = oauth2Client.generateAuthUrl({
-    scope: scopes
-  });
-  return url;
+  return oauth2Client.generateAuthUrl({scope: scopes});
 }
 
 
@@ -45,7 +41,7 @@ function authorizeApp(url) {
   return new Promise(function(resolve, reject) {
     const win = new BrowserWindow({
       'title': '',
-      'useContentSize': true
+      'useContentSize': true,
     });
     win.setMenuBarVisibility(false);
     win.loadURL(url);
@@ -87,15 +83,15 @@ function getAccessToken(scopes, clientId, clientSecret) {
           client_id: clientId,
           client_secret: clientSecret,
           grant_type: 'authorization_code',
-          redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
+          redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
         });
 
         request.post('https://accounts.google.com/o/oauth2/token', {
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: data
+          body: data,
         }, function(error, response, body) {
           if (error) {
             reject(error);
@@ -110,5 +106,5 @@ function getAccessToken(scopes, clientId, clientSecret) {
 
 module.exports = {
   getAuthorizationCode,
-  getAccessToken
+  getAccessToken,
 };

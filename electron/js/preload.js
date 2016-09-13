@@ -45,9 +45,7 @@ function getAdressBook () {
 }
 
 if (process.platform === 'darwin') {
-  Object.defineProperty(window, 'zAddressBook', {
-    get: getAdressBook
-  });
+  Object.defineProperty(window, 'zAddressBook', {get: getAdressBook});
 }
 
 ///////////////////////////////////////////////////////////////////////////////
