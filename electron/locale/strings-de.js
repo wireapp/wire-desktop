@@ -12,6 +12,7 @@ string.menuStartup = 'Wire beim Windows-Start ausführen';
 string.menuLocale = 'Sprache';
 string.menuLocaleLangEn = 'Englisch';
 string.menuLocaleLangDe = 'Deutsch';
+string.menuLocaleLangFr = 'French';
 string.menuAbout = 'Über Wire';
 string.menuSignOut = 'Ausloggen';
 string.menuPing = 'Ping';
