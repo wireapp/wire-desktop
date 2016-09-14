@@ -92,7 +92,7 @@ module.exports = (grunt) ->
           platform: 'win32'
           icon: 'resources/win/wire.internal.ico'
           arch: 'ia32'
-          win32metadata:
+          'version-string':
             CompanyName: '<%= info.name %>'
             FileDescription: '<%= info.description %>'
             OriginalFilename: '<%= info.nameInternal %>.exe'
@@ -104,7 +104,7 @@ module.exports = (grunt) ->
           platform: 'win32'
           icon: 'resources/win/wire.ico'
           arch: 'ia32'
-          win32metadata:
+          'version-string':
             CompanyName: '<%= info.name %>'
             FileDescription: '<%= info.description %>'
             OriginalFilename: '<%= info.name %>.exe'
