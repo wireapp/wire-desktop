@@ -2,7 +2,7 @@
   "name": "wireinternal",
   "productName": "WireInternal",
   "description": "Electron wrapper for Wire",
-  "version": "2.10.2654",
+  "version": "2.11.2655",
   "main": "main.js",
   "updateWinUrl": "https://wire-app.wire.com/win/internal/",
   "environment": "internal",
