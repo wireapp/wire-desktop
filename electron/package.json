@@ -2,7 +2,7 @@
   "name": "wire",
   "productName": "Wire",
   "description": "Electron wrapper for Wire",
-  "version": "2.11.2657",
+  "version": "2.11.2658",
   "main": "main.js",
   "updateWinUrl": "https://wire-app.wire.com/win/prod/",
   "environment": "production",
