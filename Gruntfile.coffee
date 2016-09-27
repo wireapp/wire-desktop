@@ -35,7 +35,7 @@ module.exports = (grunt) ->
       build: 'wrap/build'
       dist: 'wrap/dist'
       win: 'wrap/**/<%= info.name %>-win*'
-      osx: 'wrap/**/<%= info.name %>-darwin*'
+      macos: 'wrap/**/<%= info.name %>-darwin*'
       linux: 'wrap/**/<%= info.name %>-linux*'
       pkg: '*.pkg'
 
@@ -48,8 +48,8 @@ module.exports = (grunt) ->
         sign:
           app: '<%= info.sign.app %>'
           package: '<%= info.sign.package %>'
-        parent: 'resources/osx/entitlements/parent.plist'
-        child: 'resources/osx/entitlements/child.plist'
+        parent: 'resources/macos/entitlements/parent.plist'
+        child: 'resources/macos/entitlements/child.plist'
         dir: 'wrap/dist/<%= info.name %>-mas-x64/<%= info.name %>.app'
         name: '<%= info.name %>'
 
@@ -69,23 +69,23 @@ module.exports = (grunt) ->
         protocols: [
           {name: '', schemes: ['wire']}
         ]
-      osx_internal:
+      macos_internal:
         options:
           name: '<%= info.nameInternal %>'
           platform: 'mas'
-          icon: 'resources/osx/wire.internal.icns'
+          icon: 'resources/macos/wire.internal.icns'
           'app-bundle-id': 'com.wearezeta.zclient.mac.internal'
           'dev-region': 'en'
-      osx_prod:
+      macos_prod:
         options:
           platform: 'mas'
           out: 'wrap/dist/'
-          icon: 'resources/osx/wire.icns'
+          icon: 'resources/macos/wire.icns'
           'app-category-type': 'public.app-category.social-networking'
           'app-bundle-id': 'com.wearezeta.zclient.mac'
           'helper-bundle-id': 'com.wearezeta.zclient.mac.helper'
           'dev-region': 'en'
-          'extend-info': 'resources/osx/custom.plist'
+          'extend-info': 'resources/macos/custom.plist'
       win_internal:
         options:
           name: '<%= info.nameInternal %>'
@@ -252,8 +252,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release',    ['build-inc', 'gitcommit', 'gittag', 'gitpush']
 
-  grunt.registerTask 'osx',        ['clean:osx', 'update-keys', 'release-internal', 'electron:osx_internal']
-  grunt.registerTask 'osx-prod',   ['clean:osx', 'update-keys', 'release-prod', 'electron:osx_prod', 'productbuild']
+  grunt.registerTask 'macos',      ['clean:macos', 'update-keys', 'release-internal', 'electron:macos_internal']
+  grunt.registerTask 'macos-prod', ['clean:macos', 'update-keys', 'release-prod', 'electron:macos_prod', 'productbuild']
 
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
