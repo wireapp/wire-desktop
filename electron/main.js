@@ -130,19 +130,21 @@ ipcMain.on('google-auth-request', function(event) {
 ///////////////////////////////////////////////////////////////////////////////
 function showMainWindow() {
   main = new BrowserWindow({
-    'titleBarStyle': 'hidden-inset',
     'title': config.NAME,
+    'titleBarStyle': 'hidden-inset',
     'width': config.DEFAULT_WIDTH_MAIN,
     'height': config.DEFAULT_HEIGHT_MAIN,
     'minWidth': config.MIN_WIDTH_MAIN,
     'minHeight': config.MIN_HEIGHT_MAIN,
-    'show': false,
     'autoHideMenuBar': false,
+    'backgroundColor': '#2391d3',
     'icon': ICON_PATH,
+    'show': false,
     'webPreferences': {
+      'backgroundThrottling': false,
       'nodeIntegration': false,
-      'preload': PRELOAD_JS,
-    },
+      'preload': PRELOAD_JS
+    }
   });
 
   if (init.restore('fullscreen', false)) {
@@ -158,9 +160,9 @@ function showMainWindow() {
   }
 
   if (!argv.startup) {
-    setTimeout(function() {
+    main.once('ready-to-show', function() {
       main.show();
-    }, 800);
+    });
   }
 
   main.webContents.on('will-navigate', function(event, url) {
