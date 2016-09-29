@@ -160,9 +160,9 @@ function showMainWindow() {
   }
 
   if (!argv.startup) {
-    main.once('ready-to-show', function() {
+    setTimeout(function() {
       main.show();
-    });
+    }, 800);
   }
 
   main.webContents.on('will-navigate', function(event, url) {
