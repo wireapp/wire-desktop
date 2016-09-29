@@ -143,8 +143,8 @@ function showMainWindow() {
     'webPreferences': {
       'backgroundThrottling': false,
       'nodeIntegration': false,
-      'preload': PRELOAD_JS
-    }
+      'preload': PRELOAD_JS,
+    },
   });
 
   if (init.restore('fullscreen', false)) {
