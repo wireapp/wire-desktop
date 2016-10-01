@@ -125,7 +125,7 @@ window.addEventListener('contextmenu', function (event) {
 window.addEventListener('click', function(event) {
   const element = event.target;
 
-  if (element.classList.contains('icon-more') && element.parentElement.previousElementSibling) {
+  if (element.classList.contains('icon-more') && !element.classList.contains('context-menu') && element.parentElement.previousElementSibling) {
     // get center-column
     const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
     if (createConversationMenu(id)) {
