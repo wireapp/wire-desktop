@@ -9,13 +9,15 @@
     "prod": "electron electron --debug=5858 --devtools --enable-logging --env=https://app.wire.com",
     "localhost": "electron electron --debug=5858 --devtools --enable-logging --env=http://localhost:8888",
     "test": "eslint electron && electron-mocha tests",
-    "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f"
+    "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f",
+    "deb64": "electron-installer-debian --src wrap/build/Wire-linux-x64/ --arch amd64 --config linux.json"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "devDependencies": {
+    "electron-installer-debian": "0.4.0",
     "electron-mocha": "3.1.1",
     "electron-packager": "8.1.0",
     "electron-prebuilt": "1.4.2",
