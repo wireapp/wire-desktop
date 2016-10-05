@@ -16,11 +16,11 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "devDependencies": {
-    "electron-mocha": "3.0.5",
-    "electron-packager": "8.0.0",
-    "electron-prebuilt": "1.4.0",
+    "electron-mocha": "3.1.1",
+    "electron-packager": "8.1.0",
+    "electron-prebuilt": "1.4.2",
     "electron-rebuild": "1.2.1",
-    "eslint": "3.4.0",
+    "eslint": "3.7.1",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-electron-installer": "2.1.0",
