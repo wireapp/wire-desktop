@@ -169,6 +169,12 @@ module.exports = (grunt) ->
           owner : 'wireapp'
           repository : 'wire-desktop'
 
+    shell:
+      deb64:
+        command: 'npm run deb64'
+      deb32:
+        command: 'npm run deb32'
+
 
 ###############################################################################
 # Tasks
@@ -259,4 +265,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
   grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'electron:linux']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electron:linux']
+  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electron:linux', 'shell']

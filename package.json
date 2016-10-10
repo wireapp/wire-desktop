@@ -10,7 +10,8 @@
     "localhost": "electron electron --debug=5858 --devtools --enable-logging --env=http://localhost:8888",
     "test": "eslint electron && electron-mocha tests",
     "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f",
-    "deb64": "electron-installer-debian --src wrap/build/Wire-linux-x64/ --arch amd64 --config linux.json"
+    "deb64": "electron-installer-debian --src wrap/build/Wire-linux-x64/ --arch amd64 --config linux.json",
+    "deb32": "electron-installer-debian --src wrap/build/Wire-linux-ia32/ --arch x32 --config linux.json"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "grunt-electron-installer": "2.1.0",
     "grunt-git": "1.0.0",
     "grunt-github-changes": "0.1.0",
+    "grunt-shell": "2.0.0",
     "load-grunt-tasks": "3.5.2"
   }
 }
