@@ -282,23 +282,24 @@ if (process.platform === 'darwin') {
     separatorTemplate,
     toggleFullScreenTemplate
   );
-
   toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
 }
 
 if (process.platform === 'win32') {
   const squirrel = require('./../squirrel');
-
   menuTemplate.unshift(win32Template);
   windowTemplate['i18n'] = 'menuView';
   windowTemplate.submenu.unshift(
     toggleMenuTemplate,
     separatorTemplate
   );
-  helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
   squirrel.startupLinkExists(function(exists) {
     menu.items[0].submenu.items[2].checked = exists;
   });
+}
+
+if (process.platform !== 'darwin') {
+  helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
 }
 
 function processMenu(template, language) {
