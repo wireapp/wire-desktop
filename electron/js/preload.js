@@ -132,8 +132,8 @@ ipcRenderer.on('sign-out', function() {
   amplify.publish(z.event.WebApp.LOGOUT.ASK_TO_CLEAR_DATA);
 });
 
-ipcRenderer.on('profile-settings-show', function() {
-  amplify.publish(z.event.WebApp.PROFILE.SETTINGS.SHOW);
+ipcRenderer.on('profile-preferences-show', function() {
+  amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
 });
 
 ipcRenderer.on('conversation-start', function() {
