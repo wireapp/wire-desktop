@@ -84,10 +84,9 @@ if (process.platform !== 'darwin') {
     }
     return true;
   });
-}
-
-if (shouldQuit) {
-  app.quit();
+  if (process.platform === 'linux' && shouldQuit) {
+    app.quit();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
