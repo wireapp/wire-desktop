@@ -267,6 +267,23 @@ var win32Template = {
   ],
 };
 
+var linuxTemplate = {
+  label: config.NAME,
+  submenu: [
+    {
+      i18n: 'menuPreferences',
+      accelerator: 'Ctrl+,',
+      click: function() {sendAction('profile-settings-show');},
+    },
+    localeTemplate,
+    signOutTemplate, {
+      i18n: 'menuQuit',
+      accelerator: 'Ctrl+Q',
+      click: function() {app.quit();},
+    },
+  ],
+};
+
 menuTemplate = [
   conversationTemplate,
   editTemplate,
@@ -296,6 +313,10 @@ if (process.platform === 'win32') {
   squirrel.startupLinkExists(function(exists) {
     menu.items[0].submenu.items[2].checked = exists;
   });
+}
+
+if (process.platform === 'linux') {
+  menuTemplate.unshift(linuxTemplate);
 }
 
 if (process.platform !== 'darwin') {
