@@ -268,7 +268,7 @@ var win32Template = {
 };
 
 var linuxTemplate = {
-  label: config.NAME,
+  i18n: 'menuFile',
   submenu: [
     localeTemplate,
     signOutTemplate, {
