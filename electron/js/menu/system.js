@@ -270,11 +270,6 @@ var win32Template = {
 var linuxTemplate = {
   label: config.NAME,
   submenu: [
-    {
-      i18n: 'menuPreferences',
-      accelerator: 'Ctrl+,',
-      click: function() {sendAction('profile-settings-show');},
-    },
     localeTemplate,
     signOutTemplate, {
       i18n: 'menuQuit',
@@ -317,6 +312,10 @@ if (process.platform === 'win32') {
 
 if (process.platform === 'linux') {
   menuTemplate.unshift(linuxTemplate);
+  editTemplate.submenu.push(separatorTemplate, {
+    i18n: 'menuPreferences',
+    click: function() {sendAction('profile-settings-show');},
+  });
 }
 
 if (process.platform !== 'darwin') {
