@@ -51,7 +51,6 @@ string.menuSettings = 'Einstellungen';
 string.menuQuit = 'Wire beenden';
 string.menuShowHide = 'Menü ein-/ausblenden';
 string.menuSavePictureAs = 'Bild speichern unter...';
-string.menuFile = 'Ablage';
 
 string.restartLocale = 'Bitte starte Wire erneut, um diese Einstellung zu übernehmen.';
 string.restartLater = 'Später';

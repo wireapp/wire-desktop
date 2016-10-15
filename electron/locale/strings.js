@@ -49,8 +49,6 @@ string.menuSettings = 'Settings';
 string.menuQuit = 'Quit Wire';
 string.menuShowHide = 'Show/Hide Menu';
 string.menuSavePictureAs = 'Save Picture As...';
-string.menuFile = 'File';
-
 
 string.restartLocale = 'Please restart the app for this setting to take effect.';
 string.restartLater = 'Later';

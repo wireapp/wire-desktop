@@ -268,7 +268,7 @@ var win32Template = {
 };
 
 var linuxTemplate = {
-  i18n: 'menuFile',
+  label: config.NAME,
   submenu: [
     localeTemplate,
     signOutTemplate, {
@@ -280,8 +280,8 @@ var linuxTemplate = {
 };
 
 menuTemplate = [
-  conversationTemplate,
   editTemplate,
+  conversationTemplate,
   windowTemplate,
   helpTemplate,
 ];
