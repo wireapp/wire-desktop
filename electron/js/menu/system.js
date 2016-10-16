@@ -148,7 +148,7 @@ var toggleMenuTemplate = {
 var toggleFullScreenTemplate = {
   i18n: 'menuFullScreen',
   type: 'checkbox',
-  accelerator: 'Alt+Command+F',
+  accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
     getBrowserWindow().setFullScreen(!getBrowserWindow().isFullScreen());
   },
@@ -316,6 +316,13 @@ if (process.platform === 'linux') {
     i18n: 'menuPreferences',
     click: function() {sendAction('profile-settings-show');},
   });
+  windowTemplate.submenu.push(
+    separatorTemplate,
+    toggleMenuTemplate,
+    separatorTemplate,
+    toggleFullScreenTemplate
+  );
+  toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
 }
 
 if (process.platform !== 'darwin') {
