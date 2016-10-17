@@ -271,6 +271,7 @@ var linuxTemplate = {
   label: config.NAME,
   submenu: [
     localeTemplate,
+    separatorTemplate,
     signOutTemplate, {
       i18n: 'menuQuit',
       accelerator: 'Ctrl+Q',
@@ -280,8 +281,8 @@ var linuxTemplate = {
 };
 
 menuTemplate = [
-  editTemplate,
   conversationTemplate,
+  editTemplate,
   windowTemplate,
   helpTemplate,
 ];
