@@ -32,7 +32,7 @@ fi
 json=$(curl \
   -F "bundle_short_version=$short_version" \
   -F "bundle_version=$build_version" \
-  -H "X-HockeyAppToken: $OSX_MAS_HOCKEY_TOKEN" \
+  -H "X-HockeyAppToken: $MACOS_MAS_HOCKEY_TOKEN" \
   https://rink.hockeyapp.net/api/2/apps/8fe169d9cb81d550b6478232560b8321/app_versions/new)
 
 prop='config_url'
@@ -47,7 +47,7 @@ curl -X PUT \
   -F "notify=0" \
   -F "status=2" \
   -F "ipa=@Wire.pkg" \
-  -H "X-HockeyAppToken: $OSX_MAS_HOCKEY_TOKEN" \
+  -H "X-HockeyAppToken: $MACOS_MAS_HOCKEY_TOKEN" \
   https://rink.hockeyapp.net/api/2/apps/8fe169d9cb81d550b6478232560b8321/app_versions/$hockey_app_version
 
 # clean up

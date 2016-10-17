@@ -23,7 +23,7 @@ import os
 import requests
 
 HOCKEY_URL = 'https://rink.hockeyapp.net/api/2/apps/upload'
-HOCKEY_TOKEN = os.environ.get('OSX_HOCKEY_TOKEN')
+HOCKEY_TOKEN = os.environ.get('MACOS_HOCKEY_TOKEN')
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
 wire_app = os.path.join(bin_root, '..', 'wrap', 'build', 'WireInternal-mas-x64', 'WireInternal.app')

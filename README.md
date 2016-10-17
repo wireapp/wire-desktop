@@ -33,8 +33,8 @@ npm install
 ### Tasks
 
 ```shell
-# Build for OS X
-grunt osx-prod
+# Build for macOS
+grunt macos-prod
 
 # Build for Windows
 grunt win-prod
@@ -42,7 +42,7 @@ grunt win-prod
 # Build for Linux (experimental and unsupported)
 grunt linux
 
-# Trigger Windows and OS X builds
+# Trigger Windows and macOS builds
 grunt release
 ```
 
