@@ -357,7 +357,7 @@ function changeLocale(language) {
   locale.setLocale(language);
   dialog.showMessageBox({
     type: 'info',
-    title: 'Restart needed',
+    title: locale[language].restartNeeded,
     message: locale[language].restartLocale,
     buttons: [locale[language].restartLater, locale[language].restartNow],
   }, function(response) {
