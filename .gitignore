@@ -5,6 +5,7 @@
 .grunt
 .Icon
 /.idea
+/keys
 /temp
 /wrap
 app.asar
