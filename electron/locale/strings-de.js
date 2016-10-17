@@ -54,5 +54,6 @@ string.menuSavePictureAs = 'Bild speichern unter...';
 
 string.restartLocale = 'Bitte starte Wire erneut, um diese Einstellung zu übernehmen.';
 string.restartLater = 'Später';
+string.restartNow = 'Jetzt neustarten';
 
 module.exports = string;

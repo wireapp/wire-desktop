@@ -359,7 +359,7 @@ function changeLocale(language) {
     type: 'info',
     title: 'Restart needed',
     message: locale[language].restartLocale,
-    buttons: [locale[language].restartLater, locale[language].menuQuit],
+    buttons: [locale[language].restartLater, locale[language].restartNow],
   }, function(response) {
     if (response == 1) {
       app.quit();

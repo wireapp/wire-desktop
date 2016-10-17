@@ -54,5 +54,6 @@ string.menuSavePictureAs = 'Save Picture As...';
 
 string.restartLocale = 'Please restart the app for this setting to take effect.';
 string.restartLater = 'Later';
+string.restartNow = 'Restart Now';
 
 module.exports = string;
