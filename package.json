@@ -10,8 +10,8 @@
     "localhost": "electron electron --debug=5858 --devtools --enable-logging --env=http://localhost:8888",
     "test": "eslint electron && electron-mocha tests",
     "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f",
-    "linux32": "build --ia32",
-    "linux64": "build --x64"
+    "linux32": "build --linux --ia32",
+    "linux64": "build --linux --x64"
   },
   "repository": {
     "type": "git",
