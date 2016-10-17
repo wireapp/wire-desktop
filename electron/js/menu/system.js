@@ -270,6 +270,11 @@ var win32Template = {
 var linuxTemplate = {
   label: config.NAME,
   submenu: [
+    {
+      i18n: 'menuPreferences',
+      click: function() {sendAction('profile-settings-show');},
+    },
+    separatorTemplate,
     localeTemplate,
     separatorTemplate,
     signOutTemplate, {
@@ -318,8 +323,6 @@ if (process.platform === 'linux') {
     click: function() {sendAction('profile-settings-show');},
   });
   windowTemplate.submenu.push(
-    separatorTemplate,
-    toggleMenuTemplate,
     separatorTemplate,
     toggleFullScreenTemplate
   );
