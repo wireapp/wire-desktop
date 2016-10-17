@@ -140,7 +140,6 @@ function showMainWindow() {
     'minWidth': config.MIN_WIDTH_MAIN,
     'minHeight': config.MIN_HEIGHT_MAIN,
     'autoHideMenuBar': false,
-    'backgroundColor': '#2391d3',
     'icon': ICON_PATH,
     'show': false,
     'webPreferences': {
