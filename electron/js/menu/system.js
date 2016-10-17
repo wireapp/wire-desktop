@@ -221,7 +221,7 @@ var darwinTemplate = {
     separatorTemplate, {
       i18n: 'menuPreferences',
       accelerator: 'Command+,',
-      click: function() {sendAction('profile-settings-show');},
+      click: function() {sendAction('profile-preferences-show');},
     },
     separatorTemplate,
     localeTemplate,
