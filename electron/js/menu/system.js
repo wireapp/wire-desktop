@@ -148,7 +148,7 @@ var toggleMenuTemplate = {
 var toggleFullScreenTemplate = {
   i18n: 'menuFullScreen',
   type: 'checkbox',
-  accelerator: 'Alt+Command+F',
+  accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
     getBrowserWindow().setFullScreen(!getBrowserWindow().isFullScreen());
   },
@@ -267,6 +267,19 @@ var win32Template = {
   ],
 };
 
+var linuxTemplate = {
+  label: config.NAME,
+  submenu: [
+    localeTemplate,
+    separatorTemplate,
+    signOutTemplate, {
+      i18n: 'menuQuit',
+      accelerator: 'Ctrl+Q',
+      click: function() {app.quit();},
+    },
+  ],
+};
+
 menuTemplate = [
   conversationTemplate,
   editTemplate,
@@ -296,6 +309,21 @@ if (process.platform === 'win32') {
   squirrel.startupLinkExists(function(exists) {
     menu.items[0].submenu.items[2].checked = exists;
   });
+}
+
+if (process.platform === 'linux') {
+  menuTemplate.unshift(linuxTemplate);
+  editTemplate.submenu.push(separatorTemplate, {
+    i18n: 'menuPreferences',
+    click: function() {sendAction('profile-settings-show');},
+  });
+  windowTemplate.submenu.push(
+    separatorTemplate,
+    toggleMenuTemplate,
+    separatorTemplate,
+    toggleFullScreenTemplate
+  );
+  toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
 }
 
 if (process.platform !== 'darwin') {
