@@ -52,6 +52,7 @@ let config = {
   LOCALE: [
     'en',
     'de',
+    'es',
   ],
 
   RAYGUN_API_KEY: '',

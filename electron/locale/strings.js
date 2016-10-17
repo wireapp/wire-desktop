@@ -10,6 +10,7 @@ string.menuStartup = 'Launch Wire on Windows Start';
 string.menuLocale = 'Language';
 string.menuLocaleLangEn = 'English';
 string.menuLocaleLangDe = 'German';
+string.menuLocaleLangEs = 'Spanish';
 string.menuAbout = 'About Wire';
 string.menuSignOut = 'Log Out';
 string.menuPing = 'Ping';
