@@ -36,7 +36,7 @@ module.exports = (grunt) ->
       dist: 'wrap/dist'
       win: 'wrap/**/<%= info.name %>-win*'
       macos: 'wrap/**/<%= info.name %>-darwin*'
-      linux: 'wrap/**/<%= info.name %>-linux*'
+      linux: ['wrap/**/<%= info.name %>-linux*', 'wrap/dist']
       pkg: '*.pkg'
 
     'update-keys':
@@ -170,10 +170,8 @@ module.exports = (grunt) ->
           repository : 'wire-desktop'
 
     shell:
-      deb64:
-        command: 'npm run deb64'
-      deb32:
-        command: 'npm run deb32'
+      linux64:
+        command: 'npm run linux64'
 
 
 ###############################################################################
@@ -266,4 +264,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'electron:linux']
   grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electron:linux']
-  grunt.registerTask 'linux-deb',  ['linux-prod', 'shell']
+  grunt.registerTask 'linux-dist', ['clean:linux', 'update-keys', 'release-prod', 'shell']
