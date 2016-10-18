@@ -59,6 +59,12 @@ var localeTemplate = {
       click: function() {
         changeLocale('de');
       },
+    }, {
+      i18n: 'menuLocaleLangEs',
+      type: 'radio',
+      click: function() {
+        changeLocale('es');
+      },
     },
   ],
 };
