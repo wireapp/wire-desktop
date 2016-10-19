@@ -25,6 +25,10 @@ const config = require('./../js/config');
 const init = require('./../js/lib/init');
 const de = require('./strings-de');
 const en = require('./strings-en');
+const es = require('./strings-es');
+const fi = require('./strings-fi');
+const hr = require('./strings-hr');
+const ro = require('./strings ro');
 const ru = require('./strings-ru');
 
 let current;
@@ -57,8 +61,12 @@ function setLocale(locale) {
 
 
 module.exports = {
-  'en': en,
   'de': de,
+  'en': en,
+  'es': es,
+  'fi': fi,
+  'hr': hr,
+  'ro': ro,
   'ru': ru,
   getCurrent: getCurrent,
   getText: getText,

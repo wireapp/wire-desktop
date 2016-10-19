@@ -60,6 +60,30 @@ var localeTemplate = {
         changeLocale('de');
       },
     }, {
+      i18n: 'menuLocaleLangEs',
+      type: 'radio',
+      click: function() {
+        changeLocale('es');
+      },
+    }, {
+      i18n: 'menuLocaleLangFi',
+      type: 'radio',
+      click: function() {
+        changeLocale('fi');
+      },
+    }, {
+      i18n: 'menuLocaleLangHr',
+      type: 'radio',
+      click: function() {
+        changeLocale('hr');
+      },
+    }, {
+      i18n: 'menuLocaleLangRo',
+      type: 'radio',
+      click: function() {
+        changeLocale('ro');
+      },
+    }, {
       i18n: 'menuLocaleLangRu',
       type: 'radio',
       click: function() {
