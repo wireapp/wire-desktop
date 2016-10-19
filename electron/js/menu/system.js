@@ -54,7 +54,7 @@ var localeTemplate = {
         changeLocale('en');
       },
     }, {
-      label: 'Deutsche',
+      label: 'Deutsch',
       type: 'radio',
       click: function() {
         changeLocale('de');
