@@ -48,43 +48,43 @@ var localeTemplate = {
   i18n: 'menuLocale',
   submenu: [
     {
-      i18n: 'menuLocaleLangEn',
+      label: 'English',
       type: 'radio',
       click: function() {
         changeLocale('en');
       },
     }, {
-      i18n: 'menuLocaleLangDe',
+      label: 'Deutsche',
       type: 'radio',
       click: function() {
         changeLocale('de');
       },
     }, {
-      i18n: 'menuLocaleLangEs',
+      label: 'Español',
       type: 'radio',
       click: function() {
         changeLocale('es');
       },
     }, {
-      i18n: 'menuLocaleLangFi',
+      label: 'Suomalainen',
       type: 'radio',
       click: function() {
         changeLocale('fi');
       },
     }, {
-      i18n: 'menuLocaleLangHr',
+      label: 'Hrvatski',
       type: 'radio',
       click: function() {
         changeLocale('hr');
       },
     }, {
-      i18n: 'menuLocaleLangRo',
+      label: 'Română',
       type: 'radio',
       click: function() {
         changeLocale('ro');
       },
     }, {
-      i18n: 'menuLocaleLangRu',
+      label: 'Русский',
       type: 'radio',
       click: function() {
         changeLocale('ru');

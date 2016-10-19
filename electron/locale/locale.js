@@ -28,7 +28,7 @@ const en = require('./strings-en');
 const es = require('./strings-es');
 const fi = require('./strings-fi');
 const hr = require('./strings-hr');
-const ro = require('./strings ro');
+const ro = require('./strings-ro');
 const ru = require('./strings-ru');
 
 let current;
