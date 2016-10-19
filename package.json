@@ -10,16 +10,27 @@
     "localhost": "electron electron --debug=5858 --devtools --enable-logging --env=http://localhost:8888",
     "test": "eslint electron && electron-mocha tests",
     "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f",
-    "deb64": "electron-installer-debian --src wrap/build/Wire-linux-x64/ --arch amd64 --config linux.json",
-    "deb32": "electron-installer-debian --src wrap/build/Wire-linux-ia32/ --arch x32 --config linux.json"
+    "linux32": "build --linux --ia32",
+    "linux64": "build --linux --x64"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
+  "directories": {
+    "buildResources": "resources",
+    "app": "electron",
+    "output": "wrap/dist"
+  },
+  "build": {
+    "linux" : {
+      "category": "Network",
+      "target": ["AppImage", "deb"]
+    }
+  },
   "devDependencies": {
     "electron": "1.4.3",
-    "electron-installer-debian": "0.4.0",
+    "electron-builder": "7.14.1",
     "electron-mocha": "3.1.1",
     "electron-packager": "8.1.0",
     "electron-rebuild": "1.2.1",

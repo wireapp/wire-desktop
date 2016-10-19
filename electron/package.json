@@ -7,6 +7,7 @@
   "updateWinUrl": "https://wire-app.wire.com/win/prod/",
   "environment": "production",
   "homepage": "https://wire.com",
+  "author": "Wire Swiss <wireapp@wire.com>",
   "private": true,
   "repository": {
     "type": "git",

@@ -1,9 +1,0 @@
-{
-  "dest": "wrap/dist/",
-  "icon": "resources/linux/icon.256x256.png",
-  "bin": "Wire",
-  "categories": [
-    "Network"
-  ],
-  "maintainer": "Wire Swiss <wireapp@wire.com>"
-}
