@@ -50,8 +50,12 @@ let config = {
   ],
 
   LOCALE: [
-    'en',
     'de',
+    'en',
+    'es',
+    'fi',
+    'hr',
+    'ro',
     'ru',
   ],
 
