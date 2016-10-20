@@ -39,7 +39,7 @@ const label = {
   'hr': 'Hrvatski',
   'ro': 'Română',
   'ru': 'Русский',
-}
+};
 
 let current;
 
