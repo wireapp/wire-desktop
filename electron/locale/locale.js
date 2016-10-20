@@ -31,6 +31,16 @@ const hr = require('./strings-hr');
 const ro = require('./strings-ro');
 const ru = require('./strings-ru');
 
+const label = {
+  'en': 'English',
+  'de': 'Deutsch',
+  'es': 'Español',
+  'fi': 'Suomalainen',
+  'hr': 'Hrvatski',
+  'ro': 'Română',
+  'ru': 'Русский',
+};
+
 let current;
 
 
@@ -68,6 +78,7 @@ module.exports = {
   'hr': hr,
   'ro': ro,
   'ru': ru,
+  'label': label,
   getCurrent: getCurrent,
   getText: getText,
   setLocale: setLocale,

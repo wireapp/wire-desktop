@@ -48,43 +48,43 @@ var localeTemplate = {
   i18n: 'menuLocale',
   submenu: [
     {
-      label: 'English',
+      label: locale.label['en'],
       type: 'radio',
       click: function() {
         changeLocale('en');
       },
     }, {
-      label: 'Deutsch',
+      label: locale.label['de'],
       type: 'radio',
       click: function() {
         changeLocale('de');
       },
     }, {
-      label: 'Español',
+      label: locale.label['es'],
       type: 'radio',
       click: function() {
         changeLocale('es');
       },
     }, {
-      label: 'Suomalainen',
+      label: locale.label['fi'],
       type: 'radio',
       click: function() {
         changeLocale('fi');
       },
     }, {
-      label: 'Hrvatski',
+      label: locale.label['hr'],
       type: 'radio',
       click: function() {
         changeLocale('hr');
       },
     }, {
-      label: 'Română',
+      label: locale.label['ro'],
       type: 'radio',
       click: function() {
         changeLocale('ro');
       },
     }, {
-      label: 'Русский',
+      label: locale.label['ru'],
       type: 'radio',
       click: function() {
         changeLocale('ru');
@@ -369,15 +369,11 @@ function processMenu(template, language) {
     if (item.submenu != null) {
       processMenu(item.submenu, language);
     }
+    if (locale.label[locale.getCurrent()] === item.label) {
+      item.checked = true;
+    }
     if (item.i18n != null && strings[item.i18n] != null) {
       item.label = strings[item.i18n];
-
-      if (item.i18n.includes('menuLocaleLang')) {
-        var lang = item.i18n.substr(14).toLowerCase();
-        if (lang == language) {
-          item.checked = true;
-        }
-      }
     }
   }
 }
