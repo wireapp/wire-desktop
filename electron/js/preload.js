@@ -132,7 +132,7 @@ ipcRenderer.on('sign-out', function() {
   amplify.publish(z.event.WebApp.LOGOUT.ASK_TO_CLEAR_DATA);
 });
 
-ipcRenderer.on('profile-preferences-show', function() {
+ipcRenderer.on('preferences-show', function() {
   amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
 });
 

@@ -251,7 +251,7 @@ var darwinTemplate = {
     separatorTemplate, {
       i18n: 'menuPreferences',
       accelerator: 'Command+,',
-      click: function() {sendAction('profile-preferences-show');},
+      click: function() {sendAction('preferences-show');},
     },
     separatorTemplate,
     localeTemplate,
@@ -284,7 +284,7 @@ var win32Template = {
     {
       i18n: 'menuSettings',
       accelerator: 'Ctrl+,',
-      click: function() {sendAction('profile-settings-show');},
+      click: function() {sendAction('preferences-show');},
     },
     localeTemplate,
     startupTemplate,
@@ -302,7 +302,7 @@ var linuxTemplate = {
   submenu: [
     {
       i18n: 'menuPreferences',
-      click: function() {sendAction('profile-settings-show');},
+      click: function() {sendAction('preferences-show');},
     },
     separatorTemplate,
     localeTemplate,
