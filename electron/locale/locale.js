@@ -40,7 +40,7 @@ const label = {
   'hr': 'Hrvatski',
   'ro': 'Română',
   'ru': 'Русский',
-  'uz': 'O\'zbek'
+  'uz': 'O\'zbek',
 };
 
 let current;

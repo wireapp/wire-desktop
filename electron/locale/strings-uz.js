@@ -53,6 +53,6 @@ string.menuSavePictureAs = 'Rasmni saqlash...';
 string.restartNeeded = 'Qayta ishga tushirish kerak';
 string.restartLocale = 'Sozlama ishga kirishi uchun dasturni qayta ishga tushiring';
 string.restartLater = 'Keyinroq';
-string.restartNow = 'Hoziroq'
+string.restartNow = 'Hoziroq';
 
 module.exports = string;
