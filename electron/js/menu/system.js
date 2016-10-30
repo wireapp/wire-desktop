@@ -350,7 +350,7 @@ if (process.platform === 'linux') {
   menuTemplate.unshift(linuxTemplate);
   editTemplate.submenu.push(separatorTemplate, {
     i18n: 'menuPreferences',
-    click: function() {sendAction('profile-settings-show');},
+    click: function() {sendAction('preferences-show');},
   });
   windowTemplate.submenu.push(
     separatorTemplate,
