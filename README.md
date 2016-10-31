@@ -23,11 +23,10 @@ Based on [Electron](http://electron.atom.io).
 
 ### Clone
 
-
 ```shell
 git clone https://github.com/wireapp/wire-desktop.git
 cd wire-desktop
-npm install
+yarn
 ```
 
 ### Tasks
@@ -49,11 +48,11 @@ grunt release
 ### Run
 
 ```shell
-npm start
+yarn start
 ```
 
 ### Tests
 
 ```shell
-npm test
+yarn test
 ```
