@@ -4,7 +4,7 @@ sudo: false
 # http://docs.travis-ci.com/user/languages/javascript-with-nodejs/
 language: node_js
 node_js:
-  - "5.1.1"
+  - "6"
 
 # https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
 env:
@@ -21,12 +21,17 @@ git:
 
 cache:
   directories:
+    - $HOME/.npm
+    - $HOME/.yarn-cache
     - node_modules
     - electron/node_modules
 
 # http://docs.travis-ci.com/user/build-lifecycle/
+before_install:
+  - npm install -g yarn --cache-min 999999999
+
 install:
-  - npm install
+  - yarn
 
 # http://docs.travis-ci.com/user/build-lifecycle/
 before_script:
@@ -34,7 +39,7 @@ before_script:
 
 # http://docs.travis-ci.com/user/pull-requests/
 script:
-  - npm test
+  - yarn test
 
 notifications:
   email: false
