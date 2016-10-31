@@ -17,6 +17,7 @@
 #
 
 electron_packager = require 'electron-packager'
+os = require 'os'
 
 ELECTRON_PACKAGE_JSON = 'electron/package.json'
 PACKAGE_JSON = 'package.json'
@@ -114,6 +115,7 @@ module.exports = (grunt) ->
       linux:
         options:
           platform: 'linux'
+          arch: os.arch()
 
     'create-windows-installer':
       internal:
