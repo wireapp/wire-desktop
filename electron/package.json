@@ -19,7 +19,7 @@
     "minimist": "1.2.0",
     "open-graph": "0.2.1",
     "raygun": "0.9.0",
-    "request": "2.75.0",
+    "request": "2.76.0",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
   "optionalDependencies": {
