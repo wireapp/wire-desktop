@@ -19,8 +19,8 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 #
 
-import os
 import boto3
+import os
 
 BUCKET = os.environ.get('BUCKET')
 S3_PATH = 'win/prod/'
