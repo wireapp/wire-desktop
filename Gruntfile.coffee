@@ -111,10 +111,6 @@ module.exports = (grunt) ->
             ProductName: '<%= info.name %>'
             InternalName: '<%= info.name %>.exe'
 
-      linux:
-        options:
-          platform: 'linux'
-
     'create-windows-installer':
       internal:
         title: '<%= info.nameInternal %>'
@@ -264,6 +260,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'electron:linux']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electron:linux']
-  grunt.registerTask 'linux-dist', ['clean:linux', 'update-keys', 'release-prod', 'shell']
+  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'shell']
+  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'shell']

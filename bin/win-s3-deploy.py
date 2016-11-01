@@ -28,7 +28,7 @@ S3_PATH = 'win/prod/'
 VERSION = os.environ.get('WRAPPER_VERSION')
 
 NEW_RELEASE = 'wire-' + VERSION + '-RELEASES'
-NEW_EXE ='wire-' + VERSION + '.exe'
+NEW_EXE = 'wire-' + VERSION + '.exe'
 
 NEW_RELEASE_KEY = 'win/prod/' + NEW_RELEASE
 NEW_EXE_KEY = 'win/prod/' + NEW_EXE
