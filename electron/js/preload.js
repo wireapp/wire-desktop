@@ -23,6 +23,7 @@ const {ipcRenderer, webFrame, desktopCapturer} = require('electron');
 const pkg = require('./../package.json');
 
 webFrame.setZoomLevelLimits(1, 1);
+webFrame.registerURLSchemeAsBypassingCSP('file');
 
 // https://github.com/electron/electron/issues/2984
 const _setImmediate = setImmediate;
