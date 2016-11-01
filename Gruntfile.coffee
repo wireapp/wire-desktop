@@ -268,4 +268,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'linux',       ['clean:linux', 'update-keys', 'release-internal', 'shell']
   grunt.registerTask 'linux-prod',  ['clean:linux', 'update-keys', 'release-prod', 'shell']
-  grunt.registerTask 'linux-local', ['clean:linux', 'update-keys', 'release-prod', 'linux']
+  grunt.registerTask 'linux-local', ['clean:linux', 'update-keys', 'release-prod', 'electron:linux']
