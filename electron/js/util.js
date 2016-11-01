@@ -55,7 +55,7 @@ module.exports = {
 
   updateBadge: function(win) {
     setTimeout(function() {
-      var count = (/\(([0-9]+)\)/).exec(win.getTitle() || win.webContents.getTitle());
+      var count = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
       if (process.platform === 'darwin') {
         app.dock.setBadge(count ? count[1] : '');
       } else if (count) {
