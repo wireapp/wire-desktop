@@ -19,9 +19,9 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 #
 
-import os
-import json
 import boto3
+import json
+import os
 
 BUCKET = os.environ.get('BUCKET')
 S3_PATH = 'win/internal/'
@@ -33,7 +33,7 @@ info_json = os.path.join(bin_root, '..', 'info.json')
 
 def upload_file(source, dest):
   if not os.path.isfile(source):
-    print '%s not found'
+    print '%s not found' % source
     return
 
   print 'Uploading %s to %s' % (os.path.basename(source), dest),

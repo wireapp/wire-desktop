@@ -24,23 +24,22 @@ import json
 import os
 
 BUCKET = os.environ.get('BUCKET')
-S3_PATH = 'win/prod/'
+S3_PATH = 'linux/'
 bin_root = os.path.dirname(os.path.realpath(__file__))
-build_root = os.path.join(bin_root, '..', 'wrap', 'prod', 'Wire-win32-ia32')
-releases = os.path.join(build_root, 'RELEASES')
+build_root = os.path.join(bin_root, '..', 'wrap', 'dist')
 info_json = os.path.join(bin_root, '..', 'info.json')
 
 
 def upload_file(source, dest):
   if not os.path.isfile(source):
-    print '%s not found'
+    print '%s not found' % source
     return
 
   print 'Uploading %s to %s' % (os.path.basename(source), dest),
-
   s3 = boto3.resource('s3')
+
   data = open(source, 'rb')
-  s3.Bucket(BUCKET).put_object(Key=dest, Body=data, ACL='public-read')
+  s3.Bucket(name=BUCKET).put_object(Key=dest, Body=data, ACL='public-read')
   print '- OK'
 
 if __name__ == '__main__':
@@ -48,10 +47,12 @@ if __name__ == '__main__':
     info = json.load(info_file)
   version = '%s.%s' % (info['version'], info['build'])
 
-  wire_nupkg = 'wire-%s-full.nupkg' % version
-  wire_nupkg_full = os.path.join(build_root, wire_nupkg)
-  wire_exe_full = os.path.join(build_root, 'WireSetup.exe')
+  files = [
+    'wire-%s-amd64.deb' % version,
+    'wire-%s-ia32.AppImage' % version,
+    'wire-%s-ia32.deb' % version,
+    'wire-%s-x86_64.AppImage' % version,
+  ]
 
-  upload_file(wire_nupkg_full, '%s%s' % (S3_PATH, wire_nupkg))
-  upload_file(wire_exe_full, '%swire-%s.exe' % (S3_PATH, version))
-  upload_file(releases, '%swire-%s-RELEASES' % (S3_PATH, version))
+  for filename in files:
+    upload_file(os.path.join(build_root, filename), '%s%s' % (S3_PATH, filename))

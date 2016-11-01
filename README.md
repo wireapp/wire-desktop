@@ -39,8 +39,8 @@ grunt macos-prod
 # Build for Windows
 grunt win-prod
 
-# Build for Linux (experimental and unsupported)
-grunt linux
+# Build for Linux
+grunt linux-prod
 
 # Trigger Windows and macOS builds
 grunt release
