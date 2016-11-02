@@ -27,18 +27,24 @@ const de = require('./strings-de');
 const en = require('./strings-en');
 const es = require('./strings-es');
 const fi = require('./strings-fi');
+const fr = require('./strings-fr');
 const hr = require('./strings-hr');
 const ro = require('./strings-ro');
 const ru = require('./strings-ru');
+const tr = require('./strings-tr');
+const uk = require('./strings-uk');
 
 const label = {
   'en': 'English',
   'de': 'Deutsch',
   'es': 'Español',
   'fi': 'Suomalainen',
+  'fr': 'Français',
   'hr': 'Hrvatski',
   'ro': 'Română',
   'ru': 'Русский',
+  'tr': 'Türk',
+  'uk': 'Український',
 };
 
 let current;

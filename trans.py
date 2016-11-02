@@ -26,10 +26,13 @@ import re
 SUPPORTED_LOCALE = [
   'de',
   'es',
-  'hr',
   'fi',
+  'fr',
+  'hr',
   'ro',
   'ru',
+  'tr',
+  'uk',
 ]
 os.system('crowdin-cli --identity=keys/crowdin.yaml upload sources')
 os.system('crowdin-cli --identity=keys/crowdin.yaml download')

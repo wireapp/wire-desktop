@@ -72,6 +72,12 @@ var localeTemplate = {
         changeLocale('fi');
       },
     }, {
+      label: locale.label['fr'],
+      type: 'radio',
+      click: function() {
+        changeLocale('fr');
+      },
+    }, {
       label: locale.label['hr'],
       type: 'radio',
       click: function() {
@@ -88,6 +94,18 @@ var localeTemplate = {
       type: 'radio',
       click: function() {
         changeLocale('ru');
+      },
+    }, {
+      label: locale.label['tr'],
+      type: 'radio',
+      click: function() {
+        changeLocale('tr');
+      },
+    }, {
+      label: locale.label['uk'],
+      type: 'radio',
+      click: function() {
+        changeLocale('uk');
       },
     },
   ],

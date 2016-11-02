@@ -54,9 +54,12 @@ let config = {
     'de',
     'es',
     'fi',
+    'fr',
     'hr',
     'ro',
     'ru',
+    'tr',
+    'uk',
   ],
 
   RAYGUN_API_KEY: '',
