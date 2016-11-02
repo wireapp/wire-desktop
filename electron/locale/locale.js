@@ -27,18 +27,24 @@ const de = require('./strings-de');
 const en = require('./strings-en');
 const es = require('./strings-es');
 const fi = require('./strings-fi');
+const fr = require('./strings-fr');
 const hr = require('./strings-hr');
 const ro = require('./strings-ro');
 const ru = require('./strings-ru');
+const tr = require('./strings-tr');
+const uk = require('./strings-uk');
 
 const label = {
   'en': 'English',
   'de': 'Deutsch',
   'es': 'Español',
-  'fi': 'Suomalainen',
+  'fi': 'Suomi',
+  'fr': 'Français',
   'hr': 'Hrvatski',
   'ro': 'Română',
   'ru': 'Русский',
+  'tr': 'Türkçe',
+  'uk': 'Українська',
 };
 
 let current;
@@ -75,9 +81,12 @@ module.exports = {
   'en': en,
   'es': es,
   'fi': fi,
+  'fr': fr,
   'hr': hr,
   'ro': ro,
   'ru': ru,
+  'tr': tr,
+  'uk': uk,
   'label': label,
   getCurrent: getCurrent,
   getText: getText,
