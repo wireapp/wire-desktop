@@ -55,6 +55,9 @@ function getCurrent() {
     // We care only about the language part and not the country (en_US, de_DE)
     current = init.restore('locale', parseLocale(app.getLocale().substr(0, 2)));
   }
+  if (config.LOCALE.indexOf(current) === -1) {
+    current = config.LOCALE[0];
+  }
   return current;
 }
 
