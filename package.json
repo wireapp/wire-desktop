@@ -2,8 +2,8 @@
   "name": "wire-desktop",
   "private": true,
   "scripts": {
-    "preinstall": "cd electron && npm install",
-    "install": "npm run rebuild-native-modules",
+    "preinstall": "cd electron && yarn",
+    "install": "yarn run rebuild-native-modules",
     "start": "electron electron --debug=5858 --devtools --enable-logging",
     "staging": "electron electron --debug=5858 --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "prod": "electron electron --debug=5858 --devtools --enable-logging --env=https://app.wire.com",
