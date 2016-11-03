@@ -23,6 +23,7 @@
     "output": "wrap/dist"
   },
   "build": {
+    "npmRebuild": false,
     "linux" : {
       "category": "Network",
       "target": ["AppImage", "deb"]
