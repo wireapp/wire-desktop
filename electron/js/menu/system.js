@@ -202,6 +202,13 @@ var toggleFullScreenTemplate = {
   },
 };
 
+var toggleStartInTrayTemplate = {
+  i18n: 'menuStartInTray',
+  type: 'checkbox',
+  click: function() {
+    init.save('startInTray', !init.restore('startInTray'));
+  },
+};
 
 var editTemplate = {
   i18n: 'menuEdit',
@@ -349,6 +356,7 @@ if (process.platform === 'darwin') {
     toggleFullScreenTemplate
   );
   toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+  toggleStartInTrayTemplate.checked = init.restore('startInTray', false);
 }
 
 if (process.platform === 'win32') {
@@ -372,9 +380,11 @@ if (process.platform === 'linux') {
   });
   windowTemplate.submenu.push(
     separatorTemplate,
-    toggleFullScreenTemplate
+    toggleFullScreenTemplate,
+    toggleStartInTrayTemplate
   );
   toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+  toggleStartInTrayTemplate.checked = init.restore('startInTray', false);
 }
 
 if (process.platform !== 'darwin') {
