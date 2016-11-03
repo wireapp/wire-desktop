@@ -53,7 +53,7 @@ let isUpdate = false;
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
 let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.INTERNAL_URL);
-let startInTray = init.restore('startInTray')
+let startInTray = init.restore('startInTray');
 
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
