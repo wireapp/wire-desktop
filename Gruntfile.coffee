@@ -167,9 +167,9 @@ module.exports = (grunt) ->
 
     shell:
       linux64:
-        command: 'npm run linux64'
+        command: 'yarn run linux64'
       linux32:
-        command: 'npm run linux32'
+        command: 'yarn run linux32'
 
 
 ###############################################################################
