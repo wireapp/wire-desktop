@@ -30,14 +30,14 @@ module.exports = {
       win.setMenuBarVisibility(false);
     }
 
-    var height = config.MIN_HEIGHT_AUTH;
+    var height = config.HEIGHT_AUTH;
     if (process.platform === 'win32') {
       height += 40;
     }
     win.setFullScreen(false);
     win.setMaximizable(false);
-    win.setMinimumSize(config.MIN_WIDTH_AUTH, height);
-    win.setSize(config.MIN_WIDTH_AUTH, height);
+    win.setMinimumSize(config.WIDTH_AUTH, height);
+    win.setSize(config.WIDTH_AUTH, height);
     win.setResizable(false);
     win.center();
   },
