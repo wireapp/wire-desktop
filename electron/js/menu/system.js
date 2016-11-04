@@ -212,7 +212,7 @@ var toggleAutoLaunchTemplate = {
   type: 'checkbox',
   click: function() {
     init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
-    init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable();
+    init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
 };
 
