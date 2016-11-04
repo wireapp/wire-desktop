@@ -162,9 +162,9 @@ function showMainWindow() {
     main.webContents.openDevTools();
   }
 
-  if (!argv.startup) {
+  if (!argv.startup && !startInTray) {
     setTimeout(function() {
-      if (!startInTray) main.show();
+      main.show();
     }, 800);
   }
 
