@@ -53,7 +53,6 @@ let isUpdate = false;
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
 let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.INTERNAL_URL);
-let startInTray = init.restore('startInTray');
 
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -162,7 +161,7 @@ function showMainWindow() {
     main.webContents.openDevTools();
   }
 
-  if (!argv.startup && !startInTray) {
+  if (!argv.startup && !init.restore('startInTray')) {
     setTimeout(function() {
       main.show();
     }, 800);
