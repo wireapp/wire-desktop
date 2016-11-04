@@ -20,6 +20,7 @@
 'use strict';
 
 const {app, shell, BrowserWindow, dialog, Menu} = require('electron');
+var autoLaunch = require('auto-launch');
 
 const config = require('./../config');
 const init = require('./../lib/init');
@@ -27,6 +28,10 @@ const locale = require('./../../locale/locale');
 
 let menu;
 var menuTemplate;
+
+const launcher = new autoLaunch({
+	 name: 'Wire',
+});
 
 function getBrowserWindow() {
   return BrowserWindow.getFocusedWindow();
@@ -202,6 +207,14 @@ var toggleFullScreenTemplate = {
   },
 };
 
+var toggleAutoLaunchTemplate = {
+  i18n: 'menuAutoStart',
+  type: 'checkbox',
+  click: function() {
+    init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
+    init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable();
+  },
+};
 
 var editTemplate = {
   i18n: 'menuEdit',
@@ -323,6 +336,8 @@ var linuxTemplate = {
       click: function() {sendAction('preferences-show');},
     },
     separatorTemplate,
+    toggleAutoLaunchTemplate,
+    separatorTemplate,
     localeTemplate,
     separatorTemplate,
     signOutTemplate, {
@@ -375,6 +390,7 @@ if (process.platform === 'linux') {
     toggleFullScreenTemplate
   );
   toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+  toggleAutoLaunchTemplate.checked = init.restore('shouldAutoLaunch');
 }
 
 if (process.platform !== 'darwin') {
