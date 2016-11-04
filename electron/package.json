@@ -2,7 +2,7 @@
   "name": "wire",
   "productName": "Wire",
   "description": "Modern communication, full privacy.",
-  "version": "2.11.2669",
+  "version": "2.11.2670",
   "main": "main.js",
   "updateWinUrl": "https://wire-app.wire.com/win/prod/",
   "environment": "production",
