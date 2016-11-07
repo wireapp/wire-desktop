@@ -36,13 +36,13 @@ let config = {
   LOCALHOST_URL: 'http://localhost:8888/',
 
   MIN_WIDTH_MAIN: 760,
-  MIN_HEIGHT_MAIN: 680,
+  MIN_HEIGHT_MAIN: 576,
 
   DEFAULT_WIDTH_MAIN: 1024,
   DEFAULT_HEIGHT_MAIN: 768,
 
-  MIN_WIDTH_AUTH: 400,
-  MIN_HEIGHT_AUTH: 576,
+  WIDTH_AUTH: 400,
+  HEIGHT_AUTH: 576,
 
   WHITE_LIST: [
     'https://www.wire.com/',
