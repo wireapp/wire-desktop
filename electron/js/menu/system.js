@@ -21,6 +21,7 @@
 
 const {app, shell, BrowserWindow, dialog, Menu} = require('electron');
 var autoLaunch = require('auto-launch');
+var launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const init = require('./../lib/init');
@@ -31,6 +32,7 @@ var menuTemplate;
 
 const launcher = new autoLaunch({
 	 name: 'Wire',
+	 path: launchCmd,
 });
 
 function getBrowserWindow() {
