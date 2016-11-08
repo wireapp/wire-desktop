@@ -55,5 +55,5 @@ string.restartLater = 'Later';
 string.restartNow = 'Restart Now';
 
 string.autostartErrTitle = 'Can\'t autostart';
-string.autostartErrMess = 'Due to the portable nature of AppImage, we can\'t locate your executable. Please manually add Wire to your autostart items.';
-string.buttonOK = 'OK';
+string.autostartErrMess = 'Due to the portable nature of AppImage, we can\'t locate your executable. Please manually add Wire to your autostart items.'
+string.buttonOK = 'OK'

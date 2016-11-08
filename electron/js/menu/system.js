@@ -212,8 +212,8 @@ var toggleAutoLaunchTemplate = {
   type: 'checkbox',
   click: function() {
     toggleAutoLaunch();
-    init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
-    toggleAutoLaunchTemplate.checked = init.restore('shouldAutoLaunch', false);
+	  init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
+		toggleAutoLaunchTemplate.checked = init.restore('shouldAutoLaunch', false);
   },
 };
 
@@ -435,11 +435,11 @@ function toggleAutoLaunch() {
       title: locale[locale.getCurrent()].autostartErrTitle,
       message: locale[locale.getCurrent()].autostartErrMess,
       buttons: [locale[locale.getCurrent()].buttonOK],
-    });
-    init.save('shouldAutoLaunch', false);
-  } else {
+		});
+		init.save('shouldAutoLaunch', false);
+	} else {
     init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
-  }
+	}
 }
 
 processMenu(menuTemplate, locale.getCurrent());
