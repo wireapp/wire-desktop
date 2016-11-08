@@ -26,6 +26,8 @@
   "build": {
     "npmRebuild": false,
     "linux" : {
+      "afterInstall" : "bin/deb/after-install.tpl",
+      "afterRemove" : "bin/deb/after-remove.tpl",
       "category": "Network",
       "target": ["AppImage", "deb"]
     }
