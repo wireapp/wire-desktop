@@ -1,5 +1,6 @@
 {
   "name": "wire-desktop",
+  "license": "LicenseRef-LICENSE",
   "private": true,
   "scripts": {
     "preinstall": "cd electron && yarn",
