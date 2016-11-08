@@ -30,7 +30,7 @@ let menu;
 var menuTemplate;
 
 const launcher = new autoLaunch({
-  name: 'Wire',
+	 name: 'Wire',
 });
 
 function getBrowserWindow() {
@@ -211,9 +211,8 @@ var toggleAutoLaunchTemplate = {
   i18n: 'menuAutoStart',
   type: 'checkbox',
   click: function() {
-    toggleAutoLaunch();
-	  init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
-		toggleAutoLaunchTemplate.checked = init.restore('shouldAutoLaunch', false);
+    init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
+    init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
 };
 
@@ -391,6 +390,7 @@ if (process.platform === 'linux') {
     toggleFullScreenTemplate
   );
   toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+  toggleAutoLaunchTemplate.checked = init.restore('shouldAutoLaunch');
 }
 
 if (process.platform !== 'darwin') {
@@ -426,20 +426,6 @@ function changeLocale(language) {
       app.relaunch();
     }
   });
-}
-
-function toggleAutoLaunch() {
-  if (process.execPath.indexOf('tmp') !== -1) {
-    dialog.showMessageBox({
-      type: 'info',
-      title: locale[locale.getCurrent()].autostartErrTitle,
-      message: locale[locale.getCurrent()].autostartErrMess,
-      buttons: [locale[locale.getCurrent()].buttonOK],
-		});
-		init.save('shouldAutoLaunch', false);
-	} else {
-    init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
-	}
 }
 
 processMenu(menuTemplate, locale.getCurrent());
