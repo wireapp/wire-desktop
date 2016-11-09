@@ -21,12 +21,29 @@ No license is granted to the Wire trademark and its associated logos, all of whi
 Cross plattform desktop app, simply wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp).
 Based on [Electron](http://electron.atom.io).
 
+### Install
+
+1. Install [Node.js](https://nodejs.org/)
+2. Install [Yarn](https://yarnpkg.com) (`npm install -g yarn`)
+
 ### Clone
 
 ```shell
 git clone https://github.com/wireapp/wire-desktop.git
 cd wire-desktop
 yarn
+```
+
+### Execute
+
+```shell
+yarn start
+```
+
+### Test
+
+```
+yarn test
 ```
 
 ### Tasks
@@ -40,19 +57,4 @@ grunt win-prod
 
 # Build for Linux
 grunt linux-prod
-
-# Trigger Windows and macOS builds
-grunt release
-```
-
-### Run
-
-```shell
-yarn start
-```
-
-### Tests
-
-```shell
-yarn test
 ```
