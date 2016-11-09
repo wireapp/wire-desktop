@@ -34,7 +34,7 @@ cd wire-desktop
 yarn
 ```
 
-### Execute
+### Start
 
 ```shell
 yarn start
