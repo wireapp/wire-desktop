@@ -58,7 +58,7 @@ module.exports = (grunt) ->
         name: '<%= info.name %>'
         dir: 'electron'
         out: 'wrap/build'
-        version: '1.4.4'
+        version: '1.4.5'
         overwrite: true
         arch: 'all'
         asar: true
