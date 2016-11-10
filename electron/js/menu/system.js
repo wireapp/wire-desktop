@@ -412,6 +412,10 @@ function changeLocale(language) {
   });
 }
 
-processMenu(menuTemplate, locale.getCurrent());
-
-module.exports = menu = Menu.buildFromTemplate(menuTemplate);
+module.exports = {
+  createMenu: function() {
+    processMenu(menuTemplate, locale.getCurrent());
+    menu = Menu.buildFromTemplate(menuTemplate);
+    return menu;
+  },
+};

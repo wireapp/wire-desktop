@@ -66,7 +66,6 @@ raygunClient.onBeforeSend(function(payload) {
 
 if (config.DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
-  systemMenu.append(developerMenu);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -266,7 +265,15 @@ app.on('before-quit', function() {
 
 app.on('ready', function() {
   if (!isUpdate) {
-    Menu.setApplicationMenu(systemMenu);
+    var appMenu = systemMenu.createMenu();
+    if (config.DEVELOPMENT) {
+      appMenu.append(developerMenu);
+    }
+    appMenu.on('about-wire', function() {
+      showAboutWindow();
+    });
+
+    Menu.setApplicationMenu(appMenu);
     tray.createTrayIcon();
     showMainWindow();
   }
@@ -275,10 +282,6 @@ app.on('ready', function() {
 ///////////////////////////////////////////////////////////////////////////////
 // System Menu Events
 ///////////////////////////////////////////////////////////////////////////////
-systemMenu.on('about-wire', function() {
-  showAboutWindow();
-});
-
 ///////////////////////////////////////////////////////////////////////////////
 // Delete the console.log
 ///////////////////////////////////////////////////////////////////////////////
