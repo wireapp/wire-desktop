@@ -266,10 +266,9 @@ app.on('before-quit', function() {
 ///////////////////////////////////////////////////////////////////////////////
 // System Menu & Tray Icon & Show window
 ///////////////////////////////////////////////////////////////////////////////
-
 app.on('ready', function() {
   if (!isUpdate) {
-    var appMenu = systemMenu.createMenu();
+    let appMenu = systemMenu.createMenu();
     if (config.DEVELOPMENT) {
       appMenu.append(developerMenu);
     }
