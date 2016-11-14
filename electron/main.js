@@ -66,7 +66,6 @@ raygunClient.onBeforeSend(function(payload) {
 
 if (config.DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
-  systemMenu.append(developerMenu);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -264,19 +263,23 @@ app.on('before-quit', function() {
   quitting = true;
 });
 
+///////////////////////////////////////////////////////////////////////////////
+// System Menu & Tray Icon & Show window
+///////////////////////////////////////////////////////////////////////////////
 app.on('ready', function() {
   if (!isUpdate) {
-    Menu.setApplicationMenu(systemMenu);
+    let appMenu = systemMenu.createMenu();
+    if (config.DEVELOPMENT) {
+      appMenu.append(developerMenu);
+    }
+    appMenu.on('about-wire', function() {
+      showAboutWindow();
+    });
+
+    Menu.setApplicationMenu(appMenu);
     tray.createTrayIcon();
     showMainWindow();
   }
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// System Menu Events
-///////////////////////////////////////////////////////////////////////////////
-systemMenu.on('about-wire', function() {
-  showAboutWindow();
 });
 
 ///////////////////////////////////////////////////////////////////////////////
