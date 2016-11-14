@@ -316,6 +316,12 @@ bluebird-lst-c@^1.0.3:
   dependencies:
     bluebird "^3.4.6"
 
+bluebird-lst-c@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/bluebird-lst-c/-/bluebird-lst-c-1.0.4.tgz#1278210da5b0750959c3d15971154ff08e07ad93"
+  dependencies:
+    bluebird "^3.4.6"
+
 bluebird@^2.9.30:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
@@ -672,6 +678,12 @@ debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@2.2.0:
   dependencies:
     ms "0.7.1"
 
+debug@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.2.tgz#94cb466ef7d6d2c7e5245cdd6e4104f2d0d70d30"
+  dependencies:
+    ms "0.7.2"
+
 debug@0.7.4:
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-0.7.4.tgz#06e1ea8082c2cb14e39806e22e2f6f757f92af39"
@@ -780,28 +792,28 @@ editor@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/editor/-/editor-1.0.0.tgz#60c7f87bd62bcc6a894fa8ccd6afb7823a24f742"
 
-electron-builder@7.24.1:
-  version "7.24.1"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-7.24.1.tgz#47e407f84bd8eb323e552ecfb5c2f86b3db45220"
+electron-builder@8.5.3:
+  version "8.5.3"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-8.5.3.tgz#edf61dbf32e2ebd8d0fe0633bc95302659ec27ef"
   dependencies:
     "7zip-bin" "^2.0.4"
     ansi-escapes "^1.4.0"
     archiver "^1.2.0"
     archiver-utils "^1.3.0"
     asar-electron-builder "^0.13.5"
-    bluebird-lst-c "^1.0.3"
+    bluebird-lst-c "^1.0.4"
     chalk "^1.1.3"
     chromium-pickle-js "^0.2.0"
     cli-cursor "^1.0.2"
     cuint "^0.2.2"
-    debug "^2.2.0"
+    debug "^2.3.2"
     electron-download "2.1.2"
-    electron-osx-sign-tf "~1.1.0"
-    fs-extra-p "^2.0.5"
+    electron-macos-sign "1.0.1"
+    fs-extra-p "^2.0.6"
     hosted-git-info "^2.1.5"
     ini "^1.3.4"
     isbinaryfile "^3.0.1"
-    js-yaml "^3.6.1"
+    js-yaml "^3.7.0"
     lodash.template "^4.4.0"
     mime "^1.3.4"
     minimatch "^3.0.3"
@@ -848,6 +860,18 @@ electron-download@2.1.2:
     path-exists "^1.0.0"
     rc "^1.1.2"
 
+electron-macos-sign@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/electron-macos-sign/-/electron-macos-sign-1.0.1.tgz#689dc5dd5dff713585aa8c0bc631863f287b86f4"
+  dependencies:
+    bluebird "^3.4.6"
+    compare-version "^0.1.2"
+    debug "^2.2.0"
+    isbinaryfile "^3.0.1"
+    minimist "^1.2.0"
+    plist "^2.0.1"
+    tempfile "^1.1.1"
+
 electron-mocha@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/electron-mocha/-/electron-mocha-3.1.1.tgz#3685203b5537fe7186528bfb5750b36958619881"
@@ -857,18 +881,6 @@ electron-mocha@3.1.1:
     fs-extra "^0.30.0"
     mocha "^3.0.0"
     which "^1.1.1"
-
-electron-osx-sign-tf@~1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/electron-osx-sign-tf/-/electron-osx-sign-tf-1.1.0.tgz#f6d7ef8e94e47824ebd6a6c60d3464281d4abce9"
-  dependencies:
-    bluebird "^3.4.6"
-    compare-version "^0.1.2"
-    debug "^2.2.0"
-    isbinaryfile "^3.0.1"
-    minimist "^1.2.0"
-    plist "^2.0.1"
-    tempfile "^1.1.1"
 
 electron-osx-sign@^0.3.0:
   version "0.3.2"
@@ -1228,9 +1240,9 @@ form-data@0.0.8:
     combined-stream "~0.0.4"
     mime "~1.2.2"
 
-fs-extra-p@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/fs-extra-p/-/fs-extra-p-2.0.5.tgz#a9f9bee515880198da4528d81a85f43e0cf9837b"
+fs-extra-p@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/fs-extra-p/-/fs-extra-p-2.0.6.tgz#d6d83d9e517fc1d8b7557df78593a6258e1f381f"
   dependencies:
     bluebird-lst-c "^1.0.3"
     fs-extra-tf "^0.30.4"
@@ -1924,9 +1936,16 @@ js-tokens@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-2.0.0.tgz#79903f5563ee778cc1162e6dcf1a0027c97f9cb5"
 
-js-yaml@^3.5.1, js-yaml@^3.6.1:
+js-yaml@^3.5.1:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.6.1.tgz#6e5fe67d8b205ce4d22fad05b7781e8dadcc4b30"
+  dependencies:
+    argparse "^1.0.7"
+    esprima "^2.6.0"
+
+js-yaml@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.7.0.tgz#5c967ddd837a9bfdca5f2de84253abe8a1c03b80"
   dependencies:
     argparse "^1.0.7"
     esprima "^2.6.0"
@@ -2297,6 +2316,10 @@ moment@2.5.1:
 ms@0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
+
+ms@0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.2.tgz#ae25cf2512b3885a1d95d7f037868d8431124765"
 
 multimatch@^2.0.0:
   version "2.1.0"
