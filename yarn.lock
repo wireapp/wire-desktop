@@ -948,9 +948,9 @@ electron-winstaller@^2.2.0:
     lodash.template "^4.2.2"
     temp "^0.8.3"
 
-electron@1.4.6:
-  version "1.4.6"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-1.4.6.tgz#7e8ea042f03ff3f14f48afa132f7fdecc29b3df5"
+electron@1.4.7:
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-1.4.7.tgz#a63cffda5502929511523ef14c15c3113e6e29b9"
   dependencies:
     electron-download "^3.0.1"
     extract-zip "^1.0.3"
