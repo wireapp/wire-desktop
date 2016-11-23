@@ -8,7 +8,7 @@ string.menuEdit = 'Modifica';
 string.menuWindow = 'Finestra';
 string.menuView = 'View';
 string.menuHelp = 'Aiuto';
-string.menuStartup = 'Apri Wire all\'avvio del sistema';
+string.menuStartup = 'Apri Wire all’avvio del sistema';
 string.menuLocale = 'Lingua';
 string.menuAbout = 'Informazioni su Wire';
 string.menuSignOut = 'Log Out';
@@ -51,7 +51,7 @@ string.menuShowHide = 'Mostra/Nascondi Menu';
 string.menuSavePictureAs = 'Salva Immagine Con Nome...';
 
 string.restartNeeded = 'Riavvio Richiesto';
-string.restartLocale = 'Si prega di riavviare l\'applicazione affinchè le modifiche abbiano effetto.';
+string.restartLocale = 'Si prega di riavviare l’applicazione affinchè le modifiche abbiano effetto.';
 string.restartLater = 'Più Tardi';
 string.restartNow = 'Riavvia Ora';
 
