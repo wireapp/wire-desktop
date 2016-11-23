@@ -25,6 +25,7 @@ const spellchecker = require('spellchecker');
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
+const config = require('./../config');
 const locale = require('./../../locale/locale');
 const customContext = require('./custom-context');
 let textMenu;
