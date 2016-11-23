@@ -1,0 +1,58 @@
+'use strict';
+
+let string = {};
+
+string.menuConversation = 'Conversazione';
+string.menuStart = 'Avvia';
+string.menuEdit = 'Modifica';
+string.menuWindow = 'Finestra';
+string.menuView = 'View';
+string.menuHelp = 'Aiuto';
+string.menuStartup = 'Apri Wire all’avvio del sistema';
+string.menuLocale = 'Lingua';
+string.menuAbout = 'Informazioni su Wire';
+string.menuSignOut = 'Log Out';
+string.menuPing = 'Ping';
+string.menuCall = 'Chiama';
+string.menuVideoCall = 'Chiamata Video';
+string.menuPeople = 'Contatti';
+string.menuAddPeople = 'Aggiungi Contatti...';
+string.menuArchive = 'Archivia';
+string.menuUnarchive = 'Disarchivia';
+string.menuMute = 'Silenzia';
+string.menuUnmute = 'Desilenzia';
+string.menuLeave = 'Esci';
+string.menuDelete = 'Rimuovi';
+string.menuBlock = 'Blocca';
+string.menuUndo = 'Annulla modifica';
+string.menuRedo = 'Riapplica modifica';
+string.menuCut = 'Taglia';
+string.menuCopy = 'Copia';
+string.menuPaste = 'Incolla';
+string.menuSelectAll = 'Seleziona Tutto';
+string.menuMinimize = 'Minimizza';
+string.menuClose = 'Chiudi';
+string.menuNextConversation = 'Conversazione Successiva';
+string.menuPreviousConversation = 'Conversazione Precedente';
+string.menuFullScreen = 'Schermo Intero';
+string.menuLegal = 'Termini Legali';
+string.menuPrivacy = 'Privacy';
+string.menuLicense = 'Informazioni di Licenza';
+string.menuSupport = 'Supporta il Sito';
+string.menuWireURL = 'Wire Website';
+string.menuPreferences = 'Preferenze';
+string.menuServices = 'Servizi';
+string.menuHideWire = 'Nascondi Wire';
+string.menuHideOthers = 'Nascondi gli Altri';
+string.menuShowAll = 'Mostra Tutti';
+string.menuSettings = 'Impostazioni';
+string.menuQuit = 'Esci da Wire';
+string.menuShowHide = 'Mostra/Nascondi Menu';
+string.menuSavePictureAs = 'Salva Immagine Con Nome...';
+
+string.restartNeeded = 'Riavvio Richiesto';
+string.restartLocale = 'Si prega di riavviare l’applicazione affinchè le modifiche abbiano effetto.';
+string.restartLater = 'Più Tardi';
+string.restartNow = 'Riavvia Ora';
+
+module.exports = string;
