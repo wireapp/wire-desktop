@@ -29,6 +29,7 @@ SUPPORTED_LOCALE = [
   'fi',
   'fr',
   'hr',
+  'it',
   'ro',
   'ru',
   'tr',
