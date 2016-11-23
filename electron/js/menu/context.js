@@ -19,27 +19,54 @@
 
 'use strict';
 
-const {remote, ipcRenderer} = require('electron');
+const {remote, ipcRenderer, webFrame} = require('electron');
+const spellchecker = require('spellchecker');
 
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
+const webContents = remote.getCurrentWebContents();
 const locale = require('./../../locale/locale');
 const customContext = require('./custom-context');
+let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Default
 ///////////////////////////////////////////////////////////////////////////////
 let defaultMenu = Menu.buildFromTemplate([{label: 'Copy', role: 'copy'}]);
 
+///////////////////////////////////////////////////////////////////////////////
 // Text
-// =================================================================
-let textMenu = Menu.buildFromTemplate([
+///////////////////////////////////////////////////////////////////////////////
+let selection = {
+  isMisspelled: false,
+  suggestions: [],
+};
+
+let textMenuTemplate = [
   {label: locale.getText('menuCut'), role: 'cut'},
   {label: locale.getText('menuCopy'), role: 'copy'},
   {label: locale.getText('menuPaste'), role: 'paste'},
   {type: 'separator'},
   {label: locale.getText('menuSelectAll'), role: 'selectall'},
-]);
+];
+
+function createTextMenu() {
+  let template = textMenuTemplate.slice();
+  if (selection.isMisspelled) {
+    template.unshift({type: 'separator'});
+    if (selection.suggestions.length > 0) {
+      for (let suggestion of selection.suggestions.reverse()) {
+        template.unshift({label: suggestion, click: function(menuItem) {
+          webContents.replaceMisspelling(menuItem.label);
+        }});
+      }
+    } else {
+      template.unshift({label: locale.getText('menuNoSuggestions'), enabled: false});
+    }
+  }
+  textMenu = Menu.buildFromTemplate(template);
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Conversation
@@ -105,9 +132,9 @@ let imageMenu = Menu.buildFromTemplate([{
 
 window.addEventListener('contextmenu', function (event) {
   const element = event.target;
-
   if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
     event.preventDefault();
+    createTextMenu();
     textMenu.popup(remote.getCurrentWindow());
   } else if (element.classList.contains('center-column')) {
     let id = element.getAttribute('data-uie-uid');
@@ -179,3 +206,18 @@ function createConversationMenu(id) {
   }
   return false;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Spell Checker
+///////////////////////////////////////////////////////////////////////////////
+webFrame.setSpellCheckProvider('en-US', true, {
+  spellCheck (text) {
+    selection.isMisspelled = spellchecker.isMisspelled(text);
+    selection.suggestions = [];
+    if (selection.isMisspelled) {
+      selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.MAX_SUGGESTIONS);
+    }
+    return !selection.isMisspelled;
+  },
+});

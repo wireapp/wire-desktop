@@ -70,6 +70,8 @@ let config = {
   GOOGLE_CLIENT_SECRET: '',
 
   CONSOLE_LOG: 'console.log',
+
+  MAX_SUGGESTIONS: 4,
 };
 
 config.ENVIRONMENT = pkg.environment;
