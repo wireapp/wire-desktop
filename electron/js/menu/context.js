@@ -26,13 +26,14 @@ const MenuItem = remote.MenuItem;
 const locale = require('./../../locale/locale');
 const customContext = require('./custom-context');
 
+///////////////////////////////////////////////////////////////////////////////
 // Default
-// =================================================================
-var default_menu = Menu.buildFromTemplate([{label: 'Copy', role: 'copy'}]);
+///////////////////////////////////////////////////////////////////////////////
+let defaultMenu = Menu.buildFromTemplate([{label: 'Copy', role: 'copy'}]);
 
 // Text
 // =================================================================
-var text_menu = Menu.buildFromTemplate([
+let textMenu = Menu.buildFromTemplate([
   {label: locale.getText('menuCut'), role: 'cut'},
   {label: locale.getText('menuCopy'), role: 'copy'},
   {label: locale.getText('menuPaste'), role: 'paste'},
@@ -40,63 +41,65 @@ var text_menu = Menu.buildFromTemplate([
   {label: locale.getText('menuSelectAll'), role: 'selectall'},
 ]);
 
+///////////////////////////////////////////////////////////////////////////////
 // Conversation
-// =================================================================
-var silence = new MenuItem({
+///////////////////////////////////////////////////////////////////////////////
+let silence = new MenuItem({
   label: locale.getText('menuMute'),
   click: function () {
     wire.app.view.conversation_list.click_on_mute_action();
   },
 });
 
-var notify = new MenuItem({
+let notify = new MenuItem({
   label: locale.getText('menuUnmute'),
   click: function () {
     wire.app.view.conversation_list.click_on_mute_action();
   },
 });
 
-var archive = new MenuItem({
+let archive = new MenuItem({
   label: locale.getText('menuArchive'),
   click: function() {
     wire.app.view.conversation_list.click_on_archive_action();
   },
 });
 
-var unarchive = new MenuItem({
+let unarchive = new MenuItem({
   label: locale.getText('menuUnarchive'),
   click: function() {
     wire.app.view.conversation_list.click_on_unarchive_action();
   },
 });
 
-var clear = new MenuItem({
+let clear = new MenuItem({
   label: locale.getText('menuDelete'),
   click: function() {
     wire.app.view.conversation_list.click_on_clear_action();
   },
 });
 
-var leave = new MenuItem({
+let leave = new MenuItem({
   label: locale.getText('menuLeave'),
   click: function() {
     wire.app.view.conversation_list.click_on_leave_action();
   },
 });
 
-var block = new MenuItem({
+let block = new MenuItem({
   label: locale.getText('menuBlock'),
   click: function() {
     wire.app.view.conversation_list.click_on_block_action();
   },
 });
 
+///////////////////////////////////////////////////////////////////////////////
 // Images
-// =================================================================
-var image_menu = Menu.buildFromTemplate([{
+///////////////////////////////////////////////////////////////////////////////
+let imageMenu = Menu.buildFromTemplate([{
   label: locale.getText('menuSavePictureAs'),
   click: function() {
-    savePicture(image_menu.file, image_menu.image);
+    savePicture(imageMenu.file, imageMenu.image);
   },
 }]);
 
@@ -105,19 +108,19 @@ window.addEventListener('contextmenu', function (event) {
 
   if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
     event.preventDefault();
-    text_menu.popup(remote.getCurrentWindow());
+    textMenu.popup(remote.getCurrentWindow());
   } else if (element.classList.contains('center-column')) {
-    var id = element.getAttribute('data-uie-uid');
+    let id = element.getAttribute('data-uie-uid');
     if (createConversationMenu(id)) {
       event.preventDefault();
     }
   } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
     event.preventDefault();
-    image_menu.image = element.src;
-    image_menu.popup(remote.getCurrentWindow());
+    imageMenu.image = element.src;
+    imageMenu.popup(remote.getCurrentWindow());
   } else if (element.classList.contains('text') || element.nodeName === 'A') {
     event.preventDefault();
-    default_menu.popup(remote.getCurrentWindow());
+    defaultMenu.popup(remote.getCurrentWindow());
   }
 
 }, false);
@@ -159,19 +162,19 @@ function createConversationMenu(id) {
 
   if (conversation_et) {
     app.view.conversation_list.selected_conversation(conversation_et);
-    let list_menu = new Menu();
-    list_menu.append(conversation_et.is_muted() ? notify : silence);
-    list_menu.append(conversation_et.is_archived() ? unarchive : archive);
-    list_menu.append(clear);
+    let listMenu = new Menu();
+    listMenu.append(conversation_et.is_muted() ? notify : silence);
+    listMenu.append(conversation_et.is_archived() ? unarchive : archive);
+    listMenu.append(clear);
     if (conversation_et.type() === z.conversation.ConversationType.REGULAR) {
       if (!conversation_et.removed_from_conversation()) {
-        list_menu.append(leave);
+        listMenu.append(leave);
       }
     } else {
-      list_menu.append(block);
+      listMenu.append(block);
     }
-    list_menu.popup(remote.getCurrentWindow());
-    list_menu.current_conversation = id;
+    listMenu.popup(remote.getCurrentWindow());
+    listMenu.current_conversation = id;
     return true;
   }
   return false;
