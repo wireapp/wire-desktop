@@ -872,9 +872,9 @@ electron-macos-sign@1.0.1:
     plist "^2.0.1"
     tempfile "^1.1.1"
 
-electron-mocha@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/electron-mocha/-/electron-mocha-3.2.0.tgz#010133aa64380eb821d7828a5329cd4e96a1e9b3"
+electron-mocha@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/electron-mocha/-/electron-mocha-3.2.1.tgz#ee4ada97da921e52bc1e3c9235ca87670963c7a0"
   dependencies:
     commander "^2.8.1"
     electron-window "^0.8.0"
