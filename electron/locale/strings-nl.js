@@ -1,0 +1,58 @@
+'use strict';
+
+let string = {};
+
+string.menuConversation = 'Gesprek';
+string.menuStart = 'Start';
+string.menuEdit = 'Wijzig';
+string.menuWindow = 'Venster';
+string.menuView = 'Beeld';
+string.menuHelp = 'Help';
+string.menuStartup = 'Wire Automatisch Starten met Windows';
+string.menuLocale = 'Taal';
+string.menuAbout = 'Over Wire';
+string.menuSignOut = 'Log Uit';
+string.menuPing = 'Ping';
+string.menuCall = 'Audiogesprek';
+string.menuVideoCall = 'Videogesprek';
+string.menuPeople = 'Personen';
+string.menuAddPeople = 'Voeg Persoon toe...';
+string.menuArchive = 'Archiveer';
+string.menuUnarchive = 'Dearchiveer';
+string.menuMute = 'Dempen';
+string.menuUnmute = 'Dempen Uit';
+string.menuLeave = 'Verlaat';
+string.menuDelete = 'Verwijder';
+string.menuBlock = 'Blokkeer';
+string.menuUndo = 'Ongedaan Maken';
+string.menuRedo = 'Opnieuw Doen';
+string.menuCut = 'Knippen';
+string.menuCopy = 'Kopiëren';
+string.menuPaste = 'Plakken';
+string.menuSelectAll = 'Selecteer Alles';
+string.menuMinimize = 'Minimaliseer';
+string.menuClose = 'Sluiten';
+string.menuNextConversation = 'Volgend Gesprek';
+string.menuPreviousConversation = 'Vorig Gesprek';
+string.menuFullScreen = 'Volledig Scherm';
+string.menuLegal = 'Juridisch';
+string.menuPrivacy = 'Privacy';
+string.menuLicense = 'Licentie Informatie';
+string.menuSupport = 'Ondersteuning Website';
+string.menuWireURL = 'Wire Website';
+string.menuPreferences = 'Voorkeuren';
+string.menuServices = 'Diensten';
+string.menuHideWire = 'Verberg Wire';
+string.menuHideOthers = 'Verberg Anderen';
+string.menuShowAll = 'Toon Alles';
+string.menuSettings = 'Instellingen';
+string.menuQuit = 'Sluit Wire';
+string.menuShowHide = 'Toon/Verberg Menu';
+string.menuSavePictureAs = 'Afbeelding Opslaan Als...';
+
+string.restartNeeded = 'Herstart Noodzakelijk';
+string.restartLocale = 'Start de applicatie opnieuw om de wijzigingen door te voeren.';
+string.restartLater = 'Later';
+string.restartNow = 'Nu Opnieuw Starten';
+
+module.exports = string;

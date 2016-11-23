@@ -56,6 +56,7 @@ let config = {
     'fi',
     'fr',
     'hr',
+    'nl',
     'ro',
     'ru',
     'tr',

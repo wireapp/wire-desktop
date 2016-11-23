@@ -84,6 +84,12 @@ var localeTemplate = {
         changeLocale('hr');
       },
     }, {
+      label: locale.label['nl'],
+      type: 'radio',
+      click: function() {
+        changeLocale('nl');
+      },
+    }, {
       label: locale.label['ro'],
       type: 'radio',
       click: function() {
