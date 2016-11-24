@@ -20,8 +20,6 @@
 'use strict';
 
 const {remote, ipcRenderer, webFrame} = require('electron');
-const spellchecker = require('spellchecker');
-
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
@@ -212,7 +210,9 @@ function createConversationMenu(id) {
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-if (locale.getCurrent() === 'en') {
+if (process.platform !== 'win32' && locale.getCurrent() === 'en') {
+  const spellchecker = require('spellchecker');
+
   webFrame.setSpellCheckProvider('en-US', true, {
     spellCheck (text) {
       selection.isMisspelled = spellchecker.isMisspelled(text);
