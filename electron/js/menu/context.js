@@ -33,7 +33,7 @@ let textMenu;
 ///////////////////////////////////////////////////////////////////////////////
 // Default
 ///////////////////////////////////////////////////////////////////////////////
-let defaultMenu = Menu.buildFromTemplate([{label: 'Copy', role: 'copy'}]);
+const defaultMenu = Menu.buildFromTemplate([{label: 'Copy', role: 'copy'}]);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Text
@@ -43,7 +43,7 @@ let selection = {
   suggestions: [],
 };
 
-let textMenuTemplate = [
+const textMenuTemplate = [
   {label: locale.getText('menuCut'), role: 'cut'},
   {label: locale.getText('menuCopy'), role: 'copy'},
   {label: locale.getText('menuPaste'), role: 'paste'},
@@ -212,13 +212,15 @@ function createConversationMenu(id) {
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-webFrame.setSpellCheckProvider('en-US', true, {
-  spellCheck (text) {
-    selection.isMisspelled = spellchecker.isMisspelled(text);
-    selection.suggestions = [];
-    if (selection.isMisspelled) {
-      selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.MAX_SUGGESTIONS);
-    }
-    return !selection.isMisspelled;
-  },
-});
+if (locale.getCurrent() === 'en') {
+  webFrame.setSpellCheckProvider('en-US', true, {
+    spellCheck (text) {
+      selection.isMisspelled = spellchecker.isMisspelled(text);
+      selection.suggestions = [];
+      if (selection.isMisspelled) {
+        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.MAX_SUGGESTIONS);
+      }
+      return !selection.isMisspelled;
+    },
+  });
+}
