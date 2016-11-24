@@ -71,7 +71,10 @@ let config = {
 
   CONSOLE_LOG: 'console.log',
 
-  MAX_SUGGESTIONS: 4,
+  SPELL_SUGGESTIONS: 4,
+  SPELL_SUPPORTED: [
+    'en',
+  ],
 };
 
 config.ENVIRONMENT = pkg.environment;

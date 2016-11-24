@@ -212,13 +212,13 @@ function createConversationMenu(id) {
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-if (locale.getCurrent() === 'en') {
-  webFrame.setSpellCheckProvider('en-US', true, {
+if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
+  webFrame.setSpellCheckProvider(locale.getCurrent(), true, {
     spellCheck (text) {
       selection.isMisspelled = spellchecker.isMisspelled(text);
       selection.suggestions = [];
       if (selection.isMisspelled) {
-        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.MAX_SUGGESTIONS);
+        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELL_SUGGESTIONS);
       }
       return !selection.isMisspelled;
     },
