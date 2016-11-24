@@ -44,6 +44,8 @@ let config = {
   WIDTH_AUTH: 400,
   HEIGHT_AUTH: 576,
 
+  UPDATE_INTERVAL: 12 * 60 * 60 * 1000,
+
   WHITE_LIST: [
     'https://www.wire.com/',
     'https://wire.com/',

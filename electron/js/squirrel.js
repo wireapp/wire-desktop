@@ -17,11 +17,10 @@
  *
  */
 
-// https://github.com/atom/atom/blob/master/src/browser/squirrel-update.coffee
-
+// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
 'use strict';
 
-const {app} = require('electron');
+const {app, BrowserWindow} = require('electron');
 
 const config = require('./config');
 const cp = require('child_process');
@@ -48,6 +47,11 @@ let startupLink = path.resolve(path.join(startupFolder, linkName));
 let desktopLink = path.join(homeFolder, 'Desktop', linkName);
 let taskbarLink = path.join(taskbarFolder, linkName);
 
+function getBrowserWindow() {
+  return BrowserWindow.getFocusedWindow();
+}
+
+
 function spawn(command, args, callback) {
   var error;
   var spawnedProcess;
@@ -62,7 +66,7 @@ function spawn(command, args, callback) {
       return typeof callback === 'function' ? callback(error, stdout) : void 0;
     });
     return;
-  }
+  };
 
   spawnedProcess.stdout.on('data', function(data) {
     return stdout += data;
@@ -103,7 +107,7 @@ function startupLinkExists(callback) {
   fs.exists(startupLink, function(exists) {
     callback(exists);
   });
-}
+};
 
 
 function createStartShortcut(callback) {
@@ -162,9 +166,32 @@ function removeStartupShortcut(callback) {
 };
 
 
-function updateSelfWin(callback) {
-  spawnUpdate(['--update', config.UPDATE_WIN_URL], callback);
+function checkUpdate() {
+  spawnUpdate(['--download', config.UPDATE_WIN_URL], function(error, update) {
+    if (error != null) {
+      return false;
+    }
+    if (update) {
+      installUpdate();
+    }
+  });
 }
+
+
+function installUpdate() {
+  spawnUpdate(['--update', config.UPDATE_WIN_URL], function(error) {
+    if (error != null) {
+      return false;
+    }
+    getBrowserWindow().webContents.send('wrapper-updated');
+  });
+};
+
+
+function scheduleUpdate() {
+  checkUpdate();
+  window.setInterval(checkUpdate, config.UPDATE_INTERVAL);
+};
 
 
 function handleSquirrelEvent(shouldQuit, callback) {
@@ -199,13 +226,13 @@ function handleSquirrelEvent(shouldQuit, callback) {
       app.quit();
       return true;
   }
-  updateSelfWin();
   if (shouldQuit) {
     app.quit();
   }
+  scheduleUpdate();
   updateTaskbarShortcut();
   return false;
-}
+};
 
 module.exports = {
   handleSquirrelEvent: handleSquirrelEvent,
