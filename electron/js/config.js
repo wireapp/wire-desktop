@@ -52,6 +52,7 @@ let config = {
   LOCALE: [
     'en',
     'de',
+    'dk',
     'es',
     'fi',
     'fr',
