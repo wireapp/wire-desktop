@@ -28,6 +28,7 @@ sys.setdefaultencoding('utf8')
 
 SUPPORTED_LOCALE = [
   'de',
+  'dk',
   'es',
   'fi',
   'fr',

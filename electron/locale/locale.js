@@ -24,6 +24,7 @@ const app = require('electron').app || require('electron').remote.app;
 const config = require('./../js/config');
 const init = require('./../js/lib/init');
 const de = require('./strings-de');
+const dk = require('./strings-dk');
 const en = require('./strings-en');
 const es = require('./strings-es');
 const fi = require('./strings-fi');
@@ -38,6 +39,7 @@ const uk = require('./strings-uk');
 const label = {
   'en': 'English',
   'de': 'Deutsch',
+  'dk': 'Dansk',
   'es': 'Español',
   'fi': 'Suomi',
   'fr': 'Français',
@@ -83,6 +85,7 @@ function setLocale(locale) {
 
 module.exports = {
   'de': de,
+  'dk': dk,
   'en': en,
   'es': es,
   'fi': fi,
