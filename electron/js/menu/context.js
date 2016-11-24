@@ -210,15 +210,15 @@ function createConversationMenu(id) {
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-if (process.platform !== 'win32' && locale.getCurrent() === 'en') {
+if (process.platform !== 'win32' && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
 
-  webFrame.setSpellCheckProvider('en-US', true, {
+  webFrame.setSpellCheckProvider(locale.getCurrent(), true, {
     spellCheck (text) {
       selection.isMisspelled = spellchecker.isMisspelled(text);
       selection.suggestions = [];
       if (selection.isMisspelled) {
-        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.MAX_SUGGESTIONS);
+        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELL_SUGGESTIONS);
       }
       return !selection.isMisspelled;
     },
