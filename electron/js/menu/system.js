@@ -63,7 +63,7 @@ var localeTemplate = {
       label: locale.label['dk'],
       type: 'radio',
       click: function() {
-       changeLocale('dk');
+        changeLocale('dk');
       },
     }, {
       label: locale.label['es'],
