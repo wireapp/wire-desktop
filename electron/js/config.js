@@ -73,6 +73,11 @@ let config = {
   GOOGLE_CLIENT_SECRET: '',
 
   CONSOLE_LOG: 'console.log',
+
+  SPELL_SUGGESTIONS: 4,
+  SPELL_SUPPORTED: [
+    'en',
+  ],
 };
 
 config.ENVIRONMENT = pkg.environment;

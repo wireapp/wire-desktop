@@ -24,6 +24,7 @@
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
   "optionalDependencies": {
-    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#1.0.1"
+    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#1.0.1",
+    "spellchecker": "3.3.1"
   }
 }
