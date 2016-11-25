@@ -54,6 +54,12 @@ var localeTemplate = {
         changeLocale('en');
       },
     }, {
+      label: locale.label['cs'],
+      type: 'radio',
+      click: function() {
+        changeLocale('cs');
+      },
+    }, {
       label: locale.label['de'],
       type: 'radio',
       click: function() {
@@ -90,6 +96,12 @@ var localeTemplate = {
         changeLocale('it');
       },
     }, {
+      label: locale.label['pt'],
+      type: 'radio',
+      click: function() {
+        changeLocale('pt');
+      },
+    }, {
       label: locale.label['ro'],
       type: 'radio',
       click: function() {
@@ -100,6 +112,12 @@ var localeTemplate = {
       type: 'radio',
       click: function() {
         changeLocale('ru');
+      },
+    }, {
+      label: locale.label['sl'],
+      type: 'radio',
+      click: function() {
+        changeLocale('sl');
       },
     }, {
       label: locale.label['tr'],
