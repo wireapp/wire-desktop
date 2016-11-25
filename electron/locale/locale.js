@@ -50,7 +50,7 @@ const label = {
   'pt': 'Português do Brasil',
   'ro': 'Română',
   'ru': 'Русский',
-  'sl': 'Slovenski',
+  'sl': 'Slovenščina',
   'tr': 'Türkçe',
   'uk': 'Українська',
 };
