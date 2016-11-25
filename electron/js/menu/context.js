@@ -210,7 +210,7 @@ function createConversationMenu(id) {
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-if (process.platform !== 'win32' && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
+if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
 
   webFrame.setSpellCheckProvider(locale.getCurrent(), true, {
