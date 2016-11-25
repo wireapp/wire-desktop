@@ -40,17 +40,17 @@ const uk = require('./strings-uk');
 
 const label = {
   'en': 'English',
-  'cs': 'CS',
+  'cs': 'Čeština',
   'de': 'Deutsch',
   'es': 'Español',
   'fi': 'Suomi',
   'fr': 'Français',
   'hr': 'Hrvatski',
   'it': 'Italiano',
-  'pt': 'PT',
+  'pt': 'Português do Brasil',
   'ro': 'Română',
   'ru': 'Русский',
-  'sl': 'SL',
+  'sl': 'Slovenski',
   'tr': 'Türkçe',
   'uk': 'Українська',
 };
