@@ -57,7 +57,7 @@ let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.IN
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
 ///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEYgit});
+raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
 
 raygunClient.onBeforeSend(function(payload) {
   delete payload.details.machineName;
