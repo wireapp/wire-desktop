@@ -364,47 +364,6 @@ menuTemplate = [
   helpTemplate,
 ];
 
-if (process.platform === 'darwin') {
-  menuTemplate.unshift(darwinTemplate);
-  windowTemplate.submenu.push(
-    separatorTemplate,
-    showWireTemplate,
-    separatorTemplate,
-    toggleFullScreenTemplate
-  );
-  toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-}
-
-if (process.platform === 'win32') {
-  const squirrel = require('./../squirrel');
-  menuTemplate.unshift(win32Template);
-  windowTemplate['i18n'] = 'menuView';
-  windowTemplate.submenu.unshift(
-    toggleMenuTemplate,
-    separatorTemplate
-  );
-  squirrel.startupLinkExists(function(exists) {
-    menu.items[0].submenu.items[2].checked = exists;
-  });
-}
-
-if (process.platform === 'linux') {
-  menuTemplate.unshift(linuxTemplate);
-  editTemplate.submenu.push(separatorTemplate, {
-    i18n: 'menuPreferences',
-    click: function() {sendAction('preferences-show');},
-  });
-  windowTemplate.submenu.push(
-    separatorTemplate,
-    toggleFullScreenTemplate
-  );
-  toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-}
-
-if (process.platform !== 'darwin') {
-  helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
-}
-
 function processMenu(template, language) {
   var strings = locale[language];
   for (let item of template) {
@@ -438,8 +397,50 @@ function changeLocale(language) {
 
 module.exports = {
   createMenu: function() {
+    if (process.platform === 'darwin') {
+      menuTemplate.unshift(darwinTemplate);
+      windowTemplate.submenu.push(
+        separatorTemplate,
+        showWireTemplate,
+        separatorTemplate,
+        toggleFullScreenTemplate
+      );
+      toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+    }
+
+    if (process.platform === 'win32') {
+      const squirrel = require('./../squirrel');
+      menuTemplate.unshift(win32Template);
+      windowTemplate['i18n'] = 'menuView';
+      windowTemplate.submenu.unshift(
+        toggleMenuTemplate,
+        separatorTemplate
+      );
+      squirrel.startupLinkExists(function(exists) {
+        menu.items[0].submenu.items[2].checked = exists;
+      });
+    }
+
+    if (process.platform === 'linux') {
+      menuTemplate.unshift(linuxTemplate);
+      editTemplate.submenu.push(separatorTemplate, {
+        i18n: 'menuPreferences',
+        click: function() {sendAction('preferences-show');},
+      });
+      windowTemplate.submenu.push(
+        separatorTemplate,
+        toggleFullScreenTemplate
+      );
+      toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+    }
+
+    if (process.platform !== 'darwin') {
+      helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
+    }
+
     processMenu(menuTemplate, locale.getCurrent());
     menu = Menu.buildFromTemplate(menuTemplate);
+
     return menu;
   },
 };
