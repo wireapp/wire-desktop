@@ -397,9 +397,6 @@ function changeLocale(language) {
 
 module.exports = {
   createMenu: function() {
-    processMenu(menuTemplate, locale.getCurrent());
-    menu = Menu.buildFromTemplate(menuTemplate);
-
     if (process.platform === 'darwin') {
       menuTemplate.unshift(darwinTemplate);
       windowTemplate.submenu.push(
@@ -409,7 +406,6 @@ module.exports = {
 	toggleFullScreenTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-      helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
     }
 
     if (process.platform === 'win32') {
@@ -437,6 +433,13 @@ module.exports = {
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
     }
+
+    if (process.platform !== 'darwin') {
+      helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
+    }
+
+    processMenu(menuTemplate, locale.getCurrent());
+    menu = Menu.buildFromTemplate(menuTemplate);
 
     return menu;
   },
