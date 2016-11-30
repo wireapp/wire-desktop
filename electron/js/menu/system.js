@@ -373,6 +373,7 @@ if (process.platform === 'darwin') {
     toggleFullScreenTemplate
   );
   toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+  helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
 }
 
 if (process.platform === 'win32') {
@@ -399,10 +400,6 @@ if (process.platform === 'linux') {
     toggleFullScreenTemplate
   );
   toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-}
-
-if (process.platform !== 'darwin') {
-  helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
 }
 
 function processMenu(template, language) {
