@@ -400,10 +400,10 @@ module.exports = {
     if (process.platform === 'darwin') {
       menuTemplate.unshift(darwinTemplate);
       windowTemplate.submenu.push(
-	separatorTemplate,
-	showWireTemplate,
-	separatorTemplate,
-	toggleFullScreenTemplate
+        separatorTemplate,
+        showWireTemplate,
+        separatorTemplate,
+        toggleFullScreenTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
     }
@@ -413,23 +413,23 @@ module.exports = {
       menuTemplate.unshift(win32Template);
       windowTemplate['i18n'] = 'menuView';
       windowTemplate.submenu.unshift(
-	toggleMenuTemplate,
-	separatorTemplate
+        toggleMenuTemplate,
+        separatorTemplate
       );
       squirrel.startupLinkExists(function(exists) {
-	menu.items[0].submenu.items[2].checked = exists;
+        menu.items[0].submenu.items[2].checked = exists;
       });
     }
 
     if (process.platform === 'linux') {
       menuTemplate.unshift(linuxTemplate);
       editTemplate.submenu.push(separatorTemplate, {
-	i18n: 'menuPreferences',
-	click: function() {sendAction('preferences-show');},
+        i18n: 'menuPreferences',
+        click: function() {sendAction('preferences-show');},
       });
       windowTemplate.submenu.push(
-	separatorTemplate,
-	toggleFullScreenTemplate
+        separatorTemplate,
+        toggleFullScreenTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
     }
