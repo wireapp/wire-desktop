@@ -25,6 +25,7 @@ const {app} = require('electron');
 
 const config = require('./config');
 const cp = require('child_process');
+const locale = require('./../../locale/locale');
 const fs = require('fs');
 const path = require('path');
 
@@ -175,6 +176,7 @@ function handleSquirrelEvent(shouldQuit, callback) {
       createStartShortcut(function() {
         createDesktopShortcut(function() {
           createStartupShortcut(function() {
+            locale.setLocale(app.getLocale());
             app.quit();
           });
         });
