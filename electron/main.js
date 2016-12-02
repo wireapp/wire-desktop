@@ -94,16 +94,12 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 ipcMain.once('load-webapp', function(event, online) {
   enteredWebapp = true;
-  if (baseURL.includes('?')) {
-    baseURL += '&hl=' + locale.getCurrent();
-  } else {
-    baseURL += '?hl=' + locale.getCurrent();
-  }
+  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(baseURL);
 });
 
 ipcMain.on('loaded', function() {
-  var size = main.getSize();
+  let size = main.getSize();
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
     util.resizeToBig(main);
   }
