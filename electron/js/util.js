@@ -59,8 +59,10 @@ module.exports = {
       if (process.platform === 'darwin') {
         app.dock.setBadge(count ? count[1] : '');
       } else if (count) {
+        win.flashFrame(true);
         tray.useBadgeIcon();
       } else {
+        win.flashFrame(false);
         tray.useDefaultIcon();
       }
     }, 50);
