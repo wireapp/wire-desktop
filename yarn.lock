@@ -802,9 +802,9 @@ editor@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/editor/-/editor-1.0.0.tgz#60c7f87bd62bcc6a894fa8ccd6afb7823a24f742"
 
-electron-builder@10.4.1:
-  version "10.4.1"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-10.4.1.tgz#e0601701d6551625bb6d3ae271fa6f40576d5e8e"
+electron-builder@10.4.3:
+  version "10.4.3"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-10.4.3.tgz#f7441390e8e5ca65ebad30602745f3e9f7a95e3e"
   dependencies:
     "7zip-bin" "^2.0.4"
     ansi-escapes "^1.4.0"
@@ -1539,9 +1539,9 @@ grunt-electron-installer@2.1.0:
   dependencies:
     electron-winstaller "^2.2.0"
 
-grunt-git@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/grunt-git/-/grunt-git-1.0.1.tgz#485be9d955e10c0799af867ac6a778bd79427280"
+grunt-git@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/grunt-git/-/grunt-git-1.0.2.tgz#cba2d16a77e3e8f6b04ec52bf7ae27764ee4a259"
   dependencies:
     flopmang "^0.0.1"
 
