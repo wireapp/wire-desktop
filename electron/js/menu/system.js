@@ -365,12 +365,12 @@ menuTemplate = [
 ];
 
 function processMenu(template, language) {
-  var strings = locale[language];
+  let strings = locale[language];
   for (let item of template) {
     if (item.submenu != null) {
       processMenu(item.submenu, language);
     }
-    if (locale.label[locale.getCurrent()] === item.label) {
+    if (locale.label[language] === item.label) {
       item.checked = true;
     }
     if (item.i18n != null && strings[item.i18n] != null) {
