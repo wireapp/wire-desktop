@@ -802,9 +802,9 @@ editor@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/editor/-/editor-1.0.0.tgz#60c7f87bd62bcc6a894fa8ccd6afb7823a24f742"
 
-electron-builder@10.4.3:
-  version "10.4.3"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-10.4.3.tgz#f7441390e8e5ca65ebad30602745f3e9f7a95e3e"
+electron-builder@10.5.0:
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-10.5.0.tgz#0157aed4e5f061b1b82c098880074c7264a3b302"
   dependencies:
     "7zip-bin" "^2.0.4"
     ansi-escapes "^1.4.0"
