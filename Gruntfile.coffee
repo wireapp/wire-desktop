@@ -166,9 +166,9 @@ module.exports = (grunt) ->
 
     shell:
       linux64:
-        command: 'yarn run linux64'
+        command: 'build --linux --x64'
       linux32:
-        command: 'yarn run linux32'
+        command: 'build --linux --ia32'
 
 
 ###############################################################################
