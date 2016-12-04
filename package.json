@@ -24,7 +24,6 @@
     "output": "wrap/dist"
   },
   "build": {
-    "npmRebuild": false,
     "linux" : {
       "afterInstall" : "bin/deb/after-install.tpl",
       "afterRemove" : "bin/deb/after-remove.tpl",
