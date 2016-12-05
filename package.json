@@ -10,9 +10,8 @@
     "prod": "electron electron --debug=5858 --devtools --enable-logging --env=https://app.wire.com",
     "localhost": "electron electron --debug=5858 --devtools --enable-logging --env=http://localhost:8888",
     "test": "eslint electron && electron-mocha tests",
-    "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f",
-    "linux32": "build --linux --ia32",
-    "linux64": "build --linux --x64"
+    "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f"
+
   },
   "repository": {
     "type": "git",
@@ -24,7 +23,6 @@
     "output": "wrap/dist"
   },
   "build": {
-    "npmRebuild": false,
     "linux" : {
       "afterInstall" : "bin/deb/after-install.tpl",
       "afterRemove" : "bin/deb/after-remove.tpl",
