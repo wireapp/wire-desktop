@@ -23,7 +23,7 @@ const electron = require('electron');
 const {app} = electron;
 
 const config = require('./config');
-const pointInRectangle = ('./lib/pointInRect');
+const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
   isInView: function(win) {
