@@ -19,10 +19,7 @@
 
 'use strict';
 
-const {app} = require('electron');
-
 const config = require('./config');
-const tray = require('./menu/tray');
 
 module.exports = {
   resizeToSmall: function(win) {
@@ -51,21 +48,6 @@ module.exports = {
     win.setResizable(true);
     win.setMaximizable(true);
     win.center();
-  },
-
-  updateBadge: function(win) {
-    setTimeout(function() {
-      var count = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
-      if (process.platform === 'darwin') {
-        app.dock.setBadge(count ? count[1] : '');
-      } else if (count) {
-        win.flashFrame(true);
-        tray.useBadgeIcon();
-      } else {
-        win.flashFrame(false);
-        tray.useDefaultIcon();
-      }
-    }, 50);
   },
 
   openInExternalWindow: function(url) {

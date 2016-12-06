@@ -23,11 +23,15 @@ const {app, BrowserWindow, Menu, Tray} = require('electron');
 
 const path = require('path');
 const config = require('./../config');
+const locale = require('./../../locale/locale');
 
 const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
 
 const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
 const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
+const iconOverlayPath = path.join(app.getAppPath(), 'img', 'tray.badge.png');
+
+let lastUnreadCount = 0;
 
 let appIcon = null;
 
@@ -53,6 +57,31 @@ module.exports = {
     appIcon.on('click', function () {
       BrowserWindow.getAllWindows()[0].show();
     });
+  },
+
+  updateBadgeIcon: function(win) {
+    setTimeout(() => {
+      var counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
+      var count = counter ? counter[1] : 0;
+
+      if (process.platform === 'win32') {
+        if (count) {
+          this.useBadgeIcon();
+          win.setOverlayIcon(iconOverlayPath, locale.getText('unreadMessages'));
+          if (!win.isFocused() && count > lastUnreadCount) {
+            win.flashFrame(true);
+          }
+        } else {
+          win.flashFrame(false);
+          win.setOverlayIcon(null, '');
+          this.useDefaultIcon();
+        }
+      } else {
+        app.setBadgeCount(parseInt(count, 10));
+      }
+
+      lastUnreadCount = count;
+    }, 50);
   },
 
   useDefaultIcon: function() {

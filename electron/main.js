@@ -201,8 +201,12 @@ function showMainWindow() {
     }
   });
 
+  main.on('focus', function() {
+    main.flashFrame(false);
+  });
+
   main.on('page-title-updated', function() {
-    util.updateBadge(main);
+    tray.updateBadgeIcon(main);
   });
 
   main.on('close', function(event) {
