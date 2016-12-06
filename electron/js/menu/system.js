@@ -246,7 +246,6 @@ var editTemplate = {
       enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       click: function(event) {
         init.save('spelling', event.checked);
-        console.log(event.checked);
       },
     },
   ],
