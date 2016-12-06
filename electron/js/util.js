@@ -19,6 +19,9 @@
 
 'use strict';
 
+const electron = require('electron');
+const {app} = electron;
+
 const config = require('./config');
 
 module.exports = {
