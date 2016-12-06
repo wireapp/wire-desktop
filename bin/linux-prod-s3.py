@@ -48,10 +48,10 @@ if __name__ == '__main__':
   version = '%s.%s' % (info['version'], info['build'])
 
   files = [
-    'wire-%s-amd64.deb' % version,
-    'wire-%s-ia32.AppImage' % version,
-    'wire-%s-ia32.deb' % version,
-    'wire-%s-x86_64.AppImage' % version,
+    'wire-%s_amd64.deb' % version,
+    'wire-%s_ia32.AppImage' % version,
+    'wire-%s_ia32.deb' % version,
+    'wire-%s_x86_64.AppImage' % version,
   ]
 
   for filename in files:
