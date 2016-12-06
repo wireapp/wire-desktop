@@ -77,7 +77,7 @@ module.exports = {
           this.useDefaultIcon();
         }
       } else {
-        app.dock.setBadgeCount(count);
+        app.setBadgeCount(parseInt(count, 10));
       }
 
       lastUnreadCount = count;
