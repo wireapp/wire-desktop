@@ -19,13 +19,8 @@
 
 'use strict';
 
-const {app} = require('electron');
-
 const config = require('./config');
-const path = require('path');
 const tray = require('./menu/tray');
-
-const iconOverlayPath = path.join(app.getAppPath(), 'img', ('tray.badge.png'));
 
 module.exports = {
   resizeToSmall: function(win) {
@@ -54,33 +49,6 @@ module.exports = {
     win.setResizable(true);
     win.setMaximizable(true);
     win.center();
-  },
-
-  updateBadge: function(win, last_unread_count) {
-    return new Promise(function(resolve) {
-      setTimeout(function() {
-        var counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
-        var count = counter ? counter[1] : 0;
-
-        if (process.platform === 'win32') {
-          if (count) {
-            tray.useBadgeIcon();
-            win.setOverlayIcon(iconOverlayPath, 'Unread messages');
-            if (!win.isFocused() && count > last_unread_count) {
-              win.flashFrame(true);
-            }
-          } else {
-            win.flashFrame(false);
-            win.setOverlayIcon(null, '');
-            tray.useDefaultIcon();
-          }
-        } else {
-          app.dock.setBadgeCount(count);
-        }
-
-        resolve(count);
-      }, 50);
-    });
   },
 
   openInExternalWindow: function(url) {

@@ -55,4 +55,6 @@ string.restartLocale = 'Bitte starte Wire erneut, um diese Einstellung zu übern
 string.restartLater = 'Später';
 string.restartNow = 'Jetzt neustarten';
 
+string.unreadMessages = 'Ungelesene Nachrichten';
+
 module.exports = string;
