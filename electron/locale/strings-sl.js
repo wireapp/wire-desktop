@@ -31,6 +31,7 @@ string.menuCut = 'Izreži';
 string.menuCopy = 'Kopiraj';
 string.menuPaste = 'Prilepi';
 string.menuSelectAll = 'Izberi vse';
+string.menuSpelling = 'Preverjanje črkovanja med tipkanjem';
 string.menuMinimize = 'Minimiziraj';
 string.menuClose = 'Zapri';
 string.menuNextConversation = 'Naslednji pogovor';
@@ -50,6 +51,7 @@ string.menuSettings = 'Nastavitve';
 string.menuQuit = 'Zapri Wire';
 string.menuShowHide = 'Pokaži/Skrij meni';
 string.menuSavePictureAs = 'Shrani sliko kot...';
+string.menuNoSuggestions = 'Brez predlogov';
 
 string.restartNeeded = 'Potreben ponovni zagon';
 string.restartLocale = 'Prosimo ponovno zaženite aplikacijo, da bo ta nastavitev aktivna.';
