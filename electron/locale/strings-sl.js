@@ -50,6 +50,7 @@ string.menuSettings = 'Nastavitve';
 string.menuQuit = 'Zapri Wire';
 string.menuShowHide = 'Pokaži/Skrij meni';
 string.menuSavePictureAs = 'Shrani sliko kot...';
+string.menuNoSuggestions = 'Brez predlogov';
 
 string.restartNeeded = 'Potreben ponovni zagon';
 string.restartLocale = 'Prosimo ponovno zaženite aplikacijo, da bo ta nastavitev aktivna.';

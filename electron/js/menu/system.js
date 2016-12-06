@@ -238,6 +238,17 @@ var editTemplate = {
     {i18n: 'menuPaste', role: 'paste'},
     separatorTemplate,
     {i18n: 'menuSelectAll', role: 'selectall'},
+    separatorTemplate,
+    {
+      i18n: 'menuSpelling',
+      type: 'checkbox',
+      checked: init.restore('spelling', true) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      click: function(event) {
+        init.save('spelling', event.checked);
+        console.log(event.checked);
+      },
+    },
   ],
 };
 

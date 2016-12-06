@@ -50,6 +50,7 @@ string.menuSettings = 'Настройки';
 string.menuQuit = 'Завершить Wire';
 string.menuShowHide = 'Показать/скрыть меню';
 string.menuSavePictureAs = 'Сохранить изображение как...';
+string.menuNoSuggestions = 'Нет предложений';
 
 string.restartNeeded = 'Необходим перезапуск';
 string.restartLocale = 'Пожалуйста, перезапустите приложение, чтобы новые настройки вступили в силу.';
