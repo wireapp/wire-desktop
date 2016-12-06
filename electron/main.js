@@ -144,6 +144,8 @@ function showMainWindow() {
     },
   });
 
+  let unread_count = 0;
+
   if (init.restore('fullscreen', false)) {
     main.setFullScreen(true);
   } else {
@@ -201,8 +203,14 @@ function showMainWindow() {
     }
   });
 
+  main.on('focus', function(){
+    main.flashFrame(false);
+  });
+
   main.on('page-title-updated', function() {
-    util.updateBadge(main);
+    util.updateBadge(main, unread_count).then(function(new_unread_count) {
+      unread_count = new_unread_count;
+    });
   });
 
   main.on('close', function(event) {
