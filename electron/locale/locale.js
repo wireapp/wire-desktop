@@ -77,7 +77,7 @@ function parseLocale(locale) {
 
 function getText(text) {
   var strings = eval(getCurrent());
-  return strings[text] || '';
+  return strings[text] || en[text] || '';
 }
 
 

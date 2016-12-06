@@ -375,7 +375,6 @@ menuTemplate = [
 ];
 
 function processMenu(template, language) {
-  let strings = locale[language];
   for (let item of template) {
     if (item.submenu != null) {
       processMenu(item.submenu, language);
@@ -383,8 +382,8 @@ function processMenu(template, language) {
     if (locale.label[language] === item.label) {
       item.checked = true;
     }
-    if (item.i18n != null && strings[item.i18n] != null) {
-      item.label = strings[item.i18n];
+    if (item.i18n != null) {
+      item.label = locale.getText(item.i18n);
     }
   }
 }
