@@ -50,6 +50,7 @@ string.menuSettings = 'Ayarlar';
 string.menuQuit = 'Wire’dan Çık';
 string.menuShowHide = 'Menüyü Göster/Gizle';
 string.menuSavePictureAs = 'Fotoğraf Olarak Kaydet...';
+string.menuNoSuggestions = 'Öneri yok';
 
 string.restartNeeded = 'Yeniden Başlatmak Gerekli';
 string.restartLocale = 'Lütfen bu ayarın etkinleşmesi için uygulamayı baştan başlatın.';

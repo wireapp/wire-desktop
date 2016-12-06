@@ -25,6 +25,7 @@ const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
+const init = require('./../lib/init');
 const customContext = require('./custom-context');
 let textMenu;
 
@@ -212,9 +213,11 @@ function createConversationMenu(id) {
 ///////////////////////////////////////////////////////////////////////////////
 if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
-
-  webFrame.setSpellCheckProvider(locale.getCurrent(), true, {
+  webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck (text) {
+      if (!init.restore('spelling')) {
+        return true;
+      }
       selection.isMisspelled = spellchecker.isMisspelled(text);
       selection.suggestions = [];
       if (selection.isMisspelled) {
