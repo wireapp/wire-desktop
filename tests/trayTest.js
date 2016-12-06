@@ -38,7 +38,7 @@ describe('tray', () => {
             assert.equal(app.getBadgeCount(), 2);
           }
           done();
-        }, 50);
+        }, 75);
       });
     });
   });
