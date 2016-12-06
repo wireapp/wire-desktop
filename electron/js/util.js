@@ -23,8 +23,22 @@ const electron = require('electron');
 const {app} = electron;
 
 const config = require('./config');
+const pointInRectangle = ('./lib/pointInRect');
 
 module.exports = {
+  isInView: function(win) {
+    let windowBounds = win.getBounds();
+    let nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
+
+    let upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
+    let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
+
+    if (upperLeftVisible || lowerRightVisible) {
+      return true;
+    }
+    return false;
+  },
+
   resizeToSmall: function(win) {
     if (process.platform !== 'darwin') {
       win.setMenuBarVisibility(false);
