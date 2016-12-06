@@ -33,10 +33,7 @@ module.exports = {
     let upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
     let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
 
-    if (upperLeftVisible || lowerRightVisible) {
-      return true;
-    }
-    return false;
+    return upperLeftVisible || lowerRightVisible;
   },
 
   resizeToSmall: function(win) {
