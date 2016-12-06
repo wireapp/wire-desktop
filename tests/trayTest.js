@@ -22,20 +22,20 @@ const {BrowserWindow, app} = require('electron');
 const assert = require('assert');
 const path = require('path');
 
-const util = require('../electron/js/util');
+const tray = require('../electron/js/menu/tray');
 
-describe('util', () => {
+describe('tray', () => {
 
-  describe('#updateBadge()', () => {
+  describe('#updateBadgeIcon()', () => {
 
     it('should update badge according to window title', (done) => {
       window = new BrowserWindow();
       window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
       window.webContents.on('dom-ready', function() {
-        util.updateBadge(window);
+        tray.updateBadgeIcon(window);
         setTimeout(function(){
-          if (process.platform === 'darwin') {
-            assert.equal(app.dock.getBadge(), 2);
+          if (process.platform !== 'win') {
+            assert.equal(app.getBadgeCount(), 2);
           }
           done();
         }, 50);
