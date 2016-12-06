@@ -20,7 +20,6 @@
 'use strict';
 
 const config = require('./config');
-const tray = require('./menu/tray');
 
 module.exports = {
   resizeToSmall: function(win) {
