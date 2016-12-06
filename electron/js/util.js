@@ -20,7 +20,6 @@
 'use strict';
 
 const electron = require('electron');
-const {app} = electron;
 
 const config = require('./config');
 const pointInRectangle = require('./lib/pointInRect');
@@ -34,6 +33,15 @@ module.exports = {
     let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
 
     return upperLeftVisible || lowerRightVisible;
+  },
+
+  openInExternalWindow: function(url) {
+    for (let item of config.WHITE_LIST) {
+      if (url.includes(item)) {
+        return true;
+      }
+    }
+    return false;
   },
 
   resizeToSmall: function(win) {
@@ -62,14 +70,5 @@ module.exports = {
     win.setResizable(true);
     win.setMaximizable(true);
     win.center();
-  },
-
-  openInExternalWindow: function(url) {
-    for (let item of config.WHITE_LIST) {
-      if (url.includes(item)) {
-        return true;
-      }
-    }
-    return false;
   },
 };
