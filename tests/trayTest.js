@@ -34,7 +34,7 @@ describe('tray', () => {
       window.webContents.on('dom-ready', function() {
         tray.updateBadgeIcon(window);
         setTimeout(function(){
-          if (process.platform !== 'win') {
+          if (process.platform === 'darwin') {
             assert.equal(app.getBadgeCount(), 2);
           }
           done();
