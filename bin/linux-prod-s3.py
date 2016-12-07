@@ -48,7 +48,7 @@ if __name__ == '__main__':
   version = '%s.%s' % (info['version'], info['build'])
 
   files = [
-    'wire_%s_ia32.deb' % version,
+    'wire_%s_i386.deb' % version,
     'wire_%s_amd64.deb' % version,
     'wire-%s-ia32.AppImage' % version,
     'wire-%s-x86_64.AppImage' % version,
