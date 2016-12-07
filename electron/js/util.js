@@ -19,9 +19,31 @@
 
 'use strict';
 
+const electron = require('electron');
+
 const config = require('./config');
+const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
+  isInView: function(win) {
+    let windowBounds = win.getBounds();
+    let nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
+
+    let upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
+    let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
+
+    return upperLeftVisible || lowerRightVisible;
+  },
+
+  openInExternalWindow: function(url) {
+    for (let item of config.WHITE_LIST) {
+      if (url.includes(item)) {
+        return true;
+      }
+    }
+    return false;
+  },
+
   resizeToSmall: function(win) {
     if (process.platform !== 'darwin') {
       win.setMenuBarVisibility(false);
@@ -48,14 +70,5 @@ module.exports = {
     win.setResizable(true);
     win.setMaximizable(true);
     win.center();
-  },
-
-  openInExternalWindow: function(url) {
-    for (let item of config.WHITE_LIST) {
-      if (url.includes(item)) {
-        return true;
-      }
-    }
-    return false;
   },
 };

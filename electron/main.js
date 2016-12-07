@@ -157,6 +157,10 @@ function showMainWindow() {
   }
 
   if (!argv.startup) {
+    if (!util.isInView(main)) {
+      main.center();
+    }
+
     setTimeout(function() {
       main.show();
     }, 800);
