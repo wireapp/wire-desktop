@@ -802,9 +802,9 @@ editor@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/editor/-/editor-1.0.0.tgz#60c7f87bd62bcc6a894fa8ccd6afb7823a24f742"
 
-electron-builder@10.6.0:
-  version "10.6.0"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-10.6.0.tgz#0e5dc148dbdfc189fea3c0bd9bfe4595d54d12b0"
+electron-builder@10.6.1:
+  version "10.6.1"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-10.6.1.tgz#fc1a1a3d47d9d38aacf1203133c8ab236e370916"
   dependencies:
     "7zip-bin" "^2.0.4"
     ansi-escapes "^1.4.0"
@@ -955,9 +955,9 @@ electron-winstaller@^2.2.0:
     lodash.template "^4.2.2"
     temp "^0.8.3"
 
-electron@1.4.10:
-  version "1.4.10"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-1.4.10.tgz#11492d82eb1d92fa36006c2376404d13a790f393"
+electron@1.4.11:
+  version "1.4.11"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-1.4.11.tgz#368e8a85c2bf3076f62bc4840132f022c9cfb0ec"
   dependencies:
     electron-download "^3.0.1"
     extract-zip "^1.0.3"
