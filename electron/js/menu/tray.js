@@ -66,14 +66,11 @@ module.exports = {
       if (count) {
         this.useBadgeIcon();
         win.setOverlayIcon(iconOverlayPath, locale.getText('unreadMessages'));
-        if (!win.isFocused() && count > lastUnreadCount) {
-          win.flashFrame(true);
-        }
       } else {
         this.useDefaultIcon();
         win.setOverlayIcon(null, '');
-        win.flashFrame(false);
       }
+      win.flashFrame(!win.isFocused() && count > lastUnreadCount);
       app.setBadgeCount(count);
       lastUnreadCount = count;
     }, 50);
