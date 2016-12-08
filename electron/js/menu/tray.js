@@ -76,9 +76,16 @@ module.exports = {
           win.setOverlayIcon(null, '');
           this.useDefaultIcon();
         }
-      } else {
+      } else if (process.platform === 'linux') {
         app.setBadgeCount(parseInt(count, 10));
-      }
+        if (count) {
+          this.useBadgeIcon();
+        } else {
+          this.useDefaultIcon();
+        }
+      } else {
+      app.setBadgeCount(parseInt(count, 10));
+    }
 
       lastUnreadCount = count;
     }, 50);
