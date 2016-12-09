@@ -61,15 +61,14 @@ module.exports = {
 
   updateBadgeIcon: function(win) {
     setTimeout(() => {
-      var counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
-      var count = parseInt(counter ? counter[1] : '0', 10);
+      let counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
+      let count = parseInt(counter ? counter[1] : '0', 10);
       if (count) {
         this.useBadgeIcon();
-        win.setOverlayIcon(iconOverlayPath, locale.getText('unreadMessages'));
       } else {
         this.useDefaultIcon();
-        win.setOverlayIcon(null, '');
       }
+      win.setOverlayIcon(count && process.platform !== 'darwin' ? iconOverlayPath : null, locale.getText('unreadMessages'));
       win.flashFrame(!win.isFocused() && count > lastUnreadCount);
       app.setBadgeCount(count);
       lastUnreadCount = count;
