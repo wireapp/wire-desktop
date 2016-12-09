@@ -17,6 +17,8 @@
  *
  */
 
+'use strict';
+
 const {BrowserWindow, app} = require('electron');
 
 const assert = require('assert');
@@ -33,7 +35,7 @@ describe('tray', () => {
       window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
       window.webContents.on('dom-ready', function() {
         tray.updateBadgeIcon(window);
-        setTimeout(function(){
+        setTimeout(function() {
           if (process.platform === 'darwin') {
             assert.equal(app.getBadgeCount(), 2);
           }
