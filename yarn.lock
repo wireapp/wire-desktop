@@ -686,13 +686,7 @@ debug@2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@^2.1.1, debug@^2.1.3, debug@^2.2.0:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.2.tgz#94cb466ef7d6d2c7e5245cdd6e4104f2d0d70d30"
-  dependencies:
-    ms "0.7.2"
-
-debug@^2.3.2, debug@^2.3.3:
+debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@^2.3.2, debug@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
   dependencies:
@@ -905,9 +899,9 @@ electron-osx-sign@^0.4.1:
     plist "^1.2.0"
     tempfile "^1.1.1"
 
-electron-packager@8.3.0:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-8.3.0.tgz#687e5d300ca0d2c5bfe311a8fed0e8172e83572d"
+electron-packager@8.4.0:
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-8.4.0.tgz#aad862797ced23cf3c6d25533f452ffe3765f355"
   dependencies:
     asar "^0.12.3"
     debug "^2.2.0"
@@ -1539,9 +1533,9 @@ grunt-electron-installer@2.1.0:
   dependencies:
     electron-winstaller "^2.2.0"
 
-grunt-git@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/grunt-git/-/grunt-git-1.0.2.tgz#cba2d16a77e3e8f6b04ec52bf7ae27764ee4a259"
+grunt-git@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/grunt-git/-/grunt-git-1.0.3.tgz#20afceaea444f3e2bda9b73e826855387119439c"
   dependencies:
     flopmang "^0.0.1"
 
@@ -1947,18 +1941,18 @@ js-tokens@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-2.0.0.tgz#79903f5563ee778cc1162e6dcf1a0027c97f9cb5"
 
-js-yaml@^3.5.1, js-yaml@~3.5.2:
-  version "3.5.5"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.5.5.tgz#0377c38017cabc7322b0d1fbcd25a491641f2fbe"
-  dependencies:
-    argparse "^1.0.2"
-    esprima "^2.6.0"
-
-js-yaml@^3.7.0:
+js-yaml@^3.5.1, js-yaml@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.7.0.tgz#5c967ddd837a9bfdca5f2de84253abe8a1c03b80"
   dependencies:
     argparse "^1.0.7"
+    esprima "^2.6.0"
+
+js-yaml@~3.5.2:
+  version "3.5.5"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.5.5.tgz#0377c38017cabc7322b0d1fbcd25a491641f2fbe"
+  dependencies:
+    argparse "^1.0.2"
     esprima "^2.6.0"
 
 jsbn@~0.1.0:
@@ -2189,11 +2183,11 @@ lodash@^3.10.1, lodash@^3.5.0, lodash@~3.10.1:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@^4.0.0, lodash@^4.3.0, lodash@~4.3.0:
+lodash@^4.0.0, lodash@~4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.3.0.tgz#efd9c4a6ec53f3b05412429915c3e4824e4d25a4"
 
-lodash@^4.14.0, lodash@^4.8.0:
+lodash@^4.14.0, lodash@^4.3.0, lodash@^4.8.0:
   version "4.16.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.5.tgz#77d88feac548009b1a5c4ca7b49ac431ce346ae8"
 
