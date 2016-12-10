@@ -32,7 +32,7 @@
     }
   },
   "devDependencies": {
-    "electron": "1.4.11",
+    "electron": "1.4.12",
     "electron-builder": "10.6.1",
     "electron-mocha": "3.2.1",
     "electron-packager": "8.4.0",
