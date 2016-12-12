@@ -61,25 +61,16 @@ module.exports = {
 
   updateBadgeIcon: function(win) {
     setTimeout(() => {
-      var counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
-      var count = counter ? counter[1] : 0;
-
-      if (process.platform === 'win32') {
-        if (count) {
-          this.useBadgeIcon();
-          win.setOverlayIcon(iconOverlayPath, locale.getText('unreadMessages'));
-          if (!win.isFocused() && count > lastUnreadCount) {
-            win.flashFrame(true);
-          }
-        } else {
-          win.flashFrame(false);
-          win.setOverlayIcon(null, '');
-          this.useDefaultIcon();
-        }
+      let counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
+      let count = parseInt(counter ? counter[1] : 0, 10);
+      if (count) {
+        this.useBadgeIcon();
       } else {
-        app.setBadgeCount(parseInt(count, 10));
+        this.useDefaultIcon();
       }
-
+      win.setOverlayIcon(count && process.platform === 'win32' ? iconOverlayPath : null, locale.getText('unreadMessages'));
+      win.flashFrame(!win.isFocused() && count > lastUnreadCount);
+      app.setBadgeCount(count);
       lastUnreadCount = count;
     }, 50);
   },
