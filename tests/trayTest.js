@@ -31,7 +31,7 @@ describe('tray', () => {
   describe('#updateBadgeIcon()', () => {
 
     it('should update badge according to window title', (done) => {
-      window = new BrowserWindow();
+      let window = new BrowserWindow();
       window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
       window.webContents.on('dom-ready', function() {
         tray.updateBadgeIcon(window);

@@ -28,8 +28,8 @@ describe('datauri', () => {
   describe('fromBuffer', () => {
 
     it('should return datauri', () => {
-      buffer = new Buffer('foo', 'utf-8');
-      mimetype = 'text/plain';
+      let buffer = new Buffer('foo', 'utf-8');
+      let mimetype = 'text/plain';
       assert.equal(datauri.fromBuffer(mimetype, buffer), 'data:text/plain;base64,Zm9v');
     });
 
