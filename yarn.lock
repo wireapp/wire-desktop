@@ -796,9 +796,9 @@ editor@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/editor/-/editor-1.0.0.tgz#60c7f87bd62bcc6a894fa8ccd6afb7823a24f742"
 
-electron-builder@10.6.1:
-  version "10.6.1"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-10.6.1.tgz#fc1a1a3d47d9d38aacf1203133c8ab236e370916"
+electron-builder@10.7.0:
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-10.7.0.tgz#b4566332c6ac33b0fd63164a88b061e73745591f"
   dependencies:
     "7zip-bin" "^2.0.4"
     ansi-escapes "^1.4.0"
@@ -2183,11 +2183,11 @@ lodash@^3.10.1, lodash@^3.5.0, lodash@~3.10.1:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@^4.0.0, lodash@~4.3.0:
+lodash@^4.0.0, lodash@^4.3.0, lodash@~4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.3.0.tgz#efd9c4a6ec53f3b05412429915c3e4824e4d25a4"
 
-lodash@^4.14.0, lodash@^4.3.0, lodash@^4.8.0:
+lodash@^4.14.0, lodash@^4.8.0:
   version "4.16.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.5.tgz#77d88feac548009b1a5c4ca7b49ac431ce346ae8"
 
