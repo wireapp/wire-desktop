@@ -17,6 +17,8 @@
  *
  */
 
+'use strict';
+
 const assert = require('assert');
 
 const arrayify = require('../electron/js/lib/arrayify');
