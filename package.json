@@ -34,7 +34,7 @@
   "devDependencies": {
     "electron": "1.4.12",
     "electron-builder": "10.7.0",
-    "electron-mocha": "3.2.1",
+    "electron-mocha": "3.3.0",
     "electron-packager": "8.4.0",
     "electron-rebuild": "1.4.0",
     "eslint": "3.12.0",
