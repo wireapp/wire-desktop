@@ -229,6 +229,7 @@ var toggleFullScreenTemplate = {
 var toggleStartInTrayTemplate = {
   i18n: 'menuStartInTray',
   type: 'checkbox',
+  checked: init.restore('startInTray', false),
   click: function() {
     init.save('startInTray', !init.restore('startInTray'));
   },
@@ -422,7 +423,6 @@ module.exports = {
         toggleFullScreenTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-      toggleStartInTrayTemplate.checked = init.restore('startInTray', false);
     }
 
     if (process.platform === 'win32') {
@@ -450,7 +450,6 @@ module.exports = {
         toggleStartInTrayTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-      toggleStartInTrayTemplate.checked = init.restore('startInTray', false);
     }
 
     if (process.platform !== 'darwin') {
