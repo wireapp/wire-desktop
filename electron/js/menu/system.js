@@ -236,6 +236,7 @@ var toggleFullScreenTemplate = {
 var toggleAutoLaunchTemplate = {
   i18n: 'menuAutoStart',
   type: 'checkbox',
+  checked: init.restore('shouldAutoLaunch'),
   click: function() {
     init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
     init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
@@ -458,7 +459,6 @@ module.exports = {
         toggleFullScreenTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-      toggleAutoLaunchTemplate.checked = init.restore('shouldAutoLaunch');
     }
 
     if (process.platform !== 'darwin') {
