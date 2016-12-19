@@ -31,8 +31,8 @@ let menu;
 var menuTemplate;
 
 const launcher = new autoLaunch({
-   name: 'Wire',
-   path: launchCmd,
+  name: 'Wire',
+  path: launchCmd,
 });
 
 function getBrowserWindow() {
