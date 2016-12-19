@@ -24,25 +24,33 @@ const app = require('electron').app || require('electron').remote.app;
 const config = require('./../js/config');
 const init = require('./../js/lib/init');
 const de = require('./strings-de');
+const cs = require('./strings-cs');
 const en = require('./strings-en');
 const es = require('./strings-es');
 const fi = require('./strings-fi');
 const fr = require('./strings-fr');
 const hr = require('./strings-hr');
+const it = require('./strings-it');
+const pt = require('./strings-pt');
 const ro = require('./strings-ro');
 const ru = require('./strings-ru');
+const sl = require('./strings-sl');
 const tr = require('./strings-tr');
 const uk = require('./strings-uk');
 
 const label = {
   'en': 'English',
+  'cs': 'Čeština',
   'de': 'Deutsch',
   'es': 'Español',
   'fi': 'Suomi',
   'fr': 'Français',
   'hr': 'Hrvatski',
+  'it': 'Italiano',
+  'pt': 'Português do Brasil',
   'ro': 'Română',
   'ru': 'Русский',
+  'sl': 'Slovenščina',
   'tr': 'Türkçe',
   'uk': 'Українська',
 };
@@ -69,7 +77,7 @@ function parseLocale(locale) {
 
 function getText(text) {
   var strings = eval(getCurrent());
-  return strings[text] || '';
+  return strings[text] || en[text] || '';
 }
 
 
@@ -80,14 +88,18 @@ function setLocale(locale) {
 
 
 module.exports = {
+  'cs': cs,
   'de': de,
   'en': en,
   'es': es,
   'fi': fi,
   'fr': fr,
   'hr': hr,
+  'it': it,
+  'pt': pt,
   'ro': ro,
   'ru': ru,
+  'sl': sl,
   'tr': tr,
   'uk': uk,
   'label': label,

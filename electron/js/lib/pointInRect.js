@@ -19,20 +19,10 @@
 
 'use strict';
 
-const assert = require('assert');
 
-const datauri = require('../electron/js/lib/datauri');
-
-describe('datauri', () => {
-
-  describe('fromBuffer', () => {
-
-    it('should return datauri', () => {
-      let buffer = new Buffer('foo', 'utf-8');
-      let mimetype = 'text/plain';
-      assert.equal(datauri.fromBuffer(mimetype, buffer), 'data:text/plain;base64,Zm9v');
-    });
-
-  });
-
-});
+module.exports = function(point, rectangle) {
+  return point[0] >= rectangle.x &&
+    point[0] <= rectangle.x + rectangle.width &&
+    point[1] >= rectangle.y &&
+    point[1] <= rectangle.y + rectangle.height;
+};

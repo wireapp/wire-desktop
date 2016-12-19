@@ -54,6 +54,12 @@ var localeTemplate = {
         changeLocale('en');
       },
     }, {
+      label: locale.label['cs'],
+      type: 'radio',
+      click: function() {
+        changeLocale('cs');
+      },
+    }, {
       label: locale.label['de'],
       type: 'radio',
       click: function() {
@@ -84,6 +90,18 @@ var localeTemplate = {
         changeLocale('hr');
       },
     }, {
+      label: locale.label['it'],
+      type: 'radio',
+      click: function() {
+        changeLocale('it');
+      },
+    }, {
+      label: locale.label['pt'],
+      type: 'radio',
+      click: function() {
+        changeLocale('pt');
+      },
+    }, {
       label: locale.label['ro'],
       type: 'radio',
       click: function() {
@@ -94,6 +112,12 @@ var localeTemplate = {
       type: 'radio',
       click: function() {
         changeLocale('ru');
+      },
+    }, {
+      label: locale.label['sl'],
+      type: 'radio',
+      click: function() {
+        changeLocale('sl');
       },
     }, {
       label: locale.label['tr'],
@@ -221,6 +245,16 @@ var editTemplate = {
     {i18n: 'menuPaste', role: 'paste'},
     separatorTemplate,
     {i18n: 'menuSelectAll', role: 'selectall'},
+    separatorTemplate,
+    {
+      i18n: 'menuSpelling',
+      type: 'checkbox',
+      checked: init.restore('spelling', true) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      click: function(event) {
+        init.save('spelling', event.checked);
+      },
+    },
   ],
 };
 
@@ -347,61 +381,16 @@ menuTemplate = [
   helpTemplate,
 ];
 
-if (process.platform === 'darwin') {
-  menuTemplate.unshift(darwinTemplate);
-  windowTemplate.submenu.push(
-    separatorTemplate,
-    showWireTemplate,
-    separatorTemplate,
-    toggleFullScreenTemplate
-  );
-  toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-  toggleStartInTrayTemplate.checked = init.restore('startInTray', false);
-}
-
-if (process.platform === 'win32') {
-  const squirrel = require('./../squirrel');
-  menuTemplate.unshift(win32Template);
-  windowTemplate['i18n'] = 'menuView';
-  windowTemplate.submenu.unshift(
-    toggleMenuTemplate,
-    separatorTemplate
-  );
-  squirrel.startupLinkExists(function(exists) {
-    menu.items[0].submenu.items[2].checked = exists;
-  });
-}
-
-if (process.platform === 'linux') {
-  menuTemplate.unshift(linuxTemplate);
-  editTemplate.submenu.push(separatorTemplate, {
-    i18n: 'menuPreferences',
-    click: function() {sendAction('preferences-show');},
-  });
-  windowTemplate.submenu.push(
-    separatorTemplate,
-    toggleFullScreenTemplate,
-    toggleStartInTrayTemplate
-  );
-  toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-  toggleStartInTrayTemplate.checked = init.restore('startInTray', false);
-}
-
-if (process.platform !== 'darwin') {
-  helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
-}
-
 function processMenu(template, language) {
-  var strings = locale[language];
   for (let item of template) {
     if (item.submenu != null) {
       processMenu(item.submenu, language);
     }
-    if (locale.label[locale.getCurrent()] === item.label) {
+    if (locale.label[language] === item.label) {
       item.checked = true;
     }
-    if (item.i18n != null && strings[item.i18n] != null) {
-      item.label = strings[item.i18n];
+    if (item.i18n != null) {
+      item.label = locale.getText(item.i18n);
     }
   }
 }
@@ -422,6 +411,55 @@ function changeLocale(language) {
   });
 }
 
-processMenu(menuTemplate, locale.getCurrent());
+module.exports = {
+  createMenu: function() {
+    if (process.platform === 'darwin') {
+      menuTemplate.unshift(darwinTemplate);
+      windowTemplate.submenu.push(
+        separatorTemplate,
+        showWireTemplate,
+        separatorTemplate,
+        toggleFullScreenTemplate
+      );
+      toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+      toggleStartInTrayTemplate.checked = init.restore('startInTray', false);
+    }
 
-module.exports = menu = Menu.buildFromTemplate(menuTemplate);
+    if (process.platform === 'win32') {
+      const squirrel = require('./../squirrel');
+      menuTemplate.unshift(win32Template);
+      windowTemplate['i18n'] = 'menuView';
+      windowTemplate.submenu.unshift(
+        toggleMenuTemplate,
+        separatorTemplate
+      );
+      squirrel.startupLinkExists(function(exists) {
+        menu.items[0].submenu.items[2].checked = exists;
+      });
+    }
+
+    if (process.platform === 'linux') {
+      menuTemplate.unshift(linuxTemplate);
+      editTemplate.submenu.push(separatorTemplate, {
+        i18n: 'menuPreferences',
+        click: function() {sendAction('preferences-show');},
+      });
+      windowTemplate.submenu.push(
+        separatorTemplate,
+        toggleFullScreenTemplate,
+        toggleStartInTrayTemplate
+      );
+      toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+      toggleStartInTrayTemplate.checked = init.restore('startInTray', false);
+    }
+
+    if (process.platform !== 'darwin') {
+      helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
+    }
+
+    processMenu(menuTemplate, locale.getCurrent());
+    menu = Menu.buildFromTemplate(menuTemplate);
+
+    return menu;
+  },
+};

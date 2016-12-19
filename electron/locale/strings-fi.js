@@ -31,6 +31,7 @@ string.menuCut = 'Leikkaa';
 string.menuCopy = 'Kopioi';
 string.menuPaste = 'Liitä';
 string.menuSelectAll = 'Valitse kaikki';
+string.menuSpelling = 'Tarkista oikeinkirjoitus kirjoittaessa';
 string.menuMinimize = 'Pienennä';
 string.menuClose = 'Sulje';
 string.menuNextConversation = 'Seuraava keskustelu';
@@ -50,6 +51,7 @@ string.menuSettings = 'Asetukset';
 string.menuQuit = 'Lopeta Wire';
 string.menuShowHide = 'Näytä/piilota valikko';
 string.menuSavePictureAs = 'Tallenna kuva...';
+string.menuNoSuggestions = 'Ei ehdotuksia';
 
 string.restartNeeded = 'Käynnistää tarvittavat';
 string.restartLocale = 'Käynnistä ohjelma uudelleen, jotta tämä asetus tulee voimaan.';

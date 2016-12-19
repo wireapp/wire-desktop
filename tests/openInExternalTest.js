@@ -17,6 +17,8 @@
  *
  */
 
+'use strict';
+
 const assert = require('assert');
 const config = require('../electron/js/config');
 const util = require('../electron/js/util');
