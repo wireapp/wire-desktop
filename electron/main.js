@@ -160,7 +160,7 @@ function showMainWindow() {
     if (!util.isInView(main)) {
       main.center();
     }
-    
+
     setTimeout(function() {
       main.show();
     }, 800);
