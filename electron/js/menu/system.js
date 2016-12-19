@@ -31,8 +31,8 @@ let menu;
 var menuTemplate;
 
 const launcher = new autoLaunch({
-	 name: 'Wire',
-	 path: launchCmd,
+   name: 'Wire',
+   path: launchCmd,
 });
 
 function getBrowserWindow() {
@@ -423,43 +423,43 @@ function changeLocale(language) {
 
 module.exports = {
   createMenu: function() {
-		if (process.platform === 'darwin') {
-		  menuTemplate.unshift(darwinTemplate);
-		  windowTemplate.submenu.push(
-		    separatorTemplate,
-		    showWireTemplate,
-		    separatorTemplate,
-		    toggleFullScreenTemplate
-		  );
-		  toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-		}
+    if (process.platform === 'darwin') {
+      menuTemplate.unshift(darwinTemplate);
+      windowTemplate.submenu.push(
+        separatorTemplate,
+        showWireTemplate,
+        separatorTemplate,
+        toggleFullScreenTemplate
+      );
+      toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+    }
 
-		if (process.platform === 'win32') {
-		  const squirrel = require('./../squirrel');
-		  menuTemplate.unshift(win32Template);
-		  windowTemplate['i18n'] = 'menuView';
-		  windowTemplate.submenu.unshift(
-		    toggleMenuTemplate,
-		    separatorTemplate
-		  );
-		  squirrel.startupLinkExists(function(exists) {
-		    menu.items[0].submenu.items[2].checked = exists;
-		  });
-		}
+    if (process.platform === 'win32') {
+      const squirrel = require('./../squirrel');
+      menuTemplate.unshift(win32Template);
+      windowTemplate['i18n'] = 'menuView';
+      windowTemplate.submenu.unshift(
+        toggleMenuTemplate,
+        separatorTemplate
+      );
+      squirrel.startupLinkExists(function(exists) {
+        menu.items[0].submenu.items[2].checked = exists;
+      });
+    }
 
-		if (process.platform === 'linux') {
-		  menuTemplate.unshift(linuxTemplate);
-		  editTemplate.submenu.push(separatorTemplate, {
-		    i18n: 'menuPreferences',
-		    click: function() {sendAction('preferences-show');},
-		  });
-		  windowTemplate.submenu.push(
-		    separatorTemplate,
-		    toggleFullScreenTemplate
-		  );
-		  toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
-		  toggleAutoLaunchTemplate.checked = init.restore('shouldAutoLaunch');
-		}
+    if (process.platform === 'linux') {
+      menuTemplate.unshift(linuxTemplate);
+      editTemplate.submenu.push(separatorTemplate, {
+        i18n: 'menuPreferences',
+        click: function() {sendAction('preferences-show');},
+      });
+      windowTemplate.submenu.push(
+        separatorTemplate,
+        toggleFullScreenTemplate
+      );
+      toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+      toggleAutoLaunchTemplate.checked = init.restore('shouldAutoLaunch');
+    }
 
     if (process.platform !== 'darwin') {
       helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
