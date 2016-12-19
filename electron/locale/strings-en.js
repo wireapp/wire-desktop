@@ -30,6 +30,7 @@ string.menuCut = 'Cut';
 string.menuCopy = 'Copy';
 string.menuPaste = 'Paste';
 string.menuSelectAll = 'Select All';
+string.menuSpelling = 'Check Spelling while Typing';
 string.menuMinimize = 'Minimize';
 string.menuClose = 'Close';
 string.menuNextConversation = 'Next Conversation';
@@ -49,11 +50,14 @@ string.menuSettings = 'Settings';
 string.menuQuit = 'Quit Wire';
 string.menuShowHide = 'Show/Hide Menu';
 string.menuSavePictureAs = 'Save Picture As...';
+string.menuNoSuggestions = 'No Suggestions';
 string.menuAutoStart = 'Start with OS';
 
 string.restartNeeded = 'Restart Needed';
 string.restartLocale = 'Please restart the app for this setting to take effect.';
 string.restartLater = 'Later';
 string.restartNow = 'Restart Now';
+
+string.unreadMessages = 'Unread message';
 
 module.exports = string;

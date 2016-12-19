@@ -57,7 +57,7 @@ let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.IN
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
 ///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEYgit});
+raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
 
 raygunClient.onBeforeSend(function(payload) {
   delete payload.details.machineName;
@@ -66,7 +66,6 @@ raygunClient.onBeforeSend(function(payload) {
 
 if (config.DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
-  systemMenu.append(developerMenu);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,16 +94,12 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 ipcMain.once('load-webapp', function(event, online) {
   enteredWebapp = true;
-  if (baseURL.includes('?')) {
-    baseURL += '&hl=' + locale.getCurrent();
-  } else {
-    baseURL += '?hl=' + locale.getCurrent();
-  }
+  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(baseURL);
 });
 
 ipcMain.on('loaded', function() {
-  var size = main.getSize();
+  let size = main.getSize();
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
     util.resizeToBig(main);
   }
@@ -162,6 +157,10 @@ function showMainWindow() {
   }
 
   if (!argv.startup) {
+    if (!util.isInView(main)) {
+      main.center();
+    }
+
     setTimeout(function() {
       main.show();
     }, 800);
@@ -206,8 +205,12 @@ function showMainWindow() {
     }
   });
 
+  main.on('focus', function() {
+    main.flashFrame(false);
+  });
+
   main.on('page-title-updated', function() {
-    util.updateBadge(main);
+    tray.updateBadgeIcon(main);
   });
 
   main.on('close', function(event) {
@@ -264,19 +267,23 @@ app.on('before-quit', function() {
   quitting = true;
 });
 
+///////////////////////////////////////////////////////////////////////////////
+// System Menu & Tray Icon & Show window
+///////////////////////////////////////////////////////////////////////////////
 app.on('ready', function() {
   if (!isUpdate) {
-    Menu.setApplicationMenu(systemMenu);
+    let appMenu = systemMenu.createMenu();
+    if (config.DEVELOPMENT) {
+      appMenu.append(developerMenu);
+    }
+    appMenu.on('about-wire', function() {
+      showAboutWindow();
+    });
+
+    Menu.setApplicationMenu(appMenu);
     tray.createTrayIcon();
     showMainWindow();
   }
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// System Menu Events
-///////////////////////////////////////////////////////////////////////////////
-systemMenu.on('about-wire', function() {
-  showAboutWindow();
 });
 
 ///////////////////////////////////////////////////////////////////////////////

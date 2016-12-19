@@ -23,11 +23,15 @@ const {app, BrowserWindow, Menu, Tray} = require('electron');
 
 const path = require('path');
 const config = require('./../config');
+const locale = require('./../../locale/locale');
 
 const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
 
 const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
 const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
+const iconOverlayPath = path.join(app.getAppPath(), 'img', 'taskbar.overlay.png');
+
+let lastUnreadCount = 0;
 
 let appIcon = null;
 
@@ -53,6 +57,22 @@ module.exports = {
     appIcon.on('click', function () {
       BrowserWindow.getAllWindows()[0].show();
     });
+  },
+
+  updateBadgeIcon: function(win) {
+    setTimeout(() => {
+      let counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
+      let count = parseInt(counter ? counter[1] : 0, 10);
+      if (count) {
+        this.useBadgeIcon();
+      } else {
+        this.useDefaultIcon();
+      }
+      win.setOverlayIcon(count && process.platform === 'win32' ? iconOverlayPath : null, locale.getText('unreadMessages'));
+      win.flashFrame(!win.isFocused() && count > lastUnreadCount);
+      app.setBadgeCount(count);
+      lastUnreadCount = count;
+    }, 50);
   },
 
   useDefaultIcon: function() {

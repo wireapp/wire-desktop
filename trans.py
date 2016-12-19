@@ -21,16 +21,23 @@
 
 import os
 import re
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 
 SUPPORTED_LOCALE = [
+  'cs',
   'de',
   'es',
   'fi',
   'fr',
   'hr',
+  'it',
+  'pt',
   'ro',
   'ru',
+  'sl',
   'tr',
   'uk',
 ]
@@ -44,6 +51,20 @@ root = 'electron/locale/'
 def get_locale(filename):
   locale = filename.replace('strings-', '').replace('.js', '')
   return locale if len(locale) == 2 else None
+
+
+def fix_apostrophe(text):
+  if not text:
+    return text
+  text = unicode(text, errors='ignore')
+  first = text.find(u"'")
+  last = text.rfind(u"'")
+  if first != last:
+    pre = text[0:first + 1]
+    string = text[first + 1:last]
+    post = text[last:]
+    return '%s%s%s' % (pre, string.replace(u"'", u'’'), post)
+  return text
 
 
 for filename in os.listdir(root):
@@ -62,10 +83,11 @@ for filename in os.listdir(root):
       source = source.replace('=', ' = ')
       source = source.replace("'use = strict';\n\n", '')
       source = re.sub(r'#(.)+\n', '', source)
+      source = '\n'.join(map(fix_apostrophe, source.splitlines()))
 
       f.write("'use strict';\n\nlet string = {};\n\n")
       f.write(source)
-      f.write('module.exports = string;\n')
+      f.write('\nmodule.exports = string;\n')
 
   if filename == 'strings.js':
     with open(os.path.join(root, filename), 'r') as f:

@@ -1,0 +1,59 @@
+'use strict';
+
+let string = {};
+
+
+string.menuConversation = 'Conversazione';
+string.menuStart = 'Avvia';
+string.menuEdit = 'Modifica';
+string.menuWindow = 'Finestre';
+string.menuView = 'Mostra';
+string.menuHelp = 'Aiuto';
+string.menuStartup = 'Apri Wire all’avvio di Windows';
+string.menuLocale = 'Lingua';
+string.menuAbout = 'A proposito di Wire';
+string.menuSignOut = 'Esci dall’account';
+string.menuPing = 'Fai un trillo';
+string.menuCall = 'Chiama';
+string.menuVideoCall = 'Videochiama';
+string.menuPeople = 'Persone';
+string.menuAddPeople = 'Aggiungi persone...';
+string.menuArchive = 'Archivia';
+string.menuUnarchive = 'Disarchivia';
+string.menuMute = 'Silenzia';
+string.menuUnmute = 'Riattiva audio';
+string.menuLeave = 'Abbandona';
+string.menuDelete = 'Elimina';
+string.menuBlock = 'Blocca';
+string.menuUndo = 'Annulla';
+string.menuRedo = 'Ripeti';
+string.menuCut = 'Taglia';
+string.menuCopy = 'Copia';
+string.menuPaste = 'Incolla';
+string.menuSelectAll = 'Seleziona tutto';
+string.menuMinimize = 'Ridurre al minimo';
+string.menuClose = 'Chiudi';
+string.menuNextConversation = 'Conversazione successiva';
+string.menuPreviousConversation = 'Conversazione precedente';
+string.menuFullScreen = 'Schermo intero';
+string.menuLegal = 'Legale';
+string.menuPrivacy = 'Sulla privacy';
+string.menuLicense = 'Informazioni sulla licenza';
+string.menuSupport = 'Sito di assistenza';
+string.menuWireURL = 'Sito di Wire';
+string.menuPreferences = 'Preferenze';
+string.menuServices = 'Servizi';
+string.menuHideWire = 'Nascondi Wire';
+string.menuHideOthers = 'Nascondi gli altri';
+string.menuShowAll = 'Mostra tutti';
+string.menuSettings = 'Impostazioni';
+string.menuQuit = 'Chiudi Wire';
+string.menuShowHide = 'Mostra/Nascondi Menu';
+string.menuSavePictureAs = 'Salva immagine con nome...';
+
+string.restartNeeded = 'Riavvio necessario';
+string.restartLocale = 'Riavvia l’app affinchè questa impostazione abbia effetto.';
+string.restartLater = 'Più tardi';
+string.restartNow = 'Riavvia adesso';
+
+module.exports = string;

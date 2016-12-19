@@ -30,6 +30,7 @@ string.menuCut = 'Ausschneiden';
 string.menuCopy = 'Kopieren';
 string.menuPaste = 'Einfügen';
 string.menuSelectAll = 'Alles auswählen';
+string.menuSpelling = 'Rechtschreibung während der Eingabe prüfen';
 string.menuMinimize = 'Minimieren';
 string.menuClose = 'Schließen';
 string.menuNextConversation = 'Nächste Unterhaltung';
@@ -49,10 +50,13 @@ string.menuSettings = 'Einstellungen';
 string.menuQuit = 'Wire beenden';
 string.menuShowHide = 'Menü ein-/ausblenden';
 string.menuSavePictureAs = 'Bild speichern unter...';
+string.menuNoSuggestions = 'Keine Vorschläge';
 
 string.restartNeeded = 'Neustart erforderlich';
 string.restartLocale = 'Bitte starte Wire erneut, um diese Einstellung zu übernehmen.';
 string.restartLater = 'Später';
 string.restartNow = 'Jetzt neustarten';
+
+string.unreadMessages = 'Ungelesene Nachrichten';
 
 module.exports = string;

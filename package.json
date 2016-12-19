@@ -1,5 +1,6 @@
 {
   "name": "wire-desktop",
+  "license": "LicenseRef-LICENSE",
   "private": true,
   "scripts": {
     "preinstall": "cd electron && yarn",
@@ -9,9 +10,8 @@
     "prod": "electron electron --debug=5858 --devtools --enable-logging --env=https://app.wire.com",
     "localhost": "electron electron --debug=5858 --devtools --enable-logging --env=http://localhost:8888",
     "test": "eslint electron && electron-mocha tests",
-    "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f",
-    "linux32": "build --linux --ia32",
-    "linux64": "build --linux --x64"
+    "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f"
+
   },
   "repository": {
     "type": "git",
@@ -23,24 +23,26 @@
     "output": "wrap/dist"
   },
   "build": {
-    "npmRebuild": false,
     "linux" : {
+      "afterInstall" : "bin/deb/after-install.tpl",
+      "afterRemove" : "bin/deb/after-remove.tpl",
       "category": "Network",
+      "depends": ["libappindicator1", "libasound2", "libgconf-2-4", "libnotify-bin", "libnss3", "libxss1"],
       "target": ["AppImage", "deb"]
     }
   },
   "devDependencies": {
     "auto-launch": "5.0.1",
-    "electron": "1.4.4",
-    "electron-builder": "7.21.0",
-    "electron-mocha": "3.1.1",
-    "electron-packager": "8.2.0",
-    "electron-rebuild": "1.3.0",
-    "eslint": "3.9.1",
+    "electron": "1.4.12",
+    "electron-builder": "10.8.0",
+    "electron-mocha": "3.3.0",
+    "electron-packager": "8.4.0",
+    "electron-rebuild": "1.4.0",
+    "eslint": "3.12.2",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-electron-installer": "2.1.0",
-    "grunt-git": "1.0.1",
+    "grunt-git": "1.0.3",
     "grunt-github-changes": "0.1.0",
     "grunt-shell": "2.1.0",
     "load-grunt-tasks": "3.5.2"

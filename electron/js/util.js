@@ -19,25 +19,44 @@
 
 'use strict';
 
-const {app} = require('electron');
+const electron = require('electron');
 
 const config = require('./config');
-const tray = require('./menu/tray');
+const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
+  isInView: function(win) {
+    let windowBounds = win.getBounds();
+    let nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
+
+    let upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
+    let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
+
+    return upperLeftVisible || lowerRightVisible;
+  },
+
+  openInExternalWindow: function(url) {
+    for (let item of config.WHITE_LIST) {
+      if (url.includes(item)) {
+        return true;
+      }
+    }
+    return false;
+  },
+
   resizeToSmall: function(win) {
     if (process.platform !== 'darwin') {
       win.setMenuBarVisibility(false);
     }
 
-    var height = config.MIN_HEIGHT_AUTH;
+    var height = config.HEIGHT_AUTH;
     if (process.platform === 'win32') {
       height += 40;
     }
     win.setFullScreen(false);
     win.setMaximizable(false);
-    win.setMinimumSize(config.MIN_WIDTH_AUTH, height);
-    win.setSize(config.MIN_WIDTH_AUTH, height);
+    win.setMinimumSize(config.WIDTH_AUTH, height);
+    win.setSize(config.WIDTH_AUTH, height);
     win.setResizable(false);
     win.center();
   },
@@ -51,27 +70,5 @@ module.exports = {
     win.setResizable(true);
     win.setMaximizable(true);
     win.center();
-  },
-
-  updateBadge: function(win) {
-    setTimeout(function() {
-      var count = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
-      if (process.platform === 'darwin') {
-        app.dock.setBadge(count ? count[1] : '');
-      } else if (count) {
-        tray.useBadgeIcon();
-      } else {
-        tray.useDefaultIcon();
-      }
-    }, 50);
-  },
-
-  openInExternalWindow: function(url) {
-    for (let item of config.WHITE_LIST) {
-      if (url.includes(item)) {
-        return true;
-      }
-    }
-    return false;
   },
 };
