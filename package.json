@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "electron": "1.4.13",
-    "electron-builder": "10.17.3",
+    "electron-builder": "11.2.0",
     "electron-mocha": "3.3.0",
     "electron-packager": "8.4.0",
     "electron-rebuild": "1.4.0",
