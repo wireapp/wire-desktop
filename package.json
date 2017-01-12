@@ -12,8 +12,8 @@
     "test": "eslint electron && electron-mocha tests",
     "rebuild-native-modules": "electron-rebuild -m ./electron/node_modules -f",
     "build:macos": "grunt macos-prod",
-    "build:win": "grunt win",
-    "build:linux": "grunt linux"
+    "build:win": "grunt win-prod",
+    "build:linux": "grunt linux-prod"
   },
   "repository": {
     "type": "git",
