@@ -34,12 +34,12 @@
     }
   },
   "devDependencies": {
-    "electron": "1.4.13",
-    "electron-builder": "10.9.2",
+    "electron": "1.4.14",
+    "electron-builder": "11.2.3",
     "electron-mocha": "3.3.0",
-    "electron-packager": "8.4.0",
+    "electron-packager": "8.5.0",
     "electron-rebuild": "1.4.0",
-    "eslint": "3.12.2",
+    "eslint": "3.13.1",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-electron-installer": "2.1.0",
