@@ -25,16 +25,22 @@ Based on [Electron](http://electron.atom.io).
 
 1. Install [Node.js](https://nodejs.org/)
 2. Install [Yarn](https://yarnpkg.com) (`npm install -g yarn`)
+3. Install [Grunt](https://gruntjs.com) (`npm install -g grunt-cli`)
 
 ### Clone
 
 ```shell
 git clone https://github.com/wireapp/wire-desktop.git
 cd wire-desktop
+```
+
+### Compile
+
+```shell
 yarn
 ```
 
-### Start
+### Start for debugging/developing
 
 ```shell
 yarn start
@@ -46,7 +52,7 @@ yarn start
 yarn test
 ```
 
-### Tasks
+### Package
 
 ```shell
 # Build for macOS
@@ -55,6 +61,18 @@ grunt macos-prod
 # Build for Windows
 grunt win-prod
 
-# Build for Linux
-grunt linux-prod
+# Build for Windows 32-bit on a 64-bit system
+export npm_config_target_arch=ia32
+npm install
+grunt win-prod
+
+# Build for Linux 32-bit
+export npm_config_target_arch=ia32
+npm install
+grunt linux-prod-32
+
+# Build for Linux 64-bit
+export npm_config_target_arch=x64
+npm install
+grunt linux-prod-64
 ```

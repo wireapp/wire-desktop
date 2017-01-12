@@ -259,5 +259,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'shell']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'shell']
+  grunt.registerTask 'linux-32',      ['clean:linux', 'update-keys', 'release-internal', 'shell:linux32']
+  grunt.registerTask 'linux-64',      ['clean:linux', 'update-keys', 'release-internal', 'shell:linux64']
+  grunt.registerTask 'linux-32-prod', ['clean:linux', 'update-keys', 'release-prod', 'shell:linux32']
+  grunt.registerTask 'linux-64-prod', ['clean:linux', 'update-keys', 'release-prod', 'shell:linux64']
