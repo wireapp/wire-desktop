@@ -58,3 +58,7 @@ grunt win-prod
 # Build for Linux
 grunt linux-prod
 ```
+
+### Translations
+
+All Wire translations are crowdsourced via CrowdIn: https://crowdin.com/projects/wire
