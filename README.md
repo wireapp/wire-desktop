@@ -61,4 +61,4 @@ grunt linux-prod
 
 ### Translations
 
-All Wire translations are crowdsourced via CrowdIn: https://crowdin.com/projects/wire
+All Wire translations are crowdsourced via [Crowdin](https://crowdin.com/projects/wire).
