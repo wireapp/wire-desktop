@@ -58,3 +58,7 @@ yarn run build:win
 # Build for Linux
 yarn run build:linux
 ```
+
+### Translations
+
+All Wire translations are crowdsourced via [Crowdin](https://crowdin.com/projects/wire).
