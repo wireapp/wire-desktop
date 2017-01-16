@@ -42,7 +42,7 @@ yarn start
 
 ### Test
 
-```
+```shell
 yarn test
 ```
 
@@ -50,13 +50,13 @@ yarn test
 
 ```shell
 # Build for macOS
-grunt macos-prod
+yarn run build:macos
 
 # Build for Windows
-grunt win-prod
+yarn run build:win
 
 # Build for Linux
-grunt linux-prod
+yarn run build:linux
 ```
 
 ### Translations
