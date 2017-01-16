@@ -19,7 +19,7 @@
 
 'use strict';
 
-const {remote, ipcRenderer, webFrame} = require('electron');
+const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
@@ -32,7 +32,14 @@ let textMenu;
 ///////////////////////////////////////////////////////////////////////////////
 // Default
 ///////////////////////////////////////////////////////////////////////////////
-const defaultMenu = Menu.buildFromTemplate([{label: 'Copy', role: 'copy'}]);
+let copyContext = '';
+
+const defaultMenu = Menu.buildFromTemplate([{
+  label: locale.getText('menuCopy'),
+  click: function () {
+    clipboard.writeText(copyContext);
+  },
+}]);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Text
@@ -132,6 +139,7 @@ let imageMenu = Menu.buildFromTemplate([{
 
 window.addEventListener('contextmenu', function (event) {
   const element = event.target;
+  copyContext = '';
   if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
     event.preventDefault();
     createTextMenu();
@@ -145,9 +153,26 @@ window.addEventListener('contextmenu', function (event) {
     event.preventDefault();
     imageMenu.image = element.src;
     imageMenu.popup(remote.getCurrentWindow());
-  } else if (element.classList.contains('text') || element.nodeName === 'A') {
+  } else if (element.nodeName === 'A') {
     event.preventDefault();
+    copyContext = element.href;
     defaultMenu.popup(remote.getCurrentWindow());
+  } else if (element.classList.contains('text')) {
+    event.preventDefault();
+    copyContext = element.innerText.trim();
+    defaultMenu.popup(remote.getCurrentWindow());
+  } else {
+    // Maybe we are in a code block _inside_ an element with the 'text' class?
+    // Code block can consist of many tags: CODE, PRE, SPAN, etc.
+    let parentNode = element.parentNode;
+    while (parentNode !== document && !parentNode.classList.contains('text')) {
+      parentNode = parentNode.parentNode;
+    }
+    if (parentNode !== document) {
+      event.preventDefault();
+      copyContext = parentNode.innerText.trim();
+      defaultMenu.popup(remote.getCurrentWindow());
+    }
   }
 
 }, false);
@@ -215,7 +240,7 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck (text) {
-      if (!init.restore('spelling')) {
+      if (!init.restore('spelling', true)) {
         return true;
       }
       selection.isMisspelled = spellchecker.isMisspelled(text);
