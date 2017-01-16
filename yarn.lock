@@ -57,7 +57,7 @@ ansi-align@^1.1.0:
   dependencies:
     string-width "^1.0.1"
 
-ansi-escapes@^1.1.0, ansi-escapes@^1.4.0:
+ansi-escapes@^1.1.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-1.4.0.tgz#d3a8a83b319aa67793662b13e761c7911422306e"
 
@@ -438,7 +438,7 @@ cli-boxes@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-1.0.0.tgz#4fa917c3e59c94a004cd61f8ee509da651687143"
 
-cli-cursor@^1.0.1, cli-cursor@^1.0.2:
+cli-cursor@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/cli-cursor/-/cli-cursor-1.0.2.tgz#64da3f7d56a54412e59794bd62dc35295e8f2987"
   dependencies:
@@ -758,33 +758,31 @@ electron-builder-core@11.2.1:
   version "11.2.1"
   resolved "https://registry.yarnpkg.com/electron-builder-core/-/electron-builder-core-11.2.1.tgz#1dca8c1a1cee8b51750b7708a04913aeffacf8a8"
 
-electron-builder-http@11.2.0, electron-builder-http@~11.2.0:
-  version "11.2.0"
-  resolved "https://registry.yarnpkg.com/electron-builder-http/-/electron-builder-http-11.2.0.tgz#f62b58253638bd95f93484bcaa0a2387b36b9bf7"
+electron-builder-http@11.3.0, electron-builder-http@~11.3.0:
+  version "11.3.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-http/-/electron-builder-http-11.3.0.tgz#9ac35fa08da30cff3c42dc3a2444958796afd117"
   dependencies:
+    debug "2.6.0"
     fs-extra-p "^3.0.3"
 
-electron-builder-util@11.2.1:
-  version "11.2.1"
-  resolved "https://registry.yarnpkg.com/electron-builder-util/-/electron-builder-util-11.2.1.tgz#c1194363cd458d7f1a19e81991fedb027d55fccb"
+electron-builder-util@11.3.0:
+  version "11.3.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-util/-/electron-builder-util-11.3.0.tgz#3449491e492be81588438b362062523978141930"
   dependencies:
     "7zip-bin" "^2.0.4"
-    ansi-escapes "^1.4.0"
     bluebird-lst-c "^1.0.5"
     chalk "^1.1.3"
-    cli-cursor "^1.0.2"
     debug "2.6.0"
-    electron-builder-http "~11.2.0"
+    electron-builder-http "~11.3.0"
     fs-extra-p "^3.0.3"
     is-ci "^1.0.10"
     node-emoji "^1.5.0"
-    pretty-ms "^2.1.0"
     source-map-support "^0.4.8"
     stat-mode "^0.2.2"
 
-electron-builder@11.2.3:
-  version "11.2.3"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-11.2.3.tgz#83e565b31e513efac0763d52e20822e2dad24388"
+electron-builder@11.3.0:
+  version "11.3.0"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-11.3.0.tgz#63a7716a6a9aaa71574f0b37d08630981d2f6541"
   dependencies:
     "7zip-bin" "^2.0.4"
     asar-electron-builder "^0.13.5"
@@ -793,8 +791,8 @@ electron-builder@11.2.3:
     chromium-pickle-js "^0.2.0"
     cuint "^0.2.2"
     electron-builder-core "11.2.1"
-    electron-builder-http "11.2.0"
-    electron-builder-util "11.2.1"
+    electron-builder-http "11.3.0"
+    electron-builder-util "11.3.0"
     electron-download-tf "3.1.0"
     electron-macos-sign "~1.4.0"
     fs-extra-p "^3.0.3"
@@ -1800,7 +1798,7 @@ is-electron-renderer@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/is-electron-renderer/-/is-electron-renderer-2.0.1.tgz#a469d056f975697c58c98c6023eb0aa79af895a2"
 
-is-finite@^1.0.0, is-finite@^1.0.1:
+is-finite@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-finite/-/is-finite-1.0.2.tgz#cc6677695602be550ef11e8b4aa6305342b6d0aa"
   dependencies:
@@ -1895,11 +1893,11 @@ isarray@^1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
 
-isbinaryfile@^3.0.0, isbinaryfile@^3.0.1:
+isbinaryfile@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isbinaryfile/-/isbinaryfile-3.0.1.tgz#6e99573675372e841a0520c036b41513d783e79e"
 
-isbinaryfile@^3.0.2:
+isbinaryfile@^3.0.1, isbinaryfile@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/isbinaryfile/-/isbinaryfile-3.0.2.tgz#4a3e974ec0cba9004d3fc6cde7209ea69368a621"
 
@@ -2660,10 +2658,6 @@ parse-link-header@0.1.0, parse-link-header@~0.1.0:
   dependencies:
     xtend "~2.0.5"
 
-parse-ms@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-1.0.1.tgz#56346d4749d78f23430ca0c713850aef91aa361d"
-
 path-array@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/path-array/-/path-array-1.0.1.tgz#7e2f0f35f07a2015122b868b7eac0eb2c4fec271"
@@ -2747,10 +2741,6 @@ plist@^2.0.0, plist@^2.0.1:
     xmlbuilder "8.2.2"
     xmldom "0.1.x"
 
-plur@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/plur/-/plur-1.0.0.tgz#db85c6814f5e5e5a3b49efc28d604fec62975156"
-
 pluralize@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-1.2.1.tgz#d1a21483fd22bb41e58a12fa3421823140897c45"
@@ -2769,14 +2759,6 @@ pretty-bytes@^1.0.2:
   dependencies:
     get-stdin "^4.0.1"
     meow "^3.1.0"
-
-pretty-ms@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/pretty-ms/-/pretty-ms-2.1.0.tgz#4257c256df3fb0b451d6affaab021884126981dc"
-  dependencies:
-    is-finite "^1.0.1"
-    parse-ms "^1.0.0"
-    plur "^1.0.0"
 
 process-nextick-args@~1.0.6:
   version "1.0.7"

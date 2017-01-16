@@ -240,7 +240,7 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck (text) {
-      if (!init.restore('spelling')) {
+      if (!init.restore('spelling', true)) {
         return true;
       }
       selection.isMisspelled = spellchecker.isMisspelled(text);
