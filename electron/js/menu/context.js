@@ -139,6 +139,7 @@ let imageMenu = Menu.buildFromTemplate([{
 
 window.addEventListener('contextmenu', function (event) {
   const element = event.target;
+  copyContext = '';
   if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
     event.preventDefault();
     createTextMenu();
