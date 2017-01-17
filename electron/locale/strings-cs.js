@@ -50,10 +50,12 @@ string.menuSettings = 'Nastavení';
 string.menuQuit = 'Ukončit Wire';
 string.menuShowHide = 'Zobrazit/skrýt nabídku';
 string.menuSavePictureAs = 'Uložit obrázek jako...';
+string.menuNoSuggestions = 'Žádné návrhy';
 
 string.restartNeeded = 'Nutný restart';
 string.restartLocale = 'Pro použití změněných nastavení restartujte prosím aplikaci.';
 string.restartLater = 'Později';
 string.restartNow = 'Restartovat nyní';
+
 
 module.exports = string;

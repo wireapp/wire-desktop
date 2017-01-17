@@ -50,10 +50,12 @@ string.menuSettings = 'Ajustes';
 string.menuQuit = 'Cerrar Wire';
 string.menuShowHide = 'Mostrar/Ocultar Menú';
 string.menuSavePictureAs = 'Guardar Imagen Como...';
+string.menuNoSuggestions = 'No hay sugerencias';
 
 string.restartNeeded = 'Es Necesario Reiniciar';
 string.restartLocale = 'Reiniciar la aplicación para que esta configuración tenga efecto.';
 string.restartLater = 'Más Tarde';
 string.restartNow = 'Reiniciar Ahora';
+
 
 module.exports = string;

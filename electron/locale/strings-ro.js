@@ -50,10 +50,12 @@ string.menuSettings = 'Setări';
 string.menuQuit = 'Ieși din Wire';
 string.menuShowHide = 'Arată/ascunde meniul';
 string.menuSavePictureAs = 'Salvează imaginea ca...';
+string.menuNoSuggestions = 'Fără sugestii';
 
 string.restartNeeded = 'Restart necesar';
 string.restartLocale = 'Te rugăm să repornești aplicația pentru ca efectele să se aplice.';
 string.restartLater = 'Mai târziu';
 string.restartNow = 'Repornește acum';
+
 
 module.exports = string;

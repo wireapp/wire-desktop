@@ -31,7 +31,6 @@ string.menuCut = 'Вырезать';
 string.menuCopy = 'Копировать';
 string.menuPaste = 'Вставить';
 string.menuSelectAll = 'Выбрать все';
-string.menuSpelling = 'Проверять правописание при вводе';
 string.menuMinimize = 'Минимизировать';
 string.menuClose = 'Закрыть';
 string.menuNextConversation = 'Следующий разговор';
@@ -57,5 +56,6 @@ string.restartNeeded = 'Необходим перезапуск';
 string.restartLocale = 'Пожалуйста, перезапустите приложение, чтобы новые настройки вступили в силу.';
 string.restartLater = 'Позже';
 string.restartNow = 'Перезапустить сейчас';
+
 
 module.exports = string;
