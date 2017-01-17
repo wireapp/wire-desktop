@@ -60,6 +60,12 @@ var localeTemplate = {
         changeLocale('cs');
       },
     }, {
+      label: locale.label['da'],
+      type: 'radio',
+      click: function() {
+        changeLocale('da');
+      },
+    }, {
       label: locale.label['de'],
       type: 'radio',
       click: function() {
