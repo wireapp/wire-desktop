@@ -23,40 +23,39 @@ Based on [Electron](http://electron.atom.io).
 
 ### Install
 
-1. Install [Node.js](https://nodejs.org/)
-2. Install [Yarn](https://yarnpkg.com) (`npm install -g yarn`)
+Install [Node.js](https://nodejs.org/).
 
 ### Clone
 
 ```shell
 git clone https://github.com/wireapp/wire-desktop.git
 cd wire-desktop
-yarn
+npm install
 ```
 
 ### Start
 
 ```shell
-yarn start
+npm start
 ```
 
 ### Test
 
 ```shell
-yarn test
+npm test
 ```
 
 ### Tasks
 
 ```shell
 # Build for macOS
-yarn run build:macos
+npm run build:macos
 
 # Build for Windows
-yarn run build:win
+npm run build:win
 
 # Build for Linux
-yarn run build:linux
+npm run build:linux
 ```
 
 ### Translations
