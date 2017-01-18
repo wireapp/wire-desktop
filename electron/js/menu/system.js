@@ -31,7 +31,7 @@ let menu;
 var menuTemplate;
 
 const launcher = new autoLaunch({
-  name: 'Wire',
+  name: 'pkg.productName',
   path: launchCmd,
 });
 
@@ -234,9 +234,9 @@ var toggleFullScreenTemplate = {
 };
 
 var toggleAutoLaunchTemplate = {
-  i18n: 'menuAutoStart',
+  i18n: 'menuStartup',
   type: 'checkbox',
-  checked: init.restore('shouldAutoLaunch'),
+  checked: init.restore('shouldAutoLaunch', false),
   click: function() {
     init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
     init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line

@@ -6,7 +6,7 @@ string.menuEdit = 'Edit';
 string.menuWindow = 'Window';
 string.menuView = 'View';
 string.menuHelp = 'Help';
-string.menuStartup = 'Launch Wire on Windows Start';
+string.menuStartup = 'Launch Wire on OS Start';
 string.menuLocale = 'Language';
 string.menuAbout = 'About Wire';
 string.menuSignOut = 'Log Out';
@@ -49,7 +49,6 @@ string.menuQuit = 'Quit Wire';
 string.menuShowHide = 'Show/Hide Menu';
 string.menuSavePictureAs = 'Save Picture As...';
 string.menuNoSuggestions = 'No Suggestions';
-string.menuAutoStart = 'Start with OS';
 
 string.restartNeeded = 'Restart Needed';
 string.restartLocale = 'Please restart the app for this setting to take effect.';
