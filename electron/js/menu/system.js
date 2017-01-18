@@ -20,6 +20,8 @@
 'use strict';
 
 const {app, shell, BrowserWindow, dialog, Menu} = require('electron');
+var autoLaunch = require('auto-launch');
+var launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const init = require('./../lib/init');
@@ -27,6 +29,11 @@ const locale = require('./../../locale/locale');
 
 let menu;
 var menuTemplate;
+
+const launcher = new autoLaunch({
+  name: config.NAME,
+  path: launchCmd,
+});
 
 function getBrowserWindow() {
   return BrowserWindow.getFocusedWindow();
@@ -232,6 +239,15 @@ var toggleFullScreenTemplate = {
   },
 };
 
+var toggleAutoLaunchTemplate = {
+  i18n: 'menuStartup',
+  type: 'checkbox',
+  checked: init.restore('shouldAutoLaunch', false),
+  click: function() {
+    init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
+    init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
+  },
+};
 
 var editTemplate = {
   i18n: 'menuEdit',
@@ -362,6 +378,8 @@ var linuxTemplate = {
       i18n: 'menuPreferences',
       click: function() {sendAction('preferences-show');},
     },
+    separatorTemplate,
+    toggleAutoLaunchTemplate,
     separatorTemplate,
     localeTemplate,
     separatorTemplate,
