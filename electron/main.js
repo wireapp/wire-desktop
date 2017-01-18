@@ -156,7 +156,7 @@ function showMainWindow() {
     main.webContents.openDevTools();
   }
 
-  if (!argv.startup) {
+  if (!argv.startup && !init.restore('startInTray')) {
     if (!util.isInView(main)) {
       main.center();
     }

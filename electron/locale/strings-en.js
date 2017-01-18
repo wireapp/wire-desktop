@@ -51,6 +51,7 @@ string.menuQuit = 'Quit Wire';
 string.menuShowHide = 'Show/Hide Menu';
 string.menuSavePictureAs = 'Save Picture As...';
 string.menuNoSuggestions = 'No Suggestions';
+string.menuStartInTray = 'Start App in Tray';
 
 string.restartNeeded = 'Restart Needed';
 string.restartLocale = 'Please restart the app for this setting to take effect.';

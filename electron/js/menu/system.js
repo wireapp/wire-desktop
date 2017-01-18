@@ -232,6 +232,14 @@ var toggleFullScreenTemplate = {
   },
 };
 
+var toggleStartInTrayTemplate = {
+  i18n: 'menuStartInTray',
+  type: 'checkbox',
+  checked: init.restore('startInTray', false),
+  click: function() {
+    init.save('startInTray', !init.restore('startInTray'));
+  },
+};
 
 var editTemplate = {
   i18n: 'menuEdit',
@@ -444,7 +452,8 @@ module.exports = {
       });
       windowTemplate.submenu.push(
         separatorTemplate,
-        toggleFullScreenTemplate
+        toggleFullScreenTemplate,
+        toggleStartInTrayTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
     }
