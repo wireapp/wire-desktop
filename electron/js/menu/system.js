@@ -31,7 +31,7 @@ let menu;
 var menuTemplate;
 
 const launcher = new autoLaunch({
-  name: 'pkg.productName',
+  name: config.NAME,
   path: launchCmd,
 });
 
@@ -65,6 +65,12 @@ var localeTemplate = {
       type: 'radio',
       click: function() {
         changeLocale('cs');
+      },
+    }, {
+      label: locale.label['da'],
+      type: 'radio',
+      click: function() {
+        changeLocale('da');
       },
     }, {
       label: locale.label['de'],

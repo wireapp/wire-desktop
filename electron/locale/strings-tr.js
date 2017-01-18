@@ -57,4 +57,5 @@ string.restartLocale = 'Lütfen bu ayarın etkinleşmesi için uygulamayı başt
 string.restartLater = 'Sonra';
 string.restartNow = 'Şimdi Yeniden Başlat';
 
+
 module.exports = string;

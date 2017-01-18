@@ -50,10 +50,12 @@ string.menuSettings = 'Postavke';
 string.menuQuit = 'Zatvori Wire';
 string.menuShowHide = 'Prikaži/Sakrij Izbornik';
 string.menuSavePictureAs = 'Spremi Sliku Kao...';
+string.menuNoSuggestions = 'Nema prijedloga';
 
 string.restartNeeded = 'Potrebno ponovno pokretanje';
 string.restartLocale = 'Molimo ponovno pokrenite aplikaciju kako bi promjene stupile na snagu.';
 string.restartLater = 'Kasnije';
 string.restartNow = 'Ponovno pokreni';
+
 
 module.exports = string;

@@ -31,7 +31,6 @@ string.menuCut = 'Leikkaa';
 string.menuCopy = 'Kopioi';
 string.menuPaste = 'Liitä';
 string.menuSelectAll = 'Valitse kaikki';
-string.menuSpelling = 'Tarkista oikeinkirjoitus kirjoittaessa';
 string.menuMinimize = 'Pienennä';
 string.menuClose = 'Sulje';
 string.menuNextConversation = 'Seuraava keskustelu';
@@ -57,5 +56,6 @@ string.restartNeeded = 'Käynnistää tarvittavat';
 string.restartLocale = 'Käynnistä ohjelma uudelleen, jotta tämä asetus tulee voimaan.';
 string.restartLater = 'Myöhemmin';
 string.restartNow = 'Käynnistä uudelleen nyt';
+
 
 module.exports = string;

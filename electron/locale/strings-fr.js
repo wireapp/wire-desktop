@@ -4,7 +4,7 @@ let string = {};
 
 
 string.menuConversation = 'Conversation';
-string.menuStart = 'Commencer';
+string.menuStart = 'Nouveau';
 string.menuEdit = 'Modifier';
 string.menuWindow = 'Fenêtre';
 string.menuView = 'Vue';
@@ -50,10 +50,12 @@ string.menuSettings = 'Paramètres';
 string.menuQuit = 'Quitter Wire';
 string.menuShowHide = 'Afficher/masquer le menu';
 string.menuSavePictureAs = 'Enregistrer l’image sous...';
+string.menuNoSuggestions = 'Aucune suggestion';
 
 string.restartNeeded = 'Redémarrage nécessaire';
 string.restartLocale = 'L’application doit être redémarrée pour que les nouveaux paramètres prennent effet.';
 string.restartLater = 'Plus tard';
 string.restartNow = 'Redémarrer maintenant';
+
 
 module.exports = string;

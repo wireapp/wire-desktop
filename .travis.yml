@@ -22,16 +22,11 @@ git:
 cache:
   directories:
     - $HOME/.npm
-    - $HOME/.yarn-cache
     - node_modules
     - electron/node_modules
 
-# http://docs.travis-ci.com/user/build-lifecycle/
-before_install:
-  - npm install -g yarn --cache-min 999999999
-
 install:
-  - yarn
+  - npm install
 
 # http://docs.travis-ci.com/user/build-lifecycle/
 before_script:
@@ -39,7 +34,7 @@ before_script:
 
 # http://docs.travis-ci.com/user/pull-requests/
 script:
-  - yarn test
+  - npm test
 
 notifications:
   email: false

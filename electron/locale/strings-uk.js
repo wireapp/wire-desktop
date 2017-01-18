@@ -50,10 +50,12 @@ string.menuSettings = 'Параметри';
 string.menuQuit = 'Вийти з Wire';
 string.menuShowHide = 'Показати/сховати меню';
 string.menuSavePictureAs = 'Зберегти картинку як...';
+string.menuNoSuggestions = 'Немає припущень';
 
 string.restartNeeded = 'Необхідно перезавантажити додаток';
 string.restartLocale = 'Перезапустіть додаток, щоб зміна цього параметру вступила в силу.';
 string.restartLater = 'Пізніше';
 string.restartNow = 'Перезавантажити додаток негайно';
+
 
 module.exports = string;
