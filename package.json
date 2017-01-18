@@ -34,7 +34,6 @@
     }
   },
   "devDependencies": {
-    "auto-launch": "5.0.1",
     "electron": "1.4.14",
     "electron-builder": "11.4.4",
     "electron-mocha": "3.3.0",
