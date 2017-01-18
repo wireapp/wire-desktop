@@ -156,7 +156,7 @@ function showMainWindow() {
     main.webContents.openDevTools();
   }
 
-  if (!argv.startup) {
+  if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {
       main.center();
     }
