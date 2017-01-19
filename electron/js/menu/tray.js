@@ -47,6 +47,9 @@ module.exports = {
         label: 'Open ' + config.NAME,
         click: function() {BrowserWindow.getAllWindows()[0].show();},
       }, {
+        label: 'Hide ' + config.NAME,
+        click: function() {BrowserWindow.getAllWindows()[0].hide();}
+      }, {
         label: 'Quit',
         click: function() {app.quit();},
       },
