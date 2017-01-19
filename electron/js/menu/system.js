@@ -33,6 +33,7 @@ var menuTemplate;
 const launcher = new autoLaunch({
   name: config.NAME,
   path: launchCmd,
+  isHidden: true,
 });
 
 function getBrowserWindow() {
