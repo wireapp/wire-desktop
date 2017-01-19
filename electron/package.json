@@ -1,11 +1,11 @@
 {
-  "name": "wire",
-  "productName": "Wire",
+  "name": "wireinternal",
+  "productName": "WireInternal",
   "description": "Modern communication, full privacy.",
   "version": "2.11.2700",
   "main": "main.js",
-  "updateWinUrl": "https://wire-app.wire.com/win/prod/",
-  "environment": "production",
+  "updateWinUrl": "https://wire-app.wire.com/win/internal/",
+  "environment": "internal",
   "homepage": "https://wire.com",
   "license": "GPL-3.0",
   "author": "Wire Swiss <wireapp@wire.com>",
@@ -26,6 +26,6 @@
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
   "optionalDependencies": {
-    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#1.0.1"
+    "node-addressbook": "https://github.com/digital-flowers/node-addressbook.git#master"
   }
 }
