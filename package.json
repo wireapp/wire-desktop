@@ -19,12 +19,12 @@
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
-  "directories": {
-    "buildResources": "resources",
-    "app": "electron",
-    "output": "wrap/dist"
-  },
   "build": {
+    "directories": {
+      "buildResources": "resources",
+      "app": "electron",
+      "output": "wrap/dist"
+    },
     "linux" : {
       "afterInstall" : "bin/deb/after-install.tpl",
       "afterRemove" : "bin/deb/after-remove.tpl",
