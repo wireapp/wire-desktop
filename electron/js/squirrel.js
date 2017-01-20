@@ -20,7 +20,7 @@
 // https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
 'use strict';
 
-const {app, BrowserWindow} = require('electron');
+const {app, ipcRenderer} = require('electron');
 
 const config = require('./config');
 const cp = require('child_process');
@@ -46,11 +46,6 @@ let startLink = path.resolve(path.join(startFolder, config.NAME, linkName));
 let startupLink = path.resolve(path.join(startupFolder, linkName));
 let desktopLink = path.join(homeFolder, 'Desktop', linkName);
 let taskbarLink = path.join(taskbarFolder, linkName);
-
-function getBrowserWindow() {
-  return BrowserWindow.getFocusedWindow();
-}
-
 
 function spawn(command, args, callback) {
   var error;
@@ -183,14 +178,14 @@ function installUpdate() {
     if (error != null) {
       return false;
     }
-    getBrowserWindow().webContents.send('wrapper-updated');
+    ipcRenderer.send('wrapper-updated');
   });
 };
 
 
 function scheduleUpdate() {
   checkUpdate();
-  window.setInterval(checkUpdate, config.UPDATE_INTERVAL);
+  setInterval(checkUpdate, config.UPDATE_INTERVAL);
 };
 
 
