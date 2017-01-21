@@ -26,6 +26,7 @@ var launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.
 const config = require('./../config');
 const init = require('./../lib/init');
 const locale = require('./../../locale/locale');
+const windowManager = require('./../window-manager');
 
 let menu;
 var menuTemplate;
@@ -36,15 +37,15 @@ const launcher = new autoLaunch({
   isHidden: true,
 });
 
-function getBrowserWindow() {
-  return BrowserWindow.getFocusedWindow();
+function getPrimaryWindow() {
+  return windowManager.getPrimaryWindow();
 }
 
 // TODO: disable menus when not in focus
 function sendAction(action) {
-  const window = getBrowserWindow();
+  const window = getPrimaryWindow();
   if (window) {
-    getBrowserWindow().webContents.send(action);
+    getPrimaryWindow().webContents.send(action);
   }
 }
 
@@ -222,11 +223,12 @@ var showWireTemplate = {
 var toggleMenuTemplate = {
   i18n: 'menuShowHide',
   click: function() {
-    if (getBrowserWindow().isMenuBarAutoHide()) {
-      getBrowserWindow().setAutoHideMenuBar(false);
+    mainBrowserWindow = getPrimaryWindow();
+    if (mainBrowserWindow.isMenuBarAutoHide()) {
+      mainBrowserWindow.setAutoHideMenuBar(false);
     } else {
-      getBrowserWindow().setAutoHideMenuBar(true);
-      getBrowserWindow().setMenuBarVisibility(false);
+      mainBrowserWindow.setAutoHideMenuBar(true);
+      mainBrowserWindow.setMenuBarVisibility(false);
     }
   },
 };
@@ -236,7 +238,8 @@ var toggleFullScreenTemplate = {
   type: 'checkbox',
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
-    getBrowserWindow().setFullScreen(!getBrowserWindow().isFullScreen());
+    mainBrowserWindow = getPrimaryWindow();
+    mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
 };
 

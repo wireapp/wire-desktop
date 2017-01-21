@@ -166,6 +166,7 @@ function showMainWindow() {
       main.center();
     }
 
+    discloseWindowID(main);
     setTimeout(function() {
       main.show();
     }, 800);
@@ -252,6 +253,11 @@ function showAboutWindow() {
   }
   about.show();
 }
+
+function discloseWindowID(browserWindow) {
+  const windowManager = require('./js/window-manager');
+  windowManager.setPrimaryWindowId(browserWindow.id);
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
