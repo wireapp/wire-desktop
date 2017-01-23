@@ -26,6 +26,7 @@ const config = require('./config');
 const cp = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const windowManager = require('./window-manager');
 
 app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
 
@@ -46,6 +47,12 @@ let startLink = path.resolve(path.join(startFolder, config.NAME, linkName));
 let startupLink = path.resolve(path.join(startupFolder, linkName));
 let desktopLink = path.join(homeFolder, 'Desktop', linkName);
 let taskbarLink = path.join(taskbarFolder, linkName);
+
+
+function getPrimaryWindow() {
+  return windowManager.getPrimaryWindow();
+}
+
 
 function spawn(command, args, callback) {
   var error;
@@ -178,7 +185,10 @@ function installUpdate() {
     if (error != null) {
       return false;
     }
-    ipcMain.send('wrapper-updated');
+    main = getPrimaryWindow();
+    if (main) {
+      main.webContents.send('wrapper-updated');
+    }
   });
 };
 
