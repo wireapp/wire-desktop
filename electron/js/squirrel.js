@@ -20,7 +20,7 @@
 // https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
 'use strict';
 
-const {app, ipcMain} = require('electron');
+const {app} = require('electron');
 
 const config = require('./config');
 const cp = require('child_process');
@@ -185,10 +185,7 @@ function installUpdate() {
     if (error != null) {
       return false;
     }
-    main = getPrimaryWindow();
-    if (main) {
-      main.webContents.send('wrapper-updated');
-    }
+    getPrimaryWindow().webContents.send('wrapper-updated');
   });
 };
 
