@@ -60,6 +60,7 @@ let config = {
     'fi',
     'fr',
     'hr',
+    'hu',
     'it',
     'pt',
     'ro',
