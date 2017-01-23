@@ -19,7 +19,7 @@
 
 'use strict';
 
-const {app, shell, BrowserWindow, dialog, Menu} = require('electron');
+const {app, shell, dialog, Menu} = require('electron');
 var autoLaunch = require('auto-launch');
 var launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
@@ -220,7 +220,7 @@ var conversationTemplate = {
 var showWireTemplate = {
   label: config.NAME,
   accelerator: 'CmdOrCtrl+1',
-  click: function() {BrowserWindow.getAllWindows()[0].show();},
+  click: function() {getPrimaryWindow().show();},
 };
 
 var toggleMenuTemplate = {
