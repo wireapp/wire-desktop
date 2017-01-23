@@ -19,11 +19,12 @@
 
 'use strict';
 
-const {app, BrowserWindow, Menu, Tray} = require('electron');
+const {app, Menu, Tray} = require('electron');
 
 const path = require('path');
 const config = require('./../config');
 const locale = require('./../../locale/locale');
+const windowManager = require('./../window-manager');
 
 const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
 
@@ -44,10 +45,10 @@ module.exports = {
     appIcon = new Tray(iconPath);
     var contextMenu = Menu.buildFromTemplate([
       {
-        label: 'Open ' + config.NAME,
-        click: function() {BrowserWindow.getAllWindows()[0].show();},
+        label: locale.getText('trayOpen') + ' ' + config.NAME,
+        click: function() {windowManager.getPrimaryWindow().show();},
       }, {
-        label: 'Quit',
+        label: locale.getText('trayQuit'),
         click: function() {app.quit();},
       },
     ]);
@@ -55,7 +56,7 @@ module.exports = {
     appIcon.setToolTip(config.NAME);
     appIcon.setContextMenu(contextMenu);
     appIcon.on('click', function () {
-      BrowserWindow.getAllWindows()[0].show();
+      windowManager.getPrimaryWindow().show();
     });
   },
 

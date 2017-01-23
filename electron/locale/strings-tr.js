@@ -31,6 +31,7 @@ string.menuCut = 'Kes';
 string.menuCopy = 'Kopyala';
 string.menuPaste = 'Yapıştır';
 string.menuSelectAll = 'Hepsini Seç';
+string.menuSpelling = 'Yazarken Doğru Yazıp Yazmadığınızı Kontrol Edin';
 string.menuMinimize = 'Küçült';
 string.menuClose = 'Kapat';
 string.menuNextConversation = 'Sonraki Konuşma';
@@ -57,5 +58,8 @@ string.restartLocale = 'Lütfen bu ayarın etkinleşmesi için uygulamayı başt
 string.restartLater = 'Sonra';
 string.restartNow = 'Şimdi Yeniden Başlat';
 
+string.trayOpen = 'Aç';
+
+string.unreadMessages = 'Okunmamış mesaj';
 
 module.exports = string;

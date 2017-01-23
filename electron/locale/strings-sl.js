@@ -31,6 +31,7 @@ string.menuCut = 'Izreži';
 string.menuCopy = 'Kopiraj';
 string.menuPaste = 'Prilepi';
 string.menuSelectAll = 'Izberi vse';
+string.menuSpelling = 'Preverjanje črkovanja med tipkanjem';
 string.menuMinimize = 'Minimiziraj';
 string.menuClose = 'Zapri';
 string.menuNextConversation = 'Naslednji pogovor';
@@ -57,5 +58,8 @@ string.restartLocale = 'Prosimo ponovno zaženite aplikacijo, da bo ta nastavite
 string.restartLater = 'Kasneje';
 string.restartNow = 'Ponovno zaženi zdaj';
 
+string.trayOpen = 'Odpri';
+
+string.unreadMessages = 'Neprebrano sporočilo';
 
 module.exports = string;
