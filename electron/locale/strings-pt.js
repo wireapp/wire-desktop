@@ -2,7 +2,6 @@
 
 let string = {};
 
-
 string.menuConversation = 'Conversa';
 string.menuStart = 'Início';
 string.menuEdit = 'Editar';
@@ -31,6 +30,7 @@ string.menuCut = 'Recortar';
 string.menuCopy = 'Copiar';
 string.menuPaste = 'Colar';
 string.menuSelectAll = 'Selecionar tudo';
+string.menuSpelling = 'Verificar Ortografia ao Digitar';
 string.menuMinimize = 'Minimizar';
 string.menuClose = 'Fechar';
 string.menuNextConversation = 'Próxima conversa';
@@ -57,5 +57,8 @@ string.restartLocale = 'Por favor, reinicie o aplicativo para essa configuraçã
 string.restartLater = 'Mais tarde';
 string.restartNow = 'Reiniciar agora';
 
+string.trayOpen = 'Abrir';
+
+string.unreadMessages = 'Mensagem não lida';
 
 module.exports = string;

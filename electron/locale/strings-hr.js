@@ -57,5 +57,7 @@ string.restartLocale = 'Molimo ponovno pokrenite aplikaciju kako bi promjene stu
 string.restartLater = 'Kasnije';
 string.restartNow = 'Ponovno pokreni';
 
+string.trayOpen = 'Otvori';
+
 
 module.exports = string;

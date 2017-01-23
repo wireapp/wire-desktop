@@ -57,5 +57,7 @@ string.restartLocale = 'Pro použití změněných nastavení restartujte prosí
 string.restartLater = 'Později';
 string.restartNow = 'Restartovat nyní';
 
+string.trayOpen = 'Otevřít';
+
 
 module.exports = string;

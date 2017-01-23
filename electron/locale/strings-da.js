@@ -31,6 +31,7 @@ string.menuCut = 'Klip';
 string.menuCopy = 'Kopiér';
 string.menuPaste = 'Indsæt';
 string.menuSelectAll = 'Vælg alle';
+string.menuSpelling = 'Stavekontrol mens du skriver';
 string.menuMinimize = 'Minimer';
 string.menuClose = 'Luk';
 string.menuNextConversation = 'Næste samtale';
@@ -57,5 +58,8 @@ string.restartLocale = 'Genstart venligst app’en for at aktivere denne indstil
 string.restartLater = 'Senere';
 string.restartNow = 'Genstart nu';
 
+string.trayOpen = 'Åbn';
+
+string.unreadMessages = 'Ulæst besked';
 
 module.exports = string;

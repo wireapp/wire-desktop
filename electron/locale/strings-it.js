@@ -57,5 +57,7 @@ string.restartLocale = 'Riavvia l’app affinchè questa impostazione abbia effe
 string.restartLater = 'Più tardi';
 string.restartNow = 'Riavvia adesso';
 
+string.trayOpen = 'Apri';
+
 
 module.exports = string;
