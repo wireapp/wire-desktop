@@ -153,20 +153,6 @@ var localeTemplate = {
   ],
 };
 
-var startupTemplate = {
-  i18n: 'menuStartup',
-  type: 'checkbox',
-  click: function() {
-    const squirrel = require('./../squirrel');
-    let checked = menu.items[0].submenu.items[2].checked;
-    if (checked) {
-      squirrel.createStartupShortcut();
-    } else {
-      squirrel.removeStartupShortcut();
-    }
-  },
-};
-
 var aboutTemplate = {
   i18n: 'menuAbout',
   click: function() {menu.emit('about-wire');},
@@ -368,7 +354,7 @@ var win32Template = {
       click: function() {sendAction('preferences-show');},
     },
     localeTemplate,
-    startupTemplate,
+    toggleAutoLaunchTemplate,
     separatorTemplate,
     signOutTemplate, {
       i18n: 'menuQuit',
@@ -451,16 +437,12 @@ module.exports = {
     }
 
     if (process.platform === 'win32') {
-      const squirrel = require('./../squirrel');
       menuTemplate.unshift(win32Template);
       windowTemplate['i18n'] = 'menuView';
       windowTemplate.submenu.unshift(
         toggleMenuTemplate,
         separatorTemplate
       );
-      squirrel.startupLinkExists(function(exists) {
-        menu.items[0].submenu.items[2].checked = exists;
-      });
     }
 
     if (process.platform === 'linux') {

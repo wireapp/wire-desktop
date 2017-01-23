@@ -40,11 +40,9 @@ let linkName = config.NAME + '.lnk';
 let homeFolder = path.resolve(process.env.HOMEPATH);
 
 let startFolder = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs'));
-let startupFolder = path.resolve(path.join(startFolder, 'Startup'));
 let taskbarFolder = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar'));
 
 let startLink = path.resolve(path.join(startFolder, config.NAME, linkName));
-let startupLink = path.resolve(path.join(startupFolder, linkName));
 let desktopLink = path.join(homeFolder, 'Desktop', linkName);
 let taskbarLink = path.join(taskbarFolder, linkName);
 
@@ -105,13 +103,6 @@ function spawnUpdate(args, callback) {
 };
 
 
-function startupLinkExists(callback) {
-  fs.exists(startupLink, function(exists) {
-    callback(exists);
-  });
-};
-
-
 function createStartShortcut(callback) {
   spawnUpdate(['--createShortcut', exeName, '-l=StartMenu'], callback);
 };
@@ -122,24 +113,10 @@ function createDesktopShortcut(callback) {
 };
 
 
-function createStartupShortcut(callback) {
-  spawnUpdate(['--createShortcut', exeName, '-l=Startup'], callback);
-};
-
-
 function updateDesktopShortcut(callback) {
   fs.exists(desktopLink, function(exists) {
     if (exists) {
       createDesktopShortcut(callback);
-    }
-  });
-};
-
-
-function updateStartupShortcut(callback) {
-  fs.exists(startupLink, function(exists) {
-    if (exists) {
-      createStartupShortcut(callback);
     }
   });
 };
@@ -160,11 +137,6 @@ function removeShortcuts(callback) {
   spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], function() {
     fs.unlink(taskbarLink, callback);
   });
-};
-
-
-function removeStartupShortcut(callback) {
-  spawnUpdate(['--removeShortcut', exeName, '-l=Startup'], callback);
 };
 
 
@@ -203,9 +175,7 @@ function handleSquirrelEvent(shouldQuit, callback) {
     case '--squirrel-install':
       createStartShortcut(function() {
         createDesktopShortcut(function() {
-          createStartupShortcut(function() {
-            app.quit();
-          });
+          app.quit();
         });
       });
       return true;
@@ -213,9 +183,7 @@ function handleSquirrelEvent(shouldQuit, callback) {
       // TODO (lipis): don't createStartup shortcut in the next prod release
       updateDesktopShortcut(function() {
         updateTaskbarShortcut(function() {
-          updateStartupShortcut(function() {
-            app.quit();
-          });
+          app.quit();
         });
       });
       return true;
@@ -238,7 +206,4 @@ function handleSquirrelEvent(shouldQuit, callback) {
 
 module.exports = {
   handleSquirrelEvent: handleSquirrelEvent,
-  createStartupShortcut: createStartupShortcut,
-  removeStartupShortcut: removeStartupShortcut,
-  startupLinkExists: startupLinkExists,
 };
