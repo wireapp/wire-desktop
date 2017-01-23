@@ -23,6 +23,7 @@ const {BrowserWindow} = require('electron');
 
 let primaryWindowId;
 
+
 function setPrimaryWindowId(newPrimaryWindowId) {
   primaryWindowId = newPrimaryWindowId;
 };
@@ -33,6 +34,7 @@ function getPrimaryWindow() {
     return BrowserWindow.fromId(primaryWindowId);
   }
 };
+
 
 module.exports = {
   setPrimaryWindowId: setPrimaryWindowId,

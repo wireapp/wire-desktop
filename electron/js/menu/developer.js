@@ -23,9 +23,11 @@ const {MenuItem} = require('electron');
 const config = require('./../config');
 const windowManager = require('./../window-manager');
 
+
 function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
 }
+
 
 var reloadTemplate = {
   label: 'Reload',

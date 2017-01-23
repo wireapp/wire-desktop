@@ -37,9 +37,11 @@ const launcher = new autoLaunch({
   isHidden: true,
 });
 
+
 function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
 }
+
 
 // TODO: disable menus when not in focus
 function sendAction(action) {
@@ -48,6 +50,7 @@ function sendAction(action) {
     getPrimaryWindow().webContents.send(action);
   }
 }
+
 
 var separatorTemplate = {
   type: 'separator',
@@ -402,6 +405,7 @@ menuTemplate = [
   helpTemplate,
 ];
 
+
 function processMenu(template, language) {
   for (let item of template) {
     if (item.submenu != null) {
@@ -431,6 +435,7 @@ function changeLocale(language) {
     }
   });
 }
+
 
 module.exports = {
   createMenu: function() {
