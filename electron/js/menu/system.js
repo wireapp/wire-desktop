@@ -218,7 +218,7 @@ var showWireTemplate = {
 var toggleMenuTemplate = {
   i18n: 'menuShowHide',
   click: function() {
-    mainBrowserWindow = getPrimaryWindow();
+    let mainBrowserWindow = getPrimaryWindow();
     if (mainBrowserWindow.isMenuBarAutoHide()) {
       mainBrowserWindow.setAutoHideMenuBar(false);
     } else {
@@ -233,7 +233,7 @@ var toggleFullScreenTemplate = {
   type: 'checkbox',
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
-    mainBrowserWindow = getPrimaryWindow();
+    let mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
 };

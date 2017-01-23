@@ -157,7 +157,10 @@ function installUpdate() {
     if (error != null) {
       return false;
     }
-    getPrimaryWindow().webContents.send('wrapper-updated');
+    let main = getPrimaryWindow();
+    if (main) {
+      getPrimaryWindow().webContents.send('wrapper-updated');
+    }
   });
 };
 
