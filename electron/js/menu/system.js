@@ -108,6 +108,12 @@ var localeTemplate = {
         changeLocale('hr');
       },
     }, {
+      label: locale.label['hu'],
+      type: 'radio',
+      click: function() {
+        changeLocale('hu');
+      },
+    }, {
       label: locale.label['it'],
       type: 'radio',
       click: function() {
