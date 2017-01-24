@@ -68,7 +68,7 @@ module.exports = {
         this.useBadgeIcon();
         if (count > lastUnreadCount) {
           this.displayBalloonNotification(count);
-          }
+        }
       } else {
         this.useDefaultIcon();
       }
