@@ -183,7 +183,6 @@ function handleSquirrelEvent(shouldQuit, callback) {
       });
       return true;
     case '--squirrel-updated':
-      // TODO (lipis): don't createStartup shortcut in the next prod release
       updateDesktopShortcut(function() {
         updateTaskbarShortcut(function() {
           app.quit();
