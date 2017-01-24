@@ -41,6 +41,10 @@ body.os-mac .text a {
   -webkit-user-select: none;
 }
 
+.device-id-part {
+  -webkit-user-select: auto;
+}
+
 .drag-region {
   position: fixed;
   width: 100%;
