@@ -33,7 +33,7 @@ function getPrimaryWindow() {
   if (primaryWindowId) {
     return BrowserWindow.fromId(primaryWindowId);
   }
-  return BrowserWindow.getAllWindows()[0]
+  return BrowserWindow.getAllWindows()[0];
 };
 
 
