@@ -28,12 +28,13 @@ let config = {
   WIRE_PRIVACY: 'https://wire.com/privacy/',
   WIRE_LICENSES: 'https://wire.com/legal/licenses/',
 
-  INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
-  PRODUCTION_URL: 'https://app.wire.com/',
-  STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
+  BENNY_URL: 'https://wire-webapp-benny.zinfra.io/?env=prod',
   DEV_URL: 'https://wire-webapp-dev.zinfra.io/',
   EDGE_URL: 'https://wire-webapp-edge.zinfra.io/',
+  INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
   LOCALHOST_URL: 'http://localhost:8888/',
+  PRODUCTION_URL: 'https://app.wire.com/',
+  STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
 
   MIN_WIDTH_MAIN: 760,
   MIN_HEIGHT_MAIN: 512,

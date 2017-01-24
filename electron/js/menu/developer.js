@@ -60,6 +60,11 @@ var devEdgeTemplate = {
   click: function() {getPrimaryWindow().loadURL(config.EDGE_URL);},
 };
 
+var devBennyTemplate = {
+  label: 'Cryptobox',
+  click: function() {getPrimaryWindow().loadURL(config.BENNY_URL);},
+};
+
 var devLocalhostTemplate = {
   label: 'Localhost',
   click: function() {getPrimaryWindow().loadURL(config.LOCALHOST_URL);},
@@ -92,6 +97,7 @@ let menuTemplate = {
     devStagingTemplate,
     devDevTemplate,
     devEdgeTemplate,
+    devBennyTemplate,
     devLocalhostTemplate,
     separatorTemplate,
     versionTemplate,
