@@ -67,9 +67,9 @@ module.exports = {
       if (count) {
         this.useBadgeIcon();
         if (count > lastUnreadCount) {
-            this.displayBalloonNotification(count);
-            }
-        } else {
+          this.displayBalloonNotification(count);
+          }
+      } else {
         this.useDefaultIcon();
       }
       win.setOverlayIcon(count && process.platform === 'win32' ? iconOverlayPath : null, locale.getText('unreadMessages'));
@@ -90,9 +90,9 @@ module.exports = {
   },
   
   displayBalloonNotification: function(count) {
-      if (appIcon == null) return;
-      var options = {title:'Wire', content:'You have unread messages in ' + count + ' conversation(s).'};
-      appIcon.displayBalloon(options);
+    if (appIcon == null) return;
+    var options = {title:'Wire', content:'You have unread messages in ' + count + ' conversation(s).'};
+    appIcon.displayBalloon(options);
   },
   
 };
