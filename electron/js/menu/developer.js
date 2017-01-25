@@ -46,7 +46,7 @@ var devProductionTemplate = {
   type: 'radio',
   checked: env === config.PROD,
   click: function() {
-    getPrimaryWindow().loadURL(config.PRODUCTION_URL);
+    getPrimaryWindow().loadURL(config.PROD_URL);
     init.save('env', config.PROD);
   },
 };

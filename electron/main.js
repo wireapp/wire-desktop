@@ -101,7 +101,7 @@ function getBaseUrl() {
     if (env === config.EDGE) baseURL = config.EDGE_URL;
     if (env === config.INTERNAL) baseURL = config.INTERNAL_URL;
     if (env === config.LOCALHOST) baseURL = config.LOCALHOST_URL;
-    if (env === config.PROD) baseURL = config.PRODUCTION_URL;
+    if (env === config.PROD) baseURL = config.PROD_URL;
     if (env === config.STAGING) baseURL = config.STAGING_URL;
   }
   return baseURL;
