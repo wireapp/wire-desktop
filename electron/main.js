@@ -52,7 +52,6 @@ let quitting = false;
 let isUpdate = false;
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
-let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.INTERNAL_URL);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -92,8 +91,25 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 // IPC events
 ///////////////////////////////////////////////////////////////////////////////
+function getBaseUrl() {
+  let baseURL = argv.env || config.PRODUCTION;
+  if (!argv.env && config.DEVELOPMENT) {
+    let env = init.restore('env', config.INTERNAL);
+
+    if (env === config.CRYPTO) baseURL = config.BENNY_URL;
+    if (env === config.DEV) baseURL = config.DEV_URL;
+    if (env === config.EDGE) baseURL = config.EDGE_URL;
+    if (env === config.INTERNAL) baseURL = config.INTERNAL_URL;
+    if (env === config.LOCALHOST) baseURL = config.LOCALHOST_URL;
+    if (env === config.PROD) baseURL = config.PROD_URL;
+    if (env === config.STAGING) baseURL = config.STAGING_URL;
+  }
+  return baseURL;
+}
+
 ipcMain.once('load-webapp', function(event, online) {
   enteredWebapp = true;
+  let baseURL = getBaseUrl();
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(baseURL);
 });

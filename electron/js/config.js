@@ -33,8 +33,16 @@ let config = {
   EDGE_URL: 'https://wire-webapp-edge.zinfra.io/',
   INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
   LOCALHOST_URL: 'http://localhost:8888/',
-  PRODUCTION_URL: 'https://app.wire.com/',
+  PROD_URL: 'https://app.wire.com/',
   STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
+
+  CRYPTO: 'crypto',
+  DEV: 'dev',
+  EDGE: 'edge',
+  INTERNAL: 'internal',
+  LOCALHOST: 'localhost',
+  PROD: 'prod',
+  STAGING: 'staging',
 
   MIN_WIDTH_MAIN: 760,
   MIN_HEIGHT_MAIN: 512,

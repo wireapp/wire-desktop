@@ -22,7 +22,8 @@
 const {MenuItem} = require('electron');
 const config = require('./../config');
 const windowManager = require('./../window-manager');
-
+const init = require('./../lib/init');
+const env = init.restore('env', config.INTERNAL);
 
 function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
@@ -42,32 +43,72 @@ var devToolsTemplate = {
 
 var devProductionTemplate = {
   label: 'Production',
-  click: function() {getPrimaryWindow().loadURL(config.PRODUCTION_URL);},
+  type: 'radio',
+  checked: env === config.PROD,
+  click: function() {
+    getPrimaryWindow().loadURL(config.PROD_URL);
+    init.save('env', config.PROD);
+  },
+};
+
+var devInternalTemplate = {
+  label: 'Internal',
+  type: 'radio',
+  checked: env === config.INTERNAL,
+  click: function() {
+    getPrimaryWindow().loadURL(config.INTERNAL_URL);
+    init.save('env', config.INTERNAL);
+  },
 };
 
 var devStagingTemplate = {
   label: 'Staging',
-  click: function() {getPrimaryWindow().loadURL(config.STAGING_URL);},
+  type: 'radio',
+  checked: env === config.STAGING,
+  click: function() {
+    getPrimaryWindow().loadURL(config.STAGING_URL);
+    init.save('env', config.STAGING);
+  },
 };
 
 var devDevTemplate = {
   label: 'Dev',
-  click: function() {getPrimaryWindow().loadURL(config.DEV_URL);},
+  type: 'radio',
+  checked: env === config.DEV,
+  click: function() {
+    getPrimaryWindow().loadURL(config.DEV_URL);
+    init.save('env', config.DEV);
+  },
 };
 
 var devEdgeTemplate = {
   label: 'Edge',
-  click: function() {getPrimaryWindow().loadURL(config.EDGE_URL);},
+  type: 'radio',
+  checked: env === config.EDGE,
+  click: function() {
+    getPrimaryWindow().loadURL(config.EDGE_URL);
+    init.save('env', config.EDGE);
+  },
 };
 
 var devBennyTemplate = {
   label: 'Cryptobox',
-  click: function() {getPrimaryWindow().loadURL(config.BENNY_URL);},
+  type: 'radio',
+  checked: env === config.CRYPTO,
+  click: function() {
+    getPrimaryWindow().loadURL(config.BENNY_URL);
+    init.save('env', config.CRYPTO);
+  },
 };
 
 var devLocalhostTemplate = {
   label: 'Localhost',
-  click: function() {getPrimaryWindow().loadURL(config.LOCALHOST_URL);},
+  type: 'radio',
+  checked: env === config.LOCALHOST,
+  click: function() {
+    getPrimaryWindow().loadURL(config.LOCALHOST_URL);
+    init.save('env', config.LOCALHOST);
+  },
 };
 
 var versionTemplate = {
@@ -94,6 +135,7 @@ let menuTemplate = {
     reloadTemplate,
     separatorTemplate,
     devProductionTemplate,
+    devInternalTemplate,
     devStagingTemplate,
     devDevTemplate,
     devEdgeTemplate,
