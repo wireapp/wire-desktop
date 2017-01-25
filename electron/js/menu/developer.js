@@ -23,7 +23,7 @@ const {MenuItem} = require('electron');
 const config = require('./../config');
 const windowManager = require('./../window-manager');
 const init = require('./../lib/init');
-const env = init.restore('env', 'internal');
+const env = init.restore('env', config.INTERNAL);
 
 function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
@@ -44,67 +44,70 @@ var devToolsTemplate = {
 var devProductionTemplate = {
   label: 'Production',
   type: 'radio',
-  checked: env === 'production',
+  checked: env === config.PROD,
   click: function() {
     getPrimaryWindow().loadURL(config.PRODUCTION_URL);
-    init.save('env', 'production');
+    init.save('env', config.PROD);
   },
 };
 
 var devInternalTemplate = {
   label: 'Internal',
   type: 'radio',
-  checked: env === 'internal',
+  checked: env === config.INTERNAL,
   click: function() {
     getPrimaryWindow().loadURL(config.INTERNAL_URL);
-    init.save('env', 'internal');
+    init.save('env', config.INTERNAL);
   },
 };
 
 var devStagingTemplate = {
   label: 'Staging',
   type: 'radio',
-  checked: env === 'staging',
-  click: function() {getPrimaryWindow().loadURL(config.STAGING_URL);},
+  checked: env === config.STAGING,
+  click: function() {
+    getPrimaryWindow().loadURL(config.STAGING_URL);
+    init.save('env', config.STAGING);
+  },
 };
 
 var devDevTemplate = {
   label: 'Dev',
   type: 'radio',
-  checked: env === 'dev',
+  checked: env === config.DEV,
   click: function() {
     getPrimaryWindow().loadURL(config.DEV_URL);
-    init.save('env', 'dev');
+    init.save('env', config.DEV);
   },
 };
 
 var devEdgeTemplate = {
   label: 'Edge',
   type: 'radio',
-  checked: env === 'edge',
+  checked: env === config.EDGE,
   click: function() {
     getPrimaryWindow().loadURL(config.EDGE_URL);
-    init.save('env', 'edge');
+    init.save('env', config.EDGE);
   },
 };
 
 var devBennyTemplate = {
   label: 'Cryptobox',
   type: 'radio',
-  checked: env === 'cryptobox',
+  checked: env === config.CRYPTO,
   click: function() {
     getPrimaryWindow().loadURL(config.BENNY_URL);
-    init.save('env', 'cryptobox');
+    init.save('env', config.CRYPTO);
   },
 };
 
 var devLocalhostTemplate = {
   label: 'Localhost',
   type: 'radio',
-  checked: env === 'localhost',
+  checked: env === config.LOCALHOST,
   click: function() {
     getPrimaryWindow().loadURL(config.LOCALHOST_URL);
-    init.save('env', 'localhost');
+    init.save('env', config.LOCALHOST);
   },
 };
 

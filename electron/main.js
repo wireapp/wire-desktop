@@ -94,15 +94,15 @@ if (process.platform !== 'darwin') {
 function getBaseUrl() {
   let baseURL = argv.env || config.PRODUCTION;
   if (!argv.env && config.DEVELOPMENT) {
-    let env = init.restore('env', 'internal');
+    let env = init.restore('env', config.INTERNAL);
 
-    if (env === 'cryptobox') baseURL = config.BENNY_URL;
-    if (env === 'dev') baseURL = config.DEV_URL;
-    if (env === 'edge') baseURL = config.EDGE_URL;
-    if (env === 'internal') baseURL = config.INTERNAL_URL;
-    if (env === 'localhost') baseURL = config.LOCALHOST_URL;
-    if (env === 'production') baseURL = config.PRODUCTION_URL;
-    if (env === 'staging') baseURL = config.STAGING_URL;
+    if (env === config.CRYPTO) baseURL = config.BENNY_URL;
+    if (env === config.DEV) baseURL = config.DEV_URL;
+    if (env === config.EDGE) baseURL = config.EDGE_URL;
+    if (env === config.INTERNAL) baseURL = config.INTERNAL_URL;
+    if (env === config.LOCALHOST) baseURL = config.LOCALHOST_URL;
+    if (env === config.PROD) baseURL = config.PRODUCTION_URL;
+    if (env === config.STAGING) baseURL = config.STAGING_URL;
   }
   return baseURL;
 }

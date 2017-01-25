@@ -36,6 +36,14 @@ let config = {
   PRODUCTION_URL: 'https://app.wire.com/',
   STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
 
+  CRYPTO: 'crypto',
+  DEV: 'dev',
+  EDGE: 'edge',
+  INTERNAL: 'internal',
+  LOCALHOST: 'localhost',
+  PROD: 'prod',
+  STAGING: 'staging',
+
   MIN_WIDTH_MAIN: 760,
   MIN_HEIGHT_MAIN: 512,
 
