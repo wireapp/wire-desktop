@@ -22,7 +22,8 @@
 const {MenuItem} = require('electron');
 const config = require('./../config');
 const windowManager = require('./../window-manager');
-
+const init = require('./../lib/init');
+const env = init.restore('env', 'internal');
 
 function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
@@ -42,32 +43,69 @@ var devToolsTemplate = {
 
 var devProductionTemplate = {
   label: 'Production',
-  click: function() {getPrimaryWindow().loadURL(config.PRODUCTION_URL);},
+  type: 'radio',
+  checked: env === 'production',
+  click: function() {
+    getPrimaryWindow().loadURL(config.PRODUCTION_URL);
+    init.save('env', 'production');
+  },
+};
+
+var devInternalTemplate = {
+  label: 'Internal',
+  type: 'radio',
+  checked: env === 'internal',
+  click: function() {
+    getPrimaryWindow().loadURL(config.INTERNAL_URL);
+    init.save('env', 'internal');
+  },
 };
 
 var devStagingTemplate = {
   label: 'Staging',
+  type: 'radio',
+  checked: env === 'staging',
   click: function() {getPrimaryWindow().loadURL(config.STAGING_URL);},
 };
 
 var devDevTemplate = {
   label: 'Dev',
-  click: function() {getPrimaryWindow().loadURL(config.DEV_URL);},
+  type: 'radio',
+  checked: env === 'dev',
+  click: function() {
+    getPrimaryWindow().loadURL(config.DEV_URL);
+    init.save('env', 'dev');
+  },
 };
 
 var devEdgeTemplate = {
   label: 'Edge',
-  click: function() {getPrimaryWindow().loadURL(config.EDGE_URL);},
+  type: 'radio',
+  checked: env === 'edge',
+  click: function() {
+    getPrimaryWindow().loadURL(config.EDGE_URL);
+    init.save('env', 'edge');
+  },
 };
 
 var devBennyTemplate = {
   label: 'Cryptobox',
-  click: function() {getPrimaryWindow().loadURL(config.BENNY_URL);},
+  type: 'radio',
+  checked: env === 'cryptobox',
+  click: function() {
+    getPrimaryWindow().loadURL(config.BENNY_URL);
+    init.save('env', 'cryptobox');
+  },
 };
 
 var devLocalhostTemplate = {
   label: 'Localhost',
-  click: function() {getPrimaryWindow().loadURL(config.LOCALHOST_URL);},
+  type: 'radio',
+  checked: env === 'localhost',
+  click: function() {
+    getPrimaryWindow().loadURL(config.LOCALHOST_URL);
+    init.save('env', 'localhost');
+  },
 };
 
 var versionTemplate = {
@@ -94,6 +132,7 @@ let menuTemplate = {
     reloadTemplate,
     separatorTemplate,
     devProductionTemplate,
+    devInternalTemplate,
     devStagingTemplate,
     devDevTemplate,
     devEdgeTemplate,

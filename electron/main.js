@@ -50,9 +50,12 @@ let about;
 let enteredWebapp = false;
 let quitting = false;
 let isUpdate = false;
+function getBaseUrl() {
+
+}
+
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
-let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.INTERNAL_URL);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -92,8 +95,25 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 // IPC events
 ///////////////////////////////////////////////////////////////////////////////
+function getBaseUrl() {
+  let baseURL = argv.env || config.PRODUCTION;
+  if (!argv.env && config.DEVELOPMENT) {
+    let env = init.restore('env', 'internal');
+
+    if (env === 'cryptobox') baseURL = config.BENNY_URL;
+    if (env === 'dev') baseURL = config.DEV_URL;
+    if (env === 'edge') baseURL = config.EDGE_URL;
+    if (env === 'internal') baseURL = config.INTERNAL_URL;
+    if (env === 'localhost') baseURL = config.LOCALHOST_URL;
+    if (env === 'production') baseURL = config.PRODUCTION_URL;
+    if (env === 'staging') baseURL = config.STAGING_URL;
+  }
+  return baseURL;
+}
+
 ipcMain.once('load-webapp', function(event, online) {
   enteredWebapp = true;
+  let baseURL = getBaseUrl();
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(baseURL);
 });
