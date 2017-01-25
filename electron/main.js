@@ -92,7 +92,7 @@ if (process.platform !== 'darwin') {
 // IPC events
 ///////////////////////////////////////////////////////////////////////////////
 function getBaseUrl() {
-  let baseURL = argv.env || config.PRODUCTION;
+  let baseURL = argv.env || config.PROD_URL;
   if (!argv.env && config.DEVELOPMENT) {
     let env = init.restore('env', config.INTERNAL);
 
