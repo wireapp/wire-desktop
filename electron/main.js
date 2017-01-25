@@ -50,10 +50,6 @@ let about;
 let enteredWebapp = false;
 let quitting = false;
 let isUpdate = false;
-function getBaseUrl() {
-
-}
-
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
 
