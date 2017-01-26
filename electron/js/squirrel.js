@@ -146,27 +146,23 @@ function checkUpdate() {
       return false;
     }
     if (update) {
-      installUpdate();
+      let main = getPrimaryWindow();
+      if (main) {
+        getPrimaryWindow().webContents.send('wrapper-update');
+      }
     }
   });
 }
 
 
 function installUpdate() {
-  spawnUpdate(['--update', config.UPDATE_WIN_URL], function(error) {
-    if (error != null) {
-      return false;
-    }
-    let main = getPrimaryWindow();
-    if (main) {
-      getPrimaryWindow().webContents.send('wrapper-updated');
-    }
-  });
+  spawnUpdate(['--update', config.UPDATE_WIN_URL]);
+  app.quit();
 };
 
 
 function scheduleUpdate() {
-  checkUpdate();
+  setTimeout(checkUpdate, config.UPDATE_DELAY);
   setInterval(checkUpdate, config.UPDATE_INTERVAL);
 };
 
@@ -184,9 +180,7 @@ function handleSquirrelEvent(shouldQuit, callback) {
       return true;
     case '--squirrel-updated':
       updateDesktopShortcut(function() {
-        updateTaskbarShortcut(function() {
-          app.quit();
-        });
+        updateTaskbarShortcut();
       });
       return true;
     case '--squirrel-uninstall':
@@ -207,5 +201,6 @@ function handleSquirrelEvent(shouldQuit, callback) {
 };
 
 module.exports = {
+  installUpdate: installUpdate,
   handleSquirrelEvent: handleSquirrelEvent,
 };

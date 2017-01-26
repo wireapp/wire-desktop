@@ -189,6 +189,6 @@ ipcRenderer.on('conversation-show', function(conversation_id) {
   amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id);
 });
 
-ipcRenderer.on('wrapper-updated', function() {
+ipcRenderer.on('wrapper-update', function() {
   amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE);
 });
