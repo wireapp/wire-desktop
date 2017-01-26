@@ -53,6 +53,7 @@ let config = {
   WIDTH_AUTH: 400,
   HEIGHT_AUTH: 576,
 
+  UPDATE_DELAY: 5 * 60 * 1000,
   UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
 
   WHITE_LIST: [

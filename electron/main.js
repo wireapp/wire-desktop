@@ -49,7 +49,6 @@ let raygunClient;
 let about;
 let enteredWebapp = false;
 let quitting = false;
-let isUpdate = false;
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
 
@@ -137,11 +136,6 @@ ipcMain.on('google-auth-request', function(event) {
     .catch(function(error) {
       event.sender.send('google-auth-error', error);
     });
-});
-
-ipcMain.on('restart', function() {
-  app.quit();
-  app.relaunch();
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -298,19 +292,17 @@ app.on('before-quit', function() {
 // System Menu & Tray Icon & Show window
 ///////////////////////////////////////////////////////////////////////////////
 app.on('ready', function() {
-  if (!isUpdate) {
-    let appMenu = systemMenu.createMenu();
-    if (config.DEVELOPMENT) {
-      appMenu.append(developerMenu);
-    }
-    appMenu.on('about-wire', function() {
-      showAboutWindow();
-    });
-
-    Menu.setApplicationMenu(appMenu);
-    tray.createTrayIcon();
-    showMainWindow();
+  let appMenu = systemMenu.createMenu();
+  if (config.DEVELOPMENT) {
+    appMenu.append(developerMenu);
   }
+  appMenu.on('about-wire', function() {
+    showAboutWindow();
+  });
+
+  Menu.setApplicationMenu(appMenu);
+  tray.createTrayIcon();
+  showMainWindow();
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -329,7 +321,9 @@ fs.stat(consoleLog, function(err, stats) {
 ///////////////////////////////////////////////////////////////////////////////
 if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
-  squirrel.handleSquirrelEvent(shouldQuit, function(squirrelEvent) {
-    isUpdate = squirrelEvent === '--squirrel-updated';
+  squirrel.handleSquirrelEvent(shouldQuit);
+
+  ipcMain.on('restart', function() {
+    squirrel.installUpdate();
   });
 }
