@@ -42,7 +42,8 @@ module.exports = (function() {
   function restore(name, defaultValue) {
     try {
       const data = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
-      return data[name] || defaultValue;
+      const value = data[name];
+      return typeof value !== 'undefined' ? value : defaultValue;
     } catch (error) {
       return defaultValue;
     }

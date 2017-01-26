@@ -28,12 +28,21 @@ let config = {
   WIRE_PRIVACY: 'https://wire.com/privacy/',
   WIRE_LICENSES: 'https://wire.com/legal/licenses/',
 
-  INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
-  PRODUCTION_URL: 'https://app.wire.com/',
-  STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
+  BENNY_URL: 'https://wire-webapp-benny.zinfra.io/?env=prod',
   DEV_URL: 'https://wire-webapp-dev.zinfra.io/',
   EDGE_URL: 'https://wire-webapp-edge.zinfra.io/',
+  INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
   LOCALHOST_URL: 'http://localhost:8888/',
+  PROD_URL: 'https://app.wire.com/',
+  STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
+
+  CRYPTO: 'crypto',
+  DEV: 'dev',
+  EDGE: 'edge',
+  INTERNAL: 'internal',
+  LOCALHOST: 'localhost',
+  PROD: 'prod',
+  STAGING: 'staging',
 
   MIN_WIDTH_MAIN: 760,
   MIN_HEIGHT_MAIN: 512,
@@ -43,6 +52,9 @@ let config = {
 
   WIDTH_AUTH: 400,
   HEIGHT_AUTH: 576,
+
+  UPDATE_DELAY: 5 * 60 * 1000,
+  UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
 
   WHITE_LIST: [
     'https://www.wire.com/',
@@ -58,6 +70,7 @@ let config = {
     'fi',
     'fr',
     'hr',
+    'hu',
     'it',
     'pt',
     'ro',

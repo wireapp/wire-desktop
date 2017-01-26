@@ -119,8 +119,12 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
       ipcRenderer.send('notification-click');
     });
 
-    amplify.subscribe(z.event.WebApp.LOADED, function() {
+    amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
       ipcRenderer.send('loaded');
+    });
+
+    amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function() {
+      ipcRenderer.send('restart');
     });
   }
   // else we are on /auth
@@ -130,7 +134,7 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
 // Webapp Events
 ///////////////////////////////////////////////////////////////////////////////
 ipcRenderer.on('sign-out', function() {
-  amplify.publish(z.event.WebApp.LOGOUT.ASK_TO_CLEAR_DATA);
+  amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
 });
 
 ipcRenderer.on('preferences-show', function() {
@@ -183,4 +187,8 @@ ipcRenderer.on('conversation-next', function() {
 
 ipcRenderer.on('conversation-show', function(conversation_id) {
   amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id);
+});
+
+ipcRenderer.on('wrapper-update', function() {
+  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE);
 });

@@ -31,6 +31,7 @@ string.menuCut = 'Cortar';
 string.menuCopy = 'Copiar';
 string.menuPaste = 'Pegar';
 string.menuSelectAll = 'Seleccionar todo';
+string.menuSpelling = 'Comprobar ortografía al escribir';
 string.menuMinimize = 'Minimizar';
 string.menuClose = 'Cerrar';
 string.menuNextConversation = 'Siguiente Conversación';
@@ -57,5 +58,8 @@ string.restartLocale = 'Reiniciar la aplicación para que esta configuración te
 string.restartLater = 'Más Tarde';
 string.restartNow = 'Reiniciar Ahora';
 
+string.trayOpen = 'Abrir';
+
+string.unreadMessages = 'Mensaje sin leer';
 
 module.exports = string;

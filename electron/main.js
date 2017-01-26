@@ -49,10 +49,8 @@ let raygunClient;
 let about;
 let enteredWebapp = false;
 let quitting = false;
-let isUpdate = false;
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
-let baseURL = argv.env || (config.PRODUCTION ? config.PRODUCTION_URL : config.INTERNAL_URL);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -92,8 +90,25 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 // IPC events
 ///////////////////////////////////////////////////////////////////////////////
+function getBaseUrl() {
+  let baseURL = argv.env || config.PROD_URL;
+  if (!argv.env && config.DEVELOPMENT) {
+    let env = init.restore('env', config.INTERNAL);
+
+    if (env === config.CRYPTO) baseURL = config.BENNY_URL;
+    if (env === config.DEV) baseURL = config.DEV_URL;
+    if (env === config.EDGE) baseURL = config.EDGE_URL;
+    if (env === config.INTERNAL) baseURL = config.INTERNAL_URL;
+    if (env === config.LOCALHOST) baseURL = config.LOCALHOST_URL;
+    if (env === config.PROD) baseURL = config.PROD_URL;
+    if (env === config.STAGING) baseURL = config.STAGING_URL;
+  }
+  return baseURL;
+}
+
 ipcMain.once('load-webapp', function(event, online) {
   enteredWebapp = true;
+  let baseURL = getBaseUrl();
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(baseURL);
 });
@@ -156,11 +171,12 @@ function showMainWindow() {
     main.webContents.openDevTools();
   }
 
-  if (!argv.startup) {
+  if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {
       main.center();
     }
 
+    discloseWindowID(main);
     setTimeout(function() {
       main.show();
     }, 800);
@@ -248,6 +264,11 @@ function showAboutWindow() {
   about.show();
 }
 
+function discloseWindowID(browserWindow) {
+  const windowManager = require('./js/window-manager');
+  windowManager.setPrimaryWindowId(browserWindow.id);
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
@@ -271,19 +292,17 @@ app.on('before-quit', function() {
 // System Menu & Tray Icon & Show window
 ///////////////////////////////////////////////////////////////////////////////
 app.on('ready', function() {
-  if (!isUpdate) {
-    let appMenu = systemMenu.createMenu();
-    if (config.DEVELOPMENT) {
-      appMenu.append(developerMenu);
-    }
-    appMenu.on('about-wire', function() {
-      showAboutWindow();
-    });
-
-    Menu.setApplicationMenu(appMenu);
-    tray.createTrayIcon();
-    showMainWindow();
+  let appMenu = systemMenu.createMenu();
+  if (config.DEVELOPMENT) {
+    appMenu.append(developerMenu);
   }
+  appMenu.on('about-wire', function() {
+    showAboutWindow();
+  });
+
+  Menu.setApplicationMenu(appMenu);
+  tray.createTrayIcon();
+  showMainWindow();
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -302,7 +321,9 @@ fs.stat(consoleLog, function(err, stats) {
 ///////////////////////////////////////////////////////////////////////////////
 if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
-  squirrel.handleSquirrelEvent(shouldQuit, function(squirrelEvent) {
-    isUpdate = squirrelEvent === '--squirrel-updated';
+  squirrel.handleSquirrelEvent(shouldQuit);
+
+  ipcMain.on('restart', function() {
+    squirrel.installUpdate();
   });
 }

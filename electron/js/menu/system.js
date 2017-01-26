@@ -19,13 +19,14 @@
 
 'use strict';
 
-const {app, shell, BrowserWindow, dialog, Menu} = require('electron');
+const {app, shell, dialog, Menu} = require('electron');
 var autoLaunch = require('auto-launch');
 var launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const init = require('./../lib/init');
 const locale = require('./../../locale/locale');
+const windowManager = require('./../window-manager');
 
 let menu;
 var menuTemplate;
@@ -33,19 +34,23 @@ var menuTemplate;
 const launcher = new autoLaunch({
   name: config.NAME,
   path: launchCmd,
+  isHidden: true,
 });
 
-function getBrowserWindow() {
-  return BrowserWindow.getFocusedWindow();
+
+function getPrimaryWindow() {
+  return windowManager.getPrimaryWindow();
 }
+
 
 // TODO: disable menus when not in focus
 function sendAction(action) {
-  const window = getBrowserWindow();
+  const window = getPrimaryWindow();
   if (window) {
-    getBrowserWindow().webContents.send(action);
+    getPrimaryWindow().webContents.send(action);
   }
 }
+
 
 var separatorTemplate = {
   type: 'separator',
@@ -103,6 +108,12 @@ var localeTemplate = {
         changeLocale('hr');
       },
     }, {
+      label: locale.label['hu'],
+      type: 'radio',
+      click: function() {
+        changeLocale('hu');
+      },
+    }, {
       label: locale.label['it'],
       type: 'radio',
       click: function() {
@@ -146,20 +157,6 @@ var localeTemplate = {
       },
     },
   ],
-};
-
-var startupTemplate = {
-  i18n: 'menuStartup',
-  type: 'checkbox',
-  click: function() {
-    const squirrel = require('./../squirrel');
-    let checked = menu.items[0].submenu.items[2].checked;
-    if (checked) {
-      squirrel.createStartupShortcut();
-    } else {
-      squirrel.removeStartupShortcut();
-    }
-  },
 };
 
 var aboutTemplate = {
@@ -215,17 +212,18 @@ var conversationTemplate = {
 var showWireTemplate = {
   label: config.NAME,
   accelerator: 'CmdOrCtrl+1',
-  click: function() {BrowserWindow.getAllWindows()[0].show();},
+  click: function() {getPrimaryWindow().show();},
 };
 
 var toggleMenuTemplate = {
   i18n: 'menuShowHide',
   click: function() {
-    if (getBrowserWindow().isMenuBarAutoHide()) {
-      getBrowserWindow().setAutoHideMenuBar(false);
+    let mainBrowserWindow = getPrimaryWindow();
+    if (mainBrowserWindow.isMenuBarAutoHide()) {
+      mainBrowserWindow.setAutoHideMenuBar(false);
     } else {
-      getBrowserWindow().setAutoHideMenuBar(true);
-      getBrowserWindow().setMenuBarVisibility(false);
+      mainBrowserWindow.setAutoHideMenuBar(true);
+      mainBrowserWindow.setMenuBarVisibility(false);
     }
   },
 };
@@ -235,7 +233,8 @@ var toggleFullScreenTemplate = {
   type: 'checkbox',
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
-    getBrowserWindow().setFullScreen(!getBrowserWindow().isFullScreen());
+    let mainBrowserWindow = getPrimaryWindow();
+    mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
 };
 
@@ -361,7 +360,7 @@ var win32Template = {
       click: function() {sendAction('preferences-show');},
     },
     localeTemplate,
-    startupTemplate,
+    toggleAutoLaunchTemplate,
     separatorTemplate,
     signOutTemplate, {
       i18n: 'menuQuit',
@@ -398,6 +397,7 @@ menuTemplate = [
   helpTemplate,
 ];
 
+
 function processMenu(template, language) {
   for (let item of template) {
     if (item.submenu != null) {
@@ -428,6 +428,7 @@ function changeLocale(language) {
   });
 }
 
+
 module.exports = {
   createMenu: function() {
     if (process.platform === 'darwin') {
@@ -442,16 +443,12 @@ module.exports = {
     }
 
     if (process.platform === 'win32') {
-      const squirrel = require('./../squirrel');
       menuTemplate.unshift(win32Template);
       windowTemplate['i18n'] = 'menuView';
       windowTemplate.submenu.unshift(
         toggleMenuTemplate,
         separatorTemplate
       );
-      squirrel.startupLinkExists(function(exists) {
-        menu.items[0].submenu.items[2].checked = exists;
-      });
     }
 
     if (process.platform === 'linux') {

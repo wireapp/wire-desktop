@@ -57,5 +57,7 @@ string.restartLocale = 'L’application doit être redémarrée pour que les nou
 string.restartLater = 'Plus tard';
 string.restartNow = 'Redémarrer maintenant';
 
+string.trayOpen = 'Ouvrir';
+
 
 module.exports = string;
