@@ -70,7 +70,7 @@ module.exports = {
         this.useDefaultIcon();
       }
       win.setOverlayIcon(count && process.platform === 'win32' ? iconOverlayPath : null, locale.getText('unreadMessages'));
-      if (process.platform === 'win32') {
+      if (process.platform !== 'darwin') {
         win.flashFrame(!win.isFocused() && count > lastUnreadCount);
       }
       app.setBadgeCount(count);
