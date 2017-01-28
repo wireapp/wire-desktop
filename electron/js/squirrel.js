@@ -148,7 +148,7 @@ function checkUpdate() {
     if (update) {
       let main = getPrimaryWindow();
       if (main) {
-        getPrimaryWindow().webContents.send('wrapper-update');
+        getPrimaryWindow().webContents.send('wrapper-update-available');
       }
     }
   });

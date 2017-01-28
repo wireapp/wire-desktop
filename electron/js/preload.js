@@ -124,7 +124,7 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
     });
 
     amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function() {
-      ipcRenderer.send('restart');
+      ipcRenderer.send('wrapper-restart');
     });
   }
   // else we are on /auth
@@ -189,6 +189,6 @@ ipcRenderer.on('conversation-show', function(conversation_id) {
   amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id);
 });
 
-ipcRenderer.on('wrapper-update', function() {
-  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE);
+ipcRenderer.on('wrapper-update-available', function() {
+  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, 'wrapper');
 });
