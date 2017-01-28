@@ -323,7 +323,7 @@ if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
 
-  ipcMain.on('restart', function() {
+  ipcMain.on('wrapper-restart', function() {
     squirrel.installUpdate();
   });
 }
