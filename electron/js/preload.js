@@ -123,8 +123,12 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
       ipcRenderer.send('loaded');
     });
 
-    amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function() {
-      ipcRenderer.send('wrapper-restart');
+    amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
+      if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
+        ipcRenderer.send('wrapper-restart');
+      } else {
+        ipcRenderer.send('wrapper-reload');
+      }
     });
   }
   // else we are on /auth
@@ -190,5 +194,5 @@ ipcRenderer.on('conversation-show', function(conversation_id) {
 });
 
 ipcRenderer.on('wrapper-update-available', function() {
-  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, 'wrapper');
+  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
 });
