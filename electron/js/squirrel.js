@@ -167,9 +167,8 @@ function scheduleUpdate() {
 };
 
 
-function handleSquirrelEvent(shouldQuit, callback) {
+function handleSquirrelEvent(shouldQuit) {
   var squirrelEvent = process.argv[1];
-  callback(squirrelEvent);
   switch (squirrelEvent) {
     case '--squirrel-install':
       createStartShortcut(function() {
@@ -181,6 +180,9 @@ function handleSquirrelEvent(shouldQuit, callback) {
     case '--squirrel-updated':
       updateDesktopShortcut(function() {
         updateTaskbarShortcut();
+        /* app.quit() is needed for a smooth update experience from the last public release.
+           Remove after the next public release of 2.12 on all platforms */
+        app.quit();
       });
       return true;
     case '--squirrel-uninstall':
