@@ -8,7 +8,6 @@ string.menuEdit = 'Editar';
 string.menuWindow = 'Janela';
 string.menuView = 'Vizualizar';
 string.menuHelp = 'Ajuda';
-string.menuStartup = 'Iniciar Wire com o Windows';
 string.menuLocale = 'Língua';
 string.menuAbout = 'Sobre o Wire';
 string.menuSignOut = 'Sair';

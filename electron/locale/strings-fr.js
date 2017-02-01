@@ -9,7 +9,6 @@ string.menuEdit = 'Modifier';
 string.menuWindow = 'Fenêtre';
 string.menuView = 'Vue';
 string.menuHelp = 'Aide';
-string.menuStartup = 'Lancer Wire au démarrage de Windows';
 string.menuLocale = 'Langue';
 string.menuAbout = 'À propos de Wire';
 string.menuSignOut = 'Se déconnecter';

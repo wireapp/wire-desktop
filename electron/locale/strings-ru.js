@@ -9,7 +9,7 @@ string.menuEdit = 'Редактировать';
 string.menuWindow = 'Окно';
 string.menuView = 'Вид';
 string.menuHelp = 'Справка';
-string.menuStartup = 'Запускать Wire при запуске Windows';
+string.menuStartup = 'Запускать Wire при загрузке системы';
 string.menuLocale = 'Язык';
 string.menuAbout = 'О Wire';
 string.menuSignOut = 'Выход';
@@ -59,6 +59,7 @@ string.restartLater = 'Позже';
 string.restartNow = 'Перезапустить сейчас';
 
 string.trayOpen = 'Открыть';
+string.trayQuit = 'Завершить';
 
 string.unreadMessages = 'Непрочитанное сообщение';
 

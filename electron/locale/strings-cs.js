@@ -9,7 +9,6 @@ string.menuEdit = 'Upravit';
 string.menuWindow = 'Okno';
 string.menuView = 'Zobrazení';
 string.menuHelp = 'Pomoc';
-string.menuStartup = 'Spustit Wire při startu Windows';
 string.menuLocale = 'Jazyk';
 string.menuAbout = 'O aplikaci Wire';
 string.menuSignOut = 'Odhlásit';
