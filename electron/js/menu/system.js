@@ -20,8 +20,8 @@
 'use strict';
 
 const {app, shell, dialog, Menu} = require('electron');
-let autoLaunch = require('auto-launch');
-let launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
+var autoLaunch = require('auto-launch');
+var launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const init = require('./../lib/init');
@@ -29,8 +29,8 @@ const locale = require('./../../locale/locale');
 const squirrel = require('./../squirrel');
 const windowManager = require('./../window-manager');
 
-let menu;
-let menuTemplate;
+var menu;
+var menuTemplate;
 
 const launcher = new autoLaunch({
   name: config.NAME,
@@ -53,11 +53,11 @@ function sendAction(action) {
 }
 
 
-let separatorTemplate = {
+var separatorTemplate = {
   type: 'separator',
 };
 
-let localeTemplate = {
+var localeTemplate = {
   i18n: 'menuLocale',
   submenu: [
     {
@@ -160,17 +160,17 @@ let localeTemplate = {
   ],
 };
 
-let aboutTemplate = {
+var aboutTemplate = {
   i18n: 'menuAbout',
   click: function() {menu.emit('about-wire');},
 };
 
-let signOutTemplate = {
+var signOutTemplate = {
   i18n: 'menuSignOut',
   click: function() {sendAction('sign-out');},
 };
 
-let conversationTemplate = {
+var conversationTemplate = {
   i18n: 'menuConversation',
   submenu: [
     {
@@ -210,16 +210,16 @@ let conversationTemplate = {
   ],
 };
 
-let showWireTemplate = {
+var showWireTemplate = {
   label: config.NAME,
   accelerator: 'CmdOrCtrl+1',
   click: function() {getPrimaryWindow().show();},
 };
 
-let toggleMenuTemplate = {
+var toggleMenuTemplate = {
   i18n: 'menuShowHide',
   click: function() {
-    let mainBrowserWindow = getPrimaryWindow();
+    var mainBrowserWindow = getPrimaryWindow();
     if (mainBrowserWindow.isMenuBarAutoHide()) {
       mainBrowserWindow.setAutoHideMenuBar(false);
     } else {
@@ -229,17 +229,17 @@ let toggleMenuTemplate = {
   },
 };
 
-let toggleFullScreenTemplate = {
+var toggleFullScreenTemplate = {
   i18n: 'menuFullScreen',
   type: 'checkbox',
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
-    let mainBrowserWindow = getPrimaryWindow();
+    var mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
 };
 
-let toggleAutoLaunchTemplate = {
+var toggleAutoLaunchTemplate = {
   i18n: 'menuStartup',
   type: 'checkbox',
   checked: init.restore('shouldAutoLaunch', false),
@@ -250,7 +250,7 @@ let toggleAutoLaunchTemplate = {
   },
 };
 
-let editTemplate = {
+var editTemplate = {
   i18n: 'menuEdit',
   submenu: [
     {i18n: 'menuUndo', role: 'undo'},
@@ -274,7 +274,7 @@ let editTemplate = {
   ],
 };
 
-let windowTemplate = {
+var windowTemplate = {
   i18n: 'menuWindow',
   role: 'window',
   submenu: [
@@ -296,7 +296,7 @@ let windowTemplate = {
   ],
 };
 
-let helpTemplate = {
+var helpTemplate = {
   i18n: 'menuHelp',
   role: 'help',
   submenu: [
@@ -319,7 +319,7 @@ let helpTemplate = {
   ],
 };
 
-let darwinTemplate = {
+var darwinTemplate = {
   label: config.NAME,
   submenu: [
     aboutTemplate,
@@ -353,7 +353,7 @@ let darwinTemplate = {
   ],
 };
 
-let win32Template = {
+var win32Template = {
   label: config.NAME,
   submenu: [
     {
@@ -372,7 +372,7 @@ let win32Template = {
   ],
 };
 
-let linuxTemplate = {
+var linuxTemplate = {
   label: config.NAME,
   submenu: [
     {
@@ -401,7 +401,7 @@ menuTemplate = [
 
 
 function processMenu(template, language) {
-  for (let item of template) {
+  for (var item of template) {
     if (item.submenu != null) {
       processMenu(item.submenu, language);
     }
