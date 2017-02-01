@@ -29,7 +29,7 @@ const locale = require('./../../locale/locale');
 const squirrel = require('./../squirrel');
 const windowManager = require('./../window-manager');
 
-var menu;
+let menu;
 var menuTemplate;
 
 const launcher = new autoLaunch({
@@ -219,7 +219,7 @@ var showWireTemplate = {
 var toggleMenuTemplate = {
   i18n: 'menuShowHide',
   click: function() {
-    var mainBrowserWindow = getPrimaryWindow();
+    let mainBrowserWindow = getPrimaryWindow();
     if (mainBrowserWindow.isMenuBarAutoHide()) {
       mainBrowserWindow.setAutoHideMenuBar(false);
     } else {
@@ -234,7 +234,7 @@ var toggleFullScreenTemplate = {
   type: 'checkbox',
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
-    var mainBrowserWindow = getPrimaryWindow();
+    let mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
 };
@@ -244,7 +244,6 @@ var toggleAutoLaunchTemplate = {
   type: 'checkbox',
   checked: init.restore('shouldAutoLaunch', false),
   click: function() {
-    console.log(444444);
     init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
     init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
@@ -401,7 +400,7 @@ menuTemplate = [
 
 
 function processMenu(template, language) {
-  for (var item of template) {
+  for (let item of template) {
     if (item.submenu != null) {
       processMenu(item.submenu, language);
     }
