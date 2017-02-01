@@ -9,7 +9,6 @@ string.menuEdit = 'Muokkaa';
 string.menuWindow = 'Ikkuna';
 string.menuView = 'Näytä';
 string.menuHelp = 'Ohje';
-string.menuStartup = 'Käynnistä Wire Windowsin käynnistyessä';
 string.menuLocale = 'Kieli';
 string.menuAbout = 'Tietoja Wirestä';
 string.menuSignOut = 'Kirjaudu ulos';

@@ -9,6 +9,7 @@ string.menuEdit = 'Szerkesztés';
 string.menuWindow = 'Ablak';
 string.menuView = 'Nézet';
 string.menuHelp = 'Segítség';
+string.menuStartup = 'Wire futtatása indításkor';
 string.menuLocale = 'Nyelv';
 string.menuAbout = 'Wire névjegy';
 string.menuSignOut = 'Kijelentkezés';
@@ -58,6 +59,7 @@ string.restartLater = 'Később';
 string.restartNow = 'Újraindítás most';
 
 string.trayOpen = 'Megnyitás';
+string.trayQuit = 'Kilépés';
 
 string.unreadMessages = 'Olvasatlan üzenet';
 

@@ -9,7 +9,6 @@ string.menuEdit = 'Promjeni';
 string.menuWindow = 'Prozor';
 string.menuView = 'Pregled';
 string.menuHelp = 'Pomoć';
-string.menuStartup = 'Automatski pokreni Wire pri pokretanju Windowsa';
 string.menuLocale = 'Jezik';
 string.menuAbout = 'O Wire';
 string.menuSignOut = 'Odjava';
