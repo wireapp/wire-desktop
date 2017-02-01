@@ -9,7 +9,7 @@ string.menuEdit = 'Uredi';
 string.menuWindow = 'Okno';
 string.menuView = 'Pogled';
 string.menuHelp = 'Pomoč';
-string.menuStartup = 'Zaženi Wire ob zagonu Windows';
+string.menuStartup = 'Zaženi Wire ob sistemskem zagonu';
 string.menuLocale = 'Jezik';
 string.menuAbout = 'O aplikaciji Wire';
 string.menuSignOut = 'Odjava';
@@ -59,6 +59,7 @@ string.restartLater = 'Kasneje';
 string.restartNow = 'Ponovno zaženi zdaj';
 
 string.trayOpen = 'Odpri';
+string.trayQuit = 'Končaj';
 
 string.unreadMessages = 'Neprebrano sporočilo';
 

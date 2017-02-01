@@ -9,7 +9,7 @@ string.menuEdit = 'Editar';
 string.menuWindow = 'Ventana';
 string.menuView = 'Vista';
 string.menuHelp = 'Ayuda';
-string.menuStartup = 'Cargar Wire al iniciar Windows';
+string.menuStartup = 'Activar Wire en Inicio';
 string.menuLocale = 'Idioma';
 string.menuAbout = 'Acerca de Wire';
 string.menuSignOut = 'Cerrar Sesión';
@@ -59,6 +59,7 @@ string.restartLater = 'Más Tarde';
 string.restartNow = 'Reiniciar Ahora';
 
 string.trayOpen = 'Abrir';
+string.trayQuit = 'Salir';
 
 string.unreadMessages = 'Mensaje sin leer';
 

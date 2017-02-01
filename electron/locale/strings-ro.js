@@ -9,7 +9,6 @@ string.menuEdit = 'Editează';
 string.menuWindow = 'Fereastră';
 string.menuView = 'Vedere';
 string.menuHelp = 'Ajutor';
-string.menuStartup = 'Lansează Wire la pornirea Windows';
 string.menuLocale = 'Limba';
 string.menuAbout = 'Despre Wire';
 string.menuSignOut = 'Deconectare';
