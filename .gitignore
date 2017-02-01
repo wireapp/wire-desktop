@@ -1,9 +1,10 @@
-*.log
-*.pyc
-*.pyc
 .DS_Store
 .grunt
 .Icon
+.vscode
+*.log
+*.pyc
+*.pyc
 /.idea
 /keys
 /temp
