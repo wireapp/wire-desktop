@@ -202,7 +202,20 @@ function handleSquirrelEvent(shouldQuit) {
   return false;
 };
 
+
+// TODO: remove this code after April 2017 (Backwards compatibility with 2in32 startup)
+function checkForOldStartup() {
+  const startupLink = path.resolve(path.join(startFolder, 'Startup', linkName));
+  const exists = fs.existsSync(startupLink);
+  if (exists) {
+    fs.unlink(startupLink);
+  }
+  return exists;
+};
+
+
 module.exports = {
   installUpdate: installUpdate,
   handleSquirrelEvent: handleSquirrelEvent,
+  checkForOldStartup: checkForOldStartup,
 };
