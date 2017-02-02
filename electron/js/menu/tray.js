@@ -43,7 +43,7 @@ module.exports = {
     }
 
     appIcon = new Tray(iconPath);
-    var contextMenu = Menu.buildFromTemplate([
+    let contextMenu = Menu.buildFromTemplate([
       {
         label: locale.getText('trayOpen') + ' ' + config.NAME,
         click: function() {windowManager.getPrimaryWindow().show();},
