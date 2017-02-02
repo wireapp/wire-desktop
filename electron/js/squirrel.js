@@ -53,9 +53,9 @@ function getPrimaryWindow() {
 
 
 function spawn(command, args, callback) {
-  var error;
-  var spawnedProcess;
-  var stdout;
+  let error;
+  let spawnedProcess;
+  let stdout;
   stdout = '';
 
   try {
@@ -168,7 +168,7 @@ function scheduleUpdate() {
 
 
 function handleSquirrelEvent(shouldQuit) {
-  var squirrelEvent = process.argv[1];
+  let squirrelEvent = process.argv[1];
   switch (squirrelEvent) {
     case '--squirrel-install':
       createStartShortcut(function() {

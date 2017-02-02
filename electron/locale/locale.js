@@ -80,7 +80,7 @@ function parseLocale(locale) {
 
 
 function getText(text) {
-  var strings = eval(getCurrent());
+  let strings = eval(getCurrent());
   return strings[text] || en[text] || '';
 }
 

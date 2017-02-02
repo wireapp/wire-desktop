@@ -30,18 +30,18 @@ function getPrimaryWindow() {
 }
 
 
-var reloadTemplate = {
+let reloadTemplate = {
   label: 'Reload',
   click: function() {getPrimaryWindow().reload();},
 };
 
-var devToolsTemplate = {
+let devToolsTemplate = {
   label: 'Toggle DevTools',
   accelerator: 'Alt+CmdOrCtrl+I',
   click: function() {getPrimaryWindow().toggleDevTools();},
 };
 
-var devProductionTemplate = {
+let devProductionTemplate = {
   label: 'Production',
   type: 'radio',
   checked: env === config.PROD,
@@ -51,7 +51,7 @@ var devProductionTemplate = {
   },
 };
 
-var devInternalTemplate = {
+let devInternalTemplate = {
   label: 'Internal',
   type: 'radio',
   checked: env === config.INTERNAL,
@@ -61,7 +61,7 @@ var devInternalTemplate = {
   },
 };
 
-var devStagingTemplate = {
+let devStagingTemplate = {
   label: 'Staging',
   type: 'radio',
   checked: env === config.STAGING,
@@ -71,7 +71,7 @@ var devStagingTemplate = {
   },
 };
 
-var devDevTemplate = {
+let devDevTemplate = {
   label: 'Dev',
   type: 'radio',
   checked: env === config.DEV,
@@ -81,7 +81,7 @@ var devDevTemplate = {
   },
 };
 
-var devEdgeTemplate = {
+let devEdgeTemplate = {
   label: 'Edge',
   type: 'radio',
   checked: env === config.EDGE,
@@ -91,7 +91,7 @@ var devEdgeTemplate = {
   },
 };
 
-var devBennyTemplate = {
+let devBennyTemplate = {
   label: 'Cryptobox',
   type: 'radio',
   checked: env === config.CRYPTO,
@@ -101,7 +101,7 @@ var devBennyTemplate = {
   },
 };
 
-var devLocalhostTemplate = {
+let devLocalhostTemplate = {
   label: 'Localhost',
   type: 'radio',
   checked: env === config.LOCALHOST,
@@ -111,19 +111,19 @@ var devLocalhostTemplate = {
   },
 };
 
-var versionTemplate = {
+let versionTemplate = {
   label: 'Wire Version ' + config.VERSION,
 };
 
-var chromeVersionTemplate = {
+let chromeVersionTemplate = {
   label: 'Chrome Version ' + process.versions.chrome,
 };
 
-var electronVersionTemplate = {
+let electronVersionTemplate = {
   label: 'Electron Version ' + process.versions.electron,
 };
 
-var separatorTemplate = {
+let separatorTemplate = {
   type: 'separator',
 };
 
