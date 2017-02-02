@@ -20,8 +20,8 @@
 'use strict';
 
 const {app, shell, dialog, Menu} = require('electron');
-let autoLaunch = require('auto-launch');
-let launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
+const autoLaunch = require('auto-launch');
+const launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const init = require('./../lib/init');
@@ -52,7 +52,7 @@ function sendAction(action) {
 }
 
 
-let separatorTemplate = {
+const separatorTemplate = {
   type: 'separator',
 };
 
