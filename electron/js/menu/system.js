@@ -26,7 +26,6 @@ const launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : proces
 const config = require('./../config');
 const init = require('./../lib/init');
 const locale = require('./../../locale/locale');
-const squirrel = require('./../squirrel');
 const windowManager = require('./../window-manager');
 
 let menu;
@@ -444,6 +443,7 @@ module.exports = {
     }
 
     if (process.platform === 'win32') {
+      const squirrel = require('./../squirrel');
       if (squirrel.checkForOldStartup()) {
         if (!toggleAutoLaunchTemplate.checked) {
           toggleAutoLaunchTemplate.click();
