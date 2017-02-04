@@ -33,6 +33,7 @@ const fr = require('./strings-fr');
 const hr = require('./strings-hr');
 const hu = require('./strings-hu');
 const it = require('./strings-it');
+const pl = require('./strings-pl');
 const pt = require('./strings-pt');
 const ro = require('./strings-ro');
 const ru = require('./strings-ru');
@@ -51,6 +52,7 @@ const label = {
   'hr': 'Hrvatski',
   'hu': 'Magyar',
   'it': 'Italiano',
+  'pl': 'Polski',
   'pt': 'Português do Brasil',
   'ro': 'Română',
   'ru': 'Русский',
@@ -102,6 +104,7 @@ module.exports = {
   'hr': hr,
   'hu': hu,
   'it': it,
+  'pl': pl,
   'pt': pt,
   'ro': ro,
   'ru': ru,
