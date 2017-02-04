@@ -36,6 +36,7 @@ SUPPORTED_LOCALE = [
   'hr',
   'hu',
   'it',
+  'pl',
   'pt',
   'ro',
   'ru',
