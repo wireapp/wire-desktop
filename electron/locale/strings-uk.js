@@ -9,7 +9,6 @@ string.menuEdit = 'Редагувати';
 string.menuWindow = 'Вікно';
 string.menuView = 'Вигляд';
 string.menuHelp = 'Допомога';
-string.menuStartup = 'Стартувати Wire при завантаженні Windows';
 string.menuLocale = 'Мова';
 string.menuAbout = 'Про Wire';
 string.menuSignOut = 'Вийти';

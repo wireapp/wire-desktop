@@ -9,7 +9,7 @@ string.menuEdit = 'Redigér';
 string.menuWindow = 'Vindue';
 string.menuView = 'Vis';
 string.menuHelp = 'Hjælp';
-string.menuStartup = 'Start Wire automatisk, når Windows starter op';
+string.menuStartup = 'Start Wire når ved opstart';
 string.menuLocale = 'Sprog';
 string.menuAbout = 'Om Wire';
 string.menuSignOut = 'Log ud';
@@ -59,6 +59,7 @@ string.restartLater = 'Senere';
 string.restartNow = 'Genstart nu';
 
 string.trayOpen = 'Åbn';
+string.trayQuit = 'Afslut';
 
 string.unreadMessages = 'Ulæst besked';
 

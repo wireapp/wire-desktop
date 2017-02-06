@@ -2,7 +2,7 @@
   "name": "wire",
   "productName": "Wire",
   "description": "Modern communication, full privacy.",
-  "version": "2.11.2699",
+  "version": "2.11.2705",
   "main": "main.js",
   "updateWinUrl": "https://wire-app.wire.com/win/prod/",
   "environment": "production",
@@ -26,6 +26,6 @@
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
   "optionalDependencies": {
-    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#1.0.1"
+    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
   }
 }

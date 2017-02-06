@@ -9,7 +9,7 @@ string.menuEdit = 'Düzenle';
 string.menuWindow = 'Pencere';
 string.menuView = 'Görüntüle';
 string.menuHelp = 'Yardım';
-string.menuStartup = 'Wire’ı Windows başladığında başlat';
+string.menuStartup = 'Wire’ı başlangıçta çalıştır';
 string.menuLocale = 'Dil';
 string.menuAbout = 'Wire Hakkında';
 string.menuSignOut = 'Çıkış Yap';
@@ -59,6 +59,7 @@ string.restartLater = 'Sonra';
 string.restartNow = 'Şimdi Yeniden Başlat';
 
 string.trayOpen = 'Aç';
+string.trayQuit = 'Çık';
 
 string.unreadMessages = 'Okunmamış mesaj';
 

@@ -53,9 +53,9 @@ function getPrimaryWindow() {
 
 
 function spawn(command, args, callback) {
-  var error;
-  var spawnedProcess;
-  var stdout;
+  let error;
+  let spawnedProcess;
+  let stdout;
   stdout = '';
 
   try {
@@ -148,7 +148,7 @@ function checkUpdate() {
     if (update) {
       let main = getPrimaryWindow();
       if (main) {
-        getPrimaryWindow().webContents.send('wrapper-update-available');
+        main.webContents.send('wrapper-update-available');
       }
     }
   });
@@ -167,9 +167,8 @@ function scheduleUpdate() {
 };
 
 
-function handleSquirrelEvent(shouldQuit, callback) {
-  var squirrelEvent = process.argv[1];
-  callback(squirrelEvent);
+function handleSquirrelEvent(shouldQuit) {
+  let squirrelEvent = process.argv[1];
   switch (squirrelEvent) {
     case '--squirrel-install':
       createStartShortcut(function() {
@@ -181,6 +180,9 @@ function handleSquirrelEvent(shouldQuit, callback) {
     case '--squirrel-updated':
       updateDesktopShortcut(function() {
         updateTaskbarShortcut();
+        /* app.quit() is needed for a smooth update experience from the last public release.
+           Remove after the next public release of 2.12 on all platforms */
+        app.quit();
       });
       return true;
     case '--squirrel-uninstall':
@@ -200,7 +202,20 @@ function handleSquirrelEvent(shouldQuit, callback) {
   return false;
 };
 
+
+// TODO: remove this code after April 2017 (Backwards compatibility with 2in32 startup)
+function checkForOldStartup() {
+  const startupLink = path.resolve(path.join(startFolder, 'Startup', linkName));
+  const exists = fs.existsSync(startupLink);
+  if (exists) {
+    fs.unlink(startupLink);
+  }
+  return exists;
+};
+
+
 module.exports = {
   installUpdate: installUpdate,
   handleSquirrelEvent: handleSquirrelEvent,
+  checkForOldStartup: checkForOldStartup,
 };
