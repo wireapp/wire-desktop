@@ -36,11 +36,11 @@
   },
   "devDependencies": {
     "electron": "1.4.15",
-    "electron-builder": "12.3.0",
+    "electron-builder": "12.3.1",
     "electron-mocha": "3.3.0",
     "electron-packager": "8.5.0",
     "electron-rebuild": "1.4.0",
-    "eslint": "3.14.1",
+    "eslint": "3.15.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-electron-installer": "2.1.0",
