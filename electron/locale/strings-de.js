@@ -8,7 +8,7 @@ string.menuEdit = 'Bearbeiten';
 string.menuWindow = 'Fenster';
 string.menuView = 'Ansicht';
 string.menuHelp = 'Hilfe';
-string.menuStartup = 'Wire beim Windows-Start ausführen';
+string.menuStartup = 'Wire beim Start ausführen';
 string.menuLocale = 'Sprache';
 string.menuAbout = 'Über Wire';
 string.menuSignOut = 'Ausloggen';
@@ -30,6 +30,7 @@ string.menuCut = 'Ausschneiden';
 string.menuCopy = 'Kopieren';
 string.menuPaste = 'Einfügen';
 string.menuSelectAll = 'Alles auswählen';
+string.menuSpelling = 'Rechtschreibung während der Eingabe prüfen';
 string.menuMinimize = 'Minimieren';
 string.menuClose = 'Schließen';
 string.menuNextConversation = 'Nächste Unterhaltung';
@@ -56,5 +57,9 @@ string.restartLocale = 'Bitte starte Wire erneut, um diese Einstellung zu übern
 string.restartLater = 'Später';
 string.restartNow = 'Jetzt neustarten';
 
+string.trayOpen = 'Öffnen';
+string.trayQuit = 'Beenden';
+
+string.unreadMessages = 'Ungelesene Nachrichten';
 
 module.exports = string;

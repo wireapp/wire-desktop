@@ -9,7 +9,7 @@ string.menuEdit = 'Redigér';
 string.menuWindow = 'Vindue';
 string.menuView = 'Vis';
 string.menuHelp = 'Hjælp';
-string.menuStartup = 'Start Wire automatisk, når Windows starter op';
+string.menuStartup = 'Start Wire når ved opstart';
 string.menuLocale = 'Sprog';
 string.menuAbout = 'Om Wire';
 string.menuSignOut = 'Log ud';
@@ -31,6 +31,7 @@ string.menuCut = 'Klip';
 string.menuCopy = 'Kopiér';
 string.menuPaste = 'Indsæt';
 string.menuSelectAll = 'Vælg alle';
+string.menuSpelling = 'Stavekontrol mens du skriver';
 string.menuMinimize = 'Minimer';
 string.menuClose = 'Luk';
 string.menuNextConversation = 'Næste samtale';
@@ -57,5 +58,9 @@ string.restartLocale = 'Genstart venligst app’en for at aktivere denne indstil
 string.restartLater = 'Senere';
 string.restartNow = 'Genstart nu';
 
+string.trayOpen = 'Åbn';
+string.trayQuit = 'Afslut';
+
+string.unreadMessages = 'Ulæst besked';
 
 module.exports = string;

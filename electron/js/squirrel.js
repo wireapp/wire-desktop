@@ -17,8 +17,7 @@
  *
  */
 
-// https://github.com/atom/atom/blob/master/src/browser/squirrel-update.coffee
-
+// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
 'use strict';
 
 const {app} = require('electron');
@@ -27,6 +26,7 @@ const config = require('./config');
 const cp = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const windowManager = require('./window-manager');
 
 app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
 
@@ -40,18 +40,22 @@ let linkName = config.NAME + '.lnk';
 let homeFolder = path.resolve(process.env.HOMEPATH);
 
 let startFolder = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs'));
-let startupFolder = path.resolve(path.join(startFolder, 'Startup'));
 let taskbarFolder = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar'));
 
 let startLink = path.resolve(path.join(startFolder, config.NAME, linkName));
-let startupLink = path.resolve(path.join(startupFolder, linkName));
 let desktopLink = path.join(homeFolder, 'Desktop', linkName);
 let taskbarLink = path.join(taskbarFolder, linkName);
 
+
+function getPrimaryWindow() {
+  return windowManager.getPrimaryWindow();
+}
+
+
 function spawn(command, args, callback) {
-  var error;
-  var spawnedProcess;
-  var stdout;
+  let error;
+  let spawnedProcess;
+  let stdout;
   stdout = '';
 
   try {
@@ -62,7 +66,7 @@ function spawn(command, args, callback) {
       return typeof callback === 'function' ? callback(error, stdout) : void 0;
     });
     return;
-  }
+  };
 
   spawnedProcess.stdout.on('data', function(data) {
     return stdout += data;
@@ -99,13 +103,6 @@ function spawnUpdate(args, callback) {
 };
 
 
-function startupLinkExists(callback) {
-  fs.exists(startupLink, function(exists) {
-    callback(exists);
-  });
-}
-
-
 function createStartShortcut(callback) {
   spawnUpdate(['--createShortcut', exeName, '-l=StartMenu'], callback);
 };
@@ -116,24 +113,10 @@ function createDesktopShortcut(callback) {
 };
 
 
-function createStartupShortcut(callback) {
-  spawnUpdate(['--createShortcut', exeName, '-l=Startup'], callback);
-};
-
-
 function updateDesktopShortcut(callback) {
   fs.exists(desktopLink, function(exists) {
     if (exists) {
       createDesktopShortcut(callback);
-    }
-  });
-};
-
-
-function updateStartupShortcut(callback) {
-  fs.exists(startupLink, function(exists) {
-    if (exists) {
-      createStartupShortcut(callback);
     }
   });
 };
@@ -157,37 +140,49 @@ function removeShortcuts(callback) {
 };
 
 
-function removeStartupShortcut(callback) {
-  spawnUpdate(['--removeShortcut', exeName, '-l=Startup'], callback);
-};
-
-
-function updateSelfWin(callback) {
-  spawnUpdate(['--update', config.UPDATE_WIN_URL], callback);
+function checkUpdate() {
+  spawnUpdate(['--download', config.UPDATE_WIN_URL], function(error, update) {
+    if (error != null) {
+      return false;
+    }
+    if (update) {
+      let main = getPrimaryWindow();
+      if (main) {
+        main.webContents.send('wrapper-update-available');
+      }
+    }
+  });
 }
 
 
-function handleSquirrelEvent(shouldQuit, callback) {
-  var squirrelEvent = process.argv[1];
-  callback(squirrelEvent);
+function installUpdate() {
+  spawnUpdate(['--update', config.UPDATE_WIN_URL]);
+  app.quit();
+};
+
+
+function scheduleUpdate() {
+  setTimeout(checkUpdate, config.UPDATE_DELAY);
+  setInterval(checkUpdate, config.UPDATE_INTERVAL);
+};
+
+
+function handleSquirrelEvent(shouldQuit) {
+  let squirrelEvent = process.argv[1];
   switch (squirrelEvent) {
     case '--squirrel-install':
       createStartShortcut(function() {
         createDesktopShortcut(function() {
-          createStartupShortcut(function() {
-            app.quit();
-          });
+          app.quit();
         });
       });
       return true;
     case '--squirrel-updated':
-      // TODO (lipis): don't createStartup shortcut in the next prod release
       updateDesktopShortcut(function() {
-        updateTaskbarShortcut(function() {
-          updateStartupShortcut(function() {
-            app.quit();
-          });
-        });
+        updateTaskbarShortcut();
+        /* app.quit() is needed for a smooth update experience from the last public release.
+           Remove after the next public release of 2.12 on all platforms */
+        app.quit();
       });
       return true;
     case '--squirrel-uninstall':
@@ -199,17 +194,28 @@ function handleSquirrelEvent(shouldQuit, callback) {
       app.quit();
       return true;
   }
-  updateSelfWin();
   if (shouldQuit) {
     app.quit();
   }
+  scheduleUpdate();
   updateTaskbarShortcut();
   return false;
-}
+};
+
+
+// TODO: remove this code after April 2017 (Backwards compatibility with 2in32 startup)
+function checkForOldStartup() {
+  const startupLink = path.resolve(path.join(startFolder, 'Startup', linkName));
+  const exists = fs.existsSync(startupLink);
+  if (exists) {
+    fs.unlink(startupLink);
+  }
+  return exists;
+};
+
 
 module.exports = {
+  installUpdate: installUpdate,
   handleSquirrelEvent: handleSquirrelEvent,
-  createStartupShortcut: createStartupShortcut,
-  removeStartupShortcut: removeStartupShortcut,
-  startupLinkExists: startupLinkExists,
+  checkForOldStartup: checkForOldStartup,
 };

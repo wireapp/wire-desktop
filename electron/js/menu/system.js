@@ -19,16 +19,17 @@
 
 'use strict';
 
-const {app, shell, BrowserWindow, dialog, Menu} = require('electron');
-var autoLaunch = require('auto-launch');
-var launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
+const {app, shell, dialog, Menu} = require('electron');
+const autoLaunch = require('auto-launch');
+const launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const init = require('./../lib/init');
 const locale = require('./../../locale/locale');
+const windowManager = require('./../window-manager');
 
 let menu;
-var menuTemplate;
+let menuTemplate;
 
 const launcher = new autoLaunch({
   name: config.NAME,
@@ -36,23 +37,26 @@ const launcher = new autoLaunch({
   isHidden: true,
 });
 
-function getBrowserWindow() {
-  return BrowserWindow.getFocusedWindow();
+
+function getPrimaryWindow() {
+  return windowManager.getPrimaryWindow();
 }
+
 
 // TODO: disable menus when not in focus
 function sendAction(action) {
-  const window = getBrowserWindow();
+  const window = getPrimaryWindow();
   if (window) {
-    getBrowserWindow().webContents.send(action);
+    getPrimaryWindow().webContents.send(action);
   }
 }
 
-var separatorTemplate = {
+
+const separatorTemplate = {
   type: 'separator',
 };
 
-var localeTemplate = {
+let localeTemplate = {
   i18n: 'menuLocale',
   submenu: [
     {
@@ -104,6 +108,12 @@ var localeTemplate = {
         changeLocale('hr');
       },
     }, {
+      label: locale.label['hu'],
+      type: 'radio',
+      click: function() {
+        changeLocale('hu');
+      },
+    }, {
       label: locale.label['it'],
       type: 'radio',
       click: function() {
@@ -149,31 +159,17 @@ var localeTemplate = {
   ],
 };
 
-var startupTemplate = {
-  i18n: 'menuStartup',
-  type: 'checkbox',
-  click: function() {
-    const squirrel = require('./../squirrel');
-    let checked = menu.items[0].submenu.items[2].checked;
-    if (checked) {
-      squirrel.createStartupShortcut();
-    } else {
-      squirrel.removeStartupShortcut();
-    }
-  },
-};
-
-var aboutTemplate = {
+let aboutTemplate = {
   i18n: 'menuAbout',
   click: function() {menu.emit('about-wire');},
 };
 
-var signOutTemplate = {
+let signOutTemplate = {
   i18n: 'menuSignOut',
   click: function() {sendAction('sign-out');},
 };
 
-var conversationTemplate = {
+let conversationTemplate = {
   i18n: 'menuConversation',
   submenu: [
     {
@@ -213,34 +209,36 @@ var conversationTemplate = {
   ],
 };
 
-var showWireTemplate = {
+let showWireTemplate = {
   label: config.NAME,
   accelerator: 'CmdOrCtrl+1',
-  click: function() {BrowserWindow.getAllWindows()[0].show();},
+  click: function() {getPrimaryWindow().show();},
 };
 
-var toggleMenuTemplate = {
+let toggleMenuTemplate = {
   i18n: 'menuShowHide',
   click: function() {
-    if (getBrowserWindow().isMenuBarAutoHide()) {
-      getBrowserWindow().setAutoHideMenuBar(false);
+    let mainBrowserWindow = getPrimaryWindow();
+    if (mainBrowserWindow.isMenuBarAutoHide()) {
+      mainBrowserWindow.setAutoHideMenuBar(false);
     } else {
-      getBrowserWindow().setAutoHideMenuBar(true);
-      getBrowserWindow().setMenuBarVisibility(false);
+      mainBrowserWindow.setAutoHideMenuBar(true);
+      mainBrowserWindow.setMenuBarVisibility(false);
     }
   },
 };
 
-var toggleFullScreenTemplate = {
+let toggleFullScreenTemplate = {
   i18n: 'menuFullScreen',
   type: 'checkbox',
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
-    getBrowserWindow().setFullScreen(!getBrowserWindow().isFullScreen());
+    let mainBrowserWindow = getPrimaryWindow();
+    mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
 };
 
-var toggleAutoLaunchTemplate = {
+let toggleAutoLaunchTemplate = {
   i18n: 'menuStartup',
   type: 'checkbox',
   checked: init.restore('shouldAutoLaunch', false),
@@ -250,7 +248,7 @@ var toggleAutoLaunchTemplate = {
   },
 };
 
-var editTemplate = {
+let editTemplate = {
   i18n: 'menuEdit',
   submenu: [
     {i18n: 'menuUndo', role: 'undo'},
@@ -274,7 +272,7 @@ var editTemplate = {
   ],
 };
 
-var windowTemplate = {
+let windowTemplate = {
   i18n: 'menuWindow',
   role: 'window',
   submenu: [
@@ -296,7 +294,7 @@ var windowTemplate = {
   ],
 };
 
-var helpTemplate = {
+let helpTemplate = {
   i18n: 'menuHelp',
   role: 'help',
   submenu: [
@@ -319,7 +317,7 @@ var helpTemplate = {
   ],
 };
 
-var darwinTemplate = {
+let darwinTemplate = {
   label: config.NAME,
   submenu: [
     aboutTemplate,
@@ -353,7 +351,7 @@ var darwinTemplate = {
   ],
 };
 
-var win32Template = {
+let win32Template = {
   label: config.NAME,
   submenu: [
     {
@@ -362,7 +360,7 @@ var win32Template = {
       click: function() {sendAction('preferences-show');},
     },
     localeTemplate,
-    startupTemplate,
+    toggleAutoLaunchTemplate,
     separatorTemplate,
     signOutTemplate, {
       i18n: 'menuQuit',
@@ -372,7 +370,7 @@ var win32Template = {
   ],
 };
 
-var linuxTemplate = {
+let linuxTemplate = {
   label: config.NAME,
   submenu: [
     {
@@ -398,6 +396,7 @@ menuTemplate = [
   windowTemplate,
   helpTemplate,
 ];
+
 
 function processMenu(template, language) {
   for (let item of template) {
@@ -429,6 +428,7 @@ function changeLocale(language) {
   });
 }
 
+
 module.exports = {
   createMenu: function() {
     if (process.platform === 'darwin') {
@@ -444,15 +444,19 @@ module.exports = {
 
     if (process.platform === 'win32') {
       const squirrel = require('./../squirrel');
+      if (squirrel.checkForOldStartup()) {
+        if (!toggleAutoLaunchTemplate.checked) {
+          toggleAutoLaunchTemplate.click();
+          toggleAutoLaunchTemplate.checked = true;
+        }
+      };
+
       menuTemplate.unshift(win32Template);
       windowTemplate['i18n'] = 'menuView';
       windowTemplate.submenu.unshift(
         toggleMenuTemplate,
         separatorTemplate
       );
-      squirrel.startupLinkExists(function(exists) {
-        menu.items[0].submenu.items[2].checked = exists;
-      });
     }
 
     if (process.platform === 'linux') {

@@ -31,6 +31,7 @@ const es = require('./strings-es');
 const fi = require('./strings-fi');
 const fr = require('./strings-fr');
 const hr = require('./strings-hr');
+const hu = require('./strings-hu');
 const it = require('./strings-it');
 const pt = require('./strings-pt');
 const ro = require('./strings-ro');
@@ -48,6 +49,7 @@ const label = {
   'fi': 'Suomi',
   'fr': 'Français',
   'hr': 'Hrvatski',
+  'hu': 'Magyar',
   'it': 'Italiano',
   'pt': 'Português do Brasil',
   'ro': 'Română',
@@ -78,7 +80,7 @@ function parseLocale(locale) {
 
 
 function getText(text) {
-  var strings = eval(getCurrent());
+  let strings = eval(getCurrent());
   return strings[text] || en[text] || '';
 }
 
@@ -98,6 +100,7 @@ module.exports = {
   'fi': fi,
   'fr': fr,
   'hr': hr,
+  'hu': hu,
   'it': it,
   'pt': pt,
   'ro': ro,

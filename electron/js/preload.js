@@ -46,7 +46,7 @@ function getAdressBook () {
 }
 
 if (process.platform === 'darwin') {
-  Object.defineProperty(window, 'zAddressBook', {get: getAdressBook});
+  Object.defineProperty(window, 'wAddressBook', {get: getAdressBook});
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -119,8 +119,16 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
       ipcRenderer.send('notification-click');
     });
 
-    amplify.subscribe(z.event.WebApp.LOADED, function() {
+    amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
       ipcRenderer.send('loaded');
+    });
+
+    amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
+      if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
+        ipcRenderer.send('wrapper-restart');
+      } else {
+        ipcRenderer.send('wrapper-reload');
+      }
     });
   }
   // else we are on /auth
@@ -130,7 +138,7 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
 // Webapp Events
 ///////////////////////////////////////////////////////////////////////////////
 ipcRenderer.on('sign-out', function() {
-  amplify.publish(z.event.WebApp.LOGOUT.ASK_TO_CLEAR_DATA);
+  amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
 });
 
 ipcRenderer.on('preferences-show', function() {
@@ -183,4 +191,8 @@ ipcRenderer.on('conversation-next', function() {
 
 ipcRenderer.on('conversation-show', function(conversation_id) {
   amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id);
+});
+
+ipcRenderer.on('wrapper-update-available', function() {
+  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
 });

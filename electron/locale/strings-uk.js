@@ -9,7 +9,6 @@ string.menuEdit = 'Редагувати';
 string.menuWindow = 'Вікно';
 string.menuView = 'Вигляд';
 string.menuHelp = 'Допомога';
-string.menuStartup = 'Стартувати Wire при завантаженні Windows';
 string.menuLocale = 'Мова';
 string.menuAbout = 'Про Wire';
 string.menuSignOut = 'Вийти';
@@ -31,6 +30,7 @@ string.menuCut = 'Вирізати';
 string.menuCopy = 'Скопіювати';
 string.menuPaste = 'Вставити';
 string.menuSelectAll = 'Виділити все';
+string.menuSpelling = 'Перевіряти правопис під час введення';
 string.menuMinimize = 'Згорнути';
 string.menuClose = 'Закрити';
 string.menuNextConversation = 'Наступна розмова';
@@ -57,5 +57,8 @@ string.restartLocale = 'Перезапустіть додаток, щоб змі
 string.restartLater = 'Пізніше';
 string.restartNow = 'Перезавантажити додаток негайно';
 
+string.trayOpen = 'Вiдкрити';
+
+string.unreadMessages = 'Непрочитане повідомлення';
 
 module.exports = string;

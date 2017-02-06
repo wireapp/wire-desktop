@@ -9,7 +9,6 @@ string.menuEdit = 'Modifier';
 string.menuWindow = 'Fenêtre';
 string.menuView = 'Vue';
 string.menuHelp = 'Aide';
-string.menuStartup = 'Lancer Wire au démarrage de Windows';
 string.menuLocale = 'Langue';
 string.menuAbout = 'À propos de Wire';
 string.menuSignOut = 'Se déconnecter';
@@ -56,6 +55,8 @@ string.restartNeeded = 'Redémarrage nécessaire';
 string.restartLocale = 'L’application doit être redémarrée pour que les nouveaux paramètres prennent effet.';
 string.restartLater = 'Plus tard';
 string.restartNow = 'Redémarrer maintenant';
+
+string.trayOpen = 'Ouvrir';
 
 
 module.exports = string;

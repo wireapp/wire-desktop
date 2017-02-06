@@ -9,7 +9,6 @@ string.menuEdit = 'Modifica';
 string.menuWindow = 'Finestre';
 string.menuView = 'Mostra';
 string.menuHelp = 'Aiuto';
-string.menuStartup = 'Apri Wire all’avvio di Windows';
 string.menuLocale = 'Lingua';
 string.menuAbout = 'A proposito di Wire';
 string.menuSignOut = 'Esci dall’account';
@@ -56,6 +55,8 @@ string.restartNeeded = 'Riavvio necessario';
 string.restartLocale = 'Riavvia l’app affinchè questa impostazione abbia effetto.';
 string.restartLater = 'Più tardi';
 string.restartNow = 'Riavvia adesso';
+
+string.trayOpen = 'Apri';
 
 
 module.exports = string;

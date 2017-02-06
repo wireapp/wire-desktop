@@ -9,7 +9,6 @@ string.menuEdit = 'Muokkaa';
 string.menuWindow = 'Ikkuna';
 string.menuView = 'Näytä';
 string.menuHelp = 'Ohje';
-string.menuStartup = 'Käynnistä Wire Windowsin käynnistyessä';
 string.menuLocale = 'Kieli';
 string.menuAbout = 'Tietoja Wirestä';
 string.menuSignOut = 'Kirjaudu ulos';
@@ -31,6 +30,7 @@ string.menuCut = 'Leikkaa';
 string.menuCopy = 'Kopioi';
 string.menuPaste = 'Liitä';
 string.menuSelectAll = 'Valitse kaikki';
+string.menuSpelling = 'Tarkista oikeinkirjoitus kirjoitettaessa';
 string.menuMinimize = 'Pienennä';
 string.menuClose = 'Sulje';
 string.menuNextConversation = 'Seuraava keskustelu';
@@ -57,5 +57,8 @@ string.restartLocale = 'Käynnistä ohjelma uudelleen, jotta tämä asetus tulee
 string.restartLater = 'Myöhemmin';
 string.restartNow = 'Käynnistä uudelleen nyt';
 
+string.trayOpen = 'Avaa';
+
+string.unreadMessages = 'Lukematon viesti';
 
 module.exports = string;

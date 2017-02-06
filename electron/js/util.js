@@ -49,7 +49,7 @@ module.exports = {
       win.setMenuBarVisibility(false);
     }
 
-    var height = config.HEIGHT_AUTH;
+    let height = config.HEIGHT_AUTH;
     if (process.platform === 'win32') {
       height += 40;
     }

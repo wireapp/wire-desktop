@@ -9,7 +9,6 @@ string.menuEdit = 'Upravit';
 string.menuWindow = 'Okno';
 string.menuView = 'Zobrazení';
 string.menuHelp = 'Pomoc';
-string.menuStartup = 'Spustit Wire při startu Windows';
 string.menuLocale = 'Jazyk';
 string.menuAbout = 'O aplikaci Wire';
 string.menuSignOut = 'Odhlásit';
@@ -56,6 +55,8 @@ string.restartNeeded = 'Nutný restart';
 string.restartLocale = 'Pro použití změněných nastavení restartujte prosím aplikaci.';
 string.restartLater = 'Později';
 string.restartNow = 'Restartovat nyní';
+
+string.trayOpen = 'Otevřít';
 
 
 module.exports = string;

@@ -9,7 +9,6 @@ string.menuEdit = 'Promjeni';
 string.menuWindow = 'Prozor';
 string.menuView = 'Pregled';
 string.menuHelp = 'Pomoć';
-string.menuStartup = 'Automatski pokreni Wire pri pokretanju Windowsa';
 string.menuLocale = 'Jezik';
 string.menuAbout = 'O Wire';
 string.menuSignOut = 'Odjava';
@@ -56,6 +55,8 @@ string.restartNeeded = 'Potrebno ponovno pokretanje';
 string.restartLocale = 'Molimo ponovno pokrenite aplikaciju kako bi promjene stupile na snagu.';
 string.restartLater = 'Kasnije';
 string.restartNow = 'Ponovno pokreni';
+
+string.trayOpen = 'Otvori';
 
 
 module.exports = string;
