@@ -46,7 +46,10 @@ module.exports = {
     let contextMenu = Menu.buildFromTemplate([
       {
         label: locale.getText('trayOpen') + ' ' + config.NAME,
-        click: function() {windowManager.getPrimaryWindow().show();},
+        click: function() {
+          if (windowManager.getPrimaryWindow().isMinimized()) windowManager.getPrimaryWindow().restore();
+          else windowManager.getPrimaryWindow().show();
+        },
       }, {
         label: locale.getText('trayQuit'),
         click: function() {app.quit();},
@@ -56,7 +59,8 @@ module.exports = {
     appIcon.setToolTip(config.NAME);
     appIcon.setContextMenu(contextMenu);
     appIcon.on('click', function () {
-      windowManager.getPrimaryWindow().show();
+      if (windowManager.getPrimaryWindow().isMinimized()) windowManager.getPrimaryWindow().restore();
+      else windowManager.getPrimaryWindow().show();
     });
   },
 
