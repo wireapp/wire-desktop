@@ -36,8 +36,6 @@ process.once('loaded', function() {
   global.desktopCapturer = desktopCapturer;
   global.winston = require('winston');
 
-  console.log(path.join(app.getPath('userData'), config.CONSOLE_LOG))
-
   winston
     .add(winston.transports.File, {
       filename: path.join(app.getPath('userData'), config.CONSOLE_LOG),
