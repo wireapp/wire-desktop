@@ -218,7 +218,7 @@ function showMainWindow() {
     if (enteredWebapp) {
       main.webContents.send('webapp-loaded', {
         electron_version: app.getVersion(),
-        notification_icon: path.join(app.getAppPath(), 'img', 'notification.png')
+        notification_icon: path.join(app.getAppPath(), 'img', 'notification.png'),
       });
     } else {
       main.webContents.send('splash-screen-loaded');

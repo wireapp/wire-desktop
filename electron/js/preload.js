@@ -22,7 +22,6 @@
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
 const {app} = remote;
 const pkg = require('./../package.json');
-const config = require('./config');
 const path = require('path');
 
 webFrame.setZoomLevelLimits(1, 1);
@@ -38,7 +37,7 @@ process.once('loaded', function() {
 
   winston
     .add(winston.transports.File, {
-      filename: path.join(app.getPath('userData'), config.CONSOLE_LOG),
+      filename: path.join(app.getPath('userData'), require('./config').CONSOLE_LOG),
       handleExceptions: true,
     })
     .remove(winston.transports.Console)
