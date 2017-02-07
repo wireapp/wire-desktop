@@ -19,8 +19,11 @@
 
 'use strict';
 
-const {ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const {app} = remote;
 const pkg = require('./../package.json');
+const config = require('./config');
+const path = require('path');
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -31,6 +34,17 @@ process.once('loaded', function() {
   global.setImmediate = _setImmediate;
   global.openGraph = require('./lib/openGraph');
   global.desktopCapturer = desktopCapturer;
+  global.winston = require('winston');
+
+  console.log(path.join(app.getPath('userData'), config.CONSOLE_LOG))
+
+  winston
+    .add(winston.transports.File, {
+      filename: path.join(app.getPath('userData'), config.CONSOLE_LOG),
+      handleExceptions: true,
+    })
+    .remove(winston.transports.Console)
+    .info(pkg.productName, 'Version', pkg.version);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,16 +86,6 @@ ipcRenderer.once('splash-screen-loaded', function() {
 ipcRenderer.once('webapp-loaded', function(sender, config) {
   window.electron_version = config.electron_version;
   window.notification_icon = config.notification_icon;
-  window.winston = require('winston');
-
-  winston
-    .add(winston.transports.File, {
-      filename: config.logging_file,
-      handleExceptions: true,
-    })
-    .remove(winston.transports.Console)
-    .info(pkg.productName, 'Version', pkg.version);
-
   require('./menu/context');
 
   // loading webapp failed
