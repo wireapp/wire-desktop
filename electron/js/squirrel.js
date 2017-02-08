@@ -157,13 +157,12 @@ function checkUpdate() {
 
 function installUpdate() {
   spawnUpdate(['--update', config.UPDATE_WIN_URL]);
-  app.quit();
 };
 
 
 function scheduleUpdate() {
-  setTimeout(checkUpdate, config.UPDATE_DELAY);
   setInterval(checkUpdate, config.UPDATE_INTERVAL);
+  installUpdate();
 };
 
 
