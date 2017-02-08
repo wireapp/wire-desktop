@@ -140,21 +140,6 @@ function removeShortcuts(callback) {
 };
 
 
-function checkUpdate() {
-  spawnUpdate(['--download', config.UPDATE_WIN_URL], function(error, update) {
-    if (error != null) {
-      return false;
-    }
-    if (update) {
-      let main = getPrimaryWindow();
-      if (main) {
-        main.webContents.send('wrapper-update-available');
-      }
-    }
-  });
-}
-
-
 function installUpdate() {
   spawnUpdate(['--update', config.UPDATE_WIN_URL]);
 };
