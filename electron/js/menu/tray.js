@@ -47,8 +47,7 @@ module.exports = {
       {
         label: locale.getText('trayOpen') + ' ' + config.NAME,
         click: function() {
-          const win = windowManager.getPrimaryWindow();
-          windowManager.showPrimaryWindow(win);
+          windowManager.showPrimaryWindow();
         },
       }, {
         label: locale.getText('trayQuit'),
@@ -59,8 +58,7 @@ module.exports = {
     appIcon.setToolTip(config.NAME);
     appIcon.setContextMenu(contextMenu);
     appIcon.on('click', function() {
-      const win = windowManager.getPrimaryWindow();
-      windowManager.showPrimaryWindow(win);
+      windowManager.showPrimaryWindow();
     });
   },
 

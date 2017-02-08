@@ -37,7 +37,8 @@ function getPrimaryWindow() {
 };
 
 
-function showPrimaryWindow(win) {
+function showPrimaryWindow() {
+  var win = getPrimaryWindow();
   if (win.isMinimized()) {
     win.restore();
   } else if (!win.isVisible()) {
