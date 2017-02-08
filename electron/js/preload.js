@@ -195,6 +195,5 @@ ipcRenderer.on('conversation-show', function(conversation_id) {
 });
 
 ipcRenderer.on('wrapper-update-available', function() {
-  // TODO: Remove comment when the update for newer version is fixed
-  // amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
+  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
 });

@@ -161,8 +161,8 @@ function installUpdate() {
 
 
 function scheduleUpdate() {
-  setInterval(checkUpdate, config.UPDATE_INTERVAL);
-  installUpdate();
+  setTimeout(installUpdate, config.UPDATE_DELAY);
+  setInterval(installUpdate, config.UPDATE_INTERVAL);
 };
 
 
