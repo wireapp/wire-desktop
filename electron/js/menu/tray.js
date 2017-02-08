@@ -32,6 +32,7 @@ const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
 const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
 const iconOverlayPath = path.join(app.getAppPath(), 'img', 'taskbar.overlay.png');
 
+
 let lastUnreadCount = 0;
 
 let appIcon = null;
@@ -47,12 +48,8 @@ module.exports = {
       {
         label: locale.getText('trayOpen') + ' ' + config.NAME,
         click: function() {
-          if (windowManager.getPrimaryWindow().isMinimized()) {
-            windowManager.getPrimaryWindow().restore();
-          } else if (!windowManager.getPrimaryWindow().isVisible()) {
-            windowManager.getPrimaryWindow().show();
-          }
-          windowManager.getPrimaryWindow().focus();
+          const win = windowManager.getPrimaryWindow();
+          windowManager.showPrimaryWindow(win);
         },
       }, {
         label: locale.getText('trayQuit'),
@@ -62,13 +59,9 @@ module.exports = {
 
     appIcon.setToolTip(config.NAME);
     appIcon.setContextMenu(contextMenu);
-    appIcon.on('click', function () {
-      if (windowManager.getPrimaryWindow().isMinimized()) {
-        windowManager.getPrimaryWindow().restore();
-      } else if (!windowManager.getPrimaryWindow().isVisible()) {
-        windowManager.getPrimaryWindow().show();
-      }
-      windowManager.getPrimaryWindow().focus();
+    appIcon.on('click', function() {
+      const win = windowManager.getPrimaryWindow();
+      windowManager.showPrimaryWindow(win);
     });
   },
 
