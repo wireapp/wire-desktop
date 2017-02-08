@@ -26,7 +26,6 @@ const config = require('./config');
 const cp = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const windowManager = require('./window-manager');
 
 app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
 
@@ -45,11 +44,6 @@ let taskbarFolder = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'In
 let startLink = path.resolve(path.join(startFolder, config.NAME, linkName));
 let desktopLink = path.join(homeFolder, 'Desktop', linkName);
 let taskbarLink = path.join(taskbarFolder, linkName);
-
-
-function getPrimaryWindow() {
-  return windowManager.getPrimaryWindow();
-}
 
 
 function spawn(command, args, callback) {
