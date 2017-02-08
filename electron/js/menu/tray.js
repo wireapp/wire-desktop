@@ -49,10 +49,10 @@ module.exports = {
         click: function() {
           if (windowManager.getPrimaryWindow().isMinimized()) {
             windowManager.getPrimaryWindow().restore();
-            windowManager.getPrimaryWindow().focus();
-          } else {
+          } else if (!windowManager.getPrimaryWindow().isVisible()) {
             windowManager.getPrimaryWindow().show();
           }
+          windowManager.getPrimaryWindow().focus();
         },
       }, {
         label: locale.getText('trayQuit'),
@@ -65,10 +65,10 @@ module.exports = {
     appIcon.on('click', function () {
       if (windowManager.getPrimaryWindow().isMinimized()) {
         windowManager.getPrimaryWindow().restore();
-        windowManager.getPrimaryWindow().focus();
-      } else {
+      } else if (!windowManager.getPrimaryWindow().isVisible()) {
         windowManager.getPrimaryWindow().show();
       }
+      windowManager.getPrimaryWindow().focus();
     });
   },
 
