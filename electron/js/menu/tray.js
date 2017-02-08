@@ -47,8 +47,12 @@ module.exports = {
       {
         label: locale.getText('trayOpen') + ' ' + config.NAME,
         click: function() {
-          if (windowManager.getPrimaryWindow().isMinimized()) windowManager.getPrimaryWindow().restore();
-          else windowManager.getPrimaryWindow().show();
+          if (windowManager.getPrimaryWindow().isMinimized()) {
+            windowManager.getPrimaryWindow().restore();
+            windowManager.getPrimaryWindow().focus();
+          } else {
+            windowManager.getPrimaryWindow().show();
+          }
         },
       }, {
         label: locale.getText('trayQuit'),
@@ -59,8 +63,12 @@ module.exports = {
     appIcon.setToolTip(config.NAME);
     appIcon.setContextMenu(contextMenu);
     appIcon.on('click', function () {
-      if (windowManager.getPrimaryWindow().isMinimized()) windowManager.getPrimaryWindow().restore();
-      else windowManager.getPrimaryWindow().show();
+      if (windowManager.getPrimaryWindow().isMinimized()) {
+        windowManager.getPrimaryWindow().restore();
+        windowManager.getPrimaryWindow().focus();
+      } else {
+        windowManager.getPrimaryWindow().show();
+      }
     });
   },
 
