@@ -267,7 +267,6 @@ function showAboutWindow() {
 }
 
 function discloseWindowID(browserWindow) {
-  const windowManager = require('./js/window-manager');
   windowManager.setPrimaryWindowId(browserWindow.id);
 };
 
