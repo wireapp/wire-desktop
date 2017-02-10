@@ -35,7 +35,7 @@ const systemMenu = require('./js/menu/system');
 const developerMenu = require('./js/menu/developer');
 const tray = require('./js/menu/tray');
 const util = require('./js/util');
-const windowManager = require('./js/window-manager.js');
+const windowManager = require('./js/window-manager');
 
 const APP_PATH = app.getAppPath();
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');

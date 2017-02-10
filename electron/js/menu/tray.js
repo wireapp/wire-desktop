@@ -24,7 +24,6 @@ const {app, Menu, Tray} = require('electron');
 const path = require('path');
 const config = require('./../config');
 const locale = require('./../../locale/locale');
-const windowManager = require('./../window-manager');
 
 const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
 
@@ -46,9 +45,7 @@ module.exports = {
     let contextMenu = Menu.buildFromTemplate([
       {
         label: locale.getText('trayOpen') + ' ' + config.NAME,
-        click: function() {
-          windowManager.showPrimaryWindow();
-        },
+        click: function() {windowManager.showPrimaryWindow();},
       }, {
         label: locale.getText('trayQuit'),
         click: function() {app.quit();},
