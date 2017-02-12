@@ -66,6 +66,11 @@ if (config.DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
+if (argv.portable) {
+  const USER_PATH = path.join(APP_PATH, '..', 'WireData');
+  app.setPath('userData', USER_PATH);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Single Instance stuff
 ///////////////////////////////////////////////////////////////////////////////
