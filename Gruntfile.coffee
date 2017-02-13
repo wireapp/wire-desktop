@@ -17,6 +17,7 @@
 #
 
 electron_packager = require 'electron-packager'
+os = require 'os'
 
 ELECTRON_PACKAGE_JSON = 'electron/package.json'
 PACKAGE_JSON = 'package.json'
@@ -109,6 +110,11 @@ module.exports = (grunt) ->
             OriginalFilename: '<%= info.name %>.exe'
             ProductName: '<%= info.name %>'
             InternalName: '<%= info.name %>.exe'
+
+      linux:
+         options:
+           platform: 'linux'
+           arch: os.arch()
 
     'create-windows-installer':
       internal:
@@ -251,13 +257,14 @@ module.exports = (grunt) ->
     execSync "productbuild --component '#{options.dir}' /Applications --sign '#{options.sign.package}' '#{options.name}.pkg'"
 
 
-  grunt.registerTask 'release',    ['build-inc', 'gitcommit', 'gittag', 'gitpush']
+  grunt.registerTask 'release',     ['build-inc', 'gitcommit', 'gittag', 'gitpush']
 
-  grunt.registerTask 'macos',      ['clean:macos', 'update-keys', 'release-internal', 'electron:macos_internal']
-  grunt.registerTask 'macos-prod', ['clean:macos', 'update-keys', 'release-prod', 'electron:macos_prod', 'productbuild']
+  grunt.registerTask 'macos',       ['clean:macos', 'update-keys', 'release-internal', 'electron:macos_internal']
+  grunt.registerTask 'macos-prod',  ['clean:macos', 'update-keys', 'release-prod', 'electron:macos_prod', 'productbuild']
 
-  grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
-  grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
+  grunt.registerTask 'win',         ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
+  grunt.registerTask 'win-prod',    ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'shell']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'shell']
+  grunt.registerTask 'linux',       ['clean:linux', 'update-keys', 'release-internal', 'shell']
+  grunt.registerTask 'linux-prod',  ['clean:linux', 'update-keys', 'release-prod', 'shell']
+  grunt.registerTask 'linux-local', ['clean:linux', 'update-keys', 'release-prod', 'electron:linux']
