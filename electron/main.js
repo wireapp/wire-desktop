@@ -35,6 +35,7 @@ const systemMenu = require('./js/menu/system');
 const developerMenu = require('./js/menu/developer');
 const tray = require('./js/menu/tray');
 const util = require('./js/util');
+const windowManager = require('./js/window-manager');
 
 const APP_PATH = app.getAppPath();
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
@@ -79,10 +80,7 @@ if (argv.portable) {
 if (process.platform !== 'darwin') {
   shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
     if (main) {
-      if (!main.isVisible()) {
-        main.show();
-      }
-      main.focus();
+      windowManager.showPrimaryWindow();
     }
     return true;
   });
@@ -130,7 +128,7 @@ ipcMain.on('save-picture', function(event, fileName, bytes) {
 });
 
 ipcMain.on('notification-click', function() {
-  main.show();
+  windowManager.showPrimaryWindow();
 });
 
 ipcMain.on('google-auth-request', function(event) {
@@ -274,7 +272,6 @@ function showAboutWindow() {
 }
 
 function discloseWindowID(browserWindow) {
-  const windowManager = require('./js/window-manager');
   windowManager.setPrimaryWindowId(browserWindow.id);
 };
 
