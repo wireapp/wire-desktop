@@ -39,6 +39,7 @@ const ru = require('./strings-ru');
 const sl = require('./strings-sl');
 const tr = require('./strings-tr');
 const uk = require('./strings-uk');
+const zh = require('./strings-zh');
 
 const label = {
   'en': 'English',
@@ -57,6 +58,7 @@ const label = {
   'sl': 'Slovenščina',
   'tr': 'Türkçe',
   'uk': 'Українська',
+  'zh': '中文',
 };
 
 let current;
@@ -108,6 +110,7 @@ module.exports = {
   'sl': sl,
   'tr': tr,
   'uk': uk,
+  'zh': zh,
   'label': label,
   getCurrent: getCurrent,
   getText: getText,

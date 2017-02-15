@@ -78,6 +78,7 @@ let config = {
     'sl',
     'tr',
     'uk',
+    'zh',
   ],
 
   RAYGUN_API_KEY: '',
