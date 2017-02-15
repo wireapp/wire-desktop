@@ -37,7 +37,19 @@ function getPrimaryWindow() {
 };
 
 
+function showPrimaryWindow() {
+  var win = getPrimaryWindow();
+  if (win.isMinimized()) {
+    win.restore();
+  } else if (!win.isVisible()) {
+    win.show();
+  }
+  win.focus();
+};
+
+
 module.exports = {
   setPrimaryWindowId: setPrimaryWindowId,
   getPrimaryWindow: getPrimaryWindow,
+  showPrimaryWindow: showPrimaryWindow,
 };

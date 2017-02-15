@@ -17,6 +17,7 @@
 #
 
 electron_packager = require 'electron-packager'
+createWindowsInstaller = require('electron-winstaller').createWindowsInstaller
 
 ELECTRON_PACKAGE_JSON = 'electron/package.json'
 PACKAGE_JSON = 'package.json'
@@ -207,7 +208,7 @@ module.exports = (grunt) ->
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
   grunt.registerMultiTask 'electron', 'Package Electron apps', ->
-    done = this.async()
+    done = @async()
     electron_packager @options(), (error) ->
       if (error)
         grunt.warn error
@@ -250,6 +251,12 @@ module.exports = (grunt) ->
     execSync "codesign -fs '#{options.sign.app}' --entitlements '#{options.parent}' '#{options.dir}'"
     execSync "productbuild --component '#{options.dir}' /Applications --sign '#{options.sign.package}' '#{options.name}.pkg'"
 
+  grunt.registerMultiTask 'create-windows-installer', 'Create the Windows installer', ->
+    @requiresConfig "#{@name}.#{@target}.appDirectory"
+
+    config = grunt.config "#{@name}.#{@target}"
+    done = @async()
+    createWindowsInstaller(config).then done, done
 
   grunt.registerTask 'release',    ['build-inc', 'gitcommit', 'gittag', 'gitpush']
 
