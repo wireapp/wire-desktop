@@ -61,6 +61,10 @@ npm run build:win
 npm run build:linux
 ```
 
+### Troubleshooting
+
+If you are having troubles building Wire for Windows, then [this wiki page](https://github.com/wireapp/wire-desktop/wiki/Troubleshooting) might be of help.
+
 ### Translations
 
 All Wire translations are crowdsourced via [Crowdin](https://crowdin.com/projects/wire).
