@@ -36,7 +36,7 @@ process.once('loaded', function() {
   global.winston = require('winston');
 
   const logFilePath = path.join(app.getPath('userData'), require('./config').CONSOLE_LOG);
-  console.log('Logging into file: ' + logFilePath);
+  console.log('Logging into file', logFilePath);
 
   winston
     .add(winston.transports.File, {
