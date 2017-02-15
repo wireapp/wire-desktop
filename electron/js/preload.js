@@ -35,9 +35,12 @@ process.once('loaded', function() {
   global.desktopCapturer = desktopCapturer;
   global.winston = require('winston');
 
+  const logFilePath = path.join(app.getPath('userData'), require('./config').CONSOLE_LOG);
+  console.log('Logging into file', logFilePath);
+
   winston
     .add(winston.transports.File, {
-      filename: path.join(app.getPath('userData'), require('./config').CONSOLE_LOG),
+      filename: logFilePath,
       handleExceptions: true,
     })
     .remove(winston.transports.Console)
