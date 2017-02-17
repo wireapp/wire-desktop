@@ -26,6 +26,7 @@ const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
 
+const certutils = require('./js/certutils');
 const config = require('./js/config');
 const download = require('./js/lib/download');
 const googleAuth = require('./js/lib/googleAuth');
@@ -167,6 +168,23 @@ function showMainWindow() {
   } else {
     main.setBounds(init.restore('bounds', main.getBounds()));
   }
+
+  main.webContents.session.setCertificateVerifyProc((hostname, certificate, callback) => {
+    const cert = certificate.data;
+
+    if (certutils.hostnameShouldBePinned(hostname)) {
+      if (certutils.verifyPinning(hostname, cert) === true) {
+        console.log(`\x1b[32mPinning for hostname ${hostname} verified.\x1b[0m`);
+        callback(true);
+      } else {
+        console.log(`\x1b[31mPinning for hostname ${hostname} failed.\x1b[0m`);
+        callback(false);
+      }
+    } else {
+      console.log(`\x1b[2mNo pinning required for hostname ${hostname}\x1b[0m`);
+      callback(true);
+    }
+  });
 
   main.loadURL(SPLASH_HTML);
 

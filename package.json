@@ -47,6 +47,7 @@
     "grunt-git": "1.0.3",
     "grunt-github-changes": "0.1.0",
     "grunt-shell": "2.1.0",
-    "load-grunt-tasks": "3.5.2"
-  }
+    "load-grunt-tasks": "3.5.2",
+    "pkijs": "^2.0.48"
+   }
 }
