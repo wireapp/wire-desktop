@@ -28,8 +28,11 @@ const windowManager = require('./../window-manager');
 
 const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
 
-const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
-const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
+const iconName = (process.platform === 'darwin') ? 'tray-Template.' : 'tray.';
+const iconBadgeName = (process.platform === 'darwin') ? 'tray.badge-Template.' : 'tray.';
+
+const iconPath = path.join(app.getAppPath(), 'img', (iconName + iconExt));
+const iconBadgePath = path.join(app.getAppPath(), 'img', (iconBadgeName + iconExt));
 const iconOverlayPath = path.join(app.getAppPath(), 'img', 'taskbar.overlay.png');
 
 let lastUnreadCount = 0;
