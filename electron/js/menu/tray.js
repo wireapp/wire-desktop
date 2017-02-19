@@ -41,10 +41,6 @@ let appIcon = null;
 
 module.exports = {
   createTrayIcon: function() {
-    if (process.platform === 'darwin') {
-      return;
-    }
-
     appIcon = new Tray(iconPath);
     let contextMenu = Menu.buildFromTemplate([
       {
