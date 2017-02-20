@@ -36,7 +36,7 @@ const pins = [
   {url: 'prod-assets.wire.com',      keys: [MAIN_CERT]}
 ];
 
-const str2ab = (str) => {
+const binToArrayBuffer = (str) => {
   const buf = new ArrayBuffer(str.length);
   const bufView = new Uint8Array(buf);
   for (let index = 0, strLen = str.length; index < strLen; index++) {
@@ -45,15 +45,15 @@ const str2ab = (str) => {
   return buf;
 };
 
-const pem2cert = (pem) => {
-  const strippedPem = new String(pem).replace(/(-----(BEGIN|END) CERTIFICATE-----|\n)/g, '').trim();
-  const raw = new Buffer(strippedPem, 'base64').toString('binary');
-  const asn1 = asn1js.fromBER(str2ab(raw)).result;
+const pemToCert = (pem) => {
+  const strippedPem = pem.replace(/(-----(BEGIN|END) CERTIFICATE-----|\n)/g, '').trim();
+  const raw = Buffer.from(strippedPem, 'base64').toString('binary');
+  const asn1 = asn1js.fromBER(binToArrayBuffer(raw)).result;
   return new pkijs.Certificate({schema: asn1});
 };
 
-const getPublicKeyHash = (cert) => {
-  const certificate = pem2cert(cert);
+const getPublicKeyHash = (pemString) => {
+  const certificate = pemToCert(pemString);
   const publicKey = new Uint8Array(certificate.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
   let shasum = crypto.createHash('sha1');
   shasum.update(publicKey);
