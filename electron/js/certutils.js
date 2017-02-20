@@ -19,8 +19,6 @@
 
 'use strict';
 
-require('babel-polyfill');
-
 const config = require('./config');
 
 const asn1js = require('asn1js');
@@ -30,7 +28,7 @@ const pkijs = require('pkijs');
 const MAIN_CERT = 'ff4880f09cc1e2d0edc0d07fdcdc987c2b5f4d9c';
 const strip = (url) => url.replace(/https:|[\/]+/g, '');
 const pins = [
-  { url: strip(config.PROD_URL),      keys: ['c85f71715e51593828e37cd8450501f3fa5fa4a2',
+  { url: strip(config.PROD_URL),      keys: [ 'c85f71715e51593828e37cd8450501f3fa5fa4a2',
                                               MAIN_CERT ] },
   { url: 'wire.com',                  keys: [ MAIN_CERT ] },
   { url: 'www.wire.com',              keys: [ MAIN_CERT ] },
@@ -39,31 +37,31 @@ const pins = [
   { url: 'prod-assets.wire.com',      keys: [ MAIN_CERT ] }
 ];
 
+const str2ab = (str) => {
+  const buf = new ArrayBuffer(str.length);
+  const bufView = new Uint8Array(buf);
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
+};
+
+const pem2cert = (pem) => {
+  const strippedPem = new String(pem).replace(/(-----(BEGIN|END) CERTIFICATE-----|\n)/g, '').trim();
+  const raw = new Buffer(strippedPem, 'base64').toString('binary');
+  const asn1 = asn1js.fromBER(str2ab(raw)).result;
+  return new pkijs.Certificate({ schema: asn1 });
+};
+
+const getPublicKeyHash = (cert) => {
+  const certificate = pem2cert(cert);
+  const publicKey = new Uint8Array(certificate.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
+  let shasum = crypto.createHash('sha1');
+  shasum.update(publicKey);
+  return shasum.digest('hex');
+};
+
 module.exports = {
-  str2ab (str) {
-    const buf = new ArrayBuffer(str.length);
-    const bufView = new Uint8Array(buf);
-    for (let i = 0, strLen = str.length; i < strLen; i++) {
-      bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-  },
-
-  pem2cert (pem) {
-    const strippedPem = new String(pem).replace(/(-----(BEGIN|END) CERTIFICATE-----|\n)/g, '').trim();
-    const raw = new Buffer(strippedPem, 'base64').toString('binary');
-    const asn1 = asn1js.fromBER(this.str2ab(raw)).result;
-    return new pkijs.Certificate({ schema: asn1 });
-  },
-
-  getPublicKeyHash (cert) {
-    const certificate = this.pem2cert(cert);
-    const publicKey = new Uint8Array(certificate.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
-    let shasum = crypto.createHash('sha1');
-    shasum.update(publicKey);
-    return shasum.digest('hex');
-  },
-
   hostnameShouldBePinned (hostname) {
     let foundPin = false;
     for (let pin of pins) {
@@ -76,14 +74,18 @@ module.exports = {
   },
 
   verifyPinning (hostname, cert) {
-    const certKey = this.getPublicKeyHash(cert);
+    const certKey = getPublicKeyHash(cert);
     let foundKey = false;
+
     for (let pin of pins) {
-      for (let key of pin.keys) {
-        if (key.toLowerCase().trim() === certKey.toLowerCase().trim()) {
-          foundKey = true;
-          break;
+      if (pin.url === hostname) {
+        for (let key of pin.keys) {
+          if (key.toLowerCase().trim() === certKey.toLowerCase().trim()) {
+            foundKey = true;
+            break;
+          }
         }
+        break;
       }
     }
     return foundKey;

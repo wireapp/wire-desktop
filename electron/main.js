@@ -169,20 +169,17 @@ function showMainWindow() {
     main.setBounds(init.restore('bounds', main.getBounds()));
   }
 
-  main.webContents.session.setCertificateVerifyProc((hostname, certificate, callback) => {
-    const cert = certificate.data;
+  main.webContents.session.setCertificateVerifyProc((hostname = '', certificate = {}, cb) => {
+    const { data: cert = '' } = certificate;
 
-    if (certutils.hostnameShouldBePinned(hostname)) {
+    if (certutils.hostnameShouldBePinned(hostname) === true) {
       if (certutils.verifyPinning(hostname, cert) === true) {
-        console.log(`\x1b[32mPinning for hostname ${hostname} verified.\x1b[0m`);
-        callback(true);
+        cb(true);
       } else {
-        console.log(`\x1b[31mPinning for hostname ${hostname} failed.\x1b[0m`);
-        callback(false);
+        cb(false);
       }
     } else {
-      console.log(`\x1b[2mNo pinning required for hostname ${hostname}\x1b[0m`);
-      callback(true);
+      cb(true);
     }
   });
 
