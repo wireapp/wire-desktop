@@ -38,7 +38,7 @@
     "electron": "1.4.15",
     "electron-builder": "13.9.0",
     "electron-mocha": "3.3.0",
-    "electron-packager": "8.5.1",
+    "electron-packager": "8.5.2",
     "electron-rebuild": "1.4.0",
     "electron-winstaller": "2.5.2",
     "eslint": "3.15.0",
