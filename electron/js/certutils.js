@@ -28,12 +28,12 @@ const pkijs = require('pkijs');
 const MAIN_CERT = 'ff4880f09cc1e2d0edc0d07fdcdc987c2b5f4d9c';
 const strip = (url) => url.replace(/https:|[\/]+/g, '');
 const pins = [
-  {url: strip(config.PROD_URL),      keys: ['c85f71715e51593828e37cd8450501f3fa5fa4a2', MAIN_CERT]},
-  {url: 'wire.com',                  keys: [MAIN_CERT]},
-  {url: 'www.wire.com',              keys: [MAIN_CERT]},
+  {url: strip(config.PROD_URL), keys: ['c85f71715e51593828e37cd8450501f3fa5fa4a2', MAIN_CERT]},
+  {url: 'wire.com', keys: [MAIN_CERT]},
+  {url: 'www.wire.com', keys: [MAIN_CERT]},
   {url: 'prod-nginz-https.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-nginz-ssl.wire.com',   keys: [MAIN_CERT]},
-  {url: 'prod-assets.wire.com',      keys: [MAIN_CERT]}
+  {url: 'prod-nginz-ssl.wire.com', keys: [MAIN_CERT]},
+  {url: 'prod-assets.wire.com', keys: [MAIN_CERT]},
 ];
 
 const binToArrayBuffer = (str) => {
@@ -84,5 +84,5 @@ module.exports = {
       }
     }
     return false;
-  }
+  },
 };
