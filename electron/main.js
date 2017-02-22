@@ -179,7 +179,7 @@ function showMainWindow() {
     if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, cert))) {
       cb(-2);
     } else {
-      cb(0);
+      cb(-3);
     }
   });
 
