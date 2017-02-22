@@ -24,7 +24,6 @@ const {app} = require('electron');
 
 const config = require('./config');
 const cp = require('child_process');
-const fs = require('fs');
 const path = require('path');
 
 app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
@@ -36,15 +35,7 @@ let updateDotExe = path.join(rootFolder, 'Update.exe');
 let exeName = config.NAME + '.exe';
 let linkName = config.NAME + '.lnk';
 
-let homeFolder = path.resolve(process.env.HOMEPATH);
-
-let startFolder = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs'));
-let taskbarFolder = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar'));
-
-let startLink = path.resolve(path.join(startFolder, config.NAME, linkName));
-let desktopLink = path.join(homeFolder, 'Desktop', linkName);
-let taskbarLink = path.join(taskbarFolder, linkName);
-
+let taskbarLink = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName));
 
 function spawn(command, args, callback) {
   let error;
@@ -107,26 +98,6 @@ function createDesktopShortcut(callback) {
 };
 
 
-function updateDesktopShortcut(callback) {
-  fs.exists(desktopLink, function(exists) {
-    if (exists) {
-      createDesktopShortcut(callback);
-    }
-  });
-};
-
-
-function updateTaskbarShortcut(callback) {
-  fs.exists(taskbarLink, function(exists) {
-    if (exists) {
-      createStartShortcut(function() {
-        fs.createReadStream(startLink).pipe(fs.createWriteStream(taskbarLink));
-      });
-    }
-  });
-};
-
-
 function removeShortcuts(callback) {
   spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], function() {
     fs.unlink(taskbarLink, callback);
@@ -156,12 +127,7 @@ function handleSquirrelEvent(shouldQuit) {
       });
       return true;
     case '--squirrel-updated':
-      updateDesktopShortcut(function() {
-        updateTaskbarShortcut();
-        /* app.quit() is needed for a smooth update experience from the last public release.
-           Remove after the next public release of 2.12 on all platforms */
-        app.quit();
-      });
+      app.exit();
       return true;
     case '--squirrel-uninstall':
       removeShortcuts(function() {
@@ -176,24 +142,11 @@ function handleSquirrelEvent(shouldQuit) {
     app.quit();
   }
   scheduleUpdate();
-  updateTaskbarShortcut();
   return false;
-};
-
-
-// TODO: remove this code after April 2017 (Backwards compatibility with 2in32 startup)
-function checkForOldStartup() {
-  const startupLink = path.resolve(path.join(startFolder, 'Startup', linkName));
-  const exists = fs.existsSync(startupLink);
-  if (exists) {
-    fs.unlink(startupLink);
-  }
-  return exists;
 };
 
 
 module.exports = {
   installUpdate: installUpdate,
   handleSquirrelEvent: handleSquirrelEvent,
-  checkForOldStartup: checkForOldStartup,
 };
