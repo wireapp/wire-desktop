@@ -173,7 +173,7 @@ function showMainWindow() {
     const { hostname = '', certificate: { data: cert = '' } = {}, error } = request;
 
     if (error !== undefined) {
-      return cb(0);
+      return cb(-2);
     }
 
     if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, cert))) {
