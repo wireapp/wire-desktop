@@ -169,13 +169,13 @@ function showMainWindow() {
     main.setBounds(init.restore('bounds', main.getBounds()));
   }
 
-  main.webContents.session.setCertificateVerifyProc((hostname = '', certificate = {}, cb) => {
+  main.webContents.session.setCertificateVerifyProc(({hostname = '', certificate = {}}, cb) => {
     const {data: cert = ''} = certificate;
 
-    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, cert))) {
-      cb(false);
+    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, certificate.data))) {
+      cb(-2);
     } else {
-      cb(true);
+      cb(0);
     }
   });
 
