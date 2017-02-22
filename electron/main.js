@@ -172,7 +172,7 @@ function showMainWindow() {
   main.webContents.session.setCertificateVerifyProc(({hostname = '', certificate = {}}, cb) => {
     const {data: cert = ''} = certificate;
 
-    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, certificate.data))) {
+    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, cert))) {
       cb(-2);
     } else {
       cb(0);
