@@ -443,14 +443,6 @@ module.exports = {
     }
 
     if (process.platform === 'win32') {
-      const squirrel = require('./../squirrel');
-      if (squirrel.checkForOldStartup()) {
-        if (!toggleAutoLaunchTemplate.checked) {
-          toggleAutoLaunchTemplate.click();
-          toggleAutoLaunchTemplate.checked = true;
-        }
-      };
-
       menuTemplate.unshift(win32Template);
       windowTemplate['i18n'] = 'menuView';
       windowTemplate.submenu.unshift(
