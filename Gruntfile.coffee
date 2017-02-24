@@ -192,7 +192,7 @@ module.exports = (grunt) ->
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.updateWinUrl = info.updateWinUrlInternal
     electron_pkg.environment = 'internal'
-    electron_pkg.name = info.nameInternal.toLowerCase()
+    electron_pkg.name = info.namePackageInternal
     electron_pkg.productName = info.nameInternal
     grunt.file.write ELECTRON_PACKAGE_JSON, JSON.stringify(electron_pkg, null, 2) + '\n'
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
@@ -202,7 +202,7 @@ module.exports = (grunt) ->
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.updateWinUrl = info.updateWinUrlProd
     electron_pkg.environment = 'production'
-    electron_pkg.name = info.name.toLowerCase()
+    electron_pkg.name = info.namePackage
     electron_pkg.productName = info.name
     grunt.file.write ELECTRON_PACKAGE_JSON, JSON.stringify(electron_pkg, null, 2) + '\n'
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
