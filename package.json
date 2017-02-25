@@ -35,18 +35,18 @@
     }
   },
   "devDependencies": {
-    "electron": "1.4.15",
-    "electron-builder": "13.9.0",
+    "electron": "1.6.1",
+    "electron-builder": "12.3.1",
     "electron-mocha": "3.3.0",
-    "electron-packager": "8.5.1",
+    "electron-packager": "8.5.2",
     "electron-rebuild": "1.4.0",
     "electron-winstaller": "2.5.2",
-    "eslint": "3.15.0",
+    "eslint": "3.16.1",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-git": "1.0.3",
     "grunt-github-changes": "0.1.0",
     "grunt-shell": "2.1.0",
     "load-grunt-tasks": "3.5.2"
-  }
+   }
 }
