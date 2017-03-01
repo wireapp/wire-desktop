@@ -24,6 +24,7 @@ const {app} = require('electron');
 
 const config = require('./config');
 const cp = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
