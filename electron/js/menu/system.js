@@ -459,6 +459,8 @@ module.exports = {
       });
       windowTemplate.submenu.push(
         separatorTemplate,
+        toggleMenuTemplate,
+        separatorTemplate,
         toggleFullScreenTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
