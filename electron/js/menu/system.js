@@ -263,7 +263,7 @@ let editTemplate = {
     {
       i18n: 'menuSpelling',
       type: 'checkbox',
-      checked: init.restore('spelling', true) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      checked: init.restore('spelling', false) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       click: function(event) {
         init.save('spelling', event.checked);
