@@ -26,7 +26,6 @@ const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
 
-const certutils = require('./js/certutils');
 const config = require('./js/config');
 const download = require('./js/lib/download');
 const googleAuth = require('./js/lib/googleAuth');
@@ -168,20 +167,6 @@ function showMainWindow() {
   } else {
     main.setBounds(init.restore('bounds', main.getBounds()));
   }
-
-  main.webContents.session.setCertificateVerifyProc((request, cb) => {
-    const { hostname = '', certificate: { data: cert = '' } = {}, error } = request;
-
-    if (error !== undefined) {
-      return cb(-2);
-    }
-
-    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, cert))) {
-      cb(-2);
-    } else {
-      cb(-3);
-    }
-  });
 
   main.loadURL(SPLASH_HTML);
 
