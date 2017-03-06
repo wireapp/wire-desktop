@@ -138,6 +138,12 @@ let localeTemplate = {
         changeLocale('ru');
       },
     }, {
+      label: locale.label['sk'],
+      type: 'radio',
+      click: function() {
+        changeLocale('sk');
+      },
+    }, {
       label: locale.label['sl'],
       type: 'radio',
       click: function() {
