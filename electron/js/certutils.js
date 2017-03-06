@@ -21,44 +21,16 @@
 
 const config = require('./config');
 
-const asn1js = require('asn1js');
-const crypto = require('crypto');
-const pkijs = require('pkijs');
-
-const MAIN_CERT = 'ff4880f09cc1e2d0edc0d07fdcdc987c2b5f4d9c';
+const MAIN_FP = 'sha256//i3WcWNbHeLUtbknEiTEbC18p+m9aSg77qFgJ9rCT9Q=';
 const strip = (url) => url.replace(/https:|[\/]+/g, '');
 const pins = [
-  {url: strip(config.PROD_URL), keys: ['c85f71715e51593828e37cd8450501f3fa5fa4a2', MAIN_CERT]},
-  {url: 'wire.com', keys: [MAIN_CERT]},
-  {url: 'www.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-nginz-https.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-nginz-ssl.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-assets.wire.com', keys: [MAIN_CERT]},
+  {url: strip(config.PROD_URL), fingerprints: ['sha256/EwEzwQBfMUx/l1QwK/12BK2FCQZN50bNGjgGnq7gQpY=', MAIN_FP]},
+  {url: 'wire.com', fingerprints: [MAIN_FP]},
+  {url: 'www.wire.com', fingerprints: [MAIN_FP]},
+  {url: 'prod-nginz-https.wire.com', fingerprints: [MAIN_FP]},
+  {url: 'prod-nginz-ssl.wire.com', fingerprints: [MAIN_FP]},
+  {url: 'prod-assets.wire.com', fingerprints: [MAIN_FP]},
 ];
-
-const binToArrayBuffer = (str) => {
-  const buf = new ArrayBuffer(str.length);
-  const bufView = new Uint8Array(buf);
-  for (let index = 0, strLen = str.length; index < strLen; index++) {
-    bufView[index] = str.charCodeAt(index);
-  }
-  return buf;
-};
-
-const pemToCert = (pem) => {
-  const strippedPem = pem.replace(/(-----(BEGIN|END) CERTIFICATE-----|\n)/g, '').trim();
-  const raw = Buffer.from(strippedPem, 'base64').toString('binary');
-  const asn1 = asn1js.fromBER(binToArrayBuffer(raw)).result;
-  return new pkijs.Certificate({schema: asn1});
-};
-
-const getPublicKeyHash = (pemString) => {
-  const certificate = pemToCert(pemString);
-  const publicKey = new Uint8Array(certificate.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
-  let shasum = crypto.createHash('sha1');
-  shasum.update(publicKey);
-  return shasum.digest('hex');
-};
 
 module.exports = {
   hostnameShouldBePinned (hostname) {
@@ -70,13 +42,11 @@ module.exports = {
     return false;
   },
 
-  verifyPinning (hostname, cert) {
-    const certKey = getPublicKeyHash(cert).toLowerCase().trim();
-
+  verifyPinning (hostname, fingerprint) {
     for (let pin of pins) {
       if (pin.url === hostname) {
-        for (let key of pin.keys) {
-          if (key.toLowerCase().trim() === certKey) {
+        for (let fp of pin.fingerprints) {
+          if (fp.trim() === fingerprint.trim()) {
             return true;
           }
         }
