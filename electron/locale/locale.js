@@ -36,6 +36,7 @@ const it = require('./strings-it');
 const pt = require('./strings-pt');
 const ro = require('./strings-ro');
 const ru = require('./strings-ru');
+const sk = require('./strings-sk');
 const sl = require('./strings-sl');
 const tr = require('./strings-tr');
 const uk = require('./strings-uk');
@@ -46,15 +47,16 @@ const label = {
   'da': 'Dansk',
   'de': 'Deutsch',
   'es': 'Español',
-  'fi': 'Suomi',
   'fr': 'Français',
   'hr': 'Hrvatski',
-  'hu': 'Magyar',
   'it': 'Italiano',
+  'hu': 'Magyar',
   'pt': 'Português do Brasil',
   'ro': 'Română',
   'ru': 'Русский',
+  'sk': 'Slovenčina',
   'sl': 'Slovenščina',
+  'fi': 'Suomi',
   'tr': 'Türkçe',
   'uk': 'Українська',
 };
@@ -105,6 +107,7 @@ module.exports = {
   'pt': pt,
   'ro': ro,
   'ru': ru,
+  'sk': sk,
   'sl': sl,
   'tr': tr,
   'uk': uk,
