@@ -9,6 +9,7 @@ string.menuEdit = 'Editează';
 string.menuWindow = 'Fereastră';
 string.menuView = 'Vedere';
 string.menuHelp = 'Ajutor';
+string.menuStartup = 'Lansează Wire pe Startup';
 string.menuLocale = 'Limba';
 string.menuAbout = 'Despre Wire';
 string.menuSignOut = 'Deconectare';
@@ -58,6 +59,7 @@ string.restartLater = 'Mai târziu';
 string.restartNow = 'Repornește acum';
 
 string.trayOpen = 'Deschide';
+string.trayQuit = 'Ieși';
 
 string.unreadMessages = 'Mesaj necitit';
 

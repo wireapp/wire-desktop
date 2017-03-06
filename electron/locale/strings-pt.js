@@ -8,6 +8,7 @@ string.menuEdit = 'Editar';
 string.menuWindow = 'Janela';
 string.menuView = 'Vizualizar';
 string.menuHelp = 'Ajuda';
+string.menuStartup = 'Abrir o Wire na inicialização';
 string.menuLocale = 'Língua';
 string.menuAbout = 'Sobre o Wire';
 string.menuSignOut = 'Sair';
@@ -57,6 +58,7 @@ string.restartLater = 'Mais tarde';
 string.restartNow = 'Reiniciar agora';
 
 string.trayOpen = 'Abrir';
+string.trayQuit = 'Sair';
 
 string.unreadMessages = 'Mensagem não lida';
 
