@@ -9,6 +9,7 @@ string.menuEdit = 'Редагувати';
 string.menuWindow = 'Вікно';
 string.menuView = 'Вигляд';
 string.menuHelp = 'Допомога';
+string.menuStartup = 'Запускати Wire разом з системою';
 string.menuLocale = 'Мова';
 string.menuAbout = 'Про Wire';
 string.menuSignOut = 'Вийти';
@@ -58,6 +59,7 @@ string.restartLater = 'Пізніше';
 string.restartNow = 'Перезавантажити додаток негайно';
 
 string.trayOpen = 'Вiдкрити';
+string.trayQuit = 'Вийти';
 
 string.unreadMessages = 'Непрочитане повідомлення';
 

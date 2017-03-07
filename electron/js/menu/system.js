@@ -138,6 +138,12 @@ let localeTemplate = {
         changeLocale('ru');
       },
     }, {
+      label: locale.label['sk'],
+      type: 'radio',
+      click: function() {
+        changeLocale('sk');
+      },
+    }, {
       label: locale.label['sl'],
       type: 'radio',
       click: function() {
@@ -263,7 +269,7 @@ let editTemplate = {
     {
       i18n: 'menuSpelling',
       type: 'checkbox',
-      checked: init.restore('spelling', true) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      checked: init.restore('spelling', false) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       click: function(event) {
         init.save('spelling', event.checked);
@@ -443,14 +449,6 @@ module.exports = {
     }
 
     if (process.platform === 'win32') {
-      const squirrel = require('./../squirrel');
-      if (squirrel.checkForOldStartup()) {
-        if (!toggleAutoLaunchTemplate.checked) {
-          toggleAutoLaunchTemplate.click();
-          toggleAutoLaunchTemplate.checked = true;
-        }
-      };
-
       menuTemplate.unshift(win32Template);
       windowTemplate['i18n'] = 'menuView';
       windowTemplate.submenu.unshift(
@@ -466,6 +464,8 @@ module.exports = {
         click: function() {sendAction('preferences-show');},
       });
       windowTemplate.submenu.push(
+        separatorTemplate,
+        toggleMenuTemplate,
         separatorTemplate,
         toggleFullScreenTemplate
       );
