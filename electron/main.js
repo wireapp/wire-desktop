@@ -69,7 +69,8 @@ if (config.DEVELOPMENT) {
 }
 
 if (argv.portable) {
-  const USER_PATH = path.join(process.execPath, '..', 'WireData');
+  const EXEC_PATH = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
+  const USER_PATH = path.join(EXEC_PATH, '..', 'WireData');
   app.setPath('userData', USER_PATH);
 }
 
