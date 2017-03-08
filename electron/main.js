@@ -71,20 +71,27 @@ if (config.DEVELOPMENT) {
 ///////////////////////////////////////////////////////////////////////////////
 // Single Instance stuff
 ///////////////////////////////////////////////////////////////////////////////
-// makeSingleInstance will crash the signed mas app
-// see: https://github.com/atom/electron/issues/4688
-if (process.platform !== 'darwin') {
-  shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
-    if (main) {
-      windowManager.showPrimaryWindow();
-    }
-    return true;
-  });
-  if (process.platform === 'linux' && shouldQuit) {
-    app.quit();
+shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+  if (main) {
+    windowManager.showPrimaryWindow();
   }
+  return true;
+});
+if (process.platform !== 'win32' && shouldQuit) {
+  app.quit();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Auto Update
+///////////////////////////////////////////////////////////////////////////////
+if (process.platform === 'win32') {
+  const squirrel = require('./js/squirrel');
+  squirrel.handleSquirrelEvent(shouldQuit);
+
+  ipcMain.on('wrapper-restart', function() {
+    squirrel.installUpdate();
+  });
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC events
@@ -330,16 +337,3 @@ fs.stat(consoleLog, function(err, stats) {
     fs.rename(consoleLog, consoleLog.replace('.log', '.old'));
   }
 });
-
-
-///////////////////////////////////////////////////////////////////////////////
-// Auto Update
-///////////////////////////////////////////////////////////////////////////////
-if (process.platform === 'win32') {
-  const squirrel = require('./js/squirrel');
-  squirrel.handleSquirrelEvent(shouldQuit);
-
-  ipcMain.on('wrapper-restart', function() {
-    squirrel.installUpdate();
-  });
-}
