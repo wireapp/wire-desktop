@@ -30,6 +30,7 @@ string.menuCut = 'Taglia';
 string.menuCopy = 'Copia';
 string.menuPaste = 'Incolla';
 string.menuSelectAll = 'Seleziona tutto';
+string.menuSpelling = 'Controllo ortografico durante la digitazione';
 string.menuMinimize = 'Ridurre al minimo';
 string.menuClose = 'Chiudi';
 string.menuNextConversation = 'Conversazione successiva';
@@ -57,6 +58,8 @@ string.restartLater = 'Più tardi';
 string.restartNow = 'Riavvia adesso';
 
 string.trayOpen = 'Apri';
+string.trayQuit = 'Esci';
 
+string.unreadMessages = 'Messaggio non letto';
 
 module.exports = string;

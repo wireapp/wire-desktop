@@ -75,6 +75,7 @@ let config = {
     'pt',
     'ro',
     'ru',
+    'sk',
     'sl',
     'tr',
     'uk',

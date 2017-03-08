@@ -9,6 +9,7 @@ string.menuEdit = 'Modifier';
 string.menuWindow = 'Fenêtre';
 string.menuView = 'Vue';
 string.menuHelp = 'Aide';
+string.menuStartup = 'Lancer Wire au démarrage';
 string.menuLocale = 'Langue';
 string.menuAbout = 'À propos de Wire';
 string.menuSignOut = 'Se déconnecter';
@@ -30,6 +31,7 @@ string.menuCut = 'Couper';
 string.menuCopy = 'Copier';
 string.menuPaste = 'Coller';
 string.menuSelectAll = 'Sélectionner tout';
+string.menuSpelling = 'Vérifier l’orthographe lors de la frappe';
 string.menuMinimize = 'Minimiser';
 string.menuClose = 'Fermer';
 string.menuNextConversation = 'Conversation suivante';
@@ -57,6 +59,8 @@ string.restartLater = 'Plus tard';
 string.restartNow = 'Redémarrer maintenant';
 
 string.trayOpen = 'Ouvrir';
+string.trayQuit = 'Quitter';
 
+string.unreadMessages = 'Message non lu';
 
 module.exports = string;
