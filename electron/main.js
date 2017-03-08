@@ -145,8 +145,8 @@ ipcMain.on('google-auth-request', function(event) {
 });
 
 ipcMain.on('wrapper-reload', function() {
-  app.quit();
   app.relaunch();
+  app.quit();
 });
 
 ///////////////////////////////////////////////////////////////////////////////
