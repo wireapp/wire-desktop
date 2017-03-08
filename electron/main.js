@@ -71,14 +71,19 @@ if (config.DEVELOPMENT) {
 ///////////////////////////////////////////////////////////////////////////////
 // Single Instance stuff
 ///////////////////////////////////////////////////////////////////////////////
-shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
-  if (main) {
-    windowManager.showPrimaryWindow();
+
+// makeSingleInstance will crash the signed mas app
+// see: https://github.com/atom/electron/issues/4688
+if (process.platform !== 'darwin') {
+  shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+    if (main) {
+      windowManager.showPrimaryWindow();
+    }
+    return true;
+  });
+  if (process.platform !== 'win32' && shouldQuit) {
+    app.quit();
   }
-  return true;
-});
-if (process.platform !== 'win32' && shouldQuit) {
-  app.quit();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
