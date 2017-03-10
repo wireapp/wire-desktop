@@ -227,9 +227,11 @@ let toggleMenuTemplate = {
     let mainBrowserWindow = getPrimaryWindow();
     if (mainBrowserWindow.isMenuBarAutoHide()) {
       mainBrowserWindow.setAutoHideMenuBar(false);
+      init.save('hideMenu', false);
     } else {
       mainBrowserWindow.setAutoHideMenuBar(true);
       mainBrowserWindow.setMenuBarVisibility(false);
+      init.save('hideMenu', true);
     }
   },
 };
