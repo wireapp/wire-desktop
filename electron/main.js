@@ -165,7 +165,7 @@ function showMainWindow() {
     'height': config.DEFAULT_HEIGHT_MAIN,
     'minWidth': config.MIN_WIDTH_MAIN,
     'minHeight': config.MIN_HEIGHT_MAIN,
-    'autoHideMenuBar': false,
+    'autoHideMenuBar': !init.restore('showMenu', true),
     'icon': ICON_PATH,
     'show': false,
     'webPreferences': {
