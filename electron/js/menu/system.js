@@ -224,16 +224,16 @@ let showWireTemplate = {
 let toggleMenuTemplate = {
   i18n: 'menuShowHide',
   type: 'checkbox',
-  checked: !init.restore('hideMenu', false),
+  checked: init.restore('showMenu', true),
   click: function() {
     let mainBrowserWindow = getPrimaryWindow();
     if (mainBrowserWindow.isMenuBarAutoHide()) {
       mainBrowserWindow.setAutoHideMenuBar(false);
-      init.save('hideMenu', false);
+      init.save('showMenu', true);
     } else {
       mainBrowserWindow.setAutoHideMenuBar(true);
       mainBrowserWindow.setMenuBarVisibility(false);
-      init.save('hideMenu', true);
+      init.save('showMenu', false);
     }
   },
 };
