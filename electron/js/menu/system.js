@@ -428,8 +428,8 @@ function changeLocale(language) {
     buttons: [locale[language].restartLater, locale[language].restartNow],
   }, function(response) {
     if (response == 1) {
-      app.quit();
       app.relaunch();
+      app.quit();
     }
   });
 }

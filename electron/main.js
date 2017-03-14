@@ -77,6 +77,7 @@ if (argv.portable) {
 ///////////////////////////////////////////////////////////////////////////////
 // Single Instance stuff
 ///////////////////////////////////////////////////////////////////////////////
+
 // makeSingleInstance will crash the signed mas app
 // see: https://github.com/atom/electron/issues/4688
 if (process.platform !== 'darwin') {
@@ -86,11 +87,22 @@ if (process.platform !== 'darwin') {
     }
     return true;
   });
-  if (process.platform === 'linux' && shouldQuit) {
+  if (process.platform !== 'win32' && shouldQuit) {
     app.quit();
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Auto Update
+///////////////////////////////////////////////////////////////////////////////
+if (process.platform === 'win32') {
+  const squirrel = require('./js/squirrel');
+  squirrel.handleSquirrelEvent(shouldQuit);
+
+  ipcMain.on('wrapper-restart', function() {
+    squirrel.installUpdate();
+  });
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC events
@@ -144,8 +156,8 @@ ipcMain.on('google-auth-request', function(event) {
 });
 
 ipcMain.on('wrapper-reload', function() {
-  app.quit();
   app.relaunch();
+  app.quit();
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -336,16 +348,3 @@ fs.stat(consoleLog, function(err, stats) {
     fs.rename(consoleLog, consoleLog.replace('.log', '.old'));
   }
 });
-
-
-///////////////////////////////////////////////////////////////////////////////
-// Auto Update
-///////////////////////////////////////////////////////////////////////////////
-if (process.platform === 'win32') {
-  const squirrel = require('./js/squirrel');
-  squirrel.handleSquirrelEvent(shouldQuit);
-
-  ipcMain.on('wrapper-restart', function() {
-    squirrel.installUpdate();
-  });
-}
