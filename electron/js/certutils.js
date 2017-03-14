@@ -36,19 +36,9 @@ const pins = [
   {url: 'prod-assets.wire.com', keys: [MAIN_CERT]},
 ];
 
-const binToArrayBuffer = (str) => {
-  const buf = new ArrayBuffer(str.length);
-  const bufView = new Uint8Array(buf);
-  for (let index = 0, strLen = str.length; index < strLen; index++) {
-    bufView[index] = str.charCodeAt(index);
-  }
-  return buf;
-};
-
 const pemToCert = (pem) => {
   const strippedPem = pem.replace(/(-----(BEGIN|END) CERTIFICATE-----|\n)/g, '').trim();
-  const raw = Buffer.from(strippedPem, 'base64').toString('binary');
-  const asn1 = asn1js.fromBER(binToArrayBuffer(raw)).result;
+  const asn1 = asn1js.fromBER(new Uint8Array(Buffer.from(strippedPem, 'base64')).buffer).result;
   return new pkijs.Certificate({schema: asn1});
 };
 
