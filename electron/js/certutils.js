@@ -45,8 +45,7 @@ const pemToCert = (pem) => {
 const getPublicKeyHash = (pemString) => {
   const certificate = pemToCert(pemString);
   const publicKey = new Uint8Array(certificate.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
-  let shasum = crypto.createHash('sha1');
-  shasum.update(publicKey);
+  let shasum = crypto.createHash('sha1').update(publicKey);
   return shasum.digest('hex');
 };
 
