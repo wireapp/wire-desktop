@@ -23,15 +23,15 @@ import boto3
 import os
 
 BUCKET = os.environ.get('BUCKET')
-S3_PATH = 'win/internal/'
+S3_PATH = 'win/prod/'
 
 info_json = os.path.join(bin_root, '..', 'info.json')
 with open(info_json) as info_file:
   info = json.load(info_file)
 version = '%s.%s' % (info['version'], info['build'])
 
-NEW_RELEASE = 'wire-internal-' + version + '-RELEASES'
-NEW_EXE = 'wire-internal-' + version + '.exe'
+NEW_RELEASE = 'wire-' + version + '-RELEASES'
+NEW_EXE = 'wire-' + version + '.exe'
 
 NEW_RELEASE_KEY = S3_PATH + NEW_RELEASE
 NEW_EXE_KEY = S3_PATH + NEW_EXE
