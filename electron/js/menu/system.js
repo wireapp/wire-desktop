@@ -223,6 +223,8 @@ let showWireTemplate = {
 
 let toggleMenuTemplate = {
   i18n: 'menuShowHide',
+  type: 'checkbox',
+  checked: !init.restore('hideMenu', false),
   click: function() {
     let mainBrowserWindow = getPrimaryWindow();
     if (mainBrowserWindow.isMenuBarAutoHide()) {
