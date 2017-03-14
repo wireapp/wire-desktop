@@ -36,8 +36,8 @@ NEW_EXE = 'wire-internal-' + version + '.exe'
 NEW_RELEASE_KEY = S3_PATH + NEW_RELEASE
 NEW_EXE_KEY = S3_PATH + NEW_EXE
 
-OLD_RELEASE_KEY = S3_PATH + "RELEASES"
-OLD_EXE_KEY = S3_PATH + "WireSetup.exe"
+OLD_RELEASE_KEY = S3_PATH + 'RELEASES'
+OLD_EXE_KEY = S3_PATH + 'WireSetup.exe'
 
 client = boto3.client(
   's3',
