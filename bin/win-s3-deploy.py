@@ -25,7 +25,7 @@ import os
 
 BUCKET = os.environ.get('BUCKET')
 S3_PATH = 'win/internal/'
-
+bin_root = os.path.dirname(os.path.realpath(__file__))
 info_json = os.path.join(bin_root, '..', 'info.json')
 with open(info_json) as info_file:
   info = json.load(info_file)
