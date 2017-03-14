@@ -49,7 +49,6 @@ string.menuHideOthers = 'Masquer les autres fenêtres';
 string.menuShowAll = 'Afficher tout';
 string.menuSettings = 'Paramètres';
 string.menuQuit = 'Quitter Wire';
-string.menuShowHide = 'Afficher/masquer le menu';
 string.menuSavePictureAs = 'Enregistrer l’image sous...';
 string.menuNoSuggestions = 'Aucune suggestion';
 

@@ -49,7 +49,6 @@ string.menuHideOthers = 'Diğerlerini Gizle';
 string.menuShowAll = 'Hepsini Göster';
 string.menuSettings = 'Ayarlar';
 string.menuQuit = 'Wire’dan Çık';
-string.menuShowHide = 'Menüyü Göster/Gizle';
 string.menuSavePictureAs = 'Fotoğraf Olarak Kaydet...';
 string.menuNoSuggestions = 'Öneri yok';
 
