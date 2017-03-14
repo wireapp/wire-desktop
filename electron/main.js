@@ -182,13 +182,13 @@ function showMainWindow() {
   }
 
   main.webContents.session.setCertificateVerifyProc((request, cb) => {
-    const {hostname = '', certificate: {fingerprint = ''} = {}, error} = request;
+    const {hostname = '', certificate: {data: cert = ''} = {}, error} = request;
 
     if (typeof error !== 'undefined') {
       return cb(-2);
     }
 
-    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, fingerprint))) {
+    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, cert))) {
       cb(-2);
     } else {
       cb(-3);
