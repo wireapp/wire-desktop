@@ -46,7 +46,7 @@ string.menuHideOthers = 'Hide Others';
 string.menuShowAll = 'Show All';
 string.menuSettings = 'Settings';
 string.menuQuit = 'Quit Wire';
-string.menuShowHide = 'Show/Hide Menu';
+string.menuShowHide = 'Show Menu';
 string.menuSavePictureAs = 'Save Picture As...';
 string.menuNoSuggestions = 'No Suggestions';
 
