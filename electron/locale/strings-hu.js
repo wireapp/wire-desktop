@@ -49,6 +49,7 @@ string.menuHideOthers = 'Többi menüelem elrejtése';
 string.menuShowAll = 'Mindet mutat';
 string.menuSettings = 'Beállítások';
 string.menuQuit = 'Kilépés a Wire-ből';
+string.menuShowHide = 'Menü megjelenítése';
 string.menuSavePictureAs = 'Kép mentése más néven...';
 string.menuNoSuggestions = 'Nincs javaslat';
 

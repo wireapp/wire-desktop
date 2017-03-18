@@ -49,6 +49,7 @@ string.menuHideOthers = 'Скрыть остальные';
 string.menuShowAll = 'Показать все';
 string.menuSettings = 'Настройки';
 string.menuQuit = 'Завершить Wire';
+string.menuShowHide = 'Показать меню';
 string.menuSavePictureAs = 'Сохранить изображение как...';
 string.menuNoSuggestions = 'Нет предложений';
 

@@ -48,6 +48,7 @@ string.menuHideOthers = 'Esconder Outros';
 string.menuShowAll = 'Mostrar Tudo';
 string.menuSettings = 'Configurações';
 string.menuQuit = 'Sair do Wire';
+string.menuShowHide = 'Mostrar Menu';
 string.menuSavePictureAs = 'Salvar imagem como...';
 string.menuNoSuggestions = 'Sem sugestões';
 
