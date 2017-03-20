@@ -49,7 +49,6 @@ string.menuHideOthers = 'Skrij ostale';
 string.menuShowAll = 'Prikaži vse';
 string.menuSettings = 'Nastavitve';
 string.menuQuit = 'Zapri Wire';
-string.menuShowHide = 'Pokaži/Skrij meni';
 string.menuSavePictureAs = 'Shrani sliko kot...';
 string.menuNoSuggestions = 'Brez predlogov';
 

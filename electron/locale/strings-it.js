@@ -9,6 +9,7 @@ string.menuEdit = 'Modifica';
 string.menuWindow = 'Finestre';
 string.menuView = 'Mostra';
 string.menuHelp = 'Aiuto';
+string.menuStartup = 'Lancia Wire all’avvio';
 string.menuLocale = 'Lingua';
 string.menuAbout = 'A proposito di Wire';
 string.menuSignOut = 'Esci dall’account';
@@ -48,7 +49,6 @@ string.menuHideOthers = 'Nascondi gli altri';
 string.menuShowAll = 'Mostra tutti';
 string.menuSettings = 'Impostazioni';
 string.menuQuit = 'Chiudi Wire';
-string.menuShowHide = 'Mostra/Nascondi Menu';
 string.menuSavePictureAs = 'Salva immagine con nome...';
 string.menuNoSuggestions = 'Nessun suggerimento';
 

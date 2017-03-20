@@ -49,7 +49,7 @@ string.menuHideOthers = 'Ascunde altele';
 string.menuShowAll = 'Arată toate';
 string.menuSettings = 'Setări';
 string.menuQuit = 'Ieși din Wire';
-string.menuShowHide = 'Arată/ascunde meniul';
+string.menuShowHide = 'Arată meniul';
 string.menuSavePictureAs = 'Salvează imaginea ca...';
 string.menuNoSuggestions = 'Fără sugestii';
 
