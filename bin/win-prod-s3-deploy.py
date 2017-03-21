@@ -43,7 +43,7 @@ OLD_EXE_KEY = S3_PATH + 'WireSetup.exe'
 client = boto3.client(
   's3',
   aws_access_key_id=os.environ.get('AWS_ACCESS_KEY'),
-  aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+  aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY')
 )
 
 client.delete_object(Bucket=BUCKET, Key=OLD_RELEASE_KEY)
