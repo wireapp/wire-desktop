@@ -42,14 +42,14 @@ OLD_EXE_KEY = S3_PATH + 'WireInternalSetup.exe'
 
 s3 = boto3.resource('s3');
 
-s3.Object(BUCKET,OLD_RELEASE_KEY).delete()
+s3.Object(BUCKET, OLD_RELEASE_KEY).delete()
 print 'deleted %s' % OLD_RELEASE_KEY
 
-s3.Object(BUCKET,OLD_EXE_KEY).delete()
+s3.Object(BUCKET, OLD_EXE_KEY).delete()
 print 'deleted %s' % OLD_EXE_KEY
 
-s3.Object(BUCKET,OLD_RELEASE_KEY).copy_from(CopySource='%s/%s' % (BUCKET, NEW_RELEASE_KEY))
+s3.Object(BUCKET, OLD_RELEASE_KEY).copy_from(CopySource='%s/%s' % (BUCKET, NEW_RELEASE_KEY))
 print 'copied %s to %s ' % (NEW_RELEASE_KEY, OLD_RELEASE_KEY)
 
-s3.Object(BUCKET,OLD_EXE_KEY).copy_from(CopySource='%s/%s' % (BUCKET, NEW_EXE_KEY))
+s3.Object(BUCKET, OLD_EXE_KEY).copy_from(CopySource='%s/%s' % (BUCKET, NEW_EXE_KEY))
 print 'copied %s to %s ' % (NEW_EXE_KEY, OLD_EXE_KEY)
