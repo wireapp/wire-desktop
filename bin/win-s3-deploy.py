@@ -38,22 +38,19 @@ NEW_RELEASE_KEY = S3_PATH + NEW_RELEASE
 NEW_EXE_KEY = S3_PATH + NEW_EXE
 
 OLD_RELEASE_KEY = S3_PATH + 'RELEASES'
-OLD_EXE_KEY = S3_PATH + 'WireSetup.exe'
+OLD_EXE_KEY = S3_PATH + 'WireInternalSetup.exe'
 
-client = boto3.client(
-  's3',
-  aws_access_key_id=os.environ.get('AWS_ACCESS_KEY'),
-  aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY')
-)
+s3 = boto3.resource('s3');
 
-client.delete_object(Bucket=BUCKET, Key=OLD_RELEASE_KEY)
+s3.Object(BUCKET,OLD_RELEASE_KEY).delete()
 print 'deleted %s' % OLD_RELEASE_KEY
 
-client.delete_object(Bucket=BUCKET, Key=OLD_EXE_KEY)
+s3.Object(BUCKET,OLD_EXE_KEY).delete()
 print 'deleted %s' % OLD_EXE_KEY
 
+s3.Object(BUCKET,OLD_RELEASE_KEY).copy_from(CopySource='%s/%s' % (BUCKET, NEW_RELEASE_KEY))
 client.copy_object(Bucket=BUCKET, CopySource='%s/%s' % (BUCKET, NEW_RELEASE_KEY), Key=OLD_RELEASE_KEY)
 print 'copied %s to %s ' % (NEW_RELEASE_KEY, OLD_RELEASE_KEY)
 
-client.copy_object(Bucket=BUCKET, CopySource='%s/%s' % (BUCKET, NEW_EXE_KEY), Key=OLD_EXE_KEY)
+s3.Object(BUCKET,OLD_EXE_KEY).copy_from(CopySource='%s/%s' % (BUCKET, NEW_EXE_KEY))
 print 'copied %s to %s ' % (NEW_EXE_KEY, OLD_EXE_KEY)
