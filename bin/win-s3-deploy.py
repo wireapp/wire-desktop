@@ -40,7 +40,7 @@ NEW_EXE_KEY = S3_PATH + NEW_EXE
 OLD_RELEASE_KEY = S3_PATH + 'RELEASES'
 OLD_EXE_KEY = S3_PATH + 'WireInternalSetup.exe'
 
-s3 = boto3.resource('s3');
+s3 = boto3.resource('s3')
 
 s3.Object(BUCKET, OLD_RELEASE_KEY).delete()
 print 'deleted %s' % OLD_RELEASE_KEY
