@@ -52,13 +52,6 @@ if __name__ == '__main__':
   wire_nupkg_full = os.path.join(build_root, wire_nupkg)
   wire_exe_full = os.path.join(build_root, 'WireInternalSetup.exe')
 
-  with open(releases, 'r+') as f:
-    last = f.readlines()[-1]
-    f.seek(0)
-    f.write(last)
-    f.truncate()
-
   upload_file(wire_nupkg_full, '%s%s' % (S3_PATH, wire_nupkg))
   upload_file(wire_exe_full, '%swire-internal-%s.exe' % (S3_PATH, version))
-  upload_file(releases, '%sRELEASES' % S3_PATH)
   upload_file(releases, '%swire-internal-%s-RELEASES' % (S3_PATH, version))
