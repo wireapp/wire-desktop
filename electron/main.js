@@ -149,10 +149,12 @@ ipcMain.on('google-auth-request', function(event) {
     });
 });
 
-ipcMain.on('wrapper-reload', function() {
-  app.relaunch();
-  app.quit();
-});
+if (process.platform !== 'darwin') {
+  ipcMain.on('wrapper-reload', function() {
+    app.relaunch();
+    app.quit();
+  });
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
