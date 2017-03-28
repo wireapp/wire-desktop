@@ -2,6 +2,10 @@
 
 let string = {};
 
+string.aboutReleases = 'Versionshinweise';
+string.aboutUpdate = 'Wie wird Wire aktualisiert';
+string.aboutVersion = 'Version';
+string.aboutWebappVersion = 'Wire für Web Version';
 
 string.menuConversation = 'Unterhaltung';
 string.menuStart = 'Unterhaltung beginnen';
