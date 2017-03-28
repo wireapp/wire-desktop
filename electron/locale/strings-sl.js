@@ -49,6 +49,7 @@ string.menuHideOthers = 'Skrij ostale';
 string.menuShowAll = 'Prikaži vse';
 string.menuSettings = 'Nastavitve';
 string.menuQuit = 'Zapri Wire';
+string.menuShowHide = 'Prikaži meni';
 string.menuSavePictureAs = 'Shrani sliko kot...';
 string.menuNoSuggestions = 'Brez predlogov';
 
@@ -61,5 +62,6 @@ string.trayOpen = 'Odpri';
 string.trayQuit = 'Končaj';
 
 string.unreadMessages = 'Neprebrano sporočilo';
+
 
 module.exports = string;

@@ -58,4 +58,5 @@ string.restartNow = 'Restartovat nyní';
 string.trayOpen = 'Otevřít';
 
 
+
 module.exports = string;

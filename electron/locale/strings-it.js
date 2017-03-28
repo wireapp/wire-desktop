@@ -49,6 +49,7 @@ string.menuHideOthers = 'Nascondi gli altri';
 string.menuShowAll = 'Mostra tutti';
 string.menuSettings = 'Impostazioni';
 string.menuQuit = 'Chiudi Wire';
+string.menuShowHide = 'Mostra Menu';
 string.menuSavePictureAs = 'Salva immagine con nome...';
 string.menuNoSuggestions = 'Nessun suggerimento';
 
@@ -61,5 +62,6 @@ string.trayOpen = 'Apri';
 string.trayQuit = 'Esci';
 
 string.unreadMessages = 'Messaggio non letto';
+
 
 module.exports = string;

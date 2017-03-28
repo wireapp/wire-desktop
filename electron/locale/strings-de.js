@@ -62,4 +62,5 @@ string.trayQuit = 'Beenden';
 
 string.unreadMessages = 'Ungelesene Nachrichten';
 
+
 module.exports = string;

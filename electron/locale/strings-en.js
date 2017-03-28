@@ -62,4 +62,9 @@ string.trayQuit = 'Quit';
 
 string.unreadMessages = 'Unread message';
 
+string.aboutVersion = 'Version';
+string.aboutWebappVersion = 'Wire for Web version';
+string.aboutUpdate = 'How Wire update works';
+string.aboutReleases = 'Releases';
+
 module.exports = string;

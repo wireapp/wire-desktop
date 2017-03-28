@@ -62,4 +62,5 @@ string.trayQuit = 'Afslut';
 
 string.unreadMessages = 'Ulæst besked';
 
+
 module.exports = string;

@@ -62,4 +62,5 @@ string.trayQuit = 'Sair';
 
 string.unreadMessages = 'Mensagem não lida';
 
+
 module.exports = string;
