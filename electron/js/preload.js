@@ -67,7 +67,7 @@ if (process.platform === 'darwin') {
 // App Start
 ///////////////////////////////////////////////////////////////////////////////
 function loadWebapp() {
-  ipcRenderer.send('load-webapp', navigator.onLine);
+  ipcRenderer.send('load-webapp');
 }
 
 ipcRenderer.once('splash-screen-loaded', function() {
@@ -84,6 +84,7 @@ ipcRenderer.once('splash-screen-loaded', function() {
 
 // app.wire.com was loaded
 ipcRenderer.once('webapp-loaded', function(sender, config) {
+  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
   window.electron_version = config.electron_version;
   window.notification_icon = config.notification_icon;
   require('./menu/context');

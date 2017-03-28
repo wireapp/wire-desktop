@@ -1,5 +1,10 @@
 'use strict';
 
+string.aboutReleases = 'Releases';
+string.aboutUpdate = 'How Wire Updates Work';
+string.aboutVersion = 'Version';
+string.aboutWebappVersion = 'Wire for Web Version';
+
 string.menuConversation = 'Conversation';
 string.menuStart = 'Start';
 string.menuEdit = 'Edit';

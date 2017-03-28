@@ -19,9 +19,15 @@
 
 'use strict';
 
-const {remote} = require('electron');
+const {remote, ipcRenderer} = require('electron');
 
 const pkg = require('./../package.json');
+const locale = require('./../locale/locale');
+
+let labels = document.getElementsByClassName('text');
+for (let label of labels) {
+  label.innerHTML = locale.getText(label.dataset.string);
+}
 
 document.getElementById('name').innerHTML = pkg.productName;
 document.getElementById('version').innerHTML = pkg.version;
@@ -29,5 +35,13 @@ document.getElementById('version').innerHTML = pkg.version;
 window.addEventListener('keydown', function(event) {
   if (event.keyCode === 27) {
     remote.getCurrentWindow().close();
+  }
+});
+
+ipcRenderer.once('about-loaded', function(sender, config) {
+  if (config.webappVersion) {
+    document.getElementById('webappVersion').innerHTML = config.webappVersion;
+  } else {
+    document.getElementById('webappVersion').parentNode.remove();
   }
 });

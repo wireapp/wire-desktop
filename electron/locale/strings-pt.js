@@ -2,6 +2,7 @@
 
 let string = {};
 
+
 string.menuConversation = 'Conversa';
 string.menuStart = 'Início';
 string.menuEdit = 'Editar';

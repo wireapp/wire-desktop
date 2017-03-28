@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Razgovor';
 string.menuStart = 'Počni';
 string.menuEdit = 'Promjeni';

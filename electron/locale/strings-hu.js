@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Beszélgetés';
 string.menuStart = 'Indítás';
 string.menuEdit = 'Szerkesztés';
@@ -13,7 +14,7 @@ string.menuStartup = 'Wire futtatása indításkor';
 string.menuLocale = 'Nyelv';
 string.menuAbout = 'Wire névjegy';
 string.menuSignOut = 'Kijelentkezés';
-string.menuPing = 'Bökés';
+string.menuPing = 'Kopogás';
 string.menuCall = 'Hívás';
 string.menuVideoCall = 'Videóhívás';
 string.menuPeople = 'Partner';
@@ -40,7 +41,7 @@ string.menuFullScreen = 'Teljes képernyő';
 string.menuLegal = 'Jogi nyilatkozat';
 string.menuPrivacy = 'Adatvédelem';
 string.menuLicense = 'Licenc információ';
-string.menuSupport = 'Website Ügyfélszolgálat';
+string.menuSupport = 'Wire Ügyfélszolgálat';
 string.menuWireURL = 'Wire Weboldala';
 string.menuPreferences = 'Előnyök';
 string.menuServices = 'Szolgáltatások';

@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Conversación';
 string.menuStart = 'Iniciar';
 string.menuEdit = 'Editar';
