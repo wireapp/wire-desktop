@@ -2,6 +2,7 @@
 
 let string = {};
 
+
 string.menuConversation = 'Conversa';
 string.menuStart = 'Início';
 string.menuEdit = 'Editar';
@@ -61,6 +62,5 @@ string.trayOpen = 'Abrir';
 string.trayQuit = 'Sair';
 
 string.unreadMessages = 'Mensagem não lida';
-
 
 module.exports = string;

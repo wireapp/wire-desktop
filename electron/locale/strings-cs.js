@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Konverzace';
 string.menuStart = 'Spustit';
 string.menuEdit = 'Upravit';
@@ -56,7 +57,6 @@ string.restartLater = 'Později';
 string.restartNow = 'Restartovat nyní';
 
 string.trayOpen = 'Otevřít';
-
 
 
 module.exports = string;

@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Samtale';
 string.menuStart = 'Start';
 string.menuEdit = 'Redigér';
@@ -61,6 +62,5 @@ string.trayOpen = 'Åbn';
 string.trayQuit = 'Afslut';
 
 string.unreadMessages = 'Ulæst besked';
-
 
 module.exports = string;

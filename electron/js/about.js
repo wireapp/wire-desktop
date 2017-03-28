@@ -39,7 +39,7 @@ window.addEventListener('keydown', function(event) {
 });
 
 ipcRenderer.once('about-loaded', function(sender, config) {
-  if (config.webappVersions) {
+  if (config.webappVersion) {
     document.getElementById('webappVersion').innerHTML = config.webappVersion;
   } else {
     document.getElementById('webappVersion').parentNode.remove();

@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Konverzácia';
 string.menuStart = 'Začať';
 string.menuEdit = 'Upraviť';
@@ -62,6 +63,5 @@ string.trayOpen = 'Otvoriť';
 string.trayQuit = 'Ukončiť';
 
 string.unreadMessages = 'Neprečítané správy';
-
 
 module.exports = string;

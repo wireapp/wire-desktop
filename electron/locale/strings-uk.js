@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Розмова';
 string.menuStart = 'Почати';
 string.menuEdit = 'Редагувати';
@@ -62,6 +63,5 @@ string.trayOpen = 'Вiдкрити';
 string.trayQuit = 'Вийти';
 
 string.unreadMessages = 'Непрочитане повідомлення';
-
 
 module.exports = string;

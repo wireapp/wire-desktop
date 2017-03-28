@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Beszélgetés';
 string.menuStart = 'Indítás';
 string.menuEdit = 'Szerkesztés';
@@ -62,6 +63,5 @@ string.trayOpen = 'Megnyitás';
 string.trayQuit = 'Kilépés';
 
 string.unreadMessages = 'Olvasatlan üzenet';
-
 
 module.exports = string;

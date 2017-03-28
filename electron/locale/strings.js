@@ -1,5 +1,10 @@
 'use strict';
 
+string.aboutReleases = 'Releases';
+string.aboutUpdate = 'How Wire update works';
+string.aboutVersion = 'Version';
+string.aboutWebappVersion = 'Wire for Web version';
+
 string.menuConversation = 'Conversation';
 string.menuStart = 'Start';
 string.menuEdit = 'Edit';
@@ -59,8 +64,3 @@ string.trayOpen = 'Open';
 string.trayQuit = 'Quit';
 
 string.unreadMessages = 'Unread message';
-
-string.aboutVersion = 'Version';
-string.aboutWebappVersion = 'Wire for Web version';
-string.aboutUpdate = 'How Wire update works';
-string.aboutReleases = 'Releases';

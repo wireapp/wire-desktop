@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Razgovor';
 string.menuStart = 'Počni';
 string.menuEdit = 'Promjeni';
@@ -56,7 +57,6 @@ string.restartLater = 'Kasnije';
 string.restartNow = 'Ponovno pokreni';
 
 string.trayOpen = 'Otvori';
-
 
 
 module.exports = string;
