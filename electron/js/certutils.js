@@ -20,58 +20,43 @@
 'use strict';
 
 const config = require('./config');
-
-const asn1js = require('asn1js');
 const crypto = require('crypto');
-const pkijs = require('pkijs');
+const rs = require('jsrsasign');
 
-const MAIN_CERT = 'ff4880f09cc1e2d0edc0d07fdcdc987c2b5f4d9c';
+const MAIN_FP = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU=';
+const DIGICERT_EV_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxszlc+b71LvlLS0ypt/l\ngT/JzSVJtnEqw9WUNGeiChywX2mmQLHEt7KP0JikqUFZOtPclNY823Q4pErMTSWC\n90qlUxI47vNJbXGRfmO2q6Zfw6SE+E9iUb74xezbOJLjBuUIkQzEKEFV+8taiRV+\nceg1v01yCT2+OjhQW3cxG42zxyRFmqesbQAUWgS3uhPrUQqYQUEiTmVhh4FBUKZ5\nXIneGUpX1S7mXRxTLH6YzRoGFqRoc9A0BBNcoXHTWnxV215k4TeHMFYE5RG0KYAS\n8Xk5iKICEXwnZreIt3jyygqoOKsKZMK/Zl2VhMGhJR6HXRpQCyASzEG7bgtROLhL\nywIDAQAB\n-----END PUBLIC KEY-----';
+const DIGICERT_GLOBAL_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4jvhEXLeqKTTo1eqUKKP\nC3eQyaKl7hLOllsBCSDMAZOnTjC3U/dDxGkAV53ijSLdhwZAAIEJzs4bg7/fzTtx\nRuLWZscFs3YnFo97nh6Vfe63SKMI2tavegw5BmV/Sl0fvBf4q77uKNd0f3p4mVmF\naG5cIzJLv07A6Fpt43C/dxC//AH2hdmoRBBYMql1GNXRor5H4idq9Joz+EkIYIvU\nX7Q6hL+hqkpMfT7PT19sdl6gSzeRntwi5m3OFBqOasv+zbMUZBfHWymeMr/y7vrT\nC0LUq7dBMtoM1O/4gdW7jVg/tRvoSSiicNoxBN33shbyTApOB6jtSj1etX+jkMOv\nJwIDAQAB\n-----END PUBLIC KEY-----';
 const strip = (url) => url.replace(/https:|[\/]+/g, '');
 const pins = [
-  {url: strip(config.PROD_URL), keys: ['c85f71715e51593828e37cd8450501f3fa5fa4a2', MAIN_CERT]},
-  {url: 'wire.com', keys: [MAIN_CERT]},
-  {url: 'www.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-nginz-https.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-nginz-ssl.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-assets.wire.com', keys: [MAIN_CERT]},
+  {url: strip(config.PROD_URL), fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP], issuer_root: DIGICERT_EV_ROOT},
+  {url: 'wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
+  {url: 'www.wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
+  {url: 'prod-nginz-https.wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
+  {url: 'prod-nginz-ssl.wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
+  {url: 'prod-assets.wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
 ];
-
-const pemToCert = (pem) => {
-  const strippedPem = pem.replace(/(-----(BEGIN|END) CERTIFICATE-----|\n)/g, '').trim();
-  const asn1 = asn1js.fromBER(new Uint8Array(Buffer.from(strippedPem, 'base64')).buffer).result;
-  return new pkijs.Certificate({schema: asn1});
-};
-
-const getPublicKeyHash = (pemString) => {
-  const certificate = pemToCert(pemString);
-  const publicKey = new Uint8Array(certificate.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
-  let shasum = crypto.createHash('sha1').update(publicKey);
-  return shasum.digest('hex');
-};
 
 module.exports = {
   hostnameShouldBePinned (hostname) {
-    for (let pin of pins) {
-      if (pin.url.toLowerCase().trim() === hostname.toLowerCase().trim()) {
-        return true;
-      }
-    }
-    return false;
+    return pins.some((pin) => pin.url.toLowerCase().trim() === hostname.toLowerCase().trim());
   },
 
-  verifyPinning (hostname, cert) {
-    const certKey = getPublicKeyHash(cert).toLowerCase().trim();
+  verifyPinning (hostname, certificate) {
+    const {data: certData = '', issuerCert: {data: issuerCertData = ''} = {}} = certificate;
+
+    const issuerCert = rs.ASN1HEX.pemToHex(issuerCertData);
+    const publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
+    const publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
+    const publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
 
     for (let pin of pins) {
       if (pin.url === hostname) {
-        for (let key of pin.keys) {
-          if (key.toLowerCase().trim() === certKey) {
-            return true;
-          }
+        const issuerRootPubKey = rs.KEYUTIL.getKey(pin.issuer_root);
+        if (!rs.X509.verifySignature(issuerCert, issuerRootPubKey)) {
+          return false;
         }
-        break;
+        return pin.fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint);
       }
     }
-    return false;
   },
 };
