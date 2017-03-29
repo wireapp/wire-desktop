@@ -196,9 +196,9 @@ function showMainWindow() {
     }
 
     if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, certificate))) {
+      console.error(`Certutils could not verify certificate pinning for ${hostname}.`);
       cb(-2);
     } else {
-      console.error(`Certutils could not verify certificate pinning for ${hostname}.`);
       cb(-3);
     }
   });
