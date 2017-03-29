@@ -19,7 +19,7 @@
 
 'use strict';
 
-const {remote, ipcRenderer} = require('electron');
+const {remote, ipcRenderer, shell} = require('electron');
 
 const pkg = require('./../package.json');
 const locale = require('./../locale/locale');
@@ -37,6 +37,14 @@ window.addEventListener('keydown', function(event) {
     remote.getCurrentWindow().close();
   }
 });
+
+let links = document.getElementsByTagName('a');
+for (let link of links) {
+  link.onclick = function() {
+    shell.openExternal(link.href);
+    return false;
+  };
+}
 
 ipcRenderer.once('about-loaded', function(sender, config) {
   if (config.webappVersion) {
