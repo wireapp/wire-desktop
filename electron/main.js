@@ -192,18 +192,27 @@ function showMainWindow() {
     const {hostname = '', certificate = {}, error} = request;
 
     if (typeof error !== 'undefined') {
-      console.error(error);
+      console.error(setCertificateVerifyProc, error);
       return cb(-2);
     }
 
     if (certutils.hostnameShouldBePinned(hostname)) {
       const pinningResult = certutils.verifyPinning(hostname, certificate);
+      let pinningError = '';
       if (pinningResult.verifiedFingerprints === false) {
-        console.error(`Certutils could not verify the certificate fingerprint(s) for ${hostname}.`);
-        return cb(-2);
+        pinningError = `Certutils could not verify the certificate fingerprint(s) for ${hostname}.`;
       }
       if (pinningResult.verifiedIssuerRootPubkeys === false) {
-        console.error(`Certutils could not verify the CA's certificate signature(s) for ${hostname}.`);
+        pinningError = `Certutils could not verify the CA's certificate signature(s) for ${hostname}.`;
+      }
+      if (pinningResult.verifiedPublicKeyAlgorithmID === false) {
+        pinningError = `Certutils could not verify the certificate algorithm ID for ${hostname}.`;
+      }
+      if (pinningResult.verifiedPublicKeyAlgorithmParam === false) {
+        pinningError = `Certutils could not verify the certificate algorithm parameters for ${hostname}.`;
+      }
+      if (pinningError !== '') {
+        console.error(pinningError);
         return cb(-2);
       }
     }

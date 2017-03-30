@@ -24,16 +24,59 @@ const crypto = require('crypto');
 const rs = require('jsrsasign');
 
 const MAIN_FP = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU=';
+const ALGORITHM_RSA = '2a864886f70d010101';
 const DIGICERT_EV_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxszlc+b71LvlLS0ypt/l\ngT/JzSVJtnEqw9WUNGeiChywX2mmQLHEt7KP0JikqUFZOtPclNY823Q4pErMTSWC\n90qlUxI47vNJbXGRfmO2q6Zfw6SE+E9iUb74xezbOJLjBuUIkQzEKEFV+8taiRV+\nceg1v01yCT2+OjhQW3cxG42zxyRFmqesbQAUWgS3uhPrUQqYQUEiTmVhh4FBUKZ5\nXIneGUpX1S7mXRxTLH6YzRoGFqRoc9A0BBNcoXHTWnxV215k4TeHMFYE5RG0KYAS\n8Xk5iKICEXwnZreIt3jyygqoOKsKZMK/Zl2VhMGhJR6HXRpQCyASzEG7bgtROLhL\nywIDAQAB\n-----END PUBLIC KEY-----';
-const DIGICERT_GLOBAL_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4jvhEXLeqKTTo1eqUKKP\nC3eQyaKl7hLOllsBCSDMAZOnTjC3U/dDxGkAV53ijSLdhwZAAIEJzs4bg7/fzTtx\nRuLWZscFs3YnFo97nh6Vfe63SKMI2tavegw5BmV/Sl0fvBf4q77uKNd0f3p4mVmF\naG5cIzJLv07A6Fpt43C/dxC//AH2hdmoRBBYMql1GNXRor5H4idq9Joz+EkIYIvU\nX7Q6hL+hqkpMfT7PT19sdl6gSzeRntwi5m3OFBqOasv+zbMUZBfHWymeMr/y7vrT\nC0LUq7dBMtoM1O/4gdW7jVg/tRvoSSiicNoxBN33shbyTApOB6jtSj1etX+jkMOv\nJwIDAQAB\n-----END PUBLIC KEY-----';
 const strip = (url) => url.replace(/https:|[\/]+/g, '');
 const pins = [
-  {url: strip(config.PROD_URL), fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP], issuerRootPubkeys: [DIGICERT_EV_ROOT]},
-  {url: 'wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
-  {url: 'www.wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
-  {url: 'prod-nginz-https.wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
-  {url: 'prod-nginz-ssl.wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
-  {url: 'prod-assets.wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
+  {
+    url: strip(config.PROD_URL),
+    publicKeyInfo: {
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP],
+      issuerRootPubkeys: [DIGICERT_EV_ROOT],
+    },
+  },
+  {
+    url: 'wire.com',
+    publicKeyInfo: {
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    },
+  },
+  {
+    url: 'www.wire.com',
+    publicKeyInfo: {
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    },
+  },
+  {
+    url: 'prod-nginz-https.wire.com',
+    publicKeyInfo: {
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    },
+  },
+  {
+    url: 'prod-nginz-ssl.wire.com',
+    publicKeyInfo: {
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    },
+  },
+  {
+    url: 'prod-assets.wire.com',
+    publicKeyInfo: {
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    },
+  },
 ];
 
 module.exports = {
@@ -51,10 +94,12 @@ module.exports = {
     const result = {};
 
     for (let pin of pins) {
-      const {url = '', fingerprints = [], issuerRootPubkeys = []} = pin;
+      const {url = '', publicKeyInfo: {fingerprints = [], algorithmID = '', algorithmParam} = {}, issuerRootPubkeys = []} = pin;
       if (url === hostname) {
         result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCert, rs.KEYUTIL.getKey(pubkey))) : undefined;
         result.verifiedFingerprints = (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined;
+        result.verifiedPublicKeyAlgorithmID = algorithmID === publicKey.algoid;
+        result.verifiedPublicKeyAlgorithmParam = algorithmParam === publicKey.algparam;
         break;
       }
     }
