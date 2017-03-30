@@ -28,12 +28,12 @@ const DIGICERT_EV_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOC
 const DIGICERT_GLOBAL_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4jvhEXLeqKTTo1eqUKKP\nC3eQyaKl7hLOllsBCSDMAZOnTjC3U/dDxGkAV53ijSLdhwZAAIEJzs4bg7/fzTtx\nRuLWZscFs3YnFo97nh6Vfe63SKMI2tavegw5BmV/Sl0fvBf4q77uKNd0f3p4mVmF\naG5cIzJLv07A6Fpt43C/dxC//AH2hdmoRBBYMql1GNXRor5H4idq9Joz+EkIYIvU\nX7Q6hL+hqkpMfT7PT19sdl6gSzeRntwi5m3OFBqOasv+zbMUZBfHWymeMr/y7vrT\nC0LUq7dBMtoM1O/4gdW7jVg/tRvoSSiicNoxBN33shbyTApOB6jtSj1etX+jkMOv\nJwIDAQAB\n-----END PUBLIC KEY-----';
 const strip = (url) => url.replace(/https:|[\/]+/g, '');
 const pins = [
-  {url: strip(config.PROD_URL), fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP], issuer_root: DIGICERT_EV_ROOT},
-  {url: 'wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
-  {url: 'www.wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
-  {url: 'prod-nginz-https.wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
-  {url: 'prod-nginz-ssl.wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
-  {url: 'prod-assets.wire.com', fingerprints: [MAIN_FP], issuer_root: DIGICERT_GLOBAL_ROOT},
+  {url: strip(config.PROD_URL), fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP], issuerRootPubkeys: [DIGICERT_EV_ROOT]},
+  {url: 'wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
+  {url: 'www.wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
+  {url: 'prod-nginz-https.wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
+  {url: 'prod-nginz-ssl.wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
+  {url: 'prod-assets.wire.com', fingerprints: [MAIN_FP], issuerRootPubkeys: [DIGICERT_GLOBAL_ROOT]},
 ];
 
 module.exports = {
@@ -48,15 +48,16 @@ module.exports = {
     const publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
     const publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
     const publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
+    const result = {};
 
     for (let pin of pins) {
-      if (pin.url === hostname) {
-        const issuerRootPubKey = rs.KEYUTIL.getKey(pin.issuer_root);
-        if (!rs.X509.verifySignature(issuerCert, issuerRootPubKey)) {
-          return false;
-        }
-        return pin.fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint);
+      const {url = '', fingerprints = [], issuerRootPubkeys = []} = pin;
+      if (url === hostname) {
+        result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCert, rs.KEYUTIL.getKey(pubkey))) : undefined;
+        result.verifiedFingerprints = (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined;
+        break;
       }
     }
+    return result;
   },
 };

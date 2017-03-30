@@ -192,15 +192,23 @@ function showMainWindow() {
     const {hostname = '', certificate = {}, error} = request;
 
     if (typeof error !== 'undefined') {
+      console.error(error);
       return cb(-2);
     }
 
-    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, certificate))) {
-      console.error(`Certutils could not verify certificate pinning for ${hostname}.`);
-      cb(-2);
-    } else {
-      cb(-3);
+    if (certutils.hostnameShouldBePinned(hostname)) {
+      const pinningResult = certutils.verifyPinning(hostname, certificate);
+      if (pinningResult.verifiedFingerprints === false) {
+        console.error(`Certutils could not verify the certificate fingerprint(s) for ${hostname}.`);
+        return cb(-2);
+      }
+      if (pinningResult.verifiedIssuerRootPubkeys === false) {
+        console.error(`Certutils could not verify the CA's certificate signature(s) for ${hostname}.`);
+        return cb(-2);
+      }
     }
+
+    return cb(-3);
   });
 
   main.loadURL(SPLASH_HTML);
