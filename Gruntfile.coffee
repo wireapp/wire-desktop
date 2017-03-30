@@ -170,6 +170,8 @@ module.exports = (grunt) ->
         command: 'build --linux --x64'
       linux32:
         command: 'build --linux --ia32'
+      checksum:
+        command: 'bin/checksum.sh'
 
 
 ###############################################################################

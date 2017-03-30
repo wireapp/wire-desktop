@@ -52,6 +52,7 @@ if __name__ == '__main__':
     'wire_%s_amd64.deb' % version,
     'wire-%s-ia32.AppImage' % version,
     'wire-%s-x86_64.AppImage' % version,
+    'SHA265SUMS',
   ]
 
   for filename in files:
