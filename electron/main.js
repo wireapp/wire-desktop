@@ -288,7 +288,7 @@ function showAboutWindow() {
     about = new BrowserWindow({
       'title': '',
       'width': 304,
-      'height': 240,
+      'height': 256,
       'resizable': false,
       'fullscreen': false,
     });
