@@ -18,6 +18,7 @@
 
 electron_packager = require 'electron-packager'
 createWindowsInstaller = require('electron-winstaller').createWindowsInstaller
+electron_builder = require 'electron-builder'
 
 ELECTRON_PACKAGE_JSON = 'electron/package.json'
 PACKAGE_JSON = 'package.json'
@@ -37,7 +38,7 @@ module.exports = (grunt) ->
       dist: 'wrap/dist'
       win: 'wrap/**/<%= info.name %>-win*'
       macos: 'wrap/**/<%= info.name %>-darwin*'
-      linux: ['wrap/**/<%= info.name %>-linux*', 'wrap/dist']
+      linux: ['wrap/**/linux*', 'wrap/**/wire*']
       pkg: '*.pkg'
 
     'update-keys':
@@ -111,6 +112,35 @@ module.exports = (grunt) ->
             ProductName: '<%= info.name %>'
             InternalName: '<%= info.name %>.exe'
 
+    electronbuilder:
+      linux-ia32:
+        options:
+          productName: 'wire-desktop'
+          asar: false
+          linux:
+            fpm: ['--name', 'wire-desktop']
+            executableName: 'wire-desktop'
+            target: ['AppImage', 'deb']
+            arch: 'ia32'
+            afterInstall: 'bin/deb/after-install.tpl'
+            afterRemove: 'bin/deb/after-remove.tpl'
+            category: 'Network'
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
+      linux-x64:
+        options:
+          productName: 'wire-desktop'
+          asar: false
+          linux:
+            fpm: ['--name', 'wire-desktop']
+            executableName: 'wire-desktop'
+            target: ['AppImage', 'deb']
+            arch: 'x64'
+            afterInstall: 'bin/deb/after-install.tpl'
+            afterRemove: 'bin/deb/after-remove.tpl'
+            category: 'Network'
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
+
+
     'create-windows-installer':
       internal:
         title: '<%= info.nameInternal %>'
@@ -165,13 +195,6 @@ module.exports = (grunt) ->
           owner : 'wireapp'
           repository : 'wire-desktop'
 
-    shell:
-      linux64:
-        command: 'build --linux --x64'
-      linux32:
-        command: 'build --linux --ia32'
-
-
 ###############################################################################
 # Tasks
 ###############################################################################
@@ -214,6 +237,18 @@ module.exports = (grunt) ->
         grunt.warn error
       else
         done()
+
+  grunt.registerMultiTask 'electronbuilder', 'Build Electron apps', ->
+    done = @async()
+    electron_builder.build
+      targets: electron_builder.Platform.LINUX.createTarget()
+      config: @options()
+    #.then ->
+    #  done()
+    #  return
+    #.catch error ->
+    #  grunt.warn error
+    #  return
 
   grunt.registerTask 'update-keys', ->
     options = @options()
@@ -266,5 +301,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'shell']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'shell']
+  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux-x64', 'electronbuilder:linux-ia32']
