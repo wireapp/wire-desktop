@@ -42,6 +42,7 @@ const APP_PATH = app.getAppPath();
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const SPLASH_HTML = 'file://' + path.join(APP_PATH, 'html', 'splash.html');
+const CERT_ERR_HTML = 'file://' + path.join(APP_PATH, 'html', 'certificate-error.html');
 const ABOUT_HTML = 'file://' + path.join(APP_PATH, 'html', 'about.html');
 const ICON = 'wire.' + ((process.platform === 'win32') ? 'ico' : 'png');
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
@@ -193,27 +194,18 @@ function showMainWindow() {
 
     if (typeof error !== 'undefined') {
       console.error(setCertificateVerifyProc, error);
+      main.loadURL(CERT_ERR_HTML);
       return cb(-2);
     }
 
     if (certutils.hostnameShouldBePinned(hostname)) {
-      const pinningResult = certutils.verifyPinning(hostname, certificate);
-      let pinningError = '';
-      if (pinningResult.verifiedFingerprints === false) {
-        pinningError = `Certutils could not verify the certificate fingerprint(s) for ${hostname}.`;
-      }
-      if (pinningResult.verifiedIssuerRootPubkeys === false) {
-        pinningError = `Certutils could not verify the CA's certificate signature(s) for ${hostname}.`;
-      }
-      if (pinningResult.verifiedPublicKeyAlgorithmID === false) {
-        pinningError = `Certutils could not verify the certificate algorithm ID for ${hostname}.`;
-      }
-      if (pinningResult.verifiedPublicKeyAlgorithmParam === false) {
-        pinningError = `Certutils could not verify the certificate algorithm parameters for ${hostname}.`;
-      }
-      if (pinningError !== '') {
-        console.error(pinningError);
-        return cb(-2);
+      const pinningResults = certutils.verifyPinning(hostname, certificate);
+      for (let result in pinningResults) {
+        if (pinningResults[result] === false) {
+          console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+          main.loadURL(CERT_ERR_HTML);
+          return cb(-2);
+        }
       }
     }
 
