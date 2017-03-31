@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2016 Wire Swiss GmbH
+ * Copyright (C) 2017 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,26 +19,23 @@
 
 'use strict';
 
-const config = require('./config');
 const crypto = require('crypto');
 const rs = require('jsrsasign');
 
 const MAIN_FP = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU=';
 const ALGORITHM_RSA = '2a864886f70d010101';
-const DIGICERT_EV_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxszlc+b71LvlLS0ypt/l\ngT/JzSVJtnEqw9WUNGeiChywX2mmQLHEt7KP0JikqUFZOtPclNY823Q4pErMTSWC\n90qlUxI47vNJbXGRfmO2q6Zfw6SE+E9iUb74xezbOJLjBuUIkQzEKEFV+8taiRV+\nceg1v01yCT2+OjhQW3cxG42zxyRFmqesbQAUWgS3uhPrUQqYQUEiTmVhh4FBUKZ5\nXIneGUpX1S7mXRxTLH6YzRoGFqRoc9A0BBNcoXHTWnxV215k4TeHMFYE5RG0KYAS\n8Xk5iKICEXwnZreIt3jyygqoOKsKZMK/Zl2VhMGhJR6HXRpQCyASzEG7bgtROLhL\nywIDAQAB\n-----END PUBLIC KEY-----';
-const strip = (url) => url.replace(/https:|[\/]+/g, '');
+const VERISIGN_CLASS3_G5_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryQICCl6NZ5gDKrnSztO\n3Hy8PEUcuyvg/ikC+VcIo2SFFSf18a3IMYldIugqqqZCs4/4uVW3sbdLs/6PfgdX\n7O9D22ZiFWHPYA2k2N744MNiCD1UE+tJyllUhSblK48bn+v1oZHCM0nYQ2NqUkvS\nj+hwUU3RiWl7x3D2s9wSdNt7XUtW05a/FXehsPSiJfKvHJJnGOX0BgTvkLnkAOTd\nOrUZ/wK69Dzu4IvrN4vs9Nes8vbwPa/ddZEzGR0cQMt0JBkhk9kU/qwqUseP1QRJ\n5I1jR4g8aYPL/ke9K35PxZWuDp3U0UPAZ3PjFAh+5T+fc7gzCs9dPzSHloruU+gl\nFQIDAQAB\n-----END PUBLIC KEY-----\n';
 const pins = [
   {
-    url: strip(config.PROD_URL),
+    url: /.*app\.wire\.com.*/i,
     publicKeyInfo: {
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
       fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP],
-      issuerRootPubkeys: [DIGICERT_EV_ROOT],
     },
   },
   {
-    url: 'wire.com',
+    url: /^wire.com.*/i,
     publicKeyInfo: {
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
@@ -46,7 +43,7 @@ const pins = [
     },
   },
   {
-    url: 'www.wire.com',
+    url: /.*www.wire.com.*/i,
     publicKeyInfo: {
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
@@ -54,7 +51,7 @@ const pins = [
     },
   },
   {
-    url: 'prod-nginz-https.wire.com',
+    url: /.*prod-nginz-https\.wire\.com\.*/i,
     publicKeyInfo: {
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
@@ -62,7 +59,7 @@ const pins = [
     },
   },
   {
-    url: 'prod-nginz-ssl.wire.com',
+    url: /.*prod-nginz-ssl\.wire\.com.*/i,
     publicKeyInfo: {
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
@@ -70,18 +67,26 @@ const pins = [
     },
   },
   {
-    url: 'prod-assets.wire.com',
+    url: /.*prod-assets\.wire\.com.*/i,
     publicKeyInfo: {
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
       fingerprints: [MAIN_FP],
+    },
+  },
+  {
+    url: /.*.cloudfront.net.*/i,
+    publicKeyInfo: {
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
     },
   },
 ];
 
 module.exports = {
   hostnameShouldBePinned (hostname) {
-    return pins.some((pin) => pin.url.toLowerCase().trim() === hostname.toLowerCase().trim());
+    return pins.some((pin) => pin.url.test(hostname.toLowerCase().trim()));
   },
 
   verifyPinning (hostname, certificate) {
@@ -94,8 +99,8 @@ module.exports = {
     const result = {};
 
     for (let pin of pins) {
-      const {url = '', publicKeyInfo: {fingerprints = [], algorithmID = '', algorithmParam} = {}, issuerRootPubkeys = []} = pin;
-      if (url === hostname) {
+      const {url, publicKeyInfo: {fingerprints = [], algorithmID = '', algorithmParam, issuerRootPubkeys = []} = {}} = pin;
+      if (url.test(hostname.toLowerCase().trim())) {
         result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCert, rs.KEYUTIL.getKey(pubkey))) : undefined;
         result.verifiedFingerprints = (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined;
         result.verifiedPublicKeyAlgorithmID = algorithmID === publicKey.algoid;
