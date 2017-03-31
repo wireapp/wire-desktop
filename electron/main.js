@@ -193,7 +193,7 @@ function showMainWindow() {
     const {hostname = '', certificate = {}, error} = request;
 
     if (typeof error !== 'undefined') {
-      console.error(setCertificateVerifyProc, error);
+      console.error('setCertificateVerifyProc', error);
       main.loadURL(CERT_ERR_HTML);
       return cb(-2);
     }

@@ -28,59 +28,59 @@ const VERISIGN_CLASS3_G5_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BA
 const pins = [
   {
     url: /.*app\.wire\.com.*/i,
-    publicKeyInfo: {
+    publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
       fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP],
-    },
+    }],
   },
   {
     url: /^wire.com.*/i,
-    publicKeyInfo: {
+    publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
       fingerprints: [MAIN_FP],
-    },
+    }],
   },
   {
     url: /.*www.wire.com.*/i,
-    publicKeyInfo: {
+    publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
       fingerprints: [MAIN_FP],
-    },
+    }],
   },
   {
     url: /.*prod-nginz-https\.wire\.com\.*/i,
-    publicKeyInfo: {
+    publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
       fingerprints: [MAIN_FP],
-    },
+    }],
   },
   {
     url: /.*prod-nginz-ssl\.wire\.com.*/i,
-    publicKeyInfo: {
+    publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
       fingerprints: [MAIN_FP],
-    },
+    }],
   },
   {
     url: /.*prod-assets\.wire\.com.*/i,
-    publicKeyInfo: {
+    publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
       fingerprints: [MAIN_FP],
-    },
+    }],
   },
   {
     url: /.*.cloudfront.net.*/i,
-    publicKeyInfo: {
+    publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
-      issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
-    },
+    }],
+    issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
   },
 ];
 
@@ -99,12 +99,18 @@ module.exports = {
     const result = {};
 
     for (let pin of pins) {
-      const {url, publicKeyInfo: {fingerprints = [], algorithmID = '', algorithmParam, issuerRootPubkeys = []} = {}} = pin;
+      const {url, publicKeyInfo = [], issuerRootPubkeys = []} = pin;
       if (url.test(hostname.toLowerCase().trim())) {
         result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCert, rs.KEYUTIL.getKey(pubkey))) : undefined;
-        result.verifiedFingerprints = (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined;
-        result.verifiedPublicKeyAlgorithmID = algorithmID === publicKey.algoid;
-        result.verifiedPublicKeyAlgorithmParam = algorithmParam === publicKey.algparam;
+        result.publicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
+          const {fingerprints = [], algorithmID = '', algorithmParam} = pubkey;
+          arr.push({
+            verifiedFingerprints: (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined,
+            verifiedPublicKeyAlgorithmID: algorithmID === publicKey.algoid,
+            verifiedPublicKeyAlgorithmParam: algorithmParam === publicKey.algparam,
+          });
+          return arr;
+        }, []).every((obj) => Object.values(obj).every((val) => val !== false));
         break;
       }
     }
