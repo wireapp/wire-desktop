@@ -35,13 +35,13 @@
     }
   },
   "devDependencies": {
-    "electron": "1.6.4",
+    "electron": "1.6.5",
     "electron-builder": "12.3.1",
     "electron-mocha": "3.4.0",
     "electron-packager": "8.6.0",
     "electron-rebuild": "1.5.7",
     "electron-winstaller": "2.5.2",
-    "eslint": "3.18.0",
+    "eslint": "3.19.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-git": "1.0.3",
