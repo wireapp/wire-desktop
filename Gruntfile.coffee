@@ -228,12 +228,6 @@ module.exports = (grunt) ->
     electron_builder.build
       targets: electron_builder.Platform.LINUX.createTarget(['deb', 'AppImage'], electron_builder.Arch.ia32, electron_builder.Arch.x64)
       config: @options()
-    #.then ->
-    #  done()
-    #  return
-    #.catch error ->
-    #  grunt.warn error
-    #  return
 
   grunt.registerTask 'update-keys', ->
     options = @options()
