@@ -120,7 +120,6 @@ module.exports = (grunt) ->
           linux:
             fpm: ['--name', 'wire-desktop']
             executableName: 'wire-desktop'
-            target: ['AppImage', 'deb']
             afterInstall: 'bin/deb/after-install.tpl'
             afterRemove: 'bin/deb/after-remove.tpl'
             category: 'Network'
@@ -132,7 +131,6 @@ module.exports = (grunt) ->
           linux:
             fpm: ['--name', 'wire-desktop-internal']
             executableName: 'wire-desktop-internal'
-            target: ['AppImage', 'deb']
             afterInstall: 'bin/deb/after-install.tpl'
             afterRemove: 'bin/deb/after-remove.tpl'
             category: 'Network'
