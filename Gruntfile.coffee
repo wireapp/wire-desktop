@@ -113,7 +113,7 @@ module.exports = (grunt) ->
             InternalName: '<%= info.name %>.exe'
 
     electronbuilder:
-      linux-ia32:
+      linux_ia32:
         options:
           productName: 'wire-desktop'
           asar: false
@@ -126,7 +126,7 @@ module.exports = (grunt) ->
             afterRemove: 'bin/deb/after-remove.tpl'
             category: 'Network'
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
-      linux-x64:
+      linux_x64:
         options:
           productName: 'wire-desktop'
           asar: false
@@ -301,4 +301,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux-x64', 'electronbuilder:linux-ia32']
+  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux_x64', 'electronbuilder:linux_ia32']
