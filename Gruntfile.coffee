@@ -125,6 +125,18 @@ module.exports = (grunt) ->
             afterRemove: 'bin/deb/after-remove.tpl'
             category: 'Network'
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
+      linux_internal:
+        options:
+          productName: 'wire-desktop-internal'
+          asar: false
+          linux:
+            fpm: ['--name', 'wire-desktop-internal']
+            executableName: 'wire-desktop-internal'
+            target: ['AppImage', 'deb']
+            afterInstall: 'bin/deb/after-install.tpl'
+            afterRemove: 'bin/deb/after-remove.tpl'
+            category: 'Network'
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
 
     'create-windows-installer':
       internal:
@@ -280,4 +292,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
+  grunt.registerTask 'linux', ['clean:linux', 'update-keys', 'release-internal', 'electronbuilder:linux_internal']
   grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux_prod']
