@@ -75,11 +75,8 @@ const pins = [
     }],
   },
   {
-    url: /.*.cloudfront.net.*/i,
-    publicKeyInfo: [{
-      algorithmID: ALGORITHM_RSA,
-      algorithmParam: null,
-    }],
+    url: /.*\.cloudfront.net.*/i,
+    publicKeyInfo: [],
     issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
   },
 ];
@@ -98,11 +95,11 @@ module.exports = {
     const publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
     const result = {};
 
-    for (let pin of pins) {
+    for (const pin of pins) {
       const {url, publicKeyInfo = [], issuerRootPubkeys = []} = pin;
       if (url.test(hostname.toLowerCase().trim())) {
         result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCert, rs.KEYUTIL.getKey(pubkey))) : undefined;
-        result.publicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
+        result.verifiedPublicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
           const {fingerprints = [], algorithmID = '', algorithmParam = null} = pubkey;
           arr.push(
             (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined,
@@ -114,6 +111,7 @@ module.exports = {
         break;
       }
     }
+
     return result;
   },
 };

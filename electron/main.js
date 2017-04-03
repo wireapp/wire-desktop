@@ -200,8 +200,8 @@ function showMainWindow() {
 
     if (certutils.hostnameShouldBePinned(hostname)) {
       const pinningResults = certutils.verifyPinning(hostname, certificate);
-      for (let result in pinningResults) {
-        if (pinningResults[result] === false) {
+      for (const result of Object.values(pinningResults)) {
+        if (result === false) {
           console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
           main.loadURL(CERT_ERR_HTML);
           return cb(-2);
