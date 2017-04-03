@@ -113,7 +113,7 @@ module.exports = (grunt) ->
             InternalName: '<%= info.name %>.exe'
 
     electronbuilder:
-      linux_ia32:
+      linux_prod:
         options:
           productName: 'wire-desktop'
           asar: false
@@ -121,25 +121,10 @@ module.exports = (grunt) ->
             fpm: ['--name', 'wire-desktop']
             executableName: 'wire-desktop'
             target: ['AppImage', 'deb']
-            arch: 'ia32'
             afterInstall: 'bin/deb/after-install.tpl'
             afterRemove: 'bin/deb/after-remove.tpl'
             category: 'Network'
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
-      linux_x64:
-        options:
-          productName: 'wire-desktop'
-          asar: false
-          linux:
-            fpm: ['--name', 'wire-desktop']
-            executableName: 'wire-desktop'
-            target: ['AppImage', 'deb']
-            arch: 'x64'
-            afterInstall: 'bin/deb/after-install.tpl'
-            afterRemove: 'bin/deb/after-remove.tpl'
-            category: 'Network'
-            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
-
 
     'create-windows-installer':
       internal:
@@ -241,7 +226,7 @@ module.exports = (grunt) ->
   grunt.registerMultiTask 'electronbuilder', 'Build Electron apps', ->
     done = @async()
     electron_builder.build
-      targets: electron_builder.Platform.LINUX.createTarget()
+      targets: electron_builder.Platform.LINUX.createTarget(['deb', 'AppImage'], electron_builder.Arch.ia32, electron_builder.Arch.x64)
       config: @options()
     #.then ->
     #  done()
@@ -301,4 +286,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux_x64', 'electronbuilder:linux_ia32']
+  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux_prod']
