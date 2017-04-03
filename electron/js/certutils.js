@@ -103,14 +103,14 @@ module.exports = {
       if (url.test(hostname.toLowerCase().trim())) {
         result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCert, rs.KEYUTIL.getKey(pubkey))) : undefined;
         result.publicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
-          const {fingerprints = [], algorithmID = '', algorithmParam} = pubkey;
-          arr.push({
-            verifiedFingerprints: (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined,
-            verifiedPublicKeyAlgorithmID: algorithmID === publicKey.algoid,
-            verifiedPublicKeyAlgorithmParam: algorithmParam === publicKey.algparam,
-          });
+          const {fingerprints = [], algorithmID = '', algorithmParam = null} = pubkey;
+          arr.push(
+            (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined,
+            algorithmID === publicKey.algoid,
+            algorithmParam === publicKey.algparam
+          );
           return arr;
-        }, []).every((obj) => Object.values(obj).every((val) => val !== false));
+        }, []).every((val) => val !== false);
         break;
       }
     }
