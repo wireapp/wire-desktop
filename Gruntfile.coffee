@@ -113,10 +113,12 @@ module.exports = (grunt) ->
             InternalName: '<%= info.name %>.exe'
 
     electronbuilder:
+      options:
+        asar: false
       linux_prod:
         options:
           productName: 'wire-desktop'
-          asar: false
+          targets: ['deb', 'AppImage']
           linux:
             fpm: ['--name', 'wire-desktop']
             executableName: 'wire-desktop'
@@ -127,7 +129,7 @@ module.exports = (grunt) ->
       linux_internal:
         options:
           productName: 'wire-desktop-internal'
-          asar: false
+          targets: ['deb', 'AppImage']
           linux:
             fpm: ['--name', 'wire-desktop-internal']
             executableName: 'wire-desktop-internal'
@@ -135,6 +137,13 @@ module.exports = (grunt) ->
             afterRemove: 'bin/deb/after-remove.tpl'
             category: 'Network'
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
+      linux_dir:
+        options:
+          productName: 'wire-desktop'
+          targets: ['dir']
+          linux:
+            fpm: ['--name', 'wire-desktop']
+            executableName: 'wire-desktop'
 
     'create-windows-installer':
       internal:
@@ -235,9 +244,13 @@ module.exports = (grunt) ->
 
   grunt.registerMultiTask 'electronbuilder', 'Build Electron apps', ->
     done = @async()
+    options = @options()
+    targets = options.targets
+    delete options.targets
+
     electron_builder.build
-      targets: electron_builder.Platform.LINUX.createTarget(['deb', 'AppImage'], electron_builder.Arch.ia32, electron_builder.Arch.x64)
-      config: @options()
+      targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.Arch.ia32, electron_builder.Arch.x64)
+      config: options
 
   grunt.registerTask 'update-keys', ->
     options = @options()
