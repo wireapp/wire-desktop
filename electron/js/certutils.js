@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2016 Wire Swiss GmbH
+ * Copyright (C) 2017 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,59 +19,99 @@
 
 'use strict';
 
-const config = require('./config');
-
-const asn1js = require('asn1js');
 const crypto = require('crypto');
-const pkijs = require('pkijs');
+const rs = require('jsrsasign');
 
-const MAIN_CERT = 'ff4880f09cc1e2d0edc0d07fdcdc987c2b5f4d9c';
-const strip = (url) => url.replace(/https:|[\/]+/g, '');
+const MAIN_FP = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU=';
+const ALGORITHM_RSA = '2a864886f70d010101';
+const VERISIGN_CLASS3_G5_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryQICCl6NZ5gDKrnSztO\n3Hy8PEUcuyvg/ikC+VcIo2SFFSf18a3IMYldIugqqqZCs4/4uVW3sbdLs/6PfgdX\n7O9D22ZiFWHPYA2k2N744MNiCD1UE+tJyllUhSblK48bn+v1oZHCM0nYQ2NqUkvS\nj+hwUU3RiWl7x3D2s9wSdNt7XUtW05a/FXehsPSiJfKvHJJnGOX0BgTvkLnkAOTd\nOrUZ/wK69Dzu4IvrN4vs9Nes8vbwPa/ddZEzGR0cQMt0JBkhk9kU/qwqUseP1QRJ\n5I1jR4g8aYPL/ke9K35PxZWuDp3U0UPAZ3PjFAh+5T+fc7gzCs9dPzSHloruU+gl\nFQIDAQAB\n-----END PUBLIC KEY-----\n';
 const pins = [
-  {url: strip(config.PROD_URL), keys: ['c85f71715e51593828e37cd8450501f3fa5fa4a2', MAIN_CERT]},
-  {url: 'wire.com', keys: [MAIN_CERT]},
-  {url: 'www.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-nginz-https.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-nginz-ssl.wire.com', keys: [MAIN_CERT]},
-  {url: 'prod-assets.wire.com', keys: [MAIN_CERT]},
+  {
+    url: /.*app\.wire\.com.*/i,
+    publicKeyInfo: [{
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP],
+    }],
+  },
+  {
+    url: /^wire.com.*/i,
+    publicKeyInfo: [{
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    }],
+  },
+  {
+    url: /.*www.wire.com.*/i,
+    publicKeyInfo: [{
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    }],
+  },
+  {
+    url: /.*prod-nginz-https\.wire\.com\.*/i,
+    publicKeyInfo: [{
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    }],
+  },
+  {
+    url: /.*prod-nginz-ssl\.wire\.com.*/i,
+    publicKeyInfo: [{
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    }],
+  },
+  {
+    url: /.*prod-assets\.wire\.com.*/i,
+    publicKeyInfo: [{
+      algorithmID: ALGORITHM_RSA,
+      algorithmParam: null,
+      fingerprints: [MAIN_FP],
+    }],
+  },
+  {
+    url: /.*\.cloudfront.net.*/i,
+    publicKeyInfo: [],
+    issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
+  },
 ];
-
-const pemToCert = (pem) => {
-  const strippedPem = pem.replace(/(-----(BEGIN|END) CERTIFICATE-----|\n)/g, '').trim();
-  const asn1 = asn1js.fromBER(new Uint8Array(Buffer.from(strippedPem, 'base64')).buffer).result;
-  return new pkijs.Certificate({schema: asn1});
-};
-
-const getPublicKeyHash = (pemString) => {
-  const certificate = pemToCert(pemString);
-  const publicKey = new Uint8Array(certificate.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
-  let shasum = crypto.createHash('sha1').update(publicKey);
-  return shasum.digest('hex');
-};
 
 module.exports = {
   hostnameShouldBePinned (hostname) {
-    for (let pin of pins) {
-      if (pin.url.toLowerCase().trim() === hostname.toLowerCase().trim()) {
-        return true;
-      }
-    }
-    return false;
+    return pins.some((pin) => pin.url.test(hostname.toLowerCase().trim()));
   },
 
-  verifyPinning (hostname, cert) {
-    const certKey = getPublicKeyHash(cert).toLowerCase().trim();
+  verifyPinning (hostname, certificate) {
+    const {data: certData = '', issuerCert: {data: issuerCertData = ''} = {}} = certificate;
 
-    for (let pin of pins) {
-      if (pin.url === hostname) {
-        for (let key of pin.keys) {
-          if (key.toLowerCase().trim() === certKey) {
-            return true;
-          }
-        }
+    const issuerCert = rs.ASN1HEX.pemToHex(issuerCertData);
+    const publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
+    const publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
+    const publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
+    const result = {};
+
+    for (const pin of pins) {
+      const {url, publicKeyInfo = [], issuerRootPubkeys = []} = pin;
+      if (url.test(hostname.toLowerCase().trim())) {
+        result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCert, rs.KEYUTIL.getKey(pubkey))) : undefined;
+        result.verifiedPublicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
+          const {fingerprints = [], algorithmID = '', algorithmParam = null} = pubkey;
+          arr.push(
+            (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined,
+            algorithmID === publicKey.algoid,
+            algorithmParam === publicKey.algparam
+          );
+          return arr;
+        }, []).every((val) => val !== false);
         break;
       }
     }
-    return false;
+
+    return result;
   },
 };
