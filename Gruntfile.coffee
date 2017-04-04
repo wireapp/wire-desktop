@@ -115,6 +115,7 @@ module.exports = (grunt) ->
     electronbuilder:
       options:
         asar: false
+        arch: 'all'
       linux_prod:
         options:
           productName: 'wire-desktop'
@@ -137,8 +138,17 @@ module.exports = (grunt) ->
             afterRemove: 'bin/deb/after-remove.tpl'
             category: 'Network'
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
-      linux_dir:
+      linux_ia32:
         options:
+          arch: 'ia32'
+          productName: 'wire-desktop'
+          targets: ['dir']
+          linux:
+            fpm: ['--name', 'wire-desktop']
+            executableName: 'wire-desktop'
+      linux_x64:
+        options:
+          arch: 'x64'
           productName: 'wire-desktop'
           targets: ['dir']
           linux:
@@ -247,10 +257,17 @@ module.exports = (grunt) ->
     options = @options()
     targets = options.targets
     delete options.targets
+    arch = options.arch
+    delete options.arch
 
-    electron_builder.build
-      targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.Arch.ia32, electron_builder.Arch.x64)
-      config: options
+    if arch == 'all'
+      electron_builder.build
+        targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.Arch.ia32, electron_builder.Arch.x64)
+        config: options
+    else
+      electron_builder.build
+        targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.archFromString(arch))
+        config: options
 
   grunt.registerTask 'update-keys', ->
     options = @options()
