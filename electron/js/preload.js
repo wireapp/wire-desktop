@@ -140,9 +140,9 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
   try {
     Object.assign(window.sodium, require('libsodium-neon'));
     console.log('Using libsodium-neon');
-  } catch (err) {
+  } catch (error) {
     // fallback to libsodium.js
-    console.error('Failed loading libsodium-neon', err);
+    console.error(`Failed loading libsodium-neon: ${error.message}`, error);
   }
 });
 
