@@ -35,7 +35,7 @@ const pins = [
     }],
   },
   {
-    url: /^wire.com.*/i,
+    url: /^wire\.com.*/i,
     publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
@@ -43,7 +43,7 @@ const pins = [
     }],
   },
   {
-    url: /.*www.wire.com.*/i,
+    url: /.*www\.wire.com.*/i,
     publicKeyInfo: [{
       algorithmID: ALGORITHM_RSA,
       algorithmParam: null,
@@ -75,7 +75,7 @@ const pins = [
     }],
   },
   {
-    url: /.*\.cloudfront.net.*/i,
+    url: /.*\.cloudfront\.net.*/i,
     publicKeyInfo: [],
     issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
   },
@@ -88,17 +88,24 @@ module.exports = {
 
   verifyPinning (hostname, certificate) {
     const {data: certData = '', issuerCert: {data: issuerCertData = ''} = {}} = certificate;
+    let issuerCertHex, publicKey, publicKeyBytes, publicKeyFingerprint;
 
-    const issuerCert = rs.ASN1HEX.pemToHex(issuerCertData);
-    const publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
-    const publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
-    const publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
+    try {
+      issuerCertHex = rs.ASN1HEX.pemToHex(issuerCertData);
+      publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
+      publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
+      publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
+    } catch (err) {
+      console.error('verifyPinning', err);
+      return {decoding: false};
+    }
+
     const result = {};
 
     for (const pin of pins) {
       const {url, publicKeyInfo = [], issuerRootPubkeys = []} = pin;
       if (url.test(hostname.toLowerCase().trim())) {
-        result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCert, rs.KEYUTIL.getKey(pubkey))) : undefined;
+        result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCertHex, rs.KEYUTIL.getKey(pubkey))) : undefined;
         result.verifiedPublicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
           const {fingerprints = [], algorithmID = '', algorithmParam = null} = pubkey;
           arr.push(
