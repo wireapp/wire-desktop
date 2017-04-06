@@ -3,6 +3,11 @@
 let string = {};
 
 
+string.aboutReleases = 'Objave';
+string.aboutUpdate = 'Kako delujejo Wire posodobitve';
+string.aboutVersion = 'Različica';
+string.aboutWebappVersion = 'Različica Wire za splet';
+
 string.menuConversation = 'Pogovor';
 string.menuStart = 'Začni';
 string.menuEdit = 'Uredi';
@@ -49,7 +54,7 @@ string.menuHideOthers = 'Skrij ostale';
 string.menuShowAll = 'Prikaži vse';
 string.menuSettings = 'Nastavitve';
 string.menuQuit = 'Zapri Wire';
-string.menuShowHide = 'Pokaži/Skrij meni';
+string.menuShowHide = 'Prikaži meni';
 string.menuSavePictureAs = 'Shrani sliko kot...';
 string.menuNoSuggestions = 'Brez predlogov';
 

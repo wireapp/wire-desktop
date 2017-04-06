@@ -3,6 +3,11 @@
 let string = {};
 
 
+string.aboutReleases = 'Kiadási jegyzék';
+string.aboutUpdate = 'Hogyan frissül a Wire';
+string.aboutVersion = 'Verzió';
+string.aboutWebappVersion = 'Wire Webes verzió';
+
 string.menuConversation = 'Beszélgetés';
 string.menuStart = 'Indítás';
 string.menuEdit = 'Szerkesztés';
@@ -13,7 +18,7 @@ string.menuStartup = 'Wire futtatása indításkor';
 string.menuLocale = 'Nyelv';
 string.menuAbout = 'Wire névjegy';
 string.menuSignOut = 'Kijelentkezés';
-string.menuPing = 'Bökés';
+string.menuPing = 'Kopogás';
 string.menuCall = 'Hívás';
 string.menuVideoCall = 'Videóhívás';
 string.menuPeople = 'Partner';
@@ -40,7 +45,7 @@ string.menuFullScreen = 'Teljes képernyő';
 string.menuLegal = 'Jogi nyilatkozat';
 string.menuPrivacy = 'Adatvédelem';
 string.menuLicense = 'Licenc információ';
-string.menuSupport = 'Website Ügyfélszolgálat';
+string.menuSupport = 'Wire Ügyfélszolgálat';
 string.menuWireURL = 'Wire Weboldala';
 string.menuPreferences = 'Előnyök';
 string.menuServices = 'Szolgáltatások';
@@ -49,7 +54,7 @@ string.menuHideOthers = 'Többi menüelem elrejtése';
 string.menuShowAll = 'Mindet mutat';
 string.menuSettings = 'Beállítások';
 string.menuQuit = 'Kilépés a Wire-ből';
-string.menuShowHide = 'Menü megjelenítése/elrejtése';
+string.menuShowHide = 'Menü megjelenítése';
 string.menuSavePictureAs = 'Kép mentése más néven...';
 string.menuNoSuggestions = 'Nincs javaslat';
 

@@ -42,6 +42,7 @@ const APP_PATH = app.getAppPath();
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const SPLASH_HTML = 'file://' + path.join(APP_PATH, 'html', 'splash.html');
+const CERT_ERR_HTML = 'file://' + path.join(APP_PATH, 'html', 'certificate-error.html');
 const ABOUT_HTML = 'file://' + path.join(APP_PATH, 'html', 'about.html');
 const ICON = 'wire.' + ((process.platform === 'win32') ? 'ico' : 'png');
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
@@ -53,6 +54,7 @@ let enteredWebapp = false;
 let quitting = false;
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
+let webappVersion;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -123,7 +125,7 @@ function getBaseUrl() {
   return baseURL;
 }
 
-ipcMain.once('load-webapp', function(event, online) {
+ipcMain.once('load-webapp', function() {
   enteredWebapp = true;
   let baseURL = getBaseUrl();
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
@@ -135,6 +137,10 @@ ipcMain.on('loaded', function() {
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
     util.resizeToBig(main);
   }
+});
+
+ipcMain.once('webapp-version', function(event, version) {
+  webappVersion = version;
 });
 
 ipcMain.on('save-picture', function(event, fileName, bytes) {
@@ -155,10 +161,12 @@ ipcMain.on('google-auth-request', function(event) {
     });
 });
 
-ipcMain.on('wrapper-reload', function() {
-  app.relaunch();
-  app.quit();
-});
+if (process.platform !== 'darwin') {
+  ipcMain.on('wrapper-reload', function() {
+    app.relaunch();
+    app.quit();
+  });
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
@@ -188,17 +196,26 @@ function showMainWindow() {
   }
 
   main.webContents.session.setCertificateVerifyProc((request, cb) => {
-    const {hostname = '', certificate: {data: cert = ''} = {}, error} = request;
+    const {hostname = '', certificate = {}, error} = request;
 
     if (typeof error !== 'undefined') {
+      console.error('setCertificateVerifyProc', error);
+      main.loadURL(CERT_ERR_HTML);
       return cb(-2);
     }
 
-    if (certutils.hostnameShouldBePinned(hostname) && !(certutils.verifyPinning(hostname, cert))) {
-      cb(-2);
-    } else {
-      cb(-3);
+    if (certutils.hostnameShouldBePinned(hostname)) {
+      const pinningResults = certutils.verifyPinning(hostname, certificate);
+      for (const result of Object.values(pinningResults)) {
+        if (result === false) {
+          console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+          main.loadURL(CERT_ERR_HTML);
+          return cb(-2);
+        }
+      }
     }
+
+    return cb(-3);
   });
 
   main.loadURL(SPLASH_HTML);
@@ -286,12 +303,18 @@ function showAboutWindow() {
     about = new BrowserWindow({
       'title': '',
       'width': 304,
-      'height': 208,
+      'height': 256,
       'resizable': false,
       'fullscreen': false,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
+    about.webContents.on('dom-ready', function() {
+      about.webContents.send('about-loaded', {
+        webappVersion: webappVersion,
+      });
+    });
+
     about.on('closed', function() {
       about = undefined;
     });

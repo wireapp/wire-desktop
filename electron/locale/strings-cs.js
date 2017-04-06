@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Konverzace';
 string.menuStart = 'Spustit';
 string.menuEdit = 'Upravit';
@@ -47,7 +48,6 @@ string.menuHideOthers = 'Skrýt ostatní';
 string.menuShowAll = 'Zobrazit vše';
 string.menuSettings = 'Nastavení';
 string.menuQuit = 'Ukončit Wire';
-string.menuShowHide = 'Zobrazit/skrýt nabídku';
 string.menuSavePictureAs = 'Uložit obrázek jako...';
 string.menuNoSuggestions = 'Žádné návrhy';
 

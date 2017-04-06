@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Conversation';
 string.menuStart = 'Nouveau';
 string.menuEdit = 'Modifier';
@@ -17,10 +18,10 @@ string.menuPing = 'Ping';
 string.menuCall = 'Appel';
 string.menuVideoCall = 'Appel vidéo';
 string.menuPeople = 'Personnes';
-string.menuAddPeople = 'Ajouter des personnes...';
+string.menuAddPeople = 'Ajouter des contacts...';
 string.menuArchive = 'Archiver';
-string.menuUnarchive = 'Désarchiver';
-string.menuMute = 'Désactiver le micro';
+string.menuUnarchive = 'Restaurer';
+string.menuMute = 'Mettre en sourdine';
 string.menuUnmute = 'Activer le micro';
 string.menuLeave = 'Quitter';
 string.menuDelete = 'Supprimer';
@@ -30,9 +31,9 @@ string.menuRedo = 'Refaire';
 string.menuCut = 'Couper';
 string.menuCopy = 'Copier';
 string.menuPaste = 'Coller';
-string.menuSelectAll = 'Sélectionner tout';
+string.menuSelectAll = 'Tout sélectionner';
 string.menuSpelling = 'Vérifier l’orthographe lors de la frappe';
-string.menuMinimize = 'Minimiser';
+string.menuMinimize = 'Réduire';
 string.menuClose = 'Fermer';
 string.menuNextConversation = 'Conversation suivante';
 string.menuPreviousConversation = 'Conversation précédente';
@@ -46,10 +47,10 @@ string.menuPreferences = 'Préférences';
 string.menuServices = 'Services';
 string.menuHideWire = 'Masquer Wire';
 string.menuHideOthers = 'Masquer les autres fenêtres';
-string.menuShowAll = 'Afficher tout';
+string.menuShowAll = 'Tout afficher';
 string.menuSettings = 'Paramètres';
 string.menuQuit = 'Quitter Wire';
-string.menuShowHide = 'Afficher/masquer le menu';
+string.menuShowHide = 'Afficher le menu';
 string.menuSavePictureAs = 'Enregistrer l’image sous...';
 string.menuNoSuggestions = 'Aucune suggestion';
 

@@ -72,6 +72,7 @@ let config = {
     'hr',
     'hu',
     'it',
+    'lt',
     'pt',
     'ro',
     'ru',

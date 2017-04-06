@@ -2,6 +2,11 @@
 
 let string = {};
 
+string.aboutReleases = 'Versionshinweise';
+string.aboutUpdate = 'Wie wird Wire aktualisiert';
+string.aboutVersion = 'Version';
+string.aboutWebappVersion = 'Wire für Web Version';
+
 string.menuConversation = 'Unterhaltung';
 string.menuStart = 'Unterhaltung beginnen';
 string.menuEdit = 'Bearbeiten';
@@ -48,7 +53,7 @@ string.menuHideOthers = 'Andere ausblenden';
 string.menuShowAll = 'Alle anzeigen';
 string.menuSettings = 'Einstellungen';
 string.menuQuit = 'Wire beenden';
-string.menuShowHide = 'Menü ein-/ausblenden';
+string.menuShowHide = 'Menü anzeigen';
 string.menuSavePictureAs = 'Bild speichern unter...';
 string.menuNoSuggestions = 'Keine Vorschläge';
 

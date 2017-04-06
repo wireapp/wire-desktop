@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Razgovor';
 string.menuStart = 'Počni';
 string.menuEdit = 'Promjeni';
@@ -47,7 +48,6 @@ string.menuHideOthers = 'Sakrij druge';
 string.menuShowAll = 'Prikaži sve';
 string.menuSettings = 'Postavke';
 string.menuQuit = 'Zatvori Wire';
-string.menuShowHide = 'Prikaži/Sakrij Izbornik';
 string.menuSavePictureAs = 'Spremi Sliku Kao...';
 string.menuNoSuggestions = 'Nema prijedloga';
 

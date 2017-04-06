@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Keskustelu';
 string.menuStart = 'Aloita';
 string.menuEdit = 'Muokkaa';
@@ -48,7 +49,6 @@ string.menuHideOthers = 'Piilota muut';
 string.menuShowAll = 'Näytä kaikki';
 string.menuSettings = 'Asetukset';
 string.menuQuit = 'Lopeta Wire';
-string.menuShowHide = 'Näytä/piilota valikko';
 string.menuSavePictureAs = 'Tallenna kuva...';
 string.menuNoSuggestions = 'Ei ehdotuksia';
 

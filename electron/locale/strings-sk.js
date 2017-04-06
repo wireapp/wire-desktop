@@ -3,6 +3,11 @@
 let string = {};
 
 
+string.aboutReleases = 'Vydania';
+string.aboutUpdate = 'Ako funguje aktualizácia';
+string.aboutVersion = 'Verzia';
+string.aboutWebappVersion = 'Wire pre webovú verziu';
+
 string.menuConversation = 'Konverzácia';
 string.menuStart = 'Začať';
 string.menuEdit = 'Upraviť';
@@ -49,7 +54,7 @@ string.menuHideOthers = 'Skryť ostatné';
 string.menuShowAll = 'Zobraziť všetky';
 string.menuSettings = 'Nastavenia';
 string.menuQuit = 'Ukončiť Wire';
-string.menuShowHide = 'Zobraziť/Skryť Menu';
+string.menuShowHide = 'Zobraziť menu';
 string.menuSavePictureAs = 'Uložiť obrázok ako...';
 string.menuNoSuggestions = 'Žiadne návrhy';
 

@@ -3,6 +3,11 @@
 let string = {};
 
 
+string.aboutReleases = 'Sürümler';
+string.aboutUpdate = 'Wire Güncellemeleri Nasıl Çalışır';
+string.aboutVersion = 'Sürüm';
+string.aboutWebappVersion = 'Web için Wire Sürümü';
+
 string.menuConversation = 'Konuşma';
 string.menuStart = 'Başlat';
 string.menuEdit = 'Düzenle';
@@ -49,7 +54,7 @@ string.menuHideOthers = 'Diğerlerini Gizle';
 string.menuShowAll = 'Hepsini Göster';
 string.menuSettings = 'Ayarlar';
 string.menuQuit = 'Wire’dan Çık';
-string.menuShowHide = 'Menüyü Göster/Gizle';
+string.menuShowHide = 'Menüyü Göster';
 string.menuSavePictureAs = 'Fotoğraf Olarak Kaydet...';
 string.menuNoSuggestions = 'Öneri yok';
 

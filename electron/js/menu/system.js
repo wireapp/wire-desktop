@@ -120,6 +120,12 @@ let localeTemplate = {
         changeLocale('it');
       },
     }, {
+      label: locale.label['lt'],
+      type: 'radio',
+      click: function() {
+        changeLocale('lt');
+      },
+    }, {
       label: locale.label['pt'],
       type: 'radio',
       click: function() {
@@ -429,10 +435,12 @@ function changeLocale(language) {
     type: 'info',
     title: locale[language].restartNeeded,
     message: locale[language].restartLocale,
-    buttons: [locale[language].restartLater, locale[language].restartNow],
+    buttons: [locale[language].restartLater, process.platform === 'darwin' ? locale[language].menuQuit : locale[language].restartNow],
   }, function(response) {
     if (response == 1) {
-      app.relaunch();
+      if (process.platform !== 'darwin') {
+        app.relaunch();
+      }
       app.quit();
     }
   });

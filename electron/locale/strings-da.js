@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.menuConversation = 'Samtale';
 string.menuStart = 'Start';
 string.menuEdit = 'Redigér';
@@ -49,7 +50,6 @@ string.menuHideOthers = 'Skjul øvrige';
 string.menuShowAll = 'Vis alle';
 string.menuSettings = 'Indstillinger';
 string.menuQuit = 'Afslut Wire';
-string.menuShowHide = 'Vis/Skjul menu';
 string.menuSavePictureAs = 'Gem billede som...';
 string.menuNoSuggestions = 'Ingen forslag';
 
