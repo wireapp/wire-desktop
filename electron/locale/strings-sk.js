@@ -3,6 +3,10 @@
 let string = {};
 
 
+string.aboutReleases = 'Vydania';
+string.aboutUpdate = 'Ako funguje aktualizácia';
+string.aboutVersion = 'Verzia';
+string.aboutWebappVersion = 'Wire pre webovú verziu';
 
 string.menuConversation = 'Konverzácia';
 string.menuStart = 'Začať';
