@@ -120,6 +120,12 @@ let localeTemplate = {
         changeLocale('it');
       },
     }, {
+      label: locale.label['lt'],
+      type: 'radio',
+      click: function() {
+        changeLocale('lt');
+      },
+    }, {
       label: locale.label['pt'],
       type: 'radio',
       click: function() {

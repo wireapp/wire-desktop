@@ -3,6 +3,10 @@
 let string = {};
 
 
+string.aboutReleases = 'Kiadási jegyzék';
+string.aboutUpdate = 'Hogyan frissül a Wire';
+string.aboutVersion = 'Verzió';
+string.aboutWebappVersion = 'Wire Webes verzió';
 
 string.menuConversation = 'Beszélgetés';
 string.menuStart = 'Indítás';

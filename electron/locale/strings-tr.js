@@ -3,6 +3,10 @@
 let string = {};
 
 
+string.aboutReleases = 'Sürümler';
+string.aboutUpdate = 'Wire Güncellemeleri Nasıl Çalışır';
+string.aboutVersion = 'Sürüm';
+string.aboutWebappVersion = 'Web için Wire Sürümü';
 
 string.menuConversation = 'Konuşma';
 string.menuStart = 'Başlat';
