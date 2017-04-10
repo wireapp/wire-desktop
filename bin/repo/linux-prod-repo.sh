@@ -57,8 +57,8 @@ if [ ! -r "${PGP_KEYFILE}" ]; then
   exit 1
 fi
 
-if [ -z "${GPG_PASSPHRASE}" ]; then
-  echo >&2 "You need to set GPG_PASSPHRASE in order to sign the Release file."
+if [ -z "${PGP_PASSPHRASE}" ]; then
+  echo >&2 "You need to set PGP_PASSPHRASE in order to sign the Release file."
   exit 1
 fi
 
@@ -76,7 +76,7 @@ gpg2 --batch \
     --homedir "${GPG_TEMP_DIR}" \
     --import "${PGP_KEYFILE}"
 
-echo "${GPG_PASSPHRASE}" | \
+echo "${PGP_PASSPHRASE}" | \
 gpg2 --passphrase-fd 0 \
     --homedir "${GPG_TEMP_DIR}" \
     --no-tty \
