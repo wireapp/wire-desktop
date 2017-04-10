@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2016 Wire Swiss GmbH
+ * Copyright (C) 2017 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,6 +118,12 @@ let localeTemplate = {
       type: 'radio',
       click: function() {
         changeLocale('it');
+      },
+    }, {
+      label: locale.label['lt'],
+      type: 'radio',
+      click: function() {
+        changeLocale('lt');
       },
     }, {
       label: locale.label['pt'],
