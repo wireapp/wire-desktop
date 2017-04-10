@@ -214,13 +214,13 @@ module.exports = (grunt) ->
 ###############################################################################
   grunt.registerTask 'build-inc', ->
     info = grunt.config.get 'info'
-    info.build = "#{parseInt(info.build, 10) + 1 }"
+    info.build = "#{parseInt(info.build, 10) + 1}"
     grunt.config.set 'info', info
-    grunt.file.write INFO_JSON, JSON.stringify(info, null, 2) + '\n'
+    grunt.file.write INFO_JSON, "#{JSON.stringify info, null, 2}\n"
 
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.version = "#{info.version}.#{info.build}"
-    grunt.file.write ELECTRON_PACKAGE_JSON, JSON.stringify(electron_pkg, null, 2) + '\n'
+    grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
 
     grunt.log.write("Build number increased to #{info.build} ").ok();
 
@@ -231,7 +231,7 @@ module.exports = (grunt) ->
     electron_pkg.environment = 'internal'
     electron_pkg.name = info.nameInternal.toLowerCase()
     electron_pkg.productName = info.nameInternal
-    grunt.file.write ELECTRON_PACKAGE_JSON, JSON.stringify(electron_pkg, null, 2) + '\n'
+    grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
   grunt.registerTask 'release-prod', ->
@@ -241,7 +241,7 @@ module.exports = (grunt) ->
     electron_pkg.environment = 'production'
     electron_pkg.name = info.name.toLowerCase()
     electron_pkg.productName = info.name
-    grunt.file.write ELECTRON_PACKAGE_JSON, JSON.stringify(electron_pkg, null, 2) + '\n'
+    grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
   grunt.registerMultiTask 'electron', 'Package Electron apps', ->
@@ -262,11 +262,11 @@ module.exports = (grunt) ->
 
     if arch == 'all'
       electron_builder.build
-        targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.Arch.ia32, electron_builder.Arch.x64)
+        targets: electron_builder.Platform.LINUX.createTarget targets, electron_builder.Arch.ia32, electron_builder.Arch.x64
         config: options
     else
       electron_builder.build
-        targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.archFromString(arch))
+        targets: electron_builder.Platform.LINUX.createTarget targets, electron_builder.archFromString arch
         config: options
 
   grunt.registerTask 'update-keys', ->
@@ -320,5 +320,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux', ['clean:linux', 'update-keys', 'release-internal', 'electronbuilder:linux_internal']
+  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'electronbuilder:linux_internal']
   grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux_prod']
