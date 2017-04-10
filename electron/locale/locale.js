@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2016 Wire Swiss GmbH
+ * Copyright (C) 2017 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ const fr = require('./strings-fr');
 const hr = require('./strings-hr');
 const hu = require('./strings-hu');
 const it = require('./strings-it');
+const lt = require('./strings-lt');
 const pt = require('./strings-pt');
 const ro = require('./strings-ro');
 const ru = require('./strings-ru');
@@ -50,6 +51,7 @@ const label = {
   'fr': 'Français',
   'hr': 'Hrvatski',
   'it': 'Italiano',
+  'lt': 'Lietuvos',
   'hu': 'Magyar',
   'pt': 'Português do Brasil',
   'ro': 'Română',
@@ -104,6 +106,7 @@ module.exports = {
   'hr': hr,
   'hu': hu,
   'it': it,
+  'lt': lt,
   'pt': pt,
   'ro': ro,
   'ru': ru,

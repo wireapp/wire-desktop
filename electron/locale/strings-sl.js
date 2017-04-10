@@ -3,6 +3,10 @@
 let string = {};
 
 
+string.aboutReleases = 'Objave';
+string.aboutUpdate = 'Kako delujejo Wire posodobitve';
+string.aboutVersion = 'Različica';
+string.aboutWebappVersion = 'Različica Wire za splet';
 
 string.menuConversation = 'Pogovor';
 string.menuStart = 'Začni';
