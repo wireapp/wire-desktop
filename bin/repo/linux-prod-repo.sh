@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euf -o pipefail
 
 # Change to script's directory to ensure we're in the correct folder.
 # http://stackoverflow.com/questions/3349105/how-to-set-current-working-directory-to-the-directory-of-the-script
@@ -22,7 +22,7 @@ STABLE_CONF_FILE="${CONF_DIR}/stable.conf"
 PGP_SIGN_ID="D599C1AA126762B1"
 PGP_PASSPHRASE=""
 
-mkdir -p {"${BINARY_DIR}","${STABLE_DIR}/main/binary-"{all,i386,amd64},"${CONF_DIR}","${CACHE_DIR}"}
+mkdir -p "${BINARY_DIR}" "${STABLE_DIR}/main/binary-"{all,i386,amd64} "${CONF_DIR}" "${CACHE_DIR}"
 
 if ! _command_exist "gpg"; then
   echo "Could not find gpg. Please install package 'gnupg2'."
