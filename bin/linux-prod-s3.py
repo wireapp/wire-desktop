@@ -48,10 +48,32 @@ if __name__ == '__main__':
   version = '%s.%s' % (info['version'], info['build'])
 
   files = [
-    'wire_%s_i386.deb' % version,
-    'wire_%s_amd64.deb' % version,
     'wire-%s-ia32.AppImage' % version,
     'wire-%s-x86_64.AppImage' % version,
+    'wire_%s_amd64.deb' % version,
+    'wire_%s_i386.deb' % version,
+    'debian/pool/main/wire_%s_amd64.deb' % version,
+    'debian/pool/main/wire_%s_i386.deb' % version,
+    'debian/dist/stable/Contents-all',
+    'debian/dist/stable/Contents-all.bz2',
+    'debian/dist/stable/Contents-all.gz',
+    'debian/dist/stable/Contents-amd64',
+    'debian/dist/stable/Contents-amd64.bz2',
+    'debian/dist/stable/Contents-amd64.gz',
+    'debian/dist/stable/Contents-i386',
+    'debian/dist/stable/Contents-i386.bz2',
+    'debian/dist/stable/Contents-i386.gz',
+    'debian/dist/stable/Release',
+    'debian/dist/stable/Release.gpg',
+    'debian/dist/stable/main/binary-all/Packages',
+    'debian/dist/stable/main/binary-all/Packages.bz2',
+    'debian/dist/stable/main/binary-all/Packages.gz',
+    'debian/dist/stable/main/binary-amd64/Packages',
+    'debian/dist/stable/main/binary-amd64/Packages.bz2',
+    'debian/dist/stable/main/binary-amd64/Packages.gz',
+    'debian/dist/stable/main/binary-i386/Packages',
+    'debian/dist/stable/main/binary-i386/Packages.bz2',
+    'debian/dist/stable/main/binary-i386/Packages.gz',
   ]
 
   for filename in files:
