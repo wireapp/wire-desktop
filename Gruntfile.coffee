@@ -18,6 +18,7 @@
 
 electron_packager = require 'electron-packager'
 createWindowsInstaller = require('electron-winstaller').createWindowsInstaller
+electron_builder = require 'electron-builder'
 
 ELECTRON_PACKAGE_JSON = 'electron/package.json'
 PACKAGE_JSON = 'package.json'
@@ -37,7 +38,7 @@ module.exports = (grunt) ->
       dist: 'wrap/dist'
       win: 'wrap/**/<%= info.name %>-win*'
       macos: 'wrap/**/<%= info.name %>-darwin*'
-      linux: ['wrap/**/<%= info.name %>-linux*', 'wrap/dist']
+      linux: ['wrap/**/linux*', 'wrap/**/wire*']
       pkg: '*.pkg'
 
     'update-keys':
@@ -111,6 +112,49 @@ module.exports = (grunt) ->
             ProductName: '<%= info.name %>'
             InternalName: '<%= info.name %>.exe'
 
+    electronbuilder:
+      options:
+        asar: false
+        arch: 'all'
+      linux_prod:
+        options:
+          productName: 'wire-desktop'
+          targets: ['deb', 'AppImage']
+          linux:
+            fpm: ['--name', 'wire-desktop']
+            executableName: 'wire-desktop'
+            afterInstall: 'bin/deb/after-install.tpl'
+            afterRemove: 'bin/deb/after-remove.tpl'
+            category: 'Network'
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
+      linux_internal:
+        options:
+          productName: 'wire-desktop-internal'
+          targets: ['deb', 'AppImage']
+          linux:
+            fpm: ['--name', 'wire-desktop-internal']
+            executableName: 'wire-desktop-internal'
+            afterInstall: 'bin/deb/after-install.tpl'
+            afterRemove: 'bin/deb/after-remove.tpl'
+            category: 'Network'
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
+      linux_ia32:
+        options:
+          arch: 'ia32'
+          productName: 'wire-desktop'
+          targets: ['dir']
+          linux:
+            fpm: ['--name', 'wire-desktop']
+            executableName: 'wire-desktop'
+      linux_x64:
+        options:
+          arch: 'x64'
+          productName: 'wire-desktop'
+          targets: ['dir']
+          linux:
+            fpm: ['--name', 'wire-desktop']
+            executableName: 'wire-desktop'
+
     'create-windows-installer':
       internal:
         title: '<%= info.nameInternal %>'
@@ -165,25 +209,18 @@ module.exports = (grunt) ->
           owner : 'wireapp'
           repository : 'wire-desktop'
 
-    shell:
-      linux64:
-        command: 'build --linux --x64'
-      linux32:
-        command: 'build --linux --ia32'
-
-
 ###############################################################################
 # Tasks
 ###############################################################################
   grunt.registerTask 'build-inc', ->
     info = grunt.config.get 'info'
-    info.build = "#{parseInt(info.build, 10) + 1 }"
+    info.build = "#{parseInt(info.build, 10) + 1}"
     grunt.config.set 'info', info
-    grunt.file.write INFO_JSON, JSON.stringify(info, null, 2) + '\n'
+    grunt.file.write INFO_JSON, "#{JSON.stringify info, null, 2}\n"
 
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.version = "#{info.version}.#{info.build}"
-    grunt.file.write ELECTRON_PACKAGE_JSON, JSON.stringify(electron_pkg, null, 2) + '\n'
+    grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
 
     grunt.log.write("Build number increased to #{info.build} ").ok();
 
@@ -194,7 +231,7 @@ module.exports = (grunt) ->
     electron_pkg.environment = 'internal'
     electron_pkg.name = info.nameInternal.toLowerCase()
     electron_pkg.productName = info.nameInternal
-    grunt.file.write ELECTRON_PACKAGE_JSON, JSON.stringify(electron_pkg, null, 2) + '\n'
+    grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
   grunt.registerTask 'release-prod', ->
@@ -204,7 +241,7 @@ module.exports = (grunt) ->
     electron_pkg.environment = 'production'
     electron_pkg.name = info.name.toLowerCase()
     electron_pkg.productName = info.name
-    grunt.file.write ELECTRON_PACKAGE_JSON, JSON.stringify(electron_pkg, null, 2) + '\n'
+    grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
   grunt.registerMultiTask 'electron', 'Package Electron apps', ->
@@ -214,6 +251,23 @@ module.exports = (grunt) ->
         grunt.warn error
       else
         done()
+
+  grunt.registerMultiTask 'electronbuilder', 'Build Electron apps', ->
+    done = @async()
+    options = @options()
+    targets = options.targets
+    delete options.targets
+    arch = options.arch
+    delete options.arch
+
+    if arch == 'all'
+      electron_builder.build
+        targets: electron_builder.Platform.LINUX.createTarget targets, electron_builder.Arch.ia32, electron_builder.Arch.x64
+        config: options
+    else
+      electron_builder.build
+        targets: electron_builder.Platform.LINUX.createTarget targets, electron_builder.archFromString arch
+        config: options
 
   grunt.registerTask 'update-keys', ->
     options = @options()
@@ -266,5 +320,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
   grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'shell']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'shell']
+  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'electronbuilder:linux_internal']
+  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux_prod']
