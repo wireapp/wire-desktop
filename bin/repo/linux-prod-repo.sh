@@ -27,31 +27,35 @@ _log() {
   echo "${SCRIPT_NAME}: ${1}"
 }
 
-_error() {
+_error_exit() {
   echo >&2 "${SCRIPT_NAME}: Error: ${1}"
+  exit 1
 }
 
 mkdir -p "${BINARY_DIR}" "${STABLE_DIR}/main/binary-"{all,i386,amd64} "${CONF_DIR}" "${CACHE_DIR}"
 
-if _command_exist "gpg2"; then
+if ! _command_exist "gpg2"; then
+  _error_exit "Could not find gpg2. Please install package 'gnupg2' version 2.0.x."
+else
   GPG_VERSION="$(gpg2 --version | head -n 1 | grep -oE '2\..*')"
   if ! grep -qE "2\.0" <<< "${GPG_VERSION}"; then
-    _error "Your gpg2 version is ${GPG_VERSION}. Signing with a predefined passphrase will work only with gpg2 version 2.0.x."
-    exit 1
+    _error_exit "Your gpg2 version is ${GPG_VERSION}. Signing with a predefined passphrase will work only with gpg2 version 2.0.x."
   fi
-else
-  _error "Could not find gpg2. Please install package 'gnupg2' version 2.0.x."
-  exit 1
 fi
 
 if ! _command_exist "apt-ftparchive"; then
-  _error "Could not find apt-ftparchive. Please install package 'apt-utils'."
-  exit 1
+  _error_exit "Could not find apt-ftparchive. Please install package 'apt-utils'."
+fi
+
+if ! _command_exist "shred"; then
+  _log "Could not find shred. Please install package 'coreutils'."
+  SHRED_STATUS="unavailable"
+else
+  SHRED_STATUS="available"
 fi
 
 if ! ls ./*.deb > /dev/null 2>&1; then
-  _error "No binaries found. Add some in ${PWD}."
-  exit 1
+  _error_exit "No binaries found. Add some in ${PWD}."
 fi
 
 for FILE in *.deb; do
@@ -59,24 +63,20 @@ for FILE in *.deb; do
 done
 
 if [ ! -r "${APT_CONF_FILE}" ]; then
-  _error "Could not read ${APT_CONF_FILE}. Create it in ${CONF_DIR}."
-  exit 1
+  _error_exit "Could not read ${APT_CONF_FILE}. Create it in ${CONF_DIR}."
 fi
 
 if [ ! -r "${STABLE_CONF_FILE}" ]; then
-  _error "Could not read ${STABLE_CONF_FILE}. Create it in ${CONF_DIR}."
-  exit 1
+  _error_exit "Could not read ${STABLE_CONF_FILE}. Create it in ${CONF_DIR}."
 fi
 
 # Check if private key file exists
 if [ ! -r "${PGP_KEYFILE}" ]; then
-  _error "PGP key file '${PGP_KEYFILE}' missing. Please add it to ${PWD}."
-  exit 1
+  _error_exit "PGP key file '${PGP_KEYFILE}' missing. Please add it to ${PWD}."
 fi
 
 if [ -z "${PGP_PASSPHRASE}" ]; then
-  _error "You need to set PGP_PASSPHRASE in order to sign the release file."
-  exit 1
+  _error_exit "You need to set PGP_PASSPHRASE in order to sign the release file."
 fi
 
 _log "Reading config file..."
@@ -91,6 +91,7 @@ chmod 700 "${GPG_TEMP_DIR}"
 
 gpg2 --batch \
      --homedir "${GPG_TEMP_DIR}" \
+     --quiet \
      --import "${PGP_KEYFILE}"
 
 echo "${PGP_PASSPHRASE}" | \
@@ -105,6 +106,12 @@ gpg2 --armor \
      --quiet \
      --yes \
      "${RELEASE_FILE}"
+
+if [ "${SHRED_STATUS}" == "unavailable" ]; then
+  _log "Info: shred not found. Using insecure way of deleting."
+else
+  find "${GPG_TEMP_DIR}" -type f -exec shred {} \;
+fi
 
 rm -rf "${GPG_TEMP_DIR}"
 
