@@ -70,9 +70,8 @@ if [ ! -r "${STABLE_CONF_FILE}" ]; then
   _error_exit "Could not read ${STABLE_CONF_FILE}. Create it in ${CONF_DIR}."
 fi
 
-# Check if private key file exists
 if [ ! -r "${PGP_KEYFILE}" ]; then
-  _error_exit "PGP key file '${PGP_KEYFILE}' missing. Please add it to ${PWD}."
+  _error_exit "PGP key file ${PGP_KEYFILE} missing. Please add it to ${PWD}."
 fi
 
 if [ -z "${PGP_PASSPHRASE}" ]; then
@@ -115,4 +114,4 @@ fi
 
 rm -rf "${GPG_TEMP_DIR}"
 
-echo "Done"
+_log "Done"
