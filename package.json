@@ -24,14 +24,6 @@
       "buildResources": "resources",
       "app": "electron",
       "output": "wrap/dist"
-    },
-    "linux" : {
-      "afterInstall" : "bin/deb/after-install.tpl",
-      "afterRemove" : "bin/deb/after-remove.tpl",
-      "asar": false,
-      "category": "Network",
-      "depends": ["libappindicator1", "libasound2", "libgconf-2-4", "libnotify-bin", "libnss3", "libxss1"],
-      "target": ["AppImage", "deb"]
     }
   },
   "devDependencies": {
@@ -46,7 +38,6 @@
     "grunt-contrib-clean": "1.0.0",
     "grunt-git": "1.0.3",
     "grunt-github-changes": "0.1.0",
-    "grunt-shell": "2.1.0",
     "load-grunt-tasks": "3.5.2"
    }
 }
