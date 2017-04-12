@@ -65,7 +65,7 @@ npm run build:linux
 
 If you would like to build for another Linux target or architecture, run the following commands:
 
-```
+```bash
 grunt 'clean:linux' 'update-keys' 'release-prod'
 grunt --arch=<arch> --target=<target> 'electronbuilder:linux_other'
 ```
