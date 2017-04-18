@@ -138,19 +138,11 @@ module.exports = (grunt) ->
             afterRemove: 'bin/deb/after-remove.tpl'
             category: 'Network'
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1']
-      linux_ia32:
+      linux_other:
         options:
-          arch: 'ia32'
+          arch: "#{grunt.option('arch') || process.arch}"
           productName: 'wire-desktop'
-          targets: ['dir']
-          linux:
-            fpm: ['--name', 'wire-desktop']
-            executableName: 'wire-desktop'
-      linux_x64:
-        options:
-          arch: 'x64'
-          productName: 'wire-desktop'
-          targets: ['dir']
+          targets: ["#{grunt.option('target') || 'dir'}"]
           linux:
             fpm: ['--name', 'wire-desktop']
             executableName: 'wire-desktop'
