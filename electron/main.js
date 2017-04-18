@@ -92,8 +92,7 @@ if (process.platform !== 'darwin') {
 // Fix indicator icon on Unity
 // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
 ///////////////////////////////////////////////////////////////////////////////
-const de = process.env.XDG_CURRENT_DESKTOP;
-if (de.includes('Unity')) {
+if (process.env.XDG_CURRENT_DESKTOP.includes('Unity')) {
   process.env.XDG_CURRENT_DESKTOP = 'Unity';
 };
 
