@@ -84,7 +84,9 @@ if (process.platform !== 'darwin') {
     return true;
   });
   if (process.platform !== 'win32' && shouldQuit) {
-    app.quit();
+    // Using exit instead of quit for the time being
+    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+    app.exit();
   }
 }
 
@@ -165,7 +167,9 @@ ipcMain.on('google-auth-request', function(event) {
 if (process.platform !== 'darwin') {
   ipcMain.on('wrapper-reload', function() {
     app.relaunch();
-    app.quit();
+    // Using exit instead of quit for the time being
+    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+    app.exit();
   });
 }
 

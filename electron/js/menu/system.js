@@ -441,7 +441,9 @@ function changeLocale(language) {
       if (process.platform !== 'darwin') {
         app.relaunch();
       }
-      app.quit();
+      // Using exit instead of quit for the time being
+      // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+      app.exit();
     }
   });
 }
