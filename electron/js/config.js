@@ -28,7 +28,6 @@ let config = {
   WIRE_PRIVACY: 'https://wire.com/privacy/',
   WIRE_LICENSES: 'https://wire.com/legal/licenses/',
 
-  BENNY_URL: 'https://wire-webapp-benny.zinfra.io/',
   DEV_URL: 'https://wire-webapp-dev.zinfra.io/',
   EDGE_URL: 'https://wire-webapp-edge.zinfra.io/',
   INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
