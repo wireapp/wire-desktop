@@ -116,7 +116,6 @@ function getBaseUrl() {
   if (!argv.env && config.DEVELOPMENT) {
     let env = init.restore('env', config.INTERNAL);
 
-    if (env === config.CRYPTO) baseURL = config.BENNY_URL;
     if (env === config.DEV) baseURL = config.DEV_URL;
     if (env === config.EDGE) baseURL = config.EDGE_URL;
     if (env === config.INTERNAL) baseURL = config.INTERNAL_URL;
