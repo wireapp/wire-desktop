@@ -167,6 +167,12 @@ let localeTemplate = {
       click: function() {
         changeLocale('uk');
       },
+    }, {
+      label: locale.label['zh'],
+      type: 'radio',
+      click: function() {
+        changeLocale('zh');
+      },
     },
   ],
 };

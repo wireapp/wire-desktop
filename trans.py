@@ -44,6 +44,7 @@ SUPPORTED_LOCALE = [
   'sl',
   'tr',
   'uk',
+  'zh',
 ]
 os.system('crowdin-cli --identity=keys/crowdin.yaml upload sources')
 os.system('crowdin-cli --identity=keys/crowdin.yaml download')
