@@ -27,7 +27,7 @@
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
   "optionalDependencies": {
-    "libsodium-neon": "wireapp/libsodium-neon#develop",
+    "libsodium-neon": "wireapp/libsodium-neon",
     "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
   }
 }
