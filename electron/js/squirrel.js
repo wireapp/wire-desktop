@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2016 Wire Swiss GmbH
+ * Copyright (C) 2017 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,7 +140,9 @@ function handleSquirrelEvent(shouldQuit) {
       return true;
   }
   if (shouldQuit) {
-    app.quit();
+    // Using exit instead of quit for the time being
+    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+    app.exit();
   }
   scheduleUpdate();
   return false;

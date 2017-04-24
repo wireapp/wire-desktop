@@ -3,6 +3,10 @@
 let string = {};
 
 
+string.aboutReleases = 'Variante';
+string.aboutUpdate = 'Cum funcționează actualizările Wire';
+string.aboutVersion = 'Versiune';
+string.aboutWebappVersion = 'Wire pentru Web';
 
 string.menuConversation = 'Conversații';
 string.menuStart = 'Începe';

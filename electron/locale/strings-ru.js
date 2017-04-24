@@ -3,6 +3,10 @@
 let string = {};
 
 
+string.aboutReleases = 'Релизы';
+string.aboutUpdate = 'Как работают обновления Wire';
+string.aboutVersion = 'Версия';
+string.aboutWebappVersion = 'Версия Wire для веб';
 
 string.menuConversation = 'Разговор';
 string.menuStart = 'Начать';

@@ -3,7 +3,7 @@
 
 #
 # Wire
-# Copyright (C) 2016 Wire Swiss GmbH
+# Copyright (C) 2017 Wire Swiss GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,10 +48,32 @@ if __name__ == '__main__':
   version = '%s.%s' % (info['version'], info['build'])
 
   files = [
-    'wire_%s_i386.deb' % version,
-    'wire_%s_amd64.deb' % version,
     'wire-%s-ia32.AppImage' % version,
     'wire-%s-x86_64.AppImage' % version,
+    'wire_%s_amd64.deb' % version,
+    'wire_%s_i386.deb' % version,
+    'debian/pool/main/wire_%s_amd64.deb' % version,
+    'debian/pool/main/wire_%s_i386.deb' % version,
+    'debian/dists/stable/Contents-all',
+    'debian/dists/stable/Contents-all.bz2',
+    'debian/dists/stable/Contents-all.gz',
+    'debian/dists/stable/Contents-amd64',
+    'debian/dists/stable/Contents-amd64.bz2',
+    'debian/dists/stable/Contents-amd64.gz',
+    'debian/dists/stable/Contents-i386',
+    'debian/dists/stable/Contents-i386.bz2',
+    'debian/dists/stable/Contents-i386.gz',
+    'debian/dists/stable/Release',
+    'debian/dists/stable/Release.gpg',
+    'debian/dists/stable/main/binary-all/Packages',
+    'debian/dists/stable/main/binary-all/Packages.bz2',
+    'debian/dists/stable/main/binary-all/Packages.gz',
+    'debian/dists/stable/main/binary-amd64/Packages',
+    'debian/dists/stable/main/binary-amd64/Packages.bz2',
+    'debian/dists/stable/main/binary-amd64/Packages.gz',
+    'debian/dists/stable/main/binary-i386/Packages',
+    'debian/dists/stable/main/binary-i386/Packages.bz2',
+    'debian/dists/stable/main/binary-i386/Packages.gz',
   ]
 
   for filename in files:
