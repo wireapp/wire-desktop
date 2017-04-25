@@ -91,14 +91,6 @@ if (process.platform !== 'darwin') {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Fix indicator icon on Unity
-// Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
-///////////////////////////////////////////////////////////////////////////////
-if (process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity')) {
-  process.env.XDG_CURRENT_DESKTOP = 'Unity';
-};
-
-///////////////////////////////////////////////////////////////////////////////
 // Auto Update
 ///////////////////////////////////////////////////////////////////////////////
 if (process.platform === 'win32') {
@@ -108,6 +100,23 @@ if (process.platform === 'win32') {
   ipcMain.on('wrapper-restart', function() {
     squirrel.installUpdate();
   });
+
+  // Stop further execution on update to prevent second tray icon
+  if (shouldQuit) {
+    return;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Fix indicator icon on Unity
+// Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
+///////////////////////////////////////////////////////////////////////////////
+if (process.platform === 'linux') {
+  const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
+
+  if (isUbuntuUnity) {
+    process.env.XDG_CURRENT_DESKTOP = 'Unity';
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -84,19 +84,19 @@ ipcRenderer.once('splash-screen-loaded', function() {
 
 // app.wire.com was loaded
 ipcRenderer.once('webapp-loaded', function(sender, config) {
-  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
-  window.electron_version = config.electron_version;
-  window.notification_icon = config.notification_icon;
-  require('./menu/context');
-
   // loading webapp failed
-  if (window.wire == undefined) {
+  if (window.wire === undefined) {
     return setInterval(function () {
       if (navigator.onLine) {
         location.reload();
       }
     }, 1000);
   }
+
+  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
+  window.electron_version = config.electron_version;
+  window.notification_icon = config.notification_icon;
+  require('./menu/context');
 
   if (process.platform === 'darwin') {
     // add titlebar ghost to prevent interactions with the content while dragging
