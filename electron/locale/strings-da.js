@@ -3,6 +3,10 @@
 let string = {};
 
 
+string.aboutReleases = 'Udgivelser';
+string.aboutUpdate = 'Hvordan fungere Wire opdateringer';
+string.aboutVersion = 'Version';
+string.aboutWebappVersion = 'Wire for Web-Versionen';
 
 string.menuConversation = 'Samtale';
 string.menuStart = 'Start';
@@ -10,7 +14,7 @@ string.menuEdit = 'Redigér';
 string.menuWindow = 'Vindue';
 string.menuView = 'Vis';
 string.menuHelp = 'Hjælp';
-string.menuStartup = 'Start Wire når ved opstart';
+string.menuStartup = 'Start Wire ved opstart';
 string.menuLocale = 'Sprog';
 string.menuAbout = 'Om Wire';
 string.menuSignOut = 'Log ud';
@@ -50,6 +54,7 @@ string.menuHideOthers = 'Skjul øvrige';
 string.menuShowAll = 'Vis alle';
 string.menuSettings = 'Indstillinger';
 string.menuQuit = 'Afslut Wire';
+string.menuShowHide = 'Vis Menu';
 string.menuSavePictureAs = 'Gem billede som...';
 string.menuNoSuggestions = 'Ingen forslag';
 
