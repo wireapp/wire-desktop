@@ -189,7 +189,7 @@ ipcRenderer.on('conversation-silence', function() {
 });
 
 ipcRenderer.on('conversation-delete', function() {
-  wire.app.view.conversation_list.click_on_clear_action();
+  amplify.publish(z.event.WebApp.SHORTCUT.DELETE);
 });
 
 ipcRenderer.on('conversation-prev', function() {
