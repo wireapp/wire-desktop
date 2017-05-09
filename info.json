@@ -1,6 +1,8 @@
 {
   "name": "Wire",
   "nameInternal": "WireInternal",
+  "namePackage": "wire-desktop",
+  "namePackageInternal": "wire-desktop-internal",
   "description": "Wire",
   "version": "2.14",
   "build": "2743",
