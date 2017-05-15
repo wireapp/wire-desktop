@@ -5,6 +5,7 @@
   "scripts": {
     "preinstall": "cd electron && npm install",
     "install": "cd electron && npm run rebuild-native-modules",
+    "postinstall": "cd electron && npm run rebuild-neon",
     "start": "electron electron --inspect --devtools --enable-logging",
     "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",

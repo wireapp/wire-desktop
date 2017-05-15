@@ -36,7 +36,7 @@
     "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
   },
   "scripts": {
-    "rebuild-native-modules": "node ./rebuild-native-modules.js \"electron-rebuild\" \"-f -m ./\" && npm run rebuild-neon",
+    "rebuild-native-modules": "node ./rebuild-native-modules.js \"electron-rebuild\" \"-f -m ./\"",
     "rebuild-neon": "node ./rebuild-native-modules.js \"electron-build-env\" \"neon build libsodium-neon\""
   }
 }
