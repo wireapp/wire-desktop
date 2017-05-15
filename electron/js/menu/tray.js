@@ -66,6 +66,9 @@ module.exports = {
       let count = parseInt(counter ? counter[1] : 0, 10);
       if (count) {
         this.useBadgeIcon();
+        if (count > lastUnreadCount) {
+          this.displayBalloonNotification(count);
+        }
       } else {
         this.useDefaultIcon();
       }
@@ -85,4 +88,11 @@ module.exports = {
     if (appIcon == null) return;
     appIcon.setImage(iconBadgePath);
   },
+  
+  displayBalloonNotification: function(count) {
+    if (appIcon == null) return;
+    var options = {title:'Wire', content:'You have unread messages in ' + count + ' conversation(s).'};
+    appIcon.displayBalloon(options);
+  },
+  
 };
