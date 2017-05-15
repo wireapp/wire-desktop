@@ -165,11 +165,11 @@ ipcRenderer.on('conversation-ping', function() {
 });
 
 ipcRenderer.on('conversation-call', function() {
-  wire.app.view.content.conversation_titlebar.click_on_call_button();
+  amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false);
 });
 
 ipcRenderer.on('conversation-video-call', function() {
-  wire.app.view.content.conversation_titlebar.click_on_video_button();
+  amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true);
 });
 
 ipcRenderer.on('conversation-people', function() {
