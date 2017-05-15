@@ -4,14 +4,12 @@
   "private": true,
   "scripts": {
     "preinstall": "cd electron && npm install",
-    "install": "npm run rebuild-native-modules",
-    "postinstall": "cd electron && npm run rebuild-neon",
+    "install": "cd electron && npm run rebuild-native-modules",
     "start": "electron electron --inspect --devtools --enable-logging",
     "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "localhost": "electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
     "test": "eslint electron && electron-mocha tests",
-    "rebuild-native-modules": "electron-rebuild -f -m ./electron/node_modules",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod"
@@ -32,7 +30,6 @@
     "electron-builder": "12.3.1",
     "electron-mocha": "3.4.0",
     "electron-packager": "8.6.0",
-    "electron-rebuild": "1.4.0",
     "electron-winstaller": "2.5.2",
     "eslint": "3.19.0",
     "grunt": "1.0.1",
