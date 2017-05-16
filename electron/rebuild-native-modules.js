@@ -27,8 +27,8 @@ const arch = process.env.wire_target_arch ? process.env.wire_target_arch : proce
 const normalize = (args) => {
   return args.map((arg) => {
     Object.keys(process.env).forEach((key) => {
-      const regex = new RegExp(`\\$${key}|%${key}%`, 'i');
-      arg = arg.replace(regex, process.env[key]);
+      const variableRegex = new RegExp(`\\$${key}|%${key}%`, 'i');
+      arg = arg.replace(variableRegex, process.env[key]);
     });
     return arg;
   });
@@ -39,7 +39,7 @@ if (args.length === 1) {
   const [command] = normalize(args);
   const proc = exec(command, (error, stdout, stderr) => {
     if (error) {
-      console.error(`exec error: ${error}`);
+      console.error('Execution error: ', error);
       return;
     }
     process.stdout.write(stdout);
