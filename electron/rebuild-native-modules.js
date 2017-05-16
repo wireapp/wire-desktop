@@ -39,7 +39,7 @@ if (args.length === 1) {
   const [command] = normalize(args);
   const proc = exec(command, (error, stdout, stderr) => {
     if (error) {
-      console.error('Execution error: ', error);
+      console.error('Execution error:', error);
       return;
     }
     process.stdout.write(stdout);
