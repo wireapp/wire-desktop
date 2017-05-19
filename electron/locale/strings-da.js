@@ -4,9 +4,9 @@ let string = {};
 
 
 string.aboutReleases = 'Udgivelser';
-string.aboutUpdate = 'Hvordan fungere Wire opdateringer';
+string.aboutUpdate = 'Hvordan fungere Wire’s opdateringer';
 string.aboutVersion = 'Version';
-string.aboutWebappVersion = 'Wire for Web-Versionen';
+string.aboutWebappVersion = 'Wires’s Web-Versionen';
 
 string.menuConversation = 'Samtale';
 string.menuStart = 'Start';
