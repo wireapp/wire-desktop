@@ -11,7 +11,7 @@ node('Linux_Node') {
   }
 
   stage('Checkout & Clean') {
-    git branch: "$GIT_BRANCH", url: 'https://github.com/wireapp/wire-desktop.git'
+    git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/'
   }
 
