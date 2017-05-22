@@ -13,7 +13,7 @@ node('Windows_Node') {
   }
 
   stage('Checkout & Clean') {
-    git branch: "$GIT_BRANCH", url: 'https://github.com/wireapp/wire-desktop.git'
+    git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     bat returnStatus: true, script: 'rmdir /s /q "wrap"'
     bat returnStatus: true, script: 'rmdir /s /q "node_modules"'
     bat returnStatus: true, script: 'rmdir /s /q "electron\\node_modules"'
@@ -28,10 +28,10 @@ node('Windows_Node') {
     try {
       bat 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.0.0-windows-x64', type: 'nodejs'
-      withEnv(["PATH+NODE=$NODE",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
+      withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         bat 'node -v'
         bat returnStatus: true, script: 'rustc --version'
-        bat 'npm install -g grunt'
+        bat 'npm install -g grunt-cli'
         bat 'npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if(production) {
@@ -43,7 +43,7 @@ node('Windows_Node') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "$jenkinsbot_secret", message: "**${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -59,7 +59,7 @@ node('Windows_Node') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "$jenkinsbot_secret", message: "**${JOB_NAME} ${version} signing failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} ${version} signing failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -67,7 +67,7 @@ node('Windows_Node') {
   stage('Build installer') {
     try {
       def NODE = tool name: 'node-v8.0.0-windows-x64', type: 'nodejs'
-      withEnv(["PATH+NODE=$NODE",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
+      withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         if(production) {
           bat 'grunt create-windows-installer:prod'
         } else {
@@ -76,7 +76,7 @@ node('Windows_Node') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "$jenkinsbot_secret", message: "**${JOB_NAME} ${version} building installer failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} ${version} building installer failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -90,7 +90,7 @@ node('Windows_Node') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "$jenkinsbot_secret", message: "**${JOB_NAME} ${version} signing installer failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} ${version} signing installer failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -109,5 +109,5 @@ node('Windows_Node') {
     }
   }
 
-  wireSend secret: "$jenkinsbot_secret", message: " **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
+  wireSend secret: "${jenkinsbot_secret}", message: " **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
 }

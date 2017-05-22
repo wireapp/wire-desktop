@@ -14,10 +14,7 @@ node('master') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf wrap/'
-    sh returnStatus: true, script: 'rm -rf electron/node_modules/'
-    sh returnStatus: true, script: 'rm -rf node_modules/'
-    sh returnStatus: true, script: 'rm -rf bin/WireInternal.zip'
+    sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/ bin/'
   }
 
   def text = readFile('info.json')
@@ -40,7 +37,7 @@ node('master') {
       sh 'security unlock-keychain -p 123456 /Users/jenkins/Library/Keychains/login.keychain'
       sh 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.0.0-darwin-x64', type: 'nodejs'
-      withEnv(['PATH+RUST=/Users/jenkins/.cargo/bin',"PATH+NODE=$NODE/bin"]) {
+      withEnv(['PATH+RUST=/Users/jenkins/.cargo/bin',"PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
@@ -55,7 +52,7 @@ node('master') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "$jenkinsbot_secret", message: "🍏 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -66,10 +63,10 @@ node('master') {
       archiveArtifacts 'info.json,Wire.pkg'
     } else {
       // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"$WORKSPACE/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"$WORKSPACE/bin/WireInternal.zip\""
+      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/bin/WireInternal.zip\""
       archiveArtifacts 'info.json,bin/WireInternal.zip'
     }
   }
 
-  wireSend secret: "$jenkinsbot_secret", message: "🍏 **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
 }
