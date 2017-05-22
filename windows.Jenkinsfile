@@ -4,7 +4,7 @@ def parseJson(def text) {
 }
 
 node('Windows_Node') {
-    
+
     def production = ${params.PRODUCTION}
 
     def jenkinsbot_secret = ""
@@ -18,7 +18,7 @@ node('Windows_Node') {
         bat returnStatus: true, script: 'rmdir /s /q "node_modules"'
         bat returnStatus: true, script: 'rmdir /s /q "electron\\node_modules"'
     }
-    
+
     def text = readFile("info.json")
     def buildInfo = parseJson(text);
     def version = buildInfo.version + "." + buildInfo.build;
@@ -47,7 +47,7 @@ node('Windows_Node') {
             throw e
         }
     }
-    
+
     stage('Sign build') {
         try {
             if(production) {
@@ -63,7 +63,7 @@ node('Windows_Node') {
             throw e
         }
     }
-    
+
     stage('Build installer') {
         try {
             def NODE = tool name: 'node-v8.0.0-windows-x64', type: 'nodejs'
@@ -80,7 +80,7 @@ node('Windows_Node') {
             throw e
         }
     }
-    
+
     stage('Sign installer') {
         try {
             if(production) {
@@ -94,7 +94,7 @@ node('Windows_Node') {
             throw e
         }
     }
-    
+
     stage('Archive build artifacts') {
         if(production) {
             archiveArtifacts 'info.json,wrap\\prod\\Wire-win32-ia32\\**'
@@ -102,7 +102,7 @@ node('Windows_Node') {
             archiveArtifacts 'info.json,wrap\\internal\\WireInternal-win32-ia32\\**'
         }
     }
-    
+
     if(production) {
         stage('Test') {
              build job: "Wrapper Windows Tests", parameters: [string(name: "WRAPPER_BUILD_ID", value: "${BUILD_ID}")], wait: false
