@@ -7,7 +7,7 @@ node('Windows_Node') {
 
   def production = ${params.PRODUCTION}
 
-  def jenkinsbot_secret = ""
+  def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
@@ -19,10 +19,10 @@ node('Windows_Node') {
     bat returnStatus: true, script: 'rmdir /s /q "electron\\node_modules"'
   }
 
-  def text = readFile("info.json")
+  def text = readFile('info.json')
   def buildInfo = parseJson(text);
-  def version = buildInfo.version + "." + buildInfo.build;
-  currentBuild.displayName = version + " #" + currentBuild.id
+  def version = buildInfo.version + '.' + buildInfo.build;
+  currentBuild.displayName = version + ' #' + currentBuild.id
 
   stage('Build') {
     try {
@@ -42,7 +42,7 @@ node('Windows_Node') {
         }
       }
     } catch(e) {
-      currentBuild.result = "FAILED"
+      currentBuild.result = 'FAILED'
       wireSend secret: "$jenkinsbot_secret", message: "**${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
       throw e
     }
@@ -58,7 +58,7 @@ node('Windows_Node') {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\WireInternal.exe"'
       }
     } catch(e) {
-      currentBuild.result = "FAILED"
+      currentBuild.result = 'FAILED'
       wireSend secret: "$jenkinsbot_secret", message: "**${JOB_NAME} ${version} signing failed** see: ${JOB_URL}"
       throw e
     }
@@ -75,7 +75,7 @@ node('Windows_Node') {
         }
       }
     } catch(e) {
-      currentBuild.result = "FAILED"
+      currentBuild.result = 'FAILED'
       wireSend secret: "$jenkinsbot_secret", message: "**${JOB_NAME} ${version} building installer failed** see: ${JOB_URL}"
       throw e
     }
@@ -89,7 +89,7 @@ node('Windows_Node') {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\internal\\WireInternal-win32-ia32\\WireInternalSetup.exe"'
       }
     } catch(e) {
-      currentBuild.result = "FAILED"
+      currentBuild.result = 'FAILED'
       wireSend secret: "$jenkinsbot_secret", message: "**${JOB_NAME} ${version} signing installer failed** see: ${JOB_URL}"
       throw e
     }
@@ -105,7 +105,7 @@ node('Windows_Node') {
 
   if(production) {
     stage('Test') {
-       build job: "Wrapper Windows Tests", parameters: [string(name: "WRAPPER_BUILD_ID", value: "${BUILD_ID}")], wait: false
+       build job: 'Wrapper Windows Tests', parameters: [string(name: 'WRAPPER_BUILD_ID', value: "${BUILD_ID}")], wait: false
     }
   }
 

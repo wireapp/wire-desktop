@@ -7,7 +7,7 @@ node('master') {
 
   def production = ${params.PRODUCTION}
 
-  def jenkinsbot_secret = ""
+  def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
@@ -20,10 +20,10 @@ node('master') {
     sh returnStatus: true, script: 'rm -rf bin/WireInternal.zip'
   }
 
-  def text = readFile("info.json")
+  def text = readFile('info.json')
   def buildInfo = parseJson(text);
-  def version = buildInfo.version + "." + buildInfo.build;
-  currentBuild.displayName = version + " #" + currentBuild.id
+  def version = buildInfo.version + '.' + buildInfo.build;
+  currentBuild.displayName = version + ' #' + currentBuild.id
 
   stage('Install rust') {
     withEnv(['PATH+RUST=/Users/jenkins/.cargo/bin']) {
@@ -41,7 +41,7 @@ node('master') {
       sh 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.0.0-darwin-x64', type: 'nodejs'
       withEnv(['PATH+RUST=/Users/jenkins/.cargo/bin',"PATH+NODE=$NODE/bin"]) {
-        sh "node -v"
+        sh 'node -v'
         sh 'npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if(production) {
@@ -54,7 +54,7 @@ node('master') {
         }
       }
     } catch(e) {
-      currentBuild.result = "FAILED"
+      currentBuild.result = 'FAILED'
       wireSend secret: "$jenkinsbot_secret", message: "🍏 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
       throw e
     }
