@@ -90,7 +90,9 @@ if (process.platform !== 'darwin') {
     return true;
   });
   if (process.platform !== 'win32' && shouldQuit) {
-    app.quit();
+    // Using exit instead of quit for the time being
+    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+    app.exit();
   }
 }
 
@@ -104,6 +106,23 @@ if (process.platform === 'win32') {
   ipcMain.on('wrapper-restart', function() {
     squirrel.installUpdate();
   });
+
+  // Stop further execution on update to prevent second tray icon
+  if (shouldQuit) {
+    return;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Fix indicator icon on Unity
+// Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
+///////////////////////////////////////////////////////////////////////////////
+if (process.platform === 'linux') {
+  const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
+
+  if (isUbuntuUnity) {
+    process.env.XDG_CURRENT_DESKTOP = 'Unity';
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -114,7 +133,6 @@ function getBaseUrl() {
   if (!argv.env && config.DEVELOPMENT) {
     let env = init.restore('env', config.INTERNAL);
 
-    if (env === config.CRYPTO) baseURL = config.BENNY_URL;
     if (env === config.DEV) baseURL = config.DEV_URL;
     if (env === config.EDGE) baseURL = config.EDGE_URL;
     if (env === config.INTERNAL) baseURL = config.INTERNAL_URL;
@@ -164,7 +182,9 @@ ipcMain.on('google-auth-request', function(event) {
 if (process.platform !== 'darwin') {
   ipcMain.on('wrapper-reload', function() {
     app.relaunch();
-    app.quit();
+    // Using exit instead of quit for the time being
+    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+    app.exit();
   });
 }
 

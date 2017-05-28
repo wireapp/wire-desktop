@@ -84,19 +84,19 @@ ipcRenderer.once('splash-screen-loaded', function() {
 
 // app.wire.com was loaded
 ipcRenderer.once('webapp-loaded', function(sender, config) {
-  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
-  window.electron_version = config.electron_version;
-  window.notification_icon = config.notification_icon;
-  require('./menu/context');
-
   // loading webapp failed
-  if (window.wire == undefined) {
+  if (window.wire === undefined) {
     return setInterval(function () {
       if (navigator.onLine) {
         location.reload();
       }
     }, 1000);
   }
+
+  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
+  window.electron_version = config.electron_version;
+  window.notification_icon = config.notification_icon;
+  require('./menu/context');
 
   if (process.platform === 'darwin') {
     // add titlebar ghost to prevent interactions with the content while dragging
@@ -137,6 +137,12 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
     });
   }
   // else we are on /auth
+  try {
+    Object.assign(window.sodium, require('libsodium-neon'));
+    console.info('Using libsodium-neon.');
+  } catch (error) {
+    console.info('Failed loading "libsodium-neon", falling back to "libsodium.js".', error);
+  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -159,11 +165,11 @@ ipcRenderer.on('conversation-ping', function() {
 });
 
 ipcRenderer.on('conversation-call', function() {
-  wire.app.view.content.conversation_titlebar.click_on_call_button();
+  amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false);
 });
 
 ipcRenderer.on('conversation-video-call', function() {
-  wire.app.view.content.conversation_titlebar.click_on_video_button();
+  amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true);
 });
 
 ipcRenderer.on('conversation-people', function() {
@@ -183,7 +189,7 @@ ipcRenderer.on('conversation-silence', function() {
 });
 
 ipcRenderer.on('conversation-delete', function() {
-  wire.app.view.conversation_list.click_on_clear_action();
+  amplify.publish(z.event.WebApp.SHORTCUT.DELETE);
 });
 
 ipcRenderer.on('conversation-prev', function() {
