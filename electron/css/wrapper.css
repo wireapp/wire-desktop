@@ -38,7 +38,7 @@ body.os-mac .text a {
 }
 
 .app {
-  -webkit-user-select: none;
+  user-select: none;
 }
 
 .drag-region {
@@ -47,7 +47,7 @@ body.os-mac .text a {
   height: 40px;
   top: 0;
   left: 0;
-  -webkit-user-select: none;
+  user-select: none;
   -webkit-app-region: drag;
   pointer-events: none;
   z-index: 1000000;

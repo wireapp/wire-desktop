@@ -13,7 +13,12 @@
     "test": "eslint electron && electron-mocha tests",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
-    "build:linux": "grunt linux-prod"
+    "build:linux": "grunt linux-prod",
+    "precommit": "lint-staged",
+    "prettier": "prettier --single-quote --trailing-comma --no-bracket-spacing --write 'electron/**/*.{js,css}'"
+  },
+  "lint-staged": {
+    "*.{js,css}": ["npm run prettier", "git add"]
   },
   "repository": {
     "type": "git",
@@ -37,6 +42,9 @@
     "grunt-contrib-clean": "1.1.0",
     "grunt-git": "1.0.3",
     "grunt-github-changes": "0.1.0",
+    "husky": "0.13.4",
+    "lint-staged": "3.6.0",
+    "prettier": "1.4.2",
     "load-grunt-tasks": "3.5.2"
   }
 }
