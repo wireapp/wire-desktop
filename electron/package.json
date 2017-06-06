@@ -32,7 +32,7 @@
     "electron-rebuild": "1.5.11"
   },
   "optionalDependencies": {
-    "libsodium-neon": "2.1.0",
+    "libsodium-neon": "2.1.1",
     "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
   },
   "scripts": {
