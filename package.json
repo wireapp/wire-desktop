@@ -15,7 +15,7 @@
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
     "precommit": "lint-staged",
-    "lint": "eslint -c .eslintrc.yml --ignore-path .gitignore --quiet electron/js/**/*.js",
+    "lint": "eslint -c .eslintrc.yml --ignore-path .gitignore --quiet electron/js/**/*.js electron/*.js tests/**/*.js ",
     "lint:fix": "yarn lint:fix:script && yarn lint:fix:style",
     "lint:fix:script": "npm run lint -- --fix",
     "lint:fix:style": "prettier --single-quote --write electron/css/**/*.css"

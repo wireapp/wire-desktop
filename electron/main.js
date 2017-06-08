@@ -19,7 +19,7 @@
 
 'use strict';
 
-const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 
 const fs = require('fs');
 const minimist = require('minimist');
@@ -41,27 +41,31 @@ const windowManager = require('./js/window-manager');
 const APP_PATH = app.getAppPath();
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-const SPLASH_HTML = 'file://' + path.join(APP_PATH, 'html', 'splash.html');
-const CERT_ERR_HTML =
-  'file://' + path.join(APP_PATH, 'html', 'certificate-error.html');
-const ABOUT_HTML = 'file://' + path.join(APP_PATH, 'html', 'about.html');
-const ICON = 'wire.' + (process.platform === 'win32' ? 'ico' : 'png');
+const SPLASH_HTML = `file://${path.join(APP_PATH, 'html', 'splash.html')}`;
+const CERT_ERR_HTML = `file://${path.join(
+  APP_PATH,
+  'html',
+  'certificate-error.html'
+)}`;
+const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
+const ICON = `wire.${process.platform === 'win32' ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
+const STARTUP_DELAY = 800;
 
 let main;
-let raygunClient;
+const raygunClient = new raygun.Client().init({
+  apiKey: config.RAYGUN_API_KEY
+});
 let about;
 let enteredWebapp = false;
 let quitting = false;
 let shouldQuit = false;
-let argv = minimist(process.argv.slice(1));
+const argv = minimist(process.argv.slice(1));
 let webappVersion;
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Misc
-///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
-
+// /////////////////////////////////////////////////////////////////////////////
 raygunClient.onBeforeSend(function(payload) {
   delete payload.details.machineName;
   return payload;
@@ -71,9 +75,9 @@ if (config.DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Single Instance stuff
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 
 // makeSingleInstance will crash the signed mas app
 // see: https://github.com/atom/electron/issues/4688
@@ -91,9 +95,9 @@ if (process.platform !== 'darwin') {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Auto Update
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
@@ -101,17 +105,12 @@ if (process.platform === 'win32') {
   ipcMain.on('wrapper-restart', function() {
     squirrel.installUpdate();
   });
-
-  // Stop further execution on update to prevent second tray icon
-  if (shouldQuit) {
-    return;
-  }
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Fix indicator icon on Unity
 // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 if (process.platform === 'linux') {
   const isUbuntuUnity =
     process.env.XDG_CURRENT_DESKTOP &&
@@ -122,13 +121,13 @@ if (process.platform === 'linux') {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // IPC events
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 function getBaseUrl() {
   let baseURL = argv.env || config.PROD_URL;
   if (!argv.env && config.DEVELOPMENT) {
-    let env = init.restore('env', config.INTERNAL);
+    const env = init.restore('env', config.INTERNAL);
 
     if (env === config.DEV) baseURL = config.DEV_URL;
     if (env === config.EDGE) baseURL = config.EDGE_URL;
@@ -143,12 +142,12 @@ function getBaseUrl() {
 ipcMain.once('load-webapp', function() {
   enteredWebapp = true;
   let baseURL = getBaseUrl();
-  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
+  baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
   main.loadURL(baseURL);
 });
 
 ipcMain.on('loaded', function() {
-  let size = main.getSize();
+  const size = main.getSize();
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
     util.resizeToBig(main);
   }
@@ -171,7 +170,7 @@ ipcMain.on('google-auth-request', function(event) {
     .getAccessToken(
       config.GOOGLE_SCOPES,
       config.GOOGLE_CLIENT_ID,
-      config.GOOGLE_CLIENT_SECRET,
+      config.GOOGLE_CLIENT_SECRET
     )
     .then(function(code) {
       event.sender.send('google-auth-success', code.access_token);
@@ -190,25 +189,25 @@ if (process.platform !== 'darwin') {
   });
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // APP Windows
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 function showMainWindow() {
   main = new BrowserWindow({
+    autoHideMenuBar: !init.restore('showMenu', true),
+    height: config.DEFAULT_HEIGHT_MAIN,
+    icon: ICON_PATH,
+    minHeight: config.MIN_HEIGHT_MAIN,
+    minWidth: config.MIN_WIDTH_MAIN,
+    show: false,
     title: config.NAME,
     titleBarStyle: 'hidden-inset',
-    width: config.DEFAULT_WIDTH_MAIN,
-    height: config.DEFAULT_HEIGHT_MAIN,
-    minWidth: config.MIN_WIDTH_MAIN,
-    minHeight: config.MIN_HEIGHT_MAIN,
-    autoHideMenuBar: !init.restore('showMenu', true),
-    icon: ICON_PATH,
-    show: false,
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: false,
-      preload: PRELOAD_JS,
+      preload: PRELOAD_JS
     },
+    width: config.DEFAULT_WIDTH_MAIN
   });
 
   if (init.restore('fullscreen', false)) {
@@ -218,12 +217,12 @@ function showMainWindow() {
   }
 
   main.webContents.session.setCertificateVerifyProc((request, cb) => {
-    const {hostname = '', certificate = {}, error} = request;
-
+    const { hostname = '', certificate = {}, error } = request;
+    const certificateOffset = -2;
     if (typeof error !== 'undefined') {
       console.error('setCertificateVerifyProc', error);
       main.loadURL(CERT_ERR_HTML);
-      return cb(-2);
+      return cb(certificateOffset);
     }
 
     if (certutils.hostnameShouldBePinned(hostname)) {
@@ -231,15 +230,15 @@ function showMainWindow() {
       for (const result of Object.values(pinningResults)) {
         if (result === false) {
           console.error(
-            `Certutils verification failed for ${hostname}: ${result} is false`,
+            `Certutils verification failed for ${hostname}: ${result} is false`
           );
           main.loadURL(CERT_ERR_HTML);
-          return cb(-2);
+          return cb(certificateOffset);
         }
       }
     }
 
-    return cb(-3);
+    return cb(certificateOffset - 1);
   });
 
   main.loadURL(SPLASH_HTML);
@@ -256,7 +255,7 @@ function showMainWindow() {
     discloseWindowID(main);
     setTimeout(function() {
       main.show();
-    }, 800);
+    }, STARTUP_DELAY);
   }
 
   main.webContents.on('will-navigate', function(event, url) {
@@ -293,8 +292,8 @@ function showMainWindow() {
         notification_icon: path.join(
           app.getAppPath(),
           'img',
-          'notification.png',
-        ),
+          'notification.png'
+        )
       });
     } else {
       main.webContents.send('splash-screen-loaded');
@@ -329,17 +328,17 @@ function showMainWindow() {
 function showAboutWindow() {
   if (about === undefined) {
     about = new BrowserWindow({
-      title: '',
-      width: 304,
+      fullscreen: false,
       height: 256,
       resizable: false,
-      fullscreen: false,
+      title: '',
+      width: 304
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
     about.webContents.on('dom-ready', function() {
       about.webContents.send('about-loaded', {
-        webappVersion: webappVersion,
+        webappVersion
       });
     });
 
@@ -354,9 +353,9 @@ function discloseWindowID(browserWindow) {
   windowManager.setPrimaryWindowId(browserWindow.id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // APP Events
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 app.on('window-all-closed', function() {
   if (process.platform !== 'darwin') {
     app.quit();
@@ -373,11 +372,11 @@ app.on('before-quit', function() {
   quitting = true;
 });
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // System Menu & Tray Icon & Show window
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 app.on('ready', function() {
-  let appMenu = systemMenu.createMenu();
+  const appMenu = systemMenu.createMenu();
   if (config.DEVELOPMENT) {
     appMenu.append(developerMenu);
   }
@@ -390,10 +389,10 @@ app.on('ready', function() {
   showMainWindow();
 });
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Delete the console.log
-///////////////////////////////////////////////////////////////////////////////
-let consoleLog = path.join(app.getPath('userData'), config.CONSOLE_LOG);
+// /////////////////////////////////////////////////////////////////////////////
+const consoleLog = path.join(app.getPath('userData'), config.CONSOLE_LOG);
 fs.stat(consoleLog, function(err, stats) {
   if (!err) {
     fs.rename(consoleLog, consoleLog.replace('.log', '.old'));

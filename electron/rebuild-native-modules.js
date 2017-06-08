@@ -36,7 +36,8 @@ const normalize = args => {
   });
 };
 
-let args = process.argv.slice(2);
+const offset = 2;
+let args = process.argv.slice(offset);
 if (args.length === 1) {
   const [command] = normalize(args);
   const proc = exec(command, (error, stdout, stderr) => {
@@ -52,6 +53,6 @@ if (args.length === 1) {
   args = normalize(args);
   const command = args.shift();
   args.unshift('--arch', arch, '--');
-  const proc = spawn.sync(command, args, {stdio: 'inherit'});
+  const proc = spawn.sync(command, args, { stdio: 'inherit' });
   process.exit(proc.status);
 }
