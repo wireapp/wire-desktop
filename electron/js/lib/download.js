@@ -25,7 +25,7 @@ const imageType = require('image-type');
 const {dialog} = require('electron');
 
 module.exports = function(fileName, bytes) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     let options = {};
     let type = imageType(bytes);
 
@@ -34,12 +34,10 @@ module.exports = function(fileName, bytes) {
     }
 
     if (type && type.ext) {
-      options.filters = [
-        {name: 'Images', extensions: [type.ext]},
-      ];
+      options.filters = [{name: 'Images', extensions: [type.ext]}];
     }
 
-    dialog.showSaveDialog(options, function (chosenPath) {
+    dialog.showSaveDialog(options, function(chosenPath) {
       if (chosenPath !== undefined) {
         fs.writeFile(chosenPath, new Buffer(bytes.buffer), function(error) {
           if (error) {

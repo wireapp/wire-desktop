@@ -25,17 +25,27 @@ const config = require('./config');
 const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
-  isInView: function(win) {
+  isInView(win) {
     let windowBounds = win.getBounds();
-    let nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
+    let nearestWorkArea = electron.screen.getDisplayMatching(windowBounds)
+      .workArea;
 
-    let upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
-    let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
+    let upperLeftVisible = pointInRectangle(
+      [windowBounds.x, windowBounds.y],
+      nearestWorkArea,
+    );
+    let lowerRightVisible = pointInRectangle(
+      [
+        windowBounds.x + windowBounds.width,
+        windowBounds.y + windowBounds.height,
+      ],
+      nearestWorkArea,
+    );
 
     return upperLeftVisible || lowerRightVisible;
   },
 
-  openInExternalWindow: function(url) {
+  openInExternalWindow(url) {
     for (let item of config.WHITE_LIST) {
       if (url.includes(item)) {
         return true;
@@ -44,7 +54,7 @@ module.exports = {
     return false;
   },
 
-  resizeToSmall: function(win) {
+  resizeToSmall(win) {
     if (process.platform !== 'darwin') {
       win.setMenuBarVisibility(false);
     }
@@ -61,7 +71,7 @@ module.exports = {
     win.center();
   },
 
-  resizeToBig: function(win) {
+  resizeToBig(win) {
     if (process.platform !== 'darwin') {
       win.setMenuBarVisibility(true);
     }

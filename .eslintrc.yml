@@ -1,19 +1,43 @@
----
-  env:
-    browser: true
-    node: true
-    es6: true
-  rules:
-    comma-dangle: [2, always-multiline]
-    handle-callback-err: 2
-    indent: [2, 2, {SwitchCase: 1}]
-    keyword-spacing: 2
-    no-dupe-class-members: 2
-    no-multi-spaces: 2
-    no-shadow: 2
-    no-unused-expressions: 2
-    no-unused-vars: [2, {args: none}]
-    quotes: [2, single, avoid-escape]
-    semi: [2, always]
-    space-before-blocks: 2
-    strict: [2, global]
+env:
+  es6: true
+
+plugins:
+  - prettier
+
+extends:
+  - prettier
+
+rules:
+  constructor-super: 2
+  default-case: 2
+  eol-last: 2
+  handle-callback-err: 2
+  id-length: 2
+  no-console: 0
+  no-const-assign: 2
+  no-dupe-class-members: 2
+  no-else-return: 2
+  no-lonely-if: 2
+  no-magic-numbers: [2, {ignore: [-1, 0, 1]}]
+  no-shadow: 2
+  no-unused-expressions: 2
+  no-unused-vars: [2, {args: none}]
+  no-var: 2
+  no-whitespace-before-property: 2
+  object-curly-spacing: [2, never]
+  object-shorthand: 2
+  prefer-const: 2
+  prefer-promise-reject-errors: 2
+  prefer-spread: 2
+  prefer-template: 2
+  prettier/prettier: [2, {
+      singleQuote: true,
+      trailingComma: all,
+      bracketSpacing: false,
+      printWidth: 80
+    }
+  ]
+  sort-keys: [2, asc, {caseSensitive: true, natural: true}]
+  sort-vars: 2
+  spaced-comment: [2, always, {exceptions: ['#']}]
+  strict: [2, global]

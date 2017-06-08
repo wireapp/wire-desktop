@@ -29,16 +29,19 @@ function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
 }
 
-
 let reloadTemplate = {
   label: 'Reload',
-  click: function() {getPrimaryWindow().reload();},
+  click: function() {
+    getPrimaryWindow().reload();
+  },
 };
 
 let devToolsTemplate = {
   label: 'Toggle DevTools',
   accelerator: 'Alt+CmdOrCtrl+I',
-  click: function() {getPrimaryWindow().toggleDevTools();},
+  click: function() {
+    getPrimaryWindow().toggleDevTools();
+  },
 };
 
 let devProductionTemplate = {

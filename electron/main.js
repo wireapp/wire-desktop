@@ -42,9 +42,10 @@ const APP_PATH = app.getAppPath();
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const SPLASH_HTML = 'file://' + path.join(APP_PATH, 'html', 'splash.html');
-const CERT_ERR_HTML = 'file://' + path.join(APP_PATH, 'html', 'certificate-error.html');
+const CERT_ERR_HTML =
+  'file://' + path.join(APP_PATH, 'html', 'certificate-error.html');
 const ABOUT_HTML = 'file://' + path.join(APP_PATH, 'html', 'about.html');
-const ICON = 'wire.' + ((process.platform === 'win32') ? 'ico' : 'png');
+const ICON = 'wire.' + (process.platform === 'win32' ? 'ico' : 'png');
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
 let main;
@@ -112,7 +113,9 @@ if (process.platform === 'win32') {
 // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
 ///////////////////////////////////////////////////////////////////////////////
 if (process.platform === 'linux') {
-  const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
+  const isUbuntuUnity =
+    process.env.XDG_CURRENT_DESKTOP &&
+    process.env.XDG_CURRENT_DESKTOP.includes('Unity');
 
   if (isUbuntuUnity) {
     process.env.XDG_CURRENT_DESKTOP = 'Unity';
@@ -164,7 +167,12 @@ ipcMain.on('notification-click', function() {
 });
 
 ipcMain.on('google-auth-request', function(event) {
-  googleAuth.getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
+  googleAuth
+    .getAccessToken(
+      config.GOOGLE_SCOPES,
+      config.GOOGLE_CLIENT_ID,
+      config.GOOGLE_CLIENT_SECRET,
+    )
     .then(function(code) {
       event.sender.send('google-auth-success', code.access_token);
     })
@@ -187,19 +195,19 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 function showMainWindow() {
   main = new BrowserWindow({
-    'title': config.NAME,
-    'titleBarStyle': 'hidden-inset',
-    'width': config.DEFAULT_WIDTH_MAIN,
-    'height': config.DEFAULT_HEIGHT_MAIN,
-    'minWidth': config.MIN_WIDTH_MAIN,
-    'minHeight': config.MIN_HEIGHT_MAIN,
-    'autoHideMenuBar': !init.restore('showMenu', true),
-    'icon': ICON_PATH,
-    'show': false,
-    'webPreferences': {
-      'backgroundThrottling': false,
-      'nodeIntegration': false,
-      'preload': PRELOAD_JS,
+    title: config.NAME,
+    titleBarStyle: 'hidden-inset',
+    width: config.DEFAULT_WIDTH_MAIN,
+    height: config.DEFAULT_HEIGHT_MAIN,
+    minWidth: config.MIN_WIDTH_MAIN,
+    minHeight: config.MIN_HEIGHT_MAIN,
+    autoHideMenuBar: !init.restore('showMenu', true),
+    icon: ICON_PATH,
+    show: false,
+    webPreferences: {
+      backgroundThrottling: false,
+      nodeIntegration: false,
+      preload: PRELOAD_JS,
     },
   });
 
@@ -222,7 +230,9 @@ function showMainWindow() {
       const pinningResults = certutils.verifyPinning(hostname, certificate);
       for (const result of Object.values(pinningResults)) {
         if (result === false) {
-          console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+          console.error(
+            `Certutils verification failed for ${hostname}: ${result} is false`,
+          );
           main.loadURL(CERT_ERR_HTML);
           return cb(-2);
         }
@@ -280,7 +290,11 @@ function showMainWindow() {
     if (enteredWebapp) {
       main.webContents.send('webapp-loaded', {
         electron_version: app.getVersion(),
-        notification_icon: path.join(app.getAppPath(), 'img', 'notification.png'),
+        notification_icon: path.join(
+          app.getAppPath(),
+          'img',
+          'notification.png',
+        ),
       });
     } else {
       main.webContents.send('splash-screen-loaded');
@@ -315,11 +329,11 @@ function showMainWindow() {
 function showAboutWindow() {
   if (about === undefined) {
     about = new BrowserWindow({
-      'title': '',
-      'width': 304,
-      'height': 256,
-      'resizable': false,
-      'fullscreen': false,
+      title: '',
+      width: 304,
+      height: 256,
+      resizable: false,
+      fullscreen: false,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
@@ -338,7 +352,7 @@ function showAboutWindow() {
 
 function discloseWindowID(browserWindow) {
   windowManager.setPrimaryWindowId(browserWindow.id);
-};
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events

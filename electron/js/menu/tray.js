@@ -26,11 +26,19 @@ const config = require('./../config');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 
-const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
+const iconExt = process.platform === 'win32' ? 'ico' : 'png';
 
-const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
-const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
-const iconOverlayPath = path.join(app.getAppPath(), 'img', 'taskbar.overlay.png');
+const iconPath = path.join(app.getAppPath(), 'img', 'tray.' + iconExt);
+const iconBadgePath = path.join(
+  app.getAppPath(),
+  'img',
+  'tray.badge.' + iconExt,
+);
+const iconOverlayPath = path.join(
+  app.getAppPath(),
+  'img',
+  'taskbar.overlay.png',
+);
 
 let lastUnreadCount = 0;
 
@@ -46,10 +54,15 @@ module.exports = {
     let contextMenu = Menu.buildFromTemplate([
       {
         label: locale.getText('trayOpen') + ' ' + config.NAME,
-        click: function() {windowManager.showPrimaryWindow();},
-      }, {
+        click: function() {
+          windowManager.showPrimaryWindow();
+        },
+      },
+      {
         label: locale.getText('trayQuit'),
-        click: function() {app.quit();},
+        click: function() {
+          app.quit();
+        },
       },
     ]);
 
@@ -62,14 +75,19 @@ module.exports = {
 
   updateBadgeIcon: function(win) {
     setTimeout(() => {
-      let counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
+      let counter = /\(([0-9]+)\)/.exec(
+        win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''),
+      );
       let count = parseInt(counter ? counter[1] : 0, 10);
       if (count) {
         this.useBadgeIcon();
       } else {
         this.useDefaultIcon();
       }
-      win.setOverlayIcon(count && process.platform === 'win32' ? iconOverlayPath : null, locale.getText('unreadMessages'));
+      win.setOverlayIcon(
+        count && process.platform === 'win32' ? iconOverlayPath : null,
+        locale.getText('unreadMessages'),
+      );
       win.flashFrame(!win.isFocused() && count > lastUnreadCount);
       app.setBadgeCount(count);
       lastUnreadCount = count;

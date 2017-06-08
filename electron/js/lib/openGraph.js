@@ -38,7 +38,7 @@ function updateMetaDataWithImages(meta, images) {
 
 module.exports = function(url, limit = 1, callback) {
   // older version excepts 2 paramaters (url, callback)
-  if (typeof(limit) === 'function') {
+  if (typeof limit === 'function') {
     callback = limit;
     limit = 1;
   }

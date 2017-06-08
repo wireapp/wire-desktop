@@ -35,7 +35,10 @@ process.once('loaded', function() {
   global.desktopCapturer = desktopCapturer;
   global.winston = require('winston');
 
-  const logFilePath = path.join(app.getPath('userData'), require('./config').CONSOLE_LOG);
+  const logFilePath = path.join(
+    app.getPath('userData'),
+    require('./config').CONSOLE_LOG,
+  );
   console.log('Logging into file', logFilePath);
 
   winston
@@ -52,7 +55,7 @@ process.once('loaded', function() {
 ///////////////////////////////////////////////////////////////////////////////
 let cachedAddressBook;
 
-function getAdressBook () {
+function getAdressBook() {
   if (cachedAddressBook == undefined) {
     cachedAddressBook = require('node-addressbook');
   }
@@ -86,7 +89,7 @@ ipcRenderer.once('splash-screen-loaded', function() {
 ipcRenderer.once('webapp-loaded', function(sender, config) {
   // loading webapp failed
   if (window.wire === undefined) {
-    return setInterval(function () {
+    return setInterval(function() {
       if (navigator.onLine) {
         location.reload();
       }
@@ -128,7 +131,9 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
       ipcRenderer.send('loaded');
     });
 
-    amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
+    amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(
+      update_source,
+    ) {
       if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
         ipcRenderer.send('wrapper-restart');
       } else {
@@ -141,7 +146,10 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
     Object.assign(window.sodium, require('libsodium-neon'));
     console.info('Using libsodium-neon.');
   } catch (error) {
-    console.info('Failed loading "libsodium-neon", falling back to "libsodium.js".', error);
+    console.info(
+      'Failed loading "libsodium-neon", falling back to "libsodium.js".',
+      error,
+    );
   }
 });
 
@@ -205,5 +213,8 @@ ipcRenderer.on('conversation-show', function(conversation_id) {
 });
 
 ipcRenderer.on('wrapper-update-available', function() {
-  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
+  amplify.publish(
+    z.event.WebApp.LIFECYCLE.UPDATE,
+    z.announce.UPDATE_SOURCE.DESKTOP,
+  );
 });

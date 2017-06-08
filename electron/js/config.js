@@ -55,10 +55,7 @@ let config = {
   UPDATE_DELAY: 5 * 60 * 1000,
   UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
 
-  WHITE_LIST: [
-    'https://www.wire.com/',
-    'https://wire.com/',
-  ],
+  WHITE_LIST: ['https://www.wire.com/', 'https://wire.com/'],
 
   LOCALE: [
     'en',
@@ -90,9 +87,7 @@ let config = {
   CONSOLE_LOG: 'console.log',
 
   SPELL_SUGGESTIONS: 4,
-  SPELL_SUPPORTED: [
-    'en',
-  ],
+  SPELL_SUPPORTED: ['en'],
 };
 
 config.ENVIRONMENT = pkg.environment;

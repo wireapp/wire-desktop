@@ -15,7 +15,7 @@
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
     "precommit": "lint-staged",
-    "prettier": "prettier --single-quote --trailing-comma --no-bracket-spacing --write 'electron/**/*.{js,css}'"
+    "prettier": "prettier --single-quote --trailing-comma='all' --no-bracket-spacing --write 'electron/js/**/*.js' 'electron/css/**/*.css'"
   },
   "lint-staged": {
     "*.{js,css}": ["npm run prettier", "git add"]
@@ -38,6 +38,8 @@
     "electron-packager": "8.7.1",
     "electron-winstaller": "2.6.1",
     "eslint": "3.19.0",
+    "eslint-config-prettier": "2.1.1",
+    "eslint-plugin-prettier": "2.1.1",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.1.0",
     "grunt-git": "1.0.3",
