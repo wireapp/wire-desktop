@@ -26,15 +26,15 @@ const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
   isInView(win) {
-    let windowBounds = win.getBounds();
-    let nearestWorkArea = electron.screen.getDisplayMatching(windowBounds)
+    const windowBounds = win.getBounds();
+    const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds)
       .workArea;
 
-    let upperLeftVisible = pointInRectangle(
+    const upperLeftVisible = pointInRectangle(
       [windowBounds.x, windowBounds.y],
       nearestWorkArea,
     );
-    let lowerRightVisible = pointInRectangle(
+    const lowerRightVisible = pointInRectangle(
       [
         windowBounds.x + windowBounds.width,
         windowBounds.y + windowBounds.height,
@@ -46,29 +46,12 @@ module.exports = {
   },
 
   openInExternalWindow(url) {
-    for (let item of config.WHITE_LIST) {
+    for (const item of config.WHITE_LIST) {
       if (url.includes(item)) {
         return true;
       }
     }
     return false;
-  },
-
-  resizeToSmall(win) {
-    if (process.platform !== 'darwin') {
-      win.setMenuBarVisibility(false);
-    }
-
-    let height = config.HEIGHT_AUTH;
-    if (process.platform === 'win32') {
-      height += 40;
-    }
-    win.setFullScreen(false);
-    win.setMaximizable(false);
-    win.setMinimumSize(config.WIDTH_AUTH, height);
-    win.setSize(config.WIDTH_AUTH, height);
-    win.setResizable(false);
-    win.center();
   },
 
   resizeToBig(win) {
@@ -79,6 +62,24 @@ module.exports = {
     win.setSize(config.DEFAULT_WIDTH_MAIN, config.DEFAULT_HEIGHT_MAIN);
     win.setResizable(true);
     win.setMaximizable(true);
+    win.center();
+  },
+
+  resizeToSmall(win) {
+    if (process.platform !== 'darwin') {
+      win.setMenuBarVisibility(false);
+    }
+
+    let height = config.HEIGHT_AUTH;
+    if (process.platform === 'win32') {
+      const WIN_OFFSET = 40;
+      height += WIN_OFFSET;
+    }
+    win.setFullScreen(false);
+    win.setMaximizable(false);
+    win.setMinimumSize(config.WIDTH_AUTH, height);
+    win.setSize(config.WIDTH_AUTH, height);
+    win.setResizable(false);
     win.center();
   },
 };

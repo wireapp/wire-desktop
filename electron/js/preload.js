@@ -24,6 +24,8 @@ const {app} = remote;
 const pkg = require('./../package.json');
 const path = require('path');
 
+const LOADING_FAIL_DELAY = 1000;
+
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
@@ -93,7 +95,7 @@ ipcRenderer.once('webapp-loaded', function(sender, config) {
       if (navigator.onLine) {
         location.reload();
       }
-    }, 1000);
+    }, LOADING_FAIL_DELAY);
   }
 
   ipcRenderer.send('webapp-version', z.util.Environment.version(false));

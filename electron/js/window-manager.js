@@ -35,7 +35,7 @@ function getPrimaryWindow() {
 }
 
 function showPrimaryWindow() {
-  var win = getPrimaryWindow();
+  const win = getPrimaryWindow();
   if (win.isMinimized()) {
     win.restore();
   } else if (!win.isVisible()) {
@@ -45,7 +45,7 @@ function showPrimaryWindow() {
 }
 
 module.exports = {
-  setPrimaryWindowId: setPrimaryWindowId,
-  getPrimaryWindow: getPrimaryWindow,
-  showPrimaryWindow: showPrimaryWindow,
+  getPrimaryWindow,
+  setPrimaryWindowId,
+  showPrimaryWindow,
 };
