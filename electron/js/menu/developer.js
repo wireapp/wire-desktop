@@ -19,7 +19,7 @@
 
 'use strict';
 
-const {MenuItem} = require('electron');
+const { MenuItem } = require('electron');
 const config = require('./../config');
 const windowManager = require('./../window-manager');
 const init = require('./../lib/init');
@@ -29,108 +29,108 @@ function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
 }
 
-let reloadTemplate = {
-  label: 'Reload',
-  click: function() {
+const reloadTemplate = {
+  click() {
     getPrimaryWindow().reload();
   },
+  label: 'Reload'
 };
 
-let devToolsTemplate = {
-  label: 'Toggle DevTools',
+const devToolsTemplate = {
   accelerator: 'Alt+CmdOrCtrl+I',
-  click: function() {
+  click() {
     getPrimaryWindow().toggleDevTools();
   },
+  label: 'Toggle DevTools'
 };
 
-let devProductionTemplate = {
-  label: 'Production',
-  type: 'radio',
+const devProductionTemplate = {
   checked: env === config.PROD,
-  click: function() {
+  click() {
     getPrimaryWindow().loadURL(config.PROD_URL);
     init.save('env', config.PROD);
   },
+  label: 'Production',
+  type: 'radio'
 };
 
-let devInternalTemplate = {
-  label: 'Internal',
-  type: 'radio',
+const devInternalTemplate = {
   checked: env === config.INTERNAL,
-  click: function() {
+  click() {
     getPrimaryWindow().loadURL(config.INTERNAL_URL);
     init.save('env', config.INTERNAL);
   },
+  label: 'Internal',
+  type: 'radio'
 };
 
-let devStagingTemplate = {
-  label: 'Staging',
-  type: 'radio',
+const devStagingTemplate = {
   checked: env === config.STAGING,
-  click: function() {
+  click() {
     getPrimaryWindow().loadURL(config.STAGING_URL);
     init.save('env', config.STAGING);
   },
+  label: 'Staging',
+  type: 'radio'
 };
 
-let devDevTemplate = {
-  label: 'Dev',
-  type: 'radio',
+const devDevTemplate = {
   checked: env === config.DEV,
-  click: function() {
+  click() {
     getPrimaryWindow().loadURL(config.DEV_URL);
     init.save('env', config.DEV);
   },
+  label: 'Dev',
+  type: 'radio'
 };
 
-let devEdgeTemplate = {
-  label: 'Edge',
-  type: 'radio',
+const devEdgeTemplate = {
   checked: env === config.EDGE,
-  click: function() {
+  click() {
     getPrimaryWindow().loadURL(config.EDGE_URL);
     init.save('env', config.EDGE);
   },
+  label: 'Edge',
+  type: 'radio'
 };
 
-let devBennyTemplate = {
-  label: 'Cryptobox',
-  type: 'radio',
+const devBennyTemplate = {
   checked: env === config.CRYPTO,
-  click: function() {
+  click() {
     getPrimaryWindow().loadURL(config.BENNY_URL);
     init.save('env', config.CRYPTO);
   },
+  label: 'Cryptobox',
+  type: 'radio'
 };
 
-let devLocalhostTemplate = {
-  label: 'Localhost',
-  type: 'radio',
+const devLocalhostTemplate = {
   checked: env === config.LOCALHOST,
-  click: function() {
+  click() {
     getPrimaryWindow().loadURL(config.LOCALHOST_URL);
     init.save('env', config.LOCALHOST);
   },
+  label: 'Localhost',
+  type: 'radio'
 };
 
-let versionTemplate = {
-  label: 'Wire Version ' + config.VERSION,
+const versionTemplate = {
+  label: `Wire Version ${config.VERSION}`
 };
 
-let chromeVersionTemplate = {
-  label: 'Chrome Version ' + process.versions.chrome,
+const chromeVersionTemplate = {
+  label: `Chrome Version ${process.versions.chrome}`
 };
 
-let electronVersionTemplate = {
-  label: 'Electron Version ' + process.versions.electron,
+const electronVersionTemplate = {
+  label: `Electron Version ${process.versions.electron}`
 };
 
-let separatorTemplate = {
-  type: 'separator',
+const separatorTemplate = {
+  type: 'separator'
 };
 
-let menuTemplate = {
+const menuTemplate = {
   id: 'Developer',
   label: 'Developer',
   submenu: [
@@ -147,8 +147,8 @@ let menuTemplate = {
     separatorTemplate,
     versionTemplate,
     chromeVersionTemplate,
-    electronVersionTemplate,
-  ],
+    electronVersionTemplate
+  ]
 };
 
 module.exports = new MenuItem(menuTemplate);

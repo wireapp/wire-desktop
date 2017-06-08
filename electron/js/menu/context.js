@@ -19,7 +19,7 @@
 
 'use strict';
 
-const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
+const { clipboard, remote, ipcRenderer, webFrame } = require('electron');
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
@@ -29,121 +29,121 @@ const init = require('./../lib/init');
 const customContext = require('./custom-context');
 let textMenu;
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Default
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 let copyContext = '';
 
 const defaultMenu = Menu.buildFromTemplate([
   {
-    label: locale.getText('menuCopy'),
-    click: function() {
+    click() {
       clipboard.writeText(copyContext);
     },
-  },
+    label: locale.getText('menuCopy')
+  }
 ]);
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Text
-///////////////////////////////////////////////////////////////////////////////
-let selection = {
+// /////////////////////////////////////////////////////////////////////////////
+const selection = {
   isMisspelled: false,
-  suggestions: [],
+  suggestions: []
 };
 
 const textMenuTemplate = [
-  {label: locale.getText('menuCut'), role: 'cut'},
-  {label: locale.getText('menuCopy'), role: 'copy'},
-  {label: locale.getText('menuPaste'), role: 'paste'},
-  {type: 'separator'},
-  {label: locale.getText('menuSelectAll'), role: 'selectall'},
+  { label: locale.getText('menuCut'), role: 'cut' },
+  { label: locale.getText('menuCopy'), role: 'copy' },
+  { label: locale.getText('menuPaste'), role: 'paste' },
+  { type: 'separator' },
+  { label: locale.getText('menuSelectAll'), role: 'selectall' }
 ];
 
 function createTextMenu() {
-  let template = textMenuTemplate.slice();
+  const template = textMenuTemplate.slice();
   if (selection.isMisspelled) {
-    template.unshift({type: 'separator'});
+    template.unshift({ type: 'separator' });
     if (selection.suggestions.length > 0) {
-      for (let suggestion of selection.suggestions.reverse()) {
+      for (const suggestion of selection.suggestions.reverse()) {
         template.unshift({
-          label: suggestion,
-          click: function(menuItem) {
+          click(menuItem) {
             webContents.replaceMisspelling(menuItem.label);
           },
+          label: suggestion
         });
       }
     } else {
       template.unshift({
-        label: locale.getText('menuNoSuggestions'),
         enabled: false,
+        label: locale.getText('menuNoSuggestions')
       });
     }
   }
   textMenu = Menu.buildFromTemplate(template);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Conversation
-///////////////////////////////////////////////////////////////////////////////
-let silence = new MenuItem({
-  label: locale.getText('menuMute'),
-  click: function() {
+// /////////////////////////////////////////////////////////////////////////////
+const silence = new MenuItem({
+  click() {
     wire.app.view.conversation_list.click_on_mute_action();
   },
+  label: locale.getText('menuMute')
 });
 
-let notify = new MenuItem({
-  label: locale.getText('menuUnmute'),
-  click: function() {
+const notify = new MenuItem({
+  click() {
     wire.app.view.conversation_list.click_on_mute_action();
   },
+  label: locale.getText('menuUnmute')
 });
 
-let archive = new MenuItem({
-  label: locale.getText('menuArchive'),
-  click: function() {
+const archive = new MenuItem({
+  click() {
     wire.app.view.conversation_list.click_on_archive_action();
   },
+  label: locale.getText('menuArchive')
 });
 
-let unarchive = new MenuItem({
-  label: locale.getText('menuUnarchive'),
-  click: function() {
+const unarchive = new MenuItem({
+  click() {
     wire.app.view.conversation_list.click_on_unarchive_action();
   },
+  label: locale.getText('menuUnarchive')
 });
 
-let clear = new MenuItem({
-  label: locale.getText('menuDelete'),
-  click: function() {
+const clear = new MenuItem({
+  click() {
     wire.app.view.conversation_list.click_on_clear_action();
   },
+  label: locale.getText('menuDelete')
 });
 
-let leave = new MenuItem({
-  label: locale.getText('menuLeave'),
-  click: function() {
+const leave = new MenuItem({
+  click() {
     wire.app.view.conversation_list.click_on_leave_action();
   },
+  label: locale.getText('menuLeave')
 });
 
-let block = new MenuItem({
-  label: locale.getText('menuBlock'),
-  click: function() {
+const block = new MenuItem({
+  click() {
     wire.app.view.conversation_list.click_on_block_action();
   },
+  label: locale.getText('menuBlock')
 });
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Images
-///////////////////////////////////////////////////////////////////////////////
-let imageMenu = Menu.buildFromTemplate([
+// /////////////////////////////////////////////////////////////////////////////
+const imageMenu = Menu.buildFromTemplate([
   {
-    label: locale.getText('menuSavePictureAs'),
-    click: function() {
+    click() {
       savePicture(imageMenu.file, imageMenu.image);
     },
-  },
+    label: locale.getText('menuSavePictureAs')
+  }
 ]);
 
 window.addEventListener(
@@ -156,7 +156,7 @@ window.addEventListener(
       createTextMenu();
       textMenu.popup(remote.getCurrentWindow());
     } else if (element.classList.contains('center-column')) {
-      let id = element.getAttribute('data-uie-uid');
+      const id = element.getAttribute('data-uie-uid');
       if (createConversationMenu(id)) {
         event.preventDefault();
       }
@@ -192,7 +192,7 @@ window.addEventListener(
       }
     }
   },
-  false,
+  false
 );
 
 window.addEventListener(
@@ -207,14 +207,14 @@ window.addEventListener(
     ) {
       // get center-column
       const id = element.parentElement.previousElementSibling.getAttribute(
-        'data-uie-uid',
+        'data-uie-uid'
       );
       if (createConversationMenu(id)) {
         event.stopPropagation();
       }
     }
   },
-  true,
+  true
 );
 
 window.addEventListener(
@@ -224,7 +224,7 @@ window.addEventListener(
     customContext.fromElement(element).popup(remote.getCurrentWindow());
     event.stopPropagation();
   },
-  true,
+  true
 );
 
 function savePicture(fileName, url) {
@@ -241,12 +241,12 @@ function savePicture(fileName, url) {
 function createConversationMenu(id) {
   const app = wire.app;
   const conversation_et = app.repository.conversation.get_conversation_by_id(
-    id,
+    id
   );
 
   if (conversation_et) {
     app.view.conversation_list.selected_conversation(conversation_et);
-    let listMenu = new Menu();
+    const listMenu = new Menu();
     listMenu.append(conversation_et.is_muted() ? notify : silence);
     listMenu.append(conversation_et.is_archived() ? unarchive : archive);
     listMenu.append(clear);
@@ -264,9 +264,9 @@ function createConversationMenu(id) {
   return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 // Spell Checker
-///////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
 if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
@@ -282,6 +282,6 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
           .slice(0, config.SPELL_SUGGESTIONS);
       }
       return !selection.isMisspelled;
-    },
+    }
   });
 }

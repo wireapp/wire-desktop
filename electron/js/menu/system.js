@@ -19,7 +19,7 @@
 
 'use strict';
 
-const {app, shell, dialog, Menu} = require('electron');
+const { app, shell, dialog, Menu } = require('electron');
 const autoLaunch = require('auto-launch');
 const launchCmd = process.env.APPIMAGE != null
   ? process.env.APPIMAGE
@@ -31,12 +31,11 @@ const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 
 let menu;
-let menuTemplate;
 
 const launcher = new autoLaunch({
-  name: config.NAME,
-  path: launchCmd,
   isHidden: true,
+  name: config.NAME,
+  path: launchCmd
 });
 
 function getPrimaryWindow() {
@@ -52,238 +51,236 @@ function sendAction(action) {
 }
 
 const separatorTemplate = {
-  type: 'separator',
+  type: 'separator'
 };
 
-let localeTemplate = {
+const localeTemplate = {
   i18n: 'menuLocale',
   submenu: [
     {
-      label: locale.label['en'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('en');
       },
+      label: locale.label['en'],
+      type: 'radio'
     },
     {
-      label: locale.label['cs'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('cs');
       },
+      label: locale.label['cs'],
+      type: 'radio'
     },
     {
-      label: locale.label['da'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('da');
       },
+      label: locale.label['da'],
+      type: 'radio'
     },
     {
-      label: locale.label['de'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('de');
       },
+      label: locale.label['de'],
+      type: 'radio'
     },
     {
-      label: locale.label['es'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('es');
       },
+      label: locale.label['es'],
+      type: 'radio'
     },
     {
-      label: locale.label['fi'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('fi');
       },
+      label: locale.label['fi'],
+      type: 'radio'
     },
     {
-      label: locale.label['fr'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('fr');
       },
+      label: locale.label['fr'],
+      type: 'radio'
     },
     {
-      label: locale.label['hr'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('hr');
       },
+      label: locale.label['hr'],
+      type: 'radio'
     },
     {
-      label: locale.label['hu'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('hu');
       },
+      label: locale.label['hu'],
+      type: 'radio'
     },
     {
-      label: locale.label['it'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('it');
       },
+      label: locale.label['it'],
+      type: 'radio'
     },
     {
-      label: locale.label['lt'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('lt');
       },
+      label: locale.label['lt'],
+      type: 'radio'
     },
     {
-      label: locale.label['pt'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('pt');
       },
+      label: locale.label['pt'],
+      type: 'radio'
     },
     {
-      label: locale.label['ro'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('ro');
       },
+      label: locale.label['ro'],
+      type: 'radio'
     },
     {
-      label: locale.label['ru'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('ru');
       },
+      label: locale.label['ru'],
+      type: 'radio'
     },
     {
-      label: locale.label['sk'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('sk');
       },
+      label: locale.label['sk'],
+      type: 'radio'
     },
     {
-      label: locale.label['sl'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('sl');
       },
+      label: locale.label['sl'],
+      type: 'radio'
     },
     {
-      label: locale.label['tr'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('tr');
       },
+      label: locale.label['tr'],
+      type: 'radio'
     },
     {
-      label: locale.label['uk'],
-      type: 'radio',
-      click: function() {
+      click() {
         changeLocale('uk');
       },
-    },
-  ],
+      label: locale.label['uk'],
+      type: 'radio'
+    }
+  ]
 };
 
-let aboutTemplate = {
-  i18n: 'menuAbout',
-  click: function() {
+const aboutTemplate = {
+  click() {
     menu.emit('about-wire');
   },
+  i18n: 'menuAbout'
 };
 
-let signOutTemplate = {
-  i18n: 'menuSignOut',
-  click: function() {
+const signOutTemplate = {
+  click() {
     sendAction('sign-out');
   },
+  i18n: 'menuSignOut'
 };
 
-let conversationTemplate = {
+const conversationTemplate = {
   i18n: 'menuConversation',
   submenu: [
     {
-      i18n: 'menuStart',
       accelerator: 'CmdOrCtrl+N',
-      click: function() {
+      click() {
         sendAction('conversation-start');
       },
+      i18n: 'menuStart'
     },
     separatorTemplate,
     {
-      i18n: 'menuPing',
       accelerator: 'CmdOrCtrl+K',
-      click: function() {
+      click() {
         sendAction('conversation-ping');
       },
+      i18n: 'menuPing'
     },
     {
-      i18n: 'menuCall',
-      click: function() {
+      click() {
         sendAction('conversation-call');
       },
+      i18n: 'menuCall'
     },
     {
-      i18n: 'menuVideoCall',
-      click: function() {
+      click() {
         sendAction('conversation-video-call');
       },
+      i18n: 'menuVideoCall'
     },
     separatorTemplate,
     {
-      i18n: 'menuPeople',
       accelerator: 'CmdOrCtrl+I',
-      click: function() {
+      click() {
         sendAction('conversation-people');
       },
+      i18n: 'menuPeople'
     },
     {
-      i18n: 'menuAddPeople',
       accelerator: 'Shift+CmdOrCtrl+K',
-      click: function() {
+      click() {
         sendAction('conversation-add-people');
       },
+      i18n: 'menuAddPeople'
     },
     separatorTemplate,
     {
-      i18n: 'menuArchive',
       accelerator: 'CmdOrCtrl+D',
-      click: function() {
+      click() {
         sendAction('conversation-archive');
       },
+      i18n: 'menuArchive'
     },
     {
-      i18n: 'menuMute',
       accelerator: 'Alt+CmdOrCtrl+S',
-      click: function() {
+      click() {
         sendAction('conversation-silence');
       },
+      i18n: 'menuMute'
     },
     {
-      i18n: 'menuDelete',
-      click: function() {
+      click() {
         sendAction('conversation-delete');
       },
-    },
-  ],
+      i18n: 'menuDelete'
+    }
+  ]
 };
 
-let showWireTemplate = {
-  label: config.NAME,
+const showWireTemplate = {
   accelerator: 'CmdOrCtrl+1',
-  click: function() {
+  click() {
     getPrimaryWindow().show();
   },
+  label: config.NAME
 };
 
-let toggleMenuTemplate = {
-  i18n: 'menuShowHide',
-  type: 'checkbox',
+const toggleMenuTemplate = {
   checked: init.restore('showMenu', true),
-  click: function() {
-    let mainBrowserWindow = getPrimaryWindow();
+  click() {
+    const mainBrowserWindow = getPrimaryWindow();
     if (mainBrowserWindow.isMenuBarAutoHide()) {
       mainBrowserWindow.setAutoHideMenuBar(false);
       init.save('showMenu', true);
@@ -293,199 +290,201 @@ let toggleMenuTemplate = {
       init.save('showMenu', false);
     }
   },
+  i18n: 'menuShowHide',
+  type: 'checkbox'
 };
 
-let toggleFullScreenTemplate = {
-  i18n: 'menuFullScreen',
-  type: 'checkbox',
+const toggleFullScreenTemplate = {
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
-  click: function() {
-    let mainBrowserWindow = getPrimaryWindow();
+  click() {
+    const mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
+  i18n: 'menuFullScreen',
+  type: 'checkbox'
 };
 
-let toggleAutoLaunchTemplate = {
-  i18n: 'menuStartup',
-  type: 'checkbox',
+const toggleAutoLaunchTemplate = {
   checked: init.restore('shouldAutoLaunch', false),
-  click: function() {
+  click() {
     init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
     init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
+  i18n: 'menuStartup',
+  type: 'checkbox'
 };
 
-let editTemplate = {
+const editTemplate = {
   i18n: 'menuEdit',
   submenu: [
-    {i18n: 'menuUndo', role: 'undo'},
-    {i18n: 'menuRedo', role: 'redo'},
+    { i18n: 'menuUndo', role: 'undo' },
+    { i18n: 'menuRedo', role: 'redo' },
     separatorTemplate,
-    {i18n: 'menuCut', role: 'cut'},
-    {i18n: 'menuCopy', role: 'copy'},
-    {i18n: 'menuPaste', role: 'paste'},
+    { i18n: 'menuCut', role: 'cut' },
+    { i18n: 'menuCopy', role: 'copy' },
+    { i18n: 'menuPaste', role: 'paste' },
     separatorTemplate,
-    {i18n: 'menuSelectAll', role: 'selectall'},
+    { i18n: 'menuSelectAll', role: 'selectall' },
     separatorTemplate,
     {
-      i18n: 'menuSpelling',
-      type: 'checkbox',
       checked:
         init.restore('spelling', false) &&
           config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
-      enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
-      click: function(event) {
+      click(event) {
         init.save('spelling', event.checked);
       },
-    },
-  ],
+      enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      i18n: 'menuSpelling',
+      type: 'checkbox'
+    }
+  ]
 };
 
-let windowTemplate = {
+const windowTemplate = {
   i18n: 'menuWindow',
   role: 'window',
   submenu: [
     {
       i18n: 'menuMinimize',
-      role: 'minimize',
+      role: 'minimize'
     },
     {
       i18n: 'menuClose',
-      role: 'close',
+      role: 'close'
     },
     separatorTemplate,
     {
-      i18n: 'menuNextConversation',
       accelerator: process.platform === 'darwin'
         ? 'Alt+Cmd+Up'
         : 'Alt+Shift+Up',
-      click: function() {
+      click() {
         sendAction('conversation-next');
       },
+      i18n: 'menuNextConversation'
     },
     {
-      i18n: 'menuPreviousConversation',
       accelerator: process.platform === 'darwin'
         ? 'Alt+Cmd+Down'
         : 'Alt+Shift+Down',
-      click: function() {
+      click() {
         sendAction('conversation-prev');
       },
-    },
-  ],
+      i18n: 'menuPreviousConversation'
+    }
+  ]
 };
 
-let helpTemplate = {
+const helpTemplate = {
   i18n: 'menuHelp',
   role: 'help',
   submenu: [
     {
-      i18n: 'menuLegal',
-      click: function() {
+      click() {
         shell.openExternal(config.WIRE_LEGAL);
       },
+      i18n: 'menuLegal'
     },
     {
-      i18n: 'menuPrivacy',
-      click: function() {
+      click() {
         shell.openExternal(config.WIRE_PRIVACY);
       },
+      i18n: 'menuPrivacy'
     },
     {
-      i18n: 'menuLicense',
-      click: function() {
+      click() {
         shell.openExternal(config.WIRE_LICENSES);
       },
+      i18n: 'menuLicense'
     },
     {
-      i18n: 'menuSupport',
-      click: function() {
+      click() {
         shell.openExternal(config.WIRE_SUPPORT);
       },
+      i18n: 'menuSupport'
     },
     {
-      i18n: 'menuWireURL',
-      click: function() {
+      click() {
         shell.openExternal(config.WIRE);
       },
-    },
-  ],
+      i18n: 'menuWireURL'
+    }
+  ]
 };
 
-let darwinTemplate = {
+const darwinTemplate = {
   label: config.NAME,
   submenu: [
     aboutTemplate,
     separatorTemplate,
     {
-      i18n: 'menuPreferences',
       accelerator: 'Command+,',
-      click: function() {
+      click() {
         sendAction('preferences-show');
       },
+      i18n: 'menuPreferences'
     },
     separatorTemplate,
     localeTemplate,
     {
       i18n: 'menuServices',
       role: 'services',
-      submenu: [],
+      submenu: []
     },
     separatorTemplate,
     {
       i18n: 'menuHideWire',
-      role: 'hide',
+      role: 'hide'
     },
     {
       i18n: 'menuHideOthers',
-      role: 'hideothers',
+      role: 'hideothers'
     },
     {
       i18n: 'menuShowAll',
-      role: 'unhide',
+      role: 'unhide'
     },
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Command+Q',
-      selector: 'terminate:',
-    },
-  ],
+      i18n: 'menuQuit',
+      selector: 'terminate:'
+    }
+  ]
 };
 
-let win32Template = {
+const win32Template = {
   label: config.NAME,
   submenu: [
     {
-      i18n: 'menuSettings',
       accelerator: 'Ctrl+,',
-      click: function() {
+      click() {
         sendAction('preferences-show');
       },
+      i18n: 'menuSettings'
     },
     localeTemplate,
     toggleAutoLaunchTemplate,
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Alt+F4',
-      click: function() {
+      click() {
         app.quit();
       },
-    },
-  ],
+      i18n: 'menuQuit'
+    }
+  ]
 };
 
-let linuxTemplate = {
+const linuxTemplate = {
   label: config.NAME,
   submenu: [
     {
-      i18n: 'menuPreferences',
-      click: function() {
+      click() {
         sendAction('preferences-show');
       },
+      i18n: 'menuPreferences'
     },
     separatorTemplate,
     toggleAutoLaunchTemplate,
@@ -494,24 +493,24 @@ let linuxTemplate = {
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Ctrl+Q',
-      click: function() {
+      click() {
         app.quit();
       },
-    },
-  ],
+      i18n: 'menuQuit'
+    }
+  ]
 };
 
-menuTemplate = [
+const menuTemplate = [
   conversationTemplate,
   editTemplate,
   windowTemplate,
-  helpTemplate,
+  helpTemplate
 ];
 
 function processMenu(template, language) {
-  for (let item of template) {
+  for (const item of template) {
     if (item.submenu != null) {
       processMenu(item.submenu, language);
     }
@@ -528,15 +527,15 @@ function changeLocale(language) {
   locale.setLocale(language);
   dialog.showMessageBox(
     {
-      type: 'info',
-      title: locale[language].restartNeeded,
-      message: locale[language].restartLocale,
       buttons: [
         locale[language].restartLater,
         process.platform === 'darwin'
           ? locale[language].menuQuit
-          : locale[language].restartNow,
+          : locale[language].restartNow
       ],
+      message: locale[language].restartLocale,
+      title: locale[language].restartNeeded,
+      type: 'info'
     },
     function(response) {
       if (response == 1) {
@@ -547,19 +546,19 @@ function changeLocale(language) {
         // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
         app.exit();
       }
-    },
+    }
   );
 }
 
 module.exports = {
-  createMenu: function() {
+  createMenu() {
     if (process.platform === 'darwin') {
       menuTemplate.unshift(darwinTemplate);
       windowTemplate.submenu.push(
         separatorTemplate,
         showWireTemplate,
         separatorTemplate,
-        toggleFullScreenTemplate,
+        toggleFullScreenTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
     }
@@ -573,16 +572,16 @@ module.exports = {
     if (process.platform === 'linux') {
       menuTemplate.unshift(linuxTemplate);
       editTemplate.submenu.push(separatorTemplate, {
-        i18n: 'menuPreferences',
-        click: function() {
+        click() {
           sendAction('preferences-show');
         },
+        i18n: 'menuPreferences'
       });
       windowTemplate.submenu.push(
         separatorTemplate,
         toggleMenuTemplate,
         separatorTemplate,
-        toggleFullScreenTemplate,
+        toggleFullScreenTemplate
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
     }
@@ -595,5 +594,5 @@ module.exports = {
     menu = Menu.buildFromTemplate(menuTemplate);
 
     return menu;
-  },
+  }
 };

@@ -49,7 +49,7 @@ module.exports = (function() {
   }
 
   return {
-    save,
     restore,
+    save
   };
 })();

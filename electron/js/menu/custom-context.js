@@ -19,28 +19,30 @@
 
 'use strict';
 
-const {remote} = require('electron');
+const { remote } = require('electron');
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 
 module.exports = {
-  fromElement: function(contextMenuElement) {
-    let menu = new Menu();
-    let elements = contextMenuElement.querySelectorAll('[data-context-action]');
+  fromElement(contextMenuElement) {
+    const menu = new Menu();
+    const elements = contextMenuElement.querySelectorAll(
+      '[data-context-action]'
+    );
 
     Array.from(elements).forEach(function(element) {
-      let menuItem = new MenuItem({
-        label: element.innerText,
-        click: function() {
-          let tag = contextMenuElement.getAttribute('data-context-tag');
-          let data = contextMenuElement.getAttribute('data-context-data');
-          let action = element.getAttribute('data-context-action');
+      const menuItem = new MenuItem({
+        click() {
+          const tag = contextMenuElement.getAttribute('data-context-tag');
+          const data = contextMenuElement.getAttribute('data-context-data');
+          const action = element.getAttribute('data-context-action');
           amplify.publish(z.event.WebApp.CONTEXT_MENU, tag, action, data);
         },
+        label: element.innerText
       });
       menu.append(menuItem);
     });
 
     return menu;
-  },
+  }
 };

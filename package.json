@@ -15,10 +15,16 @@
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
     "precommit": "lint-staged",
-    "prettier": "prettier --single-quote --trailing-comma='all' --no-bracket-spacing --write 'electron/js/**/*.js' 'electron/css/**/*.css'"
+    "lint": "eslint -c .eslintrc.yml --ignore-path .gitignore --quiet electron/js/**/*.js",
+    "lint:fix": "yarn lint:fix:script && yarn lint:fix:style",
+    "lint:fix:script": "npm run lint -- --fix",
+    "lint:fix:style": "prettier --single-quote --write electron/css/**/*.css"
   },
   "lint-staged": {
-    "*.{js,css}": ["npm run prettier", "git add"]
+    "*.{js,css}": [
+      "npm run lint:fix",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
