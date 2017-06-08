@@ -10,7 +10,7 @@
     "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "localhost": "electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
-    "test": "eslint electron && electron-mocha tests",
+    "test": "npm run lint && electron-mocha tests",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
