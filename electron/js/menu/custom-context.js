@@ -19,7 +19,7 @@
 
 'use strict';
 
-const { remote } = require('electron');
+const {remote} = require('electron');
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 
@@ -27,7 +27,7 @@ module.exports = {
   fromElement(contextMenuElement) {
     const menu = new Menu();
     const elements = contextMenuElement.querySelectorAll(
-      '[data-context-action]'
+      '[data-context-action]',
     );
 
     Array.from(elements).forEach(function(element) {
@@ -38,11 +38,11 @@ module.exports = {
           const action = element.getAttribute('data-context-action');
           amplify.publish(z.event.WebApp.CONTEXT_MENU, tag, action, data);
         },
-        label: element.innerText
+        label: element.innerText,
       });
       menu.append(menuItem);
     });
 
     return menu;
-  }
+  },
 };

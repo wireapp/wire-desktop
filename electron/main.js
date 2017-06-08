@@ -19,7 +19,7 @@
 
 'use strict';
 
-const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
 
 const fs = require('fs');
 const minimist = require('minimist');
@@ -45,7 +45,7 @@ const SPLASH_HTML = `file://${path.join(APP_PATH, 'html', 'splash.html')}`;
 const CERT_ERR_HTML = `file://${path.join(
   APP_PATH,
   'html',
-  'certificate-error.html'
+  'certificate-error.html',
 )}`;
 const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 const ICON = `wire.${process.platform === 'win32' ? 'ico' : 'png'}`;
@@ -54,7 +54,7 @@ const STARTUP_DELAY = 800;
 
 let main;
 const raygunClient = new raygun.Client().init({
-  apiKey: config.RAYGUN_API_KEY
+  apiKey: config.RAYGUN_API_KEY,
 });
 let about;
 let enteredWebapp = false;
@@ -170,7 +170,7 @@ ipcMain.on('google-auth-request', function(event) {
     .getAccessToken(
       config.GOOGLE_SCOPES,
       config.GOOGLE_CLIENT_ID,
-      config.GOOGLE_CLIENT_SECRET
+      config.GOOGLE_CLIENT_SECRET,
     )
     .then(function(code) {
       event.sender.send('google-auth-success', code.access_token);
@@ -205,9 +205,9 @@ function showMainWindow() {
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: false,
-      preload: PRELOAD_JS
+      preload: PRELOAD_JS,
     },
-    width: config.DEFAULT_WIDTH_MAIN
+    width: config.DEFAULT_WIDTH_MAIN,
   });
 
   if (init.restore('fullscreen', false)) {
@@ -217,7 +217,7 @@ function showMainWindow() {
   }
 
   main.webContents.session.setCertificateVerifyProc((request, cb) => {
-    const { hostname = '', certificate = {}, error } = request;
+    const {hostname = '', certificate = {}, error} = request;
     const certificateOffset = -2;
     if (typeof error !== 'undefined') {
       console.error('setCertificateVerifyProc', error);
@@ -230,7 +230,7 @@ function showMainWindow() {
       for (const result of Object.values(pinningResults)) {
         if (result === false) {
           console.error(
-            `Certutils verification failed for ${hostname}: ${result} is false`
+            `Certutils verification failed for ${hostname}: ${result} is false`,
           );
           main.loadURL(CERT_ERR_HTML);
           return cb(certificateOffset);
@@ -292,8 +292,8 @@ function showMainWindow() {
         notification_icon: path.join(
           app.getAppPath(),
           'img',
-          'notification.png'
-        )
+          'notification.png',
+        ),
       });
     } else {
       main.webContents.send('splash-screen-loaded');
@@ -332,13 +332,13 @@ function showAboutWindow() {
       height: 256,
       resizable: false,
       title: '',
-      width: 304
+      width: 304,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
     about.webContents.on('dom-ready', function() {
       about.webContents.send('about-loaded', {
-        webappVersion
+        webappVersion,
       });
     });
 

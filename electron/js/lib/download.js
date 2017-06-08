@@ -22,7 +22,7 @@
 const fs = require('fs');
 const imageType = require('image-type');
 
-const { dialog } = require('electron');
+const {dialog} = require('electron');
 
 module.exports = function(fileName, bytes) {
   return new Promise(function(resolve, reject) {
@@ -34,7 +34,7 @@ module.exports = function(fileName, bytes) {
     }
 
     if (type && type.ext) {
-      options.filters = [{ extensions: [type.ext], name: 'Images' }];
+      options.filters = [{extensions: [type.ext], name: 'Images'}];
     }
 
     dialog.showSaveDialog(options, function(chosenPath) {

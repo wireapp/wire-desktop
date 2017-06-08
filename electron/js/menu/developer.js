@@ -19,7 +19,7 @@
 
 'use strict';
 
-const { MenuItem } = require('electron');
+const {MenuItem} = require('electron');
 const config = require('./../config');
 const windowManager = require('./../window-manager');
 const init = require('./../lib/init');
@@ -33,7 +33,7 @@ const reloadTemplate = {
   click() {
     getPrimaryWindow().reload();
   },
-  label: 'Reload'
+  label: 'Reload',
 };
 
 const devToolsTemplate = {
@@ -41,7 +41,7 @@ const devToolsTemplate = {
   click() {
     getPrimaryWindow().toggleDevTools();
   },
-  label: 'Toggle DevTools'
+  label: 'Toggle DevTools',
 };
 
 const devProductionTemplate = {
@@ -51,7 +51,7 @@ const devProductionTemplate = {
     init.save('env', config.PROD);
   },
   label: 'Production',
-  type: 'radio'
+  type: 'radio',
 };
 
 const devInternalTemplate = {
@@ -61,7 +61,7 @@ const devInternalTemplate = {
     init.save('env', config.INTERNAL);
   },
   label: 'Internal',
-  type: 'radio'
+  type: 'radio',
 };
 
 const devStagingTemplate = {
@@ -71,7 +71,7 @@ const devStagingTemplate = {
     init.save('env', config.STAGING);
   },
   label: 'Staging',
-  type: 'radio'
+  type: 'radio',
 };
 
 const devDevTemplate = {
@@ -81,7 +81,7 @@ const devDevTemplate = {
     init.save('env', config.DEV);
   },
   label: 'Dev',
-  type: 'radio'
+  type: 'radio',
 };
 
 const devEdgeTemplate = {
@@ -91,7 +91,7 @@ const devEdgeTemplate = {
     init.save('env', config.EDGE);
   },
   label: 'Edge',
-  type: 'radio'
+  type: 'radio',
 };
 
 const devBennyTemplate = {
@@ -101,7 +101,7 @@ const devBennyTemplate = {
     init.save('env', config.CRYPTO);
   },
   label: 'Cryptobox',
-  type: 'radio'
+  type: 'radio',
 };
 
 const devLocalhostTemplate = {
@@ -111,23 +111,23 @@ const devLocalhostTemplate = {
     init.save('env', config.LOCALHOST);
   },
   label: 'Localhost',
-  type: 'radio'
+  type: 'radio',
 };
 
 const versionTemplate = {
-  label: `Wire Version ${config.VERSION}`
+  label: `Wire Version ${config.VERSION}`,
 };
 
 const chromeVersionTemplate = {
-  label: `Chrome Version ${process.versions.chrome}`
+  label: `Chrome Version ${process.versions.chrome}`,
 };
 
 const electronVersionTemplate = {
-  label: `Electron Version ${process.versions.electron}`
+  label: `Electron Version ${process.versions.electron}`,
 };
 
 const separatorTemplate = {
-  type: 'separator'
+  type: 'separator',
 };
 
 const menuTemplate = {
@@ -147,8 +147,8 @@ const menuTemplate = {
     separatorTemplate,
     versionTemplate,
     chromeVersionTemplate,
-    electronVersionTemplate
-  ]
+    electronVersionTemplate,
+  ],
 };
 
 module.exports = new MenuItem(menuTemplate);

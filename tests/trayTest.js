@@ -21,7 +21,7 @@
 
 'use strict';
 
-const { BrowserWindow, app } = require('electron');
+const {BrowserWindow, app} = require('electron');
 
 const assert = require('assert');
 const path = require('path');
@@ -33,7 +33,7 @@ describe('tray', () => {
     it('should update badge according to window title', done => {
       const window = new BrowserWindow();
       window.loadURL(
-        `file://${path.join(__dirname, 'fixtures', 'badge.html')}`
+        `file://${path.join(__dirname, 'fixtures', 'badge.html')}`,
       );
       window.webContents.on('dom-ready', function() {
         tray.updateBadgeIcon(window);

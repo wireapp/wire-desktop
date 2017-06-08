@@ -21,8 +21,12 @@
     "lint:fix:style": "prettier --single-quote --write electron/css/**/*.css"
   },
   "lint-staged": {
-    "*.{js,css}": [
-      "npm run lint:fix",
+    "*.css": [
+      "npm run lint:fix:style",
+      "git add"
+    ],
+    "*.js": [
+      "npm run lint:fix:script",
       "git add"
     ]
   },

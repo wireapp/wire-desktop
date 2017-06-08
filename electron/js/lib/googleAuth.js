@@ -19,7 +19,7 @@
 
 'use strict';
 
-const { BrowserWindow } = require('electron');
+const {BrowserWindow} = require('electron');
 
 const qs = require('querystring');
 const google = require('googleapis');
@@ -30,16 +30,16 @@ function getAuthenticationUrl(scopes, clientId, clientSecret) {
   const oauth2Client = new OAuth2(
     clientId,
     clientSecret,
-    'urn:ietf:wg:oauth:2.0:oob'
+    'urn:ietf:wg:oauth:2.0:oob',
   );
-  return oauth2Client.generateAuthUrl({ scope: scopes });
+  return oauth2Client.generateAuthUrl({scope: scopes});
 }
 
 function authorizeApp(url) {
   return new Promise(function(resolve, reject) {
     const win = new BrowserWindow({
       title: '',
-      useContentSize: true
+      useContentSize: true,
     });
     win.setMenuBarVisibility(false);
     win.loadURL(url);
@@ -79,7 +79,7 @@ function getAccessToken(scopes, clientId, clientSecret) {
         client_secret: clientSecret,
         code,
         grant_type: 'authorization_code',
-        redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
+        redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       });
 
       request.post(
@@ -88,8 +88,8 @@ function getAccessToken(scopes, clientId, clientSecret) {
           body: data,
           headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
         },
         function(error, response, body) {
           if (error) {
@@ -97,7 +97,7 @@ function getAccessToken(scopes, clientId, clientSecret) {
           } else {
             resolve(JSON.parse(body));
           }
-        }
+        },
       );
     });
   });
@@ -105,5 +105,5 @@ function getAccessToken(scopes, clientId, clientSecret) {
 
 module.exports = {
   getAccessToken,
-  getAuthorizationCode
+  getAuthorizationCode,
 };

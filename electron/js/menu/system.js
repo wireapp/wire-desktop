@@ -19,7 +19,7 @@
 
 'use strict';
 
-const { app, shell, dialog, Menu } = require('electron');
+const {app, shell, dialog, Menu} = require('electron');
 const autoLaunch = require('auto-launch');
 const launchCmd = process.env.APPIMAGE != null
   ? process.env.APPIMAGE
@@ -35,7 +35,7 @@ let menu;
 const launcher = new autoLaunch({
   isHidden: true,
   name: config.NAME,
-  path: launchCmd
+  path: launchCmd,
 });
 
 function getPrimaryWindow() {
@@ -51,7 +51,7 @@ function sendAction(action) {
 }
 
 const separatorTemplate = {
-  type: 'separator'
+  type: 'separator',
 };
 
 const localeTemplate = {
@@ -62,142 +62,142 @@ const localeTemplate = {
         changeLocale('en');
       },
       label: locale.label['en'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('cs');
       },
       label: locale.label['cs'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('da');
       },
       label: locale.label['da'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('de');
       },
       label: locale.label['de'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('es');
       },
       label: locale.label['es'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('fi');
       },
       label: locale.label['fi'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('fr');
       },
       label: locale.label['fr'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('hr');
       },
       label: locale.label['hr'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('hu');
       },
       label: locale.label['hu'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('it');
       },
       label: locale.label['it'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('lt');
       },
       label: locale.label['lt'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('pt');
       },
       label: locale.label['pt'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('ro');
       },
       label: locale.label['ro'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('ru');
       },
       label: locale.label['ru'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('sk');
       },
       label: locale.label['sk'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('sl');
       },
       label: locale.label['sl'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('tr');
       },
       label: locale.label['tr'],
-      type: 'radio'
+      type: 'radio',
     },
     {
       click() {
         changeLocale('uk');
       },
       label: locale.label['uk'],
-      type: 'radio'
-    }
-  ]
+      type: 'radio',
+    },
+  ],
 };
 
 const aboutTemplate = {
   click() {
     menu.emit('about-wire');
   },
-  i18n: 'menuAbout'
+  i18n: 'menuAbout',
 };
 
 const signOutTemplate = {
   click() {
     sendAction('sign-out');
   },
-  i18n: 'menuSignOut'
+  i18n: 'menuSignOut',
 };
 
 const conversationTemplate = {
@@ -208,7 +208,7 @@ const conversationTemplate = {
       click() {
         sendAction('conversation-start');
       },
-      i18n: 'menuStart'
+      i18n: 'menuStart',
     },
     separatorTemplate,
     {
@@ -216,19 +216,19 @@ const conversationTemplate = {
       click() {
         sendAction('conversation-ping');
       },
-      i18n: 'menuPing'
+      i18n: 'menuPing',
     },
     {
       click() {
         sendAction('conversation-call');
       },
-      i18n: 'menuCall'
+      i18n: 'menuCall',
     },
     {
       click() {
         sendAction('conversation-video-call');
       },
-      i18n: 'menuVideoCall'
+      i18n: 'menuVideoCall',
     },
     separatorTemplate,
     {
@@ -236,14 +236,14 @@ const conversationTemplate = {
       click() {
         sendAction('conversation-people');
       },
-      i18n: 'menuPeople'
+      i18n: 'menuPeople',
     },
     {
       accelerator: 'Shift+CmdOrCtrl+K',
       click() {
         sendAction('conversation-add-people');
       },
-      i18n: 'menuAddPeople'
+      i18n: 'menuAddPeople',
     },
     separatorTemplate,
     {
@@ -251,22 +251,22 @@ const conversationTemplate = {
       click() {
         sendAction('conversation-archive');
       },
-      i18n: 'menuArchive'
+      i18n: 'menuArchive',
     },
     {
       accelerator: 'Alt+CmdOrCtrl+S',
       click() {
         sendAction('conversation-silence');
       },
-      i18n: 'menuMute'
+      i18n: 'menuMute',
     },
     {
       click() {
         sendAction('conversation-delete');
       },
-      i18n: 'menuDelete'
-    }
-  ]
+      i18n: 'menuDelete',
+    },
+  ],
 };
 
 const showWireTemplate = {
@@ -274,7 +274,7 @@ const showWireTemplate = {
   click() {
     getPrimaryWindow().show();
   },
-  label: config.NAME
+  label: config.NAME,
 };
 
 const toggleMenuTemplate = {
@@ -291,7 +291,7 @@ const toggleMenuTemplate = {
     }
   },
   i18n: 'menuShowHide',
-  type: 'checkbox'
+  type: 'checkbox',
 };
 
 const toggleFullScreenTemplate = {
@@ -301,7 +301,7 @@ const toggleFullScreenTemplate = {
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
   i18n: 'menuFullScreen',
-  type: 'checkbox'
+  type: 'checkbox',
 };
 
 const toggleAutoLaunchTemplate = {
@@ -311,20 +311,20 @@ const toggleAutoLaunchTemplate = {
     init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
   i18n: 'menuStartup',
-  type: 'checkbox'
+  type: 'checkbox',
 };
 
 const editTemplate = {
   i18n: 'menuEdit',
   submenu: [
-    { i18n: 'menuUndo', role: 'undo' },
-    { i18n: 'menuRedo', role: 'redo' },
+    {i18n: 'menuUndo', role: 'undo'},
+    {i18n: 'menuRedo', role: 'redo'},
     separatorTemplate,
-    { i18n: 'menuCut', role: 'cut' },
-    { i18n: 'menuCopy', role: 'copy' },
-    { i18n: 'menuPaste', role: 'paste' },
+    {i18n: 'menuCut', role: 'cut'},
+    {i18n: 'menuCopy', role: 'copy'},
+    {i18n: 'menuPaste', role: 'paste'},
     separatorTemplate,
-    { i18n: 'menuSelectAll', role: 'selectall' },
+    {i18n: 'menuSelectAll', role: 'selectall'},
     separatorTemplate,
     {
       checked:
@@ -335,9 +335,9 @@ const editTemplate = {
       },
       enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       i18n: 'menuSpelling',
-      type: 'checkbox'
-    }
-  ]
+      type: 'checkbox',
+    },
+  ],
 };
 
 const windowTemplate = {
@@ -346,11 +346,11 @@ const windowTemplate = {
   submenu: [
     {
       i18n: 'menuMinimize',
-      role: 'minimize'
+      role: 'minimize',
     },
     {
       i18n: 'menuClose',
-      role: 'close'
+      role: 'close',
     },
     separatorTemplate,
     {
@@ -360,7 +360,7 @@ const windowTemplate = {
       click() {
         sendAction('conversation-next');
       },
-      i18n: 'menuNextConversation'
+      i18n: 'menuNextConversation',
     },
     {
       accelerator: process.platform === 'darwin'
@@ -369,9 +369,9 @@ const windowTemplate = {
       click() {
         sendAction('conversation-prev');
       },
-      i18n: 'menuPreviousConversation'
-    }
-  ]
+      i18n: 'menuPreviousConversation',
+    },
+  ],
 };
 
 const helpTemplate = {
@@ -382,33 +382,33 @@ const helpTemplate = {
       click() {
         shell.openExternal(config.WIRE_LEGAL);
       },
-      i18n: 'menuLegal'
+      i18n: 'menuLegal',
     },
     {
       click() {
         shell.openExternal(config.WIRE_PRIVACY);
       },
-      i18n: 'menuPrivacy'
+      i18n: 'menuPrivacy',
     },
     {
       click() {
         shell.openExternal(config.WIRE_LICENSES);
       },
-      i18n: 'menuLicense'
+      i18n: 'menuLicense',
     },
     {
       click() {
         shell.openExternal(config.WIRE_SUPPORT);
       },
-      i18n: 'menuSupport'
+      i18n: 'menuSupport',
     },
     {
       click() {
         shell.openExternal(config.WIRE);
       },
-      i18n: 'menuWireURL'
-    }
-  ]
+      i18n: 'menuWireURL',
+    },
+  ],
 };
 
 const darwinTemplate = {
@@ -421,36 +421,36 @@ const darwinTemplate = {
       click() {
         sendAction('preferences-show');
       },
-      i18n: 'menuPreferences'
+      i18n: 'menuPreferences',
     },
     separatorTemplate,
     localeTemplate,
     {
       i18n: 'menuServices',
       role: 'services',
-      submenu: []
+      submenu: [],
     },
     separatorTemplate,
     {
       i18n: 'menuHideWire',
-      role: 'hide'
+      role: 'hide',
     },
     {
       i18n: 'menuHideOthers',
-      role: 'hideothers'
+      role: 'hideothers',
     },
     {
       i18n: 'menuShowAll',
-      role: 'unhide'
+      role: 'unhide',
     },
     separatorTemplate,
     signOutTemplate,
     {
       accelerator: 'Command+Q',
       i18n: 'menuQuit',
-      selector: 'terminate:'
-    }
-  ]
+      selector: 'terminate:',
+    },
+  ],
 };
 
 const win32Template = {
@@ -461,7 +461,7 @@ const win32Template = {
       click() {
         sendAction('preferences-show');
       },
-      i18n: 'menuSettings'
+      i18n: 'menuSettings',
     },
     localeTemplate,
     toggleAutoLaunchTemplate,
@@ -472,9 +472,9 @@ const win32Template = {
       click() {
         app.quit();
       },
-      i18n: 'menuQuit'
-    }
-  ]
+      i18n: 'menuQuit',
+    },
+  ],
 };
 
 const linuxTemplate = {
@@ -484,7 +484,7 @@ const linuxTemplate = {
       click() {
         sendAction('preferences-show');
       },
-      i18n: 'menuPreferences'
+      i18n: 'menuPreferences',
     },
     separatorTemplate,
     toggleAutoLaunchTemplate,
@@ -497,16 +497,16 @@ const linuxTemplate = {
       click() {
         app.quit();
       },
-      i18n: 'menuQuit'
-    }
-  ]
+      i18n: 'menuQuit',
+    },
+  ],
 };
 
 const menuTemplate = [
   conversationTemplate,
   editTemplate,
   windowTemplate,
-  helpTemplate
+  helpTemplate,
 ];
 
 function processMenu(template, language) {
@@ -531,11 +531,11 @@ function changeLocale(language) {
         locale[language].restartLater,
         process.platform === 'darwin'
           ? locale[language].menuQuit
-          : locale[language].restartNow
+          : locale[language].restartNow,
       ],
       message: locale[language].restartLocale,
       title: locale[language].restartNeeded,
-      type: 'info'
+      type: 'info',
     },
     function(response) {
       if (response == 1) {
@@ -546,7 +546,7 @@ function changeLocale(language) {
         // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
         app.exit();
       }
-    }
+    },
   );
 }
 
@@ -558,7 +558,7 @@ module.exports = {
         separatorTemplate,
         showWireTemplate,
         separatorTemplate,
-        toggleFullScreenTemplate
+        toggleFullScreenTemplate,
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
     }
@@ -575,13 +575,13 @@ module.exports = {
         click() {
           sendAction('preferences-show');
         },
-        i18n: 'menuPreferences'
+        i18n: 'menuPreferences',
       });
       windowTemplate.submenu.push(
         separatorTemplate,
         toggleMenuTemplate,
         separatorTemplate,
-        toggleFullScreenTemplate
+        toggleFullScreenTemplate,
       );
       toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
     }
@@ -594,5 +594,5 @@ module.exports = {
     menu = Menu.buildFromTemplate(menuTemplate);
 
     return menu;
-  }
+  },
 };

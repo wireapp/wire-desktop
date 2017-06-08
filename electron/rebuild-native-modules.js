@@ -53,6 +53,6 @@ if (args.length === 1) {
   args = normalize(args);
   const command = args.shift();
   args.unshift('--arch', arch, '--');
-  const proc = spawn.sync(command, args, { stdio: 'inherit' });
+  const proc = spawn.sync(command, args, {stdio: 'inherit'});
   process.exit(proc.status);
 }

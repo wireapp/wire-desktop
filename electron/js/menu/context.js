@@ -19,7 +19,7 @@
 
 'use strict';
 
-const { clipboard, remote, ipcRenderer, webFrame } = require('electron');
+const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
@@ -39,8 +39,8 @@ const defaultMenu = Menu.buildFromTemplate([
     click() {
       clipboard.writeText(copyContext);
     },
-    label: locale.getText('menuCopy')
-  }
+    label: locale.getText('menuCopy'),
+  },
 ]);
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -48,34 +48,34 @@ const defaultMenu = Menu.buildFromTemplate([
 // /////////////////////////////////////////////////////////////////////////////
 const selection = {
   isMisspelled: false,
-  suggestions: []
+  suggestions: [],
 };
 
 const textMenuTemplate = [
-  { label: locale.getText('menuCut'), role: 'cut' },
-  { label: locale.getText('menuCopy'), role: 'copy' },
-  { label: locale.getText('menuPaste'), role: 'paste' },
-  { type: 'separator' },
-  { label: locale.getText('menuSelectAll'), role: 'selectall' }
+  {label: locale.getText('menuCut'), role: 'cut'},
+  {label: locale.getText('menuCopy'), role: 'copy'},
+  {label: locale.getText('menuPaste'), role: 'paste'},
+  {type: 'separator'},
+  {label: locale.getText('menuSelectAll'), role: 'selectall'},
 ];
 
 function createTextMenu() {
   const template = textMenuTemplate.slice();
   if (selection.isMisspelled) {
-    template.unshift({ type: 'separator' });
+    template.unshift({type: 'separator'});
     if (selection.suggestions.length > 0) {
       for (const suggestion of selection.suggestions.reverse()) {
         template.unshift({
           click(menuItem) {
             webContents.replaceMisspelling(menuItem.label);
           },
-          label: suggestion
+          label: suggestion,
         });
       }
     } else {
       template.unshift({
         enabled: false,
-        label: locale.getText('menuNoSuggestions')
+        label: locale.getText('menuNoSuggestions'),
       });
     }
   }
@@ -89,49 +89,49 @@ const silence = new MenuItem({
   click() {
     wire.app.view.conversation_list.click_on_mute_action();
   },
-  label: locale.getText('menuMute')
+  label: locale.getText('menuMute'),
 });
 
 const notify = new MenuItem({
   click() {
     wire.app.view.conversation_list.click_on_mute_action();
   },
-  label: locale.getText('menuUnmute')
+  label: locale.getText('menuUnmute'),
 });
 
 const archive = new MenuItem({
   click() {
     wire.app.view.conversation_list.click_on_archive_action();
   },
-  label: locale.getText('menuArchive')
+  label: locale.getText('menuArchive'),
 });
 
 const unarchive = new MenuItem({
   click() {
     wire.app.view.conversation_list.click_on_unarchive_action();
   },
-  label: locale.getText('menuUnarchive')
+  label: locale.getText('menuUnarchive'),
 });
 
 const clear = new MenuItem({
   click() {
     wire.app.view.conversation_list.click_on_clear_action();
   },
-  label: locale.getText('menuDelete')
+  label: locale.getText('menuDelete'),
 });
 
 const leave = new MenuItem({
   click() {
     wire.app.view.conversation_list.click_on_leave_action();
   },
-  label: locale.getText('menuLeave')
+  label: locale.getText('menuLeave'),
 });
 
 const block = new MenuItem({
   click() {
     wire.app.view.conversation_list.click_on_block_action();
   },
-  label: locale.getText('menuBlock')
+  label: locale.getText('menuBlock'),
 });
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -142,8 +142,8 @@ const imageMenu = Menu.buildFromTemplate([
     click() {
       savePicture(imageMenu.file, imageMenu.image);
     },
-    label: locale.getText('menuSavePictureAs')
-  }
+    label: locale.getText('menuSavePictureAs'),
+  },
 ]);
 
 window.addEventListener(
@@ -192,7 +192,7 @@ window.addEventListener(
       }
     }
   },
-  false
+  false,
 );
 
 window.addEventListener(
@@ -207,14 +207,14 @@ window.addEventListener(
     ) {
       // get center-column
       const id = element.parentElement.previousElementSibling.getAttribute(
-        'data-uie-uid'
+        'data-uie-uid',
       );
       if (createConversationMenu(id)) {
         event.stopPropagation();
       }
     }
   },
-  true
+  true,
 );
 
 window.addEventListener(
@@ -224,7 +224,7 @@ window.addEventListener(
     customContext.fromElement(element).popup(remote.getCurrentWindow());
     event.stopPropagation();
   },
-  true
+  true,
 );
 
 function savePicture(fileName, url) {
@@ -241,7 +241,7 @@ function savePicture(fileName, url) {
 function createConversationMenu(id) {
   const app = wire.app;
   const conversation_et = app.repository.conversation.get_conversation_by_id(
-    id
+    id,
   );
 
   if (conversation_et) {
@@ -282,6 +282,6 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
           .slice(0, config.SPELL_SUGGESTIONS);
       }
       return !selection.isMisspelled;
-    }
+    },
   });
 }

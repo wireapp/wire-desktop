@@ -50,6 +50,6 @@ module.exports = (function() {
 
   return {
     restore,
-    save
+    save,
   };
 })();

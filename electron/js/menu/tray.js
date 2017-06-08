@@ -19,7 +19,7 @@
 
 'use strict';
 
-const { app, Menu, Tray } = require('electron');
+const {app, Menu, Tray} = require('electron');
 
 const path = require('path');
 const config = require('./../config');
@@ -32,12 +32,12 @@ const iconPath = path.join(app.getAppPath(), 'img', `tray.${iconExt}`);
 const iconBadgePath = path.join(
   app.getAppPath(),
   'img',
-  `tray.badge.${iconExt}`
+  `tray.badge.${iconExt}`,
 );
 const iconOverlayPath = path.join(
   app.getAppPath(),
   'img',
-  'taskbar.overlay.png'
+  'taskbar.overlay.png',
 );
 
 const BADGE_DELAY = 50;
@@ -58,14 +58,14 @@ module.exports = {
         click() {
           windowManager.showPrimaryWindow();
         },
-        label: `${locale.getText('trayOpen')} ${config.NAME}`
+        label: `${locale.getText('trayOpen')} ${config.NAME}`,
       },
       {
         click() {
           app.quit();
         },
-        label: locale.getText('trayQuit')
-      }
+        label: locale.getText('trayQuit'),
+      },
     ]);
 
     appIcon.setToolTip(config.NAME);
@@ -78,7 +78,7 @@ module.exports = {
   updateBadgeIcon(win) {
     setTimeout(() => {
       const counter = /\(([0-9]+)\)/.exec(
-        win.getTitle() || (win.webContents ? win.webContents.getTitle() : '')
+        win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''),
       );
       const count = parseInt(counter ? counter[1] : 0, 10);
       if (count) {
@@ -88,7 +88,7 @@ module.exports = {
       }
       win.setOverlayIcon(
         count && process.platform === 'win32' ? iconOverlayPath : null,
-        locale.getText('unreadMessages')
+        locale.getText('unreadMessages'),
       );
       win.flashFrame(!win.isFocused() && count > lastUnreadCount);
       app.setBadgeCount(count);
@@ -104,5 +104,5 @@ module.exports = {
   useDefaultIcon() {
     if (appIcon == null) return;
     appIcon.setImage(iconPath);
-  }
+  },
 };

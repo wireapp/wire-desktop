@@ -30,7 +30,7 @@ describe('datauri', () => {
       const mimetype = 'text/plain';
       assert.equal(
         datauri.fromBuffer(mimetype, buffer),
-        'data:text/plain;base64,Zm9v'
+        'data:text/plain;base64,Zm9v',
       );
     });
   });
