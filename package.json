@@ -14,21 +14,10 @@
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
-    "precommit": "lint-staged",
     "lint": "eslint -c .eslintrc.yml --ignore-path .gitignore --quiet \"electron/js/**/*.js\" \"electron/*.js\" \"tests/**/*.js\"",
     "lint:fix": "yarn lint:fix:script && yarn lint:fix:style",
     "lint:fix:script": "npm run lint -- --fix",
     "lint:fix:style": "prettier --single-quote --write electron/css/**/*.css"
-  },
-  "lint-staged": {
-    "*.css": [
-      "npm run lint:fix:style",
-      "git add"
-    ],
-    "*.js": [
-      "npm run lint:fix:script",
-      "git add"
-    ]
   },
   "repository": {
     "type": "git",
@@ -54,8 +43,6 @@
     "grunt-contrib-clean": "1.1.0",
     "grunt-git": "1.0.3",
     "grunt-github-changes": "0.1.0",
-    "husky": "0.13.4",
-    "lint-staged": "3.6.0",
     "prettier": "1.4.4",
     "load-grunt-tasks": "3.5.2"
   }
