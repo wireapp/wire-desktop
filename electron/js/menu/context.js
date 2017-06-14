@@ -26,7 +26,6 @@ const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
 const init = require('./../lib/init');
-const customContext = require('./custom-context');
 let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,11 +143,6 @@ window.addEventListener('contextmenu', function (event) {
     event.preventDefault();
     createTextMenu();
     textMenu.popup(remote.getCurrentWindow());
-  } else if (element.classList.contains('center-column')) {
-    let id = element.getAttribute('data-uie-uid');
-    if (createConversationMenu(id)) {
-      event.preventDefault();
-    }
   } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
     event.preventDefault();
     imageMenu.image = element.src;
@@ -189,12 +183,6 @@ window.addEventListener('click', function(event) {
   }
 }, true);
 
-window.addEventListener('z.components.ContextMenuEvent::CONTEXT_MENU', function(event) {
-  const element = event.target;
-  customContext.fromElement(element).popup(remote.getCurrentWindow());
-  event.stopPropagation();
-}, true);
-
 
 function savePicture(fileName, url) {
   fetch(url)
@@ -205,31 +193,6 @@ function savePicture(fileName, url) {
       const bytes = new Uint8Array(arrayBuffer);
       ipcRenderer.send('save-picture', fileName, bytes);
     });
-}
-
-
-function createConversationMenu(id) {
-  const app = wire.app;
-  const conversation_et = app.repository.conversation.get_conversation_by_id(id);
-
-  if (conversation_et) {
-    app.view.conversation_list.selected_conversation(conversation_et);
-    let listMenu = new Menu();
-    listMenu.append(conversation_et.is_muted() ? notify : silence);
-    listMenu.append(conversation_et.is_archived() ? unarchive : archive);
-    listMenu.append(clear);
-    if (conversation_et.type() === z.conversation.ConversationType.REGULAR) {
-      if (!conversation_et.removed_from_conversation()) {
-        listMenu.append(leave);
-      }
-    } else {
-      listMenu.append(block);
-    }
-    listMenu.popup(remote.getCurrentWindow());
-    listMenu.current_conversation = id;
-    return true;
-  }
-  return false;
 }
 
 
