@@ -21,7 +21,6 @@
 
 const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
-const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
@@ -72,59 +71,6 @@ function createTextMenu() {
   }
   textMenu = Menu.buildFromTemplate(template);
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-// Conversation
-///////////////////////////////////////////////////////////////////////////////
-let silence = new MenuItem({
-  label: locale.getText('menuMute'),
-  click: function () {
-    wire.app.view.conversation_list.click_on_mute_action();
-  },
-});
-
-let notify = new MenuItem({
-  label: locale.getText('menuUnmute'),
-  click: function () {
-    wire.app.view.conversation_list.click_on_mute_action();
-  },
-});
-
-let archive = new MenuItem({
-  label: locale.getText('menuArchive'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_archive_action();
-  },
-});
-
-let unarchive = new MenuItem({
-  label: locale.getText('menuUnarchive'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_unarchive_action();
-  },
-});
-
-let clear = new MenuItem({
-  label: locale.getText('menuDelete'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_clear_action();
-  },
-});
-
-let leave = new MenuItem({
-  label: locale.getText('menuLeave'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_leave_action();
-  },
-});
-
-let block = new MenuItem({
-  label: locale.getText('menuBlock'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_block_action();
-  },
-});
 
 ///////////////////////////////////////////////////////////////////////////////
 // Images
