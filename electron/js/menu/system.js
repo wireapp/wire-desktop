@@ -212,7 +212,7 @@ let conversationTemplate = {
       click: function() {sendAction('conversation-archive');},
     }, {
       i18n: 'menuMute',
-      accelerator: 'Alt+CmdOrCtrl+S',
+      accelerator: 'Alt+CmdOrCtrl+M',
       click: function() {sendAction('conversation-silence');},
     }, {
       i18n: 'menuDelete',
