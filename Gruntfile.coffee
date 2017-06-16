@@ -63,10 +63,9 @@ module.exports = (grunt) ->
         overwrite: true
         arch: 'all'
         asar: true
-        'app-copyright': '<%= info.copyright %>'
-        'app-version': '<%= info.version %>'
-        'build-version': '<%= info.build %>'
-        'min-version': '10.9.0'
+        appCopyright: '<%= info.copyright %>'
+        appVersion: '<%= info.version %>'
+        buildVersion: '<%= info.build %>'
         protocols: [
           {name: '', schemes: ['wire']}
         ]
@@ -75,18 +74,16 @@ module.exports = (grunt) ->
           name: '<%= info.nameInternal %>'
           platform: 'mas'
           icon: 'resources/macos/wire.internal.icns'
-          'app-bundle-id': 'com.wearezeta.zclient.mac.internal'
-          'dev-region': 'en'
+          appBundleId: 'com.wearezeta.zclient.mac.internal'
       macos_prod:
         options:
           platform: 'mas'
           out: 'wrap/dist/'
           icon: 'resources/macos/wire.icns'
-          'app-category-type': 'public.app-category.social-networking'
-          'app-bundle-id': 'com.wearezeta.zclient.mac'
-          'helper-bundle-id': 'com.wearezeta.zclient.mac.helper'
-          'dev-region': 'en'
-          'extend-info': 'resources/macos/custom.plist'
+          appCategoryType: 'public.app-category.social-networking'
+          appBundleId: 'com.wearezeta.zclient.mac'
+          helperBundleId: 'com.wearezeta.zclient.mac.helper'
+          extendInfo: 'resources/macos/custom.plist'
       win_internal:
         options:
           name: '<%= info.nameInternal %>'
