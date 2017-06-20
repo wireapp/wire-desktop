@@ -254,7 +254,7 @@ const conversationTemplate = {
       i18n: 'menuArchive',
     },
     {
-      accelerator: 'Alt+CmdOrCtrl+S',
+      accelerator: 'Alt+CmdOrCtrl+M',
       click() {
         sendAction('conversation-silence');
       },
@@ -308,7 +308,7 @@ const toggleAutoLaunchTemplate = {
   checked: init.restore('shouldAutoLaunch', false),
   click() {
     init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
-    init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
+    init.restore("shouldAutoLaunch") ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
   i18n: 'menuStartup',
   type: 'checkbox',

@@ -24,7 +24,7 @@ const {app} = remote;
 const pkg = require('./../package.json');
 const path = require('path');
 
-const LOADING_FAIL_DELAY = 1000;
+const LOADING_FAIL_DELAY = 500;
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -77,82 +77,89 @@ function loadWebapp() {
 
 ipcRenderer.once('splash-screen-loaded', function() {
   if (navigator.onLine) {
-    loadWebapp(navigator.onLine);
-  } else {
-    const offline = document.getElementById('offline');
-    const loading = document.getElementById('loading');
-    loading.style.display = 'none';
-    offline.style.display = 'block';
-    window.addEventListener('online', loadWebapp);
+    return loadWebapp();
   }
+
+  const offline = document.getElementById('offline');
+  const loading = document.getElementById('loading');
+  loading.style.display = 'none';
+  offline.style.display = 'block';
+  window.addEventListener('online', loadWebapp);
 });
 
 // app.wire.com was loaded
-ipcRenderer.once('webapp-loaded', function(sender, config) {
-  // loading webapp failed
-  if (window.wire === undefined) {
-    return setInterval(function() {
-      if (navigator.onLine) {
-        location.reload();
-      }
-    }, LOADING_FAIL_DELAY);
-  }
+ipcRenderer.once('webapp-loaded', (sender, config) => {
+  const webappLoaded = () => {
+    ipcRenderer.send('webapp-version', z.util.Environment.version(false));
+    window.electron_version = config.electron_version;
+    window.notification_icon = config.notification_icon;
+    require('./menu/context');
 
-  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
-  window.electron_version = config.electron_version;
-  window.notification_icon = config.notification_icon;
-  require('./menu/context');
+    if (process.platform === 'darwin') {
+      // add titlebar ghost to prevent interactions with the content while dragging
+      const titleBar = document.createElement('div');
+      titleBar.className = 'drag-region';
+      document.body.appendChild(titleBar);
+    }
 
-  if (process.platform === 'darwin') {
-    // add titlebar ghost to prevent interactions with the content while dragging
-    const titleBar = document.createElement('div');
-    titleBar.className = 'drag-region';
-    document.body.appendChild(titleBar);
-  }
-
-  // we are on app.wire.com/
-  if (wire.app) {
-    // hijack google authenticate method
-    wire.app.service.connect_google._authenticate = function() {
-      return new Promise(function(resolve, reject) {
-        ipcRenderer.send('google-auth-request');
-        ipcRenderer.once('google-auth-success', function(event, token) {
-          resolve(token);
+    // we are on app.wire.com/
+    if (wire.app) {
+      // hijack google authenticate method
+      wire.app.service.connect_google._authenticate = () => {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.send('google-auth-request');
+          ipcRenderer.once('google-auth-success', (event, token) =>
+            resolve(token),
+          );
+          ipcRenderer.once('google-auth-error', error => reject(error));
         });
-        ipcRenderer.once('google-auth-error', function(error) {
-          reject(error);
-        });
-      });
-    };
+      };
 
-    amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, function() {
-      ipcRenderer.send('notification-click');
-    });
+      amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () =>
+        ipcRenderer.send('notification-click'),
+      );
+      amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () =>
+        ipcRenderer.send('loaded'),
+      );
+      amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
+        const update_from_desktop =
+          update_source === z.announce.UPDATE_SOURCE.DESKTOP;
 
-    amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
-      ipcRenderer.send('loaded');
-    });
-
-    amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(
-      update_source,
-    ) {
-      if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
-        ipcRenderer.send('wrapper-restart');
-      } else {
+        if (update_from_desktop) {
+          return ipcRenderer.send('wrapper-restart');
+        }
         ipcRenderer.send('wrapper-reload');
-      }
-    });
+      });
+    }
+
+    // else we are on /auth
+    try {
+      Object.assign(window.sodium, require('libsodium-neon'));
+      console.info('Using libsodium-neon.');
+    } catch (error) {
+      console.info(
+        'Failed loading "libsodium-neon", falling back to "libsodium.js".',
+        error,
+      );
+    }
+  };
+
+  if (window.wire) {
+    return webappLoaded();
   }
-  // else we are on /auth
-  try {
-    Object.assign(window.sodium, require('libsodium-neon'));
-    console.info('Using libsodium-neon.');
-  } catch (error) {
-    console.info(
-      'Failed loading "libsodium-neon", falling back to "libsodium.js".',
-      error,
-    );
-  }
+
+  const interval_id = setInterval(() => {
+    if (window.wire) {
+      clearInterval(interval_id);
+      return webappLoaded();
+    }
+
+    if (navigator.onLine) {
+      // Loading webapp failed
+      clearInterval(interval_id);
+      location.reload();
+    }
+  }, LOADING_FAIL_DELAY);
 });
 
 ///////////////////////////////////////////////////////////////////////////////

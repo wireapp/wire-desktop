@@ -21,17 +21,15 @@
 
 const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
-const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
 const init = require('./../lib/init');
-const customContext = require('./custom-context');
 let textMenu;
 
-// /////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Default
-// /////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 let copyContext = '';
 
 const defaultMenu = Menu.buildFromTemplate([
@@ -43,9 +41,9 @@ const defaultMenu = Menu.buildFromTemplate([
   },
 ]);
 
-// /////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Text
-// /////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 const selection = {
   isMisspelled: false,
   suggestions: [],
@@ -82,61 +80,9 @@ function createTextMenu() {
   textMenu = Menu.buildFromTemplate(template);
 }
 
-// /////////////////////////////////////////////////////////////////////////////
-// Conversation
-// /////////////////////////////////////////////////////////////////////////////
-const silence = new MenuItem({
-  click() {
-    wire.app.view.conversation_list.click_on_mute_action();
-  },
-  label: locale.getText('menuMute'),
-});
-
-const notify = new MenuItem({
-  click() {
-    wire.app.view.conversation_list.click_on_mute_action();
-  },
-  label: locale.getText('menuUnmute'),
-});
-
-const archive = new MenuItem({
-  click() {
-    wire.app.view.conversation_list.click_on_archive_action();
-  },
-  label: locale.getText('menuArchive'),
-});
-
-const unarchive = new MenuItem({
-  click() {
-    wire.app.view.conversation_list.click_on_unarchive_action();
-  },
-  label: locale.getText('menuUnarchive'),
-});
-
-const clear = new MenuItem({
-  click() {
-    wire.app.view.conversation_list.click_on_clear_action();
-  },
-  label: locale.getText('menuDelete'),
-});
-
-const leave = new MenuItem({
-  click() {
-    wire.app.view.conversation_list.click_on_leave_action();
-  },
-  label: locale.getText('menuLeave'),
-});
-
-const block = new MenuItem({
-  click() {
-    wire.app.view.conversation_list.click_on_block_action();
-  },
-  label: locale.getText('menuBlock'),
-});
-
-// /////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Images
-// /////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 const imageMenu = Menu.buildFromTemplate([
   {
     click() {
@@ -155,11 +101,6 @@ window.addEventListener(
       event.preventDefault();
       createTextMenu();
       textMenu.popup(remote.getCurrentWindow());
-    } else if (element.classList.contains('center-column')) {
-      const id = element.getAttribute('data-uie-uid');
-      if (createConversationMenu(id)) {
-        event.preventDefault();
-      }
     } else if (
       element.classList.contains('image-element') ||
       element.classList.contains('detail-view-image')
@@ -217,16 +158,6 @@ window.addEventListener(
   true,
 );
 
-window.addEventListener(
-  'z.components.ContextMenuEvent::CONTEXT_MENU',
-  function(event) {
-    const element = event.target;
-    customContext.fromElement(element).popup(remote.getCurrentWindow());
-    event.stopPropagation();
-  },
-  true,
-);
-
 function savePicture(fileName, url) {
   fetch(url)
     .then(function(response) {
@@ -238,35 +169,9 @@ function savePicture(fileName, url) {
     });
 }
 
-function createConversationMenu(id) {
-  const app = wire.app;
-  const conversation_et = app.repository.conversation.get_conversation_by_id(
-    id,
-  );
-
-  if (conversation_et) {
-    app.view.conversation_list.selected_conversation(conversation_et);
-    const listMenu = new Menu();
-    listMenu.append(conversation_et.is_muted() ? notify : silence);
-    listMenu.append(conversation_et.is_archived() ? unarchive : archive);
-    listMenu.append(clear);
-    if (conversation_et.type() === z.conversation.ConversationType.REGULAR) {
-      if (!conversation_et.removed_from_conversation()) {
-        listMenu.append(leave);
-      }
-    } else {
-      listMenu.append(block);
-    }
-    listMenu.popup(remote.getCurrentWindow());
-    listMenu.current_conversation = id;
-    return true;
-  }
-  return false;
-}
-
-// /////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
-// /////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
