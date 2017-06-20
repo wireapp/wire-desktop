@@ -26,9 +26,7 @@ const MenuItem = remote.MenuItem;
 module.exports = {
   fromElement(contextMenuElement) {
     const menu = new Menu();
-    const elements = contextMenuElement.querySelectorAll(
-      '[data-context-action]',
-    );
+    const elements = contextMenuElement.querySelectorAll('[data-context-action]');
 
     Array.from(elements).forEach(function(element) {
       const menuItem = new MenuItem({

@@ -37,15 +37,7 @@ const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
 
 const taskbarLink = path.resolve(
-  path.join(
-    process.env.APPDATA,
-    'Microsoft',
-    'Internet Explorer',
-    'Quick Launch',
-    'User Pinned',
-    'TaskBar',
-    linkName,
-  ),
+  path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName),
 );
 
 function spawn(command, args, callback) {
@@ -106,12 +98,9 @@ function createDesktopShortcut(callback) {
 }
 
 function removeShortcuts(callback) {
-  spawnUpdate(
-    ['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'],
-    function() {
-      fs.unlink(taskbarLink, callback);
-    },
-  );
+  spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], function() {
+    fs.unlink(taskbarLink, callback);
+  });
 }
 
 function installUpdate() {

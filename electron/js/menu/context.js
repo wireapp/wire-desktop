@@ -101,10 +101,7 @@ window.addEventListener(
       event.preventDefault();
       createTextMenu();
       textMenu.popup(remote.getCurrentWindow());
-    } else if (
-      element.classList.contains('image-element') ||
-      element.classList.contains('detail-view-image')
-    ) {
+    } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
       event.preventDefault();
       imageMenu.image = element.src;
       imageMenu.popup(remote.getCurrentWindow());
@@ -120,10 +117,7 @@ window.addEventListener(
       // Maybe we are in a code block _inside_ an element with the 'text' class?
       // Code block can consist of many tags: CODE, PRE, SPAN, etc.
       let parentNode = element.parentNode;
-      while (
-        parentNode !== document &&
-        !parentNode.classList.contains('text')
-      ) {
+      while (parentNode !== document && !parentNode.classList.contains('text')) {
         parentNode = parentNode.parentNode;
       }
       if (parentNode !== document) {
@@ -147,9 +141,7 @@ window.addEventListener(
       element.parentElement.previousElementSibling
     ) {
       // get center-column
-      const id = element.parentElement.previousElementSibling.getAttribute(
-        'data-uie-uid',
-      );
+      const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
       if (createConversationMenu(id)) {
         event.stopPropagation();
       }
@@ -182,9 +174,7 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
       selection.isMisspelled = spellchecker.isMisspelled(text);
       selection.suggestions = [];
       if (selection.isMisspelled) {
-        selection.suggestions = spellchecker
-          .getCorrectionsForMisspelling(text)
-          .slice(0, config.SPELL_SUGGESTIONS);
+        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELL_SUGGESTIONS);
       }
       return !selection.isMisspelled;
     },

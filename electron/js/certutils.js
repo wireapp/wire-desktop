@@ -100,20 +100,14 @@ module.exports = {
   },
 
   verifyPinning(hostname, certificate) {
-    const {
-      data: certData = '',
-      issuerCert: {data: issuerCertData = ''} = {},
-    } = certificate;
+    const {data: certData = '', issuerCert: {data: issuerCertData = ''} = {}} = certificate;
     let issuerCertHex, publicKey, publicKeyBytes, publicKeyFingerprint;
 
     try {
       issuerCertHex = rs.ASN1HEX.pemToHex(issuerCertData);
       publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
       publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
-      publicKeyFingerprint = crypto
-        .createHash('sha256')
-        .update(publicKeyBytes)
-        .digest('base64');
+      publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
     } catch (err) {
       console.error('verifyPinning', err);
       return {decoding: false};
@@ -125,22 +119,14 @@ module.exports = {
       const {url, publicKeyInfo = [], issuerRootPubkeys = []} = pin;
       if (url.test(hostname.toLowerCase().trim())) {
         result.verifiedIssuerRootPubkeys = issuerRootPubkeys.length > 0
-          ? issuerRootPubkeys.some(pubkey =>
-              rs.X509.verifySignature(issuerCertHex, rs.KEYUTIL.getKey(pubkey)),
-            )
+          ? issuerRootPubkeys.some(pubkey => rs.X509.verifySignature(issuerCertHex, rs.KEYUTIL.getKey(pubkey)))
           : undefined;
         result.verifiedPublicKeyInfo = publicKeyInfo
           .reduce((arr, pubkey) => {
-            const {
-              fingerprints = [],
-              algorithmID = '',
-              algorithmParam = null,
-            } = pubkey;
+            const {fingerprints = [], algorithmID = '', algorithmParam = null} = pubkey;
             arr.push(
               fingerprints.length > 0
-                ? fingerprints.some(
-                    fingerprint => fingerprint === publicKeyFingerprint,
-                  )
+                ? fingerprints.some(fingerprint => fingerprint === publicKeyFingerprint)
                 : undefined,
               algorithmID === publicKey.algoid,
               algorithmParam === publicKey.algparam,
