@@ -9,7 +9,7 @@
     "install": "cd electron && npm run rebuild-native-modules",
     "lint:fix:scripts": "npm run lint -- --fix",
     "lint:fix:styles": "prettier --single-quote --write electron/css/**/*.css",
-    "lint:fix": "yarn lint:fix:script && yarn lint:fix:style",
+    "lint:fix": "yarn lint:fix:scripts && yarn lint:fix:styles",
     "lint": "eslint -c .eslintrc.yml --ignore-path .gitignore --quiet \"electron/js/**/*.js\" \"electron/*.js\" \"tests/**/*.js\"",
     "localhost": "electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
     "postinstall": "cd electron && npm run rebuild-neon",

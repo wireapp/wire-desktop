@@ -37,7 +37,10 @@ process.once('loaded', function() {
   global.desktopCapturer = desktopCapturer;
   global.winston = require('winston');
 
-  const logFilePath = path.join(app.getPath('userData'), require('./config').CONSOLE_LOG);
+  const logFilePath = path.join(
+    app.getPath('userData'),
+    require('./config').CONSOLE_LOG,
+  );
   console.log('Logging into file', logFilePath);
 
   winston
@@ -105,7 +108,9 @@ ipcRenderer.once('webapp-loaded', (sender, config) => {
       wire.app.service.connect_google._authenticate = () => {
         return new Promise((resolve, reject) => {
           ipcRenderer.send('google-auth-request');
-          ipcRenderer.once('google-auth-success', (event, token) => resolve(token));
+          ipcRenderer.once('google-auth-success', (event, token) =>
+            resolve(token),
+          );
           ipcRenderer.once('google-auth-error', error => reject(error));
         });
       };
@@ -113,9 +118,12 @@ ipcRenderer.once('webapp-loaded', (sender, config) => {
       amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () =>
         ipcRenderer.send('notification-click'),
       );
-      amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => ipcRenderer.send('loaded'));
+      amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () =>
+        ipcRenderer.send('loaded'),
+      );
       amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
-        const update_from_desktop = update_source === z.announce.UPDATE_SOURCE.DESKTOP;
+        const update_from_desktop =
+          update_source === z.announce.UPDATE_SOURCE.DESKTOP;
 
         if (update_from_desktop) {
           return ipcRenderer.send('wrapper-restart');
@@ -129,7 +137,10 @@ ipcRenderer.once('webapp-loaded', (sender, config) => {
       Object.assign(window.sodium, require('libsodium-neon'));
       console.info('Using libsodium-neon.');
     } catch (error) {
-      console.info('Failed loading "libsodium-neon", falling back to "libsodium.js".', error);
+      console.info(
+        'Failed loading "libsodium-neon", falling back to "libsodium.js".',
+        error,
+      );
     }
   };
 
@@ -211,5 +222,8 @@ ipcRenderer.on('conversation-show', function(conversation_id) {
 });
 
 ipcRenderer.on('wrapper-update-available', function() {
-  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
+  amplify.publish(
+    z.event.WebApp.LIFECYCLE.UPDATE,
+    z.announce.UPDATE_SOURCE.DESKTOP,
+  );
 });

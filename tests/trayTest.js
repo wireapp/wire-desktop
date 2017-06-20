@@ -32,7 +32,9 @@ describe('tray', () => {
   describe('#updateBadgeIcon()', () => {
     it('should update badge according to window title', done => {
       const window = new BrowserWindow();
-      window.loadURL(`file://${path.join(__dirname, 'fixtures', 'badge.html')}`);
+      window.loadURL(
+        `file://${path.join(__dirname, 'fixtures', 'badge.html')}`,
+      );
       window.webContents.on('dom-ready', function() {
         tray.updateBadgeIcon(window);
         setTimeout(function() {

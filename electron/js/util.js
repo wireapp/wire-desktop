@@ -27,11 +27,18 @@ const pointInRectangle = require('./lib/pointInRect');
 module.exports = {
   isInView(win) {
     const windowBounds = win.getBounds();
-    const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
+    const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds)
+      .workArea;
 
-    const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
+    const upperLeftVisible = pointInRectangle(
+      [windowBounds.x, windowBounds.y],
+      nearestWorkArea,
+    );
     const lowerRightVisible = pointInRectangle(
-      [windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height],
+      [
+        windowBounds.x + windowBounds.width,
+        windowBounds.y + windowBounds.height,
+      ],
       nearestWorkArea,
     );
 

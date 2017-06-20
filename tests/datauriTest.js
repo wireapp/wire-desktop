@@ -28,7 +28,10 @@ describe('datauri', () => {
     it('should return datauri', () => {
       const buffer = new Buffer('foo', 'utf-8');
       const mimetype = 'text/plain';
-      assert.equal(datauri.fromBuffer(mimetype, buffer), 'data:text/plain;base64,Zm9v');
+      assert.equal(
+        datauri.fromBuffer(mimetype, buffer),
+        'data:text/plain;base64,Zm9v',
+      );
     });
   });
 });

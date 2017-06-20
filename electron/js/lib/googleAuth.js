@@ -27,7 +27,11 @@ const request = require('request');
 const OAuth2 = google.auth.OAuth2;
 
 function getAuthenticationUrl(scopes, clientId, clientSecret) {
-  const oauth2Client = new OAuth2(clientId, clientSecret, 'urn:ietf:wg:oauth:2.0:oob');
+  const oauth2Client = new OAuth2(
+    clientId,
+    clientSecret,
+    'urn:ietf:wg:oauth:2.0:oob',
+  );
   return oauth2Client.generateAuthUrl({scope: scopes});
 }
 

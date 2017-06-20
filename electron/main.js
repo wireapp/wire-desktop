@@ -42,7 +42,11 @@ const APP_PATH = app.getAppPath();
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const SPLASH_HTML = `file://${path.join(APP_PATH, 'html', 'splash.html')}`;
-const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
+const CERT_ERR_HTML = `file://${path.join(
+  APP_PATH,
+  'html',
+  'certificate-error.html',
+)}`;
 const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 const ICON = `wire.${process.platform === 'win32' ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
@@ -109,7 +113,8 @@ if (process.platform === 'win32') {
 ///////////////////////////////////////////////////////////////////////////////
 if (process.platform === 'linux') {
   const isUbuntuUnity =
-    process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
+    process.env.XDG_CURRENT_DESKTOP &&
+    process.env.XDG_CURRENT_DESKTOP.includes('Unity');
 
   if (isUbuntuUnity) {
     process.env.XDG_CURRENT_DESKTOP = 'Unity';
@@ -162,7 +167,11 @@ ipcMain.on('notification-click', function() {
 
 ipcMain.on('google-auth-request', function(event) {
   googleAuth
-    .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
+    .getAccessToken(
+      config.GOOGLE_SCOPES,
+      config.GOOGLE_CLIENT_ID,
+      config.GOOGLE_CLIENT_SECRET,
+    )
     .then(function(code) {
       event.sender.send('google-auth-success', code.access_token);
     })
@@ -220,7 +229,9 @@ function showMainWindow() {
       const pinningResults = certutils.verifyPinning(hostname, certificate);
       for (const result of Object.values(pinningResults)) {
         if (result === false) {
-          console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+          console.error(
+            `Certutils verification failed for ${hostname}: ${result} is false`,
+          );
           main.loadURL(CERT_ERR_HTML);
           return cb(certificateOffset);
         }
@@ -278,7 +289,11 @@ function showMainWindow() {
     if (enteredWebapp) {
       main.webContents.send('webapp-loaded', {
         electron_version: app.getVersion(),
-        notification_icon: path.join(app.getAppPath(), 'img', 'notification.png'),
+        notification_icon: path.join(
+          app.getAppPath(),
+          'img',
+          'notification.png',
+        ),
       });
     } else {
       main.webContents.send('splash-screen-loaded');

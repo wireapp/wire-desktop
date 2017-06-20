@@ -106,9 +106,12 @@ function createDesktopShortcut(callback) {
 }
 
 function removeShortcuts(callback) {
-  spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], function() {
-    fs.unlink(taskbarLink, callback);
-  });
+  spawnUpdate(
+    ['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'],
+    function() {
+      fs.unlink(taskbarLink, callback);
+    },
+  );
 }
 
 function installUpdate() {

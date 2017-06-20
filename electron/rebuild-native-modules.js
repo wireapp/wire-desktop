@@ -22,7 +22,9 @@
 
 const spawn = require('cross-spawn');
 const exec = require('child_process').exec;
-const arch = process.env.wire_target_arch ? process.env.wire_target_arch : process.arch;
+const arch = process.env.wire_target_arch
+  ? process.env.wire_target_arch
+  : process.arch;
 
 const normalize = args => {
   return args.map(arg => {
