@@ -29,16 +29,8 @@ const windowManager = require('./../window-manager');
 const iconExt = process.platform === 'win32' ? 'ico' : 'png';
 
 const iconPath = path.join(app.getAppPath(), 'img', `tray.${iconExt}`);
-const iconBadgePath = path.join(
-  app.getAppPath(),
-  'img',
-  `tray.badge.${iconExt}`,
-);
-const iconOverlayPath = path.join(
-  app.getAppPath(),
-  'img',
-  'taskbar.overlay.png',
-);
+const iconBadgePath = path.join(app.getAppPath(), 'img', `tray.badge.${iconExt}`);
+const iconOverlayPath = path.join(app.getAppPath(), 'img', 'taskbar.overlay.png');
 
 const BADGE_DELAY = 50;
 

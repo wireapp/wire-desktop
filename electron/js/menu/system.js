@@ -21,9 +21,7 @@
 
 const {app, shell, dialog, Menu} = require('electron');
 const autoLaunch = require('auto-launch');
-const launchCmd = process.env.APPIMAGE != null
-  ? process.env.APPIMAGE
-  : process.execPath;
+const launchCmd = process.env.APPIMAGE != null ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const init = require('./../lib/init');
@@ -328,8 +326,7 @@ const editTemplate = {
     separatorTemplate,
     {
       checked:
-        init.restore('spelling', false) &&
-          config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+        init.restore('spelling', false) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       click(event) {
         init.save('spelling', event.checked);
       },
@@ -354,18 +351,14 @@ const windowTemplate = {
     },
     separatorTemplate,
     {
-      accelerator: process.platform === 'darwin'
-        ? 'Alt+Cmd+Up'
-        : 'Alt+Shift+Up',
+      accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
       click() {
         sendAction('conversation-next');
       },
       i18n: 'menuNextConversation',
     },
     {
-      accelerator: process.platform === 'darwin'
-        ? 'Alt+Cmd+Down'
-        : 'Alt+Shift+Down',
+      accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
       click() {
         sendAction('conversation-prev');
       },
@@ -502,12 +495,7 @@ const linuxTemplate = {
   ],
 };
 
-const menuTemplate = [
-  conversationTemplate,
-  editTemplate,
-  windowTemplate,
-  helpTemplate,
-];
+const menuTemplate = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
 
 function processMenu(template, language) {
   for (const item of template) {
@@ -529,9 +517,7 @@ function changeLocale(language) {
     {
       buttons: [
         locale[language].restartLater,
-        process.platform === 'darwin'
-          ? locale[language].menuQuit
-          : locale[language].restartNow,
+        process.platform === 'darwin' ? locale[language].menuQuit : locale[language].restartNow,
       ],
       message: locale[language].restartLocale,
       title: locale[language].restartNeeded,

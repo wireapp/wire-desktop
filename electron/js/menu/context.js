@@ -120,10 +120,7 @@ window.addEventListener(
       // Maybe we are in a code block _inside_ an element with the 'text' class?
       // Code block can consist of many tags: CODE, PRE, SPAN, etc.
       let parentNode = element.parentNode;
-      while (
-        parentNode !== document &&
-        !parentNode.classList.contains('text')
-      ) {
+      while (parentNode !== document && !parentNode.classList.contains('text')) {
         parentNode = parentNode.parentNode;
       }
       if (parentNode !== document) {
@@ -147,9 +144,7 @@ window.addEventListener(
       element.parentElement.previousElementSibling
     ) {
       // get center-column
-      const id = element.parentElement.previousElementSibling.getAttribute(
-        'data-uie-uid',
-      );
+      const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
       if (createConversationMenu(id)) {
         event.stopPropagation();
       }
