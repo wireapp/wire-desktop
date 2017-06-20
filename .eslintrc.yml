@@ -34,7 +34,7 @@ rules:
       singleQuote: true,
       trailingComma: all,
       bracketSpacing: false,
-      printWidth: 100
+      printWidth: 80
     }
   ]
   sort-keys: [2, asc, {caseSensitive: true, natural: true}]
