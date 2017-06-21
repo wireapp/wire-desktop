@@ -65,6 +65,7 @@ let config = {
     'cs',
     'da',
     'de',
+    'el',
     'es',
     'fi',
     'fr',

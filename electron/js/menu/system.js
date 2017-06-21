@@ -84,6 +84,12 @@ let localeTemplate = {
         changeLocale('de');
       },
     }, {
+      label: locale.label['el'],
+      type: 'radio',
+      click: function() {
+        changeLocale('el');
+      },
+    }, {
       label: locale.label['es'],
       type: 'radio',
       click: function() {

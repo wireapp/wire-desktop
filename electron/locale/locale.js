@@ -27,6 +27,7 @@ const da = require('./strings-da');
 const de = require('./strings-de');
 const cs = require('./strings-cs');
 const en = require('./strings-en');
+const el = require('./strings-el');
 const es = require('./strings-es');
 const fi = require('./strings-fi');
 const fr = require('./strings-fr');
@@ -47,6 +48,7 @@ const label = {
   'cs': 'Čeština',
   'da': 'Dansk',
   'de': 'Deutsch',
+  'el': 'Ελληνικά',
   'es': 'Español',
   'fr': 'Français',
   'hr': 'Hrvatski',
@@ -100,6 +102,7 @@ module.exports = {
   'da': da,
   'de': de,
   'en': en,
+  'el': el,
   'es': es,
   'fi': fi,
   'fr': fr,
