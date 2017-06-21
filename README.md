@@ -18,6 +18,8 @@ No license is granted to the Wire trademark and its associated logos, all of whi
 
 ## Wire Desktop
 
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+
 Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp).
 Based on [Electron](http://electron.atom.io).
 

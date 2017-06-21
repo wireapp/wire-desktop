@@ -24,6 +24,8 @@ const {app} = remote;
 const pkg = require('./../package.json');
 const path = require('path');
 
+const LOADING_FAIL_DELAY = 500;
+
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
@@ -52,7 +54,7 @@ process.once('loaded', function() {
 ///////////////////////////////////////////////////////////////////////////////
 let cachedAddressBook;
 
-function getAdressBook () {
+function getAdressBook() {
   if (cachedAddressBook == undefined) {
     cachedAddressBook = require('node-addressbook');
   }
@@ -104,13 +106,13 @@ ipcRenderer.once('webapp-loaded', (sender, config) => {
         return new Promise((resolve, reject) => {
           ipcRenderer.send('google-auth-request');
           ipcRenderer.once('google-auth-success', (event, token) => resolve(token));
-          ipcRenderer.once('google-auth-error', (error) => reject(error));
+          ipcRenderer.once('google-auth-error', error => reject(error));
         });
       };
 
       amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => ipcRenderer.send('notification-click'));
       amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => ipcRenderer.send('loaded'));
-      amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
+      amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
         const update_from_desktop = update_source === z.announce.UPDATE_SOURCE.DESKTOP;
 
         if (update_from_desktop) {
@@ -144,7 +146,7 @@ ipcRenderer.once('webapp-loaded', (sender, config) => {
       clearInterval(interval_id);
       location.reload();
     }
-  }, 500);
+  }, LOADING_FAIL_DELAY);
 });
 
 ///////////////////////////////////////////////////////////////////////////////

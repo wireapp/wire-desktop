@@ -25,17 +25,17 @@ const arrayify = require('./arrayify');
 const datauri = require('./datauri');
 
 function fetch(url, callback) {
-  request({ url: url, encoding: null }, function(error, response, body) {
+  request({encoding: null, url}, function(error, response, body) {
     if (error) return callback(error);
-    let mimetype = response.headers['content-type'];
+    const mimetype = response.headers['content-type'];
     callback(null, datauri.fromBuffer(mimetype, body));
   });
 }
 
 module.exports = function(urls, limit = 1, callback) {
-  let imagesToFetch = arrayify(urls).slice(0, limit);
+  const imagesToFetch = arrayify(urls).slice(0, limit);
   let completedRequests = 0;
-  let images = [];
+  const images = [];
 
   if (imagesToFetch.length === 0) return callback();
 

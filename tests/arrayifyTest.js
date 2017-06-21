@@ -24,7 +24,6 @@ const assert = require('assert');
 const arrayify = require('../electron/js/lib/arrayify');
 
 describe('arrayify', () => {
-
   it('should return empty array if no arguments', () => {
     assert.deepEqual(arrayify(), []);
   });
@@ -36,5 +35,4 @@ describe('arrayify', () => {
   it('should keep array untouched', () => {
     assert.deepEqual(arrayify(['foo']), ['foo']);
   });
-
 });

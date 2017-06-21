@@ -24,15 +24,11 @@ const assert = require('assert');
 const datauri = require('../electron/js/lib/datauri');
 
 describe('datauri', () => {
-
   describe('fromBuffer', () => {
-
     it('should return datauri', () => {
-      let buffer = new Buffer('foo', 'utf-8');
-      let mimetype = 'text/plain';
+      const buffer = new Buffer('foo', 'utf-8');
+      const mimetype = 'text/plain';
       assert.equal(datauri.fromBuffer(mimetype, buffer), 'data:text/plain;base64,Zm9v');
     });
-
   });
-
 });

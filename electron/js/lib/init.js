@@ -26,7 +26,6 @@ const path = require('path');
 
 const INIT_JSON = path.join(app.getPath('userData'), 'init.json');
 
-
 module.exports = (function() {
   function save(name, value) {
     let data = {};
@@ -50,7 +49,7 @@ module.exports = (function() {
   }
 
   return {
-    save,
     restore,
+    save,
   };
-}());
+})();

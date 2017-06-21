@@ -26,30 +26,37 @@ const config = require('./../config');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 
-const iconExt = (process.platform === 'win32') ? 'ico' : 'png';
+const iconExt = process.platform === 'win32' ? 'ico' : 'png';
 
-const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
-const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
+const iconPath = path.join(app.getAppPath(), 'img', `tray.${iconExt}`);
+const iconBadgePath = path.join(app.getAppPath(), 'img', `tray.badge.${iconExt}`);
 const iconOverlayPath = path.join(app.getAppPath(), 'img', 'taskbar.overlay.png');
+
+const BADGE_DELAY = 50;
 
 let lastUnreadCount = 0;
 
 let appIcon = null;
 
 module.exports = {
-  createTrayIcon: function() {
+  createTrayIcon() {
     if (process.platform === 'darwin') {
       return;
     }
 
     appIcon = new Tray(iconPath);
-    let contextMenu = Menu.buildFromTemplate([
+    const contextMenu = Menu.buildFromTemplate([
       {
-        label: locale.getText('trayOpen') + ' ' + config.NAME,
-        click: function() {windowManager.showPrimaryWindow();},
-      }, {
+        click() {
+          windowManager.showPrimaryWindow();
+        },
+        label: `${locale.getText('trayOpen')} ${config.NAME}`,
+      },
+      {
+        click() {
+          app.quit();
+        },
         label: locale.getText('trayQuit'),
-        click: function() {app.quit();},
       },
     ]);
 
@@ -60,29 +67,32 @@ module.exports = {
     });
   },
 
-  updateBadgeIcon: function(win) {
+  updateBadgeIcon(win) {
     setTimeout(() => {
-      let counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
-      let count = parseInt(counter ? counter[1] : 0, 10);
+      const counter = /\(([0-9]+)\)/.exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
+      const count = parseInt(counter ? counter[1] : 0, 10);
       if (count) {
         this.useBadgeIcon();
       } else {
         this.useDefaultIcon();
       }
-      win.setOverlayIcon(count && process.platform === 'win32' ? iconOverlayPath : null, locale.getText('unreadMessages'));
+      win.setOverlayIcon(
+        count && process.platform === 'win32' ? iconOverlayPath : null,
+        locale.getText('unreadMessages'),
+      );
       win.flashFrame(!win.isFocused() && count > lastUnreadCount);
       app.setBadgeCount(count);
       lastUnreadCount = count;
-    }, 50);
+    }, BADGE_DELAY);
   },
 
-  useDefaultIcon: function() {
-    if (appIcon == null) return;
-    appIcon.setImage(iconPath);
-  },
-
-  useBadgeIcon: function() {
+  useBadgeIcon() {
     if (appIcon == null) return;
     appIcon.setImage(iconBadgePath);
+  },
+
+  useDefaultIcon() {
+    if (appIcon == null) return;
+    appIcon.setImage(iconPath);
   },
 };

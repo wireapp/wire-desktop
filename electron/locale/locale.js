@@ -43,28 +43,27 @@ const tr = require('./strings-tr');
 const uk = require('./strings-uk');
 
 const label = {
-  'en': 'English',
-  'cs': 'Čeština',
-  'da': 'Dansk',
-  'de': 'Deutsch',
-  'es': 'Español',
-  'fr': 'Français',
-  'hr': 'Hrvatski',
-  'it': 'Italiano',
-  'lt': 'Lietuvos',
-  'hu': 'Magyar',
-  'pt': 'Português do Brasil',
-  'ro': 'Română',
-  'ru': 'Русский',
-  'sk': 'Slovenčina',
-  'sl': 'Slovenščina',
-  'fi': 'Suomi',
-  'tr': 'Türkçe',
-  'uk': 'Українська',
+  en: 'English',
+  cs: 'Čeština',
+  da: 'Dansk',
+  de: 'Deutsch',
+  es: 'Español',
+  fr: 'Français',
+  hr: 'Hrvatski',
+  it: 'Italiano',
+  lt: 'Lietuvos',
+  hu: 'Magyar',
+  pt: 'Português do Brasil',
+  ro: 'Română',
+  ru: 'Русский',
+  sk: 'Slovenčina',
+  sl: 'Slovenščina',
+  fi: 'Suomi',
+  tr: 'Türkçe',
+  uk: 'Українська',
 };
 
 let current;
-
 
 function getCurrent() {
   if (current == null) {
@@ -77,44 +76,40 @@ function getCurrent() {
   return current;
 }
 
-
 function parseLocale(locale) {
   return config.LOCALE.find(loc => loc.includes(locale)) || config.LOCALE[0];
 }
-
 
 function getText(text) {
   let strings = eval(getCurrent());
   return strings[text] || en[text] || '';
 }
 
-
 function setLocale(locale) {
   current = parseLocale(locale);
   init.save('locale', current);
 }
 
-
 module.exports = {
-  'cs': cs,
-  'da': da,
-  'de': de,
-  'en': en,
-  'es': es,
-  'fi': fi,
-  'fr': fr,
-  'hr': hr,
-  'hu': hu,
-  'it': it,
-  'lt': lt,
-  'pt': pt,
-  'ro': ro,
-  'ru': ru,
-  'sk': sk,
-  'sl': sl,
-  'tr': tr,
-  'uk': uk,
-  'label': label,
+  cs: cs,
+  da: da,
+  de: de,
+  en: en,
+  es: es,
+  fi: fi,
+  fr: fr,
+  hr: hr,
+  hu: hu,
+  it: it,
+  lt: lt,
+  pt: pt,
+  ro: ro,
+  ru: ru,
+  sk: sk,
+  sl: sl,
+  tr: tr,
+  uk: uk,
+  label: label,
   getCurrent: getCurrent,
   getText: getText,
   setLocale: setLocale,

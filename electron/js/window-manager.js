@@ -23,33 +23,29 @@ const {BrowserWindow} = require('electron');
 
 let primaryWindowId;
 
-
 function setPrimaryWindowId(newPrimaryWindowId) {
   primaryWindowId = newPrimaryWindowId;
-};
-
+}
 
 function getPrimaryWindow() {
   if (primaryWindowId) {
     return BrowserWindow.fromId(primaryWindowId);
   }
   return BrowserWindow.getAllWindows()[0];
-};
-
+}
 
 function showPrimaryWindow() {
-  var win = getPrimaryWindow();
+  const win = getPrimaryWindow();
   if (win.isMinimized()) {
     win.restore();
   } else if (!win.isVisible()) {
     win.show();
   }
   win.focus();
-};
-
+}
 
 module.exports = {
-  setPrimaryWindowId: setPrimaryWindowId,
-  getPrimaryWindow: getPrimaryWindow,
-  showPrimaryWindow: showPrimaryWindow,
+  getPrimaryWindow,
+  setPrimaryWindowId,
+  showPrimaryWindow,
 };

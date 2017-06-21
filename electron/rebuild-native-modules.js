@@ -24,9 +24,9 @@ const spawn = require('cross-spawn');
 const exec = require('child_process').exec;
 const arch = process.env.wire_target_arch ? process.env.wire_target_arch : process.arch;
 
-const normalize = (args) => {
-  return args.map((arg) => {
-    Object.keys(process.env).forEach((key) => {
+const normalize = args => {
+  return args.map(arg => {
+    Object.keys(process.env).forEach(key => {
       const variableRegex = new RegExp(`\\$${key}|%${key}%`, 'i');
       arg = arg.replace(variableRegex, process.env[key]);
     });
@@ -34,7 +34,8 @@ const normalize = (args) => {
   });
 };
 
-let args = process.argv.slice(2);
+const offset = 2;
+let args = process.argv.slice(offset);
 if (args.length === 1) {
   const [command] = normalize(args);
   const proc = exec(command, (error, stdout, stderr) => {

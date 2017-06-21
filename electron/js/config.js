@@ -21,78 +21,52 @@
 
 const pkg = require('./../package.json');
 
-let config = {
-  WIRE: 'https://wire.com',
-  WIRE_SUPPORT: 'https://support.wire.com',
-  WIRE_LEGAL: 'https://wire.com/legal/',
-  WIRE_PRIVACY: 'https://wire.com/privacy/',
-  WIRE_LICENSES: 'https://wire.com/legal/licenses/',
+const SEC_IN_MIN = 60;
+const MIN_IN_HOUR = 60;
+const HOUR_IN_DAY = 24;
+const SEC = 1000;
+const MIN = SEC_IN_MIN * SEC;
+const HOUR = MIN_IN_HOUR * MIN;
+const DAY = HOUR_IN_DAY * HOUR;
 
-  DEV_URL: 'https://wire-webapp-dev.zinfra.io/',
-  EDGE_URL: 'https://wire-webapp-edge.zinfra.io/',
-  INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
-  LOCALHOST_URL: 'http://localhost:8888/',
-  PROD_URL: 'https://app.wire.com/',
-  STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
+const UPDATE_DELAY_MINUTES = 5;
 
+const config = {
+  CONSOLE_LOG: 'console.log',
   CRYPTO: 'crypto',
-  DEV: 'dev',
-  EDGE: 'edge',
-  INTERNAL: 'internal',
-  LOCALHOST: 'localhost',
-  PROD: 'prod',
-  STAGING: 'staging',
-
-  MIN_WIDTH_MAIN: 760,
-  MIN_HEIGHT_MAIN: 512,
-
-  DEFAULT_WIDTH_MAIN: 1024,
   DEFAULT_HEIGHT_MAIN: 768,
-
-  WIDTH_AUTH: 400,
-  HEIGHT_AUTH: 576,
-
-  UPDATE_DELAY: 5 * 60 * 1000,
-  UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
-
-  WHITE_LIST: [
-    'https://www.wire.com/',
-    'https://wire.com/',
-  ],
-
-  LOCALE: [
-    'en',
-    'cs',
-    'da',
-    'de',
-    'es',
-    'fi',
-    'fr',
-    'hr',
-    'hu',
-    'it',
-    'lt',
-    'pt',
-    'ro',
-    'ru',
-    'sk',
-    'sl',
-    'tr',
-    'uk',
-  ],
-
-  RAYGUN_API_KEY: '',
-
-  GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
+  DEFAULT_WIDTH_MAIN: 1024,
+  DEV: 'dev',
+  DEV_URL: 'https://wire-webapp-dev.zinfra.io/',
+  EDGE: 'edge',
+  EDGE_URL: 'https://wire-webapp-edge.zinfra.io/',
   GOOGLE_CLIENT_ID: '',
   GOOGLE_CLIENT_SECRET: '',
-
-  CONSOLE_LOG: 'console.log',
-
+  GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
+  HEIGHT_AUTH: 576,
+  INTERNAL: 'internal',
+  INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
+  LOCALE: ['en', 'cs', 'da', 'de', 'es', 'fi', 'fr', 'hr', 'hu', 'it', 'lt', 'pt', 'ro', 'ru', 'sk', 'sl', 'tr', 'uk'],
+  LOCALHOST: 'localhost',
+  LOCALHOST_URL: 'http://localhost:8888/',
+  MIN_HEIGHT_MAIN: 512,
+  MIN_WIDTH_MAIN: 760,
+  PROD: 'prod',
+  PROD_URL: 'https://app.wire.com/',
+  RAYGUN_API_KEY: '',
   SPELL_SUGGESTIONS: 4,
-  SPELL_SUPPORTED: [
-    'en',
-  ],
+  SPELL_SUPPORTED: ['en'],
+  STAGING: 'staging',
+  STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
+  UPDATE_DELAY: UPDATE_DELAY_MINUTES * MIN,
+  UPDATE_INTERVAL: DAY,
+  WHITE_LIST: ['https://www.wire.com/', 'https://wire.com/'],
+  WIDTH_AUTH: 400,
+  WIRE: 'https://wire.com',
+  WIRE_LEGAL: 'https://wire.com/legal/',
+  WIRE_LICENSES: 'https://wire.com/legal/licenses/',
+  WIRE_PRIVACY: 'https://wire.com/privacy/',
+  WIRE_SUPPORT: 'https://support.wire.com',
 };
 
 config.ENVIRONMENT = pkg.environment;

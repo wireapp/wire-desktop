@@ -3,17 +3,22 @@
   "license": "LicenseRef-LICENSE",
   "private": true,
   "scripts": {
-    "preinstall": "cd electron && npm install",
-    "install": "cd electron && npm run rebuild-native-modules",
-    "postinstall": "cd electron && npm run rebuild-neon",
-    "start": "electron electron --inspect --devtools --enable-logging",
-    "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
-    "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
-    "localhost": "electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
-    "test": "eslint electron && electron-mocha tests",
+    "build:linux": "grunt linux-prod",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
-    "build:linux": "grunt linux-prod"
+    "install": "cd electron && npm run rebuild-native-modules",
+    "lint:fix:scripts": "npm run lint -- --fix",
+    "lint:fix:styles": "prettier --single-quote --write electron/css/**/*.css",
+    "lint:fix": "yarn lint:fix:scripts && yarn lint:fix:styles",
+    "lint": "eslint -c .eslintrc.yml --ignore-path .gitignore --quiet \"electron/js/**/*.js\" \"electron/*.js\" \"tests/**/*.js\"",
+    "localhost": "electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
+    "postinstall": "cd electron && npm run rebuild-neon",
+    "precommit": "lint-staged",
+    "preinstall": "cd electron && npm install",
+    "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
+    "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
+    "start": "electron electron --inspect --devtools --enable-logging",
+    "test": "npm run lint && electron-mocha tests"
   },
   "repository": {
     "type": "git",
@@ -26,6 +31,16 @@
       "output": "wrap/dist"
     }
   },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:fix:scripts",
+      "git add"
+    ],
+    "*.css": [
+      "npm run lint:fix:styles",
+      "git add"
+    ]
+  },
   "devDependencies": {
     "electron": "1.7.3",
     "electron-builder": "18.6.2",
@@ -33,10 +48,15 @@
     "electron-packager": "8.7.1",
     "electron-winstaller": "2.6.1",
     "eslint": "3.19.0",
+    "eslint-config-prettier": "2.1.1",
+    "eslint-plugin-prettier": "2.1.1",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.1.0",
     "grunt-git": "1.0.3",
     "grunt-github-changes": "0.1.0",
-    "load-grunt-tasks": "3.5.2"
+    "husky": "0.13.4",
+    "lint-staged": "4.0.0",
+    "load-grunt-tasks": "3.5.2",
+    "prettier": "1.4.4"
   }
 }

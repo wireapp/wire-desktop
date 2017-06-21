@@ -27,16 +27,18 @@ const cp = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
+app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 
-let appFolder = path.resolve(process.execPath, '..');
-let rootFolder = path.resolve(appFolder, '..');
-let updateDotExe = path.join(rootFolder, 'Update.exe');
+const appFolder = path.resolve(process.execPath, '..');
+const rootFolder = path.resolve(appFolder, '..');
+const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-let exeName = config.NAME + '.exe';
-let linkName = config.NAME + '.lnk';
+const exeName = `${config.NAME}.exe`;
+const linkName = `${config.NAME}.lnk`;
 
-let taskbarLink = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName));
+const taskbarLink = path.resolve(
+  path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName),
+);
 
 function spawn(command, args, callback) {
   let error;
@@ -52,21 +54,21 @@ function spawn(command, args, callback) {
       return typeof callback === 'function' ? callback(error, stdout) : void 0;
     });
     return;
-  };
+  }
 
   spawnedProcess.stdout.on('data', function(data) {
-    return stdout += data;
+    return (stdout += data);
   });
 
   error = null;
   spawnedProcess.on('error', function(processError) {
-    return error != null ? error : error = processError;
+    return error != null ? error : (error = processError);
   });
 
   spawnedProcess.on('close', function(code, signal) {
     if (code !== 0) {
       if (error == null) {
-        error = new Error('Command failed: ' + (signal != null ? signal : code));
+        error = new Error(`Command failed: ${signal != null ? signal : code}`);
       }
     }
     if (error != null) {
@@ -81,44 +83,37 @@ function spawn(command, args, callback) {
     }
     return typeof callback === 'function' ? callback(error, stdout) : void 0;
   });
-};
-
+}
 
 function spawnUpdate(args, callback) {
   spawn(updateDotExe, args, callback);
-};
-
+}
 
 function createStartShortcut(callback) {
   spawnUpdate(['--createShortcut', exeName, '-l=StartMenu'], callback);
-};
-
+}
 
 function createDesktopShortcut(callback) {
   spawnUpdate(['--createShortcut', exeName, '-l=Desktop'], callback);
-};
-
+}
 
 function removeShortcuts(callback) {
   spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], function() {
     fs.unlink(taskbarLink, callback);
   });
-};
-
+}
 
 function installUpdate() {
   spawnUpdate(['--update', config.UPDATE_WIN_URL]);
-};
-
+}
 
 function scheduleUpdate() {
   setTimeout(installUpdate, config.UPDATE_DELAY);
   setInterval(installUpdate, config.UPDATE_INTERVAL);
-};
-
+}
 
 function handleSquirrelEvent(shouldQuit) {
-  let squirrelEvent = process.argv[1];
+  const squirrelEvent = process.argv[1];
   switch (squirrelEvent) {
     case '--squirrel-install':
       createStartShortcut(function() {
@@ -138,18 +133,18 @@ function handleSquirrelEvent(shouldQuit) {
     case '--squirrel-obsolete':
       app.quit();
       return true;
+    default:
+      if (shouldQuit) {
+        // Using exit instead of quit for the time being
+        // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+        app.exit();
+      }
+      scheduleUpdate();
+      return false;
   }
-  if (shouldQuit) {
-    // Using exit instead of quit for the time being
-    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-    app.exit();
-  }
-  scheduleUpdate();
-  return false;
-};
-
+}
 
 module.exports = {
-  installUpdate: installUpdate,
-  handleSquirrelEvent: handleSquirrelEvent,
+  handleSquirrelEvent,
+  installUpdate,
 };

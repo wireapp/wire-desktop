@@ -24,9 +24,7 @@ const config = require('../electron/js/config');
 const util = require('../electron/js/util');
 
 describe('util', () => {
-
   describe('#openInExternalWindow()', () => {
-
     it('should open link in external browser when link is part of whitelist', () => {
       assert.equal(util.openInExternalWindow(config.WHITE_LIST[0]), true);
     });
@@ -34,7 +32,5 @@ describe('util', () => {
     it('should not open link in external browser when link is not part of whitelist', () => {
       assert.equal(util.openInExternalWindow('app.wire.com'), false);
     });
-
   });
-
 });

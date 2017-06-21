@@ -19,10 +19,11 @@
 
 'use strict';
 
-
 module.exports = function(point, rectangle) {
-  return point[0] >= rectangle.x &&
+  return (
+    point[0] >= rectangle.x &&
     point[0] <= rectangle.x + rectangle.width &&
     point[1] >= rectangle.y &&
-    point[1] <= rectangle.y + rectangle.height;
+    point[1] <= rectangle.y + rectangle.height
+  );
 };

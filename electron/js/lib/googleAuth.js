@@ -26,22 +26,16 @@ const google = require('googleapis');
 const request = require('request');
 const OAuth2 = google.auth.OAuth2;
 
-
 function getAuthenticationUrl(scopes, clientId, clientSecret) {
-  const oauth2Client = new OAuth2(
-    clientId,
-    clientSecret,
-    'urn:ietf:wg:oauth:2.0:oob'
-  );
+  const oauth2Client = new OAuth2(clientId, clientSecret, 'urn:ietf:wg:oauth:2.0:oob');
   return oauth2Client.generateAuthUrl({scope: scopes});
 }
-
 
 function authorizeApp(url) {
   return new Promise(function(resolve, reject) {
     const win = new BrowserWindow({
-      'title': '',
-      'useContentSize': true,
+      title: '',
+      useContentSize: true,
     });
     win.setMenuBarVisibility(false);
     win.loadURL(url);
@@ -53,12 +47,13 @@ function authorizeApp(url) {
     win.on('page-title-updated', function() {
       setImmediate(function() {
         const title = win.getTitle();
+        const pos = 2;
         if (title.startsWith('Denied')) {
-          reject(new Error(title.split(/[ =]/)[2]));
+          reject(new Error(title.split(/[ =]/)[pos]));
           win.removeAllListeners('closed');
           win.close();
         } else if (title.startsWith('Success')) {
-          resolve(title.split(/[ =]/)[2]);
+          resolve(title.split(/[ =]/)[pos]);
           win.removeAllListeners('closed');
           win.close();
         }
@@ -67,44 +62,44 @@ function authorizeApp(url) {
   });
 }
 
-
 function getAuthorizationCode(scopes, clientId, clientSecret) {
   const url = getAuthenticationUrl(scopes, clientId, clientSecret);
   return authorizeApp(url);
 }
 
-
 function getAccessToken(scopes, clientId, clientSecret) {
-  return new Promise(function (resolve, reject) {
-    getAuthorizationCode(scopes, clientId, clientSecret)
-      .then(function (code) {
-        const data = qs.stringify({
-          code: code,
-          client_id: clientId,
-          client_secret: clientSecret,
-          grant_type: 'authorization_code',
-          redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-        });
+  return new Promise(function(resolve, reject) {
+    getAuthorizationCode(scopes, clientId, clientSecret).then(function(code) {
+      const data = qs.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      });
 
-        request.post('https://accounts.google.com/o/oauth2/token', {
+      request.post(
+        'https://accounts.google.com/o/oauth2/token',
+        {
+          body: data,
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: data,
-        }, function(error, response, body) {
+        },
+        function(error, response, body) {
           if (error) {
             reject(error);
           } else {
             resolve(JSON.parse(body));
           }
-        });
-      });
+        },
+      );
+    });
   });
 }
 
-
 module.exports = {
-  getAuthorizationCode,
   getAccessToken,
+  getAuthorizationCode,
 };

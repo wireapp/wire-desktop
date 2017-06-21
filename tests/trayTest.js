@@ -17,6 +17,8 @@
  *
  */
 
+/* eslint-disable no-magic-numbers */
+
 'use strict';
 
 const {BrowserWindow, app} = require('electron');
@@ -27,12 +29,10 @@ const path = require('path');
 const tray = require('../electron/js/menu/tray');
 
 describe('tray', () => {
-
   describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
+    it('should update badge according to window title', done => {
+      const window = new BrowserWindow();
+      window.loadURL(`file://${path.join(__dirname, 'fixtures', 'badge.html')}`);
       window.webContents.on('dom-ready', function() {
         tray.updateBadgeIcon(window);
         setTimeout(function() {
@@ -44,5 +44,4 @@ describe('tray', () => {
       });
     });
   });
-
 });

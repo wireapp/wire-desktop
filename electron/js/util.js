@@ -25,18 +25,21 @@ const config = require('./config');
 const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
-  isInView: function(win) {
-    let windowBounds = win.getBounds();
-    let nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
+  isInView(win) {
+    const windowBounds = win.getBounds();
+    const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
 
-    let upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
-    let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
+    const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
+    const lowerRightVisible = pointInRectangle(
+      [windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height],
+      nearestWorkArea,
+    );
 
     return upperLeftVisible || lowerRightVisible;
   },
 
-  openInExternalWindow: function(url) {
-    for (let item of config.WHITE_LIST) {
+  openInExternalWindow(url) {
+    for (const item of config.WHITE_LIST) {
       if (url.includes(item)) {
         return true;
       }
@@ -44,24 +47,7 @@ module.exports = {
     return false;
   },
 
-  resizeToSmall: function(win) {
-    if (process.platform !== 'darwin') {
-      win.setMenuBarVisibility(false);
-    }
-
-    let height = config.HEIGHT_AUTH;
-    if (process.platform === 'win32') {
-      height += 40;
-    }
-    win.setFullScreen(false);
-    win.setMaximizable(false);
-    win.setMinimumSize(config.WIDTH_AUTH, height);
-    win.setSize(config.WIDTH_AUTH, height);
-    win.setResizable(false);
-    win.center();
-  },
-
-  resizeToBig: function(win) {
+  resizeToBig(win) {
     if (process.platform !== 'darwin') {
       win.setMenuBarVisibility(true);
     }
@@ -69,6 +55,24 @@ module.exports = {
     win.setSize(config.DEFAULT_WIDTH_MAIN, config.DEFAULT_HEIGHT_MAIN);
     win.setResizable(true);
     win.setMaximizable(true);
+    win.center();
+  },
+
+  resizeToSmall(win) {
+    if (process.platform !== 'darwin') {
+      win.setMenuBarVisibility(false);
+    }
+
+    let height = config.HEIGHT_AUTH;
+    if (process.platform === 'win32') {
+      const WIN_OFFSET = 40;
+      height += WIN_OFFSET;
+    }
+    win.setFullScreen(false);
+    win.setMaximizable(false);
+    win.setMinimumSize(config.WIDTH_AUTH, height);
+    win.setSize(config.WIDTH_AUTH, height);
+    win.setResizable(false);
     win.center();
   },
 };
