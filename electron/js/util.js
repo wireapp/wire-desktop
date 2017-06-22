@@ -20,6 +20,8 @@
 'use strict';
 
 const electron = require('electron');
+const debug = require('debug');
+const utilDebug = debug('utilDebug');
 
 const config = require('./config');
 const pointInRectangle = require('./lib/pointInRect');
