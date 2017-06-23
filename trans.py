@@ -30,6 +30,7 @@ SUPPORTED_LOCALE = [
   'cs',
   'da',
   'de',
+  'el',
   'es',
   'fi',
   'fr',
