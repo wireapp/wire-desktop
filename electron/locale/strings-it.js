@@ -3,6 +3,10 @@
 let string = {};
 
 
+string.aboutReleases = 'Note di rilascio';
+string.aboutUpdate = 'Come funzionano gli aggiornamenti di Wire';
+string.aboutVersion = 'Versione';
+string.aboutWebappVersion = 'Wire versione Web';
 
 string.menuConversation = 'Conversazione';
 string.menuStart = 'Avvia';
@@ -33,7 +37,7 @@ string.menuCopy = 'Copia';
 string.menuPaste = 'Incolla';
 string.menuSelectAll = 'Seleziona tutto';
 string.menuSpelling = 'Controllo ortografico durante la digitazione';
-string.menuMinimize = 'Ridurre al minimo';
+string.menuMinimize = 'Riduci a icona';
 string.menuClose = 'Chiudi';
 string.menuNextConversation = 'Conversazione successiva';
 string.menuPreviousConversation = 'Conversazione precedente';
