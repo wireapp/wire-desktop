@@ -192,7 +192,7 @@ let conversationTemplate = {
   submenu: [
     {
       i18n: 'menuStart',
-      accelerator: 'CmdOrCtrl+N',
+      accelerator: 'CmdOrCtrl+F',
       click: function() {sendAction('conversation-start');},
     }, separatorTemplate, {
       i18n: 'menuPing',
