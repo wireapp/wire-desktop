@@ -20,6 +20,7 @@
 'use strict';
 
 const electron = require('electron');
+const url = require('url');
 const debug = require('debug');
 const utilDebug = debug('utilDebug');
 
@@ -37,9 +38,41 @@ module.exports = {
     return upperLeftVisible || lowerRightVisible;
   },
 
-  openInExternalWindow: function(url) {
+  isMatchingEmbed: (_url) => {
+    const hostname = url.parse(_url).hostname;
+
+    for (let embedDomain of config.EMBED_DOMAINS) {
+
+      // If the hostname match
+      if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(hostname)) {
+        utilDebug('Allowing %s', embedDomain.name);
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  isMatchingEmbedOpenExternalWhitelist: (domain, _url) => {
+    const currentHostname = url.parse(domain).hostname;
+    const linkHostname = url.parse(_url).hostname;
+
+    for (let embedDomain of config.EMBED_DOMAINS) {
+
+      // If the hostname match
+      if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(currentHostname)) {
+
+        // And the link to open is allowed
+        return embedDomain.allowedExternalLinks.includes(linkHostname);
+      }
+    }
+
+    return false;
+  },
+
+  openInExternalWindow: function(_url) {
     for (let item of config.WHITE_LIST) {
-      if (url.includes(item)) {
+      if (_url.includes(item)) {
         return true;
       }
     }
