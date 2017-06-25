@@ -19,8 +19,8 @@
 
 'use strict';
 
+// Modules
 const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
-
 const fs = require('fs');
 const minimist = require('minimist');
 const path = require('path');
@@ -28,11 +28,24 @@ const raygun = require('raygun');
 const debug = require('debug');
 const debugMain = debug('mainTmp');
 
+// Paths
+const APP_PATH = app.getAppPath();
+const USER_DATAS_PATH = app.getPath('userData');
+
+// Local files defines
+const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
+const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
+const SPLASH_HTML = `file://${path.join(APP_PATH, 'html', 'splash.html')}`;
+const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
+const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
+
+// Config. persistence
+const init = require('./js/lib/init');
+
+// Wrapper modules
 const certutils = require('./js/certutils');
-const config = require('./js/config');
 const download = require('./js/lib/download');
 const googleAuth = require('./js/lib/googleAuth');
-const init = require('./js/lib/init');
 const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
 const developerMenu = require('./js/menu/developer');
@@ -40,13 +53,12 @@ const tray = require('./js/menu/tray');
 const util = require('./js/util');
 const windowManager = require('./js/window-manager');
 
-const APP_PATH = app.getAppPath();
-const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
-const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-const SPLASH_HTML = 'file://' + path.join(APP_PATH, 'html', 'splash.html');
-const CERT_ERR_HTML = 'file://' + path.join(APP_PATH, 'html', 'certificate-error.html');
-const ABOUT_HTML = 'file://' + path.join(APP_PATH, 'html', 'about.html');
-const ICON = 'wire.' + ((process.platform === 'win32') ? 'ico' : 'png');
+// Config
+const argv = minimist(process.argv.slice(1));
+const config = require('./js/config');
+
+// Icon
+const ICON = `wire.${((process.platform === 'win32') ? 'ico' : 'png')}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
 let main;
@@ -55,7 +67,6 @@ let about;
 let enteredWebapp = false;
 let quitting = false;
 let shouldQuit = false;
-let argv = minimist(process.argv.slice(1));
 let webappVersion;
 
 ///////////////////////////////////////////////////////////////////////////////
