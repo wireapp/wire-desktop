@@ -1,8 +1,11 @@
 ---
+  parserOptions:
+    sourceType: module
+    ecmaVersion: 8
   env:
     browser: true
     node: true
-    es6: true
+  plugins: [react]
   rules:
     comma-dangle: [2, always-multiline]
     handle-callback-err: 2

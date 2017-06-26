@@ -3,12 +3,9 @@ import { render } from 'react-dom'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 
-import App from './components/App'
 import { addAccount, switchAccount } from './actions'
 import appStore from './reducers'
 import { loadState, saveState } from './lib/localStorage'
-
-import './index.css'
 
 const persistedState = loadState()
 
@@ -24,8 +21,6 @@ store.subscribe(() => {
 })
 
 render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <div>foo</div>,
   document.getElementById('root')
 )
