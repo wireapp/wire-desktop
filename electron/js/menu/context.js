@@ -24,7 +24,6 @@ const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
-const init = require('./../lib/init');
 let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
