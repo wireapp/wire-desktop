@@ -105,6 +105,9 @@ function onLoad() {
   exposeLibsodiumNeon()
   replaceGoogleAuth(window.wire)
 
+  // include context menu
+  require('../../js/menu/context')
+
   window.removeEventListener('DOMContentLoaded', onLoad);
 }
 
