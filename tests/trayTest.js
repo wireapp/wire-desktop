@@ -21,6 +21,10 @@
 
 const {BrowserWindow, app} = require('electron');
 
+// Configuration persistence
+const ConfigurationPersistence = require('../electron/js/lib/ConfigurationPersistence');
+global.init = new ConfigurationPersistence({file: '/tmp/trayTestConfigFile.json'});
+
 const assert = require('assert');
 const path = require('path');
 
