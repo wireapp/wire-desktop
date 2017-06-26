@@ -25,8 +25,10 @@ const fs = require('fs');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
+/*eslint-disable no-unused-vars*/
 const debug = require('debug');
 const debugMain = debug('mainTmp');
+/*eslint-enable no-unused-vars*/
 
 // Paths
 const APP_PATH = app.getAppPath();
