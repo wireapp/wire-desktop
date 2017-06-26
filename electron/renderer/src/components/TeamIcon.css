@@ -1,0 +1,17 @@
+.TeamIcon {
+  position: relative;
+  fill: #fff;
+  width: 38px;
+  height: 38px;
+}
+
+.TeamIcon > * {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%)
+}
+
+.TeamIcon > span {
+  font-size: 11px;
+}

@@ -1,0 +1,30 @@
+.Sidebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  background-color: rgba(0, 0, 0, .24);
+  width: 78px;
+  padding-top: 40px;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.Sidebar-icon + .Sidebar-icon{
+  margin-top: 16px;
+}
+
+.Sidebar-account-add {
+  margin-top: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, .16);
+  fill: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
