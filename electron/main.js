@@ -27,7 +27,6 @@ const path = require('path');
 const raygun = require('raygun');
 /*eslint-disable no-unused-vars*/
 const debug = require('debug');
-const debugMain = debug('mainTmp');
 /*eslint-enable no-unused-vars*/
 
 const certutils = require('./js/certutils');
@@ -204,9 +203,6 @@ function showMainWindow() {
       'backgroundThrottling': false,
       'nodeIntegration': false,
       'preload': PRELOAD_JS,
-
-      // Enable <webview>
-      webviewTag: true,
     },
   });
 
@@ -277,17 +273,9 @@ function showMainWindow() {
     }
   });
 
-  // Handle the new window event in the main Browser Window
-  main.webContents.on('new-window', (event, _url) => {
+  main.webContents.on('new-window', function(event, url) {
     event.preventDefault();
-
-    // Ensure the link does not come from a webview
-    if (typeof event.sender.viewInstanceId !== 'undefined') {
-      debugMain('New window did came from a webview, aborting.');
-      return;
-    }
-
-    shell.openExternal(_url);
+    shell.openExternal(url);
   });
 
   main.webContents.on('dom-ready', function() {
@@ -400,81 +388,3 @@ fs.stat(consoleLog, function(err, stats) {
     fs.rename(consoleLog, consoleLog.replace('.log', '.old'));
   }
 });
-
-class ElectronWrapperInit {
-
-  constructor() {
-    this.debug = debug('ElectronWrapperInit');
-  }
-
-  async run() {
-    this.debug('webviewProtection init');
-    this.webviewProtection();
-  }
-
-  // <webview> hardening
-  webviewProtection() {
-    const webviewProtectionDebug = debug('ElectronWrapperInit:webviewProtection');
-    const openLinkInNewWindow = (event, _url) => {
-
-      // Prevent default behavior
-      event.preventDefault();
-
-      // Ensure the link come from a whitelisted link
-      if (!util.isMatchingEmbedOpenExternalWhitelist(event.sender.history[0], _url)) {
-        webviewProtectionDebug('Tried to open a non-whitelisted window from a webview, aborting. URL: %s', _url);
-        return;
-      }
-
-      webviewProtectionDebug('Opening an external window from a webview. URL: %s', _url);
-      shell.openExternal(_url);
-    };
-
-    app.on('web-contents-created', (event, contents) => {
-
-      // The following events should only be applied on webviews
-      if (contents.getType() !== 'webview') {
-        return;
-      }
-
-      // Open webview links outside of the app
-      contents.on('new-window', (e, _url) => { openLinkInNewWindow(e, _url); });
-      contents.on('will-navigate', (e, _url) => { openLinkInNewWindow(e, _url); });
-
-      contents.on('will-attach-webview', (e, webPreferences, params) => {
-        const _url = params.src;
-
-        // Strip away preload scripts as they represent a security risk
-        delete webPreferences.preload;
-        delete webPreferences.preloadURL;
-        params.preload = '';
-
-        // Use secure defaults
-        webPreferences.nodeIntegration = false;
-        webPreferences.webSecurity = true;
-        webPreferences.sandbox = true;
-        webPreferences.contextIsolation = true;
-        params.contextIsolation = true;
-        webPreferences.allowRunningInsecureContent = false;
-        params.plugins = false;
-        params.autosize = false;
-
-        // Let onBeforeSendHeaders manage the referrer
-        params.httpreferrer = '';
-
-        // IMPORTANT: Use an in-memory partition for the session (derived from the URL)
-        // https://electron.atom.io/docs/api/webview-tag/#partition
-        params.partition = new Buffer(_url).toString('base64');
-        webviewProtectionDebug('Using partition %s', params.partition);
-
-        // Verify the URL being loaded
-        if (!util.isMatchingEmbed(_url)) {
-          e.preventDefault();
-          webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
-        }
-      });
-    });
-  }
-}
-
-(new ElectronWrapperInit()).run();

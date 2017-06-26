@@ -55,47 +55,6 @@ let config = {
   UPDATE_DELAY: 5 * 60 * 1000,
   UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
 
-  EMBED_DOMAINS: [
-
-    // Youtube
-    {
-      name: 'Youtube',
-      hostname: ['www.youtube-nocookie.com'],
-      allowedExternalLinks: [
-        'www.youtube.com',
-      ],
-    },
-
-    // Vimeo
-    {
-      name: 'Vimeo',
-      hostname: ['player.vimeo.com'],
-      allowedExternalLinks: [
-        'vimeo.com',
-        'player.vimeo.com',
-      ],
-    },
-
-    // Soundcloud
-    {
-      name: 'Soundcloud',
-      hostname: ['w.soundcloud.com'],
-      allowedExternalLinks: [
-        'soundcloud.com',
-      ],
-    },
-
-    // Spotify
-    {
-      name: 'Spotify',
-      hostname: ['open.spotify.com', 'embed.spotify.com'],
-      allowedExternalLinks: [
-        'www.spotify.com',
-        'developer.spotify.com',
-      ],
-    },
-  ],
-
   WHITE_LIST: [
     'https://www.wire.com/',
     'https://wire.com/',

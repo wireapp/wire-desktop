@@ -20,7 +20,6 @@
 'use strict';
 
 const electron = require('electron');
-const url = require('url');
 /*eslint-disable no-unused-vars*/
 const debug = require('debug');
 const utilDebug = debug('utilDebug');
@@ -40,41 +39,9 @@ module.exports = {
     return upperLeftVisible || lowerRightVisible;
   },
 
-  isMatchingEmbed: (_url) => {
-    const hostname = url.parse(_url).hostname;
-
-    for (let embedDomain of config.EMBED_DOMAINS) {
-
-      // If the hostname match
-      if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(hostname)) {
-        utilDebug('Allowing %s', embedDomain.name);
-        return true;
-      }
-    }
-
-    return false;
-  },
-
-  isMatchingEmbedOpenExternalWhitelist: (domain, _url) => {
-    const currentHostname = url.parse(domain).hostname;
-    const linkHostname = url.parse(_url).hostname;
-
-    for (let embedDomain of config.EMBED_DOMAINS) {
-
-      // If the hostname match
-      if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(currentHostname)) {
-
-        // And the link to open is allowed
-        return embedDomain.allowedExternalLinks.includes(linkHostname);
-      }
-    }
-
-    return false;
-  },
-
-  openInExternalWindow: function(_url) {
+  openInExternalWindow: function(url) {
     for (let item of config.WHITE_LIST) {
-      if (_url.includes(item)) {
+      if (url.includes(item)) {
         return true;
       }
     }
