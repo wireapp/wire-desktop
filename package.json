@@ -29,7 +29,7 @@
   "devDependencies": {
     "electron": "1.7.3",
     "electron-builder": "18.6.2",
-    "electron-mocha": "3.4.0",
+    "electron-mocha": "4.0.0",
     "electron-packager": "8.7.1",
     "electron-winstaller": "2.6.3",
     "eslint": "3.19.0",
