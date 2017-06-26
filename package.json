@@ -41,7 +41,7 @@
     "electron-packager": "8.7.1",
     "electron-winstaller": "2.6.1",
     "eslint": "3.19.0",
-    "eslint-plugin-react": "^7.1.0",
+    "eslint-plugin-react": "7.1.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.1.0",
     "grunt-git": "1.0.3",
