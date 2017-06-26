@@ -199,7 +199,6 @@ function showMainWindow() {
     'webPreferences': {
       'backgroundThrottling': false,
       'nodeIntegration': false,
-      'preload': PRELOAD_JS,
     },
   });
 
@@ -232,7 +231,7 @@ function showMainWindow() {
     return cb(-3);
   });
 
-  main.loadURL(SPLASH_HTML);
+  main.loadURL(`file://${__dirname}/renderer/index.html`);
 
   if (argv.devtools) {
     main.webContents.openDevTools();
