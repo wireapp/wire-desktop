@@ -16,7 +16,7 @@
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
     "bundle:dev": "webpack",
-    "bundle:prod": "webpack -p"
+    "bundle": "webpack -p"
   },
   "repository": {
     "type": "git",
