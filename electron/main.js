@@ -232,7 +232,7 @@ function showMainWindow() {
     return cb(-3);
   });
 
-  main.loadURL(`file://${__dirname}/renderer/index.html`);
+  main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(getBaseUrl())}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools();
