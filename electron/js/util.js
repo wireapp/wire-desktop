@@ -20,10 +20,10 @@
 'use strict';
 
 const electron = require('electron');
-// eslint-disable-next-line no-use-before-define
+/*eslint-disable no-unused-vars*/
 const debug = require('debug');
-// eslint-disable-next-line no-use-before-define
 const utilDebug = debug('utilDebug');
+/*eslint-enable no-unused-vars*/
 
 const config = require('./config');
 const pointInRectangle = require('./lib/pointInRect');
