@@ -22,6 +22,8 @@
     "minimist": "1.2.0",
     "open-graph": "0.2.3",
     "raygun": "0.9.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "request": "2.76.0",
     "spellchecker": "3.3.1",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
