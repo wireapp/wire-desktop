@@ -19,8 +19,6 @@
 
 'use strict';
 
-alert('foo')
-
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
 const {app, webContents} = remote;
 
