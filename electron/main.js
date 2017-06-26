@@ -30,7 +30,9 @@ const debugMain = debug('mainTmp');
 
 // Paths
 const APP_PATH = app.getAppPath();
+/*eslint-disable no-unused-vars*/
 const USER_DATAS_PATH = app.getPath('userData');
+/*eslint-enable no-unused-vars*/
 
 // Local files defines
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
