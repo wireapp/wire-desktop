@@ -231,7 +231,7 @@ function showMainWindow() {
     return cb(-3);
   });
 
-  main.loadURL('file://' + __dirname + '/renderer/index.html');
+  main.loadURL(`file://${__dirname}/renderer/index.html`);
 
   if (argv.devtools) {
     main.webContents.openDevTools();
