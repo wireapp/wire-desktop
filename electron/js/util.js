@@ -20,7 +20,9 @@
 'use strict';
 
 const electron = require('electron');
+// eslint-disable-next-line no-use-before-define
 const debug = require('debug');
+// eslint-disable-next-line no-use-before-define
 const utilDebug = debug('utilDebug');
 
 const config = require('./config');

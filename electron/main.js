@@ -25,6 +25,7 @@ const fs = require('fs');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
+// eslint-disable-next-line no-use-before-define
 const debug = require('debug');
 
 const certutils = require('./js/certutils');
