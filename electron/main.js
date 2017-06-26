@@ -198,6 +198,8 @@ function showMainWindow() {
     'show': false,
     'webPreferences': {
       'backgroundThrottling': false,
+      'nodeIntegration': false,
+      'webviewTag': true,
     },
   });
 
