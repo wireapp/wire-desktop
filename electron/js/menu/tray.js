@@ -61,7 +61,6 @@ module.exports = {
   },
 
   updateBadgeIcon: function(win, count) {
-    console.log(count)
     if (count) {
       this.useBadgeIcon();
     } else {

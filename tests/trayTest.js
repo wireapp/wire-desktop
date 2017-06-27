@@ -35,12 +35,10 @@ describe('tray', () => {
       window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
       window.webContents.on('dom-ready', function() {
         tray.updateBadgeIcon(window, 10);
-        setTimeout(function() {
-          if (process.platform === 'darwin') {
-            assert.equal(app.getBadgeCount(), 10);
-          }
-          done();
-        }, 75);
+        if (process.platform === 'darwin') {
+          assert.equal(app.getBadgeCount(), 10);
+        }
+        done();
       });
     });
   });
