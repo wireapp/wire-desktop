@@ -30,7 +30,7 @@ function getEnv() {
   return decodeURIComponent(env)
 }
 
-const Webviews = ({ accounts, onAccountBadgeUpdate }) => 
+const Webviews = ({ accounts, onAccountBadgeUpdate }) =>
   <ul className="Webviews">
     {accounts.map((account, index) => (
       <Webview
