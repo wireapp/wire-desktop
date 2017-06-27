@@ -34,6 +34,22 @@
   margin-top: 16px;
 }
 
+.Sidebar-icon-badge {
+  position: relative;
+}
+
+.Sidebar-icon-badge:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  border: .5px solid #fff;
+  border-radius: 50%;
+}
+
 .Sidebar-account-add {
   margin-top: 16px;
   width: 28px;

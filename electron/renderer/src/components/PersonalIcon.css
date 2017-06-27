@@ -17,12 +17,29 @@
  *
  */
 
-const {ipcRenderer, webFrame} = require('electron');
+.PersonalIcon {
+  position: relative;
+  width: 38px;
+  height: 38px;
+}
 
-webFrame.setZoomLevelLimits(1, 1);
+.PersonalIcon > * {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%)
+}
 
-process.once('loaded', function() {
-  global.reportBadgeCount = (count) => {
-    ipcRenderer.send('badge-count', count)
-  };
-});
+.PersonalIcon-inner {
+    width: 28px;
+    height: 28px;
+    background-color: rgba(255, 255, 255, 0.16);
+    border-radius: 50%;
+}
+
+.PersonalIcon-border {
+    border: .5px solid #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}

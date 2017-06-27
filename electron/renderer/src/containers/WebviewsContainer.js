@@ -22,23 +22,9 @@ import { connect } from 'react-redux'
 import { updateAccountBadge } from '../actions'
 import Webviews from '../components/Webviews'
 
-const mapStateToProps = (state) => {
-  return {
-    accounts: state.accounts
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onAccountBadgeUpdate: (count) => {
-      dispatch(updateAccountBadge(count))
-    }
-  }
-}
-
 const WebviewsContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
+  (state) => ({ accounts: state.accounts }),
+  { updateAccountBadge }
 )(Webviews)
 
 export default WebviewsContainer

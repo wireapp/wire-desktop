@@ -17,12 +17,14 @@
  *
  */
 
-const {ipcRenderer, webFrame} = require('electron');
+import React from 'react'
 
-webFrame.setZoomLevelLimits(1, 1);
+import './PersonalIcon.css'
 
-process.once('loaded', function() {
-  global.reportBadgeCount = (count) => {
-    ipcRenderer.send('badge-count', count)
-  };
-});
+const PersonalIcon = ({ account, onClick }) =>
+  <div className="PersonalIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
+    <div className="PersonalIcon-border" style={account.visible ? {} : { display: 'none' }} ></div>
+    <div className="PersonalIcon-inner"></div>
+  </div>
+
+export default PersonalIcon
