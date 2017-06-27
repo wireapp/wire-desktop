@@ -19,15 +19,22 @@
 
 import React from 'react'
 
-import TeamIcon from './TeamIcon'
+import PersonalIcon from './PersonalIcon'
 
 import './Sidebar.css'
 
-const Sidebar = ({ accounts, addAccountWithSession, onSwitchAccountClick }) =>
+function className(account) {
+  return [
+    "Sidebar-icon",
+    ((account.badgeCount > 0 && account.visible === false) ? "Sidebar-icon-badge" : '')
+  ].join(' ')
+}
+
+const Sidebar = ({ accounts, addAccountWithSession, switchAccount }) =>
   <div className="Sidebar">
     {accounts.map(account => (
-      <div className={"Sidebar-icon " + (account.badgeCount > 0 ? "Sidebar-icon-badge" : '')} key={account.id}>
-        <TeamIcon account={account} onClick={() => switchAccount(account.id)} />
+      <div className={className(account)} key={account.id}>
+        <PersonalIcon account={account} onClick={() => switchAccount(account.id)} />
       </div>
     ))}
     <div className="Sidebar-account-add" onClick={addAccountWithSession} >
