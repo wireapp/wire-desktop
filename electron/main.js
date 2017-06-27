@@ -199,6 +199,7 @@ function showMainWindow() {
     'webPreferences': {
       'backgroundThrottling': false,
       'nodeIntegration': false,
+      'webviewTag': true,
     },
   });
 
@@ -231,7 +232,7 @@ function showMainWindow() {
     return cb(-3);
   });
 
-  main.loadURL(`file://${__dirname}/renderer/index.html`);
+  main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(getBaseUrl())}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools();
@@ -247,27 +248,6 @@ function showMainWindow() {
       main.show();
     }, 800);
   }
-
-  main.webContents.on('will-navigate', function(event, url) {
-    // Prevent links like www.wire.com without blank target:
-    // to be opened inside the wrapper
-    if (util.openInExternalWindow(url)) {
-      event.preventDefault();
-      shell.openExternal(url);
-      return;
-    }
-
-    // Prevent Redirect for Drag and Drop on embeds
-    // or when no internet is present
-    if (url.includes('file://')) {
-      event.preventDefault();
-    }
-
-    // Resize the window for auth
-    if (url.includes('/auth/')) {
-      util.resizeToSmall(main);
-    }
-  });
 
   main.webContents.on('new-window', function(event, url) {
     event.preventDefault();

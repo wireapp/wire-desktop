@@ -6,7 +6,7 @@
     "preinstall": "cd electron && npm install",
     "install": "cd electron && npm run rebuild-native-modules",
     "postinstall": "cd electron && npm run rebuild-neon",
-    "prestart": "npm run bundle:dev",
+    "prestart": "npm run bundle",
     "start": "electron electron --inspect --devtools --enable-logging",
     "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
@@ -15,8 +15,7 @@
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
-    "bundle:dev": "webpack",
-    "bundle": "webpack -p"
+    "bundle": "webpack"
   },
   "repository": {
     "type": "git",

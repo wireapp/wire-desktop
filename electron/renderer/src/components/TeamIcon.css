@@ -17,34 +17,20 @@
  *
  */
 
-import React from 'react'
-import { render } from 'react-dom'
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
+.TeamIcon {
+  position: relative;
+  fill: #fff;
+  width: 38px;
+  height: 38px;
+}
 
-import App from './components/App'
-import { addAccount, switchAccount } from './actions'
-import appStore from './reducers'
-import { loadState, saveState } from './lib/localStorage'
+.TeamIcon > * {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%)
+}
 
-import './Index.css'
-
-const persistedState = loadState()
-
-const store = createStore(
-  appStore,
-  persistedState
-)
-
-store.subscribe(() => {
-  saveState({
-    accounts: store.getState().accounts
-  })
-})
-
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-)
+.TeamIcon > span {
+  font-size: 11px;
+}

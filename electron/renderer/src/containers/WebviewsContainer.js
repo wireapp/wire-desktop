@@ -17,34 +17,28 @@
  *
  */
 
-import React from 'react'
-import { render } from 'react-dom'
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
+import { connect } from 'react-redux'
 
-import App from './components/App'
-import { addAccount, switchAccount } from './actions'
-import appStore from './reducers'
-import { loadState, saveState } from './lib/localStorage'
+import { updateAccountBadge } from '../actions'
+import Webviews from '../components/Webviews'
 
-import './Index.css'
+const mapStateToProps = (state) => {
+  return {
+    accounts: state.accounts
+  }
+}
 
-const persistedState = loadState()
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onAccountBadgeUpdate: (count) => {
+      dispatch(updateAccountBadge(count))
+    }
+  }
+}
 
-const store = createStore(
-  appStore,
-  persistedState
-)
+const WebviewsContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Webviews)
 
-store.subscribe(() => {
-  saveState({
-    accounts: store.getState().accounts
-  })
-})
-
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-)
+export default WebviewsContainer
