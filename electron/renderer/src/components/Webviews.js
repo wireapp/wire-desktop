@@ -30,7 +30,7 @@ function getEnv() {
   return decodeURIComponent(env)
 }
 
-const Webviews = ({ accounts, onAccountBadgeUpdate }) =>
+const Webviews = ({ accounts, onAccountBadgeUpdate }) => 
   <ul className="Webviews">
     {accounts.map((account, index) => (
       <Webview
@@ -44,6 +44,9 @@ const Webviews = ({ accounts, onAccountBadgeUpdate }) =>
           const count = badgeCount(title)
           if (count !== undefined) {
             onAccountBadgeUpdate(account.id, count)
+
+            const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0)
+            window.reportBadgeCount(accumulatedCount)
           }
         }}
       />

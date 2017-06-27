@@ -34,10 +34,10 @@ describe('tray', () => {
       let window = new BrowserWindow();
       window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
       window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window);
+        tray.updateBadgeIcon(window, 10);
         setTimeout(function() {
           if (process.platform === 'darwin') {
-            assert.equal(app.getBadgeCount(), 2);
+            assert.equal(app.getBadgeCount(), 10);
           }
           done();
         }, 75);

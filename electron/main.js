@@ -163,6 +163,10 @@ ipcMain.on('notification-click', function() {
   windowManager.showPrimaryWindow();
 });
 
+ipcMain.on('badge-count', function(event, count) {
+  tray.updateBadgeIcon(main, count);
+});
+
 ipcMain.on('google-auth-request', function(event) {
   googleAuth.getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
     .then(function(code) {
@@ -199,6 +203,7 @@ function showMainWindow() {
     'webPreferences': {
       'backgroundThrottling': false,
       'nodeIntegration': false,
+      'preload': PRELOAD_JS,
       'webviewTag': true,
     },
   });
@@ -268,10 +273,6 @@ function showMainWindow() {
 
   main.on('focus', function() {
     main.flashFrame(false);
-  });
-
-  main.on('page-title-updated', function() {
-    tray.updateBadgeIcon(main);
   });
 
   main.on('close', function(event) {

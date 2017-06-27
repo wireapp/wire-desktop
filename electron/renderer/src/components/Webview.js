@@ -46,7 +46,7 @@ class Webview extends Component {
   }
 
   render() {
-    const {partition, src, ...validPros} = this.props
+    const {partition, src, onPageTitleUpdated, ...validPros} = this.props
     return <webview {...validPros} ref={(webview) => { this.webview = webview; }} />
   }
 }
