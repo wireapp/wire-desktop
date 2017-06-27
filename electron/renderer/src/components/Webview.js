@@ -46,8 +46,8 @@ class Webview extends Component {
   }
 
   render() {
-    const {className, preload} = this.props
-    return <webview className={className} preload={preload} ref={(webview) => { this.webview = webview; }} />
+    const {partition, src, ...validPros} = this.props
+    return <webview {...validPros} ref={(webview) => { this.webview = webview; }} />
   }
 }
 

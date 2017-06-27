@@ -32,11 +32,12 @@ function getEnv() {
 
 const Webviews = ({ accounts, onAccountBadgeUpdate }) =>
   <ul className="Webviews">
-    {accounts.map(account => (
+    {accounts.map((account, index) => (
       <Webview
         key={account.id}
         className={"Webview " + (account.visible ? '' : 'hide')}
         src={getEnv()}
+        name={index}
         partition={account.sessionID}
         preload='./static/webview-preload.js'
         onPageTitleUpdated={({title}) => {
