@@ -19,18 +19,17 @@
 
 import React from 'react'
 
-import TeamsSidebar from '../containers/TeamsSidebar'
-import WebviewList from '../containers/WebviewList'
-
+import SidebarContainer from '../containers/SidebarContainer'
+import WebviewsContainer from '../containers/WebviewsContainer'
 import DragRegion from './DragRegion'
 
 import './App.css'
 
 const App = () =>
-    <div className="App">
-        <DragRegion />
-        <WebviewList />
-        <TeamsSidebar />
-    </div>
+  <div className="App">
+    <DragRegion />
+    <WebviewsContainer />
+    <SidebarContainer />
+  </div>
 
 export default App

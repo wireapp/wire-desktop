@@ -17,8 +17,6 @@
  *
  */
 
-'use strict';
-
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
 const {app, webContents} = remote;
 

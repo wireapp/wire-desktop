@@ -36,9 +36,9 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const WebviewList = connect(
+const WebviewsContainer = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Webviews)
 
-export default WebviewList
+export default WebviewsContainer

@@ -39,9 +39,9 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const TeamsSidebar = connect(
+const SidebarContainer = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Sidebar)
 
-export default TeamsSidebar
+export default SidebarContainer
