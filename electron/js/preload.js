@@ -25,7 +25,7 @@ function getSelectedWebview() {
   return document.querySelector('.Webview:not(.hide)')
 }
 
-function subscribeToMainProcessEvent() {
+function subscribeToMainProcessEvents() {
   ipcRenderer.on('system-menu', (event, action) => {
     const selectedWebview = getSelectedWebview()
     if (selectedWebview) {
@@ -40,4 +40,4 @@ process.once('loaded', () => {
   };
 });
 
-subscribeToMainProcessEvent()
+subscribeToMainProcessEvents()

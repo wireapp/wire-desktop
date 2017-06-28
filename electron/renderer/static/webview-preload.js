@@ -40,7 +40,7 @@ function subscribeToWebappEvents() {
   });
 }
 
-function subscribeToMainProcessEvent() {
+function subscribeToMainProcessEvents() {
   ipcRenderer.on('sign-out', () => {
     amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
   });
@@ -165,7 +165,7 @@ function onLoad() {
   global.desktopCapturer = desktopCapturer;
 
   subscribeToWebappEvents()
-  subscribeToMainProcessEvent()
+  subscribeToMainProcessEvents()
   
   exposeAddressbook()
   exposeLibsodiumNeon()
