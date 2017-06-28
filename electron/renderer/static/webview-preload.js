@@ -18,7 +18,6 @@
  */
 
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
-const {app, webContents} = remote;
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -38,6 +37,68 @@ function subscribeToWebappEvents() {
     } else {
       ipcRenderer.send('wrapper-reload');
     }
+  });
+}
+
+function subscribeToMainProcessEvents() {
+  ipcRenderer.on('sign-out', () => {
+    amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
+  });
+
+  ipcRenderer.on('preferences-show', () => {
+    amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
+  });
+
+  ipcRenderer.on('conversation-start', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.START);
+  });
+
+  ipcRenderer.on('conversation-ping', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PING);
+  });
+
+  ipcRenderer.on('conversation-call', () => {
+    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false);
+  });
+
+  ipcRenderer.on('conversation-video-call', () => {
+    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true);
+  });
+
+  ipcRenderer.on('conversation-people', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE);
+  });
+
+  ipcRenderer.on('conversation-add-people', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE);
+  });
+
+  ipcRenderer.on('conversation-archive', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE);
+  });
+
+  ipcRenderer.on('conversation-silence', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
+  });
+
+  ipcRenderer.on('conversation-delete', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.DELETE);
+  });
+
+  ipcRenderer.on('conversation-prev', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PREV);
+  });
+
+  ipcRenderer.on('conversation-next', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.NEXT);
+  });
+
+  ipcRenderer.on('conversation-show', (conversation_id) => {
+    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id);
+  });
+
+  ipcRenderer.on('wrapper-update-available', () => {
+    amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
   });
 }
 
@@ -104,6 +165,7 @@ function onLoad() {
   global.desktopCapturer = desktopCapturer;
 
   subscribeToWebappEvents()
+  subscribeToMainProcessEvents()
   
   exposeAddressbook()
   exposeLibsodiumNeon()

@@ -21,8 +21,23 @@ const {ipcRenderer, webFrame} = require('electron');
 
 webFrame.setZoomLevelLimits(1, 1);
 
-process.once('loaded', function() {
+function getSelectedWebview() {
+  return document.querySelector('.Webview:not(.hide)')
+}
+
+function subscribeToMainProcessEvents() {
+  ipcRenderer.on('system-menu', (event, action) => {
+    const selectedWebview = getSelectedWebview()
+    if (selectedWebview) {
+      selectedWebview.send(action)
+    }
+  });
+}
+
+process.once('loaded', () => {
   global.reportBadgeCount = (count) => {
     ipcRenderer.send('badge-count', count)
   };
 });
+
+subscribeToMainProcessEvents()
