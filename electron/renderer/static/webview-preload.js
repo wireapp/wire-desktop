@@ -130,14 +130,6 @@ function exposeAddressbook() {
   }
 }
 
-function exposeOpenGraph() {
-  try {
-    Object.assign(window.openGraph, require('../../js/lib/openGraph'));
-  } catch (error) {
-    console.info('Failed loading "openGraph".', error);
-  }
-}
-
 function replaceGoogleAuth(namespace = {}) {
   if (namespace.app === undefined) {
     return;
@@ -163,13 +155,13 @@ const _setImmediate = setImmediate;
 function onLoad() {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
+  global.openGraph = require('../../js/lib/openGraph')
 
   subscribeToWebappEvents()
   subscribeToMainProcessEvents()
   
   exposeAddressbook()
   exposeLibsodiumNeon()
-  exposeOpenGraph();
   replaceGoogleAuth(window.wire)
 
   // include context menu
