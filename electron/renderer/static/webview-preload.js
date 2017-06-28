@@ -18,7 +18,6 @@
  */
 
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
-const {app, webContents} = remote;
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -42,7 +41,7 @@ function subscribeToWebappEvents() {
 }
 
 function subscribeToMainProcessEvent() {
-  ipcRenderer.on('sign-out', () {
+  ipcRenderer.on('sign-out', () => {
     amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
   });
 

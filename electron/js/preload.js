@@ -22,7 +22,6 @@ const {ipcRenderer, webFrame} = require('electron');
 webFrame.setZoomLevelLimits(1, 1);
 
 function getSelectedWebview() {
-  // TODO: rethink to get webview from id
   return document.querySelector('.Webview:not(.hide)')
 }
 
