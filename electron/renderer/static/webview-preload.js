@@ -31,12 +31,8 @@ function subscribeToWebappEvents() {
     ipcRenderer.send('loaded');
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
-    // mocked webapp event
-    ipcRenderer.sendToHost('team-info', {
-      userID: window.wire.app.repository.user.self().id,
-      accentID: window.wire.app.repository.user.self().accent_id()
-    })
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, function(info) {
+    ipcRenderer.sendToHost('team-info', info)
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
