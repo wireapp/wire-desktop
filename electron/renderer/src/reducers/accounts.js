@@ -43,7 +43,7 @@ const accounts = (state = [createAccount()], action) => {
     case 'UPDATE_ACCOUNT':
       return state.map(account => {
         return (account.id === action.id)
-          ? { ...account, ...action.data } // TODO: VALIDATE
+          ? { ...account, ...action.data }
           : account
       })
     case 'UPDATE_ACCOUNT_BADGE':
@@ -60,10 +60,7 @@ const accounts = (state = [createAccount()], action) => {
         }
       })
     case 'DELETE_ACCOUNT':
-      return [
-        ...state.slice(0, action.payload.id),
-        ...state.slice(action.payload.id + 1)
-      ]
+      return state.filter(account => account.id !== action.id)
     default:
       return state
   }

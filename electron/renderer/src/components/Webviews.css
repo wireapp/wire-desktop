@@ -24,3 +24,18 @@
   margin: 0;
   padding: 0;
 }
+
+.Webviews-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.Webviews-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  fill: #fff;
+}

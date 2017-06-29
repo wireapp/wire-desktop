@@ -19,12 +19,12 @@
 
 import { connect } from 'react-redux'
 
-import { updateAccountBadge, updateAccount } from '../actions'
+import { updateAccountBadge, updateAccount, deleteAccount } from '../actions'
 import Webviews from '../components/Webviews'
 
 const WebviewsContainer = connect(
   (state) => ({ accounts: state.accounts }),
-  { updateAccountBadge, updateAccount }
+  { updateAccountBadge, updateAccount, deleteAccount }
 )(Webviews)
 
 export default WebviewsContainer
