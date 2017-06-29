@@ -41,8 +41,8 @@
 .Sidebar-icon-badge:after {
   content: "";
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 3px;
+  right: 2px;
   width: 10px;
   height: 10px;
   background: currentColor;

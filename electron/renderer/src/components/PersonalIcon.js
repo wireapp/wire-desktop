@@ -19,12 +19,20 @@
 
 import React from 'react'
 
+import { colorFromId } from '../lib/accentColor'
+
 import './PersonalIcon.css'
 
 const PersonalIcon = ({ account, onClick }) =>
   <div className="PersonalIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
-    <div className="PersonalIcon-border" style={account.visible ? {} : { display: 'none' }} ></div>
-    <div className="PersonalIcon-inner"></div>
+    {account.visible &&
+      <div className="PersonalIcon-border" style={{borderColor: colorFromId(account.accentID)}}></div>
+    }
+    <div className="PersonalIcon-inner">
+      {account.picture &&
+        <img src={account.picture} />
+      }
+    </div>
   </div>
 
 export default PersonalIcon

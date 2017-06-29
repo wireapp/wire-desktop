@@ -17,40 +17,78 @@
  *
  */
 
-import React from 'react'
+import React, { Component } from 'react'
 
 import Webview from './Webview'
 import badgeCount from '../lib/badgeCount'
 
 import './Webviews.css'
 
-function getEnv() {
-  const url = new URL(window.location)
-  const env = url.searchParams.get('env')
-  return decodeURIComponent(env)
+class Webviews extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  _getEnvironmentUrl() {
+    const url = new URL(window.location)
+    const env = url.searchParams.get('env')
+    return decodeURIComponent(env)
+  }
+
+  _onPageTitleUpdated(account, { title }) {
+    const count = badgeCount(title)
+    if (count !== undefined) {
+      this.props.updateAccountBadge(account.id, count)
+
+      const accumulatedCount = this.props.accounts.reduce((accumulated, account) => {
+        return accumulated + account.badgeCount
+      }, 0)
+
+      window.reportBadgeCount(accumulatedCount)
+    }
+  }
+
+  _onIpcMessage(account, {channel, args}) {
+    switch (channel) {
+      case 'team-info':
+        this.props.updateAccount(account.id, args[0])
+        break;
+    }
+  }
+
+  _onWebviewClose(account) {
+    this.props.deleteAccount(account.id)
+  }
+
+  _canDeleteWebview(account) {
+    return !account.userID && account.sessionID
+  }
+
+  render() {
+    return (
+      <ul className="Webviews">
+        {this.props.accounts.map((account) => (
+          <div className="Webviews-container" key={account.id}>
+            <Webview
+              className={"Webview " + (account.visible ? '' : 'hide')}
+              src={this._getEnvironmentUrl()}
+              partition={account.sessionID}
+              preload='./static/webview-preload.js'
+              onPageTitleUpdated={(event) => this._onPageTitleUpdated(account, event)}
+              onIpcMessage={(event) => this._onIpcMessage(account, event)}
+            />
+            {(this._canDeleteWebview(account)) &&
+              <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
+                <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243" fillRule="evenodd"/>
+                </svg>  
+              </div>
+            }
+          </div>
+        ))}
+      </ul>
+    )
+  }
 }
-
-const Webviews = ({ accounts, updateAccountBadge }) =>
-  <ul className="Webviews">
-    {accounts.map((account, index) => (
-      <Webview
-        key={account.id}
-        className={"Webview " + (account.visible ? '' : 'hide')}
-        src={getEnv()}
-        name={index}
-        partition={account.sessionID}
-        preload='./static/webview-preload.js'
-        onPageTitleUpdated={({title}) => {
-          const count = badgeCount(title)
-          if (count !== undefined) {
-            updateAccountBadge(account.id, count)
-
-            const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0)
-            window.reportBadgeCount(accumulatedCount)
-          }
-        }}
-      />
-    ))}
-  </ul>
 
 export default Webviews

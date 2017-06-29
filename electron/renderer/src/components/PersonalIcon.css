@@ -31,15 +31,21 @@
 }
 
 .PersonalIcon-inner {
-    width: 28px;
-    height: 28px;
-    background-color: rgba(255, 255, 255, 0.16);
-    border-radius: 50%;
+  overflow: hidden;
+  width: 28px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, .4);
+  border-radius: 50%;
+}
+
+.PersonalIcon-inner > img {
+  width: 100%;
+  height: 100;
 }
 
 .PersonalIcon-border {
-    border: .5px solid #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+  border: 2px solid #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
 }

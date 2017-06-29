@@ -17,7 +17,7 @@
  *
  */
 
-const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const {ipcRenderer, webFrame, desktopCapturer} = require('electron');
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -29,6 +29,10 @@ function subscribeToWebappEvents() {
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
     ipcRenderer.send('loaded');
+  });
+
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, function(info) {
+    ipcRenderer.sendToHost('team-info', info)
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
@@ -159,7 +163,7 @@ function onLoad() {
 
   subscribeToWebappEvents()
   subscribeToMainProcessEvents()
-  
+
   exposeAddressbook()
   exposeLibsodiumNeon()
   replaceGoogleAuth(window.wire)

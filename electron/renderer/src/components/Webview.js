@@ -27,6 +27,7 @@ class Webview extends Component {
     super(props)
 
     this._onPageTitleUpdated = this._onPageTitleUpdated.bind(this)
+    this._onIpcMessage = this._onIpcMessage.bind(this)
   }
 
   componentDidMount() {
@@ -39,15 +40,20 @@ class Webview extends Component {
     this.webview.src = src
 
     this.webview.addEventListener('page-title-updated', this._onPageTitleUpdated)
+    this.webview.addEventListener('ipc-message', this._onIpcMessage)
   }
 
-  _onPageTitleUpdated(title) {
-    this.props.onPageTitleUpdated(title)
+  _onPageTitleUpdated(event) {
+    this.props.onPageTitleUpdated(event)
+  }
+
+  _onIpcMessage(event) {
+    this.props.onIpcMessage(event)
   }
 
   render() {
-    const {partition, src, onPageTitleUpdated, ...validPros} = this.props
-    return <webview {...validPros} ref={(webview) => { this.webview = webview; }} />
+    const {partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props
+    return <webview {...validProps} ref={(webview) => { this.webview = webview; }} />
   }
 }
 
