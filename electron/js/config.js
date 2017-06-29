@@ -72,7 +72,7 @@ let config = {
       ],
     },
     {
-      name: 'Soundcloud',
+      name: 'SoundCloud',
       hostname: ['w.soundcloud.com'],
       allowedExternalLinks: [
         'soundcloud.com',
