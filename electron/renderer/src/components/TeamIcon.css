@@ -32,6 +32,7 @@
 }
 
 .TeamIcon > span {
+  color: var(--graphite-dark);
   font-size: 11px;
   text-transform: uppercase;
 }

@@ -44,7 +44,7 @@ const Sidebar = ({ accounts, addAccountWithSession, switchAccount }) =>
   <div className="Sidebar" style={hasCreatedAccount(accounts) ? {} : { display: 'none'}}>
     {accounts.map(account => (
       <div style={{ color: colorFromId(account.accentID) }} className={className(account)} key={account.id}>
-        {!account.teamID ? (
+        {account.teamID ? (
           <TeamIcon account={account} onClick={() => switchAccount(account.id)} />
         ) : (
           <PersonalIcon account={account} onClick={() => switchAccount(account.id)} />
