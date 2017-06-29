@@ -38,5 +38,8 @@
     "grunt-git": "1.0.4",
     "grunt-github-changes": "0.1.0",
     "load-grunt-tasks": "3.5.2"
+  },
+  "dependencies": {
+    "debug": "2.6.8"
   }
 }
