@@ -296,7 +296,7 @@ function showMainWindow() {
 
     // Ensure the link does not come from a webview
     if (typeof event.sender.viewInstanceId !== 'undefined') {
-      debugMain('New window did came from a webview, aborting.');
+      debugMain('New window was created from a webview, aborting.');
       return;
     }
 
