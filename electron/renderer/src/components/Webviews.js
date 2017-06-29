@@ -17,40 +17,63 @@
  *
  */
 
-import React from 'react'
+import React, { Component } from 'react'
 
 import Webview from './Webview'
 import badgeCount from '../lib/badgeCount'
 
 import './Webviews.css'
 
-function getEnv() {
-  const url = new URL(window.location)
-  const env = url.searchParams.get('env')
-  return decodeURIComponent(env)
+class Webviews extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  _getEnvironmentUrl() {
+    const url = new URL(window.location)
+    const env = url.searchParams.get('env')
+    return decodeURIComponent(env)
+  }
+
+  _onPageTitleUpdated(title) {
+    const count = badgeCount(title)
+    if (count !== undefined) {
+      this.props.updateAccountBadge(account.id, count)
+
+      const accumulatedCount = accounts.reduce((accumulated, account) => {
+        return accumulated + account.badgeCount
+      }, 0)
+
+      window.reportBadgeCount(accumulatedCount)
+    }
+  }
+
+  _onIpcMessage(account, {channel, args}) {
+    switch (channel) {
+      case 'team-info':
+        this.props.updateAccount(account.id, args[0])
+        break;
+    }
+  }
+
+  render() {
+    return (
+      <ul className="Webviews">
+        {this.props.accounts.map((account, index) => (
+          <Webview
+            key={account.id}
+            className={"Webview " + (account.visible ? '' : 'hide')}
+            src={this._getEnvironmentUrl()}
+            name={index}
+            partition={account.sessionID}
+            preload='./static/webview-preload.js'
+            onPageTitleUpdated={(title) => this._onPageTitleUpdated(title)}
+            onIpcMessage={(event) => this._onIpcMessage(account, event)}
+          />
+        ))}
+      </ul>
+    )
+  }
 }
-
-const Webviews = ({ accounts, updateAccountBadge }) =>
-  <ul className="Webviews">
-    {accounts.map((account, index) => (
-      <Webview
-        key={account.id}
-        className={"Webview " + (account.visible ? '' : 'hide')}
-        src={getEnv()}
-        name={index}
-        partition={account.sessionID}
-        preload='./static/webview-preload.js'
-        onPageTitleUpdated={({title}) => {
-          const count = badgeCount(title)
-          if (count !== undefined) {
-            updateAccountBadge(account.id, count)
-
-            const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0)
-            window.reportBadgeCount(accumulatedCount)
-          }
-        }}
-      />
-    ))}
-  </ul>
 
 export default Webviews

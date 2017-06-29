@@ -28,7 +28,7 @@ function createAccount(sessionID) {
     picture: undefined,
     name: undefined,
     visible: true,
-    accentId: undefined,
+    accentID: undefined,
     badgeCount: 0
   }
 }
@@ -40,6 +40,12 @@ const accounts = (state = [createAccount()], action) => {
         ...state.map(account => ({ ...account, visible: false })),
         createAccount(action.sessionID)
       ]
+    case 'UPDATE_ACCOUNT':
+      return state.map(account => {
+        return (account.id === action.id)
+          ? { ...account, ...action.data } // TODO: VALIDATE
+          : account
+      })
     case 'UPDATE_ACCOUNT_BADGE':
       return state.map(account => {
         return (account.id === action.id)
