@@ -63,5 +63,6 @@ export const ACCENT_COLORS = [
 ];
 
 export function colorFromId(id) {
-  return ACCENT_COLORS.find((color) => color.id === id) || STRONG_BLUE
+  const accentColor = ACCENT_COLORS.find((color) => color.id === id)
+  return accentColor && accentColor.color
 }
