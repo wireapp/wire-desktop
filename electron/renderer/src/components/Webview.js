@@ -43,8 +43,8 @@ class Webview extends Component {
     this.webview.addEventListener('ipc-message', this._onIpcMessage)
   }
 
-  _onPageTitleUpdated(title) {
-    this.props.onPageTitleUpdated(title)
+  _onPageTitleUpdated(event) {
+    this.props.onPageTitleUpdated(event)
   }
 
   _onIpcMessage(event) {

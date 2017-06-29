@@ -21,13 +21,14 @@ import React from 'react'
 
 import TeamIcon from './TeamIcon'
 import PersonalIcon from './PersonalIcon'
+import { colorFromId } from '../lib/accentColor'
 
 import './Sidebar.css'
 
 function className(account) {
   return [
-    "Sidebar-icon",
-    ((account.badgeCount > 0 && account.visible === false) ? "Sidebar-icon-badge" : '')
+    'Sidebar-icon',
+    ((account.badgeCount > 0 && account.visible === false) ? 'Sidebar-icon-badge' : '')
   ].join(' ')
 }
 
@@ -42,8 +43,8 @@ function isCreatingAccount(accounts) {
 const Sidebar = ({ accounts, addAccountWithSession, switchAccount }) =>
   <div className="Sidebar" style={hasCreatedAccount(accounts) ? {} : { display: 'none'}}>
     {accounts.map(account => (
-      <div className={className(account)} key={account.id}>
-        {account.teamID ? (
+      <div style={{ color: colorFromId(account.accentID) }} className={className(account)} key={account.id}>
+        {!account.teamID ? (
           <TeamIcon account={account} onClick={() => switchAccount(account.id)} />
         ) : (
           <PersonalIcon account={account} onClick={() => switchAccount(account.id)} />

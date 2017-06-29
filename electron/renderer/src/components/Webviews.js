@@ -35,12 +35,12 @@ class Webviews extends Component {
     return decodeURIComponent(env)
   }
 
-  _onPageTitleUpdated(title) {
+  _onPageTitleUpdated(account, { title }) {
     const count = badgeCount(title)
     if (count !== undefined) {
       this.props.updateAccountBadge(account.id, count)
 
-      const accumulatedCount = accounts.reduce((accumulated, account) => {
+      const accumulatedCount = this.props.accounts.reduce((accumulated, account) => {
         return accumulated + account.badgeCount
       }, 0)
 
@@ -59,15 +59,14 @@ class Webviews extends Component {
   render() {
     return (
       <ul className="Webviews">
-        {this.props.accounts.map((account, index) => (
+        {this.props.accounts.map((account) => (
           <Webview
             key={account.id}
             className={"Webview " + (account.visible ? '' : 'hide')}
             src={this._getEnvironmentUrl()}
-            name={index}
             partition={account.sessionID}
             preload='./static/webview-preload.js'
-            onPageTitleUpdated={(title) => this._onPageTitleUpdated(title)}
+            onPageTitleUpdated={(event) => this._onPageTitleUpdated(account, event)}
             onIpcMessage={(event) => this._onIpcMessage(account, event)}
           />
         ))}

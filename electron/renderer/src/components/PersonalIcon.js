@@ -28,7 +28,11 @@ const PersonalIcon = ({ account, onClick }) =>
     {account.visible &&
       <div className="PersonalIcon-border" style={{borderColor: colorFromId(account.accentID)}}></div>
     }
-    <div className="PersonalIcon-inner"></div>
+    <div className="PersonalIcon-inner">
+      {account.picture &&
+        <img src={account.picture} />
+      }
+    </div>
   </div>
 
 export default PersonalIcon
