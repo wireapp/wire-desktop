@@ -261,24 +261,8 @@ function showMainWindow() {
   }
 
   main.webContents.on('will-navigate', function(event, url) {
-    // Prevent links like www.wire.com without blank target:
-    // to be opened inside the wrapper
-    if (util.openInExternalWindow(url)) {
-      event.preventDefault();
-      shell.openExternal(url);
-      return;
-    }
-
-    // Prevent Redirect for Drag and Drop on embeds
-    // or when no internet is present
-    if (url.includes('file://')) {
-      event.preventDefault();
-    }
-
-    // Resize the window for auth
-    if (url.includes('/auth/')) {
-      util.resizeToSmall(main);
-    }
+    // Prevent any kind of navigation inside the main window
+    event.preventDefault();
   });
 
   // Handle the new window event in the main Browser Window
@@ -431,6 +415,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', (event, contents) => {
+      return
 
       // The following events should only be applied on webviews
       if (contents.getType() !== 'webview') {

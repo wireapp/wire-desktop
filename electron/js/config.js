@@ -96,11 +96,6 @@ let config = {
     },
   ],
 
-  WHITE_LIST: [
-    'https://www.wire.com/',
-    'https://wire.com/',
-  ],
-
   LOCALE: [
     'en',
     'cs',

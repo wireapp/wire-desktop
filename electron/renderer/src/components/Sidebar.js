@@ -32,16 +32,15 @@ function className(account) {
   ].join(' ')
 }
 
-function hasCreatedAccount(accounts) {
-  return accounts.length && accounts.some((account) => account.userID !== undefined)
-}
-
-function isCreatingAccount(accounts) {
-  return accounts.length && accounts.some((account) => account.userID === undefined)
-}
-
-const Sidebar = ({ accounts, addAccountWithSession, switchAccount }) =>
-  <div className="Sidebar" style={hasCreatedAccount(accounts) ? {} : { display: 'none'}}>
+const Sidebar = ({
+  accounts,
+  hasCreatedAccount,
+  isAddingAccount,
+  addAccountWithSession,
+  switchAccount,
+  hasReachedLimitOfAccounts
+}) =>
+  <div className="Sidebar" style={hasCreatedAccount ? {} : { display: 'none'}}>
     {accounts.map(account => (
       <div style={{ color: colorFromId(account.accentID) }} className={className(account)} key={account.id}>
         {account.teamID ? (
@@ -51,7 +50,7 @@ const Sidebar = ({ accounts, addAccountWithSession, switchAccount }) =>
         )}
       </div>
     ))}
-    {!isCreatingAccount(accounts) &&
+    {!isAddingAccount && !hasReachedLimitOfAccounts &&
       <div className="Sidebar-account-add" onClick={addAccountWithSession} >
         <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 6.125v1.75h6.125V14h1.75V7.875H14v-1.75H7.875V0h-1.75v6.125" fillRule="evenodd"/>
