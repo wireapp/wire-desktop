@@ -21,6 +21,7 @@ import React from 'react'
 import { render } from 'react-dom'
 import { applyMiddleware, createStore } from 'redux'
 import { Provider } from 'react-redux'
+import thunk from 'redux-thunk';
 import logger from 'redux-logger'
 
 import App from './components/App'
@@ -35,7 +36,7 @@ const persistedState = loadState()
 const store = createStore(
   appStore,
   persistedState,
-  applyMiddleware(logger)
+  applyMiddleware(logger, thunk)
 )
 
 store.subscribe(() => {

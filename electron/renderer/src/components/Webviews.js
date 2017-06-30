@@ -57,7 +57,7 @@ class Webviews extends Component {
   }
 
   _onWebviewClose(account) {
-    this.props.deleteAccount(account.id)
+    this.props.abortAccountCreation(account.id)
   }
 
   _canDeleteWebview(account) {
