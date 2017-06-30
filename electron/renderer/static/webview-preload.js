@@ -17,7 +17,8 @@
  *
  */
 
-const {ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const path = require('path');
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -160,6 +161,7 @@ function onLoad() {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.openGraph = require('../../js/lib/openGraph')
+  global.notification_icon = path.join(remote.app.getAppPath(), 'img', 'notification.png')
 
   subscribeToWebappEvents()
   subscribeToMainProcessEvents()
