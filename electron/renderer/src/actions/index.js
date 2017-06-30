@@ -48,3 +48,13 @@ export const deleteAccount = id => {
     id
   }
 }
+
+export const abortAccountCreation = (id) => {
+  return (dispatch, getState) => {
+    dispatch(deleteAccount(id))
+
+    const accounts = getState().accounts
+    const lastAccount = accounts[accounts.length - 1]
+    dispatch(switchAccount(lastAccount.id))
+  }
+}
