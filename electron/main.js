@@ -211,29 +211,6 @@ function showMainWindow() {
     main.setBounds(init.restore('bounds', main.getBounds()));
   }
 
-  main.webContents.session.setCertificateVerifyProc((request, cb) => {
-    const {hostname = '', certificate = {}, error} = request;
-
-    if (typeof error !== 'undefined') {
-      console.error('setCertificateVerifyProc', error);
-      main.loadURL(CERT_ERR_HTML);
-      return cb(-2);
-    }
-
-    if (certutils.hostnameShouldBePinned(hostname)) {
-      const pinningResults = certutils.verifyPinning(hostname, certificate);
-      for (const result of Object.values(pinningResults)) {
-        if (result === false) {
-          console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
-          main.loadURL(CERT_ERR_HTML);
-          return cb(-2);
-        }
-      }
-    }
-
-    return cb(-3);
-  });
-
   let baseURL = getBaseUrl();
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
@@ -440,6 +417,29 @@ class ElectronWrapperInit {
           e.preventDefault();
           webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
         }
+      });
+
+      contents.session.setCertificateVerifyProc((request, cb) => {
+        const {hostname = '', certificate = {}, error} = request;
+
+        if (typeof error !== 'undefined') {
+          console.error('setCertificateVerifyProc', error);
+          main.loadURL(CERT_ERR_HTML);
+          return cb(-2);
+        }
+
+        if (certutils.hostnameShouldBePinned(hostname)) {
+          const pinningResults = certutils.verifyPinning(hostname, certificate);
+          for (const result of Object.values(pinningResults)) {
+            if (result === false) {
+              console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+              main.loadURL(CERT_ERR_HTML);
+              return cb(-2);
+            }
+          }
+        }
+
+        return cb(-3);
       });
     });
   }
