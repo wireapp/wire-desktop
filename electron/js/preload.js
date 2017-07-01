@@ -34,10 +34,21 @@ function subscribeToMainProcessEvents() {
   });
 }
 
-process.once('loaded', () => {
-  global.reportBadgeCount = (count) => {
-    ipcRenderer.send('badge-count', count)
-  };
-});
+function addDragRegion() {
+  if (process.platform === 'darwin') {
+    // add titlebar ghost to prevent interactions with the content while dragging
+    const titleBar = document.createElement('div');
+    titleBar.className = 'drag-region';
+    document.body.appendChild(titleBar);
+  }
+}
+
+window.reportBadgeCount = (count) => {
+  ipcRenderer.send('badge-count', count)
+};
 
 subscribeToMainProcessEvents()
+
+window.addEventListener('DOMContentLoaded', () => {
+  addDragRegion()
+});
