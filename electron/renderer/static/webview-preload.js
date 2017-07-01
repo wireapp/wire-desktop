@@ -154,30 +154,27 @@ function replaceGoogleAuth(namespace = {}) {
   };
 }
 
+function updateWebappStyles() {
+  document.body.classList.add('team-mode')
+}
+
 // https://github.com/electron/electron/issues/2984
 const _setImmediate = setImmediate;
-
-function onLoad() {
-  global.setImmediate = _setImmediate;
+process.once('loaded', () => {
+  global.setImmediate = _setImmediate
   global.desktopCapturer = desktopCapturer;
   global.openGraph = require('../../js/lib/openGraph')
   global.notification_icon = path.join(remote.app.getAppPath(), 'img', 'notification.png')
-
-  subscribeToWebappEvents()
-  subscribeToMainProcessEvents()
-
   exposeAddressbook()
   exposeLibsodiumNeon()
+})
+
+window.addEventListener('DOMContentLoaded', () => {
+  subscribeToWebappEvents()
+  subscribeToMainProcessEvents()
+  updateWebappStyles()
   replaceGoogleAuth(window.wire)
 
   // include context menu
   require('../../js/menu/context')
-
-  window.removeEventListener('DOMContentLoaded', onLoad);
-}
-
-if (document.readyState === 'complete') {
-  onLoad();
-} else {
-  window.addEventListener('DOMContentLoaded', onLoad);
-}
+});
