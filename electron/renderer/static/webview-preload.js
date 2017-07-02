@@ -135,13 +135,13 @@ function exposeAddressbook() {
   }
 }
 
-function replaceGoogleAuth(namespace = {}) {
-  if (namespace.app === undefined) {
+function replaceGoogleAuth() {
+  if (window.wire.app === undefined) {
     return;
   }
 
   // hijack google authenticate method
-  namespace.app.service.connect_google._authenticate = function() {
+  window.wire.app.service.connect_google._authenticate = function() {
     return new Promise(function(resolve, reject) {
       ipcRenderer.send('google-auth-request');
       ipcRenderer.once('google-auth-success', function(event, token) {
@@ -158,10 +158,26 @@ function updateWebappStyles() {
   document.body.classList.add('team-mode')
 }
 
+function checkAvailablity(callback) {
+  const intervalId = setInterval(() => {
+    if (window.wire) {
+      clearInterval(intervalId);
+      callback();
+      return
+    }
+
+    if (navigator.onLine) {
+      // Loading webapp failed
+      clearInterval(intervalId);
+      location.reload();
+    }
+  }, 500);
+}
+
 // https://github.com/electron/electron/issues/2984
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
-  global.setImmediate = _setImmediate
+  global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.openGraph = require('../../js/lib/openGraph')
   global.notification_icon = path.join(remote.app.getAppPath(), 'img', 'notification.png')
@@ -170,11 +186,13 @@ process.once('loaded', () => {
 })
 
 window.addEventListener('DOMContentLoaded', () => {
-  subscribeToWebappEvents()
-  subscribeToMainProcessEvents()
-  updateWebappStyles()
-  replaceGoogleAuth(window.wire)
+  checkAvailablity(() => {
+    subscribeToMainProcessEvents()
+    updateWebappStyles()
+    subscribeToWebappEvents()
+    replaceGoogleAuth()
 
-  // include context menu
-  require('../../js/menu/context')
+    // include context menu
+    require('../../js/menu/context')
+  })
 });
