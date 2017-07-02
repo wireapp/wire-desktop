@@ -12,6 +12,7 @@
     "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "localhost": "electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
     "lint": "eslint electron",
+    "jest": "jest",
     "test": "npm run lint && electron-mocha tests",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
