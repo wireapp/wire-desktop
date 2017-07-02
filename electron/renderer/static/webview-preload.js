@@ -18,7 +18,9 @@
  */
 
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const {app} = remote;
 const path = require('path');
+const pkg = require('../../package.json');
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -154,6 +156,22 @@ function replaceGoogleAuth() {
   };
 }
 
+function enableFileLogging() {
+  // TODO: add log identifier
+  global.winston = require('winston');
+  const logFile = require('../../js/config').CONSOLE_LOG
+  const logFilePath = path.join(app.getPath('userData'), 'logs', logFile);
+  console.log('Logging into file', logFilePath);
+
+  winston
+    .add(winston.transports.File, {
+      filename: logFilePath,
+      handleExceptions: true,
+    })
+    .remove(winston.transports.Console)
+    .info(pkg.productName, 'Version', pkg.version);
+}
+
 function updateWebappStyles() {
   document.body.classList.add('team-mode')
 }
@@ -180,9 +198,10 @@ process.once('loaded', () => {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.openGraph = require('../../js/lib/openGraph')
-  global.notification_icon = path.join(remote.app.getAppPath(), 'img', 'notification.png')
+  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png')
   exposeAddressbook()
   exposeLibsodiumNeon()
+  enableFileLogging()
 })
 
 window.addEventListener('DOMContentLoaded', () => {

@@ -377,6 +377,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', (event, contents) => {
+      return
       // The following events should only be applied on webviews
       if (contents.getType() !== 'webview') {
         return;
