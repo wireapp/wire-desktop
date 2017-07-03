@@ -51,7 +51,7 @@ class Webviews extends Component {
   _onIpcMessage(account, {channel, args}) {
     switch (channel) {
       case 'team-info':
-        this.props.updateAccount(account.id, args[0])
+        this.props.updateAccountData(account.id, args[0])
         break;
     }
   }
