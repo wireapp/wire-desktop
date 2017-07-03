@@ -17,14 +17,31 @@
  *
  */
 
-.DragRegion {
-  position: fixed;
-  width: 100%;
-  height: 40px;
-  top: 0;
-  left: 0;
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
-  pointer-events: none;
-  z-index: 1000000;
-}
+import { saveState, loadState } from '../localStorage'
+
+import LocalStorageMock from '../__mocks__/localStorage';
+
+
+describe('localStorage', () => {
+
+  beforeEach(() => {
+    global.localStorage = new LocalStorageMock();
+  })
+
+  afterEach(() => {
+    delete global.localStorage
+  })
+
+  it('should return saved state', () => {
+    const state = {
+      foo: 'string',
+      bar: true,
+      num: 1,
+      test: null
+    }
+
+    saveState(state)
+
+    expect(loadState()).toEqual(state)
+  })
+})

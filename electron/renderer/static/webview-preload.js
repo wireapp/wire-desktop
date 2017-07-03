@@ -18,7 +18,9 @@
  */
 
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const {app} = remote;
 const path = require('path');
+const pkg = require('../../package.json');
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -135,13 +137,13 @@ function exposeAddressbook() {
   }
 }
 
-function replaceGoogleAuth(namespace = {}) {
-  if (namespace.app === undefined) {
+function replaceGoogleAuth() {
+  if (window.wire.app === undefined) {
     return;
   }
 
   // hijack google authenticate method
-  namespace.app.service.connect_google._authenticate = function() {
+  window.wire.app.service.connect_google._authenticate = function() {
     return new Promise(function(resolve, reject) {
       ipcRenderer.send('google-auth-request');
       ipcRenderer.once('google-auth-success', function(event, token) {
@@ -154,30 +156,62 @@ function replaceGoogleAuth(namespace = {}) {
   };
 }
 
+function enableFileLogging() {
+  // TODO: add log identifier
+  global.winston = require('winston');
+  const logFile = require('../../js/config').CONSOLE_LOG
+  const logFilePath = path.join(app.getPath('userData'), 'logs', logFile);
+  console.log('Logging into file', logFilePath);
+
+  winston
+    .add(winston.transports.File, {
+      filename: logFilePath,
+      handleExceptions: true,
+    })
+    .remove(winston.transports.Console)
+    .info(pkg.productName, 'Version', pkg.version);
+}
+
+function updateWebappStyles() {
+  document.body.classList.add('team-mode')
+}
+
+function checkAvailablity(callback) {
+  const intervalId = setInterval(() => {
+    if (window.wire) {
+      clearInterval(intervalId);
+      callback();
+      return
+    }
+
+    if (navigator.onLine) {
+      // Loading webapp failed
+      clearInterval(intervalId);
+      location.reload();
+    }
+  }, 500);
+}
+
 // https://github.com/electron/electron/issues/2984
 const _setImmediate = setImmediate;
-
-function onLoad() {
+process.once('loaded', () => {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.openGraph = require('../../js/lib/openGraph')
-  global.notification_icon = path.join(remote.app.getAppPath(), 'img', 'notification.png')
-
-  subscribeToWebappEvents()
-  subscribeToMainProcessEvents()
-
+  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png')
   exposeAddressbook()
   exposeLibsodiumNeon()
-  replaceGoogleAuth(window.wire)
+  enableFileLogging()
+})
 
-  // include context menu
-  require('../../js/menu/context')
+window.addEventListener('DOMContentLoaded', () => {
+  checkAvailablity(() => {
+    subscribeToMainProcessEvents()
+    updateWebappStyles()
+    subscribeToWebappEvents()
+    replaceGoogleAuth()
 
-  window.removeEventListener('DOMContentLoaded', onLoad);
-}
-
-if (document.readyState === 'complete') {
-  onLoad();
-} else {
-  window.addEventListener('DOMContentLoaded', onLoad);
-}
+    // include context menu
+    require('../../js/menu/context')
+  })
+});

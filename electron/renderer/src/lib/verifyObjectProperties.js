@@ -17,14 +17,20 @@
  *
  */
 
-import { connect } from 'react-redux'
+function is(type, obj) {
+    var clas = Object.prototype.toString.call(obj).slice(8, -1);
+    return obj != null && clas === type;
+}
 
-import { updateAccountBadge, updateAccountData, abortAccountCreation, switchAccount } from '../actions'
-import Webviews from '../components/Webviews'
+export default function(data, config) {
+  const dataKeys = Object.keys(data)
+  const configKeys = Object.keys(config)
 
-const WebviewsContainer = connect(
-  (state) => ({ accounts: state.accounts }),
-  { updateAccountBadge, updateAccountData, abortAccountCreation, switchAccount }
-)(Webviews)
+  if (dataKeys.length > configKeys) {
+      return false
+  }
 
-export default WebviewsContainer
+  return dataKeys.every((key) => {
+    return config.hasOwnProperty(key) && is(config[key], data[key])
+ })
+}

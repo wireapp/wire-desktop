@@ -17,14 +17,14 @@
  *
  */
 
-import { connect } from 'react-redux'
+import badgeCount from '../badgeCount'
 
-import { updateAccountBadge, updateAccountData, abortAccountCreation, switchAccount } from '../actions'
-import Webviews from '../components/Webviews'
+describe('badgeCount', () => {
+  it('should return undefined if badge count cannot be generated from title', () => {
+    expect(badgeCount('Title')).not.toBeDefined()
+  })
 
-const WebviewsContainer = connect(
-  (state) => ({ accounts: state.accounts }),
-  { updateAccountBadge, updateAccountData, abortAccountCreation, switchAccount }
-)(Webviews)
-
-export default WebviewsContainer
+  it('should return count if badge count can be generated from title', () => {
+    expect(badgeCount('(1) Title')).toEqual(1)
+  })
+})

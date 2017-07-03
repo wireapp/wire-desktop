@@ -17,11 +17,14 @@
  *
  */
 
-import React from 'react'
+import { colorFromId } from '../accentColor'
 
-import './DragRegion.css'
+describe('colorFromId', () => {
+  it('should return correct color', () => {
+    expect(colorFromId(2)).toEqual('#00c800')
+  })
 
-const DragRegion = () =>
-  <div className="DragRegion" />
-
-export default DragRegion
+  it('should return undefined if id does not exist', () => {
+    expect(colorFromId(42)).not.toBeDefined()
+  })
+})

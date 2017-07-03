@@ -17,14 +17,10 @@
  *
  */
 
-import { connect } from 'react-redux'
+import reducer from '../accounts'
 
-import { updateAccountBadge, updateAccountData, abortAccountCreation, switchAccount } from '../actions'
-import Webviews from '../components/Webviews'
-
-const WebviewsContainer = connect(
-  (state) => ({ accounts: state.accounts }),
-  { updateAccountBadge, updateAccountData, abortAccountCreation, switchAccount }
-)(Webviews)
-
-export default WebviewsContainer
+describe('accounts reducer', () => {
+  it('should return the initial state with one account', () => {
+    expect(reducer(undefined, {}).length).toEqual(1)
+  })
+})

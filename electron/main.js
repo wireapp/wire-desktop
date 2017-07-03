@@ -45,7 +45,6 @@ const windowManager = require('./js/window-manager');
 const APP_PATH = app.getAppPath();
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-const SPLASH_HTML = 'file://' + path.join(APP_PATH, 'html', 'splash.html');
 const CERT_ERR_HTML = 'file://' + path.join(APP_PATH, 'html', 'certificate-error.html');
 const ABOUT_HTML = 'file://' + path.join(APP_PATH, 'html', 'about.html');
 const ICON = 'wire.' + ((process.platform === 'win32') ? 'ico' : 'png');
@@ -54,7 +53,6 @@ const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 let main;
 let raygunClient;
 let about;
-let enteredWebapp = false;
 let quitting = false;
 let shouldQuit = false;
 let argv = minimist(process.argv.slice(1));
@@ -141,13 +139,6 @@ function getBaseUrl() {
   return baseURL;
 }
 
-ipcMain.once('load-webapp', function() {
-  enteredWebapp = true;
-  let baseURL = getBaseUrl();
-  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
-  main.loadURL(baseURL);
-});
-
 ipcMain.on('loaded', function() {
   let size = main.getSize();
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
@@ -220,30 +211,9 @@ function showMainWindow() {
     main.setBounds(init.restore('bounds', main.getBounds()));
   }
 
-  main.webContents.session.setCertificateVerifyProc((request, cb) => {
-    const {hostname = '', certificate = {}, error} = request;
-
-    if (typeof error !== 'undefined') {
-      console.error('setCertificateVerifyProc', error);
-      main.loadURL(CERT_ERR_HTML);
-      return cb(-2);
-    }
-
-    if (certutils.hostnameShouldBePinned(hostname)) {
-      const pinningResults = certutils.verifyPinning(hostname, certificate);
-      for (const result of Object.values(pinningResults)) {
-        if (result === false) {
-          console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
-          main.loadURL(CERT_ERR_HTML);
-          return cb(-2);
-        }
-      }
-    }
-
-    return cb(-3);
-  });
-
-  main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(getBaseUrl())}`);
+  let baseURL = getBaseUrl();
+  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
+  main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools();
@@ -280,14 +250,6 @@ function showMainWindow() {
 
   main.webContents.on('dom-ready', function() {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
-    if (enteredWebapp) {
-      main.webContents.send('webapp-loaded', {
-        electron_version: app.getVersion(),
-        notification_icon: path.join(app.getAppPath(), 'img', 'notification.png'),
-      });
-    } else {
-      main.webContents.send('splash-screen-loaded');
-    }
   });
 
   main.on('focus', function() {
@@ -416,7 +378,6 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', (event, contents) => {
       return
-
       // The following events should only be applied on webviews
       if (contents.getType() !== 'webview') {
         return;
@@ -457,6 +418,29 @@ class ElectronWrapperInit {
           e.preventDefault();
           webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
         }
+      });
+
+      contents.session.setCertificateVerifyProc((request, cb) => {
+        const {hostname = '', certificate = {}, error} = request;
+
+        if (typeof error !== 'undefined') {
+          console.error('setCertificateVerifyProc', error);
+          main.loadURL(CERT_ERR_HTML);
+          return cb(-2);
+        }
+
+        if (certutils.hostnameShouldBePinned(hostname)) {
+          const pinningResults = certutils.verifyPinning(hostname, certificate);
+          for (const result of Object.values(pinningResults)) {
+            if (result === false) {
+              console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+              main.loadURL(CERT_ERR_HTML);
+              return cb(-2);
+            }
+          }
+        }
+
+        return cb(-3);
       });
     });
   }

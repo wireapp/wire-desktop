@@ -21,13 +21,11 @@ import React from 'react'
 
 import SidebarContainer from '../containers/SidebarContainer'
 import WebviewsContainer from '../containers/WebviewsContainer'
-import DragRegion from './DragRegion'
 
 import './App.css'
 
 const App = () =>
   <div className="App">
-    <DragRegion />
     <WebviewsContainer />
     <SidebarContainer />
   </div>

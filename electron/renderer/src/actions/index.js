@@ -1,4 +1,5 @@
 import uuid from 'uuid/v4'
+import verifyObjectProperties from '../lib/verifyObjectProperties'
 
 export const ADD_ACCOUNT = 'ADD_ACCOUNT'
 export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT'
@@ -56,5 +57,22 @@ export const abortAccountCreation = (id) => {
     const accounts = getState().accounts
     const lastAccount = accounts[accounts.length - 1]
     dispatch(switchAccount(lastAccount.id))
+  }
+}
+export const updateAccountData = (id, data) => {
+  return (dispatch, getState) => {
+    const isValidAccountData = verifyObjectProperties(data, {
+      'teamID': 'String',
+      'userID': 'String',
+      'picture': 'String',
+      'name': 'String',
+      'accentID': 'Number'
+    })
+
+    if (isValidAccountData) {
+      dispatch(updateAccount(id, data))
+    } else {
+      console.warn(`Got invalid account data ${JSON.stringify(data)}`)
+    }
   }
 }
