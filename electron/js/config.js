@@ -55,17 +55,13 @@ let config = {
   UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
 
   EMBED_DOMAINS: [
-
-    // Youtube
     {
-      name: 'Youtube',
+      name: 'YouTube',
       hostname: ['www.youtube-nocookie.com'],
       allowedExternalLinks: [
         'www.youtube.com',
       ],
     },
-
-    // Vimeo
     {
       name: 'Vimeo',
       hostname: ['player.vimeo.com'],
@@ -74,17 +70,13 @@ let config = {
         'player.vimeo.com',
       ],
     },
-
-    // Soundcloud
     {
-      name: 'Soundcloud',
+      name: 'SoundCloud',
       hostname: ['w.soundcloud.com'],
       allowedExternalLinks: [
         'soundcloud.com',
       ],
     },
-
-    // Spotify
     {
       name: 'Spotify',
       hostname: ['open.spotify.com', 'embed.spotify.com'],
