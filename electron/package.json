@@ -20,7 +20,7 @@
     "googleapis": "17.1.0",
     "image-type": "3.0.0",
     "jsrsasign": "7.1.2",
-    "lodash.throttle": "4.1.1",
+    "lodash": "4.17.4",
     "minimist": "1.2.0",
     "open-graph": "0.2.3",
     "raygun": "0.9.1",
