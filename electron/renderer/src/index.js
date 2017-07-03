@@ -23,6 +23,7 @@ import { applyMiddleware, createStore } from 'redux'
 import { Provider } from 'react-redux'
 import thunk from 'redux-thunk';
 import logger from 'redux-logger'
+import throttle from 'lodash.throttle'
 
 import App from './components/App'
 import { addAccount, switchAccount } from './actions'
@@ -39,11 +40,11 @@ const store = createStore(
   applyMiddleware(logger, thunk)
 )
 
-store.subscribe(() => {
+store.subscribe(throttle(() => {
   saveState({
     accounts: store.getState().accounts
   })
-})
+}), 500)
 
 render(
   <Provider store={store}>
