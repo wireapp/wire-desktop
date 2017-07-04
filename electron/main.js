@@ -353,11 +353,23 @@ app.on('ready', function() {
 ///////////////////////////////////////////////////////////////////////////////
 // Delete the console.log
 ///////////////////////////////////////////////////////////////////////////////
-let consoleLog = path.join(app.getPath('userData'), config.CONSOLE_LOG);
-fs.stat(consoleLog, function(err, stats) {
-  if (!err) {
-    fs.rename(consoleLog, consoleLog.replace('.log', '.old'));
+const logDir = path.join(app.getPath('userData'), 'logs');
+fs.readdir(logDir, (error, files) => {
+  if (error) {
+    console.log(`Failed to read log directory with error: ${error.message}`)
+    return;
   }
+
+  // TODO filter out dotfiles
+  for (const file of files) {
+    const consoleLog = path.join(logDir, file, config.CONSOLE_LOG);
+    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (error) => {
+      if (error) {
+        console.log(`Failed to rename log file (${consoleLog}) with error: ${error.message}`)
+      }
+    });
+  }
+  
 });
 
 class ElectronWrapperInit {

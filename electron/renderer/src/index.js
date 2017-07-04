@@ -37,7 +37,7 @@ const persistedState = loadState()
 const store = createStore(
   appStore,
   persistedState,
-  applyMiddleware(logger, thunk)
+  applyMiddleware(thunk, logger)
 )
 
 store.subscribe(throttle(() => {
