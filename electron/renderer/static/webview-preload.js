@@ -199,6 +199,10 @@ function updateWebappStyles() {
   document.body.classList.add('team-mode')
 }
 
+function reportWebappVersion() {
+  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
+}
+
 function checkAvailablity(callback) {
   const intervalId = setInterval(() => {
     if (window.wire) {
@@ -220,21 +224,22 @@ const _setImmediate = setImmediate;
 process.once('loaded', () => {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
-  global.openGraph = require('../../js/lib/openGraph')
-  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png')
-  exposeAddressbook()
-  exposeLibsodiumNeon()
-  enableFileLogging()
+  global.openGraph = require('../../js/lib/openGraph');
+  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
+  exposeAddressbook();
+  exposeLibsodiumNeon();
+  enableFileLogging();
 })
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailablity(() => {
-    subscribeToMainProcessEvents()
-    updateWebappStyles()
-    subscribeToWebappEvents()
-    replaceGoogleAuth()
+    subscribeToMainProcessEvents();
+    updateWebappStyles();
+    subscribeToWebappEvents();
+    replaceGoogleAuth();
+    reportWebappVersion();
 
     // include context menu
-    require('../../js/menu/context')
+    require('../../js/menu/context');
   })
 });
