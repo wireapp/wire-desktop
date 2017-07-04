@@ -160,7 +160,7 @@ function replaceGoogleAuth() {
 }
 
 function enableFileLogging() {
-  // webapp uses winston ref to define log level
+  // webapp uses winston refeference to define log level
   global.winston = require('winston');
 
   const id = new URL(window.location).searchParams.get('id');
