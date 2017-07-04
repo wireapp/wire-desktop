@@ -418,9 +418,6 @@ class ElectronWrapperInit {
           params.plugins = false;
           params.autosize = false;
 
-          // Let onBeforeSendHeaders manage the referrer
-          params.httpreferrer = '';
-
           // Verify the URL being loaded
           if (!util.isMatchingHost(_url, getBaseUrl())) {
             e.preventDefault();
