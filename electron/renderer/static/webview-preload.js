@@ -163,8 +163,8 @@ function enableFileLogging() {
   // webapp uses winston ref to define log level
   global.winston = require('winston');
 
-  const id = new URL(window.location).searchParams.get('id')
-  const logName = require('../../js/config').CONSOLE_LOG
+  const id = new URL(window.location).searchParams.get('id');
+  const logName = require('../../js/config').CONSOLE_LOG;
   const logDirectory = path.join(app.getPath('userData'), 'logs');
 
   try {
@@ -180,7 +180,7 @@ function enableFileLogging() {
 
     const logFilePath = path.join(subDirectory, logName);
 
-    console.log('Logging into file', logFilePath);
+    console.log(`Logging into file: ${logFilePath}`);
 
     winston
       .add(winston.transports.File, {
@@ -190,7 +190,7 @@ function enableFileLogging() {
       .remove(winston.transports.Console)
       .info(pkg.productName, 'Version', pkg.version);
 
-  } catch (e) {
+  } catch (error) {
     console.error(`Failed to create log file: ${error.message}`)
   }
 }

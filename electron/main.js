@@ -343,7 +343,7 @@ app.on('ready', function() {
 const logDir = path.join(app.getPath('userData'), 'logs');
 fs.readdir(logDir, (error, files) => {
   if (error) {
-    console.log(`Failed to read log directory ${error.message}`)
+    console.log(`Failed to read log directory with error: ${error.message}`)
     return;
   }
 
