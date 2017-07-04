@@ -199,6 +199,10 @@ function updateWebappStyles() {
   document.body.classList.add('team-mode')
 }
 
+function reportWebappVersion() {
+  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
+}
+
 function checkAvailablity(callback) {
   const intervalId = setInterval(() => {
     if (window.wire) {
@@ -233,6 +237,7 @@ window.addEventListener('DOMContentLoaded', () => {
     updateWebappStyles();
     subscribeToWebappEvents();
     replaceGoogleAuth();
+    reportWebappVersion();
 
     // include context menu
     require('../../js/menu/context');
