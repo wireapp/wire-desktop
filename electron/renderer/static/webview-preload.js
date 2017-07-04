@@ -167,27 +167,32 @@ function enableFileLogging() {
   const logName = require('../../js/config').CONSOLE_LOG
   const logDirectory = path.join(app.getPath('userData'), 'logs');
 
-  if (!fs.existsSync(logDirectory)) {
-    fs.mkdirSync(logDirectory);
+  try {
+    if (!fs.existsSync(logDirectory)) {
+      fs.mkdirSync(logDirectory);
+    }
+
+    const subDirectory = path.join(logDirectory, id);
+
+    if (!fs.existsSync(subDirectory)) {
+      fs.mkdirSync(subDirectory);
+    }
+
+    const logFilePath = path.join(subDirectory, logName);
+
+    console.log('Logging into file', logFilePath);
+
+    winston
+      .add(winston.transports.File, {
+        filename: logFilePath,
+        handleExceptions: true,
+      })
+      .remove(winston.transports.Console)
+      .info(pkg.productName, 'Version', pkg.version);
+
+  } catch (e) {
+    console.error(`Failed to create log file: ${error.message}`)
   }
-
-  const subDirectory = path.join(logDirectory, id);
-
-  if (!fs.existsSync(subDirectory)) {
-    fs.mkdirSync(subDirectory);
-  }
-
-  const logFilePath = path.join(subDirectory, logName);
-
-  console.log('Logging into file', logFilePath);
-
-  winston
-    .add(winston.transports.File, {
-      filename: logFilePath,
-      handleExceptions: true,
-    })
-    .remove(winston.transports.Console)
-    .info(pkg.productName, 'Version', pkg.version);
 }
 
 function updateWebappStyles() {
