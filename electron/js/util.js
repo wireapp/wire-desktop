@@ -40,6 +40,10 @@ module.exports = {
     return upperLeftVisible || lowerRightVisible;
   },
 
+  isMatchingHost: (_url, _baseUrl) => {
+    return url.parse(_url).host === url.parse(_baseUrl).host;
+  },
+
   isMatchingEmbed: (_url) => {
     const hostname = url.parse(_url).hostname;
 
