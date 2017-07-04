@@ -17,9 +17,12 @@
  *
  */
 
+const fs = require('fs');
+const path = require('path');
+
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
 const {app} = remote;
-const path = require('path');
+
 const pkg = require('../../package.json');
 
 webFrame.setZoomLevelLimits(1, 1);
@@ -157,10 +160,25 @@ function replaceGoogleAuth() {
 }
 
 function enableFileLogging() {
-  // TODO: add log identifier
+  // webapp uses winston ref to define log level
   global.winston = require('winston');
-  const logFile = require('../../js/config').CONSOLE_LOG
-  const logFilePath = path.join(app.getPath('userData'), 'logs', logFile);
+
+  const id = new URL(window.location).searchParams.get('id')
+  const logName = require('../../js/config').CONSOLE_LOG
+  const logDirectory = path.join(app.getPath('userData'), 'logs');
+
+  if (!fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory);
+  }
+
+  const subDirectory = path.join(logDirectory, id);
+
+  if (!fs.existsSync(subDirectory)) {
+    fs.mkdirSync(subDirectory);
+  }
+
+  const logFilePath = path.join(subDirectory, logName);
+
   console.log('Logging into file', logFilePath);
 
   winston
