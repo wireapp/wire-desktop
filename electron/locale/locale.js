@@ -22,7 +22,8 @@
 const app = require('electron').app || require('electron').remote.app;
 
 const config = require('./../js/config');
-const init = require('./../js/lib/init');
+const settings = require('./../js/lib/settings');
+
 const da = require('./strings-da');
 const de = require('./strings-de');
 const cs = require('./strings-cs');
@@ -75,7 +76,7 @@ let current;
 function getCurrent() {
   if (current == null) {
     // We care only about the language part and not the country (en_US, de_DE)
-    current = init.restore('locale', parseLocale(app.getLocale().substr(0, 2)));
+    current = settings.restore('locale', parseLocale(app.getLocale().substr(0, 2)));
   }
   if (config.LOCALE.indexOf(current) === -1) {
     current = config.LOCALE[0];
@@ -97,7 +98,7 @@ function getText(text) {
 
 function setLocale(locale) {
   current = parseLocale(locale);
-  init.save('locale', current);
+  settings.save('locale', current);
 }
 
 
