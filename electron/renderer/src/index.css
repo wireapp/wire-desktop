@@ -26,6 +26,8 @@ body {
   margin: 0;
   height: 100vh;
   width: 100vw;
+  background-image: linear-gradient(0, #2391d3, #68b3e0);
+  background-repeat: no-repeat;
   font-family: -apple-system, ".SFNSText-Regular", "Helvetica Neue", "Segoe UI", Arial, sans-serif;
   color: var(--graphite-dark);
 }
