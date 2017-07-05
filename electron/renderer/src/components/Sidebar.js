@@ -21,6 +21,7 @@ import React from 'react'
 
 import TeamIcon from './TeamIcon'
 import PersonalIcon from './PersonalIcon'
+import { ContextMenu, ContextMenuItem, ContextMenuTrigger } from './ContextMenu'
 import { colorFromId } from '../lib/accentColor'
 
 import './Sidebar.css'
@@ -53,14 +54,21 @@ const Sidebar = ({
       </div>
     ))}
     {!isAddingAccount && !hasReachedLimitOfAccounts &&
-      <div className="Sidebar-cell">
-        <div className="Sidebar-account-add" onClick={addAccountWithSession} >
-          <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 6.125v1.75h6.125V14h1.75V7.875H14v-1.75H7.875V0h-1.75v6.125" fillRule="evenodd"/>
-          </svg>
+      <ContextMenuTrigger id="account">
+        <div className="Sidebar-cell">
+          <div className="Sidebar-account-add" onClick={addAccountWithSession} >
+            <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 6.125v1.75h6.125V14h1.75V7.875H14v-1.75H7.875V0h-1.75v6.125" fillRule="evenodd"/>
+            </svg>
+          </div>
         </div>
-      </div>
+      </ContextMenuTrigger>
     }
+
+    <ContextMenu id="account">
+      <ContextMenuItem onClick={() => window.open('https://teams.wire.com')}>Create Team</ContextMenuItem>
+      <ContextMenuItem onClick={() => addAccountWithSession()}>Add Account</ContextMenuItem>
+    </ContextMenu>
   </div>
 
 export default Sidebar
