@@ -406,7 +406,8 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', (event, contents) => {
 
-      if (contents.getType() === 'window') {
+      switch(contents.getType()) {
+        case 'window':
         contents.on('will-attach-webview', (e, webPreferences, params) => {
           const _url = params.src;
 
@@ -424,39 +425,37 @@ class ElectronWrapperInit {
             webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
           }
         });
-      }
+        break;
 
-      // The following events should only be applied on webviews
-      if (contents.getType() !== 'webview') {
-        return;
-      }
+        case 'webview':
+        // Open webview links outside of the app
+        contents.on('new-window', (e, _url) => { openLinkInNewWindow(e, _url); });
+        contents.on('will-navigate', (e, _url) => { willNavigateInWebview(e, _url); });
 
-      // Open webview links outside of the app
-      contents.on('new-window', (e, _url) => { openLinkInNewWindow(e, _url); });
-      contents.on('will-navigate', (e, _url) => { willNavigateInWebview(e, _url); });
+        contents.session.setCertificateVerifyProc((request, cb) => {
+          const {hostname = '', certificate = {}, error} = request;
 
-      contents.session.setCertificateVerifyProc((request, cb) => {
-        const {hostname = '', certificate = {}, error} = request;
+          if (typeof error !== 'undefined') {
+            console.error('setCertificateVerifyProc', error);
+            main.loadURL(CERT_ERR_HTML);
+            return cb(-2);
+          }
 
-        if (typeof error !== 'undefined') {
-          console.error('setCertificateVerifyProc', error);
-          main.loadURL(CERT_ERR_HTML);
-          return cb(-2);
-        }
-
-        if (certutils.hostnameShouldBePinned(hostname)) {
-          const pinningResults = certutils.verifyPinning(hostname, certificate);
-          for (const result of Object.values(pinningResults)) {
-            if (result === false) {
-              console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
-              main.loadURL(CERT_ERR_HTML);
-              return cb(-2);
+          if (certutils.hostnameShouldBePinned(hostname)) {
+            const pinningResults = certutils.verifyPinning(hostname, certificate);
+            for (const result of Object.values(pinningResults)) {
+              if (result === false) {
+                console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+                main.loadURL(CERT_ERR_HTML);
+                return cb(-2);
+              }
             }
           }
-        }
 
-        return cb(-3);
-      });
+          return cb(-3);
+        });
+        break;
+      }
     });
   }
 }
