@@ -6,19 +6,20 @@
     "preinstall": "cd electron && npm install",
     "install": "cd electron && npm run rebuild-native-modules",
     "postinstall": "cd electron && npm run rebuild-neon",
-    "prestart": "npm run bundle",
-    "start": "electron electron --inspect --devtools --enable-logging",
-    "edge": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
-    "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
-    "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
-    "localhost": "electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
+    "electron": "npm run bundle && electron electron --inspect --devtools --enable-logging",
+    "start": "npm run electron",
+    "edge": "npm run electron -- --env=https://wire-webapp-edge.zinfra.io",
+    "staging": "npm run electron -- --env=https://wire-webapp-staging.zinfra.io",
+    "prod": "npm run electron -- --env=https://app.wire.com",
+    "localhost": "npm run electron -- --env=http://localhost:8888",
     "lint": "eslint electron",
     "jest": "jest",
     "test": "npm run lint && electron-mocha tests",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
-    "bundle": "webpack"
+    "bundle:dev": "webpack --config webpack.dev.config.js",
+    "bundle": "webpack --config webpack.prod.config.js"
   },
   "repository": {
     "type": "git",
@@ -56,6 +57,7 @@
     "webpack": "3.0.0"
   },
   "dependencies": {
+    "babili-webpack-plugin": "0.1.2",
     "debug": "2.6.8"
   }
 }
