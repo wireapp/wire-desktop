@@ -132,6 +132,18 @@ let localeTemplate = {
         changeLocale('lt');
       },
     }, {
+      label: locale.label['nl'],
+      type: 'radio',
+      click: function() {
+        changeLocale('nl');
+      },
+    },{
+      label: locale.label['pl'],
+      type: 'radio',
+      click: function() {
+        changeLocale('pl');
+      },
+    },{
       label: locale.label['pt'],
       type: 'radio',
       click: function() {
