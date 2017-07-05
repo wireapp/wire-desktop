@@ -25,15 +25,15 @@ class IsOnline extends Component {
   constructor(props) {
     super(props)
 
-    this.state = { 
-        isOnline: navigator.onLine 
+    this.state = {
+      isOnline: navigator.onLine
     }
   }
 
   componentDidMount() {
     if (this.state.isOnline === false) {
         window.addEventListener('online', (event) => {
-            this.setState({ isOnline: true });
+          this.setState({ isOnline: true });
         }, { once: true });
       }
   }
