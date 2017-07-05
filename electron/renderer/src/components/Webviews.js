@@ -30,11 +30,18 @@ class Webviews extends Component {
   }
 
   _getEnvironmentUrl(account) {
-    const url = new URL(window.location)
-    const env = url.searchParams.get('env')
-    const envUrl = new URL(env)
-    envUrl.searchParams.set('id', account.id)
-    return decodeURIComponent(envUrl)
+    const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'))
+    const url = new URL(envParam)
+
+    // pass account id to webview so we can access it in the preload scropt
+    url.searchParams.set('id', account.id)
+
+    // redirect to auth page if user is unknown
+    if (account.userID === undefined) {
+      url.pathname = '/auth'
+    }
+
+    return url.href
   }
 
   _onPageTitleUpdated(account, { title }) {
