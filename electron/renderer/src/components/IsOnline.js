@@ -17,21 +17,30 @@
  *
  */
 
-import React from 'react'
+import React, { Component } from 'react'
 
-import SidebarContainer from '../containers/SidebarContainer'
-import WebviewsContainer from '../containers/WebviewsContainer'
+import './IsOnline.css'
 
-import IsOnline from './IsOnline'
+class IsOnline extends Component {
+  constructor(props) {
+    super(props)
 
-import './App.css'
+    this.state = {
+      isOnline: navigator.onLine
+    }
+  }
 
-const App = () =>
-  <IsOnline>
-    <div className="App">
-      <WebviewsContainer />
-      <SidebarContainer />
-    </div>
-  </IsOnline>
+  componentDidMount() {
+    if (this.state.isOnline === false) {
+      window.addEventListener('online', (event) => {
+        this.setState({ isOnline: true });
+      }, { once: true });
+    }
+  }
 
-export default App
+  render() {
+    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
+  }
+}
+
+export default IsOnline
