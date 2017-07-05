@@ -32,10 +32,10 @@ class IsOnline extends Component {
 
   componentDidMount() {
     if (this.state.isOnline === false) {
-        window.addEventListener('online', (event) => {
-          this.setState({ isOnline: true });
-        }, { once: true });
-      }
+      window.addEventListener('online', (event) => {
+        this.setState({ isOnline: true });
+      }, { once: true });
+    }
   }
 
   render() {
