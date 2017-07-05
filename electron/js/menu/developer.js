@@ -22,7 +22,8 @@
 const {MenuItem} = require('electron');
 const config = require('./../config');
 const windowManager = require('./../window-manager');
-const env = global.init.restore('env', config.INTERNAL);
+const init = require('./../lib/ConfigurationPersistence');
+const env = init.restore('env', config.INTERNAL);
 
 function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
@@ -46,7 +47,7 @@ let devProductionTemplate = {
   checked: env === config.PROD,
   click: function() {
     getPrimaryWindow().loadURL(config.PROD_URL);
-    global.init.save('env', config.PROD);
+    init.save('env', config.PROD);
   },
 };
 
@@ -56,7 +57,7 @@ let devInternalTemplate = {
   checked: env === config.INTERNAL,
   click: function() {
     getPrimaryWindow().loadURL(config.INTERNAL_URL);
-    global.init.save('env', config.INTERNAL);
+    init.save('env', config.INTERNAL);
   },
 };
 
@@ -66,7 +67,7 @@ let devStagingTemplate = {
   checked: env === config.STAGING,
   click: function() {
     getPrimaryWindow().loadURL(config.STAGING_URL);
-    global.init.save('env', config.STAGING);
+    init.save('env', config.STAGING);
   },
 };
 
@@ -76,7 +77,7 @@ let devDevTemplate = {
   checked: env === config.DEV,
   click: function() {
     getPrimaryWindow().loadURL(config.DEV_URL);
-    global.init.save('env', config.DEV);
+    init.save('env', config.DEV);
   },
 };
 
@@ -86,7 +87,7 @@ let devEdgeTemplate = {
   checked: env === config.EDGE,
   click: function() {
     getPrimaryWindow().loadURL(config.EDGE_URL);
-    global.init.save('env', config.EDGE);
+    init.save('env', config.EDGE);
   },
 };
 
@@ -96,7 +97,7 @@ let devBennyTemplate = {
   checked: env === config.CRYPTO,
   click: function() {
     getPrimaryWindow().loadURL(config.BENNY_URL);
-    global.init.save('env', config.CRYPTO);
+    init.save('env', config.CRYPTO);
   },
 };
 
@@ -106,7 +107,7 @@ let devLocalhostTemplate = {
   checked: env === config.LOCALHOST,
   click: function() {
     getPrimaryWindow().loadURL(config.LOCALHOST_URL);
-    global.init.save('env', config.LOCALHOST);
+    init.save('env', config.LOCALHOST);
   },
 };
 

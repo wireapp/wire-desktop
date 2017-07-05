@@ -20,29 +20,26 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 
-//const app = require('electron').app;
+const app = require('electron').app || require('electron').remote.app;
+const INIT_JSON = path.join(app.getPath('userData'), 'init.json');
 const debug = require('debug');
 
 class ConfigurationPersistence {
 
-  constructor(file) {
-    this.file = file;
+  constructor() {
     this.debug = debug('ConfigurationPersistence');
 
     // Get content of init.json
-    try {
-      this.datas = this._readFromFile();
-    } catch (e) {
-      this.debug('Unable to parse the init file. Details: %s', e);
-      this.datas = {};
+    if (typeof global._ConfigurationPersistence === 'undefined') {
+      try {
+        global._ConfigurationPersistence = this._readFromFile();
+      } catch (e) {
+        this.debug('Unable to parse the init file. Details: %s', e);
+        global._ConfigurationPersistence = {};
+      }
     }
-
-    // Save configuration file when Electron exit
-    /*app.on('before-quit', async () => {
-      this.debug('Persisting user configuration file...');
-      await this._saveToFile();
-    });*/
 
     this.debug('Init ConfigurationPersistence');
     return true;
@@ -50,21 +47,21 @@ class ConfigurationPersistence {
 
   save(name, value) {
     this.debug('Saving %s with "%o" as value', name, value);
-    this.datas[name] = value;
+    global._ConfigurationPersistence[name] = value;
     return true;
   }
 
   restore(name, defaultValue) {
     this.debug('Restoring %s', name);
-    const value = this.datas[name];
+    const value = global._ConfigurationPersistence[name];
     return (typeof value !== 'undefined' ? value : defaultValue);
   }
 
   _saveToFile() {
     return new Promise((resolve, reject) => {
-      const datasInJSON = JSON.stringify(this.datas);
+      const datasInJSON = JSON.stringify(global._ConfigurationPersistence);
       this.debug('Saving datas to persistent storage: %o', datasInJSON);
-      fs.writeFile(this.file, datasInJSON, 'utf8', (err, data) => {
+      fs.writeFile(INIT_JSON, datasInJSON, 'utf8', (err, data) => {
         if (err) {
           this.debug('An error occurred while saving the config file: %s', err);
           reject(err);
@@ -77,10 +74,10 @@ class ConfigurationPersistence {
 
   _readFromFile() {
     this.debug('Reading user configuration file...');
-    const datasInJSON = JSON.parse(fs.readFileSync(this.file, 'utf8'));
+    const datasInJSON = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
     this.debug('%o', datasInJSON);
     return datasInJSON;
   }
-}
+};
 
-module.exports = ConfigurationPersistence;
+module.exports = new ConfigurationPersistence();

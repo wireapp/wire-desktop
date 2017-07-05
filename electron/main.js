@@ -37,7 +37,6 @@ const USER_DATAS_PATH = app.getPath('userData');
 /*eslint-enable no-unused-vars*/
 
 // Local files defines
-const INIT_JSON = path.join(USER_DATAS_PATH, 'init.json');
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const SPLASH_HTML = `file://${path.join(APP_PATH, 'html', 'splash.html')}`;
@@ -45,8 +44,7 @@ const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.h
 const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 
 // Configuration persistence
-const ConfigurationPersistence = require('./js/lib/ConfigurationPersistence');
-global.init = new ConfigurationPersistence({file: INIT_JSON});
+const init = require('./js/lib/ConfigurationPersistence');
 
 // Wrapper modules
 const certutils = require('./js/certutils');
@@ -144,7 +142,7 @@ if (process.platform === 'linux') {
 function getBaseUrl() {
   let baseURL = argv.env || config.PROD_URL;
   if (!argv.env && config.DEVELOPMENT) {
-    let env = global.init.restore('env', config.INTERNAL);
+    let env = init.restore('env', config.INTERNAL);
 
     if (env === config.DEV) baseURL = config.DEV_URL;
     if (env === config.EDGE) baseURL = config.EDGE_URL;
@@ -212,7 +210,7 @@ function showMainWindow() {
     'height': config.DEFAULT_HEIGHT_MAIN,
     'minWidth': config.MIN_WIDTH_MAIN,
     'minHeight': config.MIN_HEIGHT_MAIN,
-    'autoHideMenuBar': !global.init.restore('showMenu', true),
+    'autoHideMenuBar': !init.restore('showMenu', true),
     'icon': ICON_PATH,
     'show': false,
     'webPreferences': {
@@ -225,10 +223,10 @@ function showMainWindow() {
     },
   });
 
-  if (global.init.restore('fullscreen', false)) {
+  if (init.restore('fullscreen', false)) {
     main.setFullScreen(true);
   } else {
-    main.setBounds(global.init.restore('bounds', main.getBounds()));
+    main.setBounds(init.restore('bounds', main.getBounds()));
   }
 
   main.webContents.session.setCertificateVerifyProc((request, cb) => {
@@ -327,10 +325,10 @@ function showMainWindow() {
 
   main.on('close', async (event) => {
 
-    global.init.save('fullscreen', main.isFullScreen());
+    init.save('fullscreen', main.isFullScreen());
 
     if (!main.isFullScreen()) {
-      global.init.save('bounds', main.getBounds());
+      init.save('bounds', main.getBounds());
     }
 
     if (!quitting) {
@@ -341,7 +339,7 @@ function showMainWindow() {
 
       // Save configuration to disk
       debugMain('Persisting user configuration file...');
-      await global.init._saveToFile();
+      await init._saveToFile();
     }
   });
 

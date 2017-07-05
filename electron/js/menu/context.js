@@ -24,6 +24,7 @@ const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
+const init = require('./../lib/ConfigurationPersistence');
 let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -148,7 +149,7 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck (text) {
-      if (!global.init.restore('spelling', false)) {
+      if (!init.restore('spelling', false)) {
         return true;
       }
       selection.isMisspelled = spellchecker.isMisspelled(text);
