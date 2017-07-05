@@ -45,7 +45,9 @@ const Sidebar = ({
     {accounts.map(account => (
       <div style={{ color: colorFromId(account.accentID) }} className={className(account)} key={account.id}>
         {account.teamID ? (
-          <TeamIcon account={account} onClick={() => switchAccount(account.id)} />
+          <ContextMenuTrigger id="account">
+            <TeamIcon account={account} onClick={() => switchAccount(account.id)} />
+          </ContextMenuTrigger>
         ) : (
           <PersonalIcon account={account} onClick={() => switchAccount(account.id)} />
         )}

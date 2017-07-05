@@ -38,9 +38,8 @@ export class ContextMenuTrigger extends Component {
   }
 
   _handleClick(event) {
-    document.dispatchEvent(new CustomEvent('context-menu-event', {
+    document.dispatchEvent(new CustomEvent(`context-menu-event-${this.props.id}`, {
       detail: {
-        id: this.props.id,
         position: this._getElementCenter(event.currentTarget),
         target: event.target
       }
@@ -103,19 +102,15 @@ export class ContextMenu extends Component {
   }
 
   componentDidUpdate(props, state) {
-    document.addEventListener('context-menu-event', this._handleContextMenuEvent)
+    document.addEventListener(`context-menu-event-${this.props.id}`, this._handleContextMenuEvent)
   }
 
   componentWillUnmount() {
-    document.removeEventListener('context-menu-event', this._handleContextMenuEvent);
+    document.removeEventListener(`context-menu-event-${this.props.id}`, this._handleContextMenuEvent);
     this._unregisterListeners()
   }
 
   _handleContextMenuEvent(event) {
-    if (event.detail.id !== this.props.id) {
-      return
-    }
-
     this._show(event.detail.position)
     this._registerListeners()
   }
