@@ -76,7 +76,7 @@ let webappVersion;
 ///////////////////////////////////////////////////////////////////////////////
 raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
 
-raygunClient.onBeforeSend(function(payload) {
+raygunClient.onBeforeSend(payload => {
   delete payload.details.machineName;
   return payload;
 });
@@ -92,7 +92,7 @@ if (config.DEVELOPMENT) {
 // makeSingleInstance will crash the signed mas app
 // see: https://github.com/atom/electron/issues/4688
 if (process.platform !== 'darwin') {
-  shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+  shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
     if (main) {
       windowManager.showPrimaryWindow();
     }
@@ -112,7 +112,7 @@ if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
 
-  ipcMain.on('wrapper-restart', function() {
+  ipcMain.on('wrapper-restart', () => {
     squirrel.installUpdate();
   });
 
@@ -152,41 +152,41 @@ function getBaseUrl() {
   return baseURL;
 }
 
-ipcMain.on('loaded', function() {
+ipcMain.on('loaded', () => {
   let size = main.getSize();
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
     util.resizeToBig(main);
   }
 });
 
-ipcMain.once('webapp-version', function(event, version) {
+ipcMain.once('webapp-version', (event, version) => {
   webappVersion = version;
 });
 
-ipcMain.on('save-picture', function(event, fileName, bytes) {
+ipcMain.on('save-picture', (event, fileName, bytes) => {
   download(fileName, bytes);
 });
 
-ipcMain.on('notification-click', function() {
+ipcMain.on('notification-click', () => {
   windowManager.showPrimaryWindow();
 });
 
-ipcMain.on('badge-count', function(event, count) {
+ipcMain.on('badge-count', (event, count) => {
   tray.updateBadgeIcon(main, count);
 });
 
-ipcMain.on('google-auth-request', function(event) {
+ipcMain.on('google-auth-request', event => {
   googleAuth.getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
-    .then(function(code) {
+    .then(code => {
       event.sender.send('google-auth-success', code.access_token);
     })
-    .catch(function(error) {
+    .catch(error => {
       event.sender.send('google-auth-error', error);
     });
 });
 
 if (process.platform !== 'darwin') {
-  ipcMain.on('wrapper-reload', function() {
+  ipcMain.on('wrapper-reload', () => {
     app.relaunch();
     // Using exit instead of quit for the time being
     // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
@@ -199,19 +199,19 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 function showMainWindow() {
   main = new BrowserWindow({
-    'title': config.NAME,
-    'titleBarStyle': 'hidden-inset',
-    'width': config.DEFAULT_WIDTH_MAIN,
-    'height': config.DEFAULT_HEIGHT_MAIN,
-    'minWidth': config.MIN_WIDTH_MAIN,
-    'minHeight': config.MIN_HEIGHT_MAIN,
-    'autoHideMenuBar': !init.restore('showMenu', true),
-    'icon': ICON_PATH,
-    'show': false,
-    'webPreferences': {
-      'backgroundThrottling': false,
-      'nodeIntegration': false,
-      'preload': PRELOAD_JS,
+    title: config.NAME,
+    titleBarStyle: 'hidden-inset',
+    width: config.DEFAULT_WIDTH_MAIN,
+    height: config.DEFAULT_HEIGHT_MAIN,
+    minWidth: config.MIN_WIDTH_MAIN,
+    minHeight: config.MIN_HEIGHT_MAIN,
+    autoHideMenuBar: !init.restore('showMenu', true),
+    icon: ICON_PATH,
+    show: false,
+    webPreferences: {
+      backgroundThrottling: false,
+      nodeIntegration: false,
+      preload: PRELOAD_JS,
 
       // Enable <webview>
       webviewTag: true,
@@ -261,15 +261,15 @@ function showMainWindow() {
     shell.openExternal(_url);
   });
 
-  main.webContents.on('dom-ready', function() {
+  main.webContents.on('dom-ready', () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
 
-  main.on('focus', function() {
+  main.on('focus', () => {
     main.flashFrame(false);
   });
 
-  main.on('close', function(event) {
+  main.on('close', (event) => {
     init.save('fullscreen', main.isFullScreen());
     if (!main.isFullScreen()) {
       init.save('bounds', main.getBounds());
@@ -281,7 +281,7 @@ function showMainWindow() {
     }
   });
 
-  main.webContents.on('crashed', function() {
+  main.webContents.on('crashed', () => {
     main.reload();
   });
 }
