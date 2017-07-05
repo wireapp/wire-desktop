@@ -64,7 +64,7 @@ const Sidebar = ({
     }
 
     <ContextMenu id="account">
-      <ContextMenuItem onClick={() => alert('create')}>Create Team</ContextMenuItem>
+      <ContextMenuItem onClick={() => window.open('https://teams.wire.com')}>Create Team</ContextMenuItem>
       <ContextMenuItem onClick={() => addAccountWithSession()}>Add Account</ContextMenuItem>
     </ContextMenu>
   </div>
