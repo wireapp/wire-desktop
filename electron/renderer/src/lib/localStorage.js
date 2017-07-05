@@ -17,30 +17,24 @@
  *
  */
 
-'use strict';
+export const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem('state')
+    if (serializedState === null) {
+      return undefined
+    }
+    return JSON.parse(serializedState)
+  } catch (error) {
+    console.error('ERROR: Failed to load state ', error.message)
+    return undefined
+  }
+}
 
-const {BrowserWindow, app} = require('electron');
-
-const assert = require('assert');
-const path = require('path');
-
-const tray = require('../electron/js/menu/tray');
-
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+export const saveState = (state) => {
+  try {
+    const serializedState = JSON.stringify(state)
+    localStorage.setItem('state', serializedState)
+  } catch (error) {
+    console.error('ERROR: Failed to save state ', error.message)
+  }
+}

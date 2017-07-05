@@ -17,30 +17,14 @@
  *
  */
 
-'use strict';
+import { connect } from 'react-redux'
 
-const {BrowserWindow, app} = require('electron');
+import { updateAccountBadge, updateAccountData, abortAccountCreation, switchAccount } from '../actions'
+import Webviews from '../components/Webviews'
 
-const assert = require('assert');
-const path = require('path');
+const WebviewsContainer = connect(
+  (state) => ({ accounts: state.accounts }),
+  { updateAccountBadge, updateAccountData, abortAccountCreation, switchAccount }
+)(Webviews)
 
-const tray = require('../electron/js/menu/tray');
-
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+export default WebviewsContainer

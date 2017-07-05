@@ -17,30 +17,22 @@
  *
  */
 
-'use strict';
+import React from 'react'
 
-const {BrowserWindow, app} = require('electron');
+import { colorFromId } from '../lib/accentColor'
 
-const assert = require('assert');
-const path = require('path');
+import './PersonalIcon.css'
 
-const tray = require('../electron/js/menu/tray');
+const PersonalIcon = ({ account, onClick }) =>
+  <div className="PersonalIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
+    {account.visible &&
+      <div className="PersonalIcon-border" style={{borderColor: colorFromId(account.accentID)}}></div>
+    }
+    <div className="PersonalIcon-inner">
+      {account.picture &&
+        <img src={account.picture} />
+      }
+    </div>
+  </div>
 
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+export default PersonalIcon

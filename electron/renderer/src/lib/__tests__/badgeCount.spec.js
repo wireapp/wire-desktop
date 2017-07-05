@@ -17,30 +17,14 @@
  *
  */
 
-'use strict';
+import badgeCount from '../badgeCount'
 
-const {BrowserWindow, app} = require('electron');
+describe('badgeCount', () => {
+  it('should return undefined if badge count cannot be generated from title', () => {
+    expect(badgeCount('Title')).not.toBeDefined()
+  })
 
-const assert = require('assert');
-const path = require('path');
-
-const tray = require('../electron/js/menu/tray');
-
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+  it('should return count if badge count can be generated from title', () => {
+    expect(badgeCount('(1) Title')).toEqual(1)
+  })
+})

@@ -17,30 +17,14 @@
  *
  */
 
-'use strict';
+import { colorFromId } from '../accentColor'
 
-const {BrowserWindow, app} = require('electron');
+describe('colorFromId', () => {
+  it('should return correct color', () => {
+    expect(colorFromId(2)).toEqual('#00c800')
+  })
 
-const assert = require('assert');
-const path = require('path');
-
-const tray = require('../electron/js/menu/tray');
-
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+  it('should return undefined if id does not exist', () => {
+    expect(colorFromId(42)).not.toBeDefined()
+  })
+})

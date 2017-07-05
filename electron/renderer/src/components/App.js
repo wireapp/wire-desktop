@@ -17,30 +17,17 @@
  *
  */
 
-'use strict';
+import React from 'react'
 
-const {BrowserWindow, app} = require('electron');
+import SidebarContainer from '../containers/SidebarContainer'
+import WebviewsContainer from '../containers/WebviewsContainer'
 
-const assert = require('assert');
-const path = require('path');
+import './App.css'
 
-const tray = require('../electron/js/menu/tray');
+const App = () =>
+  <div className="App">
+    <WebviewsContainer />
+    <SidebarContainer />
+  </div>
 
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+export default App

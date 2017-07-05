@@ -17,195 +17,38 @@
  *
  */
 
-'use strict';
-
-const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
-const {app} = remote;
-const pkg = require('./../package.json');
-const path = require('path');
+const {ipcRenderer, webFrame} = require('electron');
 
 webFrame.setZoomLevelLimits(1, 1);
-webFrame.registerURLSchemeAsBypassingCSP('file');
 
-// https://github.com/electron/electron/issues/2984
-const _setImmediate = setImmediate;
-process.once('loaded', function() {
-  global.setImmediate = _setImmediate;
-  global.openGraph = require('./lib/openGraph');
-  global.desktopCapturer = desktopCapturer;
-  global.winston = require('winston');
-
-  const logFilePath = path.join(app.getPath('userData'), require('./config').CONSOLE_LOG);
-  console.log('Logging into file', logFilePath);
-
-  winston
-    .add(winston.transports.File, {
-      filename: logFilePath,
-      handleExceptions: true,
-    })
-    .remove(winston.transports.Console)
-    .info(pkg.productName, 'Version', pkg.version);
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// Addressbook
-///////////////////////////////////////////////////////////////////////////////
-let cachedAddressBook;
-
-function getAdressBook () {
-  if (cachedAddressBook == undefined) {
-    cachedAddressBook = require('node-addressbook');
-  }
-  return cachedAddressBook;
+function getSelectedWebview() {
+  return document.querySelector('.Webview:not(.hide)')
 }
 
-if (process.platform === 'darwin') {
-  Object.defineProperty(window, 'wAddressBook', {get: getAdressBook});
+function subscribeToMainProcessEvents() {
+  ipcRenderer.on('system-menu', (event, action) => {
+    const selectedWebview = getSelectedWebview()
+    if (selectedWebview) {
+      selectedWebview.send(action)
+    }
+  });
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// App Start
-///////////////////////////////////////////////////////////////////////////////
-function loadWebapp() {
-  ipcRenderer.send('load-webapp');
+function addDragRegion() {
+  if (process.platform === 'darwin') {
+    // add titlebar ghost to prevent interactions with the content while dragging
+    const titleBar = document.createElement('div');
+    titleBar.className = 'drag-region';
+    document.body.appendChild(titleBar);
+  }
 }
 
-ipcRenderer.once('splash-screen-loaded', function() {
-  if (navigator.onLine) {
-    return loadWebapp();
-  }
+window.reportBadgeCount = (count) => {
+  ipcRenderer.send('badge-count', count)
+};
 
-  const offline = document.getElementById('offline');
-  const loading = document.getElementById('loading');
-  loading.style.display = 'none';
-  offline.style.display = 'block';
-  window.addEventListener('online', loadWebapp);
-});
+subscribeToMainProcessEvents()
 
-// app.wire.com was loaded
-ipcRenderer.once('webapp-loaded', (sender, config) => {
-  const webappLoaded = () => {
-    ipcRenderer.send('webapp-version', z.util.Environment.version(false));
-    window.electron_version = config.electron_version;
-    window.notification_icon = config.notification_icon;
-    require('./menu/context');
-
-    if (process.platform === 'darwin') {
-      // add titlebar ghost to prevent interactions with the content while dragging
-      const titleBar = document.createElement('div');
-      titleBar.className = 'drag-region';
-      document.body.appendChild(titleBar);
-    }
-
-    // we are on app.wire.com/
-    if (wire.app) {
-      // hijack google authenticate method
-      wire.app.service.connect_google._authenticate = () => {
-        return new Promise((resolve, reject) => {
-          ipcRenderer.send('google-auth-request');
-          ipcRenderer.once('google-auth-success', (event, token) => resolve(token));
-          ipcRenderer.once('google-auth-error', (error) => reject(error));
-        });
-      };
-
-      amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => ipcRenderer.send('notification-click'));
-      amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => ipcRenderer.send('loaded'));
-      amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
-        const update_from_desktop = update_source === z.announce.UPDATE_SOURCE.DESKTOP;
-
-        if (update_from_desktop) {
-          return ipcRenderer.send('wrapper-restart');
-        }
-        ipcRenderer.send('wrapper-reload');
-      });
-    }
-
-    // else we are on /auth
-    try {
-      Object.assign(window.sodium, require('libsodium-neon'));
-      console.info('Using libsodium-neon.');
-    } catch (error) {
-      console.info('Failed loading "libsodium-neon", falling back to "libsodium.js".', error);
-    }
-  };
-
-  if (window.wire) {
-    return webappLoaded();
-  }
-
-  const interval_id = setInterval(() => {
-    if (window.wire) {
-      clearInterval(interval_id);
-      return webappLoaded();
-    }
-
-    if (navigator.onLine) {
-      // Loading webapp failed
-      clearInterval(interval_id);
-      location.reload();
-    }
-  }, 500);
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// Webapp Events
-///////////////////////////////////////////////////////////////////////////////
-ipcRenderer.on('sign-out', function() {
-  amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
-});
-
-ipcRenderer.on('preferences-show', function() {
-  amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
-});
-
-ipcRenderer.on('conversation-start', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.START);
-});
-
-ipcRenderer.on('conversation-ping', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.PING);
-});
-
-ipcRenderer.on('conversation-call', function() {
-  amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false);
-});
-
-ipcRenderer.on('conversation-video-call', function() {
-  amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true);
-});
-
-ipcRenderer.on('conversation-people', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE);
-});
-
-ipcRenderer.on('conversation-add-people', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE);
-});
-
-ipcRenderer.on('conversation-archive', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE);
-});
-
-ipcRenderer.on('conversation-silence', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
-});
-
-ipcRenderer.on('conversation-delete', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.DELETE);
-});
-
-ipcRenderer.on('conversation-prev', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.PREV);
-});
-
-ipcRenderer.on('conversation-next', function() {
-  amplify.publish(z.event.WebApp.SHORTCUT.NEXT);
-});
-
-ipcRenderer.on('conversation-show', function(conversation_id) {
-  amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id);
-});
-
-ipcRenderer.on('wrapper-update-available', function() {
-  amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
+window.addEventListener('DOMContentLoaded', () => {
+  addDragRegion()
 });

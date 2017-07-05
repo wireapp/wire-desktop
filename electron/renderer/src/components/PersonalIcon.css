@@ -17,30 +17,35 @@
  *
  */
 
-'use strict';
+.PersonalIcon {
+  position: relative;
+  width: 38px;
+  height: 38px;
+}
 
-const {BrowserWindow, app} = require('electron');
+.PersonalIcon > * {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%)
+}
 
-const assert = require('assert');
-const path = require('path');
+.PersonalIcon-inner {
+  overflow: hidden;
+  width: 28px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, .4);
+  border-radius: 50%;
+}
 
-const tray = require('../electron/js/menu/tray');
+.PersonalIcon-inner > img {
+  width: 100%;
+  height: 100;
+}
 
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+.PersonalIcon-border {
+  border: 2px solid #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}

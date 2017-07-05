@@ -39,7 +39,6 @@ const USER_DATAS_PATH = app.getPath('userData');
 // Local files defines
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-const SPLASH_HTML = `file://${path.join(APP_PATH, 'html', 'splash.html')}`;
 const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
 const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 
@@ -68,7 +67,6 @@ const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 let main;
 let raygunClient;
 let about;
-let enteredWebapp = false;
 let quitting = false;
 let shouldQuit = false;
 let webappVersion;
@@ -154,13 +152,6 @@ function getBaseUrl() {
   return baseURL;
 }
 
-ipcMain.once('load-webapp', function() {
-  enteredWebapp = true;
-  let baseURL = getBaseUrl();
-  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
-  main.loadURL(baseURL);
-});
-
 ipcMain.on('loaded', function() {
   let size = main.getSize();
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
@@ -178,6 +169,10 @@ ipcMain.on('save-picture', function(event, fileName, bytes) {
 
 ipcMain.on('notification-click', function() {
   windowManager.showPrimaryWindow();
+});
+
+ipcMain.on('badge-count', function(event, count) {
+  tray.updateBadgeIcon(main, count);
 });
 
 ipcMain.on('google-auth-request', function(event) {
@@ -229,30 +224,9 @@ function showMainWindow() {
     main.setBounds(init.restore('bounds', main.getBounds()));
   }
 
-  main.webContents.session.setCertificateVerifyProc((request, cb) => {
-    const {hostname = '', certificate = {}, error} = request;
-
-    if (typeof error !== 'undefined') {
-      console.error('setCertificateVerifyProc', error);
-      main.loadURL(CERT_ERR_HTML);
-      return cb(-2);
-    }
-
-    if (certutils.hostnameShouldBePinned(hostname)) {
-      const pinningResults = certutils.verifyPinning(hostname, certificate);
-      for (const result of Object.values(pinningResults)) {
-        if (result === false) {
-          console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
-          main.loadURL(CERT_ERR_HTML);
-          return cb(-2);
-        }
-      }
-    }
-
-    return cb(-3);
-  });
-
-  main.loadURL(SPLASH_HTML);
+  let baseURL = getBaseUrl();
+  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
+  main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools();
@@ -270,24 +244,8 @@ function showMainWindow() {
   }
 
   main.webContents.on('will-navigate', function(event, url) {
-    // Prevent links like www.wire.com without blank target:
-    // to be opened inside the wrapper
-    if (util.openInExternalWindow(url)) {
-      event.preventDefault();
-      shell.openExternal(url);
-      return;
-    }
-
-    // Prevent Redirect for Drag and Drop on embeds
-    // or when no internet is present
-    if (url.includes('file://')) {
-      event.preventDefault();
-    }
-
-    // Resize the window for auth
-    if (url.includes('/auth/')) {
-      util.resizeToSmall(main);
-    }
+    // Prevent any kind of navigation inside the main window
+    event.preventDefault();
   });
 
   // Handle the new window event in the main Browser Window
@@ -305,22 +263,10 @@ function showMainWindow() {
 
   main.webContents.on('dom-ready', function() {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
-    if (enteredWebapp) {
-      main.webContents.send('webapp-loaded', {
-        electron_version: app.getVersion(),
-        notification_icon: path.join(app.getAppPath(), 'img', 'notification.png'),
-      });
-    } else {
-      main.webContents.send('splash-screen-loaded');
-    }
   });
 
   main.on('focus', function() {
     main.flashFrame(false);
-  });
-
-  main.on('page-title-updated', function() {
-    tray.updateBadgeIcon(main);
   });
 
   main.on('close', function(event) {
@@ -407,11 +353,23 @@ app.on('ready', function() {
 ///////////////////////////////////////////////////////////////////////////////
 // Delete the console.log
 ///////////////////////////////////////////////////////////////////////////////
-let consoleLog = path.join(app.getPath('userData'), config.CONSOLE_LOG);
-fs.stat(consoleLog, function(err, stats) {
-  if (!err) {
-    fs.rename(consoleLog, consoleLog.replace('.log', '.old'));
+const logDir = path.join(app.getPath('userData'), 'logs');
+fs.readdir(logDir, (error, files) => {
+  if (error) {
+    console.log(`Failed to read log directory with error: ${error.message}`)
+    return;
   }
+
+  // TODO filter out dotfiles
+  for (const file of files) {
+    const consoleLog = path.join(logDir, file, config.CONSOLE_LOG);
+    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (error) => {
+      if (error) {
+        console.log(`Failed to rename log file (${consoleLog}) with error: ${error.message}`)
+      }
+    });
+  }
+  
 });
 
 class ElectronWrapperInit {
@@ -444,7 +402,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', (event, contents) => {
-
+      return
       // The following events should only be applied on webviews
       if (contents.getType() !== 'webview') {
         return;
@@ -485,6 +443,29 @@ class ElectronWrapperInit {
           e.preventDefault();
           webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
         }
+      });
+
+      contents.session.setCertificateVerifyProc((request, cb) => {
+        const {hostname = '', certificate = {}, error} = request;
+
+        if (typeof error !== 'undefined') {
+          console.error('setCertificateVerifyProc', error);
+          main.loadURL(CERT_ERR_HTML);
+          return cb(-2);
+        }
+
+        if (certutils.hostnameShouldBePinned(hostname)) {
+          const pinningResults = certutils.verifyPinning(hostname, certificate);
+          for (const result of Object.values(pinningResults)) {
+            if (result === false) {
+              console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+              main.loadURL(CERT_ERR_HTML);
+              return cb(-2);
+            }
+          }
+        }
+
+        return cb(-3);
       });
     });
   }

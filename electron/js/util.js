@@ -72,15 +72,6 @@ module.exports = {
     return false;
   },
 
-  openInExternalWindow: function(_url) {
-    for (let item of config.WHITE_LIST) {
-      if (_url.includes(item)) {
-        return true;
-      }
-    }
-    return false;
-  },
-
   resizeToSmall: function(win) {
     if (process.platform !== 'darwin') {
       win.setMenuBarVisibility(false);

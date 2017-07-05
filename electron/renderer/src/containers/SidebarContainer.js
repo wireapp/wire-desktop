@@ -17,30 +17,19 @@
  *
  */
 
-'use strict';
+import { connect } from 'react-redux'
 
-const {BrowserWindow, app} = require('electron');
+import { addAccountWithSession, switchAccount } from '../actions'
+import Sidebar from '../components/Sidebar'
 
-const assert = require('assert');
-const path = require('path');
+const SidebarContainer = connect(
+  ({ accounts }) => ({
+    accounts: accounts,
+    hasReachedLimitOfAccounts: accounts.length === 3,
+    hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
+    isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined)
+  }),
+  {addAccountWithSession, switchAccount}
+)(Sidebar)
 
-const tray = require('../electron/js/menu/tray');
-
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+export default SidebarContainer

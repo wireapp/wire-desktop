@@ -17,30 +17,20 @@
  *
  */
 
-'use strict';
+function is(type, obj) {
+    var clas = Object.prototype.toString.call(obj).slice(8, -1);
+    return obj != null && clas === type;
+}
 
-const {BrowserWindow, app} = require('electron');
+export default function(data, config) {
+  const dataKeys = Object.keys(data)
+  const configKeys = Object.keys(config)
 
-const assert = require('assert');
-const path = require('path');
+  if (dataKeys.length > configKeys) {
+      return false
+  }
 
-const tray = require('../electron/js/menu/tray');
-
-describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
-        tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
-          assert.equal(app.getBadgeCount(), 10);
-        }
-        done();
-      });
-    });
-  });
-
-});
+  return dataKeys.every((key) => {
+    return config.hasOwnProperty(key) && is(config[key], data[key])
+ })
+}

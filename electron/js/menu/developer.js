@@ -46,8 +46,8 @@ let devProductionTemplate = {
   type: 'radio',
   checked: env === config.PROD,
   click: function() {
-    getPrimaryWindow().loadURL(config.PROD_URL);
     init.save('env', config.PROD);
+    getPrimaryWindow().reload();
   },
 };
 
@@ -56,8 +56,8 @@ let devInternalTemplate = {
   type: 'radio',
   checked: env === config.INTERNAL,
   click: function() {
-    getPrimaryWindow().loadURL(config.INTERNAL_URL);
     init.save('env', config.INTERNAL);
+    getPrimaryWindow().reload();
   },
 };
 
@@ -66,8 +66,8 @@ let devStagingTemplate = {
   type: 'radio',
   checked: env === config.STAGING,
   click: function() {
-    getPrimaryWindow().loadURL(config.STAGING_URL);
     init.save('env', config.STAGING);
+    getPrimaryWindow().reload();
   },
 };
 
@@ -76,8 +76,8 @@ let devDevTemplate = {
   type: 'radio',
   checked: env === config.DEV,
   click: function() {
-    getPrimaryWindow().loadURL(config.DEV_URL);
     init.save('env', config.DEV);
+    getPrimaryWindow().reload();
   },
 };
 
@@ -86,18 +86,8 @@ let devEdgeTemplate = {
   type: 'radio',
   checked: env === config.EDGE,
   click: function() {
-    getPrimaryWindow().loadURL(config.EDGE_URL);
     init.save('env', config.EDGE);
-  },
-};
-
-let devBennyTemplate = {
-  label: 'Cryptobox',
-  type: 'radio',
-  checked: env === config.CRYPTO,
-  click: function() {
-    getPrimaryWindow().loadURL(config.BENNY_URL);
-    init.save('env', config.CRYPTO);
+    getPrimaryWindow().reload();
   },
 };
 
@@ -106,8 +96,8 @@ let devLocalhostTemplate = {
   type: 'radio',
   checked: env === config.LOCALHOST,
   click: function() {
-    getPrimaryWindow().loadURL(config.LOCALHOST_URL);
     init.save('env', config.LOCALHOST);
+    getPrimaryWindow().reload();
   },
 };
 
@@ -139,7 +129,6 @@ let menuTemplate = {
     devStagingTemplate,
     devDevTemplate,
     devEdgeTemplate,
-    devBennyTemplate,
     devLocalhostTemplate,
     separatorTemplate,
     versionTemplate,
