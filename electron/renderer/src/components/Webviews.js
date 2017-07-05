@@ -33,7 +33,7 @@ class Webviews extends Component {
     const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'))
     const url = new URL(envParam)
 
-    // pass account id to webview so we can access it in the preload scropt
+    // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id)
 
     // redirect to auth page if user is unknown
