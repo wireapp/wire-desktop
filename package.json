@@ -18,8 +18,8 @@
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
-    "bundle:dev": "webpack --config webpack.dev.config.js",
-    "bundle": "webpack --config webpack.prod.config.js"
+    "bundle:dev": "webpack",
+    "bundle": "webpack --env.production"
   },
   "repository": {
     "type": "git",
