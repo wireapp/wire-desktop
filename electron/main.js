@@ -400,7 +400,7 @@ class ElectronWrapperInit {
         webviewProtectionDebug('Navigating inside webview. URL: %s', _url);
       } else {
         webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
-        event.preventDefault()
+        event.preventDefault();
       }
     }
 
