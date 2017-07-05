@@ -43,22 +43,24 @@ const Sidebar = ({
 }) =>
   <div className="Sidebar" style={hasCreatedAccount ? {} : { display: 'none'}}>
     {accounts.map(account => (
-      <div style={{ color: colorFromId(account.accentID) }} className={className(account)} key={account.id}>
-        {account.teamID ? (
-          <ContextMenuTrigger id="account">
+      <div className="Sidebar-cell" key={account.id}> 
+        <div style={{ color: colorFromId(account.accentID) }} className={className(account)}>
+          {account.teamID ? (
             <TeamIcon account={account} onClick={() => switchAccount(account.id)} />
-          </ContextMenuTrigger>
-        ) : (
-          <PersonalIcon account={account} onClick={() => switchAccount(account.id)} />
-        )}
+          ) : (
+            <PersonalIcon account={account} onClick={() => switchAccount(account.id)} />
+          )}
+        </div>
       </div>
     ))}
     {!isAddingAccount && !hasReachedLimitOfAccounts &&
       <ContextMenuTrigger id="account">
-        <div className="Sidebar-account-add">
-          <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 6.125v1.75h6.125V14h1.75V7.875H14v-1.75H7.875V0h-1.75v6.125" fillRule="evenodd"/>
-          </svg>
+        <div className="Sidebar-cell">
+          <div className="Sidebar-account-add" onClick={addAccountWithSession} >
+            <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 6.125v1.75h6.125V14h1.75V7.875H14v-1.75H7.875V0h-1.75v6.125" fillRule="evenodd"/>
+            </svg>
+          </div>
         </div>
       </ContextMenuTrigger>
     }

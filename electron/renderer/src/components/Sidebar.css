@@ -30,8 +30,12 @@
   flex-direction: column;
 }
 
-.Sidebar-icon + .Sidebar-icon{
-  margin-top: 16px;
+.Sidebar-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 56px;
 }
 
 .Sidebar-icon-badge {
@@ -51,7 +55,6 @@
 }
 
 .Sidebar-account-add {
-  margin-top: 16px;
   width: 28px;
   height: 28px;
   border-radius: 50%;

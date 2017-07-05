@@ -17,9 +17,12 @@
  *
  */
 
+const fs = require('fs');
+const path = require('path');
+
 const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
 const {app} = remote;
-const path = require('path');
+
 const pkg = require('../../package.json');
 
 webFrame.setZoomLevelLimits(1, 1);
@@ -157,23 +160,47 @@ function replaceGoogleAuth() {
 }
 
 function enableFileLogging() {
-  // TODO: add log identifier
+  // webapp uses winston refeference to define log level
   global.winston = require('winston');
-  const logFile = require('../../js/config').CONSOLE_LOG
-  const logFilePath = path.join(app.getPath('userData'), 'logs', logFile);
-  console.log('Logging into file', logFilePath);
 
-  winston
-    .add(winston.transports.File, {
-      filename: logFilePath,
-      handleExceptions: true,
-    })
-    .remove(winston.transports.Console)
-    .info(pkg.productName, 'Version', pkg.version);
+  const id = new URL(window.location).searchParams.get('id');
+  const logName = require('../../js/config').CONSOLE_LOG;
+  const logDirectory = path.join(app.getPath('userData'), 'logs');
+
+  try {
+    if (!fs.existsSync(logDirectory)) {
+      fs.mkdirSync(logDirectory);
+    }
+
+    const subDirectory = path.join(logDirectory, id);
+
+    if (!fs.existsSync(subDirectory)) {
+      fs.mkdirSync(subDirectory);
+    }
+
+    const logFilePath = path.join(subDirectory, logName);
+
+    console.log(`Logging into file: ${logFilePath}`);
+
+    winston
+      .add(winston.transports.File, {
+        filename: logFilePath,
+        handleExceptions: true,
+      })
+      .remove(winston.transports.Console)
+      .info(pkg.productName, 'Version', pkg.version);
+
+  } catch (error) {
+    console.error(`Failed to create log file: ${error.message}`)
+  }
 }
 
 function updateWebappStyles() {
   document.body.classList.add('team-mode')
+}
+
+function reportWebappVersion() {
+  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
 }
 
 function checkAvailablity(callback) {
@@ -197,21 +224,22 @@ const _setImmediate = setImmediate;
 process.once('loaded', () => {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
-  global.openGraph = require('../../js/lib/openGraph')
-  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png')
-  exposeAddressbook()
-  exposeLibsodiumNeon()
-  enableFileLogging()
+  global.openGraph = require('../../js/lib/openGraph');
+  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
+  exposeAddressbook();
+  exposeLibsodiumNeon();
+  enableFileLogging();
 })
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailablity(() => {
-    subscribeToMainProcessEvents()
-    updateWebappStyles()
-    subscribeToWebappEvents()
-    replaceGoogleAuth()
+    subscribeToMainProcessEvents();
+    updateWebappStyles();
+    subscribeToWebappEvents();
+    replaceGoogleAuth();
+    reportWebappVersion();
 
     // include context menu
-    require('../../js/menu/context')
+    require('../../js/menu/context');
   })
 });

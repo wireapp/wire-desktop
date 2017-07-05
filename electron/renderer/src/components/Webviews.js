@@ -29,10 +29,12 @@ class Webviews extends Component {
     super(props)
   }
 
-  _getEnvironmentUrl() {
+  _getEnvironmentUrl(account) {
     const url = new URL(window.location)
     const env = url.searchParams.get('env')
-    return decodeURIComponent(env)
+    const envUrl = new URL(env)
+    envUrl.searchParams.set('id', account.id)
+    return decodeURIComponent(envUrl)
   }
 
   _onPageTitleUpdated(account, { title }) {
@@ -71,7 +73,7 @@ class Webviews extends Component {
           <div className="Webviews-container" key={account.id}>
             <Webview
               className={"Webview " + (account.visible ? '' : 'hide')}
-              src={this._getEnvironmentUrl()}
+              src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
               preload='./static/webview-preload.js'
               onPageTitleUpdated={(event) => this._onPageTitleUpdated(account, event)}
