@@ -17,10 +17,10 @@
  *
  */
 
-import reducer from '../accounts'
+import reducer from '../accounts';
 
 describe('accounts reducer', () => {
   it('should return the initial state with one account', () => {
-    expect(reducer(undefined, {}).length).toEqual(1)
-  })
-})
+    expect(reducer(undefined, {}).length).toEqual(1);
+  });
+});
