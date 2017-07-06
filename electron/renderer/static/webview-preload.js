@@ -226,13 +226,14 @@ process.once('loaded', () => {
   global.desktopCapturer = desktopCapturer;
   global.openGraph = require('../../js/lib/openGraph');
   global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
-  exposeAddressbook();
-  exposeLibsodiumNeon();
   enableFileLogging();
 });
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailablity(() => {
+    exposeAddressbook();
+    exposeLibsodiumNeon();
+    
     subscribeToMainProcessEvents();
     updateWebappStyles();
     subscribeToWebappEvents();
