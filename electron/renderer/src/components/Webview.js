@@ -17,44 +17,43 @@
  *
  */
 
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
+import React, { Component } from 'react';
 
-import './Webview.css'
+import './Webview.css';
 
 class Webview extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this._onPageTitleUpdated = this._onPageTitleUpdated.bind(this)
-    this._onIpcMessage = this._onIpcMessage.bind(this)
+    this._onPageTitleUpdated = this._onPageTitleUpdated.bind(this);
+    this._onIpcMessage = this._onIpcMessage.bind(this);
   }
 
   componentDidMount() {
-    const {src, partition} = this.props
+    const {src, partition} = this.props;
 
     // set unknown props
     // see: https://facebook.github.io/react/warnings/unknown-prop.html
     // see: https://github.com/electron/electron/issues/6046
-    this.webview.partition = partition ? `persist:${partition}` : ''
-    this.webview.src = src
+    this.webview.partition = partition ? `persist:${partition}` : '';
+    this.webview.src = src;
 
-    this.webview.addEventListener('page-title-updated', this._onPageTitleUpdated)
-    this.webview.addEventListener('ipc-message', this._onIpcMessage)
+    this.webview.addEventListener('page-title-updated', this._onPageTitleUpdated);
+    this.webview.addEventListener('ipc-message', this._onIpcMessage);
   }
 
   _onPageTitleUpdated(event) {
-    this.props.onPageTitleUpdated(event)
+    this.props.onPageTitleUpdated(event);
   }
 
   _onIpcMessage(event) {
-    this.props.onIpcMessage(event)
+    this.props.onIpcMessage(event);
   }
 
   render() {
-    const {partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props
-    return <webview {...validProps} ref={(webview) => { this.webview = webview; }} />
+    const {partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props; // eslint-disable-line no-unused-vars
+    return <webview {...validProps} ref={(webview) => { this.webview = webview; }} />;
   }
 }
 
-export default Webview
+export default Webview;
