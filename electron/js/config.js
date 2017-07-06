@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const pkg = require('./../package.json');
 
@@ -100,6 +100,8 @@ let config = {
     'hu',
     'it',
     'lt',
+    'nl',
+    'pl',
     'pt',
     'ro',
     'ru',

@@ -17,38 +17,37 @@
  *
  */
 
-import React from 'react'
-import { render } from 'react-dom'
-import { applyMiddleware, createStore } from 'redux'
-import { Provider } from 'react-redux'
+import React from 'react';
+import { render } from 'react-dom';
+import { applyMiddleware, createStore } from 'redux';
+import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import logger from 'redux-logger'
-import throttle from 'lodash/throttle'
+import logger from 'redux-logger';
+import throttle from 'lodash/throttle';
 
-import App from './components/App'
-import { addAccount, switchAccount } from './actions'
-import appStore from './reducers'
-import { loadState, saveState } from './lib/localStorage'
+import App from './components/App';
+import appStore from './reducers';
+import { loadState, saveState } from './lib/localStorage';
 
-import './Index.css'
+import './Index.css';
 
-const persistedState = loadState()
+const persistedState = loadState();
 
 const store = createStore(
   appStore,
   persistedState,
   applyMiddleware(thunk, logger)
-)
+);
 
 store.subscribe(throttle(() => {
   saveState({
-    accounts: store.getState().accounts
-  })
-}), 500)
+    accounts: store.getState().accounts,
+  });
+}), 500);
 
 render(
   <Provider store={store}>
     <App />
   </Provider>,
   document.getElementById('root')
-)
+);

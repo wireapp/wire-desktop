@@ -17,13 +17,13 @@
  *
  */
 
-'use strict';
+
 
 const {MenuItem} = require('electron');
 const config = require('./../config');
+const settings = require('./../lib/settings');
+const env = settings.restore('env', config.INTERNAL);
 const windowManager = require('./../window-manager');
-const init = require('./../lib/init');
-const env = init.restore('env', config.INTERNAL);
 
 function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
@@ -46,8 +46,8 @@ let devProductionTemplate = {
   type: 'radio',
   checked: env === config.PROD,
   click: function() {
-    init.save('env', config.PROD);
     getPrimaryWindow().reload();
+    settings.save('env', config.PROD);
   },
 };
 
@@ -56,8 +56,8 @@ let devInternalTemplate = {
   type: 'radio',
   checked: env === config.INTERNAL,
   click: function() {
-    init.save('env', config.INTERNAL);
     getPrimaryWindow().reload();
+    settings.save('env', config.INTERNAL);
   },
 };
 
@@ -66,8 +66,8 @@ let devStagingTemplate = {
   type: 'radio',
   checked: env === config.STAGING,
   click: function() {
-    init.save('env', config.STAGING);
     getPrimaryWindow().reload();
+    settings.save('env', config.STAGING);
   },
 };
 
@@ -76,8 +76,8 @@ let devDevTemplate = {
   type: 'radio',
   checked: env === config.DEV,
   click: function() {
-    init.save('env', config.DEV);
     getPrimaryWindow().reload();
+    settings.save('env', config.DEV);
   },
 };
 
@@ -86,8 +86,8 @@ let devEdgeTemplate = {
   type: 'radio',
   checked: env === config.EDGE,
   click: function() {
-    init.save('env', config.EDGE);
     getPrimaryWindow().reload();
+    settings.save('env', config.EDGE);
   },
 };
 
@@ -96,8 +96,8 @@ let devLocalhostTemplate = {
   type: 'radio',
   checked: env === config.LOCALHOST,
   click: function() {
-    init.save('env', config.LOCALHOST);
     getPrimaryWindow().reload();
+    settings.save('env', config.LOCALHOST);
   },
 };
 

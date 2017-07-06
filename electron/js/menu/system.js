@@ -17,16 +17,16 @@
  *
  */
 
-'use strict';
+
 
 const {app, shell, dialog, Menu} = require('electron');
 const autoLaunch = require('auto-launch');
 const launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
-const init = require('./../lib/init');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
+const settings = require('./../lib/settings');
 
 let menu;
 let menuTemplate;
@@ -132,6 +132,18 @@ let localeTemplate = {
         changeLocale('lt');
       },
     }, {
+      label: locale.label['nl'],
+      type: 'radio',
+      click: function() {
+        changeLocale('nl');
+      },
+    },{
+      label: locale.label['pl'],
+      type: 'radio',
+      click: function() {
+        changeLocale('pl');
+      },
+    },{
       label: locale.label['pt'],
       type: 'radio',
       click: function() {
@@ -236,16 +248,16 @@ let showWireTemplate = {
 let toggleMenuTemplate = {
   i18n: 'menuShowHide',
   type: 'checkbox',
-  checked: init.restore('showMenu', true),
+  checked: settings.restore('showMenu', true),
   click: function() {
     let mainBrowserWindow = getPrimaryWindow();
     if (mainBrowserWindow.isMenuBarAutoHide()) {
       mainBrowserWindow.setAutoHideMenuBar(false);
-      init.save('showMenu', true);
+      settings.save('showMenu', true);
     } else {
       mainBrowserWindow.setAutoHideMenuBar(true);
       mainBrowserWindow.setMenuBarVisibility(false);
-      init.save('showMenu', false);
+      settings.save('showMenu', false);
     }
   },
 };
@@ -263,10 +275,10 @@ let toggleFullScreenTemplate = {
 let toggleAutoLaunchTemplate = {
   i18n: 'menuStartup',
   type: 'checkbox',
-  checked: init.restore('shouldAutoLaunch', false),
+  checked: settings.restore('shouldAutoLaunch', false),
   click: function() {
-    init.save('shouldAutoLaunch', !init.restore('shouldAutoLaunch'));
-    init.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
+    settings.save('shouldAutoLaunch', !settings.restore('shouldAutoLaunch'));
+    settings.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
 };
 
@@ -285,10 +297,10 @@ let editTemplate = {
     {
       i18n: 'menuSpelling',
       type: 'checkbox',
-      checked: init.restore('spelling', false) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      checked: settings.restore('spelling', false) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       click: function(event) {
-        init.save('spelling', event.checked);
+        settings.save('spelling', event.checked);
       },
     },
   ],
@@ -465,7 +477,7 @@ module.exports = {
         separatorTemplate,
         toggleFullScreenTemplate
       );
-      toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+      toggleFullScreenTemplate.checked = settings.restore('fullscreen', false);
     }
 
     if (process.platform === 'win32') {
@@ -489,7 +501,7 @@ module.exports = {
         separatorTemplate,
         toggleFullScreenTemplate
       );
-      toggleFullScreenTemplate.checked = init.restore('fullscreen', false);
+      toggleFullScreenTemplate.checked = settings.restore('fullscreen', false);
     }
 
     if (process.platform !== 'darwin') {

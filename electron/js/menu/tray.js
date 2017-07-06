@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {app, Menu, Tray} = require('electron');
 

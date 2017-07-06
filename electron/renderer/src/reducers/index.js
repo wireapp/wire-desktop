@@ -17,11 +17,11 @@
  *
  */
 
-import { combineReducers } from 'redux'
-import accounts from './accounts'
+import { combineReducers } from 'redux';
+import accounts from './accounts';
 
 const store = combineReducers({
-  accounts
-})
+  accounts,
+});
 
-export default store
+export default store;

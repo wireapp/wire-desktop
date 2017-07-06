@@ -17,8 +17,6 @@
  *
  */
 
-'use strict';
-
 // Modules
 const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
 const fs = require('fs');
@@ -42,8 +40,8 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
 const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 
-// Config. persistence
-const init = require('./js/lib/init');
+// Configuration persistence
+const settings = require('./js/lib/settings');
 
 // Wrapper modules
 const certutils = require('./js/certutils');
@@ -140,7 +138,7 @@ if (process.platform === 'linux') {
 function getBaseUrl() {
   let baseURL = argv.env || config.PROD_URL;
   if (!argv.env && config.DEVELOPMENT) {
-    let env = init.restore('env', config.INTERNAL);
+    let env = settings.restore('env', config.INTERNAL);
 
     if (env === config.DEV) baseURL = config.DEV_URL;
     if (env === config.EDGE) baseURL = config.EDGE_URL;
@@ -205,7 +203,7 @@ function showMainWindow() {
     'height': config.DEFAULT_HEIGHT_MAIN,
     'minWidth': config.MIN_WIDTH_MAIN,
     'minHeight': config.MIN_HEIGHT_MAIN,
-    'autoHideMenuBar': !init.restore('showMenu', true),
+    'autoHideMenuBar': !settings.restore('showMenu', true),
     'icon': ICON_PATH,
     'show': false,
     'webPreferences': {
@@ -218,10 +216,10 @@ function showMainWindow() {
     },
   });
 
-  if (init.restore('fullscreen', false)) {
+  if (settings.restore('fullscreen', false)) {
     main.setFullScreen(true);
   } else {
-    main.setBounds(init.restore('bounds', main.getBounds()));
+    main.setBounds(settings.restore('bounds', main.getBounds()));
   }
 
   let baseURL = getBaseUrl();
@@ -269,15 +267,22 @@ function showMainWindow() {
     main.flashFrame(false);
   });
 
-  main.on('close', function(event) {
-    init.save('fullscreen', main.isFullScreen());
+  main.on('page-title-updated', function() {
+    tray.updateBadgeIcon(main);
+  });
+  
+  main.on('close', async (event) => {
+    settings.save('fullscreen', main.isFullScreen());
     if (!main.isFullScreen()) {
-      init.save('bounds', main.getBounds());
+      settings.save('bounds', main.getBounds());
     }
 
     if (!quitting) {
       event.preventDefault();
       main.hide();
+    } else {
+      debugMain('Persisting user configuration file...');
+      await settings._saveToFile();
     }
   });
 
@@ -356,16 +361,16 @@ app.on('ready', function() {
 const logDir = path.join(app.getPath('userData'), 'logs');
 fs.readdir(logDir, (error, files) => {
   if (error) {
-    console.log(`Failed to read log directory with error: ${error.message}`)
+    console.log(`Failed to read log directory with error: ${error.message}`);
     return;
   }
 
   // TODO filter out dotfiles
   for (const file of files) {
     const consoleLog = path.join(logDir, file, config.CONSOLE_LOG);
-    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (error) => {
-      if (error) {
-        console.log(`Failed to rename log file (${consoleLog}) with error: ${error.message}`)
+    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (renameError) => {
+      if (renameError) {
+        console.log(`Failed to rename log file (${consoleLog}) with error: ${renameError.message}`);
       }
     });
   }
@@ -402,7 +407,7 @@ class ElectronWrapperInit {
         webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
         event.preventDefault();
       }
-    }
+    };
 
     app.on('web-contents-created', (event, contents) => {
 

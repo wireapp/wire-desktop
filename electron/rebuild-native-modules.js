@@ -18,7 +18,7 @@
  *
  */
 
-'use strict';
+
 
 const spawn = require('cross-spawn');
 const exec = require('child_process').exec;

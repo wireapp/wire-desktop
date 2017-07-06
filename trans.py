@@ -38,6 +38,8 @@ SUPPORTED_LOCALE = [
   'hu',
   'it',
   'lt',
+  'nl',
+  'pl',
   'pt',
   'ro',
   'ru',

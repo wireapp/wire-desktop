@@ -17,14 +17,14 @@
  *
  */
 
-import { colorFromId } from '../accentColor'
+import { colorFromId } from '../accentColor';
 
 describe('colorFromId', () => {
   it('should return correct color', () => {
-    expect(colorFromId(2)).toEqual('#00c800')
-  })
+    expect(colorFromId(2)).toEqual('#00c800');
+  });
 
   it('should return undefined if id does not exist', () => {
-    expect(colorFromId(42)).not.toBeDefined()
-  })
-})
+    expect(colorFromId(42)).not.toBeDefined();
+  });
+});

@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {remote, ipcRenderer, shell} = require('electron');
 

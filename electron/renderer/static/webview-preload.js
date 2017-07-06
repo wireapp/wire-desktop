@@ -38,7 +38,7 @@ function subscribeToWebappEvents() {
   });
 
   amplify.subscribe(z.event.WebApp.TEAM.INFO, function(info) {
-    ipcRenderer.sendToHost('team-info', info)
+    ipcRenderer.sendToHost('team-info', info);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
@@ -191,12 +191,12 @@ function enableFileLogging() {
       .info(pkg.productName, 'Version', pkg.version);
 
   } catch (error) {
-    console.error(`Failed to create log file: ${error.message}`)
+    console.warn(`Failed to create log file: ${error.message}`);
   }
 }
 
 function updateWebappStyles() {
-  document.body.classList.add('team-mode')
+  document.body.classList.add('team-mode');
 }
 
 function reportWebappVersion() {
@@ -208,7 +208,7 @@ function checkAvailablity(callback) {
     if (window.wire) {
       clearInterval(intervalId);
       callback();
-      return
+      return;
     }
 
     if (navigator.onLine) {
@@ -229,7 +229,7 @@ process.once('loaded', () => {
   exposeAddressbook();
   exposeLibsodiumNeon();
   enableFileLogging();
-})
+});
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailablity(() => {
@@ -241,5 +241,5 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // include context menu
     require('../../js/menu/context');
-  })
+  });
 });

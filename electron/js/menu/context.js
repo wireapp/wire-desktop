@@ -17,14 +17,14 @@
  *
  */
 
-'use strict';
+
 
 const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
-const init = require('./../lib/init');
+const settings = require('./../lib/settings');
 let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -149,7 +149,7 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck (text) {
-      if (!init.restore('spelling', false)) {
+      if (!settings.restore('spelling', false)) {
         return true;
       }
       selection.isMisspelled = spellchecker.isMisspelled(text);
