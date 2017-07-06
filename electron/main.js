@@ -17,8 +17,6 @@
  *
  */
 
-/* eslint-env node */
-
 // Modules
 const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
 const fs = require('fs');
