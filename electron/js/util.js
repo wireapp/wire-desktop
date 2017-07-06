@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const electron = require('electron');
 const url = require('url');
@@ -38,6 +38,10 @@ module.exports = {
     let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
 
     return upperLeftVisible || lowerRightVisible;
+  },
+
+  isMatchingHost: (_url, _baseUrl) => {
+    return url.parse(_url).host === url.parse(_baseUrl).host;
   },
 
   isMatchingEmbed: (_url) => {
@@ -69,15 +73,6 @@ module.exports = {
       }
     }
 
-    return false;
-  },
-
-  openInExternalWindow: function(_url) {
-    for (let item of config.WHITE_LIST) {
-      if (_url.includes(item)) {
-        return true;
-      }
-    }
     return false;
   },
 

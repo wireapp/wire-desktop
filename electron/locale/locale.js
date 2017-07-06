@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const app = require('electron').app || require('electron').remote.app;
 

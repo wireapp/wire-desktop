@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {app, shell, dialog, Menu} = require('electron');
 const autoLaunch = require('auto-launch');
@@ -47,7 +47,7 @@ function getPrimaryWindow() {
 function sendAction(action) {
   const window = getPrimaryWindow();
   if (window) {
-    getPrimaryWindow().webContents.send(action);
+    getPrimaryWindow().webContents.send('system-menu', action);
   }
 }
 

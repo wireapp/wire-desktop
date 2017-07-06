@@ -17,24 +17,22 @@
  *
  */
 
-'use strict';
+import React from 'react';
 
-const assert = require('assert');
-const config = require('../electron/js/config');
-const util = require('../electron/js/util');
+import { colorFromId } from '../lib/accentColor';
 
-describe('util', () => {
+import './PersonalIcon.css';
 
-  describe('#openInExternalWindow()', () => {
+const PersonalIcon = ({ account, onClick }) =>
+  <div className="PersonalIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
+    {account.visible &&
+      <div className="PersonalIcon-border" style={{borderColor: colorFromId(account.accentID)}}></div>
+    }
+    <div className="PersonalIcon-inner">
+      {account.picture &&
+        <img src={account.picture} />
+      }
+    </div>
+  </div>;
 
-    it('should open link in external browser when link is part of whitelist', () => {
-      assert.equal(util.openInExternalWindow(config.WHITE_LIST[0]), true);
-    });
-
-    it('should not open link in external browser when link is not part of whitelist', () => {
-      assert.equal(util.openInExternalWindow('app.wire.com'), false);
-    });
-
-  });
-
-});
+export default PersonalIcon;

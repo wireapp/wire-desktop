@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const pkg = require('./../package.json');
 
@@ -35,7 +35,6 @@ let config = {
   PROD_URL: 'https://app.wire.com/',
   STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
 
-  CRYPTO: 'crypto',
   DEV: 'dev',
   EDGE: 'edge',
   INTERNAL: 'internal',
@@ -86,11 +85,6 @@ let config = {
         'developer.spotify.com',
       ],
     },
-  ],
-
-  WHITE_LIST: [
-    'https://www.wire.com/',
-    'https://wire.com/',
   ],
 
   LOCALE: [

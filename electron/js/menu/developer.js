@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {MenuItem} = require('electron');
 const config = require('./../config');
@@ -46,7 +46,7 @@ let devProductionTemplate = {
   type: 'radio',
   checked: env === config.PROD,
   click: function() {
-    getPrimaryWindow().loadURL(config.PROD_URL);
+    getPrimaryWindow().reload();
     settings.save('env', config.PROD);
   },
 };
@@ -56,7 +56,7 @@ let devInternalTemplate = {
   type: 'radio',
   checked: env === config.INTERNAL,
   click: function() {
-    getPrimaryWindow().loadURL(config.INTERNAL_URL);
+    getPrimaryWindow().reload();
     settings.save('env', config.INTERNAL);
   },
 };
@@ -66,7 +66,7 @@ let devStagingTemplate = {
   type: 'radio',
   checked: env === config.STAGING,
   click: function() {
-    getPrimaryWindow().loadURL(config.STAGING_URL);
+    getPrimaryWindow().reload();
     settings.save('env', config.STAGING);
   },
 };
@@ -76,7 +76,7 @@ let devDevTemplate = {
   type: 'radio',
   checked: env === config.DEV,
   click: function() {
-    getPrimaryWindow().loadURL(config.DEV_URL);
+    getPrimaryWindow().reload();
     settings.save('env', config.DEV);
   },
 };
@@ -86,18 +86,8 @@ let devEdgeTemplate = {
   type: 'radio',
   checked: env === config.EDGE,
   click: function() {
-    getPrimaryWindow().loadURL(config.EDGE_URL);
+    getPrimaryWindow().reload();
     settings.save('env', config.EDGE);
-  },
-};
-
-let devBennyTemplate = {
-  label: 'Cryptobox',
-  type: 'radio',
-  checked: env === config.CRYPTO,
-  click: function() {
-    getPrimaryWindow().loadURL(config.BENNY_URL);
-    settings.save('env', config.CRYPTO);
   },
 };
 
@@ -106,7 +96,7 @@ let devLocalhostTemplate = {
   type: 'radio',
   checked: env === config.LOCALHOST,
   click: function() {
-    getPrimaryWindow().loadURL(config.LOCALHOST_URL);
+    getPrimaryWindow().reload();
     settings.save('env', config.LOCALHOST);
   },
 };
@@ -139,7 +129,6 @@ let menuTemplate = {
     devStagingTemplate,
     devDevTemplate,
     devEdgeTemplate,
-    devBennyTemplate,
     devLocalhostTemplate,
     separatorTemplate,
     versionTemplate,

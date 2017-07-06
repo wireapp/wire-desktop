@@ -1,4 +1,4 @@
-'use strict';
+
 
 string.aboutReleases = 'Releases';
 string.aboutUpdate = 'How Wire Updates Work';
