@@ -18,19 +18,19 @@
  */
 
 function is(type, obj) {
-    var clas = Object.prototype.toString.call(obj).slice(8, -1);
-    return obj != null && clas === type;
+  var clas = Object.prototype.toString.call(obj).slice(8, -1);
+  return obj != null && clas === type;
 }
 
 export default function(data, config) {
-  const dataKeys = Object.keys(data)
-  const configKeys = Object.keys(config)
+  const dataKeys = Object.keys(data);
+  const configKeys = Object.keys(config);
 
   if (dataKeys.length > configKeys) {
-      return false
+    return false;
   }
 
   return dataKeys.every((key) => {
-    return config.hasOwnProperty(key) && is(config[key], data[key])
- })
+    return config.hasOwnProperty(key) && is(config[key], data[key]);
+  });
 }
