@@ -2,10 +2,13 @@
   parserOptions:
     sourceType: module
     ecmaVersion: 8
+    ecmaFeatures:
+      jsx: true
   env:
     browser: true
     node: true
-  plugins: [react]
+  plugins: 
+    - react
   rules:
     comma-dangle: [2, always-multiline]
     handle-callback-err: 2
