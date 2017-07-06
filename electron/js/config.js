@@ -100,6 +100,8 @@ let config = {
     'hu',
     'it',
     'lt',
+    'nl',
+    'pl',
     'pt',
     'ro',
     'ru',
