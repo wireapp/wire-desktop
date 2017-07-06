@@ -7,7 +7,7 @@ export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
 export const UPDATE_ACCOUNT_BADGE = 'UPDATE_ACCOUNT_BADGE';
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
 
-export const addAccountWithSession = () => {
+export const addAccount = () => {
   return {
     type: ADD_ACCOUNT,
     sessionID: uuid(),
@@ -19,12 +19,6 @@ export const updateAccount = (id, data) => {
     type: UPDATE_ACCOUNT,
     id,
     data,
-  };
-};
-
-export const addAccount = () => {
-  return {
-    type: ADD_ACCOUNT,
   };
 };
 

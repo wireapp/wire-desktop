@@ -25,7 +25,6 @@ import {
   UPDATE_ACCOUNT,
   UPDATE_ACCOUNT_BADGE,
   DELETE_ACCOUNT,
-  addAccountWithSession,
   updateAccount,
   addAccount,
   switchAccount,
@@ -35,9 +34,9 @@ import {
 
 describe('action creators', () => {
 
-  describe('addAccountWithSession', () => {
+  describe('addAccount', () => {
     it('should create action to add account with session', () => {
-      const action = addAccountWithSession();
+      const action = addAccount();
       expect(action.type).toEqual(ADD_ACCOUNT);
       expect(action.sessionID).toEqual(expect.any(String));
     });
@@ -53,15 +52,6 @@ describe('action creators', () => {
         data,
       };
       expect(updateAccount(id, data)).toEqual(action);
-    });
-  });
-
-  describe('addAccount', () => {
-    it('should create action to add an account', () => {
-      const action = {
-        type: ADD_ACCOUNT,
-      };
-      expect(addAccount()).toEqual(action);
     });
   });
 
