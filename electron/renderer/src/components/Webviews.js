@@ -54,7 +54,7 @@ class Webviews extends Component {
     const count = badgeCount(title);
     if (count !== undefined) {
       this.props.updateAccountBadge(account.id, count);
-      const accumulatedCount = this._accumulateBadgeCount(this.props.account);
+      const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
       window.reportBadgeCount(accumulatedCount);
     }
   }

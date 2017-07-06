@@ -19,7 +19,7 @@
 
 import { connect } from 'react-redux';
 
-import { addAccountWithSession, switchAccount } from '../actions';
+import { addAccount, switchAccount } from '../actions';
 import Sidebar from '../components/Sidebar';
 
 const SidebarContainer = connect(
@@ -29,7 +29,7 @@ const SidebarContainer = connect(
     hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
     isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
   }),
-  {addAccountWithSession, switchAccount}
+  {addAccount, switchAccount}
 )(Sidebar);
 
 export default SidebarContainer;

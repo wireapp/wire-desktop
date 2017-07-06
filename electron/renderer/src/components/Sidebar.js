@@ -37,7 +37,7 @@ const Sidebar = ({
   accounts,
   hasCreatedAccount,
   isAddingAccount,
-  addAccountWithSession,
+  addAccount,
   switchAccount,
   hasReachedLimitOfAccounts,
 }) =>
@@ -67,7 +67,7 @@ const Sidebar = ({
 
     <ContextMenu id="account">
       <ContextMenuItem onClick={() => window.open('https://teams.wire.com')}>Create Team</ContextMenuItem>
-      <ContextMenuItem onClick={() => addAccountWithSession()}>Add Account</ContextMenuItem>
+      <ContextMenuItem onClick={() => addAccount()}>Add Account</ContextMenuItem>
     </ContextMenu>
   </div>;
 
