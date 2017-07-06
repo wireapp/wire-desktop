@@ -44,15 +44,17 @@ class Webviews extends Component {
     return url.href;
   }
 
+  _accumulateBadgeCount(accounts) {
+    return accounts.reduce((accumulated, account) => {
+      return accumulated + account.badgeCount;
+    }, 0);
+  }
+
   _onPageTitleUpdated(account, { title }) {
     const count = badgeCount(title);
     if (count !== undefined) {
       this.props.updateAccountBadge(account.id, count);
-
-      const accumulatedCount = this.props.accounts.reduce((accumulated, account) => {
-        return accumulated + account.badgeCount;
-      }, 0);
-
+      const accumulatedCount = this._accumulateBadgeCount(this.props.account);
       window.reportBadgeCount(accumulatedCount);
     }
   }
