@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {app, shell, dialog, Menu} = require('electron');
 const autoLaunch = require('auto-launch');

@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const fs = require('fs');
 const imageType = require('image-type');

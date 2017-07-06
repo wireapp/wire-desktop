@@ -17,19 +17,19 @@
  *
  */
 
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 
-import { addAccountWithSession, switchAccount } from '../actions'
-import Sidebar from '../components/Sidebar'
+import { addAccountWithSession, switchAccount } from '../actions';
+import Sidebar from '../components/Sidebar';
 
 const SidebarContainer = connect(
   ({ accounts }) => ({
     accounts: accounts,
     hasReachedLimitOfAccounts: accounts.length === 3,
     hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
-    isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined)
+    isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
   }),
   {addAccountWithSession, switchAccount}
-)(Sidebar)
+)(Sidebar);
 
-export default SidebarContainer
+export default SidebarContainer;

@@ -22,14 +22,14 @@ const {ipcRenderer, webFrame} = require('electron');
 webFrame.setZoomLevelLimits(1, 1);
 
 function getSelectedWebview() {
-  return document.querySelector('.Webview:not(.hide)')
+  return document.querySelector('.Webview:not(.hide)');
 }
 
 function subscribeToMainProcessEvents() {
   ipcRenderer.on('system-menu', (event, action) => {
-    const selectedWebview = getSelectedWebview()
+    const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      selectedWebview.send(action)
+      selectedWebview.send(action);
     }
   });
 }
@@ -44,11 +44,11 @@ function addDragRegion() {
 }
 
 window.reportBadgeCount = (count) => {
-  ipcRenderer.send('badge-count', count)
+  ipcRenderer.send('badge-count', count);
 };
 
-subscribeToMainProcessEvents()
+subscribeToMainProcessEvents();
 
 window.addEventListener('DOMContentLoaded', () => {
-  addDragRegion()
+  addDragRegion();
 });

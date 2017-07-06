@@ -17,8 +17,6 @@
  *
  */
 
-'use strict';
-
 // Modules
 const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
 const fs = require('fs');
@@ -363,16 +361,16 @@ app.on('ready', function() {
 const logDir = path.join(app.getPath('userData'), 'logs');
 fs.readdir(logDir, (error, files) => {
   if (error) {
-    console.log(`Failed to read log directory with error: ${error.message}`)
+    console.log(`Failed to read log directory with error: ${error.message}`);
     return;
   }
 
   // TODO filter out dotfiles
   for (const file of files) {
     const consoleLog = path.join(logDir, file, config.CONSOLE_LOG);
-    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (error) => {
-      if (error) {
-        console.log(`Failed to rename log file (${consoleLog}) with error: ${error.message}`)
+    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (renameError) => {
+      if (renameError) {
+        console.log(`Failed to rename log file (${consoleLog}) with error: ${renameError.message}`);
       }
     });
   }
@@ -409,7 +407,7 @@ class ElectronWrapperInit {
         webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
         event.preventDefault();
       }
-    }
+    };
 
     app.on('web-contents-created', (event, contents) => {
 

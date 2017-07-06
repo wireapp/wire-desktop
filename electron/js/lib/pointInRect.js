@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 
 module.exports = function(point, rectangle) {

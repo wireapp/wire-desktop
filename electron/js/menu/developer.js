@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {MenuItem} = require('electron');
 const config = require('./../config');
