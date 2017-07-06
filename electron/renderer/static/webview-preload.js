@@ -191,7 +191,7 @@ function enableFileLogging() {
       .info(pkg.productName, 'Version', pkg.version);
 
   } catch (error) {
-    console.error(`Failed to create log file: ${error.message}`)
+    console.warn(`Failed to create log file: ${error.message}`)
   }
 }
 
