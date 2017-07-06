@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;

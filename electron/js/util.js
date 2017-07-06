@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const electron = require('electron');
 const url = require('url');

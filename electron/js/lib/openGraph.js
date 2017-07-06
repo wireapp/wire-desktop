@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const og = require('open-graph');
 
