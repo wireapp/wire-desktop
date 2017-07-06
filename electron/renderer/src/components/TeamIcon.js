@@ -17,11 +17,11 @@
  *
  */
 
-import React from 'react'
+import React from 'react';
 
-import { colorFromId } from '../lib/accentColor'
+import { colorFromId } from '../lib/accentColor';
 
-import './TeamIcon.css'
+import './TeamIcon.css';
 
 const TeamIcon = ({ account, onClick }) =>
   <div className="TeamIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
@@ -34,6 +34,6 @@ const TeamIcon = ({ account, onClick }) =>
       <path d="M17.26 5.303c.96-.543 2.514-.545 3.48 0l9.52 5.375c.96.542 1.74 1.878 1.74 2.977v10.69c0 1.102-.774 2.432-1.74 2.977l-9.52 5.375c-.96.543-2.514.545-3.48 0l-9.52-5.375C6.78 26.78 6 25.444 6 24.345v-10.69c0-1.102.774-2.432 1.74-2.977l9.52-5.375z" fillRule="evenodd"></path>
     </svg>
     <span>{ [...account.name][0] }</span>
-  </div>
+  </div>;
 
-export default TeamIcon
+export default TeamIcon;

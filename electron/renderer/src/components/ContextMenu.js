@@ -17,55 +17,55 @@
  *
  */
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import './ContextMenu.css'
+import './ContextMenu.css';
 
 export class ContextMenuTrigger extends Component {
   constructor(props) {
     super(props);
 
-    this._handleClick = this._handleClick.bind(this)
+    this._handleClick = this._handleClick.bind(this);
   }
 
   _getElementCenter(element) {
-    const { left, right, top, bottom } = element.getBoundingClientRect()
+    const { left, right, top, bottom } = element.getBoundingClientRect();
     return {
       x: left + ((right - left) / 2),
-      y: top + ((bottom - top) / 2)
-    }
+      y: top + ((bottom - top) / 2),
+    };
   }
 
   _handleClick(event) {
     document.dispatchEvent(new CustomEvent(`context-menu-event-${this.props.id}`, {
       detail: {
         position: this._getElementCenter(event.currentTarget),
-        target: event.target
-      }
-    }))
+        target: event.target,
+      },
+    }));
   }
 
   render() {
     return (
       <div onClick={this._handleClick}>{ this.props.children }</div>
-    )
+    );
   }
 }
 
 ContextMenuTrigger.propTypes = {
-  id: PropTypes.string.isRequired
-}
+  id: PropTypes.string.isRequired,
+};
 
 
 export const ContextMenuItem = (props) =>
   <div className="ContextMenu-item" onClick={props.onClick}>
     { props.children }
-  </div>
+  </div>;
 
 ContextMenuTrigger.propTypes = {
-  onClick: PropTypes.func
-}
+  onClick: PropTypes.func,
+};
 
 
 export class ContextMenu extends Component {
@@ -75,55 +75,55 @@ export class ContextMenu extends Component {
     this.state = {
       position: {
         x: 0,
-        y: 0
+        y: 0,
       },
-      visible: false
-    }
+      visible: false,
+    };
 
-    this._handleContextMenuEvent = this._handleContextMenuEvent.bind(this)
-    this._handleKeyDown = this._handleKeyDown.bind(this)
-    this._handleMouseDown = this._handleMouseDown.bind(this)
-    this._handleRef = this._handleRef.bind(this)
-    this._hide = this._hide.bind(this)
-    this._handleMouseWheel = this._handleMouseWheel.bind(this)
+    this._handleContextMenuEvent = this._handleContextMenuEvent.bind(this);
+    this._handleKeyDown = this._handleKeyDown.bind(this);
+    this._handleMouseDown = this._handleMouseDown.bind(this);
+    this._handleRef = this._handleRef.bind(this);
+    this._hide = this._hide.bind(this);
+    this._handleMouseWheel = this._handleMouseWheel.bind(this);
   }
 
   _show(position) {
     this.setState({
       position,
-      visible: true
-    })
-    this._registerListeners()
+      visible: true,
+    });
+    this._registerListeners();
   }
 
   _hide() {
-    this.setState({ visible: false })
-    this._unregisterListeners()
+    this.setState({ visible: false });
+    this._unregisterListeners();
   }
 
   componentDidUpdate(props, state) {
-    document.addEventListener(`context-menu-event-${this.props.id}`, this._handleContextMenuEvent)
+    document.addEventListener(`context-menu-event-${this.props.id}`, this._handleContextMenuEvent);
   }
 
   componentWillUnmount() {
     document.removeEventListener(`context-menu-event-${this.props.id}`, this._handleContextMenuEvent);
-    this._unregisterListeners()
+    this._unregisterListeners();
   }
 
   _handleContextMenuEvent(event) {
-    this._show(event.detail.position)
-    this._registerListeners()
+    this._show(event.detail.position);
+    this._registerListeners();
   }
 
   _handleKeyDown(event) {
     if (event.keyCode === 27) {
-      this._hide()
+      this._hide();
     }
   }
 
   _handleMouseDown(event) {
     if (!this.menu.contains(event.target)) {
-      this._hide()
+      this._hide();
     }
   }
 
@@ -150,7 +150,7 @@ export class ContextMenu extends Component {
     this.menu = node;
 
     if (this.menu == null) {
-      return
+      return;
     }
 
     const {x, y} = this.state.position;
@@ -171,6 +171,6 @@ export class ContextMenu extends Component {
       <div className="ContextMenu" style={{ visibilty: 'hidden' }} ref={this._handleRef}>
         { this.props.children }
       </div>
-    )
+    );
   }
 }

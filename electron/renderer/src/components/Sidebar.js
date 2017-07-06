@@ -17,20 +17,20 @@
  *
  */
 
-import React from 'react'
+import React from 'react';
 
-import TeamIcon from './TeamIcon'
-import PersonalIcon from './PersonalIcon'
-import { ContextMenu, ContextMenuItem, ContextMenuTrigger } from './ContextMenu'
-import { colorFromId } from '../lib/accentColor'
+import TeamIcon from './TeamIcon';
+import PersonalIcon from './PersonalIcon';
+import { ContextMenu, ContextMenuItem, ContextMenuTrigger } from './ContextMenu';
+import { colorFromId } from '../lib/accentColor';
 
-import './Sidebar.css'
+import './Sidebar.css';
 
 function className(account) {
   return [
     'Sidebar-icon',
-    ((account.badgeCount > 0 && account.visible === false) ? 'Sidebar-icon-badge' : '')
-  ].join(' ')
+    ((account.badgeCount > 0 && account.visible === false) ? 'Sidebar-icon-badge' : ''),
+  ].join(' ');
 }
 
 const Sidebar = ({
@@ -39,7 +39,7 @@ const Sidebar = ({
   isAddingAccount,
   addAccountWithSession,
   switchAccount,
-  hasReachedLimitOfAccounts
+  hasReachedLimitOfAccounts,
 }) =>
   <div className="Sidebar" style={hasCreatedAccount ? {} : { display: 'none'}}>
     {accounts.map(account => (
@@ -69,6 +69,6 @@ const Sidebar = ({
       <ContextMenuItem onClick={() => window.open('https://teams.wire.com')}>Create Team</ContextMenuItem>
       <ContextMenuItem onClick={() => addAccountWithSession()}>Add Account</ContextMenuItem>
     </ContextMenu>
-  </div>
+  </div>;
 
-export default Sidebar
+export default Sidebar;

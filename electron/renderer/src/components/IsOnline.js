@@ -17,17 +17,17 @@
  *
  */
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import './IsOnline.css'
+import './IsOnline.css';
 
 class IsOnline extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
-      isOnline: navigator.onLine
-    }
+      isOnline: navigator.onLine,
+    };
   }
 
   componentDidMount() {
@@ -43,4 +43,4 @@ class IsOnline extends Component {
   }
 }
 
-export default IsOnline
+export default IsOnline;
