@@ -21,8 +21,8 @@
 
 const {MenuItem} = require('electron');
 const config = require('./../config');
-const env = settings.restore('env', config.INTERNAL);
 const settings = require('./../lib/settings');
+const env = settings.restore('env', config.INTERNAL);
 const windowManager = require('./../window-manager');
 
 function getPrimaryWindow() {
