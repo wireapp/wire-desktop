@@ -26,7 +26,6 @@ import logger from 'redux-logger'
 import throttle from 'lodash/throttle'
 
 import App from './components/App'
-import { addAccount, switchAccount } from './actions'
 import appStore from './reducers'
 import { loadState, saveState } from './lib/localStorage'
 
