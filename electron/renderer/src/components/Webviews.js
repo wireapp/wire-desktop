@@ -47,11 +47,9 @@ class Webviews extends Component {
 
   _onPageTitleUpdated(account, { title }) {
     const count = badgeCount(title);
-    if (count !== undefined) {
-      this.props.updateAccountBadge(account.id, count);
-      const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
-      window.reportBadgeCount(accumulatedCount);
-    }
+    this.props.updateAccountBadgeCount(account.id, count);
+    const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
+    window.reportBadgeCount(accumulatedCount);
   }
 
   _onIpcMessage(account, {channel, args}) {
