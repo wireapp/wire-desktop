@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { colorFromId } from '../lib/accentColor';
 
@@ -34,5 +35,11 @@ const PersonalIcon = ({ account, accentID, onClick }) =>
       }
     </div>
   </div>;
+
+PersonalIcon.propTypes = {
+  account: PropTypes.object.isRequired,
+  accentID: PropTypes.number,
+  onClick: PropTypes.func,
+};
 
 export default PersonalIcon;

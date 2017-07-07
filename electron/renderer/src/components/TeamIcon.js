@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { colorFromId } from '../lib/accentColor';
 
@@ -35,5 +36,11 @@ const TeamIcon = ({ account, accentID, onClick }) =>
     </svg>
     <span>{ [...account.name][0] }</span>
   </div>;
+
+TeamIcon.propTypes = {
+  account: PropTypes.object.isRequired,
+  accentID: PropTypes.number,
+  onClick: PropTypes.func,
+};
 
 export default TeamIcon;
