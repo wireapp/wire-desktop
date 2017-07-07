@@ -41,7 +41,13 @@ const store = createStore(
 
 store.subscribe(throttle(() => {
   saveState({
-    accounts: store.getState().accounts,
+    accounts: store.getState().accounts.map((account) => {
+      // no need to store badge count
+      return {
+        ...account,
+        badgeCount: 0
+      }
+    }),
   });
 }), 500);
 

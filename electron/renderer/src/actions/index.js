@@ -53,6 +53,7 @@ export const abortAccountCreation = (id) => {
     dispatch(switchAccount(lastAccount.id));
   };
 };
+
 export const updateAccountData = (id, data) => {
   return (dispatch, getState) => {
     const isValidAccountData = verifyObjectProperties(data, {
@@ -70,3 +71,19 @@ export const updateAccountData = (id, data) => {
     }
   };
 };
+
+export const updateAccountBadgeCount = (id, count) => {
+  return (dispatch, getState) => {
+    const account = getState().accounts.find((account) => account.id === id);
+
+    if (account) {
+      const countHasChanged = account.badgeCount !== count;
+      if (countHasChanged) {
+        dispatch(updateAccountBadge(id, count));
+      } 
+    } else {
+      console.warn(`Missing account when updating badge count`)
+    }
+
+  }
+}

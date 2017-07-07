@@ -23,5 +23,5 @@ export default function(title) {
   if (matches !== null) {
     return parseInt(matches[1], 10);
   }
-  return undefined;
+  return 0;
 }

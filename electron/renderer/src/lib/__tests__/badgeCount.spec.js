@@ -21,7 +21,7 @@ import badgeCount from '../badgeCount';
 
 describe('badgeCount', () => {
   it('should return undefined if badge count cannot be generated from title', () => {
-    expect(badgeCount('Title')).not.toBeDefined();
+    expect(badgeCount('Title')).toEqual(0);
   });
 
   it('should return count if badge count can be generated from title', () => {
