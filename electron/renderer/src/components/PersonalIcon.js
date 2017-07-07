@@ -23,10 +23,10 @@ import { colorFromId } from '../lib/accentColor';
 
 import './PersonalIcon.css';
 
-const PersonalIcon = ({ account, onClick }) =>
+const PersonalIcon = ({ account, accentID, onClick }) =>
   <div className="PersonalIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
     {account.visible &&
-      <div className="PersonalIcon-border" style={{borderColor: colorFromId(account.accentID)}}></div>
+      <div className="PersonalIcon-border" style={{borderColor: colorFromId(accentID)}}></div>
     }
     <div className="PersonalIcon-inner">
       {account.picture &&
