@@ -36,11 +36,6 @@ class Webviews extends Component {
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
-    // redirect to auth page if user is unknown
-    if (account.userID === undefined) {
-      url.pathname = '/auth';
-    }
-
     return url.href;
   }
 
