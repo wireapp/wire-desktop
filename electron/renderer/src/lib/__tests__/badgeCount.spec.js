@@ -20,7 +20,7 @@
 import badgeCount from '../badgeCount';
 
 describe('badgeCount', () => {
-  it('should return undefined if badge count cannot be generated from title', () => {
+  it('should return 0 if badge count cannot be generated from title', () => {
     expect(badgeCount('Title')).toEqual(0);
   });
 
