@@ -74,7 +74,7 @@ export const updateAccountData = (id, data) => {
 
 export const updateAccountBadgeCount = (id, count) => {
   return (dispatch, getState) => {
-    const account = getState().accounts.find((account) => account.id === id);
+    const account = getState().accounts.find((acc) => acc.id === id);
 
     if (account) {
       const countHasChanged = account.badgeCount !== count;
@@ -82,8 +82,8 @@ export const updateAccountBadgeCount = (id, count) => {
         dispatch(updateAccountBadge(id, count));
       } 
     } else {
-      console.warn(`Missing account when updating badge count`)
+      console.warn('Missing account when updating badge count');
     }
 
-  }
-}
+  };
+};

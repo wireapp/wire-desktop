@@ -45,8 +45,8 @@ store.subscribe(throttle(() => {
       // no need to store badge count
       return {
         ...account,
-        badgeCount: 0
-      }
+        badgeCount: 0,
+      };
     }),
   });
 }), 500);
