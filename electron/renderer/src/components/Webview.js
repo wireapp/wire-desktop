@@ -40,6 +40,12 @@ class Webview extends Component {
 
     this.webview.addEventListener('page-title-updated', this._onPageTitleUpdated);
     this.webview.addEventListener('ipc-message', this._onIpcMessage);
+
+    this._focusWebview();
+  }
+
+  componentDidUpdate() {
+    this._focusWebview();
   }
 
   _onPageTitleUpdated(event) {
@@ -50,9 +56,15 @@ class Webview extends Component {
     this.props.onIpcMessage(event);
   }
 
+  _focusWebview() {
+    if (this.props.visible === true) {
+      this.webview.focus();
+    }
+  }
+
   render() {
-    const {partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props; // eslint-disable-line no-unused-vars
-    return <webview {...validProps} ref={(webview) => { this.webview = webview; }} />;
+    const {visible, partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props; // eslint-disable-line no-unused-vars
+    return <webview {...validProps} ref={(webview) => this.webview = webview } />;
   }
 }
 

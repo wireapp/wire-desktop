@@ -36,6 +36,11 @@ class Webviews extends Component {
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
+    // when landing on auth page for login mode
+    url.hash = 'login';
+
+    console.log(`navigating to ${url.href}`);
+
     return url.href;
   }
 
@@ -75,6 +80,7 @@ class Webviews extends Component {
           <div className="Webviews-container" key={account.id}>
             <Webview
               className={'Webview ' + (account.visible ? '' : 'hide')}
+              visible={account.visible}
               src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
               preload='./static/webview-preload.js'

@@ -35,6 +35,7 @@ function className(account) {
 
 const Sidebar = ({
   accounts,
+  currentAccentID,
   hasCreatedAccount,
   isAddingAccount,
   addAccount,
@@ -44,11 +45,11 @@ const Sidebar = ({
   <div className="Sidebar" style={hasCreatedAccount ? {} : { display: 'none'}}>
     {accounts.map(account => (
       <div className="Sidebar-cell" key={account.id}> 
-        <div style={{ color: colorFromId(account.accentID) }} className={className(account)}>
+        <div style={{ color: colorFromId(currentAccentID) }} className={className(account)}>
           {account.teamID ? (
-            <TeamIcon account={account} onClick={() => switchAccount(account.id)} />
+            <TeamIcon account={account} accentID={currentAccentID} onClick={() => switchAccount(account.id)} />
           ) : (
-            <PersonalIcon account={account} onClick={() => switchAccount(account.id)} />
+            <PersonalIcon account={account} accentID={currentAccentID} onClick={() => switchAccount(account.id)} />
           )}
         </div>
       </div>
