@@ -280,11 +280,10 @@ function showMainWindow() {
 
     if (!quitting) {
       event.preventDefault();
-      if (main.isFullScreen()) {
-        main.setFullScreen(false);
         main.once('leave-full-screen', () => {
           main.hide();
         });
+        main.setFullScreen(false);
       } else {
         main.hide();
       }
