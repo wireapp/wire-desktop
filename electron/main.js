@@ -466,4 +466,51 @@ class ElectronWrapperInit {
   }
 };
 
+class BrowserWindowInit {
+
+  constructor() {
+
+    this.debug = debug('BrowserWindowInit');
+    this.quitting = false;
+    this.accessToken = false;
+
+    // Start the browser window
+    this.browserWindow = new BrowserWindow({
+      title: config.NAME,
+      titleBarStyle: 'hidden-inset',
+
+      width: config.DEFAULT_WIDTH_MAIN,
+      height: config.DEFAULT_HEIGHT_MAIN,
+      minWidth: config.MIN_WIDTH_MAIN,
+      minHeight: config.MIN_HEIGHT_MAIN,
+
+      autoHideMenuBar: !settings.restore('showMenu', true),
+      icon: ICON_PATH,
+      show: false,
+      backgroundColor: '#fff',
+
+      webPreferences: {
+        backgroundThrottling: false,
+        nodeIntegration: false,
+        preload: PRELOAD_JS,
+        webviewTag: true,
+        allowRunningInsecureContent: false,
+        experimentalFeatures: true,
+        webgl: false,
+      },
+    });
+
+    // Show the renderer
+    const envUrl = encodeURIComponent(`${BASE_URL}${(BASE_URL.includes('?') ? '&' : '?')}hl=${locale.getCurrent()}`);
+    main.loadURL(`file://${path.join(APP_PATH, 'renderer', 'index.html')}?env=${envUrl}`);
+    
+    // Restore previous window size
+    if (settings.restore('fullscreen', false)) {
+      this.browserWindow.setFullScreen(true);
+    } else {
+      this.browserWindow.setBounds(settings.restore('bounds', this.browserWindow.getBounds()));
+    }
+  }
+};
+
 (new ElectronWrapperInit()).run();
