@@ -28,6 +28,7 @@ const SidebarContainer = connect(
     hasReachedLimitOfAccounts: accounts.length === 3,
     hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
     isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
+    currentAccentID: accounts.find((account) => account.visible).accentID,
   }),
   {addAccount, switchAccount}
 )(Sidebar);

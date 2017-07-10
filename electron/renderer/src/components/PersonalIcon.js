@@ -18,15 +18,16 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { colorFromId } from '../lib/accentColor';
 
 import './PersonalIcon.css';
 
-const PersonalIcon = ({ account, onClick }) =>
-  <div className="PersonalIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
+const PersonalIcon = ({ account, accentID, onClick }) =>
+  <div className="PersonalIcon" title={account.name} onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
     {account.visible &&
-      <div className="PersonalIcon-border" style={{borderColor: colorFromId(account.accentID)}}></div>
+      <div className="PersonalIcon-border" style={{borderColor: colorFromId(accentID)}}></div>
     }
     <div className="PersonalIcon-inner">
       {account.picture &&
@@ -34,5 +35,11 @@ const PersonalIcon = ({ account, onClick }) =>
       }
     </div>
   </div>;
+
+PersonalIcon.propTypes = {
+  account: PropTypes.object.isRequired,
+  accentID: PropTypes.number,
+  onClick: PropTypes.func,
+};
 
 export default PersonalIcon;
