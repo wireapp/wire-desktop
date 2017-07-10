@@ -61,6 +61,7 @@ if __name__ == '__main__':
     'debian/dists/stable/Contents-i386',
     'debian/dists/stable/Contents-i386.bz2',
     'debian/dists/stable/Contents-i386.gz',
+    'debian/dists/stable/InRelease',
     'debian/dists/stable/Release',
     'debian/dists/stable/Release.gpg',
     'debian/dists/stable/main/binary-all/Packages',
