@@ -41,11 +41,11 @@ class Webview extends Component {
     this.webview.addEventListener('page-title-updated', this._onPageTitleUpdated);
     this.webview.addEventListener('ipc-message', this._onIpcMessage);
 
-    this._focusWebview()
+    this._focusWebview();
   }
 
   componentDidUpdate() {
-    this._focusWebview()
+    this._focusWebview();
   }
 
   _onPageTitleUpdated(event) {
@@ -58,7 +58,7 @@ class Webview extends Component {
 
   _focusWebview() {
     if (this.props.visible === true) {
-      this.webview.focus()
+      this.webview.focus();
     }
   }
 
