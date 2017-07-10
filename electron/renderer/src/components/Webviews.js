@@ -37,9 +37,9 @@ class Webviews extends Component {
     url.searchParams.set('id', account.id);
 
     // when landing on auth page for login mode
-    url.hash = 'login'
+    url.hash = 'login';
 
-    console.log(`navigating to ${url.href}`)
+    console.log(`navigating to ${url.href}`);
 
     return url.href;
   }

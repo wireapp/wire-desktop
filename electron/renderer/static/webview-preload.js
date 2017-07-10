@@ -220,7 +220,7 @@ function checkAvailablity(callback) {
 }
 
 function forceEmailLogin() {
-  window.location.hash = '#login'
+  window.location.hash = '#login';
 }
 
 // https://github.com/electron/electron/issues/2984
@@ -231,14 +231,14 @@ process.once('loaded', () => {
   global.openGraph = require('../../js/lib/openGraph');
   global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
   enableFileLogging();
-  forceEmailLogin()
+  forceEmailLogin();
 });
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailablity(() => {
     exposeAddressbook();
     exposeLibsodiumNeon();
-    
+
     subscribeToMainProcessEvents();
     updateWebappStyles();
     subscribeToWebappEvents();
