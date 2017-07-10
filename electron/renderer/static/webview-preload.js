@@ -219,6 +219,10 @@ function checkAvailablity(callback) {
   }, 500);
 }
 
+function forceEmailLogin() {
+  window.location.hash = '#login'
+}
+
 // https://github.com/electron/electron/issues/2984
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
@@ -227,6 +231,7 @@ process.once('loaded', () => {
   global.openGraph = require('../../js/lib/openGraph');
   global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
   enableFileLogging();
+  forceEmailLogin()
 });
 
 window.addEventListener('DOMContentLoaded', () => {
