@@ -75,6 +75,7 @@ class Webviews extends Component {
           <div className="Webviews-container" key={account.id}>
             <Webview
               className={'Webview ' + (account.visible ? '' : 'hide')}
+              visible={account.visible}
               src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
               preload='./static/webview-preload.js'
