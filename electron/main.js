@@ -280,7 +280,14 @@ function showMainWindow() {
 
     if (!quitting) {
       event.preventDefault();
-      main.hide();
+      if (main.isFullScreen()) {
+        main.setFullScreen(false);
+        main.once('leave-full-screen', () => {
+          main.hide();
+        });
+      } else {
+        main.hide();
+      }
     } else {
       debugMain('Persisting user configuration file...');
       await settings._saveToFile();
