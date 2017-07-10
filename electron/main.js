@@ -272,19 +272,30 @@ function showMainWindow() {
   });
   
   main.on('close', async (event) => {
-    settings.save('fullscreen', main.isFullScreen());
+    const isFullScreen = main.isFullScreen();
+    settings.save('fullscreen', isFullScreen);
 
-    if (!main.isFullScreen()) {
+    if (!isFullScreen) {
       settings.save('bounds', main.getBounds());
     }
 
     if (!quitting) {
       event.preventDefault();
-      main.hide();
-    } else {
-      debugMain('Persisting user configuration file...');
-      await settings._saveToFile();
+      debugMain('Closing window...');
+
+      if (isFullScreen) {
+        main.once('leave-full-screen', () => {
+          main.hide();
+        });
+        main.setFullScreen(false);
+      } else {
+        main.hide();
+      }
+      return;
     }
+    
+    debugMain('Persisting user configuration file...');
+    await settings._saveToFile();
   });
 
   main.webContents.on('crashed', () => {
