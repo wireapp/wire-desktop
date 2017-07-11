@@ -2,7 +2,7 @@
   "name": "wireinternal",
   "productName": "WireInternal",
   "description": "Modern communication, full privacy.",
-  "version": "2.15.2746",
+  "version": "2.15.2747",
   "main": "main.js",
   "updateWinUrl": "https://wire-app.wire.com/win/internal/",
   "environment": "internal",
