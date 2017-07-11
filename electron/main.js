@@ -62,6 +62,21 @@ const config = require('./js/config');
 const ICON = `wire.${((process.platform === 'win32') ? 'ico' : 'png')}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
+const BASE_URL = (() => {
+  if (!argv.env && config.DEVELOPMENT) {
+    switch (settings.restore('env', config.INTERNAL)) {
+      case config.DEV: return config.DEV_URL;
+      case config.EDGE: return config.EDGE_URL;
+      case config.INTERNAL: return config.INTERNAL_URL;
+      case config.LOCALHOST: return config.LOCALHOST_URL;
+      case config.STAGING: return config.STAGING_URL;
+    }
+  }
+
+  return argv.env || config.PROD_URL;
+})();
+
+
 let main;
 let raygunClient;
 let about;
@@ -135,21 +150,6 @@ if (process.platform === 'linux') {
 ///////////////////////////////////////////////////////////////////////////////
 // IPC events
 ///////////////////////////////////////////////////////////////////////////////
-function getBaseUrl() {
-  let baseURL = argv.env || config.PROD_URL;
-  if (!argv.env && config.DEVELOPMENT) {
-    let env = settings.restore('env', config.INTERNAL);
-
-    if (env === config.DEV) baseURL = config.DEV_URL;
-    if (env === config.EDGE) baseURL = config.EDGE_URL;
-    if (env === config.INTERNAL) baseURL = config.INTERNAL_URL;
-    if (env === config.LOCALHOST) baseURL = config.LOCALHOST_URL;
-    if (env === config.PROD) baseURL = config.PROD_URL;
-    if (env === config.STAGING) baseURL = config.STAGING_URL;
-  }
-  return baseURL;
-}
-
 ipcMain.on('loaded', () => {
   let size = main.getSize();
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
@@ -222,7 +222,7 @@ function showMainWindow() {
     main.setBounds(settings.restore('bounds', main.getBounds()));
   }
 
-  let baseURL = getBaseUrl();
+  let baseURL = BASE_URL;
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
@@ -403,6 +403,7 @@ class ElectronWrapperInit {
   // <webview> hardening
   webviewProtection() {
     const webviewProtectionDebug = debug('ElectronWrapperInit:webviewProtection');
+
     const openLinkInNewWindow = (event, _url) => {
       // Prevent default behavior
       event.preventDefault();
@@ -410,10 +411,9 @@ class ElectronWrapperInit {
       webviewProtectionDebug('Opening an external window from a webview. URL: %s', _url);
       shell.openExternal(_url);
     };
-
     const willNavigateInWebview = (event, _url) => {
       // Ensure navigation is to a whitelisted domain
-      if (util.isMatchingHost(_url, getBaseUrl())) {
+      if (util.isMatchingHost(_url, BASE_URL)) {
         webviewProtectionDebug('Navigating inside webview. URL: %s', _url);
       } else {
         webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
@@ -437,7 +437,7 @@ class ElectronWrapperInit {
             params.autosize = false;
 
             // Verify the URL being loaded
-            if (!util.isMatchingHost(_url, getBaseUrl())) {
+            if (!util.isMatchingHost(_url, BASE_URL)) {
               e.preventDefault();
               webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
             }
@@ -475,6 +475,53 @@ class ElectronWrapperInit {
       }
     });
   }
-}
+};
+
+class BrowserWindowInit {
+
+  constructor() {
+
+    this.debug = debug('BrowserWindowInit');
+    this.quitting = false;
+    this.accessToken = false;
+
+    // Start the browser window
+    this.browserWindow = new BrowserWindow({
+      title: config.NAME,
+      titleBarStyle: 'hidden-inset',
+
+      width: config.DEFAULT_WIDTH_MAIN,
+      height: config.DEFAULT_HEIGHT_MAIN,
+      minWidth: config.MIN_WIDTH_MAIN,
+      minHeight: config.MIN_HEIGHT_MAIN,
+
+      autoHideMenuBar: !settings.restore('showMenu', true),
+      icon: ICON_PATH,
+      show: false,
+      backgroundColor: '#fff',
+
+      webPreferences: {
+        backgroundThrottling: false,
+        nodeIntegration: false,
+        preload: PRELOAD_JS,
+        webviewTag: true,
+        allowRunningInsecureContent: false,
+        experimentalFeatures: true,
+        webgl: false,
+      },
+    });
+
+    // Show the renderer
+    const envUrl = encodeURIComponent(`${BASE_URL}${(BASE_URL.includes('?') ? '&' : '?')}hl=${locale.getCurrent()}`);
+    main.loadURL(`file://${path.join(APP_PATH, 'renderer', 'index.html')}?env=${envUrl}`);
+    
+    // Restore previous window size
+    if (settings.restore('fullscreen', false)) {
+      this.browserWindow.setFullScreen(true);
+    } else {
+      this.browserWindow.setBounds(settings.restore('bounds', this.browserWindow.getBounds()));
+    }
+  }
+};
 
 (new ElectronWrapperInit()).run();
