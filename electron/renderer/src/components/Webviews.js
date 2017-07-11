@@ -71,7 +71,7 @@ class Webviews extends Component {
   }
 
   _deleteWebview(account) {
-    window.sendDeleteAccount(account.id, account.sessionID)
+    window.sendDeleteAccount(account.id, account.sessionID);
     this.props.abortAccountCreation(account.id);
   }
 

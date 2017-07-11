@@ -200,7 +200,7 @@ ipcMain.on('should-delete-account-data', (e, accountID, sessionID) => {
   } catch (error) {
     debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
   }
-})
+});
 
 if (process.platform !== 'darwin') {
   ipcMain.on('wrapper-reload', () => {
