@@ -34,6 +34,16 @@ function subscribeToMainProcessEvents() {
   });
 }
 
+function setupIpcInterface() {
+  window.sendBadgeCount = (count) => {
+    ipcRenderer.send('badge-count', count);
+  };
+
+  window.sendDeleteAccount = (accountID, sessionID) => {
+    ipcRenderer.send('delete-account-data', accountID, sessionID);
+  };
+}
+
 function addDragRegion() {
   if (process.platform === 'darwin') {
     // add titlebar ghost to prevent interactions with the content while dragging
@@ -43,12 +53,16 @@ function addDragRegion() {
   }
 }
 
-window.reportBadgeCount = (count) => {
-  ipcRenderer.send('badge-count', count);
-};
-
+setupIpcInterface();
 subscribeToMainProcessEvents();
 
 window.addEventListener('DOMContentLoaded', () => {
   addDragRegion();
+});
+
+window.addEventListener('focus', () => {
+  const selectedWebview = getSelectedWebview();
+  if (selectedWebview) {
+    selectedWebview.focus();
+  }
 });

@@ -2,7 +2,7 @@
   "name": "wireinternal",
   "productName": "WireInternal",
   "description": "Modern communication, full privacy.",
-  "version": "2.15.2746",
+  "version": "2.15.2747",
   "main": "main.js",
   "updateWinUrl": "https://wire-app.wire.com/win/internal/",
   "environment": "internal",
@@ -32,6 +32,7 @@
     "redux-logger": "3.0.6",
     "redux-thunk": "2.2.0",
     "request": "2.76.0",
+    "rimraf": "2.6.1",
     "spellchecker": "3.3.1",
     "uuid": "3.1.0",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"

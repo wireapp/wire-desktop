@@ -20,7 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
 
 const pkg = require('../../package.json');
@@ -31,14 +31,15 @@ webFrame.registerURLSchemeAsBypassingCSP('file');
 function subscribeToWebappEvents() {
   amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, function() {
     ipcRenderer.send('notification-click');
-  });
-
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
-    ipcRenderer.send('loaded');
+    ipcRenderer.sendToHost('notification-click');
   });
 
   amplify.subscribe(z.event.WebApp.TEAM.INFO, function(info) {
     ipcRenderer.sendToHost('team-info', info);
+  });
+
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGN_OUT, function() {
+    ipcRenderer.sendToHost('sign-out');
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
