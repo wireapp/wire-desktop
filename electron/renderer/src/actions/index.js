@@ -87,15 +87,3 @@ export const updateAccountBadgeCount = (id, count) => {
 
   };
 };
-
-export const deleteTeam = (teamID) => {
-  return (dispatch, getState) => {
-    const account = getState().accounts.find((account) => account.teamID === teamID)
-
-    if (account !== undefined) {
-      dispatch(deleteAccount(account.id))
-    } else {
-      console.warn(`Got invalid teamID: ${teamID}`)
-    }
-  }
-}

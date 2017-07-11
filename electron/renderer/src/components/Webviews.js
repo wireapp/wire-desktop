@@ -39,8 +39,6 @@ class Webviews extends Component {
     // when landing on auth page for login mode
     url.hash = 'login';
 
-    console.log(`navigating to ${url.href}`);
-
     return url.href;
   }
 
