@@ -33,12 +33,17 @@ function subscribeToWebappEvents() {
     ipcRenderer.send('notification-click');
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
-    ipcRenderer.send('loaded');
-  });
-
   amplify.subscribe(z.event.WebApp.TEAM.INFO, function(info) {
     ipcRenderer.sendToHost('team-info', info);
+  });
+
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGN_OUT, function() {
+    ipcRenderer.sendToHost('sign-out');
+  });
+
+  // TODO: check if needed
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
+    ipcRenderer.send('loaded');
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {

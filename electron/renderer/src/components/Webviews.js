@@ -54,7 +54,7 @@ class Webviews extends Component {
     const count = badgeCount(title);
     this.props.updateAccountBadgeCount(account.id, count);
     const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
-    window.reportBadgeCount(accumulatedCount);
+    window.sendBadgeCount(accumulatedCount);
   }
 
   _onIpcMessage(account, {channel, args}) {
@@ -62,10 +62,15 @@ class Webviews extends Component {
       case 'team-info':
         this.props.updateAccountData(account.id, args[0]);
         break;
+      case 'sign-out':
+        console.log('sign-out')
+        window.sendDeleteAccount(account.id, account.sessionID);
+        break;
     }
   }
 
   _onWebviewClose(account) {
+    window.sendDeleteAccount(account.id, account.sessionID)
     this.props.abortAccountCreation(account.id);
   }
 
