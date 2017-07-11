@@ -40,7 +40,7 @@ function setupIpcInterface() {
   };
 
   window.sendDeleteAccount = (accountID, sessionID) => {
-    ipcRenderer.send('should-delete-account-data', accountID, sessionID);
+    ipcRenderer.send('delete-account-data', accountID, sessionID);
   };
 }
 

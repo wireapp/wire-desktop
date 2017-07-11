@@ -177,7 +177,7 @@ ipcMain.on('google-auth-request', event => {
     });
 });
 
-ipcMain.on('should-delete-account-data', (e, accountID, sessionID) => {
+ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   
   // delete webview partition
   try {
