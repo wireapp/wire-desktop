@@ -151,13 +151,6 @@ function getBaseUrl() {
   return baseURL;
 }
 
-ipcMain.on('loaded', () => {
-  let size = main.getSize();
-  if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
-    // util.resizeToBig(main);
-  }
-});
-
 ipcMain.once('webapp-version', (event, version) => {
   webappVersion = version;
 });

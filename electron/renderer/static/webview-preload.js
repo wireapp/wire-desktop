@@ -41,11 +41,6 @@ function subscribeToWebappEvents() {
     ipcRenderer.sendToHost('sign-out');
   });
 
-  // TODO: check if needed
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {
-    ipcRenderer.send('loaded');
-  });
-
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
     if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
       ipcRenderer.send('wrapper-restart');
