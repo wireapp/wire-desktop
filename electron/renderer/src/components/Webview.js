@@ -57,7 +57,10 @@ class Webview extends Component {
   }
 
   _focusWebview() {
-    if (this.props.visible === true) {
+    const is_visible = this.props.visible === true;
+    console.log('#### active eleent', document.activeElement);
+    if (is_visible) {
+      console.log('#### focus', this.props);
       this.webview.focus();
     }
   }

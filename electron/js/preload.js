@@ -52,3 +52,16 @@ subscribeToMainProcessEvents();
 window.addEventListener('DOMContentLoaded', () => {
   addDragRegion();
 });
+
+window.addEventListener('focus', () => {
+  console.log('### gained focus');
+
+  const selectedWebview = getSelectedWebview();
+  if (selectedWebview) {
+    selectedWebview.focus();
+  }
+});
+
+window.addEventListener('blur', () => {
+  console.log('### lost focus');
+});

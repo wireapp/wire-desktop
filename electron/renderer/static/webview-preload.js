@@ -20,7 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const {remote, ipcRenderer, webFrame, desktopCapturer} = require('electron');
+const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
 
 const pkg = require('../../package.json');
@@ -31,6 +31,7 @@ webFrame.registerURLSchemeAsBypassingCSP('file');
 function subscribeToWebappEvents() {
   amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, function() {
     ipcRenderer.send('notification-click');
+    ipcRenderer.sendToHost('notification-click');
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, function() {

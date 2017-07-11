@@ -39,8 +39,6 @@ class Webviews extends Component {
     // when landing on auth page for login mode
     url.hash = 'login';
 
-    console.log(`navigating to ${url.href}`);
-
     return url.href;
   }
 
@@ -59,6 +57,9 @@ class Webviews extends Component {
 
   _onIpcMessage(account, {channel, args}) {
     switch (channel) {
+      case 'notification-click':
+        this.props.switchAccount(account.id);
+        break;
       case 'team-info':
         this.props.updateAccountData(account.id, args[0]);
         break;
