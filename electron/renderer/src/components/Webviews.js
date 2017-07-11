@@ -63,13 +63,16 @@ class Webviews extends Component {
         this.props.updateAccountData(account.id, args[0]);
         break;
       case 'sign-out':
-        console.log('sign-out')
-        window.sendDeleteAccount(account.id, account.sessionID);
+        this._deleteWebview(account);
         break;
     }
   }
 
   _onWebviewClose(account) {
+    this._deleteWebview(account);
+  }
+
+  _deleteWebview(account) {
     window.sendDeleteAccount(account.id, account.sessionID)
     this.props.abortAccountCreation(account.id);
   }
