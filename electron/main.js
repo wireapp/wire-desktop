@@ -23,6 +23,7 @@ const fs = require('fs');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
+const rimraf = require('rimraf');
 /*eslint-disable no-unused-vars*/
 const debug = require('debug');
 const debugMain = debug('mainTmp');
@@ -150,13 +151,6 @@ if (process.platform === 'linux') {
 ///////////////////////////////////////////////////////////////////////////////
 // IPC events
 ///////////////////////////////////////////////////////////////////////////////
-ipcMain.on('loaded', () => {
-  let size = main.getSize();
-  if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
-    // util.resizeToBig(main);
-  }
-});
-
 ipcMain.once('webapp-version', (event, version) => {
   webappVersion = version;
 });
@@ -181,6 +175,31 @@ ipcMain.on('google-auth-request', event => {
     .catch(error => {
       event.sender.send('google-auth-error', error);
     });
+});
+
+ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
+  
+  // delete webview partition
+  try {
+    if (sessionID) {
+      const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
+      rimraf.sync(partitionDir);
+      debugMain(`Deleted partition for account: ${sessionID}`);
+    } else {
+      debugMain(`Skipping partition deletion for account: ${accountID}`);
+    }
+  } catch (error) {
+    debugMain(`Failed to partition for account: ${sessionID}`);
+  }
+  
+  // delete logs
+  try {
+    const logDir = path.join(app.getPath('userData'), 'logs', accountID);
+    rimraf.sync(logDir);
+    debugMain(`Deleted logs folder for account: ${accountID}`);
+  } catch (error) {
+    debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
+  }
 });
 
 if (process.platform !== 'darwin') {
