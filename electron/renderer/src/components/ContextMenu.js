@@ -59,7 +59,7 @@ ContextMenuTrigger.propTypes = {
 
 
 export const ContextMenuItem = (props) =>
-  <div className="ContextMenu-item" onClick={props.onClick}>
+  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
     { props.children }
   </div>;
 
