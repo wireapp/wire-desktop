@@ -37,8 +37,25 @@ let reloadTemplate = {
 
 let devToolsTemplate = {
   label: 'Toggle DevTools',
-  accelerator: 'Alt+CmdOrCtrl+I',
-  click: function() {getPrimaryWindow().toggleDevTools();},
+  submenu: [
+    {
+      label: 'Sidebar',
+      accelerator: 'Alt+CmdOrCtrl+I',
+      click: function() {getPrimaryWindow().toggleDevTools();},
+    },
+    {
+      label: 'First',
+      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools()");},
+    },
+    {
+      label: 'Second',
+      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools()");},
+    },
+    {
+      label: 'Third',
+      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools()");},
+    },
+  ]
 };
 
 let devProductionTemplate = {
