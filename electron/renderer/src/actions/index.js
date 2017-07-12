@@ -7,11 +7,12 @@ export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
 export const UPDATE_ACCOUNT_BADGE = 'UPDATE_ACCOUNT_BADGE';
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
 
-export const addAccount = () => {
+export const addAccount = (withSession = true) => {
+  const sessionID = withSession ? uuid() : undefined;
   return {
     type: ADD_ACCOUNT,
-    sessionID: uuid(),
-  };
+    sessionID: sessionID,
+  }
 };
 
 export const updateAccount = (id, data) => {
@@ -50,7 +51,12 @@ export const abortAccountCreation = (id) => {
 
     const accounts = getState().accounts;
     const lastAccount = accounts[accounts.length - 1];
-    dispatch(switchAccount(lastAccount.id));
+
+    if (lastAccount) {
+      dispatch(switchAccount(lastAccount.id));
+    } else {
+      dispatch(addAccount(false));
+    }
   };
 };
 
@@ -80,7 +86,7 @@ export const updateAccountBadgeCount = (id, count) => {
       const countHasChanged = account.badgeCount !== count;
       if (countHasChanged) {
         dispatch(updateAccountBadge(id, count));
-      } 
+      }
     } else {
       console.warn('Missing account when updating badge count');
     }
