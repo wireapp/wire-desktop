@@ -58,8 +58,8 @@ const Sidebar = ({
       <ContextMenuTrigger id="account">
         <div className="Sidebar-cell">
           <div data-uie-name="do-open-plus-menu" className="Sidebar-account-add" >
-            <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 6.125v1.75h6.125V14h1.75V7.875H14v-1.75H7.875V0h-1.75v6.125" fillRule="evenodd"/>
+            <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd"/>
             </svg>
           </div>
         </div>
