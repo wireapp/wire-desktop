@@ -99,7 +99,7 @@ export const addAccountWithSession = () => {
     const hasReachedAccountLimit = getState().accounts.length >= 3;
 
     if (hasReachedAccountLimit) {
-      console.warn('Missing account when updating badge count');
+      console.warn('Reached number of maximum accounts');
     } else {
       dispatch(addAccount());
     }
