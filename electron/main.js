@@ -178,7 +178,7 @@ ipcMain.on('google-auth-request', event => {
 });
 
 ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
-  
+
   // delete webview partition
   try {
     if (sessionID) {
@@ -191,7 +191,7 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   } catch (error) {
     debugMain(`Failed to partition for account: ${sessionID}`);
   }
-  
+
   // delete logs
   try {
     const logDir = path.join(app.getPath('userData'), 'logs', accountID);
@@ -325,11 +325,11 @@ function showMainWindow() {
 function showAboutWindow() {
   if (about === undefined) {
     about = new BrowserWindow({
-      'title': '',
-      'width': 304,
-      'height': 256,
-      'resizable': false,
-      'fullscreen': false,
+      title: config.NAME,
+      width: 304,
+      height: 256,
+      resizable: false,
+      fullscreen: false,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
@@ -533,7 +533,7 @@ class BrowserWindowInit {
     // Show the renderer
     const envUrl = encodeURIComponent(`${BASE_URL}${(BASE_URL.includes('?') ? '&' : '?')}hl=${locale.getCurrent()}`);
     main.loadURL(`file://${path.join(APP_PATH, 'renderer', 'index.html')}?env=${envUrl}`);
-    
+
     // Restore previous window size
     if (settings.restore('fullscreen', false)) {
       this.browserWindow.setFullScreen(true);
