@@ -17,7 +17,7 @@
  *
  */
 
-import { saveState, loadState } from '../localStorage'
+import { saveState, loadState } from '../localStorage';
 
 import LocalStorageMock from '../__mocks__/localStorage';
 
@@ -26,22 +26,22 @@ describe('localStorage', () => {
 
   beforeEach(() => {
     global.localStorage = new LocalStorageMock();
-  })
+  });
 
   afterEach(() => {
-    delete global.localStorage
-  })
+    delete global.localStorage;
+  });
 
   it('should return saved state', () => {
     const state = {
       foo: 'string',
       bar: true,
       num: 1,
-      test: null
-    }
+      test: null,
+    };
 
-    saveState(state)
+    saveState(state);
 
-    expect(loadState()).toEqual(state)
-  })
-})
+    expect(loadState()).toEqual(state);
+  });
+});

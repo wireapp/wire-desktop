@@ -17,11 +17,11 @@
  *
  */
 
-import React from 'react'
+import React from 'react';
 
-import { colorFromId } from '../lib/accentColor'
+import { colorFromId } from '../lib/accentColor';
 
-import './PersonalIcon.css'
+import './PersonalIcon.css';
 
 const PersonalIcon = ({ account, onClick }) =>
   <div className="PersonalIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
@@ -33,6 +33,6 @@ const PersonalIcon = ({ account, onClick }) =>
         <img src={account.picture} />
       }
     </div>
-  </div>
+  </div>;
 
-export default PersonalIcon
+export default PersonalIcon;

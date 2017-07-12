@@ -17,17 +17,21 @@
  *
  */
 
-import React from 'react'
+import React from 'react';
 
-import SidebarContainer from '../containers/SidebarContainer'
-import WebviewsContainer from '../containers/WebviewsContainer'
+import SidebarContainer from '../containers/SidebarContainer';
+import WebviewsContainer from '../containers/WebviewsContainer';
 
-import './App.css'
+import IsOnline from './IsOnline';
+
+import './App.css';
 
 const App = () =>
-  <div className="App">
-    <WebviewsContainer />
-    <SidebarContainer />
-  </div>
+  <IsOnline>
+    <div className="App">
+      <WebviewsContainer />
+      <SidebarContainer />
+    </div>
+  </IsOnline>;
 
-export default App
+export default App;

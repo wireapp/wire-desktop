@@ -17,66 +17,66 @@
  *
  */
 
-import verifyObjectProperties from '../verifyObjectProperties'
+import verifyObjectProperties from '../verifyObjectProperties';
 
 describe('verifyObjectProperties', () => {
 
   it('should return true if object contains all properties specified in the config', () => {
     const obj = {
-        foo: 'test',
-        bla: 2
-    }
+      foo: 'test',
+      bla: 2,
+    };
     const config = {
-        foo: 'String',
-        bla: 'Number'
-    }
-    expect(verifyObjectProperties(obj, config)).toBeTruthy()
-  })
+      foo: 'String',
+      bla: 'Number',
+    };
+    expect(verifyObjectProperties(obj, config)).toBeTruthy();
+  });
 
   it('should return true if object contains only a subset of properties specified in the config', () => {
     const obj = {
-        bla: 2
-    }
+      bla: 2,
+    };
     const config = {
-        foo: 'String',
-        bla: 'Number'
-    }
-    expect(verifyObjectProperties(obj, config)).toBeTruthy()
-  })
+      foo: 'String',
+      bla: 'Number',
+    };
+    expect(verifyObjectProperties(obj, config)).toBeTruthy();
+  });
 
   it('should return false if object contains a property with a wrong type', () => {
     const obj = {
-        foo: 1,
-        bla: 2
-    }
+      foo: 1,
+      bla: 2,
+    };
     const config = {
-        foo: 'String',
-        bla: 'Number'
-    }
-    expect(verifyObjectProperties(obj, config)).toBeFalsy()
-  })
+      foo: 'String',
+      bla: 'Number',
+    };
+    expect(verifyObjectProperties(obj, config)).toBeFalsy();
+  });
 
   it('should return false if object contains a property with undefined but config excepted a type', () => {
     const obj = {
-        foo: 1,
-        bla: 2
-    }
+      foo: 1,
+      bla: 2,
+    };
     const config = {
-        foo: 'String',
-        bla: 'Number'
-    }
-    expect(verifyObjectProperties(obj, config)).toBeFalsy()
-  })
+      foo: 'String',
+      bla: 'Number',
+    };
+    expect(verifyObjectProperties(obj, config)).toBeFalsy();
+  });
 
   it('should return false if object contains a property that is not specified in the config', () => {
     const obj = {
-        foo: 1,
-        bla: 2
-    }
+      foo: 1,
+      bla: 2,
+    };
     const config = {
-        foo: 'String'
-    }
-    expect(verifyObjectProperties(obj, config)).toBeFalsy()
-  })
+      foo: 'String',
+    };
+    expect(verifyObjectProperties(obj, config)).toBeFalsy();
+  });
 
-})
+});

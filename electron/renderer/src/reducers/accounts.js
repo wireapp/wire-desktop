@@ -17,7 +17,7 @@
  *
  */
 
-import uuid from 'uuid/v4'
+import uuid from 'uuid/v4';
 
 function createAccount(sessionID) {
   return {
@@ -29,8 +29,8 @@ function createAccount(sessionID) {
     name: undefined,
     visible: true,
     accentID: undefined,
-    badgeCount: 0
-  }
+    badgeCount: 0,
+  };
 }
 
 const accounts = (state = [createAccount()], action) => {
@@ -38,32 +38,32 @@ const accounts = (state = [createAccount()], action) => {
     case 'ADD_ACCOUNT':
       return [
         ...state.map(account => ({ ...account, visible: false })),
-        createAccount(action.sessionID)
-      ]
+        createAccount(action.sessionID),
+      ];
     case 'UPDATE_ACCOUNT':
       return state.map(account => {
         return (account.id === action.id)
           ? { ...account, ...action.data }
-          : account
-      })
+          : account;
+      });
     case 'UPDATE_ACCOUNT_BADGE':
       return state.map(account => {
         return (account.id === action.id)
           ? { ...account, badgeCount: action.count }
-          : account
-      })
+          : account;
+      });
     case 'SWITCH_ACCOUNT':
       return state.map(account => {
         return {
           ...account,
-          visible: account.id === action.id
-        }
-      })
+          visible: account.id === action.id,
+        };
+      });
     case 'DELETE_ACCOUNT':
-      return state.filter(account => account.id !== action.id)
+      return state.filter(account => account.id !== action.id);
     default:
-      return state
+      return state;
   }
-}
+};
 
-export default accounts
+export default accounts;
