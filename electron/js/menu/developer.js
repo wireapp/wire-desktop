@@ -55,7 +55,7 @@ let devToolsTemplate = {
       label: 'Third',
       click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools()");},
     },
-  ]
+  ],
 };
 
 let devProductionTemplate = {
