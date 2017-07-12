@@ -22,6 +22,7 @@
   --graphite: #8d989f;
 
   --z-index-sidebar: 1000;
+  --z-index-webview-close-button: 100;
   --z-index-webview: 1;
   --z-index-webview-hidden: 0;
 }
