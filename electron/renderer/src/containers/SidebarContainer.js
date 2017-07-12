@@ -26,7 +26,6 @@ const SidebarContainer = connect(
   ({ accounts }) => ({
     accounts: accounts,
     currentAccentID: (accounts.find((account) => account.visible) || {}).accentID,
-    currentAccountID: (accounts.find((account) => account.visible) || {}).id,
     hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
     hasReachedLimitOfAccounts: accounts.length === 3,
     isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
