@@ -48,6 +48,10 @@ class Webview extends Component {
     this._focusWebview();
   }
 
+  shouldComponentUpdate(nextProps) {
+    return this.props.visible !== nextProps.visible;
+  }
+
   _onPageTitleUpdated(event) {
     this.props.onPageTitleUpdated(event);
   }
