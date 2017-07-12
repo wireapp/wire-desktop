@@ -19,7 +19,7 @@
 
 import { connect } from 'react-redux';
 
-import { addAccount, switchAccount } from '../actions';
+import { addAccountWithSession, switchAccount } from '../actions';
 import Sidebar from '../components/Sidebar';
 
 const SidebarContainer = connect(
@@ -30,7 +30,7 @@ const SidebarContainer = connect(
     hasReachedLimitOfAccounts: accounts.length === 3,
     isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
   }),
-  {addAccount, switchAccount}
+  {addAccountWithSession, switchAccount}
 )(Sidebar);
 
 export default SidebarContainer;

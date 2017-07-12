@@ -93,3 +93,15 @@ export const updateAccountBadgeCount = (id, count) => {
 
   };
 };
+
+export const addAccountWithSession = () => {
+  return (dispatch, getState) => {
+    const hasReachedAccountLimit = getState().accounts.length >= 3;
+
+    if (hasReachedAccountLimit) {
+      console.warn('Missing account when updating badge count');
+    } else {
+      dispatch(addAccount());
+    }
+  };
+}
