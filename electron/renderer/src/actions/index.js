@@ -12,7 +12,7 @@ export const addAccount = (withSession = true) => {
   return {
     type: ADD_ACCOUNT,
     sessionID: sessionID,
-  }
+  };
 };
 
 export const updateAccount = (id, data) => {
