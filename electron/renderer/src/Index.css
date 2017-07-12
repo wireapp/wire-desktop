@@ -20,6 +20,10 @@
 :root {
   --graphite-dark: #323639;
   --graphite: #8d989f;
+
+  --z-index-sidebar: 1000;
+  --z-index-webview: 1;
+  --z-index-webview-hidden: 0;
 }
 
 body {
