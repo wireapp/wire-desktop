@@ -63,7 +63,7 @@ class Webviews extends Component {
       case 'team-info':
         this.props.updateAccountData(account.id, args[0]);
         break;
-      case 'sign-out':
+      case 'signed-out':
         this._deleteWebview(account);
         break;
     }

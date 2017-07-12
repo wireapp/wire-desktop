@@ -38,8 +38,8 @@ function subscribeToWebappEvents() {
     ipcRenderer.sendToHost('team-info', info);
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGN_OUT, function() {
-    ipcRenderer.sendToHost('sign-out');
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, function() {
+    ipcRenderer.sendToHost('signed-out');
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
