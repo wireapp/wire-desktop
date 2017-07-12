@@ -104,4 +104,4 @@ export const addAccountWithSession = () => {
       dispatch(addAccount());
     }
   };
-}
+};
