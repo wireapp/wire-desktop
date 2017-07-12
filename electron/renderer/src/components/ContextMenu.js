@@ -161,8 +161,8 @@ export class ContextMenu extends Component {
     const menuWidth = this.menu.offsetWidth;
     const menuHeight = this.menu.offsetHeight;
 
-    this.menu.style.left = `${((windowWidth - x) < menuWidth ? click_x - menuWidth : x)}px`;
-    this.menu.style.top = `${((windowHeight - y) < menuHeight ? click_y - menuHeight : y)}px`;
+    this.menu.style.left = `${((windowWidth - x) < menuWidth ? x - menuWidth : x)}px`;
+    this.menu.style.top = `${((windowHeight - y) < menuHeight ? y - menuHeight : y)}px`;
     this.menu.style.visibilty = 'visible';
   }
 
