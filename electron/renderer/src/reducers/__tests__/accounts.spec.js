@@ -51,6 +51,26 @@ describe('accounts reducer', () => {
     expect(newState[1].sessionID).toBeDefined();
   });
 
+  it('should return a state with a new account without a session', () => {
+    const state = [{
+      id: '046da4f1-39be-4b8b-823b-e71f12811454',
+      teamID: undefined,
+      userID: undefined,
+      sessionID: undefined,
+      picture: undefined,
+      name: undefined,
+      visible: true,
+      accentID: undefined,
+      badgeCount: 0,
+    }];
+    const newState = reducer(state, addAccount(false));
+
+    expect(newState.length).toEqual(2);
+    expect(newState[0].visible).toBeFalsy();
+    expect(newState[1].visible).toBeTruthy();
+    expect(newState[1].sessionID).not.toBeDefined();
+  });
+
   it('should return a state with only the specified account visible', () => {
     const state = [{
       id: '046da4f1-39be-4b8b-823b-e71f12811454',
