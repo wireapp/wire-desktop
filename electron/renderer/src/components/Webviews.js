@@ -17,53 +17,62 @@
  *
  */
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import Webview from './Webview'
-import badgeCount from '../lib/badgeCount'
+import Webview from './Webview';
+import badgeCount from '../lib/badgeCount';
 
-import './Webviews.css'
+import './Webviews.css';
 
 class Webviews extends Component {
   constructor(props) {
-    super(props)
+    super(props);
   }
 
   _getEnvironmentUrl(account) {
-    const url = new URL(window.location)
-    const env = url.searchParams.get('env')
-    const envUrl = new URL(env)
-    envUrl.searchParams.set('id', account.id)
-    return decodeURIComponent(envUrl)
+    const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'));
+    const url = new URL(envParam);
+
+    // pass account id to webview so we can access it in the preload script
+    url.searchParams.set('id', account.id);
+
+    // redirect to auth page if user is unknown
+    if (account.userID === undefined) {
+      url.pathname = '/auth';
+    }
+
+    return url.href;
+  }
+
+  _accumulateBadgeCount(accounts) {
+    return accounts.reduce((accumulated, account) => {
+      return accumulated + account.badgeCount;
+    }, 0);
   }
 
   _onPageTitleUpdated(account, { title }) {
-    const count = badgeCount(title)
+    const count = badgeCount(title);
     if (count !== undefined) {
-      this.props.updateAccountBadge(account.id, count)
-
-      const accumulatedCount = this.props.accounts.reduce((accumulated, account) => {
-        return accumulated + account.badgeCount
-      }, 0)
-
-      window.reportBadgeCount(accumulatedCount)
+      this.props.updateAccountBadge(account.id, count);
+      const accumulatedCount = this._accumulateBadgeCount(this.props.account);
+      window.reportBadgeCount(accumulatedCount);
     }
   }
 
   _onIpcMessage(account, {channel, args}) {
     switch (channel) {
       case 'team-info':
-        this.props.updateAccountData(account.id, args[0])
+        this.props.updateAccountData(account.id, args[0]);
         break;
     }
   }
 
   _onWebviewClose(account) {
-    this.props.abortAccountCreation(account.id)
+    this.props.abortAccountCreation(account.id);
   }
 
   _canDeleteWebview(account) {
-    return !account.userID && account.sessionID
+    return !account.userID && account.sessionID;
   }
 
   render() {
@@ -72,7 +81,7 @@ class Webviews extends Component {
         {this.props.accounts.map((account) => (
           <div className="Webviews-container" key={account.id}>
             <Webview
-              className={"Webview " + (account.visible ? '' : 'hide')}
+              className={'Webview ' + (account.visible ? '' : 'hide')}
               src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
               preload='./static/webview-preload.js'
@@ -89,8 +98,8 @@ class Webviews extends Component {
           </div>
         ))}
       </ul>
-    )
+    );
   }
 }
 
-export default Webviews
+export default Webviews;

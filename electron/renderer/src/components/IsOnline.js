@@ -17,39 +17,30 @@
  *
  */
 
+import React, { Component } from 'react';
 
+import './IsOnline.css';
 
-const {BrowserWindow} = require('electron');
+class IsOnline extends Component {
+  constructor(props) {
+    super(props);
 
-let primaryWindowId;
-
-
-function setPrimaryWindowId(newPrimaryWindowId) {
-  primaryWindowId = newPrimaryWindowId;
-};
-
-
-function getPrimaryWindow() {
-  if (primaryWindowId) {
-    return BrowserWindow.fromId(primaryWindowId);
+    this.state = {
+      isOnline: navigator.onLine,
+    };
   }
-  return BrowserWindow.getAllWindows()[0];
-};
 
-
-function showPrimaryWindow() {
-  var win = getPrimaryWindow();
-  if (win.isMinimized()) {
-    win.restore();
-  } else if (!win.isVisible()) {
-    win.show();
+  componentDidMount() {
+    if (this.state.isOnline === false) {
+      window.addEventListener('online', (event) => {
+        this.setState({ isOnline: true });
+      }, { once: true });
+    }
   }
-  win.focus();
-};
 
+  render() {
+    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
+  }
+}
 
-module.exports = {
-  setPrimaryWindowId: setPrimaryWindowId,
-  getPrimaryWindow: getPrimaryWindow,
-  showPrimaryWindow: showPrimaryWindow,
-};
+export default IsOnline;

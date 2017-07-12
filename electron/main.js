@@ -17,8 +17,6 @@
  *
  */
 
-'use strict';
-
 // Modules
 const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
 const fs = require('fs');
@@ -42,8 +40,8 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
 const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 
-// Config. persistence
-const init = require('./js/lib/init');
+// Configuration persistence
+const settings = require('./js/lib/settings');
 
 // Wrapper modules
 const certutils = require('./js/certutils');
@@ -76,7 +74,7 @@ let webappVersion;
 ///////////////////////////////////////////////////////////////////////////////
 raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
 
-raygunClient.onBeforeSend(function(payload) {
+raygunClient.onBeforeSend(payload => {
   delete payload.details.machineName;
   return payload;
 });
@@ -92,7 +90,7 @@ if (config.DEVELOPMENT) {
 // makeSingleInstance will crash the signed mas app
 // see: https://github.com/atom/electron/issues/4688
 if (process.platform !== 'darwin') {
-  shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+  shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
     if (main) {
       windowManager.showPrimaryWindow();
     }
@@ -112,7 +110,7 @@ if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
 
-  ipcMain.on('wrapper-restart', function() {
+  ipcMain.on('wrapper-restart', () => {
     squirrel.installUpdate();
   });
 
@@ -140,7 +138,7 @@ if (process.platform === 'linux') {
 function getBaseUrl() {
   let baseURL = argv.env || config.PROD_URL;
   if (!argv.env && config.DEVELOPMENT) {
-    let env = init.restore('env', config.INTERNAL);
+    let env = settings.restore('env', config.INTERNAL);
 
     if (env === config.DEV) baseURL = config.DEV_URL;
     if (env === config.EDGE) baseURL = config.EDGE_URL;
@@ -152,41 +150,41 @@ function getBaseUrl() {
   return baseURL;
 }
 
-ipcMain.on('loaded', function() {
+ipcMain.on('loaded', () => {
   let size = main.getSize();
   if (size[0] < config.MIN_WIDTH_MAIN || size[1] < config.MIN_HEIGHT_MAIN) {
     util.resizeToBig(main);
   }
 });
 
-ipcMain.once('webapp-version', function(event, version) {
+ipcMain.once('webapp-version', (event, version) => {
   webappVersion = version;
 });
 
-ipcMain.on('save-picture', function(event, fileName, bytes) {
+ipcMain.on('save-picture', (event, fileName, bytes) => {
   download(fileName, bytes);
 });
 
-ipcMain.on('notification-click', function() {
+ipcMain.on('notification-click', () => {
   windowManager.showPrimaryWindow();
 });
 
-ipcMain.on('badge-count', function(event, count) {
+ipcMain.on('badge-count', (event, count) => {
   tray.updateBadgeIcon(main, count);
 });
 
-ipcMain.on('google-auth-request', function(event) {
+ipcMain.on('google-auth-request', event => {
   googleAuth.getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
-    .then(function(code) {
+    .then(code => {
       event.sender.send('google-auth-success', code.access_token);
     })
-    .catch(function(error) {
+    .catch(error => {
       event.sender.send('google-auth-error', error);
     });
 });
 
 if (process.platform !== 'darwin') {
-  ipcMain.on('wrapper-reload', function() {
+  ipcMain.on('wrapper-reload', () => {
     app.relaunch();
     // Using exit instead of quit for the time being
     // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
@@ -199,29 +197,29 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 function showMainWindow() {
   main = new BrowserWindow({
-    'title': config.NAME,
-    'titleBarStyle': 'hidden-inset',
-    'width': config.DEFAULT_WIDTH_MAIN,
-    'height': config.DEFAULT_HEIGHT_MAIN,
-    'minWidth': config.MIN_WIDTH_MAIN,
-    'minHeight': config.MIN_HEIGHT_MAIN,
-    'autoHideMenuBar': !init.restore('showMenu', true),
-    'icon': ICON_PATH,
-    'show': false,
-    'webPreferences': {
-      'backgroundThrottling': false,
-      'nodeIntegration': false,
-      'preload': PRELOAD_JS,
+    title: config.NAME,
+    titleBarStyle: 'hidden-inset',
+    width: config.DEFAULT_WIDTH_MAIN,
+    height: config.DEFAULT_HEIGHT_MAIN,
+    minWidth: config.MIN_WIDTH_MAIN,
+    minHeight: config.MIN_HEIGHT_MAIN,
+    autoHideMenuBar: !settings.restore('showMenu', true),
+    icon: ICON_PATH,
+    show: false,
+    webPreferences: {
+      backgroundThrottling: false,
+      nodeIntegration: false,
+      preload: PRELOAD_JS,
 
       // Enable <webview>
       webviewTag: true,
     },
   });
 
-  if (init.restore('fullscreen', false)) {
+  if (settings.restore('fullscreen', false)) {
     main.setFullScreen(true);
   } else {
-    main.setBounds(init.restore('bounds', main.getBounds()));
+    main.setBounds(settings.restore('bounds', main.getBounds()));
   }
 
   let baseURL = getBaseUrl();
@@ -261,27 +259,35 @@ function showMainWindow() {
     shell.openExternal(_url);
   });
 
-  main.webContents.on('dom-ready', function() {
+  main.webContents.on('dom-ready', () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
 
-  main.on('focus', function() {
+  main.on('focus', () => {
     main.flashFrame(false);
   });
 
-  main.on('close', function(event) {
-    init.save('fullscreen', main.isFullScreen());
+  main.on('page-title-updated', function() {
+    tray.updateBadgeIcon(main);
+  });
+  
+  main.on('close', async (event) => {
+    settings.save('fullscreen', main.isFullScreen());
+
     if (!main.isFullScreen()) {
-      init.save('bounds', main.getBounds());
+      settings.save('bounds', main.getBounds());
     }
 
     if (!quitting) {
       event.preventDefault();
       main.hide();
+    } else {
+      debugMain('Persisting user configuration file...');
+      await settings._saveToFile();
     }
   });
 
-  main.webContents.on('crashed', function() {
+  main.webContents.on('crashed', () => {
     main.reload();
   });
 }
@@ -356,16 +362,16 @@ app.on('ready', function() {
 const logDir = path.join(app.getPath('userData'), 'logs');
 fs.readdir(logDir, (error, files) => {
   if (error) {
-    console.log(`Failed to read log directory with error: ${error.message}`)
+    console.log(`Failed to read log directory with error: ${error.message}`);
     return;
   }
 
   // TODO filter out dotfiles
   for (const file of files) {
     const consoleLog = path.join(logDir, file, config.CONSOLE_LOG);
-    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (error) => {
-      if (error) {
-        console.log(`Failed to rename log file (${consoleLog}) with error: ${error.message}`)
+    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (renameError) => {
+      if (renameError) {
+        console.log(`Failed to rename log file (${consoleLog}) with error: ${renameError.message}`);
       }
     });
   }
@@ -402,61 +408,60 @@ class ElectronWrapperInit {
         webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
         event.preventDefault();
       }
-    }
+    };
 
     app.on('web-contents-created', (event, contents) => {
 
-      if (contents.getType() === 'window') {
-        contents.on('will-attach-webview', (e, webPreferences, params) => {
-          const _url = params.src;
+      switch(contents.getType()) {
+        case 'window':
+          contents.on('will-attach-webview', (e, webPreferences, params) => {
+            const _url = params.src;
 
-          // Use secure defaults
-          webPreferences.nodeIntegration = false;
-          webPreferences.webSecurity = true;
-          params.contextIsolation = true;
-          webPreferences.allowRunningInsecureContent = false;
-          params.plugins = false;
-          params.autosize = false;
+            // Use secure defaults
+            webPreferences.nodeIntegration = false;
+            webPreferences.webSecurity = true;
+            params.contextIsolation = true;
+            webPreferences.allowRunningInsecureContent = false;
+            params.plugins = false;
+            params.autosize = false;
 
-          // Verify the URL being loaded
-          if (!util.isMatchingHost(_url, getBaseUrl())) {
-            e.preventDefault();
-            webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
-          }
-        });
-      }
+            // Verify the URL being loaded
+            if (!util.isMatchingHost(_url, getBaseUrl())) {
+              e.preventDefault();
+              webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
+            }
+          });
+        break;
 
-      // The following events should only be applied on webviews
-      if (contents.getType() !== 'webview') {
-        return;
-      }
+        case 'webview':
+          // Open webview links outside of the app
+          contents.on('new-window', (e, _url) => { openLinkInNewWindow(e, _url); });
+          contents.on('will-navigate', (e, _url) => { willNavigateInWebview(e, _url); });
 
-      // Open webview links outside of the app
-      contents.on('new-window', (e, _url) => { openLinkInNewWindow(e, _url); });
-      contents.on('will-navigate', (e, _url) => { willNavigateInWebview(e, _url); });
+          contents.session.setCertificateVerifyProc((request, cb) => {
+            const {hostname = '', certificate = {}, error} = request;
 
-      contents.session.setCertificateVerifyProc((request, cb) => {
-        const {hostname = '', certificate = {}, error} = request;
-
-        if (typeof error !== 'undefined') {
-          console.error('setCertificateVerifyProc', error);
-          main.loadURL(CERT_ERR_HTML);
-          return cb(-2);
-        }
-
-        if (certutils.hostnameShouldBePinned(hostname)) {
-          const pinningResults = certutils.verifyPinning(hostname, certificate);
-          for (const result of Object.values(pinningResults)) {
-            if (result === false) {
-              console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+            if (typeof error !== 'undefined') {
+              console.error('setCertificateVerifyProc', error);
               main.loadURL(CERT_ERR_HTML);
               return cb(-2);
             }
-          }
-        }
 
-        return cb(-3);
-      });
+            if (certutils.hostnameShouldBePinned(hostname)) {
+              const pinningResults = certutils.verifyPinning(hostname, certificate);
+              for (const result of Object.values(pinningResults)) {
+                if (result === false) {
+                  console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+                  main.loadURL(CERT_ERR_HTML);
+                  return cb(-2);
+                }
+              }
+            }
+
+            return cb(-3);
+          });
+        break;
+      }
     });
   }
 }

@@ -2,10 +2,15 @@
   parserOptions:
     sourceType: module
     ecmaVersion: 8
+    ecmaFeatures:
+      jsx: true
+      experimentalObjectRestSpread: true
+      globalReturn: true
   env:
     browser: true
     node: true
-  plugins: [react]
+  plugins: 
+    - react
   rules:
     comma-dangle: [2, always-multiline]
     handle-callback-err: 2
@@ -19,4 +24,5 @@
     quotes: [2, single, avoid-escape]
     semi: [2, always]
     space-before-blocks: 2
-    strict: [2, global]
+    react/jsx-uses-react: 2
+    react/jsx-uses-vars: 2

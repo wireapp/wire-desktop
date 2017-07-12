@@ -17,11 +17,11 @@
  *
  */
 
-import React from 'react'
+import React from 'react';
 
-import { colorFromId } from '../lib/accentColor'
+import { colorFromId } from '../lib/accentColor';
 
-import './TeamIcon.css'
+import './TeamIcon.css';
 
 const TeamIcon = ({ account, onClick }) =>
   <div className="TeamIcon" onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
@@ -36,4 +36,4 @@ const TeamIcon = ({ account, onClick }) =>
     <span>{ Array.from(account.name)[0] }</span>
   </div>
 
-export default TeamIcon
+export default TeamIcon;

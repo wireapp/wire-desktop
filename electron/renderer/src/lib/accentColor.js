@@ -63,6 +63,6 @@ export const ACCENT_COLORS = [
 ];
 
 export function colorFromId(id) {
-  const accentColor = ACCENT_COLORS.find((color) => color.id === id)
-  return accentColor && accentColor.color
+  const accentColor = ACCENT_COLORS.find((color) => color.id === id);
+  return accentColor && accentColor.color;
 }

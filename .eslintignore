@@ -1,2 +1,3 @@
 **/node_modules/*
 electron/renderer/dist
+electron/main.js
