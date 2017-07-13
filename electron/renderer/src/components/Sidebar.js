@@ -33,23 +33,34 @@ function className(account) {
   ].join(' ');
 }
 
+const switchToNewAccount = (switchAccount, account) => {
+  if (!account.visible) {
+    switchAccount(account.id);
+  }
+};
+
+const preventFocus = event => {
+  event.stopPropagation();
+  event.preventDefault();
+};
+
 const Sidebar = ({
   accounts,
+  addAccountWithSession,
   currentAccentID,
   hasCreatedAccount,
-  isAddingAccount,
-  addAccount,
-  switchAccount,
   hasReachedLimitOfAccounts,
+  isAddingAccount,
+  switchAccount,
 }) =>
-  <div className="Sidebar" style={hasCreatedAccount ? {} : { display: 'none'}}>
+  <div className="Sidebar" style={hasCreatedAccount ? {} : { display: 'none'}} onMouseDown={preventFocus}>
     {accounts.map(account => (
-      <div className="Sidebar-cell" key={account.id}> 
+      <div className="Sidebar-cell" key={account.id}>
         <div style={{ color: colorFromId(currentAccentID) }} className={className(account)}>
           {account.teamID ? (
-            <TeamIcon account={account} accentID={currentAccentID} onClick={() => switchAccount(account.id)} />
+            <TeamIcon account={account} accentID={currentAccentID} onClick={() => switchToNewAccount(switchAccount, account)} onMouseDown={preventFocus}/>
           ) : (
-            <PersonalIcon account={account} accentID={currentAccentID} onClick={() => switchAccount(account.id)} />
+            <PersonalIcon account={account} accentID={currentAccentID} onClick={() => switchToNewAccount(switchAccount, account)} onMouseDown={preventFocus}/>
           )}
         </div>
       </div>
@@ -68,7 +79,7 @@ const Sidebar = ({
 
     <ContextMenu id="account">
       <ContextMenuItem onClick={() => window.open('https://teams.wire.com')}>Create Team</ContextMenuItem>
-      <ContextMenuItem onClick={() => addAccount()}>Add Account</ContextMenuItem>
+      <ContextMenuItem onClick={() => addAccountWithSession()}>Add Account</ContextMenuItem>
     </ContextMenu>
   </div>;
 
