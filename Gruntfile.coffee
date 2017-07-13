@@ -316,4 +316,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'linux',       ['clean:linux', 'update-keys', 'release-internal', 'bundle', 'electronbuilder:linux_internal']
   grunt.registerTask 'linux-prod',  ['clean:linux', 'update-keys', 'release-prod', 'bundle', 'electronbuilder:linux_prod']
-  grunt.registerTask 'linux-other', ['clean:linux', 'update-keys', 'release-internal', 'bundle', 'electronbuilder:linux_other']
+  grunt.registerTask 'linux-other', ['clean:linux', 'update-keys', 'release-prod', 'bundle', 'electronbuilder:linux_other']
