@@ -29,20 +29,22 @@ webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
 function subscribeToWebappEvents() {
-  amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, function() {
+  amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => {
     ipcRenderer.send('notification-click');
     ipcRenderer.sendToHost('notification-click');
   });
 
-  amplify.subscribe(z.event.WebApp.TEAM.INFO, function(info) {
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info) => {
     ipcRenderer.sendToHost('team-info', info);
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, function() {
-    ipcRenderer.sendToHost('signed-out');
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, (clearData) => {
+    if (clearData) {
+      ipcRenderer.sendToHost('signed-out');
+    }
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, function(update_source) {
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
     if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
       ipcRenderer.send('wrapper-restart');
     } else {
