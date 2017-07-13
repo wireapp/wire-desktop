@@ -46,7 +46,7 @@ const preventFocus = event => {
 
 const Sidebar = ({
   accounts,
-  addAccount,
+  addAccountWithSession,
   currentAccentID,
   hasCreatedAccount,
   hasReachedLimitOfAccounts,
@@ -79,7 +79,7 @@ const Sidebar = ({
 
     <ContextMenu id="account">
       <ContextMenuItem onClick={() => window.open('https://teams.wire.com')}>Create Team</ContextMenuItem>
-      <ContextMenuItem onClick={() => addAccount()}>Add Account</ContextMenuItem>
+      <ContextMenuItem onClick={() => addAccountWithSession()}>Add Account</ContextMenuItem>
     </ContextMenu>
   </div>;
 

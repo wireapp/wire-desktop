@@ -86,6 +86,7 @@ export class ContextMenu extends Component {
     this._handleRef = this._handleRef.bind(this);
     this._hide = this._hide.bind(this);
     this._handleMouseWheel = this._handleMouseWheel.bind(this);
+    this._handleMenuClick = this._handleMenuClick.bind(this);
   }
 
   _show(position) {
@@ -119,6 +120,10 @@ export class ContextMenu extends Component {
     if (event.keyCode === 27) {
       this._hide();
     }
+  }
+
+  _handleMenuClick(event) {
+    this._hide();
   }
 
   _handleMouseDown(event) {
@@ -168,7 +173,7 @@ export class ContextMenu extends Component {
 
   render() {
     return (this.state.visible &&
-      <div className="ContextMenu" style={{ visibilty: 'hidden' }} ref={this._handleRef}>
+      <div className="ContextMenu" onClickCapture={this._handleMenuClick} style={{ visibilty: 'hidden' }} ref={this._handleRef}>
         { this.props.children }
       </div>
     );
