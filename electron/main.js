@@ -202,14 +202,12 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   }
 });
 
-if (process.platform !== 'darwin') {
-  ipcMain.on('wrapper-reload', () => {
-    app.relaunch();
-    // Using exit instead of quit for the time being
-    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-    app.exit();
-  });
-}
+ipcMain.on('wrapper-reload', () => {
+  app.relaunch();
+  // Using exit instead of quit for the time being
+  // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+  app.exit();
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
