@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const pkg = require('./../package.json');
 
@@ -35,7 +35,6 @@ let config = {
   PROD_URL: 'https://app.wire.com/',
   STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
 
-  CRYPTO: 'crypto',
   DEV: 'dev',
   EDGE: 'edge',
   INTERNAL: 'internal',
@@ -55,9 +54,37 @@ let config = {
   UPDATE_DELAY: 5 * 60 * 1000,
   UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
 
-  WHITE_LIST: [
-    'https://www.wire.com/',
-    'https://wire.com/',
+  EMBED_DOMAINS: [
+    {
+      name: 'YouTube',
+      hostname: ['www.youtube-nocookie.com'],
+      allowedExternalLinks: [
+        'www.youtube.com',
+      ],
+    },
+    {
+      name: 'Vimeo',
+      hostname: ['player.vimeo.com'],
+      allowedExternalLinks: [
+        'vimeo.com',
+        'player.vimeo.com',
+      ],
+    },
+    {
+      name: 'SoundCloud',
+      hostname: ['w.soundcloud.com'],
+      allowedExternalLinks: [
+        'soundcloud.com',
+      ],
+    },
+    {
+      name: 'Spotify',
+      hostname: ['open.spotify.com', 'embed.spotify.com'],
+      allowedExternalLinks: [
+        'www.spotify.com',
+        'developer.spotify.com',
+      ],
+    },
   ],
 
   LOCALE: [
@@ -65,6 +92,7 @@ let config = {
     'cs',
     'da',
     'de',
+    'el',
     'es',
     'fi',
     'fr',
@@ -72,6 +100,8 @@ let config = {
     'hu',
     'it',
     'lt',
+    'nl',
+    'pl',
     'pt',
     'ro',
     'ru',

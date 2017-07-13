@@ -17,16 +17,18 @@
  *
  */
 
-'use strict';
+
 
 const app = require('electron').app || require('electron').remote.app;
 
 const config = require('./../js/config');
-const init = require('./../js/lib/init');
+const settings = require('./../js/lib/settings');
+
 const da = require('./strings-da');
 const de = require('./strings-de');
 const cs = require('./strings-cs');
 const en = require('./strings-en');
+const el = require('./strings-el');
 const es = require('./strings-es');
 const fi = require('./strings-fi');
 const fr = require('./strings-fr');
@@ -34,6 +36,8 @@ const hr = require('./strings-hr');
 const hu = require('./strings-hu');
 const it = require('./strings-it');
 const lt = require('./strings-lt');
+const nl = require('./strings-nl');
+const pl = require('./strings-pl');
 const pt = require('./strings-pt');
 const ro = require('./strings-ro');
 const ru = require('./strings-ru');
@@ -47,12 +51,15 @@ const label = {
   'cs': 'Čeština',
   'da': 'Dansk',
   'de': 'Deutsch',
+  'el': 'Ελληνικά',
   'es': 'Español',
   'fr': 'Français',
   'hr': 'Hrvatski',
   'it': 'Italiano',
   'lt': 'Lietuvos',
   'hu': 'Magyar',
+  'nl': 'Nederlands',
+  'pl': 'Polski',
   'pt': 'Português do Brasil',
   'ro': 'Română',
   'ru': 'Русский',
@@ -69,7 +76,7 @@ let current;
 function getCurrent() {
   if (current == null) {
     // We care only about the language part and not the country (en_US, de_DE)
-    current = init.restore('locale', parseLocale(app.getLocale().substr(0, 2)));
+    current = settings.restore('locale', parseLocale(app.getLocale().substr(0, 2)));
   }
   if (config.LOCALE.indexOf(current) === -1) {
     current = config.LOCALE[0];
@@ -91,7 +98,7 @@ function getText(text) {
 
 function setLocale(locale) {
   current = parseLocale(locale);
-  init.save('locale', current);
+  settings.save('locale', current);
 }
 
 
@@ -100,6 +107,7 @@ module.exports = {
   'da': da,
   'de': de,
   'en': en,
+  'el': el,
   'es': es,
   'fi': fi,
   'fr': fr,
@@ -107,6 +115,8 @@ module.exports = {
   'hu': hu,
   'it': it,
   'lt': lt,
+  'nl': nl,
+  'pl': pl,
   'pt': pt,
   'ro': ro,
   'ru': ru,

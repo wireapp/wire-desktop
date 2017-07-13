@@ -63,10 +63,10 @@ module.exports = (grunt) ->
         overwrite: true
         arch: 'all'
         asar: true
-        'app-copyright': '<%= info.copyright %>'
-        'app-version': '<%= info.version %>'
-        'build-version': '<%= info.build %>'
-        'min-version': '10.9.0'
+        appCopyright: '<%= info.copyright %>'
+        appVersion: '<%= info.version %>'
+        buildVersion: '<%= info.build %>'
+        ignore: 'electron/renderer/src'
         protocols: [
           {name: '', schemes: ['wire']}
         ]
@@ -75,18 +75,16 @@ module.exports = (grunt) ->
           name: '<%= info.nameInternal %>'
           platform: 'mas'
           icon: 'resources/macos/wire.internal.icns'
-          'app-bundle-id': 'com.wearezeta.zclient.mac.internal'
-          'dev-region': 'en'
+          appBundleId: 'com.wearezeta.zclient.mac.internal'
       macos_prod:
         options:
           platform: 'mas'
           out: 'wrap/dist/'
           icon: 'resources/macos/wire.icns'
-          'app-category-type': 'public.app-category.social-networking'
-          'app-bundle-id': 'com.wearezeta.zclient.mac'
-          'helper-bundle-id': 'com.wearezeta.zclient.mac.helper'
-          'dev-region': 'en'
-          'extend-info': 'resources/macos/custom.plist'
+          appCategoryType: 'public.app-category.social-networking'
+          appBundleId: 'com.wearezeta.zclient.mac'
+          helperBundleId: 'com.wearezeta.zclient.mac.helper'
+          extendInfo: 'resources/macos/custom.plist'
       win_internal:
         options:
           name: '<%= info.nameInternal %>'
@@ -304,13 +302,17 @@ module.exports = (grunt) ->
     done = @async()
     createWindowsInstaller(config).then done, done
 
+  grunt.registerTask 'bundle', 'Bundle React app', ->
+    execSync = require('child_process').execSync
+    execSync 'npm run bundle'
+
   grunt.registerTask 'release',    ['build-inc', 'gitcommit', 'gittag', 'gitpush']
 
-  grunt.registerTask 'macos',      ['clean:macos', 'update-keys', 'release-internal', 'electron:macos_internal']
-  grunt.registerTask 'macos-prod', ['clean:macos', 'update-keys', 'release-prod', 'electron:macos_prod', 'productbuild']
+  grunt.registerTask 'macos',      ['clean:macos', 'update-keys', 'release-internal', 'bundle', 'electron:macos_internal']
+  grunt.registerTask 'macos-prod', ['clean:macos', 'update-keys', 'release-prod', 'bundle', 'electron:macos_prod', 'productbuild']
 
-  grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
-  grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
+  grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'bundle', 'electron:win_internal', 'create-windows-installer:internal']
+  grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'bundle', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'electronbuilder:linux_internal']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux_prod']
+  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'bundle', 'electronbuilder:linux_internal']
+  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'bundle', 'electronbuilder:linux_prod']

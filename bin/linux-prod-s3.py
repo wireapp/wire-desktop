@@ -48,10 +48,8 @@ if __name__ == '__main__':
   version = '%s.%s' % (info['version'], info['build'])
 
   files = [
-    'wire-%s-ia32.AppImage' % version,
+    'wire-%s-i386.AppImage' % version,
     'wire-%s-x86_64.AppImage' % version,
-    'wire_%s_amd64.deb' % version,
-    'wire_%s_i386.deb' % version,
     'debian/pool/main/wire_%s_amd64.deb' % version,
     'debian/pool/main/wire_%s_i386.deb' % version,
     'debian/dists/stable/Contents-all',
@@ -63,6 +61,7 @@ if __name__ == '__main__':
     'debian/dists/stable/Contents-i386',
     'debian/dists/stable/Contents-i386.bz2',
     'debian/dists/stable/Contents-i386.gz',
+    'debian/dists/stable/InRelease',
     'debian/dists/stable/Release',
     'debian/dists/stable/Release.gpg',
     'debian/dists/stable/main/binary-all/Packages',

@@ -1,0 +1,67 @@
+/*
+ * Wire
+ * Copyright (C) 2017 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
+.Sidebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .24);
+  width: 78px;
+  padding-top: 40px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  z-index: var(--z-index-sidebar);
+}
+
+.Sidebar-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 56px;
+}
+
+.Sidebar-icon-badge {
+  position: relative;
+}
+
+.Sidebar-icon-badge:after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  border: .5px solid #fff;
+  border-radius: 50%;
+}
+
+.Sidebar-account-add {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .16);
+  fill: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

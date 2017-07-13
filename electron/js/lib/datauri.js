@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 module.exports = {
   fromBuffer: function (mimetype, buffer) {

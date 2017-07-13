@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {BrowserWindow} = require('electron');
 
@@ -38,7 +38,7 @@ function getPrimaryWindow() {
 
 
 function showPrimaryWindow() {
-  var win = getPrimaryWindow();
+  const win = getPrimaryWindow();
   if (win.isMinimized()) {
     win.restore();
   } else if (!win.isVisible()) {

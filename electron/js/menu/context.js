@@ -17,16 +17,14 @@
  *
  */
 
-'use strict';
+
 
 const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
-const MenuItem = remote.MenuItem;
 const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
-const init = require('./../lib/init');
-const customContext = require('./custom-context');
+const settings = require('./../lib/settings');
 let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,59 +72,6 @@ function createTextMenu() {
   textMenu = Menu.buildFromTemplate(template);
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-// Conversation
-///////////////////////////////////////////////////////////////////////////////
-let silence = new MenuItem({
-  label: locale.getText('menuMute'),
-  click: function () {
-    wire.app.view.conversation_list.click_on_mute_action();
-  },
-});
-
-let notify = new MenuItem({
-  label: locale.getText('menuUnmute'),
-  click: function () {
-    wire.app.view.conversation_list.click_on_mute_action();
-  },
-});
-
-let archive = new MenuItem({
-  label: locale.getText('menuArchive'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_archive_action();
-  },
-});
-
-let unarchive = new MenuItem({
-  label: locale.getText('menuUnarchive'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_unarchive_action();
-  },
-});
-
-let clear = new MenuItem({
-  label: locale.getText('menuDelete'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_clear_action();
-  },
-});
-
-let leave = new MenuItem({
-  label: locale.getText('menuLeave'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_leave_action();
-  },
-});
-
-let block = new MenuItem({
-  label: locale.getText('menuBlock'),
-  click: function() {
-    wire.app.view.conversation_list.click_on_block_action();
-  },
-});
-
 ///////////////////////////////////////////////////////////////////////////////
 // Images
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,11 +89,6 @@ window.addEventListener('contextmenu', function (event) {
     event.preventDefault();
     createTextMenu();
     textMenu.popup(remote.getCurrentWindow());
-  } else if (element.classList.contains('center-column')) {
-    let id = element.getAttribute('data-uie-uid');
-    if (createConversationMenu(id)) {
-      event.preventDefault();
-    }
   } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
     event.preventDefault();
     imageMenu.image = element.src;
@@ -189,12 +129,6 @@ window.addEventListener('click', function(event) {
   }
 }, true);
 
-window.addEventListener('z.components.ContextMenuEvent::CONTEXT_MENU', function(event) {
-  const element = event.target;
-  customContext.fromElement(element).popup(remote.getCurrentWindow());
-  event.stopPropagation();
-}, true);
-
 
 function savePicture(fileName, url) {
   fetch(url)
@@ -208,31 +142,6 @@ function savePicture(fileName, url) {
 }
 
 
-function createConversationMenu(id) {
-  const app = wire.app;
-  const conversation_et = app.repository.conversation.get_conversation_by_id(id);
-
-  if (conversation_et) {
-    app.view.conversation_list.selected_conversation(conversation_et);
-    let listMenu = new Menu();
-    listMenu.append(conversation_et.is_muted() ? notify : silence);
-    listMenu.append(conversation_et.is_archived() ? unarchive : archive);
-    listMenu.append(clear);
-    if (conversation_et.type() === z.conversation.ConversationType.REGULAR) {
-      if (!conversation_et.removed_from_conversation()) {
-        listMenu.append(leave);
-      }
-    } else {
-      listMenu.append(block);
-    }
-    listMenu.popup(remote.getCurrentWindow());
-    listMenu.current_conversation = id;
-    return true;
-  }
-  return false;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
@@ -240,7 +149,7 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck (text) {
-      if (!init.restore('spelling', false)) {
+      if (!settings.restore('spelling', false)) {
         return true;
       }
       selection.isMisspelled = spellchecker.isMisspelled(text);

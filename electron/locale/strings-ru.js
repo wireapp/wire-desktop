@@ -1,4 +1,4 @@
-'use strict';
+
 
 let string = {};
 
@@ -46,7 +46,7 @@ string.menuLegal = 'Юридическая информация';
 string.menuPrivacy = 'Конфиденциальность';
 string.menuLicense = 'Информация о лицензии';
 string.menuSupport = 'Сайт поддержки';
-string.menuWireURL = 'Сайт Wire';
+string.menuWireURL = 'Веб-сайт Wire';
 string.menuPreferences = 'Настройки';
 string.menuServices = 'Сервисы';
 string.menuHideWire = 'Скрыть Wire';
