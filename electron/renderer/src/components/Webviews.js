@@ -29,6 +29,17 @@ class Webviews extends Component {
     super(props);
   }
 
+  shouldComponentUpdate(nextProps) {
+    for (const account of nextProps.accounts) {
+      const match = this.props.accounts.find((_account) => account.id === _account.id);
+      if (match && match.visible !== account.visible) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   _getEnvironmentUrl(account) {
     const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'));
     const url = new URL(envParam);
@@ -83,6 +94,7 @@ class Webviews extends Component {
   }
 
   render() {
+    console.log('Webviews.js rendering');
     return (
       <ul className="Webviews">
         {this.props.accounts.map((account) => (
