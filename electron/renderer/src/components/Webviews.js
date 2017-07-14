@@ -32,7 +32,7 @@ class Webviews extends Component {
   shouldComponentUpdate(nextProps) {
     for (const account of nextProps.accounts) {
       const match = this.props.accounts.find((_account) => account.id === _account.id);
-      if (match && match.visible !== account.visible) {
+      if (!match || match.visible !== account.visible) {
         return true;
       }
     }
@@ -94,7 +94,6 @@ class Webviews extends Component {
   }
 
   render() {
-    console.log('Webviews.js rendering');
     return (
       <ul className="Webviews">
         {this.props.accounts.map((account) => (
