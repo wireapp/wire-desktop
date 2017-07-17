@@ -33,10 +33,16 @@ import './Index.css';
 
 const persistedState = loadState();
 
+const middleware = [thunk];
+
+if (process.env.NODE_ENV !== 'production') {
+  middleware.push(logger);
+}
+
 const store = createStore(
   appStore,
   persistedState,
-  applyMiddleware(thunk, logger)
+  applyMiddleware(...middleware)
 );
 
 store.subscribe(throttle(() => {
