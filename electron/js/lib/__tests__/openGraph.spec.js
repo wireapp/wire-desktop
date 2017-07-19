@@ -17,8 +17,6 @@
  *
  */
 
-import nock from 'nock'
-
 import openGraph from '../openGraph';
 
 describe('openGraph', () => {

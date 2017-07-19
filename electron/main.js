@@ -466,14 +466,6 @@ class ElectronWrapperInit {
           contents.on('new-window', (e, _url) => { openLinkInNewWindow(e, _url); });
           contents.on('will-navigate', (e, _url) => { willNavigateInWebview(e, _url); });
 
-          contents.on('destroyed', (e) => {
-            debugger
-            console.log(e)
-          });
-
-          // Load css to overwrite specific webapp styles
-          contents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'))
-
           contents.session.setCertificateVerifyProc((request, cb) => {
             const {hostname = '', certificate = {}, error} = request;
 
