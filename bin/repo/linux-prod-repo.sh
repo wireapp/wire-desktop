@@ -39,9 +39,9 @@ if ! _command_exist "gpg2"; then
   _error_exit "Could not find gpg2. Please install package 'gnupg2' version 2.0.x."
 else
   GPG_VERSION="$(gpg2 --version | head -n 1 | grep -oE '2\..*')"
-  if ! grep -qE "2\\.0" <<< "${GPG_VERSION}"; then
-    _error_exit "Your gpg2 version is ${GPG_VERSION}. Signing with a predefined passphrase will work only with gpg2 version 2.0.x."
-  fi
+#  if ! grep -qE "2\\.0" <<< "${GPG_VERSION}"; then
+#    _error_exit "Your gpg2 version is ${GPG_VERSION}. Signing with a predefined passphrase will work only with gpg2 version 2.0.x."
+#  fi
 fi
 
 if ! _command_exist "apt-ftparchive"; then
