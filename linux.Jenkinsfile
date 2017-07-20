@@ -17,7 +17,7 @@ node('Linux_Node') {
 
   def text = readFile('info.json')
   def buildInfo = parseJson(text)
-  def version = buildInfo.version + ".${env.BUILD_NUMBER}"
+  def version = buildInfo.version + '.' + currentBuild.id
   currentBuild.displayName = version;
 
   stage('Install rust') {
