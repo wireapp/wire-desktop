@@ -6,7 +6,7 @@
     "preinstall": "cd electron && npm install",
     "install": "cd electron && npm run rebuild-native-modules",
     "postinstall": "cd electron && npm run rebuild-neon",
-    "prestart": "npm run bundle",
+    "prestart": "npm run bundle:dev",
     "start": "electron electron --inspect --devtools --enable-logging",
     "edge": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
     "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
@@ -14,11 +14,12 @@
     "localhost": "electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
     "lint": "eslint electron",
     "jest": "jest",
-    "test": "npm run lint && electron-mocha tests",
+    "test": "npm run lint && npm run jest && electron-mocha tests",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
-    "bundle": "webpack"
+    "bundle:dev": "webpack",
+    "bundle": "webpack --env.production"
   },
   "repository": {
     "type": "git",
@@ -39,7 +40,7 @@
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
     "css-loader": "0.28.4",
-    "electron": "1.6.11",
+    "electron": "1.7.5",
     "electron-builder": "18.6.2",
     "electron-mocha": "4.0.0",
     "electron-packager": "8.7.2",
