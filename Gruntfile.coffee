@@ -31,7 +31,7 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON PACKAGE_JSON
     info: grunt.file.readJSON INFO_JSON
-    build_number: "#{process.env.BUILD_NUMBER or 'local'}"
+    build_number: "#{process.env.BUILD_NUMBER or '0'}"
 
     clean:
       wrap: 'wrap'
@@ -212,24 +212,32 @@ module.exports = (grunt) ->
   grunt.registerTask 'release-internal', ->
     info = grunt.config.get 'info'
     build_number = grunt.config.get 'build_number'
+    commit_id = grunt.config('gitinfo.local.branch.current.shortSHA')
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.updateWinUrl = info.updateWinUrlInternal
     electron_pkg.environment = 'internal'
     electron_pkg.name = info.nameInternal.toLowerCase()
     electron_pkg.productName = info.nameInternal
-    electron_pkg.version = "#{info.version}.#{build_number}-internal"
+    if(build_number == '0')
+      electron_pkg.version = "#{info.version}.0-#{commit_id}-internal"
+    else
+      electron_pkg.version = "#{info.version}.#{build_number}-internal"
     grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
   grunt.registerTask 'release-prod', ->
     info = grunt.config.get 'info'
     build_number = grunt.config.get 'build_number'
+    commit_id = grunt.config('gitinfo.local.branch.current.shortSHA')
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.updateWinUrl = info.updateWinUrlProd
     electron_pkg.environment = 'production'
     electron_pkg.name = info.name.toLowerCase()
     electron_pkg.productName = info.name
-    electron_pkg.version = "#{info.version}.#{build_number}"
+    if(build_number == '0')
+      electron_pkg.version = "#{info.version}.0-#{commit_id}"
+    else
+      electron_pkg.version = "#{info.version}.#{build_number}"
     grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
@@ -307,12 +315,12 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'bump-version',  ['version-inc', 'gitcommit', 'gitpush']
 
-  grunt.registerTask 'macos',         ['clean:macos', 'update-keys', 'release-internal', 'bundle', 'electron:macos_internal']
-  grunt.registerTask 'macos-prod',    ['clean:macos', 'update-keys', 'release-prod', 'bundle', 'electron:macos_prod', 'productbuild']
+  grunt.registerTask 'macos',         ['clean:macos', 'update-keys', 'gitinfo', 'release-internal', 'bundle', 'electron:macos_internal']
+  grunt.registerTask 'macos-prod',    ['clean:macos', 'update-keys', 'gitinfo', 'release-prod', 'bundle', 'electron:macos_prod', 'productbuild']
 
-  grunt.registerTask 'win',           ['clean:win', 'update-keys', 'release-internal', 'bundle', 'electron:win_internal', 'create-windows-installer:internal']
-  grunt.registerTask 'win-prod',      ['clean:win', 'update-keys', 'release-prod', 'bundle', 'electron:win_prod', 'create-windows-installer:prod']
+  grunt.registerTask 'win',           ['clean:win', 'update-keys', 'gitinfo', 'release-internal', 'bundle', 'electron:win_internal', 'create-windows-installer:internal']
+  grunt.registerTask 'win-prod',      ['clean:win', 'update-keys', 'gitinfo', 'release-prod', 'bundle', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',         ['clean:linux', 'update-keys', 'release-internal', 'bundle', 'electronbuilder:linux_internal']
-  grunt.registerTask 'linux-prod',    ['clean:linux', 'update-keys', 'release-prod', 'bundle', 'electronbuilder:linux_prod']
-  grunt.registerTask 'linux-other',   ['clean:linux', 'update-keys', 'release-prod', 'bundle', 'electronbuilder:linux_other']
+  grunt.registerTask 'linux',         ['clean:linux', 'update-keys', 'gitinfo', 'release-internal', 'bundle', 'electronbuilder:linux_internal']
+  grunt.registerTask 'linux-prod',    ['clean:linux', 'update-keys', 'gitinfo', 'release-prod', 'bundle', 'electronbuilder:linux_prod']
+  grunt.registerTask 'linux-other',   ['clean:linux', 'update-keys', 'gitinfo', 'release-prod', 'bundle', 'electronbuilder:linux_other']
