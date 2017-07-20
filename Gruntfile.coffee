@@ -221,6 +221,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release-prod', ->
     info = grunt.config.get 'info'
+    build_number = grunt.config.get 'build_number'
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.updateWinUrl = info.updateWinUrlProd
     electron_pkg.environment = 'production'
