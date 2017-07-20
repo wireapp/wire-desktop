@@ -211,11 +211,13 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release-internal', ->
     info = grunt.config.get 'info'
+    build_number = grunt.config.get 'build_number'
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.updateWinUrl = info.updateWinUrlInternal
     electron_pkg.environment = 'internal'
     electron_pkg.name = info.nameInternal.toLowerCase()
     electron_pkg.productName = info.nameInternal
+    electron_pkg.version = "#{info.version}.#{build_number}-internal"
     grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
