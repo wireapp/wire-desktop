@@ -226,6 +226,7 @@ module.exports = (grunt) ->
     electron_pkg.environment = 'production'
     electron_pkg.name = info.name.toLowerCase()
     electron_pkg.productName = info.name
+    electron_pkg.version = "#{info.version}.#{build_number}"
     grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
