@@ -21,8 +21,8 @@ node('Windows_Node') {
 
   def text = readFile('info.json')
   def buildInfo = parseJson(text);
-  def version = buildInfo.version + '.' + buildInfo.build;
-  currentBuild.displayName = version + ' #' + currentBuild.id
+  def version = buildInfo.version + '.' + params.BUILD_NUMBER;
+  currentBuild.displayName = version;
 
   stage('Build') {
     try {
