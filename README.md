@@ -65,11 +65,10 @@ npm run build:linux
 
 ### Other Linux targets or architectures
 
-If you would like to build for another Linux target or architecture, run the following commands:
+If you would like to build for another Linux target or architecture, run the following command:
 
-```bash
-grunt 'clean:linux' 'update-keys' 'release-prod'
-grunt --arch=<arch> --target=<target> 'electronbuilder:linux_other'
+```shell
+grunt --arch=<arch> --target=<target> linux-other
 ```
 
 Replace `<arch>` and `<target>` with your desired architecture (e.g. `"ia32"`) and target (e.g. `"rpm"`). Have a look at the [documentation for `electron-builder`](https://github.com/electron-userland/electron-builder/wiki/Options) for the available options. Note that we cannot offer support for uncommon architectures or targets.
