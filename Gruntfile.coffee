@@ -322,7 +322,7 @@ module.exports = (grunt) ->
     execSync = require('child_process').execSync
     execSync 'npm run bundle'
 
-  grunt.registerTask 'release',     ['build-inc', 'gitcommit', 'gittag', 'gitpush']
+  grunt.registerTask 'release',     ['build-inc', 'bump-spec', 'gitcommit', 'gittag', 'gitpush']
 
   grunt.registerTask 'macos',       ['clean:macos', 'update-keys', 'release-internal', 'bundle', 'electron:macos_internal']
   grunt.registerTask 'macos-prod',  ['clean:macos', 'update-keys', 'release-prod', 'bundle', 'electron:macos_prod', 'productbuild']
