@@ -22,7 +22,7 @@ can be used on any of the available clients, requiring a phone number or email
 for registration.
 
 %prep
-%autosetup -n %{name}-release-%{version}
+%setup -q
 
 %build
 npm install
