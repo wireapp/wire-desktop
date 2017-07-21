@@ -7,7 +7,6 @@ Summary:	Modern communication, full privacy
 Name:		wire-desktop
 Version:	2.15.2751
 Release:	1%{?dist}
-
 License:	GPLv3
 URL:		https://wire.com
 Source0:    %{name}-%{version}.tar.xz
