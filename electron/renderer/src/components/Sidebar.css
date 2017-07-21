@@ -18,17 +18,16 @@
  */
 
 .Sidebar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, .24);
+  background-color: var(--sidebar-color);
   width: 78px;
   padding-top: 40px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  z-index: var(--z-index-sidebar);
+}
+
+.Sidebar:hover .Sidebar-account-add {
+  visibility: visible;
 }
 
 .Sidebar-cell {
@@ -50,8 +49,8 @@
   right: 2px;
   width: 8px;
   height: 8px;
-  background: currentColor;
-  border: .5px solid #fff;
+  background: #fff;
+  border: 2.5px solid var(--sidebar-color);
   border-radius: 50%;
 }
 
@@ -64,4 +63,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  visibility: hidden;
 }

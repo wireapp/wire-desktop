@@ -29,7 +29,7 @@ import './Sidebar.css';
 function className(account) {
   return [
     'Sidebar-icon',
-    ((account.badgeCount > 0 && account.visible === false) ? 'Sidebar-icon-badge' : ''),
+    (account.badgeCount > 0 ? 'Sidebar-icon-badge' : ''),
   ].join(' ');
 }
 
@@ -68,7 +68,7 @@ const Sidebar = ({
     {!isAddingAccount && !hasReachedLimitOfAccounts &&
       <ContextMenuTrigger id="account">
         <div className="Sidebar-cell">
-          <div data-uie-name="do-open-plus-menu" className="Sidebar-account-add" >
+          <div data-uie-name="do-open-plus-menu" className="Sidebar-account-add">
             <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd"/>
             </svg>
