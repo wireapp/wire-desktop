@@ -48,6 +48,5 @@
   "scripts": {
     "rebuild-native-modules": "node ./rebuild-native-modules.js \"electron-rebuild\" \"-f -m ./\"",
     "rebuild-neon": "node ./rebuild-native-modules.js \"electron-build-env\" \"neon build libsodium-neon\""
-  },
-  "version": "3"
+  }
 }
