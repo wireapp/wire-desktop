@@ -1,10 +1,11 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Application
+Version=1.1
 Name=Wire
-Comment=Modern communication, full privacy.
+GenericName=Privacy-Oriented Messenger
+Comment=Modern communication, full privacy
 Exec=wire-desktop
 Icon=wire-desktop
 Terminal=false
-StartupNotify=false
-Categories=Network;InstantMessaging;X-Fedora;
+Categories=Network;InstantMessaging;Chat;VideoConference
+Keywords=chat;encrypt;e2e;messenger;videocall

@@ -9,7 +9,7 @@ Version:	2.15.2751
 Release:	1%{?dist}
 License:	GPLv3
 URL:		https://wire.com
-Source0:    %{name}-%{version}.tar.xz
+Source0:	%{name}-%{version}.tar.xz
 
 BuildRequires:	cargo, desktop-file-utils, gcc-c++, git, hicolor-icon-theme, npm >= 3.10.0, python2
 
@@ -78,7 +78,7 @@ gtk-update-icon-cache /usr/share/icons/hicolor &>/dev/null || :
 
 %changelog
 * Fri Jul 21 2017 Conor I. Anderson <conor@conr.ca> - 2.15.2751-1
-- try to get this working on copr
+- modify for building on COPR
 
 * Wed Jul 19 2017 Conor I. Anderson <conor@conr.ca> - 2.15.2751-1
 - re-base on Arkady's never .spec file
