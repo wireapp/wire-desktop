@@ -3,15 +3,15 @@
 %global __requires_exclude ^(%{privlibs})\\.so
 %global debug_package %{nil}
 
-Summary:  Modern communication, full privacy
-Name:     wire-desktop
-Version:  2.15.2751
-Release:  1%{?dist}
-License:  GPLv3
-URL:      https://wire.com
-Source0:  %{name}-%{version}.tar.xz
+Summary:	Modern communication, full privacy
+Name:		wire-desktop
+Version:	2.15.2751
+Release:	1%{?dist}
+License:	GPLv3
+URL:		https://wire.com
+Source0:	%{name}-%{version}.tar.xz
 
-BuildRequires: cargo, desktop-file-utils, gcc-c++, git, hicolor-icon-theme, npm >= 3.10.0, python2
+BuildRequires:	cargo, desktop-file-utils, gcc-c++, git, hicolor-icon-theme, npm >= 3.10.0, python2
 
 %description
 Wire is an open source, cross-platform, encrypted instant messaging client. It

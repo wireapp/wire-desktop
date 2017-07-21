@@ -44,10 +44,6 @@ module.exports = (grunt) ->
     'update-keys':
       options:
         config: 'electron/js/config.js'
-            
-    'bump-spec':
-      options:
-        spec: 'wire-desktop.spec'
 
     productbuild:
       options:
@@ -276,18 +272,6 @@ module.exports = (grunt) ->
       grunt.file.write options.config, new_config_string
     else
       grunt.warn 'Failed updating keys in config'
-      
-  grunt.registerTask 'bump-spec', ->
-    options = @options()
-    info = grunt.config.get 'info'
-    spec_ver = grunt.file.read options.spec
-
-    if spec_ver?
-      new_spec_ver = spec_ver
-        .replace  /Version:  [0-9.]{9}/, "Version:  #{info.version}.#{info.build}"
-      grunt.file.write options.spec, new_spec_ver
-    else
-      grunt.warn 'Failed updating version in RPM spec'
 
   grunt.registerTask 'productbuild', 'Build Mac Appstore package', ->
     execSync = require('child_process').execSync
@@ -322,7 +306,7 @@ module.exports = (grunt) ->
     execSync = require('child_process').execSync
     execSync 'npm run bundle'
 
-  grunt.registerTask 'release',     ['build-inc', 'bump-spec', 'gitcommit', 'gittag', 'gitpush']
+  grunt.registerTask 'release',     ['build-inc', 'gitcommit', 'gittag', 'gitpush']
 
   grunt.registerTask 'macos',       ['clean:macos', 'update-keys', 'release-internal', 'bundle', 'electron:macos_internal']
   grunt.registerTask 'macos-prod',  ['clean:macos', 'update-keys', 'release-prod', 'bundle', 'electron:macos_prod', 'productbuild']
