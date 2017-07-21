@@ -198,10 +198,6 @@ function enableFileLogging() {
   }
 }
 
-function updateWebappStyles() {
-  document.body.classList.add('team-mode');
-}
-
 function reportWebappVersion() {
   ipcRenderer.send('webapp-version', z.util.Environment.version(false));
 }
@@ -243,7 +239,6 @@ window.addEventListener('DOMContentLoaded', () => {
     exposeLibsodiumNeon();
 
     subscribeToMainProcessEvents();
-    updateWebappStyles();
     subscribeToWebappEvents();
     replaceGoogleAuth();
     reportWebappVersion();

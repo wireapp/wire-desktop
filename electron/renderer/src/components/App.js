@@ -29,8 +29,8 @@ import './App.css';
 const App = () =>
   <IsOnline>
     <div className="App">
-      <WebviewsContainer />
       <SidebarContainer />
+      <WebviewsContainer />
     </div>
   </IsOnline>;
 
