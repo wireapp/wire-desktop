@@ -177,7 +177,7 @@ module.exports = (grunt) ->
         options:
           message: 'Bump version to <%= info.version %>'
         files:
-          src: [INFO_JSON, ELECTRON_PACKAGE_JSON]
+          src: [INFO_JSON]
 
     gitpush:
       task:
@@ -199,7 +199,10 @@ module.exports = (grunt) ->
 ###############################################################################
   grunt.registerTask 'version-inc', ->
     info = grunt.config.get 'info'
-    info.version = "#{parseInt(info.version, 10) + 1}"
+    version = info.version
+    major = version.substr(0, version.indexOf('.'))
+    minor = version.substr(version.lastIndexOf('.') + 1)
+    info.version = major + '.' + parseInt(minor, 10) + 1
     grunt.config.set 'info', info
     grunt.file.write INFO_JSON, "#{JSON.stringify info, null, 2}\n"
 
