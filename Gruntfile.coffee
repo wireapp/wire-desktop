@@ -306,13 +306,14 @@ module.exports = (grunt) ->
     execSync = require('child_process').execSync
     execSync 'npm run bundle'
 
-  grunt.registerTask 'release',    ['build-inc', 'gitcommit', 'gittag', 'gitpush']
+  grunt.registerTask 'release',     ['build-inc', 'gitcommit', 'gittag', 'gitpush']
 
-  grunt.registerTask 'macos',      ['clean:macos', 'update-keys', 'release-internal', 'bundle', 'electron:macos_internal']
-  grunt.registerTask 'macos-prod', ['clean:macos', 'update-keys', 'release-prod', 'bundle', 'electron:macos_prod', 'productbuild']
+  grunt.registerTask 'macos',       ['clean:macos', 'update-keys', 'release-internal', 'bundle', 'electron:macos_internal']
+  grunt.registerTask 'macos-prod',  ['clean:macos', 'update-keys', 'release-prod', 'bundle', 'electron:macos_prod', 'productbuild']
 
-  grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'bundle', 'electron:win_internal', 'create-windows-installer:internal']
-  grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'bundle', 'electron:win_prod', 'create-windows-installer:prod']
+  grunt.registerTask 'win',         ['clean:win', 'update-keys', 'release-internal', 'bundle', 'electron:win_internal', 'create-windows-installer:internal']
+  grunt.registerTask 'win-prod',    ['clean:win', 'update-keys', 'release-prod', 'bundle', 'electron:win_prod', 'create-windows-installer:prod']
 
-  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'bundle', 'electronbuilder:linux_internal']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'bundle', 'electronbuilder:linux_prod']
+  grunt.registerTask 'linux',       ['clean:linux', 'update-keys', 'release-internal', 'bundle', 'electronbuilder:linux_internal']
+  grunt.registerTask 'linux-prod',  ['clean:linux', 'update-keys', 'release-prod', 'bundle', 'electronbuilder:linux_prod']
+  grunt.registerTask 'linux-other', ['clean:linux', 'update-keys', 'release-prod', 'bundle', 'electronbuilder:linux_other']
