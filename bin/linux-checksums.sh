@@ -58,9 +58,8 @@ killall gpg-agent
 _log "Sign checksum file with gpg key..."
 
 echo "${PGP_PASSPHRASE}" | \
-gpg2 --armor \
-     --batch \
-     --detach-sign \
+gpg2 --batch \
+     --clearsign \
      --homedir "${GPG_TEMP_DIR}" \
      --local-user "${PGP_SIGN_ID}" \
      --no-tty \
