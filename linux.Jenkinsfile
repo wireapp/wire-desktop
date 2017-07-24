@@ -55,6 +55,12 @@ node('Linux_Node') {
     }
   }
 
+  stage('Create SHA256 checksums') {
+    withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
+      sh 'cd wrap/dist/ && ../../bin/linux-checksums.sh'
+    }
+  }
+
   stage('Test packaging') {
     sh 'dpkg-deb --info wrap/dist/debian/pool/main/*amd64.deb'
     sh 'dpkg-deb --info wrap/dist/debian/pool/main/*i386.deb'
