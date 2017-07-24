@@ -21,7 +21,8 @@
   --graphite-dark: #323639;
   --graphite: #8d989f;
 
-  --z-index-sidebar: 1000;
+  --sidebar-color: #1e2022;
+
   --z-index-webview-close-button: 100;
   --z-index-webview: 1;
   --z-index-webview-hidden: 0;

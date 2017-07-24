@@ -48,6 +48,7 @@ if __name__ == '__main__':
   version = '%s.%s' % (info['version'], info['build'])
 
   files = [
+    'sha256sum.txt.asc',
     'wire-%s-i386.AppImage' % version,
     'wire-%s-x86_64.AppImage' % version,
     'debian/pool/main/wire_%s_amd64.deb' % version,
