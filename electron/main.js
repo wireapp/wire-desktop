@@ -99,6 +99,12 @@ if (config.DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
+if (argv.portable) {
+  const EXEC_PATH = process.env.APPIMAGE || process.execPath;
+  const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+  app.setPath('userData', USER_PATH);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Single Instance stuff
 ///////////////////////////////////////////////////////////////////////////////
