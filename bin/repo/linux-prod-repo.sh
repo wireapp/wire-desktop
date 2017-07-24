@@ -11,6 +11,7 @@ CACHE_DIR="./cache"
 CONF_DIR="${SCRIPT_DIR}/conf"
 
 APT_CONF_FILE="${CONF_DIR}/apt-ftparchive.conf"
+INRELEASE_FILE="${STABLE_DIR}/InRelease"
 RELEASE_FILE="${STABLE_DIR}/Release"
 STABLE_CONF_FILE="${CONF_DIR}/stable.conf"
 
@@ -36,11 +37,6 @@ mkdir -p "${BINARY_DIR}" "${STABLE_DIR}/main/binary-"{all,i386,amd64} "${CONF_DI
 
 if ! _command_exist "gpg2"; then
   _error_exit "Could not find gpg2. Please install package 'gnupg2' version 2.0.x."
-else
-  GPG_VERSION="$(gpg2 --version | head -n 1 | grep -oE '2\..*')"
-  if ! grep -qE "2\.0" <<< "${GPG_VERSION}"; then
-    _error_exit "Your gpg2 version is ${GPG_VERSION}. Signing with a predefined passphrase will work only with gpg2 version 2.0.x."
-  fi
 fi
 
 if ! _command_exist "apt-ftparchive"; then
@@ -93,6 +89,10 @@ gpg2 --batch \
      --quiet \
      --import "${PGP_KEYFILE}"
 
+_log "Update gpg2 configuration to sign on unattended machines..."
+echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+killall gpg-agent
+
 echo "${PGP_PASSPHRASE}" | \
 gpg2 --armor \
      --batch \
@@ -101,6 +101,20 @@ gpg2 --armor \
      --local-user "${PGP_SIGN_ID}" \
      --no-tty \
      --output "${RELEASE_FILE}.gpg" \
+     --pinentry-mode loopback \
+     --passphrase-fd 0 \
+     --quiet \
+     --yes \
+     "${RELEASE_FILE}"
+
+echo "${PGP_PASSPHRASE}" | \
+gpg2 --batch \
+     --clearsign \
+     --homedir "${GPG_TEMP_DIR}" \
+     --local-user "${PGP_SIGN_ID}" \
+     --no-tty \
+     --output "${INRELEASE_FILE}" \
+     --pinentry-mode loopback \
      --passphrase-fd 0 \
      --quiet \
      --yes \

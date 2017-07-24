@@ -23,7 +23,8 @@ Based on [Electron](http://electron.atom.io).
 
 ### Install
 
-Install [Node.js](https://nodejs.org/).
+- Install [Node.js](https://nodejs.org/).
+- If you wish to use [libsodium-neon](https://github.com/wireapp/libsodium-neon/) (crypto speed improvements), also install [Rust](https://rustup.rs).
 
 ### Clone
 
@@ -44,6 +45,7 @@ npm start
 ```shell
 npm test
 ```
+
 ### Enable Support for Google Contacts (optional)
 
 If you wish to import Google Contacts to Wire, you will need to [generate Google OAuth 2.0 credentials](https://console.developers.google.com/apis/credentials/oauthclient) for an "other" type app ([See here](https://developers.google.com/identity/protocols/OAuth2) for more details). Once you have generated your credentials, store the "Client ID" and "Client secret" in the environment as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, respectively.
@@ -63,11 +65,10 @@ npm run build:linux
 
 ### Other Linux targets or architectures
 
-If you would like to build for another Linux target or architecture, run the following commands:
+If you would like to build for another Linux target or architecture, run the following command:
 
-```bash
-grunt 'clean:linux' 'update-keys' 'release-prod'
-grunt --arch=<arch> --target=<target> 'electronbuilder:linux_other'
+```shell
+grunt --arch=<arch> --target=<target> linux-other
 ```
 
 Replace `<arch>` and `<target>` with your desired architecture (e.g. `"ia32"`) and target (e.g. `"rpm"`). Have a look at the [documentation for `electron-builder`](https://github.com/electron-userland/electron-builder/wiki/Options) for the available options. Note that we cannot offer support for uncommon architectures or targets.

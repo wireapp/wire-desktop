@@ -17,24 +17,16 @@
  *
  */
 
-'use strict';
+ .IsOnline {
+    width: 100%;
+    height: 100%;
 
-const assert = require('assert');
-const config = require('../electron/js/config');
-const util = require('../electron/js/util');
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-describe('util', () => {
-
-  describe('#openInExternalWindow()', () => {
-
-    it('should open link in external browser when link is part of whitelist', () => {
-      assert.equal(util.openInExternalWindow(config.WHITE_LIST[0]), true);
-    });
-
-    it('should not open link in external browser when link is not part of whitelist', () => {
-      assert.equal(util.openInExternalWindow('app.wire.com'), false);
-    });
-
-  });
-
-});
+    font-size: 16px;
+    font-weight: 300;
+    text-transform: uppercase;
+    color: #fff;
+ }

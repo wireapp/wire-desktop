@@ -18,7 +18,7 @@
  */
 
 // https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
-'use strict';
+
 
 const {app} = require('electron');
 

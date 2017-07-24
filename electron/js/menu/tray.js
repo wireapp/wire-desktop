@@ -17,7 +17,7 @@
  *
  */
 
-'use strict';
+
 
 const {app, Menu, Tray} = require('electron');
 
@@ -60,20 +60,16 @@ module.exports = {
     });
   },
 
-  updateBadgeIcon: function(win) {
-    setTimeout(() => {
-      let counter = (/\(([0-9]+)\)/).exec(win.getTitle() || (win.webContents ? win.webContents.getTitle() : ''));
-      let count = parseInt(counter ? counter[1] : 0, 10);
-      if (count) {
-        this.useBadgeIcon();
-      } else {
-        this.useDefaultIcon();
-      }
-      win.setOverlayIcon(count && process.platform === 'win32' ? iconOverlayPath : null, locale.getText('unreadMessages'));
-      win.flashFrame(!win.isFocused() && count > lastUnreadCount);
-      app.setBadgeCount(count);
-      lastUnreadCount = count;
-    }, 50);
+  updateBadgeIcon: function(win, count) {
+    if (count) {
+      this.useBadgeIcon();
+    } else {
+      this.useDefaultIcon();
+    }
+    win.setOverlayIcon(count && process.platform === 'win32' ? iconOverlayPath : null, locale.getText('unreadMessages'));
+    win.flashFrame(!win.isFocused() && count > lastUnreadCount);
+    app.setBadgeCount(count);
+    lastUnreadCount = count;
   },
 
   useDefaultIcon: function() {

@@ -17,13 +17,13 @@
  *
  */
 
-'use strict';
+
 
 const {MenuItem} = require('electron');
 const config = require('./../config');
+const settings = require('./../lib/settings');
+const env = settings.restore('env', config.INTERNAL);
 const windowManager = require('./../window-manager');
-const init = require('./../lib/init');
-const env = init.restore('env', config.INTERNAL);
 
 function getPrimaryWindow() {
   return windowManager.getPrimaryWindow();
@@ -37,8 +37,25 @@ let reloadTemplate = {
 
 let devToolsTemplate = {
   label: 'Toggle DevTools',
-  accelerator: 'Alt+CmdOrCtrl+I',
-  click: function() {getPrimaryWindow().toggleDevTools();},
+  submenu: [
+    {
+      label: 'Sidebar',
+      accelerator: 'Alt+CmdOrCtrl+I',
+      click: function() {getPrimaryWindow().toggleDevTools();},
+    },
+    {
+      label: 'First',
+      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools()");},
+    },
+    {
+      label: 'Second',
+      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools()");},
+    },
+    {
+      label: 'Third',
+      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools()");},
+    },
+  ],
 };
 
 let devProductionTemplate = {
@@ -46,8 +63,8 @@ let devProductionTemplate = {
   type: 'radio',
   checked: env === config.PROD,
   click: function() {
-    getPrimaryWindow().loadURL(config.PROD_URL);
-    init.save('env', config.PROD);
+    getPrimaryWindow().reload();
+    settings.save('env', config.PROD);
   },
 };
 
@@ -56,8 +73,8 @@ let devInternalTemplate = {
   type: 'radio',
   checked: env === config.INTERNAL,
   click: function() {
-    getPrimaryWindow().loadURL(config.INTERNAL_URL);
-    init.save('env', config.INTERNAL);
+    getPrimaryWindow().reload();
+    settings.save('env', config.INTERNAL);
   },
 };
 
@@ -66,8 +83,8 @@ let devStagingTemplate = {
   type: 'radio',
   checked: env === config.STAGING,
   click: function() {
-    getPrimaryWindow().loadURL(config.STAGING_URL);
-    init.save('env', config.STAGING);
+    getPrimaryWindow().reload();
+    settings.save('env', config.STAGING);
   },
 };
 
@@ -76,8 +93,8 @@ let devDevTemplate = {
   type: 'radio',
   checked: env === config.DEV,
   click: function() {
-    getPrimaryWindow().loadURL(config.DEV_URL);
-    init.save('env', config.DEV);
+    getPrimaryWindow().reload();
+    settings.save('env', config.DEV);
   },
 };
 
@@ -86,18 +103,8 @@ let devEdgeTemplate = {
   type: 'radio',
   checked: env === config.EDGE,
   click: function() {
-    getPrimaryWindow().loadURL(config.EDGE_URL);
-    init.save('env', config.EDGE);
-  },
-};
-
-let devBennyTemplate = {
-  label: 'Cryptobox',
-  type: 'radio',
-  checked: env === config.CRYPTO,
-  click: function() {
-    getPrimaryWindow().loadURL(config.BENNY_URL);
-    init.save('env', config.CRYPTO);
+    getPrimaryWindow().reload();
+    settings.save('env', config.EDGE);
   },
 };
 
@@ -106,8 +113,8 @@ let devLocalhostTemplate = {
   type: 'radio',
   checked: env === config.LOCALHOST,
   click: function() {
-    getPrimaryWindow().loadURL(config.LOCALHOST_URL);
-    init.save('env', config.LOCALHOST);
+    getPrimaryWindow().reload();
+    settings.save('env', config.LOCALHOST);
   },
 };
 
@@ -139,7 +146,6 @@ let menuTemplate = {
     devStagingTemplate,
     devDevTemplate,
     devEdgeTemplate,
-    devBennyTemplate,
     devLocalhostTemplate,
     separatorTemplate,
     versionTemplate,

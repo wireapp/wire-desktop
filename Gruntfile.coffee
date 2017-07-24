@@ -31,6 +31,7 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON PACKAGE_JSON
     info: grunt.file.readJSON INFO_JSON
+    build_number: "#{process.env.BUILD_NUMBER or '0'}"
 
     clean:
       wrap: 'wrap'
@@ -63,10 +64,10 @@ module.exports = (grunt) ->
         overwrite: true
         arch: 'all'
         asar: true
-        'app-copyright': '<%= info.copyright %>'
-        'app-version': '<%= info.version %>'
-        'build-version': '<%= info.build %>'
-        'min-version': '10.9.0'
+        appCopyright: '<%= info.copyright %>'
+        appVersion: '<%= info.version %>'
+        buildVersion: '<%= build_number %>'
+        ignore: 'electron/renderer/src'
         protocols: [
           {name: '', schemes: ['wire']}
         ]
@@ -75,18 +76,16 @@ module.exports = (grunt) ->
           name: '<%= info.nameInternal %>'
           platform: 'mas'
           icon: 'resources/macos/wire.internal.icns'
-          'app-bundle-id': 'com.wearezeta.zclient.mac.internal'
-          'dev-region': 'en'
+          appBundleId: 'com.wearezeta.zclient.mac.internal'
       macos_prod:
         options:
           platform: 'mas'
           out: 'wrap/dist/'
           icon: 'resources/macos/wire.icns'
-          'app-category-type': 'public.app-category.social-networking'
-          'app-bundle-id': 'com.wearezeta.zclient.mac'
-          'helper-bundle-id': 'com.wearezeta.zclient.mac.helper'
-          'dev-region': 'en'
-          'extend-info': 'resources/macos/custom.plist'
+          appCategoryType: 'public.app-category.social-networking'
+          appBundleId: 'com.wearezeta.zclient.mac'
+          helperBundleId: 'com.wearezeta.zclient.mac.helper'
+          extendInfo: 'resources/macos/custom.plist'
       win_internal:
         options:
           name: '<%= info.nameInternal %>'
@@ -151,7 +150,7 @@ module.exports = (grunt) ->
       internal:
         title: '<%= info.nameInternal %>'
         description: '<%= info.description %>'
-        version: '<%= info.version %>.<%= info.build %>'
+        version: '<%= info.version %>.<%= build_number %>'
         appDirectory: 'wrap/build/<%= info.nameInternal %>-win32-ia32'
         outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32'
         authors: '<%= info.nameInternal %>'
@@ -163,7 +162,7 @@ module.exports = (grunt) ->
       prod:
         title: '<%= info.name %>'
         description: '<%= info.description %>'
-        version: '<%= info.version %>.<%= info.build %>'
+        version: '<%= info.version %>.<%= build_number %>'
         appDirectory: 'wrap/build/<%= info.name %>-win32-ia32'
         outputDirectory: 'wrap/prod/<%= info.name %>-win32-ia32'
         authors: '<%= info.name %>'
@@ -176,15 +175,9 @@ module.exports = (grunt) ->
     gitcommit:
       release:
         options:
-          message: 'Release <%= info.version %>.<%= info.build %>'
+          message: 'Bump version to <%= info.version %>'
         files:
-          src: [INFO_JSON, ELECTRON_PACKAGE_JSON]
-
-    gittag:
-      release:
-        options:
-          tag: 'release/<%= info.version %>.<%= info.build %>'
-          message: 'Release <%= info.version %>.<%= info.build %>'
+          src: [INFO_JSON]
 
     gitpush:
       task:
@@ -204,35 +197,50 @@ module.exports = (grunt) ->
 ###############################################################################
 # Tasks
 ###############################################################################
-  grunt.registerTask 'build-inc', ->
+  grunt.registerTask 'version-inc', ->
     info = grunt.config.get 'info'
-    info.build = "#{parseInt(info.build, 10) + 1}"
+    version = info.version
+    major = version.substr(0, version.indexOf('.'))
+    minor = version.substr(version.lastIndexOf('.') + 1)
+    info.version = major + '.' + parseInt(minor, 10) + 1
     grunt.config.set 'info', info
     grunt.file.write INFO_JSON, "#{JSON.stringify info, null, 2}\n"
 
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
-    electron_pkg.version = "#{info.version}.#{info.build}"
+    electron_pkg.version = "#{info.version}"
     grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
 
-    grunt.log.write("Build number increased to #{info.build} ").ok();
+    grunt.log.write("Version number increased to #{info.version} ").ok();
 
   grunt.registerTask 'release-internal', ->
     info = grunt.config.get 'info'
+    build_number = grunt.config.get 'build_number'
+    commit_id = grunt.config('gitinfo.local.branch.current.shortSHA')
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.updateWinUrl = info.updateWinUrlInternal
     electron_pkg.environment = 'internal'
     electron_pkg.name = info.nameInternal.toLowerCase()
     electron_pkg.productName = info.nameInternal
+    if(build_number == '0')
+      electron_pkg.version = "#{info.version}.0-#{commit_id}-internal"
+    else
+      electron_pkg.version = "#{info.version}.#{build_number}-internal"
     grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
   grunt.registerTask 'release-prod', ->
     info = grunt.config.get 'info'
+    build_number = grunt.config.get 'build_number'
+    commit_id = grunt.config('gitinfo.local.branch.current.shortSHA')
     electron_pkg = grunt.file.readJSON ELECTRON_PACKAGE_JSON
     electron_pkg.updateWinUrl = info.updateWinUrlProd
     electron_pkg.environment = 'production'
     electron_pkg.name = info.name.toLowerCase()
     electron_pkg.productName = info.name
+    if(build_number == '0')
+      electron_pkg.version = "#{info.version}.0-#{commit_id}"
+    else
+      electron_pkg.version = "#{info.version}.#{build_number}"
     grunt.file.write ELECTRON_PACKAGE_JSON, "#{JSON.stringify electron_pkg, null, 2}\n"
     grunt.log.write("Releases URL points to #{electron_pkg.updateWinUrl} ").ok();
 
@@ -304,13 +312,18 @@ module.exports = (grunt) ->
     done = @async()
     createWindowsInstaller(config).then done, done
 
-  grunt.registerTask 'release',    ['build-inc', 'gitcommit', 'gittag', 'gitpush']
+  grunt.registerTask 'bundle', 'Bundle React app', ->
+    execSync = require('child_process').execSync
+    execSync 'npm run bundle'
 
-  grunt.registerTask 'macos',      ['clean:macos', 'update-keys', 'release-internal', 'electron:macos_internal']
-  grunt.registerTask 'macos-prod', ['clean:macos', 'update-keys', 'release-prod', 'electron:macos_prod', 'productbuild']
+  grunt.registerTask 'bump-version',  ['version-inc', 'gitcommit', 'gitpush']
 
-  grunt.registerTask 'win',        ['clean:win', 'update-keys', 'release-internal', 'electron:win_internal', 'create-windows-installer:internal']
-  grunt.registerTask 'win-prod',   ['clean:win', 'update-keys', 'release-prod', 'electron:win_prod', 'create-windows-installer:prod']
+  grunt.registerTask 'macos',         ['clean:macos', 'update-keys', 'gitinfo', 'release-internal', 'bundle', 'electron:macos_internal']
+  grunt.registerTask 'macos-prod',    ['clean:macos', 'update-keys', 'gitinfo', 'release-prod', 'bundle', 'electron:macos_prod', 'productbuild']
 
-  grunt.registerTask 'linux',      ['clean:linux', 'update-keys', 'release-internal', 'electronbuilder:linux_internal']
-  grunt.registerTask 'linux-prod', ['clean:linux', 'update-keys', 'release-prod', 'electronbuilder:linux_prod']
+  grunt.registerTask 'win',           ['clean:win', 'update-keys', 'gitinfo', 'release-internal', 'bundle', 'electron:win_internal', 'create-windows-installer:internal']
+  grunt.registerTask 'win-prod',      ['clean:win', 'update-keys', 'gitinfo', 'release-prod', 'bundle', 'electron:win_prod', 'create-windows-installer:prod']
+
+  grunt.registerTask 'linux',         ['clean:linux', 'update-keys', 'gitinfo', 'release-internal', 'bundle', 'electronbuilder:linux_internal']
+  grunt.registerTask 'linux-prod',    ['clean:linux', 'update-keys', 'gitinfo', 'release-prod', 'bundle', 'electronbuilder:linux_prod']
+  grunt.registerTask 'linux-other',   ['clean:linux', 'update-keys', 'gitinfo', 'release-prod', 'bundle', 'electronbuilder:linux_other']
