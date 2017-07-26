@@ -31,6 +31,13 @@ if ! _command_exist "sha256sum"; then
   _error_exit "Could not find sha256sum. Please install package 'coreutils'."
 fi
 
+if ! _command_exist "shred"; then
+  _log "Could not find shred. Please install package 'coreutils'."
+  SHRED_STATUS="unavailable"
+else
+  SHRED_STATUS="available"
+fi
+
 if ! ls ./*.deb > /dev/null 2>&1; then
   _error_exit "No deb files found. Add some in ${PWD}."
 fi
