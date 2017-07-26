@@ -71,7 +71,7 @@ node('Linux_Node') {
   }
 
   stage('Upload build as draft to GitHub') {
-    withCredentials([file(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
+    withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
       sh 'cd wrap/dist/ && python ../../bin/github_draft.py'
     }
   }

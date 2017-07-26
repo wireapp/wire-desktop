@@ -105,7 +105,7 @@ node('Windows_Node') {
 
   if(production) {
     stage('Upload build as draft to GitHub') {
-      withCredentials([file(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
+      withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
         bat 'cd wrap\\prod\\Wire-win32-ia32\\ && python ..\\..\\..\\bin\\github_draft.py'
       }
     }
