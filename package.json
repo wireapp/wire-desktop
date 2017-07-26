@@ -45,7 +45,7 @@
     "electron-mocha": "4.0.0",
     "electron-packager": "8.7.2",
     "electron-winstaller": "2.5.2",
-    "eslint": "4.2.0",
+    "eslint": "4.3.0",
     "eslint-plugin-react": "7.1.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.1.0",
@@ -55,7 +55,7 @@
     "jest": "20.0.4",
     "load-grunt-tasks": "3.5.2",
     "style-loader": "0.18.2",
-    "webpack": "3.1.0"
+    "webpack": "3.4.1"
   },
   "dependencies": {
     "debug": "2.6.8"

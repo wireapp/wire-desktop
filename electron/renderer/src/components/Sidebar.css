@@ -28,7 +28,11 @@
 }
 
 .Sidebar:hover .Sidebar-account-add {
-  visibility: visible;
+  opacity: 1;
+  pointer-events: initial;
+  transition: opacity;
+  transition-timing-function: var(--ease-out-quart);
+  transition-duration: var(--animation-timing-slow);
 }
 
 .Sidebar-cell {
@@ -64,5 +68,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
