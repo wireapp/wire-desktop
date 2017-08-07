@@ -99,7 +99,7 @@ window.addEventListener('contextmenu', function (event) {
     defaultMenu.popup(remote.getCurrentWindow());
   } else if (element.classList.contains('text')) {
     event.preventDefault();
-    copyContext = element.innerText.trim();
+    copyContext = window.getSelection().toString() || element.innerText.trim();
     defaultMenu.popup(remote.getCurrentWindow());
   } else {
     // Maybe we are in a code block _inside_ an element with the 'text' class?
@@ -110,7 +110,7 @@ window.addEventListener('contextmenu', function (event) {
     }
     if (parentNode !== document) {
       event.preventDefault();
-      copyContext = parentNode.innerText.trim();
+      copyContext = window.getSelection().toString() || parentNode.innerText.trim();
       defaultMenu.popup(remote.getCurrentWindow());
     }
   }
