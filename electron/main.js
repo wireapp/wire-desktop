@@ -231,7 +231,7 @@ function showMainWindow() {
     show: false,
     webPreferences: {
       backgroundThrottling: false,
-      nodeIntegration: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
 
       // Enable <webview>
@@ -293,7 +293,7 @@ function showMainWindow() {
   main.on('page-title-updated', function() {
     tray.updateBadgeIcon(main);
   });
-  
+
   main.on('close', async (event) => {
     const isFullScreen = main.isFullScreen();
     settings.save('fullscreen', isFullScreen);
@@ -316,7 +316,7 @@ function showMainWindow() {
       }
       return;
     }
-    
+
     debugMain('Persisting user configuration file...');
     await settings._saveToFile();
   });
@@ -409,7 +409,7 @@ fs.readdir(logDir, (error, files) => {
       }
     });
   }
-  
+
 });
 
 class ElectronWrapperInit {
