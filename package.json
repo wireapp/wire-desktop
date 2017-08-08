@@ -58,6 +58,6 @@
     "webpack": "3.5.1"
   },
   "dependencies": {
-    "debug": "2.6.8"
+    "debug": "3.0.0"
   }
 }
