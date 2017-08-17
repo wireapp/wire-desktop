@@ -33,7 +33,7 @@
     }
   },
   "devDependencies": {
-    "babel-core": "6.25.0",
+    "babel-core": "6.26.0",
     "babel-jest": "20.0.3",
     "babel-loader": "7.1.0",
     "babel-plugin-transform-object-rest-spread": "6.26.0",
