@@ -45,7 +45,7 @@
     "electron-mocha": "4.0.1",
     "electron-packager": "9.0.0",
     "electron-winstaller": "2.5.2",
-    "eslint": "4.5.0",
+    "eslint": "4.6.0",
     "eslint-plugin-react": "7.3.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.1.0",
