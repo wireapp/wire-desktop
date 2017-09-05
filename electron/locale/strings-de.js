@@ -1,6 +1,8 @@
-
+'use strict';
 
 let string = {};
+
+
 
 string.aboutReleases = 'Versionshinweise';
 string.aboutUpdate = 'Wie wird Wire aktualisiert';
@@ -62,7 +64,7 @@ string.restartLocale = 'Bitte starte Wire erneut, um diese Einstellung zu übern
 string.restartLater = 'Später';
 string.restartNow = 'Jetzt neustarten';
 
-string.trayOpen = 'Öffnen';
+string.trayOpen = 'Öffne';
 string.trayQuit = 'Beenden';
 
 string.unreadMessages = 'Ungelesene Nachrichten';
