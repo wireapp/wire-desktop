@@ -1,8 +1,13 @@
-
+'use strict';
 
 let string = {};
 
 
+
+string.aboutReleases = 'Vydání';
+string.aboutUpdate = 'Jak fungují aktualizace';
+string.aboutVersion = 'Verze';
+string.aboutWebappVersion = 'Verze Wire pro Web';
 
 string.menuConversation = 'Konverzace';
 string.menuStart = 'Spustit';
@@ -10,6 +15,7 @@ string.menuEdit = 'Upravit';
 string.menuWindow = 'Okno';
 string.menuView = 'Zobrazení';
 string.menuHelp = 'Pomoc';
+string.menuStartup = 'Spustit Wire po startu';
 string.menuLocale = 'Jazyk';
 string.menuAbout = 'O aplikaci Wire';
 string.menuSignOut = 'Odhlásit';
@@ -31,6 +37,7 @@ string.menuCut = 'Kopírovat';
 string.menuCopy = 'Vložit';
 string.menuPaste = 'Vložit';
 string.menuSelectAll = 'Vybrat vše';
+string.menuSpelling = 'Kontrolovat pravopis během psaní';
 string.menuMinimize = 'Minimalizovat';
 string.menuClose = 'Zavřít';
 string.menuNextConversation = 'Další konverzace';
@@ -48,6 +55,7 @@ string.menuHideOthers = 'Skrýt ostatní';
 string.menuShowAll = 'Zobrazit vše';
 string.menuSettings = 'Nastavení';
 string.menuQuit = 'Ukončit Wire';
+string.menuShowHide = 'Zobrazit menu';
 string.menuSavePictureAs = 'Uložit obrázek jako...';
 string.menuNoSuggestions = 'Žádné návrhy';
 
@@ -57,6 +65,8 @@ string.restartLater = 'Později';
 string.restartNow = 'Restartovat nyní';
 
 string.trayOpen = 'Otevřít';
+string.trayQuit = 'Ukončit';
 
+string.unreadMessages = 'Nepřečtená zpráva';
 
 module.exports = string;
