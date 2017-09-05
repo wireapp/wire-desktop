@@ -202,7 +202,7 @@ function reportWebappVersion() {
   ipcRenderer.send('webapp-version', z.util.Environment.version(false));
 }
 
-function checkAvailablity(callback) {
+function checkAvailability(callback) {
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);
@@ -234,7 +234,7 @@ process.once('loaded', () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-  checkAvailablity(() => {
+  checkAvailability(() => {
     exposeAddressbook();
     exposeLibsodiumNeon();
 
