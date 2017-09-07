@@ -9,7 +9,7 @@ Version:	2.15.2751
 Release:	1%{?dist}
 License:	GPLv3
 URL:		https://wire.com
-Source0:  https://github.com/ConorIA/wire-desktop/archive/release/%{version}.tar.gz
+Source0:  https://github.com/ConorIA/wire-desktop/archive/release/%{version}-conor.tar.gz
 
 BuildRequires:	cargo, desktop-file-utils, gcc-c++, git, hicolor-icon-theme, npm >= 3.10.0, python2
 
@@ -21,7 +21,7 @@ can be used on any of the available clients, requiring a phone number or email
 for registration.
 
 %prep
-%autosetup -n %{name}-release-%{version}
+%autosetup -n %{name}-release-%{version}-conor
 
 %build
 npm install
