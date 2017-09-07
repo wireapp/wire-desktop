@@ -9,7 +9,7 @@ Version:	2.15.2751
 Release:	1%{?dist}
 License:	GPLv3
 URL:		https://wire.com
-Source0:	%{name}-%{version}.tar.xz
+Source0:  https://github.com/ConorIA/wire-desktop/archive/release/%{version}.tar.gz
 
 BuildRequires:	cargo, desktop-file-utils, gcc-c++, git, hicolor-icon-theme, npm >= 3.10.0, python2
 
@@ -21,7 +21,7 @@ can be used on any of the available clients, requiring a phone number or email
 for registration.
 
 %prep
-%setup -q
+%autosetup -n %{name}-release-%{version}
 
 %build
 npm install
@@ -34,7 +34,7 @@ cp -r wrap/dist/linux*unpacked/* \
 	%{buildroot}%{_libdir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
-install -m644 resources/linux/%{name}.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
+install -m644 bin/rpm/%{name}.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
@@ -77,11 +77,14 @@ gtk-update-icon-cache /usr/share/icons/hicolor &>/dev/null || :
 %{_datadir}/applications/%{name}.desktop
 
 %changelog
+* Thu Sep 07 2017 Conor I. Anderson <conor@conr.ca> - 2.15.2751-1
+- Update some of the config for COPR
+
 * Fri Jul 21 2017 Conor I. Anderson <conor@conr.ca> - 2.15.2751-1
 - modify for building on COPR
 
 * Wed Jul 19 2017 Conor I. Anderson <conor@conr.ca> - 2.15.2751-1
-- re-base on Arkady's never .spec file
+- re-base on Arkady's newer .spec file
 
 * Mon Jul 17 2017 Conor I. Anderson <conor@conr.ca> - 2.14.2744-1
 - set up for automated building
