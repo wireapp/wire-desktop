@@ -3,14 +3,15 @@
 %global __requires_exclude ^(%{privlibs})\\.so
 %global debug_package %{nil}
 
+%define version %(echo "$(curl -s -N "https://github.com/wireapp/wire-desktop/releases.atom" | grep -o -m1 ".*Linux.*" | grep -Po "[0-9.]{9}")")
+
 Summary: Modern communication, full privacy
 Name: wire-desktop
-Version: 2.15.2751
+Version: %{version}
 Release: 1%{?dist}
 License: GPLv3
-BuildRoot: %{_tmppath}/%{name}-buildroot
 URL: https://wire.com
-Source0: https://github.com/ConorIA/wire-desktop/archive/release/%{version}-conor.tar.gz
+Source0: %{name}-%{version}.tar.gz
 
 BuildRequires: cargo, desktop-file-utils, gcc-c++, git, hicolor-icon-theme, npm >= 3.10.0, python2
 
@@ -22,7 +23,7 @@ can be used on any of the available clients, requiring a phone number or email
 for registration.
 
 %prep
-%autosetup -n %{name}-release-%{version}-conor
+%setup -q
 
 %build
 npm install
@@ -30,13 +31,12 @@ $(npm bin)/grunt 'clean:linux' 'update-keys' 'release-prod' 'bundle'
 $(npm bin)/grunt electronbuilder:linux_other
 
 %install
-rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -r wrap/dist/linux*unpacked/* \
 	%{buildroot}%{_libdir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
-install -m644 bin/rpm/%{name}.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
+install -m644 linux/resources/%{name}.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
