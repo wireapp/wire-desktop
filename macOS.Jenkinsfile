@@ -14,13 +14,13 @@ node('master') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/ bin/'
+    sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/'
   }
 
   def text = readFile('info.json')
-  def buildInfo = parseJson(text);
-  def version = buildInfo.version + '.' + buildInfo.build;
-  currentBuild.displayName = version + ' #' + currentBuild.id
+  def buildInfo = parseJson(text)
+  def version = buildInfo.version + '.' + env.BUILD_NUMBER
+  currentBuild.displayName = version;
 
   stage('Install rust') {
     withEnv(['PATH+RUST=/Users/jenkins/.cargo/bin']) {
@@ -65,6 +65,14 @@ node('master') {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/bin/WireInternal.zip\""
       archiveArtifacts 'info.json,bin/WireInternal.zip'
+    }
+  }
+
+  if(production) {
+    stage('Upload build as draft to GitHub') {
+      withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
+        sh 'python bin/github_draft.py'
+      }
     }
   }
 

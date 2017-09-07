@@ -18,17 +18,21 @@
  */
 
 .Sidebar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, .24);
+  background-color: var(--sidebar-color);
   width: 78px;
   padding-top: 40px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  z-index: var(--z-index-sidebar);
+  flex: 0 0 auto;
+}
+
+.Sidebar:hover .Sidebar-account-add {
+  opacity: 1;
+  pointer-events: initial;
+  transition: opacity;
+  transition-timing-function: var(--ease-out-quart);
+  transition-duration: var(--animation-timing-slow);
 }
 
 .Sidebar-cell {
@@ -46,12 +50,12 @@
 .Sidebar-icon-badge:after {
   content: "";
   position: absolute;
-  top: 3px;
-  right: 2px;
+  top: 2px;
+  right: 3px;
   width: 8px;
   height: 8px;
-  background: currentColor;
-  border: .5px solid #fff;
+  background: #fff;
+  border: 1.5px solid var(--sidebar-color);
   border-radius: 50%;
 }
 
@@ -64,4 +68,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0;
+  pointer-events: none;
 }

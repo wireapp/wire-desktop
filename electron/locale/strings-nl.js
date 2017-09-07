@@ -3,6 +3,7 @@
 let string = {};
 
 
+
 string.aboutReleases = 'Releases';
 string.aboutUpdate = 'Hoe Werken Wire Updates';
 string.aboutVersion = 'Versie';

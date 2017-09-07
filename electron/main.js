@@ -99,6 +99,12 @@ if (config.DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
+if (argv.portable) {
+  const EXEC_PATH = process.env.APPIMAGE || process.execPath;
+  const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+  app.setPath('userData', USER_PATH);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Single Instance stuff
 ///////////////////////////////////////////////////////////////////////////////
@@ -225,7 +231,7 @@ function showMainWindow() {
     show: false,
     webPreferences: {
       backgroundThrottling: false,
-      nodeIntegration: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
 
       // Enable <webview>
@@ -287,7 +293,7 @@ function showMainWindow() {
   main.on('page-title-updated', function() {
     tray.updateBadgeIcon(main);
   });
-  
+
   main.on('close', async (event) => {
     const isFullScreen = main.isFullScreen();
     settings.save('fullscreen', isFullScreen);
@@ -310,7 +316,7 @@ function showMainWindow() {
       }
       return;
     }
-    
+
     debugMain('Persisting user configuration file...');
     await settings._saveToFile();
   });
@@ -403,7 +409,7 @@ fs.readdir(logDir, (error, files) => {
       }
     });
   }
-  
+
 });
 
 class ElectronWrapperInit {

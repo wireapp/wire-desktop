@@ -20,15 +20,16 @@
 #
 
 import boto3
-import json
 import os
 
 BUCKET = os.environ.get('BUCKET')
-S3_PATH = 'win/prod/'
+VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
+
 bin_root = os.path.dirname(os.path.realpath(__file__))
 build_root = os.path.join(bin_root, '..', 'wrap', 'prod', 'Wire-win32-ia32')
 releases = os.path.join(build_root, 'RELEASES')
-info_json = os.path.join(bin_root, '..', 'info.json')
+
+S3_PATH = 'win/prod/'
 
 
 def upload_file(source, dest):
@@ -44,14 +45,10 @@ def upload_file(source, dest):
   print '- OK'
 
 if __name__ == '__main__':
-  with open(info_json) as info_file:
-    info = json.load(info_file)
-  version = '%s.%s' % (info['version'], info['build'])
-
-  wire_nupkg = 'wire-%s-full.nupkg' % version
+  wire_nupkg = 'wire-%s-full.nupkg' % VERSION
   wire_nupkg_full = os.path.join(build_root, wire_nupkg)
   wire_exe_full = os.path.join(build_root, 'WireSetup.exe')
 
   upload_file(wire_nupkg_full, '%s%s' % (S3_PATH, wire_nupkg))
-  upload_file(wire_exe_full, '%swire-%s.exe' % (S3_PATH, version))
-  upload_file(releases, '%swire-%s-RELEASES' % (S3_PATH, version))
+  upload_file(wire_exe_full, '%swire-%s.exe' % (S3_PATH, VERSION))
+  upload_file(releases, '%swire-%s-RELEASES' % (S3_PATH, VERSION))

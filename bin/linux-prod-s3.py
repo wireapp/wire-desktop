@@ -24,10 +24,11 @@ import json
 import os
 
 BUCKET = os.environ.get('BUCKET')
-S3_PATH = 'linux/'
+VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
+
 bin_root = os.path.dirname(os.path.realpath(__file__))
 build_root = os.path.join(bin_root, '..', 'wrap', 'dist')
-info_json = os.path.join(bin_root, '..', 'info.json')
+S3_PATH = 'linux/'
 
 
 def upload_file(source, dest):
@@ -43,15 +44,12 @@ def upload_file(source, dest):
   print '- OK'
 
 if __name__ == '__main__':
-  with open(info_json) as info_file:
-    info = json.load(info_file)
-  version = '%s.%s' % (info['version'], info['build'])
-
   files = [
-    'wire-%s-i386.AppImage' % version,
-    'wire-%s-x86_64.AppImage' % version,
-    'debian/pool/main/wire_%s_amd64.deb' % version,
-    'debian/pool/main/wire_%s_i386.deb' % version,
+    'sha256sum.txt.asc',
+    'wire-%s-i386.AppImage' % VERSION,
+    'wire-%s-x86_64.AppImage' % VERSION,
+    'debian/pool/main/wire_%s_amd64.deb' % VERSION,
+    'debian/pool/main/wire_%s_i386.deb' % VERSION,
     'debian/dists/stable/Contents-all',
     'debian/dists/stable/Contents-all.bz2',
     'debian/dists/stable/Contents-all.gz',
