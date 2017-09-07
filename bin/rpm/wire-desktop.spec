@@ -3,15 +3,16 @@
 %global __requires_exclude ^(%{privlibs})\\.so
 %global debug_package %{nil}
 
-Summary:	Modern communication, full privacy
-Name:		wire-desktop
-Version:	2.15.2751
-Release:	1%{?dist}
-License:	GPLv3
-URL:		https://wire.com
-Source0:  https://github.com/ConorIA/wire-desktop/archive/release/%{version}-conor.tar.gz
+Summary: Modern communication, full privacy
+Name: wire-desktop
+Version: 2.15.2751
+Release: 1%{?dist}
+License: GPLv3
+BuildRoot: %{_tmppath}/%{name}-buildroot
+URL: https://wire.com
+Source0: https://github.com/ConorIA/wire-desktop/archive/release/%{version}-conor.tar.gz
 
-BuildRequires:	cargo, desktop-file-utils, gcc-c++, git, hicolor-icon-theme, npm >= 3.10.0, python2
+BuildRequires: cargo, desktop-file-utils, gcc-c++, git, hicolor-icon-theme, npm >= 3.10.0, python2
 
 %description
 Wire is an open source, cross-platform, encrypted instant messaging client. It
@@ -29,6 +30,7 @@ $(npm bin)/grunt 'clean:linux' 'update-keys' 'release-prod' 'bundle'
 $(npm bin)/grunt electronbuilder:linux_other
 
 %install
+rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -r wrap/dist/linux*unpacked/* \
 	%{buildroot}%{_libdir}/%{name}/
