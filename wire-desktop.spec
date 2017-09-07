@@ -34,7 +34,7 @@ cp -r wrap/dist/linux*unpacked/* \
 	%{buildroot}%{_libdir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
-install -m644 linux/resources/%{name}.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
+install -m644 resources/linux/%{name}.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
