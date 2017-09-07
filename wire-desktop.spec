@@ -3,11 +3,9 @@
 %global __requires_exclude ^(%{privlibs})\\.so
 %global debug_package %{nil}
 
-%define version %(echo "$(curl -s -N "https://github.com/wireapp/wire-desktop/releases.atom" | grep -o -m1 ".*Linux.*" | grep -Po "[0-9.]{9}")")
-
 Summary: Modern communication, full privacy
 Name: wire-desktop
-Version: %{version}
+Version: 2.15.2751
 Release: 1%{?dist}
 License: GPLv3
 URL: https://wire.com
