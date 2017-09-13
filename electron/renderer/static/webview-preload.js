@@ -127,15 +127,13 @@ function enableFileLogging() {
   try {
     const logFilePath = path.join(app.getPath('userData'), 'logs', id, logName);
     fs.createFileSync(logFilePath);
-    winston.log(`Logging into file: ${logFilePath}`);
-    
     winston
       .add(winston.transports.File, {
         filename: logFilePath,
         handleExceptions: true,
-      })
-      .remove(winston.transports.Console)
-      .info(pkg.productName, 'Version', pkg.version);
+      });
+    winston.remove(winston.transports.Console);
+    winston.info(pkg.productName, 'Version', pkg.version);
   } catch (error) {
     console.warn(`Failed to create log file: ${error.message}`);
   }
