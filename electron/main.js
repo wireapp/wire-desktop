@@ -384,23 +384,22 @@ app.on('ready', function() {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-// Delete the console.log
+// Rename "console.log" to "console.old" (for every log directory of every account)
 ///////////////////////////////////////////////////////////////////////////////
-fs.readdir(LOG_DIR, (error, files) => {
-  if (error) {
-    console.log(`Failed to read log directory with error: ${error.message}`);
-    return;
-  }
+fs.readdir(LOG_DIR, (error, contents) => {
+  if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
 
-  // TODO filter out dotfiles
-  for (const file of files) {
-    const consoleLog = path.join(LOG_DIR, file, config.CONSOLE_LOG);
-    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (renameError) => {
-      if (renameError) {
-        console.log(`Failed to rename log file (${consoleLog}) with error: ${renameError.message}`);
+  contents.map((file) => path.join(LOG_DIR, file, config.CONSOLE_LOG))
+    .filter((file) => {
+      try {
+        return fs.statSync(file).isFile();
+      } catch(error) {
+        return undefined;
       }
+    })
+    .forEach((file) => {
+      if (file.endsWith('.log')) fs.renameSync(file, file.replace('.log', '.old'));
     });
-  }
 });
 
 class ElectronWrapperInit {
