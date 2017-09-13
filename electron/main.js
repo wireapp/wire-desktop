@@ -379,7 +379,6 @@ app.on('ready', function() {
   Menu.setApplicationMenu(appMenu);
   tray.createTrayIcon();
   showMainWindow();
-  winston.log('AHHAA');
 });
 
 ///////////////////////////////////////////////////////////////////////////////
