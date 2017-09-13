@@ -20,6 +20,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const pkg = require('../../package.json');
+const winston = require('winston');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
@@ -118,25 +119,21 @@ function replaceGoogleAuth() {
 }
 
 function enableFileLogging() {
-  // webapp uses global winston reference to define log level
-  global.winston = require('winston');
-
   const id = new URL(window.location).searchParams.get('id');
   const logName = require('../../js/config').CONSOLE_LOG;
+  const logFilePath = path.join(app.getPath('userData'), 'logs', id, logName);
+  fs.createFileSync(logFilePath);
 
-  try {
-    const logFilePath = path.join(app.getPath('userData'), 'logs', id, logName);
-    fs.createFileSync(logFilePath);
-    winston
-      .add(winston.transports.File, {
-        filename: logFilePath,
-        handleExceptions: true,
-      });
-    winston.remove(winston.transports.Console);
-    winston.info(pkg.productName, 'Version', pkg.version);
-  } catch (error) {
-    console.warn(`Failed to create log file: ${error.message}`);
-  }
+  const logger = new winston.Logger();
+  logger.add(winston.transports.File, {
+    filename: logFilePath,
+    handleExceptions: true,
+  });
+
+  logger.info(pkg.productName, 'Version', pkg.version);
+
+  // webapp uses global winston reference to define log level
+  global.winston = logger;
 }
 
 function reportWebappVersion() {
