@@ -18,38 +18,32 @@
  */
 
 // Modules
-const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
+const debug = require('debug');
+const debugMain = debug('mainTmp');
 const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-/*eslint-disable no-unused-vars*/
-const debug = require('debug');
-const debugMain = debug('mainTmp');
-/*eslint-enable no-unused-vars*/
+const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
-/*eslint-disable no-unused-vars*/
-const USER_DATAS_PATH = app.getPath('userData');
-/*eslint-enable no-unused-vars*/
-
 // Local files defines
+const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
+const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
-const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 
 // Configuration persistence
 const settings = require('./js/lib/settings');
 
 // Wrapper modules
 const certutils = require('./js/certutils');
+const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
 const googleAuth = require('./js/lib/googleAuth');
 const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
-const developerMenu = require('./js/menu/developer');
 const tray = require('./js/menu/tray');
 const util = require('./js/util');
 const windowManager = require('./js/window-manager');
