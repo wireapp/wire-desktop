@@ -31,6 +31,7 @@ const APP_PATH = app.getAppPath();
 // Local files defines
 const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
+const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
@@ -193,8 +194,7 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
   // delete logs
   try {
-    const logDir = path.join(app.getPath('userData'), 'logs', accountID);
-    fs.removeSync(logDir);
+    fs.removeSync(LOG_DIR);
     debugMain(`Deleted logs folder for account: ${accountID}`);
   } catch (error) {
     debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
@@ -386,8 +386,7 @@ app.on('ready', function() {
 ///////////////////////////////////////////////////////////////////////////////
 // Delete the console.log
 ///////////////////////////////////////////////////////////////////////////////
-const logDir = path.join(app.getPath('userData'), 'logs');
-fs.readdir(logDir, (error, files) => {
+fs.readdir(LOG_DIR, (error, files) => {
   if (error) {
     console.log(`Failed to read log directory with error: ${error.message}`);
     return;
@@ -395,14 +394,13 @@ fs.readdir(logDir, (error, files) => {
 
   // TODO filter out dotfiles
   for (const file of files) {
-    const consoleLog = path.join(logDir, file, config.CONSOLE_LOG);
+    const consoleLog = path.join(LOG_DIR, file, config.CONSOLE_LOG);
     fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (renameError) => {
       if (renameError) {
         console.log(`Failed to rename log file (${consoleLog}) with error: ${renameError.message}`);
       }
     });
   }
-
 });
 
 class ElectronWrapperInit {
