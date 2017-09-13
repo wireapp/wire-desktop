@@ -226,8 +226,6 @@ function showMainWindow() {
       backgroundThrottling: false,
       nodeIntegration: true,
       preload: PRELOAD_JS,
-
-      // Enable <webview>
       webviewTag: true,
     },
   });
@@ -381,6 +379,7 @@ app.on('ready', function() {
   Menu.setApplicationMenu(appMenu);
   tray.createTrayIcon();
   showMainWindow();
+  winston.log('AHHAA');
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -488,7 +487,7 @@ class ElectronWrapperInit {
       }
     });
   }
-};
+}
 
 class BrowserWindowInit {
 
@@ -535,6 +534,6 @@ class BrowserWindowInit {
       this.browserWindow.setBounds(settings.restore('bounds', this.browserWindow.getBounds()));
     }
   }
-};
+}
 
 (new ElectronWrapperInit()).run();
