@@ -352,7 +352,7 @@ function showAboutWindow() {
 
 function discloseWindowID(browserWindow) {
   windowManager.setPrimaryWindowId(browserWindow.id);
-};
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
