@@ -19,11 +19,9 @@
 
 const fs = require('fs-extra');
 const path = require('path');
-
-const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
-const {app} = remote;
-
 const pkg = require('../../package.json');
+const {app} = remote;
+const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
