@@ -19,11 +19,10 @@
 
 // Modules
 const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
-const fs = require('fs');
+const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const rimraf = require('rimraf');
 /*eslint-disable no-unused-vars*/
 const debug = require('debug');
 const debugMain = debug('mainTmp');
@@ -189,7 +188,7 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   try {
     if (sessionID) {
       const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
-      rimraf.sync(partitionDir);
+      fs.removeSync(partitionDir);
       debugMain(`Deleted partition for account: ${sessionID}`);
     } else {
       debugMain(`Skipping partition deletion for account: ${accountID}`);
@@ -201,7 +200,7 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   // delete logs
   try {
     const logDir = path.join(app.getPath('userData'), 'logs', accountID);
-    rimraf.sync(logDir);
+    fs.removeSync(logDir);
     debugMain(`Deleted logs folder for account: ${accountID}`);
   } catch (error) {
     debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);

@@ -58,7 +58,6 @@
     "webpack": "3.5.6"
   },
   "dependencies": {
-    "debug": "3.0.1",
-    "fs-extra": "4.0.2"
+    "debug": "3.0.1"
   }
 }
