@@ -396,7 +396,9 @@ fs.readdir(LOG_DIR, (error, contents) => {
       }
     })
     .forEach((file) => {
-      if (file.endsWith('.log')) fs.renameSync(file, file.replace('.log', '.old'));
+      if (file.endsWith('.log')) {
+        fs.renameSync(file, file.replace('.log', '.old'));
+      }
     });
 });
 
