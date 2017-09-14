@@ -19,7 +19,7 @@
 
 
 
-const {app, shell, dialog, Menu} = require('electron');
+const {app, dialog, Menu, shell} = require('electron');
 const autoLaunch = require('auto-launch');
 const launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
 
@@ -29,7 +29,6 @@ const windowManager = require('./../window-manager');
 const settings = require('./../lib/settings');
 
 let menu;
-let menuTemplate;
 
 const launcher = new autoLaunch({
   name: config.NAME,
@@ -45,8 +44,8 @@ function getPrimaryWindow() {
 
 // TODO: disable menus when not in focus
 function sendAction(action) {
-  const window = getPrimaryWindow();
-  if (window) {
+  const primaryWindow = getPrimaryWindow();
+  if (primaryWindow) {
     getPrimaryWindow().webContents.send('system-menu', action);
   }
 }
@@ -56,7 +55,7 @@ const separatorTemplate = {
   type: 'separator',
 };
 
-let localeTemplate = {
+const localeTemplate = {
   i18n: 'menuLocale',
   submenu: [
     {
@@ -189,24 +188,26 @@ let localeTemplate = {
   ],
 };
 
-let aboutTemplate = {
+const aboutTemplate = {
   i18n: 'menuAbout',
   click: function() {menu.emit('about-wire');},
 };
 
-let signOutTemplate = {
+const signOutTemplate = {
   i18n: 'menuSignOut',
   click: function() {sendAction('sign-out');},
 };
 
-let conversationTemplate = {
+const conversationTemplate = {
   i18n: 'menuConversation',
   submenu: [
     {
       i18n: 'menuStart',
       accelerator: 'CmdOrCtrl+N',
       click: function() {sendAction('conversation-start');},
-    }, separatorTemplate, {
+    },
+    separatorTemplate,
+    {
       i18n: 'menuPing',
       accelerator: 'CmdOrCtrl+K',
       click: function() {sendAction('conversation-ping');},
@@ -216,63 +217,71 @@ let conversationTemplate = {
     }, {
       i18n: 'menuVideoCall',
       click: function() {sendAction('conversation-video-call');},
-    }, separatorTemplate, {
+    },
+    separatorTemplate,
+    {
       i18n: 'menuPeople',
       accelerator: 'CmdOrCtrl+I',
       click: function() {sendAction('conversation-people');},
-    }, {
+    },
+    {
       i18n: 'menuAddPeople',
       accelerator: 'Shift+CmdOrCtrl+K',
       click: function() {sendAction('conversation-add-people');},
-    }, separatorTemplate, {
+    },
+    separatorTemplate,
+    {
       i18n: 'menuArchive',
       accelerator: 'CmdOrCtrl+D',
       click: function() {sendAction('conversation-archive');},
-    }, {
+    },
+    {
       i18n: 'menuMute',
       accelerator: 'Alt+CmdOrCtrl+M',
       click: function() {sendAction('conversation-silence');},
-    }, {
+    },
+    {
       i18n: 'menuDelete',
       click: function() {sendAction('conversation-delete');},
     },
   ],
 };
 
-let showWireTemplate = {
+const showWireTemplate = {
   label: config.NAME,
   accelerator: 'CmdOrCtrl+1',
   click: function() {getPrimaryWindow().show();},
 };
 
-let toggleMenuTemplate = {
+const toggleMenuTemplate = {
   i18n: 'menuShowHide',
   type: 'checkbox',
   checked: settings.restore('showMenu', true),
   click: function() {
-    let mainBrowserWindow = getPrimaryWindow();
-    if (mainBrowserWindow.isMenuBarAutoHide()) {
-      mainBrowserWindow.setAutoHideMenuBar(false);
-      settings.save('showMenu', true);
-    } else {
-      mainBrowserWindow.setAutoHideMenuBar(true);
-      mainBrowserWindow.setMenuBarVisibility(false);
-      settings.save('showMenu', false);
+    const mainBrowserWindow = getPrimaryWindow();
+    const showMenu = mainBrowserWindow.isMenuBarAutoHide();
+
+    mainBrowserWindow.setAutoHideMenuBar(!showMenu);
+
+    if (!showMenu) {
+      mainBrowserWindow.setMenuBarVisibility(showMenu);
     }
+
+    settings.save('showMenu', showMenu);
   },
 };
 
-let toggleFullScreenTemplate = {
+const toggleFullScreenTemplate = {
   i18n: 'menuFullScreen',
   type: 'checkbox',
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
-    let mainBrowserWindow = getPrimaryWindow();
+    const mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
 };
 
-let toggleAutoLaunchTemplate = {
+const toggleAutoLaunchTemplate = {
   i18n: 'menuStartup',
   type: 'checkbox',
   checked: settings.restore('shouldAutoLaunch', false),
@@ -282,17 +291,35 @@ let toggleAutoLaunchTemplate = {
   },
 };
 
-let editTemplate = {
+const editTemplate = {
   i18n: 'menuEdit',
   submenu: [
-    {i18n: 'menuUndo', role: 'undo'},
-    {i18n: 'menuRedo', role: 'redo'},
+    {
+      i18n: 'menuUndo',
+      role: 'undo',
+    },
+    {
+      i18n: 'menuRedo',
+      role: 'redo',
+    },
     separatorTemplate,
-    {i18n: 'menuCut', role: 'cut'},
-    {i18n: 'menuCopy', role: 'copy'},
-    {i18n: 'menuPaste', role: 'paste'},
+    {
+      i18n: 'menuCut',
+      role: 'cut',
+    },
+    {
+      i18n: 'menuCopy',
+      role: 'copy',
+    },
+    {
+      i18n: 'menuPaste',
+      role: 'paste',
+    },
     separatorTemplate,
-    {i18n: 'menuSelectAll', role: 'selectall'},
+    {
+      i18n: 'menuSelectAll',
+      role: 'selectall',
+    },
     separatorTemplate,
     {
       i18n: 'menuSpelling',
@@ -306,21 +333,25 @@ let editTemplate = {
   ],
 };
 
-let windowTemplate = {
+const windowTemplate = {
   i18n: 'menuWindow',
   role: 'window',
   submenu: [
     {
       i18n: 'menuMinimize',
       role: 'minimize',
-    }, {
+    },
+    {
       i18n: 'menuClose',
       role: 'close',
-    }, separatorTemplate, {
+    },
+    separatorTemplate,
+    {
       i18n: 'menuNextConversation',
       accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
       click: function() {sendAction('conversation-next');},
-    }, {
+    },
+    {
       i18n: 'menuPreviousConversation',
       accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
       click: function() {sendAction('conversation-prev');},
@@ -328,30 +359,34 @@ let windowTemplate = {
   ],
 };
 
-let helpTemplate = {
+const helpTemplate = {
   i18n: 'menuHelp',
   role: 'help',
   submenu: [
     {
       i18n: 'menuLegal',
       click: function() {shell.openExternal(config.WIRE_LEGAL);},
-    }, {
+    },
+    {
       i18n: 'menuPrivacy',
       click: function() {shell.openExternal(config.WIRE_PRIVACY);},
-    }, {
+    },
+    {
       i18n: 'menuLicense',
       click: function() {shell.openExternal(config.WIRE_LICENSES);},
-    }, {
+    },
+    {
       i18n: 'menuSupport',
       click: function() {shell.openExternal(config.WIRE_SUPPORT);},
-    }, {
+    },
+    {
       i18n: 'menuWireURL',
       click: function() {shell.openExternal(config.WIRE);},
     },
   ],
 };
 
-let darwinTemplate = {
+const darwinTemplate = {
   label: config.NAME,
   submenu: [
     aboutTemplate,
@@ -366,18 +401,23 @@ let darwinTemplate = {
       i18n: 'menuServices',
       role: 'services',
       submenu: [],
-    }, separatorTemplate, {
+    },
+    separatorTemplate,
+    {
       i18n: 'menuHideWire',
       role: 'hide',
-    }, {
+    },
+    {
       i18n: 'menuHideOthers',
       role: 'hideothers',
-    }, {
+    },
+    {
       i18n: 'menuShowAll',
       role: 'unhide',
     },
     separatorTemplate,
-    signOutTemplate, {
+    signOutTemplate,
+    {
       i18n: 'menuQuit',
       accelerator: 'Command+Q',
       selector: 'terminate:',
@@ -385,7 +425,7 @@ let darwinTemplate = {
   ],
 };
 
-let win32Template = {
+const win32Template = {
   label: config.NAME,
   submenu: [
     {
@@ -396,7 +436,8 @@ let win32Template = {
     localeTemplate,
     toggleAutoLaunchTemplate,
     separatorTemplate,
-    signOutTemplate, {
+    signOutTemplate,
+    {
       i18n: 'menuQuit',
       accelerator: 'Alt+F4',
       click: function() {app.quit();},
@@ -404,7 +445,7 @@ let win32Template = {
   ],
 };
 
-let linuxTemplate = {
+const linuxTemplate = {
   label: config.NAME,
   submenu: [
     {
@@ -416,7 +457,8 @@ let linuxTemplate = {
     separatorTemplate,
     localeTemplate,
     separatorTemplate,
-    signOutTemplate, {
+    signOutTemplate,
+    {
       i18n: 'menuQuit',
       accelerator: 'Ctrl+Q',
       click: function() {app.quit();},
@@ -424,7 +466,7 @@ let linuxTemplate = {
   ],
 };
 
-menuTemplate = [
+const menuTemplate = [
   conversationTemplate,
   editTemplate,
   windowTemplate,
@@ -433,13 +475,15 @@ menuTemplate = [
 
 
 function processMenu(template, language) {
-  for (let item of template) {
+  for (const item of template) {
     if (item.submenu != null) {
       processMenu(item.submenu, language);
     }
+
     if (locale.label[language] === item.label) {
       item.checked = true;
     }
+
     if (item.i18n != null) {
       item.label = locale.getText(item.i18n);
     }
@@ -453,12 +497,10 @@ function changeLocale(language) {
     type: 'info',
     title: locale[language].restartNeeded,
     message: locale[language].restartLocale,
-    buttons: [locale[language].restartLater, process.platform === 'darwin' ? locale[language].menuQuit : locale[language].restartNow],
+    buttons: [locale[language].restartLater, locale[language].restartNow],
   }, function(response) {
-    if (response == 1) {
-      if (process.platform !== 'darwin') {
-        app.relaunch();
-      }
+    if (response === 1) {
+      app.relaunch();
       // Using exit instead of quit for the time being
       // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
       app.exit();
