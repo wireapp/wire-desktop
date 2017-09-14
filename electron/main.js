@@ -132,9 +132,7 @@ if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
 
-  ipcMain.on('wrapper-restart', () => {
-    squirrel.installUpdate();
-  });
+  ipcMain.on('wrapper-update', () => squirrel.installUpdate());
 
   // Stop further execution on update to prevent second tray icon
   if (shouldQuit) {
@@ -208,12 +206,14 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   }
 });
 
-ipcMain.on('wrapper-reload', () => {
+ipcMain.on('wrapper-relaunch', () => relaunchApp());
+
+function relaunchApp() {
   app.relaunch();
   // Using exit instead of quit for the time being
   // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
   app.exit();
-});
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
@@ -314,11 +314,7 @@ function showMainWindow() {
       } else {
         main.hide();
       }
-      return;
     }
-
-    debugMain('Persisting user configuration file...');
-    await settings._saveToFile();
   });
 
   main.webContents.on('crashed', () => {
@@ -357,21 +353,21 @@ function discloseWindowID(browserWindow) {
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
-app.on('window-all-closed', function() {
+app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on('activate', function() {
+app.on('activate', () => {
   if (main) {
     main.show();
   }
 });
 
-app.on('before-quit', function() {
-  quitting = true;
-});
+app.on('before-quit', () => quitting = true);
+
+app.on('quit', async () => await settings.persistToFile());
 
 ///////////////////////////////////////////////////////////////////////////////
 // System Menu & Tray Icon & Show window
