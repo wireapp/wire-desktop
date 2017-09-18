@@ -49,7 +49,7 @@
     "eslint-plugin-react": "7.3.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.1.0",
-    "grunt-git": "1.0.6",
+    "grunt-git": "1.0.7",
     "grunt-github-changes": "0.1.0",
     "grunt-gitinfo": "0.1.8",
     "jest": "21.1.0",
