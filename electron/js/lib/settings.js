@@ -58,7 +58,7 @@ class ConfigurationPersistence {
     return (typeof value !== 'undefined' ? value : defaultValue);
   }
 
-  _saveToFile() {
+  persistToFile() {
     return new Promise((resolve, reject) => {
       const datasInJSON = JSON.stringify(global._ConfigurationPersistence);
       this.debug('Saving datas to persistent storage: %o', datasInJSON);

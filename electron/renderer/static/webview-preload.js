@@ -17,13 +17,13 @@
  *
  */
 
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
+const pkg = require('../../package.json');
+const winston = require('winston');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
-
-const pkg = require('../../package.json');
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
@@ -46,73 +46,29 @@ function subscribeToWebappEvents() {
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
     if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
-      ipcRenderer.send('wrapper-restart');
+      ipcRenderer.send('wrapper-update');
     } else {
-      ipcRenderer.send('wrapper-reload');
+      ipcRenderer.send('wrapper-relaunch');
     }
   });
 }
 
 function subscribeToMainProcessEvents() {
-  ipcRenderer.on('sign-out', () => {
-    amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
-  });
-
-  ipcRenderer.on('preferences-show', () => {
-    amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
-  });
-
-  ipcRenderer.on('conversation-start', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.START);
-  });
-
-  ipcRenderer.on('conversation-ping', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.PING);
-  });
-
-  ipcRenderer.on('conversation-call', () => {
-    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false);
-  });
-
-  ipcRenderer.on('conversation-video-call', () => {
-    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true);
-  });
-
-  ipcRenderer.on('conversation-people', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE);
-  });
-
-  ipcRenderer.on('conversation-add-people', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE);
-  });
-
-  ipcRenderer.on('conversation-archive', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE);
-  });
-
-  ipcRenderer.on('conversation-silence', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
-  });
-
-  ipcRenderer.on('conversation-delete', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.DELETE);
-  });
-
-  ipcRenderer.on('conversation-prev', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.PREV);
-  });
-
-  ipcRenderer.on('conversation-next', () => {
-    amplify.publish(z.event.WebApp.SHORTCUT.NEXT);
-  });
-
-  ipcRenderer.on('conversation-show', (conversation_id) => {
-    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id);
-  });
-
-  ipcRenderer.on('wrapper-update-available', () => {
-    amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP);
-  });
+  ipcRenderer.on('conversation-add-people', () => amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE));
+  ipcRenderer.on('conversation-archive', () => amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE));
+  ipcRenderer.on('conversation-call', () => amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false));
+  ipcRenderer.on('conversation-delete', () => amplify.publish(z.event.WebApp.SHORTCUT.DELETE));
+  ipcRenderer.on('conversation-next', () => amplify.publish(z.event.WebApp.SHORTCUT.NEXT));
+  ipcRenderer.on('conversation-people', () => amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE));
+  ipcRenderer.on('conversation-ping', () => amplify.publish(z.event.WebApp.SHORTCUT.PING));
+  ipcRenderer.on('conversation-prev', () => amplify.publish(z.event.WebApp.SHORTCUT.PREV));
+  ipcRenderer.on('conversation-show', (conversation_id) => amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id));
+  ipcRenderer.on('conversation-silence', () => amplify.publish(z.event.WebApp.SHORTCUT.SILENCE));
+  ipcRenderer.on('conversation-start', () => amplify.publish(z.event.WebApp.SHORTCUT.START));
+  ipcRenderer.on('conversation-video-call', () => amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true));
+  ipcRenderer.on('preferences-show', () => amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT));
+  ipcRenderer.on('sign-out', () => amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA));
+  ipcRenderer.on('wrapper-update-available', () => amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP));
 }
 
 function exposeLibsodiumNeon() {
@@ -163,39 +119,21 @@ function replaceGoogleAuth() {
 }
 
 function enableFileLogging() {
-  // webapp uses winston refeference to define log level
-  global.winston = require('winston');
-
   const id = new URL(window.location).searchParams.get('id');
   const logName = require('../../js/config').CONSOLE_LOG;
-  const logDirectory = path.join(app.getPath('userData'), 'logs');
+  const logFilePath = path.join(app.getPath('userData'), 'logs', id, logName);
+  fs.createFileSync(logFilePath);
 
-  try {
-    if (!fs.existsSync(logDirectory)) {
-      fs.mkdirSync(logDirectory);
-    }
+  const logger = new winston.Logger();
+  logger.add(winston.transports.File, {
+    filename: logFilePath,
+    handleExceptions: true,
+  });
 
-    const subDirectory = path.join(logDirectory, id);
+  logger.info(pkg.productName, 'Version', pkg.version);
 
-    if (!fs.existsSync(subDirectory)) {
-      fs.mkdirSync(subDirectory);
-    }
-
-    const logFilePath = path.join(subDirectory, logName);
-
-    console.log(`Logging into file: ${logFilePath}`);
-
-    winston
-      .add(winston.transports.File, {
-        filename: logFilePath,
-        handleExceptions: true,
-      })
-      .remove(winston.transports.Console)
-      .info(pkg.productName, 'Version', pkg.version);
-
-  } catch (error) {
-    console.warn(`Failed to create log file: ${error.message}`);
-  }
+  // webapp uses global winston reference to define log level
+  global.winston = logger;
 }
 
 function reportWebappVersion() {
