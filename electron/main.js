@@ -18,39 +18,33 @@
  */
 
 // Modules
-const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
-const fs = require('fs');
+const debug = require('debug');
+const debugMain = debug('mainTmp');
+const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const rimraf = require('rimraf');
-/*eslint-disable no-unused-vars*/
-const debug = require('debug');
-const debugMain = debug('mainTmp');
-/*eslint-enable no-unused-vars*/
+const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
-/*eslint-disable no-unused-vars*/
-const USER_DATAS_PATH = app.getPath('userData');
-/*eslint-enable no-unused-vars*/
-
 // Local files defines
+const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
+const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
+const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
-const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 
 // Configuration persistence
 const settings = require('./js/lib/settings');
 
 // Wrapper modules
 const certutils = require('./js/certutils');
+const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
 const googleAuth = require('./js/lib/googleAuth');
 const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
-const developerMenu = require('./js/menu/developer');
 const tray = require('./js/menu/tray');
 const util = require('./js/util');
 const windowManager = require('./js/window-manager');
@@ -132,9 +126,7 @@ if (process.platform === 'win32') {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
 
-  ipcMain.on('wrapper-restart', () => {
-    squirrel.installUpdate();
-  });
+  ipcMain.on('wrapper-update', () => squirrel.installUpdate());
 
   // Stop further execution on update to prevent second tray icon
   if (shouldQuit) {
@@ -189,7 +181,7 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   try {
     if (sessionID) {
       const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
-      rimraf.sync(partitionDir);
+      fs.removeSync(partitionDir);
       debugMain(`Deleted partition for account: ${sessionID}`);
     } else {
       debugMain(`Skipping partition deletion for account: ${accountID}`);
@@ -200,20 +192,21 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
   // delete logs
   try {
-    const logDir = path.join(app.getPath('userData'), 'logs', accountID);
-    rimraf.sync(logDir);
+    fs.removeSync(LOG_DIR);
     debugMain(`Deleted logs folder for account: ${accountID}`);
   } catch (error) {
     debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
   }
 });
 
-ipcMain.on('wrapper-reload', () => {
+ipcMain.on('wrapper-relaunch', () => relaunchApp());
+
+function relaunchApp() {
   app.relaunch();
   // Using exit instead of quit for the time being
   // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
   app.exit();
-});
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
@@ -231,10 +224,8 @@ function showMainWindow() {
     show: false,
     webPreferences: {
       backgroundThrottling: false,
-      nodeIntegration: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
-
-      // Enable <webview>
       webviewTag: true,
     },
   });
@@ -314,11 +305,7 @@ function showMainWindow() {
       } else {
         main.hide();
       }
-      return;
     }
-
-    debugMain('Persisting user configuration file...');
-    await settings._saveToFile();
   });
 
   main.webContents.on('crashed', () => {
@@ -352,26 +339,26 @@ function showAboutWindow() {
 
 function discloseWindowID(browserWindow) {
   windowManager.setPrimaryWindowId(browserWindow.id);
-};
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
-app.on('window-all-closed', function() {
+app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on('activate', function() {
+app.on('activate', () => {
   if (main) {
     main.show();
   }
 });
 
-app.on('before-quit', function() {
-  quitting = true;
-});
+app.on('before-quit', () => quitting = true);
+
+app.on('quit', async () => await settings.persistToFile());
 
 ///////////////////////////////////////////////////////////////////////////////
 // System Menu & Tray Icon & Show window
@@ -391,25 +378,24 @@ app.on('ready', function() {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-// Delete the console.log
+// Rename "console.log" to "console.old" (for every log directory of every account)
 ///////////////////////////////////////////////////////////////////////////////
-const logDir = path.join(app.getPath('userData'), 'logs');
-fs.readdir(logDir, (error, files) => {
-  if (error) {
-    console.log(`Failed to read log directory with error: ${error.message}`);
-    return;
-  }
+fs.readdir(LOG_DIR, (error, contents) => {
+  if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
 
-  // TODO filter out dotfiles
-  for (const file of files) {
-    const consoleLog = path.join(logDir, file, config.CONSOLE_LOG);
-    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (renameError) => {
-      if (renameError) {
-        console.log(`Failed to rename log file (${consoleLog}) with error: ${renameError.message}`);
+  contents.map((file) => path.join(LOG_DIR, file, config.CONSOLE_LOG))
+    .filter((file) => {
+      try {
+        return fs.statSync(file).isFile();
+      } catch(error) {
+        return undefined;
+      }
+    })
+    .forEach((file) => {
+      if (file.endsWith('.log')) {
+        fs.renameSync(file, file.replace('.log', '.old'));
       }
     });
-  }
-
 });
 
 class ElectronWrapperInit {
@@ -498,7 +484,7 @@ class ElectronWrapperInit {
       }
     });
   }
-};
+}
 
 class BrowserWindowInit {
 
@@ -545,6 +531,6 @@ class BrowserWindowInit {
       this.browserWindow.setBounds(settings.restore('bounds', this.browserWindow.getBounds()));
     }
   }
-};
+}
 
 (new ElectronWrapperInit()).run();

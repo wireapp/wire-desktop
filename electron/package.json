@@ -16,6 +16,7 @@
   "dependencies": {
     "auto-launch": "5.0.1",
     "debug": "2.6.8",
+    "fs-extra": "4.0.2",
     "googleapis": "17.1.0",
     "image-type": "3.0.0",
     "jsrsasign": "7.1.2",
@@ -31,7 +32,6 @@
     "redux-logger": "3.0.6",
     "redux-thunk": "2.2.0",
     "request": "2.76.0",
-    "rimraf": "2.6.1",
     "spellchecker": "3.3.1",
     "uuid": "3.1.0",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"

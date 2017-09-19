@@ -17,8 +17,6 @@
  *
  */
 
-
-
 const {BrowserWindow} = require('electron');
 
 let primaryWindowId;
