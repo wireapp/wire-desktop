@@ -45,7 +45,7 @@ function subscribeToWebappEvents() {
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
-    if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
+    if (update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP) {
       ipcRenderer.send('wrapper-update');
     } else {
       ipcRenderer.send('wrapper-relaunch');
