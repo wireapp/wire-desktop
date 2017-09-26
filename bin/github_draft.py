@@ -67,23 +67,21 @@ if __name__ == '__main__':
       if (file.endswith(('.asc','.AppImage','.deb','.exe','.pkg'))):
         filename = os.path.join(os.getcwd(), file)
         print 'Upload asset %s...' % filename
-        with open(filename, 'rb') as f:
-          filedata = f.read()
-          response = requests.post('%s&name=%s' % (upload_url, file), data=filedata)
+        response = requests.post('%s&name=%s' % (upload_url, file), data=file(filename).read())
 
-          if response.status_code in [200, 201]:
-            print 'Upload successful!'
+        if response.status_code in [200, 201]:
+          print 'Upload successful!'
+        else:
+          print 'Upload failed with %s :(' % (response.status_code)
+          print response.text
+          print 'Delete draft, because upload failed'
+          response = requests.delete('%s?access_token=%s' % (draft_data['url'], GITHUB_ACCESS_TOKEN))
+          if response.status_code in [200, 204]:
+            print 'Draft deleted!'
           else:
-            print 'Upload failed with %s :(' % (response.status_code)
+            print 'Delete failed with %s :(' % (response.status_code)
             print response.text
-            print 'Delete draft, because upload failed'
-            response = requests.delete('%s?access_token=%s' % (draft_data['url'], GITHUB_ACCESS_TOKEN))
-            if response.status_code in [200, 204]:
-              print 'Draft deleted!'
-            else:
-              print 'Delete failed with %s :(' % (response.status_code)
-              print response.text
-            exit(1)
+          exit(1)
   else:
     print 'Error %s :(' % (response.status_code)
     print response.text
