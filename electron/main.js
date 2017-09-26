@@ -149,7 +149,7 @@ if (process.platform === 'linux') {
 ///////////////////////////////////////////////////////////////////////////////
 // Make sure not to close the window to the tray on Gnome
 ///////////////////////////////////////////////////////////////////////////////
-function closeButton() {
+function onCloseMain() {
   if (process.platform === 'linux' && process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('GNOME')) {
     main.minimize();
   } else {
@@ -310,11 +310,11 @@ function showMainWindow() {
 
       if (isFullScreen) {
         main.once('leave-full-screen', () => {
-          closeButton();
+          onCloseMain();
         });
         main.setFullScreen(false);
       } else {
-        closeButton();
+        onCloseMain();
       }
     }
   });
