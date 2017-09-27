@@ -93,9 +93,16 @@ if (config.DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
-if (argv.portable) {
-  const EXEC_PATH = process.env.APPIMAGE || process.execPath;
-  const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+///////////////////////////////////////////////////////////////////////////////
+// Set data path for portable versions
+///////////////////////////////////////////////////////////////////////////////
+if (process.env.PORTABLE_EXECUTABLE_DIR || argv.portable) {
+  const EXEC_PATH = process.env.PORTABLE_EXECUTABLE_DIR || process.env.APPIMAGE || process.execPath;
+  if (process.env.PORTABLE_EXECUTABLE_DIR || process.env.APPIMAGE ) {
+    const USER_PATH = path.join(EXEC_PATH, '..', 'WireData');
+  } else {
+    const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+  }
   app.setPath('userData', USER_PATH);
 }
 
