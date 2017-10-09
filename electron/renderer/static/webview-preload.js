@@ -45,7 +45,7 @@ function subscribeToWebappEvents() {
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
-    if (update_source === z.announce.UPDATE_SOURCE.DESKTOP) {
+    if (update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP) {
       ipcRenderer.send('wrapper-update');
     } else {
       ipcRenderer.send('wrapper-relaunch');
@@ -120,20 +120,23 @@ function replaceGoogleAuth() {
 
 function enableFileLogging() {
   const id = new URL(window.location).searchParams.get('id');
-  const logName = require('../../js/config').CONSOLE_LOG;
-  const logFilePath = path.join(app.getPath('userData'), 'logs', id, logName);
-  fs.createFileSync(logFilePath);
 
-  const logger = new winston.Logger();
-  logger.add(winston.transports.File, {
-    filename: logFilePath,
-    handleExceptions: true,
-  });
+  if (id) {
+    const logName = require('../../js/config').CONSOLE_LOG;
+    const logFilePath = path.join(app.getPath('userData'), 'logs', id, logName);
+    fs.createFileSync(logFilePath);
 
-  logger.info(pkg.productName, 'Version', pkg.version);
+    const logger = new winston.Logger();
+    logger.add(winston.transports.File, {
+      filename: logFilePath,
+      handleExceptions: true,
+    });
 
-  // webapp uses global winston reference to define log level
-  global.winston = logger;
+    logger.info(pkg.productName, 'Version', pkg.version);
+
+    // webapp uses global winston reference to define log level
+    global.winston = logger;
+  }
 }
 
 function reportWebappVersion() {

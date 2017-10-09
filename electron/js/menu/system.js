@@ -497,13 +497,17 @@ function changeLocale(language) {
     type: 'info',
     title: locale[language].restartNeeded,
     message: locale[language].restartLocale,
-    buttons: [locale[language].restartLater, locale[language].restartNow],
+    buttons: [locale[language].restartLater, process.platform === 'darwin' ? locale[language].menuQuit : locale[language].restartNow],
   }, function(response) {
     if (response === 1) {
-      app.relaunch();
-      // Using exit instead of quit for the time being
-      // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-      app.exit();
+      if (process.platform === 'darwin') {
+        app.quit();
+      } else {
+        app.relaunch();
+        // Using exit instead of quit for the time being
+        // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+        app.exit();
+      }
     }
   });
 }

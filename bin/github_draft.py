@@ -67,8 +67,8 @@ if __name__ == '__main__':
       if (file.endswith(('.asc','.AppImage','.deb','.exe','.pkg'))):
         filename = os.path.join(os.getcwd(), file)
         print 'Upload asset %s...' % filename
-        files = {'file': open(filename, 'rb')}
-        response = requests.post('%s&name=%s' % (upload_url, file), files=files)
+        headers = {'Content-type': 'application/binary'}
+        response = requests.post('%s&name=%s' % (upload_url, file), headers=headers, data=open(filename, 'rb').read())
 
         if response.status_code in [200, 201]:
           print 'Upload successful!'
