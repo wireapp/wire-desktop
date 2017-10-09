@@ -31,12 +31,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: -apple-system,
-    ".SFNSText-Regular",
-    "Helvetica Neue",
-    "Segoe UI",
-    Arial,
-    sans-serif;
+  font-family: -apple-system, ".SFNSText-Regular", "Helvetica Neue", "Segoe UI", Arial, sans-serif;
   font-size: 11px;
   text-align: center;
   user-select: none;

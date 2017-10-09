@@ -49,11 +49,7 @@ body {
   width: 100vw;
   background-image: linear-gradient(0, #2391d3, #68b3e0);
   background-repeat: no-repeat;
-  font-family: BlinkMacSystemFont,
-    -apple-system,
-    Helvetica Neue,
-    Arial,
-    sans-serif;
+  font-family: BlinkMacSystemFont, -apple-system, Helvetica Neue, Arial, sans-serif;
   color: var(--graphite-dark);
 }
 
