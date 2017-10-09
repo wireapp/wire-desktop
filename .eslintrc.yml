@@ -1,28 +1,30 @@
----
-  parserOptions:
-    sourceType: module
-    ecmaVersion: 8
-    ecmaFeatures:
-      jsx: true
-      experimentalObjectRestSpread: true
-      globalReturn: true
-  env:
-    browser: true
-    node: true
-  plugins: 
-    - react
-  rules:
-    comma-dangle: [2, always-multiline]
-    handle-callback-err: 2
-    indent: [2, 2, {SwitchCase: 1}]
-    keyword-spacing: 2
-    no-dupe-class-members: 2
-    no-multi-spaces: 2
-    no-shadow: 2
-    no-unused-expressions: 2
-    no-unused-vars: [2, {args: none}]
-    quotes: [2, single, avoid-escape]
-    semi: [2, always]
-    space-before-blocks: 2
-    react/jsx-uses-react: 2
-    react/jsx-uses-vars: 2
+env:
+  browser: true
+  node: true
+
+parserOptions:
+  sourceType: module
+  ecmaVersion: 8
+  ecmaFeatures:
+    jsx: true
+    experimentalObjectRestSpread: true
+    globalReturn: true
+
+plugins:
+  - react
+
+rules:
+  comma-dangle: [2, always-multiline]
+  handle-callback-err: 2
+  indent: [2, 2, {SwitchCase: 1}]
+  keyword-spacing: 2
+  no-dupe-class-members: 2
+  no-multi-spaces: 2
+  no-shadow: 2
+  no-unused-expressions: 2
+  no-unused-vars: [2, {args: none}]
+  quotes: [2, single, avoid-escape]
+  semi: [2, always]
+  space-before-blocks: 2
+  react/jsx-uses-react: 2
+  react/jsx-uses-vars: 2
