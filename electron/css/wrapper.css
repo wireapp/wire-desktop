@@ -23,9 +23,7 @@ body.os-mac * {
   cursor: default !important;
 }
 
-body.os-mac .text,
-body.os-mac textarea,
-body.os-mac input[type="text"]:not(.search-input) {
+body.os-mac .text, body.os-mac textarea, body.os-mac input[type="text"]:not(.search-input) {
   cursor: text !important;
 }
 
