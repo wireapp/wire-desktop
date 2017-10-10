@@ -27,9 +27,7 @@ webFrame.setZoomLevelLimits(1, 1);
 window.locStrings = locale[locale.getCurrent()];
 window.locStringsDefault = locale['en'];
 
-function getSelectedWebview() {
-  return document.querySelector('.Webview:not(.hide)');
-};
+const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('system-menu', (event, action) => {
