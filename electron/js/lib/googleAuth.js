@@ -79,19 +79,19 @@ function getAccessToken(scopes, clientId, clientSecret) {
     getAuthorizationCode(scopes, clientId, clientSecret)
       .then(function (code) {
         const data = qs.stringify({
-          code: code,
           client_id: clientId,
           client_secret: clientSecret,
+          code: code,
           grant_type: 'authorization_code',
           redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
         });
 
         request.post('https://accounts.google.com/o/oauth2/token', {
+          body: data,
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: data,
         }, function(error, response, body) {
           if (error) {
             reject(error);
@@ -105,6 +105,6 @@ function getAccessToken(scopes, clientId, clientSecret) {
 
 
 module.exports = {
-  getAuthorizationCode,
   getAccessToken,
+  getAuthorizationCode,
 };

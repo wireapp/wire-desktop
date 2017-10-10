@@ -26,5 +26,7 @@ rules:
   quotes: [2, single, avoid-escape]
   semi: [2, always]
   space-before-blocks: 2
+  sort-keys: [2, asc, {caseSensitive: true, natural: true}]
+  sort-vars: 2
   react/jsx-uses-react: 2
   react/jsx-uses-vars: 2

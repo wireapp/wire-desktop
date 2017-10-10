@@ -40,10 +40,6 @@ module.exports = {
     return upperLeftVisible || lowerRightVisible;
   },
 
-  isMatchingHost: (_url, _baseUrl) => {
-    return url.parse(_url).host === url.parse(_baseUrl).host;
-  },
-
   isMatchingEmbed: (_url) => {
     const hostname = url.parse(_url).hostname;
 
@@ -76,6 +72,21 @@ module.exports = {
     return false;
   },
 
+  isMatchingHost: (_url, _baseUrl) => {
+    return url.parse(_url).host === url.parse(_baseUrl).host;
+  },
+
+  resizeToBig: function(win) {
+    if (process.platform !== 'darwin') {
+      win.setMenuBarVisibility(true);
+    }
+    win.setMinimumSize(config.MIN_WIDTH_MAIN, config.MIN_HEIGHT_MAIN);
+    win.setSize(config.DEFAULT_WIDTH_MAIN, config.DEFAULT_HEIGHT_MAIN);
+    win.setResizable(true);
+    win.setMaximizable(true);
+    win.center();
+  },
+
   resizeToSmall: function(win) {
     if (process.platform !== 'darwin') {
       win.setMenuBarVisibility(false);
@@ -90,17 +101,6 @@ module.exports = {
     win.setMinimumSize(config.WIDTH_AUTH, height);
     win.setSize(config.WIDTH_AUTH, height);
     win.setResizable(false);
-    win.center();
-  },
-
-  resizeToBig: function(win) {
-    if (process.platform !== 'darwin') {
-      win.setMenuBarVisibility(true);
-    }
-    win.setMinimumSize(config.MIN_WIDTH_MAIN, config.MIN_HEIGHT_MAIN);
-    win.setSize(config.DEFAULT_WIDTH_MAIN, config.DEFAULT_HEIGHT_MAIN);
-    win.setResizable(true);
-    win.setMaximizable(true);
     win.center();
   },
 };

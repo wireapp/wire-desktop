@@ -21,15 +21,15 @@ import uuid from 'uuid/v4';
 
 function createAccount(sessionID) {
   return {
-    id: uuid(),
-    teamID: undefined,
-    userID: undefined,
-    sessionID: sessionID,
-    picture: undefined,
-    name: undefined,
-    visible: true,
     accentID: undefined,
     badgeCount: 0,
+    id: uuid(),
+    name: undefined,
+    picture: undefined,
+    sessionID: sessionID,
+    teamID: undefined,
+    userID: undefined,
+    visible: true,
   };
 }
 

@@ -45,11 +45,11 @@ module.exports = {
     appIcon = new Tray(iconPath);
     let contextMenu = Menu.buildFromTemplate([
       {
-        label: locale.getText('trayOpen'),
         click: function() {windowManager.showPrimaryWindow();},
+        label: locale.getText('trayOpen'),
       }, {
-        label: locale.getText('trayQuit'),
         click: function() {app.quit();},
+        label: locale.getText('trayQuit'),
       },
     ]);
 
@@ -72,13 +72,13 @@ module.exports = {
     lastUnreadCount = count;
   },
 
-  useDefaultIcon: function() {
-    if (appIcon == null) return;
-    appIcon.setImage(iconPath);
-  },
-
   useBadgeIcon: function() {
     if (appIcon == null) return;
     appIcon.setImage(iconBadgePath);
+  },
+
+  useDefaultIcon: function() {
+    if (appIcon == null) return;
+    appIcon.setImage(iconPath);
   },
 };

@@ -19,12 +19,14 @@
 
 import { connect } from 'react-redux';
 
-import { updateAccountBadgeCount, updateAccountData, abortAccountCreation, switchAccount } from '../actions';
+import { abortAccountCreation, switchAccount, updateAccountBadgeCount, updateAccountData } from '../actions';
 import Webviews from '../components/Webviews';
 
-const WebviewsContainer = connect(
-  (state) => ({ accounts: state.accounts }),
-  { updateAccountBadgeCount, updateAccountData, abortAccountCreation, switchAccount }
-)(Webviews);
+const WebviewsContainer = connect(state => ({ accounts: state.accounts }), {
+  abortAccountCreation,
+  switchAccount,
+  updateAccountBadgeCount,
+  updateAccountData,
+})(Webviews);
 
 export default WebviewsContainer;

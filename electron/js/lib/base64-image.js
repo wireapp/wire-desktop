@@ -25,7 +25,7 @@ const arrayify = require('./arrayify');
 const datauri = require('./datauri');
 
 function fetch(url, callback) {
-  request({ url: url, encoding: null }, function(error, response, body) {
+  request({ encoding: null, url: url }, function(error, response, body) {
     if (error) return callback(error);
     let mimetype = response.headers['content-type'];
     callback(null, datauri.fromBuffer(mimetype, body));

@@ -38,8 +38,8 @@ const TeamIcon = ({ account, accentID }) =>
   </div>;
 
 TeamIcon.propTypes = {
-  account: PropTypes.object.isRequired,
   accentID: PropTypes.number,
+  account: PropTypes.object.isRequired,
   onClick: PropTypes.func,
 };
 

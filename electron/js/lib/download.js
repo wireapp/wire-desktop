@@ -35,7 +35,7 @@ module.exports = function(fileName, bytes) {
 
     if (type && type.ext) {
       options.filters = [
-        {name: 'Images', extensions: [type.ext]},
+        {extensions: [type.ext], name: 'Images'},
       ];
     }
 
