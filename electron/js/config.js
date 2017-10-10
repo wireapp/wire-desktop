@@ -27,28 +27,22 @@ const config = {
   WIRE_PRIVACY: 'https://wire.com/privacy/',
   WIRE_LICENSES: 'https://wire.com/legal/licenses/',
 
-  DEV_URL: 'https://wire-webapp-dev.zinfra.io/',
-  EDGE_URL: 'https://wire-webapp-edge.zinfra.io/',
-  INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
-  LOCALHOST_URL: 'http://localhost:8888/',
-  PROD_URL: 'https://app.wire.com/',
-  STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
+  ABOUT: {
+    HEIGHT: 256,
+    WIDTH: 304,
+  },
 
-  DEV: 'dev',
-  EDGE: 'edge',
-  INTERNAL: 'internal',
-  LOCALHOST: 'localhost',
-  PROD: 'prod',
-  STAGING: 'staging',
+  AUTH: {
+    HEIGHT: 576,
+    WIDTH: 400,
+  },
 
-  MIN_WIDTH_MAIN: 760,
-  MIN_HEIGHT_MAIN: 512,
-
-  DEFAULT_WIDTH_MAIN: 1024,
-  DEFAULT_HEIGHT_MAIN: 768,
-
-  WIDTH_AUTH: 400,
-  HEIGHT_AUTH: 576,
+  MAIN: {
+    DEFAULT_HEIGHT: 768,
+    DEFAULT_WIDTH: 1024,
+    MIN_HEIGHT: 512,
+    MIN_WIDTH: 760,
+  },
 
   UPDATE_DELAY: 5 * 60 * 1000,
   UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
@@ -84,30 +78,6 @@ const config = {
         'developer.spotify.com',
       ],
     },
-  ],
-
-  LOCALE: [
-    'en',
-    'cs',
-    'da',
-    'de',
-    'el',
-    'es',
-    'fi',
-    'fr',
-    'hr',
-    'hu',
-    'it',
-    'lt',
-    'nl',
-    'pl',
-    'pt',
-    'ro',
-    'ru',
-    'sk',
-    'sl',
-    'tr',
-    'uk',
   ],
 
   RAYGUN_API_KEY: '',

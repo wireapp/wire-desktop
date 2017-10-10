@@ -30,6 +30,10 @@ const environment = require('./environment');
 const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
+  capitalize: (input) => {
+    return input.charAt(0).toUpperCase() + input.substr(1);
+  },
+
   isInView: (win) => {
     const windowBounds = win.getBounds();
     const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
@@ -80,11 +84,11 @@ module.exports = {
       win.setMenuBarVisibility(false);
     }
 
-    const height = config.HEIGHT_AUTH + (environment.platform.IS_WINDOWS ? 40 : 0);
+    const height = config.AUTH.HEIGHT + (environment.platform.IS_WINDOWS ? 40 : 0);
     win.setFullScreen(false);
     win.setMaximizable(false);
-    win.setMinimumSize(config.WIDTH_AUTH, height);
-    win.setSize(config.WIDTH_AUTH, height);
+    win.setMinimumSize(config.AUTH.WIDTH, height);
+    win.setSize(config.AUTH.WIDTH, height);
     win.setResizable(false);
     win.center();
   },
@@ -93,8 +97,8 @@ module.exports = {
     if (!environment.platform.IS_MAC_OS) {
       win.setMenuBarVisibility(true);
     }
-    win.setMinimumSize(config.MIN_WIDTH_MAIN, config.MIN_HEIGHT_MAIN);
-    win.setSize(config.DEFAULT_WIDTH_MAIN, config.DEFAULT_HEIGHT_MAIN);
+    win.setMinimumSize(config.MAIN.MIN_WIDTH, config.MAIN.MIN_HEIGHT);
+    win.setSize(config.MAIN.DEFAULT_WIDTH, config.MAIN.DEFAULT_HEIGHT);
     win.setResizable(true);
     win.setMaximizable(true);
     win.center();

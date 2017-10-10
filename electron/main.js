@@ -40,6 +40,7 @@ const settings = require('./js/lib/settings');
 
 // Wrapper modules
 const certutils = require('./js/certutils');
+const config = require('./js/config');
 const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
 const environment = require('./js/environment');
@@ -52,27 +53,11 @@ const windowManager = require('./js/window-manager');
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const config = require('./js/config');
+const BASE_URL = environment.web.get_url_webapp(argv.env);
 
 // Icon
 const ICON = `wire.${(environment.platform.IS_WINDOWS ? 'ico' : 'png')}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
-
-const BASE_URL = (() => {
-  if (argv.env) return argv.env;
-
-  if (!argv.env && environment.app.IS_DEVELOPMENT) {
-    switch (settings.restore('env', config.INTERNAL)) {
-      case config.DEV: return config.DEV_URL;
-      case config.EDGE: return config.EDGE_URL;
-      case config.INTERNAL: return config.INTERNAL_URL;
-      case config.LOCALHOST: return config.LOCALHOST_URL;
-      case config.STAGING: return config.STAGING_URL;
-    }
-  }
-
-  return argv.env || config.PROD_URL;
-})();
 
 
 let main;
@@ -215,10 +200,10 @@ const showMainWindow = () => {
   main = new BrowserWindow({
     title: config.NAME,
     titleBarStyle: 'hidden-inset',
-    width: config.DEFAULT_WIDTH_MAIN,
-    height: config.DEFAULT_HEIGHT_MAIN,
-    minWidth: config.MIN_WIDTH_MAIN,
-    minHeight: config.MIN_HEIGHT_MAIN,
+    width: config.MAIN.DEFAULT_WIDTH,
+    height: config.MAIN.DEFAULT_HEIGHT,
+    minWidth: config.MAIN.MIN_WIDTH,
+    minHeight: config.MAIN.MIN_HEIGHT,
     autoHideMenuBar: !settings.restore('showMenu', true),
     icon: ICON_PATH,
     show: false,
@@ -315,8 +300,8 @@ const showAboutWindow = () => {
   if (about === undefined) {
     about = new BrowserWindow({
       title: config.NAME,
-      width: 304,
-      height: 256,
+      width: config.ABOUT.WIDTH,
+      height: config.ABOUT.HEIGHT,
       resizable: false,
       fullscreen: false,
     });
@@ -497,10 +482,10 @@ class BrowserWindowInit {
       title: config.NAME,
       titleBarStyle: 'hidden-inset',
 
-      width: config.DEFAULT_WIDTH_MAIN,
-      height: config.DEFAULT_HEIGHT_MAIN,
-      minWidth: config.MIN_WIDTH_MAIN,
-      minHeight: config.MIN_HEIGHT_MAIN,
+      width: config.MAIN.DEFAULT_WIDTH,
+      height: config.MAIN.DEFAULT_HEIGHT,
+      minWidth: config.MAIN.MIN_WIDTH,
+      minHeight: config.MAIN.MIN_HEIGHT,
 
       autoHideMenuBar: !settings.restore('showMenu', true),
       icon: ICON_PATH,
