@@ -51,22 +51,22 @@ const selection = {
 const textMenuTemplate = [
   {
     label: locale.getText('menuCut'),
-    role: 'cut'
+    role: 'cut',
   },
   {
     label: locale.getText('menuCopy'),
-    role: 'copy'
+    role: 'copy',
   },
   {
     label: locale.getText('menuPaste'),
-    role: 'paste'
+    role: 'paste',
   },
   {
-    type: 'separator'
+    type: 'separator',
   },
   {
     label: locale.getText('menuSelectAll'),
-    role: 'selectall'
+    role: 'selectall',
   },
 ];
 
@@ -80,13 +80,13 @@ const createTextMenu = () => {
       for (const suggestion of selection.suggestions.reverse()) {
         template.unshift({
           label: suggestion,
-          click: (menuItem) =>  webContents.replaceMisspelling(menuItem.label),
+          click: (menuItem) => webContents.replaceMisspelling(menuItem.label),
         });
       }
     } else {
       template.unshift({
         label: locale.getText('menuNoSuggestions'),
-        enabled: false
+        enabled: false,
       });
     }
   }

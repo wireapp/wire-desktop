@@ -38,7 +38,7 @@ module.exports = (fileName, bytes) => {
           name: 'Images',
           extensions: [
             type.ext,
-          ]
+          ],
         },
       ];
     }
