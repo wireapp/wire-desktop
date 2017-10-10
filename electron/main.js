@@ -60,15 +60,15 @@ const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 const BASE_URL = (() => {
   if (!argv.env && config.DEVELOPMENT) {
     switch (settings.restore('env', config.INTERNAL)) {
-      case config.DEV: return config.DEV_URL;
-      case config.EDGE: return config.EDGE_URL;
-      case config.INTERNAL: return config.INTERNAL_URL;
-      case config.LOCALHOST: return config.LOCALHOST_URL;
-      case config.STAGING: return config.STAGING_URL;
+      case config.DEV: return config.URL_DEV;
+      case config.EDGE: return config.URL_EDGE;
+      case config.INTERNAL: return config.URL_INTERNAL;
+      case config.LOCALHOST: return config.URL_LOCALHOST;
+      case config.STAGING: return config.URL_STAGING;
     }
   }
 
-  return argv.env || config.PROD_URL;
+  return argv.env || config.URL_PROD;
 })();
 
 

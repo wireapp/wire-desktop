@@ -92,14 +92,14 @@ module.exports = {
       win.setMenuBarVisibility(false);
     }
 
-    let height = config.HEIGHT_AUTH;
+    let height = config.AUTH_HEIGHT;
     if (process.platform === 'win32') {
       height += 40;
     }
     win.setFullScreen(false);
     win.setMaximizable(false);
-    win.setMinimumSize(config.WIDTH_AUTH, height);
-    win.setSize(config.WIDTH_AUTH, height);
+    win.setMinimumSize(config.AUTH_WIDTH, height);
+    win.setSize(config.AUTH_WIDTH, height);
     win.setResizable(false);
     win.center();
   },

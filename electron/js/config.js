@@ -22,71 +22,50 @@
 const pkg = require('./../package.json');
 
 let config = {
-  WIRE: 'https://wire.com',
-  WIRE_SUPPORT: 'https://support.wire.com',
-  WIRE_LEGAL: 'https://wire.com/legal/',
-  WIRE_PRIVACY: 'https://wire.com/privacy/',
-  WIRE_LICENSES: 'https://wire.com/legal/licenses/',
-
-  DEV_URL: 'https://wire-webapp-dev.zinfra.io/',
-  EDGE_URL: 'https://wire-webapp-edge.zinfra.io/',
-  INTERNAL_URL: 'https://wire-webapp-staging.wire.com/?env=prod',
-  LOCALHOST_URL: 'http://localhost:8888/',
-  PROD_URL: 'https://app.wire.com/',
-  STAGING_URL: 'https://wire-webapp-staging.zinfra.io/',
-
+  AUTH_HEIGHT: 576,
+  AUTH_WIDTH: 400,
+  CONSOLE_LOG: 'console.log',
+  DEFAULT_HEIGHT_MAIN: 768,
+  DEFAULT_WIDTH_MAIN: 1024,
   DEV: 'dev',
   EDGE: 'edge',
-  INTERNAL: 'internal',
-  LOCALHOST: 'localhost',
-  PROD: 'prod',
-  STAGING: 'staging',
-
-  MIN_WIDTH_MAIN: 760,
-  MIN_HEIGHT_MAIN: 512,
-
-  DEFAULT_WIDTH_MAIN: 1024,
-  DEFAULT_HEIGHT_MAIN: 768,
-
-  WIDTH_AUTH: 400,
-  HEIGHT_AUTH: 576,
-
-  UPDATE_DELAY: 5 * 60 * 1000,
-  UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
-
   EMBED_DOMAINS: [
     {
-      name: 'YouTube',
-      hostname: ['www.youtube-nocookie.com'],
       allowedExternalLinks: [
         'www.youtube.com',
       ],
+      hostname: ['www.youtube-nocookie.com'],
+      name: 'YouTube',
     },
     {
-      name: 'Vimeo',
-      hostname: ['player.vimeo.com'],
       allowedExternalLinks: [
         'vimeo.com',
         'player.vimeo.com',
       ],
+      hostname: ['player.vimeo.com'],
+      name: 'Vimeo',
     },
     {
-      name: 'SoundCloud',
-      hostname: ['w.soundcloud.com'],
       allowedExternalLinks: [
         'soundcloud.com',
       ],
+      hostname: ['w.soundcloud.com'],
+      name: 'SoundCloud',
     },
     {
-      name: 'Spotify',
-      hostname: ['open.spotify.com', 'embed.spotify.com'],
       allowedExternalLinks: [
         'www.spotify.com',
         'developer.spotify.com',
       ],
+      hostname: ['open.spotify.com', 'embed.spotify.com'],
+      name: 'Spotify',
     },
   ],
 
+  GOOGLE_CLIENT_ID: '',
+  GOOGLE_CLIENT_SECRET: '',
+  GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
+  INTERNAL: 'internal',
   LOCALE: [
     'en',
     'cs',
@@ -110,19 +89,29 @@ let config = {
     'tr',
     'uk',
   ],
-
+  LOCALHOST: 'localhost',
+  MIN_HEIGHT_MAIN: 512,
+  MIN_WIDTH_MAIN: 760,
+  PROD: 'prod',
   RAYGUN_API_KEY: '',
-
-  GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
-  GOOGLE_CLIENT_ID: '',
-  GOOGLE_CLIENT_SECRET: '',
-
-  CONSOLE_LOG: 'console.log',
-
   SPELL_SUGGESTIONS: 4,
   SPELL_SUPPORTED: [
     'en',
   ],
+  STAGING: 'staging',
+  UPDATE_DELAY: 5 * 60 * 1000,
+  UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
+  URL_DEV: 'https://wire-webapp-dev.zinfra.io/',
+  URL_EDGE: 'https://wire-webapp-edge.zinfra.io/',
+  URL_INTERNAL: 'https://wire-webapp-staging.wire.com/?env=prod',
+  URL_LOCALHOST: 'http://localhost:8888/',
+  URL_PROD: 'https://app.wire.com/',
+  URL_STAGING: 'https://wire-webapp-staging.zinfra.io/',
+  WIRE: 'https://wire.com',
+  WIRE_LEGAL: 'https://wire.com/legal/',
+  WIRE_LICENSES: 'https://wire.com/legal/licenses/',
+  WIRE_PRIVACY: 'https://wire.com/privacy/',
+  WIRE_SUPPORT: 'https://support.wire.com',
 };
 
 config.ENVIRONMENT = pkg.environment;

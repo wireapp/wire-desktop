@@ -31,9 +31,9 @@ const settings = require('./../lib/settings');
 let menu;
 
 const launcher = new autoLaunch({
+  isHidden: true,
   name: config.NAME,
   path: launchCmd,
-  isHidden: true,
 });
 
 
@@ -59,236 +59,233 @@ const localeTemplate = {
   i18n: 'menuLocale',
   submenu: [
     {
-      label: locale.label['en'],
-      type: 'radio',
       click: function() {
         changeLocale('en');
       },
-    }, {
-      label: locale.label['cs'],
+      label: locale.label['en'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('cs');
       },
-    }, {
-      label: locale.label['da'],
+      label: locale.label['cs'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('da');
       },
-    }, {
-      label: locale.label['de'],
+      label: locale.label['da'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('de');
       },
-    }, {
-      label: locale.label['el'],
+      label: locale.label['de'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('el');
       },
-    }, {
-      label: locale.label['es'],
+      label: locale.label['el'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('es');
       },
-    }, {
-      label: locale.label['fi'],
+      label: locale.label['es'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('fi');
       },
-    }, {
-      label: locale.label['fr'],
+      label: locale.label['fi'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('fr');
       },
-    }, {
-      label: locale.label['hr'],
+      label: locale.label['fr'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('hr');
       },
-    }, {
-      label: locale.label['hu'],
+      label: locale.label['hr'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('hu');
       },
-    }, {
-      label: locale.label['it'],
+      label: locale.label['hu'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('it');
       },
-    }, {
-      label: locale.label['lt'],
+      label: locale.label['it'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('lt');
       },
-    }, {
-      label: locale.label['nl'],
+      label: locale.label['lt'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('nl');
       },
-    },{
-      label: locale.label['pl'],
+      label: locale.label['nl'],
       type: 'radio',
+    },{
       click: function() {
         changeLocale('pl');
       },
-    },{
-      label: locale.label['pt'],
+      label: locale.label['pl'],
       type: 'radio',
+    },{
       click: function() {
         changeLocale('pt');
       },
-    }, {
-      label: locale.label['ro'],
+      label: locale.label['pt'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('ro');
       },
-    }, {
-      label: locale.label['ru'],
+      label: locale.label['ro'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('ru');
       },
-    }, {
-      label: locale.label['sk'],
+      label: locale.label['ru'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('sk');
       },
-    }, {
-      label: locale.label['sl'],
+      label: locale.label['sk'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('sl');
       },
-    }, {
-      label: locale.label['tr'],
+      label: locale.label['sl'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('tr');
       },
-    }, {
-      label: locale.label['uk'],
+      label: locale.label['tr'],
       type: 'radio',
+    }, {
       click: function() {
         changeLocale('uk');
       },
+      label: locale.label['uk'],
+      type: 'radio',
     },
   ],
 };
 
 const aboutTemplate = {
-  i18n: 'menuAbout',
   click: function() {menu.emit('about-wire');},
+  i18n: 'menuAbout',
 };
 
 const signOutTemplate = {
-  i18n: 'menuSignOut',
   click: function() {sendAction('sign-out');},
+  i18n: 'menuSignOut',
 };
 
 const conversationTemplate = {
   i18n: 'menuConversation',
   submenu: [
     {
-      i18n: 'menuStart',
       accelerator: 'CmdOrCtrl+N',
       click: function() {sendAction('conversation-start');},
+      i18n: 'menuStart',
     },
     separatorTemplate,
     {
-      i18n: 'menuPing',
       accelerator: 'CmdOrCtrl+K',
       click: function() {sendAction('conversation-ping');},
+      i18n: 'menuPing',
     }, {
-      i18n: 'menuCall',
       click: function() {sendAction('conversation-call');},
+      i18n: 'menuCall',
     }, {
-      i18n: 'menuVideoCall',
       click: function() {sendAction('conversation-video-call');},
+      i18n: 'menuVideoCall',
     },
     separatorTemplate,
     {
-      i18n: 'menuPeople',
       accelerator: 'CmdOrCtrl+I',
       click: function() {sendAction('conversation-people');},
+      i18n: 'menuPeople',
     },
     {
-      i18n: 'menuAddPeople',
       accelerator: 'Shift+CmdOrCtrl+K',
       click: function() {sendAction('conversation-add-people');},
+      i18n: 'menuAddPeople',
     },
     separatorTemplate,
     {
-      i18n: 'menuArchive',
       accelerator: 'CmdOrCtrl+D',
       click: function() {sendAction('conversation-archive');},
+      i18n: 'menuArchive',
     },
     {
-      i18n: 'menuMute',
       accelerator: 'Alt+CmdOrCtrl+M',
       click: function() {sendAction('conversation-silence');},
+      i18n: 'menuMute',
     },
     {
-      i18n: 'menuDelete',
       click: function() {sendAction('conversation-delete');},
+      i18n: 'menuDelete',
     },
   ],
 };
 
 const showWireTemplate = {
-  label: config.NAME,
   accelerator: 'CmdOrCtrl+1',
   click: function() {getPrimaryWindow().show();},
+  label: config.NAME,
 };
 
 const toggleMenuTemplate = {
-  i18n: 'menuShowHide',
-  type: 'checkbox',
   checked: settings.restore('showMenu', true),
   click: function() {
     const mainBrowserWindow = getPrimaryWindow();
     const showMenu = mainBrowserWindow.isMenuBarAutoHide();
-
     mainBrowserWindow.setAutoHideMenuBar(!showMenu);
-
     if (!showMenu) {
       mainBrowserWindow.setMenuBarVisibility(showMenu);
     }
-
     settings.save('showMenu', showMenu);
   },
+  i18n: 'menuShowHide',
+  type: 'checkbox',
 };
 
 const toggleFullScreenTemplate = {
-  i18n: 'menuFullScreen',
-  type: 'checkbox',
   accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
   click: function() {
     const mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
+  i18n: 'menuFullScreen',
+  type: 'checkbox',
 };
 
 const toggleAutoLaunchTemplate = {
-  i18n: 'menuStartup',
-  type: 'checkbox',
   checked: settings.restore('shouldAutoLaunch', false),
   click: function() {
     settings.save('shouldAutoLaunch', !settings.restore('shouldAutoLaunch'));
     settings.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
+  i18n: 'menuStartup',
+  type: 'checkbox',
 };
 
 const editTemplate = {
@@ -322,13 +319,13 @@ const editTemplate = {
     },
     separatorTemplate,
     {
-      i18n: 'menuSpelling',
-      type: 'checkbox',
       checked: settings.restore('spelling', false) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
-      enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
       click: function(event) {
         settings.save('spelling', event.checked);
       },
+      enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      i18n: 'menuSpelling',
+      type: 'checkbox',
     },
   ],
 };
@@ -347,14 +344,14 @@ const windowTemplate = {
     },
     separatorTemplate,
     {
-      i18n: 'menuNextConversation',
       accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
       click: function() {sendAction('conversation-next');},
+      i18n: 'menuNextConversation',
     },
     {
-      i18n: 'menuPreviousConversation',
       accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
       click: function() {sendAction('conversation-prev');},
+      i18n: 'menuPreviousConversation',
     },
   ],
 };
@@ -364,24 +361,24 @@ const helpTemplate = {
   role: 'help',
   submenu: [
     {
-      i18n: 'menuLegal',
       click: function() {shell.openExternal(config.WIRE_LEGAL);},
+      i18n: 'menuLegal',
     },
     {
-      i18n: 'menuPrivacy',
       click: function() {shell.openExternal(config.WIRE_PRIVACY);},
+      i18n: 'menuPrivacy',
     },
     {
-      i18n: 'menuLicense',
       click: function() {shell.openExternal(config.WIRE_LICENSES);},
+      i18n: 'menuLicense',
     },
     {
-      i18n: 'menuSupport',
       click: function() {shell.openExternal(config.WIRE_SUPPORT);},
+      i18n: 'menuSupport',
     },
     {
-      i18n: 'menuWireURL',
       click: function() {shell.openExternal(config.WIRE);},
+      i18n: 'menuWireURL',
     },
   ],
 };
@@ -391,9 +388,9 @@ const darwinTemplate = {
   submenu: [
     aboutTemplate,
     separatorTemplate, {
-      i18n: 'menuPreferences',
       accelerator: 'Command+,',
       click: function() {sendAction('preferences-show');},
+      i18n: 'menuPreferences',
     },
     separatorTemplate,
     localeTemplate,
@@ -418,8 +415,8 @@ const darwinTemplate = {
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Command+Q',
+      i18n: 'menuQuit',
       selector: 'terminate:',
     },
   ],
@@ -429,18 +426,18 @@ const win32Template = {
   label: config.NAME,
   submenu: [
     {
-      i18n: 'menuSettings',
       accelerator: 'Ctrl+,',
       click: function() {sendAction('preferences-show');},
+      i18n: 'menuSettings',
     },
     localeTemplate,
     toggleAutoLaunchTemplate,
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Alt+F4',
       click: function() {app.quit();},
+      i18n: 'menuQuit',
     },
   ],
 };
@@ -449,8 +446,8 @@ const linuxTemplate = {
   label: config.NAME,
   submenu: [
     {
-      i18n: 'menuPreferences',
       click: function() {sendAction('preferences-show');},
+      i18n: 'menuPreferences',
     },
     separatorTemplate,
     toggleAutoLaunchTemplate,
@@ -459,9 +456,9 @@ const linuxTemplate = {
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Ctrl+Q',
       click: function() {app.quit();},
+      i18n: 'menuQuit',
     },
   ],
 };
@@ -494,10 +491,10 @@ function processMenu(template, language) {
 function changeLocale(language) {
   locale.setLocale(language);
   dialog.showMessageBox({
-    type: 'info',
-    title: locale[language].restartNeeded,
-    message: locale[language].restartLocale,
     buttons: [locale[language].restartLater, process.platform === 'darwin' ? locale[language].menuQuit : locale[language].restartNow],
+    message: locale[language].restartLocale,
+    title: locale[language].restartNeeded,
+    type: 'info',
   }, function(response) {
     if (response === 1) {
       if (process.platform === 'darwin') {
@@ -538,8 +535,8 @@ module.exports = {
     if (process.platform === 'linux') {
       menuTemplate.unshift(linuxTemplate);
       editTemplate.submenu.push(separatorTemplate, {
-        i18n: 'menuPreferences',
         click: function() {sendAction('preferences-show');},
+        i18n: 'menuPreferences',
       });
       windowTemplate.submenu.push(
         separatorTemplate,
