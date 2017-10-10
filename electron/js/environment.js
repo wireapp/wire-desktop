@@ -18,30 +18,27 @@
  */
 
 
-const {BrowserWindow} = require('electron');
+const pkg = require('./../package.json');
 
-let primaryWindowId;
-
-
-const _setPrimaryWindowId = (newPrimaryWindowId) => primaryWindowId = newPrimaryWindowId;
-
-const _getPrimaryWindow = () => primaryWindowId ? BrowserWindow.fromId(primaryWindowId) : BrowserWindow.getAllWindows()[0];
-
-const _showPrimaryWindow = () => {
-  const win = getPrimaryWindow();
-
-  if (win.isMinimized()) {
-    win.restore();
-  } else if (!win.isVisible()) {
-    win.show();
-  }
-
-  win.focus();
+const _platform = {
+  IS_LINUX: process.platform === 'linux',
+  IS_MAC_OS: process.platform === 'darwin',
+  IS_WINDOWS: process.platform === 'win32',
 };
 
+const _app = {
+  ENV: pkg.environment,
+  IS_PRODUCTION: pkg.environment === 'production',
+  IS_DEVELOPMENT: pkg.environment !== 'production',
+  UPDATE_URL_WIN: pkg.updateWinUrl,
+};
+
+const _web = {
+
+};
 
 module.exports = {
-  setPrimaryWindowId: _setPrimaryWindowId,
-  getPrimaryWindow: _getPrimaryWindow,
-  showPrimaryWindow: _showPrimaryWindow,
+  app: _app,
+  platform: _platform,
+  web: _web,
 };

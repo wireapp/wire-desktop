@@ -18,7 +18,6 @@
  */
 
 
-
 const electron = require('electron');
 const url = require('url');
 /*eslint-disable no-unused-vars*/
@@ -27,15 +26,16 @@ const utilDebug = debug('utilDebug');
 /*eslint-enable no-unused-vars*/
 
 const config = require('./config');
+const environment = require('./environment');
 const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
-  isInView: function(win) {
-    let windowBounds = win.getBounds();
-    let nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
+  isInView: (win) => {
+    const windowBounds = win.getBounds();
+    const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
 
-    let upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
-    let lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
+    const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
+    const lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
 
     return upperLeftVisible || lowerRightVisible;
   },
@@ -47,10 +47,10 @@ module.exports = {
   isMatchingEmbed: (_url) => {
     const hostname = url.parse(_url).hostname;
 
-    for (let embedDomain of config.EMBED_DOMAINS) {
-
+    for (const embedDomain of config.EMBED_DOMAINS) {
       // If the hostname match
       if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(hostname)) {
+
         utilDebug('Allowing %s', embedDomain.name);
         return true;
       }
@@ -63,8 +63,7 @@ module.exports = {
     const currentHostname = url.parse(domain).hostname;
     const linkHostname = url.parse(_url).hostname;
 
-    for (let embedDomain of config.EMBED_DOMAINS) {
-
+    for (const embedDomain of config.EMBED_DOMAINS) {
       // If the hostname match
       if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(currentHostname)) {
 
@@ -76,15 +75,12 @@ module.exports = {
     return false;
   },
 
-  resizeToSmall: function(win) {
-    if (process.platform !== 'darwin') {
+  resizeToSmall: (win) => {
+    if (!environment.platform.IS_MAC_OS) {
       win.setMenuBarVisibility(false);
     }
 
-    let height = config.HEIGHT_AUTH;
-    if (process.platform === 'win32') {
-      height += 40;
-    }
+    const height = config.HEIGHT_AUTH + (environment.platform.IS_WINDOWS ? 40 : 0);
     win.setFullScreen(false);
     win.setMaximizable(false);
     win.setMinimumSize(config.WIDTH_AUTH, height);
@@ -93,8 +89,8 @@ module.exports = {
     win.center();
   },
 
-  resizeToBig: function(win) {
-    if (process.platform !== 'darwin') {
+  resizeToBig: (win) => {
+    if (!environment.platform.IS_MAC_OS) {
       win.setMenuBarVisibility(true);
     }
     win.setMinimumSize(config.MIN_WIDTH_MAIN, config.MIN_HEIGHT_MAIN);

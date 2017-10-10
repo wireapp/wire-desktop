@@ -18,35 +18,34 @@
  */
 
 
-
 const {remote, ipcRenderer, shell} = require('electron');
 
 const pkg = require('./../package.json');
 const locale = require('./../locale/locale');
 
-let labels = document.getElementsByClassName('text');
-for (let label of labels) {
+const labels = document.getElementsByClassName('text');
+for (const label of labels) {
   label.innerHTML = locale.getText(label.dataset.string);
 }
 
 document.getElementById('name').innerHTML = pkg.productName;
 document.getElementById('version').innerHTML = pkg.version;
 
-window.addEventListener('keydown', function(event) {
+window.addEventListener('keydown', (event) => {
   if (event.keyCode === 27) {
     remote.getCurrentWindow().close();
   }
 });
 
-let links = document.getElementsByTagName('a');
-for (let link of links) {
+const links = document.getElementsByTagName('a');
+for (const link of links) {
   link.onclick = function() {
     shell.openExternal(link.href);
     return false;
   };
 }
 
-ipcRenderer.once('about-loaded', function(sender, config) {
+ipcRenderer.once('about-loaded', (sender, config) => {
   if (config.webappVersion) {
     document.getElementById('webappVersion').innerHTML = config.webappVersion;
   } else {

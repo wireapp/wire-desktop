@@ -18,10 +18,9 @@
  */
 
 
-
 const pkg = require('./../package.json');
 
-let config = {
+const config = {
   WIRE: 'https://wire.com',
   WIRE_SUPPORT: 'https://support.wire.com',
   WIRE_LEGAL: 'https://wire.com/legal/',
@@ -123,13 +122,9 @@ let config = {
   SPELL_SUPPORTED: [
     'en',
   ],
-};
 
-config.ENVIRONMENT = pkg.environment;
-config.PRODUCTION = config.ENVIRONMENT === 'production';
-config.DEVELOPMENT = !config.PRODUCTION;
-config.UPDATE_WIN_URL = pkg.updateWinUrl;
-config.VERSION = pkg.version;
-config.NAME = pkg.productName;
+  VERSION: pkg.version,
+  NAME: pkg.productName,
+};
 
 module.exports = config;
