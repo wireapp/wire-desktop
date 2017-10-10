@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Релізи';
@@ -67,5 +68,6 @@ string.trayOpen = 'Вiдкрити';
 string.trayQuit = 'Вийти';
 
 string.unreadMessages = 'Непрочитане повідомлення';
+
 
 module.exports = string;

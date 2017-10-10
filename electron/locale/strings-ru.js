@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Релизы';
@@ -67,5 +68,7 @@ string.trayOpen = 'Открыть';
 string.trayQuit = 'Завершить';
 
 string.unreadMessages = 'Непрочитанное сообщение';
+
+string.wrapperCreateTeam = 'Создать команду';
 
 module.exports = string;

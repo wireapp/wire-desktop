@@ -1,6 +1,8 @@
-
+'use strict';
 
 let string = {};
+
+
 
 string.aboutReleases = 'Releases';
 string.aboutUpdate = 'How Wire Updates Work';
@@ -66,5 +68,8 @@ string.trayOpen = 'Open';
 string.trayQuit = 'Quit';
 
 string.unreadMessages = 'Unread message';
+
+string.wrapperAddAccount = 'Add Account';
+string.wrapperCreateTeam = 'Create Team';
 
 module.exports = string;

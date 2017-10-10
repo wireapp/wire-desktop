@@ -17,73 +17,68 @@
  *
  */
 
+
 const og = require('open-graph');
 const request = require('request');
 
+const _arrayify = (obj = []) => Array.isArray(obj) ? obj : [obj];
 
-function updateMetaDataWithImage(meta, image) {
-  if (image) {
-    meta.image.data = image;
-  } else {
-    delete meta.image;
-  }
-  return meta;
-}
-
-
-function bufferToBase64(buffer, mimetype) {
+const _bufferToBase64 = (buffer, mimeType) => {
   const bufferBase64encoded = Buffer.from(buffer).toString('base64');
-  return 'data:' + mimetype + ';base64,' + bufferBase64encoded;
-}
-
-
-function arrayify(obj = []) {
-  return Array.isArray(obj) ? obj : [obj];
+  return 'data:' + mimeType + ';base64,' + bufferBase64encoded;
 };
 
-
-function fetchImageAsBase64(url) {
+const _fetchImageAsBase64 = (url) => {
   return new Promise((resolve) => {
     request({url: encodeURI(url), encoding: null}, (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        resolve(bufferToBase64(body, response.headers['content-type']));
+        resolve(_bufferToBase64(body, response.headers['content-type']));
       } else {
         // we just skip images that failed to download
         resolve();
       }
     });
   });
-}
+};
 
-
-function fetchOpenGraphData(url) {
+const _fetchOpenGraphData = (url) => {
   return new Promise((resolve, reject) => {
-    og(url, function(error, meta) {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(meta);
-      }
-    });
+    og(url, (error, meta) => error ? reject(error) : resolve(meta));
   });
-}
+};
 
+const _updateMetaDataWithImage = (meta, image) => {
+  image ? meta.image.data = image : meta.image;
+  return meta;
+};
 
-module.exports = function(url, callback) {
-  fetchOpenGraphData(url)
+const _getOpenGraphData = (url, callback) => {
+  return _fetchOpenGraphData(url)
     .then((meta) => {
       if (meta.image && meta.image.url) {
-        const imageUrl = arrayify(meta.image.url)[0]
-        return fetchImageAsBase64(imageUrl)
-          .then((uri) => updateMetaDataWithImage(meta, uri))
+        const [imageUrl] = _arrayify(meta.image.url);
+
+        return _fetchImageAsBase64(imageUrl)
+          .then((uri) => _updateMetaDataWithImage(meta, uri))
           .catch(() => meta);
       }
+
       return meta;
     })
     .then((meta) => {
-      callback(null, meta);
+      if (callback) {
+        callback(null, meta);
+      }
+
+      return meta;
     })
     .catch((error) => {
-      callback(error);
+      if (callback) {
+        callback(error);
+      }
+
+      throw error;
     });
 };
+
+module.exports = _getOpenGraphData;

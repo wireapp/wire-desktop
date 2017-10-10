@@ -28,22 +28,21 @@ const debug = require('debug');
 const INIT_JSON = path.join(app.getPath('userData'), 'init.json');
 
 class ConfigurationPersistence {
-
   constructor() {
     this.debug = debug('ConfigurationPersistence');
 
     if (typeof global._ConfigurationPersistence === 'undefined') {
       this.debug('Reading config file');
+
       try {
         global._ConfigurationPersistence = this._readFromFile();
-      } catch (e) {
-        this.debug('Unable to parse the init file. Details: %s', e);
+      } catch (error) {
+        this.debug('Unable to parse the init file. Details: %s', error);
         global._ConfigurationPersistence = {};
       }
     }
 
     this.debug('Init ConfigurationPersistence');
-    return true;
   }
 
   save(name, value) {
@@ -58,16 +57,17 @@ class ConfigurationPersistence {
     return (typeof value !== 'undefined' ? value : defaultValue);
   }
 
-  _saveToFile() {
+  persistToFile() {
     return new Promise((resolve, reject) => {
-      const datasInJSON = JSON.stringify(global._ConfigurationPersistence);
-      this.debug('Saving datas to persistent storage: %o', datasInJSON);
-      fs.writeFile(INIT_JSON, datasInJSON, 'utf8', (error, data) => {
+      const dataInJSON = JSON.stringify(global._ConfigurationPersistence);
+
+      this.debug('Saving data to persistent storage: %o', dataInJSON);
+      fs.writeFile(INIT_JSON, dataInJSON, 'utf8', (error, data) => {
         if (error) {
           this.debug('An error occurred while saving the config file: %s', error);
-          reject(error);
-          return;
+          return reject(error);
         }
+
         resolve(data);
       });
     });
@@ -75,10 +75,10 @@ class ConfigurationPersistence {
 
   _readFromFile() {
     this.debug('Reading user configuration file...');
-    const datasInJSON = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
-    this.debug('%o', datasInJSON);
-    return datasInJSON;
+    const dataInJSON = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
+    this.debug('%o', dataInJSON);
+    return dataInJSON;
   }
-};
+}
 
 module.exports = new ConfigurationPersistence();

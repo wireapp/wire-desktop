@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Udgivelser';
@@ -67,5 +68,6 @@ string.trayOpen = 'Åbn';
 string.trayQuit = 'Afslut';
 
 string.unreadMessages = 'Ulæst besked';
+
 
 module.exports = string;

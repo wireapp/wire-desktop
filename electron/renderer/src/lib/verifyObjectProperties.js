@@ -18,19 +18,26 @@
  */
 
 function is(type, obj) {
-  var clas = Object.prototype.toString.call(obj).slice(8, -1);
-  return obj != null && clas === type;
+  const getType = Object.prototype.toString.call(obj).slice(8, -1);
+  return obj != null && getType === type;
 }
 
 export default function(data, config) {
   const dataKeys = Object.keys(data);
   const configKeys = Object.keys(config);
 
-  if (dataKeys.length > configKeys) {
+  if (dataKeys.length > configKeys.length) {
     return false;
   }
 
-  return dataKeys.every((key) => {
-    return config.hasOwnProperty(key) && is(config[key], data[key]);
+  const isValidObject = configKeys.every((key) => {
+    if (!data.hasOwnProperty(key)) {
+      data[key] = config[key] === 'String' ? '' : undefined;
+      return true;
+    }
+
+    return is(config[key], data[key]);
   });
+
+  return isValidObject ? data : false;
 }

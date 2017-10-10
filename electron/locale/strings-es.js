@@ -1,8 +1,13 @@
-
+'use strict';
 
 let string = {};
 
 
+
+string.aboutReleases = 'Lanzamientos';
+string.aboutUpdate = 'Cómo funcionan las actualizaciones de Wire';
+string.aboutVersion = 'Versión';
+string.aboutWebappVersion = 'Versión para web de Wire';
 
 string.menuConversation = 'Conversación';
 string.menuStart = 'Iniciar';
@@ -63,5 +68,6 @@ string.trayOpen = 'Abrir';
 string.trayQuit = 'Salir';
 
 string.unreadMessages = 'Mensaje sin leer';
+
 
 module.exports = string;

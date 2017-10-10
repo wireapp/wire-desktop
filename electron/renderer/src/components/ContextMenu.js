@@ -26,7 +26,7 @@ export class ContextMenuTrigger extends Component {
   constructor(props) {
     super(props);
 
-    this._handleClick = this._handleClick.bind(this);
+    this._handleAction = this._handleAction.bind(this);
   }
 
   _getElementCenter(element) {
@@ -37,7 +37,7 @@ export class ContextMenuTrigger extends Component {
     };
   }
 
-  _handleClick(event) {
+  _handleAction(event) {
     document.dispatchEvent(new CustomEvent(`context-menu-event-${this.props.id}`, {
       detail: {
         position: this._getElementCenter(event.currentTarget),
@@ -48,7 +48,7 @@ export class ContextMenuTrigger extends Component {
 
   render() {
     return (
-      <div onClick={this._handleClick}>{ this.props.children }</div>
+      <div onClick={this._handleAction} onContextMenu={this._handleAction}>{ this.props.children }</div>
     );
   }
 }

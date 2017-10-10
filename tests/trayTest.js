@@ -20,6 +20,7 @@
 'use strict';
 
 const {BrowserWindow, app} = require('electron');
+const environment = require('../electron/js/environment');
 
 const assert = require('assert');
 const path = require('path');
@@ -31,13 +32,16 @@ describe('tray', () => {
   describe('#updateBadgeIcon()', () => {
 
     it('should update badge according to window title', (done) => {
-      let window = new BrowserWindow();
+      const window = new BrowserWindow();
+
       window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', function() {
+      window.webContents.on('dom-ready', () => {
         tray.updateBadgeIcon(window, 10);
-        if (process.platform === 'darwin') {
+
+        if (environment.platform.IS_MAC_OS) {
           assert.equal(app.getBadgeCount(), 10);
         }
+
         done();
       });
     });

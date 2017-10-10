@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Objave';
@@ -67,5 +68,6 @@ string.trayOpen = 'Odpri';
 string.trayQuit = 'Končaj';
 
 string.unreadMessages = 'Neprebrano sporočilo';
+
 
 module.exports = string;

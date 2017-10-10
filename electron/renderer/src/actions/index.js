@@ -62,16 +62,17 @@ export const abortAccountCreation = (id) => {
 
 export const updateAccountData = (id, data) => {
   return (dispatch, getState) => {
-    const isValidAccountData = verifyObjectProperties(data, {
-      'teamID': 'String',
-      'userID': 'String',
-      'picture': 'String',
-      'name': 'String',
+    const validatedAccountData = verifyObjectProperties(data, {
       'accentID': 'Number',
+      'name': 'String',
+      'picture': 'String',
+      'teamID': 'String',
+      'teamRole': 'String',
+      'userID': 'String',
     });
 
-    if (isValidAccountData) {
-      dispatch(updateAccount(id, data));
+    if (validatedAccountData) {
+      dispatch(updateAccount(id, validatedAccountData));
     } else {
       console.warn(`Got invalid account data ${JSON.stringify(data)}`);
     }

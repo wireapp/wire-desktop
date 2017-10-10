@@ -20,9 +20,9 @@ node('Windows_Node') {
   }
 
   def text = readFile('info.json')
-  def buildInfo = parseJson(text);
-  def version = buildInfo.version + '.' + buildInfo.build;
-  currentBuild.displayName = version + ' #' + currentBuild.id
+  def buildInfo = parseJson(text)
+  def version = buildInfo.version + '.' + env.BUILD_NUMBER
+  currentBuild.displayName = version;
 
   stage('Build') {
     try {
@@ -104,6 +104,12 @@ node('Windows_Node') {
   }
 
   if(production) {
+    stage('Upload build as draft to GitHub') {
+      withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
+        bat 'cd wrap\\prod\\Wire-win32-ia32\\ && python ..\\..\\..\\bin\\github_draft.py'
+      }
+    }
+
     stage('Test') {
        build job: 'Wrapper Windows Tests', parameters: [string(name: 'WRAPPER_BUILD_ID', value: "${BUILD_ID}")], wait: false
     }

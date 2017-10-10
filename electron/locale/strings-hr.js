@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 
@@ -57,6 +58,7 @@ string.restartLater = 'Kasnije';
 string.restartNow = 'Ponovno pokreni';
 
 string.trayOpen = 'Otvori';
+
 
 
 module.exports = string;

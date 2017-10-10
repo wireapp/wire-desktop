@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Laidos';
@@ -67,5 +68,7 @@ string.trayOpen = 'Atverti';
 string.trayQuit = 'Baigti';
 
 string.unreadMessages = 'Neskaityta žinutė';
+
+string.wrapperCreateTeam = 'Sukurti komanda';
 
 module.exports = string;

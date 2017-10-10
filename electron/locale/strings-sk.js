@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Vydania';
@@ -67,5 +68,6 @@ string.trayOpen = 'Otvoriť';
 string.trayQuit = 'Ukončiť';
 
 string.unreadMessages = 'Neprečítané správy';
+
 
 module.exports = string;

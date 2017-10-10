@@ -18,64 +18,46 @@
  */
 
 // Modules
-const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
-const fs = require('fs');
+const debug = require('debug');
+const debugMain = debug('mainTmp');
+const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const rimraf = require('rimraf');
-/*eslint-disable no-unused-vars*/
-const debug = require('debug');
-const debugMain = debug('mainTmp');
-/*eslint-enable no-unused-vars*/
+const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
-/*eslint-disable no-unused-vars*/
-const USER_DATAS_PATH = app.getPath('userData');
-/*eslint-enable no-unused-vars*/
-
 // Local files defines
+const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
+const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
+const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
-const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
 
 // Configuration persistence
 const settings = require('./js/lib/settings');
 
 // Wrapper modules
 const certutils = require('./js/certutils');
+const config = require('./js/config');
+const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
+const environment = require('./js/environment');
 const googleAuth = require('./js/lib/googleAuth');
 const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
-const developerMenu = require('./js/menu/developer');
 const tray = require('./js/menu/tray');
 const util = require('./js/util');
 const windowManager = require('./js/window-manager');
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const config = require('./js/config');
+const BASE_URL = environment.web.get_url_webapp(argv.env);
 
 // Icon
-const ICON = `wire.${((process.platform === 'win32') ? 'ico' : 'png')}`;
+const ICON = `wire.${(environment.platform.IS_WINDOWS ? 'ico' : 'png')}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
-
-const BASE_URL = (() => {
-  if (!argv.env && config.DEVELOPMENT) {
-    switch (settings.restore('env', config.INTERNAL)) {
-      case config.DEV: return config.DEV_URL;
-      case config.EDGE: return config.EDGE_URL;
-      case config.INTERNAL: return config.INTERNAL_URL;
-      case config.LOCALHOST: return config.LOCALHOST_URL;
-      case config.STAGING: return config.STAGING_URL;
-    }
-  }
-
-  return argv.env || config.PROD_URL;
-})();
 
 
 let main;
@@ -95,8 +77,14 @@ raygunClient.onBeforeSend(payload => {
   return payload;
 });
 
-if (config.DEVELOPMENT) {
+if (environment.app.IS_DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
+}
+
+if (argv.portable) {
+  const EXEC_PATH = process.env.APPIMAGE || process.execPath;
+  const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+  app.setPath('userData', USER_PATH);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -105,14 +93,15 @@ if (config.DEVELOPMENT) {
 
 // makeSingleInstance will crash the signed mas app
 // see: https://github.com/atom/electron/issues/4688
-if (process.platform !== 'darwin') {
+if (!environment.platform.IS_MAC_OS) {
   shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
     if (main) {
       windowManager.showPrimaryWindow();
     }
     return true;
   });
-  if (process.platform !== 'win32' && shouldQuit) {
+
+  if (!environment.platform.IS_WINDOWS && shouldQuit) {
     // Using exit instead of quit for the time being
     // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
     app.exit();
@@ -122,13 +111,11 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 // Auto Update
 ///////////////////////////////////////////////////////////////////////////////
-if (process.platform === 'win32') {
+if (environment.platform.IS_WINDOWS) {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
 
-  ipcMain.on('wrapper-restart', () => {
-    squirrel.installUpdate();
-  });
+  ipcMain.on('wrapper-update', () => squirrel.installUpdate());
 
   // Stop further execution on update to prevent second tray icon
   if (shouldQuit) {
@@ -140,7 +127,7 @@ if (process.platform === 'win32') {
 // Fix indicator icon on Unity
 // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
 ///////////////////////////////////////////////////////////////////////////////
-if (process.platform === 'linux') {
+if (environment.platform.IS_LINUX) {
   const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
 
   if (isUbuntuUnity) {
@@ -169,12 +156,8 @@ ipcMain.on('badge-count', (event, count) => {
 
 ipcMain.on('google-auth-request', event => {
   googleAuth.getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
-    .then(code => {
-      event.sender.send('google-auth-success', code.access_token);
-    })
-    .catch(error => {
-      event.sender.send('google-auth-error', error);
-    });
+    .then(code => event.sender.send('google-auth-success', code.access_token))
+    .catch(error => event.sender.send('google-auth-error', error));
 });
 
 ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
@@ -183,7 +166,7 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   try {
     if (sessionID) {
       const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
-      rimraf.sync(partitionDir);
+      fs.removeSync(partitionDir);
       debugMain(`Deleted partition for account: ${sessionID}`);
     } else {
       debugMain(`Skipping partition deletion for account: ${accountID}`);
@@ -194,41 +177,40 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
   // delete logs
   try {
-    const logDir = path.join(app.getPath('userData'), 'logs', accountID);
-    rimraf.sync(logDir);
+    fs.removeSync(LOG_DIR);
     debugMain(`Deleted logs folder for account: ${accountID}`);
   } catch (error) {
     debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
   }
 });
 
-ipcMain.on('wrapper-reload', () => {
+ipcMain.on('wrapper-relaunch', () => relaunchApp());
+
+const relaunchApp = () => {
   app.relaunch();
   // Using exit instead of quit for the time being
   // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
   app.exit();
-});
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
 ///////////////////////////////////////////////////////////////////////////////
-function showMainWindow() {
+const showMainWindow = () => {
   main = new BrowserWindow({
     title: config.NAME,
     titleBarStyle: 'hidden-inset',
-    width: config.DEFAULT_WIDTH_MAIN,
-    height: config.DEFAULT_HEIGHT_MAIN,
-    minWidth: config.MIN_WIDTH_MAIN,
-    minHeight: config.MIN_HEIGHT_MAIN,
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
     autoHideMenuBar: !settings.restore('showMenu', true),
     icon: ICON_PATH,
     show: false,
     webPreferences: {
       backgroundThrottling: false,
-      nodeIntegration: true,
+      nodeIntegration: false,
       preload: PRELOAD_JS,
-
-      // Enable <webview>
       webviewTag: true,
     },
   });
@@ -253,12 +235,10 @@ function showMainWindow() {
     }
 
     discloseWindowID(main);
-    setTimeout(function() {
-      main.show();
-    }, 800);
+    setTimeout(() => main.show(), 800);
   }
 
-  main.webContents.on('will-navigate', function(event, url) {
+  main.webContents.on('will-navigate', (event, url) => {
     // Prevent any kind of navigation inside the main window
     event.preventDefault();
   });
@@ -284,7 +264,7 @@ function showMainWindow() {
     main.flashFrame(false);
   });
 
-  main.on('page-title-updated', function() {
+  main.on('page-title-updated', () => {
     tray.updateBadgeIcon(main);
   });
 
@@ -308,74 +288,70 @@ function showMainWindow() {
       } else {
         main.hide();
       }
-      return;
     }
-
-    debugMain('Persisting user configuration file...');
-    await settings._saveToFile();
   });
 
   main.webContents.on('crashed', () => {
     main.reload();
   });
-}
+};
 
-function showAboutWindow() {
+const showAboutWindow = () => {
   if (about === undefined) {
     about = new BrowserWindow({
       title: config.NAME,
-      width: 304,
-      height: 256,
+      width: config.WINDOW.ABOUT.WIDTH,
+      height: config.WINDOW.ABOUT.HEIGHT,
       resizable: false,
       fullscreen: false,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
-    about.webContents.on('dom-ready', function() {
+    about.webContents.on('dom-ready', () => {
       about.webContents.send('about-loaded', {
         webappVersion: webappVersion,
       });
     });
 
-    about.on('closed', function() {
+    about.on('closed', () => {
       about = undefined;
     });
   }
   about.show();
-}
+};
 
-function discloseWindowID(browserWindow) {
+const discloseWindowID = (browserWindow) => {
   windowManager.setPrimaryWindowId(browserWindow.id);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
-app.on('window-all-closed', function() {
-  if (process.platform !== 'darwin') {
+app.on('window-all-closed', () => {
+  if (!environment.isMacOS) {
     app.quit();
   }
 });
 
-app.on('activate', function() {
+app.on('activate', () => {
   if (main) {
     main.show();
   }
 });
 
-app.on('before-quit', function() {
-  quitting = true;
-});
+app.on('before-quit', () => quitting = true);
+
+app.on('quit', async () => await settings.persistToFile());
 
 ///////////////////////////////////////////////////////////////////////////////
 // System Menu & Tray Icon & Show window
 ///////////////////////////////////////////////////////////////////////////////
-app.on('ready', function() {
-  let appMenu = systemMenu.createMenu();
-  if (config.DEVELOPMENT) {
+app.on('ready', () => {
+  const appMenu = systemMenu.createMenu();
+  if (environment.app.IS_DEVELOPMENT) {
     appMenu.append(developerMenu);
   }
-  appMenu.on('about-wire', function() {
+  appMenu.on('about-wire', () => {
     showAboutWindow();
   });
 
@@ -385,25 +361,24 @@ app.on('ready', function() {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-// Delete the console.log
+// Rename "console.log" to "console.old" (for every log directory of every account)
 ///////////////////////////////////////////////////////////////////////////////
-const logDir = path.join(app.getPath('userData'), 'logs');
-fs.readdir(logDir, (error, files) => {
-  if (error) {
-    console.log(`Failed to read log directory with error: ${error.message}`);
-    return;
-  }
+fs.readdir(LOG_DIR, (error, contents) => {
+  if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
 
-  // TODO filter out dotfiles
-  for (const file of files) {
-    const consoleLog = path.join(logDir, file, config.CONSOLE_LOG);
-    fs.rename(consoleLog, consoleLog.replace('.log', '.old'), (renameError) => {
-      if (renameError) {
-        console.log(`Failed to rename log file (${consoleLog}) with error: ${renameError.message}`);
+  contents.map((file) => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
+    .filter((file) => {
+      try {
+        return fs.statSync(file).isFile();
+      } catch(error) {
+        return undefined;
+      }
+    })
+    .forEach((file) => {
+      if (file.endsWith('.log')) {
+        fs.renameSync(file, file.replace('.log', '.old'));
       }
     });
-  }
-
 });
 
 class ElectronWrapperInit {
@@ -492,7 +467,7 @@ class ElectronWrapperInit {
       }
     });
   }
-};
+}
 
 class BrowserWindowInit {
 
@@ -507,10 +482,10 @@ class BrowserWindowInit {
       title: config.NAME,
       titleBarStyle: 'hidden-inset',
 
-      width: config.DEFAULT_WIDTH_MAIN,
-      height: config.DEFAULT_HEIGHT_MAIN,
-      minWidth: config.MIN_WIDTH_MAIN,
-      minHeight: config.MIN_HEIGHT_MAIN,
+      width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+      height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+      minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+      minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
 
       autoHideMenuBar: !settings.restore('showMenu', true),
       icon: ICON_PATH,
@@ -539,6 +514,6 @@ class BrowserWindowInit {
       this.browserWindow.setBounds(settings.restore('bounds', this.browserWindow.getBounds()));
     }
   }
-};
+}
 
 (new ElectronWrapperInit()).run();

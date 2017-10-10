@@ -18,10 +18,7 @@
  */
 
 
-
 const app = require('electron').app || require('electron').remote.app;
-
-const config = require('./../js/config');
 const settings = require('./../js/lib/settings');
 
 const da = require('./strings-da');
@@ -46,7 +43,7 @@ const sl = require('./strings-sl');
 const tr = require('./strings-tr');
 const uk = require('./strings-uk');
 
-const label = {
+const SUPPORTED_LANGUAGES = {
   'en': 'English',
   'cs': 'Čeština',
   'da': 'Dansk',
@@ -72,59 +69,55 @@ const label = {
 
 let current;
 
+const getSupportedLanguageKeys = () => Object.keys(SUPPORTED_LANGUAGES);
 
-function getCurrent() {
-  if (current == null) {
+const getCurrent = () => {
+  if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
     current = settings.restore('locale', parseLocale(app.getLocale().substr(0, 2)));
   }
-  if (config.LOCALE.indexOf(current) === -1) {
-    current = config.LOCALE[0];
-  }
   return current;
-}
+};
 
+const parseLocale = (locale) => {
+  const languageKeys = getSupportedLanguageKeys();
+  return languageKeys.find((languageKey) => languageKey === locale) || languageKeys[0];
+};
 
-function parseLocale(locale) {
-  return config.LOCALE.find(loc => loc.includes(locale)) || config.LOCALE[0];
-}
+const getText = (string_identifier) => {
+  const strings = eval(getCurrent());
+  return strings[string_identifier] || en[string_identifier] || '';
+};
 
-
-function getText(text) {
-  let strings = eval(getCurrent());
-  return strings[text] || en[text] || '';
-}
-
-
-function setLocale(locale) {
+const setLocale = (locale) => {
   current = parseLocale(locale);
   settings.save('locale', current);
-}
+};
 
 
 module.exports = {
-  'cs': cs,
-  'da': da,
-  'de': de,
-  'en': en,
-  'el': el,
-  'es': es,
-  'fi': fi,
-  'fr': fr,
-  'hr': hr,
-  'hu': hu,
-  'it': it,
-  'lt': lt,
-  'nl': nl,
-  'pl': pl,
-  'pt': pt,
-  'ro': ro,
-  'ru': ru,
-  'sk': sk,
-  'sl': sl,
-  'tr': tr,
-  'uk': uk,
-  'label': label,
+  cs: cs,
+  da: da,
+  de: de,
+  en: en,
+  el: el,
+  es: es,
+  fi: fi,
+  fr: fr,
+  hr: hr,
+  hu: hu,
+  it: it,
+  lt: lt,
+  nl: nl,
+  pl: pl,
+  pt: pt,
+  ro: ro,
+  ru: ru,
+  sk: sk,
+  sl: sl,
+  tr: tr,
+  uk: uk,
+  SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES,
   getCurrent: getCurrent,
   getText: getText,
   setLocale: setLocale,

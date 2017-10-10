@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Note di rilascio';
@@ -67,5 +68,6 @@ string.trayOpen = 'Apri';
 string.trayQuit = 'Esci';
 
 string.unreadMessages = 'Messaggio non letto';
+
 
 module.exports = string;

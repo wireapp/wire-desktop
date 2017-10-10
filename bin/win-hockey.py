@@ -19,20 +19,20 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 #
 
-import json
 import os
 import requests
 import zipfile
 
-HOCKEY_TOKEN = os.environ.get('WIN_HOCKEY_TOKEN')
 HOCKEY_ID = os.environ.get('WIN_HOCKEY_ID')
+HOCKEY_TOKEN = os.environ.get('WIN_HOCKEY_TOKEN')
+VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
+
 HOCKEY_UPLOAD = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/' % HOCKEY_ID
 HOCKEY_NEW = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/new' % HOCKEY_ID
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
 wire_exe = os.path.join(bin_root, '..', 'wrap', 'internal', 'WireInternal-win32-ia32', 'WireInternalSetup.exe')
 wire_zip = os.path.join(bin_root, 'WireInternalSetup.zip')
-info_json = os.path.join(bin_root, '..', 'info.json')
 
 
 def zipit(source, dest):
@@ -49,10 +49,8 @@ if __name__ == '__main__':
 
   zipit(wire_exe, wire_zip)
 
-  with open(info_json) as info_file:
-    info = json.load(info_file)
-
-  print 'Uploading %s.%s...' % (info['version'], info['build'])
+  print 'Uploading %s...' % VERSION
+  semver_version = VERSION.split('.')
 
   headers = {
     'X-HockeyAppToken': HOCKEY_TOKEN,
@@ -61,8 +59,8 @@ if __name__ == '__main__':
     'notify': 0,
     'notes': 'Jenkins Build',
     'status': 2,
-    'bundle_short_version': info['version'],
-    'bundle_version': info['build'],
+    'bundle_short_version': '%s.%s' % (semver_version[0], semver_version[1]),
+    'bundle_version': semver_version[2],
   }
   files = {
     'ipa': open(wire_zip, 'rb')

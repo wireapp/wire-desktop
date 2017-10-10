@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 
@@ -60,5 +61,6 @@ string.restartNow = 'Käynnistä uudelleen nyt';
 string.trayOpen = 'Avaa';
 
 string.unreadMessages = 'Lukematon viesti';
+
 
 module.exports = string;

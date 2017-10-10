@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Κυκλοφορίες Εκδόσεων';
@@ -26,7 +27,7 @@ string.menuAddPeople = 'Προσθήκη ατόμων...';
 string.menuArchive = 'Αρχειοθέτηση';
 string.menuUnarchive = 'Αναίρεση αρχειοθέτησης';
 string.menuMute = 'Σίγαση';
-string.menuUnmute = 'Αύξηση έντασης';
+string.menuUnmute = 'Ενεργή ένταση';
 string.menuLeave = 'Αποχώρηση';
 string.menuDelete = 'Διαγραφή';
 string.menuBlock = 'Αποκλεισμός';
@@ -42,7 +43,7 @@ string.menuClose = 'Κλείσιμο';
 string.menuNextConversation = 'Επόμενη συνομιλία';
 string.menuPreviousConversation = 'Προηγούμενη συνομιλία';
 string.menuFullScreen = 'Πλήρης Οθόνη';
-string.menuLegal = 'Περί Νόμου';
+string.menuLegal = 'Νομικά';
 string.menuPrivacy = 'Προστασία Προσωπικών Δεδομένων';
 string.menuLicense = 'Πληροφορίες άδειας χρήσης';
 string.menuSupport = 'Ιστοσελίδα υποστήριξης';
@@ -67,5 +68,6 @@ string.trayOpen = 'Άνοιγμα';
 string.trayQuit = 'Έξοδος';
 
 string.unreadMessages = 'Μη αναγνωσμένο μήνυμα';
+
 
 module.exports = string;

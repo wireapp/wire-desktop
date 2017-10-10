@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Sürümler';
@@ -67,5 +68,6 @@ string.trayOpen = 'Aç';
 string.trayQuit = 'Çık';
 
 string.unreadMessages = 'Okunmamış mesaj';
+
 
 module.exports = string;

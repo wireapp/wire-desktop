@@ -1,6 +1,7 @@
-
+'use strict';
 
 let string = {};
+
 
 
 string.aboutReleases = 'Variante';
@@ -67,5 +68,6 @@ string.trayOpen = 'Deschide';
 string.trayQuit = 'Ieși';
 
 string.unreadMessages = 'Mesaj necitit';
+
 
 module.exports = string;
