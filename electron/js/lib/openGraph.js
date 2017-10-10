@@ -48,7 +48,12 @@ const _fetchOpenGraphData = (url) => {
 };
 
 const _updateMetaDataWithImage = (meta, image) => {
-  image ? meta.image.data = image : meta.image;
+  if (image) {
+    meta.image.data = image;
+  } else {
+    delete meta.image;
+  }
+
   return meta;
 };
 
