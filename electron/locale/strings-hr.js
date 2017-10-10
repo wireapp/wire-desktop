@@ -60,4 +60,5 @@ string.restartNow = 'Ponovno pokreni';
 string.trayOpen = 'Otvori';
 
 
+
 module.exports = string;

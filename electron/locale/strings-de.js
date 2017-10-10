@@ -69,4 +69,6 @@ string.trayQuit = 'Beenden';
 
 string.unreadMessages = 'Ungelesene Nachrichten';
 
+string.wrapperCreateTeam = 'Team erstellen';
+
 module.exports = string;

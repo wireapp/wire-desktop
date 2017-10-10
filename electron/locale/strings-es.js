@@ -69,4 +69,5 @@ string.trayQuit = 'Salir';
 
 string.unreadMessages = 'Mensaje sin leer';
 
+
 module.exports = string;

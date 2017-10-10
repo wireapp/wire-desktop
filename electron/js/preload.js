@@ -18,8 +18,12 @@
  */
 
 const {ipcRenderer, webFrame} = require('electron');
+const locale = require('../locale/locale');
 
 webFrame.setZoomLevelLimits(1, 1);
+
+window.locStrings = locale[locale.getCurrent()];
+window.locStringsDefault = locale['en'];
 
 function getSelectedWebview() {
   return document.querySelector('.Webview:not(.hide)');

@@ -69,4 +69,6 @@ string.trayQuit = 'Kilépés';
 
 string.unreadMessages = 'Olvasatlan üzenet';
 
+string.wrapperCreateTeam = 'Csapat létrehozása';
+
 module.exports = string;
