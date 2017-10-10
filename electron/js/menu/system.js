@@ -248,15 +248,15 @@ const helpTemplate = {
   submenu: [
     {
       i18n: 'menuLegal',
-      click: () => shell.openExternal(environment.web.get_url_support() + config.URL.LEGAL),
+      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.LEGAL),
     },
     {
       i18n: 'menuPrivacy',
-      click: () => shell.openExternal(environment.web.get_url_support() + config.URL.PRIVACY),
+      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.PRIVACY),
     },
     {
       i18n: 'menuLicense',
-      click: () => shell.openExternal(environment.web.get_url_support() + config.URL.LICENSES),
+      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.LICENSES),
     },
     {
       i18n: 'menuSupport',
