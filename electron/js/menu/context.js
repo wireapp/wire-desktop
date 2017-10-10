@@ -17,9 +17,7 @@
  *
  */
 
-
-
-const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
+const { clipboard, remote, ipcRenderer, webFrame } = require('electron');
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
@@ -32,12 +30,14 @@ let textMenu;
 ///////////////////////////////////////////////////////////////////////////////
 let copyContext = '';
 
-const defaultMenu = Menu.buildFromTemplate([{
-  label: locale.getText('menuCopy'),
-  click: function () {
-    clipboard.writeText(copyContext);
+const defaultMenu = Menu.buildFromTemplate([
+  {
+    click: function() {
+      clipboard.writeText(copyContext);
+    },
+    label: locale.getText('menuCopy'),
   },
-}]);
+]);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Text
@@ -48,25 +48,28 @@ let selection = {
 };
 
 const textMenuTemplate = [
-  {label: locale.getText('menuCut'), role: 'cut'},
-  {label: locale.getText('menuCopy'), role: 'copy'},
-  {label: locale.getText('menuPaste'), role: 'paste'},
-  {type: 'separator'},
-  {label: locale.getText('menuSelectAll'), role: 'selectall'},
+  { label: locale.getText('menuCut'), role: 'cut' },
+  { label: locale.getText('menuCopy'), role: 'copy' },
+  { label: locale.getText('menuPaste'), role: 'paste' },
+  { type: 'separator' },
+  { label: locale.getText('menuSelectAll'), role: 'selectall' },
 ];
 
 function createTextMenu() {
   let template = textMenuTemplate.slice();
   if (selection.isMisspelled) {
-    template.unshift({type: 'separator'});
+    template.unshift({ type: 'separator' });
     if (selection.suggestions.length > 0) {
       for (let suggestion of selection.suggestions.reverse()) {
-        template.unshift({label: suggestion, click: function(menuItem) {
-          webContents.replaceMisspelling(menuItem.label);
-        }});
+        template.unshift({
+          click: function(menuItem) {
+            webContents.replaceMisspelling(menuItem.label);
+          },
+          label: suggestion,
+        });
       }
     } else {
-      template.unshift({label: locale.getText('menuNoSuggestions'), enabled: false});
+      template.unshift({ enabled: false, label: locale.getText('menuNoSuggestions') });
     }
   }
   textMenu = Menu.buildFromTemplate(template);
@@ -75,60 +78,72 @@ function createTextMenu() {
 ///////////////////////////////////////////////////////////////////////////////
 // Images
 ///////////////////////////////////////////////////////////////////////////////
-let imageMenu = Menu.buildFromTemplate([{
-  label: locale.getText('menuSavePictureAs'),
-  click: function() {
-    savePicture(imageMenu.file, imageMenu.image);
+let imageMenu = Menu.buildFromTemplate([
+  {
+    click: function() {
+      savePicture(imageMenu.file, imageMenu.image);
+    },
+    label: locale.getText('menuSavePictureAs'),
   },
-}]);
+]);
 
-window.addEventListener('contextmenu', function (event) {
-  const element = event.target;
-  copyContext = '';
-  if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
-    event.preventDefault();
-    createTextMenu();
-    textMenu.popup(remote.getCurrentWindow());
-  } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
-    event.preventDefault();
-    imageMenu.image = element.src;
-    imageMenu.popup(remote.getCurrentWindow());
-  } else if (element.nodeName === 'A') {
-    event.preventDefault();
-    copyContext = element.href;
-    defaultMenu.popup(remote.getCurrentWindow());
-  } else if (element.classList.contains('text')) {
-    event.preventDefault();
-    copyContext = window.getSelection().toString() || element.innerText.trim();
-    defaultMenu.popup(remote.getCurrentWindow());
-  } else {
-    // Maybe we are in a code block _inside_ an element with the 'text' class?
-    // Code block can consist of many tags: CODE, PRE, SPAN, etc.
-    let parentNode = element.parentNode;
-    while (parentNode !== document && !parentNode.classList.contains('text')) {
-      parentNode = parentNode.parentNode;
-    }
-    if (parentNode !== document) {
+window.addEventListener(
+  'contextmenu',
+  function(event) {
+    const element = event.target;
+    copyContext = '';
+    if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
       event.preventDefault();
-      copyContext = window.getSelection().toString() || parentNode.innerText.trim();
+      createTextMenu();
+      textMenu.popup(remote.getCurrentWindow());
+    } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
+      event.preventDefault();
+      imageMenu.image = element.src;
+      imageMenu.popup(remote.getCurrentWindow());
+    } else if (element.nodeName === 'A') {
+      event.preventDefault();
+      copyContext = element.href;
       defaultMenu.popup(remote.getCurrentWindow());
+    } else if (element.classList.contains('text')) {
+      event.preventDefault();
+      copyContext = window.getSelection().toString() || element.innerText.trim();
+      defaultMenu.popup(remote.getCurrentWindow());
+    } else {
+      // Maybe we are in a code block _inside_ an element with the 'text' class?
+      // Code block can consist of many tags: CODE, PRE, SPAN, etc.
+      let parentNode = element.parentNode;
+      while (parentNode !== document && !parentNode.classList.contains('text')) {
+        parentNode = parentNode.parentNode;
+      }
+      if (parentNode !== document) {
+        event.preventDefault();
+        copyContext = window.getSelection().toString() || parentNode.innerText.trim();
+        defaultMenu.popup(remote.getCurrentWindow());
+      }
     }
-  }
+  },
+  false
+);
 
-}, false);
+window.addEventListener(
+  'click',
+  function(event) {
+    const element = event.target;
 
-window.addEventListener('click', function(event) {
-  const element = event.target;
-
-  if (element.classList.contains('icon-more') && !element.classList.contains('context-menu') && element.parentElement.previousElementSibling) {
-    // get center-column
-    const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
-    if (createConversationMenu(id)) {
-      event.stopPropagation();
+    if (
+      element.classList.contains('icon-more') &&
+      !element.classList.contains('context-menu') &&
+      element.parentElement.previousElementSibling
+    ) {
+      // get center-column
+      const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
+      if (createConversationMenu(id)) {
+        event.stopPropagation();
+      }
     }
-  }
-}, true);
-
+  },
+  true
+);
 
 function savePicture(fileName, url) {
   fetch(url)
@@ -141,14 +156,13 @@ function savePicture(fileName, url) {
     });
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
 if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
-    spellCheck (text) {
+    spellCheck(text) {
       if (!settings.restore('spelling', false)) {
         return true;
       }

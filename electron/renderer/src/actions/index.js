@@ -10,38 +10,38 @@ export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
 export const addAccount = (withSession = true) => {
   const sessionID = withSession ? uuid() : undefined;
   return {
-    type: ADD_ACCOUNT,
     sessionID: sessionID,
+    type: ADD_ACCOUNT,
   };
 };
 
 export const updateAccount = (id, data) => {
   return {
-    type: UPDATE_ACCOUNT,
-    id,
     data,
+    id,
+    type: UPDATE_ACCOUNT,
   };
 };
 
 export const switchAccount = id => {
   return {
-    type: SWITCH_ACCOUNT,
     id,
+    type: SWITCH_ACCOUNT,
   };
 };
 
 export const updateAccountBadge = (id, count) => {
   return {
-    type: UPDATE_ACCOUNT_BADGE,
-    id,
     count,
+    id,
+    type: UPDATE_ACCOUNT_BADGE,
   };
 };
 
 export const deleteAccount = id => {
   return {
-    type: DELETE_ACCOUNT,
     id,
+    type: DELETE_ACCOUNT,
   };
 };
 
@@ -63,11 +63,11 @@ export const abortAccountCreation = (id) => {
 export const updateAccountData = (id, data) => {
   return (dispatch, getState) => {
     const validatedAccountData = verifyObjectProperties(data, {
+      'accentID': 'Number',
+      'name': 'String',
+      'picture': 'String',
       'teamID': 'String',
       'userID': 'String',
-      'picture': 'String',
-      'name': 'String',
-      'accentID': 'Number',
     });
 
     if (validatedAccountData) {

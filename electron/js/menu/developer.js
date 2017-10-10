@@ -31,91 +31,91 @@ function getPrimaryWindow() {
 
 
 let reloadTemplate = {
-  label: 'Reload',
   click: function() {getPrimaryWindow().reload();},
+  label: 'Reload',
 };
 
 let devToolsTemplate = {
   label: 'Toggle DevTools',
   submenu: [
     {
-      label: 'Sidebar',
       accelerator: 'Alt+CmdOrCtrl+I',
       click: function() {getPrimaryWindow().toggleDevTools();},
+      label: 'Sidebar',
     },
     {
-      label: 'First',
       click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools()");},
+      label: 'First',
     },
     {
-      label: 'Second',
       click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools()");},
+      label: 'Second',
     },
     {
-      label: 'Third',
       click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools()");},
+      label: 'Third',
     },
   ],
 };
 
 let devProductionTemplate = {
-  label: 'Production',
-  type: 'radio',
   checked: env === config.PROD,
   click: function() {
     getPrimaryWindow().reload();
     settings.save('env', config.PROD);
   },
+  label: 'Production',
+  type: 'radio',
 };
 
 let devInternalTemplate = {
-  label: 'Internal',
-  type: 'radio',
   checked: env === config.INTERNAL,
   click: function() {
     getPrimaryWindow().reload();
     settings.save('env', config.INTERNAL);
   },
+  label: 'Internal',
+  type: 'radio',
 };
 
 let devStagingTemplate = {
-  label: 'Staging',
-  type: 'radio',
   checked: env === config.STAGING,
   click: function() {
     getPrimaryWindow().reload();
     settings.save('env', config.STAGING);
   },
+  label: 'Staging',
+  type: 'radio',
 };
 
 let devDevTemplate = {
-  label: 'Dev',
-  type: 'radio',
   checked: env === config.DEV,
   click: function() {
     getPrimaryWindow().reload();
     settings.save('env', config.DEV);
   },
+  label: 'Dev',
+  type: 'radio',
 };
 
 let devEdgeTemplate = {
-  label: 'Edge',
-  type: 'radio',
   checked: env === config.EDGE,
   click: function() {
     getPrimaryWindow().reload();
     settings.save('env', config.EDGE);
   },
+  label: 'Edge',
+  type: 'radio',
 };
 
 let devLocalhostTemplate = {
-  label: 'Localhost',
-  type: 'radio',
   checked: env === config.LOCALHOST,
   click: function() {
     getPrimaryWindow().reload();
     settings.save('env', config.LOCALHOST);
   },
+  label: 'Localhost',
+  type: 'radio',
 };
 
 let versionTemplate = {

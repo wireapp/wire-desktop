@@ -37,8 +37,8 @@ const PersonalIcon = ({ account, accentID, onClick }) =>
   </div>;
 
 PersonalIcon.propTypes = {
-  account: PropTypes.object.isRequired,
   accentID: PropTypes.number,
+  account: PropTypes.object.isRequired,
   onClick: PropTypes.func,
 };
 

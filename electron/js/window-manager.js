@@ -47,7 +47,7 @@ function showPrimaryWindow() {
 
 
 module.exports = {
-  setPrimaryWindowId: setPrimaryWindowId,
   getPrimaryWindow: getPrimaryWindow,
+  setPrimaryWindowId: setPrimaryWindowId,
   showPrimaryWindow: showPrimaryWindow,
 };
