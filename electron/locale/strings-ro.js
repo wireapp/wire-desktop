@@ -69,4 +69,5 @@ string.trayQuit = 'Ieși';
 
 string.unreadMessages = 'Mesaj necitit';
 
+
 module.exports = string;

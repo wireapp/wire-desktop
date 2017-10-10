@@ -64,3 +64,6 @@ string.trayOpen = 'Open';
 string.trayQuit = 'Quit';
 
 string.unreadMessages = 'Unread message';
+
+string.wrapperAddAccount = 'Add Account';
+string.wrapperCreateTeam = 'Create Team';

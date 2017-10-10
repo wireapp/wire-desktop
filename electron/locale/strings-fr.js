@@ -11,7 +11,7 @@ string.aboutWebappVersion = 'Wire Web Version';
 
 string.menuConversation = 'Conversation';
 string.menuStart = 'Nouvelle';
-string.menuEdit = 'Edition';
+string.menuEdit = 'Édition';
 string.menuWindow = 'Fenêtre';
 string.menuView = 'Affichage';
 string.menuHelp = 'Aide';
@@ -68,5 +68,7 @@ string.trayOpen = 'Ouvrir';
 string.trayQuit = 'Quitter';
 
 string.unreadMessages = 'Message non lu';
+
+string.wrapperCreateTeam = 'Créer une équipe';
 
 module.exports = string;
