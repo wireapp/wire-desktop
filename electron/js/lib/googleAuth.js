@@ -18,7 +18,6 @@
  */
 
 
-
 const {BrowserWindow} = require('electron');
 
 const qs = require('querystring');
@@ -26,33 +25,22 @@ const google = require('googleapis');
 const request = require('request');
 const OAuth2 = google.auth.OAuth2;
 
-
-function getAuthenticationUrl(scopes, clientId, clientSecret) {
-  const oauth2Client = new OAuth2(
-    clientId,
-    clientSecret,
-    'urn:ietf:wg:oauth:2.0:oob'
-  );
-  return oauth2Client.generateAuthUrl({scope: scopes});
-}
-
-
-function authorizeApp(url) {
-  return new Promise(function(resolve, reject) {
+const _authorizeApp = (url) => {
+  return new Promise((resolve, reject) => {
     const win = new BrowserWindow({
       'title': '',
       'useContentSize': true,
     });
+
     win.setMenuBarVisibility(false);
     win.loadURL(url);
 
-    win.on('closed', function() {
-      reject(new Error('User closed  the window'));
-    });
+    win.on('closed', () => reject(new Error('User closed  the window')));
 
-    win.on('page-title-updated', function() {
-      setImmediate(function() {
+    win.on('page-title-updated', () => {
+      setImmediate(() => {
         const title = win.getTitle();
+
         if (title.startsWith('Denied')) {
           reject(new Error(title.split(/[ =]/)[2]));
           win.removeAllListeners('closed');
@@ -65,19 +53,12 @@ function authorizeApp(url) {
       });
     });
   });
-}
+};
 
-
-function getAuthorizationCode(scopes, clientId, clientSecret) {
-  const url = getAuthenticationUrl(scopes, clientId, clientSecret);
-  return authorizeApp(url);
-}
-
-
-function getAccessToken(scopes, clientId, clientSecret) {
-  return new Promise(function (resolve, reject) {
-    getAuthorizationCode(scopes, clientId, clientSecret)
-      .then(function (code) {
+const _getAccessToken = (scopes, clientId, clientSecret) => {
+  return new Promise((resolve, reject) => {
+    _getAuthorizationCode(scopes, clientId, clientSecret)
+      .then((code) => {
         const data = qs.stringify({
           code: code,
           client_id: clientId,
@@ -92,19 +73,26 @@ function getAccessToken(scopes, clientId, clientSecret) {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
           body: data,
-        }, function(error, response, body) {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(JSON.parse(body));
-          }
-        });
+        }, (error, response, body) => error ? reject(error) : resolve(JSON.parse(body)));
       });
   });
-}
+};
+
+const _getAuthenticationUrl = (scopes, clientId, clientSecret) => {
+  const oauth2Client = new OAuth2(
+    clientId,
+    clientSecret,
+    'urn:ietf:wg:oauth:2.0:oob'
+  );
+  return oauth2Client.generateAuthUrl({scope: scopes});
+};
+
+const _getAuthorizationCode = (scopes, clientId, clientSecret) => {
+  const url = _getAuthenticationUrl(scopes, clientId, clientSecret);
+  return _authorizeApp(url);
+};
 
 
 module.exports = {
-  getAuthorizationCode,
-  getAccessToken,
+  getAccessToken: _getAccessToken,
 };

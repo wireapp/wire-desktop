@@ -18,13 +18,12 @@
  */
 
 
-
 const og = require('open-graph');
 
 const arrayify = require('./arrayify');
 const base64Images = require('./base64-image');
 
-function updateMetaDataWithImages(meta, images) {
+const updateMetaDataWithImages = (meta, images) => {
   images = arrayify(images);
   if (images.length > 1) {
     meta.image.url = images;
@@ -34,21 +33,22 @@ function updateMetaDataWithImages(meta, images) {
     delete meta.image;
   }
   return meta;
-}
+};
 
-module.exports = function(url, limit = 1, callback) {
-  // older version excepts 2 paramaters (url, callback)
+module.exports = (url, limit = 1, callback) => {
+  // older version excepts 2 parameters (url, callback)
   if (typeof(limit) === 'function') {
     callback = limit;
     limit = 1;
   }
 
-  og(url, function(error, meta) {
-    if (error) return callback(error);
+  og(url, (error, meta) => {
+    if (error) {
+      return callback(error);
+    }
+
     if (meta.image && meta.image.url) {
-      base64Images(meta.image.url, limit, function(dataURIs) {
-        callback(null, updateMetaDataWithImages(meta, dataURIs));
-      });
+      base64Images(meta.image.url, limit, (dataURIs) => callback(null, updateMetaDataWithImages(meta, dataURIs)));
     } else {
       callback(null, meta);
     }

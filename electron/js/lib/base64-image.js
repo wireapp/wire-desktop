@@ -18,32 +18,43 @@
  */
 
 
-
 const request = require('request');
 
 const arrayify = require('./arrayify');
 const datauri = require('./datauri');
 
-function fetch(url, callback) {
-  request({ url: url, encoding: null }, function(error, response, body) {
-    if (error) return callback(error);
-    let mimetype = response.headers['content-type'];
-    callback(null, datauri.fromBuffer(mimetype, body));
+const fetch = (url, callback) => {
+  request({ url: url, encoding: null }, (error, response, body) => {
+    if (error) {
+      return callback(error);
+    }
+
+    const mimeType = response.headers['content-type'];
+    callback(null, datauri.fromBuffer(mimeType, body));
   });
-}
+};
 
-module.exports = function(urls, limit = 1, callback) {
-  let imagesToFetch = arrayify(urls).slice(0, limit);
+module.exports = (urls, limit = 1, callback) => {
+  const imagesToFetch = arrayify(urls).slice(0, limit);
   let completedRequests = 0;
-  let images = [];
+  const images = [];
 
-  if (imagesToFetch.length === 0) return callback();
+  if (!imagesToFetch.length) {
+    return callback();
+  }
 
-  imagesToFetch.forEach(function(url) {
-    fetch(url, function(err, dataURI) {
+  imagesToFetch.forEach((url) => {
+    fetch(url, (error, dataURI) => {
       completedRequests++;
-      if (err) console.log('unable to fetch image ');
-      if (dataURI) images.push(dataURI);
+
+      if (error) {
+        console.log('unable to fetch image ');
+      }
+
+      if (dataURI) {
+        images.push(dataURI);
+      }
+
       if (completedRequests === imagesToFetch.length) {
         callback(images.length > 1 ? images : images[0]);
       }

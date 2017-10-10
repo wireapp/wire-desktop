@@ -18,13 +18,14 @@
  */
 
 
-
 const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
+
 const config = require('./../config');
 const locale = require('./../../locale/locale');
 const settings = require('./../lib/settings');
+
 let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,59 +33,82 @@ let textMenu;
 ///////////////////////////////////////////////////////////////////////////////
 let copyContext = '';
 
-const defaultMenu = Menu.buildFromTemplate([{
-  label: locale.getText('menuCopy'),
-  click: function () {
-    clipboard.writeText(copyContext);
+const defaultMenu = Menu.buildFromTemplate([
+  {
+    label: locale.getText('menuCopy'),
+    click: () => clipboard.writeText(copyContext),
   },
-}]);
+]);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Text
 ///////////////////////////////////////////////////////////////////////////////
-let selection = {
+const selection = {
   isMisspelled: false,
   suggestions: [],
 };
 
 const textMenuTemplate = [
-  {label: locale.getText('menuCut'), role: 'cut'},
-  {label: locale.getText('menuCopy'), role: 'copy'},
-  {label: locale.getText('menuPaste'), role: 'paste'},
-  {type: 'separator'},
-  {label: locale.getText('menuSelectAll'), role: 'selectall'},
+  {
+    label: locale.getText('menuCut'),
+    role: 'cut',
+  },
+  {
+    label: locale.getText('menuCopy'),
+    role: 'copy',
+  },
+  {
+    label: locale.getText('menuPaste'),
+    role: 'paste',
+  },
+  {
+    type: 'separator',
+  },
+  {
+    label: locale.getText('menuSelectAll'),
+    role: 'selectall',
+  },
 ];
 
-function createTextMenu() {
-  let template = textMenuTemplate.slice();
+const createTextMenu = () => {
+  const template = textMenuTemplate.slice();
+
   if (selection.isMisspelled) {
     template.unshift({type: 'separator'});
+
     if (selection.suggestions.length > 0) {
-      for (let suggestion of selection.suggestions.reverse()) {
-        template.unshift({label: suggestion, click: function(menuItem) {
-          webContents.replaceMisspelling(menuItem.label);
-        }});
+      for (const suggestion of selection.suggestions.reverse()) {
+        template.unshift({
+          label: suggestion,
+          click: (menuItem) => webContents.replaceMisspelling(menuItem.label),
+        });
       }
     } else {
-      template.unshift({label: locale.getText('menuNoSuggestions'), enabled: false});
+      template.unshift({
+        label: locale.getText('menuNoSuggestions'),
+        enabled: false,
+      });
     }
   }
+
   textMenu = Menu.buildFromTemplate(template);
-}
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Images
 ///////////////////////////////////////////////////////////////////////////////
-let imageMenu = Menu.buildFromTemplate([{
-  label: locale.getText('menuSavePictureAs'),
-  click: function() {
-    savePicture(imageMenu.file, imageMenu.image);
+const imageMenu = Menu.buildFromTemplate([
+  {
+    label: locale.getText('menuSavePictureAs'),
+    click: () => savePicture(imageMenu.file, imageMenu.image),
   },
-}]);
+]);
 
-window.addEventListener('contextmenu', function (event) {
+window.addEventListener('contextmenu', (event) => {
   const element = event.target;
+
   copyContext = '';
+
   if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
     event.preventDefault();
     createTextMenu();
@@ -117,7 +141,7 @@ window.addEventListener('contextmenu', function (event) {
 
 }, false);
 
-window.addEventListener('click', function(event) {
+window.addEventListener('click', (event) => {
   const element = event.target;
 
   if (element.classList.contains('icon-more') && !element.classList.contains('context-menu') && element.parentElement.previousElementSibling) {
@@ -130,28 +154,26 @@ window.addEventListener('click', function(event) {
 }, true);
 
 
-function savePicture(fileName, url) {
+const savePicture = (fileName, url) => {
   fetch(url)
-    .then(function(response) {
-      return response.arrayBuffer();
-    })
-    .then(function(arrayBuffer) {
-      const bytes = new Uint8Array(arrayBuffer);
-      ipcRenderer.send('save-picture', fileName, bytes);
-    });
-}
+    .then((response) => response.arrayBuffer())
+    .then((arrayBuffer) => ipcRenderer.send('save-picture', fileName, new Uint8Array(arrayBuffer)));
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-if (config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent())) {
+const is_spellcheck_supported = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
+if (is_spellcheck_supported) {
   const spellchecker = require('spellchecker');
+
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck (text) {
       if (!settings.restore('spelling', false)) {
         return true;
       }
+
       selection.isMisspelled = spellchecker.isMisspelled(text);
       selection.suggestions = [];
       if (selection.isMisspelled) {

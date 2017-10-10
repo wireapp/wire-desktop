@@ -18,7 +18,4 @@
  */
 
 
-
-module.exports = function (obj = []) {
-  return Array.isArray(obj) ? obj : [obj];
-};
+module.exports = (obj = []) => Array.isArray(obj) ? obj : [obj];
