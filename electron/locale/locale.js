@@ -69,7 +69,7 @@ const SUPPORTED_LANGUAGES = {
 
 let current;
 
-const getSupportedLanguageKeys = () =>  Object.keys(SUPPORTED_LANGUAGES);
+const getSupportedLanguageKeys = () => Object.keys(SUPPORTED_LANGUAGES);
 
 const getCurrent = () => {
   if (!current) {

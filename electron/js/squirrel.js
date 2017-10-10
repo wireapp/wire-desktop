@@ -95,7 +95,7 @@ const createStartShortcut = (callback) => {
 };
 
 
-const createDesktopShortcut = (callback) =>  {
+const createDesktopShortcut = (callback) => {
   spawnUpdate(['--createShortcut', exeName, '-l=Desktop'], callback);
 };
 
