@@ -111,8 +111,8 @@ const installUpdate = () => {
 
 
 const scheduleUpdate = () => {
-  setTimeout(installUpdate, config.UPDATE_DELAY);
-  setInterval(installUpdate, config.UPDATE_INTERVAL);
+  setTimeout(installUpdate, config.UPDATE.DELAY);
+  setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
 

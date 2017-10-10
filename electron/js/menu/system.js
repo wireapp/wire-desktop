@@ -174,6 +174,8 @@ const toggleAutoLaunchTemplate = {
   },
 };
 
+const supportsSpellcheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
+
 const editTemplate = {
   i18n: 'menuEdit',
   submenu: [
@@ -207,8 +209,8 @@ const editTemplate = {
     {
       i18n: 'menuSpelling',
       type: 'checkbox',
-      checked: settings.restore('spelling', false) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
-      enabled: config.SPELL_SUPPORTED.includes(locale.getCurrent()),
+      checked: supportsSpellcheck && settings.restore('spelling', false),
+      enabled: supportsSpellcheck,
       click: (event) => settings.save('spelling', event.checked),
     },
   ],
@@ -246,23 +248,23 @@ const helpTemplate = {
   submenu: [
     {
       i18n: 'menuLegal',
-      click: () => shell.openExternal(config.WIRE_LEGAL),
+      click: () => shell.openExternal(environment.web.get_url_support() + config.URL.LEGAL),
     },
     {
       i18n: 'menuPrivacy',
-      click: () => shell.openExternal(config.WIRE_PRIVACY),
+      click: () => shell.openExternal(environment.web.get_url_support() + config.URL.PRIVACY),
     },
     {
       i18n: 'menuLicense',
-      click: () => shell.openExternal(config.WIRE_LICENSES),
+      click: () => shell.openExternal(environment.web.get_url_support() + config.URL.LICENSES),
     },
     {
       i18n: 'menuSupport',
-      click: () => shell.openExternal(config.WIRE_SUPPORT),
+      click: () => shell.openExternal(environment.web.get_url_support()),
     },
     {
       i18n: 'menuWireURL',
-      click: () => shell.openExternal(config.WIRE),
+      click: () => shell.openExternal(environment.web.get_url_website()),
     },
   ],
 };

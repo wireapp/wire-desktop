@@ -21,12 +21,6 @@
 const pkg = require('./../package.json');
 
 const config = {
-  WIRE: 'https://wire.com',
-  WIRE_SUPPORT: 'https://support.wire.com',
-  WIRE_LEGAL: 'https://wire.com/legal/',
-  WIRE_PRIVACY: 'https://wire.com/privacy/',
-  WIRE_LICENSES: 'https://wire.com/legal/licenses/',
-
   ABOUT: {
     HEIGHT: 256,
     WIDTH: 304,
@@ -36,16 +30,6 @@ const config = {
     HEIGHT: 576,
     WIDTH: 400,
   },
-
-  MAIN: {
-    DEFAULT_HEIGHT: 768,
-    DEFAULT_WIDTH: 1024,
-    MIN_HEIGHT: 512,
-    MIN_WIDTH: 760,
-  },
-
-  UPDATE_DELAY: 5 * 60 * 1000,
-  UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
 
   EMBED_DOMAINS: [
     {
@@ -80,6 +64,24 @@ const config = {
     },
   ],
 
+  MAIN: {
+    DEFAULT_HEIGHT: 768,
+    DEFAULT_WIDTH: 1024,
+    MIN_HEIGHT: 512,
+    MIN_WIDTH: 760,
+  },
+
+  UPDATE: {
+    DELAY: 5 * 60 * 1000,
+    INTERVAL: 24 * 60 * 60 * 1000,
+  },
+
+  URL: {
+    LEGAL: '/legal/',
+    LICENSES: '/legal/licenses/',
+    PRIVACY: '/privacy/',
+  },
+
   RAYGUN_API_KEY: '',
 
   GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
@@ -88,10 +90,12 @@ const config = {
 
   CONSOLE_LOG: 'console.log',
 
-  SPELL_SUGGESTIONS: 4,
-  SPELL_SUPPORTED: [
-    'en',
-  ],
+  SPELLCHECK: {
+    SUGGESTIONS: 4,
+    SUPPORTED_LANGUAGES: [
+      'en',
+    ],
+  },
 
   VERSION: pkg.version,
   NAME: pkg.productName,
