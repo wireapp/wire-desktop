@@ -19,38 +19,71 @@
 
 
 const og = require('open-graph');
+const request = require('request');
 
-const arrayify = require('./arrayify');
-const base64Images = require('./base64-image');
+const _arrayify = (obj = []) => Array.isArray(obj) ? obj : [obj];
 
-const updateMetaDataWithImages = (meta, images) => {
-  images = arrayify(images);
-  if (images.length > 1) {
-    meta.image.url = images;
-  } else if (images.length > 0) {
-    meta.image.url = meta.image.data = images[0]; // old version uses data attr
+const _bufferToBase64 = (buffer, mimeType) => {
+  const bufferBase64encoded = Buffer.from(buffer).toString('base64');
+  return 'data:' + mimeType + ';base64,' + bufferBase64encoded;
+};
+
+const _fetchImageAsBase64 = (url) => {
+  return new Promise((resolve) => {
+    request({url: encodeURI(url), encoding: null}, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        resolve(_bufferToBase64(body, response.headers['content-type']));
+      } else {
+        // we just skip images that failed to download
+        resolve();
+      }
+    });
+  });
+};
+
+const _fetchOpenGraphData = (url) => {
+  return new Promise((resolve, reject) => {
+    og(url, (error, meta) => error ? reject(error) : resolve(meta));
+  });
+};
+
+const _updateMetaDataWithImage = (meta, image) => {
+  if (image) {
+    meta.image.data = image;
   } else {
     delete meta.image;
   }
+
   return meta;
 };
 
-module.exports = (url, limit = 1, callback) => {
-  // older version excepts 2 parameters (url, callback)
-  if (typeof(limit) === 'function') {
-    callback = limit;
-    limit = 1;
-  }
+const _getOpenGraphData = (url, callback) => {
+  return _fetchOpenGraphData(url)
+    .then((meta) => {
+      if (meta.image && meta.image.url) {
+        const [imageUrl] = _arrayify(meta.image.url);
 
-  og(url, (error, meta) => {
-    if (error) {
-      return callback(error);
-    }
+        return _fetchImageAsBase64(imageUrl)
+          .then((uri) => _updateMetaDataWithImage(meta, uri))
+          .catch(() => meta);
+      }
 
-    if (meta.image && meta.image.url) {
-      base64Images(meta.image.url, limit, (dataURIs) => callback(null, updateMetaDataWithImages(meta, dataURIs)));
-    } else {
-      callback(null, meta);
-    }
-  });
+      return meta;
+    })
+    .then((meta) => {
+      if (callback) {
+        callback(null, meta);
+      }
+
+      return meta;
+    })
+    .catch((error) => {
+      if (callback) {
+        callback(error);
+      }
+
+      throw error;
+    });
 };
+
+module.exports = _getOpenGraphData;
