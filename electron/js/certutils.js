@@ -90,7 +90,7 @@ module.exports = {
     let issuerCertHex, publicKey, publicKeyBytes, publicKeyFingerprint;
 
     try {
-      issuerCertHex = rs.ASN1HEX.pemToHex(issuerCertData);
+      issuerCertHex = rs.pemtohex(issuerCertData);
       publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
       publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
       publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
