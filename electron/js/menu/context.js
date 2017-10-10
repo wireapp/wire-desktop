@@ -145,7 +145,7 @@ function savePicture(fileName, url) {
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
+if (config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent())) {
   const spellchecker = require('spellchecker');
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck (text) {
@@ -155,7 +155,7 @@ if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
       selection.isMisspelled = spellchecker.isMisspelled(text);
       selection.suggestions = [];
       if (selection.isMisspelled) {
-        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELL_SUGGESTIONS);
+        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELLCHECK.SUGGESTIONS);
       }
       return !selection.isMisspelled;
     },

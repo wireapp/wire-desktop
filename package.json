@@ -13,7 +13,7 @@
     "install": "cd electron && npm run rebuild-native-modules",
     "postinstall": "cd electron && npm run rebuild-neon",
     "prestart": "npm run bundle:dev",
-    "start": "electron electron --inspect --devtools --enable-logging",
+    "start": "npm run prestart && electron electron --inspect --devtools --enable-logging",
     "edge": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
     "staging": "electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "prod": "electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",

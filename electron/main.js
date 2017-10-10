@@ -40,8 +40,10 @@ const settings = require('./js/lib/settings');
 
 // Wrapper modules
 const certutils = require('./js/certutils');
+const config = require('./js/config');
 const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
+const environment = require('./js/environment');
 const googleAuth = require('./js/lib/googleAuth');
 const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
@@ -51,25 +53,11 @@ const windowManager = require('./js/window-manager');
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const config = require('./js/config');
+const BASE_URL = environment.web.get_url_webapp(argv.env);
 
 // Icon
-const ICON = `wire.${((process.platform === 'win32') ? 'ico' : 'png')}`;
+const ICON = `wire.${(environment.platform.IS_WINDOWS ? 'ico' : 'png')}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
-
-const BASE_URL = (() => {
-  if (!argv.env && config.DEVELOPMENT) {
-    switch (settings.restore('env', config.INTERNAL)) {
-      case config.DEV: return config.DEV_URL;
-      case config.EDGE: return config.EDGE_URL;
-      case config.INTERNAL: return config.INTERNAL_URL;
-      case config.LOCALHOST: return config.LOCALHOST_URL;
-      case config.STAGING: return config.STAGING_URL;
-    }
-  }
-
-  return argv.env || config.PROD_URL;
-})();
 
 
 let main;
@@ -89,7 +77,7 @@ raygunClient.onBeforeSend(payload => {
   return payload;
 });
 
-if (config.DEVELOPMENT) {
+if (environment.app.IS_DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
@@ -105,14 +93,15 @@ if (argv.portable) {
 
 // makeSingleInstance will crash the signed mas app
 // see: https://github.com/atom/electron/issues/4688
-if (process.platform !== 'darwin') {
+if (!environment.platform.IS_MAC_OS) {
   shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
     if (main) {
       windowManager.showPrimaryWindow();
     }
     return true;
   });
-  if (process.platform !== 'win32' && shouldQuit) {
+
+  if (!environment.platform.IS_WINDOWS && shouldQuit) {
     // Using exit instead of quit for the time being
     // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
     app.exit();
@@ -122,7 +111,7 @@ if (process.platform !== 'darwin') {
 ///////////////////////////////////////////////////////////////////////////////
 // Auto Update
 ///////////////////////////////////////////////////////////////////////////////
-if (process.platform === 'win32') {
+if (environment.platform.IS_WINDOWS) {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
 
@@ -138,7 +127,7 @@ if (process.platform === 'win32') {
 // Fix indicator icon on Unity
 // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
 ///////////////////////////////////////////////////////////////////////////////
-if (process.platform === 'linux') {
+if (environment.platform.IS_LINUX) {
   const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
 
   if (isUbuntuUnity) {
@@ -167,12 +156,8 @@ ipcMain.on('badge-count', (event, count) => {
 
 ipcMain.on('google-auth-request', event => {
   googleAuth.getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
-    .then(code => {
-      event.sender.send('google-auth-success', code.access_token);
-    })
-    .catch(error => {
-      event.sender.send('google-auth-error', error);
-    });
+    .then(code => event.sender.send('google-auth-success', code.access_token))
+    .catch(error => event.sender.send('google-auth-error', error));
 });
 
 ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
@@ -201,24 +186,24 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-function relaunchApp() {
+const relaunchApp = () => {
   app.relaunch();
   // Using exit instead of quit for the time being
   // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
   app.exit();
-}
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
 ///////////////////////////////////////////////////////////////////////////////
-function showMainWindow() {
+const showMainWindow = () => {
   main = new BrowserWindow({
     title: config.NAME,
     titleBarStyle: 'hidden-inset',
-    width: config.DEFAULT_WIDTH_MAIN,
-    height: config.DEFAULT_HEIGHT_MAIN,
-    minWidth: config.MIN_WIDTH_MAIN,
-    minHeight: config.MIN_HEIGHT_MAIN,
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
     autoHideMenuBar: !settings.restore('showMenu', true),
     icon: ICON_PATH,
     show: false,
@@ -250,12 +235,10 @@ function showMainWindow() {
     }
 
     discloseWindowID(main);
-    setTimeout(function() {
-      main.show();
-    }, 800);
+    setTimeout(() => main.show(), 800);
   }
 
-  main.webContents.on('will-navigate', function(event, url) {
+  main.webContents.on('will-navigate', (event, url) => {
     // Prevent any kind of navigation inside the main window
     event.preventDefault();
   });
@@ -281,7 +264,7 @@ function showMainWindow() {
     main.flashFrame(false);
   });
 
-  main.on('page-title-updated', function() {
+  main.on('page-title-updated', () => {
     tray.updateBadgeIcon(main);
   });
 
@@ -311,41 +294,41 @@ function showMainWindow() {
   main.webContents.on('crashed', () => {
     main.reload();
   });
-}
+};
 
-function showAboutWindow() {
+const showAboutWindow = () => {
   if (about === undefined) {
     about = new BrowserWindow({
       title: config.NAME,
-      width: 304,
-      height: 256,
+      width: config.WINDOW.ABOUT.WIDTH,
+      height: config.WINDOW.ABOUT.HEIGHT,
       resizable: false,
       fullscreen: false,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
-    about.webContents.on('dom-ready', function() {
+    about.webContents.on('dom-ready', () => {
       about.webContents.send('about-loaded', {
         webappVersion: webappVersion,
       });
     });
 
-    about.on('closed', function() {
+    about.on('closed', () => {
       about = undefined;
     });
   }
   about.show();
-}
+};
 
-function discloseWindowID(browserWindow) {
+const discloseWindowID = (browserWindow) => {
   windowManager.setPrimaryWindowId(browserWindow.id);
-}
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  if (!environment.isMacOS) {
     app.quit();
   }
 });
@@ -363,12 +346,12 @@ app.on('quit', async () => await settings.persistToFile());
 ///////////////////////////////////////////////////////////////////////////////
 // System Menu & Tray Icon & Show window
 ///////////////////////////////////////////////////////////////////////////////
-app.on('ready', function() {
-  let appMenu = systemMenu.createMenu();
-  if (config.DEVELOPMENT) {
+app.on('ready', () => {
+  const appMenu = systemMenu.createMenu();
+  if (environment.app.IS_DEVELOPMENT) {
     appMenu.append(developerMenu);
   }
-  appMenu.on('about-wire', function() {
+  appMenu.on('about-wire', () => {
     showAboutWindow();
   });
 
@@ -383,7 +366,7 @@ app.on('ready', function() {
 fs.readdir(LOG_DIR, (error, contents) => {
   if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
 
-  contents.map((file) => path.join(LOG_DIR, file, config.CONSOLE_LOG))
+  contents.map((file) => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
     .filter((file) => {
       try {
         return fs.statSync(file).isFile();
@@ -499,10 +482,10 @@ class BrowserWindowInit {
       title: config.NAME,
       titleBarStyle: 'hidden-inset',
 
-      width: config.DEFAULT_WIDTH_MAIN,
-      height: config.DEFAULT_HEIGHT_MAIN,
-      minWidth: config.MIN_WIDTH_MAIN,
-      minHeight: config.MIN_HEIGHT_MAIN,
+      width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+      height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+      minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+      minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
 
       autoHideMenuBar: !settings.restore('showMenu', true),
       icon: ICON_PATH,

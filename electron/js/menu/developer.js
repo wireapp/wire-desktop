@@ -18,135 +18,85 @@
  */
 
 
-
 const {MenuItem} = require('electron');
 const config = require('./../config');
-const settings = require('./../lib/settings');
-const env = settings.restore('env', config.INTERNAL);
+const environment = require('./../environment');
+const util = require('./../util');
 const windowManager = require('./../window-manager');
 
-function getPrimaryWindow() {
-  return windowManager.getPrimaryWindow();
-}
+const currentEnvironment = environment.getEnvironment();
 
+const getPrimaryWindow = () => windowManager.getPrimaryWindow();
 
-let reloadTemplate = {
+const reloadTemplate = {
   label: 'Reload',
-  click: function() {getPrimaryWindow().reload();},
+  click: () => getPrimaryWindow().reload(),
 };
 
-let devToolsTemplate = {
+const devToolsTemplate = {
   label: 'Toggle DevTools',
   submenu: [
     {
       label: 'Sidebar',
       accelerator: 'Alt+CmdOrCtrl+I',
-      click: function() {getPrimaryWindow().toggleDevTools();},
+      click: () => getPrimaryWindow().toggleDevTools(),
     },
     {
       label: 'First',
-      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools()");},
+      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools()"),
     },
     {
       label: 'Second',
-      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools()");},
+      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools()"),
     },
     {
       label: 'Third',
-      click: function() {getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools()");},
+      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools()"),
     },
   ],
 };
 
-let devProductionTemplate = {
-  label: 'Production',
-  type: 'radio',
-  checked: env === config.PROD,
-  click: function() {
-    getPrimaryWindow().reload();
-    settings.save('env', config.PROD);
-  },
+const createEnvironmentTemplate = (env) => {
+  return {
+    label: util.capitalize(env),
+    type: 'radio',
+    checked: currentEnvironment === env,
+    click: () => {
+      environment.setEnvironment(env);
+      getPrimaryWindow().reload();
+    },
+  };
 };
 
-let devInternalTemplate = {
-  label: 'Internal',
-  type: 'radio',
-  checked: env === config.INTERNAL,
-  click: function() {
-    getPrimaryWindow().reload();
-    settings.save('env', config.INTERNAL);
-  },
-};
-
-let devStagingTemplate = {
-  label: 'Staging',
-  type: 'radio',
-  checked: env === config.STAGING,
-  click: function() {
-    getPrimaryWindow().reload();
-    settings.save('env', config.STAGING);
-  },
-};
-
-let devDevTemplate = {
-  label: 'Dev',
-  type: 'radio',
-  checked: env === config.DEV,
-  click: function() {
-    getPrimaryWindow().reload();
-    settings.save('env', config.DEV);
-  },
-};
-
-let devEdgeTemplate = {
-  label: 'Edge',
-  type: 'radio',
-  checked: env === config.EDGE,
-  click: function() {
-    getPrimaryWindow().reload();
-    settings.save('env', config.EDGE);
-  },
-};
-
-let devLocalhostTemplate = {
-  label: 'Localhost',
-  type: 'radio',
-  checked: env === config.LOCALHOST,
-  click: function() {
-    getPrimaryWindow().reload();
-    settings.save('env', config.LOCALHOST);
-  },
-};
-
-let versionTemplate = {
+const versionTemplate = {
   label: 'Wire Version ' + config.VERSION,
 };
 
-let chromeVersionTemplate = {
+const chromeVersionTemplate = {
   label: 'Chrome Version ' + process.versions.chrome,
 };
 
-let electronVersionTemplate = {
+const electronVersionTemplate = {
   label: 'Electron Version ' + process.versions.electron,
 };
 
-let separatorTemplate = {
+const separatorTemplate = {
   type: 'separator',
 };
 
-let menuTemplate = {
+const menuTemplate = {
   id: 'Developer',
   label: 'Developer',
   submenu: [
     devToolsTemplate,
     reloadTemplate,
     separatorTemplate,
-    devProductionTemplate,
-    devInternalTemplate,
-    devStagingTemplate,
-    devDevTemplate,
-    devEdgeTemplate,
-    devLocalhostTemplate,
+    createEnvironmentTemplate(environment.TYPE.PRODUCTION),
+    createEnvironmentTemplate(environment.TYPE.INTERNAL),
+    createEnvironmentTemplate(environment.TYPE.STAGING),
+    createEnvironmentTemplate(environment.TYPE.DEV),
+    createEnvironmentTemplate(environment.TYPE.EDGE),
+    createEnvironmentTemplate(environment.TYPE.LOCALHOST),
     separatorTemplate,
     versionTemplate,
     chromeVersionTemplate,

@@ -17,13 +17,14 @@
  *
  */
 
-// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
 
+// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
 
 const {app} = require('electron');
 
 const config = require('./config');
 const cp = require('child_process');
+const environment = require('./environment');
 const fs = require('fs');
 const path = require('path');
 
@@ -38,7 +39,7 @@ let linkName = config.NAME + '.lnk';
 
 let taskbarLink = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName));
 
-function spawn(command, args, callback) {
+const spawn = (command, args, callback) => {
   let error;
   let spawnedProcess;
   let stdout;
@@ -84,45 +85,44 @@ function spawn(command, args, callback) {
 };
 
 
-function spawnUpdate(args, callback) {
+const spawnUpdate = (args, callback) => {
   spawn(updateDotExe, args, callback);
 };
 
 
-function createStartShortcut(callback) {
+const createStartShortcut = (callback) => {
   spawnUpdate(['--createShortcut', exeName, '-l=StartMenu'], callback);
 };
 
 
-function createDesktopShortcut(callback) {
+const createDesktopShortcut = (callback) => {
   spawnUpdate(['--createShortcut', exeName, '-l=Desktop'], callback);
 };
 
 
-function removeShortcuts(callback) {
-  spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], function() {
-    fs.unlink(taskbarLink, callback);
-  });
+const removeShortcuts = (callback) => {
+  spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], () => fs.unlink(taskbarLink, callback));
 };
 
 
-function installUpdate() {
-  spawnUpdate(['--update', config.UPDATE_WIN_URL]);
+const installUpdate = () => {
+  spawnUpdate(['--update', environment.app.UPDATE_URL_WIN]);
 };
 
 
-function scheduleUpdate() {
-  setTimeout(installUpdate, config.UPDATE_DELAY);
-  setInterval(installUpdate, config.UPDATE_INTERVAL);
+const scheduleUpdate = () => {
+  setTimeout(installUpdate, config.UPDATE.DELAY);
+  setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
 
-function handleSquirrelEvent(shouldQuit) {
-  let squirrelEvent = process.argv[1];
+const handleSquirrelEvent = (shouldQuit) => {
+  const [, squirrelEvent] = process.argv;
+
   switch (squirrelEvent) {
     case '--squirrel-install':
-      createStartShortcut(function() {
-        createDesktopShortcut(function() {
+      createStartShortcut(() => {
+        createDesktopShortcut(() => {
           app.quit();
         });
       });
@@ -131,7 +131,7 @@ function handleSquirrelEvent(shouldQuit) {
       app.exit();
       return true;
     case '--squirrel-uninstall':
-      removeShortcuts(function() {
+      removeShortcuts(() => {
         app.quit();
       });
       return true;
