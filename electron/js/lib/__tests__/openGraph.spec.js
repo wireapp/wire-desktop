@@ -17,11 +17,31 @@
  *
  */
 
+
 import openGraph from '../openGraph';
 
 describe('openGraph', () => {
+  it('should resolve open graph data with image data', (done) => {
+    const openGraphData = {
+      "title": "Wire · Modern communication, full privacy. For iOS, Android, macOS, Windows, Linux and web.",
+      "type": "website",
+      "url": "https://wire.com/",
+      "image": {
+        "url": "https://lh3.ggpht.com/ElqTCcY1N0c3EAX27MRFoXynZlbTaJD2KEqYNXAPn5YQPZa6Bvsux4NCgEMoUhazdIWWelAU__Kzmr55j55EsgM=s1024"
+      },
+      "description": "HD quality calls, private and group chats with inline photos, music and video. Secure and perfectly synced across your devices."
+    };
 
-  it('should return open graph data with image data', (done) => {
+    openGraph('https://wire.com/')
+      .then((meta) => {
+        expect(meta.title).toBe(openGraphData.title);
+        expect(meta.image.data).toBeDefined();
+        done();
+      })
+      .catch(done.fail);
+  });
+
+  it('should excecute callback with open graph data containing image data', (done) => {
     const openGraphData = {
       "title": "Wire · Modern communication, full privacy. For iOS, Android, macOS, Windows, Linux and web.",
       "type": "website",
@@ -38,7 +58,6 @@ describe('openGraph', () => {
       expect(meta.image.data).toBeDefined();
       done();
     });
-
   });
 
   it('should return open graph data without image data', (done) => {
@@ -49,15 +68,14 @@ describe('openGraph', () => {
       "description": "HD quality calls, private and group chats with inline photos, music and video. Secure and perfectly synced across your devices."
     };
 
-    openGraph('https://wire.com/', (error, meta) => {
-      expect(error).toBeNull();
-      expect(meta.title).toBe(openGraphData.title);
-      expect(meta.image).not.toBeDefined();
-      done();
-    });
-
+    openGraph('https://wire.com/')
+      .then((meta) => {
+        expect(meta.title).toBe(openGraphData.title);
+        expect(meta.image).not.toBeDefined();
+        done();
+      })
+      .catch(done.fail);
   });
-
 });
 
 
