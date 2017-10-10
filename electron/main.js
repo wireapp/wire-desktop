@@ -366,7 +366,7 @@ app.on('ready', () => {
 fs.readdir(LOG_DIR, (error, contents) => {
   if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
 
-  contents.map((file) => path.join(LOG_DIR, file, config.CONSOLE_LOG))
+  contents.map((file) => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
     .filter((file) => {
       try {
         return fs.statSync(file).isFile();

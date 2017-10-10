@@ -54,6 +54,15 @@ const config = {
     },
   ],
 
+  LOG_FILE_NAME: 'console.log',
+
+  SPELLCHECK: {
+    SUGGESTIONS: 4,
+    SUPPORTED_LANGUAGES: [
+      'en',
+    ],
+  },
+
   UPDATE: {
     DELAY: 5 * 60 * 1000,
     INTERVAL: 24 * 60 * 60 * 1000,
@@ -88,17 +97,8 @@ const config = {
   GOOGLE_CLIENT_ID: '',
   GOOGLE_CLIENT_SECRET: '',
 
-  CONSOLE_LOG: 'console.log',
-
-  SPELLCHECK: {
-    SUGGESTIONS: 4,
-    SUPPORTED_LANGUAGES: [
-      'en',
-    ],
-  },
-
-  VERSION: pkg.version,
   NAME: pkg.productName,
+  VERSION: pkg.version,
 };
 
 module.exports = config;
