@@ -69,4 +69,5 @@ string.trayQuit = 'Вийти';
 
 string.unreadMessages = 'Непрочитане повідомлення';
 
+
 module.exports = string;

@@ -69,4 +69,5 @@ string.trayQuit = 'Končaj';
 
 string.unreadMessages = 'Neprebrano sporočilo';
 
+
 module.exports = string;

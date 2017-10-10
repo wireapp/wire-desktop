@@ -69,4 +69,6 @@ string.trayQuit = 'Завершить';
 
 string.unreadMessages = 'Непрочитанное сообщение';
 
+string.wrapperCreateTeam = 'Создать команду';
+
 module.exports = string;
