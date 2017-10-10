@@ -63,11 +63,12 @@ export const abortAccountCreation = (id) => {
 export const updateAccountData = (id, data) => {
   return (dispatch, getState) => {
     const validatedAccountData = verifyObjectProperties(data, {
-      'teamID': 'String',
-      'userID': 'String',
-      'picture': 'String',
-      'name': 'String',
       'accentID': 'Number',
+      'name': 'String',
+      'picture': 'String',
+      'teamID': 'String',
+      'teamRole': 'String',
+      'userID': 'String',
     });
 
     if (validatedAccountData) {
