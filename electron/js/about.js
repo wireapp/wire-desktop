@@ -20,7 +20,7 @@
 
 const {remote, ipcRenderer, shell} = require('electron');
 
-const pkg = require('./../package.json');
+const config = require('./config');
 const locale = require('./../locale/locale');
 
 const labels = document.getElementsByClassName('text');
@@ -28,8 +28,8 @@ for (const label of labels) {
   label.innerHTML = locale.getText(label.dataset.string);
 }
 
-document.getElementById('name').innerHTML = pkg.productName;
-document.getElementById('version').innerHTML = pkg.version;
+document.getElementById('name').innerHTML = config.NAME;
+document.getElementById('version').innerHTML = config.VERSION;
 
 window.addEventListener('keydown', (event) => {
   if (event.keyCode === 27) {
@@ -45,9 +45,9 @@ for (const link of links) {
   };
 }
 
-ipcRenderer.once('about-loaded', (sender, config) => {
-  if (config.webappVersion) {
-    document.getElementById('webappVersion').innerHTML = config.webappVersion;
+ipcRenderer.once('about-loaded', (sender, details) => {
+  if (details.webappVersion) {
+    document.getElementById('webappVersion').innerHTML = details.webappVersion;
   } else {
     document.getElementById('webappVersion').parentNode.remove();
   }

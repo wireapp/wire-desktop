@@ -17,9 +17,9 @@
  *
  */
 
+const config = require('../../js/config');
 const fs = require('fs-extra');
 const path = require('path');
-const pkg = require('../../package.json');
 const winston = require('winston');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
@@ -122,8 +122,7 @@ function enableFileLogging() {
   const id = new URL(window.location).searchParams.get('id');
 
   if (id) {
-    const logName = require('../../js/config').CONSOLE_LOG;
-    const logFilePath = path.join(app.getPath('userData'), 'logs', id, logName);
+    const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
     fs.createFileSync(logFilePath);
 
     const logger = new winston.Logger();
@@ -132,7 +131,7 @@ function enableFileLogging() {
       handleExceptions: true,
     });
 
-    logger.info(pkg.productName, 'Version', pkg.version);
+    logger.info(config.NAME, 'Version', config.VERSION);
 
     // webapp uses global winston reference to define log level
     global.winston = logger;
