@@ -84,11 +84,11 @@ module.exports = {
       win.setMenuBarVisibility(false);
     }
 
-    const height = config.AUTH.HEIGHT + (environment.platform.IS_WINDOWS ? 40 : 0);
+    const height = config.WINDOW.AUTH.HEIGHT + (environment.platform.IS_WINDOWS ? 40 : 0);
     win.setFullScreen(false);
     win.setMaximizable(false);
-    win.setMinimumSize(config.AUTH.WIDTH, height);
-    win.setSize(config.AUTH.WIDTH, height);
+    win.setMinimumSize(config.WINDOW.AUTH.WIDTH, height);
+    win.setSize(config.WINDOW.AUTH.WIDTH, height);
     win.setResizable(false);
     win.center();
   },
@@ -97,8 +97,9 @@ module.exports = {
     if (!environment.platform.IS_MAC_OS) {
       win.setMenuBarVisibility(true);
     }
-    win.setMinimumSize(config.MAIN.MIN_WIDTH, config.MAIN.MIN_HEIGHT);
-    win.setSize(config.MAIN.DEFAULT_WIDTH, config.MAIN.DEFAULT_HEIGHT);
+
+    win.setMinimumSize(config.WINDOW.MAIN.MIN_WIDTH, config.WINDOW.MAIN.MIN_HEIGHT);
+    win.setSize(config.WINDOW.MAIN.DEFAULT_WIDTH, config.WINDOW.MAIN.DEFAULT_HEIGHT);
     win.setResizable(true);
     win.setMaximizable(true);
     win.center();

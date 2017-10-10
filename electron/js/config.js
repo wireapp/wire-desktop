@@ -21,16 +21,6 @@
 const pkg = require('./../package.json');
 
 const config = {
-  ABOUT: {
-    HEIGHT: 256,
-    WIDTH: 304,
-  },
-
-  AUTH: {
-    HEIGHT: 576,
-    WIDTH: 400,
-  },
-
   EMBED_DOMAINS: [
     {
       name: 'YouTube',
@@ -64,13 +54,6 @@ const config = {
     },
   ],
 
-  MAIN: {
-    DEFAULT_HEIGHT: 768,
-    DEFAULT_WIDTH: 1024,
-    MIN_HEIGHT: 512,
-    MIN_WIDTH: 760,
-  },
-
   UPDATE: {
     DELAY: 5 * 60 * 1000,
     INTERVAL: 24 * 60 * 60 * 1000,
@@ -80,6 +63,23 @@ const config = {
     LEGAL: '/legal/',
     LICENSES: '/legal/licenses/',
     PRIVACY: '/privacy/',
+  },
+
+  WINDOW: {
+    ABOUT: {
+      HEIGHT: 256,
+      WIDTH: 304,
+    },
+    AUTH: {
+      HEIGHT: 576,
+      WIDTH: 400,
+    },
+    MAIN: {
+      DEFAULT_HEIGHT: 768,
+      DEFAULT_WIDTH: 1024,
+      MIN_HEIGHT: 512,
+      MIN_WIDTH: 760,
+    },
   },
 
   RAYGUN_API_KEY: '',

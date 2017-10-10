@@ -200,10 +200,10 @@ const showMainWindow = () => {
   main = new BrowserWindow({
     title: config.NAME,
     titleBarStyle: 'hidden-inset',
-    width: config.MAIN.DEFAULT_WIDTH,
-    height: config.MAIN.DEFAULT_HEIGHT,
-    minWidth: config.MAIN.MIN_WIDTH,
-    minHeight: config.MAIN.MIN_HEIGHT,
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
     autoHideMenuBar: !settings.restore('showMenu', true),
     icon: ICON_PATH,
     show: false,
@@ -300,8 +300,8 @@ const showAboutWindow = () => {
   if (about === undefined) {
     about = new BrowserWindow({
       title: config.NAME,
-      width: config.ABOUT.WIDTH,
-      height: config.ABOUT.HEIGHT,
+      width: config.WINDOW.ABOUT.WIDTH,
+      height: config.WINDOW.ABOUT.HEIGHT,
       resizable: false,
       fullscreen: false,
     });
@@ -482,10 +482,10 @@ class BrowserWindowInit {
       title: config.NAME,
       titleBarStyle: 'hidden-inset',
 
-      width: config.MAIN.DEFAULT_WIDTH,
-      height: config.MAIN.DEFAULT_HEIGHT,
-      minWidth: config.MAIN.MIN_WIDTH,
-      minHeight: config.MAIN.MIN_HEIGHT,
+      width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+      height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+      minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+      minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
 
       autoHideMenuBar: !settings.restore('showMenu', true),
       icon: ICON_PATH,
