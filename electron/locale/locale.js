@@ -27,6 +27,7 @@ const de = require('./strings-de');
 const el = require('./strings-el');
 const en = require('./strings-en');
 const es = require('./strings-es');
+const et = require('./strings-et');
 const fi = require('./strings-fi');
 const fr = require('./strings-fr');
 const hr = require('./strings-hr');
@@ -49,6 +50,7 @@ const SUPPORTED_LANGUAGES = {
   'da': 'Dansk',
   'de': 'Deutsch',
   'el': 'Ελληνικά',
+  'et': 'Eesti',
   'es': 'Español',
   'fr': 'Français',
   'hr': 'Hrvatski',
@@ -101,6 +103,7 @@ module.exports = {
   el: el,
   en: en,
   es: es,
+  et: et,
   fi: fi,
   fr: fr,
   hr: hr,
