@@ -94,6 +94,7 @@ const setLocale = locale => {
 };
 
 module.exports = {
+  SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES,
   cs: cs,
   da: da,
   de: de,
@@ -116,7 +117,6 @@ module.exports = {
   setLocale: setLocale,
   sk: sk,
   sl: sl,
-  SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES,
   tr: tr,
   uk: uk,
 };
