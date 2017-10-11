@@ -80,17 +80,17 @@ const getCurrent = () => {
   return current;
 };
 
-const parseLocale = locale => {
+const parseLocale = (locale) => {
   const languageKeys = getSupportedLanguageKeys();
-  return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
+  return languageKeys.find((languageKey) => languageKey === locale) || languageKeys[0];
 };
 
-const getText = string_identifier => {
+const getText = (string_identifier) => {
   const strings = eval(getCurrent());
   return strings[string_identifier] || en[string_identifier] || '';
 };
 
-const setLocale = locale => {
+const setLocale = (locale) => {
   current = parseLocale(locale);
   settings.save('locale', current);
 };
