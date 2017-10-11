@@ -34,8 +34,8 @@ describe('localStorage', () => {
 
   it('should return saved state', () => {
     const state = {
-      foo: 'string',
       bar: true,
+      foo: 'string',
       num: 1,
       test: null,
     };

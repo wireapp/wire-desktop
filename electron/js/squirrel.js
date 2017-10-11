@@ -150,6 +150,6 @@ const handleSquirrelEvent = (shouldQuit) => {
 
 
 module.exports = {
-  installUpdate: installUpdate,
   handleSquirrelEvent: handleSquirrelEvent,
+  installUpdate: installUpdate,
 };

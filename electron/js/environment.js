@@ -33,15 +33,15 @@ const TYPE = {
 };
 
 const URL_ADMIN = {
-  STAGING: 'https://wire-admin-staging.zinfra.io',
   PRODUCTION: 'https://teams.wire.com',
+  STAGING: 'https://wire-admin-staging.zinfra.io',
 };
 
 const URL_SUPPORT = 'https://support.wire.com';
 
 const URL_WEBSITE = {
-  STAGING: 'https://kalina.wire.com',
   PRODUCTION: 'https://wire.com',
+  STAGING: 'https://kalina.wire.com',
 };
 
 const URL_WEBAPP = {
@@ -55,8 +55,8 @@ const URL_WEBAPP = {
 
 const _app = {
   ENV: pkg.environment,
-  IS_PRODUCTION: pkg.environment === 'production',
   IS_DEVELOPMENT: pkg.environment !== 'production',
+  IS_PRODUCTION: pkg.environment === 'production',
   UPDATE_URL_WIN: pkg.updateWinUrl,
 };
 
@@ -85,7 +85,6 @@ const _setEnvironment = (env) => {
 const _web = {
   get_url_admin: () => _is_prod_environment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING,
   get_url_support: () => URL_SUPPORT,
-  get_url_website: () => _is_prod_environment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING,
   get_url_webapp: (env) => {
     if (_app.IS_DEVELOPMENT) {
       switch (_getEnvironment()) {
@@ -106,6 +105,7 @@ const _web = {
 
     return env || URL_WEBAPP.PRODUCTION;
   },
+  get_url_website: () => _is_prod_environment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING,
 };
 
 module.exports = {

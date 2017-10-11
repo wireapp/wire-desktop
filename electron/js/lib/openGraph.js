@@ -30,7 +30,7 @@ const _bufferToBase64 = (buffer, mimeType) => {
 
 const _fetchImageAsBase64 = (url) => {
   return new Promise((resolve) => {
-    request({url: encodeURI(url), encoding: null}, (error, response, body) => {
+    request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         resolve(_bufferToBase64(body, response.headers['content-type']));
       } else {

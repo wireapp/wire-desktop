@@ -31,9 +31,9 @@ const settings = require('./../lib/settings');
 let menu;
 
 const launcher = new autoLaunch({
+  isHidden: true,
   name: config.NAME,
   path: launchCmd,
-  isHidden: true,
 });
 
 
@@ -55,9 +55,9 @@ const separatorTemplate = {
 
 const createLanguageTemplate = (languageCode) => {
   return {
+    click: () => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
     type: 'radio',
-    click: () => changeLocale(languageCode),
   };
 };
 
@@ -72,73 +72,71 @@ const localeTemplate = {
 };
 
 const aboutTemplate = {
-  i18n: 'menuAbout',
   click: () => menu.emit('about-wire'),
+  i18n: 'menuAbout',
 };
 
 const signOutTemplate = {
-  i18n: 'menuSignOut',
   click: () => sendAction('sign-out'),
+  i18n: 'menuSignOut',
 };
 
 const conversationTemplate = {
   i18n: 'menuConversation',
   submenu: [
     {
-      i18n: 'menuStart',
       accelerator: 'CmdOrCtrl+N',
       click: () => sendAction('conversation-start'),
+      i18n: 'menuStart',
     },
     separatorTemplate,
     {
-      i18n: 'menuPing',
       accelerator: 'CmdOrCtrl+K',
       click: () => sendAction('conversation-ping'),
+      i18n: 'menuPing',
     }, {
-      i18n: 'menuCall',
       click: () => sendAction('conversation-call'),
+      i18n: 'menuCall',
     }, {
-      i18n: 'menuVideoCall',
       click: () => sendAction('conversation-video-call'),
+      i18n: 'menuVideoCall',
     },
     separatorTemplate,
     {
-      i18n: 'menuPeople',
       accelerator: 'CmdOrCtrl+I',
       click: () => sendAction('conversation-people'),
+      i18n: 'menuPeople',
     },
     {
-      i18n: 'menuAddPeople',
       accelerator: 'Shift+CmdOrCtrl+K',
       click: () => sendAction('conversation-add-people'),
+      i18n: 'menuAddPeople',
     },
     separatorTemplate,
     {
-      i18n: 'menuArchive',
       accelerator: 'CmdOrCtrl+D',
       click: () => sendAction('conversation-archive'),
+      i18n: 'menuArchive',
     },
     {
-      i18n: 'menuMute',
       accelerator: 'Alt+CmdOrCtrl+M',
       click: () => sendAction('conversation-silence'),
+      i18n: 'menuMute',
     },
     {
-      i18n: 'menuDelete',
       click: () => sendAction('conversation-delete'),
+      i18n: 'menuDelete',
     },
   ],
 };
 
 const showWireTemplate = {
-  label: config.NAME,
   accelerator: 'CmdOrCtrl+1',
   click: () => getPrimaryWindow().show(),
+  label: config.NAME,
 };
 
 const toggleMenuTemplate = {
-  i18n: 'menuShowHide',
-  type: 'checkbox',
   checked: settings.restore('showMenu', true),
   click: () => {
     const mainBrowserWindow = getPrimaryWindow();
@@ -152,26 +150,28 @@ const toggleMenuTemplate = {
 
     settings.save('showMenu', showMenu);
   },
+  i18n: 'menuShowHide',
+  type: 'checkbox',
 };
 
 const toggleFullScreenTemplate = {
-  i18n: 'menuFullScreen',
-  type: 'checkbox',
   accelerator: environment.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
   click: () => {
     const mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
+  i18n: 'menuFullScreen',
+  type: 'checkbox',
 };
 
 const toggleAutoLaunchTemplate = {
-  i18n: 'menuStartup',
-  type: 'checkbox',
   checked: settings.restore('shouldAutoLaunch', false),
   click: () => {
     settings.save('shouldAutoLaunch', !settings.restore('shouldAutoLaunch'));
     settings.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
+  i18n: 'menuStartup',
+  type: 'checkbox',
 };
 
 const supportsSpellcheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
@@ -207,11 +207,11 @@ const editTemplate = {
     },
     separatorTemplate,
     {
+      checked: supportsSpellcheck && settings.restore('spelling', false),
+      click: (event) => settings.save('spelling', event.checked),
+      enabled: supportsSpellcheck,
       i18n: 'menuSpelling',
       type: 'checkbox',
-      checked: supportsSpellcheck && settings.restore('spelling', false),
-      enabled: supportsSpellcheck,
-      click: (event) => settings.save('spelling', event.checked),
     },
   ],
 };
@@ -230,14 +230,14 @@ const windowTemplate = {
     },
     separatorTemplate,
     {
-      i18n: 'menuNextConversation',
       accelerator: environment.platform.IS_MAC_OS ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
       click: () => sendAction('conversation-next'),
+      i18n: 'menuNextConversation',
     },
     {
-      i18n: 'menuPreviousConversation',
       accelerator: environment.platform.IS_MAC_OS ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
       click: () => sendAction('conversation-prev'),
+      i18n: 'menuPreviousConversation',
     },
   ],
 };
@@ -247,24 +247,24 @@ const helpTemplate = {
   role: 'help',
   submenu: [
     {
-      i18n: 'menuLegal',
       click: () => shell.openExternal(environment.web.get_url_website() + config.URL.LEGAL),
+      i18n: 'menuLegal',
     },
     {
-      i18n: 'menuPrivacy',
       click: () => shell.openExternal(environment.web.get_url_website() + config.URL.PRIVACY),
+      i18n: 'menuPrivacy',
     },
     {
-      i18n: 'menuLicense',
       click: () => shell.openExternal(environment.web.get_url_website() + config.URL.LICENSES),
+      i18n: 'menuLicense',
     },
     {
-      i18n: 'menuSupport',
       click: () => shell.openExternal(environment.web.get_url_support()),
+      i18n: 'menuSupport',
     },
     {
-      i18n: 'menuWireURL',
       click: () => shell.openExternal(environment.web.get_url_website()),
+      i18n: 'menuWireURL',
     },
   ],
 };
@@ -274,9 +274,9 @@ const darwinTemplate = {
   submenu: [
     aboutTemplate,
     separatorTemplate, {
-      i18n: 'menuPreferences',
       accelerator: 'Command+,',
       click: () => sendAction('preferences-show'),
+      i18n: 'menuPreferences',
     },
     separatorTemplate,
     localeTemplate,
@@ -301,8 +301,8 @@ const darwinTemplate = {
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Command+Q',
+      i18n: 'menuQuit',
       selector: 'terminate:',
     },
   ],
@@ -312,18 +312,18 @@ const win32Template = {
   label: config.NAME,
   submenu: [
     {
-      i18n: 'menuSettings',
       accelerator: 'Ctrl+,',
       click: () => sendAction('preferences-show'),
+      i18n: 'menuSettings',
     },
     localeTemplate,
     toggleAutoLaunchTemplate,
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Alt+F4',
       click: () => app.quit(),
+      i18n: 'menuQuit',
     },
   ],
 };
@@ -332,8 +332,8 @@ const linuxTemplate = {
   label: config.NAME,
   submenu: [
     {
-      i18n: 'menuPreferences',
       click: () => sendAction('preferences-show'),
+      i18n: 'menuPreferences',
     },
     separatorTemplate,
     toggleAutoLaunchTemplate,
@@ -342,9 +342,9 @@ const linuxTemplate = {
     separatorTemplate,
     signOutTemplate,
     {
-      i18n: 'menuQuit',
       accelerator: 'Ctrl+Q',
       click: () => app.quit(),
+      i18n: 'menuQuit',
     },
   ],
 };
@@ -377,10 +377,10 @@ const processMenu = (template, language) => {
 const changeLocale = (language) => {
   locale.setLocale(language);
   dialog.showMessageBox({
-    type: 'info',
-    title: locale[language].restartNeeded,
-    message: locale[language].restartLocale,
     buttons: [locale[language].restartLater, environment.platform.IS_MAC_OS ? locale[language].menuQuit : locale[language].restartNow],
+    message: locale[language].restartLocale,
+    title: locale[language].restartNeeded,
+    type: 'info',
   }, (response) => {
     if (response === 1) {
       if (environment.platform.IS_MAC_OS) {
@@ -421,8 +421,8 @@ module.exports = {
     if (environment.platform.IS_LINUX) {
       menuTemplate.unshift(linuxTemplate);
       editTemplate.submenu.push(separatorTemplate, {
-        i18n: 'menuPreferences',
         click: () => sendAction('preferences-show'),
+        i18n: 'menuPreferences',
       });
       windowTemplate.submenu.push(
         separatorTemplate,

@@ -41,7 +41,7 @@ const _showPrimaryWindow = () => {
 
 
 module.exports = {
-  setPrimaryWindowId: _setPrimaryWindowId,
   getPrimaryWindow: _getPrimaryWindow,
+  setPrimaryWindowId: _setPrimaryWindowId,
   showPrimaryWindow: _showPrimaryWindow,
 };

@@ -29,42 +29,42 @@ const currentEnvironment = environment.getEnvironment();
 const getPrimaryWindow = () => windowManager.getPrimaryWindow();
 
 const reloadTemplate = {
-  label: 'Reload',
   click: () => getPrimaryWindow().reload(),
+  label: 'Reload',
 };
 
 const devToolsTemplate = {
   label: 'Toggle DevTools',
   submenu: [
     {
-      label: 'Sidebar',
       accelerator: 'Alt+CmdOrCtrl+I',
       click: () => getPrimaryWindow().toggleDevTools(),
+      label: 'Sidebar',
     },
     {
-      label: 'First',
       click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools()"),
+      label: 'First',
     },
     {
-      label: 'Second',
       click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools()"),
+      label: 'Second',
     },
     {
-      label: 'Third',
       click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools()"),
+      label: 'Third',
     },
   ],
 };
 
 const createEnvironmentTemplate = (env) => {
   return {
-    label: util.capitalize(env),
-    type: 'radio',
     checked: currentEnvironment === env,
     click: () => {
       environment.setEnvironment(env);
       getPrimaryWindow().reload();
     },
+    label: util.capitalize(env),
+    type: 'radio',
   };
 };
 

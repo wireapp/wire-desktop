@@ -23,38 +23,46 @@ const pkg = require('./../package.json');
 const config = {
   EMBED_DOMAINS: [
     {
-      name: 'YouTube',
-      hostname: ['www.youtube-nocookie.com'],
       allowedExternalLinks: [
         'www.youtube.com',
       ],
+      hostname: ['www.youtube-nocookie.com'],
+      name: 'YouTube',
     },
     {
-      name: 'Vimeo',
-      hostname: ['player.vimeo.com'],
       allowedExternalLinks: [
         'vimeo.com',
         'player.vimeo.com',
       ],
+      hostname: ['player.vimeo.com'],
+      name: 'Vimeo',
     },
     {
-      name: 'SoundCloud',
-      hostname: ['w.soundcloud.com'],
       allowedExternalLinks: [
         'soundcloud.com',
       ],
+      hostname: ['w.soundcloud.com'],
+      name: 'SoundCloud',
     },
     {
-      name: 'Spotify',
-      hostname: ['open.spotify.com', 'embed.spotify.com'],
       allowedExternalLinks: [
         'www.spotify.com',
         'developer.spotify.com',
       ],
+      hostname: ['open.spotify.com', 'embed.spotify.com'],
+      name: 'Spotify',
     },
   ],
 
+  GOOGLE_CLIENT_ID: '',
+  GOOGLE_CLIENT_SECRET: '',
+  GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
+
   LOG_FILE_NAME: 'console.log',
+
+  NAME: pkg.productName,
+
+  RAYGUN_API_KEY: '',
 
   SPELLCHECK: {
     SUGGESTIONS: 4,
@@ -74,6 +82,8 @@ const config = {
     PRIVACY: '/privacy/',
   },
 
+  VERSION: pkg.version,
+
   WINDOW: {
     ABOUT: {
       HEIGHT: 256,
@@ -90,15 +100,6 @@ const config = {
       MIN_WIDTH: 760,
     },
   },
-
-  RAYGUN_API_KEY: '',
-
-  GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
-  GOOGLE_CLIENT_ID: '',
-  GOOGLE_CLIENT_SECRET: '',
-
-  NAME: pkg.productName,
-  VERSION: pkg.version,
 };
 
 module.exports = config;

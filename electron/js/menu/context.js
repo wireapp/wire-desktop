@@ -35,8 +35,8 @@ let copyContext = '';
 
 const defaultMenu = Menu.buildFromTemplate([
   {
-    label: locale.getText('menuCopy'),
     click: () => clipboard.writeText(copyContext),
+    label: locale.getText('menuCopy'),
   },
 ]);
 
@@ -79,14 +79,14 @@ const createTextMenu = () => {
     if (selection.suggestions.length > 0) {
       for (const suggestion of selection.suggestions.reverse()) {
         template.unshift({
-          label: suggestion,
           click: (menuItem) => webContents.replaceMisspelling(menuItem.label),
+          label: suggestion,
         });
       }
     } else {
       template.unshift({
-        label: locale.getText('menuNoSuggestions'),
         enabled: false,
+        label: locale.getText('menuNoSuggestions'),
       });
     }
   }
@@ -99,8 +99,8 @@ const createTextMenu = () => {
 ///////////////////////////////////////////////////////////////////////////////
 const imageMenu = Menu.buildFromTemplate([
   {
-    label: locale.getText('menuSavePictureAs'),
     click: () => savePicture(imageMenu.file, imageMenu.image),
+    label: locale.getText('menuSavePictureAs'),
   },
 ]);
 

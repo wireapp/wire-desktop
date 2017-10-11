@@ -3,10 +3,7 @@
   "license": "LicenseRef-LICENSE",
   "private": true,
   "lint-staged": {
-    "*.css": [
-      "npm run lint:fix:style",
-      "git add"
-    ]
+    "*.css": ["npm run lint:style", "git add"]
   },
   "scripts": {
     "preinstall": "cd electron && npm install",

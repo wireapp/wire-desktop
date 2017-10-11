@@ -44,10 +44,6 @@ module.exports = {
     return upperLeftVisible || lowerRightVisible;
   },
 
-  isMatchingHost: (_url, _baseUrl) => {
-    return url.parse(_url).host === url.parse(_baseUrl).host;
-  },
-
   isMatchingEmbed: (_url) => {
     const hostname = url.parse(_url).hostname;
 
@@ -79,18 +75,8 @@ module.exports = {
     return false;
   },
 
-  resizeToSmall: (win) => {
-    if (!environment.platform.IS_MAC_OS) {
-      win.setMenuBarVisibility(false);
-    }
-
-    const height = config.WINDOW.AUTH.HEIGHT + (environment.platform.IS_WINDOWS ? 40 : 0);
-    win.setFullScreen(false);
-    win.setMaximizable(false);
-    win.setMinimumSize(config.WINDOW.AUTH.WIDTH, height);
-    win.setSize(config.WINDOW.AUTH.WIDTH, height);
-    win.setResizable(false);
-    win.center();
+  isMatchingHost: (_url, _baseUrl) => {
+    return url.parse(_url).host === url.parse(_baseUrl).host;
   },
 
   resizeToBig: (win) => {
@@ -102,6 +88,20 @@ module.exports = {
     win.setSize(config.WINDOW.MAIN.DEFAULT_WIDTH, config.WINDOW.MAIN.DEFAULT_HEIGHT);
     win.setResizable(true);
     win.setMaximizable(true);
+    win.center();
+  },
+
+  resizeToSmall: (win) => {
+    if (!environment.platform.IS_MAC_OS) {
+      win.setMenuBarVisibility(false);
+    }
+
+    const height = config.WINDOW.AUTH.HEIGHT + (environment.platform.IS_WINDOWS ? 40 : 0);
+    win.setFullScreen(false);
+    win.setMaximizable(false);
+    win.setMinimumSize(config.WINDOW.AUTH.WIDTH, height);
+    win.setSize(config.WINDOW.AUTH.WIDTH, height);
+    win.setResizable(false);
     win.center();
   },
 };

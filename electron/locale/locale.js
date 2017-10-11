@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 /*
  * Wire
  * Copyright (C) 2017 Wire Swiss GmbH
@@ -17,15 +18,14 @@
  *
  */
 
-
 const app = require('electron').app || require('electron').remote.app;
 const settings = require('./../js/lib/settings');
 
+const cs = require('./strings-cs');
 const da = require('./strings-da');
 const de = require('./strings-de');
-const cs = require('./strings-cs');
-const en = require('./strings-en');
 const el = require('./strings-el');
+const en = require('./strings-en');
 const es = require('./strings-es');
 const fi = require('./strings-fi');
 const fr = require('./strings-fr');
@@ -94,13 +94,12 @@ const setLocale = (locale) => {
   settings.save('locale', current);
 };
 
-
 module.exports = {
   cs: cs,
   da: da,
   de: de,
-  en: en,
   el: el,
+  en: en,
   es: es,
   fi: fi,
   fr: fr,
@@ -117,8 +116,8 @@ module.exports = {
   sl: sl,
   tr: tr,
   uk: uk,
-  SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES,
   getCurrent: getCurrent,
   getText: getText,
   setLocale: setLocale,
+  SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES,
 };

@@ -47,9 +47,9 @@ describe('action creators', () => {
       const id = uuid();
       const data = { name: 'Foo' };
       const action = {
-        type: UPDATE_ACCOUNT,
-        id,
         data,
+        id,
+        type: UPDATE_ACCOUNT,
       };
       expect(updateAccount(id, data)).toEqual(action);
     });
@@ -59,8 +59,8 @@ describe('action creators', () => {
     it('should create action to switch account', () => {
       const id = uuid();
       const action = {
-        type: SWITCH_ACCOUNT,
         id,
+        type: SWITCH_ACCOUNT,
       };
       expect(switchAccount(id)).toEqual(action);
     });
@@ -71,9 +71,9 @@ describe('action creators', () => {
       const id = uuid();
       const count = 42;
       const action = {
-        type: UPDATE_ACCOUNT_BADGE,
-        id,
         count,
+        id,
+        type: UPDATE_ACCOUNT_BADGE,
       };
       expect(updateAccountBadge(id, count)).toEqual(action);
     });
@@ -83,8 +83,8 @@ describe('action creators', () => {
     it('should create action to delete an account', () => {
       const id = uuid();
       const action = {
-        type: DELETE_ACCOUNT,
         id,
+        type: DELETE_ACCOUNT,
       };
       expect(deleteAccount(id)).toEqual(action);
     });
