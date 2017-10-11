@@ -42,29 +42,31 @@ const sl = require('./strings-sl');
 const tr = require('./strings-tr');
 const uk = require('./strings-uk');
 
+/* eslint-disable sort-keys */
 const SUPPORTED_LANGUAGES = {
-  cs: 'Čeština',
-  da: 'Dansk',
-  de: 'Deutsch',
-  el: 'Ελληνικά',
-  en: 'English',
-  es: 'Español',
-  fi: 'Suomi',
-  fr: 'Français',
-  hr: 'Hrvatski',
-  hu: 'Magyar',
-  it: 'Italiano',
-  lt: 'Lietuvos',
-  nl: 'Nederlands',
-  pl: 'Polski',
-  pt: 'Português do Brasil',
-  ro: 'Română',
-  ru: 'Русский',
-  sk: 'Slovenčina',
-  sl: 'Slovenščina',
-  tr: 'Türkçe',
-  uk: 'Українська',
+  'en': 'English',
+  'cs': 'Čeština',
+  'da': 'Dansk',
+  'de': 'Deutsch',
+  'el': 'Ελληνικά',
+  'es': 'Español',
+  'fr': 'Français',
+  'hr': 'Hrvatski',
+  'it': 'Italiano',
+  'lt': 'Lietuvos',
+  'hu': 'Magyar',
+  'nl': 'Nederlands',
+  'pl': 'Polski',
+  'pt': 'Português do Brasil',
+  'ro': 'Română',
+  'ru': 'Русский',
+  'sk': 'Slovenčina',
+  'sl': 'Slovenščina',
+  'fi': 'Suomi',
+  'tr': 'Türkçe',
+  'uk': 'Українська',
 };
+/* eslint-enable sort-keys */
 
 let current;
 

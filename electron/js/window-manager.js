@@ -17,14 +17,15 @@
  *
  */
 
-const { BrowserWindow } = require('electron');
+
+const {BrowserWindow} = require('electron');
 
 let primaryWindowId;
 
-const _getPrimaryWindow = () =>
-  primaryWindowId ? BrowserWindow.fromId(primaryWindowId) : BrowserWindow.getAllWindows()[0];
 
-const _setPrimaryWindowId = newPrimaryWindowId => (primaryWindowId = newPrimaryWindowId);
+const _getPrimaryWindow = () => primaryWindowId ? BrowserWindow.fromId(primaryWindowId) : BrowserWindow.getAllWindows()[0];
+
+const _setPrimaryWindowId = (newPrimaryWindowId) => primaryWindowId = newPrimaryWindowId;
 
 const _showPrimaryWindow = () => {
   const win = _getPrimaryWindow();
@@ -37,6 +38,7 @@ const _showPrimaryWindow = () => {
 
   win.focus();
 };
+
 
 module.exports = {
   getPrimaryWindow: _getPrimaryWindow,
