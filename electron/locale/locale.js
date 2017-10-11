@@ -17,11 +17,7 @@
  *
  */
 
-
-
 const app = require('electron').app || require('electron').remote.app;
-
-const config = require('./../js/config');
 const settings = require('./../js/lib/settings');
 
 const da = require('./strings-da');
@@ -46,61 +42,56 @@ const sl = require('./strings-sl');
 const tr = require('./strings-tr');
 const uk = require('./strings-uk');
 
-const label = {
-  'cs': 'Čeština',
-  'da': 'Dansk',
-  'de': 'Deutsch',
-  'el': 'Ελληνικά',
-  'en': 'English',
-  'es': 'Español',
-  'fi': 'Suomi',
-  'fr': 'Français',
-  'hr': 'Hrvatski',
-  'hu': 'Magyar',
-  'it': 'Italiano',
-  'lt': 'Lietuvos',
-  'nl': 'Nederlands',
-  'pl': 'Polski',
-  'pt': 'Português do Brasil',
-  'ro': 'Română',
-  'ru': 'Русский',
-  'sk': 'Slovenčina',
-  'sl': 'Slovenščina',
-  'tr': 'Türkçe',
-  'uk': 'Українська',
+const SUPPORTED_LANGUAGES = {
+  cs: 'Čeština',
+  da: 'Dansk',
+  de: 'Deutsch',
+  el: 'Ελληνικά',
+  en: 'English',
+  es: 'Español',
+  fi: 'Suomi',
+  fr: 'Français',
+  hr: 'Hrvatski',
+  hu: 'Magyar',
+  it: 'Italiano',
+  lt: 'Lietuvos',
+  nl: 'Nederlands',
+  pl: 'Polski',
+  pt: 'Português do Brasil',
+  ro: 'Română',
+  ru: 'Русский',
+  sk: 'Slovenčina',
+  sl: 'Slovenščina',
+  tr: 'Türkçe',
+  uk: 'Українська',
 };
 
 let current;
 
+const getSupportedLanguageKeys = () => Object.keys(SUPPORTED_LANGUAGES);
 
-function getCurrent() {
-  if (current == null) {
+const getCurrent = () => {
+  if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
     current = settings.restore('locale', parseLocale(app.getLocale().substr(0, 2)));
   }
-  if (config.LOCALE.indexOf(current) === -1) {
-    current = config.LOCALE[0];
-  }
   return current;
-}
+};
 
+const parseLocale = locale => {
+  const languageKeys = getSupportedLanguageKeys();
+  return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
+};
 
-function parseLocale(locale) {
-  return config.LOCALE.find(loc => loc.includes(locale)) || config.LOCALE[0];
-}
+const getText = string_identifier => {
+  const strings = eval(getCurrent());
+  return strings[string_identifier] || en[string_identifier] || '';
+};
 
-
-function getText(text) {
-  let strings = eval(getCurrent());
-  return strings[text] || en[text] || '';
-}
-
-
-function setLocale(locale) {
+const setLocale = locale => {
   current = parseLocale(locale);
   settings.save('locale', current);
-}
-
+};
 
 module.exports = {
   cs: cs,
@@ -116,7 +107,6 @@ module.exports = {
   hr: hr,
   hu: hu,
   it: it,
-  label: label,
   lt: lt,
   nl: nl,
   pl: pl,
@@ -126,6 +116,7 @@ module.exports = {
   setLocale: setLocale,
   sk: sk,
   sl: sl,
+  SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES,
   tr: tr,
   uk: uk,
 };

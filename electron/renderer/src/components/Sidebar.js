@@ -23,6 +23,7 @@ import TeamIcon from './TeamIcon';
 import PersonalIcon from './PersonalIcon';
 import { ContextMenu, ContextMenuItem, ContextMenuTrigger } from './ContextMenu';
 import { colorFromId } from '../lib/accentColor';
+import { getText } from '../lib/locale';
 
 import './Sidebar.css';
 
@@ -78,8 +79,10 @@ const Sidebar = ({
     }
 
     <ContextMenu id="account">
-      <ContextMenuItem onClick={() => window.open('https://wire.com/create-team/?pk_campaign=client&pk_kwd=desktop')}>Create Team</ContextMenuItem>
-      <ContextMenuItem onClick={() => addAccountWithSession()}>Add Account</ContextMenuItem>
+      <ContextMenuItem onClick={() => window.open('https://wire.com/create-team/?pk_campaign=client&pk_kwd=desktop')}>
+        {getText('wrapperCreateTeam')}
+      </ContextMenuItem>
+      <ContextMenuItem onClick={() => addAccountWithSession()}>{getText('wrapperAddAccount')}</ContextMenuItem>
     </ContextMenu>
   </div>;
 

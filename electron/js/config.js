@@ -18,17 +18,9 @@
  */
 
 
-
 const pkg = require('./../package.json');
 
-let config = {
-  AUTH_HEIGHT: 576,
-  AUTH_WIDTH: 400,
-  CONSOLE_LOG: 'console.log',
-  DEFAULT_HEIGHT_MAIN: 768,
-  DEFAULT_WIDTH_MAIN: 1024,
-  DEV: 'dev',
-  EDGE: 'edge',
+const config = {
   EMBED_DOMAINS: [
     {
       allowedExternalLinks: [
@@ -65,60 +57,49 @@ let config = {
   GOOGLE_CLIENT_ID: '',
   GOOGLE_CLIENT_SECRET: '',
   GOOGLE_SCOPES: 'https://www.googleapis.com/auth/contacts.readonly',
-  INTERNAL: 'internal',
-  LOCALE: [
-    'en',
-    'cs',
-    'da',
-    'de',
-    'el',
-    'es',
-    'fi',
-    'fr',
-    'hr',
-    'hu',
-    'it',
-    'lt',
-    'nl',
-    'pl',
-    'pt',
-    'ro',
-    'ru',
-    'sk',
-    'sl',
-    'tr',
-    'uk',
-  ],
-  LOCALHOST: 'localhost',
-  MIN_HEIGHT_MAIN: 512,
-  MIN_WIDTH_MAIN: 760,
-  PROD: 'prod',
-  RAYGUN_API_KEY: '',
-  SPELL_SUGGESTIONS: 4,
-  SPELL_SUPPORTED: [
-    'en',
-  ],
-  STAGING: 'staging',
-  UPDATE_DELAY: 5 * 60 * 1000,
-  UPDATE_INTERVAL: 24 * 60 * 60 * 1000,
-  URL_DEV: 'https://wire-webapp-dev.zinfra.io/',
-  URL_EDGE: 'https://wire-webapp-edge.zinfra.io/',
-  URL_INTERNAL: 'https://wire-webapp-staging.wire.com/?env=prod',
-  URL_LOCALHOST: 'http://localhost:8888/',
-  URL_PROD: 'https://app.wire.com/',
-  URL_STAGING: 'https://wire-webapp-staging.zinfra.io/',
-  WIRE: 'https://wire.com',
-  WIRE_LEGAL: 'https://wire.com/legal/',
-  WIRE_LICENSES: 'https://wire.com/legal/licenses/',
-  WIRE_PRIVACY: 'https://wire.com/privacy/',
-  WIRE_SUPPORT: 'https://support.wire.com',
-};
 
-config.ENVIRONMENT = pkg.environment;
-config.PRODUCTION = config.ENVIRONMENT === 'production';
-config.DEVELOPMENT = !config.PRODUCTION;
-config.UPDATE_WIN_URL = pkg.updateWinUrl;
-config.VERSION = pkg.version;
-config.NAME = pkg.productName;
+  LOG_FILE_NAME: 'console.log',
+
+  NAME: pkg.productName,
+
+  RAYGUN_API_KEY: '',
+
+  SPELLCHECK: {
+    SUGGESTIONS: 4,
+    SUPPORTED_LANGUAGES: [
+      'en',
+    ],
+  },
+
+  UPDATE: {
+    DELAY: 5 * 60 * 1000,
+    INTERVAL: 24 * 60 * 60 * 1000,
+  },
+
+  URL: {
+    LEGAL: '/legal/',
+    LICENSES: '/legal/licenses/',
+    PRIVACY: '/privacy/',
+  },
+
+  VERSION: pkg.version,
+
+  WINDOW: {
+    ABOUT: {
+      HEIGHT: 256,
+      WIDTH: 304,
+    },
+    AUTH: {
+      HEIGHT: 576,
+      WIDTH: 400,
+    },
+    MAIN: {
+      DEFAULT_HEIGHT: 768,
+      DEFAULT_WIDTH: 1024,
+      MIN_HEIGHT: 512,
+      MIN_WIDTH: 760,
+    },
+  },
+};
 
 module.exports = config;

@@ -17,24 +17,28 @@
  *
  */
 
+
 const {ipcRenderer, webFrame} = require('electron');
+const environment = require('./environment');
+const locale = require('../locale/locale');
 
 webFrame.setZoomLevelLimits(1, 1);
 
-function getSelectedWebview() {
-  return document.querySelector('.Webview:not(.hide)');
-}
+window.locStrings = locale[locale.getCurrent()];
+window.locStringsDefault = locale['en'];
 
-function subscribeToMainProcessEvents() {
+const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
+
+const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('system-menu', (event, action) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(action);
     }
   });
-}
+};
 
-function setupIpcInterface() {
+const setupIpcInterface = () => {
   window.sendBadgeCount = (count) => {
     ipcRenderer.send('badge-count', count);
   };
@@ -42,16 +46,16 @@ function setupIpcInterface() {
   window.sendDeleteAccount = (accountID, sessionID) => {
     ipcRenderer.send('delete-account-data', accountID, sessionID);
   };
-}
+};
 
-function addDragRegion() {
-  if (process.platform === 'darwin') {
+const addDragRegion = () => {
+  if (environment.platform.IS_MAC_OS) {
     // add titlebar ghost to prevent interactions with the content while dragging
     const titleBar = document.createElement('div');
     titleBar.className = 'drag-region';
     document.body.appendChild(titleBar);
   }
-}
+};
 
 setupIpcInterface();
 subscribeToMainProcessEvents();

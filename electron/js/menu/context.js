@@ -17,12 +17,15 @@
  *
  */
 
-const { clipboard, remote, ipcRenderer, webFrame } = require('electron');
+
+const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
+
 const config = require('./../config');
 const locale = require('./../../locale/locale');
 const settings = require('./../lib/settings');
+
 let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,9 +35,7 @@ let copyContext = '';
 
 const defaultMenu = Menu.buildFromTemplate([
   {
-    click: function() {
-      clipboard.writeText(copyContext);
-    },
+    click: () => clipboard.writeText(copyContext),
     label: locale.getText('menuCopy'),
   },
 ]);
@@ -42,134 +43,141 @@ const defaultMenu = Menu.buildFromTemplate([
 ///////////////////////////////////////////////////////////////////////////////
 // Text
 ///////////////////////////////////////////////////////////////////////////////
-let selection = {
+const selection = {
   isMisspelled: false,
   suggestions: [],
 };
 
 const textMenuTemplate = [
-  { label: locale.getText('menuCut'), role: 'cut' },
-  { label: locale.getText('menuCopy'), role: 'copy' },
-  { label: locale.getText('menuPaste'), role: 'paste' },
-  { type: 'separator' },
-  { label: locale.getText('menuSelectAll'), role: 'selectall' },
+  {
+    label: locale.getText('menuCut'),
+    role: 'cut',
+  },
+  {
+    label: locale.getText('menuCopy'),
+    role: 'copy',
+  },
+  {
+    label: locale.getText('menuPaste'),
+    role: 'paste',
+  },
+  {
+    type: 'separator',
+  },
+  {
+    label: locale.getText('menuSelectAll'),
+    role: 'selectall',
+  },
 ];
 
-function createTextMenu() {
-  let template = textMenuTemplate.slice();
+const createTextMenu = () => {
+  const template = textMenuTemplate.slice();
+
   if (selection.isMisspelled) {
-    template.unshift({ type: 'separator' });
+    template.unshift({type: 'separator'});
+
     if (selection.suggestions.length > 0) {
-      for (let suggestion of selection.suggestions.reverse()) {
+      for (const suggestion of selection.suggestions.reverse()) {
         template.unshift({
-          click: function(menuItem) {
-            webContents.replaceMisspelling(menuItem.label);
-          },
+          click: (menuItem) => webContents.replaceMisspelling(menuItem.label),
           label: suggestion,
         });
       }
     } else {
-      template.unshift({ enabled: false, label: locale.getText('menuNoSuggestions') });
+      template.unshift({
+        enabled: false,
+        label: locale.getText('menuNoSuggestions'),
+      });
     }
   }
+
   textMenu = Menu.buildFromTemplate(template);
-}
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Images
 ///////////////////////////////////////////////////////////////////////////////
-let imageMenu = Menu.buildFromTemplate([
+const imageMenu = Menu.buildFromTemplate([
   {
-    click: function() {
-      savePicture(imageMenu.file, imageMenu.image);
-    },
+    click: () => savePicture(imageMenu.file, imageMenu.image),
     label: locale.getText('menuSavePictureAs'),
   },
 ]);
 
-window.addEventListener(
-  'contextmenu',
-  function(event) {
-    const element = event.target;
-    copyContext = '';
-    if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
-      event.preventDefault();
-      createTextMenu();
-      textMenu.popup(remote.getCurrentWindow());
-    } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
-      event.preventDefault();
-      imageMenu.image = element.src;
-      imageMenu.popup(remote.getCurrentWindow());
-    } else if (element.nodeName === 'A') {
-      event.preventDefault();
-      copyContext = element.href;
-      defaultMenu.popup(remote.getCurrentWindow());
-    } else if (element.classList.contains('text')) {
-      event.preventDefault();
-      copyContext = window.getSelection().toString() || element.innerText.trim();
-      defaultMenu.popup(remote.getCurrentWindow());
-    } else {
-      // Maybe we are in a code block _inside_ an element with the 'text' class?
-      // Code block can consist of many tags: CODE, PRE, SPAN, etc.
-      let parentNode = element.parentNode;
-      while (parentNode !== document && !parentNode.classList.contains('text')) {
-        parentNode = parentNode.parentNode;
-      }
-      if (parentNode !== document) {
-        event.preventDefault();
-        copyContext = window.getSelection().toString() || parentNode.innerText.trim();
-        defaultMenu.popup(remote.getCurrentWindow());
-      }
+window.addEventListener('contextmenu', (event) => {
+  const element = event.target;
+
+  copyContext = '';
+
+  if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
+    event.preventDefault();
+    createTextMenu();
+    textMenu.popup(remote.getCurrentWindow());
+  } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
+    event.preventDefault();
+    imageMenu.image = element.src;
+    imageMenu.popup(remote.getCurrentWindow());
+  } else if (element.nodeName === 'A') {
+    event.preventDefault();
+    copyContext = element.href;
+    defaultMenu.popup(remote.getCurrentWindow());
+  } else if (element.classList.contains('text')) {
+    event.preventDefault();
+    copyContext = window.getSelection().toString() || element.innerText.trim();
+    defaultMenu.popup(remote.getCurrentWindow());
+  } else {
+    // Maybe we are in a code block _inside_ an element with the 'text' class?
+    // Code block can consist of many tags: CODE, PRE, SPAN, etc.
+    let parentNode = element.parentNode;
+    while (parentNode !== document && !parentNode.classList.contains('text')) {
+      parentNode = parentNode.parentNode;
     }
-  },
-  false
-);
-
-window.addEventListener(
-  'click',
-  function(event) {
-    const element = event.target;
-
-    if (
-      element.classList.contains('icon-more') &&
-      !element.classList.contains('context-menu') &&
-      element.parentElement.previousElementSibling
-    ) {
-      // get center-column
-      const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
-      if (createConversationMenu(id)) {
-        event.stopPropagation();
-      }
+    if (parentNode !== document) {
+      event.preventDefault();
+      copyContext = window.getSelection().toString() || parentNode.innerText.trim();
+      defaultMenu.popup(remote.getCurrentWindow());
     }
-  },
-  true
-);
+  }
 
-function savePicture(fileName, url) {
+}, false);
+
+window.addEventListener('click', (event) => {
+  const element = event.target;
+
+  if (element.classList.contains('icon-more') && !element.classList.contains('context-menu') && element.parentElement.previousElementSibling) {
+    // get center-column
+    const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
+    if (createConversationMenu(id)) {
+      event.stopPropagation();
+    }
+  }
+}, true);
+
+
+const savePicture = (fileName, url) => {
   fetch(url)
-    .then(function(response) {
-      return response.arrayBuffer();
-    })
-    .then(function(arrayBuffer) {
-      const bytes = new Uint8Array(arrayBuffer);
-      ipcRenderer.send('save-picture', fileName, bytes);
-    });
-}
+    .then((response) => response.arrayBuffer())
+    .then((arrayBuffer) => ipcRenderer.send('save-picture', fileName, new Uint8Array(arrayBuffer)));
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-if (config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1) {
+const is_spellcheck_supported = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
+if (is_spellcheck_supported) {
   const spellchecker = require('spellchecker');
+
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
-    spellCheck(text) {
+    spellCheck (text) {
       if (!settings.restore('spelling', false)) {
         return true;
       }
+
       selection.isMisspelled = spellchecker.isMisspelled(text);
       selection.suggestions = [];
       if (selection.isMisspelled) {
-        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELL_SUGGESTIONS);
+        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELLCHECK.SUGGESTIONS);
       }
       return !selection.isMisspelled;
     },

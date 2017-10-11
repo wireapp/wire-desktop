@@ -18,12 +18,12 @@
  */
 
 
-
 const {app, dialog, Menu, shell} = require('electron');
 const autoLaunch = require('auto-launch');
-const launchCmd = (process.env.APPIMAGE != null) ? process.env.APPIMAGE : process.execPath;
+const launchCmd = process.env.APPIMAGE ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
+const environment = require('./../environment');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 const settings = require('./../lib/settings');
@@ -37,164 +37,47 @@ const launcher = new autoLaunch({
 });
 
 
-function getPrimaryWindow() {
-  return windowManager.getPrimaryWindow();
-}
-
+const getPrimaryWindow = () => windowManager.getPrimaryWindow();
 
 // TODO: disable menus when not in focus
-function sendAction(action) {
+const sendAction = (action) => {
   const primaryWindow = getPrimaryWindow();
   if (primaryWindow) {
     getPrimaryWindow().webContents.send('system-menu', action);
   }
-}
+};
 
 
 const separatorTemplate = {
   type: 'separator',
 };
 
+
+const createLanguageTemplate = (languageCode) => {
+  return {
+    click: () => changeLocale(languageCode),
+    label: locale.SUPPORTED_LANGUAGES[languageCode],
+    type: 'radio',
+  };
+};
+
+const createLanguageSubmenu = ()=> {
+  return Object.keys(locale.SUPPORTED_LANGUAGES)
+    .map((supportedLanguage) => createLanguageTemplate(supportedLanguage));
+};
+
 const localeTemplate = {
   i18n: 'menuLocale',
-  submenu: [
-    {
-      click: function() {
-        changeLocale('en');
-      },
-      label: locale.label['en'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('cs');
-      },
-      label: locale.label['cs'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('da');
-      },
-      label: locale.label['da'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('de');
-      },
-      label: locale.label['de'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('el');
-      },
-      label: locale.label['el'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('es');
-      },
-      label: locale.label['es'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('fi');
-      },
-      label: locale.label['fi'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('fr');
-      },
-      label: locale.label['fr'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('hr');
-      },
-      label: locale.label['hr'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('hu');
-      },
-      label: locale.label['hu'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('it');
-      },
-      label: locale.label['it'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('lt');
-      },
-      label: locale.label['lt'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('nl');
-      },
-      label: locale.label['nl'],
-      type: 'radio',
-    },{
-      click: function() {
-        changeLocale('pl');
-      },
-      label: locale.label['pl'],
-      type: 'radio',
-    },{
-      click: function() {
-        changeLocale('pt');
-      },
-      label: locale.label['pt'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('ro');
-      },
-      label: locale.label['ro'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('ru');
-      },
-      label: locale.label['ru'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('sk');
-      },
-      label: locale.label['sk'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('sl');
-      },
-      label: locale.label['sl'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('tr');
-      },
-      label: locale.label['tr'],
-      type: 'radio',
-    }, {
-      click: function() {
-        changeLocale('uk');
-      },
-      label: locale.label['uk'],
-      type: 'radio',
-    },
-  ],
+  submenu: createLanguageSubmenu(),
 };
 
 const aboutTemplate = {
-  click: function() {menu.emit('about-wire');},
+  click: () => menu.emit('about-wire'),
   i18n: 'menuAbout',
 };
 
 const signOutTemplate = {
-  click: function() {sendAction('sign-out');},
+  click: () => sendAction('sign-out'),
   i18n: 'menuSignOut',
 };
 
@@ -203,45 +86,45 @@ const conversationTemplate = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+N',
-      click: function() {sendAction('conversation-start');},
+      click: () => sendAction('conversation-start'),
       i18n: 'menuStart',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+K',
-      click: function() {sendAction('conversation-ping');},
+      click: () => sendAction('conversation-ping'),
       i18n: 'menuPing',
     }, {
-      click: function() {sendAction('conversation-call');},
+      click: () => sendAction('conversation-call'),
       i18n: 'menuCall',
     }, {
-      click: function() {sendAction('conversation-video-call');},
+      click: () => sendAction('conversation-video-call'),
       i18n: 'menuVideoCall',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+I',
-      click: function() {sendAction('conversation-people');},
+      click: () => sendAction('conversation-people'),
       i18n: 'menuPeople',
     },
     {
       accelerator: 'Shift+CmdOrCtrl+K',
-      click: function() {sendAction('conversation-add-people');},
+      click: () => sendAction('conversation-add-people'),
       i18n: 'menuAddPeople',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+D',
-      click: function() {sendAction('conversation-archive');},
+      click: () => sendAction('conversation-archive'),
       i18n: 'menuArchive',
     },
     {
       accelerator: 'Alt+CmdOrCtrl+M',
-      click: function() {sendAction('conversation-silence');},
+      click: () => sendAction('conversation-silence'),
       i18n: 'menuMute',
     },
     {
-      click: function() {sendAction('conversation-delete');},
+      click: () => sendAction('conversation-delete'),
       i18n: 'menuDelete',
     },
   ],
@@ -249,19 +132,22 @@ const conversationTemplate = {
 
 const showWireTemplate = {
   accelerator: 'CmdOrCtrl+1',
-  click: function() {getPrimaryWindow().show();},
+  click: () => getPrimaryWindow().show(),
   label: config.NAME,
 };
 
 const toggleMenuTemplate = {
   checked: settings.restore('showMenu', true),
-  click: function() {
+  click: () => {
     const mainBrowserWindow = getPrimaryWindow();
     const showMenu = mainBrowserWindow.isMenuBarAutoHide();
+
     mainBrowserWindow.setAutoHideMenuBar(!showMenu);
+
     if (!showMenu) {
       mainBrowserWindow.setMenuBarVisibility(showMenu);
     }
+
     settings.save('showMenu', showMenu);
   },
   i18n: 'menuShowHide',
@@ -269,8 +155,8 @@ const toggleMenuTemplate = {
 };
 
 const toggleFullScreenTemplate = {
-  accelerator: process.platform === 'darwin' ? 'Alt+Command+F' : 'F11',
-  click: function() {
+  accelerator: environment.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
+  click: () => {
     const mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
@@ -280,13 +166,15 @@ const toggleFullScreenTemplate = {
 
 const toggleAutoLaunchTemplate = {
   checked: settings.restore('shouldAutoLaunch', false),
-  click: function() {
+  click: () => {
     settings.save('shouldAutoLaunch', !settings.restore('shouldAutoLaunch'));
     settings.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
   },
   i18n: 'menuStartup',
   type: 'checkbox',
 };
+
+const supportsSpellcheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
 
 const editTemplate = {
   i18n: 'menuEdit',
@@ -319,11 +207,9 @@ const editTemplate = {
     },
     separatorTemplate,
     {
-      checked: settings.restore('spelling', false) && config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
-      click: function(event) {
-        settings.save('spelling', event.checked);
-      },
-      enabled: config.SPELL_SUPPORTED.indexOf(locale.getCurrent()) > -1,
+      checked: supportsSpellcheck && settings.restore('spelling', false),
+      click: (event) => settings.save('spelling', event.checked),
+      enabled: supportsSpellcheck,
       i18n: 'menuSpelling',
       type: 'checkbox',
     },
@@ -344,13 +230,13 @@ const windowTemplate = {
     },
     separatorTemplate,
     {
-      accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
-      click: function() {sendAction('conversation-next');},
+      accelerator: environment.platform.IS_MAC_OS ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
+      click: () => sendAction('conversation-next'),
       i18n: 'menuNextConversation',
     },
     {
-      accelerator: process.platform === 'darwin' ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
-      click: function() {sendAction('conversation-prev');},
+      accelerator: environment.platform.IS_MAC_OS ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
+      click: () => sendAction('conversation-prev'),
       i18n: 'menuPreviousConversation',
     },
   ],
@@ -361,23 +247,23 @@ const helpTemplate = {
   role: 'help',
   submenu: [
     {
-      click: function() {shell.openExternal(config.WIRE_LEGAL);},
+      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.LEGAL),
       i18n: 'menuLegal',
     },
     {
-      click: function() {shell.openExternal(config.WIRE_PRIVACY);},
+      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.PRIVACY),
       i18n: 'menuPrivacy',
     },
     {
-      click: function() {shell.openExternal(config.WIRE_LICENSES);},
+      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.LICENSES),
       i18n: 'menuLicense',
     },
     {
-      click: function() {shell.openExternal(config.WIRE_SUPPORT);},
+      click: () => shell.openExternal(environment.web.get_url_support()),
       i18n: 'menuSupport',
     },
     {
-      click: function() {shell.openExternal(config.WIRE);},
+      click: () => shell.openExternal(environment.web.get_url_website()),
       i18n: 'menuWireURL',
     },
   ],
@@ -389,7 +275,7 @@ const darwinTemplate = {
     aboutTemplate,
     separatorTemplate, {
       accelerator: 'Command+,',
-      click: function() {sendAction('preferences-show');},
+      click: () => sendAction('preferences-show'),
       i18n: 'menuPreferences',
     },
     separatorTemplate,
@@ -427,7 +313,7 @@ const win32Template = {
   submenu: [
     {
       accelerator: 'Ctrl+,',
-      click: function() {sendAction('preferences-show');},
+      click: () => sendAction('preferences-show'),
       i18n: 'menuSettings',
     },
     localeTemplate,
@@ -436,7 +322,7 @@ const win32Template = {
     signOutTemplate,
     {
       accelerator: 'Alt+F4',
-      click: function() {app.quit();},
+      click: () => app.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -446,7 +332,7 @@ const linuxTemplate = {
   label: config.NAME,
   submenu: [
     {
-      click: function() {sendAction('preferences-show');},
+      click: () => sendAction('preferences-show'),
       i18n: 'menuPreferences',
     },
     separatorTemplate,
@@ -457,7 +343,7 @@ const linuxTemplate = {
     signOutTemplate,
     {
       accelerator: 'Ctrl+Q',
-      click: function() {app.quit();},
+      click: () => app.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -471,33 +357,33 @@ const menuTemplate = [
 ];
 
 
-function processMenu(template, language) {
+const processMenu = (template, language) => {
   for (const item of template) {
-    if (item.submenu != null) {
+    if (item.submenu) {
       processMenu(item.submenu, language);
     }
 
-    if (locale.label[language] === item.label) {
+    if (locale.SUPPORTED_LANGUAGES[language] === item.label) {
       item.checked = true;
     }
 
-    if (item.i18n != null) {
+    if (item.i18n) {
       item.label = locale.getText(item.i18n);
     }
   }
-}
+};
 
 
-function changeLocale(language) {
+const changeLocale = (language) => {
   locale.setLocale(language);
   dialog.showMessageBox({
-    buttons: [locale[language].restartLater, process.platform === 'darwin' ? locale[language].menuQuit : locale[language].restartNow],
+    buttons: [locale[language].restartLater, environment.platform.IS_MAC_OS ? locale[language].menuQuit : locale[language].restartNow],
     message: locale[language].restartLocale,
     title: locale[language].restartNeeded,
     type: 'info',
-  }, function(response) {
+  }, (response) => {
     if (response === 1) {
-      if (process.platform === 'darwin') {
+      if (environment.platform.IS_MAC_OS) {
         app.quit();
       } else {
         app.relaunch();
@@ -507,12 +393,12 @@ function changeLocale(language) {
       }
     }
   });
-}
+};
 
 
 module.exports = {
-  createMenu: function() {
-    if (process.platform === 'darwin') {
+  createMenu: () => {
+    if (environment.platform.IS_MAC_OS) {
       menuTemplate.unshift(darwinTemplate);
       windowTemplate.submenu.push(
         separatorTemplate,
@@ -523,7 +409,7 @@ module.exports = {
       toggleFullScreenTemplate.checked = settings.restore('fullscreen', false);
     }
 
-    if (process.platform === 'win32') {
+    if (environment.platform.IS_WINDOWS) {
       menuTemplate.unshift(win32Template);
       windowTemplate['i18n'] = 'menuView';
       windowTemplate.submenu.unshift(
@@ -532,10 +418,10 @@ module.exports = {
       );
     }
 
-    if (process.platform === 'linux') {
+    if (environment.platform.IS_LINUX) {
       menuTemplate.unshift(linuxTemplate);
       editTemplate.submenu.push(separatorTemplate, {
-        click: function() {sendAction('preferences-show');},
+        click: () => sendAction('preferences-show'),
         i18n: 'menuPreferences',
       });
       windowTemplate.submenu.push(
@@ -547,7 +433,7 @@ module.exports = {
       toggleFullScreenTemplate.checked = settings.restore('fullscreen', false);
     }
 
-    if (process.platform !== 'darwin') {
+    if (!environment.platform.IS_MAC_OS) {
       helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
     }
 

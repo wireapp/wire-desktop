@@ -67,6 +67,7 @@ export const updateAccountData = (id, data) => {
       'name': 'String',
       'picture': 'String',
       'teamID': 'String',
+      'teamRole': 'String',
       'userID': 'String',
     });
 
