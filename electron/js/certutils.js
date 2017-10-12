@@ -55,7 +55,7 @@ const pins = [
       algorithmParam: null,
       fingerprints: [MAIN_FP],
     }],
-    url: /.*prod-nginz-https\.wire\.com\.*/i,
+    url: /.*prod-nginz-https\.wire\.com.*/i,
   },
   {
     publicKeyInfo: [{
