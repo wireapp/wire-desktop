@@ -98,8 +98,6 @@ const _web = {
           return URL_WEBAPP.LOCALHOST;
         case TYPE.STAGING:
           return URL_WEBAPP.STAGING;
-        default:
-          return env;
       }
     }
 
