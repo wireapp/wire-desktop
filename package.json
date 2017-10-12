@@ -18,7 +18,7 @@
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
     "lint:style": "prettier --write '**/*.css'",
-    "lint:test:script": "eslint -c .eslintrc.yaml --ignore-path .gitignore --quiet electron",
+    "lint:test:script": "eslint -c .eslintrc.yaml --ignore-path .gitignore --quiet .",
     "lint:script": "npm run lint:test:script -- --fix",
     "lint:json": "prettier --write --print-width=200 '**/*.json'",
     "jest": "jest",

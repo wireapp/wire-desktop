@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 /*
  * Wire
  * Copyright (C) 2017 Wire Swiss GmbH
@@ -27,8 +28,6 @@ const INFO_JSON = 'info.json';
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
-  const path = require('path');
-
   grunt.initConfig({
     pkg: grunt.file.readJSON(PACKAGE_JSON),
     info: grunt.file.readJSON(INFO_JSON),
@@ -272,9 +271,8 @@ module.exports = function(grunt) {
     electron_pkg.environment = 'internal';
     electron_pkg.name = info.nameInternal.toLowerCase();
     electron_pkg.productName = info.nameInternal;
-    electron_pkg.version = build_number === '0'
-      ? `${info.version}.0-${commit_id}-internal`
-      : `${info.version}.${build_number}-internal`;
+    electron_pkg.version =
+      build_number === '0' ? `${info.version}.0-${commit_id}-internal` : `${info.version}.${build_number}-internal`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electron_pkg, null, 2)}\n`);
     grunt.log.write(`Releases URL points to ${electron_pkg.updateWinUrl} `).ok();
   });
@@ -309,7 +307,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('electronbuilder', 'Build Electron apps', function() {
-    const done = this.async();
     const options = this.options();
     const {targets} = options;
     delete options.targets;
@@ -321,7 +318,7 @@ module.exports = function(grunt) {
         targets: electron_builder.Platform.LINUX.createTarget(
           targets,
           electron_builder.Arch.ia32,
-          electron_builder.Arch.x64,
+          electron_builder.Arch.x64
         ),
         config: options,
       });
@@ -365,12 +362,20 @@ module.exports = function(grunt) {
       `${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
       `${options.name} Helper NP.app/`,
     ].forEach(framework =>
-      execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}/Contents/Frameworks/${framework}'`),
+      execSync(
+        `codesign --deep -fs '${options.sign
+          .app}' --entitlements '${options.child}' '${options.dir}/Contents/Frameworks/${framework}'`
+      )
     );
 
-    execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}/Contents/MacOS/${options.name}'`,);
+    execSync(
+      `codesign -fs '${options.sign
+        .app}' --entitlements '${options.child}' '${options.dir}/Contents/MacOS/${options.name}'`
+    );
     execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.parent}' '${options.dir}'`);
-    execSync(`productbuild --component '${options.dir}' /Applications --sign '${options.sign.package}' '${options.name}.pkg'`);
+    execSync(
+      `productbuild --component '${options.dir}' /Applications --sign '${options.sign.package}' '${options.name}.pkg'`
+    );
   });
 
   grunt.registerMultiTask('create-windows-installer', 'Create the Windows installer', function() {
