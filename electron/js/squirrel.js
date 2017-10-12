@@ -50,7 +50,7 @@ const spawn = (command, args, callback) => {
     spawnedProcess = cp.spawn(command, args);
   } catch (_error) {
     error = _error;
-    process.nextTick(function() {
+    process.nextTick(() => {
       return typeof callback === 'function' ? callback(error, stdout) : void 0;
     });
     return;

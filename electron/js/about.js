@@ -38,7 +38,7 @@ window.addEventListener('keydown', event => {
 
 const links = document.getElementsByTagName('a');
 for (const link of links) {
-  link.onclick = function() {
+  link.onclick = () => {
     shell.openExternal(link.href);
     return false;
   };
