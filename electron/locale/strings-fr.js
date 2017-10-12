@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Notes de mise à jour';
 string.aboutUpdate = 'Mécanisme de mise à jour';
 string.aboutVersion = 'Version';

@@ -2,9 +2,6 @@
 
 let string = {};
 
-
-
-
 string.menuConversation = 'Keskustelu';
 string.menuStart = 'Aloita';
 string.menuEdit = 'Muokkaa';
@@ -61,6 +58,5 @@ string.restartNow = 'Käynnistä uudelleen nyt';
 string.trayOpen = 'Avaa';
 
 string.unreadMessages = 'Lukematon viesti';
-
 
 module.exports = string;

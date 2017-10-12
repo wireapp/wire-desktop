@@ -33,7 +33,6 @@ import {
 } from '../';
 
 describe('action creators', () => {
-
   describe('addAccount', () => {
     it('should create action to add account with session', () => {
       const action = addAccount();
@@ -45,7 +44,7 @@ describe('action creators', () => {
   describe('updateAccount', () => {
     it('should create action to update account', () => {
       const id = uuid();
-      const data = { name: 'Foo' };
+      const data = {name: 'Foo'};
       const action = {
         data,
         id,
@@ -89,5 +88,4 @@ describe('action creators', () => {
       expect(deleteAccount(id)).toEqual(action);
     });
   });
-
 });

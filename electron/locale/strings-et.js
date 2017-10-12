@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Väljalasked';
 string.aboutUpdate = 'Kuidas Wire’i uuendused töötavad';
 string.aboutVersion = 'Versioon';

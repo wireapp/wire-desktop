@@ -17,7 +17,6 @@
  *
  */
 
-
 const {remote, ipcRenderer, shell} = require('electron');
 
 const config = require('./config');
@@ -31,7 +30,7 @@ for (const label of labels) {
 document.getElementById('name').innerHTML = config.NAME;
 document.getElementById('version').innerHTML = config.VERSION;
 
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', event => {
   if (event.keyCode === 27) {
     remote.getCurrentWindow().close();
   }

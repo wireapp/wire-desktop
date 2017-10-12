@@ -18,16 +18,16 @@
  */
 
 import React from 'react';
-import { render } from 'react-dom';
-import { applyMiddleware, createStore } from 'redux';
-import { Provider } from 'react-redux';
+import {render} from 'react-dom';
+import {applyMiddleware, createStore} from 'redux';
+import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 import throttle from 'lodash/throttle';
 
 import App from './components/App';
 import appStore from './reducers';
-import { loadState, saveState } from './lib/localStorage';
+import {loadState, saveState} from './lib/localStorage';
 
 import './Index.css';
 
@@ -39,23 +39,22 @@ if (process.env.NODE_ENV !== 'production') {
   middleware.push(logger);
 }
 
-const store = createStore(
-  appStore,
-  persistedState,
-  applyMiddleware(...middleware)
-);
+const store = createStore(appStore, persistedState, applyMiddleware(...middleware));
 
-store.subscribe(throttle(() => {
-  saveState({
-    accounts: store.getState().accounts.map((account) => {
-      // no need to store badge count
-      return {
-        ...account,
-        badgeCount: 0,
-      };
-    }),
-  });
-}), 500);
+store.subscribe(
+  throttle(() => {
+    saveState({
+      accounts: store.getState().accounts.map(account => {
+        // no need to store badge count
+        return {
+          ...account,
+          badgeCount: 0,
+        };
+      }),
+    });
+  }),
+  500
+);
 
 render(
   <Provider store={store}>

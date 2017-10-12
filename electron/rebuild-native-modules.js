@@ -18,15 +18,13 @@
  *
  */
 
-
-
 const spawn = require('cross-spawn');
 const exec = require('child_process').exec;
 const arch = process.env.wire_target_arch ? process.env.wire_target_arch : process.arch;
 
-const normalize = (args) => {
-  return args.map((arg) => {
-    Object.keys(process.env).forEach((key) => {
+const normalize = args => {
+  return args.map(arg => {
+    Object.keys(process.env).forEach(key => {
       const variableRegex = new RegExp(`\\$${key}|%${key}%`, 'i');
       arg = arg.replace(variableRegex, process.env[key]);
     });

@@ -17,7 +17,6 @@
  *
  */
 
-
 const electron = require('electron');
 const url = require('url');
 /*eslint-disable no-unused-vars*/
@@ -30,27 +29,29 @@ const environment = require('./environment');
 const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
-  capitalize: (input) => {
+  capitalize: input => {
     return input.charAt(0).toUpperCase() + input.substr(1);
   },
 
-  isInView: (win) => {
+  isInView: win => {
     const windowBounds = win.getBounds();
     const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
 
     const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
-    const lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
+    const lowerRightVisible = pointInRectangle(
+      [windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height],
+      nearestWorkArea
+    );
 
     return upperLeftVisible || lowerRightVisible;
   },
 
-  isMatchingEmbed: (_url) => {
+  isMatchingEmbed: _url => {
     const hostname = url.parse(_url).hostname;
 
     for (const embedDomain of config.EMBED_DOMAINS) {
       // If the hostname match
       if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(hostname)) {
-
         utilDebug('Allowing %s', embedDomain.name);
         return true;
       }
@@ -66,7 +67,6 @@ module.exports = {
     for (const embedDomain of config.EMBED_DOMAINS) {
       // If the hostname match
       if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(currentHostname)) {
-
         // And the link to open is allowed
         return embedDomain.allowedExternalLinks.includes(linkHostname);
       }
@@ -79,7 +79,7 @@ module.exports = {
     return url.parse(_url).host === url.parse(_baseUrl).host;
   },
 
-  resizeToBig: (win) => {
+  resizeToBig: win => {
     if (!environment.platform.IS_MAC_OS) {
       win.setMenuBarVisibility(true);
     }
@@ -91,7 +91,7 @@ module.exports = {
     win.center();
   },
 
-  resizeToSmall: (win) => {
+  resizeToSmall: win => {
     if (!environment.platform.IS_MAC_OS) {
       win.setMenuBarVisibility(false);
     }

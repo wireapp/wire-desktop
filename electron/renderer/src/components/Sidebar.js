@@ -21,17 +21,14 @@ import React from 'react';
 
 import TeamIcon from './TeamIcon';
 import PersonalIcon from './PersonalIcon';
-import { ContextMenu, ContextMenuItem, ContextMenuTrigger } from './ContextMenu';
-import { colorFromId } from '../lib/accentColor';
-import { getText } from '../lib/locale';
+import {ContextMenu, ContextMenuItem, ContextMenuTrigger} from './ContextMenu';
+import {colorFromId} from '../lib/accentColor';
+import {getText} from '../lib/locale';
 
 import './Sidebar.css';
 
 function className(account) {
-  return [
-    'Sidebar-icon',
-    (account.badgeCount > 0 ? 'Sidebar-icon-badge' : ''),
-  ].join(' ');
+  return ['Sidebar-icon', account.badgeCount > 0 ? 'Sidebar-icon-badge' : ''].join(' ');
 }
 
 const switchToNewAccount = (switchAccount, account) => {
@@ -53,11 +50,16 @@ const Sidebar = ({
   hasReachedLimitOfAccounts,
   isAddingAccount,
   switchAccount,
-}) =>
-  <div className="Sidebar" style={hasCreatedAccount ? {} : { display: 'none'}} onMouseDown={preventFocus}>
+}) => (
+  <div className="Sidebar" style={hasCreatedAccount ? {} : {display: 'none'}} onMouseDown={preventFocus}>
     {accounts.map(account => (
       <div className="Sidebar-cell" key={account.id}>
-        <div style={{ color: colorFromId(currentAccentID) }} className={className(account)} onClick={() => switchToNewAccount(switchAccount, account)} onMouseDown={preventFocus}>
+        <div
+          style={{color: colorFromId(currentAccentID)}}
+          className={className(account)}
+          onClick={() => switchToNewAccount(switchAccount, account)}
+          onMouseDown={preventFocus}
+        >
           {account.teamID ? (
             <TeamIcon account={account} accentID={currentAccentID} />
           ) : (
@@ -66,17 +68,18 @@ const Sidebar = ({
         </div>
       </div>
     ))}
-    {!isAddingAccount && !hasReachedLimitOfAccounts &&
-      <ContextMenuTrigger id="account">
-        <div className="Sidebar-cell">
-          <div data-uie-name="do-open-plus-menu" className="Sidebar-account-add">
-            <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd"/>
-            </svg>
+    {!isAddingAccount &&
+      !hasReachedLimitOfAccounts && (
+        <ContextMenuTrigger id="account">
+          <div className="Sidebar-cell">
+            <div data-uie-name="do-open-plus-menu" className="Sidebar-account-add">
+              <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd" />
+              </svg>
+            </div>
           </div>
-        </div>
-      </ContextMenuTrigger>
-    }
+        </ContextMenuTrigger>
+      )}
 
     <ContextMenu id="account">
       <ContextMenuItem onClick={() => window.open('https://wire.com/create-team/?pk_campaign=client&pk_kwd=desktop')}>
@@ -84,6 +87,7 @@ const Sidebar = ({
       </ContextMenuItem>
       <ContextMenuItem onClick={() => addAccountWithSession()}>{getText('wrapperAddAccount')}</ContextMenuItem>
     </ContextMenu>
-  </div>;
+  </div>
+);
 
 export default Sidebar;

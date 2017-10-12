@@ -30,7 +30,7 @@ export default function(data, config) {
     return false;
   }
 
-  const isValidObject = configKeys.every((key) => {
+  const isValidObject = configKeys.every(key => {
     if (!data.hasOwnProperty(key)) {
       data[key] = config[key] === 'String' ? '' : undefined;
       return true;

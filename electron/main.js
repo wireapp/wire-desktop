@@ -56,9 +56,8 @@ const argv = minimist(process.argv.slice(1));
 const BASE_URL = environment.web.get_url_webapp(argv.env);
 
 // Icon
-const ICON = `wire.${(environment.platform.IS_WINDOWS ? 'ico' : 'png')}`;
+const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
-
 
 let main;
 let raygunClient;
@@ -116,11 +115,6 @@ if (environment.platform.IS_WINDOWS) {
   squirrel.handleSquirrelEvent(shouldQuit);
 
   ipcMain.on('wrapper-update', () => squirrel.installUpdate());
-
-  // Stop further execution on update to prevent second tray icon
-  if (shouldQuit) {
-    return;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,13 +149,13 @@ ipcMain.on('badge-count', (event, count) => {
 });
 
 ipcMain.on('google-auth-request', event => {
-  googleAuth.getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
+  googleAuth
+    .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
     .then(code => event.sender.send('google-auth-success', code.access_token))
     .catch(error => event.sender.send('google-auth-error', error));
 });
 
 ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
-
   // delete webview partition
   try {
     if (sessionID) {
@@ -198,21 +192,21 @@ const relaunchApp = () => {
 ///////////////////////////////////////////////////////////////////////////////
 const showMainWindow = () => {
   main = new BrowserWindow({
+    autoHideMenuBar: !settings.restore('showMenu', true),
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    icon: ICON_PATH,
+    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
+    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    show: false,
     title: config.NAME,
     titleBarStyle: 'hidden-inset',
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-    autoHideMenuBar: !settings.restore('showMenu', true),
-    icon: ICON_PATH,
-    show: false,
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
     },
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
   if (settings.restore('fullscreen', false)) {
@@ -268,7 +262,7 @@ const showMainWindow = () => {
     tray.updateBadgeIcon(main);
   });
 
-  main.on('close', async (event) => {
+  main.on('close', async event => {
     const isFullScreen = main.isFullScreen();
     settings.save('fullscreen', isFullScreen);
 
@@ -299,11 +293,11 @@ const showMainWindow = () => {
 const showAboutWindow = () => {
   if (about === undefined) {
     about = new BrowserWindow({
-      title: config.NAME,
-      width: config.WINDOW.ABOUT.WIDTH,
+      fullscreen: false,
       height: config.WINDOW.ABOUT.HEIGHT,
       resizable: false,
-      fullscreen: false,
+      title: config.NAME,
+      width: config.WINDOW.ABOUT.WIDTH,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
@@ -320,7 +314,7 @@ const showAboutWindow = () => {
   about.show();
 };
 
-const discloseWindowID = (browserWindow) => {
+const discloseWindowID = browserWindow => {
   windowManager.setPrimaryWindowId(browserWindow.id);
 };
 
@@ -339,7 +333,7 @@ app.on('activate', () => {
   }
 });
 
-app.on('before-quit', () => quitting = true);
+app.on('before-quit', () => (quitting = true));
 
 app.on('quit', async () => await settings.persistToFile());
 
@@ -366,15 +360,16 @@ app.on('ready', () => {
 fs.readdir(LOG_DIR, (error, contents) => {
   if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
 
-  contents.map((file) => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
-    .filter((file) => {
+  contents
+    .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
+    .filter(file => {
       try {
         return fs.statSync(file).isFile();
-      } catch(error) {
+      } catch (err) {
         return undefined;
       }
     })
-    .forEach((file) => {
+    .forEach(file => {
       if (file.endsWith('.log')) {
         fs.renameSync(file, file.replace('.log', '.old'));
       }
@@ -382,7 +377,6 @@ fs.readdir(LOG_DIR, (error, contents) => {
 });
 
 class ElectronWrapperInit {
-
   constructor() {
     this.debug = debug('ElectronWrapperInit');
   }
@@ -414,8 +408,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', (event, contents) => {
-
-      switch(contents.getType()) {
+      switch (contents.getType()) {
         case 'window':
           contents.on('will-attach-webview', (e, webPreferences, params) => {
             const _url = params.src;
@@ -434,12 +427,16 @@ class ElectronWrapperInit {
               webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
             }
           });
-        break;
+          break;
 
         case 'webview':
           // Open webview links outside of the app
-          contents.on('new-window', (e, _url) => { openLinkInNewWindow(e, _url); });
-          contents.on('will-navigate', (e, _url) => { willNavigateInWebview(e, _url); });
+          contents.on('new-window', (e, _url) => {
+            openLinkInNewWindow(e, _url);
+          });
+          contents.on('will-navigate', (e, _url) => {
+            willNavigateInWebview(e, _url);
+          });
 
           contents.session.setCertificateVerifyProc((request, cb) => {
             const {hostname = '', certificate = {}, error} = request;
@@ -463,57 +460,10 @@ class ElectronWrapperInit {
 
             return cb(-3);
           });
-        break;
+          break;
       }
     });
   }
 }
 
-class BrowserWindowInit {
-
-  constructor() {
-
-    this.debug = debug('BrowserWindowInit');
-    this.quitting = false;
-    this.accessToken = false;
-
-    // Start the browser window
-    this.browserWindow = new BrowserWindow({
-      title: config.NAME,
-      titleBarStyle: 'hidden-inset',
-
-      width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-      height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-      minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-      minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-
-      autoHideMenuBar: !settings.restore('showMenu', true),
-      icon: ICON_PATH,
-      show: false,
-      backgroundColor: '#fff',
-
-      webPreferences: {
-        backgroundThrottling: false,
-        nodeIntegration: false,
-        preload: PRELOAD_JS,
-        webviewTag: true,
-        allowRunningInsecureContent: false,
-        experimentalFeatures: true,
-        webgl: false,
-      },
-    });
-
-    // Show the renderer
-    const envUrl = encodeURIComponent(`${BASE_URL}${(BASE_URL.includes('?') ? '&' : '?')}hl=${locale.getCurrent()}`);
-    main.loadURL(`file://${path.join(APP_PATH, 'renderer', 'index.html')}?env=${envUrl}`);
-
-    // Restore previous window size
-    if (settings.restore('fullscreen', false)) {
-      this.browserWindow.setFullScreen(true);
-    } else {
-      this.browserWindow.setBounds(settings.restore('bounds', this.browserWindow.getBounds()));
-    }
-  }
-}
-
-(new ElectronWrapperInit()).run();
+new ElectronWrapperInit().run();

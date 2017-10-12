@@ -17,7 +17,6 @@
  *
  */
 
-
 // https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
 
 const {app} = require('electron');
@@ -37,7 +36,9 @@ let updateDotExe = path.join(rootFolder, 'Update.exe');
 let exeName = config.NAME + '.exe';
 let linkName = config.NAME + '.lnk';
 
-let taskbarLink = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName));
+let taskbarLink = path.resolve(
+  path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName)
+);
 
 const spawn = (command, args, callback) => {
   let error;
@@ -53,15 +54,15 @@ const spawn = (command, args, callback) => {
       return typeof callback === 'function' ? callback(error, stdout) : void 0;
     });
     return;
-  };
+  }
 
   spawnedProcess.stdout.on('data', function(data) {
-    return stdout += data;
+    return (stdout += data);
   });
 
   error = null;
   spawnedProcess.on('error', function(processError) {
-    return error != null ? error : error = processError;
+    return error != null ? error : (error = processError);
   });
 
   spawnedProcess.on('close', function(code, signal) {
@@ -84,39 +85,32 @@ const spawn = (command, args, callback) => {
   });
 };
 
-
 const spawnUpdate = (args, callback) => {
   spawn(updateDotExe, args, callback);
 };
 
-
-const createStartShortcut = (callback) => {
+const createStartShortcut = callback => {
   spawnUpdate(['--createShortcut', exeName, '-l=StartMenu'], callback);
 };
 
-
-const createDesktopShortcut = (callback) => {
+const createDesktopShortcut = callback => {
   spawnUpdate(['--createShortcut', exeName, '-l=Desktop'], callback);
 };
 
-
-const removeShortcuts = (callback) => {
+const removeShortcuts = callback => {
   spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], () => fs.unlink(taskbarLink, callback));
 };
-
 
 const installUpdate = () => {
   spawnUpdate(['--update', environment.app.UPDATE_URL_WIN]);
 };
-
 
 const scheduleUpdate = () => {
   setTimeout(installUpdate, config.UPDATE.DELAY);
   setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
-
-const handleSquirrelEvent = (shouldQuit) => {
+const handleSquirrelEvent = shouldQuit => {
   const [, squirrelEvent] = process.argv;
 
   switch (squirrelEvent) {
@@ -147,7 +141,6 @@ const handleSquirrelEvent = (shouldQuit) => {
   scheduleUpdate();
   return false;
 };
-
 
 module.exports = {
   handleSquirrelEvent: handleSquirrelEvent,

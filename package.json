@@ -3,7 +3,9 @@
   "license": "LicenseRef-LICENSE",
   "private": true,
   "lint-staged": {
-    "*.css": ["npm run lint:style", "git add"]
+    "*.css": ["npm run lint:style", "git add"],
+    "*.js": ["npm run lint:script", "git add"],
+    "*.json": ["npm run lint:json", "git add"]
   },
   "scripts": {
     "preinstall": "cd electron && npm install",
@@ -15,10 +17,12 @@
     "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
-    "lint": "eslint electron",
-    "lint:fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
+    "lint:style": "prettier --write '**/*.css'",
+    "lint:test:script": "eslint -c .eslintrc.yaml --ignore-path .gitignore --quiet electron",
+    "lint:script": "npm run lint:test:script -- --fix",
+    "lint:json": "prettier --write --print-width=200 '**/*.json'",
     "jest": "jest",
-    "test": "npm run lint && npm run jest && electron-mocha tests",
+    "test": "npm run lint:test:script && npm run jest && electron-mocha tests",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
@@ -49,6 +53,8 @@
     "electron-packager": "9.1.0",
     "electron-winstaller": "2.5.2",
     "electron": "1.7.9",
+    "eslint-config-prettier": "2.6.0",
+    "eslint-plugin-prettier": "2.3.1",
     "eslint-plugin-react": "7.4.0",
     "eslint": "4.8.0",
     "grunt-contrib-clean": "1.1.0",

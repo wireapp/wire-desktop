@@ -17,18 +17,18 @@
  *
  */
 
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
-import { addAccountWithSession, switchAccount } from '../actions';
+import {addAccountWithSession, switchAccount} from '../actions';
 import Sidebar from '../components/Sidebar';
 
 const SidebarContainer = connect(
-  ({ accounts }) => ({
+  ({accounts}) => ({
     accounts: accounts,
-    currentAccentID: (accounts.find((account) => account.visible) || {}).accentID,
-    hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
+    currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
+    hasCreatedAccount: accounts.some(account => account.userID !== undefined),
     hasReachedLimitOfAccounts: accounts.length === 3,
-    isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
+    isAddingAccount: accounts.length && accounts.some(account => account.userID === undefined),
   }),
   {addAccountWithSession, switchAccount}
 )(Sidebar);

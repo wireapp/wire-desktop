@@ -18,13 +18,7 @@
  */
 
 import reducer from '../accounts';
-import {
-  updateAccount,
-  addAccount,
-  switchAccount,
-  updateAccountBadge,
-  deleteAccount,
-} from '../../actions';
+import {updateAccount, addAccount, switchAccount, updateAccountBadge, deleteAccount} from '../../actions';
 
 describe('accounts reducer', () => {
   it('should return the initial state with one account', () => {
@@ -32,17 +26,19 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with a new account', () => {
-    const state = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }];
+    const state = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+    ];
     const newState = reducer(state, addAccount());
 
     expect(newState.length).toEqual(2);
@@ -52,17 +48,19 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with a new account without a session', () => {
-    const state = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }];
+    const state = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+    ];
     const newState = reducer(state, addAccount(false));
 
     expect(newState.length).toEqual(2);
@@ -72,27 +70,30 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with only the specified account visible', () => {
-    const state = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }, {
-      accentID: undefined,
-      badgeCount: 0,
-      id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: false,
-    }];
+    const state = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: false,
+      },
+    ];
     const newState = reducer(state, switchAccount(state[1].id));
 
     expect(newState[0].visible).toBeFalsy();
@@ -100,55 +101,61 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with an updated account', () => {
-    const state = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }, {
-      accentID: undefined,
-      badgeCount: 0,
-      id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: false,
-    }];
-    const newState = reducer(state, updateAccount(state[0].id, { userID: 'f4b9a5d0-3e36-4e6f-a404-ba22d23e3730'}));
+    const state = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: false,
+      },
+    ];
+    const newState = reducer(state, updateAccount(state[0].id, {userID: 'f4b9a5d0-3e36-4e6f-a404-ba22d23e3730'}));
 
     expect(newState[0].userID).toEqual('f4b9a5d0-3e36-4e6f-a404-ba22d23e3730');
     expect(newState[1].userID).toBeUndefined();
   });
 
   it('should return a state with an updated badge count', () => {
-    const state = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }, {
-      accentID: undefined,
-      badgeCount: 0,
-      id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: false,
-    }];
+    const state = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: false,
+      },
+    ];
     const newState = reducer(state, updateAccountBadge(state[1].id, 12));
 
     expect(newState[0].badgeCount).toEqual(0);
@@ -156,31 +163,33 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state without the deleted account', () => {
-    const state = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }, {
-      accentID: undefined,
-      badgeCount: 0,
-      id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: false,
-    }];
+    const state = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: false,
+      },
+    ];
     const newState = reducer(state, deleteAccount(state[0].id));
 
     expect(newState.length).toEqual(1);
     expect(newState[0].id).toEqual('d01eb964-bf56-4668-8883-dc248b58b1ca');
   });
-
 });

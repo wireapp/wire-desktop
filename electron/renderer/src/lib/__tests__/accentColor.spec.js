@@ -17,7 +17,7 @@
  *
  */
 
-import { colorFromId } from '../accentColor';
+import {colorFromId} from '../accentColor';
 
 describe('colorFromId', () => {
   it('should return correct color', () => {

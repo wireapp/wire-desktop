@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Vydania';
 string.aboutUpdate = 'Ako funguje aktualizácia';
 string.aboutVersion = 'Verzia';
@@ -68,6 +66,5 @@ string.trayOpen = 'Otvoriť';
 string.trayQuit = 'Ukončiť';
 
 string.unreadMessages = 'Neprečítané správy';
-
 
 module.exports = string;

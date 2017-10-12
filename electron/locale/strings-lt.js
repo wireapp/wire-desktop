@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Laidos';
 string.aboutUpdate = 'Kaip veikia Wire atnaujinimai';
 string.aboutVersion = 'Versija';

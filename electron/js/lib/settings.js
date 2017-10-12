@@ -54,7 +54,7 @@ class ConfigurationPersistence {
   restore(name, defaultValue) {
     this.debug('Restoring %s', name);
     const value = global._ConfigurationPersistence[name];
-    return (typeof value !== 'undefined' ? value : defaultValue);
+    return typeof value !== 'undefined' ? value : defaultValue;
   }
 
   persistToFile() {

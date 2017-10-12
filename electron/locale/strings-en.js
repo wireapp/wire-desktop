@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Releases';
 string.aboutUpdate = 'How Wire Updates Work';
 string.aboutVersion = 'Version';

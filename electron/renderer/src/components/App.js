@@ -26,12 +26,13 @@ import IsOnline from './IsOnline';
 
 import './App.css';
 
-const App = () =>
+const App = () => (
   <IsOnline>
     <div className="App">
       <SidebarContainer />
       <WebviewsContainer />
     </div>
-  </IsOnline>;
+  </IsOnline>
+);
 
 export default App;

@@ -53,16 +53,9 @@ export const VIOLET = {
   name: 'Violet',
 };
 
-export const ACCENT_COLORS = [
-  STRONG_BLUE,
-  STRONG_LIME_GREEN,
-  VIVID_RED,
-  BRIGHT_ORANGE,
-  SOFT_PINK,
-  VIOLET,
-];
+export const ACCENT_COLORS = [STRONG_BLUE, STRONG_LIME_GREEN, VIVID_RED, BRIGHT_ORANGE, SOFT_PINK, VIOLET];
 
 export function colorFromId(id) {
-  const accentColor = ACCENT_COLORS.find((color) => color.id === id);
+  const accentColor = ACCENT_COLORS.find(color => color.id === id);
   return accentColor && accentColor.color;
 }

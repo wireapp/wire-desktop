@@ -17,13 +17,11 @@
  *
  */
 
-import { saveState, loadState } from '../localStorage';
+import {saveState, loadState} from '../localStorage';
 
 import LocalStorageMock from '../__mocks__/localStorage';
 
-
 describe('localStorage', () => {
-
   beforeEach(() => {
     global.localStorage = new LocalStorageMock();
   });

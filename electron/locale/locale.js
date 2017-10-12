@@ -45,28 +45,28 @@ const tr = require('./strings-tr');
 const uk = require('./strings-uk');
 
 const SUPPORTED_LANGUAGES = {
-  'en': 'English',
-  'cs': 'Čeština',
-  'da': 'Dansk',
-  'de': 'Deutsch',
-  'el': 'Ελληνικά',
-  'et': 'Eesti',
-  'es': 'Español',
-  'fr': 'Français',
-  'hr': 'Hrvatski',
-  'it': 'Italiano',
-  'lt': 'Lietuvos',
-  'hu': 'Magyar',
-  'nl': 'Nederlands',
-  'pl': 'Polski',
-  'pt': 'Português do Brasil',
-  'ro': 'Română',
-  'ru': 'Русский',
-  'sk': 'Slovenčina',
-  'sl': 'Slovenščina',
-  'fi': 'Suomi',
-  'tr': 'Türkçe',
-  'uk': 'Українська',
+  en: 'English',
+  cs: 'Čeština',
+  da: 'Dansk',
+  de: 'Deutsch',
+  el: 'Ελληνικά',
+  et: 'Eesti',
+  es: 'Español',
+  fr: 'Français',
+  hr: 'Hrvatski',
+  it: 'Italiano',
+  lt: 'Lietuvos',
+  hu: 'Magyar',
+  nl: 'Nederlands',
+  pl: 'Polski',
+  pt: 'Português do Brasil',
+  ro: 'Română',
+  ru: 'Русский',
+  sk: 'Slovenčina',
+  sl: 'Slovenščina',
+  fi: 'Suomi',
+  tr: 'Türkçe',
+  uk: 'Українська',
 };
 
 let current;
@@ -81,17 +81,17 @@ const getCurrent = () => {
   return current;
 };
 
-const parseLocale = (locale) => {
+const parseLocale = locale => {
   const languageKeys = getSupportedLanguageKeys();
-  return languageKeys.find((languageKey) => languageKey === locale) || languageKeys[0];
+  return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
-const getText = (string_identifier) => {
+const getText = string_identifier => {
   const strings = eval(getCurrent());
   return strings[string_identifier] || en[string_identifier] || '';
 };
 
-const setLocale = (locale) => {
+const setLocale = locale => {
   current = parseLocale(locale);
   settings.save('locale', current);
 };

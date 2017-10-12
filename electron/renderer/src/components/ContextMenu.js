@@ -17,7 +17,7 @@
  *
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import './ContextMenu.css';
@@ -30,25 +30,29 @@ export class ContextMenuTrigger extends Component {
   }
 
   _getElementCenter(element) {
-    const { left, right, top, bottom } = element.getBoundingClientRect();
+    const {left, right, top, bottom} = element.getBoundingClientRect();
     return {
-      x: left + ((right - left) / 2),
-      y: top + ((bottom - top) / 2),
+      x: left + (right - left) / 2,
+      y: top + (bottom - top) / 2,
     };
   }
 
   _handleAction(event) {
-    document.dispatchEvent(new CustomEvent(`context-menu-event-${this.props.id}`, {
-      detail: {
-        position: this._getElementCenter(event.currentTarget),
-        target: event.target,
-      },
-    }));
+    document.dispatchEvent(
+      new CustomEvent(`context-menu-event-${this.props.id}`, {
+        detail: {
+          position: this._getElementCenter(event.currentTarget),
+          target: event.target,
+        },
+      })
+    );
   }
 
   render() {
     return (
-      <div onClick={this._handleAction} onContextMenu={this._handleAction}>{ this.props.children }</div>
+      <div onClick={this._handleAction} onContextMenu={this._handleAction}>
+        {this.props.children}
+      </div>
     );
   }
 }
@@ -57,16 +61,15 @@ ContextMenuTrigger.propTypes = {
   id: PropTypes.string.isRequired,
 };
 
-
-export const ContextMenuItem = (props) =>
+export const ContextMenuItem = props => (
   <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
-    { props.children }
-  </div>;
+    {props.children}
+  </div>
+);
 
 ContextMenuTrigger.propTypes = {
   onClick: PropTypes.func,
 };
-
 
 export class ContextMenu extends Component {
   constructor(props) {
@@ -98,7 +101,7 @@ export class ContextMenu extends Component {
   }
 
   _hide() {
-    this.setState({ visible: false });
+    this.setState({visible: false});
     this._unregisterListeners();
   }
 
@@ -141,7 +144,6 @@ export class ContextMenu extends Component {
     window.addEventListener('mousedown', this._handleMouseDown);
     window.addEventListener('resize', this._hide);
     window.addEventListener('wheel', this._handleMouseWheel);
-
   }
 
   _unregisterListeners() {
@@ -166,16 +168,23 @@ export class ContextMenu extends Component {
     const menuWidth = this.menu.offsetWidth;
     const menuHeight = this.menu.offsetHeight;
 
-    this.menu.style.left = `${((windowWidth - x) < menuWidth ? x - menuWidth : x)}px`;
-    this.menu.style.top = `${((windowHeight - y) < menuHeight ? y - menuHeight : y)}px`;
+    this.menu.style.left = `${windowWidth - x < menuWidth ? x - menuWidth : x}px`;
+    this.menu.style.top = `${windowHeight - y < menuHeight ? y - menuHeight : y}px`;
     this.menu.style.visibilty = 'visible';
   }
 
   render() {
-    return (this.state.visible &&
-      <div className="ContextMenu" onClickCapture={this._handleMenuClick} style={{ visibilty: 'hidden' }} ref={this._handleRef}>
-        { this.props.children }
-      </div>
+    return (
+      this.state.visible && (
+        <div
+          className="ContextMenu"
+          onClickCapture={this._handleMenuClick}
+          style={{visibilty: 'hidden'}}
+          ref={this._handleRef}
+        >
+          {this.props.children}
+        </div>
+      )
     );
   }
 }

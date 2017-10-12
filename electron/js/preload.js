@@ -17,7 +17,6 @@
  *
  */
 
-
 const {ipcRenderer, webFrame} = require('electron');
 const environment = require('./environment');
 const locale = require('../locale/locale');
@@ -39,7 +38,7 @@ const subscribeToMainProcessEvents = () => {
 };
 
 const setupIpcInterface = () => {
-  window.sendBadgeCount = (count) => {
+  window.sendBadgeCount = count => {
     ipcRenderer.send('badge-count', count);
   };
 
