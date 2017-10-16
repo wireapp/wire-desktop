@@ -83,8 +83,4 @@ describe('cert pinning', () => {
       done();
     });
   });
-
-  it("doesn't pin other hostnames", () => {
-    badURLs.forEach(hostname => assert.equal(false, certutils.hostnameShouldBePinned(hostname)));
-  });
 });
