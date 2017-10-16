@@ -25,26 +25,30 @@ const https = require('https');
 const assert = require('assert');
 const path = require('path');
 
+const buildCert = cert => `-----BEGIN CERTIFICATE-----\n${cert.raw.toString('base64')}\n-----END CERTIFICATE-----`;
+
 const goodURLs = [
   'app.wire.com',
-  'wire.com',
+  //'d3o4r5p7qlbt6o.cloudfront.net',
   'prod-assets.wire.com',
   'prod-nginz-https.wire.com',
   'prod-nginz-ssl.wire.com',
-  'd3o4r5p7qlbt6o.cloudfront.net',
+  'wire.com',
 ];
 
 const badURLs = [
-  'error.wire.com',
-  'prod-error.wire.com',
-  'x.cloudfront.net',
   '35vf6hm99t.cloudfront.net',
+  'app.wire.com.example.com',
+  'error.wire.com',
   'example.com',
+  'prod-error.wire.com',
+  'prod-nginz-https.wire.com.example.pw',
+  'test.app.wire.com.example.pw',
   'wwwire.com',
+  'x.cloudfront.net',
 ];
 
 describe('cert pinning', () => {
-
   it('pins used hostnames', () => {
     goodURLs.forEach(hostname => assert(certutils.hostnameShouldBePinned(hostname)));
   });
@@ -54,32 +58,33 @@ describe('cert pinning', () => {
   });
 
   it('verifies all hostnames', done => {
-    const promises = goodURLs.map(hostname => new Promise(resolve =>
-      https.get(`https://${hostname}`)
-        .on('socket', socket =>
-          socket.on('secureConnect', () => {
-            const cert = socket.getPeerCertificate(true);
-            const data = {
-              data: `-----BEGIN CERTIFICATE-----\n${cert.raw.toString('base64')}\n-----END CERTIFICATE-----`,
-              issuerCert: {
-                data: `-----BEGIN CERTIFICATE-----\n${cert.issuerCertificate.raw.toString('base64')}\n-----END CERTIFICATE-----`,
-              },
-            };
-            resolve(data);
-          })
-        )
-      )
+    const certPromises = goodURLs.map(
+      hostname =>
+        new Promise(resolve =>
+          https.get(`https://${hostname}`).on('socket', socket =>
+            socket.on('secureConnect', () => {
+              const cert = socket.getPeerCertificate(true);
+              const certData = {
+                data: buildCert(cert),
+                issuerCert: {
+                  data: buildCert(cert.issuerCertificate),
+                },
+              };
+              resolve({ hostname, certData });
+            }),
+          ),
+        ),
     );
 
-    Promise.all(promises)
-      .then(hostnames => {
-        hostnames.forEach(data => assert(certutils.verifyPinning('app.wire.com', data)));
-        done()
+    Promise.all(certPromises).then(objects => {
+      objects.forEach(({hostname, certData}) => {
+        assert(certutils.verifyPinning(hostname, certData));
       });
+      done();
+    });
   });
 
-  it('doesn\'t pin other hostnames', () => {
+  it("doesn't pin other hostnames", () => {
     badURLs.forEach(hostname => assert.equal(false, certutils.hostnameShouldBePinned(hostname)));
   });
-
 });
