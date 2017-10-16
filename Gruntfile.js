@@ -146,6 +146,9 @@ module.exports = function(grunt) {
             executableName: 'wire-desktop',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
+            desktop: {
+              "StartupWMClass": "Wire"
+            },
             category: 'Network',
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
@@ -161,6 +164,9 @@ module.exports = function(grunt) {
             executableName: 'wire-desktop-internal',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
+            desktop: {
+              "StartupWMClass": "Wire"
+            },
             category: 'Network',
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
@@ -175,6 +181,9 @@ module.exports = function(grunt) {
           linux: {
             fpm: ['--name', 'wire-desktop'],
             executableName: 'wire-desktop',
+            desktop: {
+              "StartupWMClass": "Wire"
+            },
           },
         },
       },
