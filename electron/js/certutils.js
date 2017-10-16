@@ -39,8 +39,7 @@ const pins = [
       algorithmParam: null,
       fingerprints: [MAIN_FP],
     }],
-    // https://regex101.com/r/8pwnb2/3
-    url: /^(?:www\.)?wire\.com$/i,
+    url: /^(www\.)?wire\.com$/i,
   },
   {
     publicKeyInfo: [{
@@ -48,14 +47,12 @@ const pins = [
       algorithmParam: null,
       fingerprints: [MAIN_FP],
     }],
-    // https://regex101.com/r/8pwnb2/4
-    url: /^prod-(?:assets|nginz-https|nginz-ssl)\.wire\.com$/i,
+    url: /^prod-(assets|nginz-https|nginz-ssl)\.wire\.com$/i,
   },
   {
     issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
     publicKeyInfo: [],
-    // https://regex101.com/r/jPgDVV/1
-    url: /^[a-z0-9]{14,}\.cloudfront\.net$/i,
+    url: /^[a-z0-9]{14,63}\.cloudfront\.net$/i,
   },
 ];
 
