@@ -21,7 +21,7 @@
   min-width: 160px;
   background-color: #fff;
   border-radius: 4px;
-  box-shadow: 0 0 1px 0 rgba(0, 0, 0, .08), 0 8px 24px 0 rgba(0, 0, 0, .16);
+  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 8px 24px 0 rgba(0, 0, 0, 0.16);
   display: block;
   font-size: 12px;
   font-weight: 400;
@@ -38,6 +38,14 @@
   color: var(--graphite-dark);
 }
 
-.ContextMenu-item:hover, .ContextMenu-item.selected {
-  background-color: rgba(0, 0, 0, .16);
+.ContextMenuTrigger {
+  opacity: 0;
+  transition: opacity;
+  transition-timing-function: var(--ease-out-quart);
+  transition-duration: var(--animation-timing-slow);
+}
+
+.ContextMenu-item:hover,
+.ContextMenu-item.selected {
+  background-color: rgba(0, 0, 0, 0.16);
 }

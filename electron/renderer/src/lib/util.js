@@ -17,35 +17,12 @@
  *
  */
 
-.PersonalIcon {
-  position: relative;
-  width: 38px;
-  height: 38px;
-}
+export const noop = () => {};
 
-.PersonalIcon > * {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.PersonalIcon-inner {
-  overflow: hidden;
-  width: 28px;
-  height: 28px;
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-}
-
-.PersonalIcon-inner > img {
-  width: 100%;
-  height: 100;
-}
-
-.PersonalIcon-border {
-  border: 2px solid #fff;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+export function preventFocus(func = noop) {
+  return function(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    func(event);
+  };
 }

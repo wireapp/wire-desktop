@@ -17,20 +17,28 @@
  *
  */
 
-import { connect } from 'react-redux';
+const initialState = {
+  accountContextPosition: { x: 0, y: 0 },
+  isAccountContextMenuVisible: false,
+};
 
-import { addAccountWithSession, switchAccount } from '../actions';
-import Sidebar from '../components/Sidebar';
+const accounts = (state = initialState, action) => {
+  switch (action.type) {
+    case 'SET_ACCOUNT_VISIBILITY':
+      return {
+        ...state,
+        accountContextPosition: action.payload.position,
+        isAccountContextMenuVisible: action.payload.visible,
+      };
+    case 'TOGGLE_ACCOUNT_VISIBILITY':
+      return {
+        ...state,
+        accountContextPosition: action.payload.position,
+        isAccountContextMenuVisible: !state.isAccountContextMenuVisible,
+      };
+    default:
+      return state;
+  }
+};
 
-const SidebarContainer = connect(
-  ({ accounts }) => ({
-    accounts: accounts,
-    currentAccentID: (accounts.find((account) => account.visible) || {}).accentID,
-    hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
-    hasReachedLimitOfAccounts: accounts.length === 3,
-    isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
-  }),
-  {addAccountWithSession, switchAccount}
-)(Sidebar);
-
-export default SidebarContainer;
+export default accounts;
