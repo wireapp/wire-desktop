@@ -49,7 +49,7 @@ describe('cert pinning', () => {
     goodURLs.forEach(hostname => assert(certutils.hostnameShouldBePinned(hostname)));
   });
 
-  it('doesn\'t pin other hostnames', () => {
+  it(`doesn't pin other hostnames`, () => {
     badURLs.forEach(hostname => assert.equal(false, certutils.hostnameShouldBePinned(hostname)));
   });
 
