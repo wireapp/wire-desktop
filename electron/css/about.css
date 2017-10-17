@@ -36,6 +36,11 @@ body {
   font-size: 11px;
   text-align: center;
   cursor: default;
+  user-select: none;
+}
+
+.copy {
+  user-select: all;
 }
 
 h1 {
