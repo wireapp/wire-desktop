@@ -6,6 +6,7 @@ export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT';
 export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
 export const UPDATE_ACCOUNT_BADGE = 'UPDATE_ACCOUNT_BADGE';
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
+export const UPDATE_ACCOUNT_LIFECYCLE = 'UPDATE_ACCOUNT_LIFECYCLE';
 
 export const addAccount = (withSession = true) => {
   const sessionID = withSession ? uuid() : undefined;
@@ -20,6 +21,14 @@ export const updateAccount = (id, data) => {
     data,
     id,
     type: UPDATE_ACCOUNT,
+  };
+};
+
+export const updateAccountLifecycle = (id, data) => {
+  return {
+    data,
+    id,
+    type: UPDATE_ACCOUNT_LIFECYCLE,
   };
 };
 
@@ -58,9 +67,22 @@ export const toggleAddAccountMenuVisibility = (x, y) => {
   };
 };
 
-export const toggleEditAccountMenuVisibility = (x, y, accountId, sessionId, isAtLeastAdmin) => {
+export const toggleEditAccountMenuVisibility = (
+  x,
+  y,
+  accountId,
+  sessionId,
+  lifecycle,
+  isAtLeastAdmin
+) => {
   return {
-    payload: { accountId, isAtLeastAdmin, position: { x, y }, sessionId },
+    payload: {
+      accountId,
+      isAtLeastAdmin,
+      lifecycle,
+      position: { x, y },
+      sessionId,
+    },
     type: 'TOGGLE_EDIT_ACCOUNT_VISIBILITY',
   };
 };

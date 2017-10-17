@@ -23,53 +23,94 @@ const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
 
-const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
-const {app} = remote;
+const { desktopCapturer, ipcRenderer, remote, webFrame } = require('electron');
+const { app } = remote;
 
 webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
-  amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => {
-    ipcRenderer.send('notification-click');
-    ipcRenderer.sendToHost('notification-click');
-  });
-
-  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info) => {
-    ipcRenderer.sendToHost('team-info', info);
-  });
-
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, (clearData) => {
-    if (clearData) {
-      ipcRenderer.sendToHost('signed-out');
-    }
-  });
-
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
     if (update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP) {
       ipcRenderer.send('wrapper-update');
     } else {
       ipcRenderer.send('wrapper-relaunch');
     }
   });
+
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => {
+    ipcRenderer.sendToHost('lifecycle-signed-in');
+  });
+
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGN_OUT, () => {
+    ipcRenderer.sendToHost('lifecycle-signed-out');
+  });
+
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, clearData => {
+    if (clearData) {
+      ipcRenderer.sendToHost('signed-out');
+    }
+  });
+
+  amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => {
+    ipcRenderer.send('notification-click');
+    ipcRenderer.sendToHost('notification-click');
+  });
+
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, info => {
+    ipcRenderer.sendToHost('team-info', info);
+  });
 };
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on('conversation-add-people', () => amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE));
-  ipcRenderer.on('conversation-archive', () => amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE));
-  ipcRenderer.on('conversation-call', () => amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false));
-  ipcRenderer.on('conversation-delete', () => amplify.publish(z.event.WebApp.SHORTCUT.DELETE));
-  ipcRenderer.on('conversation-next', () => amplify.publish(z.event.WebApp.SHORTCUT.NEXT));
-  ipcRenderer.on('conversation-people', () => amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE));
-  ipcRenderer.on('conversation-ping', () => amplify.publish(z.event.WebApp.SHORTCUT.PING));
-  ipcRenderer.on('conversation-prev', () => amplify.publish(z.event.WebApp.SHORTCUT.PREV));
-  ipcRenderer.on('conversation-show', (conversation_id) => amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id));
-  ipcRenderer.on('conversation-silence', () => amplify.publish(z.event.WebApp.SHORTCUT.SILENCE));
-  ipcRenderer.on('conversation-start', () => amplify.publish(z.event.WebApp.SHORTCUT.START));
-  ipcRenderer.on('conversation-video-call', () => amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true));
-  ipcRenderer.on('preferences-show', () => amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT));
-  ipcRenderer.on('sign-out', () => amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA));
-  ipcRenderer.on('wrapper-update-available', () => amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP));
+  ipcRenderer.on('conversation-add-people', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE)
+  );
+  ipcRenderer.on('conversation-archive', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE)
+  );
+  ipcRenderer.on('conversation-call', () =>
+    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false)
+  );
+  ipcRenderer.on('conversation-delete', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.DELETE)
+  );
+  ipcRenderer.on('conversation-next', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.NEXT)
+  );
+  ipcRenderer.on('conversation-people', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE)
+  );
+  ipcRenderer.on('conversation-ping', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.PING)
+  );
+  ipcRenderer.on('conversation-prev', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.PREV)
+  );
+  ipcRenderer.on('conversation-show', conversation_id =>
+    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id)
+  );
+  ipcRenderer.on('conversation-silence', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.SILENCE)
+  );
+  ipcRenderer.on('conversation-start', () =>
+    amplify.publish(z.event.WebApp.SHORTCUT.START)
+  );
+  ipcRenderer.on('conversation-video-call', () =>
+    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true)
+  );
+  ipcRenderer.on('preferences-show', () =>
+    amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT)
+  );
+  ipcRenderer.on('sign-out', () =>
+    amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA)
+  );
+  ipcRenderer.on('wrapper-update-available', () =>
+    amplify.publish(
+      z.event.WebApp.LIFECYCLE.UPDATE,
+      z.announce.UPDATE_SOURCE.DESKTOP
+    )
+  );
 };
 
 const exposeLibsodiumNeon = () => {
@@ -77,7 +118,10 @@ const exposeLibsodiumNeon = () => {
     Object.assign(window.sodium, require('libsodium-neon'));
     console.info('Using libsodium-neon.');
   } catch (error) {
-    console.info('Failed loading "libsodium-neon", falling back to "libsodium.js".', error);
+    console.info(
+      'Failed loading "libsodium-neon", falling back to "libsodium.js".',
+      error
+    );
   }
 };
 
@@ -96,7 +140,7 @@ const exposeAddressbook = () => {
   };
 
   if (environment.platform.IS_MAC_OS) {
-    Object.defineProperty(window, 'wAddressBook', {get: getAdressBook});
+    Object.defineProperty(window, 'wAddressBook', { get: getAdressBook });
   }
 };
 
@@ -119,7 +163,12 @@ const enableFileLogging = () => {
   const id = new URL(window.location).searchParams.get('id');
 
   if (id) {
-    const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
+    const logFilePath = path.join(
+      app.getPath('userData'),
+      'logs',
+      id,
+      config.LOG_FILE_NAME
+    );
     fs.createFileSync(logFilePath);
 
     const logger = new winston.Logger();
@@ -139,7 +188,7 @@ const reportWebappVersion = () => {
   ipcRenderer.send('webapp-version', z.util.Environment.version(false));
 };
 
-const checkAvailability = (callback) => {
+const checkAvailability = callback => {
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);
@@ -166,7 +215,11 @@ process.once('loaded', () => {
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
   global.openGraph = require('../../js/lib/openGraph');
-  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
+  global.notification_icon = path.join(
+    app.getAppPath(),
+    'img',
+    'notification.png'
+  );
   enableFileLogging();
   forceEmailLogin();
 });

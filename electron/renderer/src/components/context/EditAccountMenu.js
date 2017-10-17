@@ -24,22 +24,32 @@ import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 import { abortAccountCreation, switchAccount } from '../../actions/';
 
-function EditAccountMenu({ accountId, isAtLeastAdmin, sessionId, ...connected }) {
+function EditAccountMenu({
+  accountId,
+  isAtLeastAdmin,
+  lifecycle,
+  sessionId,
+  ...connected
+}) {
   return (
     <ContextMenu>
       {isAtLeastAdmin && (
-        <ContextMenuItem onClick={() => window.open('https://teams.wire.com/login/')}>
+        <ContextMenuItem
+          onClick={() => window.open('https://teams.wire.com/login/')}
+        >
           {getText('wrapperManageTeam')}
         </ContextMenuItem>
       )}
-      <ContextMenuItem
-        onClick={() => {
-          connected.switchAccount(accountId);
-          window.sendLogoutAccount(accountId);
-        }}
-      >
-        {getText('wrapperLogOut')}
-      </ContextMenuItem>
+      {lifecycle === 'lifecycle-signed-in' && (
+        <ContextMenuItem
+          onClick={() => {
+            connected.switchAccount(accountId);
+            window.sendLogoutAccount(accountId);
+          }}
+        >
+          {getText('wrapperLogOut')}
+        </ContextMenuItem>
+      )}
       <ContextMenuItem
         onClick={() => {
           window.sendDeleteAccount(accountId, sessionId);
@@ -56,6 +66,7 @@ export default connect(
   ({ contextMenuState }) => ({
     accountId: contextMenuState.accountId,
     isAtLeastAdmin: contextMenuState.isAtLeastAdmin,
+    lifecycle: contextMenuState.lifecycle,
     sessionId: contextMenuState.sessionId,
   }),
   {
