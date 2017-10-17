@@ -17,8 +17,7 @@
  *
  */
 
-
-const {ipcRenderer, webFrame} = require('electron');
+const { ipcRenderer, webFrame } = require('electron');
 const environment = require('./environment');
 const locale = require('../locale/locale');
 
@@ -26,6 +25,8 @@ webFrame.setZoomLevelLimits(1, 1);
 
 window.locStrings = locale[locale.getCurrent()];
 window.locStringsDefault = locale['en'];
+
+window.isMac = environment.platform.IS_MAC_OS;
 
 const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
 
@@ -39,7 +40,7 @@ const subscribeToMainProcessEvents = () => {
 };
 
 const setupIpcInterface = () => {
-  window.sendBadgeCount = (count) => {
+  window.sendBadgeCount = count => {
     ipcRenderer.send('badge-count', count);
   };
 

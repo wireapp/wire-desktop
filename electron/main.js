@@ -24,7 +24,7 @@ const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
+const { app, BrowserWindow, globalShortcut, ipcMain, Menu, shell } = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -56,9 +56,8 @@ const argv = minimist(process.argv.slice(1));
 const BASE_URL = environment.web.get_url_webapp(argv.env);
 
 // Icon
-const ICON = `wire.${(environment.platform.IS_WINDOWS ? 'ico' : 'png')}`;
+const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
-
 
 let main;
 let raygunClient;
@@ -70,7 +69,7 @@ let webappVersion;
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
 ///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
+raygunClient = new raygun.Client().init({ apiKey: config.RAYGUN_API_KEY });
 
 raygunClient.onBeforeSend(payload => {
   delete payload.details.machineName;
@@ -155,13 +154,13 @@ ipcMain.on('badge-count', (event, count) => {
 });
 
 ipcMain.on('google-auth-request', event => {
-  googleAuth.getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
+  googleAuth
+    .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
     .then(code => event.sender.send('google-auth-success', code.access_token))
     .catch(error => event.sender.send('google-auth-error', error));
 });
 
 ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
-
   // delete webview partition
   try {
     if (sessionID) {
@@ -211,8 +210,8 @@ const showMainWindow = () => {
       backgroundThrottling: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      webviewTag: true,
-    },
+      webviewTag: true
+    }
   });
 
   if (settings.restore('fullscreen', false)) {
@@ -268,7 +267,7 @@ const showMainWindow = () => {
     tray.updateBadgeIcon(main);
   });
 
-  main.on('close', async (event) => {
+  main.on('close', async event => {
     const isFullScreen = main.isFullScreen();
     settings.save('fullscreen', isFullScreen);
 
@@ -303,13 +302,13 @@ const showAboutWindow = () => {
       width: config.WINDOW.ABOUT.WIDTH,
       height: config.WINDOW.ABOUT.HEIGHT,
       resizable: false,
-      fullscreen: false,
+      fullscreen: false
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
     about.webContents.on('dom-ready', () => {
       about.webContents.send('about-loaded', {
-        webappVersion: webappVersion,
+        webappVersion: webappVersion
       });
     });
 
@@ -320,14 +319,14 @@ const showAboutWindow = () => {
   about.show();
 };
 
-const discloseWindowID = (browserWindow) => {
+const discloseWindowID = browserWindow => {
   windowManager.setPrimaryWindowId(browserWindow.id);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
-app.on('window-all-closed', () => {
+app.on('window-all-closed', event => {
   if (!environment.isMacOS) {
     app.quit();
   }
@@ -339,7 +338,7 @@ app.on('activate', () => {
   }
 });
 
-app.on('before-quit', () => quitting = true);
+app.on('before-quit', () => (quitting = true));
 
 app.on('quit', async () => await settings.persistToFile());
 
@@ -358,6 +357,14 @@ app.on('ready', () => {
   Menu.setApplicationMenu(appMenu);
   tray.createTrayIcon();
   showMainWindow();
+
+  const shortcut = globalShortcut.register('CommandOrControl+0', () => {
+    main.show();
+  });
+
+  if (!shortcut) {
+    console.log('Registration failed.');
+  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -366,15 +373,16 @@ app.on('ready', () => {
 fs.readdir(LOG_DIR, (error, contents) => {
   if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
 
-  contents.map((file) => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
-    .filter((file) => {
+  contents
+    .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
+    .filter(file => {
       try {
         return fs.statSync(file).isFile();
-      } catch(error) {
+      } catch (error) {
         return undefined;
       }
     })
-    .forEach((file) => {
+    .forEach(file => {
       if (file.endsWith('.log')) {
         fs.renameSync(file, file.replace('.log', '.old'));
       }
@@ -382,7 +390,6 @@ fs.readdir(LOG_DIR, (error, contents) => {
 });
 
 class ElectronWrapperInit {
-
   constructor() {
     this.debug = debug('ElectronWrapperInit');
   }
@@ -414,8 +421,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', (event, contents) => {
-
-      switch(contents.getType()) {
+      switch (contents.getType()) {
         case 'window':
           contents.on('will-attach-webview', (e, webPreferences, params) => {
             const _url = params.src;
@@ -434,15 +440,19 @@ class ElectronWrapperInit {
               webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
             }
           });
-        break;
+          break;
 
         case 'webview':
           // Open webview links outside of the app
-          contents.on('new-window', (e, _url) => { openLinkInNewWindow(e, _url); });
-          contents.on('will-navigate', (e, _url) => { willNavigateInWebview(e, _url); });
+          contents.on('new-window', (e, _url) => {
+            openLinkInNewWindow(e, _url);
+          });
+          contents.on('will-navigate', (e, _url) => {
+            willNavigateInWebview(e, _url);
+          });
 
           contents.session.setCertificateVerifyProc((request, cb) => {
-            const {hostname = '', certificate = {}, error} = request;
+            const { hostname = '', certificate = {}, error } = request;
 
             if (typeof error !== 'undefined') {
               console.error('setCertificateVerifyProc', error);
@@ -463,16 +473,14 @@ class ElectronWrapperInit {
 
             return cb(-3);
           });
-        break;
+          break;
       }
     });
   }
 }
 
 class BrowserWindowInit {
-
   constructor() {
-
     this.debug = debug('BrowserWindowInit');
     this.quitting = false;
     this.accessToken = false;
@@ -499,12 +507,12 @@ class BrowserWindowInit {
         webviewTag: true,
         allowRunningInsecureContent: false,
         experimentalFeatures: true,
-        webgl: false,
-      },
+        webgl: false
+      }
     });
 
     // Show the renderer
-    const envUrl = encodeURIComponent(`${BASE_URL}${(BASE_URL.includes('?') ? '&' : '?')}hl=${locale.getCurrent()}`);
+    const envUrl = encodeURIComponent(`${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`);
     main.loadURL(`file://${path.join(APP_PATH, 'renderer', 'index.html')}?env=${envUrl}`);
 
     // Restore previous window size
@@ -516,4 +524,4 @@ class BrowserWindowInit {
   }
 }
 
-(new ElectronWrapperInit()).run();
+new ElectronWrapperInit().run();
