@@ -30,13 +30,20 @@ webFrame.setZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
-  amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => {
-    ipcRenderer.send('notification-click');
-    ipcRenderer.sendToHost('notification-click');
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
+    if (update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP) {
+      ipcRenderer.send('wrapper-update');
+    } else {
+      ipcRenderer.send('wrapper-relaunch');
+    }
   });
 
-  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info) => {
-    ipcRenderer.sendToHost('team-info', info);
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => {
+      ipcRenderer.sendToHost('loaded');
+  });
+
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGN_OUT, () => {
+    ipcRenderer.sendToHost('sign-out');
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, (clearData) => {
@@ -45,12 +52,13 @@ const subscribeToWebappEvents = () => {
     }
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
-    if (update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP) {
-      ipcRenderer.send('wrapper-update');
-    } else {
-      ipcRenderer.send('wrapper-relaunch');
-    }
+  amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => {
+    ipcRenderer.send('notification-click');
+    ipcRenderer.sendToHost('notification-click');
+  });
+
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info) => {
+    ipcRenderer.sendToHost('team-info', info);
   });
 };
 
