@@ -29,7 +29,6 @@ const buildCert = cert => `-----BEGIN CERTIFICATE-----\n${cert.raw.toString('bas
 
 const goodURLs = [
   'app.wire.com',
-  //'d3o4r5p7qlbt6o.cloudfront.net',
   'prod-assets.wire.com',
   'prod-nginz-https.wire.com',
   'prod-nginz-ssl.wire.com',
