@@ -26,6 +26,8 @@ webFrame.setZoomLevelLimits(1, 1);
 window.locStrings = locale[locale.getCurrent()];
 window.locStringsDefault = locale['en'];
 
+window.isMac = environment.platform.IS_MAC_OS;
+
 const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
 const getWebviewById = id => document.querySelector(`.Webview[data-accountid="${id}"]`);
 

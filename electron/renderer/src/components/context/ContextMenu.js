@@ -53,7 +53,7 @@ class ContextMenu extends Component {
   }
 
   _handleMouseDown(event) {
-    if (!this.menu.contains(event.target)) {
+    if (this.menu && !this.menu.contains(event.target)) {
       this._hide();
     }
   }
