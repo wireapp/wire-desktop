@@ -70,5 +70,7 @@ string.unreadMessages = 'Lukematon viesti';
 string.wrapperAddAccount = 'Lisää tili';
 string.wrapperCreateTeam = 'Luo tiimi';
 string.wrapperLogOut = 'Kirjaudu ulos';
+string.wrapperManageTeam = 'Hallinnoi tiimiä';
+string.wrapperRemoveAccount = 'Poista tili';
 
 module.exports = string;

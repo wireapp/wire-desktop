@@ -16,7 +16,7 @@ string.menuHelp = 'Hilfe';
 string.menuStartup = 'Wire beim Start ausführen';
 string.menuLocale = 'Sprache';
 string.menuAbout = 'Über Wire';
-string.menuSignOut = 'Ausloggen';
+string.menuSignOut = 'Abmelden';
 string.menuPing = 'Ping';
 string.menuCall = 'Anruf';
 string.menuVideoCall = 'Videoanruf';
@@ -69,7 +69,7 @@ string.unreadMessages = 'Ungelesene Nachrichten';
 
 string.wrapperAddAccount = 'Konto hinzufügen';
 string.wrapperCreateTeam = 'Team erstellen';
-string.wrapperLogOut = 'Ausloggen';
+string.wrapperLogOut = 'Abmelden';
 string.wrapperManageTeam = 'Team verwalten';
 string.wrapperRemoveAccount = 'Konto entfernen';
 
