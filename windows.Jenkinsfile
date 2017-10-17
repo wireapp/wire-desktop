@@ -27,7 +27,7 @@ node('Windows_Node') {
   stage('Build') {
     try {
       bat 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.7.0', type: 'nodejs'
+      def NODE = tool name: 'node-v8.7.0-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         bat 'node -v'
         bat returnStatus: true, script: 'rustc --version'
