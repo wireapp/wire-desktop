@@ -32,7 +32,7 @@ node('Windows_Node') {
         bat 'node -v'
         bat returnStatus: true, script: 'rustc --version'
         bat 'npm install -g grunt-cli'
-        bat '"C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\bin\\vsvars32.bat" & npm install'
+        bat '"C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\bin\\vcvars32.bat" & npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if(production) {
             bat 'grunt win-prod'
