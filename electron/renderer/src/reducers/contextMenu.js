@@ -18,12 +18,12 @@
  */
 
 const defaultState = {
-  accountId: 0,
+  accountId: '',
   isAddAccountMenuVisible: false,
   isAtLeastAdmin: false,
   isEditAccountMenuVisible: false,
   position: { x: 0, y: 0 },
-  sessionId: 0,
+  sessionId: '',
 };
 
 const accounts = (state = defaultState, action) => {
