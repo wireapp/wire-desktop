@@ -25,7 +25,7 @@ function is(type, obj) {
 export default function(data, config) {
   const validatedData = {};
 
-  const isValidObject = Object.keys(config).every((key) => {
+  const isValidObject = Object.keys(config).every(key => {
     if (!data.hasOwnProperty(key)) {
       validatedData[key] = config[key] === 'String' ? '' : undefined;
       return true;

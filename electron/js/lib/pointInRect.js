@@ -17,7 +17,6 @@
  *
  */
 
-
 module.exports = (point, rectangle) => {
   const [x, y] = point;
   const x_in_range = x >= rectangle.x && x <= rectangle.x + rectangle.width;

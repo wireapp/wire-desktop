@@ -17,7 +17,6 @@
  *
  */
 
-
 const pkg = require('./../package.json');
 const settings = require('./lib/settings');
 
@@ -61,14 +60,11 @@ const _app = {
 };
 
 const _getEnvironment = () => {
-  return currentEnvironment = currentEnvironment || settings.restore('env', TYPE.INTERNAL);
+  return (currentEnvironment = currentEnvironment || settings.restore('env', TYPE.INTERNAL));
 };
 
 const _is_prod_environment = () => {
-  return [
-    TYPE.INTERNAL,
-    TYPE.PRODUCTION,
-  ].includes(_getEnvironment());
+  return [TYPE.INTERNAL, TYPE.PRODUCTION].includes(_getEnvironment());
 };
 
 const _platform = {
@@ -77,15 +73,15 @@ const _platform = {
   IS_WINDOWS: process.platform === 'win32',
 };
 
-const _setEnvironment = (env) => {
+const _setEnvironment = env => {
   currentEnvironment = env || settings.restore('env', TYPE.INTERNAL);
   settings.save('env', currentEnvironment);
 };
 
 const _web = {
-  get_url_admin: () => _is_prod_environment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING,
+  get_url_admin: () => (_is_prod_environment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING),
   get_url_support: () => URL_SUPPORT,
-  get_url_webapp: (env) => {
+  get_url_webapp: env => {
     if (env) {
       return env;
     }
@@ -109,7 +105,7 @@ const _web = {
 
     return URL_WEBAPP.PRODUCTION;
   },
-  get_url_website: () => _is_prod_environment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING,
+  get_url_website: () => (_is_prod_environment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING),
 };
 
 module.exports = {

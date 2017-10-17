@@ -17,38 +17,27 @@
  *
  */
 
-
 const pkg = require('./../package.json');
 
 const config = {
   EMBED_DOMAINS: [
     {
-      allowedExternalLinks: [
-        'www.youtube.com',
-      ],
+      allowedExternalLinks: ['www.youtube.com'],
       hostname: ['www.youtube-nocookie.com'],
       name: 'YouTube',
     },
     {
-      allowedExternalLinks: [
-        'vimeo.com',
-        'player.vimeo.com',
-      ],
+      allowedExternalLinks: ['vimeo.com', 'player.vimeo.com'],
       hostname: ['player.vimeo.com'],
       name: 'Vimeo',
     },
     {
-      allowedExternalLinks: [
-        'soundcloud.com',
-      ],
+      allowedExternalLinks: ['soundcloud.com'],
       hostname: ['w.soundcloud.com'],
       name: 'SoundCloud',
     },
     {
-      allowedExternalLinks: [
-        'www.spotify.com',
-        'developer.spotify.com',
-      ],
+      allowedExternalLinks: ['www.spotify.com', 'developer.spotify.com'],
       hostname: ['open.spotify.com', 'embed.spotify.com'],
       name: 'Spotify',
     },
@@ -66,9 +55,7 @@ const config = {
 
   SPELLCHECK: {
     SUGGESTIONS: 4,
-    SUPPORTED_LANGUAGES: [
-      'en',
-    ],
+    SUPPORTED_LANGUAGES: ['en'],
   },
 
   UPDATE: {

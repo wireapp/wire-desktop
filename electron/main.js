@@ -24,7 +24,7 @@ const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const { app, BrowserWindow, globalShortcut, ipcMain, Menu, shell } = require('electron');
+const {app, BrowserWindow, globalShortcut, ipcMain, Menu, shell} = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -69,7 +69,7 @@ let webappVersion;
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
 ///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({ apiKey: config.RAYGUN_API_KEY });
+raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
 
 raygunClient.onBeforeSend(payload => {
   delete payload.details.machineName;
@@ -197,21 +197,21 @@ const relaunchApp = () => {
 ///////////////////////////////////////////////////////////////////////////////
 const showMainWindow = () => {
   main = new BrowserWindow({
+    autoHideMenuBar: !settings.restore('showMenu', true),
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    icon: ICON_PATH,
+    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
+    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    show: false,
     title: config.NAME,
     titleBarStyle: 'hidden-inset',
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-    autoHideMenuBar: !settings.restore('showMenu', true),
-    icon: ICON_PATH,
-    show: false,
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      webviewTag: true
-    }
+      webviewTag: true,
+    },
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
   if (settings.restore('fullscreen', false)) {
@@ -302,13 +302,13 @@ const showAboutWindow = () => {
       width: config.WINDOW.ABOUT.WIDTH,
       height: config.WINDOW.ABOUT.HEIGHT,
       resizable: false,
-      fullscreen: false
+      fullscreen: false,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
     about.webContents.on('dom-ready', () => {
       about.webContents.send('about-loaded', {
-        webappVersion: webappVersion
+        webappVersion: webappVersion,
       });
     });
 
@@ -452,7 +452,7 @@ class ElectronWrapperInit {
           });
 
           contents.session.setCertificateVerifyProc((request, cb) => {
-            const { hostname = '', certificate = {}, error } = request;
+            const {hostname = '', certificate = {}, error} = request;
 
             if (typeof error !== 'undefined') {
               console.error('setCertificateVerifyProc', error);
@@ -507,8 +507,8 @@ class BrowserWindowInit {
         webviewTag: true,
         allowRunningInsecureContent: false,
         experimentalFeatures: true,
-        webgl: false
-      }
+        webgl: false,
+      },
     });
 
     // Show the renderer

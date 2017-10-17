@@ -19,10 +19,10 @@
 
 import IsOnline from './IsOnline';
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
-import { switchAccount } from '../actions/';
+import {switchAccount} from '../actions/';
 
 import './App.css';
 
@@ -44,4 +44,4 @@ const App = props => (
   </IsOnline>
 );
 
-export default connect(({ accounts }) => ({ accountIds: accounts.map(account => account.id) }), { switchAccount })(App);
+export default connect(({accounts}) => ({accountIds: accounts.map(account => account.id)}), {switchAccount})(App);

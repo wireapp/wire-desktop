@@ -17,9 +17,9 @@
  *
  */
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { setAccountContextHidden } from '../../actions';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {setAccountContextHidden} from '../../actions';
 
 import './ContextMenu.css';
 
@@ -81,7 +81,7 @@ class ContextMenu extends Component {
       return;
     }
     this.menu = menu;
-    const { x, y } = this.props.position;
+    const {x, y} = this.props.position;
 
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
@@ -106,5 +106,5 @@ export default connect(
   state => ({
     position: state.contextMenuState.position,
   }),
-  { setAccountContextHidden }
+  {setAccountContextHidden}
 )(ContextMenu);

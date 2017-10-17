@@ -18,13 +18,13 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { getText } from '../../lib/locale';
+import {connect} from 'react-redux';
+import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
-import { addAccountWithSession } from '../../actions/';
+import {addAccountWithSession} from '../../actions/';
 
-function AddAccountMenu({ ...connected }) {
+function AddAccountMenu({...connected}) {
   return (
     <ContextMenu>
       <ContextMenuItem onClick={() => window.open('https://wire.com/create-team/?pk_campaign=client&pk_kwd=desktop')}>
@@ -35,4 +35,4 @@ function AddAccountMenu({ ...connected }) {
   );
 }
 
-export default connect(null, { addAccountWithSession })(AddAccountMenu);
+export default connect(null, {addAccountWithSession})(AddAccountMenu);

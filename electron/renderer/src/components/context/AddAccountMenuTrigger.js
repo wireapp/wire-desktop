@@ -19,7 +19,7 @@
 
 import React from 'react';
 
-const AddAccountMenuTrigger = ({ onClick, forceVisible }) => (
+const AddAccountMenuTrigger = ({onClick, forceVisible}) => (
   <div
     className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
     onClick={onClick}
@@ -28,10 +28,7 @@ const AddAccountMenuTrigger = ({ onClick, forceVisible }) => (
   >
     <div className="Sidebar-account-add">
       <svg width="12" height="12" viewBox="0 0 12 12">
-        <path
-          d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25"
-          fillRule="evenodd"
-        />
+        <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd" />
       </svg>
     </div>
   </div>

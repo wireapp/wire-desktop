@@ -17,21 +17,20 @@
  *
  */
 
-
 const og = require('open-graph');
 const request = require('request');
 
-const _arrayify = (obj = []) => Array.isArray(obj) ? obj : [obj];
+const _arrayify = (obj = []) => (Array.isArray(obj) ? obj : [obj]);
 
 const _bufferToBase64 = (buffer, mimeType) => {
   const bufferBase64encoded = Buffer.from(buffer).toString('base64');
   return 'data:' + mimeType + ';base64,' + bufferBase64encoded;
 };
 
-const _fetchImageAsBase64 = (url) => {
-  return new Promise((resolve) => {
+const _fetchImageAsBase64 = url => {
+  return new Promise(resolve => {
     request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
+      if (!error && response.statusCode === 200) {
         resolve(_bufferToBase64(body, response.headers['content-type']));
       } else {
         // we just skip images that failed to download
@@ -41,9 +40,9 @@ const _fetchImageAsBase64 = (url) => {
   });
 };
 
-const _fetchOpenGraphData = (url) => {
+const _fetchOpenGraphData = url => {
   return new Promise((resolve, reject) => {
-    og(url, (error, meta) => error ? reject(error) : resolve(meta));
+    og(url, (error, meta) => (error ? reject(error) : resolve(meta)));
   });
 };
 
@@ -59,25 +58,25 @@ const _updateMetaDataWithImage = (meta, image) => {
 
 const _getOpenGraphData = (url, callback) => {
   return _fetchOpenGraphData(url)
-    .then((meta) => {
+    .then(meta => {
       if (meta.image && meta.image.url) {
         const [imageUrl] = _arrayify(meta.image.url);
 
         return _fetchImageAsBase64(imageUrl)
-          .then((uri) => _updateMetaDataWithImage(meta, uri))
+          .then(uri => _updateMetaDataWithImage(meta, uri))
           .catch(() => meta);
       }
 
       return meta;
     })
-    .then((meta) => {
+    .then(meta => {
       if (callback) {
         callback(null, meta);
       }
 
       return meta;
     })
-    .catch((error) => {
+    .catch(error => {
       if (callback) {
         callback(error);
       }

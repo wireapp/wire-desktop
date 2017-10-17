@@ -18,13 +18,13 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { getText } from '../../lib/locale';
+import {connect} from 'react-redux';
+import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
-import { abortAccountCreation, switchAccount } from '../../actions/';
+import {abortAccountCreation, switchAccount} from '../../actions/';
 
-function EditAccountMenu({ accountId, isAtLeastAdmin, sessionId, ...connected }) {
+function EditAccountMenu({accountId, isAtLeastAdmin, sessionId, ...connected}) {
   return (
     <ContextMenu>
       {isAtLeastAdmin && (
@@ -53,7 +53,7 @@ function EditAccountMenu({ accountId, isAtLeastAdmin, sessionId, ...connected })
 }
 
 export default connect(
-  ({ contextMenuState }) => ({
+  ({contextMenuState}) => ({
     accountId: contextMenuState.accountId,
     isAtLeastAdmin: contextMenuState.isAtLeastAdmin,
     sessionId: contextMenuState.sessionId,

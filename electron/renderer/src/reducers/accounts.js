@@ -36,21 +36,14 @@ function createAccount(sessionID) {
 const accounts = (state = [createAccount()], action) => {
   switch (action.type) {
     case 'ADD_ACCOUNT':
-      return [
-        ...state.map(account => ({ ...account, visible: false })),
-        createAccount(action.sessionID),
-      ];
+      return [...state.map(account => ({...account, visible: false})), createAccount(action.sessionID)];
     case 'UPDATE_ACCOUNT':
       return state.map(account => {
-        return (account.id === action.id)
-          ? { ...account, ...action.data }
-          : account;
+        return account.id === action.id ? {...account, ...action.data} : account;
       });
     case 'UPDATE_ACCOUNT_BADGE':
       return state.map(account => {
-        return (account.id === action.id)
-          ? { ...account, badgeCount: action.count }
-          : account;
+        return account.id === action.id ? {...account, badgeCount: action.count} : account;
       });
     case 'SWITCH_ACCOUNT':
       return state.map(account => {

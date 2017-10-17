@@ -17,7 +17,6 @@
  *
  */
 
-
 const {remote, ipcRenderer, shell} = require('electron');
 const locale = require('./../locale/locale');
 const pkg = require('./../package.json');
@@ -30,7 +29,7 @@ for (const label of labels) {
 document.getElementById('name').innerHTML = pkg.productName;
 document.getElementById('version').innerHTML = pkg.version || 'Development';
 
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', event => {
   if (event.keyCode === 27) {
     remote.getCurrentWindow().close();
   }
@@ -38,7 +37,7 @@ window.addEventListener('keydown', (event) => {
 
 const links = document.getElementsByTagName('a');
 for (const link of links) {
-  link.onclick = function() {
+  link.onclick = () => {
     shell.openExternal(link.href);
     return false;
   };

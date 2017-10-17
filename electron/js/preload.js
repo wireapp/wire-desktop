@@ -17,7 +17,7 @@
  *
  */
 
-const { ipcRenderer, webFrame } = require('electron');
+const {ipcRenderer, webFrame} = require('electron');
 const environment = require('./environment');
 const locale = require('../locale/locale');
 

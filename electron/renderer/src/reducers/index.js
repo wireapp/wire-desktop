@@ -17,7 +17,7 @@
  *
  */
 
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import accounts from './accounts';
 import contextMenuState from './contextMenu';
 

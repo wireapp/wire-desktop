@@ -20,7 +20,6 @@
 import verifyObjectProperties from '../verifyObjectProperties';
 
 describe('verifyObjectProperties', () => {
-
   it('should return the object if object contains all properties specified in the config', () => {
     const obj = {
       bla: 2,
@@ -101,5 +100,4 @@ describe('verifyObjectProperties', () => {
 
     expect(verifyObjectProperties(obj, config)).toBeFalsy();
   });
-
 });

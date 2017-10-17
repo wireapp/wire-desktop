@@ -22,7 +22,7 @@ const defaultState = {
   isAddAccountMenuVisible: false,
   isAtLeastAdmin: false,
   isEditAccountMenuVisible: false,
-  position: { x: 0, y: 0 },
+  position: {x: 0, y: 0},
   sessionId: '',
 };
 

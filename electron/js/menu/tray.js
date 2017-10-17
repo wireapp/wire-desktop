@@ -17,8 +17,6 @@
  *
  */
 
-
-
 const {app, Menu, Tray} = require('electron');
 
 const path = require('path');
@@ -27,10 +25,10 @@ const environment = require('./../environment');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 
-const iconExt = (environment.platform.IS_WINDOWS) ? 'ico' : 'png';
+const iconExt = environment.platform.IS_WINDOWS ? 'ico' : 'png';
 
-const iconPath = path.join(app.getAppPath(), 'img', ('tray.' + iconExt));
-const iconBadgePath = path.join(app.getAppPath(), 'img', ('tray.badge.' + iconExt));
+const iconPath = path.join(app.getAppPath(), 'img', 'tray.' + iconExt);
+const iconBadgePath = path.join(app.getAppPath(), 'img', 'tray.badge.' + iconExt);
 const iconOverlayPath = path.join(app.getAppPath(), 'img', 'taskbar.overlay.png');
 
 let lastUnreadCount = 0;
@@ -44,7 +42,8 @@ const _createTrayIcon = () => {
       {
         click: () => windowManager.showPrimaryWindow(),
         label: locale.getText('trayOpen'),
-      }, {
+      },
+      {
         click: () => app.quit(),
         label: locale.getText('trayQuit'),
       },

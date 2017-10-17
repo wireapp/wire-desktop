@@ -35,17 +35,17 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost('notification-click');
   });
 
-  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info) => {
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, info => {
     ipcRenderer.sendToHost('team-info', info);
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, (clearData) => {
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, clearData => {
     if (clearData) {
       ipcRenderer.sendToHost('signed-out');
     }
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, (update_source) => {
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
     if (update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP) {
       ipcRenderer.send('wrapper-update');
     } else {
@@ -63,13 +63,17 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('conversation-people', () => amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE));
   ipcRenderer.on('conversation-ping', () => amplify.publish(z.event.WebApp.SHORTCUT.PING));
   ipcRenderer.on('conversation-prev', () => amplify.publish(z.event.WebApp.SHORTCUT.PREV));
-  ipcRenderer.on('conversation-show', (conversation_id) => amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id));
+  ipcRenderer.on('conversation-show', conversation_id =>
+    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id)
+  );
   ipcRenderer.on('conversation-silence', () => amplify.publish(z.event.WebApp.SHORTCUT.SILENCE));
   ipcRenderer.on('conversation-start', () => amplify.publish(z.event.WebApp.SHORTCUT.START));
   ipcRenderer.on('conversation-video-call', () => amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true));
   ipcRenderer.on('preferences-show', () => amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT));
   ipcRenderer.on('sign-out', () => amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA));
-  ipcRenderer.on('wrapper-update-available', () => amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP));
+  ipcRenderer.on('wrapper-update-available', () =>
+    amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.announce.UPDATE_SOURCE.DESKTOP)
+  );
 };
 
 const exposeLibsodiumNeon = () => {
@@ -139,7 +143,7 @@ const reportWebappVersion = () => {
   ipcRenderer.send('webapp-version', z.util.Environment.version(false));
 };
 
-const checkAvailability = (callback) => {
+const checkAvailability = callback => {
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);
