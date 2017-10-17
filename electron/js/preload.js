@@ -27,7 +27,7 @@ window.locStrings = locale[locale.getCurrent()];
 window.locStringsDefault = locale['en'];
 
 const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
-const getWebviewById = id => document.querySelector('.Webview[data-accountid="' + id + '"]');
+const getWebviewById = id => document.querySelector(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('system-menu', (event, action) => {
