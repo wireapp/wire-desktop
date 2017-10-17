@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Sürümler';
 string.aboutUpdate = 'Wire Güncellemeleri Nasıl Çalışır';
 string.aboutVersion = 'Sürüm';
@@ -69,5 +67,6 @@ string.trayQuit = 'Çık';
 
 string.unreadMessages = 'Okunmamış mesaj';
 
+string.wrapperLogOut = 'Çıkış Yap';
 
 module.exports = string;

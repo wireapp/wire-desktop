@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Versionshinweise';
 string.aboutUpdate = 'Wie wird Wire aktualisiert';
 string.aboutVersion = 'Version';
@@ -71,5 +69,8 @@ string.unreadMessages = 'Ungelesene Nachrichten';
 
 string.wrapperAddAccount = 'Konto hinzufügen';
 string.wrapperCreateTeam = 'Team erstellen';
+string.wrapperLogOut = 'Ausloggen';
+string.wrapperManageTeam = 'Team verwalten';
+string.wrapperRemoveAccount = 'Konto entfernen';
 
 module.exports = string;

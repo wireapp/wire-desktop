@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Релізи';
 string.aboutUpdate = 'Як працюють оновлення для Wire';
 string.aboutVersion = 'Версія';
@@ -69,5 +67,6 @@ string.trayQuit = 'Вийти';
 
 string.unreadMessages = 'Непрочитане повідомлення';
 
+string.wrapperLogOut = 'Вийти';
 
 module.exports = string;

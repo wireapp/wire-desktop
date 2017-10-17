@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Objave';
 string.aboutUpdate = 'Kako delujejo Wire posodobitve';
 string.aboutVersion = 'Različica';
@@ -69,5 +67,6 @@ string.trayQuit = 'Končaj';
 
 string.unreadMessages = 'Neprebrano sporočilo';
 
+string.wrapperLogOut = 'Odjava';
 
 module.exports = string;

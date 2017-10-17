@@ -2,8 +2,10 @@
 
 let string = {};
 
-
-
+string.aboutReleases = 'Julkaisut';
+string.aboutUpdate = 'Miten Wiren päivitykset toimivat';
+string.aboutVersion = 'Versio';
+string.aboutWebappVersion = 'Wiren verkkoversio';
 
 string.menuConversation = 'Keskustelu';
 string.menuStart = 'Aloita';
@@ -11,6 +13,7 @@ string.menuEdit = 'Muokkaa';
 string.menuWindow = 'Ikkuna';
 string.menuView = 'Näytä';
 string.menuHelp = 'Ohje';
+string.menuStartup = 'Käynnistä Wire järjestelmän mukana';
 string.menuLocale = 'Kieli';
 string.menuAbout = 'Tietoja Wirestä';
 string.menuSignOut = 'Kirjaudu ulos';
@@ -50,6 +53,7 @@ string.menuHideOthers = 'Piilota muut';
 string.menuShowAll = 'Näytä kaikki';
 string.menuSettings = 'Asetukset';
 string.menuQuit = 'Lopeta Wire';
+string.menuShowHide = 'Näytä valikko';
 string.menuSavePictureAs = 'Tallenna kuva...';
 string.menuNoSuggestions = 'Ei ehdotuksia';
 
@@ -59,8 +63,12 @@ string.restartLater = 'Myöhemmin';
 string.restartNow = 'Käynnistä uudelleen nyt';
 
 string.trayOpen = 'Avaa';
+string.trayQuit = 'Lopeta';
 
 string.unreadMessages = 'Lukematon viesti';
 
+string.wrapperAddAccount = 'Lisää tili';
+string.wrapperCreateTeam = 'Luo tiimi';
+string.wrapperLogOut = 'Kirjaudu ulos';
 
 module.exports = string;

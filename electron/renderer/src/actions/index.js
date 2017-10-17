@@ -47,15 +47,21 @@ export const deleteAccount = id => {
 
 export const setAccountContextHidden = () => {
   return {
-    payload: { position: { x: 0, y: 0 }, visible: false },
-    type: 'SET_ACCOUNT_VISIBILITY',
+    type: 'HIDE_CONTEXT_MENUS',
   };
 };
 
-export const toggleAccountContextVisibility = (x, y) => {
+export const toggleAddAccountMenuVisibility = (x, y) => {
   return {
     payload: { position: { x, y } },
-    type: 'TOGGLE_ACCOUNT_VISIBILITY',
+    type: 'TOGGLE_ADD_ACCOUNT_VISIBILITY',
+  };
+};
+
+export const toggleEditAccountMenuVisibility = (x, y, accountId, sessionId, isAtLeastAdmin) => {
+  return {
+    payload: { accountId, isAtLeastAdmin, position: { x, y }, sessionId },
+    type: 'TOGGLE_EDIT_ACCOUNT_VISIBILITY',
   };
 };
 

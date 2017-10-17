@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Κυκλοφορίες Εκδόσεων';
 string.aboutUpdate = 'Πως λειτουργούν οι ενημερώσεις στο Wire';
 string.aboutVersion = 'Έκδοση';
@@ -69,5 +67,8 @@ string.trayQuit = 'Έξοδος';
 
 string.unreadMessages = 'Μη αναγνωσμένο μήνυμα';
 
+string.wrapperAddAccount = 'Προσθήκη Λογαριασμού';
+string.wrapperCreateTeam = 'Δημιουργία ομάδας';
+string.wrapperLogOut = 'Αποσύνδεση';
 
 module.exports = string;

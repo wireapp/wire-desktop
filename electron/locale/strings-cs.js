@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Vydání';
 string.aboutUpdate = 'Jak fungují aktualizace';
 string.aboutVersion = 'Verze';
@@ -69,5 +67,8 @@ string.trayQuit = 'Ukončit';
 
 string.unreadMessages = 'Nepřečtená zpráva';
 
+string.wrapperAddAccount = 'Přidat účet';
+string.wrapperCreateTeam = 'Vytvořit tým';
+string.wrapperLogOut = 'Odhlásit';
 
 module.exports = string;
