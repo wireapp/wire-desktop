@@ -116,7 +116,7 @@ export default connect(
     accounts,
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
-    hasReachedLimitOfAccounts: accounts.length === 3,
+    hasReachedLimitOfAccounts: accounts.length >= 3,
     isAddingAccount:
       accounts.length && accounts.some(account => account.userID === undefined),
     isContextMenuVisible: contextMenuState.isAccountContextMenuVisible,
