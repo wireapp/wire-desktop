@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
 
 import SidebarContainer from '../containers/SidebarContainer';
 import WebviewsContainer from '../containers/WebviewsContainer';
@@ -26,12 +27,21 @@ import IsOnline from './IsOnline';
 
 import './App.css';
 
-const App = () =>
+const App = () => (
   <IsOnline>
-    <div className="App">
+    <div
+      className="App"
+      onKeyDown={e => {
+        const modKeyPressed = (window.isMac && e.metaKey) || e.altKey;
+        const validKeys = ['1', '2', '3'];
+        if (modKeyPressed && validKeys.includes(e.key)) {
+        }
+      }}
+    >
       <SidebarContainer />
       <WebviewsContainer />
     </div>
-  </IsOnline>;
+  </IsOnline>
+);
 
-export default App;
+export default connect(({ accounts }) => ({ accountIds: accounts.map(account => account.id) }),)(App);
