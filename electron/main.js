@@ -327,7 +327,6 @@ const discloseWindowID = browserWindow => {
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
 app.on('window-all-closed', event => {
-  event.preventDefault();
   if (!environment.isMacOS) {
     app.quit();
   }
@@ -366,11 +365,6 @@ app.on('ready', () => {
   if (!shortcut) {
     console.log('Registration failed.');
   }
-
-  main.on('close', event => {
-    event.preventDefault();
-    main.hide();
-  });
 });
 
 ///////////////////////////////////////////////////////////////////////////////
