@@ -24,13 +24,13 @@ function createAccount(sessionID) {
     accentID: undefined,
     badgeCount: 0,
     id: uuid(),
+    lifecycle: undefined,
     name: undefined,
     picture: undefined,
     sessionID: sessionID,
     teamID: undefined,
     userID: undefined,
     visible: true,
-    lifecycle: undefined,
   };
 }
 
