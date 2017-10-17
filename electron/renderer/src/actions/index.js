@@ -26,8 +26,8 @@ export const updateAccount = (id, data) => {
 
 export const updateAccountLifecycle = (id, data) => {
   return {
-    id,
     data,
+    id,
     type: UPDATE_ACCOUNT_LIFECYCLE,
   };
 };
@@ -78,8 +78,8 @@ export const toggleEditAccountMenuVisibility = (
   return {
     payload: {
       accountId,
-      lifecycle,
       isAtLeastAdmin,
+      lifecycle,
       position: { x, y },
       sessionId,
     },
