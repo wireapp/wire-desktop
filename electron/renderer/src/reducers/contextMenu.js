@@ -17,35 +17,28 @@
  *
  */
 
-.PersonalIcon {
-  position: relative;
-  width: 38px;
-  height: 38px;
-}
+const initialState = {
+  accountContextPosition: { x: 0, y: 0 },
+  isAccountContextMenuVisible: false,
+};
 
-.PersonalIcon > * {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
+const accounts = (state = initialState, action) => {
+  switch (action.type) {
+    case 'SET_ACCOUNT_VISIBILITY':
+      return {
+        ...state,
+        accountContextPosition: action.payload.position,
+        isAccountContextMenuVisible: action.payload.visible,
+      };
+    case 'TOGGLE_ACCOUNT_VISIBILITY':
+      return {
+        ...state,
+        accountContextPosition: action.payload.position,
+        isAccountContextMenuVisible: !state.isAccountContextMenuVisible,
+      };
+    default:
+      return state;
+  }
+};
 
-.PersonalIcon-inner {
-  overflow: hidden;
-  width: 28px;
-  height: 28px;
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-}
-
-.PersonalIcon-inner > img {
-  width: 100%;
-  height: 100;
-}
-
-.PersonalIcon-border {
-  border: 2px solid #fff;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
+export default accounts;

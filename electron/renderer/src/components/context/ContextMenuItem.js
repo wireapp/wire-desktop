@@ -17,35 +17,21 @@
  *
  */
 
-.PersonalIcon {
-  position: relative;
-  width: 38px;
-  height: 38px;
-}
+import React from 'react';
+import PropTypes from 'prop-types';
 
-.PersonalIcon > * {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
+const ContextMenuItem = props => (
+  <div
+    data-uie-name="item-context-menu"
+    className="ContextMenu-item"
+    onClick={props.onClick}
+  >
+    {props.children}
+  </div>
+);
 
-.PersonalIcon-inner {
-  overflow: hidden;
-  width: 28px;
-  height: 28px;
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-}
+export default ContextMenuItem;
 
-.PersonalIcon-inner > img {
-  width: 100%;
-  height: 100;
-}
-
-.PersonalIcon-border {
-  border: 2px solid #fff;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
+ContextMenuItem.propTypes = {
+  onClick: PropTypes.func,
+};

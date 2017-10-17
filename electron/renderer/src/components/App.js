@@ -17,13 +17,12 @@
  *
  */
 
+import IsOnline from './IsOnline';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import SidebarContainer from '../containers/SidebarContainer';
+import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
-
-import IsOnline from './IsOnline';
 
 import './App.css';
 
@@ -38,7 +37,7 @@ const App = () => (
         }
       }}
     >
-      <SidebarContainer />
+      <Sidebar />
       <WebviewsContainer />
     </div>
   </IsOnline>
