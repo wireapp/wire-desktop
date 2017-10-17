@@ -19,25 +19,24 @@
 
 function is(type, obj) {
   const getType = Object.prototype.toString.call(obj).slice(8, -1);
-  return obj != null && getType === type;
+  return obj && getType === type;
 }
 
 export default function(data, config) {
-  const dataKeys = Object.keys(data);
-  const configKeys = Object.keys(config);
+  const validatedData = {};
 
-  if (dataKeys.length > configKeys.length) {
-    return false;
-  }
-
-  const isValidObject = configKeys.every((key) => {
+  const isValidObject = Object.keys(config).every((key) => {
     if (!data.hasOwnProperty(key)) {
-      data[key] = config[key] === 'String' ? '' : undefined;
+      validatedData[key] = config[key] === 'String' ? '' : undefined;
       return true;
     }
 
-    return is(config[key], data[key]);
+    const isValid = is(config[key], data[key]);
+    if (isValid) {
+      validatedData[key] = data[key];
+    }
+    return isValid;
   });
 
-  return isValidObject ? data : false;
+  return isValidObject ? validatedData : false;
 }

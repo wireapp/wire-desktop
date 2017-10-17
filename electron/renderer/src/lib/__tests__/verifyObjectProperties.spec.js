@@ -26,6 +26,7 @@ describe('verifyObjectProperties', () => {
       bla: 2,
       foo: 'test',
     };
+
     const config = {
       bla: 'Number',
       foo: 'String',
@@ -40,6 +41,7 @@ describe('verifyObjectProperties', () => {
     const obj = {
       bla: 2,
     };
+
     const config = {
       bla: 'Number',
       foo: 'String',
@@ -53,15 +55,36 @@ describe('verifyObjectProperties', () => {
     expect(validatedObject['some']).toBeUndefined();
   });
 
+  it('should return only the expected properties if object contains properties in addition to the expected config', () => {
+    const obj = {
+      bla: 2,
+      foo: '3',
+      mistake: 'I should not be here',
+    };
+
+    const config = {
+      bla: 'Number',
+      foo: 'String',
+    };
+
+    const validatedObject = verifyObjectProperties(obj, config);
+    expect(validatedObject).toBeTruthy();
+    expect(Object.keys(validatedObject).length).toBe(2);
+    expect(validatedObject['foo']).toBe('3');
+    expect(validatedObject['mistake']).toBeUndefined();
+  });
+
   it('should return false if object contains a property with a wrong type', () => {
     const obj = {
       bla: 2,
       foo: 1,
     };
+
     const config = {
       bla: 'Number',
       foo: 'String',
     };
+
     expect(verifyObjectProperties(obj, config)).toBeFalsy();
   });
 
@@ -70,21 +93,12 @@ describe('verifyObjectProperties', () => {
       bla: 2,
       foo: undefined,
     };
+
     const config = {
       bla: 'Number',
       foo: 'String',
     };
-    expect(verifyObjectProperties(obj, config)).toBeFalsy();
-  });
 
-  it('should return false if object contains a property that is not specified in the config', () => {
-    const obj = {
-      bla: 2,
-      foo: 1,
-    };
-    const config = {
-      foo: 'String',
-    };
     expect(verifyObjectProperties(obj, config)).toBeFalsy();
   });
 

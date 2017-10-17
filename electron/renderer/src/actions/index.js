@@ -45,7 +45,21 @@ export const deleteAccount = id => {
   };
 };
 
-export const abortAccountCreation = (id) => {
+export const setAccountContextHidden = () => {
+  return {
+    payload: { position: { x: 0, y: 0 }, visible: false },
+    type: 'SET_ACCOUNT_VISIBILITY',
+  };
+};
+
+export const toggleAccountContextVisibility = (x, y) => {
+  return {
+    payload: { position: { x, y } },
+    type: 'TOGGLE_ACCOUNT_VISIBILITY',
+  };
+};
+
+export const abortAccountCreation = id => {
   return (dispatch, getState) => {
     dispatch(deleteAccount(id));
 
@@ -63,12 +77,12 @@ export const abortAccountCreation = (id) => {
 export const updateAccountData = (id, data) => {
   return (dispatch, getState) => {
     const validatedAccountData = verifyObjectProperties(data, {
-      'accentID': 'Number',
-      'name': 'String',
-      'picture': 'String',
-      'teamID': 'String',
-      'teamRole': 'String',
-      'userID': 'String',
+      accentID: 'Number',
+      name: 'String',
+      picture: 'String',
+      teamID: 'String',
+      teamRole: 'String',
+      userID: 'String',
     });
 
     if (validatedAccountData) {
@@ -81,7 +95,7 @@ export const updateAccountData = (id, data) => {
 
 export const updateAccountBadgeCount = (id, count) => {
   return (dispatch, getState) => {
-    const account = getState().accounts.find((acc) => acc.id === id);
+    const account = getState().accounts.find(acc => acc.id === id);
 
     if (account) {
       const countHasChanged = account.badgeCount !== count;
@@ -91,7 +105,6 @@ export const updateAccountBadgeCount = (id, count) => {
     } else {
       console.warn('Missing account when updating badge count');
     }
-
   };
 };
 

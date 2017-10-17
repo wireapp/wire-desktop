@@ -146,6 +146,9 @@ module.exports = function(grunt) {
             executableName: 'wire-desktop',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
+            desktop: {
+              "StartupWMClass": "Wire"
+            },
             category: 'Network',
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
@@ -161,6 +164,9 @@ module.exports = function(grunt) {
             executableName: 'wire-desktop-internal',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
+            desktop: {
+              "StartupWMClass": "Wire"
+            },
             category: 'Network',
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
@@ -175,6 +181,9 @@ module.exports = function(grunt) {
           linux: {
             fpm: ['--name', 'wire-desktop'],
             executableName: 'wire-desktop',
+            desktop: {
+              "StartupWMClass": "Wire"
+            },
           },
         },
       },
@@ -246,7 +255,7 @@ module.exports = function(grunt) {
   /**
    * Tasks
    */
-  grunt.registerTask('version-inc', function() {
+  grunt.registerTask('version-inc', () => {
     const info = grunt.config.get('info');
     const {version} = info;
     const major = version.substr(0, version.indexOf('.'));
@@ -263,7 +272,7 @@ module.exports = function(grunt) {
     grunt.log.write(`Version number increased to ${info.version} `).ok();
   });
 
-  grunt.registerTask('release-internal', function() {
+  grunt.registerTask('release-internal', () => {
     const info = grunt.config.get('info');
     const build_number = grunt.config.get('build_number');
     const commit_id = grunt.config('gitinfo.local.branch.current.shortSHA');
@@ -279,7 +288,7 @@ module.exports = function(grunt) {
     grunt.log.write(`Releases URL points to ${electron_pkg.updateWinUrl} `).ok();
   });
 
-  grunt.registerTask('release-prod', function() {
+  grunt.registerTask('release-prod', () => {
     const info = grunt.config.get('info');
     const build_number = grunt.config.get('build_number');
     const commit_id = grunt.config('gitinfo.local.branch.current.shortSHA');
@@ -301,15 +310,13 @@ module.exports = function(grunt) {
     const done = this.async();
     electron_packager(this.options(), function(error) {
       if (error) {
-        grunt.warn(error);
-      } else {
-        done();
+        return grunt.warn(error);
       }
+      done();
     });
   });
 
   grunt.registerMultiTask('electronbuilder', 'Build Electron apps', function() {
-    const done = this.async();
     const options = this.options();
     const {targets} = options;
     delete options.targets;
@@ -317,7 +324,7 @@ module.exports = function(grunt) {
     delete options.arch;
 
     if (arch === 'all') {
-      electron_builder.build({
+      return electron_builder.build({
         targets: electron_builder.Platform.LINUX.createTarget(
           targets,
           electron_builder.Arch.ia32,
@@ -325,28 +332,27 @@ module.exports = function(grunt) {
         ),
         config: options,
       });
-    } else {
-      electron_builder.build({
-        targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.archFromString(arch)),
-        config: options,
-      });
     }
+
+    electron_builder.build({
+      targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.archFromString(arch)),
+      config: options,
+    });
   });
 
   grunt.registerTask('update-keys', function() {
     const options = this.options();
-
     const config_string = grunt.file.read(options.config);
 
-    if (config_string != null) {
+    if (config_string) {
       const new_config_string = config_string
         .replace(`RAYGUN_API_KEY: ''`, `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
         .replace(`GOOGLE_CLIENT_ID: ''`, `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
         .replace(`GOOGLE_CLIENT_SECRET: ''`, `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
-      grunt.file.write(options.config, new_config_string);
-    } else {
-      grunt.warn('Failed updating keys in config');
+      return grunt.file.write(options.config, new_config_string);
     }
+
+    grunt.warn('Failed updating keys in config');
   });
 
   grunt.registerTask('productbuild', 'Build Mac Appstore package', function() {
@@ -364,7 +370,7 @@ module.exports = function(grunt) {
       `${options.name} Helper EH.app/`,
       `${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
       `${options.name} Helper NP.app/`,
-    ].forEach(framework =>
+    ].forEach((framework) =>
       execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}/Contents/Frameworks/${framework}'`),
     );
 
@@ -381,7 +387,7 @@ module.exports = function(grunt) {
     createWindowsInstaller(config).then(done, done);
   });
 
-  grunt.registerTask('bundle', 'Bundle React app', function() {
+  grunt.registerTask('bundle', 'Bundle React app', () => {
     const {execSync} = require('child_process');
     execSync('npm run bundle');
   });
