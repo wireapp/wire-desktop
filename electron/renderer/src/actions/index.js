@@ -45,17 +45,17 @@ export const deleteAccount = id => {
   };
 };
 
-export const toggleAccountContextVisibility = (x, y) => {
-  return {
-    payload: { position: { x, y } },
-    type: 'TOGGLE_ACCOUNT_VISIBILITY',
-  };
-};
-
 export const setAccountContextHidden = () => {
   return {
     payload: { position: { x: 0, y: 0 }, visible: false },
     type: 'SET_ACCOUNT_VISIBILITY',
+  };
+};
+
+export const toggleAccountContextVisibility = (x, y) => {
+  return {
+    payload: { position: { x, y } },
+    type: 'TOGGLE_ACCOUNT_VISIBILITY',
   };
 };
 

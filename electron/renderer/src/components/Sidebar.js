@@ -23,7 +23,7 @@ import { getText } from '../lib/locale';
 import { preventFocus } from '../lib/util';
 import ContextMenu from './context/ContextMenu';
 import ContextMenuItem from './context/ContextMenuItem';
-import ContextMenuTrigger from './context/ContextMenuTrigger';
+import AddAccountMenuTrigger from './context/AddAccountMenuTrigger';
 import PersonalIcon from './PersonalIcon';
 import React from 'react';
 import TeamIcon from './TeamIcon';
@@ -82,7 +82,7 @@ const Sidebar = ({
     ))}
     {!isAddingAccount &&
       !hasReachedLimitOfAccounts && (
-        <ContextMenuTrigger
+        <AddAccountMenuTrigger
           id="account"
           onClick={preventFocus(event => {
             const cRect = event.target.getBoundingClientRect();
