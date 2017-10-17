@@ -23,7 +23,6 @@ const certutils = require('../electron/js/certutils');
 const https = require('https');
 
 const assert = require('assert');
-const path = require('path');
 
 const buildCert = cert => `-----BEGIN CERTIFICATE-----\n${cert.raw.toString('base64')}\n-----END CERTIFICATE-----`;
 
@@ -52,7 +51,7 @@ describe('cert pinning', () => {
     goodURLs.forEach(hostname => assert(certutils.hostnameShouldBePinned(hostname)));
   });
 
-  it(`doesn't pin other hostnames`, () => {
+  it("doesn't pin other hostnames", () => {
     badURLs.forEach(hostname => assert.equal(false, certutils.hostnameShouldBePinned(hostname)));
   });
 
@@ -69,7 +68,7 @@ describe('cert pinning', () => {
                   data: buildCert(cert.issuerCertificate),
                 },
               };
-              resolve({ hostname, certData });
+              resolve({ certData, hostname });
             }),
           ),
         ),

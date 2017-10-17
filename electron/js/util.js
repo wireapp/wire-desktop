@@ -20,10 +20,8 @@
 
 const electron = require('electron');
 const url = require('url');
-/*eslint-disable no-unused-vars*/
 const debug = require('debug');
 const utilDebug = debug('utilDebug');
-/*eslint-enable no-unused-vars*/
 
 const config = require('./config');
 const environment = require('./environment');

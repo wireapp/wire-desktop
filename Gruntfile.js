@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 /*
  * Wire
  * Copyright (C) 2017 Wire Swiss GmbH
@@ -27,7 +28,6 @@ const INFO_JSON = 'info.json';
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
-  const path = require('path');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON(PACKAGE_JSON),
@@ -147,7 +147,7 @@ module.exports = function(grunt) {
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
             desktop: {
-              "StartupWMClass": "Wire"
+              'StartupWMClass': 'Wire',
             },
             category: 'Network',
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
@@ -165,7 +165,7 @@ module.exports = function(grunt) {
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
             desktop: {
-              "StartupWMClass": "Wire"
+              'StartupWMClass': 'Wire',
             },
             category: 'Network',
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
@@ -182,7 +182,7 @@ module.exports = function(grunt) {
             fpm: ['--name', 'wire-desktop'],
             executableName: 'wire-desktop',
             desktop: {
-              "StartupWMClass": "Wire"
+              'StartupWMClass': 'Wire',
             },
           },
         },
@@ -317,7 +317,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('electronbuilder', 'Build Electron apps', function() {
-    const done = this.async();
     const options = this.options();
     const {targets} = options;
     delete options.targets;
@@ -347,9 +346,9 @@ module.exports = function(grunt) {
 
     if (config_string) {
       const new_config_string = config_string
-        .replace(`RAYGUN_API_KEY: ''`, `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
-        .replace(`GOOGLE_CLIENT_ID: ''`, `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
-        .replace(`GOOGLE_CLIENT_SECRET: ''`, `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
+        .replace("RAYGUN_API_KEY: ''", `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
+        .replace("GOOGLE_CLIENT_ID: ''", `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
+        .replace("GOOGLE_CLIENT_SECRET: ''", `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
       return grunt.file.write(options.config, new_config_string);
     }
 
