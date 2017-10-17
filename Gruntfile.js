@@ -315,6 +315,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('electronbuilder', 'Build Electron apps', function() {
+    const done = this.async();
     const options = this.options();
     const {targets} = options;
     delete options.targets;

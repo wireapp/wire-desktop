@@ -18,17 +18,16 @@
  */
 
 const {remote, ipcRenderer, shell} = require('electron');
-
-const config = require('./config');
 const locale = require('./../locale/locale');
+const pkg = require('./../package.json');
 
 const labels = document.getElementsByClassName('text');
 for (const label of labels) {
   label.innerHTML = locale.getText(label.dataset.string);
 }
 
-document.getElementById('name').innerHTML = config.NAME;
-document.getElementById('version').innerHTML = config.VERSION;
+document.getElementById('name').innerHTML = pkg.productName;
+document.getElementById('version').innerHTML = pkg.version || 'Development';
 
 window.addEventListener('keydown', event => {
   if (event.keyCode === 27) {

@@ -1,7 +1,7 @@
 {
   "name": "wireinternal",
   "productName": "WireInternal",
-  "description": "Modern communication, full privacy.",
+  "description": "Secure messenger for everyone.",
   "main": "main.js",
   "updateWinUrl": "https://wire-app.wire.com/win/internal/",
   "environment": "internal",
