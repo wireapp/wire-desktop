@@ -17,21 +17,20 @@
  *
  */
 
-import React from 'react';
-
-import SidebarContainer from '../containers/SidebarContainer';
-import WebviewsContainer from '../containers/WebviewsContainer';
-
 import IsOnline from './IsOnline';
+import React from 'react';
+import Sidebar from './Sidebar';
+import WebviewsContainer from '../containers/WebviewsContainer';
 
 import './App.css';
 
-const App = () =>
+const App = () => (
   <IsOnline>
     <div className="App">
-      <SidebarContainer />
+      <Sidebar />
       <WebviewsContainer />
     </div>
-  </IsOnline>;
+  </IsOnline>
+);
 
 export default App;

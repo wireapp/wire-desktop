@@ -17,20 +17,35 @@
  *
  */
 
-import { connect } from 'react-redux';
+.ContextMenu {
+  min-width: 160px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 8px 24px 0 rgba(0, 0, 0, 0.16);
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 32px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  position: fixed;
+  z-index: 100000;
+}
 
-import { addAccountWithSession, switchAccount } from '../actions';
-import Sidebar from '../components/Sidebar';
+.ContextMenu-item {
+  cursor: pointer;
+  padding-left: 24px;
+  color: var(--graphite-dark);
+}
 
-const SidebarContainer = connect(
-  ({ accounts }) => ({
-    accounts: accounts,
-    currentAccentID: (accounts.find((account) => account.visible) || {}).accentID,
-    hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
-    hasReachedLimitOfAccounts: accounts.length === 3,
-    isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
-  }),
-  {addAccountWithSession, switchAccount}
-)(Sidebar);
+.ContextMenuTrigger {
+  opacity: 0;
+  transition: opacity;
+  transition-timing-function: var(--ease-out-quart);
+  transition-duration: var(--animation-timing-slow);
+}
 
-export default SidebarContainer;
+.ContextMenu-item:hover,
+.ContextMenu-item.selected {
+  background-color: rgba(0, 0, 0, 0.16);
+}
