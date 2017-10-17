@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Релизы';
 string.aboutUpdate = 'Как работают обновления Wire';
 string.aboutVersion = 'Версия';
@@ -69,6 +67,8 @@ string.trayQuit = 'Завершить';
 
 string.unreadMessages = 'Непрочитанное сообщение';
 
+string.wrapperAddAccount = 'Добавить аккаунт';
 string.wrapperCreateTeam = 'Создать команду';
+string.wrapperLogOut = 'Выход';
 
 module.exports = string;

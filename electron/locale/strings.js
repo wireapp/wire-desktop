@@ -1,5 +1,3 @@
-
-
 string.aboutReleases = 'Releases';
 string.aboutUpdate = 'How Wire Updates Work';
 string.aboutVersion = 'Version';
@@ -67,3 +65,6 @@ string.unreadMessages = 'Unread message';
 
 string.wrapperAddAccount = 'Add Account';
 string.wrapperCreateTeam = 'Create Team';
+string.wrapperLogOut = 'Log Out';
+string.wrapperManageTeam = 'Manage Team';
+string.wrapperRemoveAccount = 'Remove Account';

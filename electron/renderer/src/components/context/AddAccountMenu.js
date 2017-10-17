@@ -17,20 +17,22 @@
  *
  */
 
+import React from 'react';
 import { connect } from 'react-redux';
+import { getText } from '../../lib/locale';
+import ContextMenu from './ContextMenu';
+import ContextMenuItem from './ContextMenuItem';
+import { addAccountWithSession } from '../../actions/';
 
-import { addAccountWithSession, switchAccount } from '../actions';
-import Sidebar from '../components/Sidebar';
+function AddAccountMenu({ ...connected }) {
+  return (
+    <ContextMenu>
+      <ContextMenuItem onClick={() => window.open('https://wire.com/create-team/?pk_campaign=client&pk_kwd=desktop')}>
+        {getText('wrapperCreateTeam')}
+      </ContextMenuItem>
+      <ContextMenuItem onClick={connected.addAccountWithSession}>{getText('wrapperAddAccount')}</ContextMenuItem>
+    </ContextMenu>
+  );
+}
 
-const SidebarContainer = connect(
-  ({ accounts }) => ({
-    accounts: accounts,
-    currentAccentID: (accounts.find((account) => account.visible) || {}).accentID,
-    hasCreatedAccount: accounts.some((account) => account.userID !== undefined),
-    hasReachedLimitOfAccounts: accounts.length === 3,
-    isAddingAccount: accounts.length && accounts.some((account) => account.userID === undefined),
-  }),
-  {addAccountWithSession, switchAccount}
-)(Sidebar);
-
-export default SidebarContainer;
+export default connect(null, { addAccountWithSession })(AddAccountMenu);

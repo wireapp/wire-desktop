@@ -27,12 +27,8 @@
   flex: 0 0 auto;
 }
 
-.Sidebar:hover .Sidebar-account-add {
+.Sidebar:hover .ContextMenuTrigger {
   opacity: 1;
-  pointer-events: initial;
-  transition: opacity;
-  transition-timing-function: var(--ease-out-quart);
-  transition-duration: var(--animation-timing-slow);
 }
 
 .Sidebar-cell {
@@ -48,7 +44,7 @@
 }
 
 .Sidebar-icon-badge:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 2px;
   right: 3px;
@@ -63,11 +59,10 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, .16);
+  border: 2px solid rgba(255, 255, 255, 0.16);
   fill: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0;
   pointer-events: none;
 }

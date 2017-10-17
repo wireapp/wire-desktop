@@ -2,12 +2,10 @@
 
 let string = {};
 
-
-
-string.aboutReleases = 'Väljalasked';
+string.aboutReleases = 'Versioonid';
 string.aboutUpdate = 'Kuidas Wire’i uuendused töötavad';
 string.aboutVersion = 'Versioon';
-string.aboutWebappVersion = 'Wire for Web versioon';
+string.aboutWebappVersion = 'Wire veebiversioon';
 
 string.menuConversation = 'Vestlus';
 string.menuStart = 'Alusta';
@@ -60,9 +58,9 @@ string.menuSavePictureAs = 'Salvesta pilt nimega...';
 string.menuNoSuggestions = 'Soovitused puuduvad';
 
 string.restartNeeded = 'Taaskäivitamine vajalik';
-string.restartLocale = 'Palun taaskäivita rakendus selle sätte jõustumiseks.';
+string.restartLocale = 'Selle sätte jõustumiseks taaskäivita Wire.';
 string.restartLater = 'Hiljem';
-string.restartNow = 'Taaskäivita kohe';
+string.restartNow = 'Taaskäivita nüüd';
 
 string.trayOpen = 'Ava';
 string.trayQuit = 'Välju';
@@ -71,5 +69,6 @@ string.unreadMessages = 'Lugemata sõnum';
 
 string.wrapperAddAccount = 'Lisa konto';
 string.wrapperCreateTeam = 'Loo tiimikonto';
+string.wrapperLogOut = 'Logi välja';
 
 module.exports = string;

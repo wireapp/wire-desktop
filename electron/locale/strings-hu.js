@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Kiadási jegyzék';
 string.aboutUpdate = 'Hogyan frissül a Wire';
 string.aboutVersion = 'Verzió:';
@@ -69,6 +67,8 @@ string.trayQuit = 'Kilépés';
 
 string.unreadMessages = 'Olvasatlan üzenet';
 
+string.wrapperAddAccount = 'Fiók hozzáadása';
 string.wrapperCreateTeam = 'Csapat létrehozása';
+string.wrapperLogOut = 'Kijelentkezés';
 
 module.exports = string;

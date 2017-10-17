@@ -27,7 +27,7 @@ node('Windows_Node') {
   stage('Build') {
     try {
       bat 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.0.0-windows-x64', type: 'nodejs'
+      def NODE = tool name: 'node-v8.7.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         bat 'node -v'
         bat returnStatus: true, script: 'rustc --version'
@@ -66,7 +66,7 @@ node('Windows_Node') {
 
   stage('Build installer') {
     try {
-      def NODE = tool name: 'node-v8.0.0-windows-x64', type: 'nodejs'
+      def NODE = tool name: 'node-v8.7.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         if(production) {
           bat 'grunt create-windows-installer:prod'
