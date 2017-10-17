@@ -296,7 +296,7 @@ const showMainWindow = () => {
 };
 
 const showAboutWindow = () => {
-  if (about === undefined) {
+  if (!about) {
     about = new BrowserWindow({
       title: config.NAME,
       width: config.WINDOW.ABOUT.WIDTH,
