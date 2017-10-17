@@ -17,27 +17,17 @@
  *
  */
 
-.ContextMenu {
-  min-width: 160px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 0 1px 0 rgba(0, 0, 0, .08), 0 8px 24px 0 rgba(0, 0, 0, .16);
-  display: block;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 32px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  position: fixed;
-  z-index: 100000;
-}
+import React from 'react';
+import PropTypes from 'prop-types';
 
-.ContextMenu-item {
-  cursor: pointer;
-  padding-left: 24px;
-  color: var(--graphite-dark);
-}
+const ContextMenuItem = props => (
+  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
+    {props.children}
+  </div>
+);
 
-.ContextMenu-item:hover, .ContextMenu-item.selected {
-  background-color: rgba(0, 0, 0, .16);
-}
+export default ContextMenuItem;
+
+ContextMenuItem.propTypes = {
+  onClick: PropTypes.func,
+};

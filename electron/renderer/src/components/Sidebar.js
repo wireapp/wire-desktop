@@ -17,13 +17,21 @@
  *
  */
 
-import React from 'react';
-
-import TeamIcon from './TeamIcon';
-import PersonalIcon from './PersonalIcon';
-import {ContextMenu, ContextMenuItem, ContextMenuTrigger} from './ContextMenu';
 import {colorFromId} from '../lib/accentColor';
-import {getText} from '../lib/locale';
+import {connect} from 'react-redux';
+import {preventFocus} from '../lib/util';
+import AddAccountMenuTrigger from './context/AddAccountMenuTrigger';
+import AddAccountMenu from './context/AddAccountMenu';
+import EditAccountMenu from './context/EditAccountMenu';
+import PersonalIcon from './PersonalIcon';
+import React from 'react';
+import TeamIcon from './TeamIcon';
+import {
+  setAccountContextHidden,
+  switchAccount,
+  toggleAddAccountMenuVisibility,
+  toggleEditAccountMenuVisibility,
+} from '../actions/';
 
 import './Sidebar.css';
 
@@ -31,34 +39,45 @@ function className(account) {
   return ['Sidebar-icon', account.badgeCount > 0 ? 'Sidebar-icon-badge' : ''].join(' ');
 }
 
-const switchToNewAccount = (switchAccount, account) => {
-  if (!account.visible) {
-    switchAccount(account.id);
-  }
-};
-
-const preventFocus = event => {
-  event.stopPropagation();
-  event.preventDefault();
+const centerOfEventTarget = event => {
+  const cRect = event.target.getBoundingClientRect();
+  return [cRect.left + cRect.width / 2, cRect.top + cRect.height / 2];
 };
 
 const Sidebar = ({
   accounts,
-  addAccountWithSession,
   currentAccentID,
   hasCreatedAccount,
   hasReachedLimitOfAccounts,
   isAddingAccount,
-  switchAccount,
+  isAddAccountMenuVisible,
+  isEditAccountMenuVisible,
+  ...connected
 }) => (
-  <div className="Sidebar" style={hasCreatedAccount ? {} : {display: 'none'}} onMouseDown={preventFocus}>
+  <div
+    className="Sidebar"
+    style={hasCreatedAccount ? {} : {display: 'none'}}
+    onMouseDown={preventFocus()}
+    onClick={connected.setAccountContextHidden}
+  >
     {accounts.map(account => (
       <div className="Sidebar-cell" key={account.id}>
         <div
           style={{color: colorFromId(currentAccentID)}}
           className={className(account)}
-          onClick={() => switchToNewAccount(switchAccount, account)}
-          onMouseDown={preventFocus}
+          onClick={() => connected.switchAccount(account.id)}
+          onContextMenu={preventFocus(event => {
+            const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
+              account.teamRole
+            );
+            connected.toggleEditAccountMenuVisibility(
+              ...centerOfEventTarget(event),
+              account.id,
+              account.sessionID,
+              isAtLeastAdmin
+            );
+          })}
+          onMouseDown={preventFocus()}
         >
           {account.teamID ? (
             <TeamIcon account={account} accentID={currentAccentID} />
@@ -70,24 +89,34 @@ const Sidebar = ({
     ))}
     {!isAddingAccount &&
       !hasReachedLimitOfAccounts && (
-        <ContextMenuTrigger id="account">
-          <div className="Sidebar-cell">
-            <div data-uie-name="do-open-plus-menu" className="Sidebar-account-add">
-              <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd" />
-              </svg>
-            </div>
-          </div>
-        </ContextMenuTrigger>
+        <AddAccountMenuTrigger
+          id="account"
+          onClick={preventFocus(event => {
+            connected.toggleAddAccountMenuVisibility(...centerOfEventTarget(event));
+          })}
+          forceVisible={isAddAccountMenuVisible}
+        />
       )}
 
-    <ContextMenu id="account">
-      <ContextMenuItem onClick={() => window.open('https://wire.com/create-team/?pk_campaign=client&pk_kwd=desktop')}>
-        {getText('wrapperCreateTeam')}
-      </ContextMenuItem>
-      <ContextMenuItem onClick={() => addAccountWithSession()}>{getText('wrapperAddAccount')}</ContextMenuItem>
-    </ContextMenu>
+    {isAddAccountMenuVisible && <AddAccountMenu />}
+    {isEditAccountMenuVisible && <EditAccountMenu />}
   </div>
 );
 
-export default Sidebar;
+export default connect(
+  ({accounts, contextMenuState}) => ({
+    accounts,
+    currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
+    hasCreatedAccount: accounts.some(account => account.userID !== undefined),
+    hasReachedLimitOfAccounts: accounts.length >= 3,
+    isAddAccountMenuVisible: contextMenuState.isAddAccountMenuVisible,
+    isAddingAccount: accounts.length && accounts.some(account => account.userID === undefined),
+    isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
+  }),
+  {
+    setAccountContextHidden,
+    switchAccount,
+    toggleAddAccountMenuVisibility,
+    toggleEditAccountMenuVisibility,
+  }
+)(Sidebar);

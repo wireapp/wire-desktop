@@ -67,4 +67,6 @@ string.trayQuit = 'Sluit';
 
 string.unreadMessages = 'Ongelezen bericht';
 
+string.wrapperLogOut = 'Afmelden';
+
 module.exports = string;

@@ -67,4 +67,6 @@ string.trayQuit = 'Zamknij';
 
 string.unreadMessages = 'Nieprzeczytana wiadomość';
 
+string.wrapperLogOut = 'Wyloguj';
+
 module.exports = string;

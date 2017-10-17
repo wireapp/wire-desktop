@@ -82,6 +82,10 @@ const _web = {
   get_url_admin: () => (_is_prod_environment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING),
   get_url_support: () => URL_SUPPORT,
   get_url_webapp: env => {
+    if (env) {
+      return env;
+    }
+
     if (_app.IS_DEVELOPMENT) {
       switch (_getEnvironment()) {
         case TYPE.DEV:
@@ -95,11 +99,11 @@ const _web = {
         case TYPE.STAGING:
           return URL_WEBAPP.STAGING;
         default:
-          return env;
+          break;
       }
     }
 
-    return env || URL_WEBAPP.PRODUCTION;
+    return URL_WEBAPP.PRODUCTION;
   },
   get_url_website: () => (_is_prod_environment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING),
 };

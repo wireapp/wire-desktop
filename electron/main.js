@@ -24,7 +24,7 @@ const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const {app, BrowserWindow, ipcMain, Menu, shell} = require('electron');
+const {app, BrowserWindow, globalShortcut, ipcMain, Menu, shell} = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -115,6 +115,11 @@ if (environment.platform.IS_WINDOWS) {
   squirrel.handleSquirrelEvent(shouldQuit);
 
   ipcMain.on('wrapper-update', () => squirrel.installUpdate());
+
+  // Stop further execution on update to prevent second tray icon
+  if (shouldQuit) {
+    return;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -293,11 +298,11 @@ const showMainWindow = () => {
 const showAboutWindow = () => {
   if (about === undefined) {
     about = new BrowserWindow({
-      fullscreen: false,
-      height: config.WINDOW.ABOUT.HEIGHT,
-      resizable: false,
       title: config.NAME,
       width: config.WINDOW.ABOUT.WIDTH,
+      height: config.WINDOW.ABOUT.HEIGHT,
+      resizable: false,
+      fullscreen: false,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
@@ -321,7 +326,7 @@ const discloseWindowID = browserWindow => {
 ///////////////////////////////////////////////////////////////////////////////
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
-app.on('window-all-closed', () => {
+app.on('window-all-closed', event => {
   if (!environment.isMacOS) {
     app.quit();
   }
@@ -352,6 +357,14 @@ app.on('ready', () => {
   Menu.setApplicationMenu(appMenu);
   tray.createTrayIcon();
   showMainWindow();
+
+  const shortcut = globalShortcut.register('CommandOrControl+0', () => {
+    main.show();
+  });
+
+  if (!shortcut) {
+    console.log('Registration failed.');
+  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -365,7 +378,7 @@ fs.readdir(LOG_DIR, (error, contents) => {
     .filter(file => {
       try {
         return fs.statSync(file).isFile();
-      } catch (err) {
+      } catch (error) {
         return undefined;
       }
     })
@@ -463,6 +476,51 @@ class ElectronWrapperInit {
           break;
       }
     });
+  }
+}
+
+class BrowserWindowInit {
+  constructor() {
+    this.debug = debug('BrowserWindowInit');
+    this.quitting = false;
+    this.accessToken = false;
+
+    // Start the browser window
+    this.browserWindow = new BrowserWindow({
+      title: config.NAME,
+      titleBarStyle: 'hidden-inset',
+
+      width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+      height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+      minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+      minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
+
+      autoHideMenuBar: !settings.restore('showMenu', true),
+      icon: ICON_PATH,
+      show: false,
+      backgroundColor: '#fff',
+
+      webPreferences: {
+        backgroundThrottling: false,
+        nodeIntegration: false,
+        preload: PRELOAD_JS,
+        webviewTag: true,
+        allowRunningInsecureContent: false,
+        experimentalFeatures: true,
+        webgl: false,
+      },
+    });
+
+    // Show the renderer
+    const envUrl = encodeURIComponent(`${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`);
+    main.loadURL(`file://${path.join(APP_PATH, 'renderer', 'index.html')}?env=${envUrl}`);
+
+    // Restore previous window size
+    if (settings.restore('fullscreen', false)) {
+      this.browserWindow.setFullScreen(true);
+    } else {
+      this.browserWindow.setBounds(settings.restore('bounds', this.browserWindow.getBounds()));
+    }
   }
 }
 

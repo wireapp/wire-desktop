@@ -56,4 +56,6 @@ string.restartNow = 'Ponovno pokreni';
 
 string.trayOpen = 'Otvori';
 
+string.wrapperLogOut = 'Odjava';
+
 module.exports = string;

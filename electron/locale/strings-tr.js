@@ -67,4 +67,6 @@ string.trayQuit = 'Çık';
 
 string.unreadMessages = 'Okunmamış mesaj';
 
+string.wrapperLogOut = 'Çıkış Yap';
+
 module.exports = string;

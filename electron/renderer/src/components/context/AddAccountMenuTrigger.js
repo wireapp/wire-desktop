@@ -17,35 +17,21 @@
  *
  */
 
-.PersonalIcon {
-  position: relative;
-  width: 38px;
-  height: 38px;
-}
+import React from 'react';
 
-.PersonalIcon > * {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
+const AddAccountMenuTrigger = ({onClick, forceVisible}) => (
+  <div
+    className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
+    onClick={onClick}
+    onContextMenu={onClick}
+    data-uie-name="do-open-plus-menu"
+  >
+    <div className="Sidebar-account-add">
+      <svg width="12" height="12" viewBox="0 0 12 12">
+        <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd" />
+      </svg>
+    </div>
+  </div>
+);
 
-.PersonalIcon-inner {
-  overflow: hidden;
-  width: 28px;
-  height: 28px;
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-}
-
-.PersonalIcon-inner > img {
-  width: 100%;
-  height: 100;
-}
-
-.PersonalIcon-border {
-  border: 2px solid #fff;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
+export default AddAccountMenuTrigger;

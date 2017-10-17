@@ -67,4 +67,6 @@ string.trayQuit = 'Esci';
 
 string.unreadMessages = 'Messaggio non letto';
 
+string.wrapperLogOut = 'Esci dall’account';
+
 module.exports = string;

@@ -67,4 +67,6 @@ string.trayQuit = 'Salir';
 
 string.unreadMessages = 'Mensaje sin leer';
 
+string.wrapperLogOut = 'Cerrar Sesión';
+
 module.exports = string;

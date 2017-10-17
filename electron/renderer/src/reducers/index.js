@@ -19,9 +19,11 @@
 
 import {combineReducers} from 'redux';
 import accounts from './accounts';
+import contextMenuState from './contextMenu';
 
 const store = combineReducers({
   accounts,
+  contextMenuState,
 });
 
 export default store;

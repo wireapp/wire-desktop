@@ -67,4 +67,8 @@ string.trayQuit = 'Sair';
 
 string.unreadMessages = 'Mensagem não lida';
 
+string.wrapperAddAccount = 'Adicionar conta';
+string.wrapperCreateTeam = 'Criar Equipe';
+string.wrapperLogOut = 'Sair';
+
 module.exports = string;

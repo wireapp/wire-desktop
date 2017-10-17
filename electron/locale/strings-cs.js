@@ -67,4 +67,8 @@ string.trayQuit = 'Ukončit';
 
 string.unreadMessages = 'Nepřečtená zpráva';
 
+string.wrapperAddAccount = 'Přidat účet';
+string.wrapperCreateTeam = 'Vytvořit tým';
+string.wrapperLogOut = 'Odhlásit';
+
 module.exports = string;

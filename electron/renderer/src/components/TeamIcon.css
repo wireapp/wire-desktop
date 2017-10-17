@@ -36,4 +36,5 @@
   cursor: default;
   font-size: 11px;
   text-transform: uppercase;
+  user-select: none;
 }

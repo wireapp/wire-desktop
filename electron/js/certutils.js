@@ -33,7 +33,7 @@ const pins = [
         fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP],
       },
     ],
-    url: /.*app\.wire\.com.*/i,
+    url: /^app\.wire\.com$/i,
   },
   {
     publicKeyInfo: [
@@ -43,7 +43,7 @@ const pins = [
         fingerprints: [MAIN_FP],
       },
     ],
-    url: /^wire\.com.*/i,
+    url: /^(www\.)?wire\.com$/i,
   },
   {
     publicKeyInfo: [
@@ -53,42 +53,12 @@ const pins = [
         fingerprints: [MAIN_FP],
       },
     ],
-    url: /.*www\.wire.com.*/i,
-  },
-  {
-    publicKeyInfo: [
-      {
-        algorithmID: ALGORITHM_RSA,
-        algorithmParam: null,
-        fingerprints: [MAIN_FP],
-      },
-    ],
-    url: /.*prod-nginz-https\.wire\.com\.*/i,
-  },
-  {
-    publicKeyInfo: [
-      {
-        algorithmID: ALGORITHM_RSA,
-        algorithmParam: null,
-        fingerprints: [MAIN_FP],
-      },
-    ],
-    url: /.*prod-nginz-ssl\.wire\.com.*/i,
-  },
-  {
-    publicKeyInfo: [
-      {
-        algorithmID: ALGORITHM_RSA,
-        algorithmParam: null,
-        fingerprints: [MAIN_FP],
-      },
-    ],
-    url: /.*prod-assets\.wire\.com.*/i,
+    url: /^prod-(assets|nginz-https|nginz-ssl)\.wire\.com$/i,
   },
   {
     issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
     publicKeyInfo: [],
-    url: /.*\.cloudfront\.net.*/i,
+    url: /^[a-z0-9]{14,63}\.cloudfront\.net$/i,
   },
 ];
 
