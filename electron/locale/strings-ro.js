@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Variante';
 string.aboutUpdate = 'Cum funcționează actualizările Wire';
 string.aboutVersion = 'Versiune';
@@ -69,5 +67,8 @@ string.trayQuit = 'Ieși';
 
 string.unreadMessages = 'Mesaj necitit';
 
+string.wrapperAddAccount = 'Adaugă un cont';
+string.wrapperCreateTeam = 'Creează o echipă';
+string.wrapperLogOut = 'Deconectare';
 
 module.exports = string;

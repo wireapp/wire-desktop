@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Udgivelser';
 string.aboutUpdate = 'Hvordan fungere Wire’s opdateringer';
 string.aboutVersion = 'Version';
@@ -69,5 +67,6 @@ string.trayQuit = 'Afslut';
 
 string.unreadMessages = 'Ulæst besked';
 
+string.wrapperLogOut = 'Log ud';
 
 module.exports = string;

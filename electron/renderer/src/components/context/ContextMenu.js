@@ -94,22 +94,17 @@ class ContextMenu extends Component {
   }
 
   render() {
-    return this.props.visible ? (
-      <div
-        className="ContextMenu"
-        onClickCapture={this._hide}
-        ref={this._handleRef}
-      >
+    return (
+      <div className="ContextMenu" onClickCapture={this._hide} ref={this._handleRef}>
         {this.props.children}
       </div>
-    ) : null;
+    );
   }
 }
 
 export default connect(
   state => ({
-    position: state.contextMenuState.accountContextPosition,
-    visible: state.contextMenuState.isAccountContextMenuVisible,
+    position: state.contextMenuState.position,
   }),
   { setAccountContextHidden }
 )(ContextMenu);

@@ -31,7 +31,7 @@ class Webviews extends Component {
 
   shouldComponentUpdate(nextProps) {
     for (const account of nextProps.accounts) {
-      const match = this.props.accounts.find((_account) => account.id === _account.id);
+      const match = this.props.accounts.find(_account => account.id === _account.id);
       if (!match || match.visible !== account.visible) {
         return true;
       }
@@ -66,7 +66,7 @@ class Webviews extends Component {
     window.sendBadgeCount(accumulatedCount);
   }
 
-  _onIpcMessage(account, {channel, args}) {
+  _onIpcMessage(account, { channel, args }) {
     switch (channel) {
       case 'notification-click':
         this.props.switchAccount(account.id);
@@ -96,24 +96,28 @@ class Webviews extends Component {
   render() {
     return (
       <ul className="Webviews">
-        {this.props.accounts.map((account) => (
+        {this.props.accounts.map(account => (
           <div className="Webviews-container" key={account.id}>
             <Webview
               className={'Webview ' + (account.visible ? '' : 'hide')}
+              data-accountid={account.id}
               visible={account.visible}
               src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
-              preload='./static/webview-preload.js'
-              onPageTitleUpdated={(event) => this._onPageTitleUpdated(account, event)}
-              onIpcMessage={(event) => this._onIpcMessage(account, event)}
+              preload="./static/webview-preload.js"
+              onPageTitleUpdated={event => this._onPageTitleUpdated(account, event)}
+              onIpcMessage={event => this._onIpcMessage(account, event)}
             />
-            {(this._canDeleteWebview(account)) &&
+            {this._canDeleteWebview(account) && (
               <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
-                <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243" fillRule="evenodd"/>
+                <svg width="16" height="16" viewBox="0 0 16 16">
+                  <path
+                    d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243"
+                    fillRule="evenodd"
+                  />
                 </svg>
               </div>
-            }
+            )}
           </div>
         ))}
       </ul>

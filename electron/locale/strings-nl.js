@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Releases';
 string.aboutUpdate = 'Hoe Werken Wire Updates';
 string.aboutVersion = 'Versie';
@@ -69,5 +67,6 @@ string.trayQuit = 'Sluit';
 
 string.unreadMessages = 'Ongelezen bericht';
 
+string.wrapperLogOut = 'Afmelden';
 
 module.exports = string;

@@ -29,6 +29,7 @@ window.locStringsDefault = locale['en'];
 window.isMac = environment.platform.IS_MAC_OS;
 
 const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
+const getWebviewById = id => document.querySelector(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('system-menu', (event, action) => {
@@ -46,6 +47,13 @@ const setupIpcInterface = () => {
 
   window.sendDeleteAccount = (accountID, sessionID) => {
     ipcRenderer.send('delete-account-data', accountID, sessionID);
+  };
+
+  window.sendLogoutAccount = accountId => {
+    const accountWebview = getWebviewById(accountId);
+    if (accountWebview) {
+      accountWebview.send('sign-out');
+    }
   };
 };
 

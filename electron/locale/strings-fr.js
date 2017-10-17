@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Notes de mise à jour';
 string.aboutUpdate = 'Mécanisme de mise à jour';
 string.aboutVersion = 'Version';
@@ -69,6 +67,8 @@ string.trayQuit = 'Quitter';
 
 string.unreadMessages = 'Message non lu';
 
+string.wrapperAddAccount = 'Ajouter un compte';
 string.wrapperCreateTeam = 'Créer une équipe';
+string.wrapperLogOut = 'Déconnexion';
 
 module.exports = string;
