@@ -34,7 +34,7 @@ node('Linux_Node') {
     try {
       sh 'pip install -r requirements.txt'
       sh 'yarn global add grunt-cli'
-      def NODE = tool name: 'node-v8.0.0-linux-x64', type: 'nodejs'
+      def NODE = tool name: 'node-v8.7.0', type: 'nodejs'
       withEnv(['PATH+RUST=/home/jenkins/.cargo/bin',"PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm install'
