@@ -20,20 +20,21 @@
 import IsOnline from './IsOnline';
 import React from 'react';
 import { connect } from 'react-redux';
-
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
+import { switchAccount } from '../actions/';
 
 import './App.css';
 
-const App = () => (
+const App = props => (
   <IsOnline>
     <div
       className="App"
       onKeyDown={e => {
-        const modKeyPressed = (window.isMac && e.metaKey) || e.altKey;
-        const validKeys = ['1', '2', '3'];
-        if (modKeyPressed && validKeys.includes(e.key)) {
+        const modKeyPressed = (window.isMac && e.metaKey) || e.ctrlKey;
+        const isValidKey = ['1', '2', '3'].includes(e.key);
+        if (modKeyPressed && isValidKey && props.accountIds[e.key - 1]) {
+          props.switchAccount(props.accountIds[e.key - 1]);
         }
       }}
     >
@@ -43,4 +44,4 @@ const App = () => (
   </IsOnline>
 );
 
-export default connect(({ accounts }) => ({ accountIds: accounts.map(account => account.id) }),)(App);
+export default connect(({ accounts }) => ({ accountIds: accounts.map(account => account.id) }), { switchAccount })(App);
