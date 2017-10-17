@@ -78,7 +78,7 @@ const Sidebar = ({
               ...centerOfEventTarget(event),
               account.id,
               account.sessionID,
-              isLoggedIn,
+              account.lifecycle,
               isAtLeastAdmin
             );
           })}

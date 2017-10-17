@@ -31,7 +31,9 @@ class Webviews extends Component {
 
   shouldComponentUpdate(nextProps) {
     for (const account of nextProps.accounts) {
-      const match = this.props.accounts.find(_account => account.id === _account.id);
+      const match = this.props.accounts.find(
+        _account => account.id === _account.id
+      );
       if (!match || match.visible !== account.visible) {
         return true;
       }
@@ -41,7 +43,9 @@ class Webviews extends Component {
   }
 
   _getEnvironmentUrl(account) {
-    const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'));
+    const envParam = decodeURIComponent(
+      new URL(window.location).searchParams.get('env')
+    );
     const url = new URL(envParam);
 
     // pass account id to webview so we can access it in the preload script
@@ -71,9 +75,9 @@ class Webviews extends Component {
       case 'notification-click':
         this.props.switchAccount(account.id);
         break;
-      case loaded:
-        break;
-      case 'sign-out':
+      case 'lifecycle-signed-in':
+      case 'lifecycle-signed-out':
+        this.props.updateAccountLifecycle(account.id, channel);
         break;
       case 'signed-out':
         this._deleteWebview(account);
@@ -109,11 +113,15 @@ class Webviews extends Component {
               src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
               preload="./static/webview-preload.js"
-              onPageTitleUpdated={event => this._onPageTitleUpdated(account, event)}
+              onPageTitleUpdated={event =>
+                this._onPageTitleUpdated(account, event)}
               onIpcMessage={event => this._onIpcMessage(account, event)}
             />
             {this._canDeleteWebview(account) && (
-              <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
+              <div
+                className="Webviews-close"
+                onClick={() => this._onWebviewClose(account)}
+              >
                 <svg width="16" height="16" viewBox="0 0 16 16">
                   <path
                     d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243"

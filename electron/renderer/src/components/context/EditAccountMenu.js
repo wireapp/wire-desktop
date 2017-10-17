@@ -27,7 +27,7 @@ import { abortAccountCreation, switchAccount } from '../../actions/';
 function EditAccountMenu({
   accountId,
   isAtLeastAdmin,
-  isLoggedIn,
+  lifecycle,
   sessionId,
   ...connected
 }) {
@@ -40,7 +40,7 @@ function EditAccountMenu({
           {getText('wrapperManageTeam')}
         </ContextMenuItem>
       )}
-      {isLoggedIn && (
+      {lifecycle === 'lifecycle-signed-in' && (
         <ContextMenuItem
           onClick={() => {
             connected.switchAccount(accountId);
@@ -66,7 +66,7 @@ export default connect(
   ({ contextMenuState }) => ({
     accountId: contextMenuState.accountId,
     isAtLeastAdmin: contextMenuState.isAtLeastAdmin,
-    isLoggedIn: contextMenuState.isLoggedIn,
+    lifecycle: contextMenuState.lifecycle,
     sessionId: contextMenuState.sessionId,
   }),
   {

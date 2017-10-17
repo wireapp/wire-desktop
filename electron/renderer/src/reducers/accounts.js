@@ -30,6 +30,7 @@ function createAccount(sessionID) {
     teamID: undefined,
     userID: undefined,
     visible: true,
+    lifecycle: undefined,
   };
 }
 
@@ -42,14 +43,20 @@ const accounts = (state = [createAccount()], action) => {
       ];
     case 'UPDATE_ACCOUNT':
       return state.map(account => {
-        return (account.id === action.id)
+        return account.id === action.id
           ? { ...account, ...action.data }
           : account;
       });
     case 'UPDATE_ACCOUNT_BADGE':
       return state.map(account => {
-        return (account.id === action.id)
+        return account.id === action.id
           ? { ...account, badgeCount: action.count }
+          : account;
+      });
+    case 'UPDATE_ACCOUNT_LIFECYCLE':
+      return state.map(account => {
+        return account.id === action.id
+          ? { ...account, lifecycle: action.data }
           : account;
       });
     case 'SWITCH_ACCOUNT':
