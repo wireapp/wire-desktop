@@ -36,7 +36,10 @@ import {
 import './Sidebar.css';
 
 function className(account) {
-  return ['Sidebar-icon', account.badgeCount > 0 ? 'Sidebar-icon-badge' : ''].join(' ');
+  return [
+    'Sidebar-icon',
+    account.badgeCount > 0 ? 'Sidebar-icon-badge' : '',
+  ].join(' ');
 }
 
 const centerOfEventTarget = event => {
@@ -67,10 +70,17 @@ const Sidebar = ({
           className={className(account)}
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
-            const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
-              account.teamRole
+            const isAtLeastAdmin = [
+              'z.team.TeamRole.ROLE.OWNER',
+              'z.team.TeamRole.ROLE.ADMIN',
+            ].includes(account.teamRole);
+            connected.toggleEditAccountMenuVisibility(
+              ...centerOfEventTarget(event),
+              account.id,
+              account.sessionID,
+              isLoggedIn,
+              isAtLeastAdmin
             );
-            connected.toggleEditAccountMenuVisibility(...centerOfEventTarget(event), account.id, account.sessionID, isAtLeastAdmin);
           })}
           onMouseDown={preventFocus()}
         >
@@ -87,7 +97,9 @@ const Sidebar = ({
         <AddAccountMenuTrigger
           id="account"
           onClick={preventFocus(event => {
-            connected.toggleAddAccountMenuVisibility(...centerOfEventTarget(event));
+            connected.toggleAddAccountMenuVisibility(
+              ...centerOfEventTarget(event)
+            );
           })}
           forceVisible={isAddAccountMenuVisible}
         />
@@ -105,7 +117,8 @@ export default connect(
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
     hasReachedLimitOfAccounts: accounts.length >= 3,
     isAddAccountMenuVisible: contextMenuState.isAddAccountMenuVisible,
-    isAddingAccount: accounts.length && accounts.some(account => account.userID === undefined),
+    isAddingAccount:
+      accounts.length && accounts.some(account => account.userID === undefined),
     isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
   }),
   {

@@ -22,6 +22,7 @@ const defaultState = {
   isAddAccountMenuVisible: false,
   isAtLeastAdmin: false,
   isEditAccountMenuVisible: false,
+  isLoggedIn: false,
   position: { x: 0, y: 0 },
   sessionId: '',
 };
@@ -46,6 +47,7 @@ const accounts = (state = defaultState, action) => {
         isAddAccountMenuVisible: false,
         isAtLeastAdmin: action.payload.isAtLeastAdmin,
         isEditAccountMenuVisible: !state.isEditAccountMenuVisible,
+        isLoggedIn: action.payload.isLoggedIn,
         position: action.payload.position,
         sessionId: action.payload.sessionId,
       };
