@@ -118,7 +118,7 @@ if (environment.platform.IS_WINDOWS) {
 
   // Stop further execution on update to prevent second tray icon
   if (shouldQuit) {
-    return;
+    app.exit();
   }
 }
 
