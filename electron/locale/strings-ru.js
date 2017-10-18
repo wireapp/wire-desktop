@@ -70,5 +70,7 @@ string.unreadMessages = 'Непрочитанное сообщение';
 string.wrapperAddAccount = 'Добавить аккаунт';
 string.wrapperCreateTeam = 'Создать команду';
 string.wrapperLogOut = 'Выход';
+string.wrapperManageTeam = 'Управлять командой';
+string.wrapperRemoveAccount = 'Удалить аккаунт';
 
 module.exports = string;
