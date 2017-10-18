@@ -52,34 +52,32 @@ describe('cert pinning', () => {
     goodURLs.forEach(hostname => assert(certutils.hostnameShouldBePinned(hostname)));
   });
 
-  it(`doesn't pin other hostnames`, () => {
+  it('does not pin other hostnames', () => {
     badURLs.forEach(hostname => assert.equal(false, certutils.hostnameShouldBePinned(hostname)));
   });
 
-  it('verifies all hostnames', done => {
-    const certPromises = goodURLs.map(
-      hostname =>
-        new Promise(resolve =>
-          https.get(`https://${hostname}`).on('socket', socket =>
-            socket.on('secureConnect', () => {
-              const cert = socket.getPeerCertificate(true);
-              const certData = {
-                data: buildCert(cert),
-                issuerCert: {
-                  data: buildCert(cert.issuerCertificate),
-                },
-              };
-              resolve({ hostname, certData });
-            }),
-          ),
-        ),
-    );
-
-    Promise.all(certPromises).then(objects => {
-      objects.forEach(({hostname, certData}) => {
-        assert(certutils.verifyPinning(hostname, certData));
+  it('verifies all hostnames', (done) => {
+    const certPromises = goodURLs.map((hostname) => {
+      return new Promise((resolve) => {
+        https.get(`https://${hostname}`).on('socket', (socket) => {
+          socket.on('secureConnect', () => {
+            const cert = socket.getPeerCertificate(true);
+            const certData = {
+              data: buildCert(cert),
+              issuerCert: {
+                data: buildCert(cert.issuerCertificate),
+              },
+            };
+            resolve({certData, hostname});
+          });
+        });
       });
-      done();
     });
+
+    Promise.all(certPromises)
+      .then((objects) => {
+        objects.forEach(({hostname, certData}) => assert(certutils.verifyPinning(hostname, certData)));
+        done();
+      });
   });
 });
