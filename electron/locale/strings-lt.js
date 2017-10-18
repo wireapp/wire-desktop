@@ -70,5 +70,7 @@ string.unreadMessages = 'Neskaityta žinutė';
 string.wrapperAddAccount = 'Pridėti paskyrą';
 string.wrapperCreateTeam = 'Sukurti komanda';
 string.wrapperLogOut = 'Atsijungti';
+string.wrapperManageTeam = 'Tvarkyti komandą';
+string.wrapperRemoveAccount = 'Šalinti paskyrą';
 
 module.exports = string;

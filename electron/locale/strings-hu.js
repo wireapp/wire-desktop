@@ -70,5 +70,7 @@ string.unreadMessages = 'Olvasatlan üzenet';
 string.wrapperAddAccount = 'Fiók hozzáadása';
 string.wrapperCreateTeam = 'Csapat létrehozása';
 string.wrapperLogOut = 'Kijelentkezés';
+string.wrapperManageTeam = 'Csapat kezelése';
+string.wrapperRemoveAccount = 'Fiók eltávolítása';
 
 module.exports = string;
