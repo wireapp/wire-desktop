@@ -52,15 +52,15 @@ describe('cert pinning', () => {
     goodURLs.forEach(hostname => assert(certutils.hostnameShouldBePinned(hostname)));
   });
 
-  it(`doesn't pin other hostnames`, () => {
+  it('does not pin other hostnames', () => {
     badURLs.forEach(hostname => assert.equal(false, certutils.hostnameShouldBePinned(hostname)));
   });
 
-  it('verifies all hostnames', done => {
+  it('verifies all hostnames', (done) => {
     const certPromises = goodURLs.map(
       hostname =>
-        new Promise(resolve =>
-          https.get(`https://${hostname}`).on('socket', socket =>
+        new Promise((resolve) => {
+          https.get(`https://${hostname}`).on('socket', (socket) => {
             socket.on('secureConnect', () => {
               const cert = socket.getPeerCertificate(true);
               const certData = {
@@ -69,10 +69,10 @@ describe('cert pinning', () => {
                   data: buildCert(cert.issuerCertificate),
                 },
               };
-              resolve({ hostname, certData });
+              resolve({certData, hostname});
             }),
-          ),
-        ),
+          }),
+        }),
     );
 
     Promise.all(certPromises).then(objects => {
