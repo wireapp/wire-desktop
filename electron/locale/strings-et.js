@@ -70,5 +70,7 @@ string.unreadMessages = 'Lugemata sõnum';
 string.wrapperAddAccount = 'Lisa konto';
 string.wrapperCreateTeam = 'Loo tiimikonto';
 string.wrapperLogOut = 'Logi välja';
+string.wrapperManageTeam = 'Halda meeskonda';
+string.wrapperRemoveAccount = 'Eemalda konto';
 
 module.exports = string;
