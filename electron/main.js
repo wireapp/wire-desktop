@@ -197,21 +197,21 @@ const relaunchApp = () => {
 ///////////////////////////////////////////////////////////////////////////////
 const showMainWindow = () => {
   main = new BrowserWindow({
+    autoHideMenuBar: !settings.restore('showMenu', true),
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    icon: ICON_PATH,
+    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
+    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    show: false,
     title: config.NAME,
     titleBarStyle: 'hidden-inset',
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-    autoHideMenuBar: !settings.restore('showMenu', true),
-    icon: ICON_PATH,
-    show: false,
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      webviewTag: true
-    }
+      webviewTag: true,
+    },
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
   if (settings.restore('fullscreen', false)) {
@@ -298,17 +298,17 @@ const showMainWindow = () => {
 const showAboutWindow = () => {
   if (!about) {
     about = new BrowserWindow({
-      title: config.NAME,
-      width: config.WINDOW.ABOUT.WIDTH,
+      fullscreen: false,
       height: config.WINDOW.ABOUT.HEIGHT,
       resizable: false,
-      fullscreen: false
+      title: config.NAME,
+      width: config.WINDOW.ABOUT.WIDTH,
     });
     about.setMenuBarVisibility(false);
     about.loadURL(ABOUT_HTML);
     about.webContents.on('dom-ready', () => {
       about.webContents.send('about-loaded', {
-        webappVersion: webappVersion
+        webappVersion: webappVersion,
       });
     });
 
@@ -378,7 +378,7 @@ fs.readdir(LOG_DIR, (error, contents) => {
     .filter(file => {
       try {
         return fs.statSync(file).isFile();
-      } catch (error) {
+      } catch (err) {
         return undefined;
       }
     })
@@ -476,51 +476,6 @@ class ElectronWrapperInit {
           break;
       }
     });
-  }
-}
-
-class BrowserWindowInit {
-  constructor() {
-    this.debug = debug('BrowserWindowInit');
-    this.quitting = false;
-    this.accessToken = false;
-
-    // Start the browser window
-    this.browserWindow = new BrowserWindow({
-      title: config.NAME,
-      titleBarStyle: 'hidden-inset',
-
-      width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-      height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-      minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-      minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-
-      autoHideMenuBar: !settings.restore('showMenu', true),
-      icon: ICON_PATH,
-      show: false,
-      backgroundColor: '#fff',
-
-      webPreferences: {
-        backgroundThrottling: false,
-        nodeIntegration: false,
-        preload: PRELOAD_JS,
-        webviewTag: true,
-        allowRunningInsecureContent: false,
-        experimentalFeatures: true,
-        webgl: false
-      }
-    });
-
-    // Show the renderer
-    const envUrl = encodeURIComponent(`${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`);
-    main.loadURL(`file://${path.join(APP_PATH, 'renderer', 'index.html')}?env=${envUrl}`);
-
-    // Restore previous window size
-    if (settings.restore('fullscreen', false)) {
-      this.browserWindow.setFullScreen(true);
-    } else {
-      this.browserWindow.setBounds(settings.restore('bounds', this.browserWindow.getBounds()));
-    }
   }
 }
 
