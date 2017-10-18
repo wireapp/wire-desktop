@@ -131,7 +131,7 @@ const conversationTemplate = {
 };
 
 const showWireTemplate = {
-  accelerator: 'CmdOrCtrl+1',
+  accelerator: 'CmdOrCtrl+0',
   click: () => getPrimaryWindow().show(),
   label: config.NAME,
 };

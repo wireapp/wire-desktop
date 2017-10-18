@@ -17,8 +17,7 @@
  *
  */
 
-
-const {ipcRenderer, webFrame} = require('electron');
+const { ipcRenderer, webFrame } = require('electron');
 const environment = require('./environment');
 const locale = require('../locale/locale');
 
@@ -27,7 +26,10 @@ webFrame.setZoomLevelLimits(1, 1);
 window.locStrings = locale[locale.getCurrent()];
 window.locStringsDefault = locale['en'];
 
+window.isMac = environment.platform.IS_MAC_OS;
+
 const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
+const getWebviewById = id => document.querySelector(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('system-menu', (event, action) => {
@@ -39,12 +41,19 @@ const subscribeToMainProcessEvents = () => {
 };
 
 const setupIpcInterface = () => {
-  window.sendBadgeCount = (count) => {
+  window.sendBadgeCount = count => {
     ipcRenderer.send('badge-count', count);
   };
 
   window.sendDeleteAccount = (accountID, sessionID) => {
     ipcRenderer.send('delete-account-data', accountID, sessionID);
+  };
+
+  window.sendLogoutAccount = accountId => {
+    const accountWebview = getWebviewById(accountId);
+    if (accountWebview) {
+      accountWebview.send('sign-out');
+    }
   };
 };
 

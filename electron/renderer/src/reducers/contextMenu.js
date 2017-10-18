@@ -17,24 +17,39 @@
  *
  */
 
-const initialState = {
-  accountContextPosition: { x: 0, y: 0 },
-  isAccountContextMenuVisible: false,
+const defaultState = {
+  accountId: '',
+  isAddAccountMenuVisible: false,
+  isAtLeastAdmin: false,
+  isEditAccountMenuVisible: false,
+  lifecycle: false,
+  position: { x: 0, y: 0 },
+  sessionId: '',
 };
 
-const accounts = (state = initialState, action) => {
+const accounts = (state = defaultState, action) => {
   switch (action.type) {
-    case 'SET_ACCOUNT_VISIBILITY':
+    case 'HIDE_CONTEXT_MENUS':
       return {
-        ...state,
-        accountContextPosition: action.payload.position,
-        isAccountContextMenuVisible: action.payload.visible,
+        ...defaultState,
       };
-    case 'TOGGLE_ACCOUNT_VISIBILITY':
+    case 'TOGGLE_ADD_ACCOUNT_VISIBILITY':
       return {
         ...state,
-        accountContextPosition: action.payload.position,
-        isAccountContextMenuVisible: !state.isAccountContextMenuVisible,
+        isAddAccountMenuVisible: !state.isAddAccountMenuVisible,
+        isEditAccountMenuVisible: false,
+        position: action.payload.position,
+      };
+    case 'TOGGLE_EDIT_ACCOUNT_VISIBILITY':
+      return {
+        ...state,
+        accountId: action.payload.accountId,
+        isAddAccountMenuVisible: false,
+        isAtLeastAdmin: action.payload.isAtLeastAdmin,
+        isEditAccountMenuVisible: !state.isEditAccountMenuVisible,
+        lifecycle: action.payload.lifecycle,
+        position: action.payload.position,
+        sessionId: action.payload.sessionId,
       };
     default:
       return state;

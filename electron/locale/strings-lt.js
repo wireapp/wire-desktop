@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Laidos';
 string.aboutUpdate = 'Kaip veikia Wire atnaujinimai';
 string.aboutVersion = 'Versija';
@@ -69,6 +67,8 @@ string.trayQuit = 'Baigti';
 
 string.unreadMessages = 'Neskaityta žinutė';
 
+string.wrapperAddAccount = 'Pridėti paskyrą';
 string.wrapperCreateTeam = 'Sukurti komanda';
+string.wrapperLogOut = 'Atsijungti';
 
 module.exports = string;

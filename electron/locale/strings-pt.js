@@ -2,8 +2,6 @@
 
 let string = {};
 
-
-
 string.aboutReleases = 'Versões';
 string.aboutUpdate = 'Como atualizações do Wire funcionam';
 string.aboutVersion = 'Versão';
@@ -69,5 +67,8 @@ string.trayQuit = 'Sair';
 
 string.unreadMessages = 'Mensagem não lida';
 
+string.wrapperAddAccount = 'Adicionar conta';
+string.wrapperCreateTeam = 'Criar Equipe';
+string.wrapperLogOut = 'Sair';
 
 module.exports = string;

@@ -17,23 +17,22 @@
  *
  */
 
+import React from 'react';
 import { connect } from 'react-redux';
+import { getText } from '../../lib/locale';
+import ContextMenu from './ContextMenu';
+import ContextMenuItem from './ContextMenuItem';
+import { addAccountWithSession } from '../../actions/';
 
-import {
-  abortAccountCreation,
-  switchAccount,
-  updateAccountBadgeCount,
-  updateAccountData,
-  updateAccountLifecycle,
-} from '../actions';
-import Webviews from '../components/Webviews';
+function AddAccountMenu({ ...connected }) {
+  return (
+    <ContextMenu>
+      <ContextMenuItem onClick={() => window.open('https://wire.com/create-team/?pk_campaign=client&pk_kwd=desktop')}>
+        {getText('wrapperCreateTeam')}
+      </ContextMenuItem>
+      <ContextMenuItem onClick={connected.addAccountWithSession}>{getText('wrapperAddAccount')}</ContextMenuItem>
+    </ContextMenu>
+  );
+}
 
-const WebviewsContainer = connect(state => ({ accounts: state.accounts }), {
-  abortAccountCreation,
-  switchAccount,
-  updateAccountBadgeCount,
-  updateAccountData,
-  updateAccountLifecycle,
-})(Webviews);
-
-export default WebviewsContainer;
+export default connect(null, { addAccountWithSession })(AddAccountMenu);

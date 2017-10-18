@@ -45,17 +45,21 @@ const store = createStore(
   applyMiddleware(...middleware)
 );
 
-store.subscribe(throttle(() => {
-  saveState({
-    accounts: store.getState().accounts.map((account) => {
-      // no need to store badge count
-      return {
-        ...account,
-        badgeCount: 0,
-      };
-    }),
-  });
-}), 500);
+store.subscribe(
+  throttle(() => {
+    saveState({
+      accounts: store.getState().accounts.map(account => {
+        // no need to store badge count
+        return {
+          ...account,
+          badgeCount: 0,
+          lifecycle: undefined,
+        };
+      }),
+    });
+  }),
+  500
+);
 
 render(
   <Provider store={store}>
