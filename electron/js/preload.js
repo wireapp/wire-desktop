@@ -46,6 +46,8 @@ const setupIpcInterface = () => {
   };
 
   window.sendDeleteAccount = (accountID, sessionID) => {
+    const accountWebview = getWebviewById(accountID);
+    accountWebview.getWebContents().session.clearStorageData();
     ipcRenderer.send('delete-account-data', accountID, sessionID);
   };
 

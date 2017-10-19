@@ -24,7 +24,7 @@ const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const { app, BrowserWindow, globalShortcut, ipcMain, Menu, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -207,7 +207,7 @@ const showMainWindow = () => {
     titleBarStyle: 'hidden-inset',
     webPreferences: {
       backgroundThrottling: false,
-      nodeIntegration: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
       webviewTag: true,
     },
@@ -357,14 +357,6 @@ app.on('ready', () => {
   Menu.setApplicationMenu(appMenu);
   tray.createTrayIcon();
   showMainWindow();
-
-  const shortcut = globalShortcut.register('CommandOrControl+0', () => {
-    main.show();
-  });
-
-  if (!shortcut) {
-    console.log('Registration failed.');
-  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////

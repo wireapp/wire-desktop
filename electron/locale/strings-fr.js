@@ -70,5 +70,7 @@ string.unreadMessages = 'Message non lu';
 string.wrapperAddAccount = 'Ajouter un compte';
 string.wrapperCreateTeam = 'Créer une équipe';
 string.wrapperLogOut = 'Déconnexion';
+string.wrapperManageTeam = 'Gérer l’équipe';
+string.wrapperRemoveAccount = 'Supprimer le compte ';
 
 module.exports = string;
