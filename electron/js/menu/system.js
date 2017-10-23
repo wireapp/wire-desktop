@@ -119,7 +119,7 @@ const conversationTemplate = {
       i18n: 'menuArchive',
     },
     {
-      accelerator: 'Alt+CmdOrCtrl+M',
+      accelerator: 'CmdOrCtrl+Alt+M',
       click: () => sendAction('conversation-silence'),
       i18n: 'menuMute',
     },
