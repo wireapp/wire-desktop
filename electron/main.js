@@ -80,9 +80,15 @@ if (environment.app.IS_DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
-if (argv.portable) {
-  const EXEC_PATH = process.env.APPIMAGE || process.execPath;
-  const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+if (argv.portable || argv.user_data_dir) {
+  let USER_PATH;
+  if (argv.user_data_dir) {
+    USER_PATH = argv.user_data_dir;
+  } else {
+    let EXEC_PATH = process.env.APPIMAGE || process.execPath;
+    USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+  }
+  console.log("Saving user data to " + USER_PATH);
   app.setPath('userData', USER_PATH);
 }
 
