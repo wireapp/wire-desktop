@@ -80,10 +80,10 @@ if (environment.app.IS_DEVELOPMENT) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
-if (argv.portable || argv.data-path) {
+if (argv.portable || argv.data_path) {
   let USER_PATH;
-  if (argv.data-path) {
-    USER_PATH = argv.data-path;
+  if (argv.data_path) {
+    USER_PATH = argv.data_path;
   } else {
     let EXEC_PATH = process.env.APPIMAGE || process.execPath;
     USER_PATH = path.join(EXEC_PATH, '..', 'Data');
