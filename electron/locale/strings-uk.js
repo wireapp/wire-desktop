@@ -67,6 +67,8 @@ string.trayQuit = 'Вийти';
 
 string.unreadMessages = 'Непрочитане повідомлення';
 
+string.wrapperAddAccount = 'Додати акаунт';
+string.wrapperCreateTeam = 'Створити команду';
 string.wrapperLogOut = 'Вийти';
 string.wrapperManageTeam = 'Керування командою';
 string.wrapperRemoveAccount = 'Видалити акаунт';

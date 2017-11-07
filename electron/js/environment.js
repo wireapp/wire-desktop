@@ -41,7 +41,7 @@ const URL_SUPPORT = 'https://support.wire.com';
 
 const URL_WEBSITE = {
   PRODUCTION: 'https://wire.com',
-  STAGING: 'https://kalina.wire.com',
+  STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
 const URL_WEBAPP = {
