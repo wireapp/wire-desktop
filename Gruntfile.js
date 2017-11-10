@@ -25,6 +25,15 @@ const ELECTRON_PACKAGE_JSON = 'electron/package.json';
 const PACKAGE_JSON = 'package.json';
 const INFO_JSON = 'info.json';
 
+const LINUX_DESKTOP = {
+  "Version": "1.1",
+  "Name": "Wire",
+  "GenericName": "Secure messenger",
+  "Categories": "Network;InstantMessaging;Chat;VideoConference",
+  "Keywords": "chat;encrypt;e2e;messenger;videocall",
+  "StartupWMClass": "Wire"
+};
+
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
   const path = require('path');
@@ -146,10 +155,7 @@ module.exports = function(grunt) {
             executableName: 'wire-desktop',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
-            desktop: {
-              "StartupWMClass": "Wire"
-            },
-            category: 'Network',
+            desktop: LINUX_DESKTOP,
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
         },
@@ -164,10 +170,7 @@ module.exports = function(grunt) {
             executableName: 'wire-desktop-internal',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
-            desktop: {
-              "StartupWMClass": "Wire"
-            },
-            category: 'Network',
+            desktop: LINUX_DESKTOP,
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
         },
@@ -181,9 +184,7 @@ module.exports = function(grunt) {
           linux: {
             fpm: ['--name', 'wire-desktop'],
             executableName: 'wire-desktop',
-            desktop: {
-              "StartupWMClass": "Wire"
-            },
+            desktop: LINUX_DESKTOP,
           },
         },
       },
