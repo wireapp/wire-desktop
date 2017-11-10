@@ -21,7 +21,6 @@ const {remote, ipcRenderer} = require('electron');
 
 ipcRenderer.once('locale-render-text', (sender, labels) => {
   for (const label in labels) {
-    console.log('set ' + label);
     document.querySelector(`[data-string="${label}"]`).innerHTML = labels[label];
   }
 });

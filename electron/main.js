@@ -303,10 +303,6 @@ const showMainWindow = () => {
 
 const showAboutWindow = () => {
   if (!about) {
-
-    // Prevent any kind of navigation
-    // will-navigate is broken with sandboxed env, intercepting requests instead
-    // see https://github.com/electron/electron/issues/8841
     about = new BrowserWindow({
       alwaysOnTop: true,
       fullscreen: false,
@@ -378,7 +374,6 @@ const showAboutWindow = () => {
 
     about.loadURL(ABOUT_HTML);
 
-    // Send version
     about.webContents.on('dom-ready', () => {
       about.webContents.send('about-loaded', {
         webappVersion: webappVersion,
