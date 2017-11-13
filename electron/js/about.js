@@ -17,7 +17,7 @@
  *
  */
 
-const {remote, ipcRenderer} = require('electron');
+const {ipcRenderer} = require('electron');
 
 ipcRenderer.once('locale-render-text', (sender, labels) => {
   for (const label in labels) {
