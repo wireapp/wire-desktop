@@ -24,7 +24,7 @@ const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const { session, app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
+const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -305,6 +305,7 @@ const showAboutWindow = () => {
   if (!about) {
     about = new BrowserWindow({
       alwaysOnTop: true,
+      backgroundColor: '#ececec',
       fullscreen: false,
       height: config.WINDOW.ABOUT.HEIGHT,
       maximizable: false,
@@ -312,17 +313,16 @@ const showAboutWindow = () => {
       resizable: false,
       show: false,
       title: config.NAME,
-      width: config.WINDOW.ABOUT.WIDTH,
-      backgroundColor: '#ececec',
       webPreferences: {
-        session: session.fromPartition('about-window'),
         javascript: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
-        preload: path.join(APP_PATH, 'js', 'about.js'),
+        preload: path.join(APP_PATH, 'js', 'preload-about.js'),
         sandbox: true,
+        session: session.fromPartition('about-window'),
         webviewTag: false,
       },
+      width: config.WINDOW.ABOUT.WIDTH,
     });
     about.setMenuBarVisibility(false);
 
