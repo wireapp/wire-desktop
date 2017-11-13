@@ -350,15 +350,15 @@ const showAboutWindow = () => {
     });
 
     // Locales
-    ipcMain.on('locale-get-text', (event, labels) => {
+    ipcMain.on('about-locale-values', (event, labels) => {
       if (event.sender.id !== about.webContents.id) {
         return;
       }
       const resultLabels = {};
-      for (let label of labels) {
+      for (const label of labels) {
         resultLabels[label] = locale.getText(label);
       }
-      event.sender.send('locale-render-text', resultLabels);
+      event.sender.send('about-locale-render', resultLabels);
     });
 
     // Close window via escape

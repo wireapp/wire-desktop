@@ -19,7 +19,7 @@
 
 const {ipcRenderer} = require('electron');
 
-ipcRenderer.once('locale-render-text', (sender, labels) => {
+ipcRenderer.once('about-locale-render', (sender, labels) => {
   for (const label in labels) {
     document.querySelector(`[data-string="${label}"]`).innerHTML = labels[label];
   }
@@ -45,5 +45,5 @@ ipcRenderer.once('about-loaded', (sender, details) => {
   for (const label of document.querySelectorAll('[data-string]')) {
     labels.push(label.dataset.string);
   }
-  ipcRenderer.send('locale-get-text', labels);
+  ipcRenderer.send('about-locale-values', labels);
 });
