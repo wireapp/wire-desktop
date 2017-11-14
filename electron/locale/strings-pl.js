@@ -67,6 +67,10 @@ string.trayQuit = 'Zamknij';
 
 string.unreadMessages = 'Nieprzeczytana wiadomość';
 
+string.wrapperAddAccount = 'Dodaj konto';
+string.wrapperCreateTeam = 'Utwórz nowy zespół';
 string.wrapperLogOut = 'Wyloguj';
+string.wrapperManageTeam = 'Zarządzaj zespołem';
+string.wrapperRemoveAccount = 'Usuń konto';
 
 module.exports = string;

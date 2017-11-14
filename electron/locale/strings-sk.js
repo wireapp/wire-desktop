@@ -70,5 +70,7 @@ string.unreadMessages = 'Neprečítané správy';
 string.wrapperAddAccount = 'Pridať účet';
 string.wrapperCreateTeam = 'Vytvoriť tím';
 string.wrapperLogOut = 'Odhlásiť';
+string.wrapperManageTeam = 'Správa tímu';
+string.wrapperRemoveAccount = 'Odstrániť účet';
 
 module.exports = string;

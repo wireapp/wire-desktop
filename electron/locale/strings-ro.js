@@ -70,5 +70,7 @@ string.unreadMessages = 'Mesaj necitit';
 string.wrapperAddAccount = 'Adaugă un cont';
 string.wrapperCreateTeam = 'Creează o echipă';
 string.wrapperLogOut = 'Deconectare';
+string.wrapperManageTeam = 'Gestionează echipa';
+string.wrapperRemoveAccount = 'Elimină contul';
 
 module.exports = string;
