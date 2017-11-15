@@ -24,12 +24,17 @@ const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
+const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
 
 // Paths
 const APP_PATH = app.getAppPath();
+
 // Local files defines
 const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
+const ABOUT_WINDOW_WHITELIST = [ABOUT_HTML,
+  `file://${path.join(APP_PATH, 'img', 'wire.256.png')}`,
+  `file://${path.join(APP_PATH, 'css', 'about.css')}`
+];
 const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
@@ -54,6 +59,7 @@ const windowManager = require('./js/window-manager');
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = environment.web.get_url_webapp(argv.env);
+const pkg = require('./package.json');
 
 // Icon
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -198,7 +204,7 @@ const relaunchApp = () => {
 const showMainWindow = () => {
   main = new BrowserWindow({
     title: config.NAME,
-    titleBarStyle: 'hidden-inset',
+    titleBarStyle: 'hiddenInset',
     width: config.WINDOW.MAIN.DEFAULT_WIDTH,
     height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
     minWidth: config.WINDOW.MAIN.MIN_WIDTH,
@@ -298,22 +304,82 @@ const showMainWindow = () => {
 const showAboutWindow = () => {
   if (!about) {
     about = new BrowserWindow({
-      title: config.NAME,
-      width: config.WINDOW.ABOUT.WIDTH,
+      alwaysOnTop: true,
+      backgroundColor: '#ececec',
+      fullscreen: false,
       height: config.WINDOW.ABOUT.HEIGHT,
+      maximizable: false,
+      minimizable: false,
       resizable: false,
-      fullscreen: false
+      show: false,
+      title: config.NAME,
+      webPreferences: {
+        javascript: false,
+        nodeIntegration: false,
+        nodeIntegrationInWorker: false,
+        preload: path.join(APP_PATH, 'js', 'preload-about.js'),
+        sandbox: true,
+        session: session.fromPartition('about-window'),
+        webviewTag: false,
+      },
+      width: config.WINDOW.ABOUT.WIDTH,
     });
     about.setMenuBarVisibility(false);
-    about.loadURL(ABOUT_HTML);
-    about.webContents.on('dom-ready', () => {
-      about.webContents.send('about-loaded', {
-        webappVersion: webappVersion
-      });
+
+    // Prevent any kind of navigation
+    // will-navigate is broken with sandboxed env, intercepting requests instead
+    // see https://github.com/electron/electron/issues/8841
+    about.webContents.session.webRequest.onBeforeRequest({
+      urls: ['*'],
+    }, (details, callback) => {
+      const url = details.url;
+
+      // Only allow those URLs to be opened within the window
+      if (ABOUT_WINDOW_WHITELIST.includes(url)) {
+        return callback({cancel: false});
+      }
+
+      // Open HTTPS links in browser instead
+      if (url.startsWith('https://')) {
+        shell.openExternal(url);
+      } else {
+        console.log('Attempt to open URL in window prevented, url: %s', url);
+      }
+
+      callback({redirectURL: ABOUT_HTML});
+    });
+
+    // Locales
+    ipcMain.on('about-locale-values', (event, labels) => {
+      if (event.sender.id !== about.webContents.id) {
+        return;
+      }
+      const resultLabels = {};
+      for (const label of labels) {
+        resultLabels[label] = locale.getText(label);
+      }
+      event.sender.send('about-locale-render', resultLabels);
+    });
+
+    // Close window via escape
+    about.webContents.on('before-input-event', (event, input) => {
+      if (input.type === 'keyDown' && input.key === 'Escape') {
+        about.close();
+      }
     });
 
     about.on('closed', () => {
       about = undefined;
+    });
+
+    about.loadURL(ABOUT_HTML);
+
+    about.webContents.on('dom-ready', () => {
+      about.webContents.send('about-loaded', {
+        webappVersion: webappVersion,
+        productName: pkg.productName,
+        electronVersion: pkg.version,
+      });
     });
   }
   about.show();
@@ -470,6 +536,5 @@ class ElectronWrapperInit {
     });
   }
 }
-
 
 new ElectronWrapperInit().run();

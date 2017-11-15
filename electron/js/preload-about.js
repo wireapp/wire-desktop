@@ -17,37 +17,33 @@
  *
  */
 
+const {ipcRenderer} = require('electron');
 
-const {remote, ipcRenderer, shell} = require('electron');
-const locale = require('./../locale/locale');
-const pkg = require('./../package.json');
-
-const labels = document.getElementsByClassName('text');
-for (const label of labels) {
-  label.innerHTML = locale.getText(label.dataset.string);
-}
-
-document.getElementById('name').innerHTML = pkg.productName;
-document.getElementById('version').innerHTML = pkg.version || 'Development';
-
-window.addEventListener('keydown', (event) => {
-  if (event.keyCode === 27) {
-    remote.getCurrentWindow().close();
+ipcRenderer.once('about-locale-render', (sender, labels) => {
+  for (const label in labels) {
+    document.querySelector(`[data-string="${label}"]`).innerHTML = labels[label];
   }
 });
 
-const links = document.getElementsByTagName('a');
-for (const link of links) {
-  link.onclick = function() {
-    shell.openExternal(link.href);
-    return false;
-  };
-}
-
 ipcRenderer.once('about-loaded', (sender, details) => {
+  document.getElementById('name').innerHTML = details.productName;
+
+  if (details.electronVersion) {
+    document.getElementById('version').innerHTML = details.electronVersion;
+  } else {
+    document.getElementById('version').innerHTML = 'Development';
+  }
+
   if (details.webappVersion) {
     document.getElementById('webappVersion').innerHTML = details.webappVersion;
   } else {
     document.getElementById('webappVersion').parentNode.remove();
   }
+
+  // Get locales
+  const labels = [];
+  for (const label of document.querySelectorAll('[data-string]')) {
+    labels.push(label.dataset.string);
+  }
+  ipcRenderer.send('about-locale-values', labels);
 });
