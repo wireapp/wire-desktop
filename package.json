@@ -52,7 +52,7 @@
     "electron-packager": "9.1.0",
     "electron-winstaller": "2.5.2",
     "electron": "1.7.9",
-    "eslint-plugin-react": "7.4.0",
+    "eslint-plugin-react": "7.5.0",
     "eslint": "4.11.0",
     "grunt-contrib-clean": "1.1.0",
     "grunt-git": "1.0.9",
