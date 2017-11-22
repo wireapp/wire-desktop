@@ -305,7 +305,7 @@ const showAboutWindow = () => {
   if (!about) {
     about = new BrowserWindow({
       alwaysOnTop: true,
-      backgroundColor: '#ececec',
+      backgroundColor: '#fff',
       fullscreen: false,
       height: config.WINDOW.ABOUT.HEIGHT,
       maximizable: false,
