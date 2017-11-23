@@ -43,6 +43,7 @@ const sk = require('./strings-sk');
 const sl = require('./strings-sl');
 const tr = require('./strings-tr');
 const uk = require('./strings-uk');
+const zh = require('./strings-zh');
 
 const SUPPORTED_LANGUAGES = {
   'en': 'English',
@@ -67,6 +68,7 @@ const SUPPORTED_LANGUAGES = {
   'fi': 'Suomi',
   'tr': 'Türkçe',
   'uk': 'Українська',
+  'zh': '简体中文',
 };
 
 let current;
@@ -119,6 +121,7 @@ module.exports = {
   sl: sl,
   tr: tr,
   uk: uk,
+  zh: zh,
   getCurrent: getCurrent,
   getText: getText,
   setLocale: setLocale,

@@ -67,6 +67,7 @@ string.trayQuit = 'Çık';
 
 string.unreadMessages = 'Okunmamış mesaj';
 
+string.wrapperAddAccount = 'Hesap ekle';
 string.wrapperLogOut = 'Çıkış Yap';
 
 module.exports = string;
