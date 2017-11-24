@@ -210,6 +210,7 @@ const showMainWindow = () => {
     minWidth: config.WINDOW.MAIN.MIN_WIDTH,
     minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
     autoHideMenuBar: !settings.restore('showMenu', true),
+    backgroundColor: '#f7f8fa',
     icon: ICON_PATH,
     show: false,
     webPreferences: {
