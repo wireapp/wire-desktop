@@ -119,7 +119,7 @@ window.addEventListener('contextmenu', (event) => {
     imageMenu.popup(remote.getCurrentWindow());
   } else if (element.nodeName === 'A') {
     event.preventDefault();
-    copyContext = element.href;
+    copyContext = element.href.replace(/^mailto:/, '');
     defaultMenu.popup(remote.getCurrentWindow());
   } else if (element.classList.contains('text')) {
     event.preventDefault();
