@@ -56,7 +56,6 @@
     "eslint": "4.12.1",
     "grunt-contrib-clean": "1.1.0",
     "grunt-git": "1.0.9",
-    "grunt-github-changes": "0.1.0",
     "grunt-gitinfo": "0.1.8",
     "grunt": "1.0.1",
     "husky": "0.14.3",
