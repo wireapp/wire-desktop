@@ -239,18 +239,6 @@ module.exports = function(grunt) {
         },
       },
     },
-
-    githubChanges: {
-      release: {
-        options: {
-          auth: true,
-          onlyPulls: true,
-          useCommitBody: true,
-          owner: 'wireapp',
-          repository: 'wire-desktop',
-        },
-      },
-    },
   });
 
   /**
