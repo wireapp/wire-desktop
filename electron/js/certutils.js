@@ -116,7 +116,7 @@ module.exports = {
           );
 
           return arr;
-        }, []).every(result => result !== false);
+        }, []).every(value => value !== false);
 
         if (errorMessages.length > 0) {
           result.errorMessage = errorMessages.join(' ');
