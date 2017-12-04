@@ -77,19 +77,51 @@ module.exports = {
 
     const result = {};
 
+    let errorMessages = [];
+
     for (const pin of pins) {
       const {url, publicKeyInfo = [], issuerRootPubkeys = []} = pin;
+
       if (url.test(hostname.toLowerCase().trim())) {
-        result.verifiedIssuerRootPubkeys = (issuerRootPubkeys.length > 0) ? issuerRootPubkeys.some((pubkey) => rs.X509.verifySignature(issuerCertHex, rs.KEYUTIL.getKey(pubkey))) : undefined;
+        if (issuerRootPubkeys.length > 0) {
+          result.verifiedIssuerRootPubkeys = issuerRootPubkeys.some(pubkey => rs.X509.verifySignature(issuerCertHex, rs.KEYUTIL.getKey(pubkey)));
+          if (!result.verifiedIssuerRootPubkeys) {
+            errorMessages.push(`None of the issuer root public key signatures of "${issuerRootPubkeys}" could be verified.`);
+          }
+        }
+
         result.verifiedPublicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
           const {fingerprints = [], algorithmID = '', algorithmParam = null} = pubkey;
+
+          const fingerprintCheck = (fingerprints.length > 0) ? fingerprints.some(fingerprint => fingerprint === publicKeyFingerprint) : undefined;
+          const algorithmIDCheck = algorithmID === publicKey.algoid;
+          const algorithmParamCheck = algorithmParam === publicKey.algparam;
+
+          if (!fingerprintCheck) {
+            errorMessages.push(`None of the public key fingerprints of "${fingerprints}" could be verified with "${publicKeyFingerprint}".`);
+          }
+
+          if (!algorithmIDCheck) {
+            errorMessages.push(`Algorithm ID "${algorithmID}" could not be verified with "${publicKey.algoid}".`);
+          }
+
+          if (!algorithmParamCheck) {
+            errorMessages.push(`Algorithm parameter "${algorithmParam}" could not be verified with "${publicKey.algparam}".`);
+          }
+
           arr.push(
-            (fingerprints.length > 0) ? fingerprints.some((fingerprint) => fingerprint === publicKeyFingerprint) : undefined,
-            algorithmID === publicKey.algoid,
-            algorithmParam === publicKey.algparam
+            fingerprintCheck,
+            algorithmIDCheck,
+            algorithmParamCheck
           );
+
           return arr;
-        }, []).every((val) => val !== false);
+        }, []).every(result => result !== false);
+
+        if (errorMessages.length > 0) {
+          result.errorMessage = errorMessages.join(' ');
+        }
+
         break;
       }
     }

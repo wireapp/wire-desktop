@@ -510,7 +510,7 @@ class ElectronWrapperInit {
           });
 
           contents.session.setCertificateVerifyProc((request, cb) => {
-            const { hostname = '', certificate = {}, error } = request;
+            const {hostname = '', certificate = {}, error} = request;
 
             if (typeof error !== 'undefined') {
               console.error('setCertificateVerifyProc', error);
@@ -520,9 +520,10 @@ class ElectronWrapperInit {
 
             if (certutils.hostnameShouldBePinned(hostname)) {
               const pinningResults = certutils.verifyPinning(hostname, certificate);
+
               for (const result of Object.values(pinningResults)) {
                 if (result === false) {
-                  console.error(`Certutils verification failed for ${hostname}: ${result} is false`);
+                  console.error(`Certutils verification failed for "${hostname}": ${pinningResults.errorMessage}`);
                   main.loadURL(CERT_ERR_HTML);
                   return cb(-2);
                 }
