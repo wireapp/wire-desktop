@@ -116,7 +116,7 @@ module.exports = {
           );
 
           return arr;
-        }, []).every(value => value !== false);
+        }, []).every(value => Boolean(value));
 
         if (errorMessages.length > 0) {
           result.errorMessage = errorMessages.join('\n');
