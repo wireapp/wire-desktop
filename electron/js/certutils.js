@@ -86,27 +86,27 @@ module.exports = {
         if (issuerRootPubkeys.length > 0) {
           result.verifiedIssuerRootPubkeys = issuerRootPubkeys.some(pubkey => rs.X509.verifySignature(issuerCertHex, rs.KEYUTIL.getKey(pubkey)));
           if (!result.verifiedIssuerRootPubkeys) {
-            errorMessages.push(`None of the issuer root public key signatures of "${issuerRootPubkeys}" could be verified.`);
+            errorMessages.push(`Issuer root public key signatures: none of "${issuerRootPubkeys.join(', ')}" could be verified.`);
           }
         }
 
         result.verifiedPublicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
-          const {fingerprints = [], algorithmID = '', algorithmParam = null} = pubkey;
+          const {fingerprints: knownFingerprints = [], algorithmID: knownAlgorithmID = '', algorithmParam: knownAlgorithmParam = null} = pubkey;
 
-          const fingerprintCheck = (fingerprints.length > 0) ? fingerprints.some(fingerprint => fingerprint === publicKeyFingerprint) : undefined;
-          const algorithmIDCheck = algorithmID === publicKey.algoid;
-          const algorithmParamCheck = algorithmParam === publicKey.algparam;
+          const fingerprintCheck = (knownFingerprints.length > 0) ? knownFingerprints.some(knownFingerprint => knownFingerprint === publicKeyFingerprint) : undefined;
+          const algorithmIDCheck = knownAlgorithmID === publicKey.algoid;
+          const algorithmParamCheck = knownAlgorithmParam === publicKey.algparam;
 
           if (!fingerprintCheck) {
-            errorMessages.push(`None of the public key fingerprints of "${fingerprints}" could be verified with "${publicKeyFingerprint}".`);
+            errorMessages.push(`Public key fingerprints: "${publicKeyFingerprint}" could not be verified with any of the known fingerprints "${knownFingerprints.join(', ')}".`);
           }
 
           if (!algorithmIDCheck) {
-            errorMessages.push(`Algorithm ID "${algorithmID}" could not be verified with "${publicKey.algoid}".`);
+            errorMessages.push(`Algorithm ID: "${publicKey.algoid}" could not be verified with the known ID "${knownAlgorithmID}".`);
           }
 
           if (!algorithmParamCheck) {
-            errorMessages.push(`Algorithm parameter "${algorithmParam}" could not be verified with "${publicKey.algparam}".`);
+            errorMessages.push(`Algorithm parameter: "${publicKey.algparam}" could not be verified with the known parameter "${knownAlgorithmParam}".`);
           }
 
           arr.push(
@@ -119,7 +119,7 @@ module.exports = {
         }, []).every(value => value !== false);
 
         if (errorMessages.length > 0) {
-          result.errorMessage = errorMessages.join(' ');
+          result.errorMessage = errorMessages.join('\n');
         }
 
         break;

@@ -523,7 +523,7 @@ class ElectronWrapperInit {
 
               for (const result of Object.values(pinningResults)) {
                 if (result === false) {
-                  console.error(`Certutils verification failed for "${hostname}": ${pinningResults.errorMessage}`);
+                  console.error(`Certutils verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
                   main.loadURL(CERT_ERR_HTML);
                   return cb(-2);
                 }
