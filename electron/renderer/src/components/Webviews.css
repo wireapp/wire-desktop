@@ -29,6 +29,6 @@
   position: absolute;
   top: 24px;
   right: 24px;
-  fill: #fff;
+  fill: #33373a;
   z-index: var(--z-index-webview-close-button);
 }

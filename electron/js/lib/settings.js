@@ -61,15 +61,21 @@ class ConfigurationPersistence {
     return new Promise((resolve, reject) => {
       const dataInJSON = JSON.stringify(global._ConfigurationPersistence);
 
-      this.debug('Saving data to persistent storage: %o', dataInJSON);
-      fs.writeFile(INIT_JSON, dataInJSON, 'utf8', (error, data) => {
-        if (error) {
-          this.debug('An error occurred while saving the config file: %s', error);
-          return reject(error);
-        }
+      if (dataInJSON) {
+        this.debug('Saving configuration to persistent storage: %o', dataInJSON);
 
-        resolve(data);
-      });
+        return fs.writeFile(INIT_JSON, dataInJSON, 'utf8', (error, data) => {
+          if (error) {
+            this.debug('An error occurred while persisting the configuration: %s', error);
+            return reject(error);
+          }
+
+          resolve(data);
+        });
+      }
+
+      this.debug('No configuration found to persist');
+      resolve();
     });
   }
 
