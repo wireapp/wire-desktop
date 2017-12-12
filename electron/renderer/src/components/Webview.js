@@ -25,7 +25,6 @@ class Webview extends Component {
   constructor(props) {
     super(props);
 
-    this._onPageTitleUpdated = this._onPageTitleUpdated.bind(this);
     this._onIpcMessage = this._onIpcMessage.bind(this);
   }
 
@@ -38,7 +37,6 @@ class Webview extends Component {
     this.webview.partition = partition ? `persist:${partition}` : '';
     this.webview.src = src;
 
-    this.webview.addEventListener('page-title-updated', this._onPageTitleUpdated);
     this.webview.addEventListener('ipc-message', this._onIpcMessage);
 
     this._focusWebview();
@@ -53,10 +51,6 @@ class Webview extends Component {
       this._focusWebview();
     }
     return this.props.visible !== nextProps.visible;
-  }
-
-  _onPageTitleUpdated(event) {
-    this.props.onPageTitleUpdated(event);
   }
 
   _onIpcMessage(event) {

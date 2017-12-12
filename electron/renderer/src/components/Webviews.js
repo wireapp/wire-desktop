@@ -20,7 +20,6 @@
 import React, { Component } from 'react';
 
 import Webview from './Webview';
-import badgeCount from '../lib/badgeCount';
 
 import './Webviews.css';
 
@@ -63,9 +62,8 @@ class Webviews extends Component {
     }, 0);
   }
 
-  _onPageTitleUpdated(account, { title }) {
-    const count = badgeCount(title);
-    this.props.updateAccountBadgeCount(account.id, count);
+  _onUnreadCountUpdated(accountId, unreadCount) {
+    this.props.updateAccountBadgeCount(account.id, unreadCount);
     const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
     window.sendBadgeCount(accumulatedCount);
   }
@@ -78,6 +76,9 @@ class Webviews extends Component {
       case 'lifecycle-signed-in':
       case 'lifecycle-signed-out':
         this.props.updateAccountLifecycle(account.id, channel);
+        break;
+      case 'lifecycle-unread-count':
+        this._onUnreadCountUpdated(account.id, args[0]);
         break;
       case 'signed-out':
         this._deleteWebview(account);
@@ -113,8 +114,6 @@ class Webviews extends Component {
               src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
               preload="./static/webview-preload.js"
-              onPageTitleUpdated={event =>
-                this._onPageTitleUpdated(account, event)}
               onIpcMessage={event => this._onIpcMessage(account, event)}
             />
             {this._canDeleteWebview(account) && (
