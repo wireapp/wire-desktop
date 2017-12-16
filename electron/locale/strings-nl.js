@@ -67,6 +67,10 @@ string.trayQuit = 'Sluit';
 
 string.unreadMessages = 'Ongelezen bericht';
 
+string.wrapperAddAccount = 'Account toevoegen';
+string.wrapperCreateTeam = 'Maak team aan';
 string.wrapperLogOut = 'Afmelden';
+string.wrapperManageTeam = 'Beheer team';
+string.wrapperRemoveAccount = 'Verwijder account';
 
 module.exports = string;

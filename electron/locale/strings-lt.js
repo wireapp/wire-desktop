@@ -68,7 +68,7 @@ string.trayQuit = 'Baigti';
 string.unreadMessages = 'Neskaityta žinutė';
 
 string.wrapperAddAccount = 'Pridėti paskyrą';
-string.wrapperCreateTeam = 'Sukurti komanda';
+string.wrapperCreateTeam = 'Sukurti komandą';
 string.wrapperLogOut = 'Atsijungti';
 string.wrapperManageTeam = 'Tvarkyti komandą';
 string.wrapperRemoveAccount = 'Šalinti paskyrą';
