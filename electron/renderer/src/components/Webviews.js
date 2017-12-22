@@ -17,34 +17,41 @@
  *
  */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import Webview from './Webview';
 
 import './Webviews.css';
 
-class Webviews extends Component {
+class Webviews extends PureComponent {
   constructor(props) {
     super(props);
+    this.state = {
+      canDelete: this.getCanDeletes(props.accounts),
+    };
+    this.getCanDeletes = this.getCanDeletes.bind(this);
+    this._onUnreadCountUpdated = this._onUnreadCountUpdated.bind(this);
+    this._onIpcMessage = this._onIpcMessage.bind(this);
+    this._onWebviewClose = this._onWebviewClose.bind(this);
+    this._deleteWebview = this._deleteWebview.bind(this);
   }
 
-  shouldComponentUpdate(nextProps) {
-    for (const account of nextProps.accounts) {
-      const match = this.props.accounts.find(
-        _account => account.id === _account.id
-      );
-      if (!match || match.visible !== account.visible) {
-        return true;
-      }
-    }
+  componentWillReceiveProps(nextProps) {
+    this.setState({ canDelete: this.getCanDeletes(nextProps.accounts) });
+  }
 
-    return false;
+  getCanDeletes(accounts) {
+    return accounts.reduce(
+      (accumulator, account) => ({
+        ...accumulator,
+        [account.id]: this._canDeleteWebview(account),
+      }),
+      {}
+    );
   }
 
   _getEnvironmentUrl(account) {
-    const envParam = decodeURIComponent(
-      new URL(window.location).searchParams.get('env')
-    );
+    const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'));
     const url = new URL(envParam);
 
     // pass account id to webview so we can access it in the preload script
@@ -63,7 +70,7 @@ class Webviews extends Component {
   }
 
   _onUnreadCountUpdated(accountId, unreadCount) {
-    this.props.updateAccountBadgeCount(account.id, unreadCount);
+    this.props.updateAccountBadgeCount(accountId, unreadCount);
     const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
     window.sendBadgeCount(accumulatedCount);
   }
@@ -87,6 +94,7 @@ class Webviews extends Component {
         this.props.updateAccountData(account.id, args[0]);
         break;
     }
+    this.setState({ canDelete: { ...this.state.canDelete, [account.id]: this._canDeleteWebview(account) } });
   }
 
   _onWebviewClose(account) {
@@ -116,11 +124,8 @@ class Webviews extends Component {
               preload="./static/webview-preload.js"
               onIpcMessage={event => this._onIpcMessage(account, event)}
             />
-            {this._canDeleteWebview(account) && (
-              <div
-                className="Webviews-close"
-                onClick={() => this._onWebviewClose(account)}
-              >
+            {this.state.canDelete[account.id] && account.visible && (
+              <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
                 <svg width="16" height="16" viewBox="0 0 16 16">
                   <path
                     d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243"
