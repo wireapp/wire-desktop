@@ -135,7 +135,8 @@ if (environment.platform.IS_WINDOWS) {
 if (environment.platform.IS_LINUX) {
   const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
   const isPopOS = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('pop');
-  if (isUbuntuUnity || isPopOS) {
+  const isGnome = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('GNOME');
+  if (isUbuntuUnity || isPopOS || isGnome) {
     process.env.XDG_CURRENT_DESKTOP = 'Unity';
   }
 }
