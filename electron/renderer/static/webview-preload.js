@@ -52,8 +52,8 @@ const subscribeToWebappEvents = () => {
     }
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, () => {
-    ipcRenderer.sendToHost('lifecycle-unread-count');
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, count => {
+    ipcRenderer.sendToHost('lifecycle-unread-count', count);
   });
 
   amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => {
