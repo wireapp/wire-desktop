@@ -123,6 +123,7 @@ class Webviews extends PureComponent {
               partition={account.sessionID}
               preload="./static/webview-preload.js"
               onIpcMessage={event => this._onIpcMessage(account, event)}
+              webpreferences="backgroundThrottling=false"
             />
             {this.state.canDelete[account.id] && account.visible && (
               <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
