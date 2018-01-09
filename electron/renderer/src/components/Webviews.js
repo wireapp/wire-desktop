@@ -17,13 +17,13 @@
  *
  */
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 
 import Webview from './Webview';
 
 import './Webviews.css';
 
-class Webviews extends PureComponent {
+class Webviews extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -38,6 +38,16 @@ class Webviews extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     this.setState({ canDelete: this.getCanDeletes(nextProps.accounts) });
+  }
+
+  shouldComponentUpdate(nextProps) {
+    for (const account of nextProps.accounts) {
+      const match = this.props.accounts.find(_account => account.id === _account.id);
+      if (!match || match.visible !== account.visible) {
+        return true;
+      }
+    }
+    return false;
   }
 
   getCanDeletes(accounts) {
@@ -124,16 +134,17 @@ class Webviews extends PureComponent {
               preload="./static/webview-preload.js"
               onIpcMessage={event => this._onIpcMessage(account, event)}
             />
-            {this.state.canDelete[account.id] && account.visible && (
-              <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
-                <svg width="16" height="16" viewBox="0 0 16 16">
-                  <path
-                    d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243"
-                    fillRule="evenodd"
-                  />
-                </svg>
-              </div>
-            )}
+            {this.state.canDelete[account.id] &&
+              account.visible && (
+                <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
+                  <svg width="16" height="16" viewBox="0 0 16 16">
+                    <path
+                      d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243"
+                      fillRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              )}
           </div>
         ))}
       </ul>
