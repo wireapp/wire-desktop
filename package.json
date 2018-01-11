@@ -62,7 +62,7 @@
     "jest": "22.0.5",
     "lint-staged": "6.0.0",
     "load-grunt-tasks": "3.5.2",
-    "prettier": "1.9.2",
+    "prettier": "1.10.2",
     "style-loader": "0.19.1",
     "webpack": "3.10.0"
   },
