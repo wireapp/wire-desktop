@@ -134,8 +134,9 @@ if (environment.platform.IS_WINDOWS) {
 ///////////////////////////////////////////////////////////////////////////////
 if (environment.platform.IS_LINUX) {
   const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
-
-  if (isUbuntuUnity) {
+  const isPopOS = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('pop');
+  const isGnome = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('GNOME');
+  if (isUbuntuUnity || isPopOS || isGnome) {
     process.env.XDG_CURRENT_DESKTOP = 'Unity';
   }
 }
@@ -205,6 +206,7 @@ const showMainWindow = () => {
   main = new BrowserWindow({
     autoHideMenuBar: !settings.restore('showMenu', true),
     height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    backgroundColor: '#f7f8fa',
     icon: ICON_PATH,
     minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
     minWidth: config.WINDOW.MAIN.MIN_WIDTH,

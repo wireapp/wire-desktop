@@ -5,3 +5,4 @@ files:
   -
     source: '/electron/locale/strings.js'
     translation: '/electron/locale/strings-%two_letters_code%.js'
+    update_option: 'update_as_unapproved'
