@@ -215,7 +215,7 @@ const showMainWindow = () => {
     titleBarStyle: 'hidden-inset',
     webPreferences: {
       backgroundThrottling: false,
-      nodeIntegration: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
       webviewTag: true,
     },

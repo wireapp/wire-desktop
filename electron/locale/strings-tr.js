@@ -67,10 +67,10 @@ string.trayQuit = 'Çık';
 
 string.unreadMessages = 'Okunmamış mesaj';
 
-string.wrapperAddAccount = 'Hesap ekle';
-string.wrapperCreateTeam = 'Takım oluştur';
+string.wrapperAddAccount = 'Hesap Ekle';
+string.wrapperCreateTeam = 'Takım Oluştur';
 string.wrapperLogOut = 'Çıkış Yap';
-string.wrapperManageTeam = 'Takım yönet';
-string.wrapperRemoveAccount = 'Hesabı kaldır';
+string.wrapperManageTeam = 'Takımı Yönet';
+string.wrapperRemoveAccount = 'Hesabı Kaldır';
 
 module.exports = string;
