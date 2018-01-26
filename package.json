@@ -60,7 +60,7 @@
     "grunt": "1.0.1",
     "husky": "0.14.3",
     "jest": "22.1.4",
-    "lint-staged": "6.0.1",
+    "lint-staged": "6.1.0",
     "load-grunt-tasks": "3.5.2",
     "prettier": "1.10.2",
     "style-loader": "0.19.1",
