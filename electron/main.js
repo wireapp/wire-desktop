@@ -142,6 +142,17 @@ if (environment.platform.IS_LINUX) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Make sure not to close the window to the tray on Gnome
+///////////////////////////////////////////////////////////////////////////////
+function onCloseMain() {
+  if (process.platform === 'linux' && process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('GNOME')) {
+    main.minimize();
+  } else {
+    main.hide();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // IPC events
 ///////////////////////////////////////////////////////////////////////////////
 ipcMain.once('webapp-version', (event, version) => {
@@ -289,11 +300,11 @@ const showMainWindow = () => {
 
       if (isFullScreen) {
         main.once('leave-full-screen', () => {
-          main.hide();
+          onCloseMain();
         });
         main.setFullScreen(false);
       } else {
-        main.hide();
+        onCloseMain();
       }
     }
   });
