@@ -19,7 +19,7 @@
     "fs-extra": "5.0.0",
     "googleapis": "24.0.0",
     "image-type": "3.0.0",
-    "jsrsasign": "8.0.4",
+    "jsrsasign": "8.0.5",
     "lodash": "4.17.4",
     "minimist": "1.2.0",
     "open-graph": "0.2.3",
