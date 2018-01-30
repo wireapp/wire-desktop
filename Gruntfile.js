@@ -27,12 +27,12 @@ const PACKAGE_JSON = 'package.json';
 const INFO_JSON = 'info.json';
 
 const LINUX_DESKTOP = {
-  "Version": "1.1",
-  "Name": "Wire",
-  "GenericName": "Secure messenger",
-  "Categories": "Network;InstantMessaging;Chat;VideoConference",
-  "Keywords": "chat;encrypt;e2e;messenger;videocall",
-  "StartupWMClass": "Wire"
+  'Version': '1.1',
+  'Name': 'Wire',
+  'GenericName': 'Secure messenger',
+  'Categories': 'Network;InstantMessaging;Chat;VideoConference',
+  'Keywords': 'chat;encrypt;e2e;messenger;videocall',
+  'StartupWMClass': 'Wire',
 };
 
 module.exports = function(grunt) {
