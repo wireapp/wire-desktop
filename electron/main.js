@@ -346,7 +346,6 @@ const showAboutWindow = () => {
       if (url.startsWith('https://')) {
         shell.openExternal(url);
       } else {
-        console.log(ABOUT_WINDOW_WHITELIST);
         console.log('Attempt to open URL in window prevented, url: %s', url);
       }
 
