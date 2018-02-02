@@ -20,6 +20,7 @@
 // Modules
 const debug = require('debug');
 const debugMain = debug('mainTmp');
+const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
@@ -30,12 +31,12 @@ const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
 const APP_PATH = app.getAppPath();
 
 // Local files defines
-const ABOUT_HTML = `file://${path.join(APP_PATH, 'html', 'about.html')}`;
+const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html', 'about.html'));
 const ABOUT_WINDOW_WHITELIST = [ABOUT_HTML,
-  `file://${path.join(APP_PATH, 'img', 'wire.256.png')}`,
-  `file://${path.join(APP_PATH, 'css', 'about.css')}`
+  fileUrl(path.join(APP_PATH, 'img', 'wire.256.png')),
+  fileUrl(path.join(APP_PATH, 'css', 'about.css')),
 ];
-const CERT_ERR_HTML = `file://${path.join(APP_PATH, 'html', 'certificate-error.html')}`;
+const CERT_ERR_HTML = fileUrl(path.join(APP_PATH, 'html', 'certificate-error.html'));
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
@@ -345,6 +346,7 @@ const showAboutWindow = () => {
       if (url.startsWith('https://')) {
         shell.openExternal(url);
       } else {
+        console.log(ABOUT_WINDOW_WHITELIST);
         console.log('Attempt to open URL in window prevented, url: %s', url);
       }
 
