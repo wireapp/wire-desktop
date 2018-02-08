@@ -23,6 +23,7 @@
 const spawn = require('cross-spawn');
 const exec = require('child_process').exec;
 const arch = process.env.wire_target_arch ? process.env.wire_target_arch : process.arch;
+process.env.RUST_SODIUM_DISABLE_PIE = 1;
 
 const normalize = (args) => {
   return args.map((arg) => {
