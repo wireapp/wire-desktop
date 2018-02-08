@@ -57,7 +57,7 @@
     "grunt-contrib-clean": "1.1.0",
     "grunt-git": "1.0.9",
     "grunt-gitinfo": "0.1.8",
-    "grunt": "1.0.1",
+    "grunt": "1.0.2",
     "husky": "0.14.3",
     "jest": "22.1.4",
     "lint-staged": "6.1.0",
