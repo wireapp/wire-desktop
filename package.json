@@ -64,7 +64,7 @@
     "load-grunt-tasks": "3.5.2",
     "prettier": "1.10.2",
     "style-loader": "0.20.1",
-    "webpack": "3.10.0"
+    "webpack": "3.11.0"
   },
   "dependencies": {
     "debug": "3.1.0"
