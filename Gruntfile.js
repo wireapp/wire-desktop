@@ -149,14 +149,19 @@ module.exports = function(grunt) {
       linux_prod: {
         options: {
           productName: 'wire-desktop',
-          targets: ['deb', 'AppImage'],
+          targets: ['deb', 'rpm', 'AppImage'],
           linux: {
             fpm: ['--name', 'wire-desktop'],
             executableName: 'wire-desktop',
+            desktop: LINUX_DESKTOP,
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
-            desktop: LINUX_DESKTOP,
+          },
+          deb: {  
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
+          },
+          rpm: {
+            depends: ['libappindicator', 'alsa-lib', 'GConf2', 'libnotify', 'nss', 'libXScrnSaver']
           },
         },
       },
@@ -164,15 +169,20 @@ module.exports = function(grunt) {
       linux_internal: {
         options: {
           productName: 'wire-desktop-internal',
-          targets: ['deb', 'AppImage'],
+          targets: ['deb', 'rpm', 'AppImage'],
           linux: {
             fpm: ['--name', 'wire-desktop-internal'],
             executableName: 'wire-desktop-internal',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
             desktop: LINUX_DESKTOP,
+          },
+          deb: {  
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
+          rpm: {
+            depends: ['libappindicator', 'alsa-lib', 'GConf2', 'libnotify', 'nss', 'libXScrnSaver']
+          },                
         },
       },
 
