@@ -161,7 +161,7 @@ module.exports = function(grunt) {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
           rpm: {
-            depends: ['libappindicator', 'alsa-lib', 'GConf2', 'libnotify', 'nss', 'libXScrnSaver', 'libxtst']
+            depends: ['libappindicator', 'alsa-lib', 'GConf2', 'libnotify', 'nss', 'libXScrnSaver', 'libXtst']
           },
         },
       },
@@ -181,7 +181,7 @@ module.exports = function(grunt) {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
           rpm: {
-            depends: ['libappindicator', 'alsa-lib', 'GConf2', 'libnotify', 'nss', 'libXScrnSaver']
+            depends: ['libappindicator', 'alsa-lib', 'GConf2', 'libnotify', 'nss', 'libXScrnSaver', 'libXtst']
           },                
         },
       },
