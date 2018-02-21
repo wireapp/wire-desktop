@@ -56,7 +56,7 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost('lifecycle-unread-count', count);
   });
 
-  amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => {
+  amplify.subscribe(z.event.WebApp.NOTIFICATION.CLICK, () => {
     ipcRenderer.send('notification-click');
     ipcRenderer.sendToHost('notification-click');
   });
