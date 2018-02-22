@@ -26,6 +26,7 @@ const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
+const {Server} = require('@wireapp/wire-desktop-server');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -203,25 +204,37 @@ const relaunchApp = () => {
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
 ///////////////////////////////////////////////////////////////////////////////
-const showMainWindow = () => {
-  main = new BrowserWindow({
-    title: config.NAME,
-    titleBarStyle: 'hiddenInset',
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-    autoHideMenuBar: !settings.restore('showMenu', true),
-    backgroundColor: '#f7f8fa',
-    icon: ICON_PATH,
-    show: false,
-    webPreferences: {
-      backgroundThrottling: false,
-      nodeIntegration: true,
-      preload: PRELOAD_JS,
-      webviewTag: true
-    }
-  });
+const showMainWindow = async () => {
+  let opts;
+  try {
+    const server = new Server({
+      title: config.NAME,
+      titleBarStyle: 'hiddenInset',
+      width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+      height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+      minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+      minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
+      autoHideMenuBar: !settings.restore('showMenu', true),
+      backgroundColor: '#f7f8fa',
+      icon: ICON_PATH,
+      show: false,
+      webPreferences: {
+        backgroundThrottling: false,
+        nodeIntegration: true,
+        preload: PRELOAD_JS,
+        webviewTag: true
+      }
+    }, pkg.version);
+    
+    opts = await server.start();
+
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+
+  // Set browser window
+  main = opts.main;
 
   if (settings.restore('fullscreen', false)) {
     main.setFullScreen(true);
@@ -229,8 +242,9 @@ const showMainWindow = () => {
     main.setBounds(settings.restore('bounds', main.getBounds()));
   }
 
-  let baseURL = BASE_URL;
+  let baseURL = `${opts.url}/`;
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
+  console.log(baseURL);
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
@@ -425,8 +439,9 @@ app.on('ready', () => {
 
   Menu.setApplicationMenu(appMenu);
   tray.createTrayIcon();
-  showMainWindow();
 });
+
+showMainWindow();
 
 ///////////////////////////////////////////////////////////////////////////////
 // Rename "console.log" to "console.old" (for every log directory of every account)
@@ -496,10 +511,10 @@ class ElectronWrapperInit {
             params.autosize = false;
 
             // Verify the URL being loaded
-            if (!util.isMatchingHost(_url, BASE_URL)) {
+            /*if (!util.isMatchingHost(_url, BASE_URL)) {
               e.preventDefault();
               webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
-            }
+            }*/
           });
           break;
 
@@ -508,9 +523,9 @@ class ElectronWrapperInit {
           contents.on('new-window', (e, _url) => {
             openLinkInNewWindow(e, _url);
           });
-          contents.on('will-navigate', (e, _url) => {
+          /*contents.on('will-navigate', (e, _url) => {
             willNavigateInWebview(e, _url);
-          });
+          });*/
 
           contents.session.setCertificateVerifyProc((request, cb) => {
             const {hostname = '', certificate = {}, error} = request;
