@@ -8,25 +8,34 @@
 .UpdaterContainer .updater-bar-no-resize {
     height: 100%;
 }
+
 .UpdaterContainer .updater-bar {
-    background-color: var(--graphite);
-    color: #fff;
+    background-color: #febf02;
+    color: #34383b;
     display: flex;
     justify-content: center;
     width: 100%;
+
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+
+    box-shadow: inset 0px -1px 0px 0px rgba(0, 0, 0, .1);
 }
-.UpdaterContainer .updater-bar .updater-bar-feature {
-    height: 64px;
-}
-.UpdaterContainer .updater-bar .updater-bar-connection {
+.UpdaterContainer .updater-bar.updater-bar-connection {
     text-transform: uppercase;
     font-size: 11px;
     font-weight: 400;
     height: 32px;
     justify-content: center;
 }
-.UpdaterContainer .updater-bar a {
+.UpdaterContainer .updater-bar a,
+.UpdaterContainer .updater-bar a:hover,
+.UpdaterContainer .updater-bar a:active {
+    color: #34383b;
+    text-decoration: underline;
     cursor: pointer;
+    font-weight: 500;
 }
 .UpdaterContainer .updater-bar .updater-bar-message {
     display: flex;
@@ -41,10 +50,4 @@
 .UpdaterContainer .updater-bar .updater-bar-icon {
     font-size: 32px;
     margin-right: 8px;
-}
-.UpdaterContainer .updater-bar .updater-bar-link,
-.UpdaterContainer .updater-bar .updater-bar-link:hover,
-.UpdaterContainer .updater-bar .updater-bar-link:active {
-    color: #fff;
-    text-decoration: underline;
 }
