@@ -81,3 +81,9 @@ window.addEventListener('focus', () => {
     selectedWebview.focus();
   }
 });
+
+// Updater-related
+ipcRenderer.on('update-available', (event, detail) =>
+  window.dispatchEvent(new CustomEvent('update-available', {detail})),
+);
+window.addEventListener('update-available-ack', (event) => ipcRenderer.send('update-available-ack', event.detail));

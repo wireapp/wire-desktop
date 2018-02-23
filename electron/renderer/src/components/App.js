@@ -21,6 +21,7 @@ import IsOnline from './IsOnline';
 import React from 'react';
 import { connect } from 'react-redux';
 import Sidebar from './Sidebar';
+import UpdaterBar from './UpdaterBar';
 import WebviewsContainer from '../containers/WebviewsContainer';
 import { switchAccount } from '../actions/';
 
@@ -28,19 +29,21 @@ import './App.css';
 
 const App = props => (
   <IsOnline>
-    <div
-      className="App"
-      onKeyDown={e => {
-        const modKeyPressed = (window.isMac && e.metaKey) || e.ctrlKey;
-        const isValidKey = ['1', '2', '3'].includes(e.key);
-        if (modKeyPressed && isValidKey && props.accountIds[e.key - 1]) {
-          props.switchAccount(props.accountIds[e.key - 1]);
-        }
-      }}
-    >
-      <Sidebar />
-      <WebviewsContainer />
-    </div>
+    <UpdaterBar>
+      <div
+        className="App"
+        onKeyDown={e => {
+          const modKeyPressed = (window.isMac && e.metaKey) || e.ctrlKey;
+          const isValidKey = ['1', '2', '3'].includes(e.key);
+          if (modKeyPressed && isValidKey && props.accountIds[e.key - 1]) {
+            props.switchAccount(props.accountIds[e.key - 1]);
+          }
+        }}
+      >
+        <Sidebar />
+        <WebviewsContainer />
+      </div>
+    </UpdaterBar>
   </IsOnline>
 );
 
