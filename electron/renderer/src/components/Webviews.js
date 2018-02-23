@@ -133,7 +133,7 @@ class Webviews extends Component {
               partition={account.sessionID}
               preload="./static/webview-preload.js"
               onIpcMessage={event => this._onIpcMessage(account, event)}
-              webpreferences="backgroundThrottling=false"
+              webpreferences="backgroundThrottling=no"
             />
             {this.state.canDelete[account.id] &&
               account.visible && (
