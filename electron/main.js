@@ -227,7 +227,6 @@ const showMainWindow = async () => {
     }, pkg.version);
     
     opts = await server.start();
-
   } catch (error) {
     console.log(error);
     return;
@@ -244,7 +243,6 @@ const showMainWindow = async () => {
 
   let baseURL = `${opts.url}/`;
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
-  console.log(baseURL);
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
@@ -257,7 +255,7 @@ const showMainWindow = async () => {
     }
 
     discloseWindowID(main);
-    setTimeout(() => main.show(), 800);
+    main.on('ready-to-show', () => main.show());
   }
 
   main.webContents.on('will-navigate', (event, url) => {
@@ -486,7 +484,7 @@ class ElectronWrapperInit {
       webviewProtectionDebug('Opening an external window from a webview. URL: %s', _url);
       shell.openExternal(_url);
     };
-    const willNavigateInWebview = (event, _url) => {
+    /*const willNavigateInWebview = (event, _url) => {
       // Ensure navigation is to a whitelisted domain
       if (util.isMatchingHost(_url, BASE_URL)) {
         webviewProtectionDebug('Navigating inside webview. URL: %s', _url);
@@ -494,7 +492,7 @@ class ElectronWrapperInit {
         webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
         event.preventDefault();
       }
-    };
+    };*/
 
     app.on('web-contents-created', (event, contents) => {
       switch (contents.getType()) {
