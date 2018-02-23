@@ -29,6 +29,7 @@ class UpdaterBar extends Component {
       isUpdateAvailable: false,
     };
     this._onUpdateAvailable = this._onUpdateAvailable.bind(this);
+    this._onClickOnDetails = this._onClickOnDetails.bind(this);
   }
 
   componentDidMount() {
@@ -38,18 +39,26 @@ class UpdaterBar extends Component {
   componentDidUpdate() {}
 
   _onUpdateAvailable(event) {
-    this.setState({ isUpdateAvailable: true });
-    window.dispatchEvent(new CustomEvent('update-available-ack', {detail: event.detail}));
+    this.setState({
+      isUpdateAvailable: true,
+    });
+    window.dispatchEvent(new CustomEvent('update-available-ack', {}));
+  }
+
+  _onClickOnDetails(event) {
+    event.preventDefault();
+    console.log('Click on more detected');
+    window.dispatchEvent(new CustomEvent('update-available-display', {}));
   }
 
   render() {
     return (
       <div className="UpdaterContainer">
         {this.state.isUpdateAvailable ? (
-          <div className="warning-bar warning-bar-connection">
-            <div className="warning-bar-message">
+          <div className="updater-bar updater-bar-connection">
+            <div className="updater-bar-message">
               <span>{getText('wrapperUpdateAvailable')}</span>&nbsp;
-              <a className="warning-bar-link" href="https://medium.com/wire-news/desktop-updates" data-bind="l10n_text: z.string.warning_lifecycle_update_notes" rel="nofollow noopener noreferrer" target="_blank">{getText('wrapperUpdateDetails')}</a>
+              <a className="updater-bar-click" href="javascript://" onClick={this._onClickOnDetails}>{getText('wrapperUpdateDetails')}</a>
             </div>
           </div>
         ) : ''}

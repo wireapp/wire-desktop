@@ -87,3 +87,4 @@ ipcRenderer.on('update-available', (event, detail) =>
   window.dispatchEvent(new CustomEvent('update-available', {detail})),
 );
 window.addEventListener('update-available-ack', (event) => ipcRenderer.send('update-available-ack', event.detail));
+window.addEventListener('update-available-display', (event) => ipcRenderer.send('update-available-display', event.detail));
