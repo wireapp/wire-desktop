@@ -18,6 +18,7 @@
  */
 
 import React, { Component } from 'react';
+import * as anime from 'animejs';
 import { getText } from '../lib/locale';
 
 import './UpdaterBar.css';
@@ -27,22 +28,67 @@ class UpdaterBar extends Component {
     super(props);
     this.state = {
       isUpdateAvailable: false,
+      screenshot: false,
+    };
+    this.defaultAnimationSettings = {
+      easing: 'easeInOutSine',
+      duration: 600,
     };
     this._onUpdateAvailable = this._onUpdateAvailable.bind(this);
+    this._onUpdateInstalled = this._onUpdateInstalled.bind(this);
     this._onClickOnDetails = this._onClickOnDetails.bind(this);
+    this._onUpdateStartInstall = this._onUpdateStartInstall.bind(this);
+    this._onUpdateEndInstall = this._onUpdateEndInstall.bind(this);
   }
 
   componentDidMount() {
     window.addEventListener('update-available', this._onUpdateAvailable);
+    window.addEventListener('update-start-install', this._onUpdateStartInstall);
+    window.addEventListener('update-end-install', this._onUpdateEndInstall);
+    window.addEventListener('update-installed', this._onUpdateInstalled);
   }
 
   componentDidUpdate() {}
+
+  _onUpdateStartInstall(event) {
+    // Freeze window
+    const screenshot = event.detail.screenshot;
+    this.setState({
+      screenshot,
+    });
+    anime({
+      ...this.defaultAnimationSettings,
+      targets: this.screenshot,
+      opacity: [0, 1],
+    });
+  }
+
+  _onUpdateEndInstall(event) {
+    // Unfreeze window
+    anime({
+      ...this.defaultAnimationSettings,
+      targets: this.screenshot,
+      opacity: [1, 0],
+      delay: 4000,
+      complete: () => {
+        this.setState({
+          screenshot: false,
+        });
+      }
+    });
+  }
 
   _onUpdateAvailable(event) {
     this.setState({
       isUpdateAvailable: true,
     });
     window.dispatchEvent(new CustomEvent('update-available-ack', {}));
+  }
+
+  _onUpdateInstalled(event) {
+    this.setState({
+      isUpdateAvailable: false,
+    });
   }
 
   _onClickOnDetails(event) {
@@ -54,6 +100,7 @@ class UpdaterBar extends Component {
   render() {
     return (
       <div className="UpdaterContainer">
+        <img ref={elem => this.screenshot = elem} className={this.state.screenshot ? 'updater-freeze' : 'updater-freeze-hidden'} src={this.state.screenshot ? this.state.screenshot : ''} />
         {this.state.isUpdateAvailable ? (
           <div className="updater-bar updater-bar-connection">
             <div className="updater-bar-message">
