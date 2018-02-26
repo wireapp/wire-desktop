@@ -66,8 +66,8 @@ node('Linux_Node') {
     sh 'dpkg-deb --info wrap/dist/debian/pool/main/*i386.deb'
   }
 
-  stage('Save .deb, AppImage and repo files') {
-    archiveArtifacts 'info.json,wrap/dist/*.deb,wrap/dist/*.AppImage,wrap/dist/debian/**'
+  stage('Save .deb, .rpm, AppImage and repo files') {
+    archiveArtifacts 'info.json,wrap/dist/*.deb,wrap/dist/*.rpm,wrap/dist/*.AppImage,wrap/dist/debian/**'
   }
 
   stage('Upload build as draft to GitHub') {

@@ -42,12 +42,16 @@ if ! ls ./*.deb > /dev/null 2>&1; then
   _error_exit "No deb files found. Add some in ${PWD}."
 fi
 
+if ! ls ./*.rpm > /dev/null 2>&1; then
+  _error_exit "No rpm files found. Add some in ${PWD}."
+fi
+
 if ! ls ./*.AppImage > /dev/null 2>&1; then
   _error_exit "No AppImage files found. Add some in ${PWD}."
 fi
 
 _log "Create checksums..."
-sha256sum *.deb *.AppImage > sha256sum.txt
+sha256sum *.deb *.rpm *.AppImage > sha256sum.txt
 
 _log "Prepare gpg configuration..."
 mkdir -p "${GPG_TEMP_DIR}"
