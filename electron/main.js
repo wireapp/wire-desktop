@@ -46,7 +46,6 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const settings = require('./js/lib/settings');
 
 // Wrapper modules
-const certutils = require('./js/certutils');
 const config = require('./js/config');
 const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
@@ -524,30 +523,6 @@ class ElectronWrapperInit {
           /*contents.on('will-navigate', (e, _url) => {
             willNavigateInWebview(e, _url);
           });*/
-
-          contents.session.setCertificateVerifyProc((request, cb) => {
-            const {hostname = '', certificate = {}, error} = request;
-
-            if (typeof error !== 'undefined') {
-              console.error('setCertificateVerifyProc', error);
-              main.loadURL(CERT_ERR_HTML);
-              return cb(-2);
-            }
-
-            if (certutils.hostnameShouldBePinned(hostname)) {
-              const pinningResults = certutils.verifyPinning(hostname, certificate);
-
-              for (const result of Object.values(pinningResults)) {
-                if (result === false) {
-                  console.error(`Certutils verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
-                  main.loadURL(CERT_ERR_HTML);
-                  return cb(-2);
-                }
-              }
-            }
-
-            return cb(-3);
-          });
           break;
       }
     });
