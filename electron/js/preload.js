@@ -86,5 +86,11 @@ window.addEventListener('focus', () => {
 ipcRenderer.on('update-available', (event, detail) =>
   window.dispatchEvent(new CustomEvent('update-available', {detail})),
 );
+ipcRenderer.on('update-freeze', (event, detail) =>
+  window.dispatchEvent(new CustomEvent('update-freeze', {detail})),
+);
+ipcRenderer.on('update-unfreeze', (event, detail) =>
+  window.dispatchEvent(new CustomEvent('update-unfreeze', {detail: null})),
+);
 window.addEventListener('update-available-ack', (event) => ipcRenderer.send('update-available-ack', event.detail));
 window.addEventListener('update-available-display', (event) => ipcRenderer.send('update-available-display', event.detail));
