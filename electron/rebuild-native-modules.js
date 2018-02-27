@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Wire
- * Copyright (C) 2017 Wire Swiss GmbH
+ * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 const spawn = require('cross-spawn');
 const exec = require('child_process').exec;
 const arch = process.env.wire_target_arch ? process.env.wire_target_arch : process.arch;
+process.env.RUST_SODIUM_DISABLE_PIE = 1;
 
 const normalize = (args) => {
   return args.map((arg) => {
