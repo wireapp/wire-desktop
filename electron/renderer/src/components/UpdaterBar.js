@@ -32,7 +32,7 @@ class UpdaterBar extends Component {
     };
     this.defaultAnimationSettings = {
       easing: 'easeInOutSine',
-      duration: 1200,
+      duration: 700,
     };
     this._onUpdateAvailable = this._onUpdateAvailable.bind(this);
     this._onUpdateInstalled = this._onUpdateInstalled.bind(this);
@@ -100,7 +100,9 @@ class UpdaterBar extends Component {
   render() {
     return (
       <div className="UpdaterContainer">
-        <img ref={elem => this.screenshot = elem} className={this.state.screenshot ? 'updater-freeze' : 'updater-freeze-hidden'} src={this.state.screenshot ? this.state.screenshot : ''} />
+        <div ref={elem => this.screenshot = elem} className={this.state.screenshot ? 'updater-freeze' : 'updater-freeze-hidden'}>
+          <img src={this.state.screenshot ? this.state.screenshot : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6zwAAAgcBApocMXEAAAAASUVORK5CYII='} />
+        </div>
         {this.state.isUpdateAvailable ? (
           <div className="updater-bar updater-bar-connection">
             <div className="updater-bar-message">
