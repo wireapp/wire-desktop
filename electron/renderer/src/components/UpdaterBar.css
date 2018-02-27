@@ -18,8 +18,8 @@
     width: 100%;
     height: 100%;
     z-index: 959842975394;
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
+    -webkit-filter: grayscale(100%) blur(2px);
+    filter: grayscale(100%) blur(2px);
     opacity: 0;
 }
 

@@ -32,7 +32,7 @@ class UpdaterBar extends Component {
     };
     this.defaultAnimationSettings = {
       easing: 'easeInOutSine',
-      duration: 600,
+      duration: 1200,
     };
     this._onUpdateAvailable = this._onUpdateAvailable.bind(this);
     this._onUpdateInstalled = this._onUpdateInstalled.bind(this);
@@ -69,7 +69,7 @@ class UpdaterBar extends Component {
       ...this.defaultAnimationSettings,
       targets: this.screenshot,
       opacity: [1, 0],
-      delay: 4000,
+      delay: 3900,
       complete: () => {
         this.setState({
           screenshot: false,
