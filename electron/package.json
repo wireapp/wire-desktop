@@ -24,7 +24,7 @@
     "lodash": "4.17.5",
     "minimist": "1.2.0",
     "open-graph": "0.2.3",
-    "prop-types": "15.6.0",
+    "prop-types": "15.6.1",
     "raygun": "0.9.1",
     "react": "16.2.0",
     "react-dom": "16.2.0",
