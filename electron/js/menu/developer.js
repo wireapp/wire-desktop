@@ -20,7 +20,7 @@
 
 const {MenuItem} = require('electron');
 const config = require('./../config');
-const environment = require('./../environment');
+const {TYPE, Environment} = require('@wireapp/wire-desktop-server');
 const util = require('./../util');
 const windowManager = require('./../window-manager');
 
@@ -56,18 +56,6 @@ const devToolsTemplate = {
   ],
 };
 
-const createEnvironmentTemplate = (env) => {
-  return {
-    checked: currentEnvironment === env,
-    click: () => {
-      environment.setEnvironment(env);
-      getPrimaryWindow().reload();
-    },
-    label: util.capitalize(env),
-    type: 'radio',
-  };
-};
-
 const versionTemplate = {
   label: 'Wire Version ' + config.VERSION,
 };
@@ -91,12 +79,12 @@ const menuTemplate = {
     devToolsTemplate,
     reloadTemplate,
     separatorTemplate,
-    createEnvironmentTemplate(environment.TYPE.PRODUCTION),
-    createEnvironmentTemplate(environment.TYPE.INTERNAL),
-    createEnvironmentTemplate(environment.TYPE.STAGING),
-    createEnvironmentTemplate(environment.TYPE.DEV),
-    createEnvironmentTemplate(environment.TYPE.EDGE),
-    createEnvironmentTemplate(environment.TYPE.LOCALHOST),
+    Environment.createEnvironmentTemplate(Environment.TYPE.PRODUCTION),
+    Environment.createEnvironmentTemplate(Environment.TYPE.INTERNAL),
+    Environment.createEnvironmentTemplate(Environment.TYPE.STAGING),
+    Environment.createEnvironmentTemplate(Environment.TYPE.DEV),
+    Environment.createEnvironmentTemplate(Environment.TYPE.EDGE),
+    Environment.createEnvironmentTemplate(Environment.TYPE.LOCALHOST),
     separatorTemplate,
     versionTemplate,
     chromeVersionTemplate,

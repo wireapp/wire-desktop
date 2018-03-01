@@ -85,30 +85,6 @@ const _setEnvironment = (env) => {
 const _web = {
   get_url_admin: () => _is_prod_environment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING,
   get_url_support: () => URL_SUPPORT,
-  get_url_webapp: (env) => {
-    if (env) {
-      return env;
-    }
-
-    if (_app.IS_DEVELOPMENT) {
-      switch (_getEnvironment()) {
-        case TYPE.DEV:
-          return URL_WEBAPP.DEV;
-        case TYPE.EDGE:
-          return URL_WEBAPP.EDGE;
-        case TYPE.INTERNAL:
-          return URL_WEBAPP.INTERNAL;
-        case TYPE.LOCALHOST:
-          return URL_WEBAPP.LOCALHOST;
-        case TYPE.STAGING:
-          return URL_WEBAPP.STAGING;
-        default:
-          break;
-      }
-    }
-
-    return URL_WEBAPP.PRODUCTION;
-  },
   get_url_website: () => _is_prod_environment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING,
 };
 
