@@ -21,36 +21,37 @@
 const crypto = require('crypto');
 const rs = require('jsrsasign');
 
-const MAIN_FP = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU=';
-const ALGORITHM_RSA = '2a864886f70d010101';
-const VERISIGN_CLASS3_G5_ROOT='-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryQICCl6NZ5gDKrnSztO\n3Hy8PEUcuyvg/ikC+VcIo2SFFSf18a3IMYldIugqqqZCs4/4uVW3sbdLs/6PfgdX\n7O9D22ZiFWHPYA2k2N744MNiCD1UE+tJyllUhSblK48bn+v1oZHCM0nYQ2NqUkvS\nj+hwUU3RiWl7x3D2s9wSdNt7XUtW05a/FXehsPSiJfKvHJJnGOX0BgTvkLnkAOTd\nOrUZ/wK69Dzu4IvrN4vs9Nes8vbwPa/ddZEzGR0cQMt0JBkhk9kU/qwqUseP1QRJ\n5I1jR4g8aYPL/ke9K35PxZWuDp3U0UPAZ3PjFAh+5T+fc7gzCs9dPzSHloruU+gl\nFQIDAQAB\n-----END PUBLIC KEY-----\n';
+const WILDCARD_CERT_FINGERPRINT = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU=';
+const MULTIDOMAIN_CERT_FINGERPRINT = 'bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=';
+const CERT_ALGORITHM_RSA = '2a864886f70d010101';
+const PUBLIC_KEY_VERISIGN_CLASS3_G5_ROOT = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryQICCl6NZ5gDKrnSztO\n3Hy8PEUcuyvg/ikC+VcIo2SFFSf18a3IMYldIugqqqZCs4/4uVW3sbdLs/6PfgdX\n7O9D22ZiFWHPYA2k2N744MNiCD1UE+tJyllUhSblK48bn+v1oZHCM0nYQ2NqUkvS\nj+hwUU3RiWl7x3D2s9wSdNt7XUtW05a/FXehsPSiJfKvHJJnGOX0BgTvkLnkAOTd\nOrUZ/wK69Dzu4IvrN4vs9Nes8vbwPa/ddZEzGR0cQMt0JBkhk9kU/qwqUseP1QRJ\n5I1jR4g8aYPL/ke9K35PxZWuDp3U0UPAZ3PjFAh+5T+fc7gzCs9dPzSHloruU+gl\nFQIDAQAB\n-----END PUBLIC KEY-----\n';
 const pins = [
   {
     publicKeyInfo: [{
-      algorithmID: ALGORITHM_RSA,
+      algorithmID: CERT_ALGORITHM_RSA,
       algorithmParam: null,
-      fingerprints: ['bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=', MAIN_FP],
+      fingerprints: [MULTIDOMAIN_CERT_FINGERPRINT, WILDCARD_CERT_FINGERPRINT],
     }],
     url: /^app\.wire\.com$/i,
   },
   {
     publicKeyInfo: [{
-      algorithmID: ALGORITHM_RSA,
+      algorithmID: CERT_ALGORITHM_RSA,
       algorithmParam: null,
-      fingerprints: [MAIN_FP],
+      fingerprints: [MULTIDOMAIN_CERT_FINGERPRINT, WILDCARD_CERT_FINGERPRINT],
     }],
     url: /^(www\.)?wire\.com$/i,
   },
   {
     publicKeyInfo: [{
-      algorithmID: ALGORITHM_RSA,
+      algorithmID: CERT_ALGORITHM_RSA,
       algorithmParam: null,
-      fingerprints: [MAIN_FP],
+      fingerprints: [MULTIDOMAIN_CERT_FINGERPRINT, WILDCARD_CERT_FINGERPRINT],
     }],
     url: /^prod-(assets|nginz-https|nginz-ssl)\.wire\.com$/i,
   },
   {
-    issuerRootPubkeys: [VERISIGN_CLASS3_G5_ROOT],
+    issuerRootPubkeys: [PUBLIC_KEY_VERISIGN_CLASS3_G5_ROOT],
     publicKeyInfo: [],
     url: /^[a-z0-9]{14,63}\.cloudfront\.net$/i,
   },
