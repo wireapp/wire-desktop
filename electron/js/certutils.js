@@ -23,6 +23,7 @@ const rs = require('jsrsasign');
 const WILDCARD_CERT_FINGERPRINT = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU=';
 const MULTIDOMAIN_CERT_FINGERPRINT = 'bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=';
 const CERT_ALGORITHM_RSA = '2a864886f70d010101';
+// eslint-disable-next-line no-unused-vars
 const PUBLIC_KEY_VERISIGN_CLASS3_G5_ROOT = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryQICCl6NZ5gDKrnSztO\n3Hy8PEUcuyvg/ikC+VcIo2SFFSf18a3IMYldIugqqqZCs4/4uVW3sbdLs/6PfgdX\n7O9D22ZiFWHPYA2k2N744MNiCD1UE+tJyllUhSblK48bn+v1oZHCM0nYQ2NqUkvS\nj+hwUU3RiWl7x3D2s9wSdNt7XUtW05a/FXehsPSiJfKvHJJnGOX0BgTvkLnkAOTd\nOrUZ/wK69Dzu4IvrN4vs9Nes8vbwPa/ddZEzGR0cQMt0JBkhk9kU/qwqUseP1QRJ\n5I1jR4g8aYPL/ke9K35PxZWuDp3U0UPAZ3PjFAh+5T+fc7gzCs9dPzSHloruU+gl\nFQIDAQAB\n-----END PUBLIC KEY-----\n';
 const PUBLIC_KEY_DIGICERT_GLOBAL_ROOT_G2 = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQq2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5WztCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQvIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQAB\n-----END PUBLIC KEY-----';
 const pins = [
@@ -86,7 +87,7 @@ module.exports = {
       if (url.test(hostname.toLowerCase().trim())) {
         if (issuerRootPubkeys.length > 0) {
           const x509 = new rs.X509();
-          x509.readCertHex(issuerCertData);
+          x509.readCertHex(issuerCertHex);
 
           result.verifiedIssuerRootPubkeys = issuerRootPubkeys.some(rawPublicKey => {
             const x509PublicKey = rs.KEYUTIL.getKey(rawPublicKey);
