@@ -71,8 +71,8 @@ module.exports = {
       publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
       publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
       publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
-    } catch (err) {
-      console.error('Certificate verification failed', err);
+    } catch (error) {
+      console.error(`Certificate verification failed: ${error.message}`, error);
       return {decoding: false};
     }
 
