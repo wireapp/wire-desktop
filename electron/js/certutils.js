@@ -88,8 +88,8 @@ module.exports = {
           const x509 = new rs.X509();
           x509.readCertHex(issuerCertData);
 
-          result.verifiedIssuerRootPubkeys = issuerRootPubkeys.some(pubkey => {
-            const x509PublicKey = rs.KEYUTIL.getKey(pubkey);
+          result.verifiedIssuerRootPubkeys = issuerRootPubkeys.some(rawPublicKey => {
+            const x509PublicKey = rs.KEYUTIL.getKey(rawPublicKey);
             return x509.verifySignature(x509PublicKey);
           });
           if (!result.verifiedIssuerRootPubkeys) {
