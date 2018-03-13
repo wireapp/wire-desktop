@@ -65,6 +65,24 @@ const addDragRegion = () => {
     const titleBar = document.createElement('div');
     titleBar.className = 'drag-region';
     document.body.appendChild(titleBar);
+
+    let isDragging = false;
+    let isMoved = false;
+
+    titleBar.addEventListener('mousedown', () => (isDragging = true));
+    document.addEventListener('mousemove', () => (isMoved = isDragging));
+
+    titleBar.addEventListener('mouseup', e => {
+      if (isDragging && !isMoved) {
+        const selectedWebview = getSelectedWebview();
+        const cRect = selectedWebview.getBoundingClientRect();
+        const x = e.clientX - cRect.left;
+        const y = e.clientY - cRect.top;
+        selectedWebview.executeJavaScript('$(document.elementFromPoint(' + x + ',' + y + ')).click()');
+      }
+      isDragging = false;
+      isMoved = false;
+    });
   }
 };
 
