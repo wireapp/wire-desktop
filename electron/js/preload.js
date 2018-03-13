@@ -72,12 +72,12 @@ const addDragRegion = () => {
     titleBar.addEventListener('mousedown', () => (isDragging = true));
     document.addEventListener('mousemove', () => (isMoved = isDragging));
 
-    titleBar.addEventListener('mouseup', e => {
+    titleBar.addEventListener('mouseup', event => {
       if (isDragging && !isMoved) {
         const selectedWebview = getSelectedWebview();
         const cRect = selectedWebview.getBoundingClientRect();
-        const x = e.clientX - cRect.left;
-        const y = e.clientY - cRect.top;
+        const x = event.clientX - cRect.left;
+        const y = event.clientY - cRect.top;
         selectedWebview.executeJavaScript('$(document.elementFromPoint(' + x + ',' + y + ')).click()');
       }
       isDragging = false;
