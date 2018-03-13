@@ -49,6 +49,5 @@ body.os-mac .text a {
   left: 0;
   -webkit-user-select: none;
   -webkit-app-region: drag;
-  pointer-events: none;
   z-index: 1000000;
 }
