@@ -46,7 +46,7 @@
     "babel-plugin-transform-object-rest-spread": "6.26.0",
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
-    "css-loader": "0.28.10",
+    "css-loader": "0.28.11",
     "electron-builder": "18.6.2",
     "electron-mocha": "6.0.1",
     "electron-packager": "11.1.0",
