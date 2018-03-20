@@ -25,9 +25,6 @@ cache:
     - node_modules
     - electron/node_modules
 
-before_install:
-  - source "$HOME/.cargo/env"
-
 install:
   - npm install
 
