@@ -26,7 +26,6 @@ cache:
     - electron/node_modules
 
 before_install:
-  - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - source "$HOME/.cargo/env"
 
 install:

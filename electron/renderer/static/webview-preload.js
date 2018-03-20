@@ -117,18 +117,6 @@ const subscribeToMainProcessEvents = () => {
   );
 };
 
-const exposeLibsodiumNeon = () => {
-  try {
-    Object.assign(window.sodium, require('libsodium-neon'));
-    console.info('Using libsodium-neon.');
-  } catch (error) {
-    console.info(
-      'Failed loading "libsodium-neon", falling back to "libsodium.js".',
-      error
-    );
-  }
-};
-
 const exposeAddressbook = () => {
   let cachedAddressBook;
 
@@ -231,7 +219,6 @@ process.once('loaded', () => {
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
     exposeAddressbook();
-    exposeLibsodiumNeon();
 
     subscribeToMainProcessEvents();
     subscribeToWebappEvents();

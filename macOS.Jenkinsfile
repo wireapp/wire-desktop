@@ -22,22 +22,12 @@ node('master') {
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version;
 
-  stage('Install rust') {
-    withEnv(['PATH+RUST=/Users/jenkins/.cargo/bin']) {
-      def rust = sh returnStatus: true, script: 'rustc --version'
-      if(rust != 0) {
-        sh 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
-        sh 'rustc --version'
-      }
-    }
-  }
-
   stage('Build') {
     try {
       sh 'security unlock-keychain -p 123456 /Users/jenkins/Library/Keychains/login.keychain'
       sh 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.7.0', type: 'nodejs'
-      withEnv(['PATH+RUST=/Users/jenkins/.cargo/bin',"PATH+NODE=${NODE}/bin"]) {
+      withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
