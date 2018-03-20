@@ -20,21 +20,11 @@ node('Linux_Node') {
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version;
 
-  stage('Install rust') {
-    withEnv(['PATH+RUST=/home/jenkins/.cargo/bin']) {
-      def rust = sh returnStatus: true, script: 'rustc --version'
-      if(rust != 0) {
-        sh 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
-        sh 'rustc --version'
-      }
-    }
-  }
-
   stage('Build') {
     try {
       sh 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.9.4', type: 'nodejs'
-      withEnv(['PATH+RUST=/home/jenkins/.cargo/bin',"PATH+NODE=${NODE}/bin"]) {
+      withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm install -g grunt-cli'
         sh 'npm install'
