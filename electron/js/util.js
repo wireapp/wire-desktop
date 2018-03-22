@@ -106,44 +106,49 @@ module.exports = {
     win.center();
   },
 
-  importFromZip: filename => {
+  exportToZip: (stream, filename) => {
     return new Promise((resolve, reject) => {
-      fs.readFile(filename, (err, data) => {
-        const compressed = new Uint8Array(data);
-        if (err) {
-          return reject(err);
-        }
+      const input = [];
+
+      stream.on('data', data => input.push(data));
+      stream.on('error', error => reject(error));
+      stream.on('close', () => {
+        let deflated;
 
         try {
-          const result = pako.inflate(compressed, {to: 'string'});
-          const parsed = JSON.parse(result);
-          resolve(parsed);
-        } catch(err) {
-          reject(err);
+          deflated = pako.deflate(input);
+        } catch(error) {
+          return reject(error);
         }
+
+        fs.writeFile(filename, deflated, error => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve('File written');
+          }
+        });
       });
     });
   },
 
-  exportToZip: (stream, done) => {
+  importFromZip: filename => {
     return new Promise((resolve, reject) => {
-      /*const input = new Uint8Array();
-      stream.on('data', data => {
-        input.push(data);
-      });
+      const placeholder = [];
 
-      return pako.deflate(input);*/
+      fs.createReadStream(filename)
+        .on('data', chunk => placeholder.push(chunk))
+        .on('close', () => {
+          const compressed = new Uint8Array(Buffer.concat(placeholder));
 
-      const test = { my: 'super', puper: [456, 567], awesome: 'pako' };
-      const deflated = pako.deflate(JSON.stringify(test));
-
-      fs.writeFile('pako.test.zip', deflated, err => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve('File written');
-        }
-      });
+          try {
+            const result = pako.inflate(compressed, { to: 'string' });
+            const parsed = JSON.parse(result);
+            resolve(parsed);
+          } catch(err) {
+            reject(err);
+          }
+        });
     });
-  }
+  },
 };
