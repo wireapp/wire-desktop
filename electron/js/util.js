@@ -18,8 +18,6 @@
  */
 
 const electron = require('electron');
-const fs = require('fs');
-const pako = require('pako');
 const url = require('url');
 /*eslint-disable no-unused-vars*/
 const debug = require('debug');
@@ -104,51 +102,5 @@ module.exports = {
     win.setSize(config.WINDOW.AUTH.WIDTH, height);
     win.setResizable(false);
     win.center();
-  },
-
-  exportToZip: (stream, filename) => {
-    return new Promise((resolve, reject) => {
-      const input = [];
-
-      stream.on('data', data => input.push(data));
-      stream.on('error', error => reject(error));
-      stream.on('close', () => {
-        let deflated;
-
-        try {
-          deflated = pako.deflate(input);
-        } catch(error) {
-          return reject(error);
-        }
-
-        fs.writeFile(filename, deflated, error => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve('File written');
-          }
-        });
-      });
-    });
-  },
-
-  importFromZip: filename => {
-    return new Promise((resolve, reject) => {
-      const placeholder = [];
-
-      fs.createReadStream(filename)
-        .on('data', chunk => placeholder.push(chunk))
-        .on('close', () => {
-          const compressed = new Uint8Array(Buffer.concat(placeholder));
-
-          try {
-            const result = pako.inflate(compressed, { to: 'string' });
-            const parsed = JSON.parse(result);
-            resolve(parsed);
-          } catch(err) {
-            reject(err);
-          }
-        });
-    });
   },
 };

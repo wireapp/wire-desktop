@@ -64,6 +64,16 @@ const subscribeToWebappEvents = () => {
   amplify.subscribe(z.event.WebApp.TEAM.INFO, info => {
     ipcRenderer.sendToHost('team-info', info);
   });
+
+  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.EXPORT', (filename, data) => {
+    console.log('z.event.WebApp.IMPORTEXPORT.EXPORT called')
+    ipcRenderer.send('export-to-zip', filename, data);
+  });
+
+  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.IMPORT', filename => {
+    console.log('z.event.WebApp.IMPORTEXPORT.IMPORT called')
+    ipcRenderer.send('import-from-zip', filename);
+  });
 };
 
 const subscribeToMainProcessEvents = () => {
@@ -114,6 +124,12 @@ const subscribeToMainProcessEvents = () => {
       z.event.WebApp.LIFECYCLE.UPDATE,
       z.announce.UPDATE_SOURCE.DESKTOP
     )
+  );
+  ipcRenderer.on('exported-to-zip', filename =>
+    amplify.publish(z.event.WebApp.IMPORTEXPORT.EXPORTEDDATA, filename)
+  );
+  ipcRenderer.on('imported-from-zip', data =>
+    amplify.publish(z.event.WebApp.IMPORTEXPORT.IMPORTEDATA, data)
   );
 };
 

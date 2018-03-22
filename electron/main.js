@@ -23,6 +23,7 @@ const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
+const pako = require('pako');
 const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
@@ -192,6 +193,45 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 });
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
+
+// Export / import
+ipcMain.on('export-to-zip', (event, filename, data) => {
+  let deflated;
+
+  const str = JSON.stringify(data);
+  const uint = new Uint8Array(str.length);
+
+  for (let i = 0, j = str.length; i < j; ++i) {
+    uint[i] = str.charCodeAt(i);
+  }
+
+  try {
+    deflated = pako.deflate(uint);
+
+    fs.outputFile(path.resolve(filename), deflated).then(() => {
+      debugMain('Exported to ZIP');
+      event.sender.send('exported-to-zip', filename);
+    }).catch(error => {
+      throw new Error(error);
+    });
+  } catch(error) {
+    debugMain(`Failed to deflate data: ${data} with error: ${error.message}`);
+    console.error(`Failed to deflate data: ${data} with error: ${error.message}`);
+  }
+});
+
+ipcMain.on('import-from-zip', (event, filename) => {
+  fs.readFile(filename).then(buffer => {
+    const compressed = new Uint8Array(buffer);
+
+    try {
+      const inflated = pako.inflate(compressed, { to: 'string' });
+      event.sender.send('imported-from-zip', inflated);
+    } catch(error) {
+      debugMain(`Failed to inflate data from file "${filename}" with error: ${error.message}`);
+    }
+  });
+});
 
 const relaunchApp = () => {
   app.relaunch();
