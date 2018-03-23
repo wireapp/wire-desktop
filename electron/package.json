@@ -27,8 +27,7 @@
   },
   "description": "Secure messenger for everyone.",
   "devDependencies": {
-    "cross-spawn": "6.0.5",
-    "electron-rebuild": "1.7.3"
+    "cross-spawn": "6.0.5"
   },
   "environment": "internal",
   "homepage": "https://wire.com",
@@ -43,10 +42,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
-  },
-  "scripts": {
-    "install": "npm run rebuild-native-modules",
-    "rebuild-native-modules": "electron-rebuild -f -m ./"
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }
