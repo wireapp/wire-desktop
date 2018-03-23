@@ -65,13 +65,16 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost('team-info', info);
   });
 
-  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.EXPORT', (filename, data) => {
-    console.log('z.event.WebApp.IMPORTEXPORT.EXPORT called')
-    ipcRenderer.send('export-to-zip', filename, data);
+  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.EXPORT.DATA', (tableName, data) => {
+    ipcRenderer.send('export-table', tableName, data);
   });
 
-  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.IMPORT', filename => {
-    console.log('z.event.WebApp.IMPORTEXPORT.IMPORT called')
+  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.EXPORT.SENDER_DONE', () => {
+    ipcRenderer.send('export-zip');
+  });
+
+
+  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.IMPORT.START', filename => {
     ipcRenderer.send('import-from-zip', filename);
   });
 };
@@ -125,11 +128,17 @@ const subscribeToMainProcessEvents = () => {
       z.announce.UPDATE_SOURCE.DESKTOP
     )
   );
-  ipcRenderer.on('exported-to-zip', filename =>
-    amplify.publish(z.event.WebApp.IMPORTEXPORT.EXPORTEDDATA, filename)
+  ipcRenderer.on('export-error', error =>
+    amplify.publish('z.event.WebApp.IMPORTEXPORT.EXPORT.ERROR', error)
   );
-  ipcRenderer.on('imported-from-zip', data =>
-    amplify.publish(z.event.WebApp.IMPORTEXPORT.IMPORTEDATA, data)
+  ipcRenderer.on('export-zip-done', filename =>
+    amplify.publish('z.event.WebApp.IMPORTEXPORT.EXPORT.ZIP_DONE', filename)
+  );
+  ipcRenderer.on('import-zip-data', data =>
+    amplify.publish('z.event.WebApp.IMPORTEXPORT.IMPORT.DATA', data)
+  );
+  ipcRenderer.on('import-zip-error', (tableName, data) =>
+    amplify.publish('z.event.WebApp.IMPORTEXPORT.IMPORT.ERROR', tableName, data)
   );
 };
 
