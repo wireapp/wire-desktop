@@ -196,22 +196,28 @@ ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 // Export / import
 ipcMain.on('export-table', async (event, tableName, data) => {
-  const fileName = path.resolve('backup', tableName);
+  const tempFile = path.resolve('backup', '.temp', tableName);
 
   try {
-    const fileStats = await fs.stat(fileName);
+    const fileStats = await fs.stat(tempFile);
 
     if (fileStats.isFile()) {
-      const error = 'File already exists!';
-      event.sender.send('export-error', error)
-      return;
+      try {
+        await fs.appendFile(tempFile, data);
+        return;
+      } catch(error) {
+        debugMain(`Failed to append data to file "${tableName}" with error: ${error.message}`);
+        console.error(`Failed to append data to file: "${tableName}" with error: ${error.message}`);
+        event.sender.send('export-error', error)
+        return;
+      }
     }
   } catch(error) {
 
   }
 
   try {
-    await fs.outputFile(fileName, data);
+    await fs.outputFile(tempFile, data);
   } catch(error) {
     debugMain(`Failed to save data to file "${tableName}" with error: ${error.message}`);
     console.error(`Failed to save data to file: "${tableName}" with error: ${error.message}`);
@@ -221,13 +227,52 @@ ipcMain.on('export-table', async (event, tableName, data) => {
 });
 
 ipcMain.on('export-zip', async event => {
-  const filePath = path.resolve('backup');
-  const files = await fs.readdir(filePath);
+  const getTimestamp = () => {
+    const pad = obj => ('0' + obj).slice(-2);
+    const dateObj = new Date();
+    const year = dateObj.getFullYear();
+    const month = pad(dateObj.getMonth() + 1);
+    const day = pad(dateObj.getDate());
+    const hour = pad(dateObj.getHours());
+    const minutes = pad(dateObj.getMinutes());
+    const seconds = pad(dateObj.getSeconds());
+    return `${year}-${month}-${day}_${hour}-${minutes}-${seconds}`;
+  };
+
+  const backupPath = path.resolve('backup');
+  const tempPath = path.resolve(backupPath, '.temp');
+  let files;
+  try {
+    files = await fs.readdir(tempPath);
+  } catch(error) {
+    debugMain(`Failed to read directory "${tempPath}" with error: "${error.message}"`);
+    console.error(`Failed to read directory "${tempPath}" with error: "${error.message}"`);
+    event.sender.send('export-error', error);
+    return;
+  }
+
+  if (!files.length) {
+    const errorMessage = `No files to zip from "${tempPath}": Directory empty.`;
+    debugMain(errorMessage);
+    console.error(errorMessage);
+    event.sender.send('export-error', errorMessage);
+    return;
+  }
+
   const blob = await Promise.all(files.map(async filename => {
-    const resolvedFilename = path.resolve(filePath, filename);
-    const content = await fs.readFile(resolvedFilename, 'utf8');
+  const resolvedFilename = path.resolve(tempPath, filename);
+  let content;
+
+    try {
+      content = await fs.readFile(resolvedFilename, 'utf8');
+    } catch(error) {
+      debugMain(`Failed to read file "${resolvedFilename}" with error: "${error.message}"`);
+      console.error(`Failed to read file "${resolvedFilename}" with error: "${error.message}"`);
+      event.sender.send('export-error', error);
+    }
     return `{"${filename}":${content}}`;
   }));
+
   const data = blob.join('\n');
 
   let deflated;
@@ -235,27 +280,30 @@ ipcMain.on('export-zip', async event => {
   try {
     deflated = pako.deflate(data);
   } catch(error) {
-    debugMain(`Failed to deflate data: ${data} with error: ${error.message}`);
-    console.error(`Failed to deflate data: ${data} with error: ${error.message}`);
+    debugMain(`Failed to deflate data: ${data} with error: "${error.message}"`);
+    console.error(`Failed to deflate data: ${data} with error: "${error.message}"`);
     event.sender.send('export-error', error)
     return;
   }
 
-  const zipFilename = path.resolve(filePath, `backup-${Date.now()}.dat`);
+  const zipFilename = path.resolve(backupPath, `backup-${getTimestamp()}.dat`);
 
   try {
     await fs.outputFile(zipFilename, deflated);
   } catch(error) {
-    debugMain(`Failed to save data to file "${zipFilename}" with error: ${error.message}`);
-    console.error(`Failed to save data to file: "${zipFilename}" with error: ${error.message}`);
+    debugMain(`Failed to save data to file "${zipFilename}" with error: "${error.message}"`);
+    console.error(`Failed to save data to file: "${zipFilename}" with error: "${error.message}"`);
     event.sender.send('export-error', error)
     return;
   }
 
-  await Promise.all(files.map(filename => {
-    const resolvedFilename = path.resolve(filePath, filename);
-    fs.remove(resolvedFilename)
-  }));
+  try {
+    await fs.remove(tempPath);
+  } catch(error) {
+    debugMain(`Failed to remove directory "${tempPath}" with error: ${error.message}`);
+    console.error(`Failed to remove directory "${tempPath}" with error: ${error.message}`);
+    event.sender.send('export-error', error)
+  }
 
   event.sender.send('export-zip-done', zipFilename);
 });
@@ -269,24 +317,23 @@ ipcMain.on('import-from-zip', async (event, filename) => {
     const buffer = await fs.readFile(resolvedFilename);
     compressed = new Uint8Array(buffer);
   } catch(error) {
-    debugMain(`Failed to read data from file "${resolvedFilename}" with error: ${error.message}`);
-    console.error(`Failed to read data from file: "${resolvedFilename}" with error: ${error.message}`);
+    debugMain(`Failed to read data from file "${resolvedFilename}" with error: "${error.message}"`);
+    console.error(`Failed to read data from file: "${resolvedFilename}" with error: "${error.message}"`);
     return;
   }
 
   try {
     inflated = pako.inflate(compressed, { to: 'string' });
   } catch(error) {
-    debugMain(`Failed to inflate data from file "${resolvedFilename}" with error: ${error.message}`);
-    console.error(`Failed to inflate data from file "${resolvedFilename}" with error: ${error.message}`);
+    debugMain(`Failed to inflate data from file "${resolvedFilename}" with error: "${error.message}"`);
+    console.error(`Failed to inflate data from file "${resolvedFilename}" with error: "${error.message}"`);
     event.sender.send('import-error', error)
     return;
   }
 
   const tables = inflated.split('\n');
   tables.forEach(tableData => event.sender.send('import-zip-data', tableData));
-
-  event.sender.send('import-zip-done', inflated);
+  console.log(tables)
 });
 
 const relaunchApp = () => {
