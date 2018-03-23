@@ -73,7 +73,6 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.send('export-zip');
   });
 
-
   amplify.subscribe('z.event.WebApp.IMPORTEXPORT.IMPORT.START', filename => {
     ipcRenderer.send('import-from-zip', filename);
   });
@@ -131,14 +130,14 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('export-error', error =>
     amplify.publish('z.event.WebApp.IMPORTEXPORT.EXPORT.ERROR', error)
   );
-  ipcRenderer.on('export-zip-done', filename =>
+  ipcRenderer.on('export-done', filename =>
     amplify.publish('z.event.WebApp.IMPORTEXPORT.EXPORT.ZIP_DONE', filename)
   );
-  ipcRenderer.on('import-zip-data', data =>
+  ipcRenderer.on('import-data', data =>
     amplify.publish('z.event.WebApp.IMPORTEXPORT.IMPORT.DATA', data)
   );
-  ipcRenderer.on('import-zip-error', (tableName, data) =>
-    amplify.publish('z.event.WebApp.IMPORTEXPORT.IMPORT.ERROR', tableName, data)
+  ipcRenderer.on('import-error', error =>
+    amplify.publish('z.event.WebApp.IMPORTEXPORT.IMPORT.ERROR', error)
   );
 };
 

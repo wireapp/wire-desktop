@@ -305,7 +305,7 @@ ipcMain.on('export-zip', async event => {
     event.sender.send('export-error', error)
   }
 
-  event.sender.send('export-zip-done', zipFilename);
+  event.sender.send('export-done', zipFilename);
 });
 
 ipcMain.on('import-from-zip', async (event, filename) => {
@@ -319,6 +319,7 @@ ipcMain.on('import-from-zip', async (event, filename) => {
   } catch(error) {
     debugMain(`Failed to read data from file "${resolvedFilename}" with error: "${error.message}"`);
     console.error(`Failed to read data from file: "${resolvedFilename}" with error: "${error.message}"`);
+    event.sender.send('import-error', error)
     return;
   }
 
@@ -332,8 +333,8 @@ ipcMain.on('import-from-zip', async (event, filename) => {
   }
 
   const tables = inflated.split('\n');
-  tables.forEach(tableData => event.sender.send('import-zip-data', tableData));
-  console.log(tables)
+  console.log('imported tables', tables);
+  tables.forEach(tableData => event.sender.send('import-data', tableData));
 });
 
 const relaunchApp = () => {
