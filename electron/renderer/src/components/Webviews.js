@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2017 Wire Swiss GmbH
+ * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,23 +87,33 @@ class Webviews extends Component {
 
   _onIpcMessage(account, { channel, args }) {
     switch (channel) {
-      case 'notification-click':
+      case 'notification-click': {
         this.props.switchAccount(account.id);
         break;
+      }
+
       case 'lifecycle-signed-in':
-      case 'lifecycle-signed-out':
+      case 'lifecycle-signed-out': {
         this.props.updateAccountLifecycle(account.id, channel);
         break;
-      case 'lifecycle-unread-count':
+      }
+
+      case 'lifecycle-unread-count': {
         this._onUnreadCountUpdated(account.id, args[0]);
         break;
-      case 'signed-out':
+      }
+
+      case 'signed-out': {
         this._deleteWebview(account);
         break;
-      case 'team-info':
+      }
+
+      case 'team-info': {
         this.props.updateAccountData(account.id, args[0]);
         break;
+      }
     }
+
     this.setState({ canDelete: { ...this.state.canDelete, [account.id]: this._canDeleteWebview(account) } });
   }
 

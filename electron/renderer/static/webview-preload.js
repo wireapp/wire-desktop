@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2017 Wire Swiss GmbH
+ * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost('lifecycle-unread-count', count);
   });
 
-  amplify.subscribe(z.event.WebApp.SYSTEM_NOTIFICATION.CLICK, () => {
+  amplify.subscribe(z.event.WebApp.NOTIFICATION.CLICK, () => {
     ipcRenderer.send('notification-click');
     ipcRenderer.sendToHost('notification-click');
   });
@@ -118,18 +118,6 @@ const subscribeToMainProcessEvents = () => {
       z.announce.UPDATE_SOURCE.DESKTOP
     )
   );
-};
-
-const exposeLibsodiumNeon = () => {
-  try {
-    Object.assign(window.sodium, require('libsodium-neon'));
-    console.info('Using libsodium-neon.');
-  } catch (error) {
-    console.info(
-      'Failed loading "libsodium-neon", falling back to "libsodium.js".',
-      error
-    );
-  }
 };
 
 const exposeAddressbook = () => {
@@ -234,7 +222,6 @@ process.once('loaded', () => {
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
     exposeAddressbook();
-    exposeLibsodiumNeon();
 
     subscribeToMainProcessEvents();
     subscribeToWebappEvents();

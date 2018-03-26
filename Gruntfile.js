@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2017 Wire Swiss GmbH
+ * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,14 +149,19 @@ module.exports = function(grunt) {
       linux_prod: {
         options: {
           productName: 'wire-desktop',
-          targets: ['deb', 'AppImage'],
+          targets: ['deb', 'rpm', 'AppImage'],
           linux: {
             fpm: ['--name', 'wire-desktop'],
             executableName: 'wire-desktop',
+            desktop: LINUX_DESKTOP,
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
-            desktop: LINUX_DESKTOP,
+          },
+          deb: {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
+          },
+          rpm: {
+            depends: ['alsa-lib', 'Gconf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
           },
         },
       },
@@ -164,14 +169,19 @@ module.exports = function(grunt) {
       linux_internal: {
         options: {
           productName: 'wire-desktop-internal',
-          targets: ['deb', 'AppImage'],
+          targets: ['deb', 'rpm', 'AppImage'],
           linux: {
             fpm: ['--name', 'wire-desktop-internal'],
             executableName: 'wire-desktop-internal',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
             desktop: LINUX_DESKTOP,
+          },
+          deb: {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
+          },
+          rpm: {
+            depends: ['alsa-lib', 'Gconf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
           },
         },
       },

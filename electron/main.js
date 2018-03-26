@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2017 Wire Swiss GmbH
+ * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -410,7 +410,7 @@ const discloseWindowID = browserWindow => {
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
 app.on('window-all-closed', event => {
-  if (!environment.isMacOS) {
+  if (!environment.platform.IS_MAC_OS) {
     app.quit();
   }
 });
