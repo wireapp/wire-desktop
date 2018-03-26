@@ -227,21 +227,42 @@ ipcMain.on('export-table', async (event, tableName, data) => {
 });
 
 ipcMain.on('export-zip', async event => {
+  const now = new Date();
+  const backupPath = path.resolve('backup');
+  const tempPath = path.resolve(backupPath, '.temp');
+  const metadataFile = path.resolve(tempPath, 'metadata.json');
+  let files;
+  let zipped;
+
   const getTimestamp = () => {
     const pad = obj => ('0' + obj).slice(-2);
-    const dateObj = new Date();
-    const year = dateObj.getFullYear();
-    const month = pad(dateObj.getMonth() + 1);
-    const day = pad(dateObj.getDate());
-    const hour = pad(dateObj.getHours());
-    const minutes = pad(dateObj.getMinutes());
-    const seconds = pad(dateObj.getSeconds());
+    const year = now.getFullYear();
+    const month = pad(now.getMonth() + 1);
+    const day = pad(now.getDate());
+    const hour = pad(now.getHours());
+    const minutes = pad(now.getMinutes());
+    const seconds = pad(now.getSeconds());
     return `${year}-${month}-${day}_${hour}-${minutes}-${seconds}`;
   };
 
-  const backupPath = path.resolve('backup');
-  const tempPath = path.resolve(backupPath, '.temp');
-  let files;
+  // TODO
+  const metadata = {
+    platform: 'Web',
+    version: webappVersion,
+    user: '',
+    creation_time: now.toISOString(),
+    client_id: '',
+  };
+
+  try {
+    await fs.outputFile(metadataFile, metadata);
+  } catch(error) {
+    debugMain(`Failed to save metadata to file "${metadataFile}" with error: ${error.message}`);
+    console.error(`Failed to save metadata to file: "${metadataFile}" with error: ${error.message}`);
+    event.sender.send('export-error', error)
+    return;
+  }
+
   try {
     files = await fs.readdir(tempPath);
   } catch(error) {
@@ -260,8 +281,8 @@ ipcMain.on('export-zip', async event => {
   }
 
   const blob = await Promise.all(files.map(async filename => {
-  const resolvedFilename = path.resolve(tempPath, filename);
-  let content;
+    const resolvedFilename = path.resolve(tempPath, filename);
+    let content;
 
     try {
       content = await fs.readFile(resolvedFilename, 'utf8');
@@ -274,8 +295,6 @@ ipcMain.on('export-zip', async event => {
   }));
 
   const data = blob.join('\n');
-
-  let zipped;
 
   try {
     zipped = pako.gzip(data);
