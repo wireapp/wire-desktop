@@ -26,7 +26,7 @@ const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
-const {Server} = require('@wireapp/wire-desktop-server');
+const {Server, Environment} = require('@wireapp/desktop-server');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -59,8 +59,12 @@ const windowManager = require('./js/window-manager');
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = environment.web.get_url_webapp(argv.env);
 const pkg = require('./package.json');
+
+// Set development mode for environment (default is false)
+if (pkg.environment !== 'production') {
+  Environment.isDevelopment = true;
+}
 
 // Icon
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -83,7 +87,7 @@ raygunClient.onBeforeSend(payload => {
   return payload;
 });
 
-if (environment.app.IS_DEVELOPMENT) {
+if (Environment.isDevelopment) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
@@ -239,7 +243,6 @@ const showMainWindow = async () => {
   } else {
     main.setBounds(settings.restore('bounds', main.getBounds()));
   }
-
   let baseURL = `${opts.url}/`;
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
@@ -425,10 +428,10 @@ app.on('quit', async () => await settings.persistToFile());
 ///////////////////////////////////////////////////////////////////////////////
 // System Menu & Tray Icon & Show window
 ///////////////////////////////////////////////////////////////////////////////
-app.on('ready', () => {
+app.on('ready', async () => {
   const appMenu = systemMenu.createMenu();
-  if (environment.app.IS_DEVELOPMENT) {
-    appMenu.append(developerMenu);
+  if (Environment.isDevelopment) {
+    appMenu.append(await developerMenu());
   }
   appMenu.on('about-wire', () => {
     showAboutWindow();

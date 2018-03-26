@@ -21,17 +21,6 @@
 const pkg = require('./../package.json');
 const settings = require('./lib/settings');
 
-let currentEnvironment = undefined;
-
-const TYPE = {
-  DEV: 'dev',
-  EDGE: 'edge',
-  INTERNAL: 'internal',
-  LOCALHOST: 'localhost',
-  PRODUCTION: 'production',
-  STAGING: 'staging',
-};
-
 const URL_ADMIN = {
   PRODUCTION: 'https://teams.wire.com',
   STAGING: 'https://wire-admin-staging.zinfra.io',
@@ -44,42 +33,15 @@ const URL_WEBSITE = {
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
-const URL_WEBAPP = {
-  DEV: 'https://wire-webapp-dev.zinfra.io',
-  EDGE: 'https://wire-webapp-edge.zinfra.io',
-  INTERNAL: 'https://wire-webapp-staging.wire.com/?env=prod',
-  LOCALHOST: 'http://localhost:8888',
-  PRODUCTION: 'https://app.wire.com',
-  STAGING: 'https://wire-webapp-staging.zinfra.io',
-};
-
 const _app = {
   ENV: pkg.environment,
-  IS_DEVELOPMENT: pkg.environment !== 'production',
-  IS_PRODUCTION: pkg.environment === 'production',
   UPDATE_URL_WIN: pkg.updateWinUrl,
-};
-
-const _getEnvironment = () => {
-  return currentEnvironment = currentEnvironment || settings.restore('env', TYPE.INTERNAL);
-};
-
-const _is_prod_environment = () => {
-  return [
-    TYPE.INTERNAL,
-    TYPE.PRODUCTION,
-  ].includes(_getEnvironment());
 };
 
 const _platform = {
   IS_LINUX: process.platform === 'linux',
   IS_MAC_OS: process.platform === 'darwin',
   IS_WINDOWS: process.platform === 'win32',
-};
-
-const _setEnvironment = (env) => {
-  currentEnvironment = env || settings.restore('env', TYPE.INTERNAL);
-  settings.save('env', currentEnvironment);
 };
 
 const _web = {
@@ -89,10 +51,7 @@ const _web = {
 };
 
 module.exports = {
-  TYPE: TYPE,
   app: _app,
-  getEnvironment: _getEnvironment,
   platform: _platform,
-  setEnvironment: _setEnvironment,
   web: _web,
 };
