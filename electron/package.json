@@ -43,5 +43,6 @@
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
-  "updateWinUrl": "https://wire-app.wire.com/win/internal/"
+  "updateWinUrl": "https://wire-app.wire.com/win/internal/",
+  "version": "1.2.4"
 }
