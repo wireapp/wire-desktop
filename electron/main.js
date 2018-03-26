@@ -210,9 +210,8 @@ ipcMain.on('export-table', async (event, tableName, data) => {
 
 ipcMain.on('export-zip', async event => {
   const now = new Date();
-  const backupPath = path.resolve('backup');
-  const tempPath = path.resolve(backupPath, '.temp');
-  const metadataFile = path.resolve(tempPath, 'metadata.json');
+  const tempPath = path.join(BACKUP_DIR, '.temp');
+  const metadataFile = path.join(tempPath, 'metadata.json');
   let files;
   let zipped;
 
