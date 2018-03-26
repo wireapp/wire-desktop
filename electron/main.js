@@ -77,7 +77,7 @@ let webappVersion;
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
 ///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({ apiKey: config.RAYGUN_API_KEY });
+raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
 
 raygunClient.onBeforeSend(payload => {
   delete payload.details.machineName;
@@ -205,23 +205,23 @@ ipcMain.on('export-table', async (event, tableName, data) => {
       try {
         await fs.appendFile(tempFile, data);
         return;
-      } catch(error) {
+      } catch (error) {
         debugMain(`Failed to append data to file "${tableName}" with error: ${error.message}`);
         console.error(`Failed to append data to file: "${tableName}" with error: ${error.message}`);
-        event.sender.send('export-error', error)
+        event.sender.send('export-error', error);
         return;
       }
     }
-  } catch(error) {
+  } catch (error) {
 
   }
 
   try {
     await fs.outputFile(tempFile, data);
-  } catch(error) {
+  } catch (error) {
     debugMain(`Failed to save data to file "${tableName}" with error: ${error.message}`);
     console.error(`Failed to save data to file: "${tableName}" with error: ${error.message}`);
-    event.sender.send('export-error', error)
+    event.sender.send('export-error', error);
     return;
   }
 });
@@ -256,16 +256,16 @@ ipcMain.on('export-zip', async event => {
 
   try {
     await fs.outputFile(metadataFile, metadata);
-  } catch(error) {
+  } catch (error) {
     debugMain(`Failed to save metadata to file "${metadataFile}" with error: ${error.message}`);
     console.error(`Failed to save metadata to file: "${metadataFile}" with error: ${error.message}`);
-    event.sender.send('export-error', error)
+    event.sender.send('export-error', error);
     return;
   }
 
   try {
     files = await fs.readdir(tempPath);
-  } catch(error) {
+  } catch (error) {
     debugMain(`Failed to read directory "${tempPath}" with error: "${error.message}"`);
     console.error(`Failed to read directory "${tempPath}" with error: "${error.message}"`);
     event.sender.send('export-error', error);
@@ -286,7 +286,7 @@ ipcMain.on('export-zip', async event => {
 
     try {
       content = await fs.readFile(resolvedFilename, 'utf8');
-    } catch(error) {
+    } catch (error) {
       debugMain(`Failed to read file "${resolvedFilename}" with error: "${error.message}"`);
       console.error(`Failed to read file "${resolvedFilename}" with error: "${error.message}"`);
       event.sender.send('export-error', error);
@@ -298,10 +298,10 @@ ipcMain.on('export-zip', async event => {
 
   try {
     zipped = pako.gzip(data);
-  } catch(error) {
+  } catch (error) {
     debugMain(`Failed to gzip data: ${data} with error: "${error.message}"`);
     console.error(`Failed to gzip data: ${data} with error: "${error.message}"`);
-    event.sender.send('export-error', error)
+    event.sender.send('export-error', error);
     return;
   }
 
@@ -309,19 +309,19 @@ ipcMain.on('export-zip', async event => {
 
   try {
     await fs.outputFile(zipFilename, zipped);
-  } catch(error) {
+  } catch (error) {
     debugMain(`Failed to save data to file "${zipFilename}" with error: "${error.message}"`);
     console.error(`Failed to save data to file: "${zipFilename}" with error: "${error.message}"`);
-    event.sender.send('export-error', error)
+    event.sender.send('export-error', error);
     return;
   }
 
   try {
     await fs.remove(tempPath);
-  } catch(error) {
+  } catch (error) {
     debugMain(`Failed to remove directory "${tempPath}" with error: ${error.message}`);
     console.error(`Failed to remove directory "${tempPath}" with error: ${error.message}`);
-    event.sender.send('export-error', error)
+    event.sender.send('export-error', error);
   }
 
   event.sender.send('export-done', zipFilename);
@@ -335,19 +335,19 @@ ipcMain.on('import-from-zip', async (event, filename) => {
   try {
     const buffer = await fs.readFile(resolvedFilename);
     compressed = new Uint8Array(buffer);
-  } catch(error) {
+  } catch (error) {
     debugMain(`Failed to read data from file "${resolvedFilename}" with error: "${error.message}"`);
     console.error(`Failed to read data from file: "${resolvedFilename}" with error: "${error.message}"`);
-    event.sender.send('import-error', error)
+    event.sender.send('import-error', error);
     return;
   }
 
   try {
-    unzipped = pako.ungzip(compressed, { to: 'string' });
-  } catch(error) {
+    unzipped = pako.ungzip(compressed, {to: 'string'});
+  } catch (error) {
     debugMain(`Failed to ungzip data from file "${resolvedFilename}" with error: "${error.message}"`);
     console.error(`Failed to ungzip data from file "${resolvedFilename}" with error: "${error.message}"`);
-    event.sender.send('import-error', error)
+    event.sender.send('import-error', error);
     return;
   }
 
