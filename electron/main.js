@@ -23,6 +23,7 @@ const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
+const os = require('os');
 const pako = require('pako');
 const path = require('path');
 const raygun = require('raygun');
@@ -38,6 +39,7 @@ const ABOUT_WINDOW_WHITELIST = [ABOUT_HTML,
   fileUrl(path.join(APP_PATH, 'css', 'about.css')),
 ];
 const CERT_ERR_HTML = fileUrl(path.join(APP_PATH, 'html', 'certificate-error.html'));
+const BACKUP_DIR = path.join(app.getPath('userData'), 'backups');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
@@ -196,33 +198,13 @@ ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 // Export / import
 ipcMain.on('export-table', async (event, tableName, data) => {
-  const tempFile = path.resolve('backup', '.temp', tableName);
+  const tempFile = path.join(BACKUP_DIR, '.temp', `${tableName}.txt`);
+  console.log(`Writing to file "${tempFile}" ...`);
 
   try {
-    const fileStats = await fs.stat(tempFile);
-
-    if (fileStats.isFile()) {
-      try {
-        await fs.appendFile(tempFile, data);
-        return;
-      } catch (error) {
-        debugMain(`Failed to append data to file "${tableName}" with error: ${error.message}`);
-        console.error(`Failed to append data to file: "${tableName}" with error: ${error.message}`);
-        event.sender.send('export-error', error);
-        return;
-      }
-    }
+    await fs.outputFile(tempFile, `${data}${os.EOL}`, {flag: 'a'});
   } catch (error) {
-
-  }
-
-  try {
-    await fs.outputFile(tempFile, data);
-  } catch (error) {
-    debugMain(`Failed to save data to file "${tableName}" with error: ${error.message}`);
-    console.error(`Failed to save data to file: "${tableName}" with error: ${error.message}`);
     event.sender.send('export-error', error);
-    return;
   }
 });
 
@@ -305,7 +287,7 @@ ipcMain.on('export-zip', async event => {
     return;
   }
 
-  const zipFilename = path.resolve(backupPath, `backup-${getTimestamp()}.dat`);
+  const zipFilename = path.resolve(backupPath, `backup-${getTimestamp()}.gz`);
 
   try {
     await fs.outputFile(zipFilename, zipped);
