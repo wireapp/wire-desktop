@@ -198,7 +198,14 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-ipcMain.on('export-table', backupManager.saveTable.bind(backupManager));
+ipcMain.on('export-table', (event, tableName, data) => {
+  try {
+    backupManager.saveTable(event, tableName, data);
+  } catch (error) {
+    console.error(error.message, error.stack);
+    event.sender.send('export-error', error);
+  }
+});
 
 ipcMain.on('export-zip', async event => {
   const now = new Date();
@@ -217,7 +224,13 @@ ipcMain.on('export-zip', async event => {
     return `${year}-${month}-${day}_${hour}-${minutes}-${seconds}`;
   };
 
-  await backupManager.saveMetaDescription();
+  try {
+    await backupManager.saveMetaDescription();
+  } catch (error) {
+    console.error('Failed to write meta file.');
+    event.sender.send('export-error', error);
+    return;
+  }
 
   try {
     files = await fs.readdir(tempPath);

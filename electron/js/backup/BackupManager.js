@@ -1,4 +1,4 @@
-const os = require('os');
+const fs = require('fs-extra');
 const path = require('path');
 
 class BackupManager {
@@ -10,15 +10,15 @@ class BackupManager {
     const tempFile = path.join(this.rootDirectory, '.temp', `${tableName}.txt`);
     console.log(`Writing to file "${tempFile}" ...`);
 
-    try {
-      await fs.outputFile(tempFile, `${data}${os.EOL}`, {flag: 'a'});
-    } catch (error) {
-      event.sender.send('export-error', error);
+    if (typeof data === 'number') {
+      return fs.remove(tempFile);
+    } else {
+      return fs.outputFile(tempFile, `${data}\r\n`, {flag: 'a'});
     }
   }
 
   async saveMetaDescription(clientId, userId) {
-    const file = path.join(this.rootDirectory, 'metadata.json');
+    const file = path.join(this.rootDirectory, 'descriptor.json');
     const now = new Date();
 
     // https://github.com/wireapp/architecture/issues/98
@@ -30,7 +30,7 @@ class BackupManager {
       version: webappVersion,
     };
 
-    return fs.outputFile(file, meta);
+    return fs.outputFile(file, JSON.stringify(meta));
   }
 }
 
