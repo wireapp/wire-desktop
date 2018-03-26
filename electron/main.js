@@ -198,12 +198,11 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-ipcMain.on('export-table', backupManager.exportTable.bind(backupManager));
+ipcMain.on('export-table', backupManager.saveTable.bind(backupManager));
 
 ipcMain.on('export-zip', async event => {
   const now = new Date();
   const tempPath = path.join(BACKUP_DIR, '.temp');
-  const metadataFile = path.join(tempPath, 'metadata.json');
   let files;
   let zipped;
 
@@ -218,23 +217,7 @@ ipcMain.on('export-zip', async event => {
     return `${year}-${month}-${day}_${hour}-${minutes}-${seconds}`;
   };
 
-  // TODO
-  const metadata = {
-    platform: 'Web',
-    version: webappVersion,
-    user: '',
-    creation_time: now.toISOString(),
-    client_id: '',
-  };
-
-  try {
-    await fs.outputFile(metadataFile, metadata);
-  } catch (error) {
-    debugMain(`Failed to save metadata to file "${metadataFile}" with error: ${error.message}`);
-    console.error(`Failed to save metadata to file: "${metadataFile}" with error: ${error.message}`);
-    event.sender.send('export-error', error);
-    return;
-  }
+  await backupManager.saveMetaDescription();
 
   try {
     files = await fs.readdir(tempPath);
