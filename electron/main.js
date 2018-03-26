@@ -23,11 +23,12 @@ const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
-const os = require('os');
 const pako = require('pako');
 const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
+
+const BackupManager = require('./js/backup/BackupManager');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -69,6 +70,7 @@ const pkg = require('./package.json');
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
+const backupManager = new BackupManager(BACKUP_DIR);
 let main;
 let raygunClient;
 let about;
@@ -196,17 +198,7 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-// Export / import
-ipcMain.on('export-table', async (event, tableName, data) => {
-  const tempFile = path.join(BACKUP_DIR, '.temp', `${tableName}.txt`);
-  console.log(`Writing to file "${tempFile}" ...`);
-
-  try {
-    await fs.outputFile(tempFile, `${data}${os.EOL}`, {flag: 'a'});
-  } catch (error) {
-    event.sender.send('export-error', error);
-  }
-});
+ipcMain.on('export-table', backupManager.exportTable.bind(backupManager));
 
 ipcMain.on('export-zip', async event => {
   const now = new Date();
