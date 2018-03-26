@@ -275,13 +275,13 @@ ipcMain.on('export-zip', async event => {
 
   const data = blob.join('\n');
 
-  let deflated;
+  let zipped;
 
   try {
-    deflated = pako.deflate(data);
+    zipped = pako.gzip(data);
   } catch(error) {
-    debugMain(`Failed to deflate data: ${data} with error: "${error.message}"`);
-    console.error(`Failed to deflate data: ${data} with error: "${error.message}"`);
+    debugMain(`Failed to gzip data: ${data} with error: "${error.message}"`);
+    console.error(`Failed to gzip data: ${data} with error: "${error.message}"`);
     event.sender.send('export-error', error)
     return;
   }
@@ -289,7 +289,7 @@ ipcMain.on('export-zip', async event => {
   const zipFilename = path.resolve(backupPath, `backup-${getTimestamp()}.dat`);
 
   try {
-    await fs.outputFile(zipFilename, deflated);
+    await fs.outputFile(zipFilename, zipped);
   } catch(error) {
     debugMain(`Failed to save data to file "${zipFilename}" with error: "${error.message}"`);
     console.error(`Failed to save data to file: "${zipFilename}" with error: "${error.message}"`);
@@ -311,7 +311,7 @@ ipcMain.on('export-zip', async event => {
 ipcMain.on('import-from-zip', async (event, filename) => {
   const resolvedFilename = path.resolve('backup', filename);
   let compressed;
-  let inflated;
+  let unzipped;
 
   try {
     const buffer = await fs.readFile(resolvedFilename);
@@ -324,15 +324,15 @@ ipcMain.on('import-from-zip', async (event, filename) => {
   }
 
   try {
-    inflated = pako.inflate(compressed, { to: 'string' });
+    unzipped = pako.ungzip(compressed, { to: 'string' });
   } catch(error) {
-    debugMain(`Failed to inflate data from file "${resolvedFilename}" with error: "${error.message}"`);
-    console.error(`Failed to inflate data from file "${resolvedFilename}" with error: "${error.message}"`);
+    debugMain(`Failed to ungzip data from file "${resolvedFilename}" with error: "${error.message}"`);
+    console.error(`Failed to ungzip data from file "${resolvedFilename}" with error: "${error.message}"`);
     event.sender.send('import-error', error)
     return;
   }
 
-  const tables = inflated.split('\n');
+  const tables = unzipped.split('\n');
   console.log('imported tables', tables);
   tables.forEach(tableData => event.sender.send('import-data', tableData));
 });
