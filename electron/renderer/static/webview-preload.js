@@ -29,7 +29,8 @@ const { app } = remote;
 webFrame.registerURLSchemeAsPrivileged('zeta', {secure: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, bypassCSP: false});
 console.log('Registered protocol');
 
-webFrame.setZoomLevelLimits(1, 1);
+webFrame.setVisualZoomLevelLimits(1, 1);
+webFrame.setLayoutZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
