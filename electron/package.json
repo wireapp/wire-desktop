@@ -12,7 +12,6 @@
     "minimist": "1.2.0",
     "moment": "2.21.0",
     "open-graph": "0.2.3",
-    "pako": "1.0.6",
     "prop-types": "15.6.1",
     "raygun": "0.9.1",
     "react": "16.2.0",
@@ -23,6 +22,7 @@
     "redux-thunk": "2.2.0",
     "request": "2.85.0",
     "spellchecker": "3.4.4",
+    "tar": "4.4.1",
     "uuid": "3.2.1",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },

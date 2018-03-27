@@ -23,8 +23,6 @@ const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
-const moment = require('moment');
-const pako = require('pako');
 const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
@@ -71,7 +69,7 @@ const pkg = require('./package.json');
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
-const backupManager = new BackupManager(BACKUP_DIR);
+const backupManager = new BackupManager(BACKUP_DIR, pkg.version);
 let main;
 let raygunClient;
 let about;
@@ -153,6 +151,7 @@ if (environment.platform.IS_LINUX) {
 ///////////////////////////////////////////////////////////////////////////////
 ipcMain.once('webapp-version', (event, version) => {
   webappVersion = version;
+  backupManager.webappVersion = version;
 });
 
 ipcMain.on('save-picture', (event, fileName, bytes) => {
@@ -209,108 +208,40 @@ ipcMain.on('export-table', (event, tableName, data) => {
 });
 
 ipcMain.on('export-zip', async event => {
-  const timestamp = moment().format('YYYY-MM-DD_HH-MM-SS');
-  const tempPath = path.join(BACKUP_DIR, '.temp');
-  let files;
-  let zipped;
+  let archiveFilename;
 
   try {
     await backupManager.saveMetaDescription();
   } catch (error) {
-    console.error('Failed to write meta file.');
+    console.error(`Failed to write meta file with error: ${error.message}`);
     event.sender.send('export-error', error);
     return;
   }
 
   try {
-    files = await fs.readdir(tempPath);
-  } catch (error) {
-    debugMain(`Failed to read directory "${tempPath}" with error: "${error.message}"`);
-    console.error(`Failed to read directory "${tempPath}" with error: "${error.message}"`);
+    archiveFilename = await backupManager.saveArchiveFile();
+  } catch(error) {
+    debugMain(`Failed to create tar file with error: "${error.message}"`);
+    console.error(`Failed to save tar file with error: "${error.message}"`);
     event.sender.send('export-error', error);
     return;
   }
 
-  if (!files.length) {
-    const errorMessage = `No files to zip from "${tempPath}": Directory empty.`;
-    debugMain(errorMessage);
-    console.error(errorMessage);
-    event.sender.send('export-error', errorMessage);
-    return;
-  }
-
-  const blob = await Promise.all(files.map(async filename => {
-    const resolvedFilename = path.resolve(tempPath, filename);
-    let content;
-
-    try {
-      content = await fs.readFile(resolvedFilename, 'utf8');
-    } catch (error) {
-      debugMain(`Failed to read file "${resolvedFilename}" with error: "${error.message}"`);
-      console.error(`Failed to read file "${resolvedFilename}" with error: "${error.message}"`);
-      event.sender.send('export-error', error);
-    }
-    return `{"${filename}":${content}}`;
-  }));
-
-  const data = blob.join('\n');
-
-  try {
-    zipped = pako.gzip(data);
-  } catch (error) {
-    debugMain(`Failed to gzip data: ${data} with error: "${error.message}"`);
-    console.error(`Failed to gzip data: ${data} with error: "${error.message}"`);
-    event.sender.send('export-error', error);
-    return;
-  }
-
-  const zipFilename = path.resolve(backupPath, `backup-${getTimestamp()}.gz`);
-
-  try {
-    await fs.outputFile(zipFilename, zipped);
-  } catch (error) {
-    debugMain(`Failed to save data to file "${zipFilename}" with error: "${error.message}"`);
-    console.error(`Failed to save data to file: "${zipFilename}" with error: "${error.message}"`);
-    event.sender.send('export-error', error);
-    return;
-  }
-
-  try {
-    await fs.remove(tempPath);
-  } catch (error) {
-    debugMain(`Failed to remove directory "${tempPath}" with error: ${error.message}`);
-    console.error(`Failed to remove directory "${tempPath}" with error: ${error.message}`);
-    event.sender.send('export-error', error);
-  }
-
-  event.sender.send('export-done', zipFilename);
+  event.sender.send('export-done', archiveFilename);
 });
 
 ipcMain.on('import-from-zip', async (event, filename) => {
-  const resolvedFilename = path.resolve('backup', filename);
-  let compressed;
-  let unzipped;
+  let tables;
 
   try {
-    const buffer = await fs.readFile(resolvedFilename);
-    compressed = new Uint8Array(buffer);
+    tables = await backupManager.restoreFromZip(filename);
   } catch (error) {
-    debugMain(`Failed to read data from file "${resolvedFilename}" with error: "${error.message}"`);
-    console.error(`Failed to read data from file: "${resolvedFilename}" with error: "${error.message}"`);
+    debugMain(`Failed to import from file "${filename}" with error: "${error.message}"`);
+    console.error(`Failed to import from file: "${filename}" with error: "${error.message}"`);
     event.sender.send('import-error', error);
     return;
   }
 
-  try {
-    unzipped = pako.ungzip(compressed, {to: 'string'});
-  } catch (error) {
-    debugMain(`Failed to ungzip data from file "${resolvedFilename}" with error: "${error.message}"`);
-    console.error(`Failed to ungzip data from file "${resolvedFilename}" with error: "${error.message}"`);
-    event.sender.send('import-error', error);
-    return;
-  }
-
-  const tables = unzipped.split('\n');
   console.log('imported tables', tables);
   tables.forEach(tableData => event.sender.send('import-data', tableData));
 });
