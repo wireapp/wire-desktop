@@ -21,7 +21,8 @@ const { ipcRenderer, webFrame } = require('electron');
 const environment = require('./environment');
 const locale = require('../locale/locale');
 
-webFrame.setZoomLevelLimits(1, 1);
+webFrame.setVisualZoomLevelLimits(1, 1);
+webFrame.setLayoutZoomLevelLimits(1, 1);
 
 window.locStrings = locale[locale.getCurrent()];
 window.locStringsDefault = locale['en'];
