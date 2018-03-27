@@ -10,6 +10,7 @@
     "jsrsasign": "8.0.6",
     "lodash": "4.17.5",
     "minimist": "1.2.0",
+    "moment": "2.21.0",
     "open-graph": "0.2.3",
     "pako": "1.0.6",
     "prop-types": "15.6.1",

@@ -23,6 +23,7 @@ const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
+const moment = require('moment');
 const pako = require('pako');
 const path = require('path');
 const raygun = require('raygun');
@@ -208,21 +209,10 @@ ipcMain.on('export-table', (event, tableName, data) => {
 });
 
 ipcMain.on('export-zip', async event => {
-  const now = new Date();
+  const timestamp = moment().format('YYYY-MM-DD_HH-MM-SS');
   const tempPath = path.join(BACKUP_DIR, '.temp');
   let files;
   let zipped;
-
-  const getTimestamp = () => {
-    const pad = obj => ('0' + obj).slice(-2);
-    const year = now.getFullYear();
-    const month = pad(now.getMonth() + 1);
-    const day = pad(now.getDate());
-    const hour = pad(now.getHours());
-    const minutes = pad(now.getMinutes());
-    const seconds = pad(now.getSeconds());
-    return `${year}-${month}-${day}_${hour}-${minutes}-${seconds}`;
-  };
 
   try {
     await backupManager.saveMetaDescription();
