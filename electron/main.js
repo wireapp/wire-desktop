@@ -449,7 +449,7 @@ const discloseWindowID = browserWindow => {
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
 app.on('window-all-closed', event => {
-  if (!environment.isMacOS) {
+  if (!environment.platform.IS_MAC_OS) {
     app.quit();
   }
 });
