@@ -26,7 +26,8 @@ const winston = require('winston');
 const { desktopCapturer, ipcRenderer, remote, webFrame } = require('electron');
 const { app } = remote;
 
-webFrame.setZoomLevelLimits(1, 1);
+webFrame.setVisualZoomLevelLimits(1, 1);
+webFrame.setLayoutZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
