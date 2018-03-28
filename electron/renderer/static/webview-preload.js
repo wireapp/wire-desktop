@@ -131,7 +131,7 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('export-error', error =>
     amplify.publish('z.event.WebApp.BACKUP.EXPORT.ERROR', error)
   );
-  ipcRenderer.on('export-filename', () =>
+  ipcRenderer.on('export-filename', filename =>
     amplify.publish('z.event.WebApp.BACKUP.EXPORT.FILENAME', filename)
   );
   ipcRenderer.on('import-meta', metaData =>

@@ -29,7 +29,8 @@ class BackupReader {
 
   async restoreFromArchive(filename) {
     const resolvedFilename = path.resolve(filename);
-    const restoreDirectory = path.resolve(this.rootDirectory, path.basename(resolvedFilename).replace(/\..+$/, ''))
+    const archiveName = path.basename(resolvedFilename).replace(/\..+$/, '');
+    const restoreDirectory = path.resolve(this.rootDirectory, archiveName);
 
     await fs.ensureDir(restoreDirectory);
 
@@ -38,13 +39,15 @@ class BackupReader {
       file: resolvedFilename,
     });
 
-    const metaData = await fs.readFile(path.resolve(restoreDirectory, 'export.json', 'utf8'));
+    const metaData = await fs.readFile(path.resolve(restoreDirectory, 'export.json'), 'utf8');
 
-    const tableFiles = await fs.readdir().filter(filename => !filename !== 'export.json');
+    const tableFiles = (await fs.readdir(restoreDirectory)).filter(filename => filename !== 'export.json');
 
-    const tables = await Promise.all(tableFiles.map(filename => {
-      const file = path.resolve(restoreDirectory, filename);
-      return fs.readFile(file, 'utf8');
+    const tables = await Promise.all(tableFiles.map(async filename => {
+      const resolvedFilename = path.resolve(restoreDirectory, filename);
+      const content = await fs.readFile(resolvedFilename, 'utf8');
+      const name = filename.replace(/\..+$/, '');
+      return {name, content};
     }));
 
     await fs.remove(restoreDirectory);
@@ -52,3 +55,5 @@ class BackupReader {
     return [metaData, tables];
   }
 }
+
+module.exports = BackupReader;

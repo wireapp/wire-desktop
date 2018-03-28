@@ -199,7 +199,7 @@ ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 ipcMain.on('export-table', (event, tableName, dataOrLength) => {
   try {
-    backupMaanger.backupWriter.saveTable(tableName, dataOrLength);
+    backupManager.backupWriter.saveTable(tableName, dataOrLength);
   } catch (error) {
     console.error(error.message, error.stack);
     return void event.sender.send('export-error', error);
