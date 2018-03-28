@@ -69,7 +69,7 @@ const pkg = require('./package.json');
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
-const backupManager = new BackupManager(BACKUP_DIR, pkg.version);
+const backupManager = new BackupManager(BACKUP_DIR);
 let main;
 let raygunClient;
 let about;
@@ -151,7 +151,6 @@ if (environment.platform.IS_LINUX) {
 ///////////////////////////////////////////////////////////////////////////////
 ipcMain.once('webapp-version', (event, version) => {
   webappVersion = version;
-  backupManager.webappVersion = version;
 });
 
 ipcMain.on('save-picture', (event, fileName, bytes) => {
@@ -198,52 +197,53 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-ipcMain.on('export-table', (event, tableName, data) => {
+ipcMain.on('export-table', (event, tableName, dataOrLength) => {
   try {
-    backupManager.saveTable(event, tableName, data);
+    backupMaanger.backupWriter.saveTable(tableName, dataOrLength);
   } catch (error) {
     console.error(error.message, error.stack);
-    event.sender.send('export-error', error);
+    return void event.sender.send('export-error', error);
   }
 });
 
-ipcMain.on('export-zip', async event => {
+ipcMain.on('export-meta', async (event, metaData) => {
   let archiveFilename;
 
   try {
-    await backupManager.saveMetaDescription();
+    await backupManager.backupWriter.saveMetaDescription(metaData);
   } catch (error) {
     console.error(`Failed to write meta file with error: ${error.message}`);
-    event.sender.send('export-error', error);
-    return;
+    return void event.sender.send('export-error', error);
   }
 
   try {
-    archiveFilename = await backupManager.saveArchiveFile();
+    archiveFilename = await backupManager.backupWriter.saveArchiveFile();
   } catch(error) {
     debugMain(`Failed to create tar file with error: "${error.message}"`);
     console.error(`Failed to save tar file with error: "${error.message}"`);
-    event.sender.send('export-error', error);
-    return;
+    return void event.sender.send('export-error', error);
   }
 
-  event.sender.send('export-done', archiveFilename);
+  event.sender.send('export-filename', archiveFilename);
 });
 
-ipcMain.on('import-from-zip', async (event, filename) => {
+ipcMain.on('import-archive', async (event, filename) => {
   let tables;
+  let metaData;
 
   try {
-    tables = await backupManager.restoreFromZip(filename);
+    [metaData, tables] = await backupManager.backupReader.restoreFromArchive(filename);
   } catch (error) {
     debugMain(`Failed to import from file "${filename}" with error: "${error.message}"`);
     console.error(`Failed to import from file: "${filename}" with error: "${error.message}"`);
-    event.sender.send('import-error', error);
-    return;
+    return void event.sender.send('import-error', error);
   }
 
-  console.log('imported tables', tables);
-  tables.forEach(tableData => event.sender.send('import-data', tableData));
+  for (const table of tables) {
+    event.sender.send('import-data', tables[table]);
+  }
+
+  event.sender.send('import-meta', metaData);
 });
 
 const relaunchApp = () => {

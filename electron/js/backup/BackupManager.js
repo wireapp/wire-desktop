@@ -1,88 +1,33 @@
-const fs = require('fs-extra');
-const moment = require('moment');
+/*
+ * Wire
+ * Copyright (C) 2018 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
+const BackupReader = require('./BackupReader');
+const BackupWriter = require('./BackupWriter');
 const path = require('path');
-const tar = require('tar');
 
 class BackupManager {
   constructor(rootDirectory) {
     this.rootDirectory = rootDirectory;
     this.tempDirectory = path.resolve(this.rootDirectory, '.temp');
-  }
 
-  set webappVersion(webappVersion) {
-    this._webappVersion = webappVersion;
-  }
-
-  saveTable(event, tableName, data) {
-    const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
-    console.log(`Writing to file "${tempFile}" ...`);
-
-    if (typeof data === 'number') {
-      return fs.remove(tempFile);
-    } else {
-      return fs.outputFile(tempFile, `${data}\r\n`, {flag: 'a'});
-    }
-  }
-
-  async restoreFromZip(filename) {
-    const buffer = await fs.readFile(resolvedFilename);
-    const compressed = new Uint8Array(buffer);
-    const restoreDirectory = path.resolve(this.tempDirectory, filename.replace('.tar.gz', ''))
-
-    await fs.ensureDir(tempDirectory);
-
-    await tar.x({
-      cwd: this.tempDirectory,
-      file: path.resolve(filename),
-    });
-
-    const tableFiles = await fs.readdir();
-
-    const tables = await Promise.all(tableFiles.map(filename => {
-      const file = path.resolve(restoreDirectory, filename);
-      return fs.readFile(file, 'utf8');
-    }));
-
-    return tables;
-  }
-
-  saveMetaDescription(clientId, userId) {
-    const file = path.join(this.tempDirectory, 'descriptor.json');
-    const now = new Date();
-
-    // https://github.com/wireapp/architecture/issues/98
-    const meta = {
-      client_id: clientId,
-      creation_time: now.toISOString(),
-      platform: 'Web',
-      user_id: userId,
-      version: this._webappVersion,
-    };
-
-    return fs.outputFile(file, JSON.stringify(meta));
-  }
-
-  async saveArchiveFile() {
-    const timestamp = moment().format('YYYY-MM-DD_HH-MM-SS');
-    const backupFiles = await fs.readdir(this.tempDirectory);
-    const archiveFilename = path.resolve(this.rootDirectory, `backup-${timestamp}.tar.gz`);
-
-    if (!backupFiles.length) {
-      throw new Error(`No files to archive from "${this.tempDirectory}": Directory empty.`)
-      return;
-    }
-
-    console.log(`Saving archive file "${archiveFilename}" ...`);
-
-    await tar.c({
-      cwd: this.tempDirectory,
-      gzip: true,
-      preservePaths: false,
-      file: archiveFilename
-    }, backupFiles);
-    await fs.remove(this.tempDirectory);
-
-    return archiveFilename;
+    this.backupReader = new BackupReader(this.rootDirectory, this.tempDirectory);
+    this.backupWriter = new BackupWriter(this.rootDirectory, this.tempDirectory);
   }
 }
 

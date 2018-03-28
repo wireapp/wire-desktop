@@ -65,16 +65,16 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost('team-info', info);
   });
 
-  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.EXPORT.DATA', (tableName, data) => {
-    ipcRenderer.send('export-table', tableName, data);
+  amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.DATA, (tableName, dataOrLength) => {
+    ipcRenderer.send('export-table', tableName, dataOrLength);
   });
 
-  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.EXPORT.SENDER_DONE', () => {
-    ipcRenderer.send('export-zip');
+  amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.META, metaData => {
+    ipcRenderer.send('export-meta', metaData);
   });
 
-  amplify.subscribe('z.event.WebApp.IMPORTEXPORT.IMPORT.START', filename => {
-    ipcRenderer.send('import-from-zip', filename);
+  amplify.subscribe(z.event.WebApp.BACKUP.IMPORT.FILENAME, filename => {
+    ipcRenderer.send('import-archive', filename);
   });
 };
 
@@ -128,16 +128,19 @@ const subscribeToMainProcessEvents = () => {
     )
   );
   ipcRenderer.on('export-error', error =>
-    amplify.publish('z.event.WebApp.IMPORTEXPORT.EXPORT.ERROR', error)
+    amplify.publish('z.event.WebApp.BACKUP.EXPORT.ERROR', error)
   );
-  ipcRenderer.on('export-done', filename =>
-    amplify.publish('z.event.WebApp.IMPORTEXPORT.EXPORT.ZIP_DONE', filename)
+  ipcRenderer.on('export-filename', () =>
+    amplify.publish('z.event.WebApp.BACKUP.EXPORT.FILENAME', filename)
+  );
+  ipcRenderer.on('import-meta', metaData =>
+    amplify.publish('z.event.WebApp.BACKUP.IMPORT.META', metaData)
   );
   ipcRenderer.on('import-data', data =>
-    amplify.publish('z.event.WebApp.IMPORTEXPORT.IMPORT.DATA', data)
+    amplify.publish('z.event.WebApp.BACKUP.IMPORT.DATA', data)
   );
   ipcRenderer.on('import-error', error =>
-    amplify.publish('z.event.WebApp.IMPORTEXPORT.IMPORT.ERROR', error)
+    amplify.publish('z.event.WebApp.BACKUP.IMPORT.ERROR', error)
   );
 };
 

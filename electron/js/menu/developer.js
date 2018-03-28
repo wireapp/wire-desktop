@@ -17,7 +17,6 @@
  *
  */
 
-
 const {MenuItem} = require('electron');
 const config = require('./../config');
 const environment = require('./../environment');
