@@ -25,7 +25,7 @@ const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
+const {BrowserWindow, Menu, app, dialog, ipcMain, session, shell} = require('electron');
 
 const BackupManager = require('./js/backup/BackupManager');
 
@@ -224,7 +224,25 @@ ipcMain.on('export-meta', async (event, metaData) => {
     return void event.sender.send('export-error', error);
   }
 
-  event.sender.send('export-filename', archiveFilename);
+  const options = {
+    defaultPath: path.basename(archiveFilename),
+  };
+
+  let downloadFilename = dialog.showSaveDialog(main, options);
+
+  if (downloadFilename) {
+    const resolvedDownloadFilename = path.resolve(downloadFilename);
+    console.log('downloadFilename', downloadFilename);
+    console.log('resolvedDownloadFilename', resolvedDownloadFilename);
+    try {
+      await fs.move(archiveFilename, path.resolve(resolvedDownloadFilename));
+    } catch(error) {
+      debugMain(`Failed to move tar file from ${archiveFilename} to ${resolvedDownloadFilename} with error: "${error.message}"`);
+      console.error(`Failed to move tar file from ${archiveFilename} to ${resolvedDownloadFilename} with error: "${error.message}"`);
+      return void event.sender.send('export-error', error);
+    }
+  }
+  event.sender.send('export-filename', resolvedDownloadFilename);
 });
 
 ipcMain.on('import-archive', async (event, filename) => {
