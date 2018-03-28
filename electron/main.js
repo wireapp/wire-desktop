@@ -260,7 +260,10 @@ ipcMain.on('import-archive', async event => {
 
     for (const table of tables) {
       const {name, content} = table;
-      event.sender.send('import-data', name, content);
+      const eachTable = content.split('\r\n').filter(content => content !== '');
+      for (const splitTable of eachTable) {
+        event.sender.send('import-data', name, splitTable);
+      }
     }
 
     event.sender.send('import-meta', metaData);

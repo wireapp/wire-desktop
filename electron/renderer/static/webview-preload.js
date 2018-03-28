@@ -134,13 +134,13 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on('export-done', () =>
     amplify.publish(z.event.WebApp.BACKUP.EXPORT.DONE)
   );
-  ipcRenderer.on('import-meta', metaData =>
+  ipcRenderer.on('import-meta', (event, metaData) =>
     amplify.publish(z.event.WebApp.BACKUP.IMPORT.META, metaData)
   );
-  ipcRenderer.on('import-data', (tableName, data) =>
-    amplify.publish(z.event.WebApp.BACKUP.IMPORT.DATA, tableName, data)
+  ipcRenderer.on('import-data', (event, name, content) =>
+    amplify.publish(z.event.WebApp.BACKUP.IMPORT.DATA, name, content)
   );
-  ipcRenderer.on('import-error', error =>
+  ipcRenderer.on('import-error', (event, error) =>
     amplify.publish(z.event.WebApp.BACKUP.IMPORT.ERROR, error)
   );
 };
