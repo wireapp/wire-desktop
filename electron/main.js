@@ -91,9 +91,15 @@ if (Environment.isDevelopment) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
-if (argv.portable) {
-  const EXEC_PATH = process.env.APPIMAGE || process.execPath;
-  const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+if (argv.portable || argv.data_path) {
+  let USER_PATH;
+  if (argv.data_path) {
+    USER_PATH = argv.data_path;
+  } else {
+    let EXEC_PATH = process.env.APPIMAGE || process.execPath;
+    USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+  }
+  console.log("Saving user data to " + USER_PATH);
   app.setPath('userData', USER_PATH);
 }
 
