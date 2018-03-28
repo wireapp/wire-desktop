@@ -74,8 +74,8 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.send('export-meta', metaData);
   });
 
-  amplify.subscribe(z.event.WebApp.BACKUP.IMPORT.FILENAME, filename => {
-    ipcRenderer.send('import-archive', filename);
+  amplify.subscribe(z.event.WebApp.BACKUP.IMPORT.START, () => {
+    ipcRenderer.send('import-archive');
   });
 };
 
