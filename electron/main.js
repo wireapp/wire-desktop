@@ -26,6 +26,7 @@ const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
+const {Server, Environment} = require('@wireapp/desktop-server');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -45,7 +46,6 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const settings = require('./js/lib/settings');
 
 // Wrapper modules
-const certutils = require('./js/certutils');
 const config = require('./js/config');
 const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
@@ -59,8 +59,12 @@ const windowManager = require('./js/window-manager');
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = environment.web.get_url_webapp(argv.env);
 const pkg = require('./package.json');
+
+// Set development mode for environment (default is false)
+if (pkg.environment !== 'production') {
+  Environment.isDevelopment = true;
+}
 
 // Icon
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -83,7 +87,7 @@ raygunClient.onBeforeSend(payload => {
   return payload;
 });
 
-if (environment.app.IS_DEVELOPMENT) {
+if (Environment.isDevelopment) {
   app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 }
 
@@ -203,33 +207,43 @@ const relaunchApp = () => {
 ///////////////////////////////////////////////////////////////////////////////
 // APP Windows
 ///////////////////////////////////////////////////////////////////////////////
-const showMainWindow = () => {
-  main = new BrowserWindow({
-    title: config.NAME,
-    titleBarStyle: 'hiddenInset',
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-    autoHideMenuBar: !settings.restore('showMenu', true),
-    backgroundColor: '#f7f8fa',
-    icon: ICON_PATH,
-    show: false,
-    webPreferences: {
-      backgroundThrottling: false,
-      nodeIntegration: false,
-      preload: PRELOAD_JS,
-      webviewTag: true
-    }
-  });
+const showMainWindow = async () => {
+  let opts;
+  try {
+    const server = new Server({
+      title: config.NAME,
+      titleBarStyle: 'hiddenInset',
+      width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+      height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+      minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+      minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
+      autoHideMenuBar: !settings.restore('showMenu', true),
+      backgroundColor: '#f7f8fa',
+      icon: ICON_PATH,
+      show: false,
+      webPreferences: {
+        backgroundThrottling: false,
+        nodeIntegration: true,
+        preload: PRELOAD_JS,
+        webviewTag: true
+      }
+    }, pkg.version);
+    
+    opts = await server.start();
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+
+  // Set browser window
+  main = opts.main;
 
   if (settings.restore('fullscreen', false)) {
     main.setFullScreen(true);
   } else {
     main.setBounds(settings.restore('bounds', main.getBounds()));
   }
-
-  let baseURL = BASE_URL;
+  let baseURL = `${opts.url}/`;
   baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
@@ -243,7 +257,7 @@ const showMainWindow = () => {
     }
 
     discloseWindowID(main);
-    setTimeout(() => main.show(), 800);
+    main.on('ready-to-show', () => main.show());
   }
 
   main.webContents.on('will-navigate', (event, url) => {
@@ -414,10 +428,10 @@ app.on('quit', async () => await settings.persistToFile());
 ///////////////////////////////////////////////////////////////////////////////
 // System Menu & Tray Icon & Show window
 ///////////////////////////////////////////////////////////////////////////////
-app.on('ready', () => {
+app.on('ready', async () => {
   const appMenu = systemMenu.createMenu();
-  if (environment.app.IS_DEVELOPMENT) {
-    appMenu.append(developerMenu);
+  if (Environment.isDevelopment) {
+    appMenu.append(await developerMenu());
   }
   appMenu.on('about-wire', () => {
     showAboutWindow();
@@ -425,8 +439,9 @@ app.on('ready', () => {
 
   Menu.setApplicationMenu(appMenu);
   tray.createTrayIcon();
-  showMainWindow();
 });
+
+showMainWindow();
 
 ///////////////////////////////////////////////////////////////////////////////
 // Rename "console.log" to "console.old" (for every log directory of every account)
@@ -471,7 +486,7 @@ class ElectronWrapperInit {
       webviewProtectionDebug('Opening an external window from a webview. URL: %s', _url);
       shell.openExternal(_url);
     };
-    const willNavigateInWebview = (event, _url) => {
+    /*const willNavigateInWebview = (event, _url) => {
       // Ensure navigation is to a whitelisted domain
       if (util.isMatchingHost(_url, BASE_URL)) {
         webviewProtectionDebug('Navigating inside webview. URL: %s', _url);
@@ -479,7 +494,7 @@ class ElectronWrapperInit {
         webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
         event.preventDefault();
       }
-    };
+    };*/
 
     app.on('web-contents-created', (event, contents) => {
       switch (contents.getType()) {
@@ -496,10 +511,10 @@ class ElectronWrapperInit {
             params.autosize = false;
 
             // Verify the URL being loaded
-            if (!util.isMatchingHost(_url, BASE_URL)) {
+            /*if (!util.isMatchingHost(_url, BASE_URL)) {
               e.preventDefault();
               webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
-            }
+            }*/
           });
           break;
 
@@ -508,33 +523,9 @@ class ElectronWrapperInit {
           contents.on('new-window', (e, _url) => {
             openLinkInNewWindow(e, _url);
           });
-          contents.on('will-navigate', (e, _url) => {
+          /*contents.on('will-navigate', (e, _url) => {
             willNavigateInWebview(e, _url);
-          });
-
-          contents.session.setCertificateVerifyProc((request, cb) => {
-            const {hostname = '', certificate = {}, error} = request;
-
-            if (typeof error !== 'undefined') {
-              console.error('setCertificateVerifyProc', error);
-              main.loadURL(CERT_ERR_HTML);
-              return cb(-2);
-            }
-
-            if (certutils.hostnameShouldBePinned(hostname)) {
-              const pinningResults = certutils.verifyPinning(hostname, certificate);
-
-              for (const result of Object.values(pinningResults)) {
-                if (result === false) {
-                  console.error(`Certutils verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
-                  main.loadURL(CERT_ERR_HTML);
-                  return cb(-2);
-                }
-              }
-            }
-
-            return cb(-3);
-          });
+          });*/
           break;
       }
     });

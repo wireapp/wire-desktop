@@ -82,3 +82,19 @@ window.addEventListener('focus', () => {
     selectedWebview.focus();
   }
 });
+
+// Updater-related
+ipcRenderer.on('update-available', (event, detail) =>
+  window.dispatchEvent(new CustomEvent('update-available', {detail})),
+);
+ipcRenderer.on('update-installed', (event, detail) =>
+  window.dispatchEvent(new CustomEvent('update-installed', {detail: null})),
+);
+ipcRenderer.on('update-start-install', (event, detail) =>
+  window.dispatchEvent(new CustomEvent('update-start-install', {detail})),
+);
+ipcRenderer.on('update-end-install', (event, detail) =>
+  window.dispatchEvent(new CustomEvent('update-end-install', {detail: null})),
+);
+window.addEventListener('update-available-ack', (event) => ipcRenderer.send('update-available-ack', event.detail));
+window.addEventListener('update-available-display', (event) => ipcRenderer.send('update-available-display', event.detail));

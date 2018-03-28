@@ -17,14 +17,11 @@
  *
  */
 
-
 const {MenuItem} = require('electron');
 const config = require('./../config');
-const environment = require('./../environment');
+const {Environment} = require('@wireapp/desktop-server');
 const util = require('./../util');
 const windowManager = require('./../window-manager');
-
-const currentEnvironment = environment.getEnvironment();
 
 const getPrimaryWindow = () => windowManager.getPrimaryWindow();
 
@@ -56,18 +53,6 @@ const devToolsTemplate = {
   ],
 };
 
-const createEnvironmentTemplate = (env) => {
-  return {
-    checked: currentEnvironment === env,
-    click: () => {
-      environment.setEnvironment(env);
-      getPrimaryWindow().reload();
-    },
-    label: util.capitalize(env),
-    type: 'radio',
-  };
-};
-
 const versionTemplate = {
   label: 'Wire Version ' + config.VERSION,
 };
@@ -84,24 +69,26 @@ const separatorTemplate = {
   type: 'separator',
 };
 
-const menuTemplate = {
-  id: 'Developer',
-  label: 'Developer',
-  submenu: [
-    devToolsTemplate,
-    reloadTemplate,
-    separatorTemplate,
-    createEnvironmentTemplate(environment.TYPE.PRODUCTION),
-    createEnvironmentTemplate(environment.TYPE.INTERNAL),
-    createEnvironmentTemplate(environment.TYPE.STAGING),
-    createEnvironmentTemplate(environment.TYPE.DEV),
-    createEnvironmentTemplate(environment.TYPE.EDGE),
-    createEnvironmentTemplate(environment.TYPE.LOCALHOST),
-    separatorTemplate,
-    versionTemplate,
-    chromeVersionTemplate,
-    electronVersionTemplate,
-  ],
+module.exports = async () => {
+  return new MenuItem({
+    id: 'Developer',
+    label: 'Developer',
+    submenu: [
+      devToolsTemplate,
+      reloadTemplate,
+      separatorTemplate,
+      await Environment.createEnvironmentTemplate(Environment.TYPE.PRODUCTION),
+      await Environment.createEnvironmentTemplate(Environment.TYPE.INTERNAL),
+      await Environment.createEnvironmentTemplate(Environment.TYPE.STAGING),
+      await Environment.createEnvironmentTemplate(Environment.TYPE.DEV),
+      await Environment.createEnvironmentTemplate(Environment.TYPE.EDGE),
+      await Environment.createEnvironmentTemplate(Environment.TYPE.LOCALHOST),
+      separatorTemplate,
+      await Environment.createEnvironmentTemplateUpdaterDisabler(),
+      separatorTemplate,
+      versionTemplate,
+      chromeVersionTemplate,
+      electronVersionTemplate,
+    ],
+  });
 };
-
-module.exports = new MenuItem(menuTemplate);

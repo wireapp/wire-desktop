@@ -68,3 +68,6 @@ string.wrapperCreateTeam = 'Create Team';
 string.wrapperLogOut = 'Log Out';
 string.wrapperManageTeam = 'Manage Team';
 string.wrapperRemoveAccount = 'Remove Account';
+
+string.wrapperUpdateAvailable = 'A new version of Wire is available';
+string.wrapperUpdateDetails = 'See what’s new';
