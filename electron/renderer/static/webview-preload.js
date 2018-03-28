@@ -129,19 +129,19 @@ const subscribeToMainProcessEvents = () => {
     )
   );
   ipcRenderer.on('export-error', error =>
-    amplify.publish('z.event.WebApp.BACKUP.EXPORT.ERROR', error)
+    amplify.publish(z.event.WebApp.BACKUP.EXPORT.ERROR, error)
   );
-  ipcRenderer.on('export-filename', filename =>
-    amplify.publish('z.event.WebApp.BACKUP.EXPORT.FILENAME', filename)
+  ipcRenderer.on('export-done', () =>
+    amplify.publish(z.event.WebApp.BACKUP.EXPORT.DONE)
   );
   ipcRenderer.on('import-meta', metaData =>
-    amplify.publish('z.event.WebApp.BACKUP.IMPORT.META', metaData)
+    amplify.publish(z.event.WebApp.BACKUP.IMPORT.META, metaData)
   );
-  ipcRenderer.on('import-data', data =>
-    amplify.publish('z.event.WebApp.BACKUP.IMPORT.DATA', data)
+  ipcRenderer.on('import-data', (tableName, data) =>
+    amplify.publish(z.event.WebApp.BACKUP.IMPORT.DATA, tableName, data)
   );
   ipcRenderer.on('import-error', error =>
-    amplify.publish('z.event.WebApp.BACKUP.IMPORT.ERROR', error)
+    amplify.publish(z.event.WebApp.BACKUP.IMPORT.ERROR, error)
   );
 };
 

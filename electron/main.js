@@ -197,11 +197,11 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-ipcMain.on('export-table', (event, tableName, dataOrLength) => {
+ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
   try {
-    backupManager.backupWriter.saveTable(tableName, dataOrLength);
+    await backupManager.backupWriter.saveTable(tableName, dataOrLength);
   } catch (error) {
-    console.error(error.message, error.stack);
+    console.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
     return void event.sender.send('export-error', error);
   }
 });
@@ -219,8 +219,8 @@ ipcMain.on('export-meta', async (event, metaData) => {
   try {
     archiveFilename = await backupManager.backupWriter.saveArchiveFile();
   } catch(error) {
-    debugMain(`Failed to create tar file with error: "${error.message}"`);
-    console.error(`Failed to save tar file with error: "${error.message}"`);
+    debugMain(`Failed to create archive file with error: "${error.message}"`);
+    console.error(`Failed to save archive file with error: "${error.message}"`);
     return void event.sender.send('export-error', error);
   }
 
@@ -231,37 +231,40 @@ ipcMain.on('export-meta', async (event, metaData) => {
   let downloadFilename = dialog.showSaveDialog(main, options);
 
   if (downloadFilename) {
-    const resolvedDownloadFilename = path.resolve(downloadFilename);
-    console.log('downloadFilename', downloadFilename);
-    console.log('resolvedDownloadFilename', resolvedDownloadFilename);
     try {
-      await fs.move(archiveFilename, path.resolve(resolvedDownloadFilename));
+      await fs.move(archiveFilename, path.resolve(downloadFilename));
     } catch(error) {
-      debugMain(`Failed to move tar file from ${archiveFilename} to ${resolvedDownloadFilename} with error: "${error.message}"`);
-      console.error(`Failed to move tar file from ${archiveFilename} to ${resolvedDownloadFilename} with error: "${error.message}"`);
+      debugMain(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
+      console.error(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
       return void event.sender.send('export-error', error);
     }
   }
-  event.sender.send('export-filename', resolvedDownloadFilename);
+
+  event.sender.send('export-done');
 });
 
-ipcMain.on('import-archive', async (event, filename) => {
+ipcMain.on('import-archive', async event => {
   let tables;
   let metaData;
 
-  try {
-    [metaData, tables] = await backupManager.backupReader.restoreFromArchive(filename);
-  } catch (error) {
-    debugMain(`Failed to import from file "${filename}" with error: "${error.message}"`);
-    console.error(`Failed to import from file: "${filename}" with error: "${error.message}"`);
-    return void event.sender.send('import-error', error);
-  }
+  const [filename] = dialog.showOpenDialog(main);
 
-  for (const table of tables) {
-    event.sender.send('import-data', tables[table]);
-  }
+  if (filename) {
+    try {
+      [metaData, tables] = await backupManager.backupReader.restoreFromArchive(filename);
+    } catch (error) {
+      debugMain(`Failed to import from file "${filename}" with error: "${error.message}"`);
+      console.error(`Failed to import from file: "${filename}" with error: "${error.message}"`);
+      return void event.sender.send('import-error', error);
+    }
 
-  event.sender.send('import-meta', metaData);
+    for (const table of tables) {
+      const {name, content} = table;
+      event.sender.send('import-data', name, content);
+    }
+
+    event.sender.send('import-meta', metaData);
+  }
 });
 
 const relaunchApp = () => {
