@@ -45,7 +45,7 @@ class BackupWriter {
   }
 
   async saveArchiveFile() {
-    const timestamp = moment().format('YYYY-MM-DD_HH-MM-SS');
+    const timestamp = moment().format('YYYY-MM-DD_HH-mm-ss');
     const backupFiles = await fs.readdir(this.tempDirectory);
     const archiveFile = path.resolve(this.rootDirectory, `backup-${timestamp}.tar.gz`);
 
