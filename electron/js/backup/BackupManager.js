@@ -26,8 +26,8 @@ class BackupManager {
     this.rootDirectory = rootDirectory;
     this.tempDirectory = path.resolve(this.rootDirectory, '.temp');
 
-    this.backupReader = new BackupReader(this.rootDirectory, this.tempDirectory);
-    this.backupWriter = new BackupWriter(this.rootDirectory, this.tempDirectory);
+    this.reader = new BackupReader(this.rootDirectory, this.tempDirectory);
+    this.writer = new BackupWriter(this.rootDirectory, this.tempDirectory);
   }
 }
 

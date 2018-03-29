@@ -32,6 +32,7 @@
     "jest": "22.4.3",
     "lint-staged": "7.0.0",
     "load-grunt-tasks": "3.5.2",
+    "logdown": "3.2.3",
     "prettier": "1.11.1",
     "style-loader": "0.20.3",
     "webpack": "3.11.0"

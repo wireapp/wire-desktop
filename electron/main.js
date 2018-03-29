@@ -199,7 +199,7 @@ ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
   try {
-    await backupManager.backupWriter.saveTable(tableName, dataOrLength);
+    await backupManager.writer.saveTable(tableName, dataOrLength);
   } catch (error) {
     console.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
     return void event.sender.send('export-error', error);
@@ -207,21 +207,21 @@ ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
 });
 
 ipcMain.on('export-cancel', async () => {
-  backupManager.backupWriter.cancel();
+  backupManager.writer.cancel();
 })
 
 ipcMain.on('export-meta', async (event, metaData) => {
   let archiveFilename;
 
   try {
-    await backupManager.backupWriter.saveMetaDescription(metaData);
+    await backupManager.writer.saveMetaDescription(metaData);
   } catch (error) {
     console.error(`Failed to write meta file with error: ${error.message}`);
     return void event.sender.send('export-error', error);
   }
 
   try {
-    archiveFilename = await backupManager.backupWriter.saveArchiveFile();
+    archiveFilename = await backupManager.writer.saveArchiveFile();
   } catch(error) {
     debugMain(`Failed to create archive file with error: "${error.message}"`);
     console.error(`Failed to save archive file with error: "${error.message}"`);
@@ -255,7 +255,7 @@ ipcMain.on('import-archive', async event => {
 
   if (filename) {
     try {
-      [metaData, tables] = await backupManager.backupReader.restoreFromArchive(filename);
+      [metaData, tables] = await backupManager.reader.restoreFromArchive(filename);
     } catch (error) {
       debugMain(`Failed to import from file "${filename}" with error: "${error.message}"`);
       console.error(`Failed to import from file: "${filename}" with error: "${error.message}"`);

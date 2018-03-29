@@ -18,6 +18,7 @@
  */
 
 const fs = require('fs-extra');
+const logdown = require('logdown');
 const moment = require('moment');
 const path = require('path');
 const tar = require('tar');
@@ -25,6 +26,7 @@ const {PriorityQueue} = require('@wireapp/priority-queue');
 
 class BackupWriter {
   constructor(rootDirectory, tempDirectory) {
+    this.logger = logdown('wire-desktop/backup/BackupWriter');
     this.rootDirectory = rootDirectory;
     this.tempDirectory = tempDirectory;
     this.writeQueue = new PriorityQueue({maxRetries: 1});
@@ -39,6 +41,7 @@ class BackupWriter {
       const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
 
       if (typeof dataOrLength === 'number') {
+        this.logger.info(`Saving "${dataOrLength}" records from "${tableName}"...`);
         // TODO: save number of entries
       } else {
         return fs.outputFile(tempFile, `${dataOrLength}\r\n`, {flag: 'a'});
@@ -65,14 +68,14 @@ class BackupWriter {
     const archiveFile = path.resolve(this.rootDirectory, `backup-${timestamp}.tar.gz`);
 
     if (!backupFiles.length) {
-      throw new Error(`No files to archive from "${this.tempDirectory}": Directory empty.`)
+      throw new Error(`No files to archive from "${this.tempDirectory}": Directory empty.`);
     }
 
     await tar.c({
       cwd: this.tempDirectory,
+      file: archiveFile,
       gzip: true,
       preservePaths: false,
-      file: archiveFile
     }, backupFiles);
 
     await fs.remove(this.tempDirectory);
