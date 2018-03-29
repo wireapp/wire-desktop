@@ -20,23 +20,16 @@
 const fs = require('fs-extra');
 const path = require('path');
 const tar = require('tar');
-const uuid = require('uuid/v4');
 
 class BackupReader {
   constructor(rootDirectory) {
     this.rootDirectory = rootDirectory;
   };
 
-  async removeTemp() {
-    await fs.remove(this.tempDirectory);
-  }
-
-  async restoreFromArchive(filename) {
-    this.tempDirectory = path.resolve(this.rootDirectory, `.temp-${uuid()}`);
-
+  async restoreFromArchive(filename, tempDirectory) {
     const resolvedFilename = path.resolve(filename);
     const archiveName = path.basename(resolvedFilename).replace(/\..+$/, '');
-    const restoreDirectory = path.resolve(this.tempDirectory, archiveName);
+    const restoreDirectory = path.resolve(tempDirectory, archiveName);
 
     await fs.ensureDir(restoreDirectory);
 
@@ -55,8 +48,6 @@ class BackupReader {
       const name = filename.replace(/\..+$/, '');
       return {name, content};
     }));
-
-    await this.removeTemp();
 
     return [metaData, tables];
   }

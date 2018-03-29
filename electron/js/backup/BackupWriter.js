@@ -22,11 +22,11 @@ const logdown = require('logdown');
 const moment = require('moment');
 const path = require('path');
 const tar = require('tar');
-const uuid = require('uuid/v4');
+
 const {PriorityQueue} = require('@wireapp/priority-queue');
 
 class BackupWriter {
-  constructor(rootDirectory, tempDirectory) {
+  constructor(rootDirectory) {
     this.logger = logdown('wire-desktop/backup/BackupWriter');
     this.rootDirectory = rootDirectory;
     this.writeQueue = new PriorityQueue({maxRetries: 1});
@@ -36,16 +36,9 @@ class BackupWriter {
     this.writeQueue.deleteAll();
   }
 
-  async removeTemp() {
-    await fs.remove(this.tempDirectory);
-  }
-
-  async saveTable(tableName, dataOrLength) {
-    this.tempDirectory = path.resolve(this.rootDirectory, `.temp-${uuid()}`);
-    await fs.ensureDir(this.tempDirectory);
-
+  async saveTable(tableName, dataOrLength, tempDirectory) {
     return this.writeQueue.add(() => {
-      const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
+      const tempFile = path.join(tempDirectory, `${tableName}.txt`);
 
       if (typeof dataOrLength === 'number') {
         this.logger.info(`Saving "${dataOrLength}" records from "${tableName}"...`);
@@ -56,13 +49,13 @@ class BackupWriter {
     });
   }
 
-  saveMetaDescription(metaData) {
-    const file = path.join(this.tempDirectory, 'export.json');
+  saveMetaDescription(metaData, tempDirectory) {
+    const file = path.join(tempDirectory, 'export.json');
     return fs.outputFile(file, metaData);
   }
 
-  async saveArchiveFile() {
-    const timestamp = moment().format('YYYY-MM-DD_HH-mm-ss');
+  async saveArchiveFile(tempDirectory) {
+    const timestamp = moment().format('YYYY-MM-DD');
     await new Promise(resolve => {
       const interval = setInterval(() => {
         if (this.writeQueue.isPending === false) {
@@ -72,21 +65,19 @@ class BackupWriter {
       }, 500);
     });
 
-    const backupFiles = await fs.readdir(this.tempDirectory);
+    const backupFiles = await fs.readdir(tempDirectory);
     const archiveFile = path.resolve(this.rootDirectory, `backup-${timestamp}.tar.gz`);
 
     if (!backupFiles.length) {
-      throw new Error(`No files to archive from "${this.tempDirectory}": Directory empty.`);
+      throw new Error(`No files to archive from "${tempDirectory}": Directory empty.`);
     }
 
     await tar.c({
-      cwd: this.tempDirectory,
+      cwd: tempDirectory,
       file: archiveFile,
       gzip: true,
       preservePaths: false,
     }, backupFiles);
-
-    await this.removeTemp();
 
     return archiveFile;
   }

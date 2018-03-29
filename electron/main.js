@@ -198,8 +198,12 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
+  if (backupManager.tempDirectory === null) {
+    await backupManager.createTemp();
+  }
+
   try {
-    await backupManager.writer.saveTable(tableName, dataOrLength);
+    await backupManager.writer.saveTable(tableName, dataOrLength, backupManager.tempDirectory);
   } catch (error) {
     console.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
     return void event.sender.send('export-error', error);
@@ -208,61 +212,93 @@ ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
 
 ipcMain.on('export-cancel', async () => {
   backupManager.writer.cancel();
+  await backupManager.deleteTemp();
 })
 
 ipcMain.on('export-meta', async (event, metaData) => {
   let archiveFilename;
+  if (backupManager.tempDirectory === null) {
+    console.error('No temp directory exists.');
+    return void event.sender.send('export-error', 'No temp directory exists.');
+  }
 
   try {
-    await backupManager.writer.saveMetaDescription(metaData);
+    await backupManager.writer.saveMetaDescription(metaData, backupManager.tempDirectory);
   } catch (error) {
-    await backupManager.writer.deleteTemp();
+    await backupManager.deleteTemp();
     console.error(`Failed to write meta file with error: ${error.message}`);
     return void event.sender.send('export-error', error);
   }
 
   try {
-    archiveFilename = await backupManager.writer.saveArchiveFile();
+    archiveFilename = await backupManager.writer.saveArchiveFile(backupManager.tempDirectory);
   } catch(error) {
-    await backupManager.writer.deleteTemp();
+    await backupManager.deleteTemp();
     debugMain(`Failed to create archive file with error: "${error.message}"`);
     console.error(`Failed to save archive file with error: "${error.message}"`);
     return void event.sender.send('export-error', error);
   }
 
-  const options = {
+  const dialogOptions = {
     defaultPath: path.basename(archiveFilename),
+    filters: [
+      { name: 'Wire Desktop Archive Files (*.tar.gz)', extensions: ['tar.gz'] }
+    ],
+    properties: ['saveFile'],
+    title: 'Save Wire Desktop Backup file'
   };
 
-  let downloadFilename = dialog.showSaveDialog(main, options);
+  let downloadFilename = dialog.showSaveDialog(dialogOptions);
 
   if (downloadFilename) {
     try {
       await fs.move(archiveFilename, path.resolve(downloadFilename));
     } catch(error) {
-      await backupManager.writer.deleteTemp();
+      await backupManager.deleteTemp();
       debugMain(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
       console.error(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
       return void event.sender.send('export-error', error);
     }
+  } else {
+    await fs.remove(archiveFilename);
   }
 
   event.sender.send('export-done');
+
+  await backupManager.deleteTemp();
 });
 
 ipcMain.on('import-archive', async event => {
   let tables;
   let metaData;
 
-  const [filename] = dialog.showOpenDialog(main);
+  const dialogOptions = {
+    filters: [
+      { name: 'Wire Desktop Archive Files (*.tar.gz)', extensions: ['tar.gz'] }
+    ],
+    properties: ['openFile'],
+    title: 'Select Wire Desktop Backup file'
+  };
 
-  if (filename) {
+  let importFilename;
+
+  try {
+    [importFilename] = dialog.showOpenDialog(dialogOptions);
+  } catch(err) {
+    console.log('dialog err', err);
+  }
+
+  if (importFilename) {
+    console.log('importFilename', importFilename)
+    await fs.ensureDir(path.dirname(importFilename));
+    await backupManager.createTemp();
+
     try {
-      [metaData, tables] = await backupManager.reader.restoreFromArchive(filename);
+      [metaData, tables] = await backupManager.reader.restoreFromArchive(importFilename, backupManager.tempDirectory);
     } catch (error) {
-      await backupManager.reader.deleteTemp();
-      debugMain(`Failed to import from file "${filename}" with error: "${error.message}"`);
-      console.error(`Failed to import from file: "${filename}" with error: "${error.message}"`);
+      await backupManager.deleteTemp();
+      debugMain(`Failed to import from file "${importFilename}" with error: "${error.message}"`);
+      console.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);
       return void event.sender.send('import-error', error);
     }
 
@@ -275,6 +311,7 @@ ipcMain.on('import-archive', async event => {
     }
 
     event.sender.send('import-meta', metaData);
+    await backupManager.deleteTemp();
   }
 });
 
