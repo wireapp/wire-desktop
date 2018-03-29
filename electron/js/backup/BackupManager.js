@@ -17,10 +17,6 @@
  *
  */
 
-const fs = require('fs-extra');
-const path = require('path');
-const uuid = require('uuid/v4');
-
 const BackupReader = require('./BackupReader');
 const BackupWriter = require('./BackupWriter');
 
@@ -31,16 +27,6 @@ class BackupManager {
 
     this.reader = new BackupReader(this.rootDirectory);
     this.writer = new BackupWriter(this.rootDirectory);
-  }
-
-  async createTemp() {
-    this.tempDirectory = path.resolve(this.rootDirectory, `.temp-${uuid()}`);
-    await fs.ensureDir(this.tempDirectory);
-  }
-
-  async deleteTemp() {
-    await fs.remove(this.tempDirectory);
-    this.tempDirectory = null;
   }
 }
 

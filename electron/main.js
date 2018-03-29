@@ -198,12 +198,8 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
-  if (backupManager.tempDirectory === null) {
-    await backupManager.createTemp();
-  }
-
   try {
-    await backupManager.writer.saveTable(tableName, dataOrLength, backupManager.tempDirectory);
+    await backupManager.writer.saveTable(tableName, dataOrLength);
   } catch (error) {
     console.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
     return void event.sender.send('export-error', error);
@@ -212,28 +208,24 @@ ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
 
 ipcMain.on('export-cancel', async () => {
   backupManager.writer.cancel();
-  await backupManager.deleteTemp();
-})
+});
 
 ipcMain.on('export-meta', async (event, metaData) => {
   let archiveFilename;
-  if (backupManager.tempDirectory === null) {
-    console.error('No temp directory exists.');
-    return void event.sender.send('export-error', 'No temp directory exists.');
-  }
+  const backupWriter = backupManager.writer;
 
   try {
-    await backupManager.writer.saveMetaDescription(metaData, backupManager.tempDirectory);
+    await backupWriter.saveMetaDescription(metaData);
   } catch (error) {
-    await backupManager.deleteTemp();
+    await backupWriter.removeTemp();
     console.error(`Failed to write meta file with error: ${error.message}`);
     return void event.sender.send('export-error', error);
   }
 
   try {
-    archiveFilename = await backupManager.writer.saveArchiveFile(backupManager.tempDirectory);
+    archiveFilename = await backupWriter.saveArchiveFile();
   } catch(error) {
-    await backupManager.deleteTemp();
+    await backupWriter.removeTemp();
     debugMain(`Failed to create archive file with error: "${error.message}"`);
     console.error(`Failed to save archive file with error: "${error.message}"`);
     return void event.sender.send('export-error', error);
@@ -252,9 +244,9 @@ ipcMain.on('export-meta', async (event, metaData) => {
 
   if (downloadFilename) {
     try {
-      await fs.move(archiveFilename, path.resolve(downloadFilename));
+      await fs.move(archiveFilename, path.resolve(downloadFilename), {overwrite: true});
     } catch(error) {
-      await backupManager.deleteTemp();
+      await backupWriter.removeTemp();
       debugMain(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
       console.error(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
       return void event.sender.send('export-error', error);
@@ -265,12 +257,13 @@ ipcMain.on('export-meta', async (event, metaData) => {
 
   event.sender.send('export-done');
 
-  await backupManager.deleteTemp();
+  await backupWriter.removeTemp();
 });
 
 ipcMain.on('import-archive', async event => {
   let tables;
   let metaData;
+  const backupReader = backupManager.reader;
 
   const dialogOptions = {
     filters: [
@@ -285,18 +278,16 @@ ipcMain.on('import-archive', async event => {
   try {
     [importFilename] = dialog.showOpenDialog(dialogOptions);
   } catch(err) {
-    console.log('dialog err', err);
+    console.error('dialog err', err);
   }
 
   if (importFilename) {
-    console.log('importFilename', importFilename)
     await fs.ensureDir(path.dirname(importFilename));
-    await backupManager.createTemp();
 
     try {
-      [metaData, tables] = await backupManager.reader.restoreFromArchive(importFilename, backupManager.tempDirectory);
+      [metaData, tables] = await backupReader.restoreFromArchive(importFilename);
     } catch (error) {
-      await backupManager.deleteTemp();
+      await backupReader.removeTemp();
       debugMain(`Failed to import from file "${importFilename}" with error: "${error.message}"`);
       console.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);
       return void event.sender.send('import-error', error);
@@ -311,7 +302,7 @@ ipcMain.on('import-archive', async event => {
     }
 
     event.sender.send('import-meta', metaData);
-    await backupManager.deleteTemp();
+    await backupReader.removeTemp();
   }
 });
 
