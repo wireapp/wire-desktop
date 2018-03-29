@@ -32,6 +32,7 @@ class BackupWriter {
       markdown: false,
     });
     this.rootDirectory = rootDirectory;
+    this.savingsInProgress = {};
     this.writeQueue = new PriorityQueue({maxRetries: 1});
     this.tempDirectory = path.join(this.rootDirectory, '.temp');
   }
@@ -51,10 +52,14 @@ class BackupWriter {
     return this.writeQueue.add(() => {
       if (typeof dataOrLength === 'number') {
         this.logger.info(`Saving "${dataOrLength}" records from "${tableName}"...`);
-        // TODO: save number of entries
+        this.savingsInProgress[tableName] = dataOrLength;
         return fs.remove(tempFile);
       } else {
-        return fs.outputFile(tempFile, `${dataOrLength}\r\n`, {flag: 'a'});
+        if (this.savingsInProgress[tableName]) {
+          this.savingsInProgress[tableName] -= 1;
+          this.logger.info(`Saving record for "${tableName}". Records left "${this.savingsInProgress[tableName]}"...`);
+        }
+        return fs.outputFile(tempFile, `${JSON.stringify(dataOrLength)}\r\n`, {flag: 'a'});
       }
     });
   }
@@ -62,7 +67,9 @@ class BackupWriter {
   saveMetaDescription(metaData) {
     return this.writeQueue.add(() => {
       const file = path.join(this.tempDirectory, 'export.json');
-      return fs.outputFile(file, metaData);
+      this.savingsInProgress = {};
+      this.logger.info('Writing meta data file...');
+      return fs.outputFile(file, JSON.stringify(metaData, null, 2));
     });
   }
 
