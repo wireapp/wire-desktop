@@ -27,7 +27,10 @@ const {PriorityQueue} = require('@wireapp/priority-queue');
 
 class BackupWriter {
   constructor(rootDirectory) {
-    this.logger = logdown('wire-desktop/backup/BackupWriter');
+    this.logger = logdown('wire-desktop/backup/BackupWriter', {
+      logger: console,
+      markdown: false,
+    });
     this.rootDirectory = rootDirectory;
     this.writeQueue = new PriorityQueue({maxRetries: 1});
   }
