@@ -26,15 +26,23 @@ const tar = require('tar');
 const {PriorityQueue} = require('@wireapp/priority-queue');
 
 class BackupWriter {
-  constructor(rootDirectory) {
+  constructor(rootDirectory, finalRecordCount, exportFilename) {
     this.logger = logdown('wire-desktop/backup/BackupWriter', {
       logger: console,
       markdown: false,
     });
-    this.rootDirectory = rootDirectory;
+
+    this.exportedRecords = 0;
+    this.exportFilename = exportFilename;
+    this.finalRecordCount = finalRecordCount;
     this.savingsInProgress = {};
+    this.tempDirectory = path.join(rootDirectory, '.temp');
     this.writeQueue = new PriorityQueue({maxRetries: 1});
-    this.tempDirectory = path.join(this.rootDirectory, '.temp');
+    this.logger.info(`Ready to receive "${finalRecordCount}" records to export...`);
+  }
+
+  init() {
+    return this.removeTemp();
   }
 
   removeTemp() {
@@ -46,35 +54,25 @@ class BackupWriter {
     return this.removeTemp();
   }
 
-  async saveTable(tableName, dataOrLength) {
+  async saveTable(tableName, data) {
     const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
 
     return this.writeQueue.add(() => {
-      if (typeof dataOrLength === 'number') {
-        this.logger.info(`Saving "${dataOrLength}" records from "${tableName}"...`);
-        this.savingsInProgress[tableName] = dataOrLength;
-        return fs.remove(tempFile);
-      } else {
-        if (this.savingsInProgress[tableName]) {
-          this.savingsInProgress[tableName] -= 1;
-          this.logger.info(`Saving record for "${tableName}". Records left "${this.savingsInProgress[tableName]}"...`);
-        }
-        return fs.outputFile(tempFile, `${JSON.stringify(dataOrLength)}\r\n`, {flag: 'a'});
-      }
+      this.logger.info(`Saving record for "${tableName}". Records left "${this.finalRecordCount - this.exportedRecords}"...`);
+      this.exportedRecords++;
+      return fs.outputFile(tempFile, `${JSON.stringify(data)}\r\n`, {flag: 'a'});
     });
   }
 
   saveMetaDescription(metaData) {
     return this.writeQueue.add(() => {
       const file = path.join(this.tempDirectory, 'export.json');
-      this.savingsInProgress = {};
       this.logger.info('Writing meta data file...');
       return fs.outputFile(file, JSON.stringify(metaData, null, 2));
     });
   }
 
   async saveArchiveFile() {
-    const timestamp = moment().format('YYYY-MM-DD');
     await new Promise(resolve => {
       const interval = setInterval(() => {
         if (this.writeQueue.isPending === false) {
@@ -84,8 +82,11 @@ class BackupWriter {
       }, 500);
     });
 
+    if (this.exportedRecords !== this.finalRecordCount) {
+      throw new Error(`finalRecordCount is "${this.finalRecordCount}", but only "${this.exportedRecords}" records were exported.`);
+    }
+
     const backupFiles = await fs.readdir(this.tempDirectory);
-    const archiveFile = path.join(this.rootDirectory, `backup-${timestamp}.tar.gz`);
 
     if (!backupFiles.length) {
       throw new Error(`No files to archive from "${this.tempDirectory}": Directory empty.`);
@@ -93,12 +94,10 @@ class BackupWriter {
 
     await tar.c({
       cwd: this.tempDirectory,
-      file: archiveFile,
+      file: this.exportFilename,
       gzip: true,
       preservePaths: false,
     }, backupFiles);
-
-    return archiveFile;
   }
 }
 

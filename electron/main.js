@@ -27,7 +27,8 @@ const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, dialog, ipcMain, session, shell} = require('electron');
 
-const BackupManager = require('./js/backup/BackupManager');
+const BackupReader = require('./js/backup/BackupReader');
+const BackupWriter = require('./js/backup/BackupWriter');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -69,11 +70,12 @@ const pkg = require('./package.json');
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
-const backupManager = new BackupManager(BACKUP_DIR);
-let main;
-let raygunClient;
 let about;
+let backupReader;
+let backupWriter;
+let main;
 let quitting = false;
+let raygunClient;
 let shouldQuit = false;
 let webappVersion;
 
@@ -197,9 +199,31 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
+ipcMain.on('export-init', async (event, recordCount) => {
+  const timestamp = new Date().toISOString().substring(0,10);
+  const defaultFilename = `Wire-Backup_${timestamp}.desktop_wbu`;
+
+  const dialogOptions = {
+    defaultPath: defaultFilename,
+    filters: [
+      { name: 'Wire Desktop Archive Files (*.desktop_wbu)', extensions: ['desktop_wbu'] }
+    ],
+    properties: ['saveFile'],
+    title: 'Save Wire Desktop Backup file'
+  };
+
+  const exportFilename = dialog.showSaveDialog(dialogOptions);
+
+  if (exportFilename) {
+    backupWriter = new BackupWriter(BACKUP_DIR, recordCount, exportFilename);
+    await backupWriter.init();
+    event.sender.send('export-start');
+  }
+});
+
+ipcMain.on('export-table', async (event, tableName, data) => {
   try {
-    await backupManager.writer.saveTable(tableName, dataOrLength);
+    await backupWriter.saveTable(tableName, data);
   } catch (error) {
     console.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
     return void event.sender.send('export-error', error);
@@ -207,13 +231,10 @@ ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
 });
 
 ipcMain.on('export-cancel', async () => {
-  backupManager.writer.cancel();
+  backupWriter.cancel();
 });
 
 ipcMain.on('export-meta', async (event, metaData) => {
-  let archiveFilename;
-  const backupWriter = backupManager.writer;
-
   try {
     await backupWriter.saveMetaDescription(metaData);
   } catch (error) {
@@ -223,36 +244,12 @@ ipcMain.on('export-meta', async (event, metaData) => {
   }
 
   try {
-    archiveFilename = await backupWriter.saveArchiveFile();
+    await backupWriter.saveArchiveFile();
   } catch(error) {
     await backupWriter.removeTemp();
     debugMain(`Failed to create archive file with error: "${error.message}"`);
     console.error(`Failed to save archive file with error: "${error.message}"`);
     return void event.sender.send('export-error', error);
-  }
-
-  const dialogOptions = {
-    defaultPath: path.basename(archiveFilename),
-    filters: [
-      { name: 'Wire Desktop Archive Files (*.tar.gz)', extensions: ['tar.gz'] }
-    ],
-    properties: ['saveFile'],
-    title: 'Save Wire Desktop Backup file'
-  };
-
-  let downloadFilename = dialog.showSaveDialog(dialogOptions);
-
-  if (downloadFilename) {
-    try {
-      await fs.move(archiveFilename, path.resolve(downloadFilename), {overwrite: true});
-    } catch(error) {
-      await backupWriter.removeTemp();
-      debugMain(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
-      console.error(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
-      return void event.sender.send('export-error', error);
-    }
-  } else {
-    await fs.remove(archiveFilename);
   }
 
   event.sender.send('export-done');
@@ -293,6 +290,8 @@ ipcMain.on('import-archive', async event => {
       return void event.sender.send('import-error', error);
     }
 
+    event.sender.send('import-meta', metaData);
+
     for (const table of tables) {
       const {name, content} = table;
       const eachTable = content.split('\r\n').filter(content => content !== '');
@@ -301,7 +300,6 @@ ipcMain.on('import-archive', async event => {
       }
     }
 
-    event.sender.send('import-meta', metaData);
     await backupReader.removeTemp();
   }
 });

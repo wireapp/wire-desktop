@@ -66,6 +66,10 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost('team-info', info);
   });
 
+  amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.INIT, recordCount => {
+    ipcRenderer.send('export-init', recordCount);
+  });
+
   amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.DATA, (tableName, dataOrLength) => {
     ipcRenderer.send('export-table', tableName, dataOrLength);
   });
@@ -134,6 +138,9 @@ const subscribeToMainProcessEvents = () => {
   );
   ipcRenderer.on('export-error', error =>
     amplify.publish(z.event.WebApp.BACKUP.EXPORT.ERROR, error)
+  );
+  ipcRenderer.on('export-start', () =>
+    amplify.publish(z.event.WebApp.BACKUP.EXPORT.START)
   );
   ipcRenderer.on('export-done', () =>
     amplify.publish(z.event.WebApp.BACKUP.EXPORT.DONE)
