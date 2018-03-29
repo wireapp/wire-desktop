@@ -27,7 +27,7 @@ class BackupReader {
     this.rootDirectory = rootDirectory;
   };
 
-  removeTemp() {
+  async removeTemp() {
     await fs.remove(this.tempDirectory);
   }
 
