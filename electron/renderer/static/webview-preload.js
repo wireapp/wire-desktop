@@ -70,6 +70,10 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.send('export-table', tableName, dataOrLength);
   });
 
+  amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.CANCEL, () => {
+    ipcRenderer.send('export-cancel');
+  });
+
   amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.META, metaData => {
     ipcRenderer.send('export-meta', metaData);
   });

@@ -206,6 +206,10 @@ ipcMain.on('export-table', async (event, tableName, dataOrLength) => {
   }
 });
 
+ipcMain.on('export-cancel', async () => {
+  backupManager.backupWriter.cancel();
+})
+
 ipcMain.on('export-meta', async (event, metaData) => {
   let archiveFilename;
 

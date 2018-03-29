@@ -21,22 +21,29 @@ const fs = require('fs-extra');
 const moment = require('moment');
 const path = require('path');
 const tar = require('tar');
+const {PriorityQueue} = require('@wireapp/priority-queue');
 
 class BackupWriter {
   constructor(rootDirectory, tempDirectory) {
     this.rootDirectory = rootDirectory;
     this.tempDirectory = tempDirectory;
+    this.writeQueue = new PriorityQueue({maxRetries: 1});
+  }
+
+  cancel() {
+    this.writeQueue.deleteAll();
   }
 
   saveTable(tableName, dataOrLength) {
-    const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
-    console.log(`Writing to file "${tempFile}" ...`);
+    this.writeQueue.add(() => {
+      const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
 
-    if (typeof dataOrLength === 'number') {
-      //return fs.remove(tempFile);
-    } else {
-      return fs.outputFile(tempFile, `${dataOrLength}\r\n`, {flag: 'a'});
-    }
+      if (typeof dataOrLength === 'number') {
+        // TODO: save number of entries
+      } else {
+        return fs.outputFile(tempFile, `${dataOrLength}\r\n`, {flag: 'a'});
+      }
+    });
   }
 
   saveMetaDescription(metaData) {
@@ -46,6 +53,14 @@ class BackupWriter {
 
   async saveArchiveFile() {
     const timestamp = moment().format('YYYY-MM-DD_HH-mm-ss');
+    await new Promise(resolve => {
+      const interval = setInterval(() => {
+        if (this.writeQueue.isPending === false) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 500);
+    });
     const backupFiles = await fs.readdir(this.tempDirectory);
     const archiveFile = path.resolve(this.rootDirectory, `backup-${timestamp}.tar.gz`);
 
