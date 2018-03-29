@@ -10,6 +10,7 @@
     "image-type": "3.0.0",
     "jsrsasign": "8.0.7",
     "lodash": "4.17.5",
+    "logdown": "3.2.3",
     "minimist": "1.2.0",
     "moment": "2.21.0",
     "open-graph": "0.2.3",
