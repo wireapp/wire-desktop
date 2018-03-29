@@ -216,6 +216,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
   try {
     await backupManager.writer.saveMetaDescription(metaData);
   } catch (error) {
+    await backupManager.writer.deleteTemp();
     console.error(`Failed to write meta file with error: ${error.message}`);
     return void event.sender.send('export-error', error);
   }
@@ -223,6 +224,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
   try {
     archiveFilename = await backupManager.writer.saveArchiveFile();
   } catch(error) {
+    await backupManager.writer.deleteTemp();
     debugMain(`Failed to create archive file with error: "${error.message}"`);
     console.error(`Failed to save archive file with error: "${error.message}"`);
     return void event.sender.send('export-error', error);
@@ -238,6 +240,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
     try {
       await fs.move(archiveFilename, path.resolve(downloadFilename));
     } catch(error) {
+      await backupManager.writer.deleteTemp();
       debugMain(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
       console.error(`Failed to move archive file from ${archiveFilename} to ${downloadFilename} with error: "${error.message}"`);
       return void event.sender.send('export-error', error);
@@ -257,6 +260,7 @@ ipcMain.on('import-archive', async event => {
     try {
       [metaData, tables] = await backupManager.reader.restoreFromArchive(filename);
     } catch (error) {
+      await backupManager.reader.deleteTemp();
       debugMain(`Failed to import from file "${filename}" with error: "${error.message}"`);
       console.error(`Failed to import from file: "${filename}" with error: "${error.message}"`);
       return void event.sender.send('import-error', error);

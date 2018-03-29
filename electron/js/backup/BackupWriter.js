@@ -22,13 +22,13 @@ const logdown = require('logdown');
 const moment = require('moment');
 const path = require('path');
 const tar = require('tar');
+const uuid = require('uuid/v4');
 const {PriorityQueue} = require('@wireapp/priority-queue');
 
 class BackupWriter {
   constructor(rootDirectory, tempDirectory) {
     this.logger = logdown('wire-desktop/backup/BackupWriter');
     this.rootDirectory = rootDirectory;
-    this.tempDirectory = tempDirectory;
     this.writeQueue = new PriorityQueue({maxRetries: 1});
   }
 
@@ -36,8 +36,15 @@ class BackupWriter {
     this.writeQueue.deleteAll();
   }
 
-  saveTable(tableName, dataOrLength) {
-    this.writeQueue.add(() => {
+  async removeTemp() {
+    await fs.remove(this.tempDirectory);
+  }
+
+  async saveTable(tableName, dataOrLength) {
+    this.tempDirectory = path.resolve(this.rootDirectory, `.temp-${uuid()}`);
+    await fs.ensureDir(this.tempDirectory);
+
+    return this.writeQueue.add(() => {
       const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
 
       if (typeof dataOrLength === 'number') {
@@ -64,6 +71,7 @@ class BackupWriter {
         }
       }, 500);
     });
+
     const backupFiles = await fs.readdir(this.tempDirectory);
     const archiveFile = path.resolve(this.rootDirectory, `backup-${timestamp}.tar.gz`);
 
@@ -78,7 +86,7 @@ class BackupWriter {
       preservePaths: false,
     }, backupFiles);
 
-    await fs.remove(this.tempDirectory);
+    await this.removeTemp();
 
     return archiveFile;
   }

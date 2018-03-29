@@ -19,12 +19,10 @@
 
 const BackupReader = require('./BackupReader');
 const BackupWriter = require('./BackupWriter');
-const path = require('path');
 
 class BackupManager {
   constructor(rootDirectory) {
     this.rootDirectory = rootDirectory;
-    this.tempDirectory = path.resolve(this.rootDirectory, '.temp');
 
     this.reader = new BackupReader(this.rootDirectory, this.tempDirectory);
     this.writer = new BackupWriter(this.rootDirectory, this.tempDirectory);
