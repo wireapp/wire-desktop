@@ -295,7 +295,7 @@ ipcMain.on('import-archive', async event => {
   }
 
   if (importFilename) {
-    console.log(`[TIMER] Measuring import time ... `);
+    console.log(`Measuring import time ... `);
     startTime = process.hrtime();
 
     await fs.ensureDir(path.dirname(importFilename));
@@ -323,7 +323,7 @@ ipcMain.on('import-archive', async event => {
 
     const stopTime = getTimeInSeconds(startTime);
 
-    console.log(`[TIMER] Execution time for import: ${stopTime} seconds.`);
+    console.log(`Execution time for import: ${stopTime} seconds.`);
   }
 });
 
