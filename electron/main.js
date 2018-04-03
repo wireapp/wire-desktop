@@ -71,7 +71,6 @@ const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
 let about;
-let backupReader;
 let backupWriter;
 let main;
 let quitting = false;
@@ -275,7 +274,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
 ipcMain.on('import-archive', async event => {
   let tables;
   let metaData;
-  const backupReader = backupManager.reader;
+  const backupReader = new BackupReader(BACKUP_DIR);
 
   const dialogOptions = {
     filters: [
