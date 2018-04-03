@@ -60,7 +60,6 @@ class BackupWriter {
     return this.writeQueue.add(() => {
       const stringified = JSON.stringify(row);
       if (this.exportedRows.includes(row.id)) {
-        this.logger.warn(`Already exported: "${stringified}"`);
         return;
       }
       this.exportedRows.push(row.id);
@@ -88,7 +87,6 @@ class BackupWriter {
     });
 
     if (this.exportedRecords !== this.finalRecordCount) {
-      console.log(this.exportedRows.sort());
       throw new Error(`finalRecordCount is "${this.finalRecordCount}", but "${this.exportedRecords}" records were exported.`);
     }
 
