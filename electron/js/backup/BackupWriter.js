@@ -38,7 +38,7 @@ class BackupWriter {
     this.savingsInProgress = {};
     this.tempDirectory = path.join(rootDirectory, '.temp');
     this.writeQueue = new PriorityQueue({maxRetries: 1});
-    this.logger.info(`Ready to receive "${finalRecordCount}" records to export...`);
+    this.logger.info(`Storing "${finalRecordCount}" records...`);
   }
 
   init() {
@@ -58,7 +58,6 @@ class BackupWriter {
     const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
 
     return this.writeQueue.add(() => {
-      this.logger.info(`Saving record for "${tableName}". Records left "${this.finalRecordCount - this.exportedRecords}"...`);
       this.exportedRecords++;
       return fs.outputFile(tempFile, `${JSON.stringify(data)}\r\n`, {flag: 'a'});
     });
