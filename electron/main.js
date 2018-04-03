@@ -77,7 +77,15 @@ let main;
 let quitting = false;
 let raygunClient;
 let shouldQuit = false;
+let startTime;
 let webappVersion;
+
+const getTimeInSeconds = timer => {
+  const [seconds, nanoseconds] = process.hrtime(timer);
+  const NANOSECONDS_IN_SECOND = 1e9;
+  const digits = 3;
+  return (seconds + nanoseconds / NANOSECONDS_IN_SECOND).toFixed(digits);
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -200,6 +208,8 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 ipcMain.on('export-init', async (event, recordCount) => {
+  console.log(`Measuring export time for "${recordCount}" records ... `);
+  startTime = process.hrtime();
   const timestamp = new Date().toISOString().substring(0,10);
   const defaultFilename = `Wire-Backup_${timestamp}.desktop_wbu`;
 
@@ -255,6 +265,11 @@ ipcMain.on('export-meta', async (event, metaData) => {
   event.sender.send('export-done');
 
   await backupWriter.removeTemp();
+
+  const stopTime = getTimeInSeconds(startTime);
+  process.stdout.write('Done.\n');
+
+  console.log(`Execution time for export: ${stopTime} seconds.`);
 });
 
 ipcMain.on('import-archive', async event => {
@@ -279,6 +294,9 @@ ipcMain.on('import-archive', async event => {
   }
 
   if (importFilename) {
+    console.log(`[TIMER] Measuring import time ... `);
+    startTime = process.hrtime();
+
     await fs.ensureDir(path.dirname(importFilename));
 
     try {
@@ -301,6 +319,10 @@ ipcMain.on('import-archive', async event => {
     }
 
     await backupReader.removeTemp();
+
+    const stopTime = getTimeInSeconds(startTime);
+
+    console.log(`[TIMER] Execution time for import: ${stopTime} seconds.`);
   }
 });
 
