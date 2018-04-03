@@ -278,7 +278,7 @@ ipcMain.on('import-archive', async event => {
 
   const dialogOptions = {
     filters: [
-      { name: 'Wire Desktop Archive Files (*.tar.gz)', extensions: ['tar.gz'] }
+      { name: 'Wire Desktop Archive Files (*.desktop_wbu)', extensions: ['desktop_wbu'] }
     ],
     properties: ['openFile'],
     title: 'Select Wire Desktop Backup file'
