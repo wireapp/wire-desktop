@@ -208,8 +208,6 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 ipcMain.on('export-init', async (event, recordCount) => {
-  console.log(`Measuring export time for "${recordCount}" records ... `);
-  startTime = process.hrtime();
   const timestamp = new Date().toISOString().substring(0,10);
   const defaultFilename = `Wire-Backup_${timestamp}.desktop_wbu`;
 
@@ -225,6 +223,8 @@ ipcMain.on('export-init', async (event, recordCount) => {
   const exportFilename = dialog.showSaveDialog(dialogOptions);
 
   if (exportFilename) {
+    console.log(`Measuring export time for "${recordCount}" records ... `);
+    startTime = process.hrtime();
     backupWriter = new BackupWriter(BACKUP_DIR, recordCount, exportFilename);
     await backupWriter.init();
     event.sender.send('export-start');

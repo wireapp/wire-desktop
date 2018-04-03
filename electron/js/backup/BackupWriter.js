@@ -83,7 +83,7 @@ class BackupWriter {
     });
 
     if (this.exportedRecords !== this.finalRecordCount) {
-      throw new Error(`finalRecordCount is "${this.finalRecordCount}", but only "${this.exportedRecords}" records were exported.`);
+      throw new Error(`finalRecordCount is "${this.finalRecordCount}", but "${this.exportedRecords}" records were exported.`);
     }
 
     const backupFiles = await fs.readdir(this.tempDirectory);
