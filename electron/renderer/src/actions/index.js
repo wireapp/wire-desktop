@@ -2,10 +2,10 @@ import uuid from 'uuid/v4';
 import verifyObjectProperties from '../lib/verifyObjectProperties';
 
 export const ADD_ACCOUNT = 'ADD_ACCOUNT';
+export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
 export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT';
 export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
 export const UPDATE_ACCOUNT_BADGE = 'UPDATE_ACCOUNT_BADGE';
-export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
 export const UPDATE_ACCOUNT_LIFECYCLE = 'UPDATE_ACCOUNT_LIFECYCLE';
 
 export const addAccount = (withSession = true) => {
@@ -13,6 +13,20 @@ export const addAccount = (withSession = true) => {
   return {
     sessionID: sessionID,
     type: ADD_ACCOUNT,
+  };
+};
+
+export const deleteAccount = id => {
+  return {
+    id,
+    type: DELETE_ACCOUNT,
+  };
+};
+
+export const switchAccount = id => {
+  return {
+    id,
+    type: SWITCH_ACCOUNT,
   };
 };
 
@@ -32,13 +46,6 @@ export const updateAccountLifecycle = (id, data) => {
   };
 };
 
-export const switchAccount = id => {
-  return {
-    id,
-    type: SWITCH_ACCOUNT,
-  };
-};
-
 export const updateAccountBadge = (id, count) => {
   return {
     count,
@@ -47,23 +54,20 @@ export const updateAccountBadge = (id, count) => {
   };
 };
 
-export const deleteAccount = id => {
-  return {
-    id,
-    type: DELETE_ACCOUNT,
-  };
-};
+export const HIDE_CONTEXT_MENUS = 'HIDE_CONTEXT_MENUS';
+export const TOGGLE_ADD_ACCOUNT_VISIBILITY = 'TOGGLE_ADD_ACCOUNT_VISIBILITY';
+export const TOGGLE_EDIT_ACCOUNT_VISIBILITY = 'TOGGLE_EDIT_ACCOUNT_VISIBILITY';
 
 export const setAccountContextHidden = () => {
   return {
-    type: 'HIDE_CONTEXT_MENUS',
+    type: HIDE_CONTEXT_MENUS,
   };
 };
 
 export const toggleAddAccountMenuVisibility = (x, y) => {
   return {
-    payload: { position: { x, y } },
-    type: 'TOGGLE_ADD_ACCOUNT_VISIBILITY',
+    payload: {position: {x, y}},
+    type: TOGGLE_ADD_ACCOUNT_VISIBILITY,
   };
 };
 
@@ -80,10 +84,10 @@ export const toggleEditAccountMenuVisibility = (
       accountId,
       isAtLeastAdmin,
       lifecycle,
-      position: { x, y },
+      position: {x, y},
       sessionId,
     },
-    type: 'TOGGLE_EDIT_ACCOUNT_VISIBILITY',
+    type: TOGGLE_EDIT_ACCOUNT_VISIBILITY,
   };
 };
 
@@ -98,6 +102,18 @@ export const abortAccountCreation = id => {
       dispatch(switchAccount(lastAccount.id));
     } else {
       dispatch(addAccount(false));
+    }
+  };
+};
+
+export const addAccountWithSession = () => {
+  return (dispatch, getState) => {
+    const hasReachedAccountLimit = getState().accounts.length >= 3;
+
+    if (hasReachedAccountLimit) {
+      console.warn('Reached number of maximum accounts');
+    } else {
+      dispatch(addAccount());
     }
   };
 };
@@ -132,18 +148,6 @@ export const updateAccountBadgeCount = (id, count) => {
       }
     } else {
       console.warn('Missing account when updating badge count');
-    }
-  };
-};
-
-export const addAccountWithSession = () => {
-  return (dispatch, getState) => {
-    const hasReachedAccountLimit = getState().accounts.length >= 3;
-
-    if (hasReachedAccountLimit) {
-      console.warn('Reached number of maximum accounts');
-    } else {
-      dispatch(addAccount());
     }
   };
 };

@@ -17,7 +17,9 @@
  *
  */
 
-const defaultState = {
+import * as ActionCreator from '../actions';
+
+const DEFAULT_STATE = {
   accountId: '',
   isAddAccountMenuVisible: false,
   isAtLeastAdmin: false,
@@ -27,20 +29,22 @@ const defaultState = {
   sessionId: '',
 };
 
-const accounts = (state = defaultState, action) => {
+const contextMenuReducer = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
-    case 'HIDE_CONTEXT_MENUS':
-      return {
-        ...defaultState,
-      };
-    case 'TOGGLE_ADD_ACCOUNT_VISIBILITY':
+    case ActionCreator.HIDE_CONTEXT_MENUS: {
+      return {...DEFAULT_STATE};
+    }
+
+    case ActionCreator.TOGGLE_ADD_ACCOUNT_VISIBILITY: {
       return {
         ...state,
         isAddAccountMenuVisible: !state.isAddAccountMenuVisible,
         isEditAccountMenuVisible: false,
         position: action.payload.position,
       };
-    case 'TOGGLE_EDIT_ACCOUNT_VISIBILITY':
+    }
+
+    case ActionCreator.TOGGLE_EDIT_ACCOUNT_VISIBILITY: {
       return {
         ...state,
         accountId: action.payload.accountId,
@@ -51,9 +55,11 @@ const accounts = (state = defaultState, action) => {
         position: action.payload.position,
         sessionId: action.payload.sessionId,
       };
+    }
+
     default:
       return state;
   }
 };
 
-export default accounts;
+export default contextMenuReducer;

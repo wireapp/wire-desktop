@@ -17,13 +17,13 @@
  *
  */
 
-import { combineReducers } from 'redux';
-import accounts from './accounts';
-import contextMenuState from './contextMenu';
+import {combineReducers} from 'redux';
+import accountsReducer from './accountReducer';
+import contextMenuReducer from './contextMenuReducer';
 
 const store = combineReducers({
-  accounts,
-  contextMenuState,
+  accountsReducer,
+  contextMenuReducer,
 });
 
 export default store;

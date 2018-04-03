@@ -63,7 +63,7 @@ function EditAccountMenu({
 }
 
 export default connect(
-  ({ contextMenuState }) => ({
+  ({contextMenuState}) => ({
     accountId: contextMenuState.accountId,
     isAtLeastAdmin: contextMenuState.isAtLeastAdmin,
     lifecycle: contextMenuState.lifecycle,

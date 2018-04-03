@@ -58,15 +58,15 @@ class Webview extends Component {
   }
 
   _focusWebview() {
-    const is_visible = this.props.visible === true;
-    if (is_visible) {
+    const isVisible = this.props.visible === true;
+    if (isVisible) {
       this.webview.focus();
     }
   }
 
   render() {
     const {visible, partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props; // eslint-disable-line no-unused-vars
-    return <webview {...validProps} ref={(webview) => this.webview = webview } />;
+    return <webview {...validProps} ref={webview => this.webview = webview} />;
   }
 }
 

@@ -17,9 +17,9 @@
  *
  */
 
-import { colorFromId } from '../lib/accentColor';
-import { connect } from 'react-redux';
-import { preventFocus } from '../lib/util';
+import {colorFromId} from '../lib/accentColor';
+import {connect} from 'react-redux';
+import {preventFocus} from '../lib/util';
 import AddAccountMenuTrigger from './context/AddAccountMenuTrigger';
 import AddAccountMenu from './context/AddAccountMenu';
 import EditAccountMenu from './context/EditAccountMenu';

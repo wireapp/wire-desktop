@@ -17,7 +17,7 @@
  *
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 import Webview from './Webview';
 
@@ -82,7 +82,7 @@ class Webviews extends Component {
     window.sendBadgeCount(accumulatedCount);
   }
 
-  _onIpcMessage(account, { channel, args }) {
+  _onIpcMessage(account, {channel, args}) {
     switch (channel) {
       case 'notification-click': {
         this.props.switchAccount(account.id);
@@ -111,7 +111,7 @@ class Webviews extends Component {
       }
     }
 
-    this.setState({ canDelete: { ...this.state.canDelete, [account.id]: this._canDeleteWebview(account) } });
+    this.setState({canDelete: {...this.state.canDelete, [account.id]: this._canDeleteWebview(account)}});
   }
 
   _onWebviewClose(account) {
