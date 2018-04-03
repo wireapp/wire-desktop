@@ -67,9 +67,6 @@ class Webviews extends Component {
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
-    // when landing on auth page for login mode
-    url.hash = 'login';
-
     return url.href;
   }
 

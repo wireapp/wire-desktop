@@ -23,8 +23,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
 
-const { desktopCapturer, ipcRenderer, remote, webFrame } = require('electron');
-const { app } = remote;
+const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
+const {app} = remote;
 
 webFrame.setVisualZoomLevelLimits(1, 1);
 webFrame.setLayoutZoomLevelLimits(1, 1);
@@ -32,11 +32,8 @@ webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
-    if (update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP) {
-      ipcRenderer.send('wrapper-update');
-    } else {
-      ipcRenderer.send('wrapper-relaunch');
-    }
+    const isUpdateSourceDesktop = update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP;
+    ipcRenderer.send(isUpdateSourceDesktop ? 'wrapper-update' : 'wrapper-relaunch');
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => {
@@ -68,60 +65,57 @@ const subscribeToWebappEvents = () => {
 };
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on('conversation-add-people', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE)
-  );
-  ipcRenderer.on('conversation-archive', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE)
-  );
-  ipcRenderer.on('conversation-call', () =>
-    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false)
-  );
-  ipcRenderer.on('conversation-delete', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.DELETE)
-  );
-  ipcRenderer.on('conversation-next', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.NEXT)
-  );
-  ipcRenderer.on('conversation-people', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE)
-  );
-  ipcRenderer.on('conversation-ping', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.PING)
-  );
-  ipcRenderer.on('conversation-prev', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.PREV)
-  );
-  ipcRenderer.on('conversation-show', conversation_id =>
-    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id)
-  );
-  ipcRenderer.on('conversation-silence', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.SILENCE)
-  );
-  ipcRenderer.on('conversation-start', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.START)
-  );
-  ipcRenderer.on('conversation-video-call', () =>
-    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true)
-  );
-  ipcRenderer.on('preferences-show', () =>
-    amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT)
-  );
-  ipcRenderer.on('sign-out', () =>
-    amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA)
-  );
-  ipcRenderer.on('wrapper-update-available', () =>
-    amplify.publish(
-      z.event.WebApp.LIFECYCLE.UPDATE,
-      z.announce.UPDATE_SOURCE.DESKTOP
-    )
-  );
+  ipcRenderer.on('conversation-add-people', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE);
+  });
+  ipcRenderer.on('conversation-archive', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE);
+  });
+  ipcRenderer.on('conversation-call', () => {
+    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false);
+  });
+  ipcRenderer.on('conversation-delete', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.DELETE);
+  });
+  ipcRenderer.on('conversation-next', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.NEXT);
+  });
+  ipcRenderer.on('conversation-people', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE);
+  });
+  ipcRenderer.on('conversation-ping', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PING);
+  });
+  ipcRenderer.on('conversation-prev', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PREV);
+  });
+  ipcRenderer.on('conversation-show', conversationId => {
+    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId)
+  });
+  ipcRenderer.on('conversation-silence', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
+  });
+  ipcRenderer.on('conversation-start', () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.START);
+  });
+  ipcRenderer.on('conversation-video-call', () => {
+    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true);
+  });
+  ipcRenderer.on('preferences-show', () => {
+    amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
+  });
+  ipcRenderer.on('sign-out', () => {
+    amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
+  });
+  ipcRenderer.on('wrapper-update-available', () => {
+    amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.lifecycle.UPDATE_SOURCE.DESKTOP);
+  });
 };
 
-const exposeAddressbook = () => {
+const exposeAddressBook = () => {
   let cachedAddressBook;
 
-  const getAdressBook = () => {
+  const getAddressBook = () => {
     if (!cachedAddressBook) {
       try {
         cachedAddressBook = require('node-addressbook');
@@ -133,7 +127,7 @@ const exposeAddressbook = () => {
   };
 
   if (environment.platform.IS_MAC_OS) {
-    Object.defineProperty(window, 'wAddressBook', { get: getAdressBook });
+    Object.defineProperty(window, 'wAddressBook', { get: getAddressBook });
   }
 };
 
@@ -156,12 +150,7 @@ const enableFileLogging = () => {
   const id = new URL(window.location).searchParams.get('id');
 
   if (id) {
-    const logFilePath = path.join(
-      app.getPath('userData'),
-      'logs',
-      id,
-      config.LOG_FILE_NAME
-    );
+    const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
     fs.createFileSync(logFilePath);
 
     const logger = new winston.Logger();
@@ -177,16 +166,13 @@ const enableFileLogging = () => {
   }
 };
 
-const reportWebappVersion = () => {
-  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
-};
+const reportWebappVersion = () => ipcRenderer.send('webapp-version', z.util.Environment.version(false));
 
 const checkAvailability = callback => {
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);
-      callback();
-      return;
+      return callback();
     }
 
     if (navigator.onLine) {
@@ -197,10 +183,6 @@ const checkAvailability = callback => {
   }, 500);
 };
 
-const forceEmailLogin = () => {
-  window.location.hash = '#login';
-};
-
 // https://github.com/electron/electron/issues/2984
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
@@ -208,18 +190,13 @@ process.once('loaded', () => {
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
   global.openGraph = require('../../js/lib/openGraph');
-  global.notification_icon = path.join(
-    app.getAppPath(),
-    'img',
-    'notification.png'
-  );
+  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
   enableFileLogging();
-  forceEmailLogin();
 });
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
-    exposeAddressbook();
+    exposeAddressBook();
 
     subscribeToMainProcessEvents();
     subscribeToWebappEvents();

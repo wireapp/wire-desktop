@@ -35,16 +35,15 @@ import {
 
 import './Sidebar.css';
 
-function className(account) {
-  return [
-    'Sidebar-icon',
-    account.badgeCount > 0 ? 'Sidebar-icon-badge' : '',
-  ].join(' ');
-}
-
 const centerOfEventTarget = event => {
   const cRect = event.target.getBoundingClientRect();
   return [cRect.left + cRect.width / 2, cRect.top + cRect.height / 2];
+};
+
+const getClassName = account => {
+  const showIconBadge = account.badgeCount > 0 ? ' Sidebar-icon-badge' : '';
+  const showIconCursor = account.visible ? '' : ' Sidebar-icon-cursor';
+  return `Sidebar-icon${showIconBadge}${showIconCursor}`;
 };
 
 const Sidebar = ({
@@ -59,15 +58,15 @@ const Sidebar = ({
 }) => (
   <div
     className="Sidebar"
-    style={hasCreatedAccount ? {} : { display: 'none' }}
+    style={hasCreatedAccount ? {} : {display: 'none'}}
     onMouseDown={preventFocus()}
     onClick={connected.setAccountContextHidden}
   >
     {accounts.map(account => (
       <div className="Sidebar-cell" key={account.id}>
         <div
-          style={{ color: colorFromId(currentAccentID) }}
-          className={className(account)}
+          style={{color: colorFromId(currentAccentID)}}
+          className={getClassName(account)}
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
             const isAtLeastAdmin = [
@@ -110,7 +109,7 @@ const Sidebar = ({
 );
 
 export default connect(
-  ({ accounts, contextMenuState }) => ({
+  ({accounts, contextMenuState}) => ({
     accounts,
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
