@@ -35,7 +35,6 @@ class BackupWriter {
     this.exportedRecords = 0;
     this.exportFilename = exportFilename;
     this.finalRecordCount = finalRecordCount;
-    this.savingsInProgress = {};
     this.tempDirectory = path.join(rootDirectory, '.temp');
     this.writeQueue = new PriorityQueue({maxRetries: 1});
     this.logger.info(`Storing "${finalRecordCount}" records...`);
