@@ -230,9 +230,11 @@ ipcMain.on('export-init', async (event, recordCount) => {
   }
 });
 
-ipcMain.on('export-table', async (event, tableName, data) => {
+ipcMain.on('export-table', async (event, tableName, batch) => {
   try {
-    await backupWriter.saveTable(tableName, data);
+    for (row of batch) {
+      await backupWriter.saveBatch(tableName, row);
+    }
   } catch (error) {
     console.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
     return void event.sender.send('export-error', error);

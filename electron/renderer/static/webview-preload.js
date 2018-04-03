@@ -70,8 +70,8 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.send('export-init', recordCount);
   });
 
-  amplify.subscribe('wire.webapp.backup.export.data', (tableName, dataOrLength) => {
-    ipcRenderer.send('export-table', tableName, dataOrLength);
+  amplify.subscribe('wire.webapp.backup.export.data', (tableName, batch) => {
+    ipcRenderer.send('export-table', tableName, batch);
   });
 
   amplify.subscribe('wire.webapp.backup.export.cancel', () => {
