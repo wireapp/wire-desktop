@@ -17,9 +17,9 @@
  *
  */
 
-const electron_packager = require('electron-packager');
+const electronPackager = require('electron-packager');
 const {createWindowsInstaller} = require('electron-winstaller');
-const electron_builder = require('electron-builder');
+const electronBuilder = require('electron-builder');
 
 const ELECTRON_PACKAGE_JSON = 'electron/package.json';
 const PACKAGE_JSON = 'package.json';
@@ -28,7 +28,7 @@ const INFO_JSON = 'info.json';
 const LINUX_DESKTOP = {
   "Version": "1.1",
   "Name": "Wire",
-  "GenericName": "Secure messenger",
+  "GenericName": "The most secure collaboration platform",
   "Categories": "Network;InstantMessaging;Chat;VideoConference",
   "Keywords": "chat;encrypt;e2e;messenger;videocall",
   "StartupWMClass": "Wire"
@@ -36,12 +36,11 @@ const LINUX_DESKTOP = {
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
-  const path = require('path');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON(PACKAGE_JSON),
     info: grunt.file.readJSON(INFO_JSON),
-    build_number: `${process.env.BUILD_NUMBER || '0'}`,
+    buildNumber: `${process.env.BUILD_NUMBER || '0'}`,
 
     clean: {
       wrap: 'wrap',
@@ -82,7 +81,7 @@ module.exports = function(grunt) {
         asar: true,
         appCopyright: '<%= info.copyright %>',
         appVersion: '<%= info.version %>',
-        buildVersion: '<%= build_number %>',
+        buildVersion: '<%= buildNumber %>',
         ignore: 'electron/renderer/src',
         protocols: [{name: '', schemes: ['wire']}],
       },
@@ -204,7 +203,7 @@ module.exports = function(grunt) {
       internal: {
         title: '<%= info.nameInternal %>',
         description: '<%= info.description %>',
-        version: '<%= info.version %>.<%= build_number %>',
+        version: '<%= info.version %>.<%= buildNumber %>',
         appDirectory: 'wrap/build/<%= info.nameInternal %>-win32-ia32',
         outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32',
         authors: '<%= info.nameInternal %>',
@@ -218,7 +217,7 @@ module.exports = function(grunt) {
       prod: {
         title: '<%= info.name %>',
         description: '<%= info.description %>',
-        version: '<%= info.version %>.<%= build_number %>',
+        version: '<%= info.version %>.<%= buildNumber %>',
         appDirectory: 'wrap/build/<%= info.name %>-win32-ia32',
         outputDirectory: 'wrap/prod/<%= info.name %>-win32-ia32',
         authors: '<%= info.name %>',
@@ -264,50 +263,48 @@ module.exports = function(grunt) {
     grunt.config.set('info', info);
     grunt.file.write(INFO_JSON, `${JSON.stringify(info, null, 2)}\n`);
 
-    const electron_pkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electron_pkg.version = `${info.version}`;
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electron_pkg, null, 2)}\n`);
+    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    electronPkg.version = `${info.version}`;
+    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
 
     grunt.log.write(`Version number increased to ${info.version} `).ok();
   });
 
   grunt.registerTask('release-internal', () => {
     const info = grunt.config.get('info');
-    const build_number = grunt.config.get('build_number');
-    const commit_id = grunt.config('gitinfo.local.branch.current.shortSHA');
-    const electron_pkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electron_pkg.updateWinUrl = info.updateWinUrlInternal;
-    electron_pkg.environment = 'internal';
-    electron_pkg.name = info.nameInternal.toLowerCase();
-    electron_pkg.productName = info.nameInternal;
-    electron_pkg.version = build_number === '0'
-      ? `${info.version}.0-${commit_id}-internal`
-      : `${info.version}.${build_number}-internal`;
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electron_pkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to ${electron_pkg.updateWinUrl} `).ok();
+    const buildNumber = grunt.config.get('buildNumber');
+    const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
+    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    electronPkg.updateWinUrl = info.updateWinUrlInternal;
+    electronPkg.environment = 'internal';
+    electronPkg.name = info.nameInternal.toLowerCase();
+    electronPkg.productName = info.nameInternal;
+    electronPkg.version = buildNumber === '0'
+      ? `${info.version}.0-${commitId}-internal`
+      : `${info.version}.${buildNumber}-internal`;
+    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
   });
 
   grunt.registerTask('release-prod', () => {
     const info = grunt.config.get('info');
-    const build_number = grunt.config.get('build_number');
-    const commit_id = grunt.config('gitinfo.local.branch.current.shortSHA');
-    const electron_pkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electron_pkg.updateWinUrl = info.updateWinUrlProd;
-    electron_pkg.environment = 'production';
-    electron_pkg.name = info.name.toLowerCase();
-    electron_pkg.productName = info.name;
-    if (build_number === '0') {
-      electron_pkg.version = `${info.version}.0-${commit_id}`;
-    } else {
-      electron_pkg.version = `${info.version}.${build_number}`;
-    }
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electron_pkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to ${electron_pkg.updateWinUrl} `).ok();
+    const buildNumber = grunt.config.get('buildNumber');
+    const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
+    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    electronPkg.updateWinUrl = info.updateWinUrlProd;
+    electronPkg.environment = 'production';
+    electronPkg.name = info.name.toLohostnameShouldBePinnedwerCase();
+    electronPkg.productName = info.name;
+    electronPkg.version = buildNumber === '0'
+      ? `${info.version}.0-${commitId}`
+      : `${info.version}.${buildNumber}`;
+    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
   });
 
   grunt.registerMultiTask('electron', 'Package Electron apps', function() {
     const done = this.async();
-    electron_packager(this.options(), function(error) {
+    electronPackager(this.options(), error => {
       if (error) {
         return grunt.warn(error);
       }
@@ -316,7 +313,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('electronbuilder', 'Build Electron apps', function() {
-    const done = this.async();
     const options = this.options();
     const {targets} = options;
     delete options.targets;
@@ -324,32 +320,32 @@ module.exports = function(grunt) {
     delete options.arch;
 
     if (arch === 'all') {
-      return electron_builder.build({
-        targets: electron_builder.Platform.LINUX.createTarget(
+      return electronBuilder.build({
+        targets: electronBuilder.Platform.LINUX.createTarget(
           targets,
-          electron_builder.Arch.ia32,
-          electron_builder.Arch.x64,
+          electronBuilder.Arch.ia32,
+          electronBuilder.Arch.x64,
         ),
         config: options,
       });
     }
 
-    electron_builder.build({
-      targets: electron_builder.Platform.LINUX.createTarget(targets, electron_builder.archFromString(arch)),
+    electronBuilder.build({
+      targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
       config: options,
     });
   });
 
   grunt.registerTask('update-keys', function() {
     const options = this.options();
-    const config_string = grunt.file.read(options.config);
+    const configString = grunt.file.read(options.config);
 
-    if (config_string) {
-      const new_config_string = config_string
+    if (configString) {
+      const newConfigString = configString
         .replace(`RAYGUN_API_KEY: ''`, `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
         .replace(`GOOGLE_CLIENT_ID: ''`, `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
         .replace(`GOOGLE_CLIENT_SECRET: ''`, `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
-      return grunt.file.write(options.config, new_config_string);
+      return grunt.file.write(options.config, newConfigString);
     }
 
     grunt.warn('Failed updating keys in config');
@@ -370,7 +366,7 @@ module.exports = function(grunt) {
       `${options.name} Helper EH.app/`,
       `${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
       `${options.name} Helper NP.app/`,
-    ].forEach((framework) =>
+    ].forEach(framework =>
       execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}/Contents/Frameworks/${framework}'`),
     );
 

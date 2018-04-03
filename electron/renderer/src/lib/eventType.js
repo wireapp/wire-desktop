@@ -17,11 +17,15 @@
  *
  */
 
-
-module.exports = (point, rectangle) => {
-  const [x, y] = point;
-  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
-  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
-
-  return xInRange && yInRange;
+export const ACCOUNT = {
+  UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
+};
+export const ACTION = {
+  NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
+};
+export const LIFECYCLE = {
+  SIGN_OUT: 'EVENT_TYPE.LIFECYCLE.SIGN_OUT',
+  SIGNED_IN: 'EVENT_TYPE.LIFECYCLE.SIGNED_IN',
+  SIGNED_OUT: 'EVENT_TYPE.LIFECYCLE.SIGNED_OUT',
+  UNREAD_COUNT: 'EVENT_TYPE.LIFECYCLE.UNREAD_COUNT',
 };

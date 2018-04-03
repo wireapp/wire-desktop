@@ -17,7 +17,6 @@
  *
  */
 
-
 const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
@@ -25,12 +24,14 @@ const webContents = remote.getCurrentWebContents();
 const config = require('./../config');
 const locale = require('./../../locale/locale');
 const settings = require('./../lib/settings');
+const EVENT_TYPE = require('./../lib/eventType');
 
 let textMenu;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Default
 ///////////////////////////////////////////////////////////////////////////////
+
 let copyContext = '';
 
 const defaultMenu = Menu.buildFromTemplate([
@@ -43,6 +44,7 @@ const defaultMenu = Menu.buildFromTemplate([
 ///////////////////////////////////////////////////////////////////////////////
 // Text
 ///////////////////////////////////////////////////////////////////////////////
+
 const selection = {
   isMisspelled: false,
   suggestions: [],
@@ -97,6 +99,7 @@ const createTextMenu = () => {
 ///////////////////////////////////////////////////////////////////////////////
 // Images
 ///////////////////////////////////////////////////////////////////////////////
+
 const imageMenu = Menu.buildFromTemplate([
   {
     click: () => savePicture(imageMenu.file, imageMenu.image),
@@ -141,31 +144,18 @@ window.addEventListener('contextmenu', (event) => {
 
 }, false);
 
-window.addEventListener('click', (event) => {
-  const element = event.target;
-
-  if (element.classList.contains('icon-more') && !element.classList.contains('context-menu') && element.parentElement.previousElementSibling) {
-    // get center-column
-    const id = element.parentElement.previousElementSibling.getAttribute('data-uie-uid');
-    if (createConversationMenu(id)) {
-      event.stopPropagation();
-    }
-  }
-}, true);
-
-
 const savePicture = (fileName, url) => {
   fetch(url)
     .then((response) => response.arrayBuffer())
-    .then((arrayBuffer) => ipcRenderer.send('save-picture', fileName, new Uint8Array(arrayBuffer)));
+    .then((arrayBuffer) => ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, fileName, new Uint8Array(arrayBuffer)));
 };
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spell Checker
 ///////////////////////////////////////////////////////////////////////////////
-const is_spellcheck_supported = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
-if (is_spellcheck_supported) {
+
+const isSpellCheckSupported = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
+if (isSpellCheckSupported) {
   const spellchecker = require('spellchecker');
 
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {

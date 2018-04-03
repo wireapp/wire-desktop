@@ -22,6 +22,7 @@ const environment = require('../../js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
+const EVENT_TYPE = require('../../js/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
@@ -33,81 +34,82 @@ webFrame.registerURLSchemeAsBypassingCSP('file');
 const subscribeToWebappEvents = () => {
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
     const isUpdateSourceDesktop = update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP;
-    ipcRenderer.send(isUpdateSourceDesktop ? 'wrapper-update' : 'wrapper-relaunch');
+    const eventType = isUpdateSourceDesktop ? EVENT_TYPE.WRAPPER.UPDATE : EVENT_TYPE.WRAPPER.RELAUNCH;
+    ipcRenderer.send(eventType);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => {
-    ipcRenderer.sendToHost('lifecycle-signed-in');
+    ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_IN);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGN_OUT, () => {
-    ipcRenderer.sendToHost('lifecycle-signed-out');
+    ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGN_OUT);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, clearData => {
     if (clearData) {
-      ipcRenderer.sendToHost('signed-out');
+      ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT);
     }
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, count => {
-    ipcRenderer.sendToHost('lifecycle-unread-count', count);
+    ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.UNREAD_COUNT, count);
   });
 
   amplify.subscribe(z.event.WebApp.NOTIFICATION.CLICK, () => {
-    ipcRenderer.send('notification-click');
-    ipcRenderer.sendToHost('notification-click');
+    ipcRenderer.send(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
+    ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
   amplify.subscribe(z.event.WebApp.TEAM.INFO, info => {
-    ipcRenderer.sendToHost('team-info', info);
+    ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 };
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on('conversation-add-people', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.ADD_PEOPLE, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE);
   });
-  ipcRenderer.on('conversation-archive', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.ARCHIVE, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE);
   });
-  ipcRenderer.on('conversation-call', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.CALL, () => {
     amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false);
   });
-  ipcRenderer.on('conversation-delete', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.DELETE, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.DELETE);
   });
-  ipcRenderer.on('conversation-next', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_NEXT, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.NEXT);
   });
-  ipcRenderer.on('conversation-people', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.PEOPLE, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE);
   });
-  ipcRenderer.on('conversation-ping', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.PING, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PING);
   });
-  ipcRenderer.on('conversation-prev', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on('conversation-show', conversationId => {
-    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId)
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, conversationId => {
+    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId);
   });
-  ipcRenderer.on('conversation-silence', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
   });
-  ipcRenderer.on('conversation-start', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.START);
   });
-  ipcRenderer.on('conversation-video-call', () => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, () => {
     amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true);
   });
-  ipcRenderer.on('preferences-show', () => {
+  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SHOW, () => {
     amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
   });
-  ipcRenderer.on('sign-out', () => {
+  ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
     amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
   });
-  ipcRenderer.on('wrapper-update-available', () => {
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
     amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
 };
@@ -139,9 +141,9 @@ const replaceGoogleAuth = () => {
   // hijack google authenticate method
   window.wire.app.service.connect_google._authenticate = () => {
     return new Promise((resolve, reject) => {
-      ipcRenderer.send('google-auth-request');
-      ipcRenderer.once('google-auth-success', (event, token) => resolve(token));
-      ipcRenderer.once('google-auth-error', reject);
+      ipcRenderer.send(EVENT_TYPE.GOOGLE_OAUTH.REQUEST);
+      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.SUCCESS, (event, token) => resolve(token));
+      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.ERROR, reject);
     });
   };
 };
@@ -166,7 +168,7 @@ const enableFileLogging = () => {
   }
 };
 
-const reportWebappVersion = () => ipcRenderer.send('webapp-version', z.util.Environment.version(false));
+const reportWebappVersion = () => ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, z.util.Environment.version(false));
 
 const checkAvailability = callback => {
   const intervalId = setInterval(() => {

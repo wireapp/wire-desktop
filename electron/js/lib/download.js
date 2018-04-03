@@ -17,10 +17,8 @@
  *
  */
 
-
 const fs = require('fs');
 const imageType = require('image-type');
-
 const {dialog} = require('electron');
 
 module.exports = (fileName, bytes) => {

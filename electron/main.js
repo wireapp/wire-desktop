@@ -56,10 +56,11 @@ const systemMenu = require('./js/menu/system');
 const tray = require('./js/menu/tray');
 const util = require('./js/util');
 const windowManager = require('./js/window-manager');
+const EVENT_TYPE = require('./js/lib/eventType');
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = environment.web.get_url_webapp(argv.env);
+const BASE_URL = environment.web.getWebappUrl(argv.env);
 const pkg = require('./package.json');
 
 // Icon
@@ -121,7 +122,7 @@ if (environment.platform.IS_WINDOWS) {
   const squirrel = require('./js/squirrel');
   squirrel.handleSquirrelEvent(shouldQuit);
 
-  ipcMain.on('wrapper-update', () => squirrel.installUpdate());
+  ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => squirrel.installUpdate());
 
   // Stop further execution on update to prevent second tray icon
   if (shouldQuit) {
@@ -145,30 +146,30 @@ if (environment.platform.IS_LINUX) {
 ///////////////////////////////////////////////////////////////////////////////
 // IPC events
 ///////////////////////////////////////////////////////////////////////////////
-ipcMain.once('webapp-version', (event, version) => {
+ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event, version) => {
   webappVersion = version;
 });
 
-ipcMain.on('save-picture', (event, fileName, bytes) => {
+ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, fileName, bytes) => {
   download(fileName, bytes);
 });
 
-ipcMain.on('notification-click', () => {
+ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
   windowManager.showPrimaryWindow();
 });
 
-ipcMain.on('badge-count', (event, count) => {
+ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count) => {
   tray.updateBadgeIcon(main, count);
 });
 
-ipcMain.on('google-auth-request', event => {
+ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, event => {
   googleAuth
     .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
     .then(code => event.sender.send('google-auth-success', code.access_token))
     .catch(error => event.sender.send('google-auth-error', error));
 });
 
-ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
+ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event, accountID, sessionID) => {
   // delete webview partition
   try {
     if (sessionID) {
@@ -191,7 +192,7 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
   }
 });
 
-ipcMain.on('wrapper-relaunch', () => relaunchApp());
+ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => relaunchApp());
 
 const relaunchApp = () => {
   app.relaunch();
@@ -370,7 +371,7 @@ const showAboutWindow = () => {
     });
 
     // Locales
-    ipcMain.on('about-locale-values', (event, labels) => {
+    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels) => {
       if (event.sender.id !== about.webContents.id) {
         return;
       }
@@ -378,7 +379,7 @@ const showAboutWindow = () => {
       for (const label of labels) {
         resultLabels[label] = locale.getText(label);
       }
-      event.sender.send('about-locale-render', resultLabels);
+      event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
     });
 
     // Close window via escape
@@ -395,7 +396,7 @@ const showAboutWindow = () => {
     about.loadURL(ABOUT_HTML);
 
     about.webContents.on('dom-ready', () => {
-      about.webContents.send('about-loaded', {
+      about.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
         webappVersion: webappVersion,
         productName: pkg.productName,
         electronVersion: pkg.version,
@@ -436,9 +437,7 @@ app.on('ready', () => {
   if (environment.app.IS_DEVELOPMENT) {
     appMenu.append(developerMenu);
   }
-  appMenu.on('about-wire', () => {
-    showAboutWindow();
-  });
+  appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => showAboutWindow());
 
   Menu.setApplicationMenu(appMenu);
   tray.createTrayIcon();
@@ -488,6 +487,7 @@ class ElectronWrapperInit {
       webviewProtectionDebug('Opening an external window from a webview. URL: %s', _url);
       shell.openExternal(_url);
     };
+
     const willNavigateInWebview = (event, _url) => {
       // Ensure navigation is to a whitelisted domain
       if (util.isMatchingHost(_url, BASE_URL)) {
@@ -501,7 +501,7 @@ class ElectronWrapperInit {
     app.on('web-contents-created', (event, contents) => {
       switch (contents.getType()) {
         case 'window':
-          contents.on('will-attach-webview', (e, webPreferences, params) => {
+          contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
 
             // Use secure defaults
@@ -514,7 +514,7 @@ class ElectronWrapperInit {
 
             // Verify the URL being loaded
             if (!util.isMatchingHost(_url, BASE_URL)) {
-              e.preventDefault();
+              event.preventDefault();
               webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
             }
           });
@@ -522,12 +522,8 @@ class ElectronWrapperInit {
 
         case 'webview':
           // Open webview links outside of the app
-          contents.on('new-window', (e, _url) => {
-            openLinkInNewWindow(e, _url);
-          });
-          contents.on('will-navigate', (e, _url) => {
-            willNavigateInWebview(e, _url);
-          });
+          contents.on('new-window', openLinkInNewWindow);
+          contents.on('will-navigate', willNavigateInWebview);
 
           contents.session.setCertificateVerifyProc((request, cb) => {
             const {hostname = '', certificate = {}, error} = request;

@@ -17,7 +17,6 @@
  *
  */
 
-
 const {BrowserWindow} = require('electron');
 
 const qs = require('querystring');
@@ -25,7 +24,7 @@ const google = require('googleapis');
 const request = require('request');
 const OAuth2 = google.auth.OAuth2;
 
-const _authorizeApp = (url) => {
+const authorizeApp = url => {
   return new Promise((resolve, reject) => {
     const win = new BrowserWindow({
       'title': '',
@@ -41,12 +40,13 @@ const _authorizeApp = (url) => {
       setImmediate(() => {
         const title = win.getTitle();
 
+        const [, , returnValue] = title.split(/[ =]/);
         if (title.startsWith('Denied')) {
-          reject(new Error(title.split(/[ =]/)[2]));
+          reject(new Error(returnValue));
           win.removeAllListeners('closed');
           win.close();
         } else if (title.startsWith('Success')) {
-          resolve(title.split(/[ =]/)[2]);
+          resolve(returnValue);
           win.removeAllListeners('closed');
           win.close();
         }
@@ -55,9 +55,9 @@ const _authorizeApp = (url) => {
   });
 };
 
-const _getAccessToken = (scopes, clientId, clientSecret) => {
+const getAccessToken = (scopes, clientId, clientSecret) => {
   return new Promise((resolve, reject) => {
-    _getAuthorizationCode(scopes, clientId, clientSecret)
+    getAuthorizationCode(scopes, clientId, clientSecret)
       .then((code) => {
         const data = qs.stringify({
           client_id: clientId,
@@ -78,7 +78,7 @@ const _getAccessToken = (scopes, clientId, clientSecret) => {
   });
 };
 
-const _getAuthenticationUrl = (scopes, clientId, clientSecret) => {
+const getAuthenticationUrl = (scopes, clientId, clientSecret) => {
   const oauth2Client = new OAuth2(
     clientId,
     clientSecret,
@@ -87,12 +87,11 @@ const _getAuthenticationUrl = (scopes, clientId, clientSecret) => {
   return oauth2Client.generateAuthUrl({scope: scopes});
 };
 
-const _getAuthorizationCode = (scopes, clientId, clientSecret) => {
-  const url = _getAuthenticationUrl(scopes, clientId, clientSecret);
-  return _authorizeApp(url);
+const getAuthorizationCode = (scopes, clientId, clientSecret) => {
+  const url = getAuthenticationUrl(scopes, clientId, clientSecret);
+  return authorizeApp(url);
 };
 
-
 module.exports = {
-  getAccessToken: _getAccessToken,
+  getAccessToken,
 };

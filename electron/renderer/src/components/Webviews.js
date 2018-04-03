@@ -18,10 +18,9 @@
  */
 
 import React, {Component} from 'react';
-
 import Webview from './Webview';
-
 import './Webviews.css';
+import * as EVENT_TYPE from '../lib/eventType';
 
 class Webviews extends Component {
   constructor(props) {
@@ -84,29 +83,31 @@ class Webviews extends Component {
 
   _onIpcMessage(account, {channel, args}) {
     switch (channel) {
-      case 'notification-click': {
+      case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
+        const [accountData] = args;
+        this.props.updateAccountData(account.id, accountData);
+        break;
+      }
+
+      case EVENT_TYPE.ACTION.NOTIFICATION_CLICK: {
         this.props.switchAccount(account.id);
         break;
       }
 
-      case 'lifecycle-signed-in':
-      case 'lifecycle-signed-out': {
+      case EVENT_TYPE.LIFECYCLE.SIGNED_IN:
+      case EVENT_TYPE.LIFECYCLE.SIGN_OUT: {
         this.props.updateAccountLifecycle(account.id, channel);
         break;
       }
 
-      case 'lifecycle-unread-count': {
-        this._onUnreadCountUpdated(account.id, args[0]);
-        break;
-      }
-
-      case 'signed-out': {
+      case EVENT_TYPE.LIFECYCLE.SIGNED_OUT: {
         this._deleteWebview(account);
         break;
       }
 
-      case 'team-info': {
-        this.props.updateAccountData(account.id, args[0]);
+      case EVENT_TYPE.LIFECYCLE.UNREAD_COUNT: {
+        const [badgeCount] = args;
+        this._onUnreadCountUpdated(account.id, badgeCount);
         break;
       }
     }

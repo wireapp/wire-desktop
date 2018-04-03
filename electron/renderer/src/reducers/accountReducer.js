@@ -38,7 +38,9 @@ const createAccount = sessionId => {
 const accountReducer = (state = [createAccount()], action) => {
   switch (action.type) {
     case ActionCreator.ADD_ACCOUNT: {
-      return state.map(account => ({...account, visible: false})).push(createAccount(action.sessionID));
+      const newState = state.map(account => ({...account, visible: false}));
+      newState.push(createAccount(action.sessionID));
+      return newState;
     }
 
     case ActionCreator.DELETE_ACCOUNT: {

@@ -17,7 +17,6 @@
  *
  */
 
-
 // https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
 
 const {app} = require('electron');
@@ -39,6 +38,16 @@ let linkName = config.NAME + '.lnk';
 
 let taskbarLink = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName));
 
+const SQUIRREL_EVENT = {
+  CREATE_SHORTCUT: '--createShortcut',
+  INSTALL: '--squirrel-install',
+  OBSOLETE: '--squirrel-obsolete',
+  REMOVE_SHORTCUT: '--removeShortcut',
+  UNINSTALL: '--squirrel-uninstall',
+  UPDATE: '--update',
+  UPDATED: '--squirrel-updated',
+};
+
 const spawn = (command, args, callback) => {
   let error;
   let spawnedProcess;
@@ -49,22 +58,14 @@ const spawn = (command, args, callback) => {
     spawnedProcess = cp.spawn(command, args);
   } catch (_error) {
     error = _error;
-    process.nextTick(function() {
-      return typeof callback === 'function' ? callback(error, stdout) : void 0;
-    });
-    return;
-  };
+    return process.nextTick(() => typeof callback === 'function' ? callback(error, stdout) : void 0);
+  }
 
-  spawnedProcess.stdout.on('data', function(data) {
-    return stdout += data;
-  });
+  spawnedProcess.stdout.on('data', data => stdout += data);
 
   error = null;
-  spawnedProcess.on('error', function(processError) {
-    return error != null ? error : error = processError;
-  });
-
-  spawnedProcess.on('close', function(code, signal) {
+  spawnedProcess.on('error', processError => error != null ? error : error = processError);
+  spawnedProcess.on('close', (code, signal) => {
     if (code !== 0) {
       if (error == null) {
         error = new Error('Command failed: ' + (signal != null ? signal : code));
@@ -84,61 +85,60 @@ const spawn = (command, args, callback) => {
   });
 };
 
-
 const spawnUpdate = (args, callback) => {
   spawn(updateDotExe, args, callback);
 };
 
-
-const createStartShortcut = (callback) => {
-  spawnUpdate(['--createShortcut', exeName, '-l=StartMenu'], callback);
+const createStartShortcut = callback => {
+  spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu'], callback);
 };
 
-
-const createDesktopShortcut = (callback) => {
-  spawnUpdate(['--createShortcut', exeName, '-l=Desktop'], callback);
+const createDesktopShortcut = callback => {
+  spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop'], callback);
 };
 
-
-const removeShortcuts = (callback) => {
-  spawnUpdate(['--removeShortcut', exeName, '-l=Desktop,Startup,StartMenu'], () => fs.unlink(taskbarLink, callback));
+const removeShortcuts = callback => {
+  spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () => fs.unlink(taskbarLink, callback));
 };
-
 
 const installUpdate = () => {
-  spawnUpdate(['--update', environment.app.UPDATE_URL_WIN]);
+  spawnUpdate([SQUIRREL_EVENT.UPDATE, environment.app.UPDATE_URL_WIN]);
 };
-
 
 const scheduleUpdate = () => {
   setTimeout(installUpdate, config.UPDATE.DELAY);
   setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
-
-const handleSquirrelEvent = (shouldQuit) => {
+const handleSquirrelEvent = shouldQuit => {
   const [, squirrelEvent] = process.argv;
 
   switch (squirrelEvent) {
-    case '--squirrel-install':
+    case SQUIRREL_EVENT.INSTALL: {
       createStartShortcut(() => {
         createDesktopShortcut(() => {
           app.quit();
         });
       });
       return true;
-    case '--squirrel-updated':
+    }
+
+    case SQUIRREL_EVENT.UPDATED: {
       app.exit();
       return true;
-    case '--squirrel-uninstall':
-      removeShortcuts(() => {
-        app.quit();
-      });
+    }
+
+    case SQUIRREL_EVENT.UNINSTALL: {
+      removeShortcuts(() => app.quit());
       return true;
-    case '--squirrel-obsolete':
+    }
+
+    case SQUIRREL_EVENT.OBSOLETE: {
       app.quit();
       return true;
+    }
   }
+
   if (shouldQuit) {
     // Using exit instead of quit for the time being
     // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
@@ -150,6 +150,6 @@ const handleSquirrelEvent = (shouldQuit) => {
 
 
 module.exports = {
-  handleSquirrelEvent: handleSquirrelEvent,
-  installUpdate: installUpdate,
+  handleSquirrelEvent,
+  installUpdate,
 };
