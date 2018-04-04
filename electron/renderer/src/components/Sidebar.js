@@ -92,18 +92,17 @@ const Sidebar = ({
         </div>
       </div>
     ))}
-    {!isAddingAccount &&
-      !hasReachedLimitOfAccounts && (
-        <AddAccountMenuTrigger
-          id="account"
-          onClick={preventFocus(event => {
-            connected.toggleAddAccountMenuVisibility(
-              ...centerOfEventTarget(event)
-            );
-          })}
-          forceVisible={isAddAccountMenuVisible}
-        />
-      )}
+    {!isAddingAccount && !hasReachedLimitOfAccounts && (
+      <AddAccountMenuTrigger
+        id="account"
+        onClick={preventFocus(event => {
+          connected.toggleAddAccountMenuVisibility(
+            ...centerOfEventTarget(event)
+          );
+        })}
+        forceVisible={isAddAccountMenuVisible}
+      />
+    )}
 
     {isAddAccountMenuVisible && <AddAccountMenu />}
     {isEditAccountMenuVisible && <EditAccountMenu />}
