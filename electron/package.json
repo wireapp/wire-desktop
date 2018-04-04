@@ -8,6 +8,7 @@
     "fs-extra": "5.0.0",
     "googleapis": "24.0.0",
     "image-type": "3.0.0",
+    "joi": "13.1.2",
     "jsrsasign": "8.0.7",
     "lodash": "4.17.5",
     "logdown": "3.2.3",

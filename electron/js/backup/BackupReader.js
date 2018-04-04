@@ -18,11 +18,19 @@
  */
 
 const fs = require('fs-extra');
+const Joi = require('joi');
 const path = require('path');
 const tar = require('tar');
 
 class BackupReader {
   constructor(rootDirectory) {
+    this.metaDescriptorSchema = Joi.object().keys({
+      client_id: Joi.string().required(),
+      creation_time: Joi.string().required(),
+      platform: Joi.string().required(),
+      user_id: Joi.string().required(),
+      version: Joi.number().integer().min(15),
+    });
     this.rootDirectory = rootDirectory;
     this.tempDirectory = path.join(this.rootDirectory, '.temp');
   };
@@ -31,7 +39,7 @@ class BackupReader {
     return fs.remove(this.tempDirectory);
   }
 
-  async restoreFromArchive(filename) {
+  async restoreFromArchive(filename, userId, clientId) {
     const resolvedFilename = path.resolve(filename);
     const archiveName = path.basename(resolvedFilename).replace(/\..+$/, '');
     const restoreDirectory = path.join(this.tempDirectory, archiveName);
@@ -44,6 +52,14 @@ class BackupReader {
     });
 
     const metaData = await fs.readFile(path.join(restoreDirectory, 'export.json'), 'utf8');
+    const metaDescriptor = JSON.parse(metaData);
+    await Joi.validate(metaDescriptor, this.metaDescriptorSchema);
+
+    const isFromUs = (userId === metaDescriptor.user_id) && (clientId === metaDescriptor.client_id);
+
+    if (!isFromUs) {
+      throw new Error('Backup belongs to a different user.');
+    }
 
     const tableFiles = (await fs.readdir(restoreDirectory)).filter(name => name !== 'export.json');
 

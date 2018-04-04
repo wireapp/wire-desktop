@@ -297,7 +297,7 @@ ipcMain.on('import-archive', async (event, userId, clientID) => {
     await fs.ensureDir(path.dirname(importFilename));
 
     try {
-      [metaData, tables] = await backupReader.restoreFromArchive(importFilename);
+      [metaData, tables] = await backupReader.restoreFromArchive(importFilename, userId, clientID);
     } catch (error) {
       await backupReader.removeTemp();
       debugMain(`Failed to import from file "${importFilename}" with error: "${error.message}"`);
