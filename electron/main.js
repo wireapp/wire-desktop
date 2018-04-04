@@ -207,13 +207,13 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
 ipcMain.on('export-init', async (event, recordCount) => {
-  const timestamp = new Date().toISOString().substring(0,10);
+  const timestamp = new Date().toISOString().substring(0, 10);
   const defaultFilename = `Wire-Backup_${timestamp}.desktop_wbu`;
 
   const dialogOptions = {
     defaultPath: defaultFilename,
     filters: [
-      { name: 'Wire Desktop Archive Files (*.desktop_wbu)', extensions: ['desktop_wbu'] }
+      {name: 'Wire Desktop Archive Files (*.desktop_wbu)', extensions: ['desktop_wbu']}
     ],
     properties: ['saveFile'],
     title: 'Save Wire Desktop Backup file'
@@ -256,7 +256,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
 
   try {
     await backupWriter.saveArchiveFile();
-  } catch(error) {
+  } catch (error) {
     await backupWriter.removeTemp();
     debugMain(`Failed to create archive file with error: "${error.message}"`);
     console.error(`Failed to save archive file with error: "${error.message}"`);
@@ -273,29 +273,25 @@ ipcMain.on('export-meta', async (event, metaData) => {
   console.log(`Execution time for export: ${stopTime} seconds.`);
 });
 
-ipcMain.on('import-archive', async event => {
+ipcMain.on('import-archive', async (event, userId, clientID) => {
   let tables;
   let metaData;
   const backupReader = new BackupReader(BACKUP_DIR);
 
   const dialogOptions = {
     filters: [
-      { name: 'Wire Desktop Archive Files (*.desktop_wbu)', extensions: ['desktop_wbu'] }
+      {name: 'Wire Desktop Archive Files (*.desktop_wbu)', extensions: ['desktop_wbu']}
     ],
     properties: ['openFile'],
     title: 'Select Wire Desktop Backup file'
   };
 
-  let importFilename;
-
-  try {
-    [importFilename] = dialog.showOpenDialog(dialogOptions);
-  } catch(err) {
-    console.error('dialog err', err);
-  }
+  const paths = dialog.showOpenDialog(dialogOptions);
+  const importFilename = paths ? paths[0] : undefined;
 
   if (importFilename) {
-    console.log(`Measuring import time ... `);
+    console.log(`Importing backup from client "${clientID}" of user "${userId}"...`);
+    console.log(`Measuring import time... `);
     startTime = process.hrtime();
 
     await fs.ensureDir(path.dirname(importFilename));
