@@ -20,12 +20,12 @@
 'use strict';
 
 const {BrowserWindow, app} = require('electron');
-const environment = require('../electron/js/environment');
+const environment = require('../../electron/js/environment');
 
 const assert = require('assert');
 const path = require('path');
 
-const tray = require('../electron/js/menu/tray');
+const tray = require('../../electron/js/menu/tray');
 
 describe('tray', () => {
 
