@@ -45,13 +45,13 @@ class BackupReader {
 
     const metaData = await fs.readFile(path.join(restoreDirectory, 'export.json'), 'utf8');
 
-    const tableFiles = (await fs.readdir(restoreDirectory)).filter(filename => filename !== 'export.json');
+    const tableFiles = (await fs.readdir(restoreDirectory)).filter(name => name !== 'export.json');
 
-    const tables = await Promise.all(tableFiles.map(async filename => {
-      const resolvedFilename = path.join(restoreDirectory, filename);
-      const content = await fs.readFile(resolvedFilename, 'utf8');
-      const name = filename.replace(/\..+$/, '');
-      return {name, content};
+    const tables = await Promise.all(tableFiles.map(async name => {
+      const resolvedName = path.join(restoreDirectory, name);
+      const content = await fs.readFile(resolvedName, 'utf8');
+      const sanitizedName = name.replace(/\..+$/, '');
+      return {content, name: sanitizedName};
     }));
 
     return [metaData, tables];
