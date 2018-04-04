@@ -31,20 +31,20 @@ describe('tray', () => {
 
   describe('"updateBadgeIcon"', () => {
 
-    it('should update badge according to window title', (done) => {
+    it('updates badge according to window title', (done) => {
       const window = new BrowserWindow();
-
       window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', () => {
-        tray.updateBadgeIcon(window, 10);
-
-        if (environment.platform.IS_MAC_OS) {
+      if (environment.platform.IS_MAC_OS) {
+        window.webContents.on('dom-ready', () => {
+          tray.updateBadgeIcon(window, 10);
           assert.equal(app.getBadgeCount(), 10);
-        }
-
+          done();
+        });
+      } else {
         done();
-      });
+      }
     });
+
   });
 
 });

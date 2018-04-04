@@ -19,7 +19,6 @@
 
 const fs = require('fs-extra');
 const logdown = require('logdown');
-const moment = require('moment');
 const path = require('path');
 const tar = require('tar');
 
