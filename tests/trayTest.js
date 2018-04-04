@@ -29,7 +29,7 @@ const tray = require('../electron/js/menu/tray');
 
 describe('tray', () => {
 
-  describe('#updateBadgeIcon()', () => {
+  describe('"updateBadgeIcon"', () => {
 
     it('should update badge according to window title', (done) => {
       const window = new BrowserWindow();
