@@ -18,12 +18,17 @@
  */
 
 const fs = require('fs-extra');
+const logdown = require('logdown');
 const Joi = require('joi');
 const path = require('path');
 const tar = require('tar');
 
 class BackupReader {
   constructor(rootDirectory) {
+    this.logger = logdown('wire-desktop/backup/BackupReader', {
+      logger: console,
+      markdown: false,
+    });
     this.metaDescriptorSchema = Joi.object().keys({
       client_id: Joi.string().required(),
       creation_time: Joi.string().required(),
@@ -39,6 +44,17 @@ class BackupReader {
     return fs.remove(this.tempDirectory);
   }
 
+  async readMetaData() {
+    try {
+      const metaText = await fs.readFile(path.join(restoreDirectory, 'export.json'), 'utf8');
+      const metaJSON = JSON.parse(metaText);
+      await Joi.validate(metaJSON, this.metaDescriptorSchema);
+    } catch (error) {
+      this.logger.error(`Parsing meta data failed: ${error.message}`, error.stack);
+      throw new Error('Meta data file is corrupt.');
+    }
+  }
+
   async restoreFromArchive(filename, userId, clientId) {
     const resolvedFilename = path.resolve(filename);
     const archiveName = path.basename(resolvedFilename).replace(/\..+$/, '');
@@ -51,10 +67,7 @@ class BackupReader {
       file: resolvedFilename,
     });
 
-    const metaData = await fs.readFile(path.join(restoreDirectory, 'export.json'), 'utf8');
-    const metaDescriptor = JSON.parse(metaData);
-    await Joi.validate(metaDescriptor, this.metaDescriptorSchema);
-
+    const metaDescriptor = await this.readMetaData();
     const isFromUs = (userId === metaDescriptor.user_id) && (clientId === metaDescriptor.client_id);
 
     if (!isFromUs) {
