@@ -299,11 +299,10 @@ ipcMain.on('import-archive', async (event, userId, clientID) => {
     try {
       [metaData, tables] = await backupReader.restoreFromArchive(importFilename, userId, clientID);
     } catch (error) {
-      // TODO: Send error message to webapp (amplify publish)
       await backupReader.removeTemp();
       debugMain(`Failed to import from file "${importFilename}" with error: "${error.message}"`);
       console.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);
-      return void event.sender.send('import-error', error);
+      return event.sender.send('import-error', error);
     }
 
     event.sender.send('import-meta', metaData);

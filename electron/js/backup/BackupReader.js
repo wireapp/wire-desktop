@@ -23,6 +23,8 @@ const Joi = require('joi');
 const path = require('path');
 const tar = require('tar');
 
+const BackupImportError = require('./BackupImportError');
+
 class BackupReader {
   constructor(rootDirectory) {
     this.logger = logdown('wire-desktop/backup/BackupReader', {
@@ -44,14 +46,15 @@ class BackupReader {
     return fs.remove(this.tempDirectory);
   }
 
-  async readMetaData() {
+  async readMetaData(restoreDirectory) {
     try {
       const metaText = await fs.readFile(path.join(restoreDirectory, 'export.json'), 'utf8');
       const metaJSON = JSON.parse(metaText);
       await Joi.validate(metaJSON, this.metaDescriptorSchema);
     } catch (error) {
-      this.logger.error(`Parsing meta data failed: ${error.message}`, error.stack);
-      throw new Error('Meta data file is corrupt.');
+      const message = `Parsing meta data failed: ${error.message}`;
+      this.logger.error(message, error.stack);
+      throw new BackupImportError.InvalidMetaData(message);
     }
   }
 
@@ -67,7 +70,7 @@ class BackupReader {
       file: resolvedFilename,
     });
 
-    const metaDescriptor = await this.readMetaData();
+    const metaDescriptor = await this.readMetaData(restoreDirectory);
     const isFromUs = (userId === metaDescriptor.user_id) && (clientId === metaDescriptor.client_id);
 
     if (!isFromUs) {
