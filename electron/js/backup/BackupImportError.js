@@ -8,14 +8,13 @@ class BackupImportError extends Error {
   }
 }
 
-class InvalidMetaData extends BackupImportError {
+class InvalidMetaDataError extends BackupImportError {
   constructor(message = 'Meta data file is invalid.') {
     super(message);
+    this.message = message;
   }
 }
 
-Object.assign(BackupImportError, {
-  InvalidMetaData,
-});
-
-module.exports = BackupImportError;
+module.exports = {
+  InvalidMetaDataError,
+};

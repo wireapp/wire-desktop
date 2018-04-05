@@ -23,7 +23,7 @@ const Joi = require('joi');
 const path = require('path');
 const tar = require('tar');
 
-const BackupImportError = require('./BackupImportError');
+const {InvalidMetaDataError} = require('./BackupImportError');
 
 class BackupReader {
   constructor(rootDirectory) {
@@ -54,7 +54,7 @@ class BackupReader {
     } catch (error) {
       const message = `Parsing meta data failed: ${error.message}`;
       this.logger.error(message, error.stack);
-      throw new BackupImportError.InvalidMetaData(message);
+      throw new InvalidMetaDataError(message);
     }
   }
 
