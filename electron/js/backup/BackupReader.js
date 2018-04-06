@@ -51,6 +51,7 @@ class BackupReader {
       const metaText = await fs.readFile(path.join(restoreDirectory, 'export.json'), 'utf8');
       const metaJSON = JSON.parse(metaText);
       await Joi.validate(metaJSON, this.metaDescriptorSchema);
+      return metaJSON;
     } catch (error) {
       const message = `Parsing meta data failed: ${error.message}`;
       this.logger.error(message, error.stack);
@@ -70,8 +71,8 @@ class BackupReader {
       file: resolvedFilename,
     });
 
-    const metaDescriptor = await this.readMetaData(restoreDirectory);
-    const isFromUs = (userId === metaDescriptor.user_id) && (clientId === metaDescriptor.client_id);
+    const metaData = await this.readMetaData(restoreDirectory);
+    const isFromUs = (userId === metaData.user_id) && (clientId === metaData.client_id);
 
     if (!isFromUs) {
       throw new Error('Backup belongs to a different user.');
