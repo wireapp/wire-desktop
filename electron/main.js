@@ -22,6 +22,10 @@ const debug = require('debug');
 const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
+const logger = require('logdown')('wire-desktop/main', {
+  logger: console,
+  markdown: false,
+});
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
@@ -181,7 +185,7 @@ ipcMain.on('google-auth-request', event => {
     .catch(error => event.sender.send('google-auth-error', error));
 });
 
-ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
+ipcMain.on('delete-account-data', (event, accountID, sessionID) => {
   // delete webview partition
   try {
     if (sessionID) {
@@ -206,9 +210,9 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-ipcMain.on('export-init', async (event, recordCount) => {
+ipcMain.on('wire.webapp.backup.export.init', async (event, recordCount, userName) => {
   const timestamp = new Date().toISOString().substring(0, 10);
-  const defaultFilename = `Wire-Backup_${timestamp}.desktop_wbu`;
+  const defaultFilename = `Wire-${userName}-Backup_${timestamp}.desktop_wbu`;
 
   const dialogOptions = {
     defaultPath: defaultFilename,
@@ -222,7 +226,7 @@ ipcMain.on('export-init', async (event, recordCount) => {
   const exportFilename = dialog.showSaveDialog(dialogOptions);
 
   if (exportFilename) {
-    console.log(`Measuring export time for "${recordCount}" records ... `);
+    logger.log(`Measuring export time for "${recordCount}" records ... `);
     startTime = process.hrtime();
     backupWriter = new BackupWriter(BACKUP_DIR, recordCount, exportFilename);
     await backupWriter.init();
@@ -236,7 +240,7 @@ ipcMain.on('export-table', async (event, tableName, batch) => {
       await backupWriter.saveBatch(tableName, row);
     }
   } catch (error) {
-    console.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
+    logger.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
     return void event.sender.send('export-error', error);
   }
 });
@@ -250,7 +254,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
     await backupWriter.saveMetaDescription(metaData);
   } catch (error) {
     await backupWriter.removeTemp();
-    console.error(`Failed to write meta file with error: ${error.message}`);
+    logger.error(`Failed to write meta file with error: ${error.message}`);
     return void event.sender.send('export-error', error);
   }
 
@@ -259,7 +263,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
   } catch (error) {
     await backupWriter.removeTemp();
     debugMain(`Failed to create archive file with error: "${error.message}"`);
-    console.error(`Failed to save archive file with error: "${error.message}"`);
+    logger.error(`Failed to save archive file with error: "${error.message}"`);
     return void event.sender.send('export-error', error);
   }
 
@@ -270,7 +274,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
   const stopTime = getTimeInSeconds(startTime);
   process.stdout.write('Done.\n');
 
-  console.log(`Execution time for export: ${stopTime} seconds.`);
+  logger.log(`Execution time for export: ${stopTime} seconds.`);
 });
 
 ipcMain.on('import-archive', async (event, userId, clientID) => {
@@ -290,8 +294,8 @@ ipcMain.on('import-archive', async (event, userId, clientID) => {
   const importFilename = paths ? paths[0] : undefined;
 
   if (importFilename) {
-    console.log(`Importing backup from client "${clientID}" of user "${userId}"...`);
-    console.log(`Measuring import time... `);
+    logger.log(`Importing backup from client "${clientID}" of user "${userId}"...`);
+    logger.log(`Measuring import time... `);
     startTime = process.hrtime();
 
     await fs.ensureDir(path.dirname(importFilename));
@@ -301,7 +305,7 @@ ipcMain.on('import-archive', async (event, userId, clientID) => {
     } catch (error) {
       await backupReader.removeTemp();
       debugMain(`Failed to import from file "${importFilename}" with error: "${error.message}"`);
-      console.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);
+      logger.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);
       return event.sender.send('import-error', error);
     }
 
@@ -319,7 +323,7 @@ ipcMain.on('import-archive', async (event, userId, clientID) => {
 
     const stopTime = getTimeInSeconds(startTime);
 
-    console.log(`Execution time for import: ${stopTime} seconds.`);
+    logger.log(`Execution time for import: ${stopTime} seconds.`);
   }
 });
 
@@ -476,7 +480,7 @@ const showAboutWindow = () => {
       if (url.startsWith('https://')) {
         shell.openExternal(url);
       } else {
-        console.log('Attempt to open URL in window prevented, url: %s', url);
+        logger.log('Attempt to open URL in window prevented, url: %s', url);
       }
 
       callback({redirectURL: ABOUT_HTML});
@@ -562,7 +566,7 @@ app.on('ready', () => {
 // Rename "console.log" to "console.old" (for every log directory of every account)
 ///////////////////////////////////////////////////////////////////////////////
 fs.readdir(LOG_DIR, (error, contents) => {
-  if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
+  if (error) return logger.log(`Failed to read log directory with error: ${error.message}`);
 
   contents
     .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
@@ -646,7 +650,7 @@ class ElectronWrapperInit {
             const {hostname = '', certificate = {}, error} = request;
 
             if (typeof error !== 'undefined') {
-              console.error('setCertificateVerifyProc', error);
+              logger.error('setCertificateVerifyProc', error);
               main.loadURL(CERT_ERR_HTML);
               return cb(-2);
             }
@@ -656,7 +660,7 @@ class ElectronWrapperInit {
 
               for (const result of Object.values(pinningResults)) {
                 if (result === false) {
-                  console.error(`Certutils verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
+                  logger.error(`Certutils verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
                   main.loadURL(CERT_ERR_HTML);
                   return cb(-2);
                 }

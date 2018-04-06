@@ -66,8 +66,8 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost('team-info', info);
   });
 
-  amplify.subscribe('wire.webapp.backup.export.init', recordCount => {
-    ipcRenderer.send('export-init', recordCount);
+  amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.INIT, (recordCount, userName) => {
+    ipcRenderer.send(z.event.WebApp.BACKUP.EXPORT.INIT, recordCount, userName);
   });
 
   amplify.subscribe('wire.webapp.backup.export.data', (tableName, batch) => {
