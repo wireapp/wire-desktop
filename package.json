@@ -30,7 +30,7 @@
     "grunt-gitinfo": "0.1.8",
     "husky": "0.14.3",
     "jest": "22.4.3",
-    "lint-staged": "7.0.3",
+    "lint-staged": "7.0.4",
     "load-grunt-tasks": "3.5.2",
     "prettier": "1.11.1",
     "style-loader": "0.20.3",
