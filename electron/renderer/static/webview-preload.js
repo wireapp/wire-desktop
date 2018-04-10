@@ -17,14 +17,15 @@
  *
  */
 
-const config = require('../../js/config');
-const environment = require('../../js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
-
 const { desktopCapturer, ipcRenderer, remote, webFrame } = require('electron');
 const { app } = remote;
+
+const BackupEvents = require('../../js/backup/BackupEvents');
+const config = require('../../js/config');
+const environment = require('../../js/environment');
 
 webFrame.setVisualZoomLevelLimits(1, 1);
 webFrame.setLayoutZoomLevelLimits(1, 1);
@@ -67,7 +68,7 @@ const subscribeToWebappEvents = () => {
   });
 
   amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.INIT, (recordCount, userName) => {
-    ipcRenderer.send(z.event.WebApp.BACKUP.EXPORT.INIT, recordCount, userName);
+    ipcRenderer.send(BackupEvents.EXPORT.INIT, recordCount, userName);
   });
 
   amplify.subscribe('wire.webapp.backup.export.data', (tableName, batch) => {

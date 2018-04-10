@@ -31,13 +31,14 @@ const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, dialog, ipcMain, session, shell} = require('electron');
 
+const BackupEvents = require('./js/backup/BackupEvents');
 const BackupReader = require('./js/backup/BackupReader');
 const BackupWriter = require('./js/backup/BackupWriter');
 
 // Paths
 const APP_PATH = app.getAppPath();
 
-// Local files defines
+// Local files definitions
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html', 'about.html'));
 const ABOUT_WINDOW_WHITELIST = [ABOUT_HTML,
   fileUrl(path.join(APP_PATH, 'img', 'wire.256.png')),
@@ -210,7 +211,7 @@ ipcMain.on('delete-account-data', (event, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-ipcMain.on('wire.webapp.backup.export.init', async (event, recordCount, userName) => {
+ipcMain.on(BackupEvents.EXPORT.INIT, async (event, recordCount, userName) => {
   const timestamp = new Date().toISOString().substring(0, 10);
   const defaultFilename = `Wire-${userName}-Backup_${timestamp}.desktop_wbu`;
 
