@@ -39,10 +39,6 @@ class BackupWriter {
     this.logger.info(`Storing "${finalRecordCount}" records...`);
   }
 
-  init() {
-    return this.removeTemp();
-  }
-
   removeTemp() {
     return fs.remove(this.tempDirectory);
   }

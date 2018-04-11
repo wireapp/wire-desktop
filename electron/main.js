@@ -230,7 +230,7 @@ ipcMain.on(BackupEvent.EXPORT.INIT, async (event, recordCount, userName) => {
     logger.log(`Measuring export time for "${recordCount}" records ... `);
     startTime = process.hrtime();
     backupWriter = new BackupWriter(BACKUP_DIR, recordCount, exportFilename);
-    await backupWriter.init();
+    await backupWriter.removeTemp();
     event.sender.send(BackupEvent.EXPORT.START);
   }
 });
