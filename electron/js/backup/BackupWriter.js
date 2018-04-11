@@ -25,18 +25,18 @@ const tar = require('tar');
 const {PriorityQueue} = require('@wireapp/priority-queue');
 
 class BackupWriter {
-  constructor(rootDirectory, finalRecordCount, exportFilename) {
+  constructor(rootDirectory, recordCount, exportFilename) {
     this.logger = logdown('wire-desktop/backup/BackupWriter', {
       logger: console,
       markdown: false,
     });
 
-    this.exportedBatches = [];
+    this.exportedRecords = 0;
     this.exportFilename = exportFilename;
-    this.finalRecordCount = finalRecordCount;
+    this.recordCount = recordCount;
     this.tempDirectory = path.join(rootDirectory, '.temp');
     this.writeQueue = new PriorityQueue({maxRetries: 1});
-    this.logger.info(`Storing "${finalRecordCount}" records...`);
+    this.logger.info(`Storing "${recordCount}" records...`);
   }
 
   removeTemp() {
@@ -53,10 +53,7 @@ class BackupWriter {
 
     return this.writeQueue.add(() => {
       const stringified = JSON.stringify(batch);
-      if (this.exportedBatches.includes(batch.id)) {
-        return;
-      }
-      this.exportedBatches.push(batch.id);
+      this.exportedRecords++;
       return fs.outputFile(tempFile, `${stringified}\r\n`, {flag: 'a'});
     });
   }
@@ -79,8 +76,8 @@ class BackupWriter {
       }, 500);
     });
 
-    if (this.exportedBatches.length !== this.finalRecordCount) {
-      throw new Error(`finalRecordCount is "${this.finalRecordCount}", but "${this.exportedBatches.length}" records were exported.`);
+    if (this.exportedRecords !== this.recordCount) {
+      throw new Error(`finalRecordCount is "${this.recordCount}", but "${this.exportedRecords}" records were exported.`);
     }
 
     const backupFiles = await fs.readdir(this.tempDirectory);
