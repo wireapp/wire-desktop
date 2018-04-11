@@ -23,7 +23,7 @@ const winston = require('winston');
 const { desktopCapturer, ipcRenderer, remote, webFrame } = require('electron');
 const { app } = remote;
 
-const BackupEvents = require('../../js/backup/BackupEvents');
+const BackupEvent = require('../../js/backup/BackupEvent');
 const config = require('../../js/config');
 const environment = require('../../js/environment');
 
@@ -68,23 +68,23 @@ const subscribeToWebappEvents = () => {
   });
 
   amplify.subscribe(z.event.WebApp.BACKUP.EXPORT.INIT, (recordCount, userName) => {
-    ipcRenderer.send(BackupEvents.EXPORT.INIT, recordCount, userName);
+    ipcRenderer.send(BackupEvent.EXPORT.INIT, recordCount, userName);
   });
 
   amplify.subscribe('wire.webapp.backup.export.data', (tableName, batch) => {
-    ipcRenderer.send(BackupEvents.EXPORT.TABLE, tableName, batch);
+    ipcRenderer.send(BackupEvent.EXPORT.TABLE, tableName, batch);
   });
 
   amplify.subscribe('wire.webapp.backup.export.cancel', () => {
-    ipcRenderer.send(BackupEvents.EXPORT.CANCEL);
+    ipcRenderer.send(BackupEvent.EXPORT.CANCEL);
   });
 
   amplify.subscribe('wire.webapp.backup.export.meta', metaData => {
-    ipcRenderer.send(BackupEvents.EXPORT.META, metaData);
+    ipcRenderer.send(BackupEvent.EXPORT.META, metaData);
   });
 
   amplify.subscribe('wire.webapp.backup.import.start', (userId, clientId) => {
-    ipcRenderer.send(BackupEvents.IMPORT.ARCHIVE, userId, clientId);
+    ipcRenderer.send(BackupEvent.IMPORT.ARCHIVE, userId, clientId);
   });
 };
 
@@ -137,22 +137,19 @@ const subscribeToMainProcessEvents = () => {
       z.announce.UPDATE_SOURCE.DESKTOP
     )
   );
-  ipcRenderer.on(BackupEvents.EXPORT.ERROR, error =>
+  ipcRenderer.on(BackupEvent.EXPORT.ERROR, error =>
     amplify.publish('wire.webapp.backup.export.error', error)
   );
-  ipcRenderer.on(BackupEvents.EXPORT.START, () =>
+  ipcRenderer.on(BackupEvent.EXPORT.START, () =>
     amplify.publish('wire.webapp.backup.export.start')
   );
-  ipcRenderer.on(BackupEvents.EXPORT.DONE, () =>
+  ipcRenderer.on(BackupEvent.EXPORT.DONE, () =>
     amplify.publish('wire.webapp.backup.export.done')
   );
-  ipcRenderer.on(BackupEvents.IMPORT.META, (event, metaData) =>
-    amplify.publish('wire.webapp.backup.import.meta', metaData)
-  );
-  ipcRenderer.on(BackupEvents.IMPORT.DATA, (event, name, content) =>
+  ipcRenderer.on(BackupEvent.IMPORT.DATA, (event, name, content) =>
     amplify.publish('wire.webapp.backup.import.data', name, content)
   );
-  ipcRenderer.on(BackupEvents.IMPORT.ERROR, (event, error) =>
+  ipcRenderer.on(BackupEvent.IMPORT.ERROR, (event, error) =>
     amplify.publish('wire.webapp.backup.import.error', error)
   );
 };

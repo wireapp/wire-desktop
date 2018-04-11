@@ -31,8 +31,7 @@ class BackupWriter {
       markdown: false,
     });
 
-    this.exportedRecords = 0;
-    this.exportedRows = [];
+    this.exportedBatches = [];
     this.exportFilename = exportFilename;
     this.finalRecordCount = finalRecordCount;
     this.tempDirectory = path.join(rootDirectory, '.temp');
@@ -53,16 +52,15 @@ class BackupWriter {
     return this.removeTemp();
   }
 
-  saveBatch(tableName, row) {
+  saveBatch(tableName, batch) {
     const tempFile = path.join(this.tempDirectory, `${tableName}.txt`);
 
     return this.writeQueue.add(() => {
-      const stringified = JSON.stringify(row);
-      if (this.exportedRows.includes(row.id)) {
+      const stringified = JSON.stringify(batch);
+      if (this.exportedBatches.includes(batch.id)) {
         return;
       }
-      this.exportedRows.push(row.id);
-      this.exportedRecords++;
+      this.exportedBatches.push(batch.id);
       return fs.outputFile(tempFile, `${stringified}\r\n`, {flag: 'a'});
     });
   }
@@ -85,8 +83,8 @@ class BackupWriter {
       }, 500);
     });
 
-    if (this.exportedRecords !== this.finalRecordCount) {
-      throw new Error(`finalRecordCount is "${this.finalRecordCount}", but "${this.exportedRecords}" records were exported.`);
+    if (this.exportedBatches.length !== this.finalRecordCount) {
+      throw new Error(`finalRecordCount is "${this.finalRecordCount}", but "${this.exportedBatches.length}" records were exported.`);
     }
 
     const backupFiles = await fs.readdir(this.tempDirectory);

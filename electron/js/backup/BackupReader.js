@@ -87,7 +87,7 @@ class BackupReader {
       return {content, name: sanitizedName};
     }));
 
-    return [metaData, tables];
+    return tables;
   }
 }
 

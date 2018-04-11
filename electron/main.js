@@ -31,7 +31,7 @@ const path = require('path');
 const raygun = require('raygun');
 const {BrowserWindow, Menu, app, dialog, ipcMain, session, shell} = require('electron');
 
-const BackupEvents = require('./js/backup/BackupEvents');
+const BackupEvent = require('./js/backup/BackupEvent');
 const BackupReader = require('./js/backup/BackupReader');
 const BackupWriter = require('./js/backup/BackupWriter');
 
@@ -211,7 +211,7 @@ ipcMain.on('delete-account-data', (event, accountID, sessionID) => {
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
 
-ipcMain.on(BackupEvents.EXPORT.INIT, async (event, recordCount, userName) => {
+ipcMain.on(BackupEvent.EXPORT.INIT, async (event, recordCount, userName) => {
   const timestamp = new Date().toISOString().substring(0, 10);
   const defaultFilename = `Wire-${userName}-Backup_${timestamp}.desktop_wbu`;
 
@@ -231,54 +231,52 @@ ipcMain.on(BackupEvents.EXPORT.INIT, async (event, recordCount, userName) => {
     startTime = process.hrtime();
     backupWriter = new BackupWriter(BACKUP_DIR, recordCount, exportFilename);
     await backupWriter.init();
-    event.sender.send(BackupEvents.EXPORT.START);
+    event.sender.send(BackupEvent.EXPORT.START);
   }
 });
 
-ipcMain.on(BackupEvents.EXPORT.TABLE, async (event, tableName, batch) => {
+ipcMain.on(BackupEvent.EXPORT.TABLE, async (event, tableName, batch) => {
   try {
     for (row of batch) {
       await backupWriter.saveBatch(tableName, row);
     }
   } catch (error) {
     logger.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
-    event.sender.send(BackupEvents.EXPORT.ERROR, error);
+    event.sender.send(BackupEvent.EXPORT.ERROR, error);
   }
 });
 
-ipcMain.on(BackupEvents.EXPORT.CANCEL, async () => {
+ipcMain.on(BackupEvent.EXPORT.CANCEL, async () => {
   backupWriter.cancel();
 });
 
-ipcMain.on(BackupEvents.EXPORT.META, async (event, metaData) => {
+ipcMain.on(BackupEvent.EXPORT.META, async (event, metaData) => {
   try {
     await backupWriter.saveMetaDescription(metaData);
   } catch (error) {
     await backupWriter.removeTemp();
     logger.error(`Failed to write meta file with error: ${error.message}`);
-    event.sender.send(BackupEvents.EXPORT.ERROR, error);
+    event.sender.send(BackupEvent.EXPORT.ERROR, error);
   }
 
   try {
     await backupWriter.saveArchiveFile();
   } catch (error) {
     await backupWriter.removeTemp();
-    debugMain(`Failed to create archive file with error: "${error.message}"`);
     logger.error(`Failed to save archive file with error: "${error.message}"`);
-    event.sender.send(BackupEvents.EXPORT.ERROR, error);
+    event.sender.send(BackupEvent.EXPORT.ERROR, error);
   }
 
-  event.sender.send(BackupEvents.EXPORT.DONE);
+  event.sender.send(BackupEvent.EXPORT.DONE);
 
   await backupWriter.removeTemp();
 
   const stopTime = getTimeInSeconds(startTime);
-  process.stdout.write('Done.\n');
 
   logger.log(`Execution time for export: ${stopTime} seconds.`);
 });
 
-ipcMain.on(BackupEvents.IMPORT.ARCHIVE, async (event, userId, clientID) => {
+ipcMain.on(BackupEvent.IMPORT.ARCHIVE, async (event, userId, clientID) => {
   let tables;
   let metaData;
   const backupReader = new BackupReader(BACKUP_DIR);
@@ -302,21 +300,18 @@ ipcMain.on(BackupEvents.IMPORT.ARCHIVE, async (event, userId, clientID) => {
     await fs.ensureDir(path.dirname(importFilename));
 
     try {
-      [metaData, tables] = await backupReader.restoreFromArchive(importFilename, userId, clientID);
+      tables = await backupReader.restoreFromArchive(importFilename, userId, clientID);
     } catch (error) {
       await backupReader.removeTemp();
-      debugMain(`Failed to import from file "${importFilename}" with error: "${error.message}"`);
       logger.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);
-      return event.sender.send(BackupEvents.IMPORT.ERROR, error);
+      return event.sender.send(BackupEvent.IMPORT.ERROR, error);
     }
 
-    event.sender.send(BackupEvents.IMPORT.META, metaData);
-
     for (const table of tables) {
-      const {name, content} = table;
+      const {name: tableName, content} = table;
       const eachTable = content.split('\r\n').filter(content => content !== '');
       for (const splitTable of eachTable) {
-        event.sender.send(BackupEvents.IMPORT.DATA, name, splitTable);
+        event.sender.send(BackupEvent.IMPORT.DATA, tableName, splitTable);
       }
     }
 

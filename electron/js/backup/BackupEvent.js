@@ -12,6 +12,5 @@ module.exports = {
     ARCHIVE: 'backup-import-archive',
     DATA: 'backup-import-data',
     ERROR: 'backup-import-error',
-    META: 'backup-import-meta',
   },
 };
