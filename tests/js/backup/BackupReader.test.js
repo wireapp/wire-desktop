@@ -19,7 +19,7 @@
 
 const path = require('path');
 const BackupReader = require('../../../electron/js/backup/BackupReader');
-const {InvalidMetaDataError} = require('../../../electron/js/backup/BackupImportError');
+const {BackupImportError, InvalidMetaDataError} = require('../../../electron/js/backup/BackupImportError');
 
 describe('BackupReader', () => {
   const rootDirectory = path.resolve('.');
@@ -42,6 +42,7 @@ describe('BackupReader', () => {
         await reader.restoreFromArchive(filename);
       } catch(error) {
         expect(error instanceof InvalidMetaDataError).toBe(true);
+        expect(error instanceof BackupImportError).toBe(true);
         done();
       }
     });
