@@ -72,19 +72,19 @@ const subscribeToWebappEvents = () => {
   });
 
   amplify.subscribe('wire.webapp.backup.export.data', (tableName, batch) => {
-    ipcRenderer.send('export-table', tableName, batch);
+    ipcRenderer.send(BackupEvents.EXPORT.TABLE, tableName, batch);
   });
 
   amplify.subscribe('wire.webapp.backup.export.cancel', () => {
-    ipcRenderer.send('export-cancel');
+    ipcRenderer.send(BackupEvents.EXPORT.CANCEL);
   });
 
   amplify.subscribe('wire.webapp.backup.export.meta', metaData => {
-    ipcRenderer.send('export-meta', metaData);
+    ipcRenderer.send(BackupEvents.EXPORT.META, metaData);
   });
 
   amplify.subscribe('wire.webapp.backup.import.start', (userId, clientId) => {
-    ipcRenderer.send('import-archive', userId, clientId);
+    ipcRenderer.send(BackupEvents.IMPORT.ARCHIVE, userId, clientId);
   });
 };
 
@@ -137,22 +137,22 @@ const subscribeToMainProcessEvents = () => {
       z.announce.UPDATE_SOURCE.DESKTOP
     )
   );
-  ipcRenderer.on('export-error', error =>
+  ipcRenderer.on(BackupEvents.EXPORT.ERROR, error =>
     amplify.publish('wire.webapp.backup.export.error', error)
   );
-  ipcRenderer.on('export-start', () =>
+  ipcRenderer.on(BackupEvents.EXPORT.START, () =>
     amplify.publish('wire.webapp.backup.export.start')
   );
-  ipcRenderer.on('export-done', () =>
+  ipcRenderer.on(BackupEvents.EXPORT.DONE, () =>
     amplify.publish('wire.webapp.backup.export.done')
   );
-  ipcRenderer.on('import-meta', (event, metaData) =>
+  ipcRenderer.on(BackupEvents.IMPORT.META, (event, metaData) =>
     amplify.publish('wire.webapp.backup.import.meta', metaData)
   );
-  ipcRenderer.on('import-data', (event, name, content) =>
+  ipcRenderer.on(BackupEvents.IMPORT.DATA, (event, name, content) =>
     amplify.publish('wire.webapp.backup.import.data', name, content)
   );
-  ipcRenderer.on('import-error', (event, error) =>
+  ipcRenderer.on(BackupEvents.IMPORT.ERROR, (event, error) =>
     amplify.publish('wire.webapp.backup.import.error', error)
   );
 };

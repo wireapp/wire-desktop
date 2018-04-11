@@ -231,32 +231,32 @@ ipcMain.on(BackupEvents.EXPORT.INIT, async (event, recordCount, userName) => {
     startTime = process.hrtime();
     backupWriter = new BackupWriter(BACKUP_DIR, recordCount, exportFilename);
     await backupWriter.init();
-    event.sender.send('export-start');
+    event.sender.send(BackupEvents.EXPORT.START);
   }
 });
 
-ipcMain.on('export-table', async (event, tableName, batch) => {
+ipcMain.on(BackupEvents.EXPORT.TABLE, async (event, tableName, batch) => {
   try {
     for (row of batch) {
       await backupWriter.saveBatch(tableName, row);
     }
   } catch (error) {
     logger.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
-    return void event.sender.send('export-error', error);
+    event.sender.send(BackupEvents.EXPORT.ERROR, error);
   }
 });
 
-ipcMain.on('export-cancel', async () => {
+ipcMain.on(BackupEvents.EXPORT.CANCEL, async () => {
   backupWriter.cancel();
 });
 
-ipcMain.on('export-meta', async (event, metaData) => {
+ipcMain.on(BackupEvents.EXPORT.META, async (event, metaData) => {
   try {
     await backupWriter.saveMetaDescription(metaData);
   } catch (error) {
     await backupWriter.removeTemp();
     logger.error(`Failed to write meta file with error: ${error.message}`);
-    return void event.sender.send('export-error', error);
+    event.sender.send(BackupEvents.EXPORT.ERROR, error);
   }
 
   try {
@@ -265,10 +265,10 @@ ipcMain.on('export-meta', async (event, metaData) => {
     await backupWriter.removeTemp();
     debugMain(`Failed to create archive file with error: "${error.message}"`);
     logger.error(`Failed to save archive file with error: "${error.message}"`);
-    return void event.sender.send('export-error', error);
+    event.sender.send(BackupEvents.EXPORT.ERROR, error);
   }
 
-  event.sender.send('export-done');
+  event.sender.send(BackupEvents.EXPORT.DONE);
 
   await backupWriter.removeTemp();
 
@@ -278,7 +278,7 @@ ipcMain.on('export-meta', async (event, metaData) => {
   logger.log(`Execution time for export: ${stopTime} seconds.`);
 });
 
-ipcMain.on('import-archive', async (event, userId, clientID) => {
+ipcMain.on(BackupEvents.IMPORT.ARCHIVE, async (event, userId, clientID) => {
   let tables;
   let metaData;
   const backupReader = new BackupReader(BACKUP_DIR);
@@ -307,16 +307,16 @@ ipcMain.on('import-archive', async (event, userId, clientID) => {
       await backupReader.removeTemp();
       debugMain(`Failed to import from file "${importFilename}" with error: "${error.message}"`);
       logger.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);
-      return event.sender.send('import-error', error);
+      return event.sender.send(BackupEvents.IMPORT.ERROR, error);
     }
 
-    event.sender.send('import-meta', metaData);
+    event.sender.send(BackupEvents.IMPORT.META, metaData);
 
     for (const table of tables) {
       const {name, content} = table;
       const eachTable = content.split('\r\n').filter(content => content !== '');
       for (const splitTable of eachTable) {
-        event.sender.send('import-data', name, splitTable);
+        event.sender.send(BackupEvents.IMPORT.DATA, name, splitTable);
       }
     }
 
