@@ -30,7 +30,7 @@ describe('BackupWriter', () => {
     done();
   });
 
-  describe('"backupToArchive"', () => {
+  describe('"saveArchiveFile"', () => {
     it('fails if the path is not writeable', async done => {
       writer = new BackupWriter('/', 0, 'error.desktop_wbu');
 
