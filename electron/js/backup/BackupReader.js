@@ -34,7 +34,7 @@ class BackupReader {
     this.metaDescriptorSchema = Joi.object().keys({
       client_id: Joi.string().required(),
       creation_time: Joi.string().required(),
-      platform: Joi.string().required(),
+      platform: Joi.string().required().equal('Desktop'),
       user_id: Joi.string().required(),
       version: Joi.number().integer().min(15),
     });
