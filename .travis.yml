@@ -30,10 +30,7 @@ install:
 
 # http://docs.travis-ci.com/user/build-lifecycle/
 before_script:
-  # https://github.com/electron/spectron#on-travis-ci
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3
+  - export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
 
 # http://docs.travis-ci.com/user/pull-requests/
 script:
