@@ -19,7 +19,7 @@
 
 const path = require('path');
 const BackupReader = require('../../../electron/js/backup/BackupReader');
-const {BackupImportError, InvalidMetaDataError} = require('../../../electron/js/backup/BackupImportError');
+const {BackupImportError, DifferentAccountError, InvalidMetaDataError} = require('../../../electron/js/backup/BackupImportError');
 
 describe('BackupReader', () => {
   const rootDirectory = path.resolve('.');
@@ -40,18 +40,18 @@ describe('BackupReader', () => {
       const filename = path.join(fixtureDirectory, 'missing-user_id.desktop_wbu');
       try {
         await reader.restoreFromArchive(filename);
-      } catch(error) {
+      } catch (error) {
         expect(error instanceof InvalidMetaDataError).toBe(true);
         expect(error instanceof BackupImportError).toBe(true);
         done();
       }
     });
 
-    it('fails if meta properties are wrong', async done => {
+    it('fails if the backup is from a different platform', async done => {
       const filename = path.join(fixtureDirectory, 'wrong-platform.desktop_wbu');
       try {
         await reader.restoreFromArchive(filename);
-      } catch(error) {
+      } catch (error) {
         expect(error instanceof InvalidMetaDataError).toBe(true);
         done();
       }
@@ -61,19 +61,30 @@ describe('BackupReader', () => {
       const filename = path.join(fixtureDirectory, 'missing-meta-data.desktop_wbu');
       try {
         await reader.restoreFromArchive(filename);
-      } catch(error) {
+      } catch (error) {
         expect(error instanceof InvalidMetaDataError).toBe(true);
         done();
       }
     });
 
-    it('successfully restores an archive without content', async done => {
+    it('fails if the backup is not from our user', async done => {
+      const filename = path.join(fixtureDirectory, 'correct-data.desktop_wbu');
+      const userId = '532af01e-1e24-4366-aacf-33b67d4ee376';
+      try {
+        await reader.restoreFromArchive(filename, userId);
+      } catch (error) {
+        expect(error instanceof DifferentAccountError).toBe(true);
+        done();
+      }
+    });
+
+    it('restores an archive without content', async done => {
       const filename = path.join(fixtureDirectory, 'correct-meta-data.desktop_wbu');
       await reader.restoreFromArchive(filename, 'afbb5d60-1187-4385-9c29-7361dea79647', 'e0a10e999cb5ebe2');
       done();
     });
 
-    it('successfully restores a archive with content', async done => {
+    it('restores a archive with content', async done => {
       const filename = path.join(fixtureDirectory, 'correct-data.desktop_wbu');
       const tables = await reader.restoreFromArchive(filename, 'afbb5d60-1187-4385-9c29-7361dea79647', 'e0a10e999cb5ebe2');
       expect(tables.length).toBeGreaterThan(0);
