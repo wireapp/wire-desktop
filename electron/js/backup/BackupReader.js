@@ -73,7 +73,7 @@ class BackupReader {
 
     const metaData = await this.readMetaData(restoreDirectory);
     const isFromSelfUser = metaData.user_id === userId;
-    const isCompatibleDatabase = metaData.version !== databaseVersion;
+    const isCompatibleDatabase = metaData.version === databaseVersion;
 
     if (!isFromSelfUser) {
       const message = `History from user "${metaData.user_id}" cannot be restored for user "${userId}".`;

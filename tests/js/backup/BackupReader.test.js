@@ -19,7 +19,7 @@
 
 const path = require('path');
 const BackupReader = require('../../../electron/js/backup/BackupReader');
-const {BackupImportError, DifferentAccountError, InvalidMetaDataError} = require('../../../electron/js/backup/BackupImportError');
+const {BackupImportError, DifferentAccountError, IncompatibleBackupError, InvalidMetaDataError} = require('../../../electron/js/backup/BackupImportError');
 
 describe('BackupReader', () => {
   const rootDirectory = path.resolve('.');
@@ -78,15 +78,33 @@ describe('BackupReader', () => {
       }
     });
 
+    it('fails if the backup is from an unsupported database version', async done => {
+      const filename = path.join(fixtureDirectory, 'correct-data.desktop_wbu');
+      const userId = 'afbb5d60-1187-4385-9c29-7361dea79647';
+      const databaseVersion = 16;
+
+      try {
+        await reader.restoreFromArchive(filename, userId, databaseVersion);
+      } catch (error) {
+        expect(error instanceof IncompatibleBackupError).toBe(true);
+        done();
+      }
+    });
+
     it('restores an archive without content', async done => {
       const filename = path.join(fixtureDirectory, 'correct-meta-data.desktop_wbu');
-      await reader.restoreFromArchive(filename, 'afbb5d60-1187-4385-9c29-7361dea79647', 'e0a10e999cb5ebe2');
+      const userId = 'afbb5d60-1187-4385-9c29-7361dea79647';
+      const databaseVersion = 15;
+      await reader.restoreFromArchive(filename, userId, databaseVersion);
       done();
     });
 
     it('restores a archive with content', async done => {
       const filename = path.join(fixtureDirectory, 'correct-data.desktop_wbu');
-      const tables = await reader.restoreFromArchive(filename, 'afbb5d60-1187-4385-9c29-7361dea79647', 'e0a10e999cb5ebe2');
+      const userId = 'afbb5d60-1187-4385-9c29-7361dea79647';
+      const databaseVersion = 15;
+
+      const tables = await reader.restoreFromArchive(filename, userId, databaseVersion);
       expect(tables.length).toBeGreaterThan(0);
       done();
     });
