@@ -276,9 +276,8 @@ ipcMain.on(BackupEvent.EXPORT.META, async (event, metaData) => {
   logger.log(`Execution time for export: ${stopTime} seconds.`);
 });
 
-ipcMain.on(BackupEvent.IMPORT.ARCHIVE, async (event, userId, clientID) => {
+ipcMain.on(BackupEvent.IMPORT.ARCHIVE, async (event, userId, databaseVersion) => {
   let tables;
-  let metaData;
   const backupReader = new BackupReader(BACKUP_DIR);
 
   const dialogOptions = {
@@ -293,14 +292,14 @@ ipcMain.on(BackupEvent.IMPORT.ARCHIVE, async (event, userId, clientID) => {
   const importFilename = paths ? paths[0] : undefined;
 
   if (importFilename) {
-    logger.log(`Importing backup from client "${clientID}" of user "${userId}"...`);
+    logger.log(`Importing backup from user "${userId}"...`);
     logger.log(`Measuring import time... `);
     startTime = process.hrtime();
 
     await fs.ensureDir(path.dirname(importFilename));
 
     try {
-      tables = await backupReader.restoreFromArchive(importFilename, userId, clientID);
+      tables = await backupReader.restoreFromArchive(importFilename, userId, databaseVersion);
     } catch (error) {
       await backupReader.removeTemp();
       logger.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);

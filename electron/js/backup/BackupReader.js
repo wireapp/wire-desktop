@@ -23,7 +23,7 @@ const Joi = require('joi');
 const path = require('path');
 const tar = require('tar');
 
-const {InvalidMetaDataError} = require('./BackupImportError');
+const {DifferentAccountError, IncompatibleBackupError, InvalidMetaDataError} = require('./BackupImportError');
 
 class BackupReader {
   constructor(rootDirectory) {
@@ -59,7 +59,7 @@ class BackupReader {
     }
   }
 
-  async restoreFromArchive(filename, userId, clientId) {
+  async restoreFromArchive(filename, userId, databaseVersion) {
     const resolvedFilename = path.resolve(filename);
     const archiveName = path.basename(resolvedFilename).replace(/\..+$/, '');
     const restoreDirectory = path.join(this.tempDirectory, archiveName);
@@ -72,10 +72,16 @@ class BackupReader {
     });
 
     const metaData = await this.readMetaData(restoreDirectory);
-    const isFromUs = (userId === metaData.user_id) && (clientId === metaData.client_id);
+    const isFromSelfUser = metaData.user_id === userId;
+    const isCompatibleDatabase = metaData.version !== databaseVersion;
 
-    if (!isFromUs) {
-      throw new Error('Backup belongs to a different user.');
+    if (!isFromSelfUser) {
+      const message = `History from user "${metaData.user_id}" cannot be restored for user "${userId}".`;
+      throw new DifferentAccountError(message);
+    }
+
+    if (!isCompatibleDatabase) {
+      throw new IncompatibleBackupError();
     }
 
     const tableFiles = (await fs.readdir(restoreDirectory)).filter(name => name !== 'export.json');

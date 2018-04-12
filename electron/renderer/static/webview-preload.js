@@ -83,8 +83,8 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.send(BackupEvent.EXPORT.META, metaData);
   });
 
-  amplify.subscribe('wire.webapp.backup.import.start', (userId, clientId) => {
-    ipcRenderer.send(BackupEvent.IMPORT.ARCHIVE, userId, clientId);
+  amplify.subscribe(z.event.WebApp.BACKUP.IMPORT.START, (userId, databaseVersion) => {
+    ipcRenderer.send(BackupEvent.IMPORT.ARCHIVE, userId, databaseVersion);
   });
 };
 

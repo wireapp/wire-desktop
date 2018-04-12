@@ -18,20 +18,36 @@
  */
 
 class BackupImportError extends Error {
-  constructor(message) {
+  constructor(message = 'Something went wrong.') {
     super(message);
     Object.setPrototypeOf(this, BackupImportError.prototype);
   }
 }
 
 class InvalidMetaDataError extends BackupImportError {
-  constructor(message = 'Meta data file is invalid.') {
+  constructor(message = 'Meta data file is corrupt or missing properties.') {
     super(message);
     Object.setPrototypeOf(this, InvalidMetaDataError.prototype);
   }
 }
 
+class DifferentAccountError extends BackupImportError {
+  constructor(message = 'You cannot restore history from a different account.') {
+    super(message);
+    Object.setPrototypeOf(this, DifferentAccountError.prototype);
+  }
+}
+
+class IncompatibleBackupError extends BackupImportError {
+  constructor(message = 'This backup was created by a newer or outdated version of Wire and cannot be restored here.') {
+    super(message);
+    Object.setPrototypeOf(this, IncompatibleBackupError.prototype);
+  }
+}
+
 module.exports = {
   BackupImportError,
+  DifferentAccountError,
+  IncompatibleBackupError,
   InvalidMetaDataError,
 };
