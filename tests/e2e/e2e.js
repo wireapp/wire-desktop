@@ -38,9 +38,13 @@ describe('Application launch', function () {
     }
   });
 
-  it('shows an initial window', function () {
-    return this.app.client
-      .getHTML('html').then(console.log.bind(console));
-    //return this.app.client.getTitle().then(console.log.bind(console));
+  it('shows an initial window', function (done) {
+    setTimeout(() => {
+      this.app.client
+          .getHTML('html').then(console.log.bind(console));
+          //return this.app.client.getTitle().then(console.log.bind(console));
+      done();
+    }, 3000);
+
   });
 });
