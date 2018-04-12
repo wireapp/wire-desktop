@@ -26,10 +26,10 @@ describe('Application launch', function () {
 
       // The following line tells spectron to look and use the main.js file
       // and the package.json located 1 level above.
-      args: ["electron/"],
-    })
+      args: ["electron/"]
+    });
     return this.app.start();
-  })
+  });
 
   afterEach(function () {
     // not working for the moment: see https://github.com/electron/spectron/issues/177#issuecomment-370790942

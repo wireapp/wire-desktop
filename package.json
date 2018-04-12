@@ -68,7 +68,7 @@
     "test:react": "npx jest",
     "test:renderer": "electron-mocha --renderer --reporter spec tests/renderer",
     "test:style": "npm run lint",
-    "test:e2e": "mocha tests/e2e/spec.js",
+    "test:e2e": "mocha tests/e2e/e2e.js",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
     "build:linux": "grunt linux-prod",
