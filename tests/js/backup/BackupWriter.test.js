@@ -48,12 +48,13 @@ describe('BackupWriter', () => {
       try {
         await writer.saveArchiveFile();
       } catch(error) {
+        expect(error.message).toBe('finalRecordCount is "1", but "0" records were exported.');
         done();
       }
     });
 
     it('successfully exports data', async done => {
-      const tempDir = path.join(rootDirectory, '.temp2');
+      const tempDir = path.join(rootDirectory, '.archive');
       await fs.ensureDir(tempDir);
 
       writer = new BackupWriter(rootDirectory, 1, path.join(tempDir, 'backup.desktop_wbu'));
