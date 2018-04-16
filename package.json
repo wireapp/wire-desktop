@@ -56,7 +56,7 @@
     "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
     "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
-    "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
+    "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
     "lint": "eslint electron",
     "lint:fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
     "jest": "jest",
