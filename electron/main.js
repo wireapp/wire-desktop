@@ -219,9 +219,7 @@ const showMainWindow = () => {
       backgroundThrottling: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      webviewTag: true,
-      webSecurity: false,
-
+      webviewTag: true
     }
   });
 
@@ -508,7 +506,7 @@ class ElectronWrapperInit {
 
             // Use secure defaults
             webPreferences.nodeIntegration = false;
-            webPreferences.webSecurity = false;
+            webPreferences.webSecurity = true;
             params.contextIsolation = true;
             webPreferences.allowRunningInsecureContent = false;
             params.plugins = false;
