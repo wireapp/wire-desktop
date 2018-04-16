@@ -348,7 +348,9 @@ const showMainWindow = () => {
       backgroundThrottling: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      webviewTag: true
+      webviewTag: true,
+      webSecurity: false,
+
     }
   });
 
@@ -392,6 +394,23 @@ const showMainWindow = () => {
 
     shell.openExternal(_url);
   });
+
+  main.webContents.session.webRequest.onHeadersReceived(
+    {
+      urls: 'https://staging-nginz-https.zinfra.io/*',
+    },
+    (details, callback) => {
+
+      // Override remote Access-Control-Allow-Origin
+      details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
+      details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+
+      callback({
+        cancel: false,
+        responseHeaders: details.responseHeaders,
+      });
+    },
+  );
 
   main.webContents.on('dom-ready', () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
@@ -618,7 +637,7 @@ class ElectronWrapperInit {
 
             // Use secure defaults
             webPreferences.nodeIntegration = false;
-            webPreferences.webSecurity = true;
+            webPreferences.webSecurity = false;
             params.contextIsolation = true;
             webPreferences.allowRunningInsecureContent = false;
             params.plugins = false;
