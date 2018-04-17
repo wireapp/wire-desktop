@@ -22,21 +22,30 @@ const debug = require('debug');
 const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
+const logger = require('logdown')('wire-desktop/main', {
+  logger: console,
+  markdown: false,
+});
 const minimist = require('minimist');
 const path = require('path');
 const raygun = require('raygun');
-const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
+const {BrowserWindow, Menu, app, dialog, ipcMain, session, shell} = require('electron');
+
+const BackupEvent = require('./js/backup/BackupEvent');
+const BackupReader = require('./js/backup/BackupReader');
+const BackupWriter = require('./js/backup/BackupWriter');
 
 // Paths
 const APP_PATH = app.getAppPath();
 
-// Local files defines
+// Local files definitions
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html', 'about.html'));
 const ABOUT_WINDOW_WHITELIST = [ABOUT_HTML,
   fileUrl(path.join(APP_PATH, 'img', 'wire.256.png')),
   fileUrl(path.join(APP_PATH, 'css', 'about.css')),
 ];
 const CERT_ERR_HTML = fileUrl(path.join(APP_PATH, 'html', 'certificate-error.html'));
+const BACKUP_DIR = path.join(app.getPath('userData'), 'backups');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
@@ -66,17 +75,26 @@ const pkg = require('./package.json');
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
-let main;
-let raygunClient;
 let about;
+let backupWriter;
+let main;
 let quitting = false;
+let raygunClient;
 let shouldQuit = false;
+let startTime;
 let webappVersion;
+
+const getTimeInSeconds = timer => {
+  const [seconds, nanoseconds] = process.hrtime(timer);
+  const NANOSECONDS_IN_SECOND = 1e9;
+  const digits = 3;
+  return (seconds + nanoseconds / NANOSECONDS_IN_SECOND).toFixed(digits);
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
 ///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({ apiKey: config.RAYGUN_API_KEY });
+raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
 
 raygunClient.onBeforeSend(payload => {
   delete payload.details.machineName;
@@ -168,7 +186,7 @@ ipcMain.on('google-auth-request', event => {
     .catch(error => event.sender.send('google-auth-error', error));
 });
 
-ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
+ipcMain.on('delete-account-data', (event, accountID, sessionID) => {
   // delete webview partition
   try {
     if (sessionID) {
@@ -192,6 +210,117 @@ ipcMain.on('delete-account-data', (e, accountID, sessionID) => {
 });
 
 ipcMain.on('wrapper-relaunch', () => relaunchApp());
+
+ipcMain.on(BackupEvent.EXPORT.INIT, async (event, recordCount, userName) => {
+  const timestamp = new Date().toISOString().substring(0, 10);
+  const defaultFilename = `Wire-${userName}-Backup_${timestamp}.desktop_wbu`;
+
+  const dialogOptions = {
+    defaultPath: defaultFilename,
+    filters: [
+      {name: 'Wire Desktop Archive Files (*.desktop_wbu)', extensions: ['desktop_wbu']}
+    ],
+    properties: ['saveFile'],
+    title: 'Save Wire Desktop Backup file'
+  };
+
+  const exportFilename = dialog.showSaveDialog(dialogOptions);
+
+  if (exportFilename) {
+    logger.log(`Measuring export time for "${recordCount}" records ... `);
+    startTime = process.hrtime();
+    backupWriter = new BackupWriter(BACKUP_DIR, recordCount, exportFilename);
+    await backupWriter.removeTemp();
+    event.sender.send(BackupEvent.EXPORT.START);
+  }
+});
+
+ipcMain.on(BackupEvent.EXPORT.TABLE, async (event, tableName, batch) => {
+  try {
+    for (row of batch) {
+      await backupWriter.saveBatch(tableName, row);
+    }
+  } catch (error) {
+    logger.error(`Failed to write table file "${tableName}.txt" with error: ${error.message}`);
+    event.sender.send(BackupEvent.EXPORT.ERROR, error);
+  }
+});
+
+ipcMain.on(BackupEvent.EXPORT.CANCEL, async () => {
+  backupWriter.cancel();
+});
+
+ipcMain.on(BackupEvent.EXPORT.META, async (event, metaData) => {
+  try {
+    await backupWriter.saveMetaDescription(metaData);
+  } catch (error) {
+    await backupWriter.removeTemp();
+    logger.error(`Failed to write meta file with error: ${error.message}`);
+    event.sender.send(BackupEvent.EXPORT.ERROR, error);
+  }
+
+  try {
+    await backupWriter.saveArchiveFile();
+  } catch (error) {
+    await backupWriter.removeTemp();
+    logger.error(`Failed to save archive file with error: "${error.message}"`);
+    event.sender.send(BackupEvent.EXPORT.ERROR, error);
+  }
+
+  event.sender.send(BackupEvent.EXPORT.DONE);
+
+  await backupWriter.removeTemp();
+
+  const stopTime = getTimeInSeconds(startTime);
+
+  logger.log(`Execution time for export: ${stopTime} seconds.`);
+});
+
+ipcMain.on(BackupEvent.IMPORT.ARCHIVE, async (event, userId, databaseVersion) => {
+  let tables;
+  const backupReader = new BackupReader(BACKUP_DIR);
+
+  const dialogOptions = {
+    filters: [
+      {name: 'Wire Desktop Archive Files (*.desktop_wbu)', extensions: ['desktop_wbu']}
+    ],
+    properties: ['openFile'],
+    title: 'Select Wire Desktop Backup file'
+  };
+
+  const paths = dialog.showOpenDialog(dialogOptions);
+  const importFilename = paths ? paths[0] : undefined;
+
+  if (importFilename) {
+    logger.log(`Importing backup from user "${userId}"...`);
+    logger.log(`Measuring import time... `);
+    startTime = process.hrtime();
+
+    await fs.ensureDir(path.dirname(importFilename));
+
+    try {
+      tables = await backupReader.restoreFromArchive(importFilename, userId, databaseVersion);
+    } catch (error) {
+      await backupReader.removeTemp();
+      logger.error(`Failed to import from file: "${importFilename}" with error: "${error.message}"`);
+      return event.sender.send(BackupEvent.IMPORT.ERROR, error);
+    }
+
+    for (const table of tables) {
+      const {name: tableName, content} = table;
+      const eachTable = content.split('\r\n').filter(content => content !== '');
+      for (const splitTable of eachTable) {
+        event.sender.send(BackupEvent.IMPORT.DATA, tableName, splitTable);
+      }
+    }
+
+    await backupReader.removeTemp();
+
+    const stopTime = getTimeInSeconds(startTime);
+
+    logger.log(`Execution time for import: ${stopTime} seconds.`);
+  }
+});
 
 const relaunchApp = () => {
   app.relaunch();
@@ -363,7 +492,7 @@ const showAboutWindow = () => {
       if (url.startsWith('https://')) {
         shell.openExternal(url);
       } else {
-        console.log('Attempt to open URL in window prevented, url: %s', url);
+        logger.log('Attempt to open URL in window prevented, url: %s', url);
       }
 
       callback({redirectURL: ABOUT_HTML});
@@ -449,7 +578,7 @@ app.on('ready', () => {
 // Rename "console.log" to "console.old" (for every log directory of every account)
 ///////////////////////////////////////////////////////////////////////////////
 fs.readdir(LOG_DIR, (error, contents) => {
-  if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
+  if (error) return logger.log(`Failed to read log directory with error: ${error.message}`);
 
   contents
     .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
@@ -533,7 +662,7 @@ class ElectronWrapperInit {
             const {hostname = '', certificate = {}, error} = request;
 
             if (typeof error !== 'undefined') {
-              console.error('setCertificateVerifyProc', error);
+              logger.error('setCertificateVerifyProc', error);
               main.loadURL(CERT_ERR_HTML);
               return cb(-2);
             }
@@ -543,7 +672,7 @@ class ElectronWrapperInit {
 
               for (const result of Object.values(pinningResults)) {
                 if (result === false) {
-                  console.error(`Certutils verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
+                  logger.error(`Certutils verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
                   main.loadURL(CERT_ERR_HTML);
                   return cb(-2);
                 }

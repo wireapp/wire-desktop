@@ -17,7 +17,6 @@
  *
  */
 
-
 const electron = require('electron');
 const url = require('url');
 /*eslint-disable no-unused-vars*/

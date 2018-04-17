@@ -19,11 +19,10 @@
 
 'use strict';
 
-const certutils = require('../electron/js/certutils');
+const certutils = require('../../electron/js/certutils');
 const https = require('https');
 
 const assert = require('assert');
-const path = require('path');
 
 const buildCert = cert => `-----BEGIN CERTIFICATE-----\n${cert.raw.toString('base64')}\n-----END CERTIFICATE-----`;
 

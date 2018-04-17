@@ -1,14 +1,17 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
+    "@wireapp/priority-queue": "0.1.4",
     "auto-launch": "5.0.5",
     "debug": "3.1.0",
     "file-url": "2.0.2",
     "fs-extra": "5.0.0",
     "googleapis": "24.0.0",
     "image-type": "3.0.0",
+    "joi": "13.1.2",
     "jsrsasign": "8.0.9",
     "lodash": "4.17.5",
+    "logdown": "3.2.3",
     "minimist": "1.2.0",
     "open-graph": "0.2.3",
     "prop-types": "15.6.1",
@@ -21,6 +24,7 @@
     "redux-thunk": "2.2.0",
     "request": "2.85.0",
     "spellchecker": "3.4.4",
+    "tar": "4.4.1",
     "uuid": "3.2.1",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
