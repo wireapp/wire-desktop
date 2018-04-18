@@ -266,7 +266,7 @@ const showMainWindow = () => {
 
   main.webContents.session.webRequest.onHeadersReceived(
     {
-      urls: 'https://staging-nginz-https.zinfra.io/*',
+      urls: ['https://staging-nginz-https.zinfra.io/*'],
     },
     (details, callback) => {
 
