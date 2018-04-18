@@ -33,7 +33,7 @@
     "lint-staged": "7.0.4",
     "load-grunt-tasks": "3.5.2",
     "prettier": "1.12.1",
-    "style-loader": "0.20.3",
+    "style-loader": "0.21.0",
     "webpack": "3.11.0"
   },
   "license": "LicenseRef-LICENSE",
