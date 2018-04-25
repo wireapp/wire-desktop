@@ -26,7 +26,8 @@ const winston = require('winston');
 const { desktopCapturer, ipcRenderer, remote, webFrame } = require('electron');
 const { app } = remote;
 
-webFrame.setZoomLevelLimits(1, 1);
+webFrame.setVisualZoomLevelLimits(1, 1);
+webFrame.setLayoutZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
@@ -115,18 +116,6 @@ const subscribeToMainProcessEvents = () => {
       z.announce.UPDATE_SOURCE.DESKTOP
     )
   );
-};
-
-const exposeLibsodiumNeon = () => {
-  try {
-    Object.assign(window.sodium, require('libsodium-neon'));
-    console.info('Using libsodium-neon.');
-  } catch (error) {
-    console.info(
-      'Failed loading "libsodium-neon", falling back to "libsodium.js".',
-      error
-    );
-  }
 };
 
 const exposeAddressbook = () => {
@@ -231,7 +220,6 @@ process.once('loaded', () => {
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
     exposeAddressbook();
-    exposeLibsodiumNeon();
 
     subscribeToMainProcessEvents();
     subscribeToWebappEvents();

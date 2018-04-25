@@ -87,23 +87,33 @@ class Webviews extends Component {
 
   _onIpcMessage(account, { channel, args }) {
     switch (channel) {
-      case 'notification-click':
+      case 'notification-click': {
         this.props.switchAccount(account.id);
         break;
+      }
+
       case 'lifecycle-signed-in':
-      case 'lifecycle-signed-out':
+      case 'lifecycle-signed-out': {
         this.props.updateAccountLifecycle(account.id, channel);
         break;
-      case 'lifecycle-unread-count':
+      }
+
+      case 'lifecycle-unread-count': {
         this._onUnreadCountUpdated(account.id, args[0]);
         break;
-      case 'signed-out':
+      }
+
+      case 'signed-out': {
         this._deleteWebview(account);
         break;
-      case 'team-info':
+      }
+
+      case 'team-info': {
         this.props.updateAccountData(account.id, args[0]);
         break;
+      }
     }
+
     this.setState({ canDelete: { ...this.state.canDelete, [account.id]: this._canDeleteWebview(account) } });
   }
 
@@ -135,17 +145,16 @@ class Webviews extends Component {
               onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"
             />
-            {this.state.canDelete[account.id] &&
-              account.visible && (
-                <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
-                  <svg width="16" height="16" viewBox="0 0 16 16">
-                    <path
-                      d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243"
-                      fillRule="evenodd"
-                    />
-                  </svg>
-                </div>
-              )}
+            {this.state.canDelete[account.id] && account.visible && (
+              <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
+                <svg width="16" height="16" viewBox="0 0 16 16">
+                  <path
+                    d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243"
+                    fillRule="evenodd"
+                  />
+                </svg>
+              </div>
+            )}
           </div>
         ))}
       </ul>

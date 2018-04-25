@@ -264,6 +264,25 @@ const showMainWindow = () => {
     shell.openExternal(_url);
   });
 
+  main.webContents.session.webRequest.onHeadersReceived(
+    {
+      urls: 'https://staging-nginz-https.zinfra.io/*',
+    },
+    (details, callback) => {
+
+      if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
+        // Override remote Access-Control-Allow-Origin
+        details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
+        details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+      }
+
+      callback({
+        cancel: false,
+        responseHeaders: details.responseHeaders,
+      });
+    },
+  );
+
   main.webContents.on('dom-ready', () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
@@ -396,7 +415,7 @@ const discloseWindowID = browserWindow => {
 // APP Events
 ///////////////////////////////////////////////////////////////////////////////
 app.on('window-all-closed', event => {
-  if (!environment.isMacOS) {
+  if (!environment.platform.IS_MAC_OS) {
     app.quit();
   }
 });

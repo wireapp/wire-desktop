@@ -1,74 +1,72 @@
 {
-  "name": "wire-desktop",
+  "build": {
+    "directories": {
+      "app": "electron",
+      "buildResources": "resources",
+      "output": "wrap/dist"
+    }
+  },
+  "dependencies": {
+    "debug": "3.1.0"
+  },
+  "devDependencies": {
+    "babel-core": "6.26.0",
+    "babel-jest": "22.4.3",
+    "babel-loader": "7.1.4",
+    "babel-plugin-transform-object-rest-spread": "6.26.0",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-react": "6.24.1",
+    "css-loader": "0.28.11",
+    "electron": "1.8.4",
+    "electron-builder": "18.6.2",
+    "electron-mocha": "6.0.2",
+    "electron-packager": "12.0.1",
+    "electron-winstaller": "2.5.2",
+    "eslint": "4.19.1",
+    "eslint-plugin-react": "7.7.0",
+    "grunt": "1.0.2",
+    "grunt-contrib-clean": "1.1.0",
+    "grunt-git": "1.0.9",
+    "grunt-gitinfo": "0.1.8",
+    "husky": "0.14.3",
+    "jest": "22.4.3",
+    "lint-staged": "7.0.4",
+    "load-grunt-tasks": "3.5.2",
+    "prettier": "1.12.1",
+    "style-loader": "0.21.0",
+    "webpack": "3.11.0"
+  },
   "license": "LicenseRef-LICENSE",
-  "private": true,
   "lint-staged": {
     "*.css": [
       "npm run lint:style",
       "git add"
     ]
   },
-  "scripts": {
-    "preinstall": "cd electron && npm install",
-    "install": "cd electron && npm run rebuild-native-modules",
-    "postinstall": "cd electron && npm run rebuild-neon",
-    "prestart": "npm run bundle:dev",
-    "start": "electron electron --inspect --devtools --enable-logging",
-    "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
-    "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
-    "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
-    "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8888",
-    "fix": "npm run fix:script && npm run fix:style",
-    "fix:script": "npm run test:script -- --fix",
-    "fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
-    "jest": "jest",
-    "test:script": "eslint -c .eslintrc.yaml --ignore-path .gitignore --quiet .",
-    "test": "npm run test:script && npm run jest && electron-mocha tests",
-    "build:macos": "grunt macos-prod",
-    "build:win": "grunt win-prod",
-    "build:linux": "grunt linux-prod",
-    "bundle:dev": "webpack",
-    "bundle": "webpack --env.production"
-  },
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
-  "build": {
-    "directories": {
-      "buildResources": "resources",
-      "app": "electron",
-      "output": "wrap/dist"
-    }
-  },
-  "devDependencies": {
-    "babel-core": "6.26.0",
-    "babel-jest": "22.4.1",
-    "babel-loader": "7.1.4",
-    "babel-plugin-transform-object-rest-spread": "6.26.0",
-    "babel-preset-es2015": "6.24.1",
-    "babel-preset-react": "6.24.1",
-    "css-loader": "0.28.11",
-    "electron-builder": "18.6.2",
-    "electron-mocha": "6.0.1",
-    "electron-packager": "11.1.0",
-    "electron-winstaller": "2.5.2",
-    "electron": "1.8.4",
-    "eslint-plugin-react": "7.7.0",
-    "eslint": "4.18.2",
-    "grunt-contrib-clean": "1.1.0",
-    "grunt-git": "1.0.9",
-    "grunt-gitinfo": "0.1.8",
-    "grunt": "1.0.2",
-    "husky": "0.14.3",
-    "jest": "22.4.2",
-    "lint-staged": "7.0.0",
-    "load-grunt-tasks": "3.5.2",
-    "prettier": "1.11.1",
-    "style-loader": "0.20.3",
-    "webpack": "3.11.0"
-  },
-  "dependencies": {
-    "debug": "3.1.0"
+  "scripts": {
+    "build:linux": "grunt linux-prod",
+    "build:macos": "grunt macos-prod",
+    "build:win": "grunt win-prod",
+    "bundle:dev": "webpack",
+    "bundle": "webpack --env.production",
+    "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
+    "fix:script": "npm run test:script -- --fix",
+    "fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
+    "fix": "npm run fix:script && npm run fix:style",
+    "jest": "jest",
+    "lint:fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
+    "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
+    "preinstall": "cd electron && npm install",
+    "prestart": "npm run bundle:dev",
+    "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
+    "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
+    "start": "electron electron --inspect --devtools --enable-logging",
+    "test:script": "eslint -c .eslintrc.yaml --ignore-path .gitignore --quiet .",
+    "test": "npm run test:script && npm run jest && electron-mocha tests"
   }
 }

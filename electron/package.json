@@ -1,18 +1,5 @@
 {
-  "name": "wireinternal",
-  "productName": "WireInternal",
-  "description": "Secure messenger for everyone.",
-  "main": "main.js",
-  "updateWinUrl": "https://wire-app.wire.com/win/internal/",
-  "environment": "internal",
-  "homepage": "https://wire.com",
-  "license": "GPL-3.0",
   "author": "Wire Swiss <wireapp@wire.com>",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wireapp/wire-desktop.git"
-  },
   "dependencies": {
     "auto-launch": "5.0.5",
     "debug": "3.1.0",
@@ -20,14 +7,14 @@
     "fs-extra": "5.0.0",
     "googleapis": "24.0.0",
     "image-type": "3.0.0",
-    "jsrsasign": "8.0.6",
+    "jsrsasign": "8.0.12",
     "lodash": "4.17.5",
     "minimist": "1.2.0",
     "open-graph": "0.2.3",
     "prop-types": "15.6.1",
     "raygun": "0.9.1",
-    "react": "16.2.0",
-    "react-dom": "16.2.0",
+    "react": "16.3.2",
+    "react-dom": "16.3.2",
     "react-redux": "5.0.7",
     "redux": "3.7.2",
     "redux-logger": "3.0.6",
@@ -37,17 +24,23 @@
     "uuid": "3.2.1",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
+  "description": "Secure messenger for everyone.",
   "devDependencies": {
-    "cross-spawn": "6.0.5",
-    "electron-build-env": "0.2.0",
-    "electron-rebuild": "1.7.3"
+    "cross-spawn": "6.0.5"
   },
+  "environment": "internal",
+  "homepage": "https://wire.com",
+  "license": "GPL-3.0",
+  "main": "main.js",
+  "name": "wireinternal",
   "optionalDependencies": {
-    "libsodium-neon": "2.1.2",
     "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
   },
-  "scripts": {
-    "rebuild-native-modules": "node ./rebuild-native-modules.js \"electron-rebuild\" \"-f -m ./\"",
-    "rebuild-neon": "node ./rebuild-native-modules.js \"electron-build-env\" \"neon build libsodium-neon\""
-  }
+  "private": true,
+  "productName": "WireInternal",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wireapp/wire-desktop.git"
+  },
+  "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }

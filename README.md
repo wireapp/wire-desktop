@@ -24,7 +24,6 @@ Based on [Electron](http://electron.atom.io).
 ### Install
 
 - Install [Node.js](https://nodejs.org/).
-- If you wish to use [libsodium-neon](https://github.com/wireapp/libsodium-neon/) (crypto speed improvements), also install [Rust](https://rustup.rs).
 
 ### Clone
 
