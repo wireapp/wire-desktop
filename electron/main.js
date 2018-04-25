@@ -271,9 +271,11 @@ const showMainWindow = () => {
     },
     (details, callback) => {
 
-      // Override remote Access-Control-Allow-Origin
-      details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
-      details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+      if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
+        // Override remote Access-Control-Allow-Origin
+        details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
+        details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+      }
 
       callback({
         cancel: false,
