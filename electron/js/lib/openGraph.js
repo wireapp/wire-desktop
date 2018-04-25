@@ -28,7 +28,7 @@ const bufferToBase64 = (buffer, mimeType) => {
   return 'data:' + mimeType + ';base64,' + bufferBase64encoded;
 };
 
-const fetchImageAsBase64 = (url) => {
+const fetchImageAsBase64 = url => {
   return new Promise((resolve) => {
     request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
       if (!error && response.statusCode === 200) {
@@ -41,7 +41,7 @@ const fetchImageAsBase64 = (url) => {
   });
 };
 
-const fetchOpenGraphData = (url) => {
+const fetchOpenGraphData = url => {
   return new Promise((resolve, reject) => {
     openGraph(url, (error, meta) => error ? reject(error) : resolve(meta));
   });
@@ -59,12 +59,12 @@ const updateMetaDataWithImage = (meta, image) => {
 
 const getOpenGraphData = (url, callback) => {
   return fetchOpenGraphData(url)
-    .then((meta) => {
+    .then(meta => {
       if (meta.image && meta.image.url) {
         const [imageUrl] = arrayify(meta.image.url);
 
         return fetchImageAsBase64(imageUrl)
-          .then((uri) => updateMetaDataWithImage(meta, uri))
+          .then(uri => updateMetaDataWithImage(meta, uri))
           .catch(() => meta);
       }
 

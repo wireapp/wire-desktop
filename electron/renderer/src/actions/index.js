@@ -8,68 +8,53 @@ export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
 export const UPDATE_ACCOUNT_BADGE = 'UPDATE_ACCOUNT_BADGE';
 export const UPDATE_ACCOUNT_LIFECYCLE = 'UPDATE_ACCOUNT_LIFECYCLE';
 
-export const addAccount = (withSession = true) => {
-  const sessionID = withSession ? uuid() : undefined;
-  return {
-    sessionID: sessionID,
-    type: ADD_ACCOUNT,
-  };
-};
+export const addAccount = (withSession = true) => ({
+  sessionID: withSession ? uuid() : undefined,
+  type: ADD_ACCOUNT,
+});
 
-export const deleteAccount = id => {
-  return {
-    id,
-    type: DELETE_ACCOUNT,
-  };
-};
+export const deleteAccount = id => ({
+  id,
+  type: DELETE_ACCOUNT,
+});
 
-export const switchAccount = id => {
-  return {
-    id,
-    type: SWITCH_ACCOUNT,
-  };
-};
+export const switchAccount = id => ({
+  id,
+  type: SWITCH_ACCOUNT,
+});
 
-export const updateAccount = (id, data) => {
-  return {
-    data,
-    id,
-    type: UPDATE_ACCOUNT,
-  };
-};
+export const updateAccount = (id, data) => ({
+  data,
+  id,
+  type: UPDATE_ACCOUNT,
+});
 
-export const updateAccountLifecycle = (id, data) => {
-  return {
-    data,
-    id,
-    type: UPDATE_ACCOUNT_LIFECYCLE,
-  };
-};
+export const updateAccountLifecycle = (id, data) => ({
+  data,
+  id,
+  type: UPDATE_ACCOUNT_LIFECYCLE,
+});
 
-export const updateAccountBadge = (id, count) => {
-  return {
-    count,
-    id,
-    type: UPDATE_ACCOUNT_BADGE,
-  };
-};
+export const updateAccountBadge = (id, count) => ({
+  count,
+  id,
+  type: UPDATE_ACCOUNT_BADGE,
+});
 
 export const HIDE_CONTEXT_MENUS = 'HIDE_CONTEXT_MENUS';
 export const TOGGLE_ADD_ACCOUNT_VISIBILITY = 'TOGGLE_ADD_ACCOUNT_VISIBILITY';
 export const TOGGLE_EDIT_ACCOUNT_VISIBILITY = 'TOGGLE_EDIT_ACCOUNT_VISIBILITY';
 
-export const setAccountContextHidden = () => {
-  return {
-    type: HIDE_CONTEXT_MENUS,
-  };
-};
+export const setAccountContextHidden = () => ({
+  type: HIDE_CONTEXT_MENUS,
+});
 
-export const toggleAddAccountMenuVisibility = (x, y) => {
-  return {
-    payload: {position: {x, y}},
-    type: TOGGLE_ADD_ACCOUNT_VISIBILITY,
-  };
-};
+export const toggleAddAccountMenuVisibility = (x, y) => ({
+  payload: {
+    position: {x, y},
+  },
+  type: TOGGLE_ADD_ACCOUNT_VISIBILITY,
+});
 
 export const toggleEditAccountMenuVisibility = (
   x,
@@ -78,18 +63,16 @@ export const toggleEditAccountMenuVisibility = (
   sessionId,
   lifecycle,
   isAtLeastAdmin
-) => {
-  return {
-    payload: {
-      accountId,
-      isAtLeastAdmin,
-      lifecycle,
-      position: {x, y},
-      sessionId,
-    },
-    type: TOGGLE_EDIT_ACCOUNT_VISIBILITY,
-  };
-};
+) => ({
+  payload: {
+    accountId,
+    isAtLeastAdmin,
+    lifecycle,
+    position: {x, y},
+    sessionId,
+  },
+  type: TOGGLE_EDIT_ACCOUNT_VISIBILITY,
+});
 
 export const abortAccountCreation = id => {
   return (dispatch, getState) => {

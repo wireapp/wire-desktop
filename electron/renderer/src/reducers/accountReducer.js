@@ -20,20 +20,18 @@
 import uuid from 'uuid/v4';
 import * as ActionCreator from '../actions';
 
-const createAccount = sessionId => {
-  return {
-    accentID: undefined,
-    badgeCount: 0,
-    id: uuid(),
-    lifecycle: undefined,
-    name: undefined,
-    picture: undefined,
-    sessionID: sessionId,
-    teamID: undefined,
-    userID: undefined,
-    visible: true,
-  };
-};
+const createAccount = sessionId => ({
+  accentID: undefined,
+  badgeCount: 0,
+  id: uuid(),
+  lifecycle: undefined,
+  name: undefined,
+  picture: undefined,
+  sessionID: sessionId,
+  teamID: undefined,
+  userID: undefined,
+  visible: true,
+});
 
 const accountReducer = (state = [createAccount()], action) => {
   switch (action.type) {
