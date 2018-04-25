@@ -33,7 +33,7 @@ const LINUX_DESKTOP = {
   'GenericName': 'The most secure collaboration platform',
   'Categories': 'Network;InstantMessaging;Chat;VideoConference',
   'Keywords': 'chat;encrypt;e2e;messenger;videocall',
-  'StartupWMClass': 'Wire'
+  'StartupWMClass': 'Wire',
 };
 
 module.exports = function(grunt) {
