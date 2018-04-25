@@ -333,7 +333,7 @@ const showAboutWindow = () => {
 const handleAppEvents = () => {
   app.on('window-all-closed', event => {
     if (!environment.platform.IS_MAC_OS) {
-      app.quit();
+      lifecycle.quit();
     }
   });
 

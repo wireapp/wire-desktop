@@ -45,22 +45,23 @@ const checkSingleInstance = () => {
   }
 
   if (!environment.platform.IS_WINDOWS && shouldQuit) {
-    // Using exit instead of quit for the time being
-    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-    app.exit();
+    quit();
   }
 };
 
+// Using exit instead of quit for the time being
+// see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
 const relaunch = () => {
   app.relaunch();
-  // Using exit instead of quit for the time being
-  // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
   app.exit();
 };
+
+const quit = () => app.exit();
 
 module.exports = {
   checkForUpdate,
   checkSingleInstance,
   relaunch,
   shouldQuit,
+  quit,
 };

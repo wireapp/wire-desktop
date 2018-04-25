@@ -24,6 +24,7 @@ const {app} = require('electron');
 const config = require('./config');
 const cp = require('child_process');
 const environment = require('./environment');
+const lifecycle = require('./lifecycle');
 const fs = require('fs');
 const path = require('path');
 
@@ -117,35 +118,33 @@ const handleSquirrelEvent = shouldQuit => {
     case SQUIRREL_EVENT.INSTALL: {
       createStartShortcut(() => {
         createDesktopShortcut(() => {
-          app.quit();
+          lifecycle.quit();
         });
       });
       return true;
     }
 
     case SQUIRREL_EVENT.UPDATED: {
-      app.exit();
+      lifecycle.quit();
       return true;
     }
 
     case SQUIRREL_EVENT.UNINSTALL: {
-      removeShortcuts(() => app.quit());
+      removeShortcuts(() => lifecycle.quit());
       return true;
     }
 
     case SQUIRREL_EVENT.OBSOLETE: {
-      app.quit();
+      lifecycle.quit();
       return true;
     }
   }
 
   if (shouldQuit) {
-    // Using exit instead of quit for the time being
-    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-    app.exit();
+    return lifecycle.quit();
   }
+
   scheduleUpdate();
-  return false;
 };
 
 
