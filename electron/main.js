@@ -450,15 +450,15 @@ app.on('ready', () => {
 ///////////////////////////////////////////////////////////////////////////////
 // Rename "console.log" to "console.old" (for every log directory of every account)
 ///////////////////////////////////////////////////////////////////////////////
-fs.readdir(LOG_DIR, (error, contents) => {
-  if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
+fs.readdir(LOG_DIR, (readError, contents) => {
+  if (readError) return console.log(`Failed to read log directory with error: ${error.message}`);
 
   contents
     .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
     .filter(file => {
       try {
         return fs.statSync(file).isFile();
-      } catch (err) {
+      } catch (statError) {
         return undefined;
       }
     })
