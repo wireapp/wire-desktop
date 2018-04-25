@@ -27,6 +27,7 @@ const environment = require('./../environment');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 const settings = require('./../lib/settings');
+const EVENT_TYPE = require('./../lib/eventType');
 
 let menu;
 
@@ -36,22 +37,19 @@ const launcher = new autoLaunch({
   path: launchCmd,
 });
 
-
 const getPrimaryWindow = () => windowManager.getPrimaryWindow();
 
 // TODO: disable menus when not in focus
 const sendAction = (action) => {
   const primaryWindow = getPrimaryWindow();
   if (primaryWindow) {
-    getPrimaryWindow().webContents.send('system-menu', action);
+    getPrimaryWindow().webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, action);
   }
 };
-
 
 const separatorTemplate = {
   type: 'separator',
 };
-
 
 const createLanguageTemplate = (languageCode) => {
   return {
@@ -61,7 +59,7 @@ const createLanguageTemplate = (languageCode) => {
   };
 };
 
-const createLanguageSubmenu = ()=> {
+const createLanguageSubmenu = () => {
   return Object.keys(locale.SUPPORTED_LANGUAGES)
     .map((supportedLanguage) => createLanguageTemplate(supportedLanguage));
 };
@@ -72,12 +70,12 @@ const localeTemplate = {
 };
 
 const aboutTemplate = {
-  click: () => menu.emit('about-wire'),
+  click: () => menu.emit(EVENT_TYPE.ABOUT.SHOW),
   i18n: 'menuAbout',
 };
 
 const signOutTemplate = {
-  click: () => sendAction('sign-out'),
+  click: () => sendAction(EVENT_TYPE.ACTION.SIGN_OUT),
   i18n: 'menuSignOut',
 };
 
@@ -86,45 +84,45 @@ const conversationTemplate = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+N',
-      click: () => sendAction('conversation-start'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.START),
       i18n: 'menuStart',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+K',
-      click: () => sendAction('conversation-ping'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.PING),
       i18n: 'menuPing',
     }, {
-      click: () => sendAction('conversation-call'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.CALL),
       i18n: 'menuCall',
     }, {
-      click: () => sendAction('conversation-video-call'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.VIDEO_CALL),
       i18n: 'menuVideoCall',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+I',
-      click: () => sendAction('conversation-people'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.PEOPLE),
       i18n: 'menuPeople',
     },
     {
       accelerator: 'Shift+CmdOrCtrl+K',
-      click: () => sendAction('conversation-add-people'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.ADD_PEOPLE),
       i18n: 'menuAddPeople',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+D',
-      click: () => sendAction('conversation-archive'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.ARCHIVE),
       i18n: 'menuArchive',
     },
     {
       accelerator: 'CmdOrCtrl+Alt+M',
-      click: () => sendAction('conversation-silence'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
       i18n: 'menuMute',
     },
     {
-      click: () => sendAction('conversation-delete'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.DELETE),
       i18n: 'menuDelete',
     },
   ],
@@ -174,7 +172,7 @@ const toggleAutoLaunchTemplate = {
   type: 'checkbox',
 };
 
-const supportsSpellcheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
+const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
 
 const editTemplate = {
   i18n: 'menuEdit',
@@ -207,9 +205,9 @@ const editTemplate = {
     },
     separatorTemplate,
     {
-      checked: supportsSpellcheck && settings.restore('spelling', false),
+      checked: supportsSpellCheck && settings.restore('spelling', false),
       click: (event) => settings.save('spelling', event.checked),
-      enabled: supportsSpellcheck,
+      enabled: supportsSpellCheck,
       i18n: 'menuSpelling',
       type: 'checkbox',
     },
@@ -231,12 +229,12 @@ const windowTemplate = {
     separatorTemplate,
     {
       accelerator: environment.platform.IS_MAC_OS ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
-      click: () => sendAction('conversation-next'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.SHOW_NEXT),
       i18n: 'menuNextConversation',
     },
     {
       accelerator: environment.platform.IS_MAC_OS ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
-      click: () => sendAction('conversation-prev'),
+      click: () => sendAction(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
       i18n: 'menuPreviousConversation',
     },
   ],
@@ -247,23 +245,23 @@ const helpTemplate = {
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.LEGAL),
+      click: () => shell.openExternal(environment.web.getWebsiteUrl(config.URL.LEGAL)),
       i18n: 'menuLegal',
     },
     {
-      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.PRIVACY),
+      click: () => shell.openExternal(environment.web.getWebsiteUrl(config.URL.PRIVACY)),
       i18n: 'menuPrivacy',
     },
     {
-      click: () => shell.openExternal(environment.web.get_url_website() + config.URL.LICENSES),
+      click: () => shell.openExternal(environment.web.getWebsiteUrl(config.URL.LICENSES)),
       i18n: 'menuLicense',
     },
     {
-      click: () => shell.openExternal(environment.web.get_url_support()),
+      click: () => shell.openExternal(environment.web.getSupportUrl()),
       i18n: 'menuSupport',
     },
     {
-      click: () => shell.openExternal(environment.web.get_url_website()),
+      click: () => shell.openExternal(environment.web.getWebsiteUrl()),
       i18n: 'menuWireURL',
     },
   ],
@@ -275,7 +273,7 @@ const darwinTemplate = {
     aboutTemplate,
     separatorTemplate, {
       accelerator: 'Command+,',
-      click: () => sendAction('preferences-show'),
+      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
       i18n: 'menuPreferences',
     },
     separatorTemplate,
@@ -313,7 +311,7 @@ const win32Template = {
   submenu: [
     {
       accelerator: 'Ctrl+,',
-      click: () => sendAction('preferences-show'),
+      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
       i18n: 'menuSettings',
     },
     localeTemplate,
@@ -332,7 +330,7 @@ const linuxTemplate = {
   label: config.NAME,
   submenu: [
     {
-      click: () => sendAction('preferences-show'),
+      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
       i18n: 'menuPreferences',
     },
     separatorTemplate,
@@ -355,7 +353,6 @@ const menuTemplate = [
   windowTemplate,
   helpTemplate,
 ];
-
 
 const processMenu = (template, language) => {
   for (const item of template) {
@@ -395,7 +392,6 @@ const changeLocale = (language) => {
   });
 };
 
-
 module.exports = {
   createMenu: () => {
     if (environment.platform.IS_MAC_OS) {
@@ -421,7 +417,7 @@ module.exports = {
     if (environment.platform.IS_LINUX) {
       menuTemplate.unshift(linuxTemplate);
       editTemplate.submenu.push(separatorTemplate, {
-        click: () => sendAction('preferences-show'),
+        click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
         i18n: 'menuPreferences',
       });
       windowTemplate.submenu.push(

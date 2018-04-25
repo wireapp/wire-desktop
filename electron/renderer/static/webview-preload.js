@@ -22,9 +22,10 @@ const environment = require('../../js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
+const EVENT_TYPE = require('../../js/lib/eventType');
 
-const { desktopCapturer, ipcRenderer, remote, webFrame } = require('electron');
-const { app } = remote;
+const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
+const {app} = remote;
 
 webFrame.setVisualZoomLevelLimits(1, 1);
 webFrame.setLayoutZoomLevelLimits(1, 1);
@@ -32,96 +33,91 @@ webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
-    if (update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP) {
-      ipcRenderer.send('wrapper-update');
-    } else {
-      ipcRenderer.send('wrapper-relaunch');
-    }
+    const isUpdateSourceDesktop = update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP;
+    const eventType = isUpdateSourceDesktop ? EVENT_TYPE.WRAPPER.UPDATE : EVENT_TYPE.WRAPPER.RELAUNCH;
+    ipcRenderer.send(eventType);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => {
-    ipcRenderer.sendToHost('lifecycle-signed-in');
+    ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_IN);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGN_OUT, () => {
-    ipcRenderer.sendToHost('lifecycle-signed-out');
+    ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGN_OUT);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, clearData => {
     if (clearData) {
-      ipcRenderer.sendToHost('signed-out');
+      ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT);
     }
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, count => {
-    ipcRenderer.sendToHost('lifecycle-unread-count', count);
+    ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.UNREAD_COUNT, count);
   });
 
   amplify.subscribe(z.event.WebApp.NOTIFICATION.CLICK, () => {
-    ipcRenderer.send('notification-click');
-    ipcRenderer.sendToHost('notification-click');
+    ipcRenderer.send(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
+    ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
   amplify.subscribe(z.event.WebApp.TEAM.INFO, info => {
-    ipcRenderer.sendToHost('team-info', info);
+    ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 };
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on('conversation-add-people', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE)
-  );
-  ipcRenderer.on('conversation-archive', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE)
-  );
-  ipcRenderer.on('conversation-call', () =>
-    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false)
-  );
-  ipcRenderer.on('conversation-delete', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.DELETE)
-  );
-  ipcRenderer.on('conversation-next', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.NEXT)
-  );
-  ipcRenderer.on('conversation-people', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE)
-  );
-  ipcRenderer.on('conversation-ping', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.PING)
-  );
-  ipcRenderer.on('conversation-prev', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.PREV)
-  );
-  ipcRenderer.on('conversation-show', conversation_id =>
-    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversation_id)
-  );
-  ipcRenderer.on('conversation-silence', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.SILENCE)
-  );
-  ipcRenderer.on('conversation-start', () =>
-    amplify.publish(z.event.WebApp.SHORTCUT.START)
-  );
-  ipcRenderer.on('conversation-video-call', () =>
-    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true)
-  );
-  ipcRenderer.on('preferences-show', () =>
-    amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT)
-  );
-  ipcRenderer.on('sign-out', () =>
-    amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA)
-  );
-  ipcRenderer.on('wrapper-update-available', () =>
-    amplify.publish(
-      z.event.WebApp.LIFECYCLE.UPDATE,
-      z.announce.UPDATE_SOURCE.DESKTOP
-    )
-  );
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.ADD_PEOPLE, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.ADD_PEOPLE);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.ARCHIVE, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.ARCHIVE);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.CALL, () => {
+    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, false);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.DELETE, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.DELETE);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_NEXT, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.NEXT);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.PEOPLE, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PEOPLE);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.PING, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PING);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.PREV);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, conversationId => {
+    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.START);
+  });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, () => {
+    amplify.publish(z.event.WebApp.CALL.STATE.TOGGLE, true);
+  });
+  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SHOW, () => {
+    amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
+  });
+  ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
+    amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
+  });
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
+    amplify.publish(z.event.WebApp.LIFECYCLE.UPDATE, z.lifecycle.UPDATE_SOURCE.DESKTOP);
+  });
 };
 
-const exposeAddressbook = () => {
+const exposeAddressBook = () => {
   let cachedAddressBook;
 
-  const getAdressBook = () => {
+  const getAddressBook = () => {
     if (!cachedAddressBook) {
       try {
         cachedAddressBook = require('node-addressbook');
@@ -133,7 +129,7 @@ const exposeAddressbook = () => {
   };
 
   if (environment.platform.IS_MAC_OS) {
-    Object.defineProperty(window, 'wAddressBook', { get: getAdressBook });
+    Object.defineProperty(window, 'wAddressBook', { get: getAddressBook });
   }
 };
 
@@ -145,9 +141,9 @@ const replaceGoogleAuth = () => {
   // hijack google authenticate method
   window.wire.app.service.connect_google._authenticate = () => {
     return new Promise((resolve, reject) => {
-      ipcRenderer.send('google-auth-request');
-      ipcRenderer.once('google-auth-success', (event, token) => resolve(token));
-      ipcRenderer.once('google-auth-error', reject);
+      ipcRenderer.send(EVENT_TYPE.GOOGLE_OAUTH.REQUEST);
+      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.SUCCESS, (event, token) => resolve(token));
+      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.ERROR, reject);
     });
   };
 };
@@ -156,12 +152,7 @@ const enableFileLogging = () => {
   const id = new URL(window.location).searchParams.get('id');
 
   if (id) {
-    const logFilePath = path.join(
-      app.getPath('userData'),
-      'logs',
-      id,
-      config.LOG_FILE_NAME
-    );
+    const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
     fs.createFileSync(logFilePath);
 
     const logger = new winston.Logger();
@@ -177,16 +168,13 @@ const enableFileLogging = () => {
   }
 };
 
-const reportWebappVersion = () => {
-  ipcRenderer.send('webapp-version', z.util.Environment.version(false));
-};
+const reportWebappVersion = () => ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, z.util.Environment.version(false));
 
 const checkAvailability = callback => {
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);
-      callback();
-      return;
+      return callback();
     }
 
     if (navigator.onLine) {
@@ -197,10 +185,6 @@ const checkAvailability = callback => {
   }, 500);
 };
 
-const forceEmailLogin = () => {
-  window.location.hash = '#login';
-};
-
 // https://github.com/electron/electron/issues/2984
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
@@ -208,18 +192,13 @@ process.once('loaded', () => {
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
   global.openGraph = require('../../js/lib/openGraph');
-  global.notification_icon = path.join(
-    app.getAppPath(),
-    'img',
-    'notification.png'
-  );
+  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
   enableFileLogging();
-  forceEmailLogin();
 });
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
-    exposeAddressbook();
+    exposeAddressBook();
 
     subscribeToMainProcessEvents();
     subscribeToWebappEvents();

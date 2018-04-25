@@ -17,9 +17,10 @@
  *
  */
 
-const { ipcRenderer, webFrame } = require('electron');
+const {ipcRenderer, webFrame} = require('electron');
 const environment = require('./environment');
 const locale = require('../locale/locale');
+const EVENT_TYPE = require('lib/eventType');
 
 webFrame.setVisualZoomLevelLimits(1, 1);
 webFrame.setLayoutZoomLevelLimits(1, 1);
@@ -33,7 +34,7 @@ const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
 const getWebviewById = id => document.querySelector(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on('system-menu', (event, action) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event, action) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(action);
@@ -43,19 +44,19 @@ const subscribeToMainProcessEvents = () => {
 
 const setupIpcInterface = () => {
   window.sendBadgeCount = count => {
-    ipcRenderer.send('badge-count', count);
+    ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
   };
 
   window.sendDeleteAccount = (accountID, sessionID) => {
     const accountWebview = getWebviewById(accountID);
     accountWebview.getWebContents().session.clearStorageData();
-    ipcRenderer.send('delete-account-data', accountID, sessionID);
+    ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, accountID, sessionID);
   };
 
   window.sendLogoutAccount = accountId => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
-      accountWebview.send('sign-out');
+      accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
 };

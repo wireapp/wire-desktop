@@ -17,7 +17,7 @@
  *
  */
 
-import reducer from '../accounts';
+import accountReducer from '../accountReducer';
 import {
   updateAccount,
   addAccount,
@@ -28,11 +28,11 @@ import {
 
 describe('accounts reducer', () => {
   it('should return the initial state with one account', () => {
-    expect(reducer(undefined, {}).length).toEqual(1);
+    expect(accountReducer(undefined, {}).length).toEqual(1);
   });
 
   it('should return a state with a new account', () => {
-    const state = [{
+    const initialState = [{
       accentID: undefined,
       badgeCount: 0,
       id: '046da4f1-39be-4b8b-823b-e71f12811454',
@@ -43,16 +43,17 @@ describe('accounts reducer', () => {
       userID: undefined,
       visible: true,
     }];
-    const newState = reducer(state, addAccount());
+    const newState = accountReducer(initialState, addAccount());
+    const [firstAccount, secondAccount] = newState;
 
     expect(newState.length).toEqual(2);
-    expect(newState[0].visible).toBeFalsy();
-    expect(newState[1].visible).toBeTruthy();
-    expect(newState[1].sessionID).toBeDefined();
+    expect(firstAccount.visible).toBeFalsy();
+    expect(secondAccount.visible).toBeTruthy();
+    expect(secondAccount.sessionID).toBeDefined();
   });
 
   it('should return a state with a new account without a session', () => {
-    const state = [{
+    const initialState = [{
       accentID: undefined,
       badgeCount: 0,
       id: '046da4f1-39be-4b8b-823b-e71f12811454',
@@ -63,16 +64,17 @@ describe('accounts reducer', () => {
       userID: undefined,
       visible: true,
     }];
-    const newState = reducer(state, addAccount(false));
+    const newState = accountReducer(initialState, addAccount(false));
+    const [firstAccount, secondAccount] = newState;
 
     expect(newState.length).toEqual(2);
-    expect(newState[0].visible).toBeFalsy();
-    expect(newState[1].visible).toBeTruthy();
-    expect(newState[1].sessionID).not.toBeDefined();
+    expect(firstAccount.visible).toBeFalsy();
+    expect(secondAccount.visible).toBeTruthy();
+    expect(secondAccount.sessionID).not.toBeDefined();
   });
 
   it('should return a state with only the specified account visible', () => {
-    const state = [{
+    const initialState = [{
       accentID: undefined,
       badgeCount: 0,
       id: '046da4f1-39be-4b8b-823b-e71f12811454',
@@ -93,14 +95,14 @@ describe('accounts reducer', () => {
       userID: undefined,
       visible: false,
     }];
-    const newState = reducer(state, switchAccount(state[1].id));
+    const [firstAccount, secondAccount] = accountReducer(initialState, switchAccount(initialState[1].id));
 
-    expect(newState[0].visible).toBeFalsy();
-    expect(newState[1].visible).toBeTruthy();
+    expect(firstAccount.visible).toBeFalsy();
+    expect(secondAccount.visible).toBeTruthy();
   });
 
   it('should return a state with an updated account', () => {
-    const state = [{
+    const initialState = [{
       accentID: undefined,
       badgeCount: 0,
       id: '046da4f1-39be-4b8b-823b-e71f12811454',
@@ -121,14 +123,15 @@ describe('accounts reducer', () => {
       userID: undefined,
       visible: false,
     }];
-    const newState = reducer(state, updateAccount(state[0].id, { userID: 'f4b9a5d0-3e36-4e6f-a404-ba22d23e3730'}));
+    const accountData = {userID: 'f4b9a5d0-3e36-4e6f-a404-ba22d23e3730'};
+    const [firstAccount, secondAccount] = accountReducer(initialState, updateAccount(initialState[0].id, accountData));
 
-    expect(newState[0].userID).toEqual('f4b9a5d0-3e36-4e6f-a404-ba22d23e3730');
-    expect(newState[1].userID).toBeUndefined();
+    expect(firstAccount.userID).toEqual('f4b9a5d0-3e36-4e6f-a404-ba22d23e3730');
+    expect(secondAccount.userID).toBeUndefined();
   });
 
   it('should return a state with an updated badge count', () => {
-    const state = [{
+    const initialState = [{
       accentID: undefined,
       badgeCount: 0,
       id: '046da4f1-39be-4b8b-823b-e71f12811454',
@@ -149,14 +152,14 @@ describe('accounts reducer', () => {
       userID: undefined,
       visible: false,
     }];
-    const newState = reducer(state, updateAccountBadge(state[1].id, 12));
+    const [firstAccount, secondAccount] = accountReducer(initialState, updateAccountBadge(initialState[1].id, 12));
 
-    expect(newState[0].badgeCount).toEqual(0);
-    expect(newState[1].badgeCount).toEqual(12);
+    expect(firstAccount.badgeCount).toEqual(0);
+    expect(secondAccount.badgeCount).toEqual(12);
   });
 
   it('should return a state without the deleted account', () => {
-    const state = [{
+    const initialState = [{
       accentID: undefined,
       badgeCount: 0,
       id: '046da4f1-39be-4b8b-823b-e71f12811454',
@@ -177,10 +180,10 @@ describe('accounts reducer', () => {
       userID: undefined,
       visible: false,
     }];
-    const newState = reducer(state, deleteAccount(state[0].id));
+    const newState = accountReducer(initialState, deleteAccount(initialState[0].id));
+    const [firstAccount] = newState;
 
     expect(newState.length).toEqual(1);
-    expect(newState[0].id).toEqual('d01eb964-bf56-4668-8883-dc248b58b1ca');
+    expect(firstAccount.id).toEqual('d01eb964-bf56-4668-8883-dc248b58b1ca');
   });
-
 });
