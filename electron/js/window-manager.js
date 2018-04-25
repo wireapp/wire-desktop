@@ -17,18 +17,16 @@
  *
  */
 
-
 const {BrowserWindow} = require('electron');
 
 let primaryWindowId;
 
+const getPrimaryWindow = () => primaryWindowId ? BrowserWindow.fromId(primaryWindowId) : BrowserWindow.getAllWindows()[0];
 
-const _getPrimaryWindow = () => primaryWindowId ? BrowserWindow.fromId(primaryWindowId) : BrowserWindow.getAllWindows()[0];
+const setPrimaryWindowId = (newPrimaryWindowId) => primaryWindowId = newPrimaryWindowId;
 
-const _setPrimaryWindowId = (newPrimaryWindowId) => primaryWindowId = newPrimaryWindowId;
-
-const _showPrimaryWindow = () => {
-  const win = _getPrimaryWindow();
+const showPrimaryWindow = () => {
+  const win = getPrimaryWindow();
 
   if (win.isMinimized()) {
     win.restore();
@@ -41,7 +39,7 @@ const _showPrimaryWindow = () => {
 
 
 module.exports = {
-  getPrimaryWindow: _getPrimaryWindow,
-  setPrimaryWindowId: _setPrimaryWindowId,
-  showPrimaryWindow: _showPrimaryWindow,
+  getPrimaryWindow,
+  setPrimaryWindowId,
+  showPrimaryWindow,
 };

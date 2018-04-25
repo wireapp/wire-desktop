@@ -45,28 +45,28 @@ const tr = require('./strings-tr');
 const uk = require('./strings-uk');
 
 const SUPPORTED_LANGUAGES = {
-  'en': 'English',
-  'cs': 'Čeština',
-  'da': 'Dansk',
-  'de': 'Deutsch',
-  'el': 'Ελληνικά',
-  'et': 'Eesti',
-  'es': 'Español',
-  'fr': 'Français',
-  'hr': 'Hrvatski',
-  'it': 'Italiano',
-  'lt': 'Lietuvos',
-  'hu': 'Magyar',
-  'nl': 'Nederlands',
-  'pl': 'Polski',
-  'pt': 'Português do Brasil',
-  'ro': 'Română',
-  'ru': 'Русский',
-  'sk': 'Slovenčina',
-  'sl': 'Slovenščina',
-  'fi': 'Suomi',
-  'tr': 'Türkçe',
-  'uk': 'Українська',
+  en: 'English',
+  cs: 'Čeština',
+  da: 'Dansk',
+  de: 'Deutsch',
+  el: 'Ελληνικά',
+  et: 'Eesti',
+  es: 'Español',
+  fr: 'Français',
+  hr: 'Hrvatski',
+  it: 'Italiano',
+  lt: 'Lietuvos',
+  hu: 'Magyar',
+  nl: 'Nederlands',
+  pl: 'Polski',
+  pt: 'Português do Brasil',
+  ro: 'Română',
+  ru: 'Русский',
+  sk: 'Slovenčina',
+  sl: 'Slovenščina',
+  fi: 'Suomi',
+  tr: 'Türkçe',
+  uk: 'Українська',
 };
 
 let current;
@@ -81,7 +81,7 @@ const getCurrent = () => {
   return current;
 };
 
-const parseLocale = (locale) => {
+const parseLocale = locale => {
   const languageKeys = getSupportedLanguageKeys();
   return languageKeys.find((languageKey) => languageKey === locale) || languageKeys[0];
 };
@@ -91,36 +91,36 @@ const getText = (string_identifier) => {
   return strings[string_identifier] || en[string_identifier] || '';
 };
 
-const setLocale = (locale) => {
+const setLocale = locale => {
   current = parseLocale(locale);
   settings.save('locale', current);
 };
 
 module.exports = {
-  cs: cs,
-  da: da,
-  de: de,
-  el: el,
-  en: en,
-  es: es,
-  et: et,
-  fi: fi,
-  fr: fr,
-  hr: hr,
-  hu: hu,
-  it: it,
-  lt: lt,
-  nl: nl,
-  pl: pl,
-  pt: pt,
-  ro: ro,
-  ru: ru,
-  sk: sk,
-  sl: sl,
-  tr: tr,
-  uk: uk,
-  getCurrent: getCurrent,
-  getText: getText,
-  setLocale: setLocale,
-  SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES,
+  cs,
+  da,
+  de,
+  el,
+  en,
+  es,
+  et,
+  fi,
+  fr,
+  hr,
+  hu,
+  it,
+  lt,
+  nl,
+  pl,
+  pt,
+  ro,
+  ru,
+  sk,
+  sl,
+  tr,
+  uk,
+  getCurrent,
+  getText,
+  setLocale,
+  SUPPORTED_LANGUAGES,
 };

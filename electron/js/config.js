@@ -17,7 +17,6 @@
  *
  */
 
-
 const pkg = require('./../package.json');
 
 const config = {

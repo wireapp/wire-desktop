@@ -59,11 +59,9 @@ const pins = [
 ];
 
 module.exports = {
-  hostnameShouldBePinned (hostname) {
-    return pins.some(pin => pin.url.test(hostname.toLowerCase().trim()));
-  },
+  hostnameShouldBePinned: hostname => pins.some(pin => pin.url.test(hostname.toLowerCase().trim())),
 
-  verifyPinning (hostname, certificate) {
+  verifyPinning: (hostname, certificate) => {
     const {data: certData = '', issuerCert: {data: issuerCertData = ''} = {}} = certificate;
     let issuerCertHex, publicKey, publicKeyBytes, publicKeyFingerprint;
 

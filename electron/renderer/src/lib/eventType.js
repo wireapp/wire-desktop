@@ -17,13 +17,17 @@
  *
  */
 
-import {combineReducers} from 'redux';
-import accountsReducer from './accountReducer';
-import contextMenuReducer from './contextMenuReducer';
+export const ACCOUNT = {
+  UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
+};
 
-const store = combineReducers({
-  accountsReducer,
-  contextMenuReducer,
-});
+export const ACTION = {
+  NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
+};
 
-export default store;
+export const LIFECYCLE = {
+  SIGN_OUT: 'EVENT_TYPE.LIFECYCLE.SIGN_OUT',
+  SIGNED_IN: 'EVENT_TYPE.LIFECYCLE.SIGNED_IN',
+  SIGNED_OUT: 'EVENT_TYPE.LIFECYCLE.SIGNED_OUT',
+  UNREAD_COUNT: 'EVENT_TYPE.LIFECYCLE.UNREAD_COUNT',
+};

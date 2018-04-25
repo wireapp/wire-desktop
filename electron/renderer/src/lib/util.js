@@ -19,10 +19,10 @@
 
 export const noop = () => {};
 
-export function preventFocus(func = noop) {
-  return function(event) {
+export const preventFocus = (fn = noop) => {
+  return event => {
     event.stopPropagation();
     event.preventDefault();
-    func(event);
+    fn(event);
   };
-}
+};

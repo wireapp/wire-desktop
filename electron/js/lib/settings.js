@@ -35,7 +35,7 @@ class ConfigurationPersistence {
       this.debug('Reading config file');
 
       try {
-        global._ConfigurationPersistence = this._readFromFile();
+        global._ConfigurationPersistence = this.readFromFile();
       } catch (error) {
         this.debug('Unable to parse the init file. Details: %s', error);
         global._ConfigurationPersistence = {};
@@ -79,7 +79,7 @@ class ConfigurationPersistence {
     });
   }
 
-  _readFromFile() {
+  readFromFile() {
     this.debug('Reading user configuration file...');
     const dataInJSON = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
     this.debug('%o', dataInJSON);

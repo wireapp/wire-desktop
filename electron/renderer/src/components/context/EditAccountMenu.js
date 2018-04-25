@@ -18,11 +18,12 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { getText } from '../../lib/locale';
+import {connect} from 'react-redux';
+import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
-import { abortAccountCreation, switchAccount } from '../../actions/';
+import {abortAccountCreation, switchAccount} from '../../actions/';
+import * as EVENT_TYPE from '../../lib/eventType';
 
 function EditAccountMenu({
   accountId,
@@ -40,7 +41,7 @@ function EditAccountMenu({
           {getText('wrapperManageTeam')}
         </ContextMenuItem>
       )}
-      {lifecycle === 'lifecycle-signed-in' && (
+      {lifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN && (
         <ContextMenuItem
           onClick={() => {
             connected.switchAccount(accountId);
@@ -63,7 +64,7 @@ function EditAccountMenu({
 }
 
 export default connect(
-  ({ contextMenuState }) => ({
+  ({contextMenuState}) => ({
     accountId: contextMenuState.accountId,
     isAtLeastAdmin: contextMenuState.isAtLeastAdmin,
     lifecycle: contextMenuState.lifecycle,
