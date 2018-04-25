@@ -293,7 +293,7 @@ module.exports = function(grunt) {
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
     electronPkg.updateWinUrl = info.updateWinUrlProd;
     electronPkg.environment = 'production';
-    electronPkg.name = info.name.toLohostnameShouldBePinnedwerCase();
+    electronPkg.name = info.name.toLowerCase();
     electronPkg.productName = info.name;
     electronPkg.version = buildNumber === '0'
       ? `${info.version}.0-${commitId}`
