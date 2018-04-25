@@ -18,7 +18,9 @@
  */
 
 const {app} = require('electron');
-const environment = require('./js/environment');
+const environment = require('./environment');
+const minimist = require('minimist');
+
 const argv = minimist(process.argv.slice(1));
 
 // Fix indicator icon on Unity

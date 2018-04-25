@@ -46,6 +46,7 @@ const settings = require('./js/lib/settings');
 // Wrapper modules
 const appInit = require('./js/appInit');
 const certificateUtils = require('./js/certificateUtils');
+const config = require('./js/config');
 const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
 const environment = require('./js/environment');

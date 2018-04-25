@@ -17,7 +17,7 @@
  *
  */
 
-const config = require('./js/config');
+const config = require('./config');
 const raygun = require('raygun');
 
 let raygunClient;

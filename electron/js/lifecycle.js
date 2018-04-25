@@ -18,14 +18,14 @@
  */
 
 const {app, ipcMain} = require('electron');
-const environment = require('./js/environment');
-const EVENT_TYPE = require('./js/lib/eventType');
+const environment = require('./environment');
+const EVENT_TYPE = require('./lib/eventType');
 
 let shouldQuit = false;
 
 const checkForUpdate = () => {
   if (environment.platform.IS_WINDOWS) {
-    const squirrel = require('./js/squirrel');
+    const squirrel = require('./squirrel');
     squirrel.handleSquirrelEvent(shouldQuit);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => squirrel.installUpdate());
