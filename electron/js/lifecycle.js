@@ -21,8 +21,6 @@ const {app, ipcMain} = require('electron');
 const environment = require('./environment');
 const EVENT_TYPE = require('./lib/eventType');
 
-let shouldQuit = false;
-
 const checkForUpdate = () => {
   if (environment.platform.IS_WINDOWS) {
     const squirrel = require('./squirrel');
@@ -51,17 +49,19 @@ const checkSingleInstance = () => {
 
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
+const quit = () => app.exit();
+
 const relaunch = () => {
   app.relaunch();
   app.exit();
 };
 
-const quit = () => app.exit();
+let shouldQuit = false;
 
 module.exports = {
   checkForUpdate,
   checkSingleInstance,
+  quit,
   relaunch,
   shouldQuit,
-  quit,
 };
