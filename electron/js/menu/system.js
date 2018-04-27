@@ -18,12 +18,13 @@
  */
 
 
-const {app, dialog, Menu, shell} = require('electron');
+const {dialog, Menu, shell} = require('electron');
 const autoLaunch = require('auto-launch');
 const launchCmd = process.env.APPIMAGE ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const environment = require('./../environment');
+const lifecycle = require('./../lifecycle');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 const settings = require('./../lib/settings');
@@ -320,7 +321,7 @@ const win32Template = {
     signOutTemplate,
     {
       accelerator: 'Alt+F4',
-      click: () => app.quit(),
+      click: () => lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -341,7 +342,7 @@ const linuxTemplate = {
     signOutTemplate,
     {
       accelerator: 'Ctrl+Q',
-      click: () => app.quit(),
+      click: () => lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -370,7 +371,6 @@ const processMenu = (template, language) => {
   }
 };
 
-
 const changeLocale = (language) => {
   locale.setLocale(language);
   dialog.showMessageBox({
@@ -381,12 +381,9 @@ const changeLocale = (language) => {
   }, (response) => {
     if (response === 1) {
       if (environment.platform.IS_MAC_OS) {
-        app.quit();
+        lifecycle.quit();
       } else {
-        app.relaunch();
-        // Using exit instead of quit for the time being
-        // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-        app.exit();
+        lifecycle.relaunch();
       }
     }
   });

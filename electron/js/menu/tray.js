@@ -22,6 +22,7 @@ const {app, Menu, Tray} = require('electron');
 const path = require('path');
 const config = require('./../config');
 const environment = require('./../environment');
+const lifecycle = require('./../lifecycle');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 
@@ -43,7 +44,7 @@ const createTrayIcon = () => {
         click: () => windowManager.showPrimaryWindow(),
         label: locale.getText('trayOpen'),
       }, {
-        click: () => app.quit(),
+        click: () => lifecycle.quit(),
         label: locale.getText('trayQuit'),
       },
     ]);
