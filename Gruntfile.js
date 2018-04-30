@@ -25,13 +25,18 @@ const ELECTRON_PACKAGE_JSON = 'electron/package.json';
 const PACKAGE_JSON = 'package.json';
 const INFO_JSON = 'info.json';
 
-const LINUX_DESKTOP = {
-  "Version": "1.1",
-  "Name": "Wire",
-  "GenericName": "The most secure collaboration platform",
-  "Categories": "Network;InstantMessaging;Chat;VideoConference",
-  "Keywords": "chat;encrypt;e2e;messenger;videocall",
-  "StartupWMClass": "Wire"
+const LINUX_SETTINGS = {
+  afterInstall: 'bin/deb/after-install.tpl',
+  afterRemove: 'bin/deb/after-remove.tpl',
+  category: 'Network',
+  desktop: {
+    Version: '1.1',
+    Name: 'Wire',
+    GenericName: 'The most secure collaboration platform',
+    Categories: 'Network;InstantMessaging;Chat;VideoConference',
+    Keywords: 'chat;encrypt;e2e;messenger;videocall',
+    StartupWMClass: 'Wire',
+  },
 };
 
 module.exports = function(grunt) {
@@ -147,54 +152,52 @@ module.exports = function(grunt) {
 
       linux_prod: {
         options: {
-          productName: 'wire-desktop',
-          targets: ['deb', 'rpm', 'AppImage'],
-          linux: {
-            fpm: ['--name', 'wire-desktop'],
-            executableName: 'wire-desktop',
-            desktop: LINUX_DESKTOP,
-            afterInstall: 'bin/deb/after-install.tpl',
-            afterRemove: 'bin/deb/after-remove.tpl',
-          },
           deb: {
+            ...LINUX_SETTINGS,
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
-          rpm: {
-            depends: ['alsa-lib', 'Gconf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+          linux: {
+            category: 'Network',
           },
+          productName: 'wire-desktop',
+          rpm: {
+            ...LINUX_SETTINGS,
+            depends: ['alsa-lib', 'Gconf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+            fpm: ['--name', 'wire-desktop'],
+          },
+          targets: ['deb', 'rpm', 'AppImage'],
         },
       },
 
       linux_internal: {
         options: {
-          productName: 'wire-desktop-internal',
-          targets: ['deb', 'rpm', 'AppImage'],
-          linux: {
-            fpm: ['--name', 'wire-desktop-internal'],
-            executableName: 'wire-desktop-internal',
-            afterInstall: 'bin/deb/after-install.tpl',
-            afterRemove: 'bin/deb/after-remove.tpl',
-            desktop: LINUX_DESKTOP,
-          },
           deb: {
+            ...LINUX_SETTINGS,
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
-          rpm: {
-            depends: ['alsa-lib', 'Gconf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+          linux: {
+            category: 'Network',
           },
+          productName: 'wire-desktop-internal',
+          rpm: {
+            ...LINUX_SETTINGS,
+            depends: ['alsa-lib', 'Gconf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+            fpm: ['--name', 'wire-desktop-internal'],
+          },
+          targets: ['deb', 'rpm', 'AppImage'],
         },
       },
 
       linux_other: {
         options: {
           arch: `${grunt.option('arch') || process.arch}`,
+          linux: {
+            category: 'Network',
+            ...LINUX_SETTINGS,
+            fpm: ['--name', 'wire-desktop'],
+          },
           productName: 'wire-desktop',
           targets: [`${grunt.option('target') || 'dir'}`],
-          linux: {
-            fpm: ['--name', 'wire-desktop'],
-            executableName: 'wire-desktop',
-            desktop: LINUX_DESKTOP,
-          },
         },
       },
     },
@@ -314,10 +317,11 @@ module.exports = function(grunt) {
 
   grunt.registerMultiTask('electronbuilder', 'Build Electron apps', function() {
     const options = this.options();
-    const {targets} = options;
+    const {arch, targets} = options;
     delete options.targets;
-    const {arch} = options;
     delete options.arch;
+
+    const done = this.async();
 
     if (arch === 'all') {
       return electronBuilder.build({
@@ -327,13 +331,17 @@ module.exports = function(grunt) {
           electronBuilder.Arch.x64,
         ),
         config: options,
-      });
+      })
+        .then(result => done())
+        .catch(error => grunt.warn(error));
     }
 
     electronBuilder.build({
       targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
       config: options,
-    });
+    })
+      .then(result => done())
+      .catch(error => grunt.warn(error));
   });
 
   grunt.registerTask('update-keys', function() {
