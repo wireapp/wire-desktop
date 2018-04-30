@@ -30,12 +30,12 @@ const LINUX_SETTINGS = {
   afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
   desktop: {
-    Version: '1.1',
-    Name: 'Wire',
+    Version: '<%= info.version %>.<%= buildNumber %>',
+    Name: '<%= info.name %>',
     GenericName: 'The most secure collaboration platform',
     Categories: 'Network;InstantMessaging;Chat;VideoConference',
     Keywords: 'chat;encrypt;e2e;messenger;videocall',
-    StartupWMClass: 'Wire',
+    StartupWMClass: '<%= info.name %>',
   },
 };
 
