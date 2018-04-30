@@ -32,7 +32,7 @@ const LINUX_SETTINGS = {
   desktop: {
     Version: '<%= info.version %>.<%= buildNumber %>',
     Name: '<%= info.name %>',
-    GenericName: 'The most secure collaboration platform',
+    GenericName: '<%= info.description %>',
     Categories: 'Network;InstantMessaging;Chat;VideoConference',
     Keywords: 'chat;encrypt;e2e;messenger;videocall',
     StartupWMClass: '<%= info.name %>',
