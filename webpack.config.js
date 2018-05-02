@@ -21,7 +21,7 @@ module.exports = (env = {}) => {
         }
       ]
     },
-    mode: 'production',
+    mode: env.production ? 'production' : 'development',
     devtool: (() => {
       if (!env.production) {
         return 'cheap-eval-source-map'
