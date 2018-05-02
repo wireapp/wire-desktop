@@ -327,23 +327,19 @@ module.exports = function(grunt) {
 
     if (arch === 'all') {
       return electronBuilder.build({
+        config: options,
         targets: electronBuilder.Platform.LINUX.createTarget(
           targets,
           electronBuilder.Arch.ia32,
           electronBuilder.Arch.x64,
         ),
-        config: options,
-      })
-        .then(result => done())
-        .catch(error => grunt.warn(error));
+      }).then(done, done);
     }
 
     electronBuilder.build({
-      targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
       config: options,
-    })
-      .then(result => done())
-      .catch(error => grunt.warn(error));
+      targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
+    }).then(done, done);
   });
 
   grunt.registerTask('update-keys', function() {
