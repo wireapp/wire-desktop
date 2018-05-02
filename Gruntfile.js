@@ -319,21 +319,23 @@ module.exports = function(grunt) {
     const {arch} = options;
     delete options.arch;
 
+    const done = this.async();
+
     if (arch === 'all') {
       return electronBuilder.build({
+        config: options,
         targets: electronBuilder.Platform.LINUX.createTarget(
           targets,
           electronBuilder.Arch.ia32,
           electronBuilder.Arch.x64,
         ),
-        config: options,
-      });
+      }).then(done, done)
     }
 
     electronBuilder.build({
-      targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
       config: options,
-    });
+      targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
+    }).then(done, done)
   });
 
   grunt.registerTask('update-keys', function() {
