@@ -4,7 +4,7 @@ const webpack = require('webpack');
 module.exports = (env = {}) => ({
   devtool: env.production ? undefined : 'cheap-eval-source-map',
   entry: path.resolve(__dirname, 'electron/renderer/src/index.js'),
-  mode: env.production ? 'production' : 'development',
+  mode: !env.production ? 'development' : 'production',
   module: {
     rules: [
       {
