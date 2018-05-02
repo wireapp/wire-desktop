@@ -4,10 +4,6 @@ const webpack = require('webpack');
 module.exports = (env = {}) => ({
     devtool: env.production ? '' : 'cheap-eval-source-map',
     entry: path.resolve(__dirname, 'electron/renderer/src/index.js'),
-    output: {
-      filename: 'bundle.js',
-      path: path.resolve(__dirname, 'electron/renderer/dist'),
-    },
     mode: env.production ? 'production' : 'development',
     module: {
       rules: [
@@ -18,14 +14,20 @@ module.exports = (env = {}) => ({
         },
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader'],
+          use: [ 'style-loader', 'css-loader' ],
         },
       ],
+    },
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'electron/renderer/dist'),
     },
     plugins: env.production
       ? [
           new webpack.DefinePlugin({
-            'process.env': {NODE_ENV: JSON.stringify('production')},
+            'process.env': {
+              NODE_ENV: JSON.stringify('production')
+            },
           }),
         ]
       : [],
