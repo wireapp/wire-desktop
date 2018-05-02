@@ -416,7 +416,7 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (createdEvent, contents) => {
+    app.on('web-contents-created', (webviewEvent, contents) => {
       switch (contents.getType()) {
         case 'window':
           contents.on('will-attach-webview', (event, webPreferences, params) => {
