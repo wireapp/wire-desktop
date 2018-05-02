@@ -41,15 +41,15 @@ const devToolsTemplate = {
       label: 'Sidebar',
     },
     {
-      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools()"),
+      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools({mode: 'detach'})"),
       label: 'First',
     },
     {
-      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools()"),
+      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools({mode: 'detach'})"),
       label: 'Second',
     },
     {
-      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools()"),
+      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools({mode: 'detach'})"),
       label: 'Third',
     },
   ],
