@@ -128,22 +128,22 @@ const bindIpcEvents = () => {
 // App Windows
 const showMainWindow = () => {
   main = new BrowserWindow({
-    title: config.NAME,
-    titleBarStyle: 'hiddenInset',
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
     autoHideMenuBar: !settings.restore('showMenu', true),
     backgroundColor: '#f7f8fa',
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
     icon: ICON_PATH,
+    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
+    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
     show: false,
+    title: config.NAME,
+    titleBarStyle: 'hidden-inset',
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      webviewTag: true
-    }
+      webviewTag: true,
+    },
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
   if (settings.restore('fullscreen', false)) {
@@ -321,9 +321,9 @@ const showAboutWindow = () => {
 
     about.webContents.on('dom-ready', () => {
       about.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-        webappVersion: webappVersion,
-        productName: pkg.productName,
         electronVersion: pkg.version,
+        productName: pkg.productName,
+        webappVersion: webappVersion,
       });
     });
   }
@@ -364,15 +364,15 @@ const handleAppEvents = () => {
 
 const renameLogFile = () => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
-  fs.readdir(LOG_DIR, (error, contents) => {
-    if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
+  fs.readdir(LOG_DIR, (readError, contents) => {
+    if (readError) return console.log(`Failed to read log directory with error: ${readError.message}`);
 
     contents
       .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
       .filter(file => {
         try {
           return fs.statSync(file).isFile();
-        } catch (error) {
+        } catch (statError) {
           return undefined;
         }
       })
@@ -416,7 +416,7 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (event, contents) => {
+    app.on('web-contents-created', (webviewEvent, contents) => {
       switch (contents.getType()) {
         case 'window':
           contents.on('will-attach-webview', (event, webPreferences, params) => {

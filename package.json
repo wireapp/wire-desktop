@@ -43,28 +43,30 @@
       "git add"
     ]
   },
-  "name": "wire-desktop",
   "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "preinstall": "cd electron && npm install",
-    "prestart": "npm run bundle:dev",
-    "start": "electron electron --inspect --devtools --enable-logging",
-    "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
-    "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
-    "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
-    "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
-    "lint": "eslint electron",
-    "lint:fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
-    "jest": "jest",
-    "test": "npm run lint && npm run jest && electron-mocha tests",
+    "build:linux": "grunt linux-prod",
     "build:macos": "grunt macos-prod",
     "build:win": "grunt win-prod",
-    "build:linux": "grunt linux-prod",
     "bundle:dev": "webpack",
-    "bundle": "webpack --env.production"
+    "bundle": "webpack --env.production",
+    "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
+    "fix:script": "npm run test:script -- --fix",
+    "fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
+    "fix": "npm run fix:script && npm run fix:style",
+    "jest": "jest",
+    "lint:fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
+    "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
+    "preinstall": "cd electron && npm install",
+    "prestart": "npm run bundle:dev",
+    "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
+    "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
+    "start": "electron electron --inspect --devtools --enable-logging",
+    "test:script": "eslint -c .eslintrc.yaml --ignore-path .gitignore --quiet .",
+    "test": "npm run test:script && npm run jest && electron-mocha tests"
   }
 }
