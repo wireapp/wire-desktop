@@ -1,13 +1,12 @@
 const path = require('path');
 const webpack = require('webpack');
 
-module.exports = (env = {}) => {
-  return {
+module.exports = (env = {}) => ({
     devtool: env.production ? '' : 'cheap-eval-source-map',
     entry: path.resolve(__dirname, 'electron/renderer/src/index.js'),
     output: {
-      path: path.resolve(__dirname, 'electron/renderer/dist'),
       filename: 'bundle.js',
+      path: path.resolve(__dirname, 'electron/renderer/dist'),
     },
     mode: env.production ? 'production' : 'development',
     module: {
@@ -30,5 +29,4 @@ module.exports = (env = {}) => {
           }),
         ]
       : [],
-  };
-};
+});
