@@ -70,9 +70,7 @@ class Webviews extends Component {
   }
 
   _accumulateBadgeCount(accounts) {
-    return accounts.reduce((accumulated, account) => {
-      return accumulated + account.badgeCount;
-    }, 0);
+    return accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
   }
 
   _onUnreadCountUpdated(accountId, unreadCount) {
