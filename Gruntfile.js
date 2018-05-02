@@ -331,13 +331,13 @@ module.exports = function(grunt) {
           electronBuilder.Arch.ia32,
           electronBuilder.Arch.x64,
         ),
-      }).then(done, done)
+      }).then(done, done);
     }
 
     electronBuilder.build({
       config: options,
       targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
-    }).then(done, done)
+    }).then(done, done);
   });
 
   grunt.registerTask('update-keys', function() {
