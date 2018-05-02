@@ -17,22 +17,15 @@
  *
  */
 
-
 const electron = require('electron');
 const url = require('url');
-const debug = require('debug');
-const utilDebug = debug('utilDebug');
 
-const config = require('./config');
-const environment = require('./environment');
 const pointInRectangle = require('./lib/pointInRect');
 
 module.exports = {
-  capitalize: (input) => {
-    return input.charAt(0).toUpperCase() + input.substr(1);
-  },
+  capitalize: input => input.charAt(0).toUpperCase() + input.substr(1),
 
-  isInView: (win) => {
+  isInView: win => {
     const windowBounds = win.getBounds();
     const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
 
@@ -42,64 +35,5 @@ module.exports = {
     return upperLeftVisible || lowerRightVisible;
   },
 
-  isMatchingEmbed: (_url) => {
-    const hostname = url.parse(_url).hostname;
-
-    for (const embedDomain of config.EMBED_DOMAINS) {
-      // If the hostname match
-      if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(hostname)) {
-
-        utilDebug('Allowing %s', embedDomain.name);
-        return true;
-      }
-    }
-
-    return false;
-  },
-
-  isMatchingEmbedOpenExternalWhitelist: (domain, _url) => {
-    const currentHostname = url.parse(domain).hostname;
-    const linkHostname = url.parse(_url).hostname;
-
-    for (const embedDomain of config.EMBED_DOMAINS) {
-      // If the hostname match
-      if (typeof embedDomain.hostname === 'object' && embedDomain.hostname.includes(currentHostname)) {
-
-        // And the link to open is allowed
-        return embedDomain.allowedExternalLinks.includes(linkHostname);
-      }
-    }
-
-    return false;
-  },
-
-  isMatchingHost: (_url, _baseUrl) => {
-    return url.parse(_url).host === url.parse(_baseUrl).host;
-  },
-
-  resizeToBig: (win) => {
-    if (!environment.platform.IS_MAC_OS) {
-      win.setMenuBarVisibility(true);
-    }
-
-    win.setMinimumSize(config.WINDOW.MAIN.MIN_WIDTH, config.WINDOW.MAIN.MIN_HEIGHT);
-    win.setSize(config.WINDOW.MAIN.DEFAULT_WIDTH, config.WINDOW.MAIN.DEFAULT_HEIGHT);
-    win.setResizable(true);
-    win.setMaximizable(true);
-    win.center();
-  },
-
-  resizeToSmall: (win) => {
-    if (!environment.platform.IS_MAC_OS) {
-      win.setMenuBarVisibility(false);
-    }
-
-    const height = config.WINDOW.AUTH.HEIGHT + (environment.platform.IS_WINDOWS ? 40 : 0);
-    win.setFullScreen(false);
-    win.setMaximizable(false);
-    win.setMinimumSize(config.WINDOW.AUTH.WIDTH, height);
-    win.setSize(config.WINDOW.AUTH.WIDTH, height);
-    win.setResizable(false);
-    win.center();
-  },
+  isMatchingHost: (_url, _baseUrl) => url.parse(_url).host === url.parse(_baseUrl).host,
 };

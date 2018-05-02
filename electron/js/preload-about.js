@@ -18,21 +18,17 @@
  */
 
 const {ipcRenderer} = require('electron');
+const EVENT_TYPE = require('lib/eventType');
 
-ipcRenderer.once('about-locale-render', (sender, labels) => {
+ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (sender, labels) => {
   for (const label in labels) {
     document.querySelector(`[data-string="${label}"]`).innerHTML = labels[label];
   }
 });
 
-ipcRenderer.once('about-loaded', (sender, details) => {
+ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (sender, details) => {
   document.getElementById('name').innerHTML = details.productName;
-
-  if (details.electronVersion) {
-    document.getElementById('version').innerHTML = details.electronVersion;
-  } else {
-    document.getElementById('version').innerHTML = 'Development';
-  }
+  document.getElementById('version').innerHTML = details.electronVersion || 'Development';
 
   if (details.webappVersion) {
     document.getElementById('webappVersion').innerHTML = details.webappVersion;
@@ -45,5 +41,5 @@ ipcRenderer.once('about-loaded', (sender, details) => {
   for (const label of document.querySelectorAll('[data-string]')) {
     labels.push(label.dataset.string);
   }
-  ipcRenderer.send('about-locale-values', labels);
+  ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
 });

@@ -30,11 +30,11 @@ const App = props => (
   <IsOnline>
     <div
       className="App"
-      onKeyDown={e => {
-        const modKeyPressed = (window.isMac && e.metaKey) || e.ctrlKey;
-        const isValidKey = ['1', '2', '3'].includes(e.key);
-        if (modKeyPressed && isValidKey && props.accountIds[e.key - 1]) {
-          props.switchAccount(props.accountIds[e.key - 1]);
+      onKeyDown={event => {
+        const modKeyPressed = (window.isMac && event.metaKey) || event.ctrlKey;
+        const isValidKey = ['1', '2', '3'].includes(event.key);
+        if (modKeyPressed && isValidKey && props.accountIds[event.key - 1]) {
+          props.switchAccount(props.accountIds[event.key - 1]);
         }
       }}
     >
@@ -44,4 +44,4 @@ const App = props => (
   </IsOnline>
 );
 
-export default connect(({ accounts }) => ({ accountIds: accounts.map(account => account.id) }), { switchAccount })(App);
+export default connect(({accounts}) => ({accountIds: accounts.map(account => account.id)}), {switchAccount})(App);

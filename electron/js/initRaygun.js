@@ -17,13 +17,20 @@
  *
  */
 
-import {combineReducers} from 'redux';
-import accountsReducer from './accountReducer';
-import contextMenuReducer from './contextMenuReducer';
+const config = require('./config');
+const raygun = require('raygun');
 
-const store = combineReducers({
-  accountsReducer,
-  contextMenuReducer,
-});
+let raygunClient;
 
-export default store;
+const initClient = () => {
+  raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
+
+  raygunClient.onBeforeSend(payload => {
+    delete payload.details.machineName;
+    return payload;
+  });
+};
+
+module.exports = {
+  initClient,
+};

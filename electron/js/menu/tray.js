@@ -17,13 +17,12 @@
  *
  */
 
-
-
 const {app, Menu, Tray} = require('electron');
 
 const path = require('path');
 const config = require('./../config');
 const environment = require('./../environment');
+const lifecycle = require('./../lifecycle');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 
@@ -37,7 +36,7 @@ let lastUnreadCount = 0;
 
 let appIcon = null;
 
-const _createTrayIcon = () => {
+const createTrayIcon = () => {
   if (!environment.platform.IS_MAC_OS) {
     appIcon = new Tray(iconPath);
     const contextMenu = Menu.buildFromTemplate([
@@ -45,7 +44,7 @@ const _createTrayIcon = () => {
         click: () => windowManager.showPrimaryWindow(),
         label: locale.getText('trayOpen'),
       }, {
-        click: () => app.quit(),
+        click: () => lifecycle.quit(),
         label: locale.getText('trayQuit'),
       },
     ]);
@@ -56,11 +55,11 @@ const _createTrayIcon = () => {
   }
 };
 
-const _updateBadgeIcon = (win, count) => {
+const updateBadgeIcon = (win, count) => {
   if (count) {
-    _useBadgeIcon();
+    useBadgeIcon();
   } else {
-    _useDefaultIcon();
+    useDefaultIcon();
   }
 
   if (environment.platform.IS_WINDOWS) {
@@ -72,19 +71,19 @@ const _updateBadgeIcon = (win, count) => {
   lastUnreadCount = count;
 };
 
-const _useDefaultIcon = () => {
+const useDefaultIcon = () => {
   if (appIcon) {
     appIcon.setImage(iconPath);
   }
 };
 
-const _useBadgeIcon = () => {
+const useBadgeIcon = () => {
   if (appIcon) {
     appIcon.setImage(iconBadgePath);
   }
 };
 
 module.exports = {
-  createTrayIcon: _createTrayIcon,
-  updateBadgeIcon: _updateBadgeIcon,
+  createTrayIcon,
+  updateBadgeIcon,
 };

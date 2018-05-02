@@ -17,10 +17,10 @@
  *
  */
 
-function is(type, obj) {
-  const getType = Object.prototype.toString.call(obj).slice(8, -1);
-  return obj && getType === type;
-}
+const isType = (type, object) => {
+  const getType = Object.prototype.toString.call(object).slice(8, -1);
+  return object && getType === type;
+};
 
 export default function(data, config) {
   const validatedData = {};
@@ -31,7 +31,7 @@ export default function(data, config) {
       return true;
     }
 
-    const isValid = is(config[key], data[key]);
+    const isValid = isType(config[key], data[key]);
     if (isValid) {
       validatedData[key] = data[key];
     }

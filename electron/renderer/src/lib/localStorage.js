@@ -17,23 +17,22 @@
  *
  */
 
+const STATE_NAME = 'state';
+
 export const loadState = () => {
   try {
-    const serializedState = localStorage.getItem('state');
-    if (serializedState === null) {
-      return undefined;
-    }
-    return JSON.parse(serializedState);
+    const serializedState = localStorage.getItem(STATE_NAME);
+    return !!serializedState ? JSON.parse(serializedState) : undefined;
   } catch (error) {
     console.error('ERROR: Failed to load state ', error.message);
     return undefined;
   }
 };
 
-export const saveState = (state) => {
+export const saveState = state => {
   try {
     const serializedState = JSON.stringify(state);
-    localStorage.setItem('state', serializedState);
+    localStorage.setItem(STATE_NAME, serializedState);
   } catch (error) {
     console.error('ERROR: Failed to save state ', error.message);
   }

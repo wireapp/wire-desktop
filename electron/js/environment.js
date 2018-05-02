@@ -17,7 +17,6 @@
  *
  */
 
-
 const pkg = require('./../package.json');
 const settings = require('./lib/settings');
 
@@ -53,45 +52,48 @@ const URL_WEBAPP = {
   STAGING: 'https://wire-webapp-staging.zinfra.io',
 };
 
-const _app = {
+const app = {
   ENV: pkg.environment,
   IS_DEVELOPMENT: pkg.environment !== 'production',
   IS_PRODUCTION: pkg.environment === 'production',
   UPDATE_URL_WIN: pkg.updateWinUrl,
 };
 
-const _getEnvironment = () => {
+const getEnvironment = () => {
   return currentEnvironment = currentEnvironment || settings.restore('env', TYPE.INTERNAL);
 };
 
-const _is_prod_environment = () => {
+const isProdEnvironment = () => {
   return [
     TYPE.INTERNAL,
     TYPE.PRODUCTION,
-  ].includes(_getEnvironment());
+  ].includes(getEnvironment());
 };
 
-const _platform = {
+const platform = {
   IS_LINUX: process.platform === 'linux',
   IS_MAC_OS: process.platform === 'darwin',
   IS_WINDOWS: process.platform === 'win32',
 };
 
-const _setEnvironment = (env) => {
+const setEnvironment = (env) => {
   currentEnvironment = env || settings.restore('env', TYPE.INTERNAL);
   settings.save('env', currentEnvironment);
 };
 
-const _web = {
-  get_url_admin: () => _is_prod_environment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING,
-  get_url_support: () => URL_SUPPORT,
-  get_url_webapp: (env) => {
+const web = {
+  getAdminUrl: path => {
+    const baseUrl = isProdEnvironment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
+    return `${baseUrl}${path ? path : ''}`;
+  },
+  getSupportUrl: path => `${URL_SUPPORT}${path ? path : ''}`,
+  getWebappUrl: (env) => {
     if (env) {
       return env;
     }
 
-    if (_app.IS_DEVELOPMENT) {
-      switch (_getEnvironment()) {
+    if (app.IS_DEVELOPMENT) {
+      switch (getEnvironment()) {
         case TYPE.DEV:
           return URL_WEBAPP.DEV;
         case TYPE.EDGE:
@@ -109,14 +111,17 @@ const _web = {
 
     return URL_WEBAPP.PRODUCTION;
   },
-  get_url_website: () => _is_prod_environment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING,
+  getWebsiteUrl: path => {
+    const baseUrl = isProdEnvironment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
+    return `${baseUrl}${path ? path : ''}`;
+  },
 };
 
 module.exports = {
-  TYPE: TYPE,
-  app: _app,
-  getEnvironment: _getEnvironment,
-  platform: _platform,
-  setEnvironment: _setEnvironment,
-  web: _web,
+  TYPE,
+  app,
+  getEnvironment,
+  platform,
+  setEnvironment,
+  web,
 };

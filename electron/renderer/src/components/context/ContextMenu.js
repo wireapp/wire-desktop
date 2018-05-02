@@ -77,20 +77,19 @@ class ContextMenu extends Component {
   }
 
   _handleRef(menu) {
-    if (!menu) {
-      return;
+    if (menu) {
+      this.menu = menu;
+      const { x, y } = this.props.position;
+
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      const menuWidth = menu.offsetWidth;
+      const menuHeight = menu.offsetHeight;
+
+      menu.style.left = `${windowWidth - x < menuWidth ? x - menuWidth : x}px`;
+      menu.style.top = `${windowHeight - y < menuHeight ? y - menuHeight : y}px`;
     }
-    this.menu = menu;
-    const { x, y } = this.props.position;
-
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-
-    const menuWidth = menu.offsetWidth;
-    const menuHeight = menu.offsetHeight;
-
-    menu.style.left = `${windowWidth - x < menuWidth ? x - menuWidth : x}px`;
-    menu.style.top = `${windowHeight - y < menuHeight ? y - menuHeight : y}px`;
   }
 
   render() {
@@ -106,5 +105,5 @@ export default connect(
   state => ({
     position: state.contextMenuState.position,
   }),
-  { setAccountContextHidden }
+  {setAccountContextHidden}
 )(ContextMenu);
