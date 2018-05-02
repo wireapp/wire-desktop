@@ -157,7 +157,7 @@ const showMainWindow = () => {
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
-    main.webContents.openDevTools();
+    main.webContents.openDevTools({mode: 'detach'});
   }
 
   if (!argv.startup && !argv.hidden) {
