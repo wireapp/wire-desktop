@@ -2,13 +2,13 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = (env = {}) => ({
-  devtool: env.production ? '' : 'cheap-eval-source-map',
+  devtool: env.production ? undefined : 'cheap-eval-source-map',
   entry: path.resolve(__dirname, 'electron/renderer/src/index.js'),
   mode: env.production ? 'production' : 'development',
   module: {
     rules: [
       {
-        exclude: /(node_modules)/,
+        exclude: /node_modules/,
         test: /\.js$/,
         use: ['babel-loader'],
       },
@@ -30,5 +30,5 @@ module.exports = (env = {}) => ({
         },
       }),
     ]
-    : [],
+    : undefined,
 });
