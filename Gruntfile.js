@@ -1,3 +1,5 @@
+// TODO: If this is part of master, sort the keys and remove the eslint-disable
+/* eslint-disable sort-keys */
 /*
  * Wire
  * Copyright (C) 2018 Wire Swiss GmbH
@@ -26,12 +28,12 @@ const PACKAGE_JSON = 'package.json';
 const INFO_JSON = 'info.json';
 
 const LINUX_DESKTOP = {
-  "Version": "1.1",
-  "Name": "Wire",
-  "GenericName": "The most secure collaboration platform",
-  "Categories": "Network;InstantMessaging;Chat;VideoConference",
-  "Keywords": "chat;encrypt;e2e;messenger;videocall",
-  "StartupWMClass": "Wire"
+  'Version': '1.1',
+  'Name': 'Wire',
+  'GenericName': 'The most secure collaboration platform',
+  'Categories': 'Network;InstantMessaging;Chat;VideoConference',
+  'Keywords': 'chat;encrypt;e2e;messenger;videocall',
+  'StartupWMClass': 'Wire',
 };
 
 module.exports = function(grunt) {
@@ -344,9 +346,9 @@ module.exports = function(grunt) {
 
     if (configString) {
       const newConfigString = configString
-        .replace(`RAYGUN_API_KEY: ''`, `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
-        .replace(`GOOGLE_CLIENT_ID: ''`, `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
-        .replace(`GOOGLE_CLIENT_SECRET: ''`, `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
+        .replace('RAYGUN_API_KEY: \'\'', `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
+        .replace('GOOGLE_CLIENT_ID: \'\'', `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
+        .replace('GOOGLE_CLIENT_SECRET: \'\'', `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
       return grunt.file.write(options.config, newConfigString);
     }
 
