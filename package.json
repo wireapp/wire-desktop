@@ -70,6 +70,6 @@
     "start": "electron electron --inspect --devtools --enable-logging",
     "test:js": "eslint -c .eslintrc.json --ignore-path .gitignore --ignore-path .eslintignore \"**/*.js\"",
     "test:other": "npm run prettier -- --list-different",
-    "test": "npm run test:other && npm run test:js && npm run jest && electron-mocha tests"
+    "test": "npm run test:js && npm run jest && electron-mocha tests"
   }
 }
