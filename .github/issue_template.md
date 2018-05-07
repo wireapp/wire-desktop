@@ -6,7 +6,11 @@ If you have a feature request that affects Wire in general, was kindly ask you t
 
 Wire version: <Check the About dialog> Wire for web version: <Check the About dialog> Operating system: <OS/distribution and version number> Which antivirus software do you have installed: <This helps us to find out if there are compatibility issues with antivirus software>
 
-What steps will reproduce the problem? 1. 2. 3.
+What steps will reproduce the problem?
+
+1.  ...
+2.  ...
+3.  ...
 
 What is the expected result?
 
