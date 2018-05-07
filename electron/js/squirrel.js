@@ -37,7 +37,9 @@ let updateDotExe = path.join(rootFolder, 'Update.exe');
 let exeName = config.NAME + '.exe';
 let linkName = config.NAME + '.lnk';
 
-let taskbarLink = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName));
+let taskbarLink = path.resolve(
+  path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName)
+);
 
 const SQUIRREL_EVENT = {
   CREATE_SHORTCUT: '--createShortcut',
@@ -59,13 +61,13 @@ const spawn = (command, args, callback) => {
     spawnedProcess = cp.spawn(command, args);
   } catch (_error) {
     error = _error;
-    return process.nextTick(() => typeof callback === 'function' ? callback(error, stdout) : void 0);
+    return process.nextTick(() => (typeof callback === 'function' ? callback(error, stdout) : void 0));
   }
 
-  spawnedProcess.stdout.on('data', data => stdout += data);
+  spawnedProcess.stdout.on('data', data => (stdout += data));
 
   error = null;
-  spawnedProcess.on('error', processError => error != null ? error : error = processError);
+  spawnedProcess.on('error', processError => (error != null ? error : (error = processError)));
   spawnedProcess.on('close', (code, signal) => {
     if (code !== 0) {
       if (error == null) {
@@ -99,7 +101,9 @@ const createDesktopShortcut = callback => {
 };
 
 const removeShortcuts = callback => {
-  spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () => fs.unlink(taskbarLink, callback));
+  spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
+    fs.unlink(taskbarLink, callback)
+  );
 };
 
 const installUpdate = () => {
@@ -146,7 +150,6 @@ const handleSquirrelEvent = shouldQuit => {
 
   scheduleUpdate();
 };
-
 
 module.exports = {
   handleSquirrelEvent,

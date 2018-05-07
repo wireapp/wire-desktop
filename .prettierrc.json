@@ -12,7 +12,7 @@
   "useTabs": false,
   "overrides": [
     {
-      "files": ["*.json"],
+      "files": ["*.json", "electron/locale/strings-*.js"],
       "options": {
         "printWidth": 200
       }

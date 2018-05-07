@@ -28,12 +28,12 @@ const PACKAGE_JSON = 'package.json';
 const INFO_JSON = 'info.json';
 
 const LINUX_DESKTOP = {
-  'Version': '1.1',
-  'Name': 'Wire',
-  'GenericName': 'The most secure collaboration platform',
-  'Categories': 'Network;InstantMessaging;Chat;VideoConference',
-  'Keywords': 'chat;encrypt;e2e;messenger;videocall',
-  'StartupWMClass': 'Wire',
+  Version: '1.1',
+  Name: 'Wire',
+  GenericName: 'The most secure collaboration platform',
+  Categories: 'Network;InstantMessaging;Chat;VideoConference',
+  Keywords: 'chat;encrypt;e2e;messenger;videocall',
+  StartupWMClass: 'Wire',
 };
 
 module.exports = function(grunt) {
@@ -281,9 +281,8 @@ module.exports = function(grunt) {
     electronPkg.environment = 'internal';
     electronPkg.name = info.nameInternal.toLowerCase();
     electronPkg.productName = info.nameInternal;
-    electronPkg.version = buildNumber === '0'
-      ? `${info.version}.0-${commitId}-internal`
-      : `${info.version}.${buildNumber}-internal`;
+    electronPkg.version =
+      buildNumber === '0' ? `${info.version}.0-${commitId}-internal` : `${info.version}.${buildNumber}-internal`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
     grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
   });
@@ -297,9 +296,7 @@ module.exports = function(grunt) {
     electronPkg.environment = 'production';
     electronPkg.name = info.name.toLowerCase();
     electronPkg.productName = info.name;
-    electronPkg.version = buildNumber === '0'
-      ? `${info.version}.0-${commitId}`
-      : `${info.version}.${buildNumber}`;
+    electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
     grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
   });
@@ -324,20 +321,24 @@ module.exports = function(grunt) {
     const done = this.async();
 
     if (arch === 'all') {
-      return electronBuilder.build({
-        config: options,
-        targets: electronBuilder.Platform.LINUX.createTarget(
-          targets,
-          electronBuilder.Arch.ia32,
-          electronBuilder.Arch.x64,
-        ),
-      }).then(done, done);
+      return electronBuilder
+        .build({
+          config: options,
+          targets: electronBuilder.Platform.LINUX.createTarget(
+            targets,
+            electronBuilder.Arch.ia32,
+            electronBuilder.Arch.x64
+          ),
+        })
+        .then(done, done);
     }
 
-    electronBuilder.build({
-      config: options,
-      targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
-    }).then(done, done);
+    electronBuilder
+      .build({
+        config: options,
+        targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.archFromString(arch)),
+      })
+      .then(done, done);
   });
 
   grunt.registerTask('update-keys', function() {
@@ -346,9 +347,9 @@ module.exports = function(grunt) {
 
     if (configString) {
       const newConfigString = configString
-        .replace('RAYGUN_API_KEY: \'\'', `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
-        .replace('GOOGLE_CLIENT_ID: \'\'', `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
-        .replace('GOOGLE_CLIENT_SECRET: \'\'', `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
+        .replace("RAYGUN_API_KEY: ''", `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
+        .replace("GOOGLE_CLIENT_ID: ''", `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
+        .replace("GOOGLE_CLIENT_SECRET: ''", `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
       return grunt.file.write(options.config, newConfigString);
     }
 
@@ -371,12 +372,22 @@ module.exports = function(grunt) {
       `${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
       `${options.name} Helper NP.app/`,
     ].forEach(framework =>
-      execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}/Contents/Frameworks/${framework}'`),
+      execSync(
+        `codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${
+          options.dir
+        }/Contents/Frameworks/${framework}'`
+      )
     );
 
-    execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}/Contents/MacOS/${options.name}'`,);
+    execSync(
+      `codesign -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}/Contents/MacOS/${
+        options.name
+      }'`
+    );
     execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.parent}' '${options.dir}'`);
-    execSync(`productbuild --component '${options.dir}' /Applications --sign '${options.sign.package}' '${options.name}.pkg'`);
+    execSync(
+      `productbuild --component '${options.dir}' /Applications --sign '${options.sign.package}' '${options.name}.pkg'`
+    );
   });
 
   grunt.registerMultiTask('create-windows-installer', 'Create the Windows installer', function() {

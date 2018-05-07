@@ -39,11 +39,7 @@ if (process.env.NODE_ENV !== 'production') {
   middleware.push(logger);
 }
 
-const store = createStore(
-  appStore,
-  persistedState,
-  applyMiddleware(...middleware)
-);
+const store = createStore(appStore, persistedState, applyMiddleware(...middleware));
 
 store.subscribe(
   throttle(() => {

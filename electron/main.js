@@ -31,7 +31,8 @@ const APP_PATH = app.getAppPath();
 
 // Local files defines
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html', 'about.html'));
-const ABOUT_WINDOW_WHITELIST = [ABOUT_HTML,
+const ABOUT_WINDOW_WHITELIST = [
+  ABOUT_HTML,
   fileUrl(path.join(APP_PATH, 'img', 'wire.256.png')),
   fileUrl(path.join(APP_PATH, 'css', 'about.css')),
 ];
@@ -52,7 +53,7 @@ const download = require('./js/lib/download');
 const environment = require('./js/environment');
 const googleAuth = require('./js/lib/googleAuth');
 const initRaygun = require('./js/initRaygun');
-const lifecycle = require ('./js/lifecycle');
+const lifecycle = require('./js/lifecycle');
 const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
 const tray = require('./js/menu/tray');
@@ -192,7 +193,6 @@ const showMainWindow = () => {
       urls: ['https://staging-nginz-https.zinfra.io/*'],
     },
     (details, callback) => {
-
       if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
         // Override remote Access-Control-Allow-Origin
         details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
@@ -203,7 +203,7 @@ const showMainWindow = () => {
         cancel: false,
         responseHeaders: details.responseHeaders,
       });
-    },
+    }
   );
 
   main.webContents.on('dom-ready', () => {
@@ -274,25 +274,28 @@ const showAboutWindow = () => {
     // Prevent any kind of navigation
     // will-navigate is broken with sandboxed env, intercepting requests instead
     // see https://github.com/electron/electron/issues/8841
-    about.webContents.session.webRequest.onBeforeRequest({
-      urls: ['*'],
-    }, (details, callback) => {
-      const url = details.url;
+    about.webContents.session.webRequest.onBeforeRequest(
+      {
+        urls: ['*'],
+      },
+      (details, callback) => {
+        const url = details.url;
 
-      // Only allow those URLs to be opened within the window
-      if (ABOUT_WINDOW_WHITELIST.includes(url)) {
-        return callback({cancel: false});
+        // Only allow those URLs to be opened within the window
+        if (ABOUT_WINDOW_WHITELIST.includes(url)) {
+          return callback({cancel: false});
+        }
+
+        // Open HTTPS links in browser instead
+        if (url.startsWith('https://')) {
+          shell.openExternal(url);
+        } else {
+          console.log('Attempt to open URL in window prevented, url: %s', url);
+        }
+
+        callback({redirectURL: ABOUT_HTML});
       }
-
-      // Open HTTPS links in browser instead
-      if (url.startsWith('https://')) {
-        shell.openExternal(url);
-      } else {
-        console.log('Attempt to open URL in window prevented, url: %s', url);
-      }
-
-      callback({redirectURL: ABOUT_HTML});
-    });
+    );
 
     // Locales
     ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels) => {

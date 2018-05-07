@@ -12,7 +12,8 @@
       "globalReturn": true
     }
   },
-  "plugins": ["react"],
+  "extends": ["prettier"],
+  "plugins": ["prettier", "react"],
   "rules": {
     "handle-callback-err": 2,
     "no-dupe-class-members": 2,
@@ -24,6 +25,7 @@
         "args": "none"
       }
     ],
+    "prettier/prettier": 2,
     "sort-keys": [
       2,
       "asc",

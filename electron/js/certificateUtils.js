@@ -24,31 +24,39 @@ const WILDCARD_CERT_FINGERPRINT = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU='
 const MULTIDOMAIN_CERT_FINGERPRINT = 'bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=';
 const CERT_ALGORITHM_RSA = '2a864886f70d010101';
 // eslint-disable-next-line no-unused-vars
-const PUBLIC_KEY_VERISIGN_CLASS3_G5_ROOT = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryQICCl6NZ5gDKrnSztO\n3Hy8PEUcuyvg/ikC+VcIo2SFFSf18a3IMYldIugqqqZCs4/4uVW3sbdLs/6PfgdX\n7O9D22ZiFWHPYA2k2N744MNiCD1UE+tJyllUhSblK48bn+v1oZHCM0nYQ2NqUkvS\nj+hwUU3RiWl7x3D2s9wSdNt7XUtW05a/FXehsPSiJfKvHJJnGOX0BgTvkLnkAOTd\nOrUZ/wK69Dzu4IvrN4vs9Nes8vbwPa/ddZEzGR0cQMt0JBkhk9kU/qwqUseP1QRJ\n5I1jR4g8aYPL/ke9K35PxZWuDp3U0UPAZ3PjFAh+5T+fc7gzCs9dPzSHloruU+gl\nFQIDAQAB\n-----END PUBLIC KEY-----\n';
-const PUBLIC_KEY_DIGICERT_GLOBAL_ROOT_G2 = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQq2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5WztCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQvIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQAB\n-----END PUBLIC KEY-----';
+const PUBLIC_KEY_VERISIGN_CLASS3_G5_ROOT =
+  '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryQICCl6NZ5gDKrnSztO\n3Hy8PEUcuyvg/ikC+VcIo2SFFSf18a3IMYldIugqqqZCs4/4uVW3sbdLs/6PfgdX\n7O9D22ZiFWHPYA2k2N744MNiCD1UE+tJyllUhSblK48bn+v1oZHCM0nYQ2NqUkvS\nj+hwUU3RiWl7x3D2s9wSdNt7XUtW05a/FXehsPSiJfKvHJJnGOX0BgTvkLnkAOTd\nOrUZ/wK69Dzu4IvrN4vs9Nes8vbwPa/ddZEzGR0cQMt0JBkhk9kU/qwqUseP1QRJ\n5I1jR4g8aYPL/ke9K35PxZWuDp3U0UPAZ3PjFAh+5T+fc7gzCs9dPzSHloruU+gl\nFQIDAQAB\n-----END PUBLIC KEY-----\n';
+const PUBLIC_KEY_DIGICERT_GLOBAL_ROOT_G2 =
+  '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQq2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5WztCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQvIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQAB\n-----END PUBLIC KEY-----';
 const pins = [
   {
-    publicKeyInfo: [{
-      algorithmID: CERT_ALGORITHM_RSA,
-      algorithmParam: null,
-      fingerprints: [MULTIDOMAIN_CERT_FINGERPRINT, WILDCARD_CERT_FINGERPRINT],
-    }],
+    publicKeyInfo: [
+      {
+        algorithmID: CERT_ALGORITHM_RSA,
+        algorithmParam: null,
+        fingerprints: [MULTIDOMAIN_CERT_FINGERPRINT, WILDCARD_CERT_FINGERPRINT],
+      },
+    ],
     url: /^app\.wire\.com$/i,
   },
   {
-    publicKeyInfo: [{
-      algorithmID: CERT_ALGORITHM_RSA,
-      algorithmParam: null,
-      fingerprints: [MULTIDOMAIN_CERT_FINGERPRINT, WILDCARD_CERT_FINGERPRINT],
-    }],
+    publicKeyInfo: [
+      {
+        algorithmID: CERT_ALGORITHM_RSA,
+        algorithmParam: null,
+        fingerprints: [MULTIDOMAIN_CERT_FINGERPRINT, WILDCARD_CERT_FINGERPRINT],
+      },
+    ],
     url: /^(www\.)?wire\.com$/i,
   },
   {
-    publicKeyInfo: [{
-      algorithmID: CERT_ALGORITHM_RSA,
-      algorithmParam: null,
-      fingerprints: [WILDCARD_CERT_FINGERPRINT],
-    }],
+    publicKeyInfo: [
+      {
+        algorithmID: CERT_ALGORITHM_RSA,
+        algorithmParam: null,
+        fingerprints: [WILDCARD_CERT_FINGERPRINT],
+      },
+    ],
     url: /^prod-(assets|nginz-https|nginz-ssl)\.wire\.com$/i,
   },
   {
@@ -69,7 +77,10 @@ module.exports = {
       issuerCertHex = rs.pemtohex(issuerCertData);
       publicKey = rs.X509.getPublicKeyInfoPropOfCertPEM(certData);
       publicKeyBytes = Buffer.from(publicKey.keyhex, 'hex').toString('binary');
-      publicKeyFingerprint = crypto.createHash('sha256').update(publicKeyBytes).digest('base64');
+      publicKeyFingerprint = crypto
+        .createHash('sha256')
+        .update(publicKeyBytes)
+        .digest('base64');
     } catch (error) {
       console.error(`Certificate verification failed: ${error.message}`, error);
       return {decoding: false};
@@ -92,37 +103,54 @@ module.exports = {
             return x509.verifySignature(x509PublicKey);
           });
           if (!result.verifiedIssuerRootPubkeys) {
-            errorMessages.push(`Issuer root public key signatures: none of "${issuerRootPubkeys.join(', ')}" could be verified.`);
+            errorMessages.push(
+              `Issuer root public key signatures: none of "${issuerRootPubkeys.join(', ')}" could be verified.`
+            );
           }
         }
 
-        result.verifiedPublicKeyInfo = publicKeyInfo.reduce((arr, pubkey) => {
-          const {fingerprints: knownFingerprints = [], algorithmID: knownAlgorithmID = '', algorithmParam: knownAlgorithmParam = null} = pubkey;
+        result.verifiedPublicKeyInfo = publicKeyInfo
+          .reduce((arr, pubkey) => {
+            const {
+              fingerprints: knownFingerprints = [],
+              algorithmID: knownAlgorithmID = '',
+              algorithmParam: knownAlgorithmParam = null,
+            } = pubkey;
 
-          const fingerprintCheck = (knownFingerprints.length > 0) ? knownFingerprints.some(knownFingerprint => knownFingerprint === publicKeyFingerprint) : undefined;
-          const algorithmIDCheck = knownAlgorithmID === publicKey.algoid;
-          const algorithmParamCheck = knownAlgorithmParam === publicKey.algparam;
+            const fingerprintCheck =
+              knownFingerprints.length > 0
+                ? knownFingerprints.some(knownFingerprint => knownFingerprint === publicKeyFingerprint)
+                : undefined;
+            const algorithmIDCheck = knownAlgorithmID === publicKey.algoid;
+            const algorithmParamCheck = knownAlgorithmParam === publicKey.algparam;
 
-          if (!fingerprintCheck) {
-            errorMessages.push(`Public key fingerprints: "${publicKeyFingerprint}" could not be verified with any of the known fingerprints "${knownFingerprints.join(', ')}".`);
-          }
+            if (!fingerprintCheck) {
+              errorMessages.push(
+                `Public key fingerprints: "${publicKeyFingerprint}" could not be verified with any of the known fingerprints "${knownFingerprints.join(
+                  ', '
+                )}".`
+              );
+            }
 
-          if (!algorithmIDCheck) {
-            errorMessages.push(`Algorithm ID: "${publicKey.algoid}" could not be verified with the known ID "${knownAlgorithmID}".`);
-          }
+            if (!algorithmIDCheck) {
+              errorMessages.push(
+                `Algorithm ID: "${publicKey.algoid}" could not be verified with the known ID "${knownAlgorithmID}".`
+              );
+            }
 
-          if (!algorithmParamCheck) {
-            errorMessages.push(`Algorithm parameter: "${publicKey.algparam}" could not be verified with the known parameter "${knownAlgorithmParam}".`);
-          }
+            if (!algorithmParamCheck) {
+              errorMessages.push(
+                `Algorithm parameter: "${
+                  publicKey.algparam
+                }" could not be verified with the known parameter "${knownAlgorithmParam}".`
+              );
+            }
 
-          arr.push(
-            fingerprintCheck,
-            algorithmIDCheck,
-            algorithmParamCheck
-          );
+            arr.push(fingerprintCheck, algorithmIDCheck, algorithmParamCheck);
 
-          return arr;
-        }, []).every(value => Boolean(value));
+            return arr;
+          }, [])
+          .every(value => Boolean(value));
 
         if (errorMessages.length > 0) {
           result.errorMessage = errorMessages.join('\n');

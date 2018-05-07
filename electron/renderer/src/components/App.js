@@ -19,10 +19,10 @@
 
 import IsOnline from './IsOnline';
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
-import { switchAccount } from '../actions/';
+import {switchAccount} from '../actions/';
 
 import './App.css';
 

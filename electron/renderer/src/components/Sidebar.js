@@ -69,10 +69,9 @@ const Sidebar = ({
           className={getClassName(account)}
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
-            const isAtLeastAdmin = [
-              'z.team.TeamRole.ROLE.OWNER',
-              'z.team.TeamRole.ROLE.ADMIN',
-            ].includes(account.teamRole);
+            const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
+              account.teamRole
+            );
             connected.toggleEditAccountMenuVisibility(
               ...centerOfEventTarget(event),
               account.id,
@@ -91,17 +90,16 @@ const Sidebar = ({
         </div>
       </div>
     ))}
-    {!isAddingAccount && !hasReachedLimitOfAccounts && (
-      <AddAccountMenuTrigger
-        id="account"
-        onClick={preventFocus(event => {
-          connected.toggleAddAccountMenuVisibility(
-            ...centerOfEventTarget(event)
-          );
-        })}
-        forceVisible={isAddAccountMenuVisible}
-      />
-    )}
+    {!isAddingAccount &&
+      !hasReachedLimitOfAccounts && (
+        <AddAccountMenuTrigger
+          id="account"
+          onClick={preventFocus(event => {
+            connected.toggleAddAccountMenuVisibility(...centerOfEventTarget(event));
+          })}
+          forceVisible={isAddAccountMenuVisible}
+        />
+      )}
 
     {isAddAccountMenuVisible && <AddAccountMenu />}
     {isEditAccountMenuVisible && <EditAccountMenu />}
@@ -115,8 +113,7 @@ export default connect(
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
     hasReachedLimitOfAccounts: accounts.length >= 3,
     isAddAccountMenuVisible: contextMenuState.isAddAccountMenuVisible,
-    isAddingAccount:
-      accounts.length && accounts.some(account => account.userID === undefined),
+    isAddingAccount: accounts.length && accounts.some(account => account.userID === undefined),
     isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
   }),
   {

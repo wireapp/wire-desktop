@@ -41,7 +41,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
-    "*.{js}": ["eslint --fix", "git add"],
+    "*.js": ["eslint --fix", "git add"],
     "*.{json,md,css}": ["prettier --write", "git add"]
   },
   "private": true,
@@ -57,7 +57,7 @@
     "bundle": "webpack --env.production",
     "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
     "fix:js": "npm run test:js -- --fix",
-    "fix:other": "npm run prettier --write",
+    "fix:other": "npm run prettier -- --write",
     "fix": "npm run fix:js && npm run fix:other",
     "jest": "jest",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
@@ -68,7 +68,7 @@
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "start": "electron electron --inspect --devtools --enable-logging",
-    "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.{js}\"",
+    "test:js": "eslint -c .eslintrc.json --ignore-path .gitignore --ignore-path .eslintignore \"**/*.js\"",
     "test:other": "npm run prettier -- --list-different",
     "test": "npm run test:other && npm run test:js && npm run jest && electron-mocha tests"
   }

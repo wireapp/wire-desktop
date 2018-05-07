@@ -17,7 +17,7 @@
  *
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 import './Webview.css';
 
@@ -65,7 +65,7 @@ class Webview extends Component {
 
   render() {
     const {visible, partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props; // eslint-disable-line no-unused-vars
-    return <webview {...validProps} ref={webview => this.webview = webview} />;
+    return <webview {...validProps} ref={webview => (this.webview = webview)} />;
   }
 }
 

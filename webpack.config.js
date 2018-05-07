@@ -14,7 +14,7 @@ module.exports = (env = {}) => ({
       },
       {
         test: /\.css$/,
-        use: [ 'style-loader', 'css-loader' ],
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },
@@ -24,11 +24,11 @@ module.exports = (env = {}) => ({
   },
   plugins: env.production
     ? [
-      new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: JSON.stringify('production'),
-        },
-      }),
-    ]
+        new webpack.DefinePlugin({
+          'process.env': {
+            NODE_ENV: JSON.stringify('production'),
+          },
+        }),
+      ]
     : undefined,
 });

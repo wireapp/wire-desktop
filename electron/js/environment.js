@@ -60,14 +60,11 @@ const app = {
 };
 
 const getEnvironment = () => {
-  return currentEnvironment = currentEnvironment || settings.restore('env', TYPE.INTERNAL);
+  return (currentEnvironment = currentEnvironment || settings.restore('env', TYPE.INTERNAL));
 };
 
 const isProdEnvironment = () => {
-  return [
-    TYPE.INTERNAL,
-    TYPE.PRODUCTION,
-  ].includes(getEnvironment());
+  return [TYPE.INTERNAL, TYPE.PRODUCTION].includes(getEnvironment());
 };
 
 const platform = {
@@ -76,7 +73,7 @@ const platform = {
   IS_WINDOWS: process.platform === 'win32',
 };
 
-const setEnvironment = (env) => {
+const setEnvironment = env => {
   currentEnvironment = env || settings.restore('env', TYPE.INTERNAL);
   settings.save('env', currentEnvironment);
 };
@@ -87,7 +84,7 @@ const web = {
     return `${baseUrl}${path ? path : ''}`;
   },
   getSupportUrl: path => `${URL_SUPPORT}${path ? path : ''}`,
-  getWebappUrl: (env) => {
+  getWebappUrl: env => {
     if (env) {
       return env;
     }
