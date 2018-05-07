@@ -132,7 +132,7 @@ class Webviews extends Component {
         {this.props.accounts.map(account => (
           <div className="Webviews-container" key={account.id}>
             <Webview
-              className={'Webview ' + (account.visible ? '' : 'hide')}
+              className={`Webview ${account.visible ? '' : 'hide'}`}
               data-accountid={account.id}
               visible={account.visible}
               src={this._getEnvironmentUrl(account)}

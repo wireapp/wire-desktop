@@ -71,7 +71,10 @@ module.exports = {
 
   verifyPinning: (hostname, certificate) => {
     const {data: certData = '', issuerCert: {data: issuerCertData = ''} = {}} = certificate;
-    let issuerCertHex, publicKey, publicKeyBytes, publicKeyFingerprint;
+    let issuerCertHex;
+    let publicKey;
+    let publicKeyBytes;
+    let publicKeyFingerprint;
 
     try {
       issuerCertHex = rs.pemtohex(issuerCertData);

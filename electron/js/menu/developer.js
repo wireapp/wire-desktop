@@ -77,15 +77,15 @@ const createEnvironmentTemplate = env => {
 };
 
 const versionTemplate = {
-  label: 'Wire Version ' + config.VERSION,
+  label: `Wire Version ${config.VERSION}`,
 };
 
 const chromeVersionTemplate = {
-  label: 'Chrome Version ' + process.versions.chrome,
+  label: `Chrome Version ${process.versions.chrome}`,
 };
 
 const electronVersionTemplate = {
-  label: 'Electron Version ' + process.versions.electron,
+  label: `Electron Version ${process.versions.electron}`,
 };
 
 const separatorTemplate = {

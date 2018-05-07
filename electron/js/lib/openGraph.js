@@ -24,7 +24,7 @@ const arrayify = (value = []) => (Array.isArray(value) ? value : [value]);
 
 const bufferToBase64 = (buffer, mimeType) => {
   const bufferBase64encoded = Buffer.from(buffer).toString('base64');
-  return 'data:' + mimeType + ';base64,' + bufferBase64encoded;
+  return `data:${mimeType};base64,${bufferBase64encoded}`;
 };
 
 const fetchImageAsBase64 = url => {

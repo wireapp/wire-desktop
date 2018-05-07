@@ -154,7 +154,7 @@ const showMainWindow = () => {
   }
 
   let baseURL = BASE_URL;
-  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
+  baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {

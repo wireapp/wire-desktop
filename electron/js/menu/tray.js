@@ -28,8 +28,8 @@ const windowManager = require('./../window-manager');
 
 const iconExt = environment.platform.IS_WINDOWS ? 'ico' : 'png';
 
-const iconPath = path.join(app.getAppPath(), 'img', 'tray.' + iconExt);
-const iconBadgePath = path.join(app.getAppPath(), 'img', 'tray.badge.' + iconExt);
+const iconPath = path.join(app.getAppPath(), 'img', `tray.${iconExt}`);
+const iconBadgePath = path.join(app.getAppPath(), 'img', `tray.badge.${iconExt}`);
 const iconOverlayPath = path.join(app.getAppPath(), 'img', 'taskbar.overlay.png');
 
 let lastUnreadCount = 0;

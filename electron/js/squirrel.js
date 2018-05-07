@@ -28,14 +28,14 @@ const lifecycle = require('./lifecycle');
 const fs = require('fs');
 const path = require('path');
 
-app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
+app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-const exeName = config.NAME + '.exe';
-const linkName = config.NAME + '.lnk';
+const exeName = `${config.NAME}.exe`;
+const linkName = `${config.NAME}.lnk`;
 
 const taskbarLink = path.resolve(
   path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName)
@@ -71,7 +71,7 @@ const spawn = (command, args, callback) => {
   spawnedProcess.on('close', (code, signal) => {
     if (code !== 0) {
       if (error == null) {
-        error = new Error('Command failed: ' + (signal != null ? signal : code));
+        error = new Error(`Command failed: ${signal != null ? signal : code}`);
       }
     }
     if (error != null) {
