@@ -64,7 +64,7 @@
     "precommit": "lint-staged",
     "preinstall": "cd electron && npm install",
     "prestart": "npm run bundle:dev",
-    "prettier": "prettier --ignore-path .gitignore \"**/*.{json,md,css}\"",
+    "prettier": "prettier \"**/*.{json,md,css}\"",
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "start": "electron electron --inspect --devtools --enable-logging",
