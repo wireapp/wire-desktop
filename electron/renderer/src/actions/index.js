@@ -56,14 +56,7 @@ export const toggleAddAccountMenuVisibility = (x, y) => ({
   type: TOGGLE_ADD_ACCOUNT_VISIBILITY,
 });
 
-export const toggleEditAccountMenuVisibility = (
-  x,
-  y,
-  accountId,
-  sessionId,
-  lifecycle,
-  isAtLeastAdmin
-) => ({
+export const toggleEditAccountMenuVisibility = (x, y, accountId, sessionId, lifecycle, isAtLeastAdmin) => ({
   payload: {
     accountId,
     isAtLeastAdmin,

@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.aboutReleases = 'Vydání';
 string.aboutUpdate = 'Jak fungují aktualizace';

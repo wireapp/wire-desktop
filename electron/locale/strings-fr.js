@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.aboutReleases = 'Notes de mise à jour';
 string.aboutUpdate = 'Mécanisme de mise à jour';

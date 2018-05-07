@@ -18,11 +18,11 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { getText } from '../../lib/locale';
+import {connect} from 'react-redux';
+import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
-import { addAccountWithSession } from '../../actions/';
+import {addAccountWithSession} from '../../actions/';
 
 function AddAccountMenu({...connected}) {
   return (

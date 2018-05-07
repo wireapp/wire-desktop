@@ -25,7 +25,7 @@ const DEFAULT_STATE = {
   isAtLeastAdmin: false,
   isEditAccountMenuVisible: false,
   lifecycle: false,
-  position: { x: 0, y: 0 },
+  position: {x: 0, y: 0},
   sessionId: '',
 };
 

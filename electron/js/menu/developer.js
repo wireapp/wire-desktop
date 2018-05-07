@@ -41,21 +41,30 @@ const devToolsTemplate = {
       label: 'Sidebar',
     },
     {
-      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[0].openDevTools({mode: 'detach'})"),
+      click: () =>
+        getPrimaryWindow().webContents.executeJavaScript(
+          "document.getElementsByTagName('webview')[0].openDevTools({mode: 'detach'})"
+        ),
       label: 'First',
     },
     {
-      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[1].openDevTools({mode: 'detach'})"),
+      click: () =>
+        getPrimaryWindow().webContents.executeJavaScript(
+          "document.getElementsByTagName('webview')[1].openDevTools({mode: 'detach'})"
+        ),
       label: 'Second',
     },
     {
-      click: () => getPrimaryWindow().webContents.executeJavaScript("document.getElementsByTagName('webview')[2].openDevTools({mode: 'detach'})"),
+      click: () =>
+        getPrimaryWindow().webContents.executeJavaScript(
+          "document.getElementsByTagName('webview')[2].openDevTools({mode: 'detach'})"
+        ),
       label: 'Third',
     },
   ],
 };
 
-const createEnvironmentTemplate = (env) => {
+const createEnvironmentTemplate = env => {
   return {
     checked: currentEnvironment === env,
     click: () => {
@@ -68,15 +77,15 @@ const createEnvironmentTemplate = (env) => {
 };
 
 const versionTemplate = {
-  label: 'Wire Version ' + config.VERSION,
+  label: `Wire Version ${config.VERSION}`,
 };
 
 const chromeVersionTemplate = {
-  label: 'Chrome Version ' + process.versions.chrome,
+  label: `Chrome Version ${process.versions.chrome}`,
 };
 
 const electronVersionTemplate = {
-  label: 'Electron Version ' + process.versions.electron,
+  label: `Electron Version ${process.versions.electron}`,
 };
 
 const separatorTemplate = {

@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.aboutReleases = 'Objave';
 string.aboutUpdate = 'Kako delujejo Wire posodobitve';
