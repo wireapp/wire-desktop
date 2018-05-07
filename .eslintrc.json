@@ -1,0 +1,39 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 8,
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true,
+      "globalReturn": true
+    }
+  },
+  "plugins": ["react"],
+  "rules": {
+    "handle-callback-err": 2,
+    "no-dupe-class-members": 2,
+    "no-shadow": 2,
+    "no-unused-expressions": 2,
+    "no-unused-vars": [
+      2,
+      {
+        "args": "none"
+      }
+    ],
+    "sort-keys": [
+      2,
+      "asc",
+      {
+        "caseSensitive": true,
+        "natural": true
+      }
+    ],
+    "sort-vars": 2,
+    "react/jsx-uses-react": 2,
+    "react/jsx-uses-vars": 2
+  }
+}
