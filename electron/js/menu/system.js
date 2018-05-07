@@ -401,7 +401,7 @@ module.exports = {
 
     if (environment.platform.IS_WINDOWS) {
       menuTemplate.unshift(win32Template);
-      windowTemplate['i18n'] = 'menuView';
+      windowTemplate.i18n = 'menuView';
       windowTemplate.submenu.unshift(toggleMenuTemplate, separatorTemplate);
     }
 

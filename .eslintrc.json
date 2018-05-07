@@ -15,9 +15,16 @@
   "extends": ["prettier"],
   "plugins": ["prettier", "react"],
   "rules": {
+    "curly": 2,
+    "dot-notation": 2,
     "handle-callback-err": 2,
+    "no-const-assign": 2,
     "no-dupe-class-members": 2,
+    "no-else-return": 2,
+    "no-lonely-if": 2,
     "no-shadow": 2,
+    "no-inner-declarations": 2,
+    "no-unneeded-ternary": 2,
     "no-unused-expressions": 2,
     "no-unused-vars": [
       2,
@@ -25,6 +32,8 @@
         "args": "none"
       }
     ],
+    "prefer-arrow-callback": 2,
+    "prefer-const": 2,
     "prettier/prettier": 2,
     "sort-keys": [
       2,

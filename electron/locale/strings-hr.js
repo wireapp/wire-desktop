@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.menuConversation = 'Razgovor';
 string.menuStart = 'Počni';

@@ -368,7 +368,9 @@ const handleAppEvents = () => {
 const renameLogFile = () => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   fs.readdir(LOG_DIR, (readError, contents) => {
-    if (readError) return console.log(`Failed to read log directory with error: ${readError.message}`);
+    if (readError) {
+      return console.log(`Failed to read log directory with error: ${readError.message}`);
+    }
 
     contents
       .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))

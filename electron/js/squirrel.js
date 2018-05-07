@@ -30,14 +30,14 @@ const path = require('path');
 
 app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
 
-let appFolder = path.resolve(process.execPath, '..');
-let rootFolder = path.resolve(appFolder, '..');
-let updateDotExe = path.join(rootFolder, 'Update.exe');
+const appFolder = path.resolve(process.execPath, '..');
+const rootFolder = path.resolve(appFolder, '..');
+const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-let exeName = config.NAME + '.exe';
-let linkName = config.NAME + '.lnk';
+const exeName = config.NAME + '.exe';
+const linkName = config.NAME + '.lnk';
 
-let taskbarLink = path.resolve(
+const taskbarLink = path.resolve(
   path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName)
 );
 

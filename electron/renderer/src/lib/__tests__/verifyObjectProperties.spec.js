@@ -50,8 +50,8 @@ describe('verifyObjectProperties', () => {
     const validatedObject = verifyObjectProperties(obj, config);
     expect(validatedObject).toBeTruthy();
     expect(Object.keys(validatedObject).length).toBe(3);
-    expect(validatedObject['foo']).toBe('');
-    expect(validatedObject['some']).toBeUndefined();
+    expect(validatedObject.foo).toBe('');
+    expect(validatedObject.some).toBeUndefined();
   });
 
   it('should return only the expected properties if object contains properties in addition to the expected config', () => {
@@ -69,8 +69,8 @@ describe('verifyObjectProperties', () => {
     const validatedObject = verifyObjectProperties(obj, config);
     expect(validatedObject).toBeTruthy();
     expect(Object.keys(validatedObject).length).toBe(2);
-    expect(validatedObject['foo']).toBe('3');
-    expect(validatedObject['mistake']).toBeUndefined();
+    expect(validatedObject.foo).toBe('3');
+    expect(validatedObject.mistake).toBeUndefined();
   });
 
   it('should return false if object contains a property with a wrong type', () => {

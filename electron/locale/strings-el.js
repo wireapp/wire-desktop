@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.aboutReleases = 'Κυκλοφορίες Εκδόσεων';
 string.aboutUpdate = 'Πως λειτουργούν οι ενημερώσεις στο Wire';

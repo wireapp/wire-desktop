@@ -88,7 +88,7 @@ module.exports = {
 
     const result = {};
 
-    let errorMessages = [];
+    const errorMessages = [];
 
     for (const pin of pins) {
       const {url, publicKeyInfo = [], issuerRootPubkeys = []} = pin;
