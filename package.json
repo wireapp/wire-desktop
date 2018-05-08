@@ -75,7 +75,9 @@
     "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "start": "electron electron --inspect --devtools --enable-logging",
     "test:js": "eslint -c .eslintrc.json --ignore-path .gitignore --ignore-path .eslintignore \"**/*.js\"",
+    "test:main": "electron-mocha --reporter spec tests/main",
     "test:other": "npm run prettier -- --list-different",
-    "test": "npm run test:other && npm run test:js && npm run jest && electron-mocha tests"
+    "test:react": "jest",
+    "test": "npm run test:other && npm run test:js && npm run test:react && npm run test:main"
   }
 }

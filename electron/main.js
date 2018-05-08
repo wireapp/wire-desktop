@@ -29,7 +29,7 @@ const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
 // Paths
 const APP_PATH = app.getAppPath();
 
-// Local files defines
+// Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html', 'about.html'));
 const ABOUT_WINDOW_WHITELIST = [
   ABOUT_HTML,
