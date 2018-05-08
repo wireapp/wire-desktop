@@ -17,21 +17,20 @@
  *
  */
 
-
 const openGraph = require('open-graph');
 const request = require('request');
 
-const arrayify = (value = []) => Array.isArray(value) ? value : [value];
+const arrayify = (value = []) => (Array.isArray(value) ? value : [value]);
 
 const bufferToBase64 = (buffer, mimeType) => {
   const bufferBase64encoded = Buffer.from(buffer).toString('base64');
-  return 'data:' + mimeType + ';base64,' + bufferBase64encoded;
+  return `data:${mimeType};base64,${bufferBase64encoded}`;
 };
 
 const fetchImageAsBase64 = url => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
+      if (!error && response.statusCode === 200) {
         resolve(bufferToBase64(body, response.headers['content-type']));
       } else {
         // we just skip images that failed to download
@@ -43,7 +42,7 @@ const fetchImageAsBase64 = url => {
 
 const fetchOpenGraphData = url => {
   return new Promise((resolve, reject) => {
-    openGraph(url, (error, meta) => error ? reject(error) : resolve(meta));
+    openGraph(url, (error, meta) => (error ? reject(error) : resolve(meta)));
   });
 };
 
@@ -70,14 +69,14 @@ const getOpenGraphData = (url, callback) => {
 
       return meta;
     })
-    .then((meta) => {
+    .then(meta => {
       if (callback) {
         callback(null, meta);
       }
 
       return meta;
     })
-    .catch((error) => {
+    .catch(error => {
       if (callback) {
         callback(error);
       }

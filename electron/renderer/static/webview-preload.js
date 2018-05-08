@@ -129,7 +129,7 @@ const exposeAddressBook = () => {
   };
 
   if (environment.platform.IS_MAC_OS) {
-    Object.defineProperty(window, 'wAddressBook', { get: getAddressBook });
+    Object.defineProperty(window, 'wAddressBook', {get: getAddressBook});
   }
 };
 

@@ -17,13 +17,13 @@
  *
  */
 
-
-const {app, dialog, Menu, shell} = require('electron');
+const {dialog, Menu, shell} = require('electron');
 const autoLaunch = require('auto-launch');
 const launchCmd = process.env.APPIMAGE ? process.env.APPIMAGE : process.execPath;
 
 const config = require('./../config');
 const environment = require('./../environment');
+const lifecycle = require('./../lifecycle');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 const settings = require('./../lib/settings');
@@ -40,7 +40,7 @@ const launcher = new autoLaunch({
 const getPrimaryWindow = () => windowManager.getPrimaryWindow();
 
 // TODO: disable menus when not in focus
-const sendAction = (action) => {
+const sendAction = action => {
   const primaryWindow = getPrimaryWindow();
   if (primaryWindow) {
     getPrimaryWindow().webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, action);
@@ -51,7 +51,7 @@ const separatorTemplate = {
   type: 'separator',
 };
 
-const createLanguageTemplate = (languageCode) => {
+const createLanguageTemplate = languageCode => {
   return {
     click: () => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
@@ -60,8 +60,7 @@ const createLanguageTemplate = (languageCode) => {
 };
 
 const createLanguageSubmenu = () => {
-  return Object.keys(locale.SUPPORTED_LANGUAGES)
-    .map((supportedLanguage) => createLanguageTemplate(supportedLanguage));
+  return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage => createLanguageTemplate(supportedLanguage));
 };
 
 const localeTemplate = {
@@ -92,10 +91,12 @@ const conversationTemplate = {
       accelerator: 'CmdOrCtrl+K',
       click: () => sendAction(EVENT_TYPE.CONVERSATION.PING),
       i18n: 'menuPing',
-    }, {
+    },
+    {
       click: () => sendAction(EVENT_TYPE.CONVERSATION.CALL),
       i18n: 'menuCall',
-    }, {
+    },
+    {
       click: () => sendAction(EVENT_TYPE.CONVERSATION.VIDEO_CALL),
       i18n: 'menuVideoCall',
     },
@@ -206,7 +207,7 @@ const editTemplate = {
     separatorTemplate,
     {
       checked: supportsSpellCheck && settings.restore('spelling', false),
-      click: (event) => settings.save('spelling', event.checked),
+      click: event => settings.save('spelling', event.checked),
       enabled: supportsSpellCheck,
       i18n: 'menuSpelling',
       type: 'checkbox',
@@ -271,7 +272,8 @@ const darwinTemplate = {
   label: config.NAME,
   submenu: [
     aboutTemplate,
-    separatorTemplate, {
+    separatorTemplate,
+    {
       accelerator: 'Command+,',
       click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
       i18n: 'menuPreferences',
@@ -320,7 +322,7 @@ const win32Template = {
     signOutTemplate,
     {
       accelerator: 'Alt+F4',
-      click: () => app.quit(),
+      click: () => lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -341,18 +343,13 @@ const linuxTemplate = {
     signOutTemplate,
     {
       accelerator: 'Ctrl+Q',
-      click: () => app.quit(),
+      click: () => lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
 };
 
-const menuTemplate = [
-  conversationTemplate,
-  editTemplate,
-  windowTemplate,
-  helpTemplate,
-];
+const menuTemplate = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
 
 const processMenu = (template, language) => {
   for (const item of template) {
@@ -370,48 +367,42 @@ const processMenu = (template, language) => {
   }
 };
 
-
-const changeLocale = (language) => {
+const changeLocale = language => {
   locale.setLocale(language);
-  dialog.showMessageBox({
-    buttons: [locale[language].restartLater, environment.platform.IS_MAC_OS ? locale[language].menuQuit : locale[language].restartNow],
-    message: locale[language].restartLocale,
-    title: locale[language].restartNeeded,
-    type: 'info',
-  }, (response) => {
-    if (response === 1) {
-      if (environment.platform.IS_MAC_OS) {
-        app.quit();
-      } else {
-        app.relaunch();
-        // Using exit instead of quit for the time being
-        // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-        app.exit();
+  dialog.showMessageBox(
+    {
+      buttons: [
+        locale[language].restartLater,
+        environment.platform.IS_MAC_OS ? locale[language].menuQuit : locale[language].restartNow,
+      ],
+      message: locale[language].restartLocale,
+      title: locale[language].restartNeeded,
+      type: 'info',
+    },
+    response => {
+      if (response === 1) {
+        if (environment.platform.IS_MAC_OS) {
+          lifecycle.quit();
+        } else {
+          lifecycle.relaunch();
+        }
       }
     }
-  });
+  );
 };
 
 module.exports = {
   createMenu: () => {
     if (environment.platform.IS_MAC_OS) {
       menuTemplate.unshift(darwinTemplate);
-      windowTemplate.submenu.push(
-        separatorTemplate,
-        showWireTemplate,
-        separatorTemplate,
-        toggleFullScreenTemplate
-      );
+      windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
       toggleFullScreenTemplate.checked = settings.restore('fullscreen', false);
     }
 
     if (environment.platform.IS_WINDOWS) {
       menuTemplate.unshift(win32Template);
-      windowTemplate['i18n'] = 'menuView';
-      windowTemplate.submenu.unshift(
-        toggleMenuTemplate,
-        separatorTemplate
-      );
+      windowTemplate.i18n = 'menuView';
+      windowTemplate.submenu.unshift(toggleMenuTemplate, separatorTemplate);
     }
 
     if (environment.platform.IS_LINUX) {
@@ -420,12 +411,7 @@ module.exports = {
         click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
         i18n: 'menuPreferences',
       });
-      windowTemplate.submenu.push(
-        separatorTemplate,
-        toggleMenuTemplate,
-        separatorTemplate,
-        toggleFullScreenTemplate
-      );
+      windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
       toggleFullScreenTemplate.checked = settings.restore('fullscreen', false);
     }
 

@@ -19,11 +19,10 @@
 
 'use strict';
 
-const certutils = require('../electron/js/certutils');
+const certificateUtils = require('../electron/js/certificateUtils');
 const https = require('https');
 
 const assert = require('assert');
-const path = require('path');
 
 const buildCert = cert => `-----BEGIN CERTIFICATE-----\n${cert.raw.toString('base64')}\n-----END CERTIFICATE-----`;
 
@@ -49,17 +48,17 @@ const badURLs = [
 
 describe('cert pinning', () => {
   it('pins used hostnames', () => {
-    goodURLs.forEach(hostname => assert(certutils.hostnameShouldBePinned(hostname)));
+    goodURLs.forEach(hostname => assert(certificateUtils.hostnameShouldBePinned(hostname)));
   });
 
   it('does not pin other hostnames', () => {
-    badURLs.forEach(hostname => assert.equal(false, certutils.hostnameShouldBePinned(hostname)));
+    badURLs.forEach(hostname => assert.equal(false, certificateUtils.hostnameShouldBePinned(hostname)));
   });
 
-  it('verifies all hostnames', (done) => {
-    const certPromises = goodURLs.map((hostname) => {
-      return new Promise((resolve) => {
-        https.get(`https://${hostname}`).on('socket', (socket) => {
+  it('verifies all hostnames', done => {
+    const certPromises = goodURLs.map(hostname => {
+      return new Promise(resolve => {
+        https.get(`https://${hostname}`).on('socket', socket => {
           socket.on('secureConnect', () => {
             const cert = socket.getPeerCertificate(true);
             const certData = {
@@ -74,10 +73,9 @@ describe('cert pinning', () => {
       });
     });
 
-    Promise.all(certPromises)
-      .then((objects) => {
-        objects.forEach(({hostname, certData}) => assert(certutils.verifyPinning(hostname, certData)));
-        done();
-      });
+    Promise.all(certPromises).then(objects => {
+      objects.forEach(({hostname, certData}) => assert(certificateUtils.verifyPinning(hostname, certData)));
+      done();
+    });
   });
 });

@@ -19,10 +19,6 @@
 
 const electron = require('electron');
 const url = require('url');
-/*eslint-disable no-unused-vars*/
-const debug = require('debug');
-const utilDebug = debug('utilDebug');
-/*eslint-enable no-unused-vars*/
 
 const pointInRectangle = require('./lib/pointInRect');
 
@@ -34,7 +30,10 @@ module.exports = {
     const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
 
     const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
-    const lowerRightVisible = pointInRectangle([windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height], nearestWorkArea);
+    const lowerRightVisible = pointInRectangle(
+      [windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height],
+      nearestWorkArea
+    );
 
     return upperLeftVisible || lowerRightVisible;
   },

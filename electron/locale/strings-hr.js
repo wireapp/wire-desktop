@@ -1,7 +1,6 @@
 'use strict';
 
-let string = {};
-
+const string = {};
 
 string.menuConversation = 'Razgovor';
 string.menuStart = 'Počni';
@@ -56,7 +55,6 @@ string.restartLater = 'Kasnije';
 string.restartNow = 'Ponovno pokreni';
 
 string.trayOpen = 'Otvori';
-
 
 string.wrapperLogOut = 'Odjava';
 

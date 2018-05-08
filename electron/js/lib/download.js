@@ -33,17 +33,15 @@ module.exports = (fileName, bytes) => {
     if (type && type.ext) {
       options.filters = [
         {
-          extensions: [
-            type.ext,
-          ],
+          extensions: [type.ext],
           name: 'Images',
         },
       ];
     }
 
-    dialog.showSaveDialog(options, (chosenPath) => {
+    dialog.showSaveDialog(options, chosenPath => {
       if (chosenPath !== undefined) {
-        fs.writeFile(chosenPath, new Buffer(bytes.buffer), (error) => error ? reject(error) : resolve());
+        fs.writeFile(chosenPath, new Buffer(bytes.buffer), error => (error ? reject(error) : resolve()));
       } else {
         reject('no path specified');
       }

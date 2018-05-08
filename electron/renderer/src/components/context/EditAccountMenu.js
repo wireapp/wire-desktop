@@ -25,19 +25,11 @@ import ContextMenuItem from './ContextMenuItem';
 import {abortAccountCreation, switchAccount} from '../../actions/';
 import * as EVENT_TYPE from '../../lib/eventType';
 
-function EditAccountMenu({
-  accountId,
-  isAtLeastAdmin,
-  lifecycle,
-  sessionId,
-  ...connected
-}) {
+function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) {
   return (
     <ContextMenu>
       {isAtLeastAdmin && (
-        <ContextMenuItem
-          onClick={() => window.open('https://teams.wire.com/login/')}
-        >
+        <ContextMenuItem onClick={() => window.open('https://teams.wire.com/login/')}>
           {getText('wrapperManageTeam')}
         </ContextMenuItem>
       )}

@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.aboutReleases = 'Laidos';
 string.aboutUpdate = 'Kaip veikia Wire atnaujinimai';

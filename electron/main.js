@@ -24,7 +24,6 @@ const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
 const path = require('path');
-const raygun = require('raygun');
 const {BrowserWindow, Menu, app, ipcMain, session, shell} = require('electron');
 
 // Paths
@@ -32,7 +31,8 @@ const APP_PATH = app.getAppPath();
 
 // Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html', 'about.html'));
-const ABOUT_WINDOW_WHITELIST = [ABOUT_HTML,
+const ABOUT_WINDOW_WHITELIST = [
+  ABOUT_HTML,
   fileUrl(path.join(APP_PATH, 'img', 'wire.256.png')),
   fileUrl(path.join(APP_PATH, 'css', 'about.css')),
 ];
@@ -45,12 +45,15 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const settings = require('./js/lib/settings');
 
 // Wrapper modules
-const certutils = require('./js/certutils');
+const appInit = require('./js/appInit');
+const certificateUtils = require('./js/certificateUtils');
 const config = require('./js/config');
 const developerMenu = require('./js/menu/developer');
 const download = require('./js/lib/download');
 const environment = require('./js/environment');
 const googleAuth = require('./js/lib/googleAuth');
+const initRaygun = require('./js/initRaygun');
+const lifecycle = require('./js/lifecycle');
 const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
 const tray = require('./js/menu/tray');
@@ -68,160 +71,80 @@ const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
 let main;
-let raygunClient;
 let about;
 let quitting = false;
-let shouldQuit = false;
 let webappVersion;
 
-///////////////////////////////////////////////////////////////////////////////
-// Misc
-///////////////////////////////////////////////////////////////////////////////
-raygunClient = new raygun.Client().init({ apiKey: config.RAYGUN_API_KEY });
-
-raygunClient.onBeforeSend(payload => {
-  delete payload.details.machineName;
-  return payload;
-});
-
-if (environment.app.IS_DEVELOPMENT) {
-  app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
-}
-
-if (argv.portable) {
-  const EXEC_PATH = process.env.APPIMAGE || process.execPath;
-  const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
-  app.setPath('userData', USER_PATH);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Single Instance stuff
-///////////////////////////////////////////////////////////////////////////////
-
-// makeSingleInstance will crash the signed mas app
-// see: https://github.com/atom/electron/issues/4688
-if (!environment.platform.IS_MAC_OS) {
-  shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
-    if (main) {
-      windowManager.showPrimaryWindow();
-    }
-    return true;
+// IPC events
+const bindIpcEvents = () => {
+  ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event, version) => {
+    webappVersion = version;
   });
 
-  if (!environment.platform.IS_WINDOWS && shouldQuit) {
-    // Using exit instead of quit for the time being
-    // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-    app.exit();
-  }
-}
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, fileName, bytes) => {
+    download(fileName, bytes);
+  });
 
-///////////////////////////////////////////////////////////////////////////////
-// Auto Update
-///////////////////////////////////////////////////////////////////////////////
-if (environment.platform.IS_WINDOWS) {
-  const squirrel = require('./js/squirrel');
-  squirrel.handleSquirrelEvent(shouldQuit);
+  ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
+    windowManager.showPrimaryWindow();
+  });
 
-  ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => squirrel.installUpdate());
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count) => {
+    tray.updateBadgeIcon(main, count);
+  });
 
-  // Stop further execution on update to prevent second tray icon
-  if (shouldQuit) {
-    return;
-  }
-}
+  ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, event => {
+    googleAuth
+      .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
+      .then(code => event.sender.send('google-auth-success', code.access_token))
+      .catch(error => event.sender.send('google-auth-error', error));
+  });
 
-///////////////////////////////////////////////////////////////////////////////
-// Fix indicator icon on Unity
-// Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
-///////////////////////////////////////////////////////////////////////////////
-if (environment.platform.IS_LINUX) {
-  const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
-  const isPopOS = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('pop');
-  const isGnome = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('GNOME');
-  if (isUbuntuUnity || isPopOS || isGnome) {
-    process.env.XDG_CURRENT_DESKTOP = 'Unity';
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// IPC events
-///////////////////////////////////////////////////////////////////////////////
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event, version) => {
-  webappVersion = version;
-});
-
-ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, fileName, bytes) => {
-  download(fileName, bytes);
-});
-
-ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
-  windowManager.showPrimaryWindow();
-});
-
-ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count) => {
-  tray.updateBadgeIcon(main, count);
-});
-
-ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, event => {
-  googleAuth
-    .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
-    .then(code => event.sender.send('google-auth-success', code.access_token))
-    .catch(error => event.sender.send('google-auth-error', error));
-});
-
-ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event, accountID, sessionID) => {
-  // delete webview partition
-  try {
-    if (sessionID) {
-      const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
-      fs.removeSync(partitionDir);
-      debugMain(`Deleted partition for account: ${sessionID}`);
-    } else {
-      debugMain(`Skipping partition deletion for account: ${accountID}`);
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event, accountID, sessionID) => {
+    // delete webview partition
+    try {
+      if (sessionID) {
+        const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
+        fs.removeSync(partitionDir);
+        debugMain(`Deleted partition for account: ${sessionID}`);
+      } else {
+        debugMain(`Skipping partition deletion for account: ${accountID}`);
+      }
+    } catch (error) {
+      debugMain(`Failed to partition for account: ${sessionID}`);
     }
-  } catch (error) {
-    debugMain(`Failed to partition for account: ${sessionID}`);
-  }
 
-  // delete logs
-  try {
-    fs.removeSync(LOG_DIR);
-    debugMain(`Deleted logs folder for account: ${accountID}`);
-  } catch (error) {
-    debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
-  }
-});
+    // delete logs
+    try {
+      fs.removeSync(LOG_DIR);
+      debugMain(`Deleted logs folder for account: ${accountID}`);
+    } catch (error) {
+      debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
+    }
+  });
 
-ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => relaunchApp());
-
-const relaunchApp = () => {
-  app.relaunch();
-  // Using exit instead of quit for the time being
-  // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-  app.exit();
+  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
 };
 
-///////////////////////////////////////////////////////////////////////////////
-// APP Windows
-///////////////////////////////////////////////////////////////////////////////
+// App Windows
 const showMainWindow = () => {
   main = new BrowserWindow({
-    title: config.NAME,
-    titleBarStyle: 'hiddenInset',
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
     autoHideMenuBar: !settings.restore('showMenu', true),
     backgroundColor: '#f7f8fa',
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
     icon: ICON_PATH,
+    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
+    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
     show: false,
+    title: config.NAME,
+    titleBarStyle: 'hidden-inset',
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      webviewTag: true
-    }
+      webviewTag: true,
+    },
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
   if (settings.restore('fullscreen', false)) {
@@ -231,11 +154,11 @@ const showMainWindow = () => {
   }
 
   let baseURL = BASE_URL;
-  baseURL += (baseURL.includes('?') ? '&' : '?') + 'hl=' + locale.getCurrent();
+  baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
   main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
-    main.webContents.openDevTools();
+    main.webContents.openDevTools({mode: 'detach'});
   }
 
   if (!argv.startup && !argv.hidden) {
@@ -243,7 +166,7 @@ const showMainWindow = () => {
       main.center();
     }
 
-    discloseWindowID(main);
+    windowManager.setPrimaryWindowId(main.id);
     setTimeout(() => main.show(), 800);
   }
 
@@ -270,7 +193,6 @@ const showMainWindow = () => {
       urls: ['https://staging-nginz-https.zinfra.io/*'],
     },
     (details, callback) => {
-
       if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
         // Override remote Access-Control-Allow-Origin
         details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
@@ -281,7 +203,7 @@ const showMainWindow = () => {
         cancel: false,
         responseHeaders: details.responseHeaders,
       });
-    },
+    }
   );
 
   main.webContents.on('dom-ready', () => {
@@ -352,25 +274,28 @@ const showAboutWindow = () => {
     // Prevent any kind of navigation
     // will-navigate is broken with sandboxed env, intercepting requests instead
     // see https://github.com/electron/electron/issues/8841
-    about.webContents.session.webRequest.onBeforeRequest({
-      urls: ['*'],
-    }, (details, callback) => {
-      const url = details.url;
+    about.webContents.session.webRequest.onBeforeRequest(
+      {
+        urls: ['*'],
+      },
+      (details, callback) => {
+        const url = details.url;
 
-      // Only allow those URLs to be opened within the window
-      if (ABOUT_WINDOW_WHITELIST.includes(url)) {
-        return callback({cancel: false});
+        // Only allow those URLs to be opened within the window
+        if (ABOUT_WINDOW_WHITELIST.includes(url)) {
+          return callback({cancel: false});
+        }
+
+        // Open HTTPS links in browser instead
+        if (url.startsWith('https://')) {
+          shell.openExternal(url);
+        } else {
+          console.log('Attempt to open URL in window prevented, url: %s', url);
+        }
+
+        callback({redirectURL: ABOUT_HTML});
       }
-
-      // Open HTTPS links in browser instead
-      if (url.startsWith('https://')) {
-        shell.openExternal(url);
-      } else {
-        console.log('Attempt to open URL in window prevented, url: %s', url);
-      }
-
-      callback({redirectURL: ABOUT_HTML});
-    });
+    );
 
     // Locales
     ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels) => {
@@ -399,74 +324,70 @@ const showAboutWindow = () => {
 
     about.webContents.on('dom-ready', () => {
       about.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-        webappVersion: webappVersion,
-        productName: pkg.productName,
         electronVersion: pkg.version,
+        productName: pkg.productName,
+        webappVersion: webappVersion,
       });
     });
   }
   about.show();
 };
 
-const discloseWindowID = browserWindow => {
-  windowManager.setPrimaryWindowId(browserWindow.id);
+// App Events
+const handleAppEvents = () => {
+  app.on('window-all-closed', event => {
+    if (!environment.platform.IS_MAC_OS) {
+      lifecycle.quit();
+    }
+  });
+
+  app.on('activate', () => {
+    if (main) {
+      main.show();
+    }
+  });
+
+  app.on('before-quit', () => (quitting = true));
+
+  app.on('quit', async () => await settings.persistToFile());
+
+  // System Menu & Tray Icon & Show window
+  app.on('ready', () => {
+    const appMenu = systemMenu.createMenu();
+    if (environment.app.IS_DEVELOPMENT) {
+      appMenu.append(developerMenu);
+    }
+    appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => showAboutWindow());
+
+    Menu.setApplicationMenu(appMenu);
+    tray.createTrayIcon();
+    showMainWindow();
+  });
 };
 
-///////////////////////////////////////////////////////////////////////////////
-// APP Events
-///////////////////////////////////////////////////////////////////////////////
-app.on('window-all-closed', event => {
-  if (!environment.platform.IS_MAC_OS) {
-    app.quit();
-  }
-});
+const renameLogFile = () => {
+  // Rename "console.log" to "console.old" (for every log directory of every account)
+  fs.readdir(LOG_DIR, (readError, contents) => {
+    if (readError) {
+      return console.log(`Failed to read log directory with error: ${readError.message}`);
+    }
 
-app.on('activate', () => {
-  if (main) {
-    main.show();
-  }
-});
-
-app.on('before-quit', () => (quitting = true));
-
-app.on('quit', async () => await settings.persistToFile());
-
-///////////////////////////////////////////////////////////////////////////////
-// System Menu & Tray Icon & Show window
-///////////////////////////////////////////////////////////////////////////////
-app.on('ready', () => {
-  const appMenu = systemMenu.createMenu();
-  if (environment.app.IS_DEVELOPMENT) {
-    appMenu.append(developerMenu);
-  }
-  appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => showAboutWindow());
-
-  Menu.setApplicationMenu(appMenu);
-  tray.createTrayIcon();
-  showMainWindow();
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// Rename "console.log" to "console.old" (for every log directory of every account)
-///////////////////////////////////////////////////////////////////////////////
-fs.readdir(LOG_DIR, (error, contents) => {
-  if (error) return console.log(`Failed to read log directory with error: ${error.message}`);
-
-  contents
-    .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
-    .filter(file => {
-      try {
-        return fs.statSync(file).isFile();
-      } catch (error) {
-        return undefined;
-      }
-    })
-    .forEach(file => {
-      if (file.endsWith('.log')) {
-        fs.renameSync(file, file.replace('.log', '.old'));
-      }
-    });
-});
+    contents
+      .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
+      .filter(file => {
+        try {
+          return fs.statSync(file).isFile();
+        } catch (statError) {
+          return undefined;
+        }
+      })
+      .forEach(file => {
+        if (file.endsWith('.log')) {
+          fs.renameSync(file, file.replace('.log', '.old'));
+        }
+      });
+  });
+};
 
 class ElectronWrapperInit {
   constructor() {
@@ -500,7 +421,7 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (event, contents) => {
+    app.on('web-contents-created', (webviewEvent, contents) => {
       switch (contents.getType()) {
         case 'window':
           contents.on('will-attach-webview', (event, webPreferences, params) => {
@@ -536,12 +457,12 @@ class ElectronWrapperInit {
               return cb(-2);
             }
 
-            if (certutils.hostnameShouldBePinned(hostname)) {
-              const pinningResults = certutils.verifyPinning(hostname, certificate);
+            if (certificateUtils.hostnameShouldBePinned(hostname)) {
+              const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
 
               for (const result of Object.values(pinningResults)) {
                 if (result === false) {
-                  console.error(`Certutils verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
+                  console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
                   main.loadURL(CERT_ERR_HTML);
                   return cb(-2);
                 }
@@ -556,4 +477,17 @@ class ElectronWrapperInit {
   }
 }
 
-new ElectronWrapperInit().run();
+initRaygun.initClient();
+appInit.ignoreCertificateErrors();
+appInit.handlePortableFlag();
+lifecycle.checkSingleInstance();
+lifecycle.checkForUpdate();
+
+// Stop further execution on update to prevent second tray icon
+if (!lifecycle.shouldQuit) {
+  appInit.fixUnityIcon();
+  bindIpcEvents();
+  handleAppEvents();
+  renameLogFile();
+  new ElectronWrapperInit().run();
+}

@@ -28,12 +28,10 @@ const path = require('path');
 const tray = require('../../electron/js/menu/tray');
 
 describe('tray', () => {
-
   describe('"updateBadgeIcon"', () => {
-
-    it('updates badge according to window title', (done) => {
+    it('updates badge according to window title', done => {
       const window = new BrowserWindow();
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
+      window.loadURL(`file://${path.join(__dirname, 'fixtures', 'badge.html')}`);
       if (environment.platform.IS_MAC_OS) {
         window.webContents.on('dom-ready', () => {
           tray.updateBadgeIcon(window, 10);
@@ -44,7 +42,5 @@ describe('tray', () => {
         done();
       }
     });
-
   });
-
 });
