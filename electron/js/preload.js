@@ -20,7 +20,7 @@
 const {ipcRenderer, webFrame} = require('electron');
 const environment = require('./environment');
 const locale = require('../locale/locale');
-const EVENT_TYPE = require('lib/eventType');
+const EVENT_TYPE = require('./lib/eventType');
 
 webFrame.setVisualZoomLevelLimits(1, 1);
 webFrame.setLayoutZoomLevelLimits(1, 1);
