@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.aboutReleases = 'Releases';
 string.aboutUpdate = 'How Wire Updates Work';

@@ -18,13 +18,7 @@
  */
 
 import accountReducer from '../accountReducer';
-import {
-  updateAccount,
-  addAccount,
-  switchAccount,
-  updateAccountBadge,
-  deleteAccount,
-} from '../../actions';
+import {updateAccount, addAccount, switchAccount, updateAccountBadge, deleteAccount} from '../../actions';
 
 describe('accounts reducer', () => {
   it('should return the initial state with one account', () => {
@@ -32,17 +26,19 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with a new account', () => {
-    const initialState = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }];
+    const initialState = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+    ];
     const newState = accountReducer(initialState, addAccount());
     const [firstAccount, secondAccount] = newState;
 
@@ -53,17 +49,19 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with a new account without a session', () => {
-    const initialState = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }];
+    const initialState = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+    ];
     const newState = accountReducer(initialState, addAccount(false));
     const [firstAccount, secondAccount] = newState;
 
@@ -74,27 +72,30 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with only the specified account visible', () => {
-    const initialState = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }, {
-      accentID: undefined,
-      badgeCount: 0,
-      id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: false,
-    }];
+    const initialState = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: false,
+      },
+    ];
     const [firstAccount, secondAccount] = accountReducer(initialState, switchAccount(initialState[1].id));
 
     expect(firstAccount.visible).toBeFalsy();
@@ -102,27 +103,30 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with an updated account', () => {
-    const initialState = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }, {
-      accentID: undefined,
-      badgeCount: 0,
-      id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: false,
-    }];
+    const initialState = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: false,
+      },
+    ];
     const accountData = {userID: 'f4b9a5d0-3e36-4e6f-a404-ba22d23e3730'};
     const [firstAccount, secondAccount] = accountReducer(initialState, updateAccount(initialState[0].id, accountData));
 
@@ -131,27 +135,30 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with an updated badge count', () => {
-    const initialState = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }, {
-      accentID: undefined,
-      badgeCount: 0,
-      id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: false,
-    }];
+    const initialState = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: false,
+      },
+    ];
     const [firstAccount, secondAccount] = accountReducer(initialState, updateAccountBadge(initialState[1].id, 12));
 
     expect(firstAccount.badgeCount).toEqual(0);
@@ -159,27 +166,30 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state without the deleted account', () => {
-    const initialState = [{
-      accentID: undefined,
-      badgeCount: 0,
-      id: '046da4f1-39be-4b8b-823b-e71f12811454',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: true,
-    }, {
-      accentID: undefined,
-      badgeCount: 0,
-      id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
-      name: undefined,
-      picture: undefined,
-      sessionID: undefined,
-      teamID: undefined,
-      userID: undefined,
-      visible: false,
-    }];
+    const initialState = [
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: '046da4f1-39be-4b8b-823b-e71f12811454',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: true,
+      },
+      {
+        accentID: undefined,
+        badgeCount: 0,
+        id: 'd01eb964-bf56-4668-8883-dc248b58b1ca',
+        name: undefined,
+        picture: undefined,
+        sessionID: undefined,
+        teamID: undefined,
+        userID: undefined,
+        visible: false,
+      },
+    ];
     const newState = accountReducer(initialState, deleteAccount(initialState[0].id));
     const [firstAccount] = newState;
 

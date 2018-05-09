@@ -20,21 +20,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { colorFromId } from '../lib/accentColor';
+import {colorFromId} from '../lib/accentColor';
 
 import './PersonalIcon.css';
 
-const PersonalIcon = ({account, accentID, onClick}) =>
-  <div className="PersonalIcon" title={account.name} onClick={onClick} data-uie-name="item-team" data-uie-value={account.name}>
-    {account.visible &&
-      <div className="PersonalIcon-border" style={{borderColor: colorFromId(accentID)}}></div>
-    }
-    <div className="PersonalIcon-inner">
-      {account.picture &&
-        <img src={account.picture} />
-      }
-    </div>
-  </div>;
+const PersonalIcon = ({account, accentID, onClick}) => (
+  <div
+    className="PersonalIcon"
+    title={account.name}
+    onClick={onClick}
+    data-uie-name="item-team"
+    data-uie-value={account.name}
+  >
+    {account.visible && <div className="PersonalIcon-border" style={{borderColor: colorFromId(accentID)}} />}
+    <div className="PersonalIcon-inner">{account.picture && <img src={account.picture} />}</div>
+  </div>
+);
 
 PersonalIcon.propTypes = {
   accentID: PropTypes.number,

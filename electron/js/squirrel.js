@@ -28,16 +28,18 @@ const lifecycle = require('./lifecycle');
 const fs = require('fs');
 const path = require('path');
 
-app.setAppUserModelId('com.squirrel.wire.' + config.NAME.toLowerCase());
+app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 
-let appFolder = path.resolve(process.execPath, '..');
-let rootFolder = path.resolve(appFolder, '..');
-let updateDotExe = path.join(rootFolder, 'Update.exe');
+const appFolder = path.resolve(process.execPath, '..');
+const rootFolder = path.resolve(appFolder, '..');
+const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-let exeName = config.NAME + '.exe';
-let linkName = config.NAME + '.lnk';
+const exeName = `${config.NAME}.exe`;
+const linkName = `${config.NAME}.lnk`;
 
-let taskbarLink = path.resolve(path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName));
+const taskbarLink = path.resolve(
+  path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName)
+);
 
 const SQUIRREL_EVENT = {
   CREATE_SHORTCUT: '--createShortcut',
@@ -59,17 +61,17 @@ const spawn = (command, args, callback) => {
     spawnedProcess = cp.spawn(command, args);
   } catch (_error) {
     error = _error;
-    return process.nextTick(() => typeof callback === 'function' ? callback(error, stdout) : void 0);
+    return process.nextTick(() => (typeof callback === 'function' ? callback(error, stdout) : void 0));
   }
 
-  spawnedProcess.stdout.on('data', data => stdout += data);
+  spawnedProcess.stdout.on('data', data => (stdout += data));
 
   error = null;
-  spawnedProcess.on('error', processError => error != null ? error : error = processError);
+  spawnedProcess.on('error', processError => (error != null ? error : (error = processError)));
   spawnedProcess.on('close', (code, signal) => {
     if (code !== 0) {
       if (error == null) {
-        error = new Error('Command failed: ' + (signal != null ? signal : code));
+        error = new Error(`Command failed: ${signal != null ? signal : code}`);
       }
     }
     if (error != null) {
@@ -99,7 +101,9 @@ const createDesktopShortcut = callback => {
 };
 
 const removeShortcuts = callback => {
-  spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () => fs.unlink(taskbarLink, callback));
+  spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
+    fs.unlink(taskbarLink, callback)
+  );
 };
 
 const installUpdate = () => {
@@ -146,7 +150,6 @@ const handleSquirrelEvent = shouldQuit => {
 
   scheduleUpdate();
 };
-
 
 module.exports = {
   handleSquirrelEvent,

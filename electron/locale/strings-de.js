@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.aboutReleases = 'Versionshinweise';
 string.aboutUpdate = 'Wie wird Wire aktualisiert';

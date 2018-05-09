@@ -17,12 +17,14 @@
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
     "css-loader": "0.28.11",
-    "electron": "1.8.6",
+    "electron": "2.0.0",
     "electron-builder": "20.11.1",
     "electron-mocha": "6.0.2",
-    "electron-packager": "12.0.1",
+    "electron-packager": "12.0.2",
     "electron-winstaller": "2.5.2",
     "eslint": "4.19.1",
+    "eslint-config-prettier": "2.9.0",
+    "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.7.0",
     "grunt": "1.0.2",
     "grunt-contrib-clean": "1.1.0",
@@ -30,17 +32,21 @@
     "grunt-gitinfo": "0.1.8",
     "husky": "0.14.3",
     "jest": "22.4.3",
-    "lint-staged": "7.0.5",
-    "load-grunt-tasks": "3.5.2",
+    "lint-staged": "7.1.0",
+    "load-grunt-tasks": "4.0.0",
     "prettier": "1.12.1",
     "style-loader": "0.21.0",
-    "webpack": "4.6.0",
-    "webpack-cli": "2.1.2"
+    "webpack": "4.8.1",
+    "webpack-cli": "2.1.3"
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
-    "*.css": [
-      "npm run lint:style",
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write",
       "git add"
     ]
   },
@@ -56,18 +62,22 @@
     "bundle:dev": "webpack",
     "bundle": "webpack --env.production",
     "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
-    "fix:script": "npm run test:script -- --fix",
-    "fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
-    "fix": "npm run fix:script && npm run fix:style",
+    "fix:js": "npm run test:js -- --fix",
+    "fix:other": "npm run prettier -- --write",
+    "fix": "npm run fix:js && npm run fix:other",
     "jest": "jest",
-    "lint:fix:style": "prettier --single-quote --print-width=120 --write '**/*.css'",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
+    "precommit": "lint-staged",
     "preinstall": "cd electron && npm install",
     "prestart": "npm run bundle:dev",
+    "prettier": "prettier \"**/*.{json,md,css}\"",
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
     "start": "electron electron --inspect --devtools --enable-logging",
-    "test:script": "eslint -c .eslintrc.yaml --ignore-path .gitignore --quiet .",
-    "test": "npm run test:script && npm run jest && electron-mocha tests"
+    "test:js": "eslint -c .eslintrc.json --ignore-path .gitignore --ignore-path .eslintignore \"**/*.js\"",
+    "test:main": "electron-mocha --reporter spec tests/main",
+    "test:other": "npm run prettier -- --list-different",
+    "test:react": "jest",
+    "test": "npm run test:other && npm run test:js && npm run test:react && npm run test:main"
   }
 }

@@ -20,31 +20,27 @@
 'use strict';
 
 const {BrowserWindow, app} = require('electron');
-const environment = require('../electron/js/environment');
+const environment = require('../../electron/js/environment');
 
 const assert = require('assert');
 const path = require('path');
 
-const tray = require('../electron/js/menu/tray');
+const tray = require('../../electron/js/menu/tray');
 
 describe('tray', () => {
-
-  describe('#updateBadgeIcon()', () => {
-
-    it('should update badge according to window title', (done) => {
+  describe('"updateBadgeIcon"', () => {
+    it('updates badge according to window title', done => {
       const window = new BrowserWindow();
-
-      window.loadURL('file://' + path.join(__dirname, 'fixtures', 'badge.html'));
-      window.webContents.on('dom-ready', () => {
-        tray.updateBadgeIcon(window, 10);
-
-        if (environment.platform.IS_MAC_OS) {
+      window.loadURL(`file://${path.join(__dirname, 'fixtures', 'badge.html')}`);
+      if (environment.platform.IS_MAC_OS) {
+        window.webContents.on('dom-ready', () => {
+          tray.updateBadgeIcon(window, 10);
           assert.equal(app.getBadgeCount(), 10);
-        }
-
+          done();
+        });
+      } else {
         done();
-      });
+      }
     });
   });
-
 });

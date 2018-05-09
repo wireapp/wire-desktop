@@ -83,10 +83,10 @@ const getCurrent = () => {
 
 const parseLocale = locale => {
   const languageKeys = getSupportedLanguageKeys();
-  return languageKeys.find((languageKey) => languageKey === locale) || languageKeys[0];
+  return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
-const getText = (string_identifier) => {
+const getText = string_identifier => {
   const strings = eval(getCurrent());
   return strings[string_identifier] || en[string_identifier] || '';
 };

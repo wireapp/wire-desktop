@@ -1,6 +1,6 @@
 'use strict';
 
-let string = {};
+const string = {};
 
 string.aboutReleases = 'Versioonid';
 string.aboutUpdate = 'Kuidas Wire’i uuendused töötavad';
