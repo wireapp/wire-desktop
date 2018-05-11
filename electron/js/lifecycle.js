@@ -20,6 +20,7 @@
 const {app, ipcMain} = require('electron');
 const environment = require('./environment');
 const EVENT_TYPE = require('./lib/eventType');
+const windowManager = require('./window-manager');
 
 const checkForUpdate = () => {
   if (environment.platform.IS_WINDOWS) {
@@ -35,9 +36,7 @@ const checkSingleInstance = () => {
     // makeSingleInstance will crash the signed mas app
     // see: https://github.com/atom/electron/issues/4688
     shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
-      if (main) {
-        windowManager.showPrimaryWindow();
-      }
+      windowManager.showPrimaryWindow();
       return true;
     });
   }
