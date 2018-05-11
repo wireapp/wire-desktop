@@ -27,8 +27,9 @@ const EVENT_TYPE = require('../../js/lib/eventType');
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
 
-webFrame.setVisualZoomLevelLimits(1, 1);
-webFrame.setLayoutZoomLevelLimits(1, 1);
+webFrame.setZoomLevel(0);
+webFrame.setVisualZoomLevelLimits(0, 0);
+webFrame.setLayoutZoomLevelLimits(0, 0);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
