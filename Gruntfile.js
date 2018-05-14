@@ -361,16 +361,16 @@ module.exports = function(grunt) {
     const options = this.options();
 
     [
-      '/Contents/Framework/Electron Framework.framework/Electron Framework',
-      '/Contents/Framework/Electron Framework.framework/Libraries/libffmpeg.dylib',
-      '/Contents/Framework/Electron Framework.framework/Libraries/libnode.dylib',
-      '/Contents/Framework/Electron Framework.framework/',
-      `/Contents/Framework/${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
-      `/Contents/Framework/${options.name} Helper.app/`,
-      `/Contents/Framework/${options.name} Helper EH.app/Contents/MacOS/${options.name} Helper EH`,
-      `/Contents/Framework/${options.name} Helper EH.app/`,
-      `/Contents/Framework/${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
-      `/Contents/Framework/${options.name} Helper NP.app/`,
+      '/Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
+      '/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
+      '/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libnode.dylib',
+      '/Contents/Frameworks/Electron Framework.framework/',
+      `/Contents/Frameworks/${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
+      `/Contents/Frameworks/${options.name} Helper.app/`,
+      `/Contents/Frameworks/${options.name} Helper EH.app/Contents/MacOS/${options.name} Helper EH`,
+      `/Contents/Frameworks/${options.name} Helper EH.app/`,
+      `/Contents/Frameworks/${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
+      `/Contents/Frameworks/${options.name} Helper NP.app/`,
       `/Contents/Library/LoginItems/${options.name} Login Helper.app/Contents/MacOS/${options.name} Login Helper`,
       `/Contents/Library/LoginItems/${options.name} Login Helper.app/`,
     ].forEach(file =>
