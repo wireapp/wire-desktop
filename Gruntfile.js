@@ -361,22 +361,20 @@ module.exports = function(grunt) {
     const options = this.options();
 
     [
-      'Electron Framework.framework/Versions/A/Electron Framework',
-      'Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
-      'Electron Framework.framework/Versions/A/Libraries/libnode.dylib',
-      'Electron Framework.framework/',
-      `${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
-      `${options.name} Helper.app/`,
-      `${options.name} Helper EH.app/Contents/MacOS/${options.name} Helper EH`,
-      `${options.name} Helper EH.app/`,
-      `${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
-      `${options.name} Helper NP.app/`,
-    ].forEach(framework =>
-      execSync(
-        `codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${
-          options.dir
-        }/Contents/Frameworks/${framework}'`
-      )
+      '/Contents/Framework/Electron Framework.framework/Versions/A/Electron Framework',
+      '/Contents/Framework/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
+      '/Contents/Framework/Electron Framework.framework/Versions/A/Libraries/libnode.dylib',
+      '/Contents/Framework/Electron Framework.framework/',
+      `/Contents/Framework/${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
+      `/Contents/Framework/${options.name} Helper.app/`,
+      `/Contents/Framework/${options.name} Helper EH.app/Contents/MacOS/${options.name} Helper EH`,
+      `/Contents/Framework/${options.name} Helper EH.app/`,
+      `/Contents/Framework/${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
+      `/Contents/Framework/${options.name} Helper NP.app/`,
+      `/Contents/Library/LoginItems/${options.name} Login Helper.app/Contents/MacOS/${options.name} Login Helper`,
+      `/Contents/Library/LoginItems/${options.name} Login Helper.app/`,
+    ].forEach(file =>
+      execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}${file}'`)
     );
 
     execSync(
