@@ -137,7 +137,7 @@ const showMainWindow = () => {
     minWidth: config.WINDOW.MAIN.MIN_WIDTH,
     show: false,
     title: config.NAME,
-    titleBarStyle: 'hidden-inset',
+    titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: false,
