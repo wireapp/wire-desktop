@@ -19,7 +19,7 @@
     "redux": "3.7.2",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.2.0",
-    "request": "2.85.0",
+    "request": "2.86.0",
     "spellchecker": "3.4.4",
     "uuid": "3.2.1",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
