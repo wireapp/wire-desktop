@@ -35,7 +35,7 @@ string.menuCut = 'Taller';
 string.menuCopy = 'Copiar';
 string.menuPaste = 'Enganxar';
 string.menuSelectAll = 'Seleccionar tot';
-string.menuSpelling = 'Comprovar l\'ortografia al escriure';
+string.menuSpelling = "Comprovar l'ortografia al escriure";
 string.menuMinimize = 'Minimitzar';
 string.menuClose = 'Tancar';
 string.menuNextConversation = 'Següent Conversació';
@@ -58,7 +58,7 @@ string.menuSavePictureAs = 'Guardar Imatge Com...';
 string.menuNoSuggestions = 'No hi ha suggeriments';
 
 string.restartNeeded = 'És Necessari Reiniciar';
-string.restartLocale = 'Reiniciar l\'aplicació per que aquesta configuració tingui efecte.';
+string.restartLocale = "Reiniciar l'aplicació per que aquesta configuració tingui efecte.";
 string.restartLater = 'Més Tard';
 string.restartNow = 'Reiniciar ara';
 
