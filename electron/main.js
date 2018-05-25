@@ -93,7 +93,7 @@ const bindIpcEvents = () => {
     try {
       tray.updateBadgeIcon(main, count);
     } catch (error) {
-      console.error(`Failed to update badge icon with count "${count}": "${error.message}"`, error.stack);
+      console.error(`Failed to update badge icon with count "${count}": ${error.message}`, error.stack);
     }
   });
 
