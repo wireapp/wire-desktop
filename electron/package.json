@@ -18,7 +18,7 @@
     "react-redux": "5.0.7",
     "redux": "3.7.2",
     "redux-logger": "3.0.6",
-    "redux-thunk": "2.2.0",
+    "redux-thunk": "2.3.0",
     "request": "2.87.0",
     "spellchecker": "3.4.4",
     "uuid": "3.2.1",
