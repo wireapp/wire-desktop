@@ -371,8 +371,6 @@ module.exports = function(grunt) {
       `/Contents/Frameworks/${options.name} Helper EH.app/`,
       `/Contents/Frameworks/${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
       `/Contents/Frameworks/${options.name} Helper NP.app/`,
-      `/Contents/Library/LoginItems/${options.name} Login Helper.app/Contents/MacOS/${options.name} Login Helper`,
-      `/Contents/Library/LoginItems/${options.name} Login Helper.app/`,
     ].forEach(file =>
       execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}${file}'`)
     );
