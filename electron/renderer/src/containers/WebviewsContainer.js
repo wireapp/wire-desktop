@@ -28,12 +28,15 @@ import {
 } from '../actions';
 import Webviews from '../components/Webviews';
 
-const WebviewsContainer = connect(state => ({accounts: state.accounts}), {
-  abortAccountCreation,
-  switchAccount,
-  updateAccountBadgeCount,
-  updateAccountData,
-  updateAccountLifecycle,
-})(Webviews);
+const WebviewsContainer = connect(
+  state => ({accounts: state.accounts}),
+  {
+    abortAccountCreation,
+    switchAccount,
+    updateAccountBadgeCount,
+    updateAccountData,
+    updateAccountLifecycle,
+  }
+)(Webviews);
 
 export default WebviewsContainer;

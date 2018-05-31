@@ -35,4 +35,7 @@ function AddAccountMenu({...connected}) {
   );
 }
 
-export default connect(null, {addAccountWithSession})(AddAccountMenu);
+export default connect(
+  null,
+  {addAccountWithSession}
+)(AddAccountMenu);

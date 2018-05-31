@@ -22,7 +22,7 @@ Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireap
 
 ### Install
 
-* Install [Node.js](https://nodejs.org/).
+- Install [Node.js](https://nodejs.org/).
 
 ### Clone
 
