@@ -37,7 +37,7 @@
     "prettier": "1.13.4",
     "style-loader": "0.21.0",
     "webpack": "4.10.2",
-    "webpack-cli": "2.1.4"
+    "webpack-cli": "3.0.1"
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
