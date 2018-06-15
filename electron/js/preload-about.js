@@ -18,15 +18,20 @@
  */
 
 const {ipcRenderer} = require('electron');
-const EVENT_TYPE = require('lib/eventType');
+const EVENT_TYPE = require('./lib/eventType');
+
+setTimeout(() => window.alert(), 1000);
 
 ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (sender, labels) => {
+  console.log('DOM REAPLCE VALUES ', JSON.stringify(labels));
   for (const label in labels) {
     document.querySelector(`[data-string="${label}"]`).innerHTML = labels[label];
   }
 });
 
 ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (sender, details) => {
+  console.log('DOM REALLY READY', JSON.stringify(details));
+
   document.getElementById('name').innerHTML = details.productName;
   document.getElementById('version').innerHTML = details.electronVersion || 'Development';
 
@@ -42,4 +47,5 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (sender, details) => {
     labels.push(label.dataset.string);
   }
   ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
+  console.log('DOM LOCAL VALUES', JSON.stringify(details));
 });
