@@ -18,7 +18,7 @@
  */
 
 const {ipcRenderer} = require('electron');
-const EVENT_TYPE = require('lib/eventType');
+const EVENT_TYPE = require('./lib/eventType');
 
 ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (sender, labels) => {
   for (const label in labels) {
