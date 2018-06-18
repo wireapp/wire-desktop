@@ -176,7 +176,7 @@ module.exports = function(grunt) {
             executableName: 'wire-desktop-internal',
             afterInstall: 'bin/deb/after-install.tpl',
             afterRemove: 'bin/deb/after-remove.tpl',
-            desktop: LINUX_DESKTOP,
+            desktop: {...LINUX_DESKTOP, Name: 'WireInternal', StartupWMClass: 'WireInternal'},
           },
           deb: {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
