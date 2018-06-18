@@ -6,6 +6,7 @@ SCRIPT_NAME="${0##*/}"
 SCRIPT_DIR="${0%/*}"
 
 GPG_TEMP_DIR=".gpg-temporary"
+GPG_TEMP_DIR2=".gpg-temporary/private-keys-v1.d"
 PGP_SIGN_ID="D599C1AA126762B1"
 PGP_KEYFILE="${PGP_PRIVATE_KEY_FILE:-${PGP_SIGN_ID}.asc}"
 PGP_PASSPHRASE="${PGP_PASSPHRASE:-""}"
@@ -54,7 +55,7 @@ _log "Create checksums..."
 sha256sum *.deb *.rpm *.AppImage > sha256sum.txt
 
 _log "Prepare gpg configuration..."
-mkdir -p "${GPG_TEMP_DIR}"
+mkdir -p "${GPG_TEMP_DIR2}"
 chmod 700 "${GPG_TEMP_DIR}"
 
 gpg2 --batch \
