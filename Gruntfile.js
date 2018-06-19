@@ -303,12 +303,9 @@ module.exports = function(grunt) {
 
   grunt.registerMultiTask('electron', 'Package Electron apps', function() {
     const done = this.async();
-    electronPackager(this.options(), error => {
-      if (error) {
-        return grunt.warn(error);
-      }
-      done();
-    });
+    electronPackager(this.options())
+      .then(done)
+      .catch(error => grunt.warn(error));
   });
 
   grunt.registerMultiTask('electronbuilder', 'Build Electron apps', function() {
