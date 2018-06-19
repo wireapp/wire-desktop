@@ -206,10 +206,7 @@ const showMainWindow = () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
 
-  const saveFullScreenState = () => {
-    settings.save(SETTINGS_TYPE.FULL_SCREEN, main.isMaximized());
-  };
-
+  const saveFullScreenState = () => settings.save(SETTINGS_TYPE.FULL_SCREEN, main.isMaximized());
   const saveWindowBoundsState = () => {
     if (!main.isMaximized()) {
       settings.save(SETTINGS_TYPE.WINDOW_BOUNDS, main.getBounds());
