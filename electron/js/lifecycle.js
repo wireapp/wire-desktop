@@ -20,6 +20,7 @@
 const {app, ipcMain} = require('electron');
 const environment = require('./environment');
 const EVENT_TYPE = require('./lib/eventType');
+const settings = require('./lib/settings');
 const windowManager = require('./window-manager');
 
 const checkForUpdate = () => {
@@ -48,11 +49,14 @@ const checkSingleInstance = () => {
 
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-const quit = () => app.exit();
+const quit = async () => {
+  await settings.persistToFile();
+  app.exit();
+};
 
 const relaunch = () => {
   app.relaunch();
-  app.exit();
+  quit();
 };
 
 let shouldQuit = false;
