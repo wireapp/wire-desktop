@@ -25,6 +25,7 @@ const config = require('./../config');
 const locale = require('./../../locale/locale');
 const settings = require('./../lib/settings');
 const EVENT_TYPE = require('./../lib/eventType');
+const SETTINGS_TYPE = require('./../lib/settingsType');
 
 let textMenu;
 
@@ -163,7 +164,8 @@ if (isSpellCheckSupported) {
 
   webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
     spellCheck(text) {
-      if (!settings.restore('spelling', false)) {
+      const isSpellCheckEnabled = settings.restore(SETTINGS_TYPE.SPELL_CHECK, false);
+      if (!isSpellCheckEnabled) {
         return true;
       }
 

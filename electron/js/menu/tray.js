@@ -45,7 +45,7 @@ const createTrayIcon = () => {
         label: locale.getText('trayOpen'),
       },
       {
-        click: () => lifecycle.quit(),
+        click: async () => await lifecycle.quit(),
         label: locale.getText('trayQuit'),
       },
     ]);

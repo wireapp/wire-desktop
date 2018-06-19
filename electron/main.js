@@ -37,6 +37,7 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 // Configuration persistence
 const settings = require('./js/lib/settings');
+const SETTINGS_TYPE = require('./js/lib/settingsType');
 
 // Wrapper modules
 const about = require('./js/about');
@@ -65,7 +66,7 @@ const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 
 let main;
-let quitting = false;
+let isQuitting = false;
 
 // IPC events
 const bindIpcEvents = () => {
@@ -120,8 +121,10 @@ const bindIpcEvents = () => {
 
 // App Windows
 const showMainWindow = () => {
+  const showMenuBar = settings.restore(SETTINGS_TYPE.SHOW_MENU_BAR, true);
+
   main = new BrowserWindow({
-    autoHideMenuBar: !settings.restore('showMenu', true),
+    autoHideMenuBar: !showMenuBar,
     backgroundColor: '#f7f8fa',
     height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
     icon: ICON_PATH,
@@ -139,10 +142,11 @@ const showMainWindow = () => {
     width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
-  if (settings.restore('fullscreen', false)) {
-    main.setFullScreen(true);
-  } else {
-    main.setBounds(settings.restore('bounds', main.getBounds()));
+  const isFullScreen = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
+  const windowBounds = settings.restore(SETTINGS_TYPE.WINDOW_BOUNDS, main.getBounds());
+  main.setBounds(windowBounds);
+  if (isFullScreen) {
+    main.maximize();
   }
 
   let baseURL = BASE_URL;
@@ -202,30 +206,27 @@ const showMainWindow = () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
 
-  main.on('focus', () => {
-    main.flashFrame(false);
-  });
+  const saveFullScreenState = () => settings.save(SETTINGS_TYPE.FULL_SCREEN, main.isMaximized());
+  const saveWindowBoundsState = () => {
+    if (!main.isMaximized()) {
+      settings.save(SETTINGS_TYPE.WINDOW_BOUNDS, main.getBounds());
+    }
+  };
 
-  main.on('page-title-updated', () => {
-    tray.updateBadgeIcon(main);
-  });
+  main.on('focus', () => main.flashFrame(false));
+  main.on('maximize', () => saveFullScreenState());
+  main.on('move', () => saveWindowBoundsState());
+  main.on('page-title-updated', () => tray.updateBadgeIcon(main));
+  main.on('resize', () => saveWindowBoundsState());
+  main.on('unmaximize', () => saveFullScreenState());
 
   main.on('close', async event => {
-    const isFullScreen = main.isFullScreen();
-    settings.save('fullscreen', isFullScreen);
-
-    if (!isFullScreen) {
-      settings.save('bounds', main.getBounds());
-    }
-
-    if (!quitting) {
+    if (!isQuitting) {
       event.preventDefault();
       debugMain('Closing window...');
 
       if (isFullScreen) {
-        main.once('leave-full-screen', () => {
-          main.hide();
-        });
+        main.once('leave-full-screen', () => main.hide());
         main.setFullScreen(false);
       } else {
         main.hide();
@@ -233,16 +234,14 @@ const showMainWindow = () => {
     }
   });
 
-  main.webContents.on('crashed', () => {
-    main.reload();
-  });
+  main.webContents.on('crashed', () => main.reload());
 };
 
 // App Events
 const handleAppEvents = () => {
-  app.on('window-all-closed', event => {
+  app.on('window-all-closed', async () => {
     if (!environment.platform.IS_MAC_OS) {
-      lifecycle.quit();
+      await lifecycle.quit();
     }
   });
 
@@ -252,9 +251,7 @@ const handleAppEvents = () => {
     }
   });
 
-  app.on('before-quit', () => (quitting = true));
-
-  app.on('quit', async () => await settings.persistToFile());
+  app.on('before-quit', () => (isQuitting = true));
 
   // System Menu & Tray Icon & Show window
   app.on('ready', () => {
