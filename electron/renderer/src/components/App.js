@@ -44,4 +44,7 @@ const App = props => (
   </IsOnline>
 );
 
-export default connect(({accounts}) => ({accountIds: accounts.map(account => account.id)}), {switchAccount})(App);
+export default connect(
+  ({accounts}) => ({accountIds: accounts.map(account => account.id)}),
+  {switchAccount}
+)(App);

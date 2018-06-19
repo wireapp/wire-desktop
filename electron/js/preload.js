@@ -22,8 +22,8 @@ const environment = require('./environment');
 const locale = require('../locale/locale');
 const EVENT_TYPE = require('./lib/eventType');
 
+webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
-webFrame.setLayoutZoomLevelLimits(1, 1);
 
 window.locStrings = locale[locale.getCurrent()];
 window.locStringsDefault = locale.en;
