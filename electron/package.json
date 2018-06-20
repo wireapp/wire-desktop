@@ -24,7 +24,7 @@
     "uuid": "3.2.1",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
-  "description": "Secure messenger for everyone.",
+  "description": "The most secure collaboration platform.",
   "devDependencies": {
     "cross-spawn": "6.0.5"
   },
