@@ -48,7 +48,6 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON(PACKAGE_JSON),
     info: grunt.file.readJSON(INFO_JSON),
     buildNumber: `${process.env.BUILD_NUMBER || '0'}`,
-    publish: 'never',
 
     clean: {
       wrap: 'wrap',
@@ -151,6 +150,7 @@ module.exports = function(grunt) {
       options: {
         asar: false,
         arch: 'all',
+        publish: 'never',
       },
 
       linux_prod: {
