@@ -150,7 +150,7 @@ module.exports = function(grunt) {
       options: {
         asar: false,
         arch: 'all',
-        publish: 'never',
+        publish: null,
       },
 
       linux_prod: {
