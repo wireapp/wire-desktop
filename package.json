@@ -22,7 +22,7 @@
     "electron-mocha": "6.0.4",
     "electron-packager": "12.1.0",
     "electron-winstaller": "2.5.2",
-    "eslint": "4.19.1",
+    "eslint": "5.0.0",
     "eslint-config-prettier": "2.9.0",
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.9.1",
