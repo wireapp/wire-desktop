@@ -21,7 +21,7 @@
     "redux-thunk": "2.3.0",
     "request": "2.87.0",
     "spellchecker": "3.4.4",
-    "uuid": "3.2.1",
+    "uuid": "3.3.0",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
   },
   "description": "The most secure collaboration platform.",
