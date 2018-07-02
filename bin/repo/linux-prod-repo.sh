@@ -16,10 +16,16 @@ RELEASE_FILE="${STABLE_DIR}/Release"
 STABLE_CONF_FILE="${CONF_DIR}/stable.conf"
 
 GPG_TEMP_DIR=".gpg-temporary"
-GPG_TEMP_DIR2=".gpg-temporary/private-keys-v1.d"
+GPG_TEMP_DIR_KEYS="${GPG_TEMP_DIR}/private-keys-v1.d"
 PGP_SIGN_ID="D599C1AA126762B1"
 PGP_KEYFILE="${PGP_PRIVATE_KEY_FILE:-${PGP_SIGN_ID}.asc}"
 PGP_PASSPHRASE="${PGP_PASSPHRASE:-""}"
+
+_cleanup() {
+  rm -rf "${GPG_TEMP_DIR}"
+}
+
+trap _cleanup 0
 
 _command_exist() {
   command -v "${1}" > /dev/null
@@ -82,7 +88,7 @@ _log "Generating release files..."
 apt-ftparchive -c "${STABLE_CONF_FILE}" release "${STABLE_DIR}" > "${RELEASE_FILE}"
 
 _log "Signing release files..."
-mkdir -p "${GPG_TEMP_DIR2}"
+mkdir -p "${GPG_TEMP_DIR_KEYS}"
 chmod 700 "${GPG_TEMP_DIR}"
 
 gpg2 --batch \
