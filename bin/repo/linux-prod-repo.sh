@@ -25,7 +25,7 @@ _cleanup() {
   rm -rf "${GPG_TEMP_DIR}"
 }
 
-trap _cleanup 0
+trap _cleanup EXIT
 
 _command_exist() {
   command -v "${1}" > /dev/null
