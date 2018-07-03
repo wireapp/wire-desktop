@@ -1,2 +1,2 @@
 requests[security]==2.19.1
-boto3==1.2.2
+boto3==1.2.6
