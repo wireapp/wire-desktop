@@ -25,7 +25,7 @@ node('master') {
   stage('Build') {
     try {
       sh 'security unlock-keychain -p 123456 /Users/jenkins/Library/Keychains/login.keychain'
-      sh 'pip install --upgrade -r requirements.txt'
+      sh 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.7.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
