@@ -39,14 +39,14 @@ class Webviews extends Component {
     this.setState({canDelete: this.getCanDeletes(nextProps.accounts)});
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     for (const account of nextProps.accounts) {
       const match = this.props.accounts.find(_account => account.id === _account.id);
       if (!match || match.visible !== account.visible) {
         return true;
       }
     }
-    return false;
+    return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
   }
 
   getCanDeletes(accounts) {
@@ -123,7 +123,8 @@ class Webviews extends Component {
   }
 
   _canDeleteWebview(account) {
-    return !account.userID && account.sessionID;
+    const match = this.props.accounts.find(_account => account.id === _account.id);
+    return !match || (!match.userID && !!match.sessionID);
   }
 
   render() {
