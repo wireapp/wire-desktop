@@ -26,10 +26,10 @@ import PersonalIcon from './PersonalIcon';
 import React from 'react';
 import TeamIcon from './TeamIcon';
 import {
+  addAccountWithSession,
   setAccountContextHidden,
   switchAccount,
   toggleEditAccountMenuVisibility,
-  addAccountWithSession,
 } from '../actions/';
 
 import './Sidebar.css';
