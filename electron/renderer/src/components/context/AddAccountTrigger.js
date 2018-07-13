@@ -23,7 +23,7 @@ const AddAccountTrigger = ({onClick, forceVisible}) => (
   <div
     className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
     onClick={onClick}
-    data-uie-name="do-add-account"
+    data-uie-name="do-open-plus-menu"
   >
     <div className="Sidebar-account-add">
       <svg width="12" height="12" viewBox="0 0 12 12">
