@@ -21,7 +21,6 @@ import * as ActionCreator from '../actions';
 
 const DEFAULT_STATE = {
   accountId: '',
-  isAddAccountMenuVisible: false,
   isAtLeastAdmin: false,
   isEditAccountMenuVisible: false,
   lifecycle: false,
@@ -38,7 +37,6 @@ const contextMenuReducer = (state = DEFAULT_STATE, action) => {
     case ActionCreator.TOGGLE_ADD_ACCOUNT_VISIBILITY: {
       return {
         ...state,
-        isAddAccountMenuVisible: !state.isAddAccountMenuVisible,
         isEditAccountMenuVisible: false,
         position: action.payload.position,
       };
@@ -48,7 +46,6 @@ const contextMenuReducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         accountId: action.payload.accountId,
-        isAddAccountMenuVisible: false,
         isAtLeastAdmin: action.payload.isAtLeastAdmin,
         isEditAccountMenuVisible: !state.isEditAccountMenuVisible,
         lifecycle: action.payload.lifecycle,

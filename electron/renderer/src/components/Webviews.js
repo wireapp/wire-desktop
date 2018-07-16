@@ -59,12 +59,18 @@ class Webviews extends Component {
     );
   }
 
-  _getEnvironmentUrl(account) {
+  _getEnvironmentUrl(account, forceLogin) {
     const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'));
     const url = new URL(envParam);
 
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
+
+    if (forceLogin) {
+      const isLocalhost = url.hostname === 'localhost';
+      url.pathname = isLocalhost ? '/page/auth.html' : '/auth';
+      url.hash = '#login';
+    }
 
     return url.href;
   }
@@ -130,13 +136,13 @@ class Webviews extends Component {
   render() {
     return (
       <ul className="Webviews">
-        {this.props.accounts.map(account => (
+        {this.props.accounts.map((account, index) => (
           <div className="Webviews-container" key={account.id}>
             <Webview
               className={`Webview ${account.visible ? '' : 'hide'}`}
               data-accountid={account.id}
               visible={account.visible}
-              src={this._getEnvironmentUrl(account)}
+              src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
               partition={account.sessionID}
               preload="./static/webview-preload.js"
               onIpcMessage={event => this._onIpcMessage(account, event)}

@@ -33,7 +33,6 @@
 
 .TeamIcon > span {
   color: var(--graphite-dark);
-  cursor: default;
   font-size: 11px;
   text-transform: uppercase;
   user-select: none;
