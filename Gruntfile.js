@@ -176,6 +176,10 @@ module.exports = function(grunt) {
         options: {
           deb: {
             ...LINUX_SETTINGS,
+            desktop: {
+              ...LINUX_SETTINGS.desktop,
+              Name: '<%= info.nameInternal %>',
+            },
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
           linux: {
@@ -193,14 +197,13 @@ module.exports = function(grunt) {
 
       linux_other: {
         options: {
-          arch: `${grunt.option('arch') || process.arch}`,
+          arch: grunt.option('arch') || process.arch,
           linux: {
-            category: 'Network',
             ...LINUX_SETTINGS,
             fpm: ['--name', 'wire-desktop'],
           },
           productName: 'wire-desktop',
-          targets: [`${grunt.option('target') || 'dir'}`],
+          targets: [grunt.option('target') || 'dir'],
         },
       },
     },
