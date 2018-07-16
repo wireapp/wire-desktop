@@ -67,6 +67,8 @@ class Webviews extends Component {
     url.searchParams.set('id', account.id);
 
     if (forceLogin) {
+      const isLocalhost = url.hostname === 'localhost';
+      url.pathname = isLocalhost ? '/page/auth.html' : '/auth';
       url.hash = '#login';
     }
 
@@ -140,7 +142,7 @@ class Webviews extends Component {
               className={`Webview ${account.visible ? '' : 'hide'}`}
               data-accountid={account.id}
               visible={account.visible}
-              src={this._getEnvironmentUrl(account, index > 0)}
+              src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
               partition={account.sessionID}
               preload="./static/webview-preload.js"
               onIpcMessage={event => this._onIpcMessage(account, event)}

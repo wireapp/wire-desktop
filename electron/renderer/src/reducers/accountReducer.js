@@ -24,6 +24,7 @@ const createAccount = sessionId => ({
   accentID: undefined,
   badgeCount: 0,
   id: uuid(),
+  isAdding: true,
   lifecycle: undefined,
   name: undefined,
   picture: undefined,
@@ -55,7 +56,7 @@ const accountReducer = (state = [createAccount()], action) => {
     case ActionCreator.UPDATE_ACCOUNT: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
-        return isMatchingAccount ? {...account, ...action.data} : account;
+        return isMatchingAccount ? {...account, ...action.data, isAdding: false} : account;
       });
     }
 
