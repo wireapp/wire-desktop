@@ -36,7 +36,7 @@
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.13.7",
     "style-loader": "0.21.0",
-    "webpack": "4.16.0",
+    "webpack": "4.16.1",
     "webpack-cli": "3.0.8"
   },
   "license": "LicenseRef-LICENSE",
