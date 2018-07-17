@@ -26,17 +26,19 @@ node('master') {
     try {
       sh 'security unlock-keychain -p 123456 /Users/jenkins/Library/Keychains/login.keychain'
       sh 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.7.0', type: 'nodejs'
+      def NODE = tool name: 'node-v8.11.3', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
+        sh 'npm update -g npm'
+        sh 'npm -v'
         sh 'npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if(production) {
             // Production
-            sh 'grunt macos-prod'
+            sh 'npx grunt macos-prod'
           } else {
             // Internal
-            sh 'grunt macos'
+            sh 'npx grunt macos'
           }
         }
       }
