@@ -27,16 +27,17 @@ node('Windows_Node') {
   stage('Build') {
     try {
       bat 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.7.0-windows-x86', type: 'nodejs'
+      def NODE = tool name: 'node-v8.11.3-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         bat 'node -v'
-        bat 'npm install -g grunt-cli'
+        bat 'npm install -g npm'
+        bat 'npm -v'
         bat 'set "VSCMD_START_DIR=%CD%" & "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\VsDevCmd.bat" & npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if(production) {
-            bat 'grunt win-prod'
+            bat 'npx grunt win-prod'
           } else {
-            bat 'grunt win'
+            bat 'npx grunt win'
           }
         }
       }
@@ -65,12 +66,12 @@ node('Windows_Node') {
 
   stage('Build installer') {
     try {
-      def NODE = tool name: 'node-v8.7.0', type: 'nodejs'
+      def NODE = tool name: 'node-v8.11.3', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         if(production) {
-          bat 'grunt create-windows-installer:prod'
+          bat 'npx grunt create-windows-installer:prod'
         } else {
-          bat 'grunt create-windows-installer:internal'
+          bat 'npx grunt create-windows-installer:internal'
         }
       }
     } catch(e) {
