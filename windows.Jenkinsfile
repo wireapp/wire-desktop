@@ -30,7 +30,6 @@ node('Windows_Node') {
       def NODE = tool name: 'node-v8.11.3-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         bat 'node -v'
-        bat 'npm install -g npm'
         bat 'npm -v'
         bat 'set "VSCMD_START_DIR=%CD%" & "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\VsDevCmd.bat" & npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
