@@ -26,7 +26,7 @@ node('Linux_Node') {
       def NODE = tool name: 'node-v8.11.3', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
-        sh 'npm install -g npm'
+        sh 'npm update -g npm'
         sh 'npm -v'
         sh 'npm install'
         withCredentials([string(credentialsId: 'GOOGLE_CLIENT_ID', variable: 'GOOGLE_CLIENT_ID'), string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_CLIENT_SECRET'), string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
