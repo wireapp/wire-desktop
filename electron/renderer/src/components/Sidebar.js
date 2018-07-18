@@ -20,16 +20,15 @@
 import {colorFromId} from '../lib/accentColor';
 import {connect} from 'react-redux';
 import {preventFocus} from '../lib/util';
-import AddAccountMenuTrigger from './context/AddAccountMenuTrigger';
-import AddAccountMenu from './context/AddAccountMenu';
+import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
 import PersonalIcon from './PersonalIcon';
 import React from 'react';
 import TeamIcon from './TeamIcon';
 import {
+  addAccountWithSession,
   setAccountContextHidden,
   switchAccount,
-  toggleAddAccountMenuVisibility,
   toggleEditAccountMenuVisibility,
 } from '../actions/';
 
@@ -52,7 +51,6 @@ const Sidebar = ({
   hasCreatedAccount,
   hasReachedLimitOfAccounts,
   isAddingAccount,
-  isAddAccountMenuVisible,
   isEditAccountMenuVisible,
   ...connected
 }) => (
@@ -91,17 +89,8 @@ const Sidebar = ({
       </div>
     ))}
     {!isAddingAccount &&
-      !hasReachedLimitOfAccounts && (
-        <AddAccountMenuTrigger
-          id="account"
-          onClick={preventFocus(event => {
-            connected.toggleAddAccountMenuVisibility(...centerOfEventTarget(event));
-          })}
-          forceVisible={isAddAccountMenuVisible}
-        />
-      )}
+      !hasReachedLimitOfAccounts && <AddAccountTrigger id="account" onClick={connected.addAccountWithSession} />}
 
-    {isAddAccountMenuVisible && <AddAccountMenu />}
     {isEditAccountMenuVisible && <EditAccountMenu />}
   </div>
 );
@@ -112,14 +101,13 @@ export default connect(
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
     hasReachedLimitOfAccounts: accounts.length >= 3,
-    isAddAccountMenuVisible: contextMenuState.isAddAccountMenuVisible,
     isAddingAccount: accounts.length && accounts.some(account => account.userID === undefined),
     isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
   }),
   {
+    addAccountWithSession,
     setAccountContextHidden,
     switchAccount,
-    toggleAddAccountMenuVisibility,
     toggleEditAccountMenuVisibility,
   }
 )(Sidebar);

@@ -17,21 +17,12 @@
  *
  */
 
-import React from 'react';
-
-const AddAccountMenuTrigger = ({onClick, forceVisible}) => (
-  <div
-    className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
-    onClick={onClick}
-    onContextMenu={onClick}
-    data-uie-name="do-open-plus-menu"
-  >
-    <div className="Sidebar-account-add">
-      <svg width="12" height="12" viewBox="0 0 12 12">
-        <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd" />
-      </svg>
-    </div>
-  </div>
-);
-
-export default AddAccountMenuTrigger;
+module.exports = {
+  AUTO_LAUNCH: 'shouldAutoLaunch',
+  ENV: 'env',
+  FULL_SCREEN: 'fullscreen',
+  LOCALE: 'locale',
+  SHOW_MENU_BAR: 'showMenu',
+  SPELL_CHECK: 'spelling',
+  WINDOW_BOUNDS: 'bounds',
+};

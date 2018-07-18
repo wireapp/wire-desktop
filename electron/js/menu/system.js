@@ -28,6 +28,7 @@ const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
 const settings = require('./../lib/settings');
 const EVENT_TYPE = require('./../lib/eventType');
+const SETTINGS_TYPE = require('./../lib/settingsType');
 
 let menu;
 
@@ -136,7 +137,7 @@ const showWireTemplate = {
 };
 
 const toggleMenuTemplate = {
-  checked: settings.restore('showMenu', true),
+  checked: settings.restore(SETTINGS_TYPE.SHOW_MENU_BAR, true),
   click: () => {
     const mainBrowserWindow = getPrimaryWindow();
     const showMenu = mainBrowserWindow.isMenuBarAutoHide();
@@ -147,7 +148,7 @@ const toggleMenuTemplate = {
       mainBrowserWindow.setMenuBarVisibility(showMenu);
     }
 
-    settings.save('showMenu', showMenu);
+    settings.save(SETTINGS_TYPE.SHOW_MENU_BAR, showMenu);
   },
   i18n: 'menuShowHide',
   type: 'checkbox',
@@ -164,10 +165,11 @@ const toggleFullScreenTemplate = {
 };
 
 const toggleAutoLaunchTemplate = {
-  checked: settings.restore('shouldAutoLaunch', false),
+  checked: settings.restore(SETTINGS_TYPE.AUTO_LAUNCH, false),
   click: () => {
-    settings.save('shouldAutoLaunch', !settings.restore('shouldAutoLaunch'));
-    settings.restore('shouldAutoLaunch') ? launcher.enable() : launcher.disable(); // eslint-disable-line
+    const shouldAutoLaunch = !settings.restore(SETTINGS_TYPE.AUTO_LAUNCH);
+    settings.save(SETTINGS_TYPE.AUTO_LAUNCH, shouldAutoLaunch);
+    return shouldAutoLaunch ? launcher.enable() : launcher.disable();
   },
   i18n: 'menuStartup',
   type: 'checkbox',
@@ -206,8 +208,8 @@ const editTemplate = {
     },
     separatorTemplate,
     {
-      checked: supportsSpellCheck && settings.restore('spelling', false),
-      click: event => settings.save('spelling', event.checked),
+      checked: supportsSpellCheck && settings.restore(SETTINGS_TYPE.SPELL_CHECK, false),
+      click: event => settings.save(SETTINGS_TYPE.SPELL_CHECK, event.checked),
       enabled: supportsSpellCheck,
       i18n: 'menuSpelling',
       type: 'checkbox',
@@ -322,7 +324,7 @@ const win32Template = {
     signOutTemplate,
     {
       accelerator: 'Alt+F4',
-      click: () => lifecycle.quit(),
+      click: async () => await lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -343,7 +345,7 @@ const linuxTemplate = {
     signOutTemplate,
     {
       accelerator: 'Ctrl+Q',
-      click: () => lifecycle.quit(),
+      click: async () => await lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -381,11 +383,7 @@ const changeLocale = language => {
     },
     response => {
       if (response === 1) {
-        if (environment.platform.IS_MAC_OS) {
-          lifecycle.quit();
-        } else {
-          lifecycle.relaunch();
-        }
+        return environment.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
       }
     }
   );
@@ -396,7 +394,7 @@ module.exports = {
     if (environment.platform.IS_MAC_OS) {
       menuTemplate.unshift(darwinTemplate);
       windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
-      toggleFullScreenTemplate.checked = settings.restore('fullscreen', false);
+      toggleFullScreenTemplate.checked = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
     }
 
     if (environment.platform.IS_WINDOWS) {
@@ -412,7 +410,7 @@ module.exports = {
         i18n: 'menuPreferences',
       });
       windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
-      toggleFullScreenTemplate.checked = settings.restore('fullscreen', false);
+      toggleFullScreenTemplate.checked = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
     }
 
     if (!environment.platform.IS_MAC_OS) {

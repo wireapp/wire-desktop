@@ -18,24 +18,19 @@
  */
 
 import React from 'react';
-import {connect} from 'react-redux';
-import {getText} from '../../lib/locale';
-import ContextMenu from './ContextMenu';
-import ContextMenuItem from './ContextMenuItem';
-import {addAccountWithSession} from '../../actions/';
 
-function AddAccountMenu({...connected}) {
-  return (
-    <ContextMenu>
-      <ContextMenuItem onClick={() => window.open('https://wire.com/create-team/?pk_campaign=client&pk_kwd=desktop')}>
-        {getText('wrapperCreateTeam')}
-      </ContextMenuItem>
-      <ContextMenuItem onClick={connected.addAccountWithSession}>{getText('wrapperAddAccount')}</ContextMenuItem>
-    </ContextMenu>
-  );
-}
+const AddAccountTrigger = ({onClick, forceVisible}) => (
+  <div
+    className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
+    onClick={onClick}
+    data-uie-name="do-open-plus-menu"
+  >
+    <div className="Sidebar-account-add">
+      <svg width="12" height="12" viewBox="0 0 12 12">
+        <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd" />
+      </svg>
+    </div>
+  </div>
+);
 
-export default connect(
-  null,
-  {addAccountWithSession}
-)(AddAccountMenu);
+export default AddAccountTrigger;

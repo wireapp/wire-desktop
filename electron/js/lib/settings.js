@@ -46,7 +46,7 @@ class ConfigurationPersistence {
   }
 
   save(name, value) {
-    this.debug('Saving %s with "%o" as value', name, value);
+    this.debug('Saving %s with value "%o"', name, value);
     global._ConfigurationPersistence[name] = value;
     return true;
   }

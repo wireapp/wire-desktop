@@ -19,6 +19,7 @@
 
 const pkg = require('./../package.json');
 const settings = require('./lib/settings');
+const SETTINGS_TYPE = require('./lib/settingsType');
 
 let currentEnvironment = undefined;
 
@@ -60,7 +61,7 @@ const app = {
 };
 
 const getEnvironment = () => {
-  return (currentEnvironment = currentEnvironment || settings.restore('env', TYPE.INTERNAL));
+  return currentEnvironment ? currentEnvironment : restoreEnvironment();
 };
 
 const isProdEnvironment = () => {
@@ -73,9 +74,14 @@ const platform = {
   IS_WINDOWS: process.platform === 'win32',
 };
 
+const restoreEnvironment = () => {
+  currentEnvironment = settings.restore(SETTINGS_TYPE.ENV, TYPE.INTERNAL);
+  return currentEnvironment;
+};
+
 const setEnvironment = env => {
-  currentEnvironment = env || settings.restore('env', TYPE.INTERNAL);
-  settings.save('env', currentEnvironment);
+  currentEnvironment = env ? env : restoreEnvironment();
+  settings.save(SETTINGS_TYPE.ENV, currentEnvironment);
 };
 
 const web = {

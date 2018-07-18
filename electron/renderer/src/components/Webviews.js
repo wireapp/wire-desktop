@@ -39,14 +39,14 @@ class Webviews extends Component {
     this.setState({canDelete: this.getCanDeletes(nextProps.accounts)});
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     for (const account of nextProps.accounts) {
       const match = this.props.accounts.find(_account => account.id === _account.id);
       if (!match || match.visible !== account.visible) {
         return true;
       }
     }
-    return false;
+    return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
   }
 
   getCanDeletes(accounts) {
@@ -59,12 +59,18 @@ class Webviews extends Component {
     );
   }
 
-  _getEnvironmentUrl(account) {
+  _getEnvironmentUrl(account, forceLogin) {
     const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'));
     const url = new URL(envParam);
 
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
+
+    if (forceLogin) {
+      const isLocalhost = url.hostname === 'localhost';
+      url.pathname = isLocalhost ? '/page/auth.html' : '/auth';
+      url.hash = '#login';
+    }
 
     return url.href;
   }
@@ -123,19 +129,20 @@ class Webviews extends Component {
   }
 
   _canDeleteWebview(account) {
-    return !account.userID && account.sessionID;
+    const match = this.props.accounts.find(_account => account.id === _account.id);
+    return !match || (!match.userID && !!match.sessionID);
   }
 
   render() {
     return (
       <ul className="Webviews">
-        {this.props.accounts.map(account => (
+        {this.props.accounts.map((account, index) => (
           <div className="Webviews-container" key={account.id}>
             <Webview
               className={`Webview ${account.visible ? '' : 'hide'}`}
               data-accountid={account.id}
               visible={account.visible}
-              src={this._getEnvironmentUrl(account)}
+              src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
               partition={account.sessionID}
               preload="./static/webview-preload.js"
               onIpcMessage={event => this._onIpcMessage(account, event)}

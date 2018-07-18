@@ -49,13 +49,6 @@ export const setAccountContextHidden = () => ({
   type: HIDE_CONTEXT_MENUS,
 });
 
-export const toggleAddAccountMenuVisibility = (x, y) => ({
-  payload: {
-    position: {x, y},
-  },
-  type: TOGGLE_ADD_ACCOUNT_VISIBILITY,
-});
-
 export const toggleEditAccountMenuVisibility = (x, y, accountId, sessionId, lifecycle, isAtLeastAdmin) => ({
   payload: {
     accountId,

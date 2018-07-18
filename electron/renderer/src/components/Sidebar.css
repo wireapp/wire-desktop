@@ -37,6 +37,7 @@
   align-items: center;
   width: 100%;
   height: 56px;
+  cursor: pointer;
 }
 
 .Sidebar-icon-badge {
