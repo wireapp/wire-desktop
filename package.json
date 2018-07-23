@@ -6,6 +6,9 @@
       "output": "wrap/dist"
     }
   },
+  "engines": {
+    "yarn": false
+  },
   "dependencies": {
     "debug": "3.1.0"
   },
