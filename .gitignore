@@ -14,4 +14,3 @@ app.asar
 node_modules
 npm-debug.log
 Wire*.zip
-yarn.lock
