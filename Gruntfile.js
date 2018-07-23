@@ -165,7 +165,7 @@ module.exports = function(grunt) {
           productName: 'wire-desktop',
           rpm: {
             ...LINUX_SETTINGS,
-            depends: ['alsa-lib', 'Gconf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+            depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
             fpm: ['--name', 'wire-desktop'],
           },
           targets: ['deb', 'rpm', 'AppImage'],
@@ -188,7 +188,7 @@ module.exports = function(grunt) {
           productName: 'wire-desktop-internal',
           rpm: {
             ...LINUX_SETTINGS,
-            depends: ['alsa-lib', 'Gconf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+            depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
             fpm: ['--name', 'wire-desktop-internal'],
           },
           targets: ['deb', 'rpm', 'AppImage'],
