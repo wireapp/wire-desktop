@@ -67,7 +67,7 @@ const updateBadgeIcon = (win, count) => {
     win.setOverlayIcon(count ? iconOverlayPath : null, locale.getText('unreadMessages'));
   }
 
-  if (win.isFocused() || count == 0) {
+  if (win.isFocused() || !count) {
     win.flashFrame(false);
   } else if (count > lastUnreadCount) {
     win.flashFrame(true);
