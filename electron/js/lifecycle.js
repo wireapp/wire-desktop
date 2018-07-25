@@ -17,7 +17,7 @@
  *
  */
 
-const {app, ipcMain} = require('electron');
+const {app, ipcMain, BrowserWindow} = require('electron');
 const environment = require('./environment');
 const EVENT_TYPE = require('./lib/eventType');
 const settings = require('./lib/settings');
@@ -55,8 +55,16 @@ const quit = async () => {
 };
 
 const relaunch = () => {
-  app.relaunch();
-  quit();
+  if (environment.platform.IS_MAC_OS) {
+    /* on MacOS, it is not possible to relaunch the app, so just fallback
+     * to reloading all the webviews
+     * see: https://github.com/electron/electron/issues/13696
+     */
+    BrowserWindow.getAllWindows().forEach(window => window.reload());
+  } else {
+    app.relaunch();
+    quit();
+  }
 };
 
 let shouldQuit = false;
