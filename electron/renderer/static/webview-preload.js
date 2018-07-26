@@ -32,10 +32,8 @@ webFrame.setVisualZoomLevelLimits(1, 1);
 webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, update_source => {
-    const isUpdateSourceDesktop = update_source === z.lifecycle.UPDATE_SOURCE.DESKTOP;
-    const eventType = isUpdateSourceDesktop ? EVENT_TYPE.WRAPPER.UPDATE : EVENT_TYPE.WRAPPER.RELAUNCH;
-    ipcRenderer.send(eventType);
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, () => {
+    ipcRenderer.send(EVENT_TYPE.WRAPPER.RELAUNCH);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.LOADED, () => {

@@ -55,8 +55,16 @@ const quit = async () => {
 };
 
 const relaunch = () => {
-  app.relaunch();
-  quit();
+  if (environment.platform.IS_MAC_OS) {
+    /* on MacOS, it is not possible to relaunch the app, so just fallback
+     * to reloading all the webviews
+     * see: https://github.com/electron/electron/issues/13696
+     */
+    windowManager.getPrimaryWindow().webContents.send(EVENT_TYPE.WRAPPER.RELOAD);
+  } else {
+    app.relaunch();
+    quit();
+  }
 };
 
 let shouldQuit = false;
