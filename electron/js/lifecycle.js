@@ -17,7 +17,7 @@
  *
  */
 
-const {app, ipcMain, BrowserWindow} = require('electron');
+const {app, ipcMain} = require('electron');
 const environment = require('./environment');
 const EVENT_TYPE = require('./lib/eventType');
 const settings = require('./lib/settings');
@@ -60,7 +60,7 @@ const relaunch = () => {
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696
      */
-    BrowserWindow.getAllWindows().forEach(window => window.reload());
+    windowManager.getPrimaryWindow().webContents.send(EVENT_TYPE.WRAPPER.RELOAD);
   } else {
     app.relaunch();
     quit();

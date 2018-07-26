@@ -40,6 +40,11 @@ const subscribeToMainProcessEvents = () => {
       selectedWebview.send(action);
     }
   });
+
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, () => {
+    const webviews = document.querySelectorAll('webview');
+    webviews.forEach(webview => webview.reload());
+  });
 };
 
 const setupIpcInterface = () => {

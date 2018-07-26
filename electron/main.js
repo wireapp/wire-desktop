@@ -116,7 +116,7 @@ const bindIpcEvents = () => {
     }
   });
 
-  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
+  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
 };
 
 // App Windows
