@@ -41,8 +41,20 @@ const fetchImageAsBase64 = url => {
 };
 
 const fetchOpenGraphData = url => {
-  return new Promise((resolve, reject) => {
-    openGraph(url, (error, meta) => (error ? reject(error) : resolve(meta)));
+  const isHtmlContentTypePromise = new Promise(resolve => {
+    const headerRequest = request.head(url);
+    headerRequest.on('response', response => {
+      const isHtmlContentType =
+        response.headers['content-type'] && response.headers['content-type'].match(/.*text\/html/);
+      resolve(isHtmlContentType);
+    });
+  });
+
+  return isHtmlContentTypePromise.then(isHtmlContentType => {
+    if (isHtmlContentType) {
+      return new Promise((resolve, reject) => openGraph(url, (error, meta) => (error ? reject(error) : resolve(meta))));
+    }
+    throw new Error('Unhandled format for open graph generation');
   });
 };
 
