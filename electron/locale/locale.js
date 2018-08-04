@@ -22,6 +22,7 @@ const app = require('electron').app || require('electron').remote.app;
 const settings = require('./../js/lib/settings');
 const SETTINGS_TYPE = require('./../js/lib/settingsType');
 
+const ar = require('./strings-ar');
 const cs = require('./strings-cs');
 const da = require('./strings-da');
 const de = require('./strings-de');
@@ -68,6 +69,7 @@ const SUPPORTED_LANGUAGES = {
   fi: 'Suomi',
   tr: 'Türkçe',
   uk: 'Українська',
+  ar: 'العربية',
 };
 
 let current;
@@ -99,6 +101,7 @@ const setLocale = locale => {
 };
 
 module.exports = {
+  ar,
   cs,
   da,
   de,
