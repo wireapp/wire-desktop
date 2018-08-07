@@ -137,13 +137,19 @@ const replaceGoogleAuth = () => {
   }
 
   // hijack google authenticate method
-  window.wire.app.service.connect_google._authenticate = () => {
+  const authenticateWithGoogle = () => {
     return new Promise((resolve, reject) => {
       ipcRenderer.send(EVENT_TYPE.GOOGLE_OAUTH.REQUEST);
       ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.SUCCESS, (event, token) => resolve(token));
       ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.ERROR, reject);
     });
   };
+
+  if (window.wire.app.service.connectGoogle) {
+    window.wire.app.service.connectGoogle._authenticate = authenticateWithGoogle;
+  } else if (window.wire.app.service.connect_google) {
+    window.wire.app.service.connect_google._authenticate = authenticateWithGoogle;
+  }
 };
 
 const enableFileLogging = () => {
