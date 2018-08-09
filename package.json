@@ -38,7 +38,7 @@
     "lint-staged": "7.2.0",
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.14.2",
-    "style-loader": "0.22.0",
+    "style-loader": "0.22.1",
     "webpack": "4.16.5",
     "webpack-cli": "3.1.0"
   },
