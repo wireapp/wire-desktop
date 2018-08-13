@@ -40,6 +40,7 @@ let appIcon = null;
 const setTrayIcon = imagePath => {
   if (fs.existsSync(imagePath)) {
     console.log(`Image path exists: ${imagePath}`);
+    // TODO: Test with PNG only (@2X & Co.)
     const trayIcon = nativeImage.createFromPath(imagePath);
     if (appIcon) {
       appIcon.setImage(trayIcon);
