@@ -17,8 +17,9 @@
  *
  */
 
-const {app, Menu, Tray} = require('electron');
+const {app, Menu, nativeImage, Tray} = require('electron');
 
+const fs = require('fs');
 const path = require('path');
 const config = require('./../config');
 const environment = require('./../environment');
@@ -36,9 +37,22 @@ let lastUnreadCount = 0;
 
 let appIcon = null;
 
+const setTrayIcon = imagePath => {
+  if (fs.existsSync(imagePath)) {
+    console.log(`Image path exists: ${imagePath}`);
+    const trayIcon = nativeImage.createFromPath(imagePath);
+    if (appIcon) {
+      appIcon.setImage(trayIcon);
+    }
+  } else {
+    console.log(`Image path DOES NOT exist: ${imagePath}`);
+  }
+};
+
 const createTrayIcon = () => {
   if (!environment.platform.IS_MAC_OS) {
-    appIcon = new Tray(iconPath);
+    appIcon = new Tray(nativeImage.createEmpty());
+    setTrayIcon(iconPath);
     const contextMenu = Menu.buildFromTemplate([
       {
         click: () => windowManager.showPrimaryWindow(),
@@ -77,15 +91,11 @@ const updateBadgeIcon = (win, count) => {
 };
 
 const useDefaultIcon = () => {
-  if (appIcon) {
-    appIcon.setImage(iconPath);
-  }
+  setTrayIcon(iconPath);
 };
 
 const useBadgeIcon = () => {
-  if (appIcon) {
-    appIcon.setImage(iconBadgePath);
-  }
+  setTrayIcon(iconBadgePath);
 };
 
 module.exports = {

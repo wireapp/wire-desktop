@@ -79,11 +79,7 @@ const bindIpcEvents = () => {
   });
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count) => {
-    try {
-      tray.updateBadgeIcon(main, count);
-    } catch (error) {
-      console.error(`Failed to update badge icon with count "${count}": ${error.message}`, error.stack);
-    }
+    tray.updateBadgeIcon(main, count);
   });
 
   ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, event => {
