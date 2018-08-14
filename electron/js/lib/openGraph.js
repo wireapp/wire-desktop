@@ -42,7 +42,7 @@ const fetchImageAsBase64 = url => {
 };
 
 const fetchOpenGraphData = url => {
-  const CONTENT_TYPE_LIMIT = 1000000; // 1MB
+  const CONTENT_SIZE_LIMIT = 1000000; // ~1MB
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
@@ -70,13 +70,11 @@ const fetchOpenGraphData = url => {
       }
     });
 
-    let requestCurrentSize = 0;
     let partialBody = '';
     getContentRequest.on('data', buffer => {
       const chunk = buffer.toString();
-      requestCurrentSize += buffer.length;
       partialBody += chunk;
-      if (chunk.match('</head>') || requestCurrentSize > CONTENT_TYPE_LIMIT) {
+      if (chunk.match('</head>') || partialBody.length > CONTENT_SIZE_LIMIT) {
         getContentRequest.abort();
         resolve(partialBody);
       }
