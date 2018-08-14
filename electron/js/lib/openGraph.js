@@ -46,6 +46,15 @@ const fetchOpenGraphData = url => {
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
+  const parseHead = body => {
+    const headMatches = body.match(/<head>[\s\S]*?<\/head>/);
+    if (!headMatches) {
+      throw new Error('No head found in the document');
+    }
+    const [head] = headMatches;
+    return openGraphParse(head);
+  };
+
   return new Promise((resolve, reject) => {
     const getContentRequest = request.get(urlUtil.format(normalizedUrl), (error, response, body) => {
       return error ? reject(error) : resolve(body);
@@ -68,12 +77,11 @@ const fetchOpenGraphData = url => {
       requestCurrentSize += buffer.length;
       partialBody += chunk;
       if (chunk.match('</head>') || requestCurrentSize > CONTENT_TYPE_LIMIT) {
-        const [head] = partialBody.match(/<head>[\s\S]*?<\/head>/);
         getContentRequest.abort();
-        resolve(head);
+        resolve(partialBody);
       }
     });
-  }).then(openGraphParse);
+  }).then(parseHead);
 };
 
 const updateMetaDataWithImage = (meta, image) => {
