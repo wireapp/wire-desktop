@@ -42,7 +42,7 @@ const fetchImageAsBase64 = url => {
 };
 
 const fetchOpenGraphData = url => {
-  const CONTENT_TYPE_LIMIT = 1e7; // 10MB
+  const CONTENT_TYPE_LIMIT = 1000000; // 1MB
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
@@ -53,23 +53,24 @@ const fetchOpenGraphData = url => {
 
     getContentRequest.on('response', ({headers}) => {
       const contentType = headers['content-type'] || '';
-      const contentLength = parseInt(headers['content-length'] || '0', 10);
-
       const isHtmlContentType = contentType.match(/.*text\/html/);
-      const isTooLarge = contentLength > CONTENT_TYPE_LIMIT;
 
-      if (!isHtmlContentType || isTooLarge) {
-        throw new Error(`Unhandled format for open graph generation ('${contentType}' of size '${contentLength}')`);
+      if (!isHtmlContentType) {
         getContentRequest.abort();
+        throw new Error(`Unhandled format for open graph generation ('${contentType}')`);
       }
     });
 
     let requestCurrentSize = 0;
+    let partialBody = '';
     getContentRequest.on('data', buffer => {
+      const chunk = buffer.toString();
       requestCurrentSize += buffer.length;
-      if (requestCurrentSize > CONTENT_TYPE_LIMIT) {
-        throw new Error(`File size too big for open graph generation ('${contentLength}')`);
+      partialBody += chunk;
+      if (chunk.match('</head>') || requestCurrentSize > CONTENT_TYPE_LIMIT) {
+        const [head] = partialBody.match(/<head>[\s\S]*?<\/head>/);
         getContentRequest.abort();
+        resolve(head);
       }
     });
   }).then(openGraphParse);
