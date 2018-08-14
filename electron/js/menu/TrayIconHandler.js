@@ -9,8 +9,9 @@ const windowManager = require('./../window-manager');
 
 class TrayIconHandler {
   constructor() {
-    this.appIcon = new Tray(nativeImage.createEmpty());
     this.icons = this.initIcons();
+
+    this.appIcon = new Tray(this.icons.tray);
     this.lastUnreadCount = 0;
 
     if (!environment.platform.IS_MAC_OS) {
@@ -19,8 +20,6 @@ class TrayIconHandler {
   }
 
   buildTrayMenu() {
-    this.appIcon.setImage(this.icons.tray);
-
     const contextMenu = Menu.buildFromTemplate([
       {
         click: () => windowManager.showPrimaryWindow(),
@@ -32,9 +31,9 @@ class TrayIconHandler {
       },
     ]);
 
-    this.appIcon.setToolTip(config.NAME);
-    this.appIcon.setContextMenu(contextMenu);
     this.appIcon.on('click', () => windowManager.showPrimaryWindow());
+    this.appIcon.setContextMenu(contextMenu);
+    this.appIcon.setToolTip(config.NAME);
   }
 
   initIcons() {
