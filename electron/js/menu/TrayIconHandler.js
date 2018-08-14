@@ -1,12 +1,40 @@
-const {app, nativeImage, Tray} = require('electron');
+const {app, Menu, nativeImage, Tray} = require('electron');
+const config = require('./../config');
 const environment = require('./../environment');
+const lifecycle = require('./../lifecycle');
 const fs = require('fs');
+const locale = require('./../../locale/locale');
 const path = require('path');
+const windowManager = require('./../window-manager');
 
 class TrayIconHandler {
   constructor() {
     this.appIcon = new Tray(nativeImage.createEmpty());
     this.icons = this.initIcons();
+    this.lastUnreadCount = 0;
+
+    if (!environment.platform.IS_MAC_OS) {
+      this.buildTrayMenu();
+    }
+  }
+
+  buildTrayMenu() {
+    this.appIcon.setImage(this.icons.tray);
+
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        click: () => windowManager.showPrimaryWindow(),
+        label: locale.getText('trayOpen'),
+      },
+      {
+        click: async () => await lifecycle.quit(),
+        label: locale.getText('trayQuit'),
+      },
+    ]);
+
+    this.appIcon.setToolTip(config.NAME);
+    this.appIcon.setContextMenu(contextMenu);
+    this.appIcon.on('click', () => windowManager.showPrimaryWindow());
   }
 
   initIcons() {
@@ -37,6 +65,19 @@ class TrayIconHandler {
     } else {
       this.appIcon.setImage(this.icons.tray);
     }
+
+    if (environment.platform.IS_WINDOWS) {
+      win.setOverlayIcon(count ? this.icons.badge : null, locale.getText('unreadMessages'));
+    }
+
+    if (win.isFocused() || !count) {
+      win.flashFrame(false);
+    } else if (count > this.lastUnreadCount) {
+      win.flashFrame(true);
+    }
+
+    app.setBadgeCount(count);
+    this.lastUnreadCount = count;
   }
 }
 
