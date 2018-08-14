@@ -19,12 +19,10 @@
 
 'use strict';
 
-// const {BrowserWindow, app} = require('electron');
-// const environment = require('../../electron/js/environment');
-
+const {BrowserWindow} = require('electron');
 const assert = require('assert');
 const path = require('path');
-
+const sinon = require('sinon');
 const TrayIconHandler = require('../../electron/js/menu/TrayIconHandler');
 
 describe('TrayIconHandler', () => {
@@ -57,26 +55,26 @@ describe('TrayIconHandler', () => {
       tray.initIcons();
 
       assert.equal(Object.keys(tray.icons).length, 3);
-
       assert.equal(tray.icons.badge.constructor.name, 'NativeImage');
       assert.equal(tray.icons.tray.constructor.name, 'NativeImage');
       assert.equal(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
     });
   });
 
-  // describe('"updateBadgeIcon"', () => {
-  //   it('updates badge according to window title', done => {
-  //     const window = new BrowserWindow();
-  //     window.loadURL(`file://${path.join(__dirname, 'fixtures', 'badge.html')}`);
-  //     if (environment.platform.IS_MAC_OS) {
-  //       window.webContents.on('dom-ready', () => {
-  //         TrayIconHandler.updateBadgeIcon(window, 10);
-  //         assert.equal(app.getBadgeCount(), 10);
-  //         done();
-  //       });
-  //     } else {
-  //       done();
-  //     }
-  //   });
-  // });
+  describe('"updateBadgeIcon"', () => {
+    it('updates the badge counter.', done => {
+      sinon.stub(tray, 'hasOverlaySupport').get(() => false);
+      sinon.stub(tray, 'hasTrayMenuSupport').get(() => false);
+
+      tray.init();
+
+      const window = new BrowserWindow();
+      window.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+      window.webContents.on('dom-ready', () => {
+        tray.updateBadgeIcon(window, 10);
+        assert.equal(tray.lastUnreadCount, 10);
+        done();
+      });
+    });
+  });
 });
