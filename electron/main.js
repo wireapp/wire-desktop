@@ -52,9 +52,9 @@ const initRaygun = require('./js/initRaygun');
 const lifecycle = require('./js/lifecycle');
 const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
-const tray = require('./js/menu/tray');
 const util = require('./js/util');
 const windowManager = require('./js/window-manager');
+const TrayIconHandler = require('./js/menu/TrayIconHandler');
 const EVENT_TYPE = require('./js/lib/eventType');
 
 // Config
@@ -64,6 +64,7 @@ const BASE_URL = environment.web.getWebappUrl(argv.env);
 // Icon
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
+let tray = undefined;
 
 let main;
 let isQuitting = false;
@@ -258,7 +259,7 @@ const handleAppEvents = () => {
     appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
 
     Menu.setApplicationMenu(appMenu);
-    tray.createTrayIcon();
+    tray = new TrayIconHandler();
     showMainWindow();
   });
 };
