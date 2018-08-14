@@ -40,12 +40,12 @@ describe('TrayIconHandler', () => {
   describe('"getDataURL"', () => {
     it('returns a data URL scheme.', () => {
       const imagePath = path.join(__dirname, '..', 'fixtures', 'tray.png');
-      const url = tray.getDataURL(imagePath);
+      const url = TrayIconHandler.getDataURL(imagePath);
       assert.ok(url.startsWith('data:image/png;base64,'));
     });
 
     it('returns a default URL for invalid paths.', () => {
-      const url = tray.getDataURL('./invalid/path.png');
+      const url = TrayIconHandler.getDataURL('./invalid/path.png');
       assert.equal(url, 'data:null');
     });
   });

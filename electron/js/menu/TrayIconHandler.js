@@ -51,7 +51,7 @@ class TrayIconHandler {
     this.appIcon.setToolTip(config.NAME);
   }
 
-  getDataURL(imagePath) {
+  static getDataURL(imagePath) {
     if (fs.existsSync(imagePath)) {
       const image = nativeImage.createFromPath(imagePath);
       return image.toDataURL();
@@ -60,9 +60,11 @@ class TrayIconHandler {
   }
 
   initIcons() {
-    const badgeURL = this.getDataURL(path.join(app.getAppPath(), 'img', 'taskbar.overlay.png'));
-    const trayURL = this.getDataURL(path.join(app.getAppPath(), 'img', `tray.${this.defaultImageExtension}`));
-    const trayWithBadgeURL = this.getDataURL(
+    const badgeURL = TrayIconHandler.getDataURL(path.join(app.getAppPath(), 'img', 'taskbar.overlay.png'));
+    const trayURL = TrayIconHandler.getDataURL(
+      path.join(app.getAppPath(), 'img', `tray.${this.defaultImageExtension}`)
+    );
+    const trayWithBadgeURL = TrayIconHandler.getDataURL(
       path.join(app.getAppPath(), 'img', `tray.badge.${this.defaultImageExtension}`)
     );
 
