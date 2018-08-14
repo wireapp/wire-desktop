@@ -8,15 +8,30 @@ const path = require('path');
 const windowManager = require('./../window-manager');
 
 class TrayIconHandler {
-  constructor() {
-    this.icons = this.initIcons();
-
-    this.appIcon = new Tray(this.icons.tray);
+  constructor(appIcon = new Tray(nativeImage.createEmpty())) {
+    this.appIcon = appIcon;
+    this.icons = {};
     this.lastUnreadCount = 0;
+  }
 
-    if (!environment.platform.IS_MAC_OS) {
+  init() {
+    this.initIcons();
+    this.appIcon.setImage(this.icons.tray);
+    if (this.hasTrayMenuSupport) {
       this.buildTrayMenu();
     }
+  }
+
+  get defaultImageExtension() {
+    return environment.platform.IS_WINDOWS ? 'ico' : 'png';
+  }
+
+  get hasTrayMenuSupport() {
+    return !environment.platform.IS_MAC_OS;
+  }
+
+  get hasOverlaySupport() {
+    return environment.platform.IS_WINDOWS;
   }
 
   buildTrayMenu() {
@@ -45,13 +60,13 @@ class TrayIconHandler {
   }
 
   initIcons() {
-    const imageExtension = environment.platform.IS_WINDOWS ? 'ico' : 'png';
-
     const badgeURL = this.getDataURL(path.join(app.getAppPath(), 'img', 'taskbar.overlay.png'));
-    const trayURL = this.getDataURL(path.join(app.getAppPath(), 'img', `tray.${imageExtension}`));
-    const trayWithBadgeURL = this.getDataURL(path.join(app.getAppPath(), 'img', `tray.badge.${imageExtension}`));
+    const trayURL = this.getDataURL(path.join(app.getAppPath(), 'img', `tray.${this.defaultImageExtension}`));
+    const trayWithBadgeURL = this.getDataURL(
+      path.join(app.getAppPath(), 'img', `tray.badge.${this.defaultImageExtension}`)
+    );
 
-    return {
+    this.icons = {
       badge: nativeImage.createFromDataURL(badgeURL),
       tray: nativeImage.createFromDataURL(trayURL),
       trayWithBadge: nativeImage.createFromDataURL(trayWithBadgeURL),
@@ -65,7 +80,7 @@ class TrayIconHandler {
       this.appIcon.setImage(this.icons.tray);
     }
 
-    if (environment.platform.IS_WINDOWS) {
+    if (this.hasOverlaySupport) {
       win.setOverlayIcon(count ? this.icons.badge : null, locale.getText('unreadMessages'));
     }
 

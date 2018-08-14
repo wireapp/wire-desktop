@@ -31,7 +31,10 @@ describe('TrayIconHandler', () => {
   let tray = undefined;
 
   beforeEach(() => {
-    tray = new TrayIconHandler();
+    const mockedTrayIcon = {
+      setImage: () => {},
+    };
+    tray = new TrayIconHandler(mockedTrayIcon);
   });
 
   describe('"getDataURL"', () => {
@@ -49,8 +52,12 @@ describe('TrayIconHandler', () => {
 
   describe('"initIcons"', () => {
     it('creates native images from data URLs for all tray icons.', () => {
-      // console.log(typeof tray.appIcon.click);
+      assert.equal(Object.keys(tray.icons).length, 0);
+
       tray.initIcons();
+
+      assert.equal(Object.keys(tray.icons).length, 3);
+
       assert.equal(tray.icons.badge.constructor.name, 'NativeImage');
       assert.equal(tray.icons.tray.constructor.name, 'NativeImage');
       assert.equal(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
