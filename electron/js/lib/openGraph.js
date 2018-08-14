@@ -17,8 +17,9 @@
  *
  */
 
-const openGraph = require('open-graph');
+const openGraphParse = require('open-graph').parse;
 const request = require('request');
+const urlUtil = require('url');
 
 const arrayify = (value = []) => (Array.isArray(value) ? value : [value]);
 
@@ -41,21 +42,37 @@ const fetchImageAsBase64 = url => {
 };
 
 const fetchOpenGraphData = url => {
-  const isHtmlContentTypePromise = new Promise(resolve => {
-    const headerRequest = request.head(url);
-    headerRequest.on('response', response => {
-      const isHtmlContentType =
-        response.headers['content-type'] && response.headers['content-type'].match(/.*text\/html/);
-      resolve(isHtmlContentType);
-    });
-  });
+  const CONTENT_TYPE_LIMIT = 1e7; // 10MB
+  const parsedUrl = urlUtil.parse(url);
+  const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
-  return isHtmlContentTypePromise.then(isHtmlContentType => {
-    if (isHtmlContentType) {
-      return new Promise((resolve, reject) => openGraph(url, (error, meta) => (error ? reject(error) : resolve(meta))));
-    }
-    throw new Error('Unhandled format for open graph generation');
-  });
+  return new Promise((resolve, reject) => {
+    const getContentRequest = request.get(urlUtil.format(normalizedUrl), (error, response, body) => {
+      return error ? reject(error) : resolve(body);
+    });
+
+    getContentRequest.on('response', ({headers}) => {
+      const contentType = headers['content-type'] || '';
+      const contentLength = parseInt(headers['content-length'] || '0', 10);
+
+      const isHtmlContentType = contentType.match(/.*text\/html/);
+      const isTooLarge = contentLength > CONTENT_TYPE_LIMIT;
+
+      if (!isHtmlContentType || isTooLarge) {
+        throw new Error(`Unhandled format for open graph generation ('${contentType}' of size '${contentLength}')`);
+        getContentRequest.abort();
+      }
+    });
+
+    let requestCurrentSize = 0;
+    getContentRequest.on('data', buffer => {
+      requestCurrentSize += buffer.length;
+      if (requestCurrentSize > CONTENT_TYPE_LIMIT) {
+        throw new Error(`File size too big for open graph generation ('${contentLength}')`);
+        getContentRequest.abort();
+      }
+    });
+  }).then(openGraphParse);
 };
 
 const updateMetaDataWithImage = (meta, image) => {
