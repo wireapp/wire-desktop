@@ -79,6 +79,7 @@ const updateBadgeIcon = (win, count) => {
   }
 
   if (environment.platform.IS_WINDOWS) {
+    // TODO: Check path before doing that!
     win.setOverlayIcon(count ? iconOverlayPath : null, locale.getText('unreadMessages'));
   }
 
