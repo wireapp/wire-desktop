@@ -47,11 +47,7 @@ const fetchOpenGraphData = url => {
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
   const parseHead = body => {
-    const headMatches = body.match(/<head>[\s\S]*?<\/head>/);
-    if (!headMatches) {
-      throw new Error('No head found in the document');
-    }
-    const [head] = headMatches;
+    const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
     return openGraphParse(head);
   };
 
