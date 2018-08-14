@@ -36,6 +36,14 @@ class TrayIconHandler {
     this.appIcon.setToolTip(config.NAME);
   }
 
+  getDataURL(imagePath) {
+    if (fs.existsSync(imagePath)) {
+      const image = nativeImage.createFromPath(imagePath);
+      return image.toDataURL();
+    }
+    return 'data:null';
+  }
+
   initIcons() {
     const imageExtension = environment.platform.IS_WINDOWS ? 'ico' : 'png';
 
@@ -48,14 +56,6 @@ class TrayIconHandler {
       tray: nativeImage.createFromDataURL(trayURL),
       trayWithBadge: nativeImage.createFromDataURL(trayWithBadgeURL),
     };
-  }
-
-  getDataURL(imagePath) {
-    if (fs.existsSync(imagePath)) {
-      const image = nativeImage.createFromPath(imagePath);
-      return image.toDataURL();
-    }
-    return 'data:null';
   }
 
   updateBadgeIcon(win, count) {
