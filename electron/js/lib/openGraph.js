@@ -52,7 +52,7 @@ const fetchImageAsBase64 = url => {
 };
 
 const fetchOpenGraphData = url => {
-  const CONTENT_SIZE_LIMIT = 1000000; // ~1MB
+  const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
