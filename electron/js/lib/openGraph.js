@@ -17,8 +17,9 @@
  *
  */
 
-const openGraph = require('open-graph');
+const openGraphParse = require('open-graph').parse;
 const request = require('request');
+const urlUtil = require('url');
 
 const arrayify = (value = []) => (Array.isArray(value) ? value : [value]);
 
@@ -28,8 +29,9 @@ const bufferToBase64 = (buffer, mimeType) => {
 };
 
 const fetchImageAsBase64 = url => {
+  const IMAGE_SIZE_LIMIT = 5e6; // 5MB
   return new Promise(resolve => {
-    request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
+    const imageRequest = request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         resolve(bufferToBase64(body, response.headers['content-type']));
       } else {
@@ -37,25 +39,53 @@ const fetchImageAsBase64 = url => {
         resolve();
       }
     });
+
+    let currentDownloadSize = 0;
+    imageRequest.on('data', buffer => {
+      currentDownloadSize += buffer.length;
+      if (currentDownloadSize > IMAGE_SIZE_LIMIT) {
+        imageRequest.abort();
+        resolve();
+      }
+    });
   });
 };
 
 const fetchOpenGraphData = url => {
-  const isHtmlContentTypePromise = new Promise(resolve => {
-    const headerRequest = request.head(url);
-    headerRequest.on('response', response => {
-      const isHtmlContentType =
-        response.headers['content-type'] && response.headers['content-type'].match(/.*text\/html/);
-      resolve(isHtmlContentType);
-    });
-  });
+  const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
+  const parsedUrl = urlUtil.parse(url);
+  const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
-  return isHtmlContentTypePromise.then(isHtmlContentType => {
-    if (isHtmlContentType) {
-      return new Promise((resolve, reject) => openGraph(url, (error, meta) => (error ? reject(error) : resolve(meta))));
-    }
-    throw new Error('Unhandled format for open graph generation');
-  });
+  const parseHead = body => {
+    const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
+    return openGraphParse(head);
+  };
+
+  return new Promise((resolve, reject) => {
+    const getContentRequest = request.get(urlUtil.format(normalizedUrl), (error, response, body) => {
+      return error ? reject(error) : resolve(body);
+    });
+
+    getContentRequest.on('response', ({headers}) => {
+      const contentType = headers['content-type'] || '';
+      const isHtmlContentType = contentType.match(/.*text\/html/);
+
+      if (!isHtmlContentType) {
+        getContentRequest.abort();
+        throw new Error(`Unhandled format for open graph generation ('${contentType}')`);
+      }
+    });
+
+    let partialBody = '';
+    getContentRequest.on('data', buffer => {
+      const chunk = buffer.toString();
+      partialBody += chunk;
+      if (chunk.match('</head>') || partialBody.length > CONTENT_SIZE_LIMIT) {
+        getContentRequest.abort();
+        resolve(partialBody);
+      }
+    });
+  }).then(parseHead);
 };
 
 const updateMetaDataWithImage = (meta, image) => {
