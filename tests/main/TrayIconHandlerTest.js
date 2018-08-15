@@ -19,10 +19,11 @@
 
 'use strict';
 
-const {BrowserWindow} = require('electron');
 const assert = require('assert');
 const path = require('path');
+const sinon = require('sinon');
 const TrayIconHandler = require('../../electron/js/menu/TrayIconHandler');
+const {BrowserWindow} = require('electron');
 
 describe('TrayIconHandler', () => {
   const TrayMock = {
@@ -45,13 +46,34 @@ describe('TrayIconHandler', () => {
   describe('"updateBadgeIcon"', () => {
     it('updates the badge counter.', done => {
       const tray = new TrayIconHandler({IS_MAC_OS: true, IS_WINDOWS: false}, TrayMock);
-      const window = new BrowserWindow();
-      window.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
-      window.webContents.on('dom-ready', () => {
-        tray.updateBadgeIcon(window, 10);
+      const appWindow = new BrowserWindow();
+      appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+      appWindow.webContents.on('dom-ready', () => {
+        tray.updateBadgeIcon(appWindow, 10);
         assert.equal(tray.lastUnreadCount, 10);
         done();
       });
+    });
+
+    it('does change the flash state if the window has already been flashed.', done => {
+      const tray = new TrayIconHandler({IS_MAC_OS: true, IS_WINDOWS: false}, TrayMock);
+      tray.lastUnreadCount = 5;
+
+      const appWindow = new BrowserWindow({
+        show: false,
+        useContentSize: true,
+      });
+
+      sinon.spy(appWindow, 'flashFrame');
+
+      appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+      appWindow.webContents.on('dom-ready', () => {
+        assert.equal(appWindow.isFocused(), false);
+        tray.updateBadgeIcon(appWindow, 2);
+        assert.equal(appWindow.flashFrame.getCall(0), null);
+        done();
+      });
+      appWindow.showInactive();
     });
   });
 });
