@@ -22,37 +22,29 @@
 const {BrowserWindow} = require('electron');
 const assert = require('assert');
 const path = require('path');
-const sinon = require('sinon');
 const TrayIconHandler = require('../../electron/js/menu/TrayIconHandler');
 
 describe('TrayIconHandler', () => {
-  let tray = undefined;
+  const TrayMock = {
+    on: () => {},
+    setContextMenu: () => {},
+    setImage: () => {},
+    setToolTip: () => {},
+  };
 
-  beforeEach(() => {
-    const mockedTrayIcon = {
-      on: () => {},
-      setContextMenu: () => {},
-      setImage: () => {},
-      setToolTip: () => {},
-    };
-    tray = new TrayIconHandler(mockedTrayIcon);
-  });
-
-  describe('"createIcons"', () => {
-    it('creates native images from data URLs for all tray icons.', () => {
-      const icons = tray.createIcons();
-      assert.equal(Object.keys(icons).length, 3);
-      assert.equal(icons.badge.constructor.name, 'NativeImage');
-      assert.equal(icons.tray.constructor.name, 'NativeImage');
-      assert.equal(icons.trayWithBadge.constructor.name, 'NativeImage');
+  describe('"constructor"', () => {
+    it('creates native images for all tray icons on instantiation.', () => {
+      const tray = new TrayIconHandler({IS_MAC_OS: false, IS_WINDOWS: true}, TrayMock);
+      assert.equal(Object.keys(tray.icons).length, 3);
+      assert.equal(tray.icons.badge.constructor.name, 'NativeImage');
+      assert.equal(tray.icons.tray.constructor.name, 'NativeImage');
+      assert.equal(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
     });
   });
 
   describe('"updateBadgeIcon"', () => {
     it('updates the badge counter.', done => {
-      sinon.stub(tray, 'hasOverlaySupport').get(() => false);
-      sinon.stub(tray, 'hasTrayMenuSupport').get(() => false);
-
+      const tray = new TrayIconHandler({IS_MAC_OS: true, IS_WINDOWS: false}, TrayMock);
       const window = new BrowserWindow();
       window.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
       window.webContents.on('dom-ready', () => {

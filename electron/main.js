@@ -259,7 +259,7 @@ const handleAppEvents = () => {
     appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
 
     Menu.setApplicationMenu(appMenu);
-    tray = new TrayIconHandler();
+    tray = new TrayIconHandler(environment.platform);
     showMainWindow();
   });
 };
