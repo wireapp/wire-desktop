@@ -10,12 +10,12 @@ const windowManager = require('./../window-manager');
 class TrayIconHandler {
   constructor(appIcon = new Tray(nativeImage.createEmpty())) {
     this.appIcon = appIcon;
-    this.icons = {};
+    this.icons = this.createIcons();
     this.lastUnreadCount = 0;
+    this.initTrayIcon();
   }
 
-  init() {
-    this.initIcons();
+  initTrayIcon() {
     this.appIcon.setImage(this.icons.tray);
     if (this.hasTrayMenuSupport) {
       this.buildTrayMenu();
@@ -59,7 +59,7 @@ class TrayIconHandler {
     return 'data:null';
   }
 
-  initIcons() {
+  createIcons() {
     const badgeURL = TrayIconHandler.getDataURL(path.join(app.getAppPath(), 'img', 'taskbar.overlay.png'));
     const trayURL = TrayIconHandler.getDataURL(
       path.join(app.getAppPath(), 'img', `tray.${this.defaultImageExtension}`)
@@ -68,7 +68,7 @@ class TrayIconHandler {
       path.join(app.getAppPath(), 'img', `tray.badge.${this.defaultImageExtension}`)
     );
 
-    this.icons = {
+    return {
       badge: nativeImage.createFromDataURL(badgeURL),
       tray: nativeImage.createFromDataURL(trayURL),
       trayWithBadge: nativeImage.createFromDataURL(trayWithBadgeURL),

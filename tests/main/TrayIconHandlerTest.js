@@ -30,7 +30,10 @@ describe('TrayIconHandler', () => {
 
   beforeEach(() => {
     const mockedTrayIcon = {
+      on: () => {},
+      setContextMenu: () => {},
       setImage: () => {},
+      setToolTip: () => {},
     };
     tray = new TrayIconHandler(mockedTrayIcon);
   });
@@ -48,16 +51,14 @@ describe('TrayIconHandler', () => {
     });
   });
 
-  describe('"initIcons"', () => {
+  describe('"createIcons"', () => {
     it('creates native images from data URLs for all tray icons.', () => {
-      assert.equal(Object.keys(tray.icons).length, 0);
+      const icons = tray.createIcons();
 
-      tray.initIcons();
-
-      assert.equal(Object.keys(tray.icons).length, 3);
-      assert.equal(tray.icons.badge.constructor.name, 'NativeImage');
-      assert.equal(tray.icons.tray.constructor.name, 'NativeImage');
-      assert.equal(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
+      assert.equal(Object.keys(icons).length, 3);
+      assert.equal(icons.badge.constructor.name, 'NativeImage');
+      assert.equal(icons.tray.constructor.name, 'NativeImage');
+      assert.equal(icons.trayWithBadge.constructor.name, 'NativeImage');
     });
   });
 
@@ -65,8 +66,6 @@ describe('TrayIconHandler', () => {
     it('updates the badge counter.', done => {
       sinon.stub(tray, 'hasOverlaySupport').get(() => false);
       sinon.stub(tray, 'hasTrayMenuSupport').get(() => false);
-
-      tray.init();
 
       const window = new BrowserWindow();
       window.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);

@@ -260,7 +260,6 @@ const handleAppEvents = () => {
 
     Menu.setApplicationMenu(appMenu);
     tray = new TrayIconHandler();
-    tray.init();
     showMainWindow();
   });
 };
