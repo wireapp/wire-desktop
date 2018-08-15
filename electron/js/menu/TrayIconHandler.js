@@ -2,7 +2,6 @@ const {app, Menu, nativeImage, Tray} = require('electron');
 const config = require('./../config');
 const environment = require('./../environment');
 const lifecycle = require('./../lifecycle');
-const fs = require('fs');
 const locale = require('./../../locale/locale');
 const path = require('path');
 const windowManager = require('./../window-manager');
@@ -51,27 +50,13 @@ class TrayIconHandler {
     this.appIcon.setToolTip(config.NAME);
   }
 
-  static getDataURL(imagePath) {
-    if (fs.existsSync(imagePath)) {
-      const image = nativeImage.createFromPath(imagePath);
-      return image.toDataURL();
-    }
-    return 'data:null';
-  }
-
   createIcons() {
-    const badgeURL = TrayIconHandler.getDataURL(path.join(app.getAppPath(), 'img', 'taskbar.overlay.png'));
-    const trayURL = TrayIconHandler.getDataURL(
-      path.join(app.getAppPath(), 'img', `tray.${this.defaultImageExtension}`)
-    );
-    const trayWithBadgeURL = TrayIconHandler.getDataURL(
-      path.join(app.getAppPath(), 'img', `tray.badge.${this.defaultImageExtension}`)
-    );
-
     return {
-      badge: nativeImage.createFromDataURL(badgeURL),
-      tray: nativeImage.createFromDataURL(trayURL),
-      trayWithBadge: nativeImage.createFromDataURL(trayWithBadgeURL),
+      badge: nativeImage.createFromPath(path.join(app.getAppPath(), 'img', 'taskbar.overlay.png')),
+      tray: nativeImage.createFromPath(path.join(app.getAppPath(), 'img', `tray.${this.defaultImageExtension}`)),
+      trayWithBadge: nativeImage.createFromPath(
+        path.join(app.getAppPath(), 'img', `tray.badge.${this.defaultImageExtension}`)
+      ),
     };
   }
 

@@ -38,23 +38,9 @@ describe('TrayIconHandler', () => {
     tray = new TrayIconHandler(mockedTrayIcon);
   });
 
-  describe('"getDataURL"', () => {
-    it('returns a data URL scheme.', () => {
-      const imagePath = path.join(__dirname, '..', 'fixtures', 'tray.png');
-      const url = TrayIconHandler.getDataURL(imagePath);
-      assert.ok(url.startsWith('data:image/png;base64,'));
-    });
-
-    it('returns a default URL for invalid paths.', () => {
-      const url = TrayIconHandler.getDataURL('./invalid/path.png');
-      assert.equal(url, 'data:null');
-    });
-  });
-
   describe('"createIcons"', () => {
     it('creates native images from data URLs for all tray icons.', () => {
       const icons = tray.createIcons();
-
       assert.equal(Object.keys(icons).length, 3);
       assert.equal(icons.badge.constructor.name, 'NativeImage');
       assert.equal(icons.tray.constructor.name, 'NativeImage');
