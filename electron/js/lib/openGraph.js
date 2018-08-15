@@ -29,12 +29,22 @@ const bufferToBase64 = (buffer, mimeType) => {
 };
 
 const fetchImageAsBase64 = url => {
+  const IMAGE_SIZE_LIMIT = 5e6; // 5MB
   return new Promise(resolve => {
-    request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
+    const imageRequest = request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         resolve(bufferToBase64(body, response.headers['content-type']));
       } else {
         // we just skip images that failed to download
+        resolve();
+      }
+    });
+
+    let currentDownloadSize = 0;
+    imageRequest.on('data', buffer => {
+      currentDownloadSize += buffer.length;
+      if (currentDownloadSize > IMAGE_SIZE_LIMIT) {
+        imageRequest.abort();
         resolve();
       }
     });
