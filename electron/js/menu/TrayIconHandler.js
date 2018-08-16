@@ -36,10 +36,6 @@ class TrayIconHandler {
       ),
     };
 
-    this.initTrayIcon();
-  }
-
-  initTrayIcon() {
     this.appIcon.setImage(this.icons.tray);
     if (this.hasTrayMenuSupport) {
       buildTrayMenu.call(this);
