@@ -57,11 +57,10 @@ class TrayIconHandler {
   }
 
   updateBadgeIcon(win, count) {
-    if (!this.appIcon) {
-      return;
+    if (this.appIcon) {
+      const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
+      this.appIcon.setImage(trayImage);
     }
-    const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
-    this.appIcon.setImage(trayImage);
 
     if (this.hasOverlaySupport) {
       const overlayImage = count ? this.icons.badge : null;

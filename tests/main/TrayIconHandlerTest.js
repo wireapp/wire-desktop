@@ -19,6 +19,7 @@
 
 'use strict';
 
+const {app} = require('electron');
 const assert = require('assert');
 const path = require('path');
 const sinon = require('sinon');
@@ -59,62 +60,90 @@ describe('TrayIconHandler', () => {
   });
 
   describe('"updateBadgeIcon"', () => {
-    it('updates the badge counter.', done => {
-      const tray = new TrayIconHandler({IS_MAC_OS: false, IS_WINDOWS: true}, TrayMock);
-      const appWindow = new BrowserWindow();
+    describe('"Mac"', () => {
+      it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
+        const tray = new TrayIconHandler({IS_MAC: true}, TrayMock);
+        const appWindow = new BrowserWindow();
 
-      sinon.spy(appWindow, 'flashFrame');
+        sinon.spy(app, 'setBadgeCount');
+        sinon.spy(appWindow, 'flashFrame');
 
-      appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
-      appWindow.webContents.on('dom-ready', () => {
-        assert.equal(appWindow.isFocused(), true);
-        assert.equal(appWindow.flashFrame.callCount, 0);
-        tray.updateBadgeIcon(appWindow, 10);
-        assert.ok(appWindow.flashFrame.getCall(0).calledWith(false));
-        assert.equal(tray.lastUnreadCount, 10);
-        done();
+        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.webContents.on('dom-ready', () => {
+          assert.equal(appWindow.isFocused(), true);
+          assert.equal(appWindow.flashFrame.callCount, 0);
+          tray.updateBadgeIcon(appWindow, 1);
+          assert.ok(app.setBadgeCount.getCall(0).calledWith(1));
+          assert.ok(appWindow.flashFrame.getCall(0).calledWith(false));
+          assert.equal(tray.lastUnreadCount, 1);
+          appWindow.flashFrame.restore();
+          app.setBadgeCount.restore();
+          done();
+        });
       });
     });
 
-    it('flashes the tray icon when app is not in focus and you receive new messages', done => {
-      const tray = new TrayIconHandler({IS_MAC_OS: false, IS_WINDOWS: true}, TrayMock);
+    describe('"Windows"', () => {
+      it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
+        const tray = new TrayIconHandler({IS_WINDOWS: true}, TrayMock);
+        const appWindow = new BrowserWindow();
 
-      const appWindow = new BrowserWindow({
-        show: false,
-        useContentSize: true,
+        sinon.spy(appWindow, 'flashFrame');
+
+        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.webContents.on('dom-ready', () => {
+          assert.equal(appWindow.isFocused(), true);
+          assert.equal(appWindow.flashFrame.callCount, 0);
+          tray.updateBadgeIcon(appWindow, 10);
+          assert.ok(appWindow.flashFrame.getCall(0).calledWith(false));
+          assert.equal(tray.lastUnreadCount, 10);
+          appWindow.flashFrame.restore();
+          done();
+        });
       });
 
-      sinon.spy(appWindow, 'flashFrame');
+      it('flashes the app frame when app is not in focus and you receive new messages', done => {
+        const tray = new TrayIconHandler({IS_WINDOWS: true}, TrayMock);
 
-      appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
-      appWindow.webContents.on('dom-ready', () => {
-        assert.equal(appWindow.isFocused(), false);
-        tray.updateBadgeIcon(appWindow, 2);
-        assert.ok(appWindow.flashFrame.getCall(0).calledWith(true));
-        done();
+        const appWindow = new BrowserWindow({
+          show: false,
+          useContentSize: true,
+        });
+
+        sinon.spy(appWindow, 'flashFrame');
+
+        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.webContents.on('dom-ready', () => {
+          assert.equal(appWindow.isFocused(), false);
+          tray.updateBadgeIcon(appWindow, 2);
+          assert.ok(appWindow.flashFrame.getCall(0).calledWith(true));
+          appWindow.flashFrame.restore();
+          done();
+        });
+        appWindow.showInactive();
       });
-      appWindow.showInactive();
-    });
 
-    it('does change the flash state if the window has already been flashed', done => {
-      const tray = new TrayIconHandler({IS_MAC_OS: false, IS_WINDOWS: true}, TrayMock);
-      tray.lastUnreadCount = 5;
+      it('does change the flash state if the window has already been flashed', done => {
+        const tray = new TrayIconHandler({IS_WINDOWS: true}, TrayMock);
+        tray.lastUnreadCount = 5;
 
-      const appWindow = new BrowserWindow({
-        show: false,
-        useContentSize: true,
+        const appWindow = new BrowserWindow({
+          show: false,
+          useContentSize: true,
+        });
+
+        sinon.spy(appWindow, 'flashFrame');
+
+        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.webContents.on('dom-ready', () => {
+          assert.equal(appWindow.isFocused(), false);
+          tray.updateBadgeIcon(appWindow, 2);
+          assert.equal(appWindow.flashFrame.callCount, 0);
+          appWindow.flashFrame.restore();
+          done();
+        });
+        appWindow.showInactive();
       });
-
-      sinon.spy(appWindow, 'flashFrame');
-
-      appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
-      appWindow.webContents.on('dom-ready', () => {
-        assert.equal(appWindow.isFocused(), false);
-        tray.updateBadgeIcon(appWindow, 2);
-        assert.equal(appWindow.flashFrame.callCount, 0);
-        done();
-      });
-      appWindow.showInactive();
     });
   });
 });
