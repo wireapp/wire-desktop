@@ -21,9 +21,12 @@
 
 const assert = require('assert');
 const path = require('path');
-const sinon = require('sinon');
+const chai = require('chai');
 const TrayIconHandler = require('../../electron/js/menu/TrayIconHandler');
 const {BrowserWindow} = require('electron');
+
+chai.use(require('chai-spies'));
+const sandbox = chai.spy.sandbox();
 
 describe('TrayIconHandler', () => {
   const TrayMock = {
@@ -47,9 +50,15 @@ describe('TrayIconHandler', () => {
     it('updates the badge counter.', done => {
       const tray = new TrayIconHandler({IS_MAC_OS: true, IS_WINDOWS: false}, TrayMock);
       const appWindow = new BrowserWindow();
+
+      sandbox.on(appWindow, ['flashFrame']);
+
       appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
       appWindow.webContents.on('dom-ready', () => {
+        assert.equal(appWindow.isFocused(), true);
+        assert.equal(appWindow.flashFrame.__spy.called, false);
         tray.updateBadgeIcon(appWindow, 10);
+        assert.equal(appWindow.flashFrame.__spy.called, true);
         assert.equal(tray.lastUnreadCount, 10);
         done();
       });
@@ -64,13 +73,14 @@ describe('TrayIconHandler', () => {
         useContentSize: true,
       });
 
-      sinon.spy(appWindow, 'flashFrame');
+      sandbox.on(appWindow, ['flashFrame']);
 
       appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
       appWindow.webContents.on('dom-ready', () => {
         assert.equal(appWindow.isFocused(), false);
+        assert.equal(appWindow.flashFrame.__spy.called, false);
         tray.updateBadgeIcon(appWindow, 2);
-        assert.equal(appWindow.flashFrame.getCall(0), null);
+        assert.equal(appWindow.flashFrame.__spy.called, false);
         done();
       });
       appWindow.showInactive();
