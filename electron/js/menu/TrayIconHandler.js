@@ -24,7 +24,6 @@ function buildTrayMenu() {
 
 class TrayIconHandler {
   constructor(platform, appIcon = new Tray(nativeImage.createEmpty())) {
-    this.appIcon = appIcon;
     this.lastUnreadCount = 0;
     this.platform = platform;
 
@@ -42,8 +41,9 @@ class TrayIconHandler {
       trayWithBadge: nativeImage.createFromPath(iconPaths.trayWithBadge),
     };
 
-    this.appIcon.setImage(this.icons.tray);
-    if (this.hasTrayMenuSupport) {
+    if (!platform.IS_MAC_OS) {
+      this.appIcon = appIcon;
+      this.appIcon.setImage(this.icons.tray);
       buildTrayMenu.call(this);
     }
   }
@@ -52,17 +52,15 @@ class TrayIconHandler {
     return this.platform.IS_WINDOWS ? 'ico' : 'png';
   }
 
-  get hasTrayMenuSupport() {
-    return !this.platform.IS_MAC_OS;
-  }
-
   get hasOverlaySupport() {
     return this.platform.IS_WINDOWS;
   }
 
   updateBadgeIcon(win, count) {
-    const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
-    this.appIcon.setImage(trayImage);
+    if (this.appIcon) {
+      const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
+      this.appIcon.setImage(trayImage);
+    }
 
     if (this.hasOverlaySupport) {
       const overlayImage = count ? this.icons.badge : null;
