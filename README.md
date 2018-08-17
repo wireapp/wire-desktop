@@ -21,6 +21,7 @@ No license is granted to the Wire trademark and its associated logos, all of whi
 Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp). Based on [Electron](http://electron.atom.io).
 
 ### Prerequisites
+
 - [Node.js](https://nodejs.org/)
 - Git version with submodule functionality
 - Python 2.x (to build [spellchecker](https://www.npmjs.com/package/spellchecker))
