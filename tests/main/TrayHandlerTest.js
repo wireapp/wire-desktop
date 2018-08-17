@@ -46,7 +46,7 @@ describe('TrayIconHandler', () => {
     });
   });
 
-  describe('updateBadgeIcon', () => {
+  describe('showUnreadCount', () => {
     describe('without tray icon initialization', () => {
       it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
         const tray = new TrayHandler();

@@ -259,7 +259,7 @@ const handleAppEvents = () => {
     appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
 
     Menu.setApplicationMenu(appMenu);
-    tray = new TrayHandler(environment.platform);
+    tray = new TrayHandler();
     if (!environment.platform.IS_MAC_OS) {
       tray.initTray();
     }
