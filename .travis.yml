@@ -1,6 +1,14 @@
 # http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
 
+# https://docs.travis-ci.com/user/encryption-keys/
+env:
+  global:
+    # WIRE_WEBAPP_BOT_EMAIL
+    - secure: "aKwl+5gnDKUpaG8oL+lspgDCZKp+2QAIGmIKNw3jq817mdO3lwaQEIrHVJjpN21/chyzVvPQbKbwnPAWcc2Yswgdeaaz6WmgKOkqcDBCgPiHTYKGnoxGN5IB7R5Q388gUB/QTAZgStcnLUrxIbNO0E06m4D11J/+cwIc7elxHN2Dpauc37VpPGaB/ND7UHOUIUcbSx8JTz5lBf6kE+IYojmIcRWA5PUobOaxE0+WSlCHIp1W1o0Mgg6kBasjBaNhmu9an+Atj8wCE77qjbUfYtNOWPqgQGOi7+SQq73FSO785OZWDpPpsc8RrzrSP3TlKiieRy7OzvFYdiA1tSj1Aw+Y/Rl53+vNr1grvmGLHGwQi3Xm3MO43EsW1pLHWZ86ksVlchmM/Iy0SSGRAHyLsaAODPeDKJxwEnJd9un/1fOTNX9jvBO8UxUQX5vHse7mMGCodP4ZM32i036nUstrQ0CIt62H3y6rBsMSE1G6T0ylQRekzSpHxOTkPyC5dRDCS8CgMutH1lPW8oti4+QUyIUAJT6XLKb2R+vGLP7e8h+ZKUE5kQniCg5YIh8GxSR2depDgKDZWYdNfIq2HhafWEcEu6FbWJ4TExOKUe+JP3NqFyUZGOXUzFdUfWNhc0beQPk6RitF7B1zh32amPIcm/BCvMXy+J7XFRBlnz50TCc="
+    # WIRE_WEBAPP_BOT_PASSWORD
+    - secure: "uWt2xiLp6PQgiilYAvaAGj5sjQxhZQTYNDN2YbOCMEj/+Lp2KHnhtZW+QkCK+CtBwu/cIuHJtLMOXoK4gekdgapNmG1jTTfJmb/xw8zaV/AQuOQLOVpZ2yZgjbtZN0YeweWqKU78v32/qGUx0aFs9CLS6Bo6Y3COMlKB8PfUfH+2CmxLzOfwAVHpYC+VEH+WM6ODBZlnaTIUmOH2PCQSp2kEgKanmwRZwoGjOvjv9xENSxrFn0M9/vsp8qblLky7AyQW/IERoQi8U8PIDnf/0SbpBcGEynVBMo2XDDUoANGTEBnwbc5j6KmrnIZsw5VT6xVNJpVRiG6kLVbQmDS05zPPaPJqykYIlhC6pnXYSZ6aGs1hMLiJ/hvhZYLhNa83fjgHigsYouKza2PRcoyk+GXlboCPQW0gduWUtd0kYpuRtAh9VT9EoLiLh1U86wZHZTEEFwXHLhLc5IPeMvS1g4QYjc5ODlmudgWslgWum1Lc4nLJr+yTZXW9A9t3kWC8V+dyMCM76xiedaiIGPKZBRKq2kp43JgGr4aLjiuQMtpWQGwAxaKushmfMQX4GfBGq7AwI/MDyY4cqyzwDiJ6JdjtdDvuPoXpjLlsEFYvu1j2l7csN1bC474Ym9i+n0g1peMohyNqkszVVSixivG2Lgz3ZwE0QP5Duu37sKIb1TE="
+
 # http://docs.travis-ci.com/user/languages/javascript-with-nodejs/
 language: node_js
 node_js:
@@ -42,3 +50,7 @@ notifications:
 branches:
   only:
     - master
+
+after_success:
+  - yarn global add @wireapp/travis-bot@1.0.173
+  - wire-travis-bot "46b53eba-65da-4bdc-b521-2467b96e8841"
