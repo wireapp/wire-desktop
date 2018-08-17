@@ -36,8 +36,8 @@ describe('TrayIconHandler', () => {
 
   describe('"constructor"', () => {
     it('creates native images for all tray icons on instantiation', () => {
-      const tray = new TrayHandler({IS_MAC_OS: false, IS_WINDOWS: true});
-      tray.initIcon(TrayMock);
+      const tray = new TrayHandler();
+      tray.initIcon(true, TrayMock);
       assert.equal(Object.keys(tray.icons).length, 3);
       assert.equal(tray.icons.badge.constructor.name, 'NativeImage');
       assert.equal(tray.icons.tray.constructor.name, 'NativeImage');
@@ -45,19 +45,19 @@ describe('TrayIconHandler', () => {
     });
 
     it('creates a tray icon on Linux', () => {
-      const tray = new TrayHandler({IS_LINUX: true});
-      tray.initIcon(TrayMock);
+      const tray = new TrayHandler();
+      tray.initIcon(true, TrayMock);
       sinon.assert.match(tray.appIcon, sinon.match.defined);
     });
 
     it('creates a tray icon on Window', () => {
-      const tray = new TrayHandler({IS_WINDOWS: true});
-      tray.initIcon(TrayMock);
+      const tray = new TrayHandler();
+      tray.initIcon(true, TrayMock);
       sinon.assert.match(tray.appIcon, sinon.match.defined);
     });
 
     it('does not create a tray icon on macOS', () => {
-      const tray = new TrayHandler({IS_MAC_OS: true});
+      const tray = new TrayHandler();
       sinon.assert.match(tray.appIcon, sinon.match.typeOf('undefined'));
     });
   });
@@ -65,7 +65,8 @@ describe('TrayIconHandler', () => {
   describe('"updateBadgeIcon"', () => {
     describe('"Mac"', () => {
       it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
-        const tray = new TrayHandler({IS_MAC: true});
+        const tray = new TrayHandler();
+        tray.initIcon(true, TrayMock);
         const appWindow = new BrowserWindow();
 
         sinon.spy(app, 'setBadgeCount');
@@ -88,8 +89,8 @@ describe('TrayIconHandler', () => {
 
     describe('"Windows"', () => {
       it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
-        const tray = new TrayHandler({IS_WINDOWS: true});
-        tray.initIcon(TrayMock);
+        const tray = new TrayHandler();
+        tray.initIcon(true, TrayMock);
         const appWindow = new BrowserWindow();
 
         sinon.spy(appWindow, 'flashFrame');
@@ -107,8 +108,8 @@ describe('TrayIconHandler', () => {
       });
 
       it('flashes the app frame when app is not in focus and you receive new messages', done => {
-        const tray = new TrayHandler({IS_WINDOWS: true});
-        tray.initIcon(TrayMock);
+        const tray = new TrayHandler();
+        tray.initIcon(true, TrayMock);
 
         const appWindow = new BrowserWindow({
           show: false,
@@ -129,8 +130,8 @@ describe('TrayIconHandler', () => {
       });
 
       it('does change the flash state if the window has already been flashed', done => {
-        const tray = new TrayHandler({IS_WINDOWS: true});
-        tray.initIcon();
+        const tray = new TrayHandler();
+        tray.initIcon(true, TrayMock);
         tray.lastUnreadCount = 5;
 
         const appWindow = new BrowserWindow({

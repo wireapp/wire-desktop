@@ -261,7 +261,7 @@ const handleAppEvents = () => {
     Menu.setApplicationMenu(appMenu);
     tray = new TrayHandler(environment.platform);
     if (!environment.platform.IS_MAC_OS) {
-      tray.initIcon();
+      tray.initIcon(environment.platform.IS_WINDOWS);
     }
     showMainWindow();
   });

@@ -23,9 +23,9 @@ function buildTrayMenu() {
 }
 
 class TrayHandler {
-  constructor(platform) {
+  constructor() {
+    this.hasOverlaySupport = false;
     this.lastUnreadCount = 0;
-    this.platform = platform;
 
     const TRAY_ICON_IMAGE_ROOT = path.join(app.getAppPath(), 'img');
 
@@ -42,13 +42,12 @@ class TrayHandler {
     };
   }
 
-  get hasOverlaySupport() {
-    return this.platform.IS_WINDOWS;
-  }
+  initIcon(hasOverlaySupport, appIcon = new Tray(nativeImage.createEmpty())) {
+    this.hasOverlaySupport = hasOverlaySupport;
 
-  initIcon(appIcon = new Tray(nativeImage.createEmpty())) {
     this.appIcon = appIcon;
     this.appIcon.setImage(this.icons.tray);
+
     buildTrayMenu.call(this);
   }
 
