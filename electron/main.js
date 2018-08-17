@@ -54,7 +54,7 @@ const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
 const util = require('./js/util');
 const windowManager = require('./js/window-manager');
-const TrayIconHandler = require('./js/menu/TrayIconHandler');
+const TrayHandler = require('./js/menu/TrayHandler');
 const EVENT_TYPE = require('./js/lib/eventType');
 
 // Config
@@ -259,7 +259,7 @@ const handleAppEvents = () => {
     appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
 
     Menu.setApplicationMenu(appMenu);
-    tray = new TrayIconHandler(environment.platform);
+    tray = new TrayHandler(environment.platform);
     showMainWindow();
   });
 };

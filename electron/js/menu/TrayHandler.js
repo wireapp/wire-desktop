@@ -22,7 +22,7 @@ function buildTrayMenu() {
   this.appIcon.setToolTip(config.NAME);
 }
 
-class TrayIconHandler {
+class TrayHandler {
   constructor(platform, appIcon = new Tray(nativeImage.createEmpty())) {
     this.lastUnreadCount = 0;
     this.platform = platform;
@@ -74,4 +74,4 @@ class TrayIconHandler {
   }
 }
 
-module.exports = TrayIconHandler;
+module.exports = TrayHandler;
