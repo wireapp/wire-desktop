@@ -27,12 +27,12 @@ class TrayHandler {
     this.hasOverlaySupport = false;
     this.lastUnreadCount = 0;
 
-    const TRAY_ICON_IMAGE_ROOT = path.join(app.getAppPath(), 'img');
+    const IMAGE_ROOT = path.join(app.getAppPath(), 'img');
 
     const iconPaths = {
-      badge: path.join(TRAY_ICON_IMAGE_ROOT, 'taskbar.overlay.png'),
-      tray: path.join(TRAY_ICON_IMAGE_ROOT, 'tray.png'),
-      trayWithBadge: path.join(TRAY_ICON_IMAGE_ROOT, 'tray.badge.png'),
+      badge: path.join(IMAGE_ROOT, 'taskbar.overlay.png'),
+      tray: path.join(IMAGE_ROOT, 'tray-icon', 'tray', 'tray.png'),
+      trayWithBadge: path.join(IMAGE_ROOT, 'tray-icon', 'tray-with-badge', 'tray.badge.png'),
     };
 
     this.icons = {
