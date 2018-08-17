@@ -54,7 +54,7 @@ const locale = require('./locale/locale');
 const systemMenu = require('./js/menu/system');
 const util = require('./js/util');
 const windowManager = require('./js/window-manager');
-const TrayIconHandler = require('./js/menu/TrayIconHandler');
+const TrayHandler = require('./js/menu/TrayHandler');
 const EVENT_TYPE = require('./js/lib/eventType');
 
 // Config
@@ -80,7 +80,7 @@ const bindIpcEvents = () => {
   });
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count) => {
-    tray.updateBadgeIcon(main, count);
+    tray.showUnreadCount(main, count);
   });
 
   ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, event => {
@@ -213,7 +213,7 @@ const showMainWindow = () => {
   main.on('focus', () => main.flashFrame(false));
   main.on('maximize', () => saveFullScreenState());
   main.on('move', () => saveWindowBoundsState());
-  main.on('page-title-updated', () => tray.updateBadgeIcon(main));
+  main.on('page-title-updated', () => tray.showUnreadCount(main));
   main.on('resize', () => saveWindowBoundsState());
   main.on('unmaximize', () => saveFullScreenState());
 
@@ -259,7 +259,10 @@ const handleAppEvents = () => {
     appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
 
     Menu.setApplicationMenu(appMenu);
-    tray = new TrayIconHandler(environment.platform);
+    tray = new TrayHandler();
+    if (!environment.platform.IS_MAC_OS) {
+      tray.initTray();
+    }
     showMainWindow();
   });
 };
