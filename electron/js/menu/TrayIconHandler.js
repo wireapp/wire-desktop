@@ -31,8 +31,8 @@ class TrayIconHandler {
 
     const iconPaths = {
       badge: path.join(TRAY_ICON_IMAGE_ROOT, 'taskbar.overlay.png'),
-      tray: path.join(TRAY_ICON_IMAGE_ROOT, `tray.${this.defaultImageExtension}`),
-      trayWithBadge: path.join(TRAY_ICON_IMAGE_ROOT, `tray.badge.${this.defaultImageExtension}`),
+      tray: path.join(TRAY_ICON_IMAGE_ROOT, 'tray.png'),
+      trayWithBadge: path.join(TRAY_ICON_IMAGE_ROOT, 'tray.badge.png'),
     };
 
     this.icons = {
@@ -46,10 +46,6 @@ class TrayIconHandler {
       this.appIcon.setImage(this.icons.tray);
       buildTrayMenu.call(this);
     }
-  }
-
-  get defaultImageExtension() {
-    return this.platform.IS_WINDOWS ? 'ico' : 'png';
   }
 
   get hasOverlaySupport() {
