@@ -23,7 +23,7 @@ function buildTrayMenu() {
 }
 
 class TrayHandler {
-  constructor(platform, appIcon = new Tray(nativeImage.createEmpty())) {
+  constructor(platform) {
     this.lastUnreadCount = 0;
     this.platform = platform;
 
@@ -40,16 +40,16 @@ class TrayHandler {
       tray: nativeImage.createFromPath(iconPaths.tray),
       trayWithBadge: nativeImage.createFromPath(iconPaths.trayWithBadge),
     };
-
-    if (!platform.IS_MAC_OS) {
-      this.appIcon = appIcon;
-      this.appIcon.setImage(this.icons.tray);
-      buildTrayMenu.call(this);
-    }
   }
 
   get hasOverlaySupport() {
     return this.platform.IS_WINDOWS;
+  }
+
+  initIcon(appIcon = new Tray(nativeImage.createEmpty())) {
+    this.appIcon = appIcon;
+    this.appIcon.setImage(this.icons.tray);
+    buildTrayMenu.call(this);
   }
 
   updateBadgeIcon(win, count) {
