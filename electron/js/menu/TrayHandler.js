@@ -35,13 +35,11 @@ function updateBadgeCount(count) {
   this.lastUnreadCount = count;
 }
 
-function updateTrayIcon(win, count) {
-  if (this.trayIcon) {
+function updateIcons(win, count) {
+  if (this.icons) {
     const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
     this.trayIcon.setImage(trayImage);
-  }
 
-  if (this.hasOverlaySupport) {
     const overlayImage = count ? this.icons.badge : null;
     win.setOverlayIcon(overlayImage, locale.getText('unreadMessages'));
   }
@@ -49,13 +47,10 @@ function updateTrayIcon(win, count) {
 
 class TrayHandler {
   constructor() {
-    this.hasOverlaySupport = false;
     this.lastUnreadCount = 0;
   }
 
-  initTray(hasOverlaySupport, trayIcon = new Tray(nativeImage.createEmpty())) {
-    this.hasOverlaySupport = hasOverlaySupport;
-
+  initTray(trayIcon = new Tray(nativeImage.createEmpty())) {
     const IMAGE_ROOT = path.join(app.getAppPath(), 'img');
 
     const iconPaths = {
@@ -77,7 +72,7 @@ class TrayHandler {
   }
 
   showUnreadCount(win, count) {
-    updateTrayIcon.call(this, win, count);
+    updateIcons.call(this, win, count);
     flashApplicationWindow.call(this, win, count);
     updateBadgeCount.call(this, count);
   }
