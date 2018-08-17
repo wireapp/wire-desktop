@@ -42,31 +42,14 @@ describe('TrayIconHandler', () => {
       assert.equal(tray.icons.badge.constructor.name, 'NativeImage');
       assert.equal(tray.icons.tray.constructor.name, 'NativeImage');
       assert.equal(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
-    });
-
-    it('creates a tray icon on Linux', () => {
-      const tray = new TrayHandler();
-      tray.initIcon(true, TrayMock);
       sinon.assert.match(tray.appIcon, sinon.match.defined);
-    });
-
-    it('creates a tray icon on Window', () => {
-      const tray = new TrayHandler();
-      tray.initIcon(true, TrayMock);
-      sinon.assert.match(tray.appIcon, sinon.match.defined);
-    });
-
-    it('does not create a tray icon on macOS', () => {
-      const tray = new TrayHandler();
-      sinon.assert.match(tray.appIcon, sinon.match.typeOf('undefined'));
     });
   });
 
   describe('"updateBadgeIcon"', () => {
-    describe('"Mac"', () => {
+    describe('without tray icon initialization"', () => {
       it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
         const tray = new TrayHandler();
-        tray.initIcon(true, TrayMock);
         const appWindow = new BrowserWindow();
 
         sinon.spy(app, 'setBadgeCount');
@@ -87,7 +70,7 @@ describe('TrayIconHandler', () => {
       });
     });
 
-    describe('"Windows"', () => {
+    describe('with tray icon initialization', () => {
       it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
         const tray = new TrayHandler();
         tray.initIcon(true, TrayMock);
