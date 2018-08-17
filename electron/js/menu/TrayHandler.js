@@ -17,15 +17,19 @@ function buildTrayMenu() {
     },
   ]);
 
-  this.appIcon.on('click', () => windowManager.showPrimaryWindow());
-  this.appIcon.setContextMenu(contextMenu);
-  this.appIcon.setToolTip(config.NAME);
+  this.trayIcon.on('click', () => windowManager.showPrimaryWindow());
+  this.trayIcon.setContextMenu(contextMenu);
+  this.trayIcon.setToolTip(config.NAME);
 }
 
 class TrayHandler {
   constructor() {
     this.hasOverlaySupport = false;
     this.lastUnreadCount = 0;
+  }
+
+  initTray(hasOverlaySupport, trayIcon = new Tray(nativeImage.createEmpty())) {
+    this.hasOverlaySupport = hasOverlaySupport;
 
     const IMAGE_ROOT = path.join(app.getAppPath(), 'img');
 
@@ -40,21 +44,17 @@ class TrayHandler {
       tray: nativeImage.createFromPath(iconPaths.tray),
       trayWithBadge: nativeImage.createFromPath(iconPaths.trayWithBadge),
     };
-  }
 
-  initIcon(hasOverlaySupport, appIcon = new Tray(nativeImage.createEmpty())) {
-    this.hasOverlaySupport = hasOverlaySupport;
-
-    this.appIcon = appIcon;
-    this.appIcon.setImage(this.icons.tray);
+    this.trayIcon = trayIcon;
+    this.trayIcon.setImage(this.icons.tray);
 
     buildTrayMenu.call(this);
   }
 
   updateBadgeIcon(win, count) {
-    if (this.appIcon) {
+    if (this.trayIcon) {
       const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
-      this.appIcon.setImage(trayImage);
+      this.trayIcon.setImage(trayImage);
     }
 
     if (this.hasOverlaySupport) {

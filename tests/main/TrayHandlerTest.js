@@ -34,20 +34,20 @@ describe('TrayIconHandler', () => {
     setToolTip: () => {},
   };
 
-  describe('"constructor"', () => {
-    it('creates native images for all tray icons on instantiation', () => {
+  describe('initTray', () => {
+    it('creates native images for all tray icons and sets a default tray icon', () => {
       const tray = new TrayHandler();
-      tray.initIcon(true, TrayMock);
+      tray.initTray(true, TrayMock);
       assert.equal(Object.keys(tray.icons).length, 3);
       assert.equal(tray.icons.badge.constructor.name, 'NativeImage');
       assert.equal(tray.icons.tray.constructor.name, 'NativeImage');
       assert.equal(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
-      sinon.assert.match(tray.appIcon, sinon.match.defined);
+      sinon.assert.match(tray.trayIcon, sinon.match.defined);
     });
   });
 
-  describe('"updateBadgeIcon"', () => {
-    describe('without tray icon initialization"', () => {
+  describe('updateBadgeIcon', () => {
+    describe('without tray icon initialization', () => {
       it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
         const tray = new TrayHandler();
         const appWindow = new BrowserWindow();
@@ -73,7 +73,7 @@ describe('TrayIconHandler', () => {
     describe('with tray icon initialization', () => {
       it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
         const tray = new TrayHandler();
-        tray.initIcon(true, TrayMock);
+        tray.initTray(true, TrayMock);
         const appWindow = new BrowserWindow();
 
         sinon.spy(appWindow, 'flashFrame');
@@ -92,7 +92,7 @@ describe('TrayIconHandler', () => {
 
       it('flashes the app frame when app is not in focus and you receive new messages', done => {
         const tray = new TrayHandler();
-        tray.initIcon(true, TrayMock);
+        tray.initTray(true, TrayMock);
 
         const appWindow = new BrowserWindow({
           show: false,
@@ -114,7 +114,7 @@ describe('TrayIconHandler', () => {
 
       it('does change the flash state if the window has already been flashed', done => {
         const tray = new TrayHandler();
-        tray.initIcon(true, TrayMock);
+        tray.initTray(true, TrayMock);
         tray.lastUnreadCount = 5;
 
         const appWindow = new BrowserWindow({
