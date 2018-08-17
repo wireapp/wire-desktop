@@ -22,6 +22,31 @@ function buildTrayMenu() {
   this.trayIcon.setToolTip(config.NAME);
 }
 
+function flashApplicationWindow(win, count) {
+  if (win.isFocused() || !count) {
+    win.flashFrame(false);
+  } else if (count > this.lastUnreadCount) {
+    win.flashFrame(true);
+  }
+}
+
+function updateBadgeCount(count) {
+  app.setBadgeCount(count);
+  this.lastUnreadCount = count;
+}
+
+function updateTrayIcon(win, count) {
+  if (this.trayIcon) {
+    const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
+    this.trayIcon.setImage(trayImage);
+  }
+
+  if (this.hasOverlaySupport) {
+    const overlayImage = count ? this.icons.badge : null;
+    win.setOverlayIcon(overlayImage, locale.getText('unreadMessages'));
+  }
+}
+
 class TrayHandler {
   constructor() {
     this.hasOverlaySupport = false;
@@ -51,25 +76,10 @@ class TrayHandler {
     buildTrayMenu.call(this);
   }
 
-  updateBadgeIcon(win, count) {
-    if (this.trayIcon) {
-      const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
-      this.trayIcon.setImage(trayImage);
-    }
-
-    if (this.hasOverlaySupport) {
-      const overlayImage = count ? this.icons.badge : null;
-      win.setOverlayIcon(overlayImage, locale.getText('unreadMessages'));
-    }
-
-    if (win.isFocused() || !count) {
-      win.flashFrame(false);
-    } else if (count > this.lastUnreadCount) {
-      win.flashFrame(true);
-    }
-
-    app.setBadgeCount(count);
-    this.lastUnreadCount = count;
+  showUnreadCount(win, count) {
+    updateTrayIcon.call(this, win, count);
+    flashApplicationWindow.call(this, win, count);
+    updateBadgeCount.call(this, count);
   }
 }
 

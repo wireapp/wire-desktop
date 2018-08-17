@@ -80,7 +80,7 @@ const bindIpcEvents = () => {
   });
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count) => {
-    tray.updateBadgeIcon(main, count);
+    tray.showUnreadCount(main, count);
   });
 
   ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, event => {
@@ -213,7 +213,7 @@ const showMainWindow = () => {
   main.on('focus', () => main.flashFrame(false));
   main.on('maximize', () => saveFullScreenState());
   main.on('move', () => saveWindowBoundsState());
-  main.on('page-title-updated', () => tray.updateBadgeIcon(main));
+  main.on('page-title-updated', () => tray.showUnreadCount(main));
   main.on('resize', () => saveWindowBoundsState());
   main.on('unmaximize', () => saveFullScreenState());
 
