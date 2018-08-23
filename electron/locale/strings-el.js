@@ -58,7 +58,7 @@ string.menuSavePictureAs = 'Αποθήκευση Εικόνας Ως...';
 string.menuNoSuggestions = 'Καμία πρόταση';
 
 string.restartNeeded = 'Απαιτείται επανεκκίνηση';
-string.restartLocale = 'Παρακαλούμε επανεκκινήστε την εφαρμογή για να διατηρήσετε τις τρέχουσες ρυθμίσεις.';
+string.restartLocale = 'Παρακαλούμε επανεκκινήστε την εφαρμογή για να εφαρμόσετε αυτήν την ρύθμιση.';
 string.restartLater = 'Αργότερα';
 string.restartNow = 'Επανεκκίνηση τώρα';
 
@@ -68,7 +68,9 @@ string.trayQuit = 'Έξοδος';
 string.unreadMessages = 'Μη αναγνωσμένο μήνυμα';
 
 string.wrapperAddAccount = 'Προσθήκη Λογαριασμού';
-string.wrapperCreateTeam = 'Δημιουργία ομάδας';
+string.wrapperCreateTeam = 'Δημιουργία Ομάδας';
 string.wrapperLogOut = 'Αποσύνδεση';
+string.wrapperManageTeam = 'Διαχείριση Ομάδας';
+string.wrapperRemoveAccount = 'Κατάργηση Λογαριασμού';
 
 module.exports = string;

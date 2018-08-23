@@ -67,6 +67,10 @@ string.trayQuit = 'Afslut';
 
 string.unreadMessages = 'Ulæst besked';
 
+string.wrapperAddAccount = 'Tilføj konto';
+string.wrapperCreateTeam = 'Opret team';
 string.wrapperLogOut = 'Log ud';
+string.wrapperManageTeam = 'Administrer Team';
+string.wrapperRemoveAccount = 'Fjern konto';
 
 module.exports = string;

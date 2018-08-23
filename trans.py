@@ -93,7 +93,7 @@ for filename in os.listdir(root):
       source = re.sub(r'#(.)+\n', '', source)
       source = '\n'.join(map(fix_apostrophe, source.splitlines()))
 
-      f.write("'use strict';\n\nlet string = {};\n\n")
+      f.write("'use strict';\n\nconst string = {};\n\n")
       f.write(source)
       f.write('\nmodule.exports = string;\n')
 
@@ -102,6 +102,6 @@ for filename in os.listdir(root):
       source = f.read()
 
     with open(os.path.join(root, filename.replace('.js', '-en.js')), 'w') as f:
-      f.write("'use strict';\n\nlet string = {};\n\n")
+      f.write("'use strict';\n\nconst string = {};\n\n")
       f.write(source.replace("'use strict';\n\n", ''))
       f.write('\nmodule.exports = string;\n')

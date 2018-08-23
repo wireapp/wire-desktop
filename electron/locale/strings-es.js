@@ -68,7 +68,7 @@ string.trayQuit = 'Salir';
 string.unreadMessages = 'Mensaje sin leer';
 
 string.wrapperAddAccount = 'Añadir Cuenta';
-string.wrapperCreateTeam = 'Crear Equipo';
+string.wrapperCreateTeam = 'Crear un Equipo';
 string.wrapperLogOut = 'Cerrar Sesión';
 string.wrapperManageTeam = 'Administrar Equipo';
 string.wrapperRemoveAccount = 'Eliminar Cuenta';

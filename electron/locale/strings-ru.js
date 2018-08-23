@@ -9,19 +9,19 @@ string.aboutWebappVersion = 'Версия Wire для веб';
 
 string.menuConversation = 'Разговор';
 string.menuStart = 'Начать';
-string.menuEdit = 'Редактировать';
+string.menuEdit = 'Правка';
 string.menuWindow = 'Окно';
 string.menuView = 'Вид';
 string.menuHelp = 'Справка';
 string.menuStartup = 'Запускать Wire при загрузке системы';
 string.menuLocale = 'Язык';
 string.menuAbout = 'О Wire';
-string.menuSignOut = 'Выход';
+string.menuSignOut = 'Выйти';
 string.menuPing = 'Пинг';
-string.menuCall = 'Звонок';
-string.menuVideoCall = 'Видеозвонок';
+string.menuCall = 'Вызов';
+string.menuVideoCall = 'Видеовызов';
 string.menuPeople = 'Участники';
-string.menuAddPeople = 'Добавить участников';
+string.menuAddPeople = 'Добавить участников...';
 string.menuArchive = 'Архивировать';
 string.menuUnarchive = 'Разархивировать';
 string.menuMute = 'Выкл. звук';
@@ -32,11 +32,11 @@ string.menuBlock = 'Заблокировать';
 string.menuUndo = 'Отменить';
 string.menuRedo = 'Повторить';
 string.menuCut = 'Вырезать';
-string.menuCopy = 'Копировать';
+string.menuCopy = 'Скопировать';
 string.menuPaste = 'Вставить';
 string.menuSelectAll = 'Выбрать все';
-string.menuSpelling = 'Проверять правописание при наборе текста';
-string.menuMinimize = 'Минимизировать';
+string.menuSpelling = 'Проверять правописание при вводе';
+string.menuMinimize = 'Свернуть';
 string.menuClose = 'Закрыть';
 string.menuNextConversation = 'Следующий разговор';
 string.menuPreviousConversation = 'Предыдущий разговор';
@@ -58,7 +58,7 @@ string.menuSavePictureAs = 'Сохранить изображение как...'
 string.menuNoSuggestions = 'Нет предложений';
 
 string.restartNeeded = 'Необходим перезапуск';
-string.restartLocale = 'Пожалуйста, перезапустите приложение, чтобы новые настройки вступили в силу.';
+string.restartLocale = 'Пожалуйста, перезапустите приложение для применения новых настроек.';
 string.restartLater = 'Позже';
 string.restartNow = 'Перезапустить сейчас';
 
@@ -69,7 +69,7 @@ string.unreadMessages = 'Непрочитанное сообщение';
 
 string.wrapperAddAccount = 'Добавить аккаунт';
 string.wrapperCreateTeam = 'Создать команду';
-string.wrapperLogOut = 'Выход';
+string.wrapperLogOut = 'Выйти';
 string.wrapperManageTeam = 'Управлять командой';
 string.wrapperRemoveAccount = 'Удалить аккаунт';
 
