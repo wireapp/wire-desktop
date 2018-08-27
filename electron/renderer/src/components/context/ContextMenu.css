@@ -43,6 +43,7 @@
   transition: opacity;
   transition-timing-function: var(--ease-out-quart);
   transition-duration: var(--animation-timing-slow);
+  transition-delay: var(--animation-timing-slow);
 }
 
 .ContextMenu-item:hover,
