@@ -41,8 +41,7 @@ const centerOfEventTarget = event => {
 
 const getClassName = account => {
   const showIconBadge = account.badgeCount > 0 ? ' Sidebar-icon-badge' : '';
-  const showIconCursor = account.visible ? '' : ' Sidebar-icon-cursor';
-  return `Sidebar-icon${showIconBadge}${showIconCursor}`;
+  return `Sidebar-icon${showIconBadge}`;
 };
 
 const Sidebar = ({
@@ -61,25 +60,25 @@ const Sidebar = ({
     onClick={connected.setAccountContextHidden}
   >
     {accounts.map(account => (
-      <div className="Sidebar-cell" key={account.id}>
-        <div
-          style={{color: colorFromId(currentAccentID)}}
-          className={getClassName(account)}
-          onClick={() => connected.switchAccount(account.id)}
-          onContextMenu={preventFocus(event => {
-            const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
-              account.teamRole
-            );
-            connected.toggleEditAccountMenuVisibility(
-              ...centerOfEventTarget(event),
-              account.id,
-              account.sessionID,
-              account.lifecycle,
-              isAtLeastAdmin
-            );
-          })}
-          onMouseDown={preventFocus()}
-        >
+      <div
+        className="Sidebar-cell"
+        key={account.id}
+        onClick={() => connected.switchAccount(account.id)}
+        onContextMenu={preventFocus(event => {
+          const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
+            account.teamRole
+          );
+          connected.toggleEditAccountMenuVisibility(
+            ...centerOfEventTarget(event),
+            account.id,
+            account.sessionID,
+            account.lifecycle,
+            isAtLeastAdmin
+          );
+        })}
+        onMouseDown={preventFocus()}
+      >
+        <div style={{color: colorFromId(currentAccentID)}} className={getClassName(account)}>
           {account.teamID ? (
             <TeamIcon account={account} accentID={currentAccentID} />
           ) : (

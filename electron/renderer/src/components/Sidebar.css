@@ -19,16 +19,27 @@
 
 .Sidebar {
   background-color: var(--sidebar-color);
-  width: 78px;
+  width: 48px;
   padding-top: 40px;
   display: flex;
   align-items: center;
   flex-direction: column;
   flex: 0 0 auto;
+
+  transition: width;
+  transition-timing-function: var(--ease-out-quart);
+  transition-duration: var(--animation-timing-slow);
+  transition-delay: var(--animation-timing-slow);
+}
+
+.Sidebar:hover {
+  width: 78px;
+  transition-delay: 0ms;
 }
 
 .Sidebar:hover .ContextMenuTrigger {
   opacity: 1;
+  transition-delay: 0ms;
 }
 
 .Sidebar-cell {
@@ -54,10 +65,6 @@
   background: #fff;
   border: 1.5px solid var(--sidebar-color);
   border-radius: 50%;
-}
-
-.Sidebar-icon-cursor {
-  cursor: pointer;
 }
 
 .Sidebar-account-add {
