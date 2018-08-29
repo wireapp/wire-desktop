@@ -21,7 +21,7 @@
     "babel-preset-react": "6.24.1",
     "css-loader": "1.0.0",
     "electron": "1.8.8",
-    "electron-builder": "20.28.2",
+    "electron-builder": "20.28.3",
     "electron-mocha": "6.0.4",
     "electron-packager": "12.1.1",
     "electron-winstaller": "2.5.2",
