@@ -144,7 +144,7 @@ const showMainWindow = () => {
     width: mainWindowState.width,
   });
 
-  mainWindowState.manage(win);
+  mainWindowState.manage(main);
 
   const isFullScreen = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
   if (isFullScreen) {
