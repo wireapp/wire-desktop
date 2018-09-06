@@ -122,7 +122,7 @@ const showMainWindow = () => {
   const showMenuBar = settings.restore(SETTINGS_TYPE.SHOW_MENU_BAR, true);
   const mainWindowState = windowStateKeeper({
     defaultHeight: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    defaultWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    defaultWidth: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
   main = new BrowserWindow({
