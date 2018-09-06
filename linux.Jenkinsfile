@@ -22,7 +22,7 @@ node('Linux_Node') {
 
   stage('Build') {
     try {
-      sh 'pip install -r requirements.txt'
+      sh 'sudo pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.11.3', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
