@@ -24,5 +24,4 @@ module.exports = {
   LOCALE: 'locale',
   SHOW_MENU_BAR: 'showMenu',
   SPELL_CHECK: 'spelling',
-  WINDOW_BOUNDS: 'bounds',
 };
