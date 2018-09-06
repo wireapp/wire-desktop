@@ -142,6 +142,8 @@ const showMainWindow = () => {
       webviewTag: true,
     },
     width: mainWindowState.width,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
   });
 
   mainWindowState.manage(main);
