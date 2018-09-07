@@ -46,6 +46,12 @@ class ConfigurationPersistence {
     this.debug('Init ConfigurationPersistence');
   }
 
+  delete(name) {
+    this.debug('Deleting %s', name);
+    delete global._ConfigurationPersistence[name];
+    return true;
+  }
+
   save(name, value) {
     this.debug('Saving %s with value "%o"', name, value);
     global._ConfigurationPersistence[name] = value;

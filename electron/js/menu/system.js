@@ -390,11 +390,11 @@ const changeLocale = language => {
 };
 
 module.exports = {
-  createMenu: () => {
+  createMenu: isFullScreen => {
     if (environment.platform.IS_MAC_OS) {
       menuTemplate.unshift(darwinTemplate);
       windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
-      toggleFullScreenTemplate.checked = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
+      toggleFullScreenTemplate.checked = isFullScreen || false;
     }
 
     if (environment.platform.IS_WINDOWS) {
@@ -410,7 +410,7 @@ module.exports = {
         i18n: 'menuPreferences',
       });
       windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
-      toggleFullScreenTemplate.checked = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
+      toggleFullScreenTemplate.checked = isFullScreen || false;
     }
 
     if (!environment.platform.IS_MAC_OS) {

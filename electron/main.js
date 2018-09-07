@@ -23,7 +23,7 @@ const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
-const windowStateKeeper = require('electron-window-state');
+const WindowStateKeeper = require('electron-window-state');
 const path = require('path');
 const {BrowserWindow, Menu, app, ipcMain, shell} = require('electron');
 
@@ -57,6 +57,7 @@ const util = require('./js/util');
 const windowManager = require('./js/window-manager');
 const TrayHandler = require('./js/menu/TrayHandler');
 const EVENT_TYPE = require('./js/lib/eventType');
+const upgradeSettingsToV1 = require('./js/lib/upgrade-settings');
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -69,6 +70,7 @@ let tray = undefined;
 
 let main;
 let isQuitting = false;
+let isFullScreen = false;
 
 // IPC events
 const bindIpcEvents = () => {
@@ -117,19 +119,31 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
 };
 
-// App Windows
-const showMainWindow = () => {
-  const showMenuBar = settings.restore(SETTINGS_TYPE.SHOW_MENU_BAR, true);
-  const showInFullScreen = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
+const initWindowStateKeeper = () => {
   const loadedWindowBounds = settings.restore(SETTINGS_TYPE.WINDOW_BOUNDS, {
     height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
     width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
-  const mainWindowState = windowStateKeeper({
+
+  const showInFullScreen = settings.restore(SETTINGS_TYPE.FULL_SCREEN, undefined);
+
+  const stateKeeperOptions = {
     defaultHeight: loadedWindowBounds.height,
     defaultWidth: loadedWindowBounds.width,
-    fullScreen: showInFullScreen,
-  });
+  };
+
+  if (typeof showInFullScreen !== 'undefined') {
+    stateKeeperOptions.fullScreen = showInFullScreen;
+    stateKeeperOptions.maximize = showInFullScreen;
+    isFullScreen = showInFullScreen;
+  }
+
+  return WindowStateKeeper(stateKeeperOptions);
+};
+
+// App Windows
+const showMainWindow = mainWindowState => {
+  const showMenuBar = settings.restore(SETTINGS_TYPE.SHOW_MENU_BAR, true);
 
   const options = {
     autoHideMenuBar: !showMenuBar,
@@ -153,7 +167,12 @@ const showMainWindow = () => {
   };
 
   main = new BrowserWindow(options);
+  if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
+    main.maximize();
+  }
   mainWindowState.manage(main);
+
+  upgradeSettingsToV1();
 
   let baseURL = BASE_URL;
   baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
@@ -212,21 +231,10 @@ const showMainWindow = () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
 
-  const saveFullScreenState = () => settings.save(SETTINGS_TYPE.FULL_SCREEN, main.isMaximized());
-  const saveWindowBoundsState = () => {
-    if (!main.isMaximized()) {
-      settings.save(SETTINGS_TYPE.WINDOW_BOUNDS, main.getBounds());
-    }
-  };
-
   main.on('focus', () => main.flashFrame(false));
-  main.on('maximize', () => saveFullScreenState());
-  main.on('move', () => saveWindowBoundsState());
   main.on('page-title-updated', () => tray.showUnreadCount(main));
-  main.on('resize', () => saveWindowBoundsState());
-  main.on('unmaximize', () => saveFullScreenState());
 
-  main.on('close', async event => {
+  main.on('close', event => {
     if (!isQuitting) {
       event.preventDefault();
       debugMain('Closing window...');
@@ -261,7 +269,8 @@ const handleAppEvents = () => {
 
   // System Menu & Tray Icon & Show window
   app.on('ready', () => {
-    const appMenu = systemMenu.createMenu();
+    const mainWindowState = initWindowStateKeeper();
+    const appMenu = systemMenu.createMenu(isFullScreen);
     if (environment.app.IS_DEVELOPMENT) {
       appMenu.append(developerMenu);
     }
@@ -272,7 +281,7 @@ const handleAppEvents = () => {
     if (!environment.platform.IS_MAC_OS) {
       tray.initTray();
     }
-    showMainWindow();
+    showMainWindow(mainWindowState);
   });
 };
 
