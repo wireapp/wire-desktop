@@ -23,6 +23,7 @@ const debugMain = debug('mainTmp');
 const fileUrl = require('file-url');
 const fs = require('fs-extra');
 const minimist = require('minimist');
+const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const {BrowserWindow, Menu, app, ipcMain, shell} = require('electron');
 
@@ -119,11 +120,21 @@ const bindIpcEvents = () => {
 // App Windows
 const showMainWindow = () => {
   const showMenuBar = settings.restore(SETTINGS_TYPE.SHOW_MENU_BAR, true);
+  const showInFullScreen = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
+  const loadedWindowBounds = settings.restore(SETTINGS_TYPE.WINDOW_BOUNDS, {
+    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+  });
+  const mainWindowState = windowStateKeeper({
+    defaultHeight: loadedWindowBounds.height,
+    defaultWidth: loadedWindowBounds.width,
+    fullScreen: showInFullScreen,
+  });
 
-  main = new BrowserWindow({
+  const options = {
     autoHideMenuBar: !showMenuBar,
     backgroundColor: '#f7f8fa',
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
+    height: mainWindowState.height,
     icon: ICON_PATH,
     minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
     minWidth: config.WINDOW.MAIN.MIN_WIDTH,
@@ -136,15 +147,13 @@ const showMainWindow = () => {
       preload: PRELOAD_JS,
       webviewTag: true,
     },
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
-  });
+    width: mainWindowState.width,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+  };
 
-  const isFullScreen = settings.restore(SETTINGS_TYPE.FULL_SCREEN, false);
-  const windowBounds = settings.restore(SETTINGS_TYPE.WINDOW_BOUNDS, main.getBounds());
-  main.setBounds(windowBounds);
-  if (isFullScreen) {
-    main.maximize();
-  }
+  main = new BrowserWindow(options);
+  mainWindowState.manage(main);
 
   let baseURL = BASE_URL;
   baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;

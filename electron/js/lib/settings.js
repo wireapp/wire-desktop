@@ -30,6 +30,7 @@ const INIT_JSON = path.join(app.getPath('userData'), 'init.json');
 class ConfigurationPersistence {
   constructor() {
     this.debug = debug('ConfigurationPersistence');
+    this.configVersion = 1;
 
     if (typeof global._ConfigurationPersistence === 'undefined') {
       this.debug('Reading config file');
@@ -59,7 +60,8 @@ class ConfigurationPersistence {
 
   persistToFile() {
     return new Promise((resolve, reject) => {
-      const dataInJSON = JSON.stringify(global._ConfigurationPersistence);
+      global._ConfigurationPersistence.configVersion = this.configVersion;
+      const dataInJSON = JSON.stringify(global._ConfigurationPersistence, null, 2);
 
       if (dataInJSON) {
         this.debug('Saving configuration to persistent storage: %o', dataInJSON);
