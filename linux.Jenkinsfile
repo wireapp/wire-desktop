@@ -10,7 +10,9 @@ node('Linux_Node') {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
-  docker.image('node:8.11.4-jessie').inside {
+  def environment = docker.build("node", "-f linux.Dockerfile .")
+
+  environment.inside {
 
     stage('Checkout & Clean') {
       git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
@@ -21,10 +23,6 @@ node('Linux_Node') {
     def buildInfo = parseJson(text)
     def version = buildInfo.version + '.' + env.BUILD_NUMBER
     currentBuild.displayName = version;
-
-    stage('Install python') {
-      sh 'apt-get install -y --no-install-recommends python pip'
-    }
 
     stage('Build') {
       try {
