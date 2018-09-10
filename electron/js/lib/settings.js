@@ -21,14 +21,16 @@
 
 const fs = require('fs');
 const path = require('path');
-
-const app = require('electron').app || require('electron').remote.app;
 const debug = require('debug');
+const mkdirp = require('mkdirp');
+const app = require('electron').app || require('electron').remote.app;
 
-const INIT_JSON = path.join(app.getPath('userData'), 'init.json');
+const configDir = path.join(app.getPath('userData'), 'config');
+mkdirp.sync(configDir);
 
 class ConfigurationPersistence {
   constructor() {
+    this.initFile = path.join(configDir, 'init.json');
     this.debug = debug('ConfigurationPersistence');
     this.configVersion = 1;
 
@@ -72,7 +74,7 @@ class ConfigurationPersistence {
       if (dataInJSON) {
         this.debug('Saving configuration to persistent storage: %o', dataInJSON);
 
-        return fs.writeFile(INIT_JSON, dataInJSON, 'utf8', (error, data) => {
+        return fs.writeFile(this.initFile, dataInJSON, 'utf8', (error, data) => {
           if (error) {
             this.debug('An error occurred while persisting the configuration: %s', error);
             return reject(error);
@@ -89,7 +91,7 @@ class ConfigurationPersistence {
 
   readFromFile() {
     this.debug('Reading user configuration file...');
-    const dataInJSON = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
+    const dataInJSON = JSON.parse(fs.readFileSync(this.initFile, 'utf8'));
     this.debug('%o', dataInJSON);
     return dataInJSON;
   }

@@ -37,6 +37,7 @@ const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 // Configuration persistence
+const upgradeSettingsToV1 = require('./js/lib/upgrade-settings-v1');
 const settings = require('./js/lib/settings');
 const SETTINGS_TYPE = require('./js/lib/settingsType');
 
@@ -57,7 +58,6 @@ const util = require('./js/util');
 const windowManager = require('./js/window-manager');
 const TrayHandler = require('./js/menu/TrayHandler');
 const EVENT_TYPE = require('./js/lib/eventType');
-const upgradeSettingsToV1 = require('./js/lib/upgrade-settings');
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -130,6 +130,7 @@ const initWindowStateKeeper = () => {
   const stateKeeperOptions = {
     defaultHeight: loadedWindowBounds.height,
     defaultWidth: loadedWindowBounds.width,
+    path: path.join(app.getPath('userData'), 'config'),
   };
 
   if (typeof showInFullScreen !== 'undefined') {

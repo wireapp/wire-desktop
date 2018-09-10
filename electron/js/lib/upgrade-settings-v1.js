@@ -17,12 +17,27 @@
  *
  */
 
-//@ts-check
+// @ts-check
 
+const app = require('electron').app || require('electron').remote.app;
 const debug = require('debug');
+const fs = require('fs');
+const path = require('path');
+const mkdirp = require('mkdirp');
+
 const debugLogger = debug('UpgradeInitFile');
 const settings = require('./settings');
 const SETTINGS_TYPE = require('./settingsType');
+const configDir = path.join(app.getPath('userData'), 'config');
+
+const oldConfigFile = path.join(app.getPath('userData'), 'init.json');
+const configFile = path.join(configDir, 'init.json');
+
+mkdirp.sync(configDir);
+
+if (fs.existsSync(oldConfigFile)) {
+  fs.renameSync(oldConfigFile, configFile);
+}
 
 const upgradeSettingsToV1 = () => {
   try {
