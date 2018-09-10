@@ -12,6 +12,11 @@ node('Linux_Node') {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
+  def text = readFile('info.json')
+  def buildInfo = parseJson(text)
+  def version = buildInfo.version + '.' + env.BUILD_NUMBER
+  currentBuild.displayName = version;
+
   def environment = docker.build("node", "-f linux.Dockerfile .")
 
   environment.inside {
@@ -20,11 +25,6 @@ node('Linux_Node') {
       git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
       sh returnStatus: true, script: 'rm -rf $WORKSPACE/wrap/ $WORKSPACE/electron/node_modules/ $WORKSPACE/node_modules/'
     }
-
-    def text = readFile('info.json')
-    def buildInfo = parseJson(text)
-    def version = buildInfo.version + '.' + env.BUILD_NUMBER
-    currentBuild.displayName = version;
 
     stage('Build') {
       try {
