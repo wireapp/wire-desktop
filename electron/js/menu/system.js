@@ -26,9 +26,9 @@ const environment = require('./../environment');
 const lifecycle = require('./../lifecycle');
 const locale = require('./../../locale/locale');
 const windowManager = require('./../window-manager');
-const settings = require('./../lib/settings');
+const settings = require('../settings/ConfigurationPersistence');
 const EVENT_TYPE = require('./../lib/eventType');
-const SETTINGS_TYPE = require('./../lib/settingsType');
+const SettingsType = require('../settings/SettingsType');
 
 let menu;
 
@@ -137,7 +137,7 @@ const showWireTemplate = {
 };
 
 const toggleMenuTemplate = {
-  checked: settings.restore(SETTINGS_TYPE.SHOW_MENU_BAR, true),
+  checked: settings.restore(SettingsType.SHOW_MENU_BAR, true),
   click: () => {
     const mainBrowserWindow = getPrimaryWindow();
     const showMenu = mainBrowserWindow.isMenuBarAutoHide();
@@ -148,7 +148,7 @@ const toggleMenuTemplate = {
       mainBrowserWindow.setMenuBarVisibility(showMenu);
     }
 
-    settings.save(SETTINGS_TYPE.SHOW_MENU_BAR, showMenu);
+    settings.save(SettingsType.SHOW_MENU_BAR, showMenu);
   },
   i18n: 'menuShowHide',
   type: 'checkbox',
@@ -165,10 +165,10 @@ const toggleFullScreenTemplate = {
 };
 
 const toggleAutoLaunchTemplate = {
-  checked: settings.restore(SETTINGS_TYPE.AUTO_LAUNCH, false),
+  checked: settings.restore(SettingsType.AUTO_LAUNCH, false),
   click: () => {
-    const shouldAutoLaunch = !settings.restore(SETTINGS_TYPE.AUTO_LAUNCH);
-    settings.save(SETTINGS_TYPE.AUTO_LAUNCH, shouldAutoLaunch);
+    const shouldAutoLaunch = !settings.restore(SettingsType.AUTO_LAUNCH);
+    settings.save(SettingsType.AUTO_LAUNCH, shouldAutoLaunch);
     return shouldAutoLaunch ? launcher.enable() : launcher.disable();
   },
   i18n: 'menuStartup',
@@ -208,8 +208,8 @@ const editTemplate = {
     },
     separatorTemplate,
     {
-      checked: supportsSpellCheck && settings.restore(SETTINGS_TYPE.SPELL_CHECK, false),
-      click: event => settings.save(SETTINGS_TYPE.SPELL_CHECK, event.checked),
+      checked: supportsSpellCheck && settings.restore(SettingsType.SPELL_CHECK, false),
+      click: event => settings.save(SettingsType.SPELL_CHECK, event.checked),
       enabled: supportsSpellCheck,
       i18n: 'menuSpelling',
       type: 'checkbox',

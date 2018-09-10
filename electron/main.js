@@ -37,9 +37,9 @@ const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 // Configuration persistence
-const settings = require('./js/lib/settings');
-const SETTINGS_TYPE = require('./js/lib/settingsType');
-const upgradeSettingsToV1 = require('./js/lib/upgrade-settings-v1');
+const settings = require('./js/settings/ConfigurationPersistence');
+const SettingsType = require('./js/settings/SettingsType');
+const upgradeSettingsToV1 = require('./js/settings/upgrade-settings-v1');
 upgradeSettingsToV1();
 
 // Wrapper modules
@@ -121,12 +121,12 @@ const bindIpcEvents = () => {
 };
 
 const initWindowStateKeeper = () => {
-  const loadedWindowBounds = settings.restore(SETTINGS_TYPE.WINDOW_BOUNDS, {
+  const loadedWindowBounds = settings.restore(SettingsType.WINDOW_BOUNDS, {
     height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
     width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
-  const showInFullScreen = settings.restore(SETTINGS_TYPE.FULL_SCREEN, undefined);
+  const showInFullScreen = settings.restore(SettingsType.FULL_SCREEN, undefined);
 
   const stateKeeperOptions = {
     defaultHeight: loadedWindowBounds.height,
@@ -145,7 +145,7 @@ const initWindowStateKeeper = () => {
 
 // App Windows
 const showMainWindow = mainWindowState => {
-  const showMenuBar = settings.restore(SETTINGS_TYPE.SHOW_MENU_BAR, true);
+  const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
   const options = {
     autoHideMenuBar: !showMenuBar,

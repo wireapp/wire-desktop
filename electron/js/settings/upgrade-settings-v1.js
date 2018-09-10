@@ -25,20 +25,21 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const debugLogger = debug('UpgradeInitFile');
-const settings = require('./settings');
-const SETTINGS_TYPE = require('./settingsType');
+const settings = require('./ConfigurationPersistence');
+const SettingsType = require('./SettingsType');
 const oldConfigFile = path.join(app.getPath('userData'), 'init.json');
 const configDir = path.join(app.getPath('userData'), 'config');
 
 fs.ensureDirSync(configDir);
 
-const restoreOrUndefined = setting => settings.restore(setting, undefined);
+const getSetting = setting => settings.restore(setting, undefined);
+const hasConfigVersion = typeof getSetting('configVersion') === 'undefined';
 
 const upgradeSettingsToV1 = () => {
-  if (fs.existsSync(oldConfigFile) && typeof restoreOrUndefined('configVersion') === 'undefined') {
+  if (fs.existsSync(oldConfigFile) && hasConfigVersion) {
     try {
-      [SETTINGS_TYPE.FULL_SCREEN, SETTINGS_TYPE.WINDOW_BOUNDS].forEach(setting => {
-        if (typeof restoreOrUndefined(setting) !== 'undefined') {
+      [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS].forEach(setting => {
+        if (typeof getSetting(setting) !== 'undefined') {
           settings.delete(setting);
           debugLogger(`Deleted "${setting}" property from old init file.`);
         }

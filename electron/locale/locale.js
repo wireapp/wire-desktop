@@ -19,8 +19,8 @@
  */
 
 const app = require('electron').app || require('electron').remote.app;
-const settings = require('./../js/lib/settings');
-const SETTINGS_TYPE = require('./../js/lib/settingsType');
+const settings = require('../js/settings/ConfigurationPersistence');
+const SettingsType = require('../js/settings/SettingsType');
 
 const cs = require('./strings-cs');
 const da = require('./strings-da');
@@ -78,7 +78,7 @@ const getCurrent = () => {
   if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
     const defaultLocale = parseLocale(app.getLocale().substr(0, 2));
-    current = settings.restore(SETTINGS_TYPE.LOCALE, defaultLocale);
+    current = settings.restore(SettingsType.LOCALE, defaultLocale);
   }
   return current;
 };
@@ -95,7 +95,7 @@ const getText = string_identifier => {
 
 const setLocale = locale => {
   current = parseLocale(locale);
-  settings.save(SETTINGS_TYPE.LOCALE, current);
+  settings.save(SettingsType.LOCALE, current);
 };
 
 module.exports = {

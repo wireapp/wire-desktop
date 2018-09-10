@@ -18,8 +18,8 @@
  */
 
 const pkg = require('./../package.json');
-const settings = require('./lib/settings');
-const SETTINGS_TYPE = require('./lib/settingsType');
+const settings = require('./settings/ConfigurationPersistence');
+const SettingsType = require('./settings/SettingsType');
 
 let currentEnvironment = undefined;
 
@@ -75,13 +75,13 @@ const platform = {
 };
 
 const restoreEnvironment = () => {
-  currentEnvironment = settings.restore(SETTINGS_TYPE.ENV, TYPE.INTERNAL);
+  currentEnvironment = settings.restore(SettingsType.ENV, TYPE.INTERNAL);
   return currentEnvironment;
 };
 
 const setEnvironment = env => {
   currentEnvironment = env ? env : restoreEnvironment();
-  settings.save(SETTINGS_TYPE.ENV, currentEnvironment);
+  settings.save(SettingsType.ENV, currentEnvironment);
 };
 
 const web = {
