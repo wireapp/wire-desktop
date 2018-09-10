@@ -39,8 +39,6 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 // Configuration persistence
 const settings = require('./js/settings/ConfigurationPersistence');
 const SettingsType = require('./js/settings/SettingsType');
-const upgradeSettingsToV1 = require('./js/settings/upgrade-settings-v1');
-upgradeSettingsToV1();
 
 // Wrapper modules
 const about = require('./js/about');

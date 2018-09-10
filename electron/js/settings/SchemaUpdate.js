@@ -19,7 +19,7 @@
 
 // @ts-check
 
-const app = require('electron').app || require('electron').remote.app;
+const {app} = require('electron');
 const debug = require('debug');
 const fs = require('fs-extra');
 const path = require('path');
@@ -27,27 +27,29 @@ const path = require('path');
 const debugLogger = debug('UpgradeInitFile');
 const settings = require('./ConfigurationPersistence');
 const SettingsType = require('./SettingsType');
-const oldConfigFile = path.join(app.getPath('userData'), 'init.json');
-const configDir = path.join(app.getPath('userData'), 'config');
-
-fs.ensureDirSync(configDir);
 
 const getSetting = setting => settings.restore(setting, undefined);
-const hasConfigVersion = typeof getSetting('configVersion') === 'undefined';
+const hasConfigVersion = typeof getSetting('configVersion') !== 'undefined';
 
-const upgradeSettingsToV1 = () => {
-  if (fs.existsSync(oldConfigFile) && hasConfigVersion) {
-    try {
-      [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS].forEach(setting => {
-        if (typeof getSetting(setting) !== 'undefined') {
-          settings.delete(setting);
-          debugLogger(`Deleted "${setting}" property from old init file.`);
-        }
-      });
-    } catch (error) {
-      debugLogger(error);
+const toVersion1 = (
+  configFileV0 = path.join(app.getPath('userData'), 'init.json'),
+  configFileV1 = path.join(app.getPath('userData'), 'config', 'init.json')
+) => {
+  if (fs.existsSync(configFileV0)) {
+    fs.moveSync(configFileV0, configFileV1);
+    if (hasConfigVersion) {
+      try {
+        [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS].forEach(setting => {
+          if (typeof getSetting(setting) !== 'undefined') {
+            settings.delete(setting);
+            debugLogger(`Deleted "${setting}" property from old init file.`);
+          }
+        });
+      } catch (error) {
+        debugLogger(error);
+      }
     }
   }
 };
 
-module.exports = upgradeSettingsToV1;
+module.exports = {toVersion1};

@@ -23,18 +23,12 @@ const fs = require('fs-extra');
 const path = require('path');
 const debug = require('debug');
 const app = require('electron').app || require('electron').remote.app;
+const SchemaUpdate = require('./SchemaUpdate');
 
 const configDir = path.join(app.getPath('userData'), 'config');
-fs.ensureDirSync(configDir);
 
-// ---- move deprecated config file
-const oldConfigFile = path.join(app.getPath('userData'), 'init.json');
+const configFileV0 = path.join(app.getPath('userData'), 'init.json');
 const configFile = path.join(configDir, 'init.json');
-
-if (fs.existsSync(oldConfigFile)) {
-  fs.moveSync(oldConfigFile, configFile);
-}
-// ----
 
 class ConfigurationPersistence {
   constructor() {
@@ -98,6 +92,10 @@ class ConfigurationPersistence {
   }
 
   readFromFile() {
+    fs.ensureDirSync(configDir);
+
+    SchemaUpdate.toVersion1(configFileV0, configFile);
+
     this.debug('Reading user configuration file...');
     const dataInJSON = JSON.parse(fs.readFileSync(this.initFile, 'utf8'));
     this.debug('%o', dataInJSON);
