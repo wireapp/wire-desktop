@@ -25,7 +25,7 @@ const debug = require('debug');
 const app = require('electron').app || require('electron').remote.app;
 
 const configDir = path.join(app.getPath('userData'), 'config');
-fs.mkdirpSync(configDir);
+fs.ensureDirSync(configDir);
 
 // ---- move deprecated config file
 const oldConfigFile = path.join(app.getPath('userData'), 'init.json');

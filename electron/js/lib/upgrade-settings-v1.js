@@ -30,7 +30,7 @@ const SETTINGS_TYPE = require('./settingsType');
 const oldConfigFile = path.join(app.getPath('userData'), 'init.json');
 const configDir = path.join(app.getPath('userData'), 'config');
 
-fs.mkdirpSync(configDir);
+fs.ensureDirSync(configDir);
 
 const restoreOrUndefined = setting => settings.restore(setting, undefined);
 
