@@ -22,9 +22,13 @@ node('Linux_Node') {
     def version = buildInfo.version + '.' + env.BUILD_NUMBER
     currentBuild.displayName = version;
 
+    stage('Install python') {
+      sh 'apt-get install -y --no-install-recommends python pip'
+    }
+
     stage('Build') {
       try {
-        sh 'sudo pip install -r requirements.txt'
+        sh 'pip install -r requirements.txt'
         def NODE = tool name: 'node-v8.11.3', type: 'nodejs'
         withEnv(["PATH+NODE=${NODE}/bin"]) {
           sh 'node -v'
