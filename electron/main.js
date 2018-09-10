@@ -168,10 +168,10 @@ const showMainWindow = mainWindowState => {
   };
 
   main = new BrowserWindow(options);
+  mainWindowState.manage(main);
   if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
     main.maximize();
   }
-  mainWindowState.manage(main);
 
   upgradeSettingsToV1();
 
