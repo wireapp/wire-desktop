@@ -40,6 +40,7 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 const settings = require('./js/lib/settings');
 const SETTINGS_TYPE = require('./js/lib/settingsType');
 const upgradeSettingsToV1 = require('./js/lib/upgrade-settings-v1');
+upgradeSettingsToV1();
 
 // Wrapper modules
 const about = require('./js/about');
@@ -172,8 +173,6 @@ const showMainWindow = mainWindowState => {
   if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
     main.maximize();
   }
-
-  upgradeSettingsToV1();
 
   let baseURL = BASE_URL;
   baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;

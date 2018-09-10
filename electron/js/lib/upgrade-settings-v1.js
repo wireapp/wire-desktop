@@ -21,26 +21,31 @@
 
 const app = require('electron').app || require('electron').remote.app;
 const debug = require('debug');
+const fs = require('fs-extra');
 const path = require('path');
-const mkdirp = require('mkdirp');
 
 const debugLogger = debug('UpgradeInitFile');
 const settings = require('./settings');
 const SETTINGS_TYPE = require('./settingsType');
+const oldConfigFile = path.join(app.getPath('userData'), 'init.json');
 const configDir = path.join(app.getPath('userData'), 'config');
 
-mkdirp.sync(configDir);
+fs.mkdirpSync(configDir);
+
+const restoreOrUndefined = setting => settings.restore(setting, undefined);
 
 const upgradeSettingsToV1 = () => {
-  try {
-    [SETTINGS_TYPE.FULL_SCREEN, SETTINGS_TYPE.WINDOW_BOUNDS].forEach(setting => {
-      if (typeof settings.restore(setting, undefined) !== 'undefined') {
-        settings.delete(setting);
-        debugLogger(`Deleted "${setting}" property from old init file.`);
-      }
-    });
-  } catch (error) {
-    debugLogger(error);
+  if (fs.existsSync(oldConfigFile) && typeof restoreOrUndefined('configVersion') === 'undefined') {
+    try {
+      [SETTINGS_TYPE.FULL_SCREEN, SETTINGS_TYPE.WINDOW_BOUNDS].forEach(setting => {
+        if (typeof restoreOrUndefined(setting) !== 'undefined') {
+          settings.delete(setting);
+          debugLogger(`Deleted "${setting}" property from old init file.`);
+        }
+      });
+    } catch (error) {
+      debugLogger(error);
+    }
   }
 };
 

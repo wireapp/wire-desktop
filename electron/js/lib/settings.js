@@ -19,14 +19,13 @@
 
 'use strict';
 
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const debug = require('debug');
-const mkdirp = require('mkdirp');
 const app = require('electron').app || require('electron').remote.app;
 
 const configDir = path.join(app.getPath('userData'), 'config');
-mkdirp.sync(configDir);
+fs.mkdirpSync(configDir);
 
 // ---- move deprecated config file
 const oldConfigFile = path.join(app.getPath('userData'), 'init.json');
