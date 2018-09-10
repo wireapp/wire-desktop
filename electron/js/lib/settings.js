@@ -28,6 +28,15 @@ const app = require('electron').app || require('electron').remote.app;
 const configDir = path.join(app.getPath('userData'), 'config');
 mkdirp.sync(configDir);
 
+// ---- move deprecated config file
+const oldConfigFile = path.join(app.getPath('userData'), 'init.json');
+const configFile = path.join(configDir, 'init.json');
+
+if (fs.existsSync(oldConfigFile)) {
+  fs.renameSync(oldConfigFile, configFile);
+}
+// ----
+
 class ConfigurationPersistence {
   constructor() {
     this.initFile = path.join(configDir, 'init.json');

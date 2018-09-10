@@ -37,9 +37,9 @@ const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 // Configuration persistence
-const upgradeSettingsToV1 = require('./js/lib/upgrade-settings-v1');
 const settings = require('./js/lib/settings');
 const SETTINGS_TYPE = require('./js/lib/settingsType');
+const upgradeSettingsToV1 = require('./js/lib/upgrade-settings-v1');
 
 // Wrapper modules
 const about = require('./js/about');
