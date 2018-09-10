@@ -1,4 +1,4 @@
-FROM node:8.11.4-jessie
+FROM node:8.11.4-stretch
 
 RUN set -ex; \
 	apt-get update; \
