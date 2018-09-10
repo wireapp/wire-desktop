@@ -5,6 +5,8 @@ def parseJson(def text) {
 
 node('Linux_Node') {
 
+  checkout scm
+
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
