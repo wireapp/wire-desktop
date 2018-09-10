@@ -18,7 +18,7 @@ node('Linux_Node') {
 
     stage('Checkout & Clean') {
       git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-      sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/'
+      sh returnStatus: true, script: 'rm -rf $WORKSPACE/wrap/ $WORKSPACE/electron/node_modules/ $WORKSPACE/node_modules/'
     }
 
     def text = readFile('info.json')
