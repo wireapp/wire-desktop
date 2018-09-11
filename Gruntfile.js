@@ -39,6 +39,7 @@ const LINUX_SETTINGS = {
     Keywords: 'chat;encrypt;e2e;messenger;videocall',
     StartupWMClass: '<%= info.name %>',
   },
+  fpm: ['--name', 'wire-desktop'],
 };
 
 module.exports = function(grunt) {
@@ -162,11 +163,9 @@ module.exports = function(grunt) {
           linux: {
             category: 'Network',
           },
-          productName: 'wire-desktop',
           rpm: {
             ...LINUX_SETTINGS,
             depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
-            fpm: ['--name', 'wire-desktop'],
           },
           targets: ['deb', 'rpm', 'AppImage'],
         },
@@ -181,11 +180,11 @@ module.exports = function(grunt) {
               Name: '<%= info.nameInternal %>',
             },
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
+            fpm: ['--name', 'wire-desktop-internal'],
           },
           linux: {
             category: 'Network',
           },
-          productName: 'wire-desktop-internal',
           rpm: {
             ...LINUX_SETTINGS,
             depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
@@ -202,7 +201,6 @@ module.exports = function(grunt) {
             ...LINUX_SETTINGS,
             fpm: ['--name', 'wire-desktop'],
           },
-          productName: 'wire-desktop',
           targets: [grunt.option('target') || 'dir'],
         },
       },
