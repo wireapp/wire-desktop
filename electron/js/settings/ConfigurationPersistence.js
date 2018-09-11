@@ -21,7 +21,7 @@
 
 const fs = require('fs-extra');
 const debug = require('debug');
-const SchemaUpdater = require('./SchemaUpdate');
+const SchemaUpdater = require('./SchemaUpdater');
 
 class ConfigurationPersistence {
   constructor() {
