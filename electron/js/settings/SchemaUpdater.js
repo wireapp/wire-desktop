@@ -19,14 +19,13 @@
 
 // @ts-check
 
-const {app} = require('electron');
+const app = require('electron').app || require('electron').remote.app;
 const debug = require('debug');
 const fs = require('fs-extra');
 const path = require('path');
-
-const debugLogger = debug('SchemaUpdate');
 const SettingsType = require('./SettingsType');
 
+const debugLogger = debug('SchemaUpdate');
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
 const defaultPathV1 = path.join(app.getPath('userData'), 'config', 'init.json');
 

@@ -19,8 +19,8 @@
 
 'use strict';
 
-const fs = require('fs-extra');
 const debug = require('debug');
+const fs = require('fs-extra');
 const SchemaUpdater = require('./SchemaUpdater');
 
 class ConfigurationPersistence {
