@@ -162,6 +162,7 @@ module.exports = function(grunt) {
           },
           linux: {
             category: 'Network',
+            executableName: 'wire-desktop',
           },
           rpm: {
             ...LINUX_SETTINGS,
@@ -184,6 +185,7 @@ module.exports = function(grunt) {
           },
           linux: {
             category: 'Network',
+            executableName: 'wire-desktop-internal',
           },
           rpm: {
             ...LINUX_SETTINGS,
