@@ -97,6 +97,7 @@ gpg2 --batch \
      --import "${PGP_KEYFILE}"
 
 _log "Update gpg2 configuration to sign on unattended machines..."
+mkdir -p ~/.gnupg
 echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
 killall gpg-agent
 
