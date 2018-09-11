@@ -25,31 +25,35 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const debugLogger = debug('UpgradeInitFile');
-const settings = require('./ConfigurationPersistence');
 const SettingsType = require('./SettingsType');
 
-const getSetting = setting => settings.restore(setting, undefined);
-const hasConfigVersion = typeof getSetting('configVersion') !== 'undefined';
-
-const toVersion1 = (
+const moveToVersion1 = (
   configFileV0 = path.join(app.getPath('userData'), 'init.json'),
   configFileV1 = path.join(app.getPath('userData'), 'config', 'init.json')
 ) => {
   if (fs.existsSync(configFileV0)) {
     fs.moveSync(configFileV0, configFileV1);
-    if (hasConfigVersion) {
-      try {
-        [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS].forEach(setting => {
-          if (typeof getSetting(setting) !== 'undefined') {
-            settings.delete(setting);
-            debugLogger(`Deleted "${setting}" property from old init file.`);
-          }
-        });
-      } catch (error) {
-        debugLogger(error);
-      }
-    }
   }
 };
 
-module.exports = {toVersion1};
+const updateToVersion1 = dataInJSON => {
+  const getSetting = setting => (dataInJSON.hasOwnProperty(setting) ? dataInJSON[setting] : undefined);
+  const hasNoConfigVersion = typeof getSetting('configVersion') === 'undefined';
+
+  if (hasNoConfigVersion) {
+    try {
+      [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS].forEach(setting => {
+        if (typeof getSetting(setting) !== 'undefined') {
+          delete dataInJSON[setting];
+          debugLogger(`Deleted "${setting}" property from old init file.`);
+        }
+      });
+    } catch (error) {
+      debugLogger(error);
+    }
+  }
+
+  return dataInJSON;
+};
+
+module.exports = {moveToVersion1, updateToVersion1};

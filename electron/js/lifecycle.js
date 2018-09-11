@@ -49,8 +49,8 @@ const checkSingleInstance = () => {
 
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-const quit = async () => {
-  await settings.persistToFile();
+const quit = () => {
+  settings.persistToFile();
   app.exit();
 };
 

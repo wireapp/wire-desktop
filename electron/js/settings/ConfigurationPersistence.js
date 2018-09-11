@@ -28,11 +28,11 @@ const SchemaUpdate = require('./SchemaUpdate');
 const configDir = path.join(app.getPath('userData'), 'config');
 
 const configFileV0 = path.join(app.getPath('userData'), 'init.json');
-const configFile = path.join(configDir, 'init.json');
+const configFileV1 = path.join(configDir, 'init.json');
 
 class ConfigurationPersistence {
   constructor() {
-    this.initFile = path.join(configDir, 'init.json');
+    this.configFile = configFileV1;
     this.debug = debug('ConfigurationPersistence');
     this.configVersion = 1;
 
@@ -69,36 +69,34 @@ class ConfigurationPersistence {
   }
 
   persistToFile() {
-    return new Promise((resolve, reject) => {
-      global._ConfigurationPersistence.configVersion = this.configVersion;
-      const dataInJSON = JSON.stringify(global._ConfigurationPersistence, null, 2);
+    global._ConfigurationPersistence.configVersion = this.configVersion;
+    const dataInJSON = JSON.stringify(global._ConfigurationPersistence, null, 2);
 
-      if (dataInJSON) {
-        this.debug('Saving configuration to persistent storage: %o', dataInJSON);
+    if (dataInJSON) {
+      this.debug('Saving configuration to persistent storage: %o', dataInJSON);
 
-        return fs.writeFile(this.initFile, dataInJSON, 'utf8', (error, data) => {
-          if (error) {
-            this.debug('An error occurred while persisting the configuration: %s', error);
-            return reject(error);
-          }
+      try {
+        return fs.writeFileSync(this.configFile, dataInJSON, 'utf8');
+      } catch (error) {
+        this.debug('An error occurred while persisting the configuration: %s', error);
 
-          resolve(data);
-        });
+        throw error;
       }
+    }
 
-      this.debug('No configuration found to persist');
-      resolve();
-    });
+    this.debug('No configuration found to persist');
   }
 
   readFromFile() {
     fs.ensureDirSync(configDir);
-
-    SchemaUpdate.toVersion1(configFileV0, configFile);
+    SchemaUpdate.moveToVersion1(configFileV0, configFileV1);
 
     this.debug('Reading user configuration file...');
-    const dataInJSON = JSON.parse(fs.readFileSync(this.initFile, 'utf8'));
+    let dataInJSON = fs.readJSONSync(this.configFile);
+
+    dataInJSON = SchemaUpdate.updateToVersion1(dataInJSON);
     this.debug('%o', dataInJSON);
+
     return dataInJSON;
   }
 }
