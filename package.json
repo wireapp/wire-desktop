@@ -10,7 +10,7 @@
     "yarn": false
   },
   "dependencies": {
-    "debug": "3.1.0"
+    "debug": "4.0.1"
   },
   "devDependencies": {
     "babel-core": "6.26.3",
