@@ -118,7 +118,7 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
 };
 
-const checkConfigV0FullScreen = () => {
+const checkConfigV0FullScreen = mainWindowState => {
   // if a user still has the old config version 0 and had the window maximized last time
   if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
     main.maximize();
@@ -177,7 +177,7 @@ const showMainWindow = mainWindowState => {
   main = new BrowserWindow(options);
 
   mainWindowState.manage(main);
-  checkConfigV0FullScreen();
+  checkConfigV0FullScreen(mainWindowState);
 
   let baseURL = BASE_URL;
   baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
