@@ -191,8 +191,10 @@ const checkAvailability = callback => {
 
 // https://github.com/electron/electron/issues/2984
 const _setImmediate = setImmediate;
+const _clearImmediate = clearImmediate;
 process.once('loaded', () => {
   global.setImmediate = _setImmediate;
+  global.clearImmediate = _clearImmediate;
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
   global.openGraph = require('../../js/lib/openGraph');
