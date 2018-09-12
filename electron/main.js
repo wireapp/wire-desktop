@@ -67,9 +67,9 @@ const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 let tray = undefined;
 
-let main;
-let isQuitting = false;
 let isFullScreen = false;
+let isQuitting = false;
+let main;
 
 // IPC events
 const bindIpcEvents = () => {

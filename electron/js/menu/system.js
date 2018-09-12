@@ -394,7 +394,7 @@ module.exports = {
     if (environment.platform.IS_MAC_OS) {
       menuTemplate.unshift(darwinTemplate);
       windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
-      toggleFullScreenTemplate.checked = isFullScreen || false;
+      toggleFullScreenTemplate.checked = isFullScreen;
     }
 
     if (environment.platform.IS_WINDOWS) {
@@ -410,7 +410,7 @@ module.exports = {
         i18n: 'menuPreferences',
       });
       windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
-      toggleFullScreenTemplate.checked = isFullScreen || false;
+      toggleFullScreenTemplate.checked = isFullScreen;
     }
 
     if (!environment.platform.IS_MAC_OS) {
