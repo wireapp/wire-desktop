@@ -190,8 +190,10 @@ const checkAvailability = callback => {
 };
 
 // https://github.com/electron/electron/issues/2984
+const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
+  global.clearImmediate = _clearImmediate;
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
