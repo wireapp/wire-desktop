@@ -118,13 +118,21 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
 };
 
+const checkConfigV0FullScreen = () => {
+  // if a user still has the old config version 0 and had the window maximized last time
+  if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
+    main.maximize();
+  }
+};
+
 const initWindowStateKeeper = () => {
   const loadedWindowBounds = settings.restore(SettingsType.WINDOW_BOUNDS, {
     height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
     width: config.WINDOW.MAIN.DEFAULT_WIDTH,
   });
 
-  const showInFullScreen = settings.restore(SettingsType.FULL_SCREEN, undefined);
+  // load version 0 full screen setting
+  const showInFullScreen = settings.restore(SettingsType.FULL_SCREEN, 'not-set-in-v0');
 
   const stateKeeperOptions = {
     defaultHeight: loadedWindowBounds.height,
@@ -132,7 +140,7 @@ const initWindowStateKeeper = () => {
     path: path.join(app.getPath('userData'), 'config'),
   };
 
-  if (typeof showInFullScreen !== 'undefined') {
+  if (showInFullScreen !== 'not-set-in-v0') {
     stateKeeperOptions.fullScreen = showInFullScreen;
     stateKeeperOptions.maximize = showInFullScreen;
     isFullScreen = showInFullScreen;
@@ -167,10 +175,9 @@ const showMainWindow = mainWindowState => {
   };
 
   main = new BrowserWindow(options);
+
   mainWindowState.manage(main);
-  if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
-    main.maximize();
-  }
+  checkConfigV0FullScreen();
 
   let baseURL = BASE_URL;
   baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
