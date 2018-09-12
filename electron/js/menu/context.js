@@ -23,9 +23,9 @@ const webContents = remote.getCurrentWebContents();
 
 const config = require('./../config');
 const locale = require('./../../locale/locale');
-const settings = require('./../lib/settings');
+const settings = require('./../settings/ConfigurationPersistence');
 const EVENT_TYPE = require('./../lib/eventType');
-const SettingsType = require('./../lib/settingsType');
+const SettingsType = require('./../settings/SettingsType');
 
 let textMenu;
 
