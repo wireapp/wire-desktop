@@ -19,30 +19,26 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-
-const app = require('electron').app || require('electron').remote.app;
 const debug = require('debug');
-
-const INIT_JSON = path.join(app.getPath('userData'), 'init.json');
+const fs = require('fs-extra');
+const SchemaUpdater = require('./SchemaUpdater');
 
 class ConfigurationPersistence {
   constructor() {
+    this.configFile = SchemaUpdater.updateToVersion1();
     this.debug = debug('ConfigurationPersistence');
 
     if (typeof global._ConfigurationPersistence === 'undefined') {
-      this.debug('Reading config file');
-
-      try {
-        global._ConfigurationPersistence = this.readFromFile();
-      } catch (error) {
-        this.debug('Unable to parse the init file. Details: %s', error);
-        global._ConfigurationPersistence = {};
-      }
+      global._ConfigurationPersistence = this.readFromFile();
     }
 
     this.debug('Init ConfigurationPersistence');
+  }
+
+  delete(name) {
+    this.debug('Deleting %s', name);
+    delete global._ConfigurationPersistence[name];
+    return true;
   }
 
   save(name, value) {
@@ -58,32 +54,24 @@ class ConfigurationPersistence {
   }
 
   persistToFile() {
-    return new Promise((resolve, reject) => {
-      const dataInJSON = JSON.stringify(global._ConfigurationPersistence);
-
-      if (dataInJSON) {
-        this.debug('Saving configuration to persistent storage: %o', dataInJSON);
-
-        return fs.writeFile(INIT_JSON, dataInJSON, 'utf8', (error, data) => {
-          if (error) {
-            this.debug('An error occurred while persisting the configuration: %s', error);
-            return reject(error);
-          }
-
-          resolve(data);
-        });
-      }
-
-      this.debug('No configuration found to persist');
-      resolve();
-    });
+    this.debug('Saving configuration to persistent storage: %o', global._ConfigurationPersistence);
+    try {
+      return fs.writeJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
+    } catch (error) {
+      this.debug('An error occurred while persisting the configuration: %s', error);
+    }
   }
 
   readFromFile() {
-    this.debug('Reading user configuration file...');
-    const dataInJSON = JSON.parse(fs.readFileSync(INIT_JSON, 'utf8'));
-    this.debug('%o', dataInJSON);
-    return dataInJSON;
+    this.debug(`Reading config file "${this.configFile}"...`);
+    try {
+      return fs.readJSONSync(this.configFile);
+    } catch (error) {
+      // In case of an error, always use the latest schema with sensible defaults:
+      return SchemaUpdater.SCHEMATA[
+        Object.keys(SchemaUpdater.SCHEMATA)[Object.keys(SchemaUpdater.SCHEMATA).length - 1]
+      ];
+    }
   }
 }
 
