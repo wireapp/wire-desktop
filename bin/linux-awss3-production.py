@@ -31,26 +31,26 @@ build_root = os.path.join(bin_root, '..', 'wrap', 'dist')
 S3_PATH = 'linux/'
 
 
-def upload_file(source, dest):
+def upload_file(source, destination):
     if not os.path.isfile(source):
-        print '%s not found' % source
+        print '{} not found'.format(source)
         return
 
-    print 'Uploading %s to %s' % (os.path.basename(source), dest),
+    print 'Uploading {SOURCE} to {DESTINATION}'.format(SOURCE=os.path.basename(source), DESTINATION=destination),
     s3 = boto3.resource('s3')
 
     data = open(source, 'rb')
-    s3.Bucket(name=BUCKET).put_object(Key=dest, Body=data, ACL='public-read')
+    s3.Bucket(name=BUCKET).put_object(Key=destination, Body=data, ACL='public-read')
     print '- OK'
 
 
 if __name__ == '__main__':
     files = [
         'sha256sum.txt.asc',
-        'wire-%s-i386.AppImage' % VERSION,
-        'wire-%s-x86_64.AppImage' % VERSION,
-        'debian/pool/main/wire_%s_amd64.deb' % VERSION,
-        'debian/pool/main/wire_%s_i386.deb' % VERSION,
+        'wire-{VERSION}-i386.AppImage'.format(VERSION),
+        'wire-{VERSION}-x86_64.AppImage'.format(VERSION),
+        'debian/pool/main/wire{VERSION}_amd64.deb'.format(VERSION),
+        'debian/pool/main/wire_{VERSION}_i386.deb'.format(VERSION),
         'debian/dists/stable/Contents-all',
         'debian/dists/stable/Contents-all.bz2',
         'debian/dists/stable/Contents-all.gz',
@@ -75,4 +75,4 @@ if __name__ == '__main__':
     ]
 
     for filename in files:
-        upload_file(os.path.join(build_root, filename), '%s%s' % (S3_PATH, filename))
+        upload_file(os.path.join(build_root, filename), '{PATH}{FILENAME}'.format(PATH=S3_PATH, FILENAME=filename))

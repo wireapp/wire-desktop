@@ -29,25 +29,22 @@ bin_root = os.path.dirname(os.path.realpath(__file__))
 
 S3_PATH = 'win/internal/'
 
-NEW_RELEASE = 'wire-internal-' + VERSION + '-RELEASES'
-NEW_EXE = 'wire-internal-' + VERSION + '.exe'
+NEW_RELEASE_KEY = '{PATH}wire-internal-{VERSION}-RELEASES'.format(PATH=S3_PATH, VERSION=VERSION)
+NEW_EXE_KEY = '{PATH}wire-{VERSION}.exe'.format(PATH=S3_PATH, VERSION=VERSION)
 
-NEW_RELEASE_KEY = S3_PATH + NEW_RELEASE
-NEW_EXE_KEY = S3_PATH + NEW_EXE
-
-OLD_RELEASE_KEY = S3_PATH + 'RELEASES'
-OLD_EXE_KEY = S3_PATH + 'WireInternalSetup.exe'
+OLD_RELEASE_KEY = '{PATH}RELEASES'.format(S3_PATH)
+OLD_EXE_KEY = '{PATH}WireInternalSetup.exe'.format(S3_PATH)
 
 s3 = boto3.resource('s3')
 
 s3.Object(BUCKET, OLD_RELEASE_KEY).delete()
-print 'deleted %s' % OLD_RELEASE_KEY
+print 'Deleted {FILENAME}'.format(OLD_RELEASE_KEY)
 
 s3.Object(BUCKET, OLD_EXE_KEY).delete()
-print 'deleted %s' % OLD_EXE_KEY
+print 'Deleted {FILENAME}'.format(OLD_EXE_KEY)
 
-s3.Object(BUCKET, OLD_RELEASE_KEY).copy_from(ACL='public-read', CopySource='%s/%s' % (BUCKET, NEW_RELEASE_KEY))
-print 'copied %s to %s ' % (NEW_RELEASE_KEY, OLD_RELEASE_KEY)
+s3.Object(BUCKET, OLD_RELEASE_KEY).copy_from(ACL='public-read', CopySource='{BUCKET}/{FILENAME}'.format(BUCKET=BUCKET, FILENAME=NEW_RELEASE_KEY))
+print 'Copied {FILENAME} to {DESTINATION}'.format(FILENAME=NEW_RELEASE_KEY, DESTINATION=OLD_RELEASE_KEY)
 
-s3.Object(BUCKET, OLD_EXE_KEY).copy_from(ACL='public-read', CopySource='%s/%s' % (BUCKET, NEW_EXE_KEY))
-print 'copied %s to %s ' % (NEW_EXE_KEY, OLD_EXE_KEY)
+s3.Object(BUCKET, OLD_EXE_KEY).copy_from(ACL='public-read', CopySource='{BUCKET}/{FILENAME}'.format(BUCKET=BUCKET, FILENAME=NEW_EXE_KEY))
+print 'Copied {FILENAME} to {DESTINATION}'.format(FILENAME=NEW_EXE_KEY, DESTINATION=OLD_EXE_KEY)
