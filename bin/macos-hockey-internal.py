@@ -22,35 +22,37 @@
 import os
 import requests
 
-HOCKEY_URL = 'https://rink.hockeyapp.net/api/2/apps/upload'
+HOCKEY_APP_ID = os.environ.get('MACOS_PROD_HOCKEY_ID')
 HOCKEY_TOKEN = os.environ.get('MACOS_HOCKEY_TOKEN')
 VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
+
+HOCKEY_BASE_URL = 'https://rink.hockeyapp.net/api/2/apps/%s' % HOCKEY_APP_ID
+HOCKEY_URL_UPLOAD = '%s/app_versions/' % HOCKEY_BASE_URL
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
 wire_zip = os.path.join(bin_root, 'WireInternal.zip')
 
+
 def ditto(source, dest):
   os.system('ditto -c -k --sequesterRsrc --keepParent %s %s' % (source, dest))
 
+
 if __name__ == '__main__':
+    print 'Uploading Wire for macOS (%s-internal)...' % VERSION
+    semver_version = VERSION.split('.')
 
-  print 'Uploading %s...' % VERSION
-  semver_version = VERSION.split('.')
+    headers = {'X-HockeyAppToken': HOCKEY_TOKEN}
+    data = {
+        'notes': 'New build of Wire macOS (%s-internal)' % VERSION,
+        'notify': 0,
+        'status': 2,
+    }
+    files = {'ipa': open(wire_zip, 'rb')}
 
-  headers = {'X-HockeyAppToken': HOCKEY_TOKEN}
-  data = {
-    'bundle_short_version': '%s.%s' % (semver_version[0], semver_version[1]),
-    'bundle_version': semver_version[2],
-    'notes': 'New internal macOS Build %s.%s.%s' % (semver_version[0], semver_version[1], semver_version[2]),
-    'notify': 1,
-    'status': 2,
-}
-  files = {'ipa': open(wire_zip, 'rb')}
+    response = requests.post(HOCKEY_URL_UPLOAD, files=files, data=data, headers=headers)
 
-  response = requests.post(HOCKEY_URL, files=files, data=data, headers=headers)
-
-  if response.status_code in [200, 201]:
-    os.remove(wire_zip)
-    print 'Uploaded!'
-  else:
-    print 'Error :(', response.status_code
+    if response.status_code in [200, 201]:
+        os.remove(wire_zip)
+        print 'Uploaded!'
+    else:
+        print 'Error :(', response.status_code

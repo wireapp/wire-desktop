@@ -33,22 +33,23 @@ S3_PATH = 'win/prod/'
 
 
 def upload_file(source, dest):
-  if not os.path.isfile(source):
-    print '%s not found' % source
-    return
+    if not os.path.isfile(source):
+        print '%s not found' % source
+        return
 
-  print 'Uploading %s to %s' % (os.path.basename(source), dest),
+    print 'Uploading %s to %s' % (os.path.basename(source), dest),
 
-  s3 = boto3.resource('s3')
-  data = open(source, 'rb')
-  s3.Bucket(BUCKET).put_object(Key=dest, Body=data, ACL='public-read')
-  print '- OK'
+    s3 = boto3.resource('s3')
+    data = open(source, 'rb')
+    s3.Bucket(BUCKET).put_object(Key=dest, Body=data, ACL='public-read')
+    print '- OK'
+
 
 if __name__ == '__main__':
-  wire_nupkg = 'wire-%s-full.nupkg' % VERSION
-  wire_nupkg_full = os.path.join(build_root, wire_nupkg)
-  wire_exe_full = os.path.join(build_root, 'WireSetup.exe')
+    wire_nupkg = 'wire-%s-full.nupkg' % VERSION
+    wire_nupkg_full = os.path.join(build_root, wire_nupkg)
+    wire_exe_full = os.path.join(build_root, 'WireSetup.exe')
 
-  upload_file(wire_nupkg_full, '%s%s' % (S3_PATH, wire_nupkg))
-  upload_file(wire_exe_full, '%swire-%s.exe' % (S3_PATH, VERSION))
-  upload_file(releases, '%swire-%s-RELEASES' % (S3_PATH, VERSION))
+    upload_file(wire_nupkg_full, '%s%s' % (S3_PATH, wire_nupkg))
+    upload_file(wire_exe_full, '%swire-%s.exe' % (S3_PATH, VERSION))
+    upload_file(releases, '%swire-%s-RELEASES' % (S3_PATH, VERSION))

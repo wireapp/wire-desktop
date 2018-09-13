@@ -23,12 +23,13 @@ import os
 import requests
 import zipfile
 
-HOCKEY_ID = os.environ.get('WIN_PROD_HOCKEY_ID')
+HOCKEY_APP_ID = os.environ.get('WIN_PROD_HOCKEY_ID')
 HOCKEY_TOKEN = os.environ.get('WIN_PROD_HOCKEY_TOKEN')
 VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
 
-HOCKEY_UPLOAD = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/' % HOCKEY_ID
-HOCKEY_NEW = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/new' % HOCKEY_ID
+HOCKEY_BASE_URL = 'https://rink.hockeyapp.net/api/2/apps/%s' % HOCKEY_APP_ID
+HOCKEY_URL_NEW = '%s/app_versions/new' % HOCKEY_BASE_URL
+HOCKEY_URL_UPDATE = '%s/app_versions/' % HOCKEY_BASE_URL
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
 wire_exe = os.path.join(bin_root, '..', 'wrap', 'prod', 'Wire-win32-ia32', 'WireSetup.exe')
@@ -36,40 +37,34 @@ wire_zip = os.path.join(bin_root, 'WireSetup.zip')
 
 
 def zipit(source, dest):
-  os.chdir(os.path.dirname(os.path.abspath(source)))
-  filename = os.path.basename(source)
-  zipf = zipfile.ZipFile(dest, 'w')
-  zipf.write(filename)
-  zipf.close()
+    os.chdir(os.path.dirname(os.path.abspath(source)))
+    filename = os.path.basename(source)
+    zipf = zipfile.ZipFile(dest, 'w')
+    zipf.write(filename)
+    zipf.close()
 
 
 if __name__ == '__main__':
+    print 'Compressing...'
+    zipit(wire_exe, wire_zip)
 
-  print 'Compressing...'
+    print 'Uploading Wire for Windows (%s)...' % VERSION
+    semver_version = VERSION.split('.')
 
-  zipit(wire_exe, wire_zip)
+    headers = {'X-HockeyAppToken': HOCKEY_TOKEN}
+    data = {
+        'bundle_short_version': '%s.%s' % (semver_version[0], semver_version[1]),
+        'bundle_version': semver_version[2],
+        'notes': 'New build of Wire for Windows (%s)' % VERSION,
+        'notify': 0,
+        'status': 2,
+    }
+    files = {'ipa': open(wire_zip, 'rb')}
 
-  print 'Uploading %s...' % VERSION
-  semver_version = VERSION.split('.')
+    response = requests.post(HOCKEY_URL_NEW, data=data, headers=headers)
+    response = requests.put('%s%s' % (HOCKEY_URL_UPLOAD, response.json()['id']), files=files, data=data, headers=headers)
 
-  headers = {
-    'X-HockeyAppToken': HOCKEY_TOKEN,
-  }
-  data = {
-    'notify': 0,
-    'notes': 'Jenkins Build',
-    'status': 2,
-    'bundle_short_version': '%s.%s' % (semver_version[0], semver_version[1]),
-    'bundle_version': semver_version[2],
-  }
-  files = {
-    'ipa': open(wire_zip, 'rb')
-  }
-
-  response = requests.post(HOCKEY_NEW, data=data, headers=headers)
-  response = requests.put('%s%s' % (HOCKEY_UPLOAD, response.json()['id']), files=files, data=data, headers=headers)
-
-  if response.status_code in [200, 201]:
-    print 'Uploaded!'
-  else:
-    print 'Error :('
+    if response.status_code in [200, 201]:
+        print 'Uploaded!'
+    else:
+        print 'Error :(', response.status_code

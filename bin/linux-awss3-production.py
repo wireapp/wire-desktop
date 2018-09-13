@@ -32,46 +32,47 @@ S3_PATH = 'linux/'
 
 
 def upload_file(source, dest):
-  if not os.path.isfile(source):
-    print '%s not found' % source
-    return
+    if not os.path.isfile(source):
+        print '%s not found' % source
+        return
 
-  print 'Uploading %s to %s' % (os.path.basename(source), dest),
-  s3 = boto3.resource('s3')
+    print 'Uploading %s to %s' % (os.path.basename(source), dest),
+    s3 = boto3.resource('s3')
 
-  data = open(source, 'rb')
-  s3.Bucket(name=BUCKET).put_object(Key=dest, Body=data, ACL='public-read')
-  print '- OK'
+    data = open(source, 'rb')
+    s3.Bucket(name=BUCKET).put_object(Key=dest, Body=data, ACL='public-read')
+    print '- OK'
+
 
 if __name__ == '__main__':
-  files = [
-    'sha256sum.txt.asc',
-    'wire-%s-i386.AppImage' % VERSION,
-    'wire-%s-x86_64.AppImage' % VERSION,
-    'debian/pool/main/wire_%s_amd64.deb' % VERSION,
-    'debian/pool/main/wire_%s_i386.deb' % VERSION,
-    'debian/dists/stable/Contents-all',
-    'debian/dists/stable/Contents-all.bz2',
-    'debian/dists/stable/Contents-all.gz',
-    'debian/dists/stable/Contents-amd64',
-    'debian/dists/stable/Contents-amd64.bz2',
-    'debian/dists/stable/Contents-amd64.gz',
-    'debian/dists/stable/Contents-i386',
-    'debian/dists/stable/Contents-i386.bz2',
-    'debian/dists/stable/Contents-i386.gz',
-    'debian/dists/stable/InRelease',
-    'debian/dists/stable/Release',
-    'debian/dists/stable/Release.gpg',
-    'debian/dists/stable/main/binary-all/Packages',
-    'debian/dists/stable/main/binary-all/Packages.bz2',
-    'debian/dists/stable/main/binary-all/Packages.gz',
-    'debian/dists/stable/main/binary-amd64/Packages',
-    'debian/dists/stable/main/binary-amd64/Packages.bz2',
-    'debian/dists/stable/main/binary-amd64/Packages.gz',
-    'debian/dists/stable/main/binary-i386/Packages',
-    'debian/dists/stable/main/binary-i386/Packages.bz2',
-    'debian/dists/stable/main/binary-i386/Packages.gz',
-  ]
+    files = [
+        'sha256sum.txt.asc',
+        'wire-%s-i386.AppImage' % VERSION,
+        'wire-%s-x86_64.AppImage' % VERSION,
+        'debian/pool/main/wire_%s_amd64.deb' % VERSION,
+        'debian/pool/main/wire_%s_i386.deb' % VERSION,
+        'debian/dists/stable/Contents-all',
+        'debian/dists/stable/Contents-all.bz2',
+        'debian/dists/stable/Contents-all.gz',
+        'debian/dists/stable/Contents-amd64',
+        'debian/dists/stable/Contents-amd64.bz2',
+        'debian/dists/stable/Contents-amd64.gz',
+        'debian/dists/stable/Contents-i386',
+        'debian/dists/stable/Contents-i386.bz2',
+        'debian/dists/stable/Contents-i386.gz',
+        'debian/dists/stable/InRelease',
+        'debian/dists/stable/Release',
+        'debian/dists/stable/Release.gpg',
+        'debian/dists/stable/main/binary-all/Packages',
+        'debian/dists/stable/main/binary-all/Packages.bz2',
+        'debian/dists/stable/main/binary-all/Packages.gz',
+        'debian/dists/stable/main/binary-amd64/Packages',
+        'debian/dists/stable/main/binary-amd64/Packages.bz2',
+        'debian/dists/stable/main/binary-amd64/Packages.gz',
+        'debian/dists/stable/main/binary-i386/Packages',
+        'debian/dists/stable/main/binary-i386/Packages.bz2',
+        'debian/dists/stable/main/binary-i386/Packages.gz',
+    ]
 
-  for filename in files:
-    upload_file(os.path.join(build_root, filename), '%s%s' % (S3_PATH, filename))
+    for filename in files:
+        upload_file(os.path.join(build_root, filename), '%s%s' % (S3_PATH, filename))
