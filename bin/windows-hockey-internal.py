@@ -52,19 +52,15 @@ if __name__ == '__main__':
   print 'Uploading %s...' % VERSION
   semver_version = VERSION.split('.')
 
-  headers = {
-    'X-HockeyAppToken': HOCKEY_TOKEN,
-  }
+  headers = {'X-HockeyAppToken': HOCKEY_TOKEN}
   data = {
-    'notify': 0,
-    'notes': 'Jenkins Build',
-    'status': 2,
     'bundle_short_version': '%s.%s' % (semver_version[0], semver_version[1]),
     'bundle_version': semver_version[2],
+    'notes': 'New internal Windows Build %s.%s.%s' % (semver_version[0], semver_version[1], semver_version[2]),
+    'notify': 0,
+    'status': 2,
   }
-  files = {
-    'ipa': open(wire_zip, 'rb')
-  }
+  files = {'ipa': open(wire_zip, 'rb')}
 
   response = requests.post(HOCKEY_NEW, data=data, headers=headers)
   response = requests.put('%s%s' % (HOCKEY_UPLOAD, response.json()['id']), files=files, data=data, headers=headers)
@@ -72,4 +68,4 @@ if __name__ == '__main__':
   if response.status_code in [200, 201]:
     print 'Uploaded!'
   else:
-    print 'Error :('
+    print 'Error :(', response.status_code

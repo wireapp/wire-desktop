@@ -24,6 +24,7 @@ import requests
 
 HOCKEY_URL = 'https://rink.hockeyapp.net/api/2/apps/upload'
 HOCKEY_TOKEN = os.environ.get('MACOS_HOCKEY_TOKEN')
+VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
 wire_zip = os.path.join(bin_root, 'WireInternal.zip')
@@ -33,10 +34,17 @@ def ditto(source, dest):
 
 if __name__ == '__main__':
 
-  print 'Uploading...'
+  print 'Uploading %s...' % VERSION
+  semver_version = VERSION.split('.')
 
   headers = {'X-HockeyAppToken': HOCKEY_TOKEN}
-  data = {'notify': 1, 'notes': 'Jenkins Build', 'status': 2}
+  data = {
+    'bundle_short_version': '%s.%s' % (semver_version[0], semver_version[1]),
+    'bundle_version': semver_version[2],
+    'notes': 'New internal macOS Build %s.%s.%s' % (semver_version[0], semver_version[1], semver_version[2]),
+    'notify': 1,
+    'status': 2,
+}
   files = {'ipa': open(wire_zip, 'rb')}
 
   response = requests.post(HOCKEY_URL, files=files, data=data, headers=headers)
