@@ -24,66 +24,106 @@ import os
 import requests
 import subprocess
 
-JOB_NAME = os.environ.get('JOB_NAME')
-VERSION = os.environ.get('BUILD_ID')
 GITHUB_ACCESS_TOKEN = os.environ.get('GITHUB_ACCESS_TOKEN')
-DRAFT_RESOURCE = 'https://api.github.com/repos/wireapp/wire-desktop/releases?access_token=%s' % (GITHUB_ACCESS_TOKEN)
+JOB_NAME = os.environ.get('JOB_NAME')
+VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
+
+GITHUB_DRAFT_URL = 'https://api.github.com/repos/wireapp/wire-desktop/releases?access_token={ACCESS_TOKEN}'.format(GITHUB_ACCESS_TOKEN)
 
 if __name__ == '__main__':
+    # Get platform
+    if 'Linux' in JOB_NAME:
+        PLATFORM = 'Linux'
+    elif 'macOS' in JOB_NAME:
+        PLATFORM = 'macOS'
+    elif 'Windows' in JOB_NAME:
+        PLATFORM = 'Windows'
 
-  print 'Create a draft...'
+    print 'Createing a GitHub draft release draft for Wire for {PLATFORM} ({VERSION})...'.format(PLATFORM=PLATFORM, VERSION=VERSION)
 
-  # Get last commit hash
-  commitish = subprocess.check_output(['git', 'rev-parse', 'HEAD']).rstrip()
+    # Get last commit hash
+    commitish = subprocess.check_output(['git', 'rev-parse', 'HEAD']).rstrip()
 
-  # Get platform
-  if 'Linux' in JOB_NAME:
-    PLATFORM = 'Linux'
-  if 'Windows' in JOB_NAME:
-    PLATFORM = 'Windows'
-  if 'macOS' in JOB_NAME:
-    PLATFORM = 'macOS'
+    description = """
+        ### Release Notes
+        <details open>
+        <summary><b>Features</b></summary>
+        <li>... (#1234)</li>
+        </details>
+        <br>
 
-  data = {
-    'tag_name': "%s/%s" % (PLATFORM.lower(), VERSION),
-    'target_commitish': commitish,
-    'name': "%s - %s" % (VERSION, PLATFORM),
-    'body': '...',
-    'draft': True,
-    'prerelease': False,
-  }
+        <details open>
+        <summary><b>Improvements</b></summary>
+        <li>... (#1234)</li>
+        </details>
+        <br>
 
-  print data
+        <details>
+        <summary><b>Fixes</b></summary>
+        <li>... (#1234)</li>
+        </details>
+        <br>
 
-  response = requests.post(DRAFT_RESOURCE, json=data)
+        <details>
+        <summary><b>Chores</b></summary>
+        <li>... (#1234)</li>
+        </details>
 
-  if response.status_code in [200, 201]:
-    print 'Draft created!'
+        ### Version
 
-    draft_data = json.loads(response.text)
-    upload_url = '%s?access_token=%s' % (draft_data['upload_url'].split('{')[0], GITHUB_ACCESS_TOKEN)
+        Electron x.x.x
+        Chrome xx.0.xxxx.x
 
-    for file in os.listdir(os.getcwd()):
-      if (file.endswith(('.asc','.AppImage','.deb','.exe','.pkg'))):
-        filename = os.path.join(os.getcwd(), file)
-        print 'Upload asset %s...' % filename
-        headers = {'Content-type': 'application/binary'}
-        response = requests.post('%s&name=%s' % (upload_url, file), headers=headers, data=open(filename, 'rb').read())
+        ### Public Release Date
 
-        if response.status_code in [200, 201]:
-          print 'Upload successful!'
-        else:
-          print 'Upload failed with %s :(' % (response.status_code)
-          print response.text
-          print 'Delete draft, because upload failed'
-          response = requests.delete('%s?access_token=%s' % (draft_data['url'], GITHUB_ACCESS_TOKEN))
-          if response.status_code in [200, 204]:
-            print 'Draft deleted!'
-          else:
-            print 'Delete failed with %s :(' % (response.status_code)
-            print response.text
-          exit(1)
-  else:
-    print 'Error %s :(' % (response.status_code)
-    print response.text
-    exit(1)
+        {PLATFORM} 2018-xx-xx
+
+        ### Changelog
+
+        [{PLATFORM}](https://github.com/wireapp/wire-desktop/compare/release%2F3.x.xxxx...release%2F{VERSION}
+    """.format(PLATFORM=PLATFORM, VERSION=VERSION)
+
+    data = {
+        'tag_name': 'release/{VERSION}'.format(VERSION),
+        'target_commitish': commitish,
+        'name': '{VERSION} - {PLATFORM}'.format(VERSION=VERSION, PLATFORM=PLATFORM),
+        'body': description,
+        'draft': True,
+        'prerelease': False,
+    }
+
+    print data
+
+    response = requests.post(GITHUB_DRAFT_URL, json=data)
+
+    if response.status_code in [200, 201]:
+        print 'Draft created!'
+
+        draft_data = json.loads(response.text)
+        upload_url = '{URL}?access_token={ACCESS_TOKEN}'.format(URL=draft_data['upload_url'].split('{')[0], ACCESS_TOKEN=GITHUB_ACCESS_TOKEN)
+
+        for file in os.listdir(os.getcwd()):
+            if (file.endswith(('.asc','.AppImage','.deb','.exe','.pkg'))):
+                filename = os.path.join(os.getcwd(), file)
+                print 'Uploading asset {FILENAME}...'.format(filename)
+                headers = {'Content-type': 'application/binary'}
+                response = requests.post('{UPLOAD_URL}&name={FILENAME}'.format(UPLOAD_URL=upload_url, FILENAME=file), headers=headers, data=open(filename, 'rb').read())
+
+                if response.status_code in [200, 201]:
+                    print 'Upload successful!'
+                else:
+                    print 'Upload failed :(', response.status_code
+                    print response.text
+                    print 'Deleting draft, because upload failed'
+                    response = requests.delete('{URL}?access_token={ACCESS_TOKEN}'.format(URL=draft_data['url'], ACCESS_TOKEN=GITHUB_ACCESS_TOKEN))
+
+                    if response.status_code in [200, 204]:
+                        print 'Draft deleted!'
+                    else:
+                        print 'Deleting draft failed :(', response.status_code
+                        print response.text
+                        exit(1)
+    else:
+        print 'Error :(', response.status_code
+        print response.text
+        exit(1)
