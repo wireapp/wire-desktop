@@ -30,7 +30,7 @@ import {
   setAccountContextHidden,
   switchAccount,
   toggleEditAccountMenuVisibility,
-} from '../actions/';
+} from '../actions';
 
 import './Sidebar.css';
 

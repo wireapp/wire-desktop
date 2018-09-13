@@ -22,7 +22,7 @@ import {connect} from 'react-redux';
 import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
-import {abortAccountCreation, switchAccount} from '../../actions/';
+import {abortAccountCreation, switchAccount} from '../../actions';
 import * as EVENT_TYPE from '../../lib/eventType';
 
 function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) {
