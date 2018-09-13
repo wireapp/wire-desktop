@@ -57,51 +57,51 @@ root = 'electron/locale/'
 
 
 def get_locale(filename):
-  locale = filename.replace('strings-', '').replace('.js', '')
-  return locale if len(locale) == 2 else None
+    locale = filename.replace('strings-', '').replace('.js', '')
+    return locale if len(locale) == 2 else None
 
 
 def fix_apostrophe(text):
-  if not text:
+    if not text:
+        return text
+    text = unicode(text, errors='ignore')
+    first = text.find(u"'")
+    last = text.rfind(u"'")
+    if first != last:
+        pre = text[0:first + 1]
+        string = text[first + 1:last]
+        post = text[last:]
+        return '{PRE}{CONTENT}{POST}'.format(PRE=pre, CONTENT=string.replace(u"'", u'’'), POST=post)
     return text
-  text = unicode(text, errors='ignore')
-  first = text.find(u"'")
-  last = text.rfind(u"'")
-  if first != last:
-    pre = text[0:first + 1]
-    string = text[first + 1:last]
-    post = text[last:]
-    return '%s%s%s' % (pre, string.replace(u"'", u'’'), post)
-  return text
 
 
 for filename in os.listdir(root):
-  locale = get_locale(filename)
-  if locale:
-    if locale not in SUPPORTED_LOCALE:
-      file_to_delete = os.path.join(root, filename)
-      print('Removing unsupported locale "%s" (%s)' % (locale, file_to_delete))
-      os.remove(file_to_delete)
-      continue
+    locale = get_locale(filename)
+    if locale:
+        if locale not in SUPPORTED_LOCALE:
+            file_to_delete = os.path.join(root, filename)
+            print('Removing unsupported locale "{LOCALE}" ({FILENAME})'.format(LOCALE=locale, FILENAME=file_to_delete))
+            os.remove(file_to_delete)
+            continue
 
-    with open(os.path.join(root, filename), 'r') as f:
-      source = f.read()
+        with open(os.path.join(root, filename), 'r') as f:
+            source = f.read()
 
-    with open(os.path.join(root, filename), 'w') as f:
-      source = source.replace('=', ' = ')
-      source = source.replace("'use = strict';\n\n", '')
-      source = re.sub(r'#(.)+\n', '', source)
-      source = '\n'.join(map(fix_apostrophe, source.splitlines()))
+        with open(os.path.join(root, filename), 'w') as f:
+            source = source.replace('=', ' = ')
+            source = source.replace("'use = strict';\n\n", '')
+            source = re.sub(r'#(.)+\n', '', source)
+            source = '\n'.join(map(fix_apostrophe, source.splitlines()))
 
-      f.write("'use strict';\n\nconst string = {};\n\n")
-      f.write(source)
-      f.write('\nmodule.exports = string;\n')
+            f.write("'use strict';\n\nconst string = {};\n\n")
+            f.write(source)
+            f.write('\nmodule.exports = string;\n')
 
-  if filename == 'strings.js':
-    with open(os.path.join(root, filename), 'r') as f:
-      source = f.read()
+    if filename == 'strings.js':
+        with open(os.path.join(root, filename), 'r') as f:
+            source = f.read()
 
-    with open(os.path.join(root, filename.replace('.js', '-en.js')), 'w') as f:
-      f.write("'use strict';\n\nconst string = {};\n\n")
-      f.write(source.replace("'use strict';\n\n", ''))
-      f.write('\nmodule.exports = string;\n')
+        with open(os.path.join(root, filename.replace('.js', '-en.js')), 'w') as f:
+            f.write("'use strict';\n\nconst string = {};\n\n")
+            f.write(source.replace("'use strict';\n\n", ''))
+            f.write('\nmodule.exports = string;\n')
