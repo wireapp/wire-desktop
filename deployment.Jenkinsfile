@@ -4,16 +4,16 @@ Use the following Groovy script in the Extended Choice Parameter:
 def list = []
 jobs = jenkins.getAllItems()
 jobs.each { job ->
-  name = job.fullName
-  if(name.contains('Windows Internal') || name.contains('Wrapper_Linux') || name.contains('Wrapper_macOS')) {
-    builds = job.builds
-    for (i = 0; i <5; i++) {
-      lastbuild = job.builds[i]
-      if(lastbuild) {
-        list << name + '#' + lastbuild.displayName
-      }
+    name = job.fullName
+    if(name.contains('Windows Internal') || name.contains('Wrapper_Linux') || name.contains('Wrapper_macOS')) {
+        builds = job.builds
+        for (i = 0; i <5; i++) {
+            lastbuild = job.builds[i]
+            if(lastbuild) {
+                list << name + '#' + lastbuild.displayName
+            }
+        }
     }
-  }
 }
 return list
 */
@@ -47,52 +47,76 @@ node('master') {
 
     currentBuild.displayName = "Deploy $projectName " + version
 
-    stage('Upload to S3 and/or Hockey') {
-        if(projectName.contains('Windows')) {
-            parallel hockey: {
+    if(projectName.contains('Linux') || projectName.contains('Windows')) {
+        stage('Upload to AWS S3') {
+            parallel awss3: {
                 try {
+                    withEnv(['BUCKET=wire-taco']) {
+                        withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                            if(projectName.contains('Windows')) {
+                                if(params.Release.equals("Production")) {
+                                    sh 'python bin/windows-awss3-production.py'
+                                } else {
+                                    sh 'python bin/windows-awss3-internal.py'
+                                }
+                            } else if(projectName.contains('Linux')) {
+                                if(params.Release.equals("Production")) {
+                                    sh "./bin/linux-awss3-production.py"
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {
+                    currentBuild.result = "FAILED"
+                    wireSend secret: "$jenkinsbot_secret", message: "**Deploying to AWS S3 failed for ${version}** see: ${JOB_URL}"
+                    throw e
+                }
+            }, awss3_release: {
+                try {
+                    if(projectName.contains('Windows')) {
+                        withEnv(['BUCKET=wire-taco']) {
+                            if(params.Release.equals("Production")) {
+                                withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                                    sh 'python bin/win-prod-s3-deploy.py'
+                                }
+                            } else {
+                                withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                                    sh 'python bin/win-s3-deploy.py'
+                                }
+                            }
+                        }
+                    } catch(e) {
+                        currentBuild.result = "FAILED"
+                        wireSend secret: "$jenkinsbot_secret", message: "**Changing RELEASES file failed for ${version}** see: ${JOB_URL}"
+                        throw e
+                    }
+                }
+            }, failFast: true
+        }
+    }
+
+    if(projectName.contains('macOS') || projectName.contains('Windows')) {
+        stage('Upload to Hockey') {
+            try {
+                if(projectName.contains('macOS')) {
+                    if(params.Release.equals('Production')) {
+                        withCredentials([string(credentialsId: 'MACOS_MAS_HOCKEY_TOKEN', variable: 'MACOS_MAS_HOCKEY_TOKEN')]) {
+                            sh './bin/macos-hockey-production.sh'
+                        }
+                    } else {
+                        withCredentials([string(credentialsId: 'MACOS_HOCKEY_TOKEN', variable: 'MACOS_HOCKEY_TOKEN')]) {
+                            sh 'python bin/macos-hockey-internal.py'
+                        }
+                    }
+                } else if(projectName.contains('Windows')) {
                     if(params.Release.equals("Production")) {
                         withCredentials([string(credentialsId: 'WIN_PROD_HOCKEY_TOKEN', variable: 'WIN_PROD_HOCKEY_TOKEN'), string(credentialsId: 'WIN_PROD_HOCKEY_ID', variable: 'WIN_PROD_HOCKEY_ID')]) {
-                            sh 'python bin/win-prod-hockey.py'
+                            sh 'python bin/windows-hockey-production.py'
                         }
                     } else {
                         withCredentials([string(credentialsId: 'WIN_HOCKEY_TOKEN', variable: 'WIN_HOCKEY_TOKEN'), string(credentialsId: 'WIN_HOCKEY_ID', variable: 'WIN_HOCKEY_ID')]) {
-                            sh 'python bin/win-hockey.py'
+                            sh 'python bin/windows-hockey-internal.py'
                         }
-                    }
-                } catch(e) {
-                    currentBuild.result = "FAILED"
-                    wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
-                    throw e
-                }
-            }, s3: {
-                try {
-                    withEnv(['BUCKET=wire-taco']) {
-                        if(params.Release.equals("Production")) {
-                            withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                                sh 'python bin/win-prod-s3.py'
-                            }
-                        } else {
-                            withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                                sh 'python bin/win-s3.py'
-                            }
-                        }
-                    }
-                } catch(e) {
-                    currentBuild.result = "FAILED"
-                    wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
-                    throw e
-                }
-            }, failFast: true
-        } else if(projectName.contains('macOS')) {
-            try {
-                if(params.Release.equals('Production')) {
-                    withCredentials([string(credentialsId: 'MACOS_MAS_HOCKEY_TOKEN', variable: 'MACOS_MAS_HOCKEY_TOKEN')]) {
-                        sh './bin/macos-mas-hockey.sh'
-                    }
-                } else {
-                    withCredentials([string(credentialsId: 'MACOS_HOCKEY_TOKEN', variable: 'MACOS_HOCKEY_TOKEN')]) {
-                        sh 'python bin/macos-hockey.py'
                     }
                 }
             } catch(e) {
@@ -100,49 +124,20 @@ node('master') {
                 wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
                 throw e
             }
-        } else if(projectName.contains('Linux')) {
-            withEnv(['BUCKET=wire-taco']) {
-                withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh "./bin/linux-prod-s3.py"
-                }
-            }
-        }
-    }
-
-    if(projectName.contains('Windows')) {
-        stage('Update RELEASES file') {
-            try {
-                withEnv(['BUCKET=wire-taco']) {
-                    if(params.Release.equals("Production")) {
-                        withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                            sh 'python bin/win-prod-s3-deploy.py'
-                        }
-                    } else {
-                        withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                            sh 'python bin/win-s3-deploy.py'
-                        }
-                    }
-                }
-            } catch(e) {
-                currentBuild.result = "FAILED"
-                wireSend secret: "$jenkinsbot_secret", message: "**Changing RELEASES file failed for ${version}** see: ${JOB_URL}"
-                throw e
-            }
         }
     }
 
     if(params.Release.equals('Production')) {
-      stage('Upload build as draft to GitHub') {
-        withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
-          if(projectName.contains('Windows')) {
-            bat 'cd wrap\\prod\\Wire-win32-ia32\\ && python ..\\..\\..\\bin\\github_draft.py'
-          } else if(projectName.contains('macOS')) {
-            sh 'python bin/github_draft.py'
-          } else if(projectName.contains('Linux')) {
-            sh 'cd wrap/dist/ && python ../../bin/github_draft.py'
-          }
+        stage('Upload build as draft to GitHub') {
+            withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
+                if(projectName.contains('Windows')) {
+                    bat 'cd wrap\\prod\\Wire-win32-ia32\\ && python ..\\..\\..\\bin\\github_draft.py'
+                } else if(projectName.contains('macOS')) {
+                    sh 'python bin/github_draft.py'
+                } else if(projectName.contains('Linux')) {
+                    sh 'cd wrap/dist/ && python ../../bin/github_draft.py'
+                }
+            }
         }
-      }
     }
-  }
 }
