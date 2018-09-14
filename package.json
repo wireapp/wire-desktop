@@ -7,7 +7,7 @@
     }
   },
   "engines": {
-    "yarn": false
+    "yarn": "false"
   },
   "dependencies": {
     "debug": "4.0.1"
@@ -72,7 +72,7 @@
     "jest": "jest",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
     "precommit": "lint-staged",
-    "preinstall": "cd electron && npm install",
+    "postinstall": "cd electron && electron-builder install-app-deps",
     "prestart": "npm run bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
