@@ -9,7 +9,7 @@
     "googleapis": "24.0.0",
     "image-type": "3.0.0",
     "jsrsasign": "8.0.12",
-    "lodash": "4.17.10",
+    "lodash": "4.17.11",
     "minimist": "1.2.0",
     "open-graph": "0.2.3",
     "prop-types": "15.6.2",
