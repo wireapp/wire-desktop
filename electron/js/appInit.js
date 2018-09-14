@@ -39,10 +39,7 @@ const fixUnityIcon = () => {
 
 const handlePortableFlags = () => {
   if (argv.portable || argv.user_data_dir) {
-    const directory = argv.user_data_dir ? argv.user_data_dir : 'Data';
-
-    const EXEC_PATH = process.env.APPIMAGE || process.execPath;
-    const USER_PATH = path.join(EXEC_PATH, '..', directory);
+    const USER_PATH = argv.user_data_dir || path.join(process.env.APPIMAGE || process.execPath, '..', 'Data');
 
     console.log(`Saving user data to ${USER_PATH}`);
     app.setPath('userData', USER_PATH);
