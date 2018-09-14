@@ -408,7 +408,7 @@ class ElectronWrapperInit {
 
 initRaygun.initClient();
 appInit.ignoreCertificateErrors();
-appInit.handlePortableFlag();
+appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate();
 
