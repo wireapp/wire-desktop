@@ -308,7 +308,11 @@ const renameLogFile = () => {
       })
       .forEach(file => {
         if (file.endsWith('.log')) {
-          fs.renameSync(file, file.replace('.log', '.old'));
+          try {
+            fs.renameSync(file, file.replace('.log', '.old'));
+          } catch (error) {
+            console.error(`Failed to rename log file: ${error.message}`);
+          }
         }
       });
   });
@@ -404,7 +408,7 @@ class ElectronWrapperInit {
 
 initRaygun.initClient();
 appInit.ignoreCertificateErrors();
-appInit.handlePortableFlag();
+appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate();
 

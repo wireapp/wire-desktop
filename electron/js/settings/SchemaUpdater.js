@@ -60,12 +60,12 @@ class SchemaUpdater {
           }
         });
       }
-    }
 
-    try {
-      fs.writeJsonSync(configFileV1, config, {spaces: 2});
-    } catch (error) {
-      debugLogger(`Failed to write config to "${configFileV1}": ${error.message}`, error);
+      try {
+        fs.writeJsonSync(configFileV1, config, {spaces: 2});
+      } catch (error) {
+        debugLogger(`Failed to write config to "${configFileV1}": ${error.message}`, error);
+      }
     }
 
     return configFileV1;

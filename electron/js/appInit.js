@@ -37,10 +37,11 @@ const fixUnityIcon = () => {
   }
 };
 
-const handlePortableFlag = () => {
-  if (argv.portable) {
-    const EXEC_PATH = process.env.APPIMAGE || process.execPath;
-    const USER_PATH = path.join(EXEC_PATH, '..', 'Data');
+const handlePortableFlags = () => {
+  if (argv.portable || argv.user_data_dir) {
+    const USER_PATH = argv.user_data_dir || path.join(process.env.APPIMAGE || process.execPath, '..', 'Data');
+
+    console.log(`Saving user data to ${USER_PATH}`);
     app.setPath('userData', USER_PATH);
   }
 };
@@ -53,6 +54,6 @@ const ignoreCertificateErrors = () => {
 
 module.exports = {
   fixUnityIcon,
-  handlePortableFlag,
+  handlePortableFlags,
   ignoreCertificateErrors,
 };
