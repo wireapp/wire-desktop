@@ -10,7 +10,8 @@
     "yarn": "false"
   },
   "dependencies": {
-    "debug": "4.0.1"
+    "debug": "4.0.1",
+    "electron-window-state": "5.0.1"
   },
   "devDependencies": {
     "@babel/core": "7.0.1",
