@@ -1,5 +1,3 @@
-// TODO: If this is part of master, sort the keys and remove the eslint-disable
-/* eslint-disable sort-keys */
 /*
  * Wire
  * Copyright (C) 2018 Wire Swiss GmbH
@@ -32,12 +30,12 @@ const LINUX_SETTINGS = {
   afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
   desktop: {
-    Version: '<%= info.version %>.<%= buildNumber %>',
-    Name: '<%= info.name %>',
-    GenericName: '<%= info.description %>',
     Categories: 'Network;InstantMessaging;Chat;VideoConference',
+    GenericName: '<%= info.description %>',
     Keywords: 'chat;encrypt;e2e;messenger;videocall',
+    Name: '<%= info.name %>',
     StartupWMClass: '<%= info.name %>',
+    Version: '<%= info.version %>.<%= buildNumber %>',
   },
   fpm: ['--name', 'wire-desktop'],
 };
@@ -46,132 +44,117 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
 
   grunt.initConfig({
-    pkg: grunt.file.readJSON(PACKAGE_JSON),
-    info: grunt.file.readJSON(INFO_JSON),
     buildNumber: `${process.env.BUILD_NUMBER || '0'}`,
 
     clean: {
-      wrap: 'wrap',
       build: 'wrap/build',
       dist: 'wrap/dist',
-      win: 'wrap/**/<%= info.name %>-win*',
-      macos: 'wrap/**/<%= info.name %>-darwin*',
       linux: ['wrap/**/linux*', 'wrap/**/wire*'],
+      macos: 'wrap/**/<%= info.name %>-darwin*',
       pkg: '*.pkg',
+      win: 'wrap/**/<%= info.name %>-win*',
+      wrap: 'wrap',
     },
 
-    'update-keys': {
-      options: {
-        config: 'electron/js/config.js',
+    'create-windows-installer': {
+      internal: {
+        appDirectory: 'wrap/build/<%= info.nameInternal %>-win32-ia32',
+        authors: '<%= info.nameInternal %>',
+        description: '<%= info.description %>',
+        exe: '<%= info.nameInternal %>.exe',
+        iconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
+        loadingGif: 'resources/win/icon.internal.256x256.png',
+        noMsi: true,
+        outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32',
+        setupIcon: 'resources/win/wire.internal.ico',
+        title: '<%= info.nameInternal %>',
+        version: '<%= info.version %>.<%= buildNumber %>',
       },
-    },
 
-    productbuild: {
-      options: {
-        sign: {
-          app: '<%= info.sign.app %>',
-          package: '<%= info.sign.package %>',
-        },
-        parent: 'resources/macos/entitlements/parent.plist',
-        child: 'resources/macos/entitlements/child.plist',
-        dir: 'wrap/dist/<%= info.name %>-mas-x64/<%= info.name %>.app',
-        name: '<%= info.name %>',
+      prod: {
+        appDirectory: 'wrap/build/<%= info.name %>-win32-ia32',
+        authors: '<%= info.name %>',
+        description: '<%= info.description %>',
+        exe: '<%= info.name %>.exe',
+        iconUrl: 'https://wire-app.wire.com/win/prod/wire.ico',
+        loadingGif: 'resources/win/icon.256x256.png',
+        noMsi: true,
+        outputDirectory: 'wrap/prod/<%= info.name %>-win32-ia32',
+        setupIcon: 'resources/win/wire.ico',
+        title: '<%= info.name %>',
+        version: '<%= info.version %>.<%= buildNumber %>',
       },
     },
 
     electron: {
-      options: {
-        name: '<%= info.name %>',
-        dir: 'electron',
-        out: 'wrap/build',
-        overwrite: true,
-        arch: 'all',
-        asar: true,
-        appCopyright: '<%= info.copyright %>',
-        appVersion: '<%= info.version %>',
-        buildVersion: '<%= buildNumber %>',
-        ignore: 'electron/renderer/src',
-        protocols: [{name: '', schemes: ['wire']}],
-      },
-
       macos_internal: {
         options: {
+          appBundleId: 'com.wearezeta.zclient.mac.internal',
+          icon: 'resources/macos/wire.internal.icns',
           name: '<%= info.nameInternal %>',
           platform: 'mas',
-          icon: 'resources/macos/wire.internal.icns',
-          appBundleId: 'com.wearezeta.zclient.mac.internal',
         },
       },
 
       macos_prod: {
         options: {
-          platform: 'mas',
-          out: 'wrap/dist/',
-          icon: 'resources/macos/wire.icns',
-          appCategoryType: 'public.app-category.social-networking',
           appBundleId: 'com.wearezeta.zclient.mac',
-          helperBundleId: 'com.wearezeta.zclient.mac.helper',
+          appCategoryType: 'public.app-category.social-networking',
           extendInfo: 'resources/macos/custom.plist',
+          helperBundleId: 'com.wearezeta.zclient.mac.helper',
+          icon: 'resources/macos/wire.icns',
+          out: 'wrap/dist/',
+          platform: 'mas',
         },
+      },
+
+      options: {
+        appCopyright: '<%= info.copyright %>',
+        appVersion: '<%= info.version %>',
+        arch: 'all',
+        asar: true,
+        buildVersion: '<%= buildNumber %>',
+        dir: 'electron',
+        ignore: 'electron/renderer/src',
+        name: '<%= info.name %>',
+        out: 'wrap/build',
+        overwrite: true,
+        protocols: [{name: '', schemes: ['wire']}],
       },
 
       win_internal: {
         options: {
+          arch: 'ia32',
+          icon: 'resources/win/wire.internal.ico',
           name: '<%= info.nameInternal %>',
           platform: 'win32',
-          icon: 'resources/win/wire.internal.ico',
-          arch: 'ia32',
           win32metadata: {
             CompanyName: '<%= info.name %>',
             FileDescription: '<%= info.description %>',
+            InternalName: '<%= info.nameInternal %>.exe',
             OriginalFilename: '<%= info.nameInternal %>.exe',
             ProductName: '<%= info.nameInternal %>',
-            InternalName: '<%= info.nameInternal %>.exe',
           },
         },
       },
 
       win_prod: {
         options: {
-          platform: 'win32',
-          icon: 'resources/win/wire.ico',
           arch: 'ia32',
+          icon: 'resources/win/wire.ico',
+          platform: 'win32',
           win32metadata: {
             CompanyName: '<%= info.name %>',
             FileDescription: '<%= info.description %>',
+            InternalName: '<%= info.name %>.exe',
             OriginalFilename: '<%= info.name %>.exe',
             ProductName: '<%= info.name %>',
-            InternalName: '<%= info.name %>.exe',
           },
         },
       },
     },
 
     electronbuilder: {
-      options: {
-        asar: false,
-        arch: 'all',
-        publish: null,
-      },
-
-      linux_prod: {
-        options: {
-          deb: {
-            ...LINUX_SETTINGS,
-            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
-          },
-          linux: {
-            category: 'Network',
-            executableName: 'wire-desktop',
-          },
-          rpm: {
-            ...LINUX_SETTINGS,
-            depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
-          },
-          targets: ['deb', 'rpm', 'AppImage'],
-        },
-      },
-
       linux_internal: {
         options: {
           deb: {
@@ -206,45 +189,39 @@ module.exports = function(grunt) {
           targets: [grunt.option('target') || 'dir'],
         },
       },
-    },
 
-    'create-windows-installer': {
-      internal: {
-        title: '<%= info.nameInternal %>',
-        description: '<%= info.description %>',
-        version: '<%= info.version %>.<%= buildNumber %>',
-        appDirectory: 'wrap/build/<%= info.nameInternal %>-win32-ia32',
-        outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32',
-        authors: '<%= info.nameInternal %>',
-        exe: '<%= info.nameInternal %>.exe',
-        setupIcon: 'resources/win/wire.internal.ico',
-        noMsi: true,
-        loadingGif: 'resources/win/icon.internal.256x256.png',
-        iconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
+      linux_prod: {
+        options: {
+          deb: {
+            ...LINUX_SETTINGS,
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
+          },
+          linux: {
+            category: 'Network',
+            executableName: 'wire-desktop',
+          },
+          rpm: {
+            ...LINUX_SETTINGS,
+            depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+          },
+          targets: ['deb', 'rpm', 'AppImage'],
+        },
       },
 
-      prod: {
-        title: '<%= info.name %>',
-        description: '<%= info.description %>',
-        version: '<%= info.version %>.<%= buildNumber %>',
-        appDirectory: 'wrap/build/<%= info.name %>-win32-ia32',
-        outputDirectory: 'wrap/prod/<%= info.name %>-win32-ia32',
-        authors: '<%= info.name %>',
-        exe: '<%= info.name %>.exe',
-        setupIcon: 'resources/win/wire.ico',
-        noMsi: true,
-        loadingGif: 'resources/win/icon.256x256.png',
-        iconUrl: 'https://wire-app.wire.com/win/prod/wire.ico',
+      options: {
+        arch: 'all',
+        asar: false,
+        publish: null,
       },
     },
 
     gitcommit: {
       release: {
-        options: {
-          message: 'Bump version to <%= info.version %>',
-        },
         files: {
           src: [INFO_JSON],
+        },
+        options: {
+          message: 'Bump version to <%= info.version %>',
         },
       },
     },
@@ -252,9 +229,32 @@ module.exports = function(grunt) {
     gitpush: {
       task: {
         options: {
-          tags: true,
           branch: 'master',
+          tags: true,
         },
+      },
+    },
+
+    info: grunt.file.readJSON(INFO_JSON),
+
+    pkg: grunt.file.readJSON(PACKAGE_JSON),
+
+    productbuild: {
+      options: {
+        child: 'resources/macos/entitlements/child.plist',
+        dir: 'wrap/dist/<%= info.name %>-mas-x64/<%= info.name %>.app',
+        name: '<%= info.name %>',
+        parent: 'resources/macos/entitlements/parent.plist',
+        sign: {
+          app: '<%= info.sign.app %>',
+          package: '<%= info.sign.package %>',
+        },
+      },
+    },
+
+    'update-keys': {
+      options: {
+        config: 'electron/js/config.js',
       },
     },
   });
