@@ -17,26 +17,28 @@
  *
  */
 
-const electronPackager = require('electron-packager');
 const {createWindowsInstaller} = require('electron-winstaller');
+const electronPackager = require('electron-packager');
 const electronBuilder = require('electron-builder');
 
 const ELECTRON_PACKAGE_JSON = 'electron/package.json';
-const PACKAGE_JSON = 'package.json';
 const INFO_JSON = 'info.json';
+const PACKAGE_JSON = 'package.json';
+
+const LINUX_DESKTOP = {
+  Categories: 'Network;InstantMessaging;Chat;VideoConference',
+  GenericName: '<%= info.description %>',
+  Keywords: 'chat;encrypt;e2e;messenger;videocall',
+  Name: '<%= info.name %>',
+  StartupWMClass: '<%= info.name %>',
+  Version: '1.1',
+};
 
 const LINUX_SETTINGS = {
   afterInstall: 'bin/deb/after-install.tpl',
   afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
-  desktop: {
-    Categories: 'Network;InstantMessaging;Chat;VideoConference',
-    GenericName: '<%= info.description %>',
-    Keywords: 'chat;encrypt;e2e;messenger;videocall',
-    Name: '<%= info.name %>',
-    StartupWMClass: '<%= info.name %>',
-    Version: '<%= info.version %>.<%= buildNumber %>',
-  },
+  desktop: LINUX_DESKTOP,
   fpm: ['--name', 'wire-desktop'],
 };
 
@@ -160,14 +162,14 @@ module.exports = function(grunt) {
           deb: {
             ...LINUX_SETTINGS,
             desktop: {
-              ...LINUX_SETTINGS.desktop,
+              ...LINUX_DESKTOP,
               Name: '<%= info.nameInternal %>',
             },
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
             fpm: ['--name', 'wire-desktop-internal'],
           },
           linux: {
-            category: 'Network',
+            category: LINUX_SETTINGS.category,
             executableName: 'wire-desktop-internal',
           },
           rpm: {
@@ -183,9 +185,11 @@ module.exports = function(grunt) {
         options: {
           arch: grunt.option('arch') || process.arch,
           linux: {
-            ...LINUX_SETTINGS,
-            fpm: ['--name', 'wire-desktop'],
+            category: LINUX_SETTINGS.category,
+            desktop: LINUX_DESKTOP,
+            executableName: 'wire-desktop',
           },
+          productName: 'wire-desktop',
           targets: [grunt.option('target') || 'dir'],
         },
       },
@@ -197,7 +201,7 @@ module.exports = function(grunt) {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
           linux: {
-            category: 'Network',
+            category: LINUX_SETTINGS.category,
             executableName: 'wire-desktop',
           },
           rpm: {
