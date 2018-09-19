@@ -17,13 +17,13 @@
  *
  */
 
-const electronPackager = require('electron-packager');
 const {createWindowsInstaller} = require('electron-winstaller');
+const electronPackager = require('electron-packager');
 const electronBuilder = require('electron-builder');
 
 const ELECTRON_PACKAGE_JSON = 'electron/package.json';
-const PACKAGE_JSON = 'package.json';
 const INFO_JSON = 'info.json';
+const PACKAGE_JSON = 'package.json';
 
 const LINUX_DESKTOP = {
   Categories: 'Network;InstantMessaging;Chat;VideoConference',
