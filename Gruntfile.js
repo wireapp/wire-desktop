@@ -169,7 +169,7 @@ module.exports = function(grunt) {
             fpm: ['--name', 'wire-desktop-internal'],
           },
           linux: {
-            category: 'Network',
+            category: LINUX_SETTINGS.category,
             executableName: 'wire-desktop-internal',
           },
           rpm: {
@@ -185,7 +185,7 @@ module.exports = function(grunt) {
         options: {
           arch: grunt.option('arch') || process.arch,
           linux: {
-            category: 'Network',
+            category: LINUX_SETTINGS.category,
             desktop: LINUX_DESKTOP,
             executableName: 'wire-desktop',
           },
@@ -201,7 +201,7 @@ module.exports = function(grunt) {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
           linux: {
-            category: 'Network',
+            category: LINUX_SETTINGS.category,
             executableName: 'wire-desktop',
           },
           rpm: {
