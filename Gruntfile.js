@@ -27,18 +27,20 @@ const ELECTRON_PACKAGE_JSON = 'electron/package.json';
 const PACKAGE_JSON = 'package.json';
 const INFO_JSON = 'info.json';
 
+const LINUX_DESKTOP = {
+  Version: '1.1',
+  Name: '<%= info.name %>',
+  GenericName: '<%= info.description %>',
+  Categories: 'Network;InstantMessaging;Chat;VideoConference',
+  Keywords: 'chat;encrypt;e2e;messenger;videocall',
+  StartupWMClass: '<%= info.name %>',
+};
+
 const LINUX_SETTINGS = {
   afterInstall: 'bin/deb/after-install.tpl',
   afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
-  desktop: {
-    Version: '1.1',
-    Name: '<%= info.name %>',
-    GenericName: '<%= info.description %>',
-    Categories: 'Network;InstantMessaging;Chat;VideoConference',
-    Keywords: 'chat;encrypt;e2e;messenger;videocall',
-    StartupWMClass: '<%= info.name %>',
-  },
+  desktop: LINUX_DESKTOP,
   fpm: ['--name', 'wire-desktop'],
 };
 
@@ -201,6 +203,7 @@ module.exports = function(grunt) {
           arch: grunt.option('arch') || process.arch,
           linux: {
             category: 'Network',
+            desktop: LINUX_DESKTOP,
             executableName: 'wire-desktop',
           },
           productName: 'wire-desktop',
