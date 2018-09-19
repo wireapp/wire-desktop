@@ -32,7 +32,7 @@ const LINUX_SETTINGS = {
   afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
   desktop: {
-    Version: '<%= info.version %>.<%= buildNumber %>',
+    Version: '1.1',
     Name: '<%= info.name %>',
     GenericName: '<%= info.description %>',
     Categories: 'Network;InstantMessaging;Chat;VideoConference',
@@ -200,9 +200,10 @@ module.exports = function(grunt) {
         options: {
           arch: grunt.option('arch') || process.arch,
           linux: {
-            ...LINUX_SETTINGS,
-            fpm: ['--name', 'wire-desktop'],
+            category: 'Network',
+            executableName: 'wire-desktop',
           },
+          productName: 'wire-desktop',
           targets: [grunt.option('target') || 'dir'],
         },
       },
