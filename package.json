@@ -43,6 +43,11 @@
     "webpack": "4.20.2",
     "webpack-cli": "3.1.1"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
     "*.{js,jsx}": [
@@ -71,7 +76,6 @@
     "fix": "npm run fix:js && npm run fix:other",
     "jest": "jest",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
-    "precommit": "lint-staged",
     "postinstall": "cd electron && electron-builder install-app-deps",
     "prestart": "npm run bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
