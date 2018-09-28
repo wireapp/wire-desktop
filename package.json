@@ -33,7 +33,7 @@
     "grunt-contrib-clean": "2.0.0",
     "grunt-git": "1.0.10",
     "grunt-gitinfo": "0.1.8",
-    "husky": "1.0.0",
+    "husky": "1.0.1",
     "jest": "23.6.0",
     "lint-staged": "7.3.0",
     "load-grunt-tasks": "4.0.0",
