@@ -29,20 +29,19 @@
   "devDependencies": {
     "cross-spawn": "6.0.5"
   },
-  "environment": "production",
+  "environment": "internal",
   "homepage": "https://wire.com",
   "license": "GPL-3.0",
   "main": "main.js",
-  "name": "wire",
+  "name": "wireinternal",
   "optionalDependencies": {
     "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
   },
   "private": true,
-  "productName": "Wire",
+  "productName": "WireInternal",
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
-  "updateWinUrl": "https://wire-app.wire.com/win/prod/",
-  "version": "3.3.0-bd4b185"
+  "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }
