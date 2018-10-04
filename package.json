@@ -23,7 +23,7 @@
     "electron": "1.8.8",
     "electron-builder": "20.28.4",
     "electron-mocha": "6.0.4",
-    "electron-packager": "12.1.2",
+    "electron-packager": "12.2.0",
     "electron-winstaller": "2.5.2",
     "eslint": "5.6.1",
     "eslint-config-prettier": "3.1.0",
