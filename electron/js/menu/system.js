@@ -119,11 +119,6 @@ const conversationTemplate = {
       i18n: 'menuArchive',
     },
     {
-      accelerator: 'CmdOrCtrl+Alt+M',
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
-      i18n: 'menuMute',
-    },
-    {
       click: () => sendAction(EVENT_TYPE.CONVERSATION.DELETE),
       i18n: 'menuDelete',
     },
