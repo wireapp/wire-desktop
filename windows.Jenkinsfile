@@ -110,7 +110,7 @@ node('Windows_Node') {
     }
 
     stage('Test') {
-       build job: 'Wrapper Windows Tests', parameters: [string(name: 'WRAPPER_BUILD_ID', value: "${BUILD_ID}")], wait: false
+       build job: 'Wrapper_Windows_Tests', parameters: [string(name: 'WRAPPER_BUILD_ID', value: "${BUILD_ID}")], wait: false
     }
   }
 
