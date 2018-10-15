@@ -33,7 +33,7 @@ const APP_PATH = app.getAppPath();
 // Local files
 const CERT_ERR_HTML = fileUrl(path.join(APP_PATH, 'html', 'certificate-error.html'));
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 // Configuration persistence
@@ -181,7 +181,7 @@ const showMainWindow = mainWindowState => {
 
   let baseURL = BASE_URL;
   baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
+  main.loadURL(`file://${__dirname}/../renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});

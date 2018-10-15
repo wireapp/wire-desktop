@@ -38,6 +38,7 @@
     "lint-staged": "7.3.0",
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.14.3",
+    "rimraf": "2.6.2",
     "sinon": "7.0.0",
     "style-loader": "0.23.1",
     "tslint": "5.11.0",
@@ -73,7 +74,7 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "build:ts": "tsc",
+    "build:ts": "rimraf electron/dist && tsc",
     "build:linux": "npm run build:ts && grunt linux-prod",
     "build:macos": "npm run build:ts && grunt macos-prod",
     "build:win": "npm run build:ts && grunt win-prod",
@@ -95,7 +96,7 @@
     "prettier": "prettier \"**/*.{json,md,css}\"",
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
-    "start": "npm run build:ts && electron electron --inspect --devtools --enable-logging",
+    "start": "electron electron --inspect --devtools --enable-logging",
     "test:main": "electron-mocha --reporter spec tests/main",
     "test:other": "npm run prettier -- --list-different",
     "test:react": "jest",

@@ -32,7 +32,7 @@
   "environment": "internal",
   "homepage": "https://wire.com",
   "license": "GPL-3.0",
-  "main": "main.js",
+  "main": "dist/main.js",
   "name": "wireinternal",
   "optionalDependencies": {
     "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"

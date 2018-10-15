@@ -23,7 +23,7 @@ const {app, BrowserWindow, ipcMain, session, shell} = require('electron');
 
 const config = require('./config');
 const EVENT_TYPE = require('./lib/eventType');
-const pkg = require('../package.json');
+const pkg = require('../../package.json');
 const locale = require('../locale/locale');
 
 let aboutWindow;
@@ -39,7 +39,7 @@ const ABOUT_WINDOW_WHITELIST = [
   fileUrl(path.join(APP_PATH, 'img', 'wire.256.png')),
   fileUrl(path.join(APP_PATH, 'css', 'about.css')),
 ];
-const PRELOAD_JS = path.join(APP_PATH, 'js', 'preload-about.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload-about.js');
 
 ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event, version) => (webappVersion = version));
 

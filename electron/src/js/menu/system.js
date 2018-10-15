@@ -21,13 +21,13 @@ const {dialog, Menu, shell} = require('electron');
 const autoLaunch = require('auto-launch');
 const launchCmd = process.env.APPIMAGE ? process.env.APPIMAGE : process.execPath;
 
-const config = require('./../config');
-const environment = require('./../environment');
-const lifecycle = require('./../lifecycle');
-const locale = require('./../../locale/locale');
-const windowManager = require('./../window-manager');
+const config = require('../config');
+const environment = require('../environment');
+const lifecycle = require('../lifecycle');
+const locale = require('../../locale/locale');
+const windowManager = require('../window-manager');
 const settings = require('../settings/ConfigurationPersistence');
-const EVENT_TYPE = require('./../lib/eventType');
+const EVENT_TYPE = require('../lib/eventType');
 const SettingsType = require('../settings/SettingsType');
 
 let menu;

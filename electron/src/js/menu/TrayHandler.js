@@ -1,9 +1,9 @@
 const {app, Menu, nativeImage, Tray} = require('electron');
-const config = require('./../config');
-const lifecycle = require('./../lifecycle');
-const locale = require('./../../locale/locale');
+const config = require('../config');
+const lifecycle = require('../lifecycle');
+const locale = require('../../locale/locale');
 const path = require('path');
-const windowManager = require('./../window-manager');
+const windowManager = require('../window-manager');
 
 function buildTrayMenu() {
   const contextMenu = Menu.buildFromTemplate([

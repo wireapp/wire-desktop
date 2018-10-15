@@ -18,10 +18,10 @@
  */
 
 const {MenuItem} = require('electron');
-const config = require('./../config');
-const environment = require('./../environment');
-const util = require('./../util');
-const windowManager = require('./../window-manager');
+const config = require('../config');
+const environment = require('../environment');
+const util = require('../util');
+const windowManager = require('../window-manager');
 
 const currentEnvironment = environment.getEnvironment();
 

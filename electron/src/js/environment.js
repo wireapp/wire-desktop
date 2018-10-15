@@ -17,7 +17,7 @@
  *
  */
 
-const pkg = require('./../package.json');
+const pkg = require('../../package.json');
 const settings = require('./settings/ConfigurationPersistence');
 const SettingsType = require('./settings/SettingsType');
 

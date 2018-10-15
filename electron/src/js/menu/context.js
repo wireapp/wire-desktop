@@ -21,11 +21,11 @@ const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
 
-const config = require('./../config');
-const locale = require('./../../locale/locale');
-const settings = require('./../settings/ConfigurationPersistence');
-const EVENT_TYPE = require('./../lib/eventType');
-const SettingsType = require('./../settings/SettingsType');
+const config = require('../config');
+const locale = require('../../locale/locale');
+const settings = require('../settings/ConfigurationPersistence');
+const EVENT_TYPE = require('../lib/eventType');
+const SettingsType = require('../settings/SettingsType');
 
 let textMenu;
 

@@ -17,7 +17,7 @@
  *
  */
 
-const pkg = require('./../package.json');
+const pkg = require('../../package.json');
 
 const config = {
   EMBED_DOMAINS: [
