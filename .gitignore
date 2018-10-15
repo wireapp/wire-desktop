@@ -8,6 +8,7 @@
 /.idea
 /keys
 /electron/renderer/dist
+/electron/js
 /temp
 /wrap
 app.asar

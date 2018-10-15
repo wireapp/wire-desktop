@@ -40,6 +40,10 @@
     "prettier": "1.14.3",
     "sinon": "7.0.0",
     "style-loader": "0.23.1",
+    "tslint": "5.11.0",
+    "tslint-config-prettier": "1.15.0",
+    "tslint-plugin-prettier": "2.0.0",
+    "typescript": "3.1.3",
     "webpack": "4.20.2",
     "webpack-cli": "3.1.2"
   },
@@ -54,6 +58,10 @@
       "eslint --fix",
       "git add"
     ],
+    "*.ts": [
+      "tslint --config tslint.json --project tsconfig.json --fix",
+      "git add"
+    ],
     "*.{json,md,css}": [
       "prettier --write",
       "git add"
@@ -65,27 +73,32 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "build:linux": "grunt linux-prod",
-    "build:macos": "grunt macos-prod",
-    "build:win": "grunt win-prod",
-    "bundle:dev": "webpack",
-    "bundle": "webpack --env.production",
+    "build:ts": "tsc",
+    "build:linux": "npm run build:ts && grunt linux-prod",
+    "build:macos": "npm run build:ts && grunt macos-prod",
+    "build:win": "npm run build:ts && grunt win-prod",
+    "bundle:dev": "npm run build:ts && webpack",
+    "bundle": "npm run build:ts && webpack --env.production",
     "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
     "fix:js": "npm run test:js -- --fix",
     "fix:other": "npm run prettier -- --write",
-    "fix": "npm run fix:js && npm run fix:other",
+    "fix:ts": "npm run lint:ts --fix",
+    "fix": "npm run fix:js && npm run fix:other npm run fix:ts",
     "jest": "jest",
+    "lint": "npm run lint:js && npm run lint:other && npm run lint:ts",
+    "lint:js": "eslint -c .eslintrc.json --ignore-path .gitignore --ignore-path .eslintignore \"**/*.js\"",
+    "lint:other": "npm run prettier --list-different",
+    "lint:ts": "tslint --config tslint.json --project tsconfig.json \"**/*.ts\"",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
     "postinstall": "cd electron && electron-builder install-app-deps",
     "prestart": "npm run bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
     "prod": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://app.wire.com",
     "staging": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-staging.zinfra.io",
-    "start": "electron electron --inspect --devtools --enable-logging",
-    "test:js": "eslint -c .eslintrc.json --ignore-path .gitignore --ignore-path .eslintignore \"**/*.js\"",
+    "start": "npm run build:ts && electron electron --inspect --devtools --enable-logging",
     "test:main": "electron-mocha --reporter spec tests/main",
     "test:other": "npm run prettier -- --list-different",
     "test:react": "jest",
-    "test": "npm run test:other && npm run test:js && npm run test:react && npm run test:main"
+    "test": "npm run test:other && npm run test:js && npm run test:ts && npm run test:react && npm run test:main"
   }
 }
