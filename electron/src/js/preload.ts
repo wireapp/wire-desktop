@@ -17,10 +17,12 @@
  *
  */
 
-const {ipcRenderer, webFrame} = require('electron');
-const environment = require('./environment');
-const locale = require('../locale/locale');
-const EVENT_TYPE = require('./lib/eventType');
+import {WebviewTag, ipcRenderer, webFrame} from 'electron';
+import * as locale from '../locale/locale';
+import * as environment from './environment';
+import {EVENT_TYPE} from './lib/eventType';
+
+declare var window: any;
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
@@ -30,8 +32,8 @@ window.locStringsDefault = locale.en;
 
 window.isMac = environment.platform.IS_MAC_OS;
 
-const getSelectedWebview = () => document.querySelector('.Webview:not(.hide)');
-const getWebviewById = id => document.querySelector(`.Webview[data-accountid="${id}"]`);
+const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)');
+const getWebviewById = (id: string): WebviewTag => document.querySelector(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event, action) => {
@@ -42,7 +44,7 @@ const subscribeToMainProcessEvents = () => {
   });
 
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, () => {
-    const webviews = document.querySelectorAll('webview');
+    const webviews = document.querySelectorAll<WebviewTag>('webview');
     webviews.forEach(webview => webview.reload());
   });
 };

@@ -27,8 +27,12 @@
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
+    "@types/auto-launch": "5.0.0",
     "@types/debug": "0.0.31",
+    "@types/file-url": "2.0.0",
+    "@types/minimist": "1.2.0",
     "@types/node": "10.11.7",
+    "@types/request": "2.47.1",
     "cross-spawn": "6.0.5"
   },
   "environment": "internal",

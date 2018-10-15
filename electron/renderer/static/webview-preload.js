@@ -17,15 +17,16 @@
  *
  */
 
-const config = require('../../dist/js/config');
-const environment = require('../../dist/js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
-const EVENT_TYPE = require('../../dist/js/lib/eventType');
+
+const config = require('../../dist/js/config');
+const environment = require('../../dist/js/environment');
+const {EVENT_TYPE} = require('../../dist/js/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
-const {app} = remote;
+const app = remote.app;
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);

@@ -17,9 +17,9 @@
  *
  */
 
-const openGraphParse = require('open-graph').parse;
-const request = require('request');
-const urlUtil = require('url');
+import {parse as openGraphParse} from 'open-graph';
+import * as request from 'request';
+import * as urlUtil from 'url';
 
 const arrayify = (value = []) => (Array.isArray(value) ? value : [value]);
 
@@ -127,4 +127,4 @@ const getOpenGraphData = (url, callback) => {
     });
 };
 
-module.exports = getOpenGraphData;
+export {getOpenGraphData};

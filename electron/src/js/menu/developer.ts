@@ -17,27 +17,27 @@
  *
  */
 
-const {MenuItem} = require('electron');
-const config = require('../config');
-const environment = require('../environment');
-const util = require('../util');
-const windowManager = require('../window-manager');
+import * as electron from 'electron';
+import * as config from '../config';
+import * as environment from '../environment';
+import * as util from '../util';
+import * as windowManager from '../window-manager';
 
 const currentEnvironment = environment.getEnvironment();
 
 const getPrimaryWindow = () => windowManager.getPrimaryWindow();
 
-const reloadTemplate = {
+const reloadTemplate: electron.MenuItemConstructorOptions = {
   click: () => getPrimaryWindow().reload(),
   label: 'Reload',
 };
 
-const devToolsTemplate = {
+const devToolsTemplate: electron.MenuItemConstructorOptions = {
   label: 'Toggle DevTools',
   submenu: [
     {
       accelerator: 'Alt+CmdOrCtrl+I',
-      click: () => getPrimaryWindow().toggleDevTools(),
+      click: () => (getPrimaryWindow() as any).toggleDevTools(),
       label: 'Sidebar',
     },
     {
@@ -64,7 +64,7 @@ const devToolsTemplate = {
   ],
 };
 
-const createEnvironmentTemplate = env => {
+const createEnvironmentTemplate = (env): electron.MenuItemConstructorOptions => {
   return {
     checked: currentEnvironment === env,
     click: () => {
@@ -76,23 +76,23 @@ const createEnvironmentTemplate = env => {
   };
 };
 
-const versionTemplate = {
+const versionTemplate: electron.MenuItemConstructorOptions = {
   label: `Wire Version ${config.VERSION}`,
 };
 
-const chromeVersionTemplate = {
+const chromeVersionTemplate: electron.MenuItemConstructorOptions = {
   label: `Chrome Version ${process.versions.chrome}`,
 };
 
-const electronVersionTemplate = {
+const electronVersionTemplate: electron.MenuItemConstructorOptions = {
   label: `Electron Version ${process.versions.electron}`,
 };
 
-const separatorTemplate = {
+const separatorTemplate: electron.MenuItemConstructorOptions = {
   type: 'separator',
 };
 
-const menuTemplate = {
+const menuTemplate: electron.MenuItemConstructorOptions = {
   id: 'Developer',
   label: 'Developer',
   submenu: [
@@ -112,4 +112,6 @@ const menuTemplate = {
   ],
 };
 
-module.exports = new MenuItem(menuTemplate);
+const menuItem = new electron.MenuItem(menuTemplate);
+
+export {menuItem};

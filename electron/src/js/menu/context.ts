@@ -17,15 +17,15 @@
  *
  */
 
-const {clipboard, remote, ipcRenderer, webFrame} = require('electron');
+import {clipboard, ipcRenderer, remote, webFrame} from 'electron';
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
 
-const config = require('../config');
-const locale = require('../../locale/locale');
-const {settings} = require('../settings/ConfigurationPersistence');
-const EVENT_TYPE = require('../lib/eventType');
-const {SettingsType} = require('../settings/SettingsType');
+import * as locale from '../../locale/locale';
+import * as config from '../config';
+import {EVENT_TYPE} from '../lib/eventType';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
 
 let textMenu;
 
@@ -51,7 +51,7 @@ const selection = {
   suggestions: [],
 };
 
-const textMenuTemplate = [
+const textMenuTemplate: any[] = [
   {
     label: locale.getText('menuCut'),
     role: 'cut',
@@ -103,7 +103,7 @@ const createTextMenu = () => {
 
 const imageMenu = Menu.buildFromTemplate([
   {
-    click: () => savePicture(imageMenu.file, imageMenu.image),
+    click: () => savePicture((imageMenu as any).file, (imageMenu as any).image),
     label: locale.getText('menuSavePictureAs'),
   },
 ]);
@@ -111,7 +111,7 @@ const imageMenu = Menu.buildFromTemplate([
 window.addEventListener(
   'contextmenu',
   event => {
-    const element = event.target;
+    const element = event.target as HTMLElement;
 
     copyContext = '';
 
@@ -121,11 +121,11 @@ window.addEventListener(
       textMenu.popup(remote.getCurrentWindow());
     } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
       event.preventDefault();
-      imageMenu.image = element.src;
+      (imageMenu as any).image = (element as HTMLImageElement).src;
       imageMenu.popup(remote.getCurrentWindow());
     } else if (element.nodeName === 'A') {
       event.preventDefault();
-      copyContext = element.href.replace(/^mailto:/, '');
+      copyContext = (element as HTMLLinkElement).href.replace(/^mailto:/, '');
       defaultMenu.popup(remote.getCurrentWindow());
     } else if (element.classList.contains('text')) {
       event.preventDefault();
@@ -135,12 +135,12 @@ window.addEventListener(
       // Maybe we are in a code block _inside_ an element with the 'text' class?
       // Code block can consist of many tags: CODE, PRE, SPAN, etc.
       let parentNode = element.parentNode;
-      while (parentNode !== document && !parentNode.classList.contains('text')) {
+      while (parentNode !== document && !(parentNode as any).classList.contains('text')) {
         parentNode = parentNode.parentNode;
       }
       if (parentNode !== document) {
         event.preventDefault();
-        copyContext = window.getSelection().toString() || parentNode.innerText.trim();
+        copyContext = window.getSelection().toString() || (parentNode as any).innerText.trim();
         defaultMenu.popup(remote.getCurrentWindow());
       }
     }

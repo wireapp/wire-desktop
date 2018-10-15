@@ -17,17 +17,19 @@
  *
  */
 
-const {BrowserWindow} = require('electron');
+import {BrowserWindow} from 'electron';
 
-let primaryWindowId;
+let primaryWindowId: number | undefined;
 
 const getPrimaryWindow = () => {
   return primaryWindowId ? BrowserWindow.fromId(primaryWindowId) : BrowserWindow.getAllWindows()[0];
 };
 
-const setPrimaryWindowId = newPrimaryWindowId => (primaryWindowId = newPrimaryWindowId);
+const setPrimaryWindowId = (newPrimaryWindowId: number): void => {
+  primaryWindowId = newPrimaryWindowId;
+};
 
-const showPrimaryWindow = () => {
+const showPrimaryWindow = (): void => {
   const browserWindow = getPrimaryWindow();
 
   if (browserWindow) {
@@ -41,8 +43,4 @@ const showPrimaryWindow = () => {
   }
 };
 
-module.exports = {
-  getPrimaryWindow,
-  setPrimaryWindowId,
-  showPrimaryWindow,
-};
+export {getPrimaryWindow, setPrimaryWindowId, showPrimaryWindow};

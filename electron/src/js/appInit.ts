@@ -17,10 +17,10 @@
  *
  */
 
-const {app} = require('electron');
-const environment = require('./environment');
-const minimist = require('minimist');
-const path = require('path');
+import {app} from 'electron';
+import * as minimist from 'minimist';
+import * as path from 'path';
+import * as environment from './environment';
 
 const argv = minimist(process.argv.slice(1));
 
@@ -52,8 +52,4 @@ const ignoreCertificateErrors = () => {
   }
 };
 
-module.exports = {
-  fixUnityIcon,
-  handlePortableFlags,
-  ignoreCertificateErrors,
-};
+export {fixUnityIcon, handlePortableFlags, ignoreCertificateErrors};

@@ -17,16 +17,18 @@
  *
  */
 
-// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.coffee
+// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.js
 
-const {app} = require('electron');
+import {app} from 'electron';
 
-const config = require('./config');
-const cp = require('child_process');
-const environment = require('./environment');
-const lifecycle = require('./lifecycle');
-const fs = require('fs');
-const path = require('path');
+import * as cp from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as config from './config';
+import * as environment from './environment';
+import * as lifecycle from './lifecycle';
+
+type SpawnCallback = (error: Error, stdout: string) => void;
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 
@@ -38,7 +40,13 @@ const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
 
 const taskbarLink = path.resolve(
-  path.join(process.env.APPDATA, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', linkName)
+  process.env.APPDATA,
+  'Microsoft',
+  'Internet Explorer',
+  'Quick Launch',
+  'User Pinned',
+  'TaskBar',
+  linkName
 );
 
 const SQUIRREL_EVENT = {
@@ -51,7 +59,7 @@ const SQUIRREL_EVENT = {
   UPDATED: '--squirrel-updated',
 };
 
-const spawn = (command, args, callback) => {
+const spawn = (command: string, args: string[], callback?: SpawnCallback) => {
   let error;
   let spawnedProcess;
   let stdout;
@@ -88,19 +96,19 @@ const spawn = (command, args, callback) => {
   });
 };
 
-const spawnUpdate = (args, callback) => {
+const spawnUpdate = (args: string[], callback?: SpawnCallback) => {
   spawn(updateDotExe, args, callback);
 };
 
-const createStartShortcut = callback => {
+const createStartShortcut = (callback?: SpawnCallback) => {
   spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu'], callback);
 };
 
-const createDesktopShortcut = callback => {
+const createDesktopShortcut = (callback?: SpawnCallback) => {
   spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop'], callback);
 };
 
-const removeShortcuts = callback => {
+const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void) => {
   spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
     fs.unlink(taskbarLink, callback)
   );
@@ -151,7 +159,4 @@ const handleSquirrelEvent = shouldQuit => {
   scheduleUpdate();
 };
 
-module.exports = {
-  handleSquirrelEvent,
-  installUpdate,
-};
+export {handleSquirrelEvent, installUpdate};

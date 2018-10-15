@@ -17,9 +17,9 @@
  *
  */
 
+import {settings} from './settings/ConfigurationPersistence';
+import {SettingsType} from './settings/SettingsType';
 const pkg = require('../../package.json');
-const {settings} = require('./settings/ConfigurationPersistence');
-const {SettingsType} = require('./settings/SettingsType');
 
 let currentEnvironment = undefined;
 
@@ -85,12 +85,12 @@ const setEnvironment = env => {
 };
 
 const web = {
-  getAdminUrl: path => {
+  getAdminUrl: (path?: string): string => {
     const baseUrl = isProdEnvironment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
     return `${baseUrl}${path ? path : ''}`;
   },
-  getSupportUrl: path => `${URL_SUPPORT}${path ? path : ''}`,
-  getWebappUrl: env => {
+  getSupportUrl: (path?: string): string => `${URL_SUPPORT}${path ? path : ''}`,
+  getWebappUrl: (env?: string): string => {
     if (env) {
       return env;
     }
@@ -114,17 +114,10 @@ const web = {
 
     return URL_WEBAPP.PRODUCTION;
   },
-  getWebsiteUrl: path => {
+  getWebsiteUrl: (path?: string): string => {
     const baseUrl = isProdEnvironment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
     return `${baseUrl}${path ? path : ''}`;
   },
 };
 
-module.exports = {
-  TYPE,
-  app,
-  getEnvironment,
-  platform,
-  setEnvironment,
-  web,
-};
+export {TYPE, app, getEnvironment, platform, setEnvironment, web};

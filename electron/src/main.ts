@@ -18,14 +18,15 @@
  */
 
 // Modules
-const debug = require('debug');
-const debugMain = debug('mainTmp');
+import * as debug from 'debug';
+import {BrowserWindow, Menu, app, ipcMain, shell} from 'electron';
+import WindowStateKeeper = require('electron-window-state');
+import * as fs from 'fs-extra';
+import * as minimist from 'minimist';
+import * as path from 'path';
 const fileUrl = require('file-url');
-const fs = require('fs-extra');
-const minimist = require('minimist');
-const WindowStateKeeper = require('electron-window-state');
-const path = require('path');
-const {BrowserWindow, Menu, app, ipcMain, shell} = require('electron');
+
+const debugMain = debug('mainTmp');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -37,26 +38,26 @@ const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 // Configuration persistence
-const {settings} = require('./js/settings/ConfigurationPersistence');
-const {SettingsType} = require('./js/settings/SettingsType');
+import {settings} from './js/settings/ConfigurationPersistence';
+import {SettingsType} from './js/settings/SettingsType';
 
 // Wrapper modules
-const about = require('./js/about');
-const appInit = require('./js/appInit');
-const certificateUtils = require('./js/certificateUtils');
-const config = require('./js/config');
-const developerMenu = require('./js/menu/developer');
-const download = require('./js/lib/download');
-const environment = require('./js/environment');
-const googleAuth = require('./js/lib/googleAuth');
-const initRaygun = require('./js/initRaygun');
-const lifecycle = require('./js/lifecycle');
-const locale = require('./locale/locale');
-const systemMenu = require('./js/menu/system');
-const util = require('./js/util');
-const windowManager = require('./js/window-manager');
-const TrayHandler = require('./js/menu/TrayHandler');
-const EVENT_TYPE = require('./js/lib/eventType');
+import * as about from './js/about';
+import * as appInit from './js/appInit';
+import * as certificateUtils from './js/certificateUtils';
+import * as config from './js/config';
+import * as environment from './js/environment';
+import * as initRaygun from './js/initRaygun';
+import {download} from './js/lib/download';
+import {EVENT_TYPE} from './js/lib/eventType';
+import * as googleAuth from './js/lib/googleAuth';
+import * as lifecycle from './js/lifecycle';
+import {menuItem as developerMenu} from './js/menu/developer';
+import * as systemMenu from './js/menu/system';
+import {TrayHandler} from './js/menu/TrayHandler';
+import * as util from './js/util';
+import * as windowManager from './js/window-manager';
+import * as locale from './locale/locale';
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -73,8 +74,8 @@ let main;
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, fileName, bytes) => {
-    download(fileName, bytes);
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event, fileName, bytes) => {
+    await download(fileName, bytes);
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
@@ -88,7 +89,7 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, event => {
     googleAuth
       .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
-      .then(code => event.sender.send('google-auth-success', code.access_token))
+      .then((code: any) => event.sender.send('google-auth-success', code.access_token))
       .catch(error => event.sender.send('google-auth-error', error));
   });
 
@@ -134,7 +135,13 @@ const initWindowStateKeeper = () => {
   // load version 0 full screen setting
   const showInFullScreen = settings.restore(SettingsType.FULL_SCREEN, 'not-set-in-v0');
 
-  const stateKeeperOptions = {
+  const stateKeeperOptions: {
+    defaultHeight: number;
+    defaultWidth: number;
+    path: string;
+    fullScreen?: boolean;
+    maximize?: boolean;
+  } = {
     defaultHeight: loadedWindowBounds.height,
     defaultWidth: loadedWindowBounds.width,
     path: path.join(app.getPath('userData'), 'config'),
@@ -153,7 +160,7 @@ const initWindowStateKeeper = () => {
 const showMainWindow = mainWindowState => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
-  const options = {
+  const options: Electron.BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
     backgroundColor: '#f7f8fa',
     height: mainWindowState.height,
@@ -319,6 +326,8 @@ const renameLogFile = () => {
 };
 
 class ElectronWrapperInit {
+  debug: debug.IDebugger;
+
   constructor() {
     this.debug = debug('ElectronWrapperInit');
   }
@@ -351,7 +360,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', (webviewEvent, contents) => {
-      switch (contents.getType()) {
+      switch ((contents as any).getType()) {
         case 'window':
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
@@ -377,29 +386,31 @@ class ElectronWrapperInit {
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
 
-          contents.session.setCertificateVerifyProc((request, cb) => {
-            const {hostname = '', certificate = {}, error} = request;
+          contents.session.setCertificateVerifyProc(
+            (request: Electron.CertificateVerifyProcRequest, cb: (verificationResult: number) => void) => {
+              const {hostname, certificate, errorCode: error} = request;
 
-            if (typeof error !== 'undefined') {
-              console.error('setCertificateVerifyProc', error);
-              main.loadURL(CERT_ERR_HTML);
-              return cb(-2);
-            }
+              if (typeof error !== 'undefined') {
+                console.error('setCertificateVerifyProc', error);
+                main.loadURL(CERT_ERR_HTML);
+                return cb(-2);
+              }
 
-            if (certificateUtils.hostnameShouldBePinned(hostname)) {
-              const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
+              if (certificateUtils.hostnameShouldBePinned(hostname)) {
+                const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
 
-              for (const result of Object.values(pinningResults)) {
-                if (result === false) {
-                  console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
-                  main.loadURL(CERT_ERR_HTML);
-                  return cb(-2);
+                for (const result of Object.values(pinningResults)) {
+                  if (result === false) {
+                    console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
+                    main.loadURL(CERT_ERR_HTML);
+                    return cb(-2);
+                  }
                 }
               }
-            }
 
-            return cb(-3);
-          });
+              return cb(-3);
+            }
+          );
           break;
       }
     });
@@ -418,5 +429,5 @@ if (!lifecycle.shouldQuit) {
   bindIpcEvents();
   handleAppEvents();
   renameLogFile();
-  new ElectronWrapperInit().run();
+  new ElectronWrapperInit().run().catch(error => console.log(error));
 }

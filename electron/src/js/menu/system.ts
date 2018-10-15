@@ -17,18 +17,18 @@
  *
  */
 
-const {dialog, Menu, shell} = require('electron');
-const autoLaunch = require('auto-launch');
-const launchCmd = process.env.APPIMAGE ? process.env.APPIMAGE : process.execPath;
+import autoLaunch = require('auto-launch');
+import {Menu, dialog, shell} from 'electron';
+const launchCmd = process.env.APPIMAGE || process.execPath;
 
-const config = require('../config');
-const environment = require('../environment');
-const lifecycle = require('../lifecycle');
-const locale = require('../../locale/locale');
-const windowManager = require('../window-manager');
-const {settings} = require('../settings/ConfigurationPersistence');
-const EVENT_TYPE = require('../lib/eventType');
-const {SettingsType} = require('../settings/SettingsType');
+import * as locale from '../../locale/locale';
+import * as config from '../config';
+import * as environment from '../environment';
+import {EVENT_TYPE} from '../lib/eventType';
+import * as lifecycle from '../lifecycle';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
+import * as windowManager from '../window-manager';
 
 let menu;
 
@@ -48,7 +48,7 @@ const sendAction = action => {
   }
 };
 
-const separatorTemplate = {
+const separatorTemplate: any = {
   type: 'separator',
 };
 
@@ -149,7 +149,7 @@ const toggleMenuTemplate = {
   type: 'checkbox',
 };
 
-const toggleFullScreenTemplate = {
+const toggleFullScreenTemplate: any = {
   accelerator: environment.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
   click: () => {
     const mainBrowserWindow = getPrimaryWindow();
@@ -172,7 +172,7 @@ const toggleAutoLaunchTemplate = {
 
 const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
 
-const editTemplate = {
+const editTemplate: any = {
   i18n: 'menuEdit',
   submenu: [
     {
@@ -212,7 +212,7 @@ const editTemplate = {
   ],
 };
 
-const windowTemplate = {
+const windowTemplate: any = {
   i18n: 'menuWindow',
   role: 'window',
   submenu: [
@@ -319,7 +319,7 @@ const win32Template = {
     signOutTemplate,
     {
       accelerator: 'Alt+F4',
-      click: async () => await lifecycle.quit(),
+      click: async () => lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -340,13 +340,13 @@ const linuxTemplate = {
     signOutTemplate,
     {
       accelerator: 'Ctrl+Q',
-      click: async () => await lifecycle.quit(),
+      click: async () => lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
 };
 
-const menuTemplate = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
+const menuTemplate: any[] = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
 
 const processMenu = (template, language) => {
   for (const item of template) {
@@ -384,37 +384,37 @@ const changeLocale = language => {
   );
 };
 
-module.exports = {
-  createMenu: isFullScreen => {
-    if (environment.platform.IS_MAC_OS) {
-      menuTemplate.unshift(darwinTemplate);
-      windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
-      toggleFullScreenTemplate.checked = isFullScreen;
-    }
+const createMenu = isFullScreen => {
+  if (environment.platform.IS_MAC_OS) {
+    menuTemplate.unshift(darwinTemplate);
+    windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
+    toggleFullScreenTemplate.checked = isFullScreen;
+  }
 
-    if (environment.platform.IS_WINDOWS) {
-      menuTemplate.unshift(win32Template);
-      windowTemplate.i18n = 'menuView';
-      windowTemplate.submenu.unshift(toggleMenuTemplate, separatorTemplate);
-    }
+  if (environment.platform.IS_WINDOWS) {
+    menuTemplate.unshift(win32Template);
+    windowTemplate.i18n = 'menuView';
+    windowTemplate.submenu.unshift(toggleMenuTemplate, separatorTemplate);
+  }
 
-    if (environment.platform.IS_LINUX) {
-      menuTemplate.unshift(linuxTemplate);
-      editTemplate.submenu.push(separatorTemplate, {
-        click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
-        i18n: 'menuPreferences',
-      });
-      windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
-      toggleFullScreenTemplate.checked = isFullScreen;
-    }
+  if (environment.platform.IS_LINUX) {
+    menuTemplate.unshift(linuxTemplate);
+    editTemplate.submenu.push(separatorTemplate, {
+      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
+      i18n: 'menuPreferences',
+    });
+    windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
+    toggleFullScreenTemplate.checked = isFullScreen;
+  }
 
-    if (!environment.platform.IS_MAC_OS) {
-      helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
-    }
+  if (!environment.platform.IS_MAC_OS) {
+    helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
+  }
 
-    processMenu(menuTemplate, locale.getCurrent());
-    menu = Menu.buildFromTemplate(menuTemplate);
+  processMenu(menuTemplate, locale.getCurrent());
+  menu = Menu.buildFromTemplate(menuTemplate);
 
-    return menu;
-  },
+  return menu;
 };
+
+export {createMenu};

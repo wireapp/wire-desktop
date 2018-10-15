@@ -21,6 +21,7 @@ import * as debug from 'debug';
 import * as electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+
 import {SettingsType} from './SettingsType';
 
 const app = electron.app || electron.remote.app;

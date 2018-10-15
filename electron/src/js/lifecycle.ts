@@ -17,11 +17,11 @@
  *
  */
 
-const {app, ipcMain} = require('electron');
-const environment = require('./environment');
-const EVENT_TYPE = require('./lib/eventType');
-const {settings} = require('./settings/ConfigurationPersistence');
-const windowManager = require('./window-manager');
+import {app, ipcMain} from 'electron';
+import * as environment from './environment';
+import {EVENT_TYPE} from './lib/eventType';
+import {settings} from './settings/ConfigurationPersistence';
+import * as windowManager from './window-manager';
 
 const checkForUpdate = () => {
   if (environment.platform.IS_WINDOWS) {
@@ -69,10 +69,4 @@ const relaunch = () => {
 
 let shouldQuit = false;
 
-module.exports = {
-  checkForUpdate,
-  checkSingleInstance,
-  quit,
-  relaunch,
-  shouldQuit,
-};
+export {checkForUpdate, checkSingleInstance, quit, relaunch, shouldQuit};

@@ -50,7 +50,7 @@ class ConfigurationPersistence {
     return true;
   }
 
-  restore(name, defaultValue) {
+  restore(name: string, defaultValue?: any) {
     this.debug('Restoring %s', name);
     const value = global._ConfigurationPersistence[name];
     return typeof value !== 'undefined' ? value : defaultValue;

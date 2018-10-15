@@ -17,13 +17,17 @@
  *
  */
 
-const fs = require('fs');
-const imageType = require('image-type');
-const {dialog} = require('electron');
+import {dialog} from 'electron';
+import * as fs from 'fs';
 
-module.exports = (fileName, bytes) => {
+const imageType = require('image-type');
+
+const download = (fileName, bytes) => {
   return new Promise((resolve, reject) => {
-    const options = {};
+    const options: {
+      defaultPath?: string;
+      filters?: {extensions: string[]; name: string}[];
+    } = {};
     const type = imageType(bytes);
 
     if (fileName) {
@@ -48,3 +52,5 @@ module.exports = (fileName, bytes) => {
     });
   });
 };
+
+export {download};

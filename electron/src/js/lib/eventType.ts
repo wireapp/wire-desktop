@@ -17,7 +17,7 @@
  *
  */
 
-module.exports = {
+const EVENT_TYPE = {
   ABOUT: {
     LOADED: 'EVENT_TYPE.ABOUT.LOADED',
     LOCALE_RENDER: 'EVENT_TYPE.ABOUT.LOCALE_RENDER',
@@ -72,3 +72,5 @@ module.exports = {
     UPDATE_AVAILABLE: 'EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE',
   },
 };
+
+export {EVENT_TYPE};

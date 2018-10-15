@@ -17,11 +17,12 @@
  *
  */
 
-const {BrowserWindow} = require('electron');
+import {BrowserWindow} from 'electron';
 
-const qs = require('querystring');
-const google = require('googleapis');
-const request = require('request');
+import * as google from 'googleapis';
+import * as qs from 'querystring';
+import * as request from 'request';
+
 const OAuth2 = google.auth.OAuth2;
 
 const authorizeApp = url => {
@@ -91,6 +92,4 @@ const getAuthorizationCode = (scopes, clientId, clientSecret) => {
   return authorizeApp(url);
 };
 
-module.exports = {
-  getAccessToken,
-};
+export {getAccessToken};

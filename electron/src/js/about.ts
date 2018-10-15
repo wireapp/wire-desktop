@@ -17,14 +17,15 @@
  *
  */
 
-const fileUrl = require('file-url');
-const path = require('path');
-const {app, BrowserWindow, ipcMain, session, shell} = require('electron');
+import {BrowserWindow, app, ipcMain, session, shell} from 'electron';
+import fileUrl = require('file-url');
+import * as path from 'path';
 
-const config = require('./config');
-const EVENT_TYPE = require('./lib/eventType');
+import * as locale from '../locale/locale';
+import * as config from './config';
+import {EVENT_TYPE} from './lib/eventType';
+
 const pkg = require('../../package.json');
-const locale = require('../locale/locale');
 
 let aboutWindow;
 let webappVersion;
@@ -126,6 +127,4 @@ const showWindow = () => {
   aboutWindow.show();
 };
 
-module.exports = {
-  showWindow,
-};
+export {showWindow};

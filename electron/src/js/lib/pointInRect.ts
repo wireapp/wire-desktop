@@ -17,20 +17,12 @@
  *
  */
 
-const config = require('./config');
-const raygun = require('raygun');
+const pointInRectangle = (point, rectangle) => {
+  const [x, y] = point;
+  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
+  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
 
-let raygunClient;
-
-const initClient = () => {
-  raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
-
-  raygunClient.onBeforeSend(payload => {
-    delete payload.details.machineName;
-    return payload;
-  });
+  return xInRange && yInRange;
 };
 
-module.exports = {
-  initClient,
-};
+export {pointInRectangle};

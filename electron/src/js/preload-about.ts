@@ -17,8 +17,8 @@
  *
  */
 
-const {ipcRenderer} = require('electron');
-const EVENT_TYPE = require('./lib/eventType');
+import {ipcRenderer} from 'electron';
+import {EVENT_TYPE} from './lib/eventType';
 
 ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (sender, labels) => {
   for (const label in labels) {
@@ -33,12 +33,15 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (sender, details) => {
   if (details.webappVersion) {
     document.getElementById('webappVersion').innerHTML = details.webappVersion;
   } else {
-    document.getElementById('webappVersion').parentNode.remove();
+    (document.getElementById('webappVersion').parentNode as any).remove();
   }
 
   // Get locales
   const labels = [];
-  for (const label of document.querySelectorAll('[data-string]')) {
+  const dataStrings = document.querySelectorAll<any>('[data-string]');
+
+  for (const index in dataStrings) {
+    const label = dataStrings[index];
     labels.push(label.dataset.string);
   }
   ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
