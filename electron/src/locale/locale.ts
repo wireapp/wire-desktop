@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys */
 /*
  * Wire
  * Copyright (C) 2018 Wire Swiss GmbH
@@ -18,9 +17,11 @@
  *
  */
 
-const app = require('electron').app || require('electron').remote.app;
-const settings = require('../js/settings/ConfigurationPersistence');
-const SettingsType = require('../js/settings/SettingsType');
+import * as electron from 'electron';
+import {settings} from '../js/settings/ConfigurationPersistence';
+import {SettingsType} from '../js/settings/SettingsType';
+
+const app = electron.app || electron.remote.app;
 
 const cs = require('./strings-cs');
 const da = require('./strings-da');
@@ -45,6 +46,7 @@ const sl = require('./strings-sl');
 const tr = require('./strings-tr');
 const uk = require('./strings-uk');
 
+/* tslint:disable:object-literal-sort-keys */
 const SUPPORTED_LANGUAGES = {
   en: 'English',
   cs: 'Čeština',
@@ -69,6 +71,7 @@ const SUPPORTED_LANGUAGES = {
   tr: 'Türkçe',
   uk: 'Українська',
 };
+/* tslint:enable:object-literal-sort-keys */
 
 let current;
 
@@ -98,7 +101,7 @@ const setLocale = locale => {
   settings.save(SettingsType.LOCALE, current);
 };
 
-module.exports = {
+export {
   cs,
   da,
   de,

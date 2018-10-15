@@ -17,7 +17,7 @@
  *
  */
 
-module.exports = {
+const SettingsType = {
   AUTO_LAUNCH: 'shouldAutoLaunch',
   ENV: 'env',
   FULL_SCREEN: 'fullscreen',
@@ -26,3 +26,5 @@ module.exports = {
   SPELL_CHECK: 'spelling',
   WINDOW_BOUNDS: 'bounds',
 };
+
+export {SettingsType};

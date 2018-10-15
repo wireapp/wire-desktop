@@ -20,7 +20,7 @@
 const {app, ipcMain} = require('electron');
 const environment = require('./environment');
 const EVENT_TYPE = require('./lib/eventType');
-const settings = require('./settings/ConfigurationPersistence');
+const {settings} = require('./settings/ConfigurationPersistence');
 const windowManager = require('./window-manager');
 
 const checkForUpdate = () => {

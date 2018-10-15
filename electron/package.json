@@ -27,6 +27,8 @@
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
+    "@types/debug": "0.0.31",
+    "@types/node": "10.11.7",
     "cross-spawn": "6.0.5"
   },
   "environment": "internal",

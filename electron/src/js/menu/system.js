@@ -26,9 +26,9 @@ const environment = require('../environment');
 const lifecycle = require('../lifecycle');
 const locale = require('../../locale/locale');
 const windowManager = require('../window-manager');
-const settings = require('../settings/ConfigurationPersistence');
+const {settings} = require('../settings/ConfigurationPersistence');
 const EVENT_TYPE = require('../lib/eventType');
-const SettingsType = require('../settings/SettingsType');
+const {SettingsType} = require('../settings/SettingsType');
 
 let menu;
 

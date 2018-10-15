@@ -17,13 +17,13 @@
  *
  */
 
-// @ts-check
+import * as debug from 'debug';
+import * as electron from 'electron';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import {SettingsType} from './SettingsType';
 
-const app = require('electron').app || require('electron').remote.app;
-const debug = require('debug');
-const fs = require('fs-extra');
-const path = require('path');
-const SettingsType = require('./SettingsType');
+const app = electron.app || electron.remote.app;
 
 const debugLogger = debug('SchemaUpdate');
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
@@ -72,4 +72,4 @@ class SchemaUpdater {
   }
 }
 
-module.exports = SchemaUpdater;
+export {SchemaUpdater};

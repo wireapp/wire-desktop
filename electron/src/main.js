@@ -37,8 +37,8 @@ const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 // Configuration persistence
-const settings = require('./js/settings/ConfigurationPersistence');
-const SettingsType = require('./js/settings/SettingsType');
+const {settings} = require('./js/settings/ConfigurationPersistence');
+const {SettingsType} = require('./js/settings/SettingsType');
 
 // Wrapper modules
 const about = require('./js/about');

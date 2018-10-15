@@ -17,13 +17,16 @@
  *
  */
 
-'use strict';
+import * as debug from 'debug';
+import * as fs from 'fs-extra';
+import {SchemaUpdater} from './SchemaUpdater';
 
-const debug = require('debug');
-const fs = require('fs-extra');
-const SchemaUpdater = require('./SchemaUpdater');
+declare var global: any;
 
 class ConfigurationPersistence {
+  configFile: string;
+  debug: debug.IDebugger;
+
   constructor() {
     this.configFile = SchemaUpdater.updateToVersion1();
     this.debug = debug('ConfigurationPersistence');
@@ -75,4 +78,6 @@ class ConfigurationPersistence {
   }
 }
 
-module.exports = new ConfigurationPersistence();
+const settings = new ConfigurationPersistence();
+
+export {settings};
