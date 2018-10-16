@@ -37,7 +37,7 @@ const getWebviewById = (id: string): WebviewTag =>
   document.querySelector(`.Webview[data-accountid="${id}"]`) as WebviewTag;
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: Event, action?: any) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: Event, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(action);

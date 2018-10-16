@@ -43,7 +43,7 @@ const launcher = new autoLaunch({
 const getPrimaryWindow = (): Electron.BrowserWindow => windowManager.getPrimaryWindow();
 
 // TODO: disable menus when not in focus
-const sendAction = (action?: any): void => {
+const sendAction = (action: string): void => {
   const primaryWindow = getPrimaryWindow();
   if (primaryWindow) {
     getPrimaryWindow().webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, action);

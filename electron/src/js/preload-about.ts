@@ -17,10 +17,10 @@
  *
  */
 
-import {ipcRenderer} from 'electron';
+import {Event, ipcRenderer} from 'electron';
 import {EVENT_TYPE} from './lib/eventType';
 
-ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (sender: any, labels: string[]) => {
+ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: Event, labels: string[]) => {
   for (const label in labels) {
     const labelElement = document.querySelector(`[data-string="${label}"]`);
     if (labelElement) {
@@ -29,35 +29,45 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (sender: any, labels: string[])
   }
 });
 
-ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (sender: any, details: any) => {
-  const nameElement = document.getElementById('name');
-  if (nameElement) {
-    nameElement.innerHTML = details.productName;
-  }
+ipcRenderer.once(
+  EVENT_TYPE.ABOUT.LOADED,
+  (
+    event: Event,
+    details: {
+      electronVersion: string;
+      productName: string;
+      webappVersion: string;
+    }
+  ) => {
+    const nameElement = document.getElementById('name');
+    if (nameElement) {
+      nameElement.innerHTML = details.productName;
+    }
 
-  const versionElement = document.getElementById('version');
-  if (versionElement) {
-    versionElement.innerHTML = details.electronVersion || 'Development';
-  }
+    const versionElement = document.getElementById('version');
+    if (versionElement) {
+      versionElement.innerHTML = details.electronVersion || 'Development';
+    }
 
-  const webappVersionElement = document.getElementById('webappVersion');
-  if (webappVersionElement) {
-    if (details.webappVersion) {
-      webappVersionElement.innerHTML = details.webappVersion;
-    } else {
-      if (webappVersionElement.parentNode) {
-        (webappVersionElement.parentNode as any).remove();
+    const webappVersionElement = document.getElementById('webappVersion');
+    if (webappVersionElement) {
+      if (details.webappVersion) {
+        webappVersionElement.innerHTML = details.webappVersion;
+      } else {
+        if (webappVersionElement.parentNode) {
+          (webappVersionElement.parentNode as any).remove();
+        }
       }
     }
-  }
 
-  // Get locales
-  const labels = [];
-  const dataStrings = document.querySelectorAll<any>('[data-string]');
+    // Get locales
+    const labels = [];
+    const dataStrings = document.querySelectorAll<any>('[data-string]');
 
-  for (const index in dataStrings) {
-    const label = dataStrings[index];
-    labels.push(label.dataset.string);
+    for (const index in dataStrings) {
+      const label = dataStrings[index];
+      labels.push(label.dataset.string);
+    }
+    ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
   }
-  ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
-});
+);
