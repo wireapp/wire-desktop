@@ -19,45 +19,11 @@
 
 import * as Electron from 'electron';
 import {SUPPORTED_LANGUAGE} from './locale/locale';
-import {strings} from './locale/strings';
+import {strings as i18nStrings} from './locale/strings';
 
-type Point = [number, number];
-type Rectangle = {
-  height: number;
-  width: number;
-  x: number;
-  y: number;
-};
-
-interface jsRsaSignPublicKey {
-  algoid: string;
-  algparam: string | null;
-  keyhex: string;
+interface ElectronMenuWithI18n extends Electron.Menu {
+  i18n?: string;
 }
-
-interface PinningResult {
-  decoding?: boolean;
-  errorMessage?: string;
-  verifiedIssuerRootPubkeys?: boolean;
-  verifiedPublicKeyInfo?: boolean;
-}
-
-interface OnHeadersReceivedDetails {
-  responseHeaders: {
-    [key: string]: string[];
-  };
-}
-
-interface Schemata {
-  [version: string]: any;
-}
-
-type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;
-
-type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGE;
-type Supportedi18nStrings = Partial<typeof strings>;
-
-type SupportedLanguagesObject = {[id in SupportedLanguage]: any};
 
 interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {
   i18n?: string;
@@ -65,12 +31,17 @@ interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {
   submenu?: ElectronMenuItemWithI18n[] | ElectronMenuWithI18n;
 }
 
-interface ElectronMenuWithI18n extends Electron.Menu {
-  i18n?: string;
+interface jsRsaSignPublicKey {
+  algoid: string;
+  algparam: string | null;
+  keyhex: string;
 }
 
-type SpawnCallback = (error: SpawnError | null, stdout: string) => void;
-type SpawnError = Error & {code?: number | null; stdout?: string | null};
+interface OnHeadersReceivedDetails {
+  responseHeaders: {
+    [key: string]: string[];
+  };
+}
 
 interface OpenGraphResult {
   title: string;
@@ -93,6 +64,38 @@ interface OpenGraphResultWithImage extends OpenGraphResult {
     height: string;
   };
 }
+
+interface PinningResult {
+  decoding?: boolean;
+  errorMessage?: string;
+  verifiedIssuerRootPubkeys?: boolean;
+  verifiedPublicKeyInfo?: boolean;
+}
+
+interface Schemata {
+  [version: string]: any;
+}
+
+type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;
+
+type Point = [number, number];
+
+type Rectangle = {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+};
+
+type SpawnCallback = (error: SpawnError | null, stdout: string) => void;
+
+type SpawnError = Error & {code?: number | null; stdout?: string | null};
+
+type Supportedi18nStrings = Partial<typeof i18nStrings>;
+
+type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGE;
+
+type SupportedLanguagesObject = {[id in SupportedLanguage]: any};
 
 export {
   ElectronMenuItemWithI18n,
