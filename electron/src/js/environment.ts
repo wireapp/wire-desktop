@@ -120,4 +120,4 @@ const web = {
   },
 };
 
-export {TYPE, app, getEnvironment, platform, setEnvironment, web};
+export {TYPE, URL_WEBAPP, app, getEnvironment, platform, setEnvironment, web};

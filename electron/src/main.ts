@@ -24,6 +24,7 @@ import WindowStateKeeper = require('electron-window-state');
 import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {URL} from 'url';
 const fileUrl = require('file-url');
 
 const debugMain = debug('mainTmp');
@@ -389,8 +390,9 @@ class ElectronWrapperInit {
           contents.session.setCertificateVerifyProc(
             (request: Electron.CertificateVerifyProcRequest, cb: (verificationResult: number) => void) => {
               const {hostname, certificate, verificationResult} = request;
+              const {hostname: hostnameInternal} = new URL(environment.URL_WEBAPP.INTERNAL);
 
-              if (verificationResult !== 'net::OK') {
+              if (verificationResult !== 'net::OK' && hostname !== hostnameInternal) {
                 console.error('setCertificateVerifyProc', hostname, verificationResult);
                 main.loadURL(CERT_ERR_HTML);
                 return cb(-2);
