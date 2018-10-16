@@ -26,6 +26,7 @@ const minimist = require('minimist');
 const WindowStateKeeper = require('electron-window-state');
 const path = require('path');
 const {BrowserWindow, Menu, app, ipcMain, shell} = require('electron');
+const {URL} = require('url');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -379,8 +380,9 @@ class ElectronWrapperInit {
 
           contents.session.setCertificateVerifyProc((request, cb) => {
             const {hostname = '', certificate = {}, verificationResult} = request;
+            const {hostname: hostnameInternal} = new URL(environment.URL_WEBAPP.INTERNAL);
 
-            if (verificationResult !== 'net::OK') {
+            if (verificationResult !== 'net::OK' && hostname !== hostnameInternal) {
               console.error('setCertificateVerifyProc', hostname, verificationResult);
               main.loadURL(CERT_ERR_HTML);
               return cb(-2);

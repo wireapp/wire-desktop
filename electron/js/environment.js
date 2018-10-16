@@ -122,6 +122,7 @@ const web = {
 
 module.exports = {
   TYPE,
+  URL_WEBAPP,
   app,
   getEnvironment,
   platform,
