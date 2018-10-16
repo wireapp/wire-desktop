@@ -3,7 +3,7 @@
   "dependencies": {
     "auto-launch": "5.0.5",
     "debug": "4.1.0",
-    "electron-window-state": "5.0.1",
+    "electron-window-state": "5.0.2",
     "file-url": "2.0.2",
     "fs-extra": "7.0.0",
     "googleapis": "24.0.0",
