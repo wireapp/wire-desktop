@@ -44,7 +44,7 @@ import {strings as sl} from './strings-sl';
 import {strings as tr} from './strings-tr';
 import {strings as uk} from './strings-uk';
 
-import {SupportedLanguage, SupportedLanguagesObject} from '../interfaces';
+import {SupportedLanguage, SupportedLanguagesObject, i18nStringIdentifier} from '../interfaces';
 
 const app = Electron.app || Electron.remote.app;
 
@@ -74,7 +74,7 @@ const LANGUAGES: SupportedLanguagesObject = {
 };
 
 /* tslint:disable:object-literal-sort-keys */
-const SUPPORTED_LANGUAGE = {
+const SUPPORTED_LANGUAGES = {
   en: 'English',
   cs: 'Čeština',
   da: 'Dansk',
@@ -102,7 +102,7 @@ const SUPPORTED_LANGUAGE = {
 
 let current: SupportedLanguage | undefined;
 
-const getSupportedLanguageKeys = (): SupportedLanguage[] => Object.keys(SUPPORTED_LANGUAGE) as SupportedLanguage[];
+const getSupportedLanguageKeys = (): SupportedLanguage[] => Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[];
 
 const getCurrent = (): SupportedLanguage => {
   if (!current) {
@@ -118,7 +118,7 @@ const parseLocale = (locale: string): SupportedLanguage => {
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
-const getText = (string_identifier: string): string => {
+const getText = (string_identifier: i18nStringIdentifier): string => {
   const strings = getCurrent();
   return LANGUAGES[strings][string_identifier] || LANGUAGES.en[string_identifier] || '';
 };
@@ -128,4 +128,4 @@ const setLocale = (locale: string): void => {
   settings.save(SettingsType.LOCALE, current);
 };
 
-export {getCurrent, getText, LANGUAGES, setLocale, SUPPORTED_LANGUAGE};
+export {getCurrent, getText, LANGUAGES, setLocale, SUPPORTED_LANGUAGES};

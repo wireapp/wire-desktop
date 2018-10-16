@@ -1,7 +1,7 @@
 import {Supportedi18nStrings} from '../interfaces';
 
 /* tslint:disable:object-literal-sort-keys */
-const strings: Supportedi18nStrings = {
+const strings: Required<Supportedi18nStrings> = {
   aboutReleases: 'Releases',
   aboutUpdate: 'How Wire Updates Work',
   aboutVersion: 'Version',

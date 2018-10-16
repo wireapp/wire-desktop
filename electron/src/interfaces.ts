@@ -18,15 +18,15 @@
  */
 
 import * as Electron from 'electron';
-import {SUPPORTED_LANGUAGE} from './locale/locale';
+import {SUPPORTED_LANGUAGES as SupportedLanguages} from './locale/locale';
 import {strings as i18nStrings} from './locale/strings';
 
 interface ElectronMenuWithI18n extends Electron.Menu {
-  i18n?: string;
+  i18n?: i18nStringIdentifier;
 }
 
 interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {
-  i18n?: string;
+  i18n?: i18nStringIdentifier;
   selector?: string;
   submenu?: ElectronMenuItemWithI18n[] | ElectronMenuWithI18n;
 }
@@ -76,6 +76,8 @@ interface Schemata {
   [version: string]: any;
 }
 
+type i18nStringIdentifier = keyof typeof i18nStrings;
+
 type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;
 
 type Point = [number, number];
@@ -93,12 +95,13 @@ type SpawnError = Error & {code?: number | null; stdout?: string | null};
 
 type Supportedi18nStrings = Partial<typeof i18nStrings>;
 
-type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGE;
+type SupportedLanguage = keyof typeof SupportedLanguages;
 
-type SupportedLanguagesObject = {[id in SupportedLanguage]: any};
+type SupportedLanguagesObject = {[id in SupportedLanguage]: Supportedi18nStrings} & {en: typeof i18nStrings};
 
 export {
   ElectronMenuItemWithI18n,
+  i18nStringIdentifier,
   jsRsaSignPublicKey,
   OnHeadersReceivedCallback,
   OnHeadersReceivedDetails,

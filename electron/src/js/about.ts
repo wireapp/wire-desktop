@@ -21,6 +21,7 @@ import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'elec
 import fileUrl = require('file-url');
 import * as path from 'path';
 
+import {i18nStringIdentifier} from '../interfaces';
 import * as locale from '../locale/locale';
 import * as config from './config';
 import {EVENT_TYPE} from './lib/eventType';
@@ -95,7 +96,7 @@ const showWindow = () => {
     );
 
     // Locales
-    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event: IpcMessageEvent, labels: string[]) => {
+    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event: IpcMessageEvent, labels: i18nStringIdentifier[]) => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {

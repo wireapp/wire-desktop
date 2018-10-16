@@ -46,12 +46,12 @@ const defaultMenu = Menu.buildFromTemplate([
 // Text
 ///////////////////////////////////////////////////////////////////////////////
 
-const selection = {
+const selection: {isMisspelled: boolean; suggestions: string[]} = {
   isMisspelled: false,
   suggestions: [],
 };
 
-const textMenuTemplate: any[] = [
+const textMenuTemplate: Electron.MenuItemConstructorOptions[] = [
   {
     label: locale.getText('menuCut'),
     role: 'cut',

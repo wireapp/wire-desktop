@@ -57,18 +57,18 @@ const separatorTemplate: ElectronMenuItemWithI18n = {
 const createLanguageTemplate = (languageCode: SupportedLanguage): ElectronMenuItemWithI18n => {
   return {
     click: (): void => changeLocale(languageCode),
-    label: locale.SUPPORTED_LANGUAGE[languageCode],
+    label: locale.SUPPORTED_LANGUAGES[languageCode],
     type: 'radio',
   };
 };
 
 const createLanguageSubmenu = (): ElectronMenuItemWithI18n[] => {
-  return Object.keys(locale.SUPPORTED_LANGUAGE).map(supportedLanguage =>
+  return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage =>
     createLanguageTemplate(supportedLanguage as SupportedLanguage)
   );
 };
 
-const localeTemplate = {
+const localeTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuLocale',
   submenu: createLanguageSubmenu(),
 };
@@ -358,7 +358,7 @@ const processMenu = (template: Iterable<ElectronMenuItemWithI18n>, language: Sup
       processMenu(item.submenu as Iterable<ElectronMenuItemWithI18n>, language);
     }
 
-    if (locale.SUPPORTED_LANGUAGE[language] === item.label) {
+    if (locale.SUPPORTED_LANGUAGES[language] === item.label) {
       item.checked = true;
     }
 
@@ -373,10 +373,12 @@ const changeLocale = (language: SupportedLanguage): void => {
   dialog.showMessageBox(
     {
       buttons: [
-        locale.LANGUAGES[language].restartLater,
-        environment.platform.IS_MAC_OS ? locale.LANGUAGES[language].menuQuit : locale.LANGUAGES[language].restartNow,
+        locale.LANGUAGES[language].restartLater || locale.LANGUAGES.en.restartLater,
+        environment.platform.IS_MAC_OS
+          ? locale.LANGUAGES[language].menuQuit || locale.LANGUAGES.en.menuQuit
+          : locale.LANGUAGES[language].restartNow || locale.LANGUAGES.en.restartNow,
       ],
-      message: locale.LANGUAGES[language].restartLocale,
+      message: locale.LANGUAGES[language].restartLocale || locale.LANGUAGES.en.restartLocale,
       title: locale.LANGUAGES[language].restartNeeded,
       type: 'info',
     },
