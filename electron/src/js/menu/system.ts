@@ -19,8 +19,6 @@
 
 import autoLaunch = require('auto-launch');
 import {Menu, dialog, shell} from 'electron';
-const launchCmd = process.env.APPIMAGE || process.execPath;
-
 import * as locale from '../../locale/locale';
 import * as config from '../config';
 import * as environment from '../environment';
@@ -30,7 +28,11 @@ import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import * as windowManager from '../window-manager';
 
-let menu;
+import {ElectronMenuItemWithI18n, SupportedLanguage} from '../../interfaces';
+
+const launchCmd = process.env.APPIMAGE || process.execPath;
+
+let menu: Menu;
 
 const launcher = new autoLaunch({
   isHidden: true,
@@ -38,30 +40,32 @@ const launcher = new autoLaunch({
   path: launchCmd,
 });
 
-const getPrimaryWindow = () => windowManager.getPrimaryWindow();
+const getPrimaryWindow = (): Electron.BrowserWindow => windowManager.getPrimaryWindow();
 
 // TODO: disable menus when not in focus
-const sendAction = action => {
+const sendAction = (action?: any): void => {
   const primaryWindow = getPrimaryWindow();
   if (primaryWindow) {
     getPrimaryWindow().webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, action);
   }
 };
 
-const separatorTemplate: any = {
+const separatorTemplate: ElectronMenuItemWithI18n = {
   type: 'separator',
 };
 
-const createLanguageTemplate = languageCode => {
+const createLanguageTemplate = (languageCode: SupportedLanguage): ElectronMenuItemWithI18n => {
   return {
-    click: () => changeLocale(languageCode),
-    label: locale.SUPPORTED_LANGUAGES[languageCode],
+    click: (): void => changeLocale(languageCode),
+    label: locale.SUPPORTED_LANGUAGE[languageCode],
     type: 'radio',
   };
 };
 
-const createLanguageSubmenu = () => {
-  return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage => createLanguageTemplate(supportedLanguage));
+const createLanguageSubmenu = (): ElectronMenuItemWithI18n[] => {
+  return Object.keys(locale.SUPPORTED_LANGUAGE).map(supportedLanguage =>
+    createLanguageTemplate(supportedLanguage as SupportedLanguage)
+  );
 };
 
 const localeTemplate = {
@@ -69,17 +73,17 @@ const localeTemplate = {
   submenu: createLanguageSubmenu(),
 };
 
-const aboutTemplate = {
-  click: () => menu.emit(EVENT_TYPE.ABOUT.SHOW),
+const aboutTemplate: ElectronMenuItemWithI18n = {
+  click: (): void => (menu as any).emit(EVENT_TYPE.ABOUT.SHOW),
   i18n: 'menuAbout',
 };
 
-const signOutTemplate = {
+const signOutTemplate: ElectronMenuItemWithI18n = {
   click: () => sendAction(EVENT_TYPE.ACTION.SIGN_OUT),
   i18n: 'menuSignOut',
 };
 
-const conversationTemplate = {
+const conversationTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuConversation',
   submenu: [
     {
@@ -125,13 +129,13 @@ const conversationTemplate = {
   ],
 };
 
-const showWireTemplate = {
+const showWireTemplate: ElectronMenuItemWithI18n = {
   accelerator: 'CmdOrCtrl+0',
   click: () => getPrimaryWindow().show(),
   label: config.NAME,
 };
 
-const toggleMenuTemplate = {
+const toggleMenuTemplate: ElectronMenuItemWithI18n = {
   checked: settings.restore(SettingsType.SHOW_MENU_BAR, true),
   click: () => {
     const mainBrowserWindow = getPrimaryWindow();
@@ -149,7 +153,7 @@ const toggleMenuTemplate = {
   type: 'checkbox',
 };
 
-const toggleFullScreenTemplate: any = {
+const toggleFullScreenTemplate: ElectronMenuItemWithI18n = {
   accelerator: environment.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
   click: () => {
     const mainBrowserWindow = getPrimaryWindow();
@@ -159,7 +163,7 @@ const toggleFullScreenTemplate: any = {
   type: 'checkbox',
 };
 
-const toggleAutoLaunchTemplate = {
+const toggleAutoLaunchTemplate: ElectronMenuItemWithI18n = {
   checked: settings.restore(SettingsType.AUTO_LAUNCH, false),
   click: () => {
     const shouldAutoLaunch = !settings.restore(SettingsType.AUTO_LAUNCH);
@@ -172,7 +176,7 @@ const toggleAutoLaunchTemplate = {
 
 const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
 
-const editTemplate: any = {
+const editTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuEdit',
   submenu: [
     {
@@ -204,7 +208,7 @@ const editTemplate: any = {
     separatorTemplate,
     {
       checked: supportsSpellCheck && settings.restore(SettingsType.SPELL_CHECK, false),
-      click: event => settings.save(SettingsType.SPELL_CHECK, event.checked),
+      click: (menuItem: Electron.MenuItem): boolean => settings.save(SettingsType.SPELL_CHECK, menuItem.checked),
       enabled: supportsSpellCheck,
       i18n: 'menuSpelling',
       type: 'checkbox',
@@ -212,7 +216,7 @@ const editTemplate: any = {
   ],
 };
 
-const windowTemplate: any = {
+const windowTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuWindow',
   role: 'window',
   submenu: [
@@ -238,7 +242,7 @@ const windowTemplate: any = {
   ],
 };
 
-const helpTemplate = {
+const helpTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuHelp',
   role: 'help',
   submenu: [
@@ -265,7 +269,7 @@ const helpTemplate = {
   ],
 };
 
-const darwinTemplate = {
+const darwinTemplate: ElectronMenuItemWithI18n = {
   label: config.NAME,
   submenu: [
     aboutTemplate,
@@ -305,7 +309,7 @@ const darwinTemplate = {
   ],
 };
 
-const win32Template = {
+const win32Template: ElectronMenuItemWithI18n = {
   label: config.NAME,
   submenu: [
     {
@@ -325,7 +329,7 @@ const win32Template = {
   ],
 };
 
-const linuxTemplate = {
+const linuxTemplate: ElectronMenuItemWithI18n = {
   label: config.NAME,
   submenu: [
     {
@@ -346,15 +350,15 @@ const linuxTemplate = {
   ],
 };
 
-const menuTemplate: any[] = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
+const menuTemplate: ElectronMenuItemWithI18n[] = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
 
-const processMenu = (template, language) => {
+const processMenu = (template: Iterable<ElectronMenuItemWithI18n>, language: SupportedLanguage) => {
   for (const item of template) {
     if (item.submenu) {
-      processMenu(item.submenu, language);
+      processMenu(item.submenu as Iterable<ElectronMenuItemWithI18n>, language);
     }
 
-    if (locale.SUPPORTED_LANGUAGES[language] === item.label) {
+    if (locale.SUPPORTED_LANGUAGE[language] === item.label) {
       item.checked = true;
     }
 
@@ -364,16 +368,16 @@ const processMenu = (template, language) => {
   }
 };
 
-const changeLocale = language => {
+const changeLocale = (language: SupportedLanguage): void => {
   locale.setLocale(language);
   dialog.showMessageBox(
     {
       buttons: [
-        locale[language].restartLater,
-        environment.platform.IS_MAC_OS ? locale[language].menuQuit : locale[language].restartNow,
+        locale.LANGUAGES[language].restartLater,
+        environment.platform.IS_MAC_OS ? locale.LANGUAGES[language].menuQuit : locale.LANGUAGES[language].restartNow,
       ],
-      message: locale[language].restartLocale,
-      title: locale[language].restartNeeded,
+      message: locale.LANGUAGES[language].restartLocale,
+      title: locale.LANGUAGES[language].restartNeeded,
       type: 'info',
     },
     response => {
@@ -384,31 +388,51 @@ const changeLocale = language => {
   );
 };
 
-const createMenu = isFullScreen => {
+const createMenu = (isFullScreen: boolean): Menu => {
+  if (!windowTemplate.submenu) {
+    windowTemplate.submenu = [];
+  }
+  if (!editTemplate.submenu) {
+    editTemplate.submenu = [];
+  }
+  if (!helpTemplate.submenu) {
+    helpTemplate.submenu = [];
+  }
+
   if (environment.platform.IS_MAC_OS) {
     menuTemplate.unshift(darwinTemplate);
-    windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
+    if (Array.isArray(windowTemplate.submenu)) {
+      windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
+    }
     toggleFullScreenTemplate.checked = isFullScreen;
   }
 
   if (environment.platform.IS_WINDOWS) {
     menuTemplate.unshift(win32Template);
     windowTemplate.i18n = 'menuView';
-    windowTemplate.submenu.unshift(toggleMenuTemplate, separatorTemplate);
+    if (Array.isArray(windowTemplate.submenu)) {
+      windowTemplate.submenu.unshift(toggleMenuTemplate, separatorTemplate);
+    }
   }
 
   if (environment.platform.IS_LINUX) {
     menuTemplate.unshift(linuxTemplate);
-    editTemplate.submenu.push(separatorTemplate, {
-      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
-      i18n: 'menuPreferences',
-    });
-    windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
+    if (Array.isArray(editTemplate.submenu)) {
+      editTemplate.submenu.push(separatorTemplate, {
+        click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
+        i18n: 'menuPreferences',
+      });
+    }
+    if (Array.isArray(windowTemplate.submenu)) {
+      windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
+    }
     toggleFullScreenTemplate.checked = isFullScreen;
   }
 
   if (!environment.platform.IS_MAC_OS) {
-    helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
+    if (Array.isArray(helpTemplate.submenu)) {
+      helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
+    }
   }
 
   processMenu(menuTemplate, locale.getCurrent());

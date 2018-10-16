@@ -17,21 +17,23 @@
  *
  */
 
-import {parse as openGraphParse} from 'open-graph';
 import * as request from 'request';
 import * as urlUtil from 'url';
+const openGraphParse = require('open-graph');
 
-const arrayify = (value = []) => (Array.isArray(value) ? value : [value]);
+import {OpenGraphResult, OpenGraphResultWithImage} from '../../interfaces';
 
-const bufferToBase64 = (buffer, mimeType) => {
+const arrayify = <T>(value: T[] | T = []): T[] => (Array.isArray(value) ? value : [value]);
+
+const bufferToBase64 = (buffer: string, mimeType?: string): string => {
   const bufferBase64encoded = Buffer.from(buffer).toString('base64');
   return `data:${mimeType};base64,${bufferBase64encoded}`;
 };
 
-const fetchImageAsBase64 = url => {
+const fetchImageAsBase64 = (url: string): Promise<string | undefined> => {
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
   return new Promise(resolve => {
-    const imageRequest = request({encoding: null, url: encodeURI(url)}, (error, response, body) => {
+    const imageRequest = request({encoding: null, url: encodeURI(url)}, (error, response, body: string) => {
       if (!error && response.statusCode === 200) {
         resolve(bufferToBase64(body, response.headers['content-type']));
       } else {
@@ -51,18 +53,18 @@ const fetchImageAsBase64 = url => {
   });
 };
 
-const fetchOpenGraphData = url => {
+const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
-  const parseHead = body => {
+  const parseHead = (body: string) => {
     const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
     return openGraphParse(head);
   };
 
-  return new Promise((resolve, reject) => {
-    const getContentRequest = request.get(urlUtil.format(normalizedUrl), (error, response, body) => {
+  return new Promise<string>((resolve, reject) => {
+    const getContentRequest = request.get(urlUtil.format(normalizedUrl), (error, response, body: string) => {
       return error ? reject(error) : resolve(body);
     });
 
@@ -88,17 +90,19 @@ const fetchOpenGraphData = url => {
   }).then(parseHead);
 };
 
-const updateMetaDataWithImage = (meta, image) => {
+const updateMetaDataWithImage = (meta: OpenGraphResult, image?: string): OpenGraphResultWithImage => {
+  const metadata = meta as OpenGraphResultWithImage;
+
   if (image) {
-    meta.image.data = image;
+    metadata.image.data = image;
   } else {
-    delete meta.image;
+    delete metadata.image;
   }
 
-  return meta;
+  return metadata;
 };
 
-const getOpenGraphData = (url, callback) => {
+const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: OpenGraphResult) => void) => {
   return fetchOpenGraphData(url)
     .then(meta => {
       if (meta.image && meta.image.url) {

@@ -28,7 +28,7 @@ import * as config from './config';
 import * as environment from './environment';
 import * as lifecycle from './lifecycle';
 
-type SpawnCallback = (error: Error, stdout: string) => void;
+import {SpawnCallback, SpawnError} from '../interfaces';
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 
@@ -40,7 +40,7 @@ const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
 
 const taskbarLink = path.resolve(
-  process.env.APPDATA,
+  process.env.APPDATA || '',
   'Microsoft',
   'Internet Explorer',
   'Quick Launch',
@@ -60,10 +60,9 @@ const SQUIRREL_EVENT = {
 };
 
 const spawn = (command: string, args: string[], callback?: SpawnCallback) => {
-  let error;
+  let error: SpawnError | null;
   let spawnedProcess;
-  let stdout;
-  stdout = '';
+  let stdout = '';
 
   try {
     spawnedProcess = cp.spawn(command, args);
@@ -96,34 +95,34 @@ const spawn = (command: string, args: string[], callback?: SpawnCallback) => {
   });
 };
 
-const spawnUpdate = (args: string[], callback?: SpawnCallback) => {
+const spawnUpdate = (args: string[], callback?: SpawnCallback): void => {
   spawn(updateDotExe, args, callback);
 };
 
-const createStartShortcut = (callback?: SpawnCallback) => {
+const createStartShortcut = (callback?: SpawnCallback): void => {
   spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu'], callback);
 };
 
-const createDesktopShortcut = (callback?: SpawnCallback) => {
+const createDesktopShortcut = (callback?: SpawnCallback): void => {
   spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop'], callback);
 };
 
-const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void) => {
+const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void): void => {
   spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
     fs.unlink(taskbarLink, callback)
   );
 };
 
-const installUpdate = () => {
+const installUpdate = (): void => {
   spawnUpdate([SQUIRREL_EVENT.UPDATE, environment.app.UPDATE_URL_WIN]);
 };
 
-const scheduleUpdate = () => {
+const scheduleUpdate = (): void => {
   setTimeout(installUpdate, config.UPDATE.DELAY);
   setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
-const handleSquirrelEvent = shouldQuit => {
+const handleSquirrelEvent = (shouldQuit: boolean): boolean | void => {
   const [, squirrelEvent] = process.argv;
 
   switch (squirrelEvent) {

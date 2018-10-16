@@ -18,28 +18,27 @@
  */
 
 import * as debug from 'debug';
-import * as electron from 'electron';
+import * as Electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+import {Schemata} from '../../interfaces';
 import {SettingsType} from './SettingsType';
 
-const app = electron.app || electron.remote.app;
+const app = Electron.app || Electron.remote.app;
 
 const debugLogger = debug('SchemaUpdate');
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
 const defaultPathV1 = path.join(app.getPath('userData'), 'config', 'init.json');
 
 class SchemaUpdater {
-  static get SCHEMATA() {
-    return {
-      VERSION_1: {
-        configVersion: 1,
-      },
-    };
-  }
+  static SCHEMATA: Schemata = {
+    VERSION_1: {
+      configVersion: 1,
+    },
+  };
 
-  static updateToVersion1(configFileV0 = defaultPathV0, configFileV1 = defaultPathV1) {
+  static updateToVersion1(configFileV0: string = defaultPathV0, configFileV1: string = defaultPathV1): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
     if (fs.existsSync(configFileV0)) {
@@ -50,7 +49,7 @@ class SchemaUpdater {
         debugLogger(`Could not upgrade "${configFileV0}" to "${configFileV1}": ${error.message}`, error);
       }
 
-      const getSetting = setting => (config.hasOwnProperty(setting) ? config[setting] : undefined);
+      const getSetting = (setting: string) => (config.hasOwnProperty(setting) ? config[setting] : undefined);
       const hasNoConfigVersion = typeof getSetting('configVersion') === 'undefined';
 
       if (hasNoConfigVersion) {

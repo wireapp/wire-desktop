@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, app, ipcMain, session, shell} from 'electron';
+import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
@@ -27,8 +27,8 @@ import {EVENT_TYPE} from './lib/eventType';
 
 const pkg = require('../../package.json');
 
-let aboutWindow;
-let webappVersion;
+let aboutWindow: BrowserWindow | undefined;
+let webappVersion: string;
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -42,7 +42,7 @@ const ABOUT_WINDOW_WHITELIST = [
 ];
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload-about.js');
 
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event, version) => (webappVersion = version));
+ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event: IpcMessageEvent, version: string) => (webappVersion = version));
 
 const showWindow = () => {
   if (!aboutWindow) {
@@ -95,19 +95,23 @@ const showWindow = () => {
     );
 
     // Locales
-    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels) => {
-      const isExpected = event.sender.id === aboutWindow.webContents.id;
-      if (isExpected) {
-        const resultLabels = {};
-        labels.forEach(label => (resultLabels[label] = locale.getText(label)));
-        event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
+    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event: IpcMessageEvent, labels: string[]) => {
+      if (aboutWindow) {
+        const isExpected = event.sender.id === aboutWindow.webContents.id;
+        if (isExpected) {
+          const resultLabels: {[index: string]: string} = {};
+          labels.forEach(label => (resultLabels[label] = locale.getText(label)));
+          event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
+        }
       }
     });
 
     // Close window via escape
     aboutWindow.webContents.on('before-input-event', (event, input) => {
       if (input.type === 'keyDown' && input.key === 'Escape') {
-        aboutWindow.close();
+        if (aboutWindow) {
+          aboutWindow.close();
+        }
       }
     });
 
@@ -116,11 +120,13 @@ const showWindow = () => {
     aboutWindow.loadURL(ABOUT_HTML);
 
     aboutWindow.webContents.on('dom-ready', () => {
-      aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-        electronVersion: pkg.version,
-        productName: pkg.productName,
-        webappVersion: webappVersion,
-      });
+      if (aboutWindow) {
+        aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
+          electronVersion: pkg.version,
+          productName: pkg.productName,
+          webappVersion: webappVersion,
+        });
+      }
     });
   }
 

@@ -91,6 +91,7 @@
     "lint:other": "npm run prettier --list-different",
     "lint:ts": "tslint --config tslint.json --project tsconfig.json \"**/*.ts\"",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
+    "preinstall": "cd electron && npm install --only=dev",
     "postinstall": "cd electron && electron-builder install-app-deps",
     "prestart": "npm run bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",

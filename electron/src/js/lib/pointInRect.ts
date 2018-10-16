@@ -17,7 +17,9 @@
  *
  */
 
-const pointInRectangle = (point, rectangle) => {
+import {Point, Rectangle} from '../../interfaces';
+
+const pointInRectangle = (point: Point, rectangle: Rectangle) => {
   const [x, y] = point;
   const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
   const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;

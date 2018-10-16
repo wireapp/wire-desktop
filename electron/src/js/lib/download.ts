@@ -22,7 +22,7 @@ import * as fs from 'fs';
 
 const imageType = require('image-type');
 
-const download = (fileName, bytes) => {
+const download = (fileName: string, bytes: Uint8Array) => {
   return new Promise((resolve, reject) => {
     const options: {
       defaultPath?: string;

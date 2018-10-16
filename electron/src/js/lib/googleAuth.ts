@@ -25,7 +25,7 @@ import * as request from 'request';
 
 const OAuth2 = google.auth.OAuth2;
 
-const authorizeApp = url => {
+const authorizeApp = (url: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const win = new BrowserWindow({
       title: '',
@@ -56,7 +56,7 @@ const authorizeApp = url => {
   });
 };
 
-const getAccessToken = (scopes, clientId, clientSecret) => {
+const getAccessToken = (scopes: string, clientId: string, clientSecret: string): Promise<any> => {
   return getAuthorizationCode(scopes, clientId, clientSecret).then(code => {
     return new Promise((resolve, reject) => {
       const data = qs.stringify({
@@ -82,12 +82,12 @@ const getAccessToken = (scopes, clientId, clientSecret) => {
   });
 };
 
-const getAuthenticationUrl = (scopes, clientId, clientSecret) => {
+const getAuthenticationUrl = (scopes: string, clientId: string, clientSecret: string) => {
   const oauth2Client = new OAuth2(clientId, clientSecret, 'urn:ietf:wg:oauth:2.0:oob');
   return oauth2Client.generateAuthUrl({scope: scopes});
 };
 
-const getAuthorizationCode = (scopes, clientId, clientSecret) => {
+const getAuthorizationCode = (scopes: string, clientId: string, clientSecret: string) => {
   const url = getAuthenticationUrl(scopes, clientId, clientSecret);
   return authorizeApp(url);
 };

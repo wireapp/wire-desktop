@@ -27,40 +27,44 @@ declare var window: any;
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
-window.locStrings = locale[locale.getCurrent()];
-window.locStringsDefault = locale.en;
+window.locStrings = locale.LANGUAGES[locale.getCurrent()];
+window.locStringsDefault = locale.LANGUAGES.en;
 
 window.isMac = environment.platform.IS_MAC_OS;
 
-const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)');
-const getWebviewById = (id: string): WebviewTag => document.querySelector(`.Webview[data-accountid="${id}"]`);
+const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)') as WebviewTag;
+const getWebviewById = (id: string): WebviewTag =>
+  document.querySelector(`.Webview[data-accountid="${id}"]`) as WebviewTag;
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event, action) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: Event, action?: any) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(action);
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, () => {
-    const webviews = document.querySelectorAll<WebviewTag>('webview');
-    webviews.forEach(webview => webview.reload());
-  });
+  ipcRenderer.on(
+    EVENT_TYPE.WRAPPER.RELOAD,
+    (): void => {
+      const webviews = document.querySelectorAll<WebviewTag>('webview');
+      webviews.forEach(webview => webview.reload());
+    }
+  );
 };
 
-const setupIpcInterface = () => {
-  window.sendBadgeCount = count => {
+const setupIpcInterface = (): void => {
+  window.sendBadgeCount = (count: number) => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
   };
 
-  window.sendDeleteAccount = (accountID, sessionID) => {
+  window.sendDeleteAccount = (accountID: string, sessionID: string) => {
     const accountWebview = getWebviewById(accountID);
     accountWebview.getWebContents().session.clearStorageData();
     ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, accountID, sessionID);
   };
 
-  window.sendLogoutAccount = accountId => {
+  window.sendLogoutAccount = (accountId: string) => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
@@ -68,7 +72,7 @@ const setupIpcInterface = () => {
   };
 };
 
-const addDragRegion = () => {
+const addDragRegion = (): void => {
   if (environment.platform.IS_MAC_OS) {
     // add titlebar ghost to prevent interactions with the content while dragging
     const titleBar = document.createElement('div');

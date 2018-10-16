@@ -25,50 +25,10 @@ import * as config from '../config';
 import * as lifecycle from '../lifecycle';
 import * as windowManager from '../window-manager';
 
-function buildTrayMenu() {
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      click: () => windowManager.showPrimaryWindow(),
-      label: locale.getText('trayOpen'),
-    },
-    {
-      click: async () => lifecycle.quit(),
-      label: locale.getText('trayQuit'),
-    },
-  ]);
-
-  this.trayIcon.on('click', () => windowManager.showPrimaryWindow());
-  this.trayIcon.setContextMenu(contextMenu);
-  this.trayIcon.setToolTip(config.NAME);
-}
-
-function flashApplicationWindow(win, count) {
-  if (win.isFocused() || !count) {
-    win.flashFrame(false);
-  } else if (count > this.lastUnreadCount) {
-    win.flashFrame(true);
-  }
-}
-
-function updateBadgeCount(count) {
-  app.setBadgeCount(count);
-  this.lastUnreadCount = count;
-}
-
-function updateIcons(win, count) {
-  if (this.icons) {
-    const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
-    this.trayIcon.setImage(trayImage);
-
-    const overlayImage = count ? this.icons.badge : null;
-    win.setOverlayIcon(overlayImage, locale.getText('unreadMessages'));
-  }
-}
-
 class TrayHandler {
   lastUnreadCount: number;
   trayIcon?: Tray;
-  icons: {
+  icons?: {
     badge: nativeImage;
     tray: nativeImage;
     trayWithBadge: nativeImage;
@@ -96,13 +56,59 @@ class TrayHandler {
     this.trayIcon = trayIcon;
     this.trayIcon.setImage(this.icons.tray);
 
-    buildTrayMenu.call(this);
+    this.buildTrayMenu();
   }
 
-  showUnreadCount(win, count) {
-    updateIcons.call(this, win, count);
-    flashApplicationWindow.call(this, win, count);
-    updateBadgeCount.call(this, count);
+  showUnreadCount(win: Electron.BrowserWindow, count?: number) {
+    this.updateIcons(win, count);
+    this.flashApplicationWindow(win, count);
+    this.updateBadgeCount(count);
+  }
+
+  private buildTrayMenu() {
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        click: () => windowManager.showPrimaryWindow(),
+        label: locale.getText('trayOpen'),
+      },
+      {
+        click: async () => lifecycle.quit(),
+        label: locale.getText('trayQuit'),
+      },
+    ]);
+
+    if (this.trayIcon) {
+      this.trayIcon.on('click', () => windowManager.showPrimaryWindow());
+      this.trayIcon.setContextMenu(contextMenu);
+      this.trayIcon.setToolTip(config.NAME);
+    }
+  }
+
+  private flashApplicationWindow(win: Electron.BrowserWindow, count?: number) {
+    if (win.isFocused() || !count) {
+      win.flashFrame(false);
+    } else if (count > this.lastUnreadCount) {
+      win.flashFrame(true);
+    }
+  }
+
+  private updateBadgeCount(count?: number) {
+    if (count) {
+      app.setBadgeCount(count);
+      this.lastUnreadCount = count;
+    }
+  }
+
+  private updateIcons(win: Electron.BrowserWindow, count?: number) {
+    if (this.icons) {
+      const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
+      if (this.trayIcon) {
+        this.trayIcon.setImage(trayImage);
+      }
+
+      const overlayImage = count ? this.icons.badge : null;
+      win.setOverlayIcon(overlayImage, locale.getText('unreadMessages'));
+    }
   }
 }
 

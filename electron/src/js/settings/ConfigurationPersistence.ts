@@ -38,19 +38,19 @@ class ConfigurationPersistence {
     this.debug('Init ConfigurationPersistence');
   }
 
-  delete(name) {
+  delete(name: string): true {
     this.debug('Deleting %s', name);
     delete global._ConfigurationPersistence[name];
     return true;
   }
 
-  save(name, value) {
+  save<T>(name: string, value: T): true {
     this.debug('Saving %s with value "%o"', name, value);
     global._ConfigurationPersistence[name] = value;
     return true;
   }
 
-  restore(name: string, defaultValue?: any) {
+  restore<T>(name: string, defaultValue?: T): T {
     this.debug('Restoring %s', name);
     const value = global._ConfigurationPersistence[name];
     return typeof value !== 'undefined' ? value : defaultValue;
@@ -65,15 +65,14 @@ class ConfigurationPersistence {
     }
   }
 
-  readFromFile() {
+  readFromFile(): string {
     this.debug(`Reading config file "${this.configFile}"...`);
     try {
       return fs.readJSONSync(this.configFile);
     } catch (error) {
+      const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:
-      return SchemaUpdater.SCHEMATA[
-        Object.keys(SchemaUpdater.SCHEMATA)[Object.keys(SchemaUpdater.SCHEMATA).length - 1]
-      ];
+      return SchemaUpdater.SCHEMATA[schemataKeys[schemataKeys.length - 1]];
     }
   }
 }

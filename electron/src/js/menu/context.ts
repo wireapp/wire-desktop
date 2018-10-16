@@ -27,7 +27,7 @@ import {EVENT_TYPE} from '../lib/eventType';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
-let textMenu;
+let textMenu: Electron.Menu;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Default
@@ -82,7 +82,7 @@ const createTextMenu = () => {
     if (selection.suggestions.length > 0) {
       for (const suggestion of selection.suggestions.reverse()) {
         template.unshift({
-          click: menuItem => webContents.replaceMisspelling(menuItem.label),
+          click: (menuItem: Electron.MenuItem): void => webContents.replaceMisspelling(menuItem.label),
           label: suggestion,
         });
       }
@@ -135,12 +135,12 @@ window.addEventListener(
       // Maybe we are in a code block _inside_ an element with the 'text' class?
       // Code block can consist of many tags: CODE, PRE, SPAN, etc.
       let parentNode = element.parentNode;
-      while (parentNode !== document && !(parentNode as any).classList.contains('text')) {
+      while (parentNode && parentNode !== document && !(parentNode as Element).classList.contains('text')) {
         parentNode = parentNode.parentNode;
       }
       if (parentNode !== document) {
         event.preventDefault();
-        copyContext = window.getSelection().toString() || (parentNode as any).innerText.trim();
+        copyContext = window.getSelection().toString() || (parentNode as HTMLElement).innerText.trim();
         defaultMenu.popup(remote.getCurrentWindow());
       }
     }
@@ -148,7 +148,7 @@ window.addEventListener(
   false
 );
 
-const savePicture = (fileName, url) => {
+const savePicture = (fileName: string, url: RequestInfo) => {
   return fetch(url)
     .then(response => response.arrayBuffer())
     .then(arrayBuffer => ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, fileName, new Uint8Array(arrayBuffer)));

@@ -18,15 +18,9 @@
  */
 
 import * as crypto from 'crypto';
+import {PinningResult, jsRsaSignPublicKey} from '../interfaces';
 
 const rs = require('jsrsasign');
-
-interface PinningResult {
-  decoding?: boolean;
-  errorMessage?: string;
-  verifiedIssuerRootPubkeys?: boolean;
-  verifiedPublicKeyInfo?: boolean;
-}
 
 const WILDCARD_CERT_FINGERPRINT = '3pHQns2wdYtN4b2MWsMguGw70gISyhBZLZDpbj+EmdU=';
 const MULTIDOMAIN_CERT_FINGERPRINT = 'bORoZ2vRsPJ4WBsUdL1h3Q7C50ZaBqPwngDmDVw+wHA=';
@@ -74,14 +68,15 @@ const pins = [
   },
 ];
 
-const hostnameShouldBePinned = hostname => pins.some(pin => pin.url.test(hostname.toLowerCase().trim()));
+const hostnameShouldBePinned = (hostname: string): boolean =>
+  pins.some(pin => pin.url.test(hostname.toLowerCase().trim()));
 
 const verifyPinning = (hostname: string, certificate: Electron.Certificate): PinningResult => {
   const {data: certData = '', issuerCert: {data: issuerCertData = ''} = {}} = certificate;
   let issuerCertHex;
-  let publicKey;
-  let publicKeyBytes;
-  let publicKeyFingerprint;
+  let publicKey: jsRsaSignPublicKey;
+  let publicKeyBytes: string;
+  let publicKeyFingerprint: string;
 
   try {
     issuerCertHex = rs.pemtohex(issuerCertData);
@@ -98,7 +93,7 @@ const verifyPinning = (hostname: string, certificate: Electron.Certificate): Pin
 
   const result: PinningResult = {};
 
-  const errorMessages = [];
+  const errorMessages: string[] = [];
 
   for (const pin of pins) {
     const {url, publicKeyInfo = [], issuerRootPubkeys = []} = pin;
@@ -120,7 +115,7 @@ const verifyPinning = (hostname: string, certificate: Electron.Certificate): Pin
       }
 
       result.verifiedPublicKeyInfo = publicKeyInfo
-        .reduce((arr, pubkey) => {
+        .reduce((arr: (boolean | undefined)[], pubkey) => {
           const {
             fingerprints: knownFingerprints = [],
             algorithmID: knownAlgorithmID = '',

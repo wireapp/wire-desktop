@@ -20,20 +20,35 @@
 import {ipcRenderer} from 'electron';
 import {EVENT_TYPE} from './lib/eventType';
 
-ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (sender, labels) => {
+ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (sender: any, labels: string[]) => {
   for (const label in labels) {
-    document.querySelector(`[data-string="${label}"]`).innerHTML = labels[label];
+    const labelElement = document.querySelector(`[data-string="${label}"]`);
+    if (labelElement) {
+      labelElement.innerHTML = labels[label];
+    }
   }
 });
 
-ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (sender, details) => {
-  document.getElementById('name').innerHTML = details.productName;
-  document.getElementById('version').innerHTML = details.electronVersion || 'Development';
+ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (sender: any, details: any) => {
+  const nameElement = document.getElementById('name');
+  if (nameElement) {
+    nameElement.innerHTML = details.productName;
+  }
 
-  if (details.webappVersion) {
-    document.getElementById('webappVersion').innerHTML = details.webappVersion;
-  } else {
-    (document.getElementById('webappVersion').parentNode as any).remove();
+  const versionElement = document.getElementById('version');
+  if (versionElement) {
+    versionElement.innerHTML = details.electronVersion || 'Development';
+  }
+
+  const webappVersionElement = document.getElementById('webappVersion');
+  if (webappVersionElement) {
+    if (details.webappVersion) {
+      webappVersionElement.innerHTML = details.webappVersion;
+    } else {
+      if (webappVersionElement.parentNode) {
+        (webappVersionElement.parentNode as any).remove();
+      }
+    }
   }
 
   // Get locales

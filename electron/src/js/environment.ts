@@ -19,9 +19,9 @@
 
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
-const pkg = require('../../package.json');
+const pkg: {environment: string; updateWinUrl: string} = require('../../package.json');
 
-let currentEnvironment = undefined;
+let currentEnvironment: string | undefined;
 
 const TYPE = {
   DEV: 'dev',
@@ -60,11 +60,11 @@ const app = {
   UPDATE_URL_WIN: pkg.updateWinUrl,
 };
 
-const getEnvironment = () => {
+const getEnvironment = (): string => {
   return currentEnvironment ? currentEnvironment : restoreEnvironment();
 };
 
-const isProdEnvironment = () => {
+const isProdEnvironment = (): boolean => {
   return [TYPE.INTERNAL, TYPE.PRODUCTION].includes(getEnvironment());
 };
 
@@ -74,12 +74,12 @@ const platform = {
   IS_WINDOWS: process.platform === 'win32',
 };
 
-const restoreEnvironment = () => {
+const restoreEnvironment = (): string => {
   currentEnvironment = settings.restore(SettingsType.ENV, TYPE.INTERNAL);
   return currentEnvironment;
 };
 
-const setEnvironment = env => {
+const setEnvironment = (env: string): void => {
   currentEnvironment = env ? env : restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment);
 };

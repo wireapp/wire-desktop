@@ -19,7 +19,7 @@
 
 // Modules
 import * as debug from 'debug';
-import {BrowserWindow, Menu, app, ipcMain, shell} from 'electron';
+import {BrowserWindow, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
@@ -60,6 +60,9 @@ import * as util from './js/util';
 import * as windowManager from './js/window-manager';
 import * as locale from './locale/locale';
 
+// Interfaces
+import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces';
+
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = environment.web.getWebappUrl(argv.env);
@@ -67,15 +70,15 @@ const BASE_URL = environment.web.getWebappUrl(argv.env);
 // Icon
 const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
-let tray = undefined;
+let tray: TrayHandler;
 
 let isFullScreen = false;
 let isQuitting = false;
-let main;
+let main: BrowserWindow;
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event, fileName, bytes) => {
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event: IpcMessageEvent, fileName: string, bytes: Uint8Array) => {
     await download(fileName, bytes);
   });
 
@@ -83,18 +86,18 @@ const bindIpcEvents = () => {
     windowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count) => {
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: IpcMessageEvent, count: number) => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, event => {
+  ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, (event: IpcMessageEvent) => {
     googleAuth
       .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
       .then((code: any) => event.sender.send('google-auth-success', code.access_token))
       .catch(error => event.sender.send('google-auth-error', error));
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event, accountID, sessionID) => {
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event: IpcMessageEvent, accountID: string, sessionID: string) => {
     // delete webview partition
     try {
       if (sessionID) {
@@ -120,7 +123,7 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
 };
 
-const checkConfigV0FullScreen = mainWindowState => {
+const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
   // if a user still has the old config version 0 and had the window maximized last time
   if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
     main.maximize();
@@ -158,7 +161,7 @@ const initWindowStateKeeper = () => {
 };
 
 // App Windows
-const showMainWindow = mainWindowState => {
+const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
   const options: Electron.BrowserWindowConstructorOptions = {
@@ -214,7 +217,7 @@ const showMainWindow = mainWindowState => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
-    if (typeof event.sender.viewInstanceId !== 'undefined') {
+    if (typeof (event.sender as any).viewInstanceId !== 'undefined') {
       debugMain('New window was created from a webview, aborting.');
       return;
     }
@@ -226,7 +229,7 @@ const showMainWindow = mainWindowState => {
     {
       urls: ['https://staging-nginz-https.zinfra.io/*'],
     },
-    (details, callback) => {
+    (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
       if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
         // Override remote Access-Control-Allow-Origin
         details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
@@ -287,7 +290,7 @@ const handleAppEvents = () => {
     if (environment.app.IS_DEVELOPMENT) {
       appMenu.append(developerMenu);
     }
-    appMenu.on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
+    (appMenu as any).on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
 
     Menu.setApplicationMenu(appMenu);
     tray = new TrayHandler();
@@ -342,7 +345,7 @@ class ElectronWrapperInit {
   webviewProtection() {
     const webviewProtectionDebug = debug('ElectronWrapperInit:webviewProtection');
 
-    const openLinkInNewWindow = (event, _url) => {
+    const openLinkInNewWindow = (event: Event, _url: string) => {
       // Prevent default behavior
       event.preventDefault();
 
@@ -350,7 +353,7 @@ class ElectronWrapperInit {
       shell.openExternal(_url);
     };
 
-    const willNavigateInWebview = (event, _url) => {
+    const willNavigateInWebview = (event: Event, _url: string) => {
       // Ensure navigation is to a whitelisted domain
       if (util.isMatchingHost(_url, BASE_URL)) {
         webviewProtectionDebug('Navigating inside webview. URL: %s', _url);

@@ -17,16 +17,16 @@
  *
  */
 
-import * as electron from 'electron';
+import * as Electron from 'electron';
 import * as url from 'url';
 
 import {pointInRectangle} from './lib/pointInRect';
 
-const capitalize = input => input.charAt(0).toUpperCase() + input.substr(1);
+const capitalize = (input: string): string => input.charAt(0).toUpperCase() + input.substr(1);
 
-const isInView = win => {
+const isInView = (win: Electron.BrowserWindow): boolean => {
   const windowBounds = win.getBounds();
-  const nearestWorkArea = electron.screen.getDisplayMatching(windowBounds).workArea;
+  const nearestWorkArea = Electron.screen.getDisplayMatching(windowBounds).workArea;
 
   const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
   const lowerRightVisible = pointInRectangle(
@@ -37,6 +37,6 @@ const isInView = win => {
   return upperLeftVisible || lowerRightVisible;
 };
 
-const isMatchingHost = (_url, _baseUrl) => url.parse(_url).host === url.parse(_baseUrl).host;
+const isMatchingHost = (_url: string, _baseUrl: string): boolean => url.parse(_url).host === url.parse(_baseUrl).host;
 
 export {capitalize, isInView, isMatchingHost};
