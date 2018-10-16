@@ -19,6 +19,7 @@
 
 import * as Electron from 'electron';
 import {SUPPORTED_LANGUAGE} from './locale/locale';
+import {strings} from './locale/strings';
 
 type Point = [number, number];
 type Rectangle = {
@@ -54,6 +55,7 @@ interface Schemata {
 type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;
 
 type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGE;
+type Supportedi18nStrings = Partial<typeof strings>;
 
 type SupportedLanguagesObject = {[id in SupportedLanguage]: any};
 
@@ -105,6 +107,7 @@ export {
   Schemata,
   SpawnCallback,
   SpawnError,
+  Supportedi18nStrings,
   SupportedLanguage,
   SupportedLanguagesObject,
 };

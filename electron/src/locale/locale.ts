@@ -21,33 +21,56 @@ import * as Electron from 'electron';
 import {settings} from '../js/settings/ConfigurationPersistence';
 import {SettingsType} from '../js/settings/SettingsType';
 
+import {strings as cs} from './strings-cs';
+import {strings as da} from './strings-da';
+import {strings as de} from './strings-de';
+import {strings as el} from './strings-el';
+import {strings as en} from './strings-en';
+import {strings as es} from './strings-es';
+import {strings as et} from './strings-et';
+import {strings as fi} from './strings-fi';
+import {strings as fr} from './strings-fr';
+import {strings as hr} from './strings-hr';
+import {strings as hu} from './strings-hu';
+import {strings as it} from './strings-it';
+import {strings as lt} from './strings-lt';
+import {strings as nl} from './strings-nl';
+import {strings as pl} from './strings-pl';
+import {strings as pt} from './strings-pt';
+import {strings as ro} from './strings-ro';
+import {strings as ru} from './strings-ru';
+import {strings as sk} from './strings-sk';
+import {strings as sl} from './strings-sl';
+import {strings as tr} from './strings-tr';
+import {strings as uk} from './strings-uk';
+
 import {SupportedLanguage, SupportedLanguagesObject} from '../interfaces';
 
 const app = Electron.app || Electron.remote.app;
 
 const LANGUAGES: SupportedLanguagesObject = {
-  cs: require('./strings-cs'),
-  da: require('./strings-da'),
-  de: require('./strings-de'),
-  el: require('./strings-el'),
-  en: require('./strings-en'),
-  es: require('./strings-es'),
-  et: require('./strings-et'),
-  fi: require('./strings-fi'),
-  fr: require('./strings-fr'),
-  hr: require('./strings-hr'),
-  hu: require('./strings-hu'),
-  it: require('./strings-it'),
-  lt: require('./strings-lt'),
-  nl: require('./strings-nl'),
-  pl: require('./strings-pl'),
-  pt: require('./strings-pt'),
-  ro: require('./strings-ro'),
-  ru: require('./strings-ru'),
-  sk: require('./strings-sk'),
-  sl: require('./strings-sl'),
-  tr: require('./strings-tr'),
-  uk: require('./strings-uk'),
+  cs,
+  da,
+  de,
+  el,
+  en,
+  es,
+  et,
+  fi,
+  fr,
+  hr,
+  hu,
+  it,
+  lt,
+  nl,
+  pl,
+  pt,
+  ro,
+  ru,
+  sk,
+  sl,
+  tr,
+  uk,
 };
 
 /* tslint:disable:object-literal-sort-keys */
