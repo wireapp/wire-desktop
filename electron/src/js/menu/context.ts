@@ -149,7 +149,7 @@ window.addEventListener(
 );
 
 const savePicture = (fileName, url) => {
-  fetch(url)
+  return fetch(url)
     .then(response => response.arrayBuffer())
     .then(arrayBuffer => ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, fileName, new Uint8Array(arrayBuffer)));
 };

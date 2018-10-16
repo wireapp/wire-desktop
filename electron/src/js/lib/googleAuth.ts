@@ -57,8 +57,8 @@ const authorizeApp = url => {
 };
 
 const getAccessToken = (scopes, clientId, clientSecret) => {
-  return new Promise((resolve, reject) => {
-    getAuthorizationCode(scopes, clientId, clientSecret).then(code => {
+  return getAuthorizationCode(scopes, clientId, clientSecret).then(code => {
+    return new Promise((resolve, reject) => {
       const data = qs.stringify({
         client_id: clientId,
         client_secret: clientSecret,
