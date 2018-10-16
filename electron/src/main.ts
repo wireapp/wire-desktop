@@ -388,10 +388,10 @@ class ElectronWrapperInit {
 
           contents.session.setCertificateVerifyProc(
             (request: Electron.CertificateVerifyProcRequest, cb: (verificationResult: number) => void) => {
-              const {hostname, certificate, errorCode: error} = request;
+              const {hostname, certificate, verificationResult} = request;
 
-              if (typeof error !== 'undefined') {
-                console.error('setCertificateVerifyProc', error);
+              if (verificationResult !== 'net::OK') {
+                console.error('setCertificateVerifyProc', hostname, verificationResult);
                 main.loadURL(CERT_ERR_HTML);
                 return cb(-2);
               }
