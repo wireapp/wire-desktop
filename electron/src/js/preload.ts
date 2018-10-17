@@ -17,7 +17,7 @@
  *
  */
 
-import {WebviewTag, ipcRenderer, webFrame} from 'electron';
+import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
 import * as locale from '../locale/locale';
 import * as environment from './environment';
 import {EVENT_TYPE} from './lib/eventType';
@@ -36,7 +36,7 @@ const getWebviewById = (id: string): WebviewTag => {
 };
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: Event, action: string) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: IpcMessageEvent, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(action);

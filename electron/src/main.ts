@@ -19,7 +19,7 @@
 
 // Modules
 import * as debug from 'debug';
-import {BrowserWindow, Event, Menu, app, ipcMain, shell} from 'electron';
+import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
@@ -78,7 +78,7 @@ let main: BrowserWindow;
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event: Event, fileName: string, bytes: Uint8Array) => {
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event: IpcMessageEvent, fileName: string, bytes: Uint8Array) => {
     await download(fileName, bytes);
   });
 
@@ -86,18 +86,18 @@ const bindIpcEvents = () => {
     windowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: Event, count: number) => {
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: IpcMessageEvent, count: number) => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, (event: Event) => {
+  ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, (event: IpcMessageEvent) => {
     googleAuth
       .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
       .then(code => event.sender.send('google-auth-success', code.access_token))
       .catch(error => event.sender.send('google-auth-error', error));
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event: Event, accountID: string, sessionID: string) => {
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event: IpcMessageEvent, accountID: string, sessionID: string) => {
     // delete webview partition
     try {
       if (sessionID) {
@@ -192,7 +192,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
   let baseURL = BASE_URL;
   baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`file://${__dirname}/../renderer/index.html?env=${encodeURIComponent(baseURL)}`);
+  main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});

@@ -17,15 +17,16 @@
  *
  */
 
-const fs = require('fs-extra');
-const path = require('path');
+import {IpcMessageEvent, desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 const winston = require('winston');
 
-const config = require('../../dist/js/config');
-const environment = require('../../dist/js/environment');
-const {EVENT_TYPE} = require('../../dist/js/lib/eventType');
+import {AccountInfo} from '../../interfaces';
+import * as config from '../../js/config';
+import * as environment from '../../js/environment';
+import {EVENT_TYPE} from '../../js/lib/eventType';
 
-const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const app = remote.app;
 
 webFrame.setZoomFactor(1.0);
@@ -45,13 +46,13 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGN_OUT);
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, clearData => {
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, (clearData?: boolean) => {
     if (clearData) {
       ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT);
     }
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, count => {
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, (count: number) => {
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.UNREAD_COUNT, count);
   });
 
@@ -60,7 +61,7 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
-  amplify.subscribe(z.event.WebApp.TEAM.INFO, info => {
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info: AccountInfo) => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 };
@@ -90,7 +91,7 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, conversationId => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, (conversationId: string) => {
     amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, () => {
@@ -111,17 +112,13 @@ const subscribeToMainProcessEvents = () => {
 };
 
 const exposeAddressBook = () => {
-  let cachedAddressBook;
-
   const getAddressBook = () => {
-    if (!cachedAddressBook) {
-      try {
-        cachedAddressBook = require('node-addressbook');
-      } catch (error) {
-        console.info('Failed loading "node-addressbook".', error);
-      }
+    try {
+      const cachedAddressBook = require('node-addressbook');
+      return cachedAddressBook;
+    } catch (error) {
+      console.error('Failed loading "node-addressbook".', error);
     }
-    return cachedAddressBook;
   };
 
   if (environment.platform.IS_MAC_OS) {
@@ -135,10 +132,10 @@ const replaceGoogleAuth = () => {
   }
 
   // hijack google authenticate method
-  const authenticateWithGoogle = () => {
+  const authenticateWithGoogle = (): Promise<string> => {
     return new Promise((resolve, reject) => {
       ipcRenderer.send(EVENT_TYPE.GOOGLE_OAUTH.REQUEST);
-      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.SUCCESS, (event, token) => resolve(token));
+      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.SUCCESS, (event: IpcMessageEvent, token: string) => resolve(token));
       ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.ERROR, reject);
     });
   };
@@ -151,7 +148,7 @@ const replaceGoogleAuth = () => {
 };
 
 const enableFileLogging = () => {
-  const id = new URL(window.location).searchParams.get('id');
+  const id = new URL(window.location.href).searchParams.get('id');
 
   if (id) {
     const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
@@ -172,7 +169,7 @@ const enableFileLogging = () => {
 
 const reportWebappVersion = () => ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, z.util.Environment.version(false));
 
-const checkAvailability = callback => {
+const checkAvailability = (callback: () => void) => {
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);

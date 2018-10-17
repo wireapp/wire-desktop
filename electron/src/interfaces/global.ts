@@ -17,6 +17,9 @@
  *
  */
 
+import {DesktopCapturer} from 'electron';
+import {amplify, wire, z} from '../interfaces';
+import * as environment from '../js/environment';
 import {Supportedi18nStrings} from './locale';
 
 declare global {
@@ -27,11 +30,20 @@ declare global {
     sendBadgeCount: (count: number) => void;
     sendDeleteAccount: (accountId: string, sessionId: string) => void;
     sendLogoutAccount: (accountId: string) => void;
+    wire: wire;
   }
 
   namespace NodeJS {
     interface Global {
       _ConfigurationPersistence: any;
+      winston: any;
+      desktopCapturer: DesktopCapturer;
+      environment: typeof environment;
+      openGraph: any;
+      notification_icon: string;
     }
   }
+
+  const amplify: amplify;
+  const z: z;
 }
