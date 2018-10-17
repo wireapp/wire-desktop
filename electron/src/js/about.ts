@@ -28,7 +28,6 @@ import {EVENT_TYPE} from './lib/eventType';
 
 const pkg: {productName: string; version: string} = require('../../package.json');
 
-let aboutWindow: BrowserWindow | undefined;
 let webappVersion: string;
 
 // Paths
@@ -46,6 +45,8 @@ const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload-about.js');
 ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event: IpcMessageEvent, version: string) => (webappVersion = version));
 
 const showWindow = () => {
+  let aboutWindow: BrowserWindow | undefined;
+
   if (!aboutWindow) {
     aboutWindow = new BrowserWindow({
       alwaysOnTop: true,
