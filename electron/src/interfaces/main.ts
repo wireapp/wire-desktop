@@ -19,10 +19,10 @@
 
 import * as Electron from 'electron';
 
-import {i18nStringIdentifier} from './locale';
+import {i18nLanguageIdentifier} from './locale';
 
 export interface ElectronMenuWithI18n extends Electron.Menu {
-  i18n?: i18nStringIdentifier;
+  i18n?: i18nLanguageIdentifier;
 }
 
 export interface ElectronMenuWithFileAndImage extends Electron.Menu {
@@ -31,7 +31,7 @@ export interface ElectronMenuWithFileAndImage extends Electron.Menu {
 }
 
 export interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {
-  i18n?: i18nStringIdentifier;
+  i18n?: i18nLanguageIdentifier;
   selector?: string;
   submenu?: ElectronMenuItemWithI18n[] | ElectronMenuWithI18n;
 }

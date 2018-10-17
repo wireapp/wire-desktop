@@ -17,21 +17,16 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import * as React from 'react';
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
-
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
-    }
-  }
+export interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
+
+const ContextMenuItem: React.SFC<Props> = props => (
+  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
+    {props.children}
+  </div>
+);
+
+export default ContextMenuItem;

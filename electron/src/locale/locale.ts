@@ -44,11 +44,11 @@ import {strings as sl} from './strings-sl';
 import {strings as tr} from './strings-tr';
 import {strings as uk} from './strings-uk';
 
-import {SupportedLanguage, SupportedLanguagesObject, i18nStringIdentifier} from '../interfaces/';
+import {Supportedi18nLanguage, Supportedi18nLanguageObject, i18nLanguageIdentifier} from '../interfaces/';
 
 const app = Electron.app || Electron.remote.app;
 
-const LANGUAGES: SupportedLanguagesObject = {
+const LANGUAGES: Supportedi18nLanguageObject = {
   cs,
   da,
   de,
@@ -100,11 +100,12 @@ const SUPPORTED_LANGUAGES = {
 };
 /* tslint:enable:object-literal-sort-keys */
 
-let current: SupportedLanguage | undefined;
+let current: Supportedi18nLanguage | undefined;
 
-const getSupportedLanguageKeys = (): SupportedLanguage[] => Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[];
+const getSupportedLanguageKeys = (): Supportedi18nLanguage[] =>
+  Object.keys(SUPPORTED_LANGUAGES) as Supportedi18nLanguage[];
 
-const getCurrent = (): SupportedLanguage => {
+const getCurrent = (): Supportedi18nLanguage => {
   if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
     const defaultLocale = parseLocale(app.getLocale().substr(0, 2));
@@ -113,12 +114,12 @@ const getCurrent = (): SupportedLanguage => {
   return current;
 };
 
-const parseLocale = (locale: string): SupportedLanguage => {
+const parseLocale = (locale: string): Supportedi18nLanguage => {
   const languageKeys = getSupportedLanguageKeys();
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
-const getText = (stringIdentifier: i18nStringIdentifier): string => {
+const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
   const strings = getCurrent();
   return LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier] || '';
 };

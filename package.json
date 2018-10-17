@@ -55,12 +55,12 @@
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
-    "*.{js,jsx}": [
+    "*.js": [
       "eslint --fix",
       "git add"
     ],
-    "*.ts": [
-      "tslint --config tslint.json --project tsconfig.json --fix",
+    "*{.ts,.tsx}": [
+      "tslint --config tslint.json --fix",
       "git add"
     ],
     "*.{json,md,css}": [
@@ -74,7 +74,7 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "build:ts": "rimraf electron/dist && tsc",
+    "build:ts": "rimraf electron/dist && tsc && tsc --project tsconfig.renderer.json",
     "build:linux": "npm run build:ts && grunt linux-prod",
     "build:macos": "npm run build:ts && grunt macos-prod",
     "build:win": "npm run build:ts && grunt win-prod",
@@ -89,7 +89,7 @@
     "lint": "npm run lint:js && npm run lint:other && npm run lint:ts",
     "lint:js": "eslint -c .eslintrc.json --ignore-path .gitignore --ignore-path .eslintignore \"**/*.js\"",
     "lint:other": "npm run prettier --list-different",
-    "lint:ts": "tslint --config tslint.json --project tsconfig.json \"**/*.ts\"",
+    "lint:ts": "tslint --config tslint.json \"**/*.ts\"",
     "localhost": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=http://localhost:8080/app",
     "preinstall": "cd electron && npm install",
     "postinstall": "cd electron && electron-builder install-app-deps",

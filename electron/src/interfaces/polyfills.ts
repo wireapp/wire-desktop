@@ -17,14 +17,6 @@
  *
  */
 
-export interface amplify {
-  // taken from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/amplify/index.d.ts
-  request(resourceId: string, hash?: any, callback?: Function): void;
-  subscribe(topic: string, callback: Function, priority?: number): void;
-  publish(topic: string, ...args: any[]): boolean;
-  unsubscribe(topic: string, callback: Function): void;
-}
-
 export interface GoogleAccessTokenResult {
   access_token: string;
 }

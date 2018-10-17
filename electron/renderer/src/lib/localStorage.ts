@@ -17,21 +17,25 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import {RootState} from '../reducers/';
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
+const STATE_NAME = 'state';
 
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
-    }
+export const loadState = (): Partial<RootState> | undefined => {
+  try {
+    const serializedState = localStorage.getItem(STATE_NAME);
+    return !!serializedState ? JSON.parse(serializedState) : undefined;
+  } catch (error) {
+    console.error('ERROR: Failed to load state ', error.message);
+    return undefined;
   }
-}
+};
+
+export const saveState = (state: Partial<RootState>) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem(STATE_NAME, serializedState);
+  } catch (error) {
+    console.error('ERROR: Failed to save state ', error.message);
+  }
+};

@@ -17,21 +17,27 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import {connect} from 'react-redux';
+import {RootState} from '../reducers/';
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
+import {
+  abortAccountCreation,
+  switchAccount,
+  updateAccountBadgeCount,
+  updateAccountData,
+  updateAccountLifecycle,
+} from '../actions';
+import Webviews from '../components/Webviews';
 
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
-    }
+const WebviewsContainer = connect(
+  (state: RootState) => ({accounts: state.accounts}),
+  {
+    abortAccountCreation,
+    switchAccount,
+    updateAccountBadgeCount,
+    updateAccountData,
+    updateAccountLifecycle,
   }
-}
+)(Webviews);
+
+export default WebviewsContainer;

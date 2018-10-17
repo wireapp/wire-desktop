@@ -1,4 +1,4 @@
 node_modules
 electron/dist
 electron/node_modules
-electron/renderer/dist
+electron/renderer-dist

@@ -17,21 +17,17 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+export const ACCOUNT = {
+  UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
+};
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
+export const ACTION = {
+  NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
+};
 
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
-    }
-  }
-}
+export const LIFECYCLE = {
+  SIGNED_IN: 'EVENT_TYPE.LIFECYCLE.SIGNED_IN',
+  SIGNED_OUT: 'EVENT_TYPE.LIFECYCLE.SIGNED_OUT',
+  SIGN_OUT: 'EVENT_TYPE.LIFECYCLE.SIGN_OUT',
+  UNREAD_COUNT: 'EVENT_TYPE.LIFECYCLE.UNREAD_COUNT',
+};

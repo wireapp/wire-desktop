@@ -17,21 +17,10 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import {i18nLanguageIdentifier} from '../../../dist/interfaces/';
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
+window.locStrings = window.locStrings || {};
+window.locStringsDefault = window.locStringsDefault || {};
 
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
-    }
-  }
-}
+export const getText = (id: i18nLanguageIdentifier): string =>
+  window.locStrings[id] || window.locStringsDefault[id] || id;

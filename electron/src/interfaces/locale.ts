@@ -20,10 +20,12 @@
 import {SUPPORTED_LANGUAGES as SupportedLanguages} from '../locale/locale';
 import {strings as i18nStrings} from '../locale/strings';
 
-export type i18nStringIdentifier = keyof typeof i18nStrings;
+export type i18nLanguageIdentifier = keyof typeof i18nStrings;
+
+export type Supportedi18nLanguage = keyof typeof SupportedLanguages;
+
+export type Supportedi18nLanguageObject = {[id in Supportedi18nLanguage]: Supportedi18nStrings} & {
+  en: typeof i18nStrings;
+};
 
 export type Supportedi18nStrings = Partial<typeof i18nStrings>;
-
-export type SupportedLanguage = keyof typeof SupportedLanguages;
-
-export type SupportedLanguagesObject = {[id in SupportedLanguage]: Supportedi18nStrings} & {en: typeof i18nStrings};

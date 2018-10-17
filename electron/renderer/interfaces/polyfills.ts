@@ -17,21 +17,10 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
-
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
-
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
-    }
-  }
+export interface amplify {
+  // taken from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/amplify/index.d.ts
+  request(resourceId: string, hash?: any, callback?: Function): void;
+  subscribe(topic: string, callback: Function, priority?: number): void;
+  publish(topic: string, ...args: any[]): boolean;
+  unsubscribe(topic: string, callback: Function): void;
 }

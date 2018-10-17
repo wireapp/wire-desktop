@@ -17,21 +17,38 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import * as React from 'react';
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
+import './IsOnline.css';
+
+class IsOnline<P> extends React.Component {
+  state: {
+    isOnline: boolean;
+  };
+
+  constructor(props: Readonly<P>) {
+    super(props);
+
+    this.state = {
+      isOnline: navigator.onLine,
+    };
   }
 
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
+  componentDidMount() {
+    if (this.state.isOnline === false) {
+      window.addEventListener(
+        'online',
+        event => {
+          this.setState({isOnline: true});
+        },
+        {once: true}
+      );
     }
   }
+
+  render() {
+    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
+  }
 }
+
+export default IsOnline;

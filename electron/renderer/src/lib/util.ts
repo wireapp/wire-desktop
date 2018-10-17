@@ -17,21 +17,14 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import * as React from 'react';
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
+export const noop = (event: React.SyntheticEvent) => {};
 
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
-    }
-  }
-}
+export const preventFocus = (fn = noop) => {
+  return (event: React.SyntheticEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
+    fn(event);
+  };
+};

@@ -17,21 +17,18 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import {combineReducers} from 'redux';
+import accountReducer, {AccountState} from './accountReducer';
+import contextMenuReducer, {ContextMenuState} from './contextMenuReducer';
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
-
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
-    }
-  }
+export interface RootState {
+  accounts: AccountState;
+  contextMenuState: ContextMenuState;
 }
+
+const store = combineReducers<RootState>({
+  accounts: accountReducer,
+  contextMenuState: contextMenuReducer,
+});
+
+export default store;

@@ -17,21 +17,26 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+const isType = <T>(type: string, object: T): object is T => {
+  const getType = Object.prototype.toString.call(object).slice(8, -1);
+  return object && getType === type;
+};
 
-declare global {
-  interface Window {
-    isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
-  }
+export function verifyObjectProperties(data: any, config: any): Object | false {
+  const validatedData: any = {};
 
-  namespace NodeJS {
-    interface Global {
-      _ConfigurationPersistence: any;
+  const isValidObject = Object.keys(config).every(key => {
+    if (!data.hasOwnProperty(key)) {
+      validatedData[key] = config[key] === 'String' ? '' : undefined;
+      return true;
     }
-  }
+
+    const isValid = isType(config[key], data[key]);
+    if (isValid) {
+      validatedData[key] = data[key];
+    }
+    return isValid;
+  });
+
+  return isValidObject ? validatedData : false;
 }

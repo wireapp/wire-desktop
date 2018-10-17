@@ -28,7 +28,7 @@ import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import * as windowManager from '../window-manager';
 
-import {ElectronMenuItemWithI18n, SupportedLanguage} from '../../interfaces/';
+import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../../interfaces/';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -54,7 +54,7 @@ const separatorTemplate: ElectronMenuItemWithI18n = {
   type: 'separator',
 };
 
-const createLanguageTemplate = (languageCode: SupportedLanguage): ElectronMenuItemWithI18n => {
+const createLanguageTemplate = (languageCode: Supportedi18nLanguage): ElectronMenuItemWithI18n => {
   return {
     click: (): void => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
@@ -64,7 +64,7 @@ const createLanguageTemplate = (languageCode: SupportedLanguage): ElectronMenuIt
 
 const createLanguageSubmenu = (): ElectronMenuItemWithI18n[] => {
   return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage =>
-    createLanguageTemplate(supportedLanguage as SupportedLanguage)
+    createLanguageTemplate(supportedLanguage as Supportedi18nLanguage)
   );
 };
 
@@ -352,7 +352,7 @@ const linuxTemplate: ElectronMenuItemWithI18n = {
 
 const menuTemplate: ElectronMenuItemWithI18n[] = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
 
-const processMenu = (template: Iterable<ElectronMenuItemWithI18n>, language: SupportedLanguage) => {
+const processMenu = (template: Iterable<ElectronMenuItemWithI18n>, language: Supportedi18nLanguage) => {
   for (const item of template) {
     if (item.submenu) {
       processMenu(item.submenu as Iterable<ElectronMenuItemWithI18n>, language);
@@ -368,7 +368,7 @@ const processMenu = (template: Iterable<ElectronMenuItemWithI18n>, language: Sup
   }
 };
 
-const changeLocale = (language: SupportedLanguage): void => {
+const changeLocale = (language: Supportedi18nLanguage): void => {
   locale.setLocale(language);
   dialog.showMessageBox(
     {

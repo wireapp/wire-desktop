@@ -17,21 +17,29 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import {DesktopCapturer} from 'electron';
+import {Supportedi18nStrings} from '../../dist/interfaces/index';
+import * as environment from '../../dist/js/environment';
+import {amplify, wire, z} from '../interfaces/';
 
 declare global {
   interface Window {
     isMac: boolean;
     locStrings: Supportedi18nStrings;
     locStringsDefault: Supportedi18nStrings;
-    sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
-    sendLogoutAccount: (accountId: string) => void;
+    wire: wire;
   }
 
   namespace NodeJS {
     interface Global {
-      _ConfigurationPersistence: any;
+      desktopCapturer: DesktopCapturer;
+      environment: typeof environment;
+      notification_icon: string;
+      openGraph: any;
+      winston: any;
     }
   }
+
+  const amplify: amplify;
+  const z: z;
 }
