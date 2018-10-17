@@ -26,7 +26,7 @@ import * as locale from '../locale/locale';
 import * as config from './config';
 import {EVENT_TYPE} from './lib/eventType';
 
-const pkg = require('../../package.json');
+const pkg: {productName: string; version: string} = require('../../package.json');
 
 let aboutWindow: BrowserWindow | undefined;
 let webappVersion: string;

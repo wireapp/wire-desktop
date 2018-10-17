@@ -17,7 +17,7 @@
  *
  */
 
-const pkg = require('../../package.json');
+const pkg: {productName: string; version: string} = require('../../package.json');
 
 const EMBED_DOMAINS = [
   {
