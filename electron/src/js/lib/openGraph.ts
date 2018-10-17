@@ -21,7 +21,7 @@ import * as request from 'request';
 import * as urlUtil from 'url';
 const openGraphParse = require('open-graph');
 
-import {OpenGraphResult} from '../../interfaces';
+import {OpenGraphResult} from '../../interfaces/';
 
 const arrayify = <T>(value: T[] | T = []): T[] => (Array.isArray(value) ? value : [value]);
 

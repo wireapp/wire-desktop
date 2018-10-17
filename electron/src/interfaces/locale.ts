@@ -17,14 +17,13 @@
  *
  */
 
-import {Point, Rectangle} from '../../interfaces/';
+import {SUPPORTED_LANGUAGES as SupportedLanguages} from '../locale/locale';
+import {strings as i18nStrings} from '../locale/strings';
 
-const pointInRectangle = (point: Point, rectangle: Rectangle) => {
-  const [x, y] = point;
-  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
-  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
+export type i18nStringIdentifier = keyof typeof i18nStrings;
 
-  return xInRange && yInRange;
-};
+export type Supportedi18nStrings = Partial<typeof i18nStrings>;
 
-export {pointInRectangle};
+export type SupportedLanguage = keyof typeof SupportedLanguages;
+
+export type SupportedLanguagesObject = {[id in SupportedLanguage]: Supportedi18nStrings} & {en: typeof i18nStrings};

@@ -21,8 +21,6 @@ import * as debug from 'debug';
 import * as fs from 'fs-extra';
 import {SchemaUpdater} from './SchemaUpdater';
 
-declare var global: any;
-
 class ConfigurationPersistence {
   configFile: string;
   debug: debug.IDebugger;
@@ -65,7 +63,7 @@ class ConfigurationPersistence {
     }
   }
 
-  readFromFile(): string {
+  readFromFile(): any {
     this.debug(`Reading config file "${this.configFile}"...`);
     try {
       return fs.readJSONSync(this.configFile);

@@ -21,7 +21,7 @@ import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'elec
 import fileUrl = require('file-url');
 import * as path from 'path';
 
-import {i18nStringIdentifier} from '../interfaces';
+import {i18nStringIdentifier} from '../interfaces/';
 import * as locale from '../locale/locale';
 import * as config from './config';
 import {EVENT_TYPE} from './lib/eventType';

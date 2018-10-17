@@ -22,7 +22,7 @@ import * as google from 'googleapis';
 import * as qs from 'querystring';
 import * as request from 'request';
 
-import {GoogleAccessTokenResult} from '../../interfaces';
+import {GoogleAccessTokenResult} from '../../interfaces/';
 
 const OAuth2 = google.auth.OAuth2;
 

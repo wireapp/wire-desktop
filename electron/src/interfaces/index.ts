@@ -17,14 +17,7 @@
  *
  */
 
-import {Point, Rectangle} from '../../interfaces/';
-
-const pointInRectangle = (point: Point, rectangle: Rectangle) => {
-  const [x, y] = point;
-  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
-  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
-
-  return xInRange && yInRange;
-};
-
-export {pointInRectangle};
+export * from './global';
+export * from './locale';
+export * from './main';
+export * from './polyfills';

@@ -1,4 +1,4 @@
-import {Supportedi18nStrings} from '../interfaces';
+import {Supportedi18nStrings} from '../interfaces/';
 
 /* tslint:disable:object-literal-sort-keys */
 const strings: Supportedi18nStrings = {

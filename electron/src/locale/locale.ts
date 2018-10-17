@@ -44,7 +44,7 @@ import {strings as sl} from './strings-sl';
 import {strings as tr} from './strings-tr';
 import {strings as uk} from './strings-uk';
 
-import {SupportedLanguage, SupportedLanguagesObject, i18nStringIdentifier} from '../interfaces';
+import {SupportedLanguage, SupportedLanguagesObject, i18nStringIdentifier} from '../interfaces/';
 
 const app = Electron.app || Electron.remote.app;
 

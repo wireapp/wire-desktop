@@ -18,7 +18,7 @@
  */
 
 import * as crypto from 'crypto';
-import {PinningResult, jsRsaSignPublicKey} from '../interfaces';
+import {PinningResult, jsRsaSignPublicKey} from '../interfaces/';
 
 const rs = require('jsrsasign');
 

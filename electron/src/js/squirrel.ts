@@ -28,7 +28,7 @@ import * as config from './config';
 import * as environment from './environment';
 import * as lifecycle from './lifecycle';
 
-import {SpawnCallback, SpawnError} from '../interfaces';
+import {SpawnCallback, SpawnError} from '../interfaces/';
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 

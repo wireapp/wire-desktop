@@ -61,7 +61,7 @@ import * as windowManager from './js/window-manager';
 import * as locale from './locale/locale';
 
 // Interfaces
-import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces';
+import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 
 // Config
 const argv = minimist(process.argv.slice(1));

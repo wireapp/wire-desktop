@@ -17,14 +17,34 @@
  *
  */
 
-import {Point, Rectangle} from '../../interfaces/';
+export interface GoogleAccessTokenResult {
+  access_token: string;
+}
 
-const pointInRectangle = (point: Point, rectangle: Rectangle) => {
-  const [x, y] = point;
-  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
-  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
+export interface jsRsaSignPublicKey {
+  algoid: string;
+  algparam: string | null;
+  keyhex: string;
+}
 
-  return xInRange && yInRange;
-};
+export interface OnHeadersReceivedDetails {
+  responseHeaders: {
+    [key: string]: string[];
+  };
+}
 
-export {pointInRectangle};
+export interface OpenGraphResult {
+  title: string;
+  type: string;
+  url: string;
+  site_name: string;
+  description: string;
+  image: {
+    data?: string;
+    url: string;
+    width: string;
+    height: string;
+  };
+}
+
+export type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;

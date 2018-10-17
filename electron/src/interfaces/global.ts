@@ -17,14 +17,21 @@
  *
  */
 
-import {Point, Rectangle} from '../../interfaces/';
+import {Supportedi18nStrings} from './locale';
 
-const pointInRectangle = (point: Point, rectangle: Rectangle) => {
-  const [x, y] = point;
-  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
-  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
+declare global {
+  interface Window {
+    isMac: boolean;
+    locStrings: Partial<Supportedi18nStrings>;
+    locStringsDefault: Partial<Supportedi18nStrings>;
+    sendBadgeCount: (count: number) => void;
+    sendDeleteAccount: (accountId: string, sessionId: string) => void;
+    sendLogoutAccount: (accountId: string) => void;
+  }
 
-  return xInRange && yInRange;
-};
-
-export {pointInRectangle};
+  namespace NodeJS {
+    interface Global {
+      _ConfigurationPersistence: any;
+    }
+  }
+}

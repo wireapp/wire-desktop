@@ -28,7 +28,7 @@ import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import * as windowManager from '../window-manager';
 
-import {ElectronMenuItemWithI18n, SupportedLanguage} from '../../interfaces';
+import {ElectronMenuItemWithI18n, SupportedLanguage} from '../../interfaces/';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 

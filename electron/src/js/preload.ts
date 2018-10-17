@@ -22,8 +22,6 @@ import * as locale from '../locale/locale';
 import * as environment from './environment';
 import {EVENT_TYPE} from './lib/eventType';
 
-declare var window: any;
-
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
@@ -55,17 +53,17 @@ const subscribeToMainProcessEvents = () => {
 };
 
 const setupIpcInterface = (): void => {
-  window.sendBadgeCount = (count: number) => {
+  window.sendBadgeCount = (count: number): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
   };
 
-  window.sendDeleteAccount = (accountID: string, sessionID: string) => {
+  window.sendDeleteAccount = (accountID: string, sessionID: string): void => {
     const accountWebview = getWebviewById(accountID);
     accountWebview.getWebContents().session.clearStorageData();
     ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, accountID, sessionID);
   };
 
-  window.sendLogoutAccount = (accountId: string) => {
+  window.sendLogoutAccount = (accountId: string): void => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
