@@ -3,7 +3,7 @@ def parseJson(def text) {
   new groovy.json.JsonSlurperClassic().parseText(text)
 }
 
-node('Linux_Node') {
+node('node180') {
 
   checkout scm
 
