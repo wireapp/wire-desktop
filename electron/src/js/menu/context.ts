@@ -21,6 +21,7 @@ import {clipboard, ipcRenderer, remote, webFrame} from 'electron';
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
 
+import {ElectronMenuWithFileAndImage} from '../../interfaces';
 import * as locale from '../../locale/locale';
 import * as config from '../config';
 import {EVENT_TYPE} from '../lib/eventType';
@@ -101,9 +102,9 @@ const createTextMenu = () => {
 // Images
 ///////////////////////////////////////////////////////////////////////////////
 
-const imageMenu = Menu.buildFromTemplate([
+const imageMenu: ElectronMenuWithFileAndImage = Menu.buildFromTemplate([
   {
-    click: () => savePicture((imageMenu as any).file, (imageMenu as any).image),
+    click: () => savePicture(imageMenu.file || '', imageMenu.image || ''),
     label: locale.getText('menuSavePictureAs'),
   },
 ]);
@@ -122,7 +123,7 @@ window.addEventListener(
     } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
       event.preventDefault();
       const elementSource = (element as HTMLImageElement).src;
-      (imageMenu as any).image = elementSource;
+      imageMenu.image = elementSource;
       imageMenu.popup(remote.getCurrentWindow());
     } else if (element.nodeName === 'A') {
       event.preventDefault();
@@ -138,7 +139,7 @@ window.addEventListener(
       // Maybe we are in a code block _inside_ an element with the 'text' class?
       // Code block can consist of many tags: CODE, PRE, SPAN, etc.
       let parentNode = element.parentNode;
-      while (parentNode && parentNode !== document && !(parentNode as Element).classList.contains('text')) {
+      while (parentNode && parentNode !== document && !(parentNode as HTMLElement).classList.contains('text')) {
         parentNode = parentNode.parentNode;
       }
       if (parentNode !== document) {

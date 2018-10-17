@@ -25,6 +25,11 @@ interface ElectronMenuWithI18n extends Electron.Menu {
   i18n?: i18nStringIdentifier;
 }
 
+interface ElectronMenuWithFileAndImage extends Electron.Menu {
+  file?: string;
+  image?: string;
+}
+
 interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {
   i18n?: i18nStringIdentifier;
   selector?: string;
@@ -54,15 +59,7 @@ interface OpenGraphResult {
   site_name: string;
   description: string;
   image: {
-    url: string;
-    width: string;
-    height: string;
-  };
-}
-
-interface OpenGraphResultWithImage extends OpenGraphResult {
-  image: {
-    data: string;
+    data?: string;
     url: string;
     width: string;
     height: string;
@@ -105,13 +102,13 @@ type SupportedLanguagesObject = {[id in SupportedLanguage]: Supportedi18nStrings
 
 export {
   ElectronMenuItemWithI18n,
+  ElectronMenuWithFileAndImage,
   GoogleAccessTokenResult,
   i18nStringIdentifier,
   jsRsaSignPublicKey,
   OnHeadersReceivedCallback,
   OnHeadersReceivedDetails,
   OpenGraphResult,
-  OpenGraphResultWithImage,
   PinningResult,
   Point,
   Rectangle,

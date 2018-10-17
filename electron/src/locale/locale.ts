@@ -118,9 +118,9 @@ const parseLocale = (locale: string): SupportedLanguage => {
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
-const getText = (string_identifier: i18nStringIdentifier): string => {
+const getText = (stringIdentifier: i18nStringIdentifier): string => {
   const strings = getCurrent();
-  return LANGUAGES[strings][string_identifier] || LANGUAGES.en[string_identifier] || '';
+  return LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier] || '';
 };
 
 const setLocale = (locale: string): void => {

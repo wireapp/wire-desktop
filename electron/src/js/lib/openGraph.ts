@@ -21,7 +21,7 @@ import * as request from 'request';
 import * as urlUtil from 'url';
 const openGraphParse = require('open-graph');
 
-import {OpenGraphResult, OpenGraphResultWithImage} from '../../interfaces';
+import {OpenGraphResult} from '../../interfaces';
 
 const arrayify = <T>(value: T[] | T = []): T[] => (Array.isArray(value) ? value : [value]);
 
@@ -90,16 +90,14 @@ const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
   }).then(parseHead);
 };
 
-const updateMetaDataWithImage = (meta: OpenGraphResult, image?: string): OpenGraphResultWithImage => {
-  const metadata = meta as OpenGraphResultWithImage;
-
+const updateMetaDataWithImage = (meta: OpenGraphResult, image?: string): OpenGraphResult => {
   if (image) {
-    metadata.image.data = image;
+    meta.image.data = image;
   } else {
-    delete metadata.image;
+    delete meta.image;
   }
 
-  return metadata;
+  return meta;
 };
 
 const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: OpenGraphResult) => void) => {
