@@ -18,10 +18,11 @@
  */
 
 import {BrowserWindow} from 'electron';
-
 import * as google from 'googleapis';
 import * as qs from 'querystring';
 import * as request from 'request';
+
+import {GoogleAccessTokenResult} from '../../interfaces';
 
 const OAuth2 = google.auth.OAuth2;
 
@@ -35,7 +36,7 @@ const authorizeApp = (url: string): Promise<string> => {
     win.setMenuBarVisibility(false);
     win.loadURL(url);
 
-    win.on('closed', () => reject(new Error('User closed  the window')));
+    win.on('closed', () => reject(new Error('User closed the window')));
 
     win.on('page-title-updated', () => {
       setImmediate(() => {
@@ -56,9 +57,9 @@ const authorizeApp = (url: string): Promise<string> => {
   });
 };
 
-const getAccessToken = (scopes: string, clientId: string, clientSecret: string): Promise<any> => {
+const getAccessToken = (scopes: string, clientId: string, clientSecret: string): Promise<GoogleAccessTokenResult> => {
   return getAuthorizationCode(scopes, clientId, clientSecret).then(code => {
-    return new Promise((resolve, reject) => {
+    return new Promise<GoogleAccessTokenResult>((resolve, reject) => {
       const data = qs.stringify({
         client_id: clientId,
         client_secret: clientSecret,
@@ -67,17 +68,24 @@ const getAccessToken = (scopes: string, clientId: string, clientSecret: string):
         redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       });
 
-      request.post(
-        'https://accounts.google.com/o/oauth2/token',
-        {
-          body: data,
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+      const requestConfig = {
+        body: data,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        (error, response, body) => (error ? reject(error) : resolve(JSON.parse(body)))
-      );
+      };
+
+      const requestUrl = 'https://accounts.google.com/o/oauth2/token';
+
+      request.post(requestUrl, requestConfig, (error, response, body) => {
+        if (error) {
+          return reject(error);
+        }
+
+        const result = JSON.parse(body) as GoogleAccessTokenResult;
+        return resolve(result);
+      });
     });
   });
 };
@@ -87,7 +95,7 @@ const getAuthenticationUrl = (scopes: string, clientId: string, clientSecret: st
   return oauth2Client.generateAuthUrl({scope: scopes});
 };
 
-const getAuthorizationCode = (scopes: string, clientId: string, clientSecret: string) => {
+const getAuthorizationCode = (scopes: string, clientId: string, clientSecret: string): Promise<string> => {
   const url = getAuthenticationUrl(scopes, clientId, clientSecret);
   return authorizeApp(url);
 };

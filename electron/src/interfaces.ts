@@ -31,6 +31,10 @@ interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {
   submenu?: ElectronMenuItemWithI18n[] | ElectronMenuWithI18n;
 }
 
+interface GoogleAccessTokenResult {
+  access_token: string;
+}
+
 interface jsRsaSignPublicKey {
   algoid: string;
   algparam: string | null;
@@ -101,6 +105,7 @@ type SupportedLanguagesObject = {[id in SupportedLanguage]: Supportedi18nStrings
 
 export {
   ElectronMenuItemWithI18n,
+  GoogleAccessTokenResult,
   i18nStringIdentifier,
   jsRsaSignPublicKey,
   OnHeadersReceivedCallback,

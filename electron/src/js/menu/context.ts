@@ -121,11 +121,14 @@ window.addEventListener(
       textMenu.popup(remote.getCurrentWindow());
     } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
       event.preventDefault();
-      (imageMenu as any).image = (element as HTMLImageElement).src;
+      const elementSource = (element as HTMLImageElement).src;
+      (imageMenu as any).image = elementSource;
       imageMenu.popup(remote.getCurrentWindow());
     } else if (element.nodeName === 'A') {
       event.preventDefault();
-      copyContext = (element as HTMLLinkElement).href.replace(/^mailto:/, '');
+
+      const elementHref = (element as HTMLLinkElement).href;
+      copyContext = elementHref.replace(/^mailto:/, '');
       defaultMenu.popup(remote.getCurrentWindow());
     } else if (element.classList.contains('text')) {
       event.preventDefault();

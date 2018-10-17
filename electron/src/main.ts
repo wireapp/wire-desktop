@@ -93,7 +93,7 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, (event: Event) => {
     googleAuth
       .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
-      .then((code: {access_token: string}) => event.sender.send('google-auth-success', code.access_token))
+      .then(code => event.sender.send('google-auth-success', code.access_token))
       .catch(error => event.sender.send('google-auth-error', error));
   });
 
