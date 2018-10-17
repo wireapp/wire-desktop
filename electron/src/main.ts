@@ -434,5 +434,5 @@ if (!lifecycle.shouldQuit) {
   bindIpcEvents();
   handleAppEvents();
   renameLogFile();
-  new ElectronWrapperInit().run().catch(error => console.log(error));
+  new ElectronWrapperInit().run().catch(error => console.error(error));
 }

@@ -323,7 +323,7 @@ const win32Template: ElectronMenuItemWithI18n = {
     signOutTemplate,
     {
       accelerator: 'Alt+F4',
-      click: async () => lifecycle.quit(),
+      click: () => lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -344,7 +344,7 @@ const linuxTemplate: ElectronMenuItemWithI18n = {
     signOutTemplate,
     {
       accelerator: 'Ctrl+Q',
-      click: async () => lifecycle.quit(),
+      click: () => lifecycle.quit(),
       i18n: 'menuQuit',
     },
   ],
@@ -373,13 +373,11 @@ const changeLocale = (language: SupportedLanguage): void => {
   dialog.showMessageBox(
     {
       buttons: [
-        locale.LANGUAGES[language].restartLater || locale.LANGUAGES.en.restartLater,
-        environment.platform.IS_MAC_OS
-          ? locale.LANGUAGES[language].menuQuit || locale.LANGUAGES.en.menuQuit
-          : locale.LANGUAGES[language].restartNow || locale.LANGUAGES.en.restartNow,
+        locale.getText('restartLater'),
+        environment.platform.IS_MAC_OS ? locale.getText('menuQuit') : locale.getText('restartNow'),
       ],
-      message: locale.LANGUAGES[language].restartLocale || locale.LANGUAGES.en.restartLocale,
-      title: locale.LANGUAGES[language].restartNeeded,
+      message: locale.getText('restartLocale'),
+      title: locale.getText('restartNeeded'),
       type: 'info',
     },
     response => {

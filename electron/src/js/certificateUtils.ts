@@ -68,8 +68,9 @@ const pins = [
   },
 ];
 
-const hostnameShouldBePinned = (hostname: string): boolean =>
-  pins.some(pin => pin.url.test(hostname.toLowerCase().trim()));
+const hostnameShouldBePinned = (hostname: string): boolean => {
+  return pins.some(pin => pin.url.test(hostname.toLowerCase().trim()));
+};
 
 const verifyPinning = (hostname: string, certificate: Electron.Certificate): PinningResult => {
   const {data: certData = '', issuerCert: {data: issuerCertData = ''} = {}} = certificate;
@@ -108,9 +109,10 @@ const verifyPinning = (hostname: string, certificate: Electron.Certificate): Pin
           return x509.verifySignature(x509PublicKey);
         });
         if (!result.verifiedIssuerRootPubkeys) {
-          errorMessages.push(
-            `Issuer root public key signatures: none of "${issuerRootPubkeys.join(', ')}" could be verified.`
-          );
+          const errorMessage = `Issuer root public key signatures: none of "${issuerRootPubkeys.join(
+            ', '
+          )}" could be verified.`;
+          errorMessages.push(errorMessage);
         }
       }
 
@@ -130,25 +132,23 @@ const verifyPinning = (hostname: string, certificate: Electron.Certificate): Pin
           const algorithmParamCheck = knownAlgorithmParam === publicKey.algparam;
 
           if (!fingerprintCheck) {
-            errorMessages.push(
-              `Public key fingerprints: "${publicKeyFingerprint}" could not be verified with any of the known fingerprints "${knownFingerprints.join(
-                ', '
-              )}".`
-            );
+            const fingerprintsString = knownFingerprints.join(', ');
+            const errorMessage = `Public key fingerprints: "${publicKeyFingerprint}" could not be verified with any of the known fingerprints "${fingerprintsString}".`;
+            errorMessages.push(errorMessage);
           }
 
           if (!algorithmIDCheck) {
-            errorMessages.push(
-              `Algorithm ID: "${publicKey.algoid}" could not be verified with the known ID "${knownAlgorithmID}".`
-            );
+            const errorMessage = `Algorithm ID: "${
+              publicKey.algoid
+            }" could not be verified with the known ID "${knownAlgorithmID}".`;
+            errorMessages.push(errorMessage);
           }
 
           if (!algorithmParamCheck) {
-            errorMessages.push(
-              `Algorithm parameter: "${
-                publicKey.algparam
-              }" could not be verified with the known parameter "${knownAlgorithmParam}".`
-            );
+            const errorMessage = `Algorithm parameter: "${
+              publicKey.algparam
+            }" could not be verified with the known parameter "${knownAlgorithmParam}".`;
+            errorMessages.push(errorMessage);
           }
 
           arr.push(fingerprintCheck, algorithmIDCheck, algorithmParamCheck);

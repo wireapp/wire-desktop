@@ -33,8 +33,9 @@ window.locStringsDefault = locale.LANGUAGES.en;
 window.isMac = environment.platform.IS_MAC_OS;
 
 const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)') as WebviewTag;
-const getWebviewById = (id: string): WebviewTag =>
-  document.querySelector(`.Webview[data-accountid="${id}"]`) as WebviewTag;
+const getWebviewById = (id: string): WebviewTag => {
+  return document.querySelector(`.Webview[data-accountid="${id}"]`) as WebviewTag;
+};
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: Event, action: string) => {
