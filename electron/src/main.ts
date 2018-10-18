@@ -192,7 +192,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
   let baseURL = BASE_URL;
   baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`file://${__dirname}/renderer/index.html?env=${encodeURIComponent(baseURL)}`);
+  main.loadURL(`file://${__dirname}/../renderer/index.html?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});

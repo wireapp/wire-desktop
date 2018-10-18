@@ -17,7 +17,13 @@
  *
  */
 
-export * from './global';
-export * from './main';
-export * from './polyfills';
-export * from './WebApp';
+import {combineReducers} from 'redux';
+import accountReducer from './accountReducer';
+import contextMenuReducer from './contextMenuReducer';
+
+const store = combineReducers({
+  accounts: accountReducer,
+  contextMenuState: contextMenuReducer,
+});
+
+export default store;

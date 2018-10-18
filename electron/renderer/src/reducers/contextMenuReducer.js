@@ -17,18 +17,9 @@
  *
  */
 
-import {Action, ActionCreator} from '../../interfaces/';
+import * as ActionCreator from '../actions';
 
-export interface ContextMenuState {
-  accountId: string;
-  isAtLeastAdmin: boolean;
-  isEditAccountMenuVisible: boolean;
-  lifecycle: boolean | string;
-  position: {x: number; y: number};
-  sessionId: string;
-}
-
-const DEFAULT_STATE: ContextMenuState = {
+const DEFAULT_STATE = {
   accountId: '',
   isAtLeastAdmin: false,
   isEditAccountMenuVisible: false,
@@ -37,7 +28,7 @@ const DEFAULT_STATE: ContextMenuState = {
   sessionId: '',
 };
 
-const contextMenuReducer = (state = DEFAULT_STATE, action: Action) => {
+const contextMenuReducer = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
     case ActionCreator.HIDE_CONTEXT_MENUS: {
       return {...DEFAULT_STATE};

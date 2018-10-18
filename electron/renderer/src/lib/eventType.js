@@ -17,38 +17,17 @@
  *
  */
 
-import * as React from 'react';
+export const ACCOUNT = {
+  UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
+};
 
-import './IsOnline.css';
+export const ACTION = {
+  NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
+};
 
-class IsOnline<P> extends React.Component {
-  state: {
-    isOnline: boolean;
-  };
-
-  constructor(props: Readonly<P>) {
-    super(props);
-
-    this.state = {
-      isOnline: navigator.onLine,
-    };
-  }
-
-  componentDidMount() {
-    if (this.state.isOnline === false) {
-      window.addEventListener(
-        'online',
-        event => {
-          this.setState({isOnline: true});
-        },
-        {once: true}
-      );
-    }
-  }
-
-  render() {
-    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
-  }
-}
-
-export default IsOnline;
+export const LIFECYCLE = {
+  SIGN_OUT: 'EVENT_TYPE.LIFECYCLE.SIGN_OUT',
+  SIGNED_IN: 'EVENT_TYPE.LIFECYCLE.SIGNED_IN',
+  SIGNED_OUT: 'EVENT_TYPE.LIFECYCLE.SIGNED_OUT',
+  UNREAD_COUNT: 'EVENT_TYPE.LIFECYCLE.UNREAD_COUNT',
+};

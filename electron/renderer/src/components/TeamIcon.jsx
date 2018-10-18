@@ -17,23 +17,18 @@
  *
  */
 
-import * as React from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import {AccentColor} from '@wireapp/commons';
-import {Account} from '../../interfaces/';
-
-export interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  accentID?: number;
-  account: Account;
-}
+import {colorFromId} from '../lib/accentColor';
 
 import './TeamIcon.css';
 
-const TeamIcon: React.SFC<Props> = ({account, accentID}) => (
+const TeamIcon = ({account, accentID}) => (
   <div className="TeamIcon" title={account.name} data-uie-name="item-team" data-uie-value={account.name}>
     {account.visible && (
       <svg
-        style={{fill: (AccentColor.getById(accentID || 0) || {color: ''}).color}}
+        style={{fill: colorFromId(accentID)}}
         width="38"
         height="38"
         viewBox="0 0 38 38"
@@ -54,5 +49,11 @@ const TeamIcon: React.SFC<Props> = ({account, accentID}) => (
     <span>{[...account.name][0]}</span>
   </div>
 );
+
+TeamIcon.propTypes = {
+  accentID: PropTypes.number,
+  account: PropTypes.object.isRequired,
+  onClick: PropTypes.func,
+};
 
 export default TeamIcon;

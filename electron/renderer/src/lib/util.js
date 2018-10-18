@@ -17,17 +17,12 @@
  *
  */
 
-export const ACCOUNT = {
-  UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
-};
+export const noop = () => {};
 
-export const ACTION = {
-  NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
-};
-
-export const LIFECYCLE = {
-  SIGNED_IN: 'EVENT_TYPE.LIFECYCLE.SIGNED_IN',
-  SIGNED_OUT: 'EVENT_TYPE.LIFECYCLE.SIGNED_OUT',
-  SIGN_OUT: 'EVENT_TYPE.LIFECYCLE.SIGN_OUT',
-  UNREAD_COUNT: 'EVENT_TYPE.LIFECYCLE.UNREAD_COUNT',
+export const preventFocus = (fn = noop) => {
+  return event => {
+    event.stopPropagation();
+    event.preventDefault();
+    fn(event);
+  };
 };

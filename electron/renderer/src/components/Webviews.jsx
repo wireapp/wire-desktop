@@ -17,53 +17,29 @@
  *
  */
 
-import {UrlUtil} from '@wireapp/commons';
-import {IpcMessageEvent} from 'electron';
-import * as React from 'react';
-import {Account} from '../../interfaces/';
-import * as EVENT_TYPE from '../lib/eventType';
+import React, {Component} from 'react';
 import Webview from './Webview';
 import './Webviews.css';
+import * as EVENT_TYPE from '../lib/eventType';
 
-export interface Props extends React.HTMLAttributes<HTMLDataListElement> {
-  accounts: Account[];
-  onClick?: (event: React.MouseEvent<HTMLDataListElement>) => void;
-}
-
-export interface DispatchProps {
-  abortAccountCreation: (id: string) => void;
-  switchAccount: (id: string) => void;
-  updateAccountBadgeCount: (id: string, count: number) => void;
-  updateAccountData: (id: string, data: Partial<Account>) => void;
-  updateAccountLifecycle: (id: string, channel: string) => void;
-}
-
-export interface State {
-  canDelete: {
-    [id: string]: boolean;
-  };
-}
-
-export type CombinedProps = Props & DispatchProps;
-
-class Webviews extends React.Component<CombinedProps, State> {
-  constructor(props: CombinedProps) {
+class Webviews extends Component {
+  constructor(props) {
     super(props);
     this.state = {
-      canDelete: this.getCanDeletes(props.accounts),
+      canDelete: this._getCanDeletes(props.accounts),
     };
-    this.getCanDeletes = this.getCanDeletes.bind(this);
-    this.onUnreadCountUpdated = this.onUnreadCountUpdated.bind(this);
-    this.onIpcMessage = this.onIpcMessage.bind(this);
-    this.onWebviewClose = this.onWebviewClose.bind(this);
-    this.deleteWebview = this.deleteWebview.bind(this);
+    this._getCanDeletes = this._getCanDeletes.bind(this);
+    this._onUnreadCountUpdated = this._onUnreadCountUpdated.bind(this);
+    this._onIpcMessage = this._onIpcMessage.bind(this);
+    this._onWebviewClose = this._onWebviewClose.bind(this);
+    this._deleteWebview = this._deleteWebview.bind(this);
   }
 
-  public componentWillReceiveProps(nextProps: CombinedProps) {
-    this.setState({canDelete: this.getCanDeletes(nextProps.accounts)});
+  componentWillReceiveProps(nextProps) {
+    this.setState({canDelete: this._getCanDeletes(nextProps.accounts)});
   }
 
-  public shouldComponentUpdate(nextProps: CombinedProps, nextState: State) {
+  shouldComponentUpdate(nextProps, nextState) {
     for (const account of nextProps.accounts) {
       const match = this.props.accounts.find(_account => account.id === _account.id);
       if (!match || match.visible !== account.visible) {
@@ -73,18 +49,18 @@ class Webviews extends React.Component<CombinedProps, State> {
     return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
   }
 
-  private getCanDeletes(accounts: Account[]) {
+  _getCanDeletes(accounts) {
     return accounts.reduce(
       (accumulator, account) => ({
         ...accumulator,
-        [account.id]: this.canDeleteWebview(account),
+        [account.id]: this._canDeleteWebview(account),
       }),
       {}
     );
   }
 
-  private getEnvironmentUrl(account: Account, forceLogin?: boolean): string {
-    const envParam = decodeURIComponent(UrlUtil.getURLParameter('env'));
+  _getEnvironmentUrl(account, forceLogin) {
+    const envParam = decodeURIComponent(new URL(window.location.href).searchParams.get('env'));
     const url = new URL(envParam);
 
     // pass account id to webview so we can access it in the preload script
@@ -95,23 +71,24 @@ class Webviews extends React.Component<CombinedProps, State> {
       url.pathname = isLocalhost ? '/page/auth.html' : '/auth';
       url.hash = '#login';
     }
+
     return url.href;
   }
 
-  private accumulateBadgeCount(accounts: Account[]) {
+  _accumulateBadgeCount(accounts) {
     return accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
   }
 
-  private onUnreadCountUpdated(accountId: string, unreadCount: number) {
+  _onUnreadCountUpdated(accountId, unreadCount) {
     this.props.updateAccountBadgeCount(accountId, unreadCount);
-    const accumulatedCount = this.accumulateBadgeCount(this.props.accounts);
+    const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
     window.sendBadgeCount(accumulatedCount);
   }
 
-  private onIpcMessage(account: Account, event: IpcMessageEvent) {
-    switch (event.channel) {
+  _onIpcMessage(account, {channel, args}) {
+    switch (channel) {
       case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
-        const [accountData] = event.args;
+        const [accountData] = args;
         this.props.updateAccountData(account.id, accountData);
         break;
       }
@@ -123,35 +100,35 @@ class Webviews extends React.Component<CombinedProps, State> {
 
       case EVENT_TYPE.LIFECYCLE.SIGNED_IN:
       case EVENT_TYPE.LIFECYCLE.SIGN_OUT: {
-        this.props.updateAccountLifecycle(account.id, event.channel);
+        this.props.updateAccountLifecycle(account.id, channel);
         break;
       }
 
       case EVENT_TYPE.LIFECYCLE.SIGNED_OUT: {
-        this.deleteWebview(account);
+        this._deleteWebview(account);
         break;
       }
 
       case EVENT_TYPE.LIFECYCLE.UNREAD_COUNT: {
-        const [badgeCount] = event.args;
-        this.onUnreadCountUpdated(account.id, badgeCount);
+        const [badgeCount] = args;
+        this._onUnreadCountUpdated(account.id, badgeCount);
         break;
       }
     }
 
-    this.setState({canDelete: {...this.state.canDelete, [account.id]: this.canDeleteWebview(account)}});
+    this.setState({canDelete: {...this.state.canDelete, [account.id]: this._canDeleteWebview(account)}});
   }
 
-  private onWebviewClose(account: Account) {
-    this.deleteWebview(account);
+  _onWebviewClose(account) {
+    this._deleteWebview(account);
   }
 
-  private deleteWebview(account: Account) {
+  _deleteWebview(account) {
     window.sendDeleteAccount(account.id, account.sessionID);
     this.props.abortAccountCreation(account.id);
   }
 
-  private canDeleteWebview(account: Account) {
+  _canDeleteWebview(account) {
     const match = this.props.accounts.find(_account => account.id === _account.id);
     return !match || (!match.userID && !!match.sessionID);
   }
@@ -165,15 +142,15 @@ class Webviews extends React.Component<CombinedProps, State> {
               className={`Webview ${account.visible ? '' : 'hide'}`}
               data-accountid={account.id}
               visible={account.visible}
-              src={this.getEnvironmentUrl(account, account.isAdding && index > 0)}
+              src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
               partition={account.sessionID}
               preload="./static/webview-preload.js"
-              onIpcMessage={(event: IpcMessageEvent) => this.onIpcMessage(account, event)}
+              onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"
             />
             {this.state.canDelete[account.id] &&
               account.visible && (
-                <div className="Webviews-close" onClick={() => this.onWebviewClose(account)}>
+                <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
                   <svg width="16" height="16" viewBox="0 0 16 16">
                     <path
                       d="M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243"

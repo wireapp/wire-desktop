@@ -17,16 +17,14 @@
  *
  */
 
-import * as React from 'react';
+import {colorFromId} from '../accentColor';
 
-export interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
-}
+describe('colorFromId', () => {
+  it('should return correct color', () => {
+    expect(colorFromId(2)).toEqual('#00c800');
+  });
 
-const ContextMenuItem: React.SFC<Props> = props => (
-  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
-    {props.children}
-  </div>
-);
-
-export default ContextMenuItem;
+  it('should return undefined if id does not exist', () => {
+    expect(colorFromId(42)).not.toBeDefined();
+  });
+});

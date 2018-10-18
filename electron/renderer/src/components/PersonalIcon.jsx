@@ -17,19 +17,14 @@
  *
  */
 
-import {AccentColor} from '@wireapp/commons';
-import * as React from 'react';
-import {Account} from '../../interfaces/';
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import {colorFromId} from '../lib/accentColor';
 
 import './PersonalIcon.css';
 
-export interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  accentID?: number;
-  account: Account;
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-}
-
-const PersonalIcon: React.SFC<Props> = ({account, accentID, onClick}) => (
+const PersonalIcon = ({account, accentID, onClick}) => (
   <div
     className="PersonalIcon"
     title={account.name}
@@ -37,14 +32,15 @@ const PersonalIcon: React.SFC<Props> = ({account, accentID, onClick}) => (
     data-uie-name="item-team"
     data-uie-value={account.name}
   >
-    {account.visible && (
-      <div
-        className="PersonalIcon-border"
-        style={{borderColor: (AccentColor.getById(accentID || 0) || {color: ''}).color}}
-      />
-    )}
+    {account.visible && <div className="PersonalIcon-border" style={{borderColor: colorFromId(accentID)}} />}
     <div className="PersonalIcon-inner">{account.picture && <img src={account.picture} />}</div>
   </div>
 );
+
+PersonalIcon.propTypes = {
+  accentID: PropTypes.number,
+  account: PropTypes.object.isRequired,
+  onClick: PropTypes.func,
+};
 
 export default PersonalIcon;

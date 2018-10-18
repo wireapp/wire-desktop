@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "jsx": "react",
-    "outDir": "electron/renderer-dist",
-    "rootDir": "electron/renderer"
-  },
-  "exclude": ["electron/dist", "electron/renderer-dist", "electron/src", "node_modules", "electron/node_modules"],
-  "extends": "./tsconfig.json"
-}

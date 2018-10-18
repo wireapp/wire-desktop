@@ -17,25 +17,26 @@
  *
  */
 
-import * as React from 'react';
+const isType = (type, object) => {
+  const getType = Object.prototype.toString.call(object).slice(8, -1);
+  return object && getType === type;
+};
 
-export interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  forceVisible?: boolean;
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+export default function(data, config) {
+  const validatedData = {};
+
+  const isValidObject = Object.keys(config).every(key => {
+    if (!data.hasOwnProperty(key)) {
+      validatedData[key] = config[key] === 'String' ? '' : undefined;
+      return true;
+    }
+
+    const isValid = isType(config[key], data[key]);
+    if (isValid) {
+      validatedData[key] = data[key];
+    }
+    return isValid;
+  });
+
+  return isValidObject ? validatedData : false;
 }
-
-const AddAccountTrigger: React.SFC<Props> = ({onClick, forceVisible}) => (
-  <div
-    className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
-    onClick={onClick}
-    data-uie-name="do-open-plus-menu"
-  >
-    <div className="Sidebar-account-add">
-      <svg width="12" height="12" viewBox="0 0 12 12">
-        <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd" />
-      </svg>
-    </div>
-  </div>
-);
-
-export default AddAccountTrigger;

@@ -55,11 +55,11 @@
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
-    "*.js": [
+    "*.{js,jsx}": [
       "eslint --fix",
       "git add"
     ],
-    "*{.ts,.tsx}": [
+    "*.ts": [
       "tslint --config tslint.json --fix",
       "git add"
     ],
@@ -74,13 +74,13 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "build:ts": "npm run clear:ts && tsc && tsc --project tsconfig.renderer.json",
+    "build:ts": "npm run clear:ts && tsc",
     "build:linux": "npm run build:ts && grunt linux-prod",
     "build:macos": "npm run build:ts && grunt macos-prod",
     "build:win": "npm run build:ts && grunt win-prod",
     "bundle:dev": "npm run build:ts && webpack",
     "bundle": "npm run build:ts && webpack --env.production",
-    "clear:ts": "rimraf electron/dist electron/renderer-dist",
+    "clear:ts": "rimraf electron/dist",
     "edge": "npm run prestart && electron electron --inspect --devtools --enable-logging --env=https://wire-webapp-edge.zinfra.io",
     "fix:js": "npm run test:js -- --fix",
     "fix:other": "npm run prettier -- --write",

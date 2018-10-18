@@ -17,30 +17,15 @@
  *
  */
 
-import * as React from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
-import {abortAccountCreation, switchAccount} from '../../actions';
-import * as EVENT_TYPE from '../../lib/eventType';
 import {getText} from '../../lib/locale';
-import {RootState, ThunkDispatch} from '../../reducers/';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
+import {abortAccountCreation, switchAccount} from '../../actions';
+import * as EVENT_TYPE from '../../lib/eventType';
 
-export interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  accountId: string;
-  isAtLeastAdmin: boolean;
-  lifecycle: boolean | string;
-  sessionId: string;
-}
-
-export interface DispatchProps {
-  abortAccountCreation: (id: string) => void;
-  switchAccount: (id: string) => void;
-}
-
-export type CombinedProps = Props & DispatchProps;
-
-const EditAccountMenu: React.SFC<CombinedProps> = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
+function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) {
   return (
     <ContextMenu>
       {isAtLeastAdmin && (
@@ -68,17 +53,17 @@ const EditAccountMenu: React.SFC<CombinedProps> = ({accountId, isAtLeastAdmin, l
       </ContextMenuItem>
     </ContextMenu>
   );
-};
+}
 
 export default connect(
-  (state: RootState) => ({
-    accountId: state.contextMenuState.accountId,
-    isAtLeastAdmin: state.contextMenuState.isAtLeastAdmin,
-    lifecycle: state.contextMenuState.lifecycle,
-    sessionId: state.contextMenuState.sessionId,
+  ({contextMenuState}) => ({
+    accountId: contextMenuState.accountId,
+    isAtLeastAdmin: contextMenuState.isAtLeastAdmin,
+    lifecycle: contextMenuState.lifecycle,
+    sessionId: contextMenuState.sessionId,
   }),
-  (dispatch: ThunkDispatch): DispatchProps => ({
-    abortAccountCreation: (id: string) => dispatch(abortAccountCreation(id)),
-    switchAccount: (id: string) => dispatch(switchAccount(id)),
-  })
+  {
+    abortAccountCreation,
+    switchAccount,
+  }
 )(EditAccountMenu);

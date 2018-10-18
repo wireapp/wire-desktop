@@ -17,18 +17,15 @@
  *
  */
 
-import {IpcMessageEvent, desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+const config = require('../../js/config');
+const environment = require('../../js/environment');
+const fs = require('fs-extra');
+const path = require('path');
 const winston = require('winston');
+const EVENT_TYPE = require('../../js/lib/eventType');
 
-import * as config from '../../dist/js/config';
-import * as environment from '../../dist/js/environment';
-import {EVENT_TYPE} from '../../dist/js/lib/eventType';
-
-import {Account} from '../interfaces';
-
-const app = remote.app;
+const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
+const {app} = remote;
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
@@ -47,13 +44,13 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGN_OUT);
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, (clearData?: boolean) => {
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, clearData => {
     if (clearData) {
       ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT);
     }
   });
 
-  amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, (count: number) => {
+  amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, count => {
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.UNREAD_COUNT, count);
   });
 
@@ -62,7 +59,7 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
-  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info: Partial<Account>) => {
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, info => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 };
@@ -92,7 +89,7 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, (conversationId: string) => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, conversationId => {
     amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, () => {
@@ -113,13 +110,17 @@ const subscribeToMainProcessEvents = () => {
 };
 
 const exposeAddressBook = () => {
+  let cachedAddressBook;
+
   const getAddressBook = () => {
-    try {
-      const cachedAddressBook = require('node-addressbook');
-      return cachedAddressBook;
-    } catch (error) {
-      console.error('Failed loading "node-addressbook".', error);
+    if (!cachedAddressBook) {
+      try {
+        cachedAddressBook = require('node-addressbook');
+      } catch (error) {
+        console.info('Failed loading "node-addressbook".', error);
+      }
     }
+    return cachedAddressBook;
   };
 
   if (environment.platform.IS_MAC_OS) {
@@ -133,10 +134,10 @@ const replaceGoogleAuth = () => {
   }
 
   // hijack google authenticate method
-  const authenticateWithGoogle = (): Promise<string> => {
+  const authenticateWithGoogle = () => {
     return new Promise((resolve, reject) => {
       ipcRenderer.send(EVENT_TYPE.GOOGLE_OAUTH.REQUEST);
-      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.SUCCESS, (event: IpcMessageEvent, token: string) => resolve(token));
+      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.SUCCESS, (event, token) => resolve(token));
       ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.ERROR, reject);
     });
   };
@@ -170,7 +171,7 @@ const enableFileLogging = () => {
 
 const reportWebappVersion = () => ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, z.util.Environment.version(false));
 
-const checkAvailability = (callback: () => void) => {
+const checkAvailability = callback => {
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);
@@ -193,7 +194,7 @@ process.once('loaded', () => {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
-  global.openGraph = require('../../dist/js/lib/openGraph');
+  global.openGraph = require('../../js/lib/openGraph');
   global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
   enableFileLogging();
 });
@@ -208,6 +209,6 @@ window.addEventListener('DOMContentLoaded', () => {
     reportWebappVersion();
 
     // include context menu
-    require('../../dist/js/menu/context');
+    require('../../js/menu/context');
   });
 });

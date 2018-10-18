@@ -17,10 +17,17 @@
  *
  */
 
-import {i18nLanguageIdentifier} from '../../../dist/interfaces/';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-window.locStrings = window.locStrings || {};
-window.locStringsDefault = window.locStringsDefault || {};
+const ContextMenuItem = props => (
+  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
+    {props.children}
+  </div>
+);
 
-export const getText = (id: i18nLanguageIdentifier): string =>
-  window.locStrings[id] || window.locStringsDefault[id] || id;
+export default ContextMenuItem;
+
+ContextMenuItem.propTypes = {
+  onClick: PropTypes.func,
+};

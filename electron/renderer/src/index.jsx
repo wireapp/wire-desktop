@@ -17,18 +17,17 @@
  *
  */
 
-import throttle = require('lodash/throttle');
-import * as React from 'react';
+import React from 'react';
 import {render} from 'react-dom';
+import {applyMiddleware, createStore} from 'redux';
 import {Provider} from 'react-redux';
-import {Store, applyMiddleware, createStore} from 'redux';
-import logger from 'redux-logger';
 import thunk from 'redux-thunk';
+import logger from 'redux-logger';
+import throttle from 'lodash/throttle';
 
-import {Account} from '../interfaces';
 import App from './components/App';
+import appStore from './reducers';
 import {loadState, saveState} from './lib/localStorage';
-import appStore, {RootState} from './reducers/';
 
 import './Index.css';
 
@@ -37,15 +36,15 @@ const persistedState = loadState();
 const middleware = [thunk];
 
 if (process.env.NODE_ENV !== 'production') {
-  middleware.push(logger as any);
+  middleware.push(logger);
 }
 
-const store: Store<RootState> = createStore(appStore, persistedState as RootState, applyMiddleware(...middleware));
+const store = createStore(appStore, persistedState, applyMiddleware(...middleware));
 
 store.subscribe(
   throttle(() => {
     saveState({
-      accounts: store.getState().accounts.map((account: Account) => {
+      accounts: store.getState().accounts.map(account => {
         // no need to store badge count
         return {
           ...account,

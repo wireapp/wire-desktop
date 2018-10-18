@@ -17,12 +17,34 @@
  *
  */
 
-export const noop = (event: any) => {};
+import React, {Component} from 'react';
 
-export const preventFocus = (fn = noop) => {
-  return (event: any) => {
-    event.stopPropagation();
-    event.preventDefault();
-    fn(event);
-  };
-};
+import './IsOnline.css';
+
+class IsOnline extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isOnline: navigator.onLine,
+    };
+  }
+
+  componentDidMount() {
+    if (this.state.isOnline === false) {
+      window.addEventListener(
+        'online',
+        event => {
+          this.setState({isOnline: true});
+        },
+        {once: true}
+      );
+    }
+  }
+
+  render() {
+    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
+  }
+}
+
+export default IsOnline;

@@ -17,27 +17,16 @@
  *
  */
 
-import * as React from 'react';
-import {connect} from 'react-redux';
-import {switchAccount} from '../actions/';
-import WebviewsContainer from '../containers/WebviewsContainer';
-import {RootState, ThunkDispatch} from '../reducers/';
 import IsOnline from './IsOnline';
+import React from 'react';
+import {connect} from 'react-redux';
 import Sidebar from './Sidebar';
+import WebviewsContainer from '../containers/WebviewsContainer';
+import {switchAccount} from '../actions';
 
 import './App.css';
 
-export interface Props {
-  accountIds: string[];
-}
-
-export interface DispatchProps {
-  switchAccount: (accountId: string) => void;
-}
-
-export type CombinedProps = Props & DispatchProps;
-
-const App = (props: CombinedProps) => (
+const App = props => (
   <IsOnline>
     <div
       className="App"
@@ -56,8 +45,6 @@ const App = (props: CombinedProps) => (
 );
 
 export default connect(
-  (state: RootState) => ({accountIds: state.accounts.map(account => account.id)}),
-  (dispatch: ThunkDispatch): DispatchProps => ({
-    switchAccount: (accountId: string) => dispatch(switchAccount(accountId)),
-  })
+  ({accounts}) => ({accountIds: accounts.map(account => account.id)}),
+  {switchAccount}
 )(App);

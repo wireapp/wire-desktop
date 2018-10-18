@@ -7,7 +7,7 @@
 *.pyc
 /.idea
 /keys
-/electron/renderer-dist
+/electron/renderer/dist
 /electron/dist
 /electron/node_modules
 /temp

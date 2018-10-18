@@ -17,12 +17,10 @@
  *
  */
 
-import * as uuid from 'uuid/v4';
-import {Account, Action, ActionCreator} from '../../interfaces/';
+import uuid from 'uuid/v4';
+import * as ActionCreator from '../actions';
 
-export type AccountState = Account[];
-
-const createAccount = (sessionId?: string): Account => ({
+const createAccount = sessionId => ({
   accentID: undefined,
   badgeCount: 0,
   id: uuid(),
@@ -36,10 +34,10 @@ const createAccount = (sessionId?: string): Account => ({
   visible: true,
 });
 
-const accountReducer = (state = [createAccount()], action: Action): AccountState => {
+const accountReducer = (state = [createAccount()], action) => {
   switch (action.type) {
     case ActionCreator.ADD_ACCOUNT: {
-      const newState: Account[] = state.map(account => ({...account, visible: false}));
+      const newState = state.map(account => ({...account, visible: false}));
       newState.push(createAccount(action.sessionID));
       return newState;
     }
@@ -65,7 +63,7 @@ const accountReducer = (state = [createAccount()], action: Action): AccountState
     case ActionCreator.UPDATE_ACCOUNT_BADGE: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
-        return isMatchingAccount ? {...account, badgeCount: action.count || 0} : account;
+        return isMatchingAccount ? {...account, badgeCount: action.count} : account;
       });
     }
 
