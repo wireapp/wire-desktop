@@ -53,8 +53,7 @@ store.subscribe(
         };
       }),
     });
-  }),
-  500
+  }, 500)
 );
 
 render(
