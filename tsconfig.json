@@ -15,8 +15,7 @@
     "rootDir": "electron/src",
     "sourceMap": true,
     "strict": true,
-    "jsx": "react",
     "target": "es5"
   },
-  "exclude": ["babel.config.js", "electron/dist", "electron/renderer", "electron/node_modules", "Gruntfile.js", "node_modules", "tests", "webpack.config.js", "wrap"]
+  "exclude": ["electron/dist", "electron/renderer-dist", "electron/renderer", "node_modules", "electron/node_modules"]
 }

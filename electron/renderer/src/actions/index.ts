@@ -63,9 +63,9 @@ export const toggleEditAccountMenuVisibility = (
   x: number,
   y: number,
   accountId: string,
-  sessionId: string,
-  lifecycle: boolean | string,
-  isAtLeastAdmin: boolean
+  sessionId?: string,
+  lifecycle?: boolean | string,
+  isAtLeastAdmin?: boolean
 ): Action => ({
   payload: {
     accountId,

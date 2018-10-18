@@ -40,7 +40,7 @@ export interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 export interface ConnectedProps {
   accounts: Account[];
-  currentAccentID: number;
+  currentAccentID?: number;
   hasCreatedAccount: boolean;
   hasReachedLimitOfAccounts: boolean;
   isAddingAccount: boolean;
@@ -94,7 +94,7 @@ const Sidebar: React.SFC<CombinedProps> = ({
     {accounts.map(account => (
       <div className="Sidebar-cell" key={account.id}>
         <div
-          style={{color: AccentColor.getById(currentAccentID).color}}
+          style={{color: (AccentColor.getById(currentAccentID || 0) || {color: ''}).color}}
           className={getClassName(account)}
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
@@ -134,7 +134,7 @@ export default connect(
     currentAccentID: (state.accounts.find(account => !!account.visible) || {accentID: 0}).accentID,
     hasCreatedAccount: state.accounts.some(account => account.userID !== undefined),
     hasReachedLimitOfAccounts: state.accounts.length >= 3,
-    isAddingAccount: state.accounts.length && state.accounts.some(account => account.userID === undefined),
+    isAddingAccount: state.accounts.length > 0 && state.accounts.some(account => account.userID === undefined),
     isEditAccountMenuVisible: state.contextMenuState.isEditAccountMenuVisible,
   }),
   (dispatch: ThunkDispatch): DispatchProps => ({

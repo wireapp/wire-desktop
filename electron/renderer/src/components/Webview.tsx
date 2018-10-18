@@ -82,7 +82,7 @@ class Webview extends React.Component<Props, State> {
   }
 
   render() {
-    const {visible, partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props; // eslint-disable-line no-unused-vars
+    const {visible, partition, src, onPageTitleUpdated, onIpcMessage, ...validProps} = this.props;
     return <webview {...validProps} ref={webview => (this.webview = webview as WebviewTag)} />;
   }
 }

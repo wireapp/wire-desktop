@@ -21,7 +21,7 @@ import throttle = require('lodash/throttle');
 import * as React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
-import {applyMiddleware, createStore} from 'redux';
+import {Store, applyMiddleware, createStore} from 'redux';
 import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 
@@ -37,10 +37,10 @@ const persistedState = loadState();
 const middleware = [thunk];
 
 if (process.env.NODE_ENV !== 'production') {
-  middleware.push(logger);
+  middleware.push(logger as any);
 }
 
-const store = createStore<RootState>(appStore, persistedState as RootState, applyMiddleware(...middleware));
+const store: Store<RootState> = createStore(appStore, persistedState as RootState, applyMiddleware(...middleware));
 
 store.subscribe(
   throttle(() => {

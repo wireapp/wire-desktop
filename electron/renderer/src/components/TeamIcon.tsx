@@ -23,7 +23,7 @@ import {AccentColor} from '@wireapp/commons';
 import {Account} from '../../interfaces/';
 
 export interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  accentID: number;
+  accentID?: number;
   account: Account;
 }
 
@@ -33,7 +33,7 @@ const TeamIcon: React.SFC<Props> = ({account, accentID}) => (
   <div className="TeamIcon" title={account.name} data-uie-name="item-team" data-uie-value={account.name}>
     {account.visible && (
       <svg
-        style={{fill: AccentColor.getById(accentID).color || ''}}
+        style={{fill: (AccentColor.getById(accentID || 0) || {color: ''}).color}}
         width="38"
         height="38"
         viewBox="0 0 38 38"

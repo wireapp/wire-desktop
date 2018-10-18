@@ -9,6 +9,7 @@
 /keys
 /electron/renderer-dist
 /electron/dist
+/electron/node_modules
 /temp
 /wrap
 app.asar

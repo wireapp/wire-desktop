@@ -4,6 +4,6 @@
     "outDir": "electron/renderer-dist",
     "rootDir": "electron/renderer"
   },
-  "exclude": ["electron/src", "electron/node_modules", "node_modules"],
+  "exclude": ["electron/dist", "electron/renderer-dist", "electron/src", "node_modules", "electron/node_modules"],
   "extends": "./tsconfig.json"
 }

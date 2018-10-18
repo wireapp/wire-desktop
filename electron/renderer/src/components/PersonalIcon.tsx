@@ -38,7 +38,10 @@ const PersonalIcon: React.SFC<Props> = ({account, accentID, onClick}) => (
     data-uie-value={account.name}
   >
     {account.visible && (
-      <div className="PersonalIcon-border" style={{borderColor: AccentColor.getById(accentID).color}} />
+      <div
+        className="PersonalIcon-border"
+        style={{borderColor: (AccentColor.getById(accentID || 0) || {color: ''}).color}}
+      />
     )}
     <div className="PersonalIcon-inner">{account.picture && <img src={account.picture} />}</div>
   </div>

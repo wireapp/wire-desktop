@@ -39,7 +39,7 @@ export enum ActionCreator {
 }
 
 export interface Account {
-  accentID?: string;
+  accentID?: number;
   badgeCount: number;
   id: string;
   isAdding: boolean;
