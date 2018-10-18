@@ -79,14 +79,4 @@ interface z {
 interface wire {
   app: any;
 }
-
-interface AccountInfo {
-  accentID: number;
-  name: string;
-  picture: string;
-  teamID: string;
-  teamRole: string;
-  userID: string;
-}
-
-export {AccountInfo, wire, z};
+export {wire, z};

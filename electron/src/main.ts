@@ -97,7 +97,7 @@ const bindIpcEvents = () => {
       .catch(error => event.sender.send('google-auth-error', error));
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event: IpcMessageEvent, accountID: string, sessionID: string) => {
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event: IpcMessageEvent, accountID: string, sessionID?: string) => {
     // delete webview partition
     try {
       if (sessionID) {

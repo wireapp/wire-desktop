@@ -18,8 +18,9 @@
  */
 
 import * as uuid from 'uuid/v4';
-import {Action, ActionCreator, ActionFunction} from '../../interfaces/';
+import {Action, ActionCreator} from '../../interfaces/';
 import {verifyObjectProperties} from '../lib/verifyObjectProperties';
+import {ThunkAction} from '../reducers';
 
 export const addAccount = (withSession = true): Action => ({
   sessionID: withSession ? uuid() : undefined,
@@ -36,14 +37,14 @@ export const switchAccount = (id: string): Action => ({
   type: ActionCreator.SWITCH_ACCOUNT,
 });
 
-export const updateAccount = (id: string, data: any): Action => ({
+export const updateAccount = (id: string, data: Partial<Account>): Action => ({
   data,
   id,
   type: ActionCreator.UPDATE_ACCOUNT,
 });
 
-export const updateAccountLifecycle = (id: string, data: any): Action => ({
-  data,
+export const updateAccountLifecycle = (id: string, channel: string): Action => ({
+  data: channel,
   id,
   type: ActionCreator.UPDATE_ACCOUNT_LIFECYCLE,
 });
@@ -63,8 +64,8 @@ export const toggleEditAccountMenuVisibility = (
   y: number,
   accountId: string,
   sessionId: string,
-  lifecycle,
-  isAtLeastAdmin
+  lifecycle: boolean | string,
+  isAtLeastAdmin: boolean
 ): Action => ({
   payload: {
     accountId,
@@ -76,7 +77,7 @@ export const toggleEditAccountMenuVisibility = (
   type: ActionCreator.TOGGLE_EDIT_ACCOUNT_VISIBILITY,
 });
 
-export const abortAccountCreation = (id: string): ActionFunction => {
+export const abortAccountCreation = (id: string): ThunkAction => {
   return (dispatch, getState) => {
     dispatch(deleteAccount(id));
 
@@ -91,8 +92,8 @@ export const abortAccountCreation = (id: string): ActionFunction => {
   };
 };
 
-export const addAccountWithSession = (): ActionFunction => {
-  return (dispatch, getState): void => {
+export const addAccountWithSession = (): ThunkAction => {
+  return (dispatch, getState) => {
     const hasReachedAccountLimit = getState().accounts.length >= 3;
 
     if (hasReachedAccountLimit) {
@@ -103,7 +104,7 @@ export const addAccountWithSession = (): ActionFunction => {
   };
 };
 
-export const updateAccountData = (id: string, data: any): ActionFunction => {
+export const updateAccountData = (id: string, data: Partial<Account>): ThunkAction => {
   return (dispatch): void => {
     const validatedAccountData = verifyObjectProperties(data, {
       accentID: 'Number',
@@ -122,7 +123,7 @@ export const updateAccountData = (id: string, data: any): ActionFunction => {
   };
 };
 
-export const updateAccountBadgeCount = (id: string, count: number): ActionFunction => {
+export const updateAccountBadgeCount = (id: string, count: number): ThunkAction => {
   return (dispatch, getState) => {
     const account = getState().accounts.find(acc => acc.id === id);
 

@@ -33,7 +33,7 @@ const TeamIcon: React.SFC<Props> = ({account, accentID}) => (
   <div className="TeamIcon" title={account.name} data-uie-name="item-team" data-uie-value={account.name}>
     {account.visible && (
       <svg
-        style={{fill: AccentColor.getById(accentID).color}}
+        style={{fill: AccentColor.getById(accentID).color || ''}}
         width="38"
         height="38"
         viewBox="0 0 38 38"

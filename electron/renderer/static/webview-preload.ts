@@ -26,7 +26,7 @@ import * as config from '../../dist/js/config';
 import * as environment from '../../dist/js/environment';
 import {EVENT_TYPE} from '../../dist/js/lib/eventType';
 
-import {AccountInfo} from '../interfaces';
+import {Account} from '../interfaces';
 
 const app = remote.app;
 
@@ -62,7 +62,7 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
-  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info: AccountInfo) => {
+  amplify.subscribe(z.event.WebApp.TEAM.INFO, (info: Partial<Account>) => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 };

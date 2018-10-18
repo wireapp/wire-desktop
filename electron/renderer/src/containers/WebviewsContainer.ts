@@ -18,7 +18,7 @@
  */
 
 import {connect} from 'react-redux';
-import {RootState} from '../reducers/';
+import {RootState, ThunkDispatch} from '../reducers/';
 
 import {
   abortAccountCreation,
@@ -29,15 +29,23 @@ import {
 } from '../actions';
 import Webviews from '../components/Webviews';
 
+export interface DispatchProps {
+  abortAccountCreation: (id: string) => void;
+  switchAccount: (id: string) => void;
+  updateAccountBadgeCount: (id: string, count: number) => void;
+  updateAccountData: (id: string, data: Partial<Account>) => void;
+  updateAccountLifecycle: (id: string, channel: string) => void;
+}
+
 const WebviewsContainer = connect(
   (state: RootState) => ({accounts: state.accounts}),
-  {
-    abortAccountCreation,
-    switchAccount,
-    updateAccountBadgeCount,
-    updateAccountData,
-    updateAccountLifecycle,
-  }
+  (dispatch: ThunkDispatch): DispatchProps => ({
+    abortAccountCreation: (id: string) => dispatch(abortAccountCreation(id)),
+    switchAccount: (id: string) => dispatch(switchAccount(id)),
+    updateAccountBadgeCount: (id: string, count: number) => dispatch(updateAccountBadgeCount(id, count)),
+    updateAccountData: (id: string, data: Partial<Account>) => dispatch(updateAccountData(id, data)),
+    updateAccountLifecycle: (id: string, channel: string) => dispatch(updateAccountLifecycle(id, channel)),
+  })
 )(Webviews);
 
 export default WebviewsContainer;

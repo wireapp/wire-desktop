@@ -23,7 +23,7 @@ export interface ContextMenuState {
   accountId: string;
   isAtLeastAdmin: boolean;
   isEditAccountMenuVisible: boolean;
-  lifecycle: boolean;
+  lifecycle: boolean | string;
   position: {x: number; y: number};
   sessionId: string;
 }

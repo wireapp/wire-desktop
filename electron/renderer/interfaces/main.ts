@@ -42,14 +42,13 @@ export interface Account {
   accentID?: string;
   badgeCount: number;
   id: string;
-  isAdding?: boolean;
+  isAdding: boolean;
   lifecycle?: string;
   name?: string;
   picture?: string;
   sessionID?: string;
   teamID?: string;
+  teamRole?: string;
   userID?: string;
-  visible?: boolean;
+  visible: boolean;
 }
-
-export type ActionFunction = (dispatch: any, getState: any) => void;

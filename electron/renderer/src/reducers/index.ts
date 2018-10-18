@@ -18,6 +18,9 @@
  */
 
 import {combineReducers} from 'redux';
+import {ThunkAction as ReduxThunkAction, ThunkDispatch as ReduxThunkDispatch} from 'redux-thunk';
+
+import {Action} from '../../interfaces';
 import accountReducer, {AccountState} from './accountReducer';
 import contextMenuReducer, {ContextMenuState} from './contextMenuReducer';
 
@@ -25,6 +28,9 @@ export interface RootState {
   accounts: AccountState;
   contextMenuState: ContextMenuState;
 }
+
+export type ThunkAction<T = void> = ReduxThunkAction<T, RootState, void, Action>;
+export type ThunkDispatch = ReduxThunkDispatch<RootState, void, Action>;
 
 const store = combineReducers<RootState>({
   accounts: accountReducer,

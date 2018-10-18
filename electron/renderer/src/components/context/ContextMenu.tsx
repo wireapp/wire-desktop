@@ -20,7 +20,7 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {setAccountContextHidden} from '../../actions/';
-import {RootState} from '../../reducers/';
+import {RootState, ThunkDispatch} from '../../reducers/';
 
 import './ContextMenu.css';
 
@@ -125,5 +125,7 @@ export default connect(
   (state: RootState) => ({
     position: state.contextMenuState.position,
   }),
-  {setAccountContextHidden}
+  (dispatch: ThunkDispatch): DispatchProps => ({
+    setAccountContextHidden: () => dispatch(setAccountContextHidden()),
+  })
 )(ContextMenu);

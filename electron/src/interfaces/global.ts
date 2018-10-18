@@ -25,7 +25,7 @@ declare global {
     locStrings: Supportedi18nStrings;
     locStringsDefault: Supportedi18nStrings;
     sendBadgeCount: (count: number) => void;
-    sendDeleteAccount: (accountId: string, sessionId: string) => void;
+    sendDeleteAccount: (accountId: string, sessionId?: string) => void;
     sendLogoutAccount: (accountId: string) => void;
   }
 

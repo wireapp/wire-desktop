@@ -17,6 +17,7 @@
  *
  */
 
+import {UrlUtil} from '@wireapp/commons';
 import {IpcMessageEvent} from 'electron';
 import * as React from 'react';
 import {Account} from '../../interfaces/';
@@ -30,11 +31,11 @@ export interface Props extends React.HTMLAttributes<HTMLDataListElement> {
 }
 
 export interface DispatchProps {
-  updateAccountBadgeCount: (id: string, count: number) => void;
-  updateAccountData: (id: string, data: number) => void;
-  switchAccount: (id: string) => void;
-  updateAccountLifecycle: (id: string, channel: string) => void;
   abortAccountCreation: (id: string) => void;
+  switchAccount: (id: string) => void;
+  updateAccountBadgeCount: (id: string, count: number) => void;
+  updateAccountData: (id: string, data: Partial<Account>) => void;
+  updateAccountLifecycle: (id: string, channel: string) => void;
 }
 
 export interface State {
@@ -58,7 +59,7 @@ class Webviews extends React.Component<CombinedProps, State> {
     this.deleteWebview = this.deleteWebview.bind(this);
   }
 
-  public componentWillReceiveProps(nextProps) {
+  public componentWillReceiveProps(nextProps: CombinedProps) {
     this.setState({canDelete: this.getCanDeletes(nextProps.accounts)});
   }
 
@@ -82,8 +83,8 @@ class Webviews extends React.Component<CombinedProps, State> {
     );
   }
 
-  private getEnvironmentUrl(account: Account, forceLogin?: boolean) {
-    const envParam = decodeURIComponent(new URL(window.location.href).searchParams.get('env'));
+  private getEnvironmentUrl(account: Account, forceLogin?: boolean): string {
+    const envParam = decodeURIComponent(UrlUtil.getURLParameter('env'));
     const url = new URL(envParam);
 
     // pass account id to webview so we can access it in the preload script
@@ -94,7 +95,6 @@ class Webviews extends React.Component<CombinedProps, State> {
       url.pathname = isLocalhost ? '/page/auth.html' : '/auth';
       url.hash = '#login';
     }
-
     return url.href;
   }
 

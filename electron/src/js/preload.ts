@@ -57,7 +57,7 @@ const setupIpcInterface = (): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
   };
 
-  window.sendDeleteAccount = (accountID: string, sessionID: string): void => {
+  window.sendDeleteAccount = (accountID: string, sessionID?: string): void => {
     const accountWebview = getWebviewById(accountID);
     accountWebview.getWebContents().session.clearStorageData();
     ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, accountID, sessionID);

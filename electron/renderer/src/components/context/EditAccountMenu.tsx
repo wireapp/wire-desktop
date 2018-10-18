@@ -22,23 +22,25 @@ import {connect} from 'react-redux';
 import {abortAccountCreation, switchAccount} from '../../actions';
 import * as EVENT_TYPE from '../../lib/eventType';
 import {getText} from '../../lib/locale';
-import {RootState} from '../../reducers/';
+import {RootState, ThunkDispatch} from '../../reducers/';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 
 export interface Props extends React.HTMLAttributes<HTMLDivElement> {
   accountId: string;
   isAtLeastAdmin: boolean;
-  lifecycle: any;
+  lifecycle: boolean | string;
   sessionId: string;
 }
 
 export interface DispatchProps {
-  abortAccountCreation;
-  switchAccount;
+  abortAccountCreation: (id: string) => void;
+  switchAccount: (id: string) => void;
 }
 
-const EditAccountMenu: React.SFC<Props> = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
+export type CombinedProps = Props & DispatchProps;
+
+const EditAccountMenu: React.SFC<CombinedProps> = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
   return (
     <ContextMenu>
       {isAtLeastAdmin && (
@@ -75,8 +77,8 @@ export default connect(
     lifecycle: state.contextMenuState.lifecycle,
     sessionId: state.contextMenuState.sessionId,
   }),
-  {
-    abortAccountCreation,
-    switchAccount,
-  }
+  (dispatch: ThunkDispatch): DispatchProps => ({
+    abortAccountCreation: (id: string) => dispatch(abortAccountCreation(id)),
+    switchAccount: (id: string) => dispatch(switchAccount(id)),
+  })
 )(EditAccountMenu);

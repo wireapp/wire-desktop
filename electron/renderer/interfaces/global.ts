@@ -27,6 +27,9 @@ declare global {
     isMac: boolean;
     locStrings: Supportedi18nStrings;
     locStringsDefault: Supportedi18nStrings;
+    sendBadgeCount: (count: number) => void;
+    sendDeleteAccount: (accountId: string, sessionId?: string) => void;
+    sendLogoutAccount: (accountId: string) => void;
     wire: wire;
   }
 

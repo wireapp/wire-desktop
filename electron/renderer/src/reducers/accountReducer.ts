@@ -65,7 +65,7 @@ const accountReducer = (state = [createAccount()], action: Action): AccountState
     case ActionCreator.UPDATE_ACCOUNT_BADGE: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
-        return isMatchingAccount ? {...account, badgeCount: action.count} : account;
+        return isMatchingAccount ? {...account, badgeCount: action.count || 0} : account;
       });
     }
 

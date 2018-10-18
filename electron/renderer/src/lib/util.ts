@@ -17,12 +17,10 @@
  *
  */
 
-import * as React from 'react';
-
-export const noop = (event: React.SyntheticEvent) => {};
+export const noop = (event: any) => {};
 
 export const preventFocus = (fn = noop) => {
-  return (event: React.SyntheticEvent) => {
+  return (event: any) => {
     event.stopPropagation();
     event.preventDefault();
     fn(event);
