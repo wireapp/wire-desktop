@@ -1,7 +1,6 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
-    "@wireapp/commons": "0.7.2",
     "auto-launch": "5.0.5",
     "debug": "4.1.0",
     "electron-window-state": "5.0.2",
@@ -32,8 +31,6 @@
     "@types/debug": "0.0.31",
     "@types/file-url": "2.0.0",
     "@types/fs-extra": "5.0.4",
-    "@types/jasmine": "2.8.9",
-    "@types/jest": "23.3.5",
     "@types/lodash": "4.14.117",
     "@types/minimist": "1.2.0",
     "@types/node": "10.11.7",
