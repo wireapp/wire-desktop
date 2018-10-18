@@ -18,7 +18,7 @@
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-redux": "5.0.7",
-    "redux": "4.0.1",
+    "redux": "3.7.2",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
     "request": "2.88.0",
@@ -37,9 +37,6 @@
     "@types/lodash": "4.14.117",
     "@types/minimist": "1.2.0",
     "@types/node": "10.11.7",
-    "@types/react-dom": "16.0.9",
-    "@types/react-redux": "6.0.9",
-    "@types/redux-logger": "3.0.6",
     "@types/request": "2.47.1",
     "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5"
