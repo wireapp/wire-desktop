@@ -33,8 +33,8 @@ const App = props => (
       onKeyDown={event => {
         const modKeyPressed = (window.isMac && event.metaKey) || event.ctrlKey;
         const isValidKey = ['1', '2', '3'].includes(event.key);
-        if (modKeyPressed && isValidKey && props.accountIds[event.keyCode - 1]) {
-          props.switchAccount(props.accountIds[event.keyCode - 1]);
+        if (modKeyPressed && isValidKey && props.accountIds[event.key - 1]) {
+          props.switchAccount(props.accountIds[event.key - 1]);
         }
       }}
     >
