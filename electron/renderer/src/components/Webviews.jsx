@@ -60,8 +60,10 @@ class Webviews extends Component {
   }
 
   _getEnvironmentUrl(account, forceLogin) {
-    const envParam = decodeURIComponent(new URL(window.location.href).searchParams.get('env'));
-    const url = new URL(envParam);
+    const currentLocation = new URL(window.location.href);
+    const envParam = currentLocation.searchParams.get('env');
+    const decodedEnvParam = decodeURIComponent(envParam);
+    const url = new URL(decodedEnvParam);
 
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);

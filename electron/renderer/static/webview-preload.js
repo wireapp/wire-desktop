@@ -150,7 +150,8 @@ const replaceGoogleAuth = () => {
 };
 
 const enableFileLogging = () => {
-  const id = new URL(window.location.href).searchParams.get('id');
+  const currentLocation = new URL(window.location.href);
+  const id = currentLocation.searchParams.get('id');
 
   if (id) {
     const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);

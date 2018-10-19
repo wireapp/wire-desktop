@@ -118,6 +118,7 @@ window.addEventListener(
 
     if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
       event.preventDefault();
+
       createTextMenu();
       textMenu.popup(remote.getCurrentWindow());
     } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
@@ -133,6 +134,7 @@ window.addEventListener(
       defaultMenu.popup(remote.getCurrentWindow());
     } else if (element.classList.contains('text')) {
       event.preventDefault();
+
       copyContext = window.getSelection().toString() || element.innerText.trim();
       defaultMenu.popup(remote.getCurrentWindow());
     } else {

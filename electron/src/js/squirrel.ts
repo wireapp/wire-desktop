@@ -38,16 +38,18 @@ const updateDotExe = path.join(rootFolder, 'Update.exe');
 
 const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
+const windowsAppData = process.env.APPDATA || '';
 
 const taskbarLink = path.resolve(
-  process.env.APPDATA || '',
+  windowsAppData,
   'Microsoft',
   'Internet Explorer',
   'Quick Launch',
   'User Pinned',
-  'TaskBar',
-  linkName
+  'TaskBar'
 );
+
+const shortcutLink = path.resolve(taskbarLink, linkName);
 
 const SQUIRREL_EVENT = {
   CREATE_SHORTCUT: '--createShortcut',
@@ -109,7 +111,7 @@ const createDesktopShortcut = (callback?: SpawnCallback): void => {
 
 const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void): void => {
   spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
-    fs.unlink(taskbarLink, callback)
+    fs.unlink(shortcutLink, callback)
   );
 };
 
