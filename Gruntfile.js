@@ -368,25 +368,25 @@ module.exports = function(grunt) {
     const options = this.options();
 
     [
-      '/Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
-      '/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
-      '/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libnode.dylib',
-      '/Contents/Frameworks/Electron Framework.framework/',
-      `/Contents/Frameworks/${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
-      `/Contents/Frameworks/${options.name} Helper.app/`,
-      `/Contents/Frameworks/${options.name} Helper EH.app/Contents/MacOS/${options.name} Helper EH`,
-      `/Contents/Frameworks/${options.name} Helper EH.app/`,
-      `/Contents/Frameworks/${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
-      `/Contents/Frameworks/${options.name} Helper NP.app/`,
-    ].forEach(file =>
-      execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}${file}'`)
-    );
+      '/Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
+      '/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
+      '/Frameworks/Electron Framework.framework/Versions/A/Libraries/libnode.dylib',
+      '/Frameworks/Electron Framework.framework/',
+      `/Frameworks/${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
+      `/Frameworks/${options.name} Helper.app/`,
+      `/Frameworks/${options.name} Helper EH.app/Contents/MacOS/${options.name} Helper EH`,
+      `/Frameworks/${options.name} Helper EH.app/`,
+      `/Frameworks/${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
+      `/Frameworks/${options.name} Helper NP.app/`,
+      `/Library/LoginItems/${options.name} Login Helper.app/Contents/MacOS/${options.name} Login Helper`,
+      `/Library/LoginItems/${options.name} Login Helper.app/`,
+    ].forEach(file => {
+      const fileName = `${options.dir}/Contents${file}`;
+      execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${fileName}'`);
+    });
 
-    execSync(
-      `codesign -fs '${options.sign.app}' --entitlements '${options.child}' '${options.dir}/Contents/MacOS/${
-        options.name
-      }'`
-    );
+    const appName = `${options.dir}/Contents/MacOS/${options.name}`;
+    execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.child}' '${appName}'`);
     execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.parent}' '${options.dir}'`);
     execSync(
       `productbuild --component '${options.dir}' /Applications --sign '${options.sign.package}' '${options.name}.pkg'`
