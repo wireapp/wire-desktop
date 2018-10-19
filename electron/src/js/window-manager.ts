@@ -22,7 +22,8 @@ import {BrowserWindow} from 'electron';
 let primaryWindowId: number | undefined;
 
 const getPrimaryWindow = () => {
-  return primaryWindowId ? BrowserWindow.fromId(primaryWindowId) : BrowserWindow.getAllWindows()[0];
+  const [primaryWindow] = primaryWindowId ? [BrowserWindow.fromId(primaryWindowId)] : BrowserWindow.getAllWindows();
+  return primaryWindow;
 };
 
 const setPrimaryWindowId = (newPrimaryWindowId: number): void => {

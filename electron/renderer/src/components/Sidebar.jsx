@@ -35,9 +35,9 @@ import {
 import './Sidebar.css';
 
 const centerOfEventTarget = event => {
-  const cRect = event.currentTarget.getBoundingClientRect();
-  const x = cRect.left + cRect.width / 2;
-  const y = cRect.top + cRect.height / 2;
+  const clientRectangle = event.currentTarget.getBoundingClientRect();
+  const x = clientRectangle.left + clientRectangle.width / 2;
+  const y = clientRectangle.top + clientRectangle.height / 2;
   return {x, y};
 };
 
@@ -105,7 +105,7 @@ export default connect(
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
     hasReachedLimitOfAccounts: accounts.length >= 3,
-    isAddingAccount: accounts.length > 0 && accounts.some(account => account.userID === undefined),
+    isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
     isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
   }),
   {
