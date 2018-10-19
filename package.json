@@ -74,7 +74,7 @@
     "fix:other": "npm run prettier -- --write",
     "fix": "npm run fix:js && npm run fix:other",
     "jest": "jest",
-    "postinstall": "cd electron && electron-builder install-app-deps",
+    "postinstall": "cd electron && npm install && electron-builder install-app-deps",
     "prestart": "npm run bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
     "start:dev": "npm start -- --env=https://wire-webapp-dev.zinfra.io",
