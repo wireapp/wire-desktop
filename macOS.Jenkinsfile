@@ -50,7 +50,9 @@ node('master') {
 
   stage('Create SHA256 checksums') {
     withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-      sh 'cd wrap/dist && ../../bin/macos-checksums.sh'
+      if(production) {
+        sh 'bin/macos-checksums.sh'
+      }
     }
   }
 
