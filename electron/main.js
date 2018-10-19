@@ -416,7 +416,7 @@ lifecycle.checkForUpdate();
 
 // Stop further execution on update to prevent second tray icon
 if (!lifecycle.shouldQuit) {
-  appInit.fixUnityIcon();
+  appInit.addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
   renameLogFile();
