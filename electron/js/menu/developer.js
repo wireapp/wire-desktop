@@ -77,7 +77,7 @@ const createEnvironmentTemplate = env => {
 };
 
 const versionTemplate = {
-  label: `Wire Version ${config.VERSION}`,
+  label: `Wire Version ${config.VERSION || 'Development'}`,
 };
 
 const chromeVersionTemplate = {
