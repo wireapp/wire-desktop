@@ -36,9 +36,9 @@ import './Sidebar.css';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
-  const x = clientRectangle.left + clientRectangle.width / 2;
-  const y = clientRectangle.top + clientRectangle.height / 2;
-  return {x, y};
+  const centerX = clientRectangle.left + clientRectangle.width / 2;
+  const centerY = clientRectangle.top + clientRectangle.height / 2;
+  return {x: centerX, y: centerY};
 };
 
 const getClassName = account => {
