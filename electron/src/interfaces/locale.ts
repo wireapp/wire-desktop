@@ -24,8 +24,6 @@ export type i18nLanguageIdentifier = keyof typeof i18nStrings;
 
 export type Supportedi18nLanguage = keyof typeof SupportedLanguages;
 
-export type Supportedi18nLanguageObject = {[id in Supportedi18nLanguage]: Supportedi18nStrings} & {
-  en: typeof i18nStrings;
-};
+export type Supportedi18nLanguageObject = {[id in Supportedi18nLanguage]: Supportedi18nStrings};
 
 export type Supportedi18nStrings = Partial<typeof i18nStrings>;
