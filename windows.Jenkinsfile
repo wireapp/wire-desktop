@@ -108,14 +108,6 @@ node('node160') {
         bat 'cd wrap\\prod\\Wire-win32-ia32\\ && python ..\\..\\..\\bin\\github_draft.py'
       }
     }
-
-    stage('Test') {
-      try {
-        build job: 'Wrapper_Windows_Tests', parameters: [string(name: 'WRAPPER_BUILD_ID', value: "${BUILD_ID}")], wait: false
-      } catch(e) {
-        wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} Unable to trigger tests for ${version}** see: ${JOB_URL}"
-      }
-    }
   }
 
   wireSend secret: "${jenkinsbot_secret}", message: " **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
