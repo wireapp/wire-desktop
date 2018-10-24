@@ -15,7 +15,7 @@
     "prop-types": "15.6.2",
     "raygun": "0.10.0",
     "react": "16.6.0",
-    "react-dom": "16.5.2",
+    "react-dom": "16.6.0",
     "react-redux": "5.0.7",
     "redux": "3.7.2",
     "redux-logger": "3.0.6",
