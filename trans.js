@@ -225,7 +225,7 @@ program
   .option('-k, --api-key [key]', 'Set the Crowdin API key (also available as global variable `CROWDIN_API_KEY)')
   .option('-f, --files [dir]', 'Set the dir for locale files', DEFAULT_LOCALE_SOURCE)
   .action(command => {
-    const apiKey = command.parent['api-key'] || process.env.CROWDIN_API_KEY;
+    const apiKey = command.parent.apiKey || process.env.CROWDIN_API_KEY;
     const downloadDir = command.files;
     console.log({apiKey, downloadDir});
 
