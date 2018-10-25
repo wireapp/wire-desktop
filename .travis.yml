@@ -22,7 +22,13 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-4.8
+            - g++-4.9
+      env:
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
 git:
   submodules: false
@@ -32,6 +38,9 @@ cache:
     - $HOME/.npm
     - node_modules
     - electron/node_modules
+
+before_install:
+  - eval "${MATRIX_EVAL}"
 
 install:
   - npm install
