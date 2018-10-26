@@ -3,6 +3,6 @@ base_path: .
 
 files:
   -
-    source: '/electron/src/locale/strings.js'
-    translation: '/electron/src/locale/strings-%two_letters_code%.js'
+    source: '/electron/locale/strings.js'
+    translation: '/electron/locale/strings-%two_letters_code%.js'
     update_option: 'update_as_unapproved'

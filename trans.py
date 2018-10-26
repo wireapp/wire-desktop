@@ -53,7 +53,7 @@ os.system('crowdin-cli --identity=keys/crowdin.yaml upload sources')
 os.system('crowdin-cli --identity=keys/crowdin.yaml download')
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-root = 'electron/src/locale/'
+root = 'electron/locale/'
 
 
 def get_locale(filename):
