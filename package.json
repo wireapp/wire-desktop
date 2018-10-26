@@ -105,6 +105,6 @@
     "start": "npm run prestart && electron electron --inspect --devtools --enable-logging",
     "test:main": "electron-mocha --reporter spec tests/main",
     "test:react": "jest",
-    "test": "npm run lint && npm run test:react && npm run test:main"
+    "test": "npm run lint && npm run build:ts && npm run test:react && npm run test:main"
   }
 }
