@@ -18,12 +18,76 @@
  */
 
 import {SUPPORTED_LANGUAGES as SupportedLanguages} from '../locale/locale';
-import {strings as i18nStrings} from '../locale/strings';
 
-export type i18nLanguageIdentifier = keyof typeof i18nStrings;
+export type i18nLanguageIdentifier =
+  | 'aboutReleases'
+  | 'aboutUpdate'
+  | 'aboutVersion'
+  | 'aboutWebappVersion'
+  | 'menuAbout'
+  | 'menuAddPeople'
+  | 'menuArchive'
+  | 'menuBlock'
+  | 'menuCall'
+  | 'menuClose'
+  | 'menuConversation'
+  | 'menuCopy'
+  | 'menuCut'
+  | 'menuDelete'
+  | 'menuEdit'
+  | 'menuFullScreen'
+  | 'menuHelp'
+  | 'menuHideOthers'
+  | 'menuHideWire'
+  | 'menuLeave'
+  | 'menuLegal'
+  | 'menuLicense'
+  | 'menuLocale'
+  | 'menuMinimize'
+  | 'menuNextConversation'
+  | 'menuNoSuggestions'
+  | 'menuPaste'
+  | 'menuPeople'
+  | 'menuPing'
+  | 'menuPreferences'
+  | 'menuPreviousConversation'
+  | 'menuPrivacy'
+  | 'menuQuit'
+  | 'menuRedo'
+  | 'menuSavePictureAs'
+  | 'menuSelectAll'
+  | 'menuServices'
+  | 'menuSettings'
+  | 'menuShowAll'
+  | 'menuShowHide'
+  | 'menuSignOut'
+  | 'menuSpelling'
+  | 'menuStart'
+  | 'menuStartup'
+  | 'menuSupport'
+  | 'menuUnarchive'
+  | 'menuUndo'
+  | 'menuVideoCall'
+  | 'menuView'
+  | 'menuWindow'
+  | 'menuWireURL'
+  | 'restartLater'
+  | 'restartLocale'
+  | 'restartNeeded'
+  | 'restartNow'
+  | 'trayOpen'
+  | 'trayQuit'
+  | 'unreadMessages'
+  | 'wrapperAddAccount'
+  | 'wrapperCreateTeam'
+  | 'wrapperLogOut'
+  | 'wrapperManageTeam'
+  | 'wrapperRemoveAccount';
+
+export type i18nStrings = {[identifier in i18nLanguageIdentifier]: string};
+
+export type Supportedi18nStrings = Partial<i18nStrings>;
 
 export type Supportedi18nLanguage = keyof typeof SupportedLanguages;
 
 export type Supportedi18nLanguageObject = {[id in Supportedi18nLanguage]: Supportedi18nStrings};
-
-export type Supportedi18nStrings = Partial<typeof i18nStrings>;

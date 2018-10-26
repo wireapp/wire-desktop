@@ -21,30 +21,30 @@ import * as Electron from 'electron';
 import {settings} from '../js/settings/ConfigurationPersistence';
 import {SettingsType} from '../js/settings/SettingsType';
 
-import {strings as cs} from './strings-cs';
-import {strings as da} from './strings-da';
-import {strings as de} from './strings-de';
-import {strings as el} from './strings-el';
-import {strings as en} from './strings-en';
-import {strings as es} from './strings-es';
-import {strings as et} from './strings-et';
-import {strings as fi} from './strings-fi';
-import {strings as fr} from './strings-fr';
-import {strings as hr} from './strings-hr';
-import {strings as hu} from './strings-hu';
-import {strings as it} from './strings-it';
-import {strings as lt} from './strings-lt';
-import {strings as nl} from './strings-nl';
-import {strings as pl} from './strings-pl';
-import {strings as pt} from './strings-pt';
-import {strings as ro} from './strings-ro';
-import {strings as ru} from './strings-ru';
-import {strings as sk} from './strings-sk';
-import {strings as sl} from './strings-sl';
-import {strings as tr} from './strings-tr';
-import {strings as uk} from './strings-uk';
-
 import {Supportedi18nLanguage, Supportedi18nLanguageObject, i18nLanguageIdentifier} from '../interfaces/';
+
+const cs = require('./strings-cs');
+const da = require('./strings-da');
+const de = require('./strings-de');
+const el = require('./strings-el');
+const en = require('./strings-en');
+const es = require('./strings-es');
+const et = require('./strings-et');
+const fi = require('./strings-fi');
+const fr = require('./strings-fr');
+const hr = require('./strings-hr');
+const hu = require('./strings-hu');
+const it = require('./strings-it');
+const lt = require('./strings-lt');
+const nl = require('./strings-nl');
+const pl = require('./strings-pl');
+const pt = require('./strings-pt');
+const ro = require('./strings-ro');
+const ru = require('./strings-ru');
+const sk = require('./strings-sk');
+const sl = require('./strings-sl');
+const tr = require('./strings-tr');
+const uk = require('./strings-uk');
 
 const app = Electron.app || Electron.remote.app;
 
