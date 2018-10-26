@@ -125,7 +125,7 @@ const unzipFiles = async (zipFilePath, outputDir) => {
 
   const zipData = await zip.loadAsync(zipFile);
 
-  const localeRegex = new RegExp('electron/.*/strings-([a-z]{2}).js$');
+  const localeRegex = new RegExp(`electron${path.sep}.*${path.sep}strings-([a-z]{2}).js$`);
 
   zipData.forEach((filePath, entry) => {
     const localeMatch = filePath.match(localeRegex);
@@ -142,7 +142,7 @@ const unzipFiles = async (zipFilePath, outputDir) => {
 
       const resolvedFilePath = path
         .join(outputDir, filePath)
-        .replace('electron/locale/', '')
+        .replace(`electron${path.sep}locale${path.sep}`, '')
         .replace('.js', '.ts');
 
       const content = await entry.async('text');
