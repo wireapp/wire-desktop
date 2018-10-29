@@ -19,7 +19,7 @@
 
 'use strict';
 
-const certificateUtils = require('../electron/js/certificateUtils');
+const certificateUtils = require('../electron/dist/js/certificateUtils');
 const https = require('https');
 
 const assert = require('assert');

@@ -17,12 +17,12 @@
  *
  */
 
-const config = require('../../js/config');
-const environment = require('../../js/environment');
+const config = require('../../dist/js/config');
+const environment = require('../../dist/js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
-const EVENT_TYPE = require('../../js/lib/eventType');
+const {EVENT_TYPE} = require('../../dist/js/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
@@ -150,7 +150,8 @@ const replaceGoogleAuth = () => {
 };
 
 const enableFileLogging = () => {
-  const id = new URL(window.location).searchParams.get('id');
+  const currentLocation = new URL(window.location.href);
+  const id = currentLocation.searchParams.get('id');
 
   if (id) {
     const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
@@ -194,7 +195,7 @@ process.once('loaded', () => {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
-  global.openGraph = require('../../js/lib/openGraph');
+  global.openGraph = require('../../dist/js/lib/openGraph');
   global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
   enableFileLogging();
 });
@@ -209,6 +210,6 @@ window.addEventListener('DOMContentLoaded', () => {
     reportWebappVersion();
 
     // include context menu
-    require('../../js/menu/context');
+    require('../../dist/js/menu/context');
   });
 });

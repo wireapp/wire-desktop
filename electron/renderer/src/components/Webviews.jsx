@@ -26,9 +26,9 @@ class Webviews extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      canDelete: this.getCanDeletes(props.accounts),
+      canDelete: this._getCanDeletes(props.accounts),
     };
-    this.getCanDeletes = this.getCanDeletes.bind(this);
+    this._getCanDeletes = this._getCanDeletes.bind(this);
     this._onUnreadCountUpdated = this._onUnreadCountUpdated.bind(this);
     this._onIpcMessage = this._onIpcMessage.bind(this);
     this._onWebviewClose = this._onWebviewClose.bind(this);
@@ -36,7 +36,7 @@ class Webviews extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({canDelete: this.getCanDeletes(nextProps.accounts)});
+    this.setState({canDelete: this._getCanDeletes(nextProps.accounts)});
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -49,7 +49,7 @@ class Webviews extends Component {
     return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
   }
 
-  getCanDeletes(accounts) {
+  _getCanDeletes(accounts) {
     return accounts.reduce(
       (accumulator, account) => ({
         ...accumulator,
@@ -60,8 +60,10 @@ class Webviews extends Component {
   }
 
   _getEnvironmentUrl(account, forceLogin) {
-    const envParam = decodeURIComponent(new URL(window.location).searchParams.get('env'));
-    const url = new URL(envParam);
+    const currentLocation = new URL(window.location.href);
+    const envParam = currentLocation.searchParams.get('env');
+    const decodedEnvParam = decodeURIComponent(envParam);
+    const url = new URL(decodedEnvParam);
 
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);

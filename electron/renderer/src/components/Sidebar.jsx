@@ -35,8 +35,10 @@ import {
 import './Sidebar.css';
 
 const centerOfEventTarget = event => {
-  const cRect = event.target.getBoundingClientRect();
-  return [cRect.left + cRect.width / 2, cRect.top + cRect.height / 2];
+  const clientRectangle = event.currentTarget.getBoundingClientRect();
+  const centerX = clientRectangle.left + clientRectangle.width / 2;
+  const centerY = clientRectangle.top + clientRectangle.height / 2;
+  return {x: centerX, y: centerY};
 };
 
 const getClassName = account => {
@@ -70,8 +72,10 @@ const Sidebar = ({
             const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
               account.teamRole
             );
+            const center = centerOfEventTarget(event);
             connected.toggleEditAccountMenuVisibility(
-              ...centerOfEventTarget(event),
+              center.x,
+              center.y,
               account.id,
               account.sessionID,
               account.lifecycle,
@@ -101,7 +105,7 @@ export default connect(
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
     hasReachedLimitOfAccounts: accounts.length >= 3,
-    isAddingAccount: accounts.length && accounts.some(account => account.userID === undefined),
+    isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
     isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
   }),
   {
