@@ -29,8 +29,8 @@ export const updateAccount = (id, data) => ({
   type: UPDATE_ACCOUNT,
 });
 
-export const updateAccountLifecycle = (id, data) => ({
-  data,
+export const updateAccountLifecycle = (id, channel) => ({
+  data: channel,
   id,
   type: UPDATE_ACCOUNT_LIFECYCLE,
 });
@@ -88,7 +88,7 @@ export const addAccountWithSession = () => {
 };
 
 export const updateAccountData = (id, data) => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const validatedAccountData = verifyObjectProperties(data, {
       accentID: 'Number',
       name: 'String',

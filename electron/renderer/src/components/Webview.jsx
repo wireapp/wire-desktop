@@ -58,7 +58,7 @@ class Webview extends Component {
   }
 
   _focusWebview() {
-    if (this.props.visible) {
+    if (this.props.visible && this.webview) {
       this.webview.focus();
     }
   }

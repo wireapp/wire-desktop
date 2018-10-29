@@ -14,8 +14,8 @@
     "open-graph": "0.2.3",
     "prop-types": "15.6.2",
     "raygun": "0.10.0",
-    "react": "16.5.2",
-    "react-dom": "16.5.2",
+    "react": "16.6.0",
+    "react-dom": "16.6.0",
     "react-redux": "5.0.7",
     "redux": "3.7.2",
     "redux-logger": "3.0.6",
@@ -27,12 +27,21 @@
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
+    "@types/auto-launch": "5.0.0",
+    "@types/debug": "0.0.31",
+    "@types/file-url": "2.0.0",
+    "@types/fs-extra": "5.0.4",
+    "@types/lodash": "4.14.117",
+    "@types/minimist": "1.2.0",
+    "@types/node": "10.11.7",
+    "@types/request": "2.47.1",
+    "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5"
   },
   "environment": "internal",
   "homepage": "https://wire.com",
   "license": "GPL-3.0",
-  "main": "main.js",
+  "main": "dist/main.js",
   "name": "wireinternal",
   "optionalDependencies": {
     "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
