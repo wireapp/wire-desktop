@@ -93,7 +93,7 @@
     "lint:ts": "tslint --config tslint.json \"**/*.ts\"",
     "lint": "npm run lint:js && npm run lint:other && npm run lint:ts",
     "postinstall": "cd electron && npm install && electron-builder install-app-deps",
-    "prestart": "npm run bundle:dev",
+    "prestart": "npm run build:ts && npm run bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
     "start:dev": "npm start -- --env=https://wire-webapp-dev.zinfra.io",
     "start:edge": "npm start -- --env=https://wire-webapp-edge.zinfra.io",
