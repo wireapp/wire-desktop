@@ -258,7 +258,7 @@ module.exports = function(grunt) {
 
     'update-keys': {
       options: {
-        config: 'electron/js/config.js',
+        config: 'electron/dist/js/config.js',
       },
     },
   });
