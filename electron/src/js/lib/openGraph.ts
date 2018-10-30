@@ -19,7 +19,7 @@
 
 import * as request from 'request';
 import * as urlUtil from 'url';
-const openGraphParse = require('open-graph');
+const {parse: openGraphParse} = require('open-graph');
 
 import {OpenGraphResult} from '../../interfaces/';
 
