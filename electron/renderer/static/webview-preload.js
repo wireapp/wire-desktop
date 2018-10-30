@@ -195,7 +195,8 @@ process.once('loaded', () => {
   global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
-  global.openGraph = require('../../dist/js/lib/openGraph');
+  const {getOpenGraphData} = require('../../dist/js/lib/openGraph');
+  global.openGraph = getOpenGraphData;
   global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
   enableFileLogging();
 });
