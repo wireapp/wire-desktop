@@ -18,7 +18,7 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {Menu, dialog, shell} from 'electron';
+import {Menu, dialog, globalShortcut, shell} from 'electron';
 import * as locale from '../../locale/locale';
 import * as config from '../config';
 import * as environment from '../environment';
@@ -398,6 +398,9 @@ const createMenu = (isFullScreen: boolean): Menu => {
   if (!helpTemplate.submenu) {
     helpTemplate.submenu = [];
   }
+
+  // Mute shortcut
+  globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
 
   if (environment.platform.IS_MAC_OS) {
     menuTemplate.unshift(darwinTemplate);
