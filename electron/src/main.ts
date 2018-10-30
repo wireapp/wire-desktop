@@ -281,7 +281,10 @@ const handleAppEvents = () => {
     }
   });
 
-  app.on('before-quit', () => (isQuitting = true));
+  app.on('before-quit', () => {
+    settings.persistToFile();
+    isQuitting = true;
+  });
 
   // System Menu & Tray Icon & Show window
   app.on('ready', () => {
