@@ -20,7 +20,7 @@
     "babel-jest": "23.6.0",
     "babel-loader": "8.0.4",
     "commander": "2.19.0",
-    "css-loader": "1.0.0",
+    "css-loader": "1.0.1",
     "electron": "1.8.8",
     "electron-builder": "20.28.4",
     "electron-mocha": "6.0.4",
