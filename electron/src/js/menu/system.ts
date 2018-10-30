@@ -126,7 +126,6 @@ const conversationTemplate: ElectronMenuItemWithI18n = {
       accelerator: 'CmdOrCtrl+Alt+M',
       click: () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
       i18n: 'menuMute',
-      visible: false,
     },
     {
       click: () => sendAction(EVENT_TYPE.CONVERSATION.DELETE),
