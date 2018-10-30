@@ -191,13 +191,15 @@ const checkAvailability = callback => {
 const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
+  const {getOpenGraphData} = require('../../dist/js/lib/openGraph');
+
   global.clearImmediate = _clearImmediate;
-  global.setImmediate = _setImmediate;
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
-  const {getOpenGraphData} = require('../../dist/js/lib/openGraph');
-  global.openGraph = getOpenGraphData;
   global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
+  global.openGraph = getOpenGraphData;
+  global.setImmediate = _setImmediate;
+
   enableFileLogging();
 });
 
