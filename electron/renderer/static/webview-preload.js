@@ -92,6 +92,9 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, conversationId => {
     amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId);
   });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
+    amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
+  });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.START);
   });
