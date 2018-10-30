@@ -429,7 +429,7 @@ lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate();
 
 // Stop further execution on update to prevent second tray icon
-if (!lifecycle.shouldQuit) {
+if (lifecycle.isFirstInstance) {
   appInit.addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
