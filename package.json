@@ -58,7 +58,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
-    "*.{js,ksx}": [
+    "*.{js,jsx}": [
       "eslint --fix",
       "git add"
     ],
