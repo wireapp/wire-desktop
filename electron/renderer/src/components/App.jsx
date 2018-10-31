@@ -73,4 +73,7 @@ function mapDispatchToProps(dispatch) {
   return {switchAccount};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps())(App);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps()
+)(App);
