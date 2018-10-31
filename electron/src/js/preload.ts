@@ -83,6 +83,10 @@ const addDragRegion = (): void => {
 setupIpcInterface();
 subscribeToMainProcessEvents();
 
+ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event: CustomEvent, accountIndex: number) => {
+  window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
+});
+
 window.addEventListener('DOMContentLoaded', () => {
   addDragRegion();
 });
