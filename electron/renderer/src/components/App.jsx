@@ -26,27 +26,32 @@ import {switchAccount} from '../actions';
 
 import './App.css';
 
-const App = props => (
-  <IsOnline>
-    <div
-      className="App"
-      onKeyDown={event => {
-        const modKeyPressed = (window.isMac && event.metaKey) || event.ctrlKey;
-        const isValidKey = ['1', '2', '3'].includes(event.key);
-        const accountIndex = parseInt(event.key, 10) - 1;
-        const accountId = props.accountIds[accountIndex];
-        if (modKeyPressed && isValidKey && accountId) {
-          props.switchAccount(accountId);
-        }
-      }}
-    >
-      <Sidebar />
-      <WebviewsContainer />
-    </div>
-  </IsOnline>
-);
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-export default connect(
-  ({accounts}) => ({accountIds: accounts.map(account => account.id)}),
-  {switchAccount}
-)(App);
+  render() {
+    return (
+      <IsOnline>
+        <div className="App">
+          <Sidebar />
+          <WebviewsContainer />
+        </div>
+      </IsOnline>
+    );
+  }
+}
+
+function mapStateToProps(state) {
+  const {accounts} = state;
+  return {
+    accountIds: accounts.map(account => account.id),
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {switchAccount};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
