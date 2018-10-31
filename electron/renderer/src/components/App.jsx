@@ -23,12 +23,31 @@ import {connect} from 'react-redux';
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
 import {switchAccount} from '../actions';
+import * as EVENT_TYPE from '../lib/eventType';
 
 import './App.css';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+    this.switchAccount = this.switchAccount.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount, false);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount);
+  }
+
+  switchAccount(event) {
+    const {accountIndex} = event.detail;
+    const accountId = this.props.accountIds[accountIndex];
+    if (accountId) {
+      this.props.switchAccount(accountId);
+    }
   }
 
   render() {
@@ -54,4 +73,4 @@ function mapDispatchToProps(dispatch) {
   return {switchAccount};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps())(App);
