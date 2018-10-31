@@ -58,7 +58,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
-    "*.{js,jsx}": [
+    "*.{js}": [
       "eslint --fix",
       "git add"
     ],
@@ -84,7 +84,7 @@
     "bundle:dev": "webpack",
     "bundle": "webpack --env.production",
     "clear:ts": "rimraf electron/dist",
-    "fix:js": "npm run test:js -- --fix",
+    "fix:js": "npm run lint:js -- --fix",
     "fix:other": "npm run prettier -- --write",
     "fix:ts": "npm run lint:ts --fix",
     "fix": "npm run fix:js && npm run fix:other && npm run fix:ts",
