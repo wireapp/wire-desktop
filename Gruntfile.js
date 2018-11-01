@@ -161,11 +161,11 @@ module.exports = function(grunt) {
         options: {
           deb: {
             ...LINUX_SETTINGS,
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
             desktop: {
               ...LINUX_DESKTOP,
               Name: '<%= info.nameInternal %>',
             },
-            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
             fpm: ['--name', 'wire-desktop-internal'],
           },
           linux: {
