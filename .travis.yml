@@ -17,15 +17,24 @@ node_js:
 # https://docs.travis-ci.com/user/languages/c/#build-matrix
 matrix:
   include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      before_script:
+        - export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
+      env:
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - os: windows
       # Travis' Windows Env doesn't support a Python language.
       language: shell
-      env:
-        # We can only support up to Python 3.6.6, because our SFML-2.3.2 and Python 3.6.6 are compiled against VS14 (2015).
-        - PYTHON_VERSION=3.6.6
-        - PYTHON_HOME='C:\Python36'
-        - VS14_BIN='C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin'
-        - PATH="C:\ProgramData\chocolatey\bin;$PYTHON_HOME:$PYTHON_HOME\Scripts:$VS14_BIN:$PATH"
 
 git:
   submodules: false
