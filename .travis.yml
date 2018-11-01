@@ -18,8 +18,14 @@ node_js:
 matrix:
   include:
     - os: windows
-      before_install:
-        - choco install python
+      # Travis' Windows Env doesn't support a Python language.
+      language: shell
+      env:
+        # We can only support up to Python 3.6.6, because our SFML-2.3.2 and Python 3.6.6 are compiled against VS14 (2015).
+        - PYTHON_VERSION=3.6.6
+        - PYTHON_HOME='C:\Python36'
+        - VS14_BIN='C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin'
+        - PATH="C:\ProgramData\chocolatey\bin;$PYTHON_HOME:$PYTHON_HOME\Scripts:$VS14_BIN:$PATH"
 
 git:
   submodules: false
