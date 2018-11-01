@@ -19,7 +19,7 @@
 
 // Modules
 import * as debug from 'debug';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
+import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, session, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -230,6 +230,8 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
       urls: ['https://staging-nginz-https.zinfra.io/*'],
     },
     (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
+      console.log(details.responseHeaders);
+
       if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
         // Override remote Access-Control-Allow-Origin
         details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
@@ -348,12 +350,49 @@ class ElectronWrapperInit {
   webviewProtection() {
     const webviewProtectionDebug = debug('ElectronWrapperInit:webviewProtection');
 
-    const openLinkInNewWindow = (event: Event, _url: string) => {
-      // Prevent default behavior
+    const openLinkInNewWindow = (
+      event: any,
+      url: string,
+      frameName: string,
+      disposition: any,
+      options: any,
+      additionalFeatures: any
+    ) => {
       event.preventDefault();
 
-      webviewProtectionDebug('Opening an external window from a webview. URL: %s', _url);
-      shell.openExternal(_url);
+      // Single Sign On Login PoC
+      // ToDo: Add more checks (url)
+      if (frameName === 'WIRE_SSO') {
+        webviewProtectionDebug(url);
+        const PRELOAD_SSO_JS = path.join(APP_PATH, 'dist', 'js', 'preload-sso.js');
+
+        const SingleSignOnSession = session.fromPartition('sso', {cache: false});
+
+        Object.assign(options, {
+          parent: main,
+          resizable: false,
+          titleBarStyle: 'hiddenInset',
+        });
+        Object.assign(options.webPreferences, {
+          allowRunningInsecureContent: false,
+          contextIsolation: false,
+          devTools: true,
+          preloadURL: fileUrl(PRELOAD_SSO_JS),
+          sandbox: true,
+          session: SingleSignOnSession,
+          webSecurity: true,
+          webviewTag: false,
+        });
+        webviewProtectionDebug(options);
+        const SingleSignOnLoginWindow = new BrowserWindow(options);
+        event.newGuest = SingleSignOnLoginWindow;
+        SingleSignOnLoginWindow.loadURL(url);
+        SingleSignOnLoginWindow.webContents.openDevTools();
+        return;
+      }
+
+      webviewProtectionDebug('Opening an external window from a webview. URL: %s', url);
+      shell.openExternal(url);
     };
 
     const willNavigateInWebview = (event: Event, _url: string) => {
