@@ -231,8 +231,6 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
       urls: ['https://staging-nginz-https.zinfra.io/*'],
     },
     (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
-      console.log(details.responseHeaders);
-
       if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
         // Override remote Access-Control-Allow-Origin
         details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
