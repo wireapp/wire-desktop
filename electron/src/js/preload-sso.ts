@@ -19,6 +19,7 @@
 
 const {webFrame} = require('electron');
 
+// tslint:disable-next-line:no-floating-promises
 (async () => {
   const disableEval = `window.eval = () => {
     throw new Error('window.eval() has been disabled');
@@ -34,4 +35,4 @@ const {webFrame} = require('electron');
     },
   };`;
   await webFrame.executeJavaScript(windowOpenerReplacement);
-})().then();
+})();
