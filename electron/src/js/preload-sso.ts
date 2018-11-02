@@ -34,4 +34,4 @@ const {webFrame} = require('electron');
     },
   };`;
   await webFrame.executeJavaScript(windowOpenerReplacement);
-})();
+})().then();
