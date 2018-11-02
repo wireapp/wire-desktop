@@ -20,13 +20,17 @@
 import {BrowserWindow, app, session} from 'electron';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {URL} from 'url';
 
 const argv = minimist(process.argv.slice(1));
 
 const APP_PATH = app.getAppPath();
 
 class SingleSignOn {
-  private static readonly BACKEND_URL = 'https://staging-nginz-https.zinfra.io';
+  private static readonly ALLOWED_BACKEND_ORIGINS = [
+    'https://staging-nginz-https.zinfra.io',
+    'https://prod-nginz-https.wire.com',
+  ];
   private static readonly PRELOAD_SSO_JS = path.join(APP_PATH, 'dist', 'js', 'preload-sso.js');
   private static readonly BACKEND_COOKIE_NAME = 'zuid';
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
@@ -44,12 +48,13 @@ class SingleSignOn {
 
   private session: Electron.Session | undefined;
   private senderWebContents: Electron.WebContents;
+  private windowOriginUrl: URL;
 
   private static cookies = {
-    copy: async (from: Electron.Session, to: Electron.Session) => {
-      const cookies = await SingleSignOn.cookies.getBackendCookies(from);
+    copy: async (from: Electron.Session, to: Electron.Session, url: URL) => {
+      const cookies = await SingleSignOn.cookies.getBackendCookies(from, url);
       for (const cookie of cookies) {
-        await SingleSignOn.cookies.setCookie(to, cookie);
+        await SingleSignOn.cookies.setCookie(to, cookie, url.toString());
       }
       await SingleSignOn.cookies.flushCookies(to);
     },
@@ -58,21 +63,28 @@ class SingleSignOn {
         session.cookies.flushStore(() => resolve());
       });
     },
-    getBackendCookies: (session: Electron.Session): Promise<Electron.Cookie[]> => {
+    getBackendCookies: (session: Electron.Session, url: URL): Promise<Electron.Cookie[]> => {
       return new Promise((resolve, reject) => {
-        // ToDo: Ensure it comes from backend servers
-        session.cookies.get({secure: true, name: SingleSignOn.BACKEND_COOKIE_NAME}, (error, cookies) => {
-          if (error) {
-            return reject(error);
+        const rootDomain = url.hostname
+          .split('.')
+          .reverse()
+          .splice(0, 2)
+          .reverse()
+          .join('.');
+        session.cookies.get(
+          {domain: rootDomain, secure: true, name: SingleSignOn.BACKEND_COOKIE_NAME},
+          (error, cookies) => {
+            if (error) {
+              return reject(error);
+            }
+            resolve(cookies);
           }
-          resolve(cookies);
-        });
+        );
       });
     },
-    setCookie: (session: Electron.Session, cookie: Electron.Cookie) => {
+    setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string) => {
       return new Promise((resolve, reject) => {
-        // ToDo: Fix BACKEND_URL to use proper url
-        session.cookies.set({url: SingleSignOn.BACKEND_URL, ...(<Electron.Details>cookie)}, error => {
+        session.cookies.set({url, ...(<Electron.Details>cookie)}, error => {
           if (error) {
             return reject(error);
           }
@@ -114,21 +126,25 @@ class SingleSignOn {
     },
   };
 
-  public static isSingleSignOnLogin = (frameName: string) => {
+  public static isSingleSignOnLoginWindow = (frameName: string) => {
     return (
       SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName // Ensure authenticity of the window from within the code
-      // ToDo: Add URLs checks
     );
+  };
+
+  public static isBackendOrigin = (url: string) => {
+    return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
   };
 
   constructor(
     private mainBrowserWindow: Electron.BrowserWindow,
     private mainSession: Electron.Session,
     private senderEvent: Electron.Event,
-    private windowUrl: string,
+    windowOriginUrl: string,
     private windowOptions: Electron.BrowserWindowConstructorOptions
   ) {
     this.senderWebContents = senderEvent.sender;
+    this.windowOriginUrl = new URL(windowOriginUrl);
   }
 
   init() {
@@ -164,7 +180,7 @@ class SingleSignOn {
         webviewTag: false,
       },
     });
-    this.senderEvent.newGuest = SingleSignOnLoginWindow;
+    (<any>this.senderEvent).newGuest = SingleSignOnLoginWindow;
     SingleSignOnLoginWindow.once('closed', async () => {
       if (this.session) {
         await this.wipeSessionData();
@@ -173,7 +189,9 @@ class SingleSignOn {
       this.session = undefined;
     });
 
-    SingleSignOnLoginWindow.loadURL(this.windowUrl);
+    // ToDo: Ensure certificate pinning is applied
+
+    SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
 
     if (argv.devtools) {
       SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
@@ -193,7 +211,7 @@ class SingleSignOn {
 
       // Set cookies from ephemeral session to the default one
       try {
-        await SingleSignOn.cookies.copy(this.session, this.mainSession);
+        await SingleSignOn.cookies.copy(this.session, this.mainSession, this.windowOriginUrl);
       } catch (error) {
         return this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
       }
@@ -211,7 +229,7 @@ class SingleSignOn {
     // Fake postMessage to the webview
     this.senderWebContents.executeJavaScript(
       `window.dispatchEvent(new MessageEvent('message', {origin: '${
-        SingleSignOn.BACKEND_URL
+        this.windowOriginUrl.origin
       }', data: {type: '${type}'}, type: {isTrusted: true}}));`
     );
   };
