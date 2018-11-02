@@ -19,17 +19,19 @@
 
 const {webFrame} = require('electron');
 
-const disableEval = `window.eval = () => {
-  throw new Error('window.eval() has been disabled');
-}`;
-webFrame.executeJavaScript(disableEval);
+(async () => {
+  const disableEval = `window.eval = () => {
+    throw new Error('window.eval() has been disabled');
+  }`;
+  await webFrame.executeJavaScript(disableEval);
 
-// window.opener is not available when sandbox is activated,
-// therefore we need to fake the function and redirect to a
-// custom protocol
-const windowOpenerReplacement = `window.opener = {
-  postMessage: ({type}) => {
-    document.location.href='wire-sso://' + type;
-  },
-};`;
-webFrame.executeJavaScript(windowOpenerReplacement);
+  // window.opener is not available when sandbox is activated,
+  // therefore we need to fake the function and redirect to a
+  // custom protocol
+  const windowOpenerReplacement = `window.opener = {
+    postMessage: ({type}) => {
+      document.location.href='wire-sso://' + type;
+    },
+  };`;
+  await webFrame.executeJavaScript(windowOpenerReplacement);
+})();

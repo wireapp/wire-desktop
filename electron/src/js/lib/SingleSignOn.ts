@@ -46,11 +46,11 @@ class SingleSignOn {
     AUTH_SUCCESS: 'AUTH_SUCCESS',
   };
 
-  private session: Electron.Session | undefined;
-  private senderWebContents: Electron.WebContents;
-  private windowOriginUrl: URL;
+  private readonly session: Electron.Session | undefined;
+  private readonly senderWebContents: Electron.WebContents;
+  private readonly windowOriginUrl: URL;
 
-  private static cookies = {
+  private static readonly cookies = {
     copy: async (from: Electron.Session, to: Electron.Session, url: URL) => {
       const cookies = await SingleSignOn.cookies.getBackendCookies(from, url);
       for (const cookie of cookies) {
@@ -94,7 +94,7 @@ class SingleSignOn {
     },
   };
 
-  private static protocol = {
+  private static readonly protocol = {
     register: (session: Electron.Session, callback: Function): void => {
       session.protocol.registerStringProtocol(
         SingleSignOn.SSO_PROTOCOL,
@@ -137,11 +137,11 @@ class SingleSignOn {
   };
 
   constructor(
-    private mainBrowserWindow: Electron.BrowserWindow,
-    private mainSession: Electron.Session,
-    private senderEvent: Electron.Event,
+    private readonly mainBrowserWindow: Electron.BrowserWindow,
+    private readonly mainSession: Electron.Session,
+    private readonly senderEvent: Electron.Event,
     windowOriginUrl: string,
-    private windowOptions: Electron.BrowserWindowConstructorOptions
+    private readonly windowOptions: Electron.BrowserWindowConstructorOptions
   ) {
     this.senderWebContents = senderEvent.sender;
     this.windowOriginUrl = new URL(windowOriginUrl);
@@ -198,7 +198,7 @@ class SingleSignOn {
     }
   }
 
-  private finalizeLogin = async (type: string): Promise<void> => {
+  private readonly finalizeLogin = async (type: string): Promise<void> => {
     if (this.isLoginFinalized) {
       return;
     }
@@ -206,35 +206,37 @@ class SingleSignOn {
 
     if (type === SingleSignOn.RESPONSE_TYPES.AUTH_SUCCESS) {
       if (!this.session) {
-        return this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_SESS_NOT_AVAILABLE);
+        await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_SESS_NOT_AVAILABLE);
+        return;
       }
 
       // Set cookies from ephemeral session to the default one
       try {
         await SingleSignOn.cookies.copy(this.session, this.mainSession, this.windowOriginUrl);
       } catch (error) {
-        return this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
+        await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
+        return;
       }
     }
 
-    return this.dispatchResponse(type);
+    await this.dispatchResponse(type);
   };
 
-  private dispatchResponse = (type: string): void => {
+  private readonly dispatchResponse = async (type: string): Promise<void> => {
     // Ensure guest window provided type is valid
     if (/^[A-Z_]{1,255}$/g.test(type) === false) {
       throw new Error('Invalid type detected, aborting.');
     }
 
     // Fake postMessage to the webview
-    this.senderWebContents.executeJavaScript(
+    await this.senderWebContents.executeJavaScript(
       `window.dispatchEvent(new MessageEvent('message', {origin: '${
         this.windowOriginUrl.origin
       }', data: {type: '${type}'}, type: {isTrusted: true}}));`
     );
   };
 
-  private wipeSessionData = () => {
+  private readonly wipeSessionData = () => {
     return new Promise((resolve, reject) => {
       if (this.session) {
         this.session.clearStorageData({}, () => resolve());
