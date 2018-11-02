@@ -46,7 +46,7 @@ class SingleSignOn {
     AUTH_SUCCESS: 'AUTH_SUCCESS',
   };
 
-  private readonly session: Electron.Session | undefined;
+  private session: Electron.Session | undefined;
   private readonly senderWebContents: Electron.WebContents;
   private readonly windowOriginUrl: URL;
 
