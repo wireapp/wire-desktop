@@ -34,7 +34,15 @@ class SingleSignOn {
   private static readonly SSO_PROTOCOL_FULL = SingleSignOn.SSO_PROTOCOL.length + '://'.length;
   private static readonly SSO_PROTOCOL_RESPONSE_SIZE_LIMIT = 255;
 
-  private session: Electron.Session;
+  private isLoginFinalized: boolean = false;
+
+  private static readonly RESPONSE_TYPES = {
+    AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
+    AUTH_ERROR_SESS_NOT_AVAILABLE: 'AUTH_ERROR_SESS_NOT_AVAILABLE',
+    AUTH_SUCCESS: 'AUTH_SUCCESS',
+  };
+
+  private session: Electron.Session | undefined;
 
   private static cookies = {
     copy: async (from: Electron.Session, to: Electron.Session) => {
@@ -73,6 +81,38 @@ class SingleSignOn {
     },
   };
 
+  private static protocol = {
+    register: (session: Electron.Session, callback: Function): void => {
+      session.protocol.registerStringProtocol(
+        SingleSignOn.SSO_PROTOCOL,
+        (request, protocolCallback) => {
+          const type = request.url.substring(
+            SingleSignOn.SSO_PROTOCOL_FULL,
+            SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT
+          );
+          callback(type);
+          protocolCallback('');
+        },
+        error => {
+          if (error) {
+            console.error('Failed to register protocol');
+          }
+        }
+      );
+    },
+
+    unregister: (session: Electron.Session): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
+          if (error) {
+            reject(error);
+          }
+          resolve();
+        });
+      });
+    },
+  };
+
   public static isSingleSignOnLogin = (frameName: string) => {
     return (
       SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName // Ensure authenticity of the window from within the code
@@ -82,14 +122,15 @@ class SingleSignOn {
 
   constructor(
     private senderWebContents: Electron.WebContents,
-    mainBrowserWindow: Electron.BrowserWindow,
+    private mainBrowserWindow: Electron.BrowserWindow,
     private mainSession: Electron.Session,
-    event: any,
-    windowUrl: string,
-    windowOptions: Electron.BrowserWindowConstructorOptions
-  ) {
+    private senderEvent: any,
+    private windowUrl: string,
+    private windowOptions: Electron.BrowserWindowConstructorOptions
+  ) {}
+
+  init() {
     // Create a ephemeral and isolated session
-    // ToDo: Randomize session name
     this.session = session.fromPartition('sso', {cache: false});
 
     // Disable browser permissions (microphone, camera...)
@@ -98,33 +139,18 @@ class SingleSignOn {
     });
 
     // Register wire-sso protocol for this session
-    this.session.protocol.registerStringProtocol(
-      SingleSignOn.SSO_PROTOCOL,
-      (request, callback) => {
-        const type = request.url.substring(
-          SingleSignOn.SSO_PROTOCOL_FULL,
-          SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT
-        );
-        this.finalizeLogin(type);
-        callback('');
-      },
-      error => {
-        if (error) {
-          console.error('Failed to register protocol');
-        }
-      }
-    );
+    SingleSignOn.protocol.register(this.session, (type: string) => this.finalizeLogin(type));
 
     // Remove old preload URL
-    delete (<any>windowOptions).webPreferences.preloadURL;
+    delete (<any>this.windowOptions).webPreferences.preloadURL;
 
     const SingleSignOnLoginWindow: Electron.BrowserWindow = new BrowserWindow({
-      ...windowOptions,
-      parent: mainBrowserWindow,
+      ...this.windowOptions,
+      parent: this.mainBrowserWindow,
       resizable: false,
       titleBarStyle: 'hiddenInset',
       webPreferences: {
-        ...windowOptions.webPreferences,
+        ...this.windowOptions.webPreferences,
         allowRunningInsecureContent: false,
         contextIsolation: true,
         devTools: true,
@@ -136,39 +162,69 @@ class SingleSignOn {
         webviewTag: false,
       },
     });
-    event.newGuest = SingleSignOnLoginWindow;
-    SingleSignOnLoginWindow.loadURL(windowUrl);
+    this.senderEvent.newGuest = SingleSignOnLoginWindow;
+    SingleSignOnLoginWindow.once('closed', async () => {
+      if (this.session) {
+        await this.wipeSessionData();
+        await SingleSignOn.protocol.unregister(this.session);
+      }
+      this.session = undefined;
+    });
+
+    SingleSignOnLoginWindow.loadURL(this.windowUrl);
+
     if (argv.devtools) {
       SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
     }
   }
 
-  private finalizeLogin = async (type: string) => {
-    if (type === 'AUTH_SUCCESS') {
+  private finalizeLogin = async (type: string): Promise<void> => {
+    if (this.isLoginFinalized) {
+      return;
+    }
+    this.isLoginFinalized = true;
+
+    if (type === SingleSignOn.RESPONSE_TYPES.AUTH_SUCCESS) {
+      if (!this.session) {
+        return this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_SESS_NOT_AVAILABLE);
+      }
+
       // Set cookies from ephemeral session to the default one
       try {
         await SingleSignOn.cookies.copy(this.session, this.mainSession);
       } catch (error) {
         console.log(error);
-        return this.dispatchResponse('AUTH_ERROR_UNKNOWN');
+        return this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
       }
     }
 
     return this.dispatchResponse(type);
   };
 
-  private dispatchResponse = (type: string) => {
+  private dispatchResponse = (type: string): void => {
     // Ensure guest window provided type is valid
     if (/^[A-Z_]{1,255}$/g.test(type) === false) {
       throw new Error('Invalid type detected, aborting.');
     }
 
     // Fake postMessage to the webview
+    console.log(this.senderWebContents);
+    console.log(this.senderEvent);
     this.senderWebContents.executeJavaScript(
       `window.dispatchEvent(new MessageEvent('message', {origin: '${
         SingleSignOn.BACKEND_URL
-      }', data: {type: '${type}'}, type: {isTrusted: false}}));`
+      }', data: {type: '${type}'}, type: {isTrusted: true}}));`
     );
+  };
+
+  private wipeSessionData = () => {
+    return new Promise((resolve, reject) => {
+      if (this.session) {
+        this.session.clearStorageData({}, () => resolve());
+      } else {
+        resolve();
+      }
+    });
   };
 }
 

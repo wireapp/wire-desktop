@@ -362,7 +362,8 @@ class ElectronWrapperInit {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLogin(frameName)) {
-        return new SingleSignOn(event.sender, main, main.webContents.session, event, url, options);
+        webviewProtectionDebug('Initializing new SSO process.');
+        return new SingleSignOn(event.sender, main, main.webContents.session, event, url, options).init();
       }
 
       webviewProtectionDebug('Opening an external window from a webview. URL: %s', url);
