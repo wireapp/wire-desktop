@@ -43,6 +43,7 @@ class SingleSignOn {
   };
 
   private session: Electron.Session | undefined;
+  private senderWebContents: Electron.WebContents;
 
   private static cookies = {
     copy: async (from: Electron.Session, to: Electron.Session) => {
@@ -95,7 +96,7 @@ class SingleSignOn {
         },
         error => {
           if (error) {
-            console.error('Failed to register protocol');
+            throw new Error(`Failed to register protocol. Error: ${error}`);
           }
         }
       );
@@ -121,13 +122,14 @@ class SingleSignOn {
   };
 
   constructor(
-    private senderWebContents: Electron.WebContents,
     private mainBrowserWindow: Electron.BrowserWindow,
     private mainSession: Electron.Session,
-    private senderEvent: any,
+    private senderEvent: Electron.Event,
     private windowUrl: string,
     private windowOptions: Electron.BrowserWindowConstructorOptions
-  ) {}
+  ) {
+    this.senderWebContents = senderEvent.sender;
+  }
 
   init() {
     // Create a ephemeral and isolated session
@@ -193,7 +195,6 @@ class SingleSignOn {
       try {
         await SingleSignOn.cookies.copy(this.session, this.mainSession);
       } catch (error) {
-        console.log(error);
         return this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
       }
     }
@@ -208,8 +209,6 @@ class SingleSignOn {
     }
 
     // Fake postMessage to the webview
-    console.log(this.senderWebContents);
-    console.log(this.senderEvent);
     this.senderWebContents.executeJavaScript(
       `window.dispatchEvent(new MessageEvent('message', {origin: '${
         SingleSignOn.BACKEND_URL

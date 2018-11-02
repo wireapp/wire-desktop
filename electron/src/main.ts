@@ -352,18 +352,17 @@ class ElectronWrapperInit {
     const webviewProtectionDebug = debug('ElectronWrapperInit:webviewProtection');
 
     const openLinkInNewWindow = (
-      event: any,
+      event: Electron.Event,
       url: string,
       frameName: string,
-      disposition: any,
-      options: any,
-      additionalFeatures: any
+      disposition: string,
+      options: Electron.Options
     ) => {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLogin(frameName)) {
         webviewProtectionDebug('Initializing new SSO process.');
-        return new SingleSignOn(event.sender, main, main.webContents.session, event, url, options).init();
+        return new SingleSignOn(main, main.webContents.session, event, url, options).init();
       }
 
       webviewProtectionDebug('Opening an external window from a webview. URL: %s', url);
