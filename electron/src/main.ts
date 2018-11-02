@@ -21,6 +21,7 @@
 import * as debug from 'debug';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, session, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
+import * as EventEmitter from 'events';
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
@@ -360,33 +361,128 @@ class ElectronWrapperInit {
     ) => {
       event.preventDefault();
 
+      // pass browserWindowAppEvent, url, options, frameName
+
       // Single Sign On Login PoC
       // ToDo: Add more checks (url)
-      if (frameName === 'WIRE_SSO') {
-        webviewProtectionDebug(url);
+      if (
+        frameName === 'WIRE_SSO' // Ensure authenticity of the window from within the code
+      ) {
+        const BACKEND_URL = 'https://staging-nginz-https.zinfra.io';
         const PRELOAD_SSO_JS = path.join(APP_PATH, 'dist', 'js', 'preload-sso.js');
+        const BACKEND_COOKIE_NAME = 'zuid';
 
         const SingleSignOnSession = session.fromPartition('sso', {cache: false});
 
-        Object.assign(options, {
+        const setCookie = (session: Electron.Session, cookie: Electron.Cookie): Promise<void> => {
+          return new Promise((resolve, reject) => {
+            session.cookies.set({url: BACKEND_URL, ...(<Electron.Details>cookie)}, error => {
+              if (error) {
+                return reject(error);
+              }
+              resolve();
+            });
+          });
+        };
+        const getBackendCookies = (session: Electron.Session): Promise<Electron.Cookie[]> => {
+          return new Promise((resolve, reject) => {
+            // ToDo: Ensure it comes from backend servers
+            session.cookies.get({secure: true, name: BACKEND_COOKIE_NAME}, (error, cookies) => {
+              if (error) {
+                return reject(error);
+              }
+              resolve(cookies);
+            });
+          });
+        };
+        const flushCookieStore = (session: Electron.Session): Promise<void> => {
+          return new Promise((resolve, reject) => {
+            session.cookies.flushStore(() => resolve());
+          });
+        };
+        const copyCookies = async (from: Electron.Session, to: Electron.Session) => {
+          const cookies = await getBackendCookies(from);
+          for (const cookie of cookies) {
+            await setCookie(to, cookie);
+          }
+          await flushCookieStore(to);
+        };
+
+        const dispatchResponse = (type: string) => {
+          // Fake postMessage to the webview
+          if (/^[A-Z_]{1,255}$/g.test(type) === false) {
+            throw new Error('Invalid type detected, aborting.');
+          }
+          event.sender.executeJavaScript(
+            `alert('${type}');window.dispatchEvent(new MessageEvent('message', {origin: '${BACKEND_URL}', data: {type: '${type}'}, type: {isTrusted: false}}));`
+          );
+        };
+
+        const loginProcess = new EventEmitter();
+        loginProcess.once('finalize', async (type: string) => {
+          switch (type) {
+            case 'AUTH_SUCCESS':
+              {
+                // Set cookies from ephemeral session to the default one
+                try {
+                  await copyCookies(SingleSignOnSession, main.webContents.session);
+                } catch (error) {
+                  console.log(error);
+                  return dispatchResponse('AUTH_ERROR_UNKNOWN');
+                }
+              }
+
+              return dispatchResponse(type);
+          }
+        });
+
+        // Disable browser permissions
+        SingleSignOnSession.setPermissionRequestHandler((webContents, permission, callback) => {
+          callback(false);
+        });
+
+        // Register custom protocol
+        const SSO_PROTOCOL = 'wire-sso';
+        const SSO_PROTOCOL_FULL = SSO_PROTOCOL.length + 3;
+        const SSO_PROTOCOL_RESPONSE_LIMIT = 255;
+        SingleSignOnSession.protocol.registerStringProtocol(
+          SSO_PROTOCOL,
+          (request, callback) => {
+            const type = request.url.substring(SSO_PROTOCOL_FULL, SSO_PROTOCOL_RESPONSE_LIMIT);
+            loginProcess.emit('finalize', type);
+            callback('');
+          },
+          error => {
+            if (error) {
+              console.error('Failed to register protocol');
+            }
+          }
+        );
+
+        options = {
+          ...options,
           parent: main,
           resizable: false,
           titleBarStyle: 'hiddenInset',
-        });
-        Object.assign(options.webPreferences, {
+        };
+        options.webPreferences = {
+          ...options.webPreferences,
           allowRunningInsecureContent: false,
-          contextIsolation: false,
+          contextIsolation: true,
           devTools: true,
+          experimentalFeatures: false,
           preloadURL: fileUrl(PRELOAD_SSO_JS),
           sandbox: true,
           session: SingleSignOnSession,
           webSecurity: true,
           webviewTag: false,
-        });
+        };
+
         webviewProtectionDebug(options);
         const SingleSignOnLoginWindow = new BrowserWindow(options);
         event.newGuest = SingleSignOnLoginWindow;
         SingleSignOnLoginWindow.loadURL(url);
+
         SingleSignOnLoginWindow.webContents.openDevTools();
         return;
       }

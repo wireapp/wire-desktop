@@ -17,11 +17,19 @@
  *
  */
 
-const {ipcRenderer} = require('electron');
+const {webFrame} = require('electron');
 
-window.opener = {
-  postMessage: ({type}: {type: string}) => {
-    // send signal to get cookie from 'sso' session and put it in default session then emit the type and emit a 'message' compatible with onReceiveChildWindowMessage
-    ipcRenderer.send('SSO_LOGIN_RESULT', type);
+const disableEval = `window.eval = () => {
+  throw new Error('window.eval() has been disabled');
+}`;
+webFrame.executeJavaScript(disableEval);
+
+// window.opener is not available when sandbox is activated,
+// therefore we need to fake the function and redirect to a
+// custom protocol
+const windowOpenerReplacement = `window.opener = {
+  postMessage: ({type}) => {
+    document.location.href='wire-sso://' + type;
   },
-};
+};`;
+webFrame.executeJavaScript(windowOpenerReplacement);
