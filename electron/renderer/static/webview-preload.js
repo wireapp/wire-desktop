@@ -131,6 +131,15 @@ const exposeAddressBook = () => {
   }
 };
 
+const exposeSSOCapability = () => {
+  Object.defineProperty(window, 'wSSOCapable', {
+    configurable: false,
+    value: true,
+    writable: false,
+    writable: false,
+  });
+};
+
 const replaceGoogleAuth = () => {
   if (window.wire.app === undefined) {
     return;
@@ -209,6 +218,7 @@ process.once('loaded', () => {
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
     exposeAddressBook();
+    exposeSSOCapability();
 
     subscribeToMainProcessEvents();
     subscribeToWebappEvents();
