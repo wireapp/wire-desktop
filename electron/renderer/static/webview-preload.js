@@ -134,8 +134,8 @@ const exposeAddressBook = () => {
 const exposeSSOCapability = () => {
   Object.defineProperty(window, 'wSSOCapable', {
     configurable: false,
+    enumerable: false,
     value: true,
-    writable: false,
     writable: false,
   });
 };
