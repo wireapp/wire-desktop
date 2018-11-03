@@ -26,7 +26,7 @@ const {webFrame} = require('electron');
     enumerable: false,
     value: function () {
       throw new Error('window.eval() has been disabled');
-    }
+    },
     writable: false,
   });`;
   await webFrame.executeJavaScript(disableEval);
