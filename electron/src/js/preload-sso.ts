@@ -21,18 +21,29 @@ const {webFrame} = require('electron');
 
 // tslint:disable-next-line:no-floating-promises
 (async () => {
-  const disableEval = `window.eval = () => {
-    throw new Error('window.eval() has been disabled');
-  }`;
+  const disableEval = `Object.defineProperty(window, 'eval', {
+    configurable: false,
+    enumerable: false,
+    value: function () {
+      throw new Error('window.eval() has been disabled');
+    }
+    writable: false,
+  });`;
   await webFrame.executeJavaScript(disableEval);
 
   // window.opener is not available when sandbox is activated,
-  // therefore we need to fake the function and redirect to a
-  // custom protocol
-  const windowOpenerReplacement = `window.opener = {
-    postMessage: ({type}) => {
-      document.location.href='wire-sso://' + type;
-    },
-  };`;
+  // therefore we need to fake the function and redirect the
+  // response to a custom protocol
+  const windowOpenerReplacement = `Object.defineProperty(window, 'opener', {
+    configurable: true, // Needed on Chrome :(
+    enumerable: false,
+    value: Object.freeze({
+      postMessage: ({type}) => {
+        document.location.href='wire-sso://' + type;
+      }
+    }),
+    writable: false,
+  });`;
+
   await webFrame.executeJavaScript(windowOpenerReplacement);
 })();
