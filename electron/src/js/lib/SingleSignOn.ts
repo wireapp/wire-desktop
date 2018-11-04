@@ -33,11 +33,11 @@ class SingleSignOn {
     'https://prod-nginz-https.wire.com',
   ];
   private static readonly PRELOAD_SSO_JS = path.join(APP_PATH, 'dist', 'js', 'preload-sso.js');
-  private static readonly BACKEND_COOKIE_NAME = 'zuid';
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
   private static readonly SSO_PROTOCOL_HOST = 'response';
   private static readonly SSO_PROTOCOL_RESPONSE_SIZE_LIMIT = 255;
+  private static readonly SSO_SESSION_NAME = 'sso';
 
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
@@ -73,15 +73,12 @@ class SingleSignOn {
           .splice(0, 2)
           .reverse()
           .join('.');
-        session.cookies.get(
-          {domain: rootDomain, secure: true, name: SingleSignOn.BACKEND_COOKIE_NAME},
-          (error, cookies) => {
-            if (error) {
-              return reject(error);
-            }
-            resolve(cookies);
+        session.cookies.get({domain: rootDomain, secure: true}, (error, cookies) => {
+          if (error) {
+            return reject(error);
           }
-        );
+          resolve(cookies);
+        });
       });
     },
     setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string) => {
@@ -207,7 +204,7 @@ class SingleSignOn {
 
   public readonly init = async (): Promise<void> => {
     // Create a ephemeral and isolated session
-    this.session = session.fromPartition('sso', {cache: false});
+    this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
 
     // Disable browser permissions (microphone, camera...)
     this.session.setPermissionRequestHandler((webContents, permission, callback) => {
