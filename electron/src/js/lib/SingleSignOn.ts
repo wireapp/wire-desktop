@@ -25,14 +25,12 @@ import {URL} from 'url';
 
 const argv = minimist(process.argv.slice(1));
 
-const APP_PATH = app.getAppPath();
-
 class SingleSignOn {
-  private static readonly ALLOWED_BACKEND_ORIGINS = [
+  private static readonly ALLOWED_BACKEND_ORIGINS: string[] = [
     'https://staging-nginz-https.zinfra.io',
     'https://prod-nginz-https.wire.com',
   ];
-  private static readonly PRELOAD_SSO_JS = path.join(APP_PATH, 'dist', 'js', 'preload-sso.js');
+  private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist', 'js', 'preload-sso.js');
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
   private static readonly SSO_PROTOCOL_HOST = 'response';
@@ -163,17 +161,13 @@ class SingleSignOn {
     },
   };
 
-  public static isSingleSignOnLoginWindow = (frameName: string) => {
-    // Ensure authenticity of the window from within the code
-    return SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
-  };
+  // Ensure authenticity of the window from within the code
+  public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
 
-  public static isBackendOrigin = (url: string) => {
-    // Ensure the requested URL is going to the backend
-    return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
-  };
+  // Ensure the requested URL is going to the backend
+  public static isBackendOrigin = (url: string) => SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
 
-  public static javascriptHelper = () => {
+  public static readonly javascriptHelper = () => {
     return `Object.defineProperty(window, 'opener', {
       configurable: true, // Needed on Chrome :(
       enumerable: false,
@@ -207,9 +201,7 @@ class SingleSignOn {
     this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
 
     // Disable browser permissions (microphone, camera...)
-    this.session.setPermissionRequestHandler((webContents, permission, callback) => {
-      callback(false);
-    });
+    this.session.setPermissionRequestHandler((webContents, permission, callback) => callback(false));
 
     const SingleSignOnLoginWindow = this.createBrowserWindow();
 
@@ -228,9 +220,11 @@ class SingleSignOn {
     // Discard old preload URL
     delete (<any>this.windowOptions).webPreferences.preloadURL;
 
-    const SingleSignOnLoginWindow: Electron.BrowserWindow = new BrowserWindow({
+    const SingleSignOnLoginWindow = new BrowserWindow({
       ...this.windowOptions,
+      backgroundColor: '#FFFFFF',
       height: this.windowOptions.height || 600,
+      modal: false,
       parent: this.mainBrowserWindow,
       resizable: false,
       titleBarStyle: 'hiddenInset',
