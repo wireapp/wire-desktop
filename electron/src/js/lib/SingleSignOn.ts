@@ -47,6 +47,7 @@ class SingleSignOn {
   };
 
   private session: Electron.Session | undefined;
+  private readonly mainSession: Electron.Session;
   private readonly senderWebContents: Electron.WebContents;
   private readonly windowOriginUrl: URL;
 
@@ -127,22 +128,22 @@ class SingleSignOn {
   };
 
   public static isSingleSignOnLoginWindow = (frameName: string) => {
-    return (
-      SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName // Ensure authenticity of the window from within the code
-    );
+    // Ensure authenticity of the window from within the code
+    return SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
   };
 
   public static isBackendOrigin = (url: string) => {
+    // Ensure the requested URL is going to the backend
     return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
   };
 
   constructor(
     private readonly mainBrowserWindow: Electron.BrowserWindow,
-    private readonly mainSession: Electron.Session,
     private readonly senderEvent: Electron.Event,
     windowOriginUrl: string,
     private readonly windowOptions: Electron.BrowserWindowConstructorOptions
   ) {
+    this.mainSession = this.mainBrowserWindow.webContents.session;
     this.senderWebContents = senderEvent.sender;
     this.windowOriginUrl = new URL(windowOriginUrl);
   }
@@ -156,7 +157,7 @@ class SingleSignOn {
       callback(false);
     });
 
-    // Register wire-sso protocol for this session
+    // Register custom protocol for this session
     SingleSignOn.protocol.register(this.session, (type: string) => this.finalizeLogin(type));
 
     // Remove old preload URL
@@ -164,21 +165,38 @@ class SingleSignOn {
 
     const SingleSignOnLoginWindow: Electron.BrowserWindow = new BrowserWindow({
       ...this.windowOptions,
+      height: this.windowOptions.height || 600,
       parent: this.mainBrowserWindow,
       resizable: false,
       titleBarStyle: 'hiddenInset',
       webPreferences: {
         ...this.windowOptions.webPreferences,
         allowRunningInsecureContent: false,
+        backgroundThrottling: false,
         contextIsolation: true,
         devTools: true,
+        disableBlinkFeatures: '',
+        enableBlinkFeatures: '',
+        experimentalCanvasFeatures: false,
         experimentalFeatures: false,
+        images: true,
+        javascript: true,
+        nativeWindowOpen: false,
+        nodeIntegration: false,
+        nodeIntegrationInWorker: false,
+        offscreen: false,
+        partition: '',
+        plugins: false,
         preload: SingleSignOn.PRELOAD_SSO_JS,
         sandbox: true,
+        scrollBounce: true,
         session: this.session,
+        textAreasAreResizable: false,
         webSecurity: true,
+        webgl: false,
         webviewTag: false,
       },
+      width: this.windowOptions.width || 480,
     });
     (<any>this.senderEvent).newGuest = SingleSignOnLoginWindow;
     SingleSignOnLoginWindow.once('closed', async () => {
