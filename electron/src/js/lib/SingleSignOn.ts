@@ -108,54 +108,51 @@ class SingleSignOn {
         });
       });
     },
-    register: async (session: Electron.Session, callback: Function): Promise<void> => {
+    register: async (session: Electron.Session, callback: (type: string) => void): Promise<void> => {
       // Generate a new secret to authenticate the custom protocol
       SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
 
-      session.protocol.registerStringProtocol(
-        SingleSignOn.SSO_PROTOCOL,
-        (request, response) => {
-          try {
-            const url = new URL(request.url);
+      const handleRequest = (request: Electron.RegisterStringProtocolRequest, response: (data?: string) => void) => {
+        try {
+          const url = new URL(request.url);
 
-            if (url.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
-              throw new Error('Protocol is invalid');
-            }
-            if (url.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
-              throw new Error('Host is invalid');
-            }
-
-            if (typeof SingleSignOn.loginAuthorizationSecret !== 'string') {
-              throw new Error('Secret has not be set or has been consumed');
-            }
-
-            if (url.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
-              throw new Error('Secret is invalid');
-            }
-
-            const type = url.searchParams.get('type');
-
-            if (typeof type !== 'string') {
-              throw new Error('Response is empty');
-            }
-
-            if (type.length > SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT) {
-              throw new Error('Response type is too long');
-            }
-
-            SingleSignOn.loginAuthorizationSecret = undefined;
-            callback(type);
-            response('Please wait...');
-          } catch (error) {
-            response(`An error happened, please close the window and try again. Error: ${error.toString()}`);
+          if (url.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
+            throw new Error('Protocol is invalid');
           }
-        },
-        error => {
-          if (error) {
-            throw new Error(`Failed to register protocol. Error: ${error}`);
+          if (url.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
+            throw new Error('Host is invalid');
           }
+
+          if (typeof SingleSignOn.loginAuthorizationSecret !== 'string') {
+            throw new Error('Secret has not be set or has been consumed');
+          }
+
+          if (url.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
+            throw new Error('Secret is invalid');
+          }
+
+          const type = url.searchParams.get('type');
+
+          if (typeof type !== 'string') {
+            throw new Error('Response is empty');
+          }
+
+          if (type.length > SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT) {
+            throw new Error('Response type is too long');
+          }
+
+          callback(type);
+          response('Please wait...');
+        } catch (error) {
+          response(`An error happened, please close the window and try again. Error: ${error.toString()}`);
         }
-      );
+      };
+
+      session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest, error => {
+        if (error) {
+          throw new Error(`Failed to register protocol. Error: ${error}`);
+        }
+      });
     },
     unregister: (session: Electron.Session): Promise<void> => {
       return new Promise((resolve, reject) => {
