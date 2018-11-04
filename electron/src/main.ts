@@ -360,7 +360,7 @@ class ElectronWrapperInit {
 
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
         if (SingleSignOn.isBackendOrigin(url)) {
-          return new SingleSignOn(main, main.webContents.session, event, url, options).init();
+          return new SingleSignOn(main, event, url, options).init();
         }
       }
 
