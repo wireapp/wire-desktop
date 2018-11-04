@@ -17,33 +17,16 @@
  *
  */
 
-const {webFrame} = require('electron');
+const {webFrame, remote} = require('electron');
+const {SingleSignOn} = remote.require('./js/lib/SingleSignOn');
 
-// tslint:disable-next-line:no-floating-promises
-(async () => {
-  const disableEval = `Object.defineProperty(window, 'eval', {
-    configurable: false,
-    enumerable: false,
-    value: function () {
-      throw new Error('window.eval() has been disabled');
-    },
-    writable: false,
-  });`;
-  await webFrame.executeJavaScript(disableEval);
-
-  // window.opener is not available when sandbox is activated,
-  // therefore we need to fake the function and redirect the
-  // response to a custom protocol
-  const windowOpenerReplacement = `Object.defineProperty(window, 'opener', {
-    configurable: true, // Needed on Chrome :(
-    enumerable: false,
-    value: Object.freeze({
-      postMessage: ({type}) => {
-        document.location.href='wire-sso://' + type;
-      }
-    }),
-    writable: false,
-  });`;
-
-  await webFrame.executeJavaScript(windowOpenerReplacement);
-})();
+// Only execute the helper if the origin is the backend
+if (SingleSignOn.isBackendOrigin((<any>document).location.origin)) {
+  // tslint:disable-next-line:no-floating-promises
+  (async () => {
+    // `window.opener` is not available when sandbox is activated,
+    // therefore we need to fake the function on backend area and
+    // redirect the response to a custom protocol
+    await webFrame.executeJavaScript(SingleSignOn.javascriptHelper());
+  })();
+}
