@@ -17,6 +17,7 @@
  *
  */
 
+import * as crypto from 'crypto';
 import {BrowserWindow, app, session} from 'electron';
 import * as minimist from 'minimist';
 import * as path from 'path';
@@ -35,16 +36,16 @@ class SingleSignOn {
   private static readonly BACKEND_COOKIE_NAME = 'zuid';
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
-  private static readonly SSO_PROTOCOL_FULL = SingleSignOn.SSO_PROTOCOL.length + '://'.length;
+  private static readonly SSO_PROTOCOL_HOST = 'response';
   private static readonly SSO_PROTOCOL_RESPONSE_SIZE_LIMIT = 255;
-
-  private isLoginFinalized: boolean = false;
 
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
     AUTH_ERROR_SESS_NOT_AVAILABLE: 'AUTH_ERROR_SESS_NOT_AVAILABLE',
     AUTH_SUCCESS: 'AUTH_SUCCESS',
   };
+
+  public static loginAuthorizationSecret: string | undefined;
 
   private session: Electron.Session | undefined;
   private readonly mainSession: Electron.Session;
@@ -96,16 +97,58 @@ class SingleSignOn {
   };
 
   private static readonly protocol = {
-    register: (session: Electron.Session, callback: Function): void => {
+    generateSecret: (length: number): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        crypto.randomBytes(length, (error, bytes) => {
+          if (error) {
+            return reject(error);
+          }
+
+          resolve(bytes.toString('hex'));
+        });
+      });
+    },
+    register: async (session: Electron.Session, callback: Function): Promise<void> => {
+      // Generate a new secret to authenticate the custom protocol
+      SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
+
       session.protocol.registerStringProtocol(
         SingleSignOn.SSO_PROTOCOL,
-        (request, protocolCallback) => {
-          const type = request.url.substring(
-            SingleSignOn.SSO_PROTOCOL_FULL,
-            SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT
-          );
-          callback(type);
-          protocolCallback('');
+        (request, response) => {
+          try {
+            const url = new URL(request.url);
+
+            if (url.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
+              throw new Error('Protocol is invalid');
+            }
+            if (url.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
+              throw new Error('Host is invalid');
+            }
+
+            if (typeof SingleSignOn.loginAuthorizationSecret !== 'string') {
+              throw new Error('Secret has not be set or has been consumed');
+            }
+
+            if (url.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
+              throw new Error('Secret is invalid');
+            }
+
+            const type = url.searchParams.get('type');
+
+            if (typeof type !== 'string') {
+              throw new Error('Response is empty');
+            }
+
+            if (type.length > SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT) {
+              throw new Error('Response type is too long');
+            }
+
+            SingleSignOn.loginAuthorizationSecret = undefined;
+            callback(type);
+            response('Please wait...');
+          } catch (error) {
+            response(`An error happened, please close the window and try again. Error: ${error.toString()}`);
+          }
         },
         error => {
           if (error) {
@@ -114,7 +157,6 @@ class SingleSignOn {
         }
       );
     },
-
     unregister: (session: Electron.Session): Promise<void> => {
       return new Promise((resolve, reject) => {
         session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
@@ -137,6 +179,24 @@ class SingleSignOn {
     return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
   };
 
+  public static javascriptHelper = () => {
+    return `Object.defineProperty(window, 'opener', {
+      configurable: true, // Needed on Chrome :(
+      enumerable: false,
+      value: Object.freeze({
+        postMessage: ({type}) => {
+          const params = new URLSearchParams();
+          params.set('secret', '${SingleSignOn.loginAuthorizationSecret}');
+          params.set('type', type);
+          const url = new URL('${SingleSignOn.SSO_PROTOCOL}://${SingleSignOn.SSO_PROTOCOL_HOST}/');
+          url.search = params.toString();
+          document.location.href = url.toString();
+        }
+      }),
+      writable: false,
+    });`;
+  };
+
   constructor(
     private readonly mainBrowserWindow: Electron.BrowserWindow,
     private readonly senderEvent: Electron.Event,
@@ -148,7 +208,7 @@ class SingleSignOn {
     this.windowOriginUrl = new URL(windowOriginUrl);
   }
 
-  init() {
+  public readonly init = async (): Promise<void> => {
     // Create a ephemeral and isolated session
     this.session = session.fromPartition('sso', {cache: false});
 
@@ -157,10 +217,21 @@ class SingleSignOn {
       callback(false);
     });
 
-    // Register custom protocol for this session
-    SingleSignOn.protocol.register(this.session, (type: string) => this.finalizeLogin(type));
+    const SingleSignOnLoginWindow = this.createBrowserWindow();
 
-    // Remove old preload URL
+    // Register protocol
+    // Note: we need to create the window before otherwise it does not work
+    await SingleSignOn.protocol.register(this.session, (responseType: string) => this.finalizeLogin(responseType));
+
+    // Show the window(s)
+    SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
+    if (argv.devtools) {
+      SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
+    }
+  };
+
+  private readonly createBrowserWindow = (): Electron.BrowserWindow => {
+    // Discard old preload URL
     delete (<any>this.windowOptions).webPreferences.preloadURL;
 
     const SingleSignOnLoginWindow: Electron.BrowserWindow = new BrowserWindow({
@@ -198,7 +269,9 @@ class SingleSignOn {
       },
       width: this.windowOptions.width || 480,
     });
+
     (<any>this.senderEvent).newGuest = SingleSignOnLoginWindow;
+
     SingleSignOnLoginWindow.once('closed', async () => {
       if (this.session) {
         await this.wipeSessionData();
@@ -207,21 +280,10 @@ class SingleSignOn {
       this.session = undefined;
     });
 
-    // ToDo: Ensure certificate pinning is applied
-
-    SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
-
-    if (argv.devtools) {
-      SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
-    }
-  }
+    return SingleSignOnLoginWindow;
+  };
 
   private readonly finalizeLogin = async (type: string): Promise<void> => {
-    if (this.isLoginFinalized) {
-      return;
-    }
-    this.isLoginFinalized = true;
-
     if (type === SingleSignOn.RESPONSE_TYPES.AUTH_SUCCESS) {
       if (!this.session) {
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_SESS_NOT_AVAILABLE);
