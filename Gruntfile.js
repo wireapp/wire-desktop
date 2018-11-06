@@ -353,10 +353,10 @@ module.exports = function(grunt) {
     const configString = grunt.file.read(options.config);
 
     if (configString) {
-      const newConfigString = configString
-        .replace("RAYGUN_API_KEY: ''", `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`)
-        .replace("GOOGLE_CLIENT_ID: ''", `GOOGLE_CLIENT_ID: '${process.env.GOOGLE_CLIENT_ID || ''}'`)
-        .replace("GOOGLE_CLIENT_SECRET: ''", `GOOGLE_CLIENT_SECRET: '${process.env.GOOGLE_CLIENT_SECRET || ''}'`);
+      const newConfigString = configString.replace(
+        "RAYGUN_API_KEY: ''",
+        `RAYGUN_API_KEY: '${process.env.RAYGUN_API_KEY || ''}'`
+      );
       return grunt.file.write(options.config, newConfigString);
     }
 

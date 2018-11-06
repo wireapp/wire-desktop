@@ -42,10 +42,6 @@ const EMBED_DOMAINS = [
   },
 ];
 
-const GOOGLE_CLIENT_ID = '';
-const GOOGLE_CLIENT_SECRET = '';
-const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/contacts.readonly';
-
 const LOG_FILE_NAME = 'console.log';
 
 const NAME = pkg.productName;
@@ -87,17 +83,4 @@ const WINDOW = {
   },
 };
 
-export {
-  EMBED_DOMAINS,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  GOOGLE_SCOPES,
-  LOG_FILE_NAME,
-  NAME,
-  RAYGUN_API_KEY,
-  SPELLCHECK,
-  UPDATE,
-  URL,
-  VERSION,
-  WINDOW,
-};
+export {EMBED_DOMAINS, LOG_FILE_NAME, NAME, RAYGUN_API_KEY, SPELLCHECK, UPDATE, URL, VERSION, WINDOW};
