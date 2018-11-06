@@ -34,7 +34,7 @@
     "@types/lodash": "4.14.118",
     "@types/minimist": "1.2.0",
     "@types/node": "10.12.1",
-    "@types/request": "2.48.0",
+    "@types/request": "2.48.1",
     "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5"
   },
