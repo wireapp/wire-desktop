@@ -21,7 +21,7 @@
     "babel-loader": "8.0.4",
     "commander": "2.19.0",
     "css-loader": "1.0.1",
-    "electron": "1.8.8",
+    "electron": "3.0.8",
     "electron-builder": "20.29.0",
     "electron-mocha": "6.0.4",
     "electron-packager": "12.2.0",
