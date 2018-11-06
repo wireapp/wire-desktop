@@ -146,7 +146,9 @@ const replaceGoogleAuth = () => {
   }
 
   window.wire.app.service.connectGoogle._authenticate = window.wire.app.service.connect_google._authenticate = () => {
-    window.alert('This feature is no longer available.');
+    return new Promise((resolve, reject) => {
+      reject(window.alert('This feature is no longer available.'));
+    });
   };
 };
 
