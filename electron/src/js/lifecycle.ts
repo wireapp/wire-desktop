@@ -35,12 +35,16 @@ const checkForUpdate = () => {
 };
 
 const checkSingleInstance = () => {
-  isFirstInstance = app.requestSingleInstanceLock();
-
-  if (!environment.platform.IS_WINDOWS && !isFirstInstance) {
-    quit();
+  if (process.mas) {
+    isFirstInstance = true;
   } else {
-    app.on('second-instance', () => windowManager.showPrimaryWindow());
+    isFirstInstance = app.requestSingleInstanceLock();
+
+    if (!environment.platform.IS_WINDOWS && !isFirstInstance) {
+      quit();
+    } else {
+      app.on('second-instance', () => windowManager.showPrimaryWindow());
+    }
   }
 };
 
