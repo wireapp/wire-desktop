@@ -31,6 +31,7 @@ node('master') {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm install'
+        sh 'npm run build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if(production) {
             // Production
