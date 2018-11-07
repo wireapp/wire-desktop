@@ -245,6 +245,7 @@ class SingleSignOn {
       resizable: false,
       title: this.windowOriginUrl.origin,
       titleBarStyle: 'default',
+      useContentSize: true,
       webPreferences: {
         ...this.windowOptions.webPreferences,
         allowRunningInsecureContent: false,
