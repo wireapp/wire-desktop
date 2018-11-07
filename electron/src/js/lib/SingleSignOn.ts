@@ -117,6 +117,7 @@ class SingleSignOn {
           if (url.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
             throw new Error('Protocol is invalid');
           }
+
           if (url.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
             throw new Error('Host is invalid');
           }
@@ -225,6 +226,7 @@ class SingleSignOn {
 
     // Show the window(s)
     SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
+
     if (argv.devtools) {
       SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
     }
@@ -324,7 +326,8 @@ class SingleSignOn {
 
   private readonly dispatchResponse = async (type: string): Promise<void> => {
     // Ensure guest window provided type is valid
-    if (/^[A-Z_]{1,255}$/g.test(type) === false) {
+    const isTypeValid = /^[A-Z_]{1,255}$/g;
+    if (isTypeValid.test(type) === false) {
       throw new Error('Invalid type detected, aborting.');
     }
 
