@@ -22,14 +22,12 @@ import {BrowserWindow, app, session} from 'electron';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+import {BACKEND_ORIGINS} from '../config';
 
 const argv = minimist(process.argv.slice(1));
 
 class SingleSignOn {
-  private static readonly ALLOWED_BACKEND_ORIGINS: string[] = [
-    'https://staging-nginz-https.zinfra.io',
-    'https://prod-nginz-https.wire.com',
-  ];
+  private static readonly ALLOWED_BACKEND_ORIGINS: string[] = BACKEND_ORIGINS;
   private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist', 'js', 'preload-sso.js');
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
