@@ -23,30 +23,57 @@ import {connect} from 'react-redux';
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
 import {switchAccount} from '../actions';
+import * as EVENT_TYPE from '../lib/eventType';
 
 import './App.css';
 
-const App = props => (
-  <IsOnline>
-    <div
-      className="App"
-      onKeyDown={event => {
-        const modKeyPressed = (window.isMac && event.metaKey) || event.ctrlKey;
-        const isValidKey = ['1', '2', '3'].includes(event.key);
-        const accountIndex = parseInt(event.key, 10) - 1;
-        const accountId = props.accountIds[accountIndex];
-        if (modKeyPressed && isValidKey && accountId) {
-          props.switchAccount(accountId);
-        }
-      }}
-    >
-      <Sidebar />
-      <WebviewsContainer />
-    </div>
-  </IsOnline>
-);
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.switchAccount = this.switchAccount.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount, false);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount);
+  }
+
+  switchAccount(event) {
+    const {accountIndex} = event.detail;
+    const accountId = this.props.accountIds[accountIndex];
+    if (accountId) {
+      this.props.switchAccount(accountId);
+    }
+  }
+
+  render() {
+    return (
+      <IsOnline>
+        <div className="App">
+          <Sidebar />
+          <WebviewsContainer />
+        </div>
+      </IsOnline>
+    );
+  }
+}
+
+function mapStateToProps(state) {
+  const {accounts} = state;
+  return {
+    accountIds: accounts.map(account => account.id),
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {switchAccount};
+}
 
 export default connect(
-  ({accounts}) => ({accountIds: accounts.map(account => account.id)}),
-  {switchAccount}
+  mapStateToProps,
+  mapDispatchToProps()
 )(App);

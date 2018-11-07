@@ -24,16 +24,19 @@ import * as environment from './environment';
 
 const argv = minimist(process.argv.slice(1));
 
-// Fix indicator icon on Unity
-// Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
-const fixUnityIcon = () => {
+const addLinuxWorkarounds = () => {
   if (environment.platform.IS_LINUX) {
+    // Fix indicator icon on Unity
+    // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
     const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
     const isPopOS = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('pop');
     const isGnome = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('GNOME');
     if (isUbuntuUnity || isPopOS || isGnome) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity';
     }
+
+    // https://github.com/electron/electron/issues/13415
+    app.disableHardwareAcceleration();
   }
 };
 
@@ -52,4 +55,4 @@ const ignoreCertificateErrors = () => {
   }
 };
 
-export {fixUnityIcon, handlePortableFlags, ignoreCertificateErrors};
+export {addLinuxWorkarounds, handlePortableFlags, ignoreCertificateErrors};

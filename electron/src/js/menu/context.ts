@@ -120,23 +120,23 @@ window.addEventListener(
       event.preventDefault();
 
       createTextMenu();
-      textMenu.popup(remote.getCurrentWindow());
+      textMenu.popup({window: remote.getCurrentWindow()});
     } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
       event.preventDefault();
       const elementSource = (element as HTMLImageElement).src;
       imageMenu.image = elementSource;
-      imageMenu.popup(remote.getCurrentWindow());
+      imageMenu.popup({window: remote.getCurrentWindow()});
     } else if (element.nodeName === 'A') {
       event.preventDefault();
 
       const elementHref = (element as HTMLLinkElement).href;
       copyContext = elementHref.replace(/^mailto:/, '');
-      defaultMenu.popup(remote.getCurrentWindow());
+      defaultMenu.popup({window: remote.getCurrentWindow()});
     } else if (element.classList.contains('text')) {
       event.preventDefault();
 
       copyContext = window.getSelection().toString() || element.innerText.trim();
-      defaultMenu.popup(remote.getCurrentWindow());
+      defaultMenu.popup({window: remote.getCurrentWindow()});
     } else {
       // Maybe we are in a code block _inside_ an element with the 'text' class?
       // Code block can consist of many tags: CODE, PRE, SPAN, etc.
@@ -147,7 +147,7 @@ window.addEventListener(
       if (parentNode !== document) {
         event.preventDefault();
         copyContext = window.getSelection().toString() || (parentNode as HTMLElement).innerText.trim();
-        defaultMenu.popup(remote.getCurrentWindow());
+        defaultMenu.popup({window: remote.getCurrentWindow()});
       }
     }
   },

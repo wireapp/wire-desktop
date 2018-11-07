@@ -23,27 +23,28 @@ import {EVENT_TYPE} from './lib/eventType';
 import {settings} from './settings/ConfigurationPersistence';
 import * as windowManager from './window-manager';
 
+let isFirstInstance: boolean | undefined = undefined;
+
 const checkForUpdate = () => {
   if (environment.platform.IS_WINDOWS) {
     const squirrel = require('./squirrel');
-    squirrel.handleSquirrelEvent(shouldQuit);
+    squirrel.handleSquirrelEvent(isFirstInstance);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => squirrel.installUpdate());
   }
 };
 
 const checkSingleInstance = () => {
-  if (!environment.platform.IS_MAC_OS) {
-    // makeSingleInstance will crash the signed mas app
-    // see: https://github.com/atom/electron/issues/4688
-    shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
-      windowManager.showPrimaryWindow();
-      return true;
-    });
-  }
+  if (process.mas) {
+    isFirstInstance = true;
+  } else {
+    isFirstInstance = app.requestSingleInstanceLock();
 
-  if (!environment.platform.IS_WINDOWS && shouldQuit) {
-    quit();
+    if (!environment.platform.IS_WINDOWS && !isFirstInstance) {
+      quit();
+    } else {
+      app.on('second-instance', () => windowManager.showPrimaryWindow());
+    }
   }
 };
 
@@ -67,6 +68,4 @@ const relaunch = () => {
   }
 };
 
-let shouldQuit = false;
-
-export {checkForUpdate, checkSingleInstance, quit, relaunch, shouldQuit};
+export {checkForUpdate, checkSingleInstance, isFirstInstance, quit, relaunch};

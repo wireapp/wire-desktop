@@ -21,11 +21,11 @@
 import * as debug from 'debug';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
+import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-const fileUrl = require('file-url');
 
 const debugMain = debug('mainTmp');
 
@@ -34,6 +34,7 @@ const APP_PATH = app.getAppPath();
 
 // Local files
 const CERT_ERR_HTML = fileUrl(path.join(APP_PATH, 'html', 'certificate-error.html'));
+const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
@@ -190,9 +191,8 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   mainWindowState.manage(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  let baseURL = BASE_URL;
-  baseURL += `${baseURL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`file://${__dirname}/../renderer/index.html?env=${encodeURIComponent(baseURL)}`);
+  const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
@@ -281,7 +281,10 @@ const handleAppEvents = () => {
     }
   });
 
-  app.on('before-quit', () => (isQuitting = true));
+  app.on('before-quit', () => {
+    settings.persistToFile();
+    isQuitting = true;
+  });
 
   // System Menu & Tray Icon & Show window
   app.on('ready', () => {
@@ -429,8 +432,8 @@ lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate();
 
 // Stop further execution on update to prevent second tray icon
-if (!lifecycle.shouldQuit) {
-  appInit.fixUnityIcon();
+if (lifecycle.isFirstInstance) {
+  appInit.addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
   renameLogFile();

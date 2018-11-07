@@ -39,7 +39,9 @@ class Webview extends Component {
 
     this.webview.addEventListener('ipc-message', this._onIpcMessage);
 
-    this._focusWebview();
+    this.webview.addEventListener('dom-ready', event => {
+      this._focusWebview();
+    });
   }
 
   componentDidUpdate() {
@@ -59,6 +61,7 @@ class Webview extends Component {
 
   _focusWebview() {
     if (this.props.visible && this.webview) {
+      this.webview.blur();
       this.webview.focus();
     }
   }

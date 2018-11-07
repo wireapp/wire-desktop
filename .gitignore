@@ -6,10 +6,10 @@
 *.pyc
 *.pyc
 /.idea
-/keys
-/electron/renderer/dist
 /electron/dist
 /electron/node_modules
+/electron/renderer/dist
+/keys
 /temp
 /wrap
 app.asar

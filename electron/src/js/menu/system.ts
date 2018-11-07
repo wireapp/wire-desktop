@@ -18,7 +18,7 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {Menu, dialog, shell} from 'electron';
+import {Menu, dialog, globalShortcut, shell} from 'electron';
 import * as locale from '../../locale/locale';
 import * as config from '../config';
 import * as environment from '../environment';
@@ -46,7 +46,7 @@ const getPrimaryWindow = (): Electron.BrowserWindow => windowManager.getPrimaryW
 const sendAction = (action: string): void => {
   const primaryWindow = getPrimaryWindow();
   if (primaryWindow) {
-    getPrimaryWindow().webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, action);
+    primaryWindow.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, action);
   }
 };
 
@@ -397,6 +397,20 @@ const createMenu = (isFullScreen: boolean): Menu => {
   }
   if (!helpTemplate.submenu) {
     helpTemplate.submenu = [];
+  }
+
+  // Global mute shortcut
+  globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
+
+  // Global account switching shortcut
+  const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
+  const accountLimit = 3;
+  for (const shortcut of switchAccountShortcut) {
+    for (let accountId = 0; accountId < accountLimit; accountId++) {
+      globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
+        getPrimaryWindow().webContents.send(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
+      );
+    }
   }
 
   if (environment.platform.IS_MAC_OS) {

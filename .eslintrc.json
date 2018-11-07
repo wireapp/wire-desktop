@@ -1,19 +1,21 @@
 {
   "env": {
     "browser": true,
+    "es6": true,
+    "jasmine": true,
     "node": true
   },
+  "extends": ["prettier"],
+  "parser": "babel-eslint",
   "parserOptions": {
+    "ecmaVersion": 6,
     "sourceType": "module",
-    "ecmaVersion": 8,
     "ecmaFeatures": {
       "jsx": true,
-      "experimentalObjectRestSpread": true,
-      "globalReturn": true
+      "experimentalObjectRestSpread": true
     }
   },
-  "extends": ["prettier"],
-  "plugins": ["prettier", "react"],
+  "plugins": ["jasmine", "no-unsanitized", "prettier", "react"],
   "rules": {
     "curly": 2,
     "dot-notation": 2,

@@ -93,7 +93,7 @@ class TrayHandler {
   }
 
   private updateBadgeCount(count?: number) {
-    if (count) {
+    if (typeof count !== 'undefined') {
       app.setBadgeCount(count);
       this.lastUnreadCount = count;
     }

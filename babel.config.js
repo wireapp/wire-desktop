@@ -1,3 +1,5 @@
+const buildPlugins = () => ['@babel/plugin-proposal-object-rest-spread'];
+
 const buildPresets = ({modules = false, debug = false}) => {
   return [
     '@babel/preset-react',
@@ -7,7 +9,7 @@ const buildPresets = ({modules = false, debug = false}) => {
         debug,
         modules,
         targets: {
-          browsers: ['chrome >= 59'],
+          browsers: ['chrome >= 66'],
         },
         useBuiltIns: 'usage',
       },
@@ -18,8 +20,10 @@ const buildPresets = ({modules = false, debug = false}) => {
 module.exports = {
   env: {
     test: {
+      plugins: buildPlugins(),
       presets: buildPresets({debug: true, modules: 'commonjs'}),
     },
   },
+  plugins: buildPlugins(),
   presets: buildPresets({debug: true, modules: false}),
 };

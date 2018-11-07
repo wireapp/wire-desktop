@@ -124,7 +124,7 @@ const scheduleUpdate = (): void => {
   setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
-const handleSquirrelEvent = (shouldQuit: boolean): boolean | void => {
+const handleSquirrelEvent = (isFirstInstance: boolean): boolean | void => {
   const [, squirrelEvent] = process.argv;
 
   switch (squirrelEvent) {
@@ -153,7 +153,7 @@ const handleSquirrelEvent = (shouldQuit: boolean): boolean | void => {
     }
   }
 
-  if (shouldQuit) {
+  if (!isFirstInstance) {
     return lifecycle.quit();
   }
 

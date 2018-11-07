@@ -77,7 +77,7 @@ const createEnvironmentTemplate = (env: string): Electron.MenuItemConstructorOpt
 };
 
 const versionTemplate: Electron.MenuItemConstructorOptions = {
-  label: `Wire Version ${config.VERSION}`,
+  label: `Wire Version ${config.VERSION || 'Development'}`,
 };
 
 const chromeVersionTemplate: Electron.MenuItemConstructorOptions = {
