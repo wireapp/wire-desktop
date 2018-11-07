@@ -238,11 +238,15 @@ class SingleSignOn {
 
     const SingleSignOnLoginWindow = new BrowserWindow({
       ...this.windowOptions,
+      alwaysOnTop: true,
       backgroundColor: '#FFFFFF',
       fullscreen: false,
       fullscreenable: false,
       height: this.windowOptions.height || 600,
+      maximizable: false,
+      minimizable: false,
       modal: false,
+      movable: false,
       parent: this.mainBrowserWindow,
       resizable: false,
       title: this.windowOriginUrl.origin,
