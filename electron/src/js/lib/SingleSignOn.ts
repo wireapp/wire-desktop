@@ -239,6 +239,8 @@ class SingleSignOn {
     const SingleSignOnLoginWindow = new BrowserWindow({
       ...this.windowOptions,
       backgroundColor: '#FFFFFF',
+      fullscreen: false,
+      fullscreenable: false,
       height: this.windowOptions.height || 600,
       modal: false,
       parent: this.mainBrowserWindow,
