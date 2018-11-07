@@ -106,7 +106,7 @@ class SingleSignOn {
         });
       });
     },
-    register: async (session: Electron.Session, callback: (type: string) => void): Promise<void> => {
+    register: async (session: Electron.Session, finalizeLogin: (type: string) => void): Promise<void> => {
       // Generate a new secret to authenticate the custom protocol
       SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
 
@@ -140,7 +140,7 @@ class SingleSignOn {
             throw new Error('Response type is too long');
           }
 
-          callback(type);
+          finalizeLogin(type);
           response('Please wait...');
         } catch (error) {
           response(`An error happened, please close the window and try again. Error: ${error.toString()}`);
@@ -222,7 +222,7 @@ class SingleSignOn {
 
     // Register protocol
     // Note: we need to create the window before otherwise it does not work
-    await SingleSignOn.protocol.register(this.session, (responseType: string) => this.finalizeLogin(responseType));
+    await SingleSignOn.protocol.register(this.session, (type: string) => this.finalizeLogin(type));
 
     // Show the window(s)
     SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
@@ -340,7 +340,7 @@ class SingleSignOn {
   };
 
   private readonly wipeSessionData = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       if (this.session) {
         this.session.clearStorageData({}, () => resolve());
       } else {
