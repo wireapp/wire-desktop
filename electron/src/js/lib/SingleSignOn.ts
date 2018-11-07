@@ -36,6 +36,9 @@ class SingleSignOn {
   private static readonly SSO_PROTOCOL_HOST = 'response';
   private static readonly SSO_PROTOCOL_RESPONSE_SIZE_LIMIT = 255;
   private static readonly SSO_SESSION_NAME = 'sso';
+  private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + 255;
+  private static readonly SSO_USER_AGENT =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
 
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
@@ -203,6 +206,17 @@ class SingleSignOn {
     // Disable browser permissions (microphone, camera...)
     this.session.setPermissionRequestHandler((webContents, permission, callback) => callback(false));
 
+    // User-agent normalization
+    this.session.webRequest.onBeforeSendHeaders(
+      {
+        urls: ['*'],
+      },
+      (details: any, callback: Function) => {
+        details.requestHeaders['User-Agent'] = SingleSignOn.SSO_USER_AGENT;
+        callback({cancel: false, requestHeaders: details.requestHeaders});
+      }
+    );
+
     const SingleSignOnLoginWindow = this.createBrowserWindow();
 
     // Register protocol
@@ -227,7 +241,8 @@ class SingleSignOn {
       modal: false,
       parent: this.mainBrowserWindow,
       resizable: false,
-      titleBarStyle: 'hiddenInset',
+      title: this.windowOriginUrl.origin,
+      titleBarStyle: 'default',
       webPreferences: {
         ...this.windowOptions.webPreferences,
         allowRunningInsecureContent: false,
@@ -266,6 +281,23 @@ class SingleSignOn {
         await SingleSignOn.protocol.unregister(this.session);
       }
       this.session = undefined;
+    });
+
+    // Prevent title updates and new windows
+    SingleSignOnLoginWindow.on('page-title-updated', (event: Electron.Event) => event.preventDefault());
+    SingleSignOnLoginWindow.webContents.on('new-window', (event: Electron.Event) => event.preventDefault());
+
+    // Note: will-navigate is broken in Electron 3
+    // see https://github.com/electron/electron/issues/14751
+    // using did-navigate as workaround
+    SingleSignOnLoginWindow.webContents.on('did-navigate', (event: Electron.Event, url: string) => {
+      const {origin} = new URL(url);
+
+      if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
+        event.preventDefault();
+      }
+
+      SingleSignOnLoginWindow.setTitle(origin);
     });
 
     return SingleSignOnLoginWindow;
