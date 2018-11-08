@@ -5,7 +5,7 @@
     "debug": "4.1.0",
     "electron-window-state": "5.0.2",
     "file-url": "2.0.2",
-    "fs-extra": "7.0.0",
+    "fs-extra": "7.0.1",
     "googleapis": "24.0.0",
     "image-type": "3.0.0",
     "jsrsasign": "8.0.12",
