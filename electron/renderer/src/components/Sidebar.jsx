@@ -92,8 +92,9 @@ const Sidebar = ({
         </div>
       </div>
     ))}
-    {!isAddingAccount &&
-      !hasReachedLimitOfAccounts && <AddAccountTrigger id="account" onClick={connected.addAccountWithSession} />}
+    {!isAddingAccount && !hasReachedLimitOfAccounts && (
+      <AddAccountTrigger id="account" onClick={connected.addAccountWithSession} />
+    )}
 
     {isEditAccountMenuVisible && <EditAccountMenu />}
   </div>
