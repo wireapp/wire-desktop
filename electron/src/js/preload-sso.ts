@@ -22,8 +22,8 @@ const {SingleSignOn} = remote.require('./js/lib/SingleSignOn');
 
 // Only execute the helper if the origin is the backend
 if (
-  typeof document.location === 'object' &&
-  typeof document!.location!.origin === 'string' &&
+  document.location &&
+  typeof document.location.origin === 'string' &&
   SingleSignOn.isBackendOrigin(document!.location!.origin)
 ) {
   // tslint:disable-next-line:no-floating-promises
