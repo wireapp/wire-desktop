@@ -33,7 +33,6 @@ const debugMain = debug('mainTmp');
 const APP_PATH = app.getAppPath();
 
 // Local files
-const CERT_ERR_HTML = fileUrl(path.join(APP_PATH, 'html', 'certificate-error.html'));
 const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
@@ -403,7 +402,6 @@ class ElectronWrapperInit {
 
               if (verificationResult !== 'net::OK' && hostname !== hostnameInternal) {
                 console.error('setCertificateVerifyProc', hostname, verificationResult);
-                main.loadURL(CERT_ERR_HTML);
                 return cb(-2);
               }
 
@@ -413,7 +411,6 @@ class ElectronWrapperInit {
                 for (const result of Object.values(pinningResults)) {
                   if (result === false) {
                     console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
-                    main.loadURL(CERT_ERR_HTML);
                     return cb(-2);
                   }
                 }
