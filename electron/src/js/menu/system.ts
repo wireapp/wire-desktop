@@ -404,10 +404,6 @@ const createShortcuts = (): void => {
   }
 };
 
-const removeShortcuts = (): void => {
-  globalShortcut.unregisterAll();
-};
-
 const createMenu = (isFullScreen: boolean): Menu => {
   if (!windowTemplate.submenu) {
     windowTemplate.submenu = [];
@@ -459,6 +455,10 @@ const createMenu = (isFullScreen: boolean): Menu => {
   menu = Menu.buildFromTemplate(menuTemplate);
 
   return menu;
+};
+
+const removeShortcuts = (): void => {
+  globalShortcut.unregisterAll();
 };
 
 export {createMenu, createShortcuts, removeShortcuts};
