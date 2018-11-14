@@ -24,6 +24,7 @@ import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
+import * as os from 'os';
 import * as path from 'path';
 import {URL} from 'url';
 
@@ -46,7 +47,6 @@ import {SettingsType} from './js/settings/SettingsType';
 // Wrapper modules
 import * as about from './js/about';
 import * as appInit from './js/appInit';
-import * as certificateUtils from './js/certificateUtils';
 import * as config from './js/config';
 import * as environment from './js/environment';
 import * as initRaygun from './js/initRaygun';
@@ -60,6 +60,7 @@ import {TrayHandler} from './js/menu/TrayHandler';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
 import * as locale from './locale/locale';
+const certificateUtils = require('@wireapp/certificate-check');
 
 // Interfaces
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
@@ -412,7 +413,12 @@ class ElectronWrapperInit {
 
                 for (const result of Object.values(pinningResults)) {
                   if (result === false) {
-                    console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
+                    let log = `--- Wire Certificate Check log from ${new Date().toISOString()} on ${os.platform()} ${os.arch()} ---\n\n`;
+                    log += `*${hostname}*: ${pinningResults.errorMessage}\n`;
+                    log += `\nRemote certificate: ${JSON.stringify(pinningResults.certificate)}\n\n`;
+                    log += '------------------------------------------------------------------\n\n';
+                    this.debug(log);
+                    console.error(log);
                     main.loadURL(CERT_ERR_HTML);
                     return cb(-2);
                   }
