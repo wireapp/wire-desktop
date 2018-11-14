@@ -388,17 +388,7 @@ const changeLocale = (language: Supportedi18nLanguage): void => {
   );
 };
 
-const createMenu = (isFullScreen: boolean): Menu => {
-  if (!windowTemplate.submenu) {
-    windowTemplate.submenu = [];
-  }
-  if (!editTemplate.submenu) {
-    editTemplate.submenu = [];
-  }
-  if (!helpTemplate.submenu) {
-    helpTemplate.submenu = [];
-  }
-
+const createShortcuts = (): void => {
   // Global mute shortcut
   globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
 
@@ -411,6 +401,22 @@ const createMenu = (isFullScreen: boolean): Menu => {
         getPrimaryWindow().webContents.send(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
       );
     }
+  }
+};
+
+const removeShortcuts = (): void => {
+  globalShortcut.unregisterAll();
+};
+
+const createMenu = (isFullScreen: boolean): Menu => {
+  if (!windowTemplate.submenu) {
+    windowTemplate.submenu = [];
+  }
+  if (!editTemplate.submenu) {
+    editTemplate.submenu = [];
+  }
+  if (!helpTemplate.submenu) {
+    helpTemplate.submenu = [];
   }
 
   if (environment.platform.IS_MAC_OS) {
@@ -455,4 +461,4 @@ const createMenu = (isFullScreen: boolean): Menu => {
   return menu;
 };
 
-export {createMenu};
+export {createMenu, createShortcuts, removeShortcuts};
