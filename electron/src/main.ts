@@ -53,12 +53,12 @@ import * as initRaygun from './js/initRaygun';
 import {download} from './js/lib/download';
 import {EVENT_TYPE} from './js/lib/eventType';
 import * as lifecycle from './js/lifecycle';
-import {menuItem as developerMenu} from './js/menu/developer';
-import * as systemMenu from './js/menu/system';
-import {TrayHandler} from './js/menu/TrayHandler';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
 import * as locale from './locale/locale';
+import {menuItem as developerMenu} from './menu/developer';
+import * as systemMenu from './menu/system';
+import {TrayHandler} from './menu/TrayHandler';
 
 // Interfaces
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
