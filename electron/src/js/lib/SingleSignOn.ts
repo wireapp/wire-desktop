@@ -34,7 +34,8 @@ class SingleSignOn {
   private static readonly SSO_PROTOCOL_HOST = 'response';
   private static readonly SSO_PROTOCOL_RESPONSE_SIZE_LIMIT = 255;
   private static readonly SSO_SESSION_NAME = 'sso';
-  private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + 255;
+  private static readonly MAX_LENGTH_ORIGIN_DOMAIN = 255;
+  private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + SingleSignOn.MAX_LENGTH_ORIGIN_DOMAIN;
   private static readonly SSO_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
 
@@ -60,8 +61,8 @@ class SingleSignOn {
       await SingleSignOn.cookies.flushCookies(to);
     },
     flushCookies: (session: Electron.Session): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        session.cookies.flushStore(() => resolve());
+      return new Promise(resolve => {
+        session.cookies.flushStore(resolve);
       });
     },
     getBackendCookies: (session: Electron.Session, url: URL): Promise<Electron.Cookie[]> => {
@@ -105,7 +106,7 @@ class SingleSignOn {
       });
     },
     register: async (session: Electron.Session, finalizeLogin: (type: string) => void): Promise<void> => {
-      // Generate a new secret to authenticate the custom protocol
+      // Generate a new secret to authenticate the custom protocol (wire-sso)
       SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
 
       const handleRequest = (request: Electron.RegisterStringProtocolRequest, response: (data?: string) => void) => {
