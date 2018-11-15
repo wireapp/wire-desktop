@@ -46,11 +46,11 @@ before_install:
   - eval "${MATRIX_EVAL}"
 
 install:
-  - npm install
+  - yarn
 
 # http://docs.travis-ci.com/user/pull-requests/
 script:
-  - npm test
+  - yarn test
 
 notifications:
   email: false
