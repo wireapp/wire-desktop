@@ -30,6 +30,7 @@ node('master') {
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
+        sh 'npm install -g yarn'
         sh 'npm install'
         sh 'npm run build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
