@@ -45,6 +45,7 @@ import {settings} from './js/settings/ConfigurationPersistence';
 import {SettingsType} from './js/settings/SettingsType';
 
 // Wrapper modules
+import * as certificateUtils from '@wireapp/certificate-check';
 import * as about from './js/about';
 import * as appInit from './js/appInit';
 import * as config from './js/config';
@@ -60,7 +61,6 @@ import {TrayHandler} from './js/menu/TrayHandler';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
 import * as locale from './locale/locale';
-const certificateUtils = require('@wireapp/certificate-check');
 
 // Interfaces
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
