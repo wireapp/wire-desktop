@@ -22,7 +22,7 @@ import * as Electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {Schemata} from '../interfaces/index';
+import {Schemata} from '../interfaces/';
 import {SettingsType} from './SettingsType';
 
 const app = Electron.app || Electron.remote.app;

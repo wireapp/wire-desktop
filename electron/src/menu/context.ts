@@ -21,7 +21,7 @@ import {clipboard, ipcRenderer, remote, webFrame} from 'electron';
 const Menu = remote.Menu;
 const webContents = remote.getCurrentWebContents();
 
-import {ElectronMenuWithFileAndImage} from '../interfaces/index';
+import {ElectronMenuWithFileAndImage} from '../interfaces/';
 import * as config from '../js/config';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';

@@ -28,7 +28,7 @@ import * as locale from '../locale/locale';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
-import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/index';
+import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
