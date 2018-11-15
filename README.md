@@ -31,19 +31,19 @@ Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireap
 ```shell
 git clone https://github.com/wireapp/wire-desktop.git
 cd wire-desktop
-npm install
+yarn
 ```
 
 ### Start
 
 ```shell
-npm start
+yarn start
 ```
 
 ### Test
 
 ```shell
-npm test
+yarn test
 ```
 
 ### Enable Support for Google Contacts (optional)
@@ -54,13 +54,13 @@ If you wish to import Google Contacts to Wire, you will need to [generate Google
 
 ```shell
 # Build for macOS
-npm run build:macos
+yarn build:macos
 
 # Build for Windows
-npm run build:win
+yarn build:win
 
 # Build for Linux
-npm run build:linux
+yarn build:linux
 ```
 
 ### Other Linux targets or architectures
