@@ -55,5 +55,10 @@
       }
     ],
     "sort-vars": 2
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }

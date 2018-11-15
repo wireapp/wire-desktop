@@ -19,6 +19,8 @@
 
 const pkg: {productName: string; version: string} = require('../../package.json');
 
+const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
+
 const EMBED_DOMAINS = [
   {
     allowedExternalLinks: ['www.youtube.com'],
@@ -83,4 +85,4 @@ const WINDOW = {
   },
 };
 
-export {EMBED_DOMAINS, LOG_FILE_NAME, NAME, RAYGUN_API_KEY, SPELLCHECK, UPDATE, URL, VERSION, WINDOW};
+export {BACKEND_ORIGINS, EMBED_DOMAINS, LOG_FILE_NAME, NAME, RAYGUN_API_KEY, SPELLCHECK, UPDATE, URL, VERSION, WINDOW};

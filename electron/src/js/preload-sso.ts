@@ -21,7 +21,11 @@ const {webFrame, remote} = require('electron');
 const {SingleSignOn} = remote.require('./js/lib/SingleSignOn');
 
 // Only execute the helper if the origin is the backend
-if (SingleSignOn.isBackendOrigin((<any>document).location.origin)) {
+if (
+  document.location &&
+  typeof document.location.origin === 'string' &&
+  SingleSignOn.isBackendOrigin(document!.location!.origin)
+) {
   // tslint:disable-next-line:no-floating-promises
   (async () => {
     // `window.opener` is not available when sandbox is activated,

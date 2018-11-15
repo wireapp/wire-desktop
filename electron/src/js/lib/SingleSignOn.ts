@@ -22,20 +22,22 @@ import {BrowserWindow, app, session} from 'electron';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+import {BACKEND_ORIGINS} from '../config';
 
 const argv = minimist(process.argv.slice(1));
 
 class SingleSignOn {
-  private static readonly ALLOWED_BACKEND_ORIGINS: string[] = [
-    'https://staging-nginz-https.zinfra.io',
-    'https://prod-nginz-https.wire.com',
-  ];
+  private static readonly ALLOWED_BACKEND_ORIGINS: string[] = BACKEND_ORIGINS;
   private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist', 'js', 'preload-sso.js');
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
   private static readonly SSO_PROTOCOL_HOST = 'response';
   private static readonly SSO_PROTOCOL_RESPONSE_SIZE_LIMIT = 255;
   private static readonly SSO_SESSION_NAME = 'sso';
+  private static readonly MAX_LENGTH_ORIGIN_DOMAIN = 255;
+  private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + SingleSignOn.MAX_LENGTH_ORIGIN_DOMAIN;
+  private static readonly SSO_USER_AGENT =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
 
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
@@ -59,8 +61,8 @@ class SingleSignOn {
       await SingleSignOn.cookies.flushCookies(to);
     },
     flushCookies: (session: Electron.Session): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        session.cookies.flushStore(() => resolve());
+      return new Promise(resolve => {
+        session.cookies.flushStore(resolve);
       });
     },
     getBackendCookies: (session: Electron.Session, url: URL): Promise<Electron.Cookie[]> => {
@@ -103,8 +105,8 @@ class SingleSignOn {
         });
       });
     },
-    register: async (session: Electron.Session, callback: (type: string) => void): Promise<void> => {
-      // Generate a new secret to authenticate the custom protocol
+    register: async (session: Electron.Session, finalizeLogin: (type: string) => void): Promise<void> => {
+      // Generate a new secret to authenticate the custom protocol (wire-sso)
       SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
 
       const handleRequest = (request: Electron.RegisterStringProtocolRequest, response: (data?: string) => void) => {
@@ -114,6 +116,7 @@ class SingleSignOn {
           if (url.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
             throw new Error('Protocol is invalid');
           }
+
           if (url.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
             throw new Error('Host is invalid');
           }
@@ -136,7 +139,7 @@ class SingleSignOn {
             throw new Error('Response type is too long');
           }
 
-          callback(type);
+          finalizeLogin(type);
           response('Please wait...');
         } catch (error) {
           response(`An error happened, please close the window and try again. Error: ${error.toString()}`);
@@ -203,14 +206,26 @@ class SingleSignOn {
     // Disable browser permissions (microphone, camera...)
     this.session.setPermissionRequestHandler((webContents, permission, callback) => callback(false));
 
+    // User-agent normalization
+    this.session.webRequest.onBeforeSendHeaders(
+      {
+        urls: ['*'],
+      },
+      (details: any, callback: Function) => {
+        details.requestHeaders['User-Agent'] = SingleSignOn.SSO_USER_AGENT;
+        callback({cancel: false, requestHeaders: details.requestHeaders});
+      }
+    );
+
     const SingleSignOnLoginWindow = this.createBrowserWindow();
 
     // Register protocol
     // Note: we need to create the window before otherwise it does not work
-    await SingleSignOn.protocol.register(this.session, (responseType: string) => this.finalizeLogin(responseType));
+    await SingleSignOn.protocol.register(this.session, (type: string) => this.finalizeLogin(type));
 
     // Show the window(s)
     SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
+
     if (argv.devtools) {
       SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
     }
@@ -222,12 +237,20 @@ class SingleSignOn {
 
     const SingleSignOnLoginWindow = new BrowserWindow({
       ...this.windowOptions,
+      alwaysOnTop: true,
       backgroundColor: '#FFFFFF',
+      fullscreen: false,
+      fullscreenable: false,
       height: this.windowOptions.height || 600,
+      maximizable: false,
+      minimizable: false,
       modal: false,
+      movable: false,
       parent: this.mainBrowserWindow,
       resizable: false,
-      titleBarStyle: 'hiddenInset',
+      title: this.windowOriginUrl.origin,
+      titleBarStyle: 'default',
+      useContentSize: true,
       webPreferences: {
         ...this.windowOptions.webPreferences,
         allowRunningInsecureContent: false,
@@ -268,6 +291,23 @@ class SingleSignOn {
       this.session = undefined;
     });
 
+    // Prevent title updates and new windows
+    SingleSignOnLoginWindow.on('page-title-updated', (event: Electron.Event) => event.preventDefault());
+    SingleSignOnLoginWindow.webContents.on('new-window', (event: Electron.Event) => event.preventDefault());
+
+    // Note: will-navigate is broken in Electron 3
+    // see https://github.com/electron/electron/issues/14751
+    // using did-navigate as workaround
+    SingleSignOnLoginWindow.webContents.on('did-navigate', (event: Electron.Event, url: string) => {
+      const {origin} = new URL(url);
+
+      if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
+        event.preventDefault();
+      }
+
+      SingleSignOnLoginWindow.setTitle(origin);
+    });
+
     return SingleSignOnLoginWindow;
   };
 
@@ -292,7 +332,8 @@ class SingleSignOn {
 
   private readonly dispatchResponse = async (type: string): Promise<void> => {
     // Ensure guest window provided type is valid
-    if (/^[A-Z_]{1,255}$/g.test(type) === false) {
+    const isTypeValid = /^[A-Z_]{1,255}$/g;
+    if (isTypeValid.test(type) === false) {
       throw new Error('Invalid type detected, aborting.');
     }
 
@@ -305,7 +346,7 @@ class SingleSignOn {
   };
 
   private readonly wipeSessionData = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       if (this.session) {
         this.session.clearStorageData({}, () => resolve());
       } else {
