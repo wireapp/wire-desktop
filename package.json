@@ -19,6 +19,7 @@
     "babel-jest": "23.6.0",
     "babel-loader": "8.0.4",
     "commander": "2.19.0",
+    "cross-env": "5.2.0",
     "css-loader": "1.0.1",
     "electron": "3.0.9",
     "electron-builder": "20.29.0",
@@ -102,7 +103,7 @@
     "start:localhost": "yarn start --env=http://localhost:8080/app",
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:staging": "yarn start --env=https://wire-webapp-staging.zinfra.io",
-    "start": "yarn prestart && electron electron --inspect --devtools --enable-logging",
+    "start": "yarn prestart && cross-env NODE_DEBUG=wire-desktop* electron electron --inspect --devtools --enable-logging",
     "test:main": "electron-mocha --reporter spec tests/main",
     "test:react": "jest",
     "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:main"
