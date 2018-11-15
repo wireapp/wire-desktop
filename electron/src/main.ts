@@ -26,6 +26,7 @@ import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+import {SingleSignOn} from './js/lib/SingleSignOn';
 
 const debugMain = debug('mainTmp');
 
@@ -351,12 +352,21 @@ class ElectronWrapperInit {
   webviewProtection() {
     const webviewProtectionDebug = debug('ElectronWrapperInit:webviewProtection');
 
-    const openLinkInNewWindow = (event: Event, _url: string) => {
-      // Prevent default behavior
+    const openLinkInNewWindow = (
+      event: Electron.Event,
+      url: string,
+      frameName: string,
+      disposition: string,
+      options: Electron.Options
+    ) => {
       event.preventDefault();
 
-      webviewProtectionDebug('Opening an external window from a webview. URL: %s', _url);
-      shell.openExternal(_url);
+      if (SingleSignOn.isSingleSignOnLoginWindow(frameName) && SingleSignOn.isBackendOrigin(url)) {
+        return new SingleSignOn(main, event, url, options).init();
+      }
+
+      webviewProtectionDebug('Opening an external window from a webview. URL: %s', url);
+      return shell.openExternal(url);
     };
 
     const willNavigateInWebview = (event: Event, _url: string) => {

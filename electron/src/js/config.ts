@@ -19,6 +19,8 @@
 
 const pkg: {productName: string; version: string} = require('../../package.json');
 
+const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
+
 const EMBED_DOMAINS = [
   {
     allowedExternalLinks: ['www.youtube.com'],
@@ -88,6 +90,7 @@ const WINDOW = {
 };
 
 export {
+  BACKEND_ORIGINS,
   EMBED_DOMAINS,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
