@@ -35,7 +35,6 @@ const debugMain = debug('mainTmp');
 const APP_PATH = app.getAppPath();
 
 // Local files
-const CERT_ERR_HTML = fileUrl(path.join(APP_PATH, 'html', 'certificate-error.html'));
 const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
@@ -412,24 +411,24 @@ class ElectronWrapperInit {
               const {hostname, certificate, verificationResult} = request;
               const {hostname: hostnameInternal} = new URL(environment.URL_WEBAPP.INTERNAL);
 
-              if (verificationResult !== 'net::OK' && hostname !== hostnameInternal) {
-                console.error('setCertificateVerifyProc', hostname, verificationResult);
-                main.loadURL(CERT_ERR_HTML);
+              // Disable TLS verification for development backend
+              if (hostname === hostnameInternal && environment.app.IS_DEVELOPMENT) {
+                return cb(-3);
+              }
+
+              // Check browser results
+              if (verificationResult !== 'net::OK') {
+                console.error('setCertificateVerifyProc failed', hostname, verificationResult);
                 return cb(-2);
               }
 
+              // Check certificate pinning
               if (certificateUtils.hostnameShouldBePinned(hostname)) {
                 const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
 
                 for (const result of Object.values(pinningResults)) {
                   if (result === false) {
-                    let log = `--- Wire Certificate Check log from ${new Date().toISOString()} on ${os.platform()} ${os.arch()} ---\n\n`;
-                    log += `*${hostname}*: ${pinningResults.errorMessage}\n`;
-                    log += `\nRemote certificate: ${JSON.stringify(pinningResults.certificate)}\n\n`;
-                    log += '------------------------------------------------------------------\n\n';
-                    this.debug(log);
-                    console.error(log);
-                    main.loadURL(CERT_ERR_HTML);
+                    console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
                     return cb(-2);
                   }
                 }
