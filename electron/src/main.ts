@@ -52,7 +52,6 @@ import * as environment from './js/environment';
 import * as initRaygun from './js/initRaygun';
 import {download} from './js/lib/download';
 import {EVENT_TYPE} from './js/lib/eventType';
-import * as googleAuth from './js/lib/googleAuth';
 import * as lifecycle from './js/lifecycle';
 import {menuItem as developerMenu} from './js/menu/developer';
 import * as systemMenu from './js/menu/system';
@@ -89,13 +88,6 @@ const bindIpcEvents = () => {
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: IpcMessageEvent, count: number) => {
     tray.showUnreadCount(main, count);
-  });
-
-  ipcMain.on(EVENT_TYPE.GOOGLE_OAUTH.REQUEST, (event: IpcMessageEvent) => {
-    googleAuth
-      .getAccessToken(config.GOOGLE_SCOPES, config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET)
-      .then(code => event.sender.send('google-auth-success', code.access_token))
-      .catch(error => event.sender.send('google-auth-error', error));
   });
 
   ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event: IpcMessageEvent, accountID: string, sessionID?: string) => {

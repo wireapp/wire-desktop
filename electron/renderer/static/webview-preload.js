@@ -145,20 +145,11 @@ const replaceGoogleAuth = () => {
     return;
   }
 
-  // hijack google authenticate method
-  const authenticateWithGoogle = () => {
+  window.wire.app.service.connectGoogle._authenticate = window.wire.app.service.connect_google._authenticate = () => {
     return new Promise((resolve, reject) => {
-      ipcRenderer.send(EVENT_TYPE.GOOGLE_OAUTH.REQUEST);
-      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.SUCCESS, (event, token) => resolve(token));
-      ipcRenderer.once(EVENT_TYPE.GOOGLE_OAUTH.ERROR, reject);
+      reject(window.alert('This feature is no longer available.'));
     });
   };
-
-  if (window.wire.app.service.connectGoogle) {
-    window.wire.app.service.connectGoogle._authenticate = authenticateWithGoogle;
-  } else if (window.wire.app.service.connect_google) {
-    window.wire.app.service.connect_google._authenticate = authenticateWithGoogle;
-  }
 };
 
 const enableFileLogging = () => {

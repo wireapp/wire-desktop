@@ -46,10 +46,6 @@ yarn start
 yarn test
 ```
 
-### Enable Support for Google Contacts (optional)
-
-If you wish to import Google Contacts to Wire, you will need to [generate Google OAuth 2.0 credentials](https://console.developers.google.com/apis/credentials/oauthclient) for an "other" type app ([See here](https://developers.google.com/identity/protocols/OAuth2) for more details). Once you have generated your credentials, store the "Client ID" and "Client secret" in the environment as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, respectively.
-
 ### Tasks
 
 ```shell
