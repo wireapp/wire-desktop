@@ -18,6 +18,7 @@
  */
 
 // Modules
+import * as certificateUtils from '@wireapp/certificate-check';
 import * as debug from 'debug';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
@@ -46,7 +47,6 @@ import {SettingsType} from './js/settings/SettingsType';
 // Wrapper modules
 import * as about from './js/about';
 import * as appInit from './js/appInit';
-import * as certificateUtils from './js/certificateUtils';
 import * as config from './js/config';
 import * as environment from './js/environment';
 import * as initRaygun from './js/initRaygun';
