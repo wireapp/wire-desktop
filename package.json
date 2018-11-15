@@ -6,17 +6,14 @@
       "output": "wrap/dist"
     }
   },
-  "engines": {
-    "yarn": "false"
-  },
   "dependencies": {
     "debug": "4.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.1.2",
+    "@babel/plugin-proposal-object-rest-spread": "7.0.0",
     "@babel/preset-env": "7.1.6",
     "@babel/preset-react": "7.0.0",
-    "@babel/plugin-proposal-object-rest-spread": "7.0.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
     "babel-jest": "23.6.0",
@@ -80,34 +77,34 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "build:linux": "npm run build:ts && grunt linux-prod",
-    "build:macos": "npm run build:ts && grunt macos-prod",
-    "build:ts": "npm run clear:ts && tsc",
-    "build:win": "npm run build:ts && grunt win-prod",
+    "build:linux": "yarn build:ts && grunt linux-prod",
+    "build:macos": "yarn build:ts && grunt macos-prod",
+    "build:ts": "yarn clear:ts && tsc",
+    "build:win": "yarn build:ts && grunt win-prod",
     "bundle:dev": "webpack",
     "bundle": "webpack --env.production",
     "clear:ts": "rimraf electron/dist",
-    "fix:js": "npm run lint:js -- --fix",
-    "fix:other": "npm run prettier -- --write",
-    "fix:ts": "npm run lint:ts --fix",
-    "fix": "npm run fix:js && npm run fix:other && npm run fix:ts",
+    "fix:js": "yarn lint:js -- --fix",
+    "fix:other": "yarn prettier -- --write",
+    "fix:ts": "yarn lint:ts --fix",
+    "fix": "yarn fix:js && yarn fix:other && yarn fix:ts",
     "jest": "jest",
     "lint:js": "eslint --ignore-path .gitignore --ext .js,.jsx .",
-    "lint:other": "npm run prettier --list-different",
+    "lint:other": "yarn prettier --list-different",
     "lint:ts": "tslint --config tslint.json --project tsconfig.json \"**/*.ts\"",
-    "lint": "npm run lint:js && npm run lint:other && npm run lint:ts",
-    "postinstall": "cd electron && npm install && electron-builder install-app-deps",
-    "prestart": "npm run build:ts && npm run bundle:dev",
+    "lint": "yarn lint:js && yarn lint:other && yarn lint:ts",
+    "postinstall": "cd electron && yarn && electron-builder install-app-deps",
+    "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
-    "start:dev": "npm start -- --env=https://wire-webapp-dev.zinfra.io",
-    "start:edge": "npm start -- --env=https://wire-webapp-edge.zinfra.io",
-    "start:internal": "npm start -- --env=https://wire-webapp-staging.wire.com/?env=prod",
-    "start:localhost": "npm start -- --env=http://localhost:8080/app",
-    "start:prod": "npm start -- --env=https://app.wire.com",
-    "start:staging": "npm start -- --env=https://wire-webapp-staging.zinfra.io",
-    "start": "npm run prestart && electron electron --inspect --devtools --enable-logging",
+    "start:dev": "yarn start -- --env=https://wire-webapp-dev.zinfra.io",
+    "start:edge": "yarn start -- --env=https://wire-webapp-edge.zinfra.io",
+    "start:internal": "yarn start -- --env=https://wire-webapp-staging.wire.com/?env=prod",
+    "start:localhost": "yarn start -- --env=http://localhost:8080/app",
+    "start:prod": "yarn start -- --env=https://app.wire.com",
+    "start:staging": "yarn start -- --env=https://wire-webapp-staging.zinfra.io",
+    "start": "yarn prestart && electron electron --inspect --devtools --enable-logging",
     "test:main": "electron-mocha --reporter spec tests/main",
     "test:react": "jest",
-    "test": "npm run lint && npm run build:ts && npm run test:react && npm run test:main"
+    "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:main"
   }
 }
