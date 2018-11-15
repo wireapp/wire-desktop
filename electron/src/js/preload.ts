@@ -18,9 +18,9 @@
  */
 
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as environment from './environment';
-import {EVENT_TYPE} from './lib/eventType';
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);

@@ -17,7 +17,7 @@
  *
  */
 
-import {Point, Rectangle} from '../../interfaces/';
+import {Point, Rectangle} from '../interfaces/index';
 
 const pointInRectangle = (point: Point, rectangle: Rectangle) => {
   const [x, y] = point;

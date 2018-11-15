@@ -23,10 +23,10 @@ const webContents = remote.getCurrentWebContents();
 
 import {ElectronMenuWithFileAndImage} from '../interfaces/index';
 import * as config from '../js/config';
-import {EVENT_TYPE} from '../js/lib/eventType';
-import {settings} from '../js/settings/ConfigurationPersistence';
-import {SettingsType} from '../js/settings/SettingsType';
+import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
 
 let textMenu: Electron.Menu;
 

@@ -18,8 +18,8 @@
  */
 
 import * as Electron from 'electron';
-import {settings} from '../js/settings/ConfigurationPersistence';
-import {SettingsType} from '../js/settings/SettingsType';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
 
 import {Supportedi18nLanguage, Supportedi18nLanguageObject, i18nLanguageIdentifier} from '../interfaces/';
 

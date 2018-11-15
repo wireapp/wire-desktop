@@ -21,12 +21,12 @@ import autoLaunch = require('auto-launch');
 import {Menu, dialog, globalShortcut, shell} from 'electron';
 import * as config from '../js/config';
 import * as environment from '../js/environment';
-import {EVENT_TYPE} from '../js/lib/eventType';
 import * as lifecycle from '../js/lifecycle';
-import {settings} from '../js/settings/ConfigurationPersistence';
-import {SettingsType} from '../js/settings/SettingsType';
 import * as windowManager from '../js/window-manager';
+import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
 
 import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/index';
 
