@@ -200,6 +200,9 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     setTimeout(() => main.show(), 800);
   }
 
+  main.on('focus', () => systemMenu.registerShortcuts());
+  main.on('blur', () => systemMenu.unregisterShortcuts());
+
   main.webContents.on('will-navigate', (event, url) => {
     // Prevent any kind of navigation inside the main window
     event.preventDefault();

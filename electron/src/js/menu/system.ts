@@ -399,20 +399,6 @@ const createMenu = (isFullScreen: boolean): Menu => {
     helpTemplate.submenu = [];
   }
 
-  // Global mute shortcut
-  globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
-
-  // Global account switching shortcut
-  const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
-  const accountLimit = 3;
-  for (const shortcut of switchAccountShortcut) {
-    for (let accountId = 0; accountId < accountLimit; accountId++) {
-      globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
-        getPrimaryWindow().webContents.send(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
-      );
-    }
-  }
-
   if (environment.platform.IS_MAC_OS) {
     menuTemplate.unshift(darwinTemplate);
     if (Array.isArray(windowTemplate.submenu)) {
@@ -455,4 +441,24 @@ const createMenu = (isFullScreen: boolean): Menu => {
   return menu;
 };
 
-export {createMenu};
+const registerShortcuts = (): void => {
+  // Global mute shortcut
+  globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
+
+  // Global account switching shortcut
+  const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
+  const accountLimit = 3;
+  for (const shortcut of switchAccountShortcut) {
+    for (let accountId = 0; accountId < accountLimit; accountId++) {
+      globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
+        getPrimaryWindow().webContents.send(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
+      );
+    }
+  }
+};
+
+const unregisterShortcuts = (): void => {
+  globalShortcut.unregisterAll();
+};
+
+export {createMenu, registerShortcuts, unregisterShortcuts};

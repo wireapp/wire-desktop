@@ -403,7 +403,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('bundle', 'Bundle React app', () => {
     const {execSync} = require('child_process');
-    execSync('npm run bundle');
+    execSync('yarn bundle');
   });
 
   grunt.registerTask('bump-version', ['version-inc', 'gitcommit', 'gitpush']);
