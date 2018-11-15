@@ -24,7 +24,6 @@ import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
-import * as os from 'os';
 import * as path from 'path';
 import {URL} from 'url';
 import {SingleSignOn} from './js/lib/SingleSignOn';
