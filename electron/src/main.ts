@@ -400,11 +400,18 @@ class ElectronWrapperInit {
               const {hostname, certificate, verificationResult} = request;
               const {hostname: hostnameInternal} = new URL(environment.URL_WEBAPP.INTERNAL);
 
-              if (verificationResult !== 'net::OK' && hostname !== hostnameInternal) {
-                console.error('setCertificateVerifyProc', hostname, verificationResult);
+              // Disable TLS verification for development backend
+              if (hostname === hostnameInternal && environment.app.IS_DEVELOPMENT) {
+                return cb(-3);
+              }
+
+              // Check browser results
+              if (verificationResult !== 'net::OK') {
+                console.error('setCertificateVerifyProc failed', hostname, verificationResult);
                 return cb(-2);
               }
 
+              // Check certificate pinning
               if (certificateUtils.hostnameShouldBePinned(hostname)) {
                 const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
 
