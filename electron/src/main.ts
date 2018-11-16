@@ -227,7 +227,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
       if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
         // Override remote Access-Control-Allow-Origin
-        details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
+        details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
         details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
       }
 
