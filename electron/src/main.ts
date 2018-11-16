@@ -360,7 +360,7 @@ class ElectronWrapperInit {
         return new SingleSignOn(main, event, url, options).init();
       }
 
-      this.logger.log('Opening an external window from a webview. URL: %s', url);
+      this.logger.log(`Opening an external window from a webview. URL: ${url}`);
       return shell.openExternal(url);
     };
 
