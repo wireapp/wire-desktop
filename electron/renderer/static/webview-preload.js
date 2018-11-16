@@ -22,7 +22,7 @@ const environment = require('../../dist/js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
-const {EVENT_TYPE} = require('../../dist/js/lib/eventType');
+const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
