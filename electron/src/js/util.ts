@@ -20,7 +20,7 @@
 import * as Electron from 'electron';
 import * as url from 'url';
 
-import {pointInRectangle} from './lib/pointInRect';
+import {pointInRectangle} from '../lib/pointInRect';
 
 const capitalize = (input: string): string => input.charAt(0).toUpperCase() + input.substr(1);
 

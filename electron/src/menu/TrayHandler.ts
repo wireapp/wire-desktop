@@ -20,10 +20,10 @@
 import {Menu, Tray, app, nativeImage} from 'electron';
 import * as path from 'path';
 
-import * as locale from '../../locale/locale';
-import * as config from '../config';
-import * as lifecycle from '../lifecycle';
-import * as windowManager from '../window-manager';
+import * as config from '../js/config';
+import * as lifecycle from '../js/lifecycle';
+import * as windowManager from '../js/window-manager';
+import * as locale from '../locale/locale';
 
 class TrayHandler {
   lastUnreadCount: number;

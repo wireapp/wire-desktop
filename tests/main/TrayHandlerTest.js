@@ -23,7 +23,7 @@ const {app} = require('electron');
 const assert = require('assert');
 const path = require('path');
 const sinon = require('sinon');
-const {TrayHandler} = require('../../electron/dist/js/menu/TrayHandler');
+const {TrayHandler} = require('../../electron/dist/menu/TrayHandler');
 const {BrowserWindow} = require('electron');
 
 describe('TrayIconHandler', () => {

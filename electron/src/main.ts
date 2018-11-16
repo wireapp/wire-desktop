@@ -27,7 +27,7 @@ import * as fs from 'fs-extra';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import {SingleSignOn} from './js/lib/SingleSignOn';
+import {SingleSignOn} from './lib/SingleSignOn';
 
 const debugMain = debug('mainTmp');
 
@@ -41,8 +41,8 @@ const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 // Configuration persistence
-import {settings} from './js/settings/ConfigurationPersistence';
-import {SettingsType} from './js/settings/SettingsType';
+import {settings} from './settings/ConfigurationPersistence';
+import {SettingsType} from './settings/SettingsType';
 
 // Wrapper modules
 import * as about from './js/about';
@@ -50,15 +50,15 @@ import * as appInit from './js/appInit';
 import * as config from './js/config';
 import * as environment from './js/environment';
 import * as initRaygun from './js/initRaygun';
-import {download} from './js/lib/download';
-import {EVENT_TYPE} from './js/lib/eventType';
 import * as lifecycle from './js/lifecycle';
-import {menuItem as developerMenu} from './js/menu/developer';
-import * as systemMenu from './js/menu/system';
-import {TrayHandler} from './js/menu/TrayHandler';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
+import {download} from './lib/download';
+import {EVENT_TYPE} from './lib/eventType';
 import * as locale from './locale/locale';
+import {menuItem as developerMenu} from './menu/developer';
+import * as systemMenu from './menu/system';
+import {TrayHandler} from './menu/TrayHandler';
 
 // Interfaces
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
