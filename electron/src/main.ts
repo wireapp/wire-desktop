@@ -19,17 +19,19 @@
 
 // Modules
 import * as certificateUtils from '@wireapp/certificate-check';
-import * as debug from 'debug';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
+import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 import {SingleSignOn} from './lib/SingleSignOn';
+import {LogFactory} from './util/';
 
-const debugMain = debug('mainTmp');
+const logger = LogFactory.getLogger('main.ts');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -59,9 +61,6 @@ import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
-
-// Interfaces
-import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -96,20 +95,20 @@ const bindIpcEvents = () => {
       if (sessionID) {
         const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
         fs.removeSync(partitionDir);
-        debugMain(`Deleted partition for account: ${sessionID}`);
+        logger.log(`Deleted partition for account: ${sessionID}`);
       } else {
-        debugMain(`Skipping partition deletion for account: ${accountID}`);
+        logger.log(`Skipping partition deletion for account: ${accountID}`);
       }
     } catch (error) {
-      debugMain(`Failed to partition for account: ${sessionID}`);
+      logger.log(`Failed to partition for account: ${sessionID}`);
     }
 
     // delete logs
     try {
       fs.removeSync(LOG_DIR);
-      debugMain(`Deleted logs folder for account: ${accountID}`);
+      logger.log(`Deleted logs folder for account: ${accountID}`);
     } catch (error) {
-      debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
+      logger.log(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
     }
   });
 
@@ -213,7 +212,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
     // Ensure the link does not come from a webview
     if (typeof (event.sender as any).viewInstanceId !== 'undefined') {
-      debugMain('New window was created from a webview, aborting.');
+      logger.log('New window was created from a webview, aborting.');
       return;
     }
 
@@ -248,7 +247,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   main.on('close', event => {
     if (!isQuitting) {
       event.preventDefault();
-      debugMain('Closing window...');
+      logger.log('Closing window...');
 
       if (isFullScreen) {
         main.once('leave-full-screen', () => main.hide());
@@ -328,21 +327,19 @@ const renameLogFile = () => {
 };
 
 class ElectronWrapperInit {
-  debug: debug.IDebugger;
+  logger: logdown.Logger;
 
   constructor() {
-    this.debug = debug('ElectronWrapperInit');
+    this.logger = LogFactory.getLogger('ElectronWrapperInit');
   }
 
   async run() {
-    this.debug('webviewProtection init');
+    this.logger.log('webviewProtection init');
     this.webviewProtection();
   }
 
   // <webview> hardening
   webviewProtection() {
-    const webviewProtectionDebug = debug('ElectronWrapperInit:webviewProtection');
-
     const openLinkInNewWindow = (
       event: Electron.Event,
       url: string,
@@ -356,16 +353,16 @@ class ElectronWrapperInit {
         return new SingleSignOn(main, event, url, options).init();
       }
 
-      webviewProtectionDebug('Opening an external window from a webview. URL: %s', url);
+      this.logger.log(`Opening an external window from a webview. URL: ${url}`);
       return shell.openExternal(url);
     };
 
     const willNavigateInWebview = (event: Event, _url: string) => {
       // Ensure navigation is to a whitelisted domain
       if (util.isMatchingHost(_url, BASE_URL)) {
-        webviewProtectionDebug('Navigating inside webview. URL: %s', _url);
+        this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
-        webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
+        this.logger.log(`Preventing navigation inside webview. URL: ${_url}`);
         event.preventDefault();
       }
     };
@@ -387,7 +384,7 @@ class ElectronWrapperInit {
             // Verify the URL being loaded
             if (!util.isMatchingHost(_url, BASE_URL)) {
               event.preventDefault();
-              webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
+              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
             }
           });
           break;
