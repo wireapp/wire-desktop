@@ -24,7 +24,7 @@
     "electron-builder": "20.34.0",
     "electron-mocha": "6.0.4",
     "electron-packager": "12.2.0",
-    "electron-winstaller": "2.5.2",
+    "electron-winstaller": "2.7.0",
     "eslint": "5.9.0",
     "eslint-config-prettier": "3.3.0",
     "eslint-plugin-jasmine": "2.10.1",
