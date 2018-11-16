@@ -190,7 +190,7 @@ const menuUndoRedo = [
 const editTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuEdit',
   submenu: [
-    ...(environment.platform.IS_MAC_OS === false ? <ElectronMenuItemWithI18n>menuUndoRedo : []),
+    ...(environment.platform.IS_MAC_OS ? [] : <ElectronMenuItemWithI18n>menuUndoRedo),
     {
       i18n: 'menuCut',
       role: 'cut',
