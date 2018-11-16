@@ -194,7 +194,7 @@ const checkAvailability = callback => {
 const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
-  const {getOpenGraphData} = require('../../dist/js/lib/openGraph');
+  const {getOpenGraphData} = require('../../dist/lib/openGraph');
 
   global.clearImmediate = _clearImmediate;
   global.desktopCapturer = desktopCapturer;
@@ -217,6 +217,6 @@ window.addEventListener('DOMContentLoaded', () => {
     reportWebappVersion();
 
     // include context menu
-    require('../../dist/js/menu/context');
+    require('../../dist/menu/context');
   });
 });
