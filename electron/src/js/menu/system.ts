@@ -176,18 +176,21 @@ const toggleAutoLaunchTemplate: ElectronMenuItemWithI18n = {
 
 const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
 
+const menuUndoRedo = [
+  {
+    i18n: 'menuUndo',
+    role: 'undo',
+  },
+  {
+    i18n: 'menuRedo',
+    role: 'redo',
+  },
+  separatorTemplate,
+];
 const editTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuEdit',
   submenu: [
-    {
-      i18n: 'menuUndo',
-      role: 'undo',
-    },
-    {
-      i18n: 'menuRedo',
-      role: 'redo',
-    },
-    separatorTemplate,
+    ...(environment.platform.IS_MAC_OS ? [] : <ElectronMenuItemWithI18n>menuUndoRedo),
     {
       i18n: 'menuCut',
       role: 'cut',
