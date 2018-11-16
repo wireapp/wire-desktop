@@ -214,7 +214,7 @@ module.exports = function(grunt) {
 
       options: {
         arch: 'all',
-        asar: false,
+        asarUnpack: 'node_modules/spellchecker/vendor',
         publish: null,
       },
     },
