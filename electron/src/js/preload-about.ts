@@ -18,7 +18,7 @@
  */
 
 import {IpcMessageEvent, ipcRenderer} from 'electron';
-import {EVENT_TYPE} from './lib/eventType';
+import {EVENT_TYPE} from '../lib/eventType';
 
 ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels: string[]) => {
   for (const label in labels) {

@@ -18,10 +18,10 @@
  */
 
 import * as Electron from 'electron';
-import * as config from '../config';
-import * as environment from '../environment';
-import * as util from '../util';
-import * as windowManager from '../window-manager';
+import * as config from '../js/config';
+import * as environment from '../js/environment';
+import * as util from '../js/util';
+import * as windowManager from '../js/window-manager';
 
 const currentEnvironment = environment.getEnvironment();
 

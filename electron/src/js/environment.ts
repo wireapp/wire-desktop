@@ -17,8 +17,8 @@
  *
  */
 
-import {settings} from './settings/ConfigurationPersistence';
-import {SettingsType} from './settings/SettingsType';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
 const pkg: {environment: string; updateWinUrl: string} = require('../../package.json');
 
 let currentEnvironment: string | undefined;

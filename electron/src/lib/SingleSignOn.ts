@@ -22,7 +22,7 @@ import {BrowserWindow, app, session} from 'electron';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import {BACKEND_ORIGINS} from '../config';
+import {BACKEND_ORIGINS} from '../js/config';
 
 const argv = minimist(process.argv.slice(1));
 
