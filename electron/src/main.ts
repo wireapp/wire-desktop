@@ -367,7 +367,7 @@ class ElectronWrapperInit {
     const willNavigateInWebview = (event: Event, _url: string) => {
       // Ensure navigation is to a whitelisted domain
       if (util.isMatchingHost(_url, BASE_URL)) {
-        this.logger.log('Navigating inside webview. URL: %s', _url);
+        this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
         this.logger.log('Preventing navigation inside webview. URL: %s', _url);
         event.preventDefault();
