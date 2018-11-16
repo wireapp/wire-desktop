@@ -391,7 +391,7 @@ class ElectronWrapperInit {
             // Verify the URL being loaded
             if (!util.isMatchingHost(_url, BASE_URL)) {
               event.preventDefault();
-              this.logger.log('Prevented to show an unauthorized <webview>. URL: %s', _url);
+              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
             }
           });
           break;
