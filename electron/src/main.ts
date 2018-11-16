@@ -27,12 +27,11 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 import {SingleSignOn} from './lib/SingleSignOn';
+import {LogFactory} from './util/';
 
-const logger = logdown('wire-desktop/main.ts', {
-  logger: console,
-  markdown: false,
-});
+const logger = LogFactory.getLogger('main.ts');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -62,9 +61,6 @@ import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
-
-// Interfaces
-import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -334,10 +330,7 @@ class ElectronWrapperInit {
   logger: logdown.Logger;
 
   constructor() {
-    this.logger = logdown('wire-desktop/main.ts', {
-      logger: console,
-      markdown: false,
-    });
+    this.logger = LogFactory.getLogger('ElectronWrapperInit');
   }
 
   async run() {

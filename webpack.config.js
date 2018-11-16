@@ -34,4 +34,5 @@ module.exports = (env = {}) => ({
   resolve: {
     extensions: ['.js', '.jsx'],
   },
+  stats: 'errors-only',
 });

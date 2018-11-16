@@ -64,7 +64,7 @@
       "git add"
     ],
     "*.ts": [
-      "tslint --config tslint.json --fix",
+      "tslint --config tslint.json --project tsconfig.json --fix",
       "git add"
     ],
     "*.{json,md,css}": [

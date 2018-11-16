@@ -21,9 +21,9 @@ module.exports = {
   env: {
     test: {
       plugins: buildPlugins(),
-      presets: buildPresets({debug: true, modules: 'commonjs'}),
+      presets: buildPresets({modules: 'commonjs'}),
     },
   },
   plugins: buildPlugins(),
-  presets: buildPresets({debug: true, modules: false}),
+  presets: buildPresets({modules: false}),
 };
