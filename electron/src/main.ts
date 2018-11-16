@@ -369,7 +369,7 @@ class ElectronWrapperInit {
       if (util.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
-        this.logger.log('Preventing navigation inside webview. URL: %s', _url);
+        this.logger.log(`Preventing navigation inside webview. URL: ${_url}`);
         event.preventDefault();
       }
     };
