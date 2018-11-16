@@ -360,16 +360,16 @@ class ElectronWrapperInit {
         return new SingleSignOn(main, event, url, options).init();
       }
 
-      this.logger.log('Opening an external window from a webview. URL: %s', url);
+      this.logger.log(`Opening an external window from a webview. URL: ${url}`);
       return shell.openExternal(url);
     };
 
     const willNavigateInWebview = (event: Event, _url: string) => {
       // Ensure navigation is to a whitelisted domain
       if (util.isMatchingHost(_url, BASE_URL)) {
-        this.logger.log('Navigating inside webview. URL: %s', _url);
+        this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
-        this.logger.log('Preventing navigation inside webview. URL: %s', _url);
+        this.logger.log(`Preventing navigation inside webview. URL: ${_url}`);
         event.preventDefault();
       }
     };
@@ -391,7 +391,7 @@ class ElectronWrapperInit {
             // Verify the URL being loaded
             if (!util.isMatchingHost(_url, BASE_URL)) {
               event.preventDefault();
-              this.logger.log('Prevented to show an unauthorized <webview>. URL: %s', _url);
+              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
             }
           });
           break;
