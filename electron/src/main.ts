@@ -31,16 +31,20 @@ import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/
 import {SingleSignOn} from './lib/SingleSignOn';
 import {LogFactory} from './util/';
 
-const logger = LogFactory.getLogger('main.ts');
-
 // Paths
 const APP_PATH = app.getAppPath();
-
-// Local files
 const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
+
+LogFactory.LOG_FILE_PATH = LOG_DIR;
+LogFactory.LOG_FILE_NAME = 'electron.log';
+
+const logger = LogFactory.getLogger('main.ts');
+logger.log('Bla1');
+logger.log('Bla2');
+process.exit(0);
 
 // Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
