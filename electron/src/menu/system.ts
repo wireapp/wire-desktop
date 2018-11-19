@@ -178,23 +178,12 @@ const toggleAutoLaunchTemplate: ElectronMenuItemWithI18n = {
 
 const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
 
-const menuUndoRedo = [
-  {
-    i18n: 'menuUndo',
-    role: 'undo',
-  },
-  {
-    i18n: 'menuRedo',
-    role: 'redo',
-  },
-  separatorTemplate,
-];
 const editTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuEdit',
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
-      click: (menuItem: MenuItem, focusedWin: BrowserWindow) => {
+      click: (menuItem: Electron.MenuItem, focusedWin: Electron.BrowserWindow) => {
         const focusedWebContents = WebViewFocus.getFocusedWebContents();
         if (focusedWebContents) {
           focusedWebContents.undo();
@@ -204,7 +193,7 @@ const editTemplate: ElectronMenuItemWithI18n = {
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
-      click: (menuItem: MenuItem, focusedWin: BrowserWindow) => {
+      click: (menuItem: Electron.MenuItem, focusedWin: Electron.BrowserWindow) => {
         const focusedWebContents = WebViewFocus.getFocusedWebContents();
         if (focusedWebContents) {
           focusedWebContents.redo();
