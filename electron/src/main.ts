@@ -20,8 +20,6 @@
 // Modules
 import * as certificateUtils from '@wireapp/certificate-check';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
-import WindowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
