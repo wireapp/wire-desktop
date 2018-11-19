@@ -21,7 +21,7 @@ class LogFactory {
     R: 0,
   };
 
-  static getFileURI() {
+  static getFileURI(): string {
     return path.join(LogFactory.LOG_FILE_PATH, LogFactory.LOG_FILE_NAME);
   }
 
