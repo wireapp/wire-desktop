@@ -28,24 +28,6 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
-import {SingleSignOn} from './lib/SingleSignOn';
-import {LogFactory} from './util/';
-
-const logger = LogFactory.getLogger('main.ts');
-
-// Paths
-const APP_PATH = app.getAppPath();
-
-// Local files
-const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
-const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-
-// Configuration persistence
-import {settings} from './settings/ConfigurationPersistence';
-import {SettingsType} from './settings/SettingsType';
-
 // Wrapper modules
 import * as about from './js/about';
 import * as appInit from './js/appInit';
@@ -57,10 +39,27 @@ import * as util from './js/util';
 import * as windowManager from './js/window-manager';
 import {download} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
+import {SingleSignOn} from './lib/SingleSignOn';
 import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
+// Configuration persistence
+import {settings} from './settings/ConfigurationPersistence';
+import {SettingsType} from './settings/SettingsType';
+import {LogFactory} from './util/';
+
+// Paths
+const APP_PATH = app.getAppPath();
+const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
+const LOG_DIR = path.join(app.getPath('userData'), 'logs');
+const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
+const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
+
+LogFactory.LOG_FILE_PATH = LOG_DIR;
+LogFactory.LOG_FILE_NAME = 'electron.log';
+
+const logger = LogFactory.getLogger('main.ts', {forceEnable: true});
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -299,32 +298,41 @@ const handleAppEvents = () => {
   });
 };
 
-const renameLogFile = () => {
+const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string) => {
+  files
+    .filter(file => {
+      try {
+        return fs.statSync(file).isFile();
+      } catch (statError) {
+        return false;
+      }
+    })
+    .forEach(file => {
+      if (file.endsWith(oldExtension)) {
+        try {
+          fs.renameSync(file, file.replace(oldExtension, newExtension));
+        } catch (error) {
+          logger.error(`Failed to rename log file: "${error.message}"`);
+        }
+      }
+    });
+};
+
+const renameWebViewLogFiles = (): void => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   fs.readdir(LOG_DIR, (readError, contents) => {
     if (readError) {
-      return console.log(`Failed to read log directory with error: ${readError.message}`);
+      return logger.log(`Failed to read log directory with error: ${readError.message}`);
     }
 
-    contents
-      .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
-      .filter(file => {
-        try {
-          return fs.statSync(file).isFile();
-        } catch (statError) {
-          return undefined;
-        }
-      })
-      .forEach(file => {
-        if (file.endsWith('.log')) {
-          try {
-            fs.renameSync(file, file.replace('.log', '.old'));
-          } catch (error) {
-            console.error(`Failed to rename log file: ${error.message}`);
-          }
-        }
-      });
+    const logFiles = contents.map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME));
+    renameFileExtensions(logFiles, '.log', '.old');
   });
+};
+
+const initElectronLogFile = () => {
+  renameFileExtensions([LogFactory.getFileURI()], '.log', '.old');
+  fs.openSync(LogFactory.getFileURI(), 'w');
 };
 
 class ElectronWrapperInit {
@@ -363,7 +371,7 @@ class ElectronWrapperInit {
       if (util.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
-        this.logger.log(`Preventing navigation inside webview. URL: ${_url}`);
+        this.logger.log(`Preventing navigation inside WebView. URL: ${_url}`);
         event.preventDefault();
       }
     };
@@ -407,7 +415,7 @@ class ElectronWrapperInit {
 
               // Check browser results
               if (verificationResult !== 'net::OK') {
-                console.error('setCertificateVerifyProc failed', hostname, verificationResult);
+                logger.error('setCertificateVerifyProc failed', hostname, verificationResult);
                 return cb(-2);
               }
 
@@ -417,7 +425,7 @@ class ElectronWrapperInit {
 
                 for (const result of Object.values(pinningResults)) {
                   if (result === false) {
-                    console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
+                    logger.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
                     return cb(-2);
                   }
                 }
@@ -443,6 +451,7 @@ if (lifecycle.isFirstInstance) {
   appInit.addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
-  renameLogFile();
-  new ElectronWrapperInit().run().catch(error => console.error(error));
+  renameWebViewLogFiles();
+  initElectronLogFile();
+  new ElectronWrapperInit().run().catch(error => logger.error(error));
 }
