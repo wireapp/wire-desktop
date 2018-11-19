@@ -28,7 +28,25 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
+// Wrapper modules
+import * as about from './js/about';
+import * as appInit from './js/appInit';
+import * as config from './js/config';
+import * as environment from './js/environment';
+import * as initRaygun from './js/initRaygun';
+import * as lifecycle from './js/lifecycle';
+import * as util from './js/util';
+import * as windowManager from './js/window-manager';
+import {download} from './lib/download';
+import {EVENT_TYPE} from './lib/eventType';
 import {SingleSignOn} from './lib/SingleSignOn';
+import * as locale from './locale/locale';
+import {menuItem as developerMenu} from './menu/developer';
+import * as systemMenu from './menu/system';
+import {TrayHandler} from './menu/TrayHandler';
+// Configuration persistence
+import {settings} from './settings/ConfigurationPersistence';
+import {SettingsType} from './settings/SettingsType';
 import {LogFactory} from './util/';
 
 // Paths
@@ -42,26 +60,6 @@ LogFactory.LOG_FILE_PATH = LOG_DIR;
 LogFactory.LOG_FILE_NAME = 'electron.log';
 
 const logger = LogFactory.getLogger('main.ts');
-
-// Configuration persistence
-import {settings} from './settings/ConfigurationPersistence';
-import {SettingsType} from './settings/SettingsType';
-
-// Wrapper modules
-import * as about from './js/about';
-import * as appInit from './js/appInit';
-import * as config from './js/config';
-import * as environment from './js/environment';
-import * as initRaygun from './js/initRaygun';
-import * as lifecycle from './js/lifecycle';
-import * as util from './js/util';
-import * as windowManager from './js/window-manager';
-import {download} from './lib/download';
-import {EVENT_TYPE} from './lib/eventType';
-import * as locale from './locale/locale';
-import {menuItem as developerMenu} from './menu/developer';
-import * as systemMenu from './menu/system';
-import {TrayHandler} from './menu/TrayHandler';
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -299,35 +297,40 @@ const handleAppEvents = () => {
   });
 };
 
-const renameWebViewLogFiles = () => {
+const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string) => {
+  files
+    .filter(file => {
+      try {
+        return fs.statSync(file).isFile();
+      } catch (statError) {
+        return undefined;
+      }
+    })
+    .forEach(file => {
+      if (file.endsWith(oldExtension)) {
+        try {
+          fs.renameSync(file, file.replace(oldExtension, newExtension));
+        } catch (error) {
+          console.error(`Failed to rename log file: ${error.message}`);
+        }
+      }
+    });
+};
+
+const renameWebViewLogFiles = (): void => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   fs.readdir(LOG_DIR, (readError, contents) => {
     if (readError) {
       return console.log(`Failed to read log directory with error: ${readError.message}`);
     }
 
-    contents
-      .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
-      .filter(file => {
-        try {
-          return fs.statSync(file).isFile();
-        } catch (statError) {
-          return undefined;
-        }
-      })
-      .forEach(file => {
-        if (file.endsWith('.log')) {
-          try {
-            fs.renameSync(file, file.replace('.log', '.old'));
-          } catch (error) {
-            console.error(`Failed to rename log file: ${error.message}`);
-          }
-        }
-      });
+    const logFiles = contents.map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME));
+    renameFileExtensions(logFiles, '.log', '.old');
   });
 };
 
 const initElectronLogFile = () => {
+  renameFileExtensions([LogFactory.getFileURI()], '.log', '.old');
   fs.openSync(LogFactory.getFileURI(), 'w');
 };
 
