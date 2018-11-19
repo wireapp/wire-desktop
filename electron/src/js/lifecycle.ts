@@ -18,9 +18,9 @@
  */
 
 import {app, ipcMain} from 'electron';
+import {EVENT_TYPE} from '../lib/eventType';
+import {settings} from '../settings/ConfigurationPersistence';
 import * as environment from './environment';
-import {EVENT_TYPE} from './lib/eventType';
-import {settings} from './settings/ConfigurationPersistence';
 import * as windowManager from './window-manager';
 
 let isFirstInstance: boolean | undefined = undefined;

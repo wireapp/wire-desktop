@@ -22,7 +22,7 @@ const environment = require('../../dist/js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
-const {EVENT_TYPE} = require('../../dist/js/lib/eventType');
+const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app} = remote;
@@ -194,7 +194,7 @@ const checkAvailability = callback => {
 const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
-  const {getOpenGraphData} = require('../../dist/js/lib/openGraph');
+  const {getOpenGraphData} = require('../../dist/lib/openGraph');
 
   global.clearImmediate = _clearImmediate;
   global.desktopCapturer = desktopCapturer;
@@ -217,6 +217,6 @@ window.addEventListener('DOMContentLoaded', () => {
     reportWebappVersion();
 
     // include context menu
-    require('../../dist/js/menu/context');
+    require('../../dist/menu/context');
   });
 });

@@ -69,8 +69,6 @@ class Webviews extends Component {
     url.searchParams.set('id', account.id);
 
     if (forceLogin) {
-      const isLocalhost = url.hostname === 'localhost';
-      url.pathname = isLocalhost ? '/page/auth.html' : '/auth';
       url.hash = '#login';
     }
 

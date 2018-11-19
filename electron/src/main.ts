@@ -19,50 +19,48 @@
 
 // Modules
 import * as certificateUtils from '@wireapp/certificate-check';
-import * as debug from 'debug';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
+import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import {SingleSignOn} from './js/lib/SingleSignOn';
-
-const debugMain = debug('mainTmp');
-
-// Paths
-const APP_PATH = app.getAppPath();
-
-// Local files
-const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
-const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
-
-// Configuration persistence
-import {settings} from './js/settings/ConfigurationPersistence';
-import {SettingsType} from './js/settings/SettingsType';
-
+import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
 import * as appInit from './js/appInit';
 import * as config from './js/config';
 import * as environment from './js/environment';
 import * as initRaygun from './js/initRaygun';
-import {download} from './js/lib/download';
-import {EVENT_TYPE} from './js/lib/eventType';
 import {WebViewFocus} from './js/lib/webViewFocus';
 import * as lifecycle from './js/lifecycle';
-import {menuItem as developerMenu} from './js/menu/developer';
-import * as systemMenu from './js/menu/system';
-import {TrayHandler} from './js/menu/TrayHandler';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
+import {download} from './lib/download';
+import {EVENT_TYPE} from './lib/eventType';
+import {SingleSignOn} from './lib/SingleSignOn';
 import * as locale from './locale/locale';
+import {menuItem as developerMenu} from './menu/developer';
+import * as systemMenu from './menu/system';
+import {TrayHandler} from './menu/TrayHandler';
+// Configuration persistence
+import {settings} from './settings/ConfigurationPersistence';
+import {SettingsType} from './settings/SettingsType';
+import {LogFactory} from './util/';
 
-// Interfaces
-import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
+// Paths
+const APP_PATH = app.getAppPath();
+const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
+const LOG_DIR = path.join(app.getPath('userData'), 'logs');
+const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
+const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
+
+LogFactory.LOG_FILE_PATH = LOG_DIR;
+LogFactory.LOG_FILE_NAME = 'electron.log';
+
+const logger = LogFactory.getLogger('main.ts', {forceEnable: true});
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -97,24 +95,26 @@ const bindIpcEvents = () => {
       if (sessionID) {
         const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
         fs.removeSync(partitionDir);
-        debugMain(`Deleted partition for account: ${sessionID}`);
+        logger.log(`Deleted partition for account: ${sessionID}`);
       } else {
-        debugMain(`Skipping partition deletion for account: ${accountID}`);
+        logger.log(`Skipping partition deletion for account: ${accountID}`);
       }
     } catch (error) {
-      debugMain(`Failed to partition for account: ${sessionID}`);
+      logger.log(`Failed to partition for account: ${sessionID}`);
     }
 
     // delete logs
     try {
       fs.removeSync(LOG_DIR);
-      debugMain(`Deleted logs folder for account: ${accountID}`);
+      logger.log(`Deleted logs folder for account: ${accountID}`);
     } catch (error) {
-      debugMain(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
+      logger.log(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
     }
   });
 
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
+
+  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
 };
 
 const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
@@ -214,7 +214,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
     // Ensure the link does not come from a webview
     if (typeof (event.sender as any).viewInstanceId !== 'undefined') {
-      debugMain('New window was created from a webview, aborting.');
+      logger.log('New window was created from a webview, aborting.');
       return;
     }
 
@@ -228,7 +228,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
       if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
         // Override remote Access-Control-Allow-Origin
-        details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8080'];
+        details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
         details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
       }
 
@@ -249,7 +249,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   main.on('close', event => {
     if (!isQuitting) {
       event.preventDefault();
-      debugMain('Closing window...');
+      logger.log('Closing window...');
 
       if (isFullScreen) {
         main.once('leave-full-screen', () => main.hide());
@@ -289,7 +289,6 @@ const handleAppEvents = () => {
     if (environment.app.IS_DEVELOPMENT) {
       appMenu.append(developerMenu);
     }
-    (appMenu as any).on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
 
     Menu.setApplicationMenu(appMenu);
     tray = new TrayHandler();
@@ -300,50 +299,57 @@ const handleAppEvents = () => {
   });
 };
 
-const renameLogFile = () => {
+const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string) => {
+  files
+    .filter(file => {
+      try {
+        return fs.statSync(file).isFile();
+      } catch (statError) {
+        return false;
+      }
+    })
+    .forEach(file => {
+      if (file.endsWith(oldExtension)) {
+        try {
+          fs.renameSync(file, file.replace(oldExtension, newExtension));
+        } catch (error) {
+          logger.error(`Failed to rename log file: "${error.message}"`);
+        }
+      }
+    });
+};
+
+const renameWebViewLogFiles = (): void => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   fs.readdir(LOG_DIR, (readError, contents) => {
     if (readError) {
-      return console.log(`Failed to read log directory with error: ${readError.message}`);
+      return logger.log(`Failed to read log directory with error: ${readError.message}`);
     }
 
-    contents
-      .map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME))
-      .filter(file => {
-        try {
-          return fs.statSync(file).isFile();
-        } catch (statError) {
-          return undefined;
-        }
-      })
-      .forEach(file => {
-        if (file.endsWith('.log')) {
-          try {
-            fs.renameSync(file, file.replace('.log', '.old'));
-          } catch (error) {
-            console.error(`Failed to rename log file: ${error.message}`);
-          }
-        }
-      });
+    const logFiles = contents.map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME));
+    renameFileExtensions(logFiles, '.log', '.old');
   });
 };
 
+const initElectronLogFile = () => {
+  renameFileExtensions([LogFactory.getFileURI()], '.log', '.old');
+  fs.openSync(LogFactory.getFileURI(), 'w');
+};
+
 class ElectronWrapperInit {
-  debug: debug.IDebugger;
+  logger: logdown.Logger;
 
   constructor() {
-    this.debug = debug('ElectronWrapperInit');
+    this.logger = LogFactory.getLogger('ElectronWrapperInit');
   }
 
   async run() {
-    this.debug('webviewProtection init');
+    this.logger.log('webviewProtection init');
     this.webviewProtection();
   }
 
   // <webview> hardening
   webviewProtection() {
-    const webviewProtectionDebug = debug('ElectronWrapperInit:webviewProtection');
-
     const openLinkInNewWindow = (
       event: Electron.Event,
       url: string,
@@ -357,16 +363,16 @@ class ElectronWrapperInit {
         return new SingleSignOn(main, event, url, options).init();
       }
 
-      webviewProtectionDebug('Opening an external window from a webview. URL: %s', url);
+      this.logger.log(`Opening an external window from a webview. URL: ${url}`);
       return shell.openExternal(url);
     };
 
     const willNavigateInWebview = (event: Event, _url: string) => {
       // Ensure navigation is to a whitelisted domain
       if (util.isMatchingHost(_url, BASE_URL)) {
-        webviewProtectionDebug('Navigating inside webview. URL: %s', _url);
+        this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
-        webviewProtectionDebug('Preventing navigation inside webview. URL: %s', _url);
+        this.logger.log(`Preventing navigation inside WebView. URL: ${_url}`);
         event.preventDefault();
       }
     };
@@ -390,7 +396,7 @@ class ElectronWrapperInit {
             // Verify the URL being loaded
             if (!util.isMatchingHost(_url, BASE_URL)) {
               event.preventDefault();
-              webviewProtectionDebug('Prevented to show an unauthorized <webview>. URL: %s', _url);
+              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
             }
           });
           break;
@@ -412,7 +418,7 @@ class ElectronWrapperInit {
 
               // Check browser results
               if (verificationResult !== 'net::OK') {
-                console.error('setCertificateVerifyProc failed', hostname, verificationResult);
+                logger.error('setCertificateVerifyProc failed', hostname, verificationResult);
                 return cb(-2);
               }
 
@@ -422,7 +428,7 @@ class ElectronWrapperInit {
 
                 for (const result of Object.values(pinningResults)) {
                   if (result === false) {
-                    console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
+                    logger.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
                     return cb(-2);
                   }
                 }
@@ -448,6 +454,7 @@ if (lifecycle.isFirstInstance) {
   appInit.addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
-  renameLogFile();
-  new ElectronWrapperInit().run().catch(error => console.error(error));
+  renameWebViewLogFiles();
+  initElectronLogFile();
+  new ElectronWrapperInit().run().catch(error => logger.error(error));
 }

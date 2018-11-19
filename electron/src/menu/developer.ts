@@ -18,10 +18,10 @@
  */
 
 import * as Electron from 'electron';
-import * as config from '../config';
-import * as environment from '../environment';
-import * as util from '../util';
-import * as windowManager from '../window-manager';
+import * as config from '../js/config';
+import * as environment from '../js/environment';
+import * as util from '../js/util';
+import * as windowManager from '../js/window-manager';
 
 const currentEnvironment = environment.getEnvironment();
 
@@ -37,28 +37,28 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'Alt+CmdOrCtrl+I',
-      click: () => (getPrimaryWindow() as any).toggleDevTools(),
+      click: () => getPrimaryWindow().webContents.toggleDevTools(),
       label: 'Sidebar',
     },
     {
-      click: () =>
-        getPrimaryWindow().webContents.executeJavaScript(
-          "document.getElementsByTagName('webview')[0].openDevTools({mode: 'detach'})"
-        ),
+      click: () => {
+        const command = 'document.getElementsByTagName("webview")[0].openDevTools({mode: "detach"})';
+        return getPrimaryWindow().webContents.executeJavaScript(command);
+      },
       label: 'First',
     },
     {
-      click: () =>
-        getPrimaryWindow().webContents.executeJavaScript(
-          "document.getElementsByTagName('webview')[1].openDevTools({mode: 'detach'})"
-        ),
+      click: () => {
+        const command = 'document.getElementsByTagName("webview")[1].openDevTools({mode: "detach"})';
+        return getPrimaryWindow().webContents.executeJavaScript(command);
+      },
       label: 'Second',
     },
     {
-      click: () =>
-        getPrimaryWindow().webContents.executeJavaScript(
-          "document.getElementsByTagName('webview')[2].openDevTools({mode: 'detach'})"
-        ),
+      click: () => {
+        const command = 'document.getElementsByTagName("webview")[2].openDevTools({mode: "detach"})';
+        return getPrimaryWindow().webContents.executeJavaScript(command);
+      },
       label: 'Third',
     },
   ],

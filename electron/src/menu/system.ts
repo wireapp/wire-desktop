@@ -18,18 +18,19 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {BrowserWindow, Menu, MenuItem, dialog, globalShortcut, shell} from 'electron';
-import * as locale from '../../locale/locale';
-import * as config from '../config';
-import * as environment from '../environment';
+import {Menu, dialog, globalShortcut, ipcMain, shell} from 'electron';
+
+import * as config from '../js/config';
+import * as environment from '../js/environment';
+import * as lifecycle from '../js/lifecycle';
+import * as windowManager from '../js/window-manager';
 import {EVENT_TYPE} from '../lib/eventType';
 import {WebViewFocus} from '../lib/webViewFocus';
-import * as lifecycle from '../lifecycle';
+import * as locale from '../locale/locale';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-import * as windowManager from '../window-manager';
 
-import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../../interfaces/';
+import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -57,7 +58,7 @@ const separatorTemplate: ElectronMenuItemWithI18n = {
 
 const createLanguageTemplate = (languageCode: Supportedi18nLanguage): ElectronMenuItemWithI18n => {
   return {
-    click: (): void => changeLocale(languageCode),
+    click: () => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
     type: 'radio',
   };
@@ -75,7 +76,7 @@ const localeTemplate: ElectronMenuItemWithI18n = {
 };
 
 const aboutTemplate: ElectronMenuItemWithI18n = {
-  click: (): void => (menu as any).emit(EVENT_TYPE.ABOUT.SHOW),
+  click: () => ipcMain.emit(EVENT_TYPE.ABOUT.SHOW),
   i18n: 'menuAbout',
 };
 
@@ -177,6 +178,17 @@ const toggleAutoLaunchTemplate: ElectronMenuItemWithI18n = {
 
 const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
 
+const menuUndoRedo = [
+  {
+    i18n: 'menuUndo',
+    role: 'undo',
+  },
+  {
+    i18n: 'menuRedo',
+    role: 'redo',
+  },
+  separatorTemplate,
+];
 const editTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuEdit',
   submenu: [

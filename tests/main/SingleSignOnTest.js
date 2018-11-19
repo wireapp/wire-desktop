@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {SingleSignOn} = require('../../electron/dist/js/lib/SingleSignOn');
+const {SingleSignOn} = require('../../electron/dist/lib/SingleSignOn');
 
 describe('SingleSignOn"', () => {
   describe('protocol', () => {
