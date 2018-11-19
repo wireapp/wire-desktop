@@ -37,7 +37,7 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'Alt+CmdOrCtrl+I',
-      click: () => (getPrimaryWindow() as any).toggleDevTools(),
+      click: () => getPrimaryWindow().webContents.toggleDevTools(),
       label: 'Sidebar',
     },
     {

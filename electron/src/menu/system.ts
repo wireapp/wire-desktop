@@ -18,7 +18,8 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {Menu, dialog, globalShortcut, shell} from 'electron';
+import {Menu, dialog, globalShortcut, ipcMain, shell} from 'electron';
+
 import * as config from '../js/config';
 import * as environment from '../js/environment';
 import * as lifecycle from '../js/lifecycle';
@@ -56,7 +57,7 @@ const separatorTemplate: ElectronMenuItemWithI18n = {
 
 const createLanguageTemplate = (languageCode: Supportedi18nLanguage): ElectronMenuItemWithI18n => {
   return {
-    click: (): void => changeLocale(languageCode),
+    click: () => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
     type: 'radio',
   };
@@ -74,7 +75,7 @@ const localeTemplate: ElectronMenuItemWithI18n = {
 };
 
 const aboutTemplate: ElectronMenuItemWithI18n = {
-  click: (): void => (menu as any).emit(EVENT_TYPE.ABOUT.SHOW),
+  click: () => ipcMain.emit(EVENT_TYPE.ABOUT.SHOW),
   i18n: 'menuAbout',
 };
 
