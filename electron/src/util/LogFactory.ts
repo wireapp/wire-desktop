@@ -45,7 +45,7 @@ class LogFactory {
     }
   }
 
-  static async writeToFile(logTransport: logdown.TransportOptions) {
+  static writeToFile(logTransport: logdown.TransportOptions): void {
     if (LogFactory.LOG_FILE_PATH && LogFactory.LOG_FILE_NAME) {
       const [time] = logTransport.args;
       const logMessage = `${time} ${logTransport.msg}`;
