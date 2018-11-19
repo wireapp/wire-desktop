@@ -57,18 +57,30 @@ class LogFactory {
     }
   }
 
-  static getLogger(name: string, color: string = LogFactory.getColor()): logdown.Logger {
+  static getLogger(name: string, options?: {color?: string; forceEnable?: boolean}): logdown.Logger {
+    const defaults = {
+      color: LogFactory.getColor(),
+      forceEnable: false,
+    };
+    const config = {...defaults, ...options};
+
     if (logdown.transports.length === 0) {
       logdown.transports.push(LogFactory.addTimestamp);
       logdown.transports.push(LogFactory.writeToFile);
     }
     const loggerName = `${LogFactory.NAMESPACE}${name}`;
 
-    return logdown(loggerName, {
+    const logger = logdown(loggerName, {
       logger: console,
       markdown: false,
-      prefixColor: color,
+      prefixColor: config.color,
     });
+
+    if (config.forceEnable) {
+      logger.state.isEnabled = true;
+    }
+
+    return logger;
   }
 }
 

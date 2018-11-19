@@ -44,7 +44,6 @@ import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
-
 // Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
@@ -60,7 +59,7 @@ const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 LogFactory.LOG_FILE_PATH = LOG_DIR;
 LogFactory.LOG_FILE_NAME = 'electron.log';
 
-const logger = LogFactory.getLogger('main.ts');
+const logger = LogFactory.getLogger('main.ts', {forceEnable: true});
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -312,7 +311,7 @@ const renameFileExtensions = (files: string[], oldExtension: string, newExtensio
         try {
           fs.renameSync(file, file.replace(oldExtension, newExtension));
         } catch (error) {
-          console.error(`Failed to rename log file: "${error.message}"`);
+          logger.error(`Failed to rename log file: "${error.message}"`);
         }
       }
     });
@@ -322,7 +321,7 @@ const renameWebViewLogFiles = (): void => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   fs.readdir(LOG_DIR, (readError, contents) => {
     if (readError) {
-      return console.log(`Failed to read log directory with error: ${readError.message}`);
+      return logger.log(`Failed to read log directory with error: ${readError.message}`);
     }
 
     const logFiles = contents.map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME));
@@ -371,7 +370,7 @@ class ElectronWrapperInit {
       if (util.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
-        this.logger.log(`Preventing navigation inside webview. URL: ${_url}`);
+        this.logger.log(`Preventing navigation inside WebView. URL: ${_url}`);
         event.preventDefault();
       }
     };
@@ -415,7 +414,7 @@ class ElectronWrapperInit {
 
               // Check browser results
               if (verificationResult !== 'net::OK') {
-                console.error('setCertificateVerifyProc failed', hostname, verificationResult);
+                logger.error('setCertificateVerifyProc failed', hostname, verificationResult);
                 return cb(-2);
               }
 
@@ -425,7 +424,7 @@ class ElectronWrapperInit {
 
                 for (const result of Object.values(pinningResults)) {
                   if (result === false) {
-                    console.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
+                    logger.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
                     return cb(-2);
                   }
                 }
@@ -453,5 +452,5 @@ if (lifecycle.isFirstInstance) {
   handleAppEvents();
   renameWebViewLogFiles();
   initElectronLogFile();
-  new ElectronWrapperInit().run().catch(error => console.error(error));
+  new ElectronWrapperInit().run().catch(error => logger.error(error));
 }
