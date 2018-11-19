@@ -312,7 +312,7 @@ const renameFileExtensions = (files: string[], oldExtension: string, newExtensio
         try {
           fs.renameSync(file, file.replace(oldExtension, newExtension));
         } catch (error) {
-          console.error(`Failed to rename log file: ${error.message}`);
+          console.error(`Failed to rename log file: "${error.message}"`);
         }
       }
     });
