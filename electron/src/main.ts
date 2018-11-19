@@ -304,7 +304,7 @@ const renameFileExtensions = (files: string[], oldExtension: string, newExtensio
       try {
         return fs.statSync(file).isFile();
       } catch (statError) {
-        return undefined;
+        return false;
       }
     })
     .forEach(file => {
