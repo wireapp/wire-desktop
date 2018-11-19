@@ -25,7 +25,7 @@ class LogFactory {
     return path.join(LogFactory.LOG_FILE_PATH, LogFactory.LOG_FILE_NAME);
   }
 
-  static getColor() {
+  static getColor(): string {
     LogFactory.COLOR_CODE.R = (LogFactory.COLOR_CODE.R + LogFactory.COLOR_STEP.R) % 256;
     LogFactory.COLOR_CODE.G = (LogFactory.COLOR_CODE.G + LogFactory.COLOR_STEP.G) % 256;
     LogFactory.COLOR_CODE.B = (LogFactory.COLOR_CODE.B + LogFactory.COLOR_STEP.B) % 256;
@@ -39,7 +39,7 @@ class LogFactory {
     return `#${rHex}${gHex}${bHex}`;
   }
 
-  static addTimestamp(logTransport: logdown.TransportOptions) {
+  static addTimestamp(logTransport: logdown.TransportOptions): void {
     if (~logTransport.msg.indexOf(LogFactory.NAMESPACE)) {
       logTransport.args.unshift(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]`);
     }
@@ -57,7 +57,7 @@ class LogFactory {
     }
   }
 
-  static getLogger(name: string, color: string = LogFactory.getColor()) {
+  static getLogger(name: string, color: string = LogFactory.getColor()): logdown.Logger {
     if (logdown.transports.length === 0) {
       logdown.transports.push(LogFactory.addTimestamp);
       logdown.transports.push(LogFactory.writeToFile);
