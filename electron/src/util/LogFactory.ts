@@ -21,6 +21,10 @@ class LogFactory {
     R: 0,
   };
 
+  static getFileURI() {
+    return path.join(LogFactory.LOG_FILE_PATH, LogFactory.LOG_FILE_NAME);
+  }
+
   static getColor() {
     LogFactory.COLOR_CODE.R = (LogFactory.COLOR_CODE.R + LogFactory.COLOR_STEP.R) % 256;
     LogFactory.COLOR_CODE.G = (LogFactory.COLOR_CODE.G + LogFactory.COLOR_STEP.G) % 256;
@@ -44,10 +48,9 @@ class LogFactory {
   static async writeToFile(logTransport: logdown.TransportOptions) {
     if (LogFactory.LOG_FILE_PATH && LogFactory.LOG_FILE_NAME) {
       const [time] = logTransport.args;
-      const filePath = path.join(LogFactory.LOG_FILE_PATH, LogFactory.LOG_FILE_NAME);
       const logMessage = `${time} ${logTransport.msg}`;
       const withoutColor = logMessage.replace(ansiRegex(), '');
-      fs.writeFileSync(filePath, `${withoutColor}\r\n`, {
+      fs.writeFileSync(LogFactory.getFileURI(), `${withoutColor}\r\n`, {
         encoding: 'utf8',
         flag: 'a',
       });

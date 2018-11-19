@@ -42,9 +42,6 @@ LogFactory.LOG_FILE_PATH = LOG_DIR;
 LogFactory.LOG_FILE_NAME = 'electron.log';
 
 const logger = LogFactory.getLogger('main.ts');
-logger.log('Bla1');
-logger.log('Bla2');
-process.exit(0);
 
 // Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
@@ -302,7 +299,7 @@ const handleAppEvents = () => {
   });
 };
 
-const renameLogFile = () => {
+const renameWebViewLogFiles = () => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   fs.readdir(LOG_DIR, (readError, contents) => {
     if (readError) {
@@ -328,6 +325,10 @@ const renameLogFile = () => {
         }
       });
   });
+};
+
+const initElectronLogFile = () => {
+  fs.openSync(LogFactory.getFileURI(), 'w');
 };
 
 class ElectronWrapperInit {
@@ -446,6 +447,7 @@ if (lifecycle.isFirstInstance) {
   appInit.addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
-  renameLogFile();
+  renameWebViewLogFiles();
+  initElectronLogFile();
   new ElectronWrapperInit().run().catch(error => console.error(error));
 }
