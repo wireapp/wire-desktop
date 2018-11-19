@@ -113,6 +113,8 @@ const bindIpcEvents = () => {
   });
 
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
+
+  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
 };
 
 const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
@@ -287,7 +289,6 @@ const handleAppEvents = () => {
     if (environment.app.IS_DEVELOPMENT) {
       appMenu.append(developerMenu);
     }
-    (appMenu as any).on(EVENT_TYPE.ABOUT.SHOW, () => about.showWindow());
 
     Menu.setApplicationMenu(appMenu);
     tray = new TrayHandler();
