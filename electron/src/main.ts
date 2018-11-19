@@ -52,6 +52,7 @@ import * as environment from './js/environment';
 import * as initRaygun from './js/initRaygun';
 import {download} from './js/lib/download';
 import {EVENT_TYPE} from './js/lib/eventType';
+import {WebViewFocus} from './js/lib/webViewFocus';
 import * as lifecycle from './js/lifecycle';
 import {menuItem as developerMenu} from './js/menu/developer';
 import * as systemMenu from './js/menu/system';
@@ -371,6 +372,8 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', (webviewEvent, contents) => {
+      WebViewFocus.bindTracker(webviewEvent, contents);
+
       switch ((contents as any).getType()) {
         case 'window':
           contents.on('will-attach-webview', (event, webPreferences, params) => {
