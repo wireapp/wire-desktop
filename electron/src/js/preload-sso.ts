@@ -18,7 +18,7 @@
  */
 
 const {webFrame, remote} = require('electron');
-const {SingleSignOn} = remote.require('../lib/SingleSignOn');
+const {SingleSignOn} = remote.require('./lib/SingleSignOn');
 
 // Only execute the helper if the origin is the backend
 if (
