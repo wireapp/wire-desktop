@@ -131,15 +131,6 @@ const exposeAddressBook = () => {
   }
 };
 
-const exposeSSOCapability = () => {
-  Object.defineProperty(window, 'wSSOCapable', {
-    configurable: false,
-    enumerable: false,
-    value: true,
-    writable: false,
-  });
-};
-
 const replaceGoogleAuth = () => {
   if (window.wire.app === undefined) {
     return;
@@ -206,16 +197,21 @@ process.once('loaded', () => {
   enableFileLogging();
 });
 
+// Expose SSO capability to webapp before anything is rendered
+Object.defineProperty(window, 'wSSOCapable', {
+  configurable: false,
+  enumerable: false,
+  value: true,
+  writable: false,
+});
+
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
     exposeAddressBook();
-    exposeSSOCapability();
-
     subscribeToMainProcessEvents();
     subscribeToWebappEvents();
     replaceGoogleAuth();
     reportWebappVersion();
-
     // include context menu
     require('../../dist/menu/context');
   });

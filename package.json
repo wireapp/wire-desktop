@@ -100,7 +100,7 @@
     "start:dev": "yarn start --env=https://wire-webapp-dev.zinfra.io",
     "start:edge": "yarn start --env=https://wire-webapp-edge.zinfra.io",
     "start:internal": "yarn start --env=https://wire-webapp-staging.wire.com/?env=prod",
-    "start:localhost": "yarn start --env=http://localhost:8081/auth",
+    "start:localhost": "yarn start --env=http://localhost:8081",
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:staging": "yarn start --env=https://wire-webapp-staging.zinfra.io",
     "start": "yarn prestart && cross-env NODE_DEBUG=wire-desktop* electron electron --inspect --devtools --enable-logging",

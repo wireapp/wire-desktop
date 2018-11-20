@@ -69,6 +69,7 @@ class Webviews extends Component {
     url.searchParams.set('id', account.id);
 
     if (forceLogin) {
+      url.pathname = '/auth';
       url.hash = '#login';
     }
 
