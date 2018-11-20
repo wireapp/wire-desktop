@@ -50,10 +50,14 @@ class LogFactory {
       const [time] = logTransport.args;
       const logMessage = `${time} ${logTransport.msg}`;
       const withoutColor = logMessage.replace(ansiRegex(), '');
-      fs.writeFileSync(LogFactory.getFileURI(), `${withoutColor}\r\n`, {
-        encoding: 'utf8',
-        flag: 'a',
-      });
+      try {
+        fs.writeFileSync(LogFactory.getFileURI(), `${withoutColor}\r\n`, {
+          encoding: 'utf8',
+          flag: 'a',
+        });
+      } catch (error) {
+        console.warn(`Cannot write to log file "${LogFactory.getFileURI()}": ${error.message}`, error);
+      }
     }
   }
 
