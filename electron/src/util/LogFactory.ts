@@ -56,7 +56,7 @@ class LogFactory {
           flag: 'a',
         });
       } catch (error) {
-        // Don't crash on I/O logging errors
+        console.warn(`Cannot write to log file "${LogFactory.getFileURI()}": ${error.message}`, error);
       }
     }
   }
