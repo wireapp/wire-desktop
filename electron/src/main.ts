@@ -40,6 +40,7 @@ import * as windowManager from './js/window-manager';
 import {download} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {SingleSignOn} from './lib/SingleSignOn';
+import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -377,6 +378,8 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', (webviewEvent, contents) => {
+      WebViewFocus.bindTracker(webviewEvent, contents);
+
       switch ((contents as any).getType()) {
         case 'window':
           contents.on('will-attach-webview', (event, webPreferences, params) => {

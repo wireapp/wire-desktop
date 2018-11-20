@@ -63,6 +63,7 @@ class Webview extends Component {
     if (this.props.visible && this.webview) {
       this.webview.blur();
       this.webview.focus();
+      this.webview.getWebContents().webContents.focus();
     }
   }
 

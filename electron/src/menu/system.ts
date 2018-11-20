@@ -25,6 +25,7 @@ import * as environment from '../js/environment';
 import * as lifecycle from '../js/lifecycle';
 import * as windowManager from '../js/window-manager';
 import {EVENT_TYPE} from '../lib/eventType';
+import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
@@ -177,21 +178,30 @@ const toggleAutoLaunchTemplate: ElectronMenuItemWithI18n = {
 
 const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
 
-const menuUndoRedo = [
-  {
-    i18n: 'menuUndo',
-    role: 'undo',
-  },
-  {
-    i18n: 'menuRedo',
-    role: 'redo',
-  },
-  separatorTemplate,
-];
 const editTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuEdit',
   submenu: [
-    ...(environment.platform.IS_MAC_OS ? [] : <ElectronMenuItemWithI18n>menuUndoRedo),
+    {
+      accelerator: 'CmdOrCtrl+Z',
+      click: (menuItem: Electron.MenuItem, focusedWin: Electron.BrowserWindow) => {
+        const focusedWebContents = WebViewFocus.getFocusedWebContents();
+        if (focusedWebContents) {
+          focusedWebContents.undo();
+        }
+      },
+      i18n: 'menuUndo',
+    },
+    {
+      accelerator: 'Shift+CmdOrCtrl+Z',
+      click: (menuItem: Electron.MenuItem, focusedWin: Electron.BrowserWindow) => {
+        const focusedWebContents = WebViewFocus.getFocusedWebContents();
+        if (focusedWebContents) {
+          focusedWebContents.redo();
+        }
+      },
+      i18n: 'menuRedo',
+    },
+    separatorTemplate,
     {
       i18n: 'menuCut',
       role: 'cut',
