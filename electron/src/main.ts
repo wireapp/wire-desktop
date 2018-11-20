@@ -360,7 +360,7 @@ class ElectronWrapperInit {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName) && SingleSignOn.isBackendOrigin(url)) {
-        return new SingleSignOn(main, event.sender, event, url, options).init();
+        return new SingleSignOn(main, event, url, options).init();
       }
 
       this.logger.log(`Opening an external window from a webview. URL: ${url}`);
