@@ -31,7 +31,6 @@ node('node180') {
         sh 'pip install -r requirements.txt'
         sh 'node -v'
         sh 'npm -v'
-        sh 'npm install yarn'
         sh 'yarn'
         sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {

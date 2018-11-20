@@ -26,11 +26,11 @@ node('master') {
     try {
       sh 'security unlock-keychain -p 123456 /Users/jenkins/Library/Keychains/login.keychain'
       sh 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.11.3', type: 'nodejs'
+      def NODE = tool name: 'node-v8.12.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
-        sh 'npm install yarn'
+        sh 'npm install -g yarn'
         sh 'yarn'
         sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
