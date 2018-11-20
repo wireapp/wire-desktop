@@ -299,7 +299,7 @@ const handleAppEvents = () => {
   });
 };
 
-const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string) => {
+const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string): void => {
   files
     .filter(file => {
       try {
@@ -331,9 +331,9 @@ const renameWebViewLogFiles = (): void => {
   });
 };
 
-const initElectronLogFile = () => {
+const initElectronLogFile = (): void => {
   renameFileExtensions([LogFactory.getFileURI()], '.log', '.old');
-  fs.openSync(LogFactory.getFileURI(), 'w');
+  fs.ensureFileSync(LogFactory.getFileURI());
 };
 
 class ElectronWrapperInit {
