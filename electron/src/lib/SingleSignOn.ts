@@ -190,11 +190,12 @@ class SingleSignOn {
 
   constructor(
     private readonly mainBrowserWindow: Electron.BrowserWindow,
+    private readonly webview: Electron.WebContents,
     private readonly senderEvent: Electron.Event,
     windowOriginUrl: string,
     private readonly windowOptions: Electron.BrowserWindowConstructorOptions
   ) {
-    this.mainSession = this.mainBrowserWindow.webContents.session;
+    this.mainSession = this.webview.session;
     this.senderWebContents = senderEvent.sender;
     this.windowOriginUrl = new URL(windowOriginUrl);
   }
