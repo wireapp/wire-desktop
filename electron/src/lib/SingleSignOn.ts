@@ -28,7 +28,6 @@ const argv = minimist(process.argv.slice(1));
 
 class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS: string[] = BACKEND_ORIGINS;
-  private static readonly ALLOWED_BACKEND_ORIGINS_WINDOW_TITLE: string = '';
   private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist', 'js', 'preload-sso.js');
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
@@ -171,9 +170,9 @@ class SingleSignOn {
   // Ensure the requested URL is going to the backend
   public static isBackendOrigin = (url: string) => SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
 
-  // Get window title
+  // Returns an empty string if the origin is a Wire backend
   public static getWindowTitle = (origin: string) =>
-    SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? SingleSignOn.ALLOWED_BACKEND_ORIGINS_WINDOW_TITLE : origin;
+    SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
 
   public static readonly javascriptHelper = () => {
     return `Object.defineProperty(window, 'opener', {
