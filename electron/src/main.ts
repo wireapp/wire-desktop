@@ -251,7 +251,8 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
       event.preventDefault();
       logger.log('Closing window...');
 
-      if (isFullScreen) {
+      if (main.isFullScreen()) {
+        logger.log('Fullscreen detected, leaving full screen before hiding...');
         main.once('leave-full-screen', () => main.hide());
         main.setFullScreen(false);
       } else {
