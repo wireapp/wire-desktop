@@ -170,6 +170,10 @@ class SingleSignOn {
   // Ensure the requested URL is going to the backend
   public static isBackendOrigin = (url: string) => SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
 
+  // Returns an empty string if the origin is a Wire backend
+  public static getWindowTitle = (origin: string) =>
+    SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
+
   public static readonly javascriptHelper = () => {
     return `Object.defineProperty(window, 'opener', {
       configurable: true, // Needed on Chrome :(
@@ -194,8 +198,8 @@ class SingleSignOn {
     windowOriginUrl: string,
     private readonly windowOptions: Electron.BrowserWindowConstructorOptions
   ) {
-    this.mainSession = senderEvent.sender.session;
     this.senderWebContents = senderEvent.sender;
+    this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginUrl);
   }
 
@@ -248,7 +252,7 @@ class SingleSignOn {
       movable: false,
       parent: this.mainBrowserWindow,
       resizable: false,
-      title: this.windowOriginUrl.origin,
+      title: SingleSignOn.getWindowTitle(this.windowOriginUrl.origin),
       titleBarStyle: 'default',
       useContentSize: true,
       webPreferences: {
@@ -305,7 +309,7 @@ class SingleSignOn {
         event.preventDefault();
       }
 
-      SingleSignOnLoginWindow.setTitle(origin);
+      SingleSignOnLoginWindow.setTitle(SingleSignOn.getWindowTitle(origin));
     });
 
     return SingleSignOnLoginWindow;
