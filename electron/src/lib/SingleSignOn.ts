@@ -28,6 +28,7 @@ const argv = minimist(process.argv.slice(1));
 
 class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS: string[] = BACKEND_ORIGINS;
+  private static readonly ALLOWED_BACKEND_ORIGINS_WINDOW_TITLE: string = '';
   private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist', 'js', 'preload-sso.js');
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
@@ -170,6 +171,10 @@ class SingleSignOn {
   // Ensure the requested URL is going to the backend
   public static isBackendOrigin = (url: string) => SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
 
+  // Get window title
+  public static getWindowTitle = (origin: string) =>
+    SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? SingleSignOn.ALLOWED_BACKEND_ORIGINS_WINDOW_TITLE : origin;
+
   public static readonly javascriptHelper = () => {
     return `Object.defineProperty(window, 'opener', {
       configurable: true, // Needed on Chrome :(
@@ -194,8 +199,8 @@ class SingleSignOn {
     windowOriginUrl: string,
     private readonly windowOptions: Electron.BrowserWindowConstructorOptions
   ) {
-    this.mainSession = senderEvent.sender.session;
     this.senderWebContents = senderEvent.sender;
+    this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginUrl);
   }
 
@@ -248,7 +253,7 @@ class SingleSignOn {
       movable: false,
       parent: this.mainBrowserWindow,
       resizable: false,
-      title: this.windowOriginUrl.origin,
+      title: SingleSignOn.getWindowTitle(this.windowOriginUrl.origin),
       titleBarStyle: 'default',
       useContentSize: true,
       webPreferences: {
@@ -305,7 +310,7 @@ class SingleSignOn {
         event.preventDefault();
       }
 
-      SingleSignOnLoginWindow.setTitle(origin);
+      SingleSignOnLoginWindow.setTitle(SingleSignOn.getWindowTitle(origin));
     });
 
     return SingleSignOnLoginWindow;
