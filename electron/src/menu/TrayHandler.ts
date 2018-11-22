@@ -102,6 +102,7 @@ class TrayHandler {
   private updateIcons(win: Electron.BrowserWindow, count?: number) {
     if (this.icons) {
       const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
+
       if (this.trayIcon) {
         this.trayIcon.setImage(trayImage);
       }
