@@ -37,6 +37,7 @@ git:
   submodules: false
 
 cache:
+  yarn: true
   directories:
     - $HOME/.npm
     - node_modules
