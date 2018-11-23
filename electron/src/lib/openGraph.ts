@@ -58,18 +58,16 @@ const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
-  const parseHead = (body: string) => {
-    const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
-    return openGraphParse(head);
-  };
-
   return new Promise<string>((resolve, reject) => {
-    const getContentRequest = request.get(urlUtil.format(normalizedUrl), (error, response, body: string) => {
-      return error ? reject(error) : resolve(body);
-    });
+    let partialBody = '';
+    const getContentRequest = request.get(urlUtil.format(normalizedUrl));
 
-    getContentRequest.on('response', ({headers}) => {
-      const contentType = headers['content-type'] || '';
+    getContentRequest.on('response', response => {
+      if (response.statusCode !== 200) {
+        return reject(`Request failed with status code "${response.statusCode}".`);
+      }
+
+      const contentType = response.headers['content-type'] || '';
       const isHtmlContentType = contentType.match(/.*text\/html/);
 
       if (!isHtmlContentType) {
@@ -78,16 +76,24 @@ const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
       }
     });
 
-    let partialBody = '';
     getContentRequest.on('data', buffer => {
       const chunk = buffer.toString();
+
       partialBody += chunk;
+
       if (chunk.match('</head>') || partialBody.length > CONTENT_SIZE_LIMIT) {
         getContentRequest.abort();
         resolve(partialBody);
       }
     });
-  }).then(parseHead);
+
+    getContentRequest.on('complete', () => reject('No head end tag found in website.'));
+
+    getContentRequest.on('error', error => reject(error));
+  }).then((body: string) => {
+    const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
+    return openGraphParse(head);
+  });
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, image?: string): OpenGraphResult => {
