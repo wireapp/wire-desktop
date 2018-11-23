@@ -58,11 +58,6 @@ const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
-  const parseHead = (body: string) => {
-    const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
-    return openGraphParse(head);
-  };
-
   return new Promise<string>((resolve, reject) => {
     let partialBody = '';
     const getContentRequest = request.get(urlUtil.format(normalizedUrl));
@@ -95,7 +90,10 @@ const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
     getContentRequest.on('complete', () => reject('No head end tag found in website.'));
 
     getContentRequest.on('error', error => reject(error));
-  }).then(parseHead);
+  }).then((body: string) => {
+    const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
+    return openGraphParse(head);
+  });
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, image?: string): OpenGraphResult => {
