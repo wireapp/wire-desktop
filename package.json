@@ -39,7 +39,7 @@
     "husky": "1.2.0",
     "jest": "23.6.0",
     "jszip": "3.1.5",
-    "lint-staged": "8.0.5",
+    "lint-staged": "8.1.0",
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.15.2",
     "rimraf": "2.6.2",
