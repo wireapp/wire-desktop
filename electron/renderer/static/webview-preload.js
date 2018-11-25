@@ -25,7 +25,21 @@ const winston = require('winston');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
-const {app} = remote;
+const {app, systemPreferences} = remote;
+
+// Note: Until appearance-changed event is available in a future
+// version of Electron... use setInterval
+function appearanceManager() {
+  let appearancePreference = systemPreferences.isDarkMode();
+  let lastAppearancePreference = appearancePreference;
+  setInterval(() => {
+    appearancePreference = systemPreferences.isDarkMode();
+    if (lastAppearancePreference !== appearancePreference) {
+      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.DARK_MODE, appearancePreference);
+      lastAppearancePreference = appearancePreference;
+    }
+  }, 250);
+}
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
@@ -209,6 +223,9 @@ window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
     exposeAddressBook();
     subscribeToMainProcessEvents();
+    if (environment.platform.IS_MAC_OS) {
+      appearanceManager();
+    }
     subscribeToWebappEvents();
     replaceGoogleAuth();
     reportWebappVersion();
