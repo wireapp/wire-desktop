@@ -35,7 +35,7 @@ function appearanceManager() {
   setInterval(() => {
     appearancePreference = systemPreferences.isDarkMode();
     if (lastAppearancePreference !== appearancePreference) {
-      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.DARK_MODE, appearancePreference);
+      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.APPEARANCE.SYSTEM_CHANGED, appearancePreference);
       lastAppearancePreference = appearancePreference;
     }
   }, 250);
