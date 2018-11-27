@@ -45,13 +45,13 @@ class LogFactory {
     }
   }
 
-  static writeToFile(logTransport: logdown.TransportOptions): void {
+  static async writeToFile(logTransport: logdown.TransportOptions): Promise<void> {
     if (LogFactory.LOG_FILE_PATH && LogFactory.LOG_FILE_NAME) {
       const [time] = logTransport.args;
       const logMessage = `${time} ${logTransport.msg}`;
       const withoutColor = logMessage.replace(ansiRegex(), '');
       try {
-        fs.writeFileSync(LogFactory.getFileURI(), `${withoutColor}\r\n`, {
+        await fs.outputFile(LogFactory.getFileURI(), `${withoutColor}\r\n`, {
           encoding: 'utf8',
           flag: 'a',
         });
