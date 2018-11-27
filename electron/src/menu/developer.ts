@@ -17,10 +17,9 @@
  *
  */
 
-import * as Electron from 'electron';
+import {MenuItem} from 'electron';
 import * as config from '../js/config';
 import * as environment from '../js/environment';
-import * as util from '../js/util';
 import * as windowManager from '../js/window-manager';
 
 const currentEnvironment = environment.getEnvironment();
@@ -64,16 +63,20 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
   ],
 };
 
-const createEnvironmentTemplate = (env: string): Electron.MenuItemConstructorOptions => {
-  return {
-    checked: currentEnvironment === env,
-    click: () => {
-      environment.setEnvironment(env);
-      getPrimaryWindow().reload();
-    },
-    label: env == environment.TYPE.LOCALHOST_PRODUCTION ? 'Localhost (Production)' : util.capitalize(env),
-    type: 'radio',
-  };
+const createEnvironmentsTemplate = () => {
+  const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
+  for (const type in environment.TYPE) {
+    environmentTemplate.push({
+      checked: currentEnvironment === type,
+      click: () => {
+        environment.setEnvironment(<environment.TYPE>type);
+        getPrimaryWindow().reload();
+      },
+      label: environment.TYPE_LABEL[type],
+      type: 'radio',
+    });
+  }
+  return environmentTemplate;
 };
 
 const versionTemplate: Electron.MenuItemConstructorOptions = {
@@ -99,13 +102,7 @@ const menuTemplate: Electron.MenuItemConstructorOptions = {
     devToolsTemplate,
     reloadTemplate,
     separatorTemplate,
-    createEnvironmentTemplate(environment.TYPE.PRODUCTION),
-    createEnvironmentTemplate(environment.TYPE.INTERNAL),
-    createEnvironmentTemplate(environment.TYPE.STAGING),
-    createEnvironmentTemplate(environment.TYPE.DEV),
-    createEnvironmentTemplate(environment.TYPE.EDGE),
-    createEnvironmentTemplate(environment.TYPE.LOCALHOST),
-    createEnvironmentTemplate(environment.TYPE.LOCALHOST_PRODUCTION),
+    ...createEnvironmentsTemplate(),
     separatorTemplate,
     versionTemplate,
     chromeVersionTemplate,
@@ -113,6 +110,6 @@ const menuTemplate: Electron.MenuItemConstructorOptions = {
   ],
 };
 
-const menuItem = new Electron.MenuItem(menuTemplate);
+const menuItem = new MenuItem(menuTemplate);
 
 export {menuItem};

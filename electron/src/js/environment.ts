@@ -21,17 +21,27 @@ import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 const pkg: {environment: string; updateWinUrl: string} = require('../../package.json');
 
-let currentEnvironment: string | undefined;
+let currentEnvironment: TYPE;
 
-const TYPE = {
-  DEV: 'dev',
-  EDGE: 'edge',
-  INTERNAL: 'internal',
-  LOCALHOST: 'localhost',
-  LOCALHOST_PRODUCTION: 'localhost_production',
-  PRODUCTION: 'production',
-  STAGING: 'staging',
-};
+enum TYPE {
+  DEV = 'dev',
+  EDGE = 'edge',
+  INTERNAL = 'internal',
+  LOCALHOST = 'localhost',
+  LOCALHOST_PRODUCTION = 'localhost_production',
+  PRODUCTION = 'production',
+  STAGING = 'staging',
+}
+
+enum TYPE_LABEL {
+  DEV = 'Development',
+  EDGE = 'Edge',
+  INTERNAL = 'Internal',
+  LOCALHOST = 'Localhost',
+  LOCALHOST_PRODUCTION = 'Localhost (Production)',
+  PRODUCTION = 'Production',
+  STAGING = 'Staging',
+}
 
 const URL_ADMIN = {
   PRODUCTION: 'https://teams.wire.com',
@@ -62,7 +72,7 @@ const app = {
   UPDATE_URL_WIN: pkg.updateWinUrl,
 };
 
-const getEnvironment = (): string => {
+const getEnvironment = (): TYPE => {
   return currentEnvironment ? currentEnvironment : restoreEnvironment();
 };
 
@@ -76,12 +86,12 @@ const platform = {
   IS_WINDOWS: process.platform === 'win32',
 };
 
-const restoreEnvironment = (): string => {
+const restoreEnvironment = (): TYPE => {
   currentEnvironment = settings.restore(SettingsType.ENV, TYPE.INTERNAL);
-  return currentEnvironment;
+  return <TYPE>currentEnvironment;
 };
 
-const setEnvironment = (env: string): void => {
+const setEnvironment = (env: TYPE): void => {
   currentEnvironment = env ? env : restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment);
 };
@@ -124,4 +134,4 @@ const web = {
   },
 };
 
-export {TYPE, URL_WEBAPP, app, getEnvironment, platform, setEnvironment, web};
+export {TYPE, TYPE_LABEL, URL_WEBAPP, app, getEnvironment, platform, setEnvironment, web};
