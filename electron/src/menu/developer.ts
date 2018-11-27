@@ -66,7 +66,7 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
 const createEnvironmentTemplates = () => {
   const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
   for (const key in environment.TYPE) {
-    const type: environment.TYPE = <environment.TYPE>environment.TYPE[key];
+    const type = <environment.TYPE>environment.TYPE[key];
     environmentTemplate.push({
       checked: currentEnvironment === type,
       click: () => {
