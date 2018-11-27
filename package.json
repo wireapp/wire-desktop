@@ -103,7 +103,7 @@
     "start:localhost": "yarn start --env=http://localhost:8081",
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:staging": "yarn start --env=https://wire-webapp-staging.zinfra.io",
-    "start": "yarn prestart && cross-env NODE_DEBUG=wire-desktop* electron electron --inspect --devtools --enable-logging",
+    "start": "cross-env NODE_DEBUG=wire-desktop* electron electron --inspect --devtools --enable-logging",
     "test:main": "electron-mocha --reporter spec tests/main",
     "test:react": "jest",
     "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:main"
