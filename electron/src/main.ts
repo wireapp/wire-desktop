@@ -221,10 +221,10 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     shell.openExternal(_url);
   });
 
-  if (
+  const isLocalhostEnvironment =
     environment.getEnvironment() == environment.TYPE.LOCALHOST ||
-    environment.getEnvironment() == environment.TYPE.LOCALHOST_PRODUCTION
-  ) {
+    environment.getEnvironment() == environment.TYPE.LOCALHOST_PRODUCTION;
+  if (isLocalhostEnvironment) {
     main.webContents.session.webRequest.onHeadersReceived(
       {
         urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
