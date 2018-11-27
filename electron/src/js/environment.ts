@@ -24,13 +24,13 @@ const pkg: {environment: string; updateWinUrl: string} = require('../../package.
 let currentEnvironment: TYPE;
 
 enum TYPE {
-  DEV = 'dev',
-  EDGE = 'edge',
-  INTERNAL = 'internal',
-  LOCALHOST = 'localhost',
-  LOCALHOST_PRODUCTION = 'localhost_production',
-  PRODUCTION = 'production',
-  STAGING = 'staging',
+  DEV = 'DEV',
+  EDGE = 'EDGE',
+  INTERNAL = 'INTERNAL',
+  LOCALHOST = 'LOCALHOST',
+  LOCALHOST_PRODUCTION = 'LOCALHOST_PRODUCTION',
+  PRODUCTION = 'PRODUCTION',
+  STAGING = 'STAGING',
 }
 
 enum TYPE_LABEL {
