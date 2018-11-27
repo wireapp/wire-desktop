@@ -63,7 +63,7 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
   ],
 };
 
-const createEnvironmentsTemplate = () => {
+const createEnvironmentTemplates = () => {
   const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
   for (const type in environment.TYPE) {
     environmentTemplate.push({
@@ -102,7 +102,7 @@ const menuTemplate: Electron.MenuItemConstructorOptions = {
     devToolsTemplate,
     reloadTemplate,
     separatorTemplate,
-    ...createEnvironmentsTemplate(),
+    ...createEnvironmentTemplates(),
     separatorTemplate,
     versionTemplate,
     chromeVersionTemplate,
