@@ -71,7 +71,7 @@ const createEnvironmentTemplate = (env: string): Electron.MenuItemConstructorOpt
       environment.setEnvironment(env);
       getPrimaryWindow().reload();
     },
-    label: util.capitalize(env),
+    label: env == environment.TYPE.LOCALHOST_PRODUCTION ? 'Localhost (Production)' : util.capitalize(env),
     type: 'radio',
   };
 };
@@ -105,6 +105,7 @@ const menuTemplate: Electron.MenuItemConstructorOptions = {
     createEnvironmentTemplate(environment.TYPE.DEV),
     createEnvironmentTemplate(environment.TYPE.EDGE),
     createEnvironmentTemplate(environment.TYPE.LOCALHOST),
+    createEnvironmentTemplate(environment.TYPE.LOCALHOST_PRODUCTION),
     separatorTemplate,
     versionTemplate,
     chromeVersionTemplate,

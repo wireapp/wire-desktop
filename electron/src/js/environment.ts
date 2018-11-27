@@ -28,6 +28,7 @@ const TYPE = {
   EDGE: 'edge',
   INTERNAL: 'internal',
   LOCALHOST: 'localhost',
+  LOCALHOST_PRODUCTION: 'localhost_production',
   PRODUCTION: 'production',
   STAGING: 'staging',
 };
@@ -49,6 +50,7 @@ const URL_WEBAPP = {
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/?env=prod',
   LOCALHOST: 'http://localhost:8081',
+  LOCALHOST_PRODUCTION: 'http://localhost:8081/?env=prod',
   PRODUCTION: 'https://app.wire.com',
   STAGING: 'https://wire-webapp-staging.zinfra.io',
 };
@@ -105,6 +107,8 @@ const web = {
           return URL_WEBAPP.INTERNAL;
         case TYPE.LOCALHOST:
           return URL_WEBAPP.LOCALHOST;
+        case TYPE.LOCALHOST_PRODUCTION:
+          return URL_WEBAPP.LOCALHOST_PRODUCTION;
         case TYPE.STAGING:
           return URL_WEBAPP.STAGING;
         default:

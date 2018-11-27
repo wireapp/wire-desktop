@@ -221,23 +221,26 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     shell.openExternal(_url);
   });
 
-  main.webContents.session.webRequest.onHeadersReceived(
-    {
-      urls: ['https://staging-nginz-https.zinfra.io/*'],
-    },
-    (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
-      if (environment.getEnvironment() === environment.TYPE.LOCALHOST) {
+  if (
+    environment.getEnvironment() == environment.TYPE.LOCALHOST ||
+    environment.getEnvironment() == environment.TYPE.LOCALHOST_PRODUCTION
+  ) {
+    main.webContents.session.webRequest.onHeadersReceived(
+      {
+        urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
+      },
+      (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
         // Override remote Access-Control-Allow-Origin
         details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
         details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
-      }
 
-      callback({
-        cancel: false,
-        responseHeaders: details.responseHeaders,
-      });
-    }
-  );
+        callback({
+          cancel: false,
+          responseHeaders: details.responseHeaders,
+        });
+      }
+    );
+  }
 
   main.webContents.on('dom-ready', () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));

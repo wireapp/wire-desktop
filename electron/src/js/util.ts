@@ -22,7 +22,7 @@ import * as url from 'url';
 
 import {pointInRectangle} from '../lib/pointInRect';
 
-const capitalize = (input: string): string => input.charAt(0).toUpperCase() + input.substr(1);
+const capitalize = (input: string): string => input.toLowerCase().replace(/\b[a-z]/g, letter => letter.toUpperCase());
 
 const isInView = (win: Electron.BrowserWindow): boolean => {
   const windowBounds = win.getBounds();
