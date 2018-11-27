@@ -145,18 +145,6 @@ const exposeAddressBook = () => {
   }
 };
 
-const replaceGoogleAuth = () => {
-  if (window.wire.app === undefined) {
-    return;
-  }
-
-  window.wire.app.service.connectGoogle._authenticate = window.wire.app.service.connect_google._authenticate = () => {
-    return new Promise((resolve, reject) => {
-      reject(window.alert('This feature is no longer available.'));
-    });
-  };
-};
-
 const enableFileLogging = () => {
   const currentLocation = new URL(window.location.href);
   const id = currentLocation.searchParams.get('id');
@@ -227,7 +215,6 @@ window.addEventListener('DOMContentLoaded', () => {
       appearanceManager();
     }
     subscribeToWebappEvents();
-    replaceGoogleAuth();
     reportWebappVersion();
     // include context menu
     require('../../dist/menu/context');
