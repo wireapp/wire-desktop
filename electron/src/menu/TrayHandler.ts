@@ -21,6 +21,7 @@ import {Menu, Tray, app, nativeImage} from 'electron';
 import * as path from 'path';
 
 import * as config from '../js/config';
+import {windowsVersion} from '../js/environment';
 import * as lifecycle from '../js/lifecycle';
 import * as windowManager from '../js/window-manager';
 import * as locale from '../locale/locale';
@@ -41,10 +42,13 @@ class TrayHandler {
   initTray(trayIcon = new Tray(nativeImage.createEmpty())) {
     const IMAGE_ROOT = path.join(app.getAppPath(), 'img');
 
+    const trayPng = `tray${windowsVersion.IS_WINDOWS_7 ? '.windows7' : ''}.png`;
+    const trayBadgePng = `tray.badge${windowsVersion.IS_WINDOWS_7 ? '.windows7' : ''}.png`;
+
     const iconPaths = {
       badge: path.join(IMAGE_ROOT, 'taskbar.overlay.png'),
-      tray: path.join(IMAGE_ROOT, 'tray-icon', 'tray', 'tray.png'),
-      trayWithBadge: path.join(IMAGE_ROOT, 'tray-icon', 'tray-with-badge', 'tray.badge.png'),
+      tray: path.join(IMAGE_ROOT, 'tray-icon', 'tray', trayPng),
+      trayWithBadge: path.join(IMAGE_ROOT, 'tray-icon', 'tray-with-badge', trayBadgePng),
     };
 
     this.icons = {
