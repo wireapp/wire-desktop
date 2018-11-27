@@ -22,8 +22,6 @@ import * as url from 'url';
 
 import {pointInRectangle} from '../lib/pointInRect';
 
-const capitalize = (input: string): string => input.toLowerCase().replace(/\b[a-z]/g, letter => letter.toUpperCase());
-
 const isInView = (win: Electron.BrowserWindow): boolean => {
   const windowBounds = win.getBounds();
   const nearestWorkArea = Electron.screen.getDisplayMatching(windowBounds).workArea;
@@ -39,4 +37,4 @@ const isInView = (win: Electron.BrowserWindow): boolean => {
 
 const isMatchingHost = (_url: string, _baseUrl: string): boolean => url.parse(_url).host === url.parse(_baseUrl).host;
 
-export {capitalize, isInView, isMatchingHost};
+export {isInView, isMatchingHost};
