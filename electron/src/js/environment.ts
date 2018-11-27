@@ -17,8 +17,6 @@
  *
  */
 
-import * as os from 'os';
-
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 const pkg: {environment: string; updateWinUrl: string} = require('../../package.json');
@@ -76,13 +74,6 @@ const platform = {
   IS_WINDOWS: process.platform === 'win32',
 };
 
-const windowsVersion = {
-  IS_WINDOWS_10: os.release().startsWith('10.0'),
-  IS_WINDOWS_7: os.release().startsWith('6.1'),
-  IS_WINDOWS_8: os.release().startsWith('6.2'),
-  IS_WINDOWS_8_1: os.release().startsWith('6.3'),
-};
-
 const restoreEnvironment = (): string => {
   currentEnvironment = settings.restore(SettingsType.ENV, TYPE.INTERNAL);
   return currentEnvironment;
@@ -129,4 +120,4 @@ const web = {
   },
 };
 
-export {TYPE, URL_WEBAPP, app, getEnvironment, platform, setEnvironment, web, windowsVersion};
+export {TYPE, URL_WEBAPP, app, getEnvironment, platform, setEnvironment, web};
