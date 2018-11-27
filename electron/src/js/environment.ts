@@ -108,21 +108,9 @@ const web = {
     }
 
     if (app.IS_DEVELOPMENT) {
-      switch (getEnvironment()) {
-        case TYPE.DEV:
-          return URL_WEBAPP.DEV;
-        case TYPE.EDGE:
-          return URL_WEBAPP.EDGE;
-        case TYPE.INTERNAL:
-          return URL_WEBAPP.INTERNAL;
-        case TYPE.LOCALHOST:
-          return URL_WEBAPP.LOCALHOST;
-        case TYPE.LOCALHOST_PRODUCTION:
-          return URL_WEBAPP.LOCALHOST_PRODUCTION;
-        case TYPE.STAGING:
-          return URL_WEBAPP.STAGING;
-        default:
-          break;
+      const currentEnvironment = getEnvironment();
+      if (currentEnvironment) {
+        return URL_WEBAPP[currentEnvironment];
       }
     }
 
