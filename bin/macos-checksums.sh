@@ -68,9 +68,9 @@ mkdir -p "${GPG_TEMP_KEYS_DIR}"
 chmod 700 "${GPG_TEMP_DIR}"
 
 gpg --batch \
-     --homedir "${GPG_TEMP_DIR}" \
-     --quiet \
-     --import "${PGP_KEYFILE}"
+    --homedir "${GPG_TEMP_DIR}" \
+    --quiet \
+    --import "${PGP_KEYFILE}"
 
 _log "Updating gpg2 configuration to sign on unattended machines..."
 echo "allow-loopback-pinentry" > "${HOME}/.gnupg/gpg-agent.conf"
@@ -80,16 +80,16 @@ _log "Signing checksum file with PGP key..."
 
 echo "${PGP_PASSPHRASE}" | \
 gpg --batch \
-     --clearsign \
-     --homedir "${GPG_TEMP_DIR}" \
-     --local-user "${PGP_SIGN_ID}" \
-     --no-tty \
-     --output "sha256sum.txt.asc" \
-     --pinentry-mode loopback \
-     --passphrase-fd 0 \
-     --quiet \
-     --yes \
-     "sha256sum.txt"
+    --clearsign \
+    --homedir "${GPG_TEMP_DIR}" \
+    --local-user "${PGP_SIGN_ID}" \
+    --no-tty \
+    --output "sha256sum.txt.asc" \
+    --pinentry-mode loopback \
+    --passphrase-fd 0 \
+    --quiet \
+    --yes \
+    "sha256sum.txt"
 
 _log "Signing source code archive with PGP key..."
 
