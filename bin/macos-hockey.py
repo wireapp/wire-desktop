@@ -26,7 +26,7 @@ HOCKEY_URL = 'https://rink.hockeyapp.net/api/2/apps/upload'
 HOCKEY_TOKEN = os.environ.get('MACOS_HOCKEY_TOKEN')
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
-wire_zip = os.path.join(bin_root, 'WireInternal.zip')
+wire_zip = os.path.join(bin_root, '..', 'wrap', 'dist', 'WireInternal.zip')
 
 def ditto(source, dest):
   os.system('ditto -c -k --sequesterRsrc --keepParent %s %s' % (source, dest))
