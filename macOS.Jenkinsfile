@@ -55,7 +55,7 @@ node('master') {
   if(production) {
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-        sh 'bin/macos-checksums.sh'
+        sh "bin/macos-checksums.sh ${version}"
       }
     }
   }
@@ -67,7 +67,7 @@ node('master') {
     } else {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/bin/WireInternal.zip\""
-      archiveArtifacts 'info.json,bin/WireInternal.zip'
+      archiveArtifacts "info.json,bin/WireInternal.zip,${version}.tar.gz.sig"
     }
   }
 
