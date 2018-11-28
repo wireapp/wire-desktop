@@ -28,7 +28,7 @@ node('master') {
         sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
       }
       sh 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.13.0', type: 'nodejs'
+      def NODE = tool name: 'node-v8.14.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
