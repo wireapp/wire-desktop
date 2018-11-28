@@ -73,7 +73,7 @@ const app = {
 };
 
 const getEnvironment = (): TYPE => {
-  return currentEnvironment ? currentEnvironment : restoreEnvironment();
+  return <TYPE>(currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase();
 };
 
 const isProdEnvironment = (): boolean => {
@@ -93,7 +93,7 @@ const restoreEnvironment = (): TYPE => {
 
 const setEnvironment = (env: TYPE): void => {
   currentEnvironment = env ? env : restoreEnvironment();
-  settings.save(SettingsType.ENV, currentEnvironment);
+  settings.save(SettingsType.ENV, currentEnvironment.toUpperCase());
 };
 
 const web = {
@@ -110,7 +110,7 @@ const web = {
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
       if (currentEnvironment) {
-        return URL_WEBAPP[currentEnvironment];
+        return URL_WEBAPP[<TYPE>currentEnvironment.toUpperCase()];
       }
     }
 

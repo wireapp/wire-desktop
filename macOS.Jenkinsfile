@@ -24,9 +24,11 @@ node('master') {
 
   stage('Build') {
     try {
-      sh 'security unlock-keychain -p 123456 /Users/jenkins/Library/Keychains/login.keychain'
+      withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
+        sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
+      }
       sh 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.13.0', type: 'nodejs'
+      def NODE = tool name: 'node-v8.14.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
@@ -34,7 +36,7 @@ node('master') {
         sh 'yarn'
         sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          if(production) {
+          if (production) {
             // Production
             sh 'npx grunt macos-prod'
           } else {
@@ -53,7 +55,7 @@ node('master') {
   if(production) {
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-        sh 'bin/macos-checksums.sh'
+        sh "bin/macos-checksums.sh ${version}"
       }
     }
   }
@@ -65,7 +67,7 @@ node('master') {
     } else {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/bin/WireInternal.zip\""
-      archiveArtifacts 'info.json,bin/WireInternal.zip'
+      archiveArtifacts "info.json,bin/WireInternal.zip,${version}.tar.gz.sig"
     }
   }
 
