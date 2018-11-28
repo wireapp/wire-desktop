@@ -110,7 +110,7 @@ const web = {
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
       if (currentEnvironment) {
-        return URL_WEBAPP[currentEnvironment];
+        return URL_WEBAPP[<TYPE>currentEnvironment.toUpperCase()];
       }
     }
 
