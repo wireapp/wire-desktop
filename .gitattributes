@@ -15,3 +15,21 @@
 *.ttf binary
 *.woff binary
 *.woff2 binary
+
+# Ignore files when creating archive
+.DS_Store export-ignore
+.grunt export-ignore
+.Icon export-ignore
+.vscode export-ignore
+*.log export-ignore
+*.pyc export-ignore
+/.idea export-ignore
+/electron/dist export-ignore
+/electron/node_modules export-ignore
+/electron/renderer/dist export-ignore
+/keys export-ignore
+/temp export-ignore
+/wrap export-ignore
+app.asar export-ignore
+node_modules export-ignore
+Wire*.zip export-ignore

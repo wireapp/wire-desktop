@@ -4,7 +4,6 @@
 .vscode
 *.log
 *.pyc
-*.pyc
 /.idea
 /electron/dist
 /electron/node_modules
@@ -14,5 +13,4 @@
 /wrap
 app.asar
 node_modules
-npm-debug.log
 Wire*.zip
