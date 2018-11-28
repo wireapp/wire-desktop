@@ -12,11 +12,6 @@ node('master') {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
-  def macos_keychain_password = ''
-  withCredentials([string(credentialsId: "${params.MACOS_KEYCHAIN_PASSWORD}", variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
-    macos_keychain_password = env.MACOS_KEYCHAIN_PASSWORD
-  }
-
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/'
@@ -29,7 +24,9 @@ node('master') {
 
   stage('Build') {
     try {
-      sh "security unlock-keychain -p ${macos_keychain_password} /Users/jenkins/Library/Keychains/login.keychain"
+      withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
+        sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
+      }
       sh 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.13.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
@@ -39,7 +36,7 @@ node('master') {
         sh 'yarn'
         sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          if(production) {
+          if (production) {
             // Production
             sh 'npx grunt macos-prod'
           } else {
