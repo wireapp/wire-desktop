@@ -42,8 +42,8 @@ class TrayHandler {
   initTray(trayIcon = new Tray(nativeImage.createEmpty())) {
     const IMAGE_ROOT = path.join(app.getAppPath(), 'img');
 
-    let trayPng = `tray.png`;
-    let trayBadgePng = `tray.badge.png`;
+    let trayPng = 'tray.png';
+    let trayBadgePng = 'tray.badge.png';
 
     if (platform.IS_LINUX) {
       trayPng = `tray${linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
