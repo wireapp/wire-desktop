@@ -109,7 +109,6 @@ gpg2 --batch \
 rm "${BUILD_VERSION}.tar.gz"
 
 _log "Info: Deleting temp files in a secure way."
-
 find "${GPG_TEMP_DIR}" -type f -exec rm -P {} \;
 
 rm -rf "${GPG_TEMP_DIR}"
