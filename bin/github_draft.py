@@ -64,7 +64,7 @@ if __name__ == '__main__':
     upload_url = '%s?access_token=%s' % (draft_data['upload_url'].split('{')[0], GITHUB_ACCESS_TOKEN)
 
     for file in os.listdir(os.getcwd()):
-      if (file.endswith(('.asc','.AppImage','.deb','.exe','.pkg'))):
+      if (file.endswith(('.asc','.sig','.AppImage','.deb','.exe','.pkg'))):
         filename = os.path.join(os.getcwd(), file)
         print 'Upload asset %s...' % filename
         headers = {'Content-type': 'application/binary'}
