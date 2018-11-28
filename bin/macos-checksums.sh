@@ -20,6 +20,8 @@
 
 set -eu -o pipefail
 
+BUILD_VERSION="${1:-"0"}"
+
 SCRIPT_NAME="${0##*/}"
 
 GPG_TEMP_DIR=".gpg-temporary"
@@ -27,7 +29,6 @@ GPG_TEMP_KEYS_DIR="${GPG_TEMP_DIR}/private-keys-v1.d"
 PGP_SIGN_ID="D599C1AA126762B1"
 PGP_KEYFILE="${PGP_PRIVATE_KEY_FILE:-${PGP_SIGN_ID}.asc}"
 PGP_PASSPHRASE="${PGP_PASSPHRASE:-""}"
-BUILD_VERSION="${1}"
 
 _command_exist() {
   command -v "${1}" > /dev/null
