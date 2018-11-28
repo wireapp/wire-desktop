@@ -12,6 +12,11 @@ node('master') {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
+  def macos_keychain_password = ''
+  withCredentials([string(credentialsId: "${params.MACOS_KEYCHAIN_PASSWORD}", variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
+    macos_keychain_password = env.MACOS_KEYCHAIN_PASSWORD
+  }
+
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/'
@@ -24,7 +29,7 @@ node('master') {
 
   stage('Build') {
     try {
-      sh 'security unlock-keychain -p 123456 /Users/jenkins/Library/Keychains/login.keychain'
+      sh "security unlock-keychain -p ${macos_keychain_password} /Users/jenkins/Library/Keychains/login.keychain"
       sh 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v8.13.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
