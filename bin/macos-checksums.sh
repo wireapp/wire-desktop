@@ -5,8 +5,9 @@ set -eu -o pipefail
 SCRIPT_NAME="${0##*/}"
 SCRIPT_DIR="${0%/*}"
 
-GPG_TEMP_DIR=".gpg-temporary"
-GPG_TEMP_DIR2=".gpg-temporary/private-keys-v1.d"
+TEMP_DIR="$(mktemp -d)"
+GPG_TEMP_DIR="${TEMP_DIR}/.gpg-temporary"
+GPG_TEMP_DIR2="${GPG_TEMP_DIR}/private-keys-v1.d"
 PGP_SIGN_ID="D599C1AA126762B1"
 PGP_KEYFILE="${PGP_PRIVATE_KEY_FILE:-${PGP_SIGN_ID}.asc}"
 PGP_PASSPHRASE="${PGP_PASSPHRASE:-""}"
@@ -70,6 +71,6 @@ gpg --batch \
 _log "Info: Deleting temp files in a secure way."
 find "${GPG_TEMP_DIR}" -type f -exec rm -P {} \;
 
-rm -rf "${GPG_TEMP_DIR}"
+rm -rf "${TEMP_DIR}"
 
 _log "Done"
