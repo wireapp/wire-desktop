@@ -34,7 +34,7 @@ node('master') {
         sh 'yarn'
         sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          if(production) {
+          if (production) {
             // Production
             sh 'npx grunt macos-prod'
           } else {
@@ -50,18 +50,18 @@ node('master') {
     }
   }
 
-  if(production) {
+  if (production) {
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-        sh 'bin/macos-checksums.sh'
+        sh 'cd wrap/dist && ../../bin/macos-checksums.sh'
       }
     }
   }
 
   stage('Archive build artifacts') {
-    if(production) {
+    if (production) {
       // Production
-      archiveArtifacts 'info.json,Wire.pkg'
+      archiveArtifacts 'info.json,wrap/dist/*.pkg'
     } else {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/bin/WireInternal.zip\""
@@ -69,7 +69,7 @@ node('master') {
     }
   }
 
-  if(production) {
+  if (production) {
     stage('Upload build as draft to GitHub') {
       withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
         sh 'python bin/github_draft.py'

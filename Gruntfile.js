@@ -53,7 +53,6 @@ module.exports = function(grunt) {
       dist: 'wrap/dist',
       linux: ['wrap/**/linux*', 'wrap/**/wire*'],
       macos: 'wrap/**/<%= info.name %>-darwin*',
-      pkg: '*.pkg',
       win: 'wrap/**/<%= info.name %>-win*',
       wrap: 'wrap',
     },
@@ -94,6 +93,7 @@ module.exports = function(grunt) {
           appBundleId: 'com.wearezeta.zclient.mac.internal',
           icon: 'resources/macos/wire.internal.icns',
           name: '<%= info.nameInternal %>',
+          out: 'wrap/dist/',
           platform: 'mas',
         },
       },
@@ -389,7 +389,9 @@ module.exports = function(grunt) {
     execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.child}' '${appName}'`);
     execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.parent}' '${options.dir}'`);
     execSync(
-      `productbuild --component '${options.dir}' /Applications --sign '${options.sign.package}' '${options.name}.pkg'`
+      `productbuild --component '${options.dir}' /Applications --sign '${options.sign.package}' 'wrap/dist/${
+        options.name
+      }.pkg'`
     );
   });
 
