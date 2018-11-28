@@ -86,6 +86,12 @@ const platform = {
   IS_WINDOWS: process.platform === 'win32',
 };
 
+const linuxDesktop = {
+  isGnome: (process.env.XDG_CURRENT_DESKTOP || '').includes('GNOME'),
+  isPopOS: (process.env.XDG_CURRENT_DESKTOP || '').includes('pop'),
+  isUbuntuUnity: (process.env.XDG_CURRENT_DESKTOP || '').includes('Unity'),
+};
+
 const restoreEnvironment = (): TYPE => {
   currentEnvironment = settings.restore(SettingsType.ENV, TYPE.INTERNAL);
   return <TYPE>currentEnvironment;
@@ -122,4 +128,4 @@ const web = {
   },
 };
 
-export {TYPE, TYPE_LABEL, URL_WEBAPP, app, getEnvironment, platform, setEnvironment, web};
+export {TYPE, TYPE_LABEL, URL_WEBAPP, app, getEnvironment, linuxDesktop, platform, setEnvironment, web};
