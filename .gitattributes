@@ -23,6 +23,8 @@
 .vscode export-ignore
 *.log export-ignore
 *.pyc export-ignore
+*.pkg export-ignore
+info.json export-ignore
 /.idea export-ignore
 /electron/dist export-ignore
 /electron/node_modules export-ignore

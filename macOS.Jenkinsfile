@@ -65,7 +65,7 @@ node('master') {
     } else {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/bin/WireInternal.zip\""
-      archiveArtifacts 'info.json,bin/WireInternal.zip'
+      archiveArtifacts "info.json,bin/WireInternal.zip,${version}.tar.gz.sig"
     }
   }
 

@@ -4,6 +4,7 @@
 .vscode
 *.log
 *.pyc
+*.pkg
 /.idea
 /electron/dist
 /electron/node_modules
