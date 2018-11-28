@@ -34,3 +34,5 @@
 app.asar export-ignore
 node_modules export-ignore
 Wire*.zip export-ignore
+*.asc export-ignore
+*.sig export-ignore
