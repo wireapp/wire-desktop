@@ -59,6 +59,20 @@ module.exports = function(grunt) {
     },
 
     'create-windows-installer': {
+      beta: {
+        appDirectory: 'wrap/build/<%= info.nameBeta %>-win32-ia32',
+        authors: '<%= info.nameBeta %>',
+        description: '<%= info.description %>',
+        exe: '<%= info.nameBeta %>.exe',
+        iconUrl: 'https://wire-app.wire.com/win/prod/wire.ico',
+        loadingGif: 'resources/win/icon.internal.256x256.png',
+        noMsi: true,
+        outputDirectory: 'wrap/beta/<%= info.nameBeta %>-win32-ia32',
+        setupIcon: 'resources/win/wire.ico',
+        title: '<%= info.nameBeta %>',
+        version: '<%= info.version %>.<%= buildNumber %>',
+      },
+
       internal: {
         appDirectory: 'wrap/build/<%= info.nameInternal %>-win32-ia32',
         authors: '<%= info.nameInternal %>',
@@ -122,6 +136,22 @@ module.exports = function(grunt) {
         out: 'wrap/build',
         overwrite: true,
         protocols: [{name: '', schemes: ['wire']}],
+      },
+
+      win_beta: {
+        options: {
+          arch: 'ia32',
+          icon: 'resources/win/wire.ico',
+          name: '<%= info.nameBeta %>',
+          platform: 'win32',
+          win32metadata: {
+            CompanyName: '<%= info.name %>',
+            FileDescription: '<%= info.description %>',
+            InternalName: '<%= info.nameBeta %>.exe',
+            OriginalFilename: '<%= info.nameBeta %>.exe',
+            ProductName: '<%= info.nameBeta %>',
+          },
+        },
       },
 
       win_internal: {
@@ -312,6 +342,21 @@ module.exports = function(grunt) {
     grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
   });
 
+  grunt.registerTask('release-beta', () => {
+    const info = grunt.config.get('info');
+    const buildNumber = grunt.config.get('buildNumber');
+    const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
+    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    electronPkg.updateWinUrl = info.updateWinUrlBeta;
+    electronPkg.environment = 'internal';
+    electronPkg.name = info.nameInternal.toLowerCase();
+    electronPkg.productName = info.nameBeta;
+    electronPkg.version =
+      buildNumber === '0' ? `${info.version}.0-${commitId}-beta` : `${info.version}.${buildNumber}-beta`;
+    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
+  });
+
   grunt.registerMultiTask('electron', 'Package Electron apps', function() {
     const done = this.async();
     electronPackager(this.options())
@@ -445,6 +490,16 @@ module.exports = function(grunt) {
     'bundle',
     'electron:win_prod',
     'create-windows-installer:prod',
+  ]);
+
+  grunt.registerTask('win-beta', [
+    'clean:win',
+    'update-keys',
+    'gitinfo',
+    'release-beta',
+    'bundle',
+    'electron:win_beta',
+    'create-windows-installer:beta',
   ]);
 
   grunt.registerTask('linux', [
