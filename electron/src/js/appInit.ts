@@ -28,10 +28,12 @@ const addLinuxWorkarounds = () => {
   if (environment.platform.IS_LINUX) {
     // Fix indicator icon on Unity
     // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
-    const isUbuntuUnity = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity');
-    const isPopOS = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('pop');
-    const isGnome = process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('GNOME');
-    if (isUbuntuUnity || isPopOS || isGnome) {
+
+    if (
+      environment.linuxDesktop.isUbuntuUnity ||
+      environment.linuxDesktop.isPopOS ||
+      environment.linuxDesktop.isGnome
+    ) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity';
     }
 

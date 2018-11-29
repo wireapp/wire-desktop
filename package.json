@@ -22,7 +22,7 @@
     "cross-env": "5.2.0",
     "css-loader": "1.0.1",
     "electron": "beta-4-0-x",
-    "electron-builder": "20.36.2",
+    "electron-builder": "20.38.0",
     "electron-mocha": "6.0.4",
     "electron-packager": "12.2.0",
     "electron-winstaller": "2.7.0",
