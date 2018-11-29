@@ -21,24 +21,24 @@ import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 const pkg: {environment: string; updateWinUrl: string} = require('../../package.json');
 
-let currentEnvironment: TYPE;
+let currentEnvironment: BackendType;
 
-enum TYPE {
+enum BackendType {
   DEV = 'DEV',
   EDGE = 'EDGE',
   INTERNAL = 'INTERNAL',
   LOCALHOST = 'LOCALHOST',
   PRODUCTION = 'PRODUCTION',
-  STAGING = 'STAGING',
+  RC = 'RC',
 }
 
-enum TYPE_LABEL {
+enum BackendTypeLabel {
   DEV = 'Development',
   EDGE = 'Edge',
   INTERNAL = 'Internal',
   LOCALHOST = 'Localhost',
   PRODUCTION = 'Production',
-  STAGING = 'Staging',
+  RC = 'RC',
 }
 
 const URL_ADMIN = {
@@ -56,10 +56,10 @@ const URL_WEBSITE = {
 const URL_WEBAPP = {
   DEV: 'https://wire-webapp-dev.zinfra.io',
   EDGE: 'https://wire-webapp-edge.zinfra.io',
-  INTERNAL: 'https://wire-webapp-staging.wire.com/?env=prod',
+  INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
   PRODUCTION: 'https://app.wire.com',
-  STAGING: 'https://wire-webapp-staging.zinfra.io',
+  RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
 const app = {
@@ -69,12 +69,12 @@ const app = {
   UPDATE_URL_WIN: pkg.updateWinUrl,
 };
 
-const getEnvironment = (): TYPE => {
-  return <TYPE>(currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase();
+const getEnvironment = (): BackendType => {
+  return <BackendType>(currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase();
 };
 
 const isProdEnvironment = (): boolean => {
-  return [TYPE.INTERNAL, TYPE.PRODUCTION].includes(getEnvironment());
+  return [BackendType.INTERNAL, BackendType.PRODUCTION].includes(getEnvironment());
 };
 
 const isLinuxDesktop = (identifier: string): boolean => {
@@ -94,12 +94,12 @@ const linuxDesktop = {
   isUbuntuUnity: isLinuxDesktop('Unity'),
 };
 
-const restoreEnvironment = (): TYPE => {
-  currentEnvironment = settings.restore(SettingsType.ENV, TYPE.INTERNAL);
-  return <TYPE>currentEnvironment;
+const restoreEnvironment = (): BackendType => {
+  currentEnvironment = settings.restore(SettingsType.ENV, BackendType.INTERNAL);
+  return <BackendType>currentEnvironment;
 };
 
-const setEnvironment = (env: TYPE): void => {
+const setEnvironment = (env: BackendType): void => {
   currentEnvironment = env ? env : restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment.toUpperCase());
 };
@@ -118,7 +118,7 @@ const web = {
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
       if (currentEnvironment) {
-        return URL_WEBAPP[<TYPE>currentEnvironment.toUpperCase()];
+        return URL_WEBAPP[<BackendType>currentEnvironment.toUpperCase()];
       }
     }
 
@@ -130,4 +130,4 @@ const web = {
   },
 };
 
-export {TYPE, TYPE_LABEL, URL_WEBAPP, app, getEnvironment, linuxDesktop, platform, setEnvironment, web};
+export {BackendType, BackendTypeLabel, URL_WEBAPP, app, getEnvironment, linuxDesktop, platform, setEnvironment, web};
