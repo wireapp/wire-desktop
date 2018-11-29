@@ -30,7 +30,7 @@ enum TYPE {
   LOCALHOST = 'LOCALHOST',
   LOCALHOST_PRODUCTION = 'LOCALHOST_PRODUCTION',
   PRODUCTION = 'PRODUCTION',
-  STAGING = 'STAGING',
+  RC = 'RC',
 }
 
 enum TYPE_LABEL {
@@ -40,7 +40,7 @@ enum TYPE_LABEL {
   LOCALHOST = 'Localhost',
   LOCALHOST_PRODUCTION = 'Localhost (Production)',
   PRODUCTION = 'Production',
-  STAGING = 'Staging',
+  RC = 'RC',
 }
 
 const URL_ADMIN = {
