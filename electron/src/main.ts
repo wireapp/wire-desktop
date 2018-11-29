@@ -221,9 +221,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     shell.openExternal(_url);
   });
 
-  const isLocalhostEnvironment =
-    environment.getEnvironment() == environment.BackendType.LOCALHOST ||
-    environment.getEnvironment() == environment.BackendType.LOCALHOST_PRODUCTION;
+  const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
   if (isLocalhostEnvironment) {
     main.webContents.session.webRequest.onHeadersReceived(
       {

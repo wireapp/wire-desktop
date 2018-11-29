@@ -28,7 +28,6 @@ enum BackendType {
   EDGE = 'EDGE',
   INTERNAL = 'INTERNAL',
   LOCALHOST = 'LOCALHOST',
-  LOCALHOST_PRODUCTION = 'LOCALHOST_PRODUCTION',
   PRODUCTION = 'PRODUCTION',
   RC = 'RC',
 }
@@ -38,7 +37,6 @@ enum BackendTypeLabel {
   EDGE = 'Edge',
   INTERNAL = 'Internal',
   LOCALHOST = 'Localhost',
-  LOCALHOST_PRODUCTION = 'Localhost (Production)',
   PRODUCTION = 'Production',
   RC = 'RC',
 }
@@ -60,7 +58,6 @@ const URL_WEBAPP = {
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
-  LOCALHOST_PRODUCTION: 'http://localhost:8081/?env=prod',
   PRODUCTION: 'https://app.wire.com',
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
