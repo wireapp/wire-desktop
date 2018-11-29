@@ -80,6 +80,11 @@ const isProdEnvironment = (): boolean => {
   return [TYPE.INTERNAL, TYPE.PRODUCTION].includes(getEnvironment());
 };
 
+const isLinuxDesktop = (identifier: string): boolean => {
+  const xdgDesktop = process.env.XDG_CURRENT_DESKTOP;
+  return !!xdgDesktop && xdgDesktop.includes(identifier);
+};
+
 const platform = {
   IS_LINUX: process.platform === 'linux',
   IS_MAC_OS: process.platform === 'darwin',
@@ -87,9 +92,9 @@ const platform = {
 };
 
 const linuxDesktop = {
-  isGnome: (process.env.XDG_CURRENT_DESKTOP || '').includes('GNOME'),
-  isPopOS: (process.env.XDG_CURRENT_DESKTOP || '').includes('pop'),
-  isUbuntuUnity: (process.env.XDG_CURRENT_DESKTOP || '').includes('Unity'),
+  isGnome: isLinuxDesktop('GNOME'),
+  isPopOS: isLinuxDesktop('pop'),
+  isUbuntuUnity: isLinuxDesktop('Unity'),
 };
 
 const restoreEnvironment = (): TYPE => {
