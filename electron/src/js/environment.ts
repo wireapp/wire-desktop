@@ -58,11 +58,11 @@ const URL_WEBSITE = {
 const URL_WEBAPP = {
   DEV: 'https://wire-webapp-dev.zinfra.io',
   EDGE: 'https://wire-webapp-edge.zinfra.io',
-  INTERNAL: 'https://wire-webapp-staging.wire.com/?env=prod',
+  INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
   LOCALHOST_PRODUCTION: 'http://localhost:8081/?env=prod',
   PRODUCTION: 'https://app.wire.com',
-  STAGING: 'https://wire-webapp-staging.zinfra.io',
+  RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
 const app = {
