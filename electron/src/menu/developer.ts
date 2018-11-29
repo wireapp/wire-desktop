@@ -65,15 +65,15 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = () => {
   const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
-  for (const key in environment.TYPE) {
-    const type: environment.TYPE = <environment.TYPE>environment.TYPE[key];
+  for (const key in environment.BackendType) {
+    const type: environment.BackendType = <environment.BackendType>environment.BackendType[key];
     environmentTemplate.push({
       checked: currentEnvironment === type,
       click: () => {
         environment.setEnvironment(type);
         getPrimaryWindow().reload();
       },
-      label: environment.TYPE_LABEL[key],
+      label: environment.BackendTypeLabel[key],
       type: 'radio',
     });
   }
