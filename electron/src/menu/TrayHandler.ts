@@ -18,11 +18,10 @@
  */
 
 import {Menu, Tray, app, nativeImage} from 'electron';
-import * as os from 'os';
 import * as path from 'path';
 
 import * as config from '../js/config';
-import {platform} from '../js/environment';
+import {linuxDesktop, platform} from '../js/environment';
 import * as lifecycle from '../js/lifecycle';
 import * as windowManager from '../js/window-manager';
 import * as locale from '../locale/locale';
@@ -43,10 +42,13 @@ class TrayHandler {
   initTray(trayIcon = new Tray(nativeImage.createEmpty())) {
     const IMAGE_ROOT = path.join(app.getAppPath(), 'img');
 
-    const isWindows7 = platform.IS_WINDOWS && os.release().startsWith('6.1');
+    let trayPng = 'tray.png';
+    let trayBadgePng = 'tray.badge.png';
 
-    const trayPng = `tray${isWindows7 ? '.windows7' : ''}.png`;
-    const trayBadgePng = `tray.badge${isWindows7 ? '.windows7' : ''}.png`;
+    if (platform.IS_LINUX) {
+      trayPng = `tray${linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
+      trayBadgePng = `tray.badge${linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
+    }
 
     const iconPaths = {
       badge: path.join(IMAGE_ROOT, 'taskbar.overlay.png'),
