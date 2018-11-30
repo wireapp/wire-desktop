@@ -41,7 +41,7 @@
     "jszip": "3.1.5",
     "lint-staged": "8.1.0",
     "load-grunt-tasks": "4.0.0",
-    "prettier": "1.15.2",
+    "prettier": "1.15.3",
     "rimraf": "2.6.2",
     "sinon": "7.1.1",
     "style-loader": "0.23.1",
