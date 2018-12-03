@@ -2677,10 +2677,10 @@ electron-winstaller@2.7.0:
     lodash.template "^4.2.2"
     temp "^0.8.3"
 
-electron@beta-4-0-x:
-  version "4.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-4.0.0-beta.7.tgz#d54f3fb19910da593408ba6b4320d2bdf5c039da"
-  integrity sha512-770Hzxq10nQrzq39uVmvHLNKpPY3TCNrk+IYGDQTNWqmkreXZX6+9iflMMo+xdg1ZHysrTj1QQZvsjjBY176pg==
+electron@4.0.0-beta.8:
+  version "4.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-4.0.0-beta.8.tgz#df2f464d4e13479a3baa1e063af6c7362b9a2756"
+  integrity sha512-zo0Tf3t1uary5O9Skdlo37axs+vvh9CPC+MkvZnnX3MA/3kWIc+I6jN+AL4bHUdxsMVtjbY8KnusjnCjKSb0sg==
   dependencies:
     "@types/node" "^8.0.24"
     electron-download "^4.1.0"
