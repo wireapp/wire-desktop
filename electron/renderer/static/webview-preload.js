@@ -30,15 +30,18 @@ const {app, systemPreferences} = remote;
 // Note: Until appearance-changed event is available in a future
 // version of Electron... use setInterval
 function appearanceManager() {
+  const CHECK_INTERVAL = 250;
   let appearancePreference = systemPreferences.isDarkMode();
   let lastAppearancePreference = appearancePreference;
-  setInterval(() => {
+  const isSystemAppearanceChanged = () => {
     appearancePreference = systemPreferences.isDarkMode();
     if (lastAppearancePreference !== appearancePreference) {
       amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.APPEARANCE.SYSTEM_CHANGED, appearancePreference);
       lastAppearancePreference = appearancePreference;
     }
-  }, 250);
+    setTimeout(() => isSystemAppearanceChanged(), CHECK_INTERVAL);
+  };
+  isSystemAppearanceChanged();
 }
 
 webFrame.setZoomFactor(1.0);
