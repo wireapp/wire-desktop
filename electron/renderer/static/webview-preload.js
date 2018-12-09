@@ -28,20 +28,13 @@ const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app, systemPreferences} = remote;
 
 // Note: Until appearance-changed event is available in a future
-// version of Electron... use setInterval
+// version of Electron... use AppleInterfaceThemeChangedNotification
 function appearanceManager() {
-  const CHECK_INTERVAL = 250;
-  let appearancePreference = systemPreferences.isDarkMode();
-  let lastAppearancePreference = appearancePreference;
-  const isSystemAppearanceChanged = () => {
-    appearancePreference = systemPreferences.isDarkMode();
-    if (lastAppearancePreference !== appearancePreference) {
-      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.APPEARANCE.SYSTEM_CHANGED, appearancePreference);
-      lastAppearancePreference = appearancePreference;
-    }
-    setTimeout(() => isSystemAppearanceChanged(), CHECK_INTERVAL);
-  };
-  isSystemAppearanceChanged();
+  if (environment.platform.IS_MAC_OS) {
+    systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () =>
+      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.APPEARANCE.SYSTEM_CHANGED, systemPreferences.isDarkMode())
+    );
+  }
 }
 
 webFrame.setZoomFactor(1.0);
@@ -214,9 +207,7 @@ window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
     exposeAddressBook();
     subscribeToMainProcessEvents();
-    if (environment.platform.IS_MAC_OS) {
-      appearanceManager();
-    }
+    appearanceManager();
     subscribeToWebappEvents();
     reportWebappVersion();
     // include context menu
