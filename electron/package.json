@@ -4,6 +4,7 @@
     "@wireapp/certificate-check": "0.0.3",
     "ansi-regex": "4.0.0",
     "auto-launch": "5.0.5",
+    "axios": "0.18.0",
     "electron-window-state": "5.0.3",
     "file-url": "2.0.2",
     "fs-extra": "7.0.1",
@@ -22,7 +23,6 @@
     "redux": "4.0.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
-    "request": "2.88.0",
     "spellchecker": "3.5.0",
     "uuid": "3.3.2",
     "winston": "https://github.com/wireapp/winston.git#2.2.0-e"

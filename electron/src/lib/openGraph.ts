@@ -17,7 +17,7 @@
  *
  */
 
-import * as request from 'request';
+import axios, {AxiosRequestConfig} from 'axios';
 import * as urlUtil from 'url';
 const {parse: openGraphParse} = require('open-graph');
 
@@ -30,70 +30,65 @@ const bufferToBase64 = (buffer: string, mimeType?: string): string => {
   return `data:${mimeType};base64,${bufferBase64encoded}`;
 };
 
-const fetchImageAsBase64 = (url: string): Promise<string | undefined> => {
+const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
-  return new Promise(resolve => {
-    const imageRequest = request({encoding: null, url: encodeURI(url)}, (error, response, body: string) => {
-      if (!error && response.statusCode === 200) {
-        resolve(bufferToBase64(body, response.headers['content-type']));
-      } else {
-        // we just skip images that failed to download
-        resolve();
-      }
-    });
 
-    let currentDownloadSize = 0;
-    imageRequest.on('data', buffer => {
-      currentDownloadSize += buffer.length;
-      if (currentDownloadSize > IMAGE_SIZE_LIMIT) {
-        imageRequest.abort();
-        resolve();
-      }
-    });
-  });
+  const axiosConfig: AxiosRequestConfig = {
+    maxContentLength: IMAGE_SIZE_LIMIT,
+    method: 'get',
+    url,
+  };
+
+  try {
+    const response = await axios.request<string>(axiosConfig);
+
+    if (response.status !== 200) {
+      throw new Error(`Request failed with status code "${response.status}".`);
+    }
+
+    return bufferToBase64(response.data, response.headers['content-type']);
+  } catch (error) {
+    // we just skip images that failed to download
+    console.error(error);
+    return;
+  }
 };
 
-const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
+const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
 
-  return new Promise<string>((resolve, reject) => {
-    let partialBody = '';
-    const getContentRequest = request.get(urlUtil.format(normalizedUrl));
-
-    getContentRequest.on('response', response => {
-      if (response.statusCode !== 200) {
-        return reject(`Request failed with status code "${response.statusCode}".`);
-      }
-
+  axios.interceptors.response.use(
+    response => {
       const contentType = response.headers['content-type'] || '';
       const isHtmlContentType = contentType.match(/.*text\/html/);
 
       if (!isHtmlContentType) {
-        getContentRequest.abort();
         throw new Error(`Unhandled format for open graph generation ('${contentType}')`);
       }
-    });
 
-    getContentRequest.on('data', buffer => {
-      const chunk = buffer.toString();
+      return response;
+    },
+    error => Promise.reject(error)
+  );
 
-      partialBody += chunk;
+  const axiosConfig: AxiosRequestConfig = {
+    maxContentLength: CONTENT_SIZE_LIMIT,
+    method: 'get',
+    url: normalizedUrl.href,
+    onDownloadProgress(progress) {
+      console.log('progress', progress);
+    },
+  };
 
-      if (chunk.match('</head>') || partialBody.length > CONTENT_SIZE_LIMIT) {
-        getContentRequest.abort();
-        resolve(partialBody);
-      }
-    });
+  const response = await axios.request<string>(axiosConfig);
+  if (response.status !== 200) {
+    throw new Error(`Request failed with status code "${response.status}".`);
+  }
 
-    getContentRequest.on('complete', () => reject('No head end tag found in website.'));
-
-    getContentRequest.on('error', error => reject(error));
-  }).then((body: string) => {
-    const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
-    return openGraphParse(head);
-  });
+  const [head] = response.data.match(/<head>[\s\S]*?<\/head>/) || [''];
+  return openGraphParse(head);
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, image?: string): OpenGraphResult => {
