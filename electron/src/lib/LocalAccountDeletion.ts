@@ -22,7 +22,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as util from '../js/util';
 
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
+const USER_DATA_DIR = app.getPath('userData');
+const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
 const clearStorage = (sess: Electron.Session) => {
   return new Promise(resolve =>
@@ -61,7 +62,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
       if (!util.isUUID(partitionId)) {
         throw new Error('Partition is not an UUID');
       }
-      const partitionDir = path.join(app.getPath('userData'), 'Partitions', partitionId);
+      const partitionDir = path.join(USER_DATA_DIR, 'Partitions', partitionId);
       await fs.remove(partitionDir);
       console.log(`Deleted partition ${partitionId} for account ${accountId}`);
     } catch (error) {
