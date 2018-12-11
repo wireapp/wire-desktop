@@ -37,4 +37,7 @@ const isInView = (win: Electron.BrowserWindow): boolean => {
 
 const isMatchingHost = (_url: string, _baseUrl: string): boolean => url.parse(_url).host === url.parse(_baseUrl).host;
 
-export {isInView, isMatchingHost};
+const isUUID = (string: string) =>
+  /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}/i.test(string);
+
+export {isInView, isMatchingHost, isUUID};
