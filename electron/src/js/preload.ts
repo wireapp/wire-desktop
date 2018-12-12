@@ -64,7 +64,7 @@ const setupIpcInterface = (): void => {
       return;
     }
 
-    const viewInstanceId = (<any>accountWebview).getWebContents().id;
+    const viewInstanceId = accountWebview.getWebContents().id;
     ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
   };
 
