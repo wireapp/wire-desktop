@@ -388,7 +388,7 @@ class ElectronWrapperInit {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
 
-            // Verify the URL being loaded
+            // Verify the URL is being loaded
             if (!util.isMatchingHost(_url, BASE_URL)) {
               event.preventDefault();
               this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
