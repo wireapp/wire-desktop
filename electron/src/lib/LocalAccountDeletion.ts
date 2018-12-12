@@ -54,7 +54,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
   }
 
   // Delete the webview partition
-  // Note: The first account always use the default session,
+  // Note: The first account always uses the default session,
   // therefore partitionId is optional
   // ToDo: Move the first account to a partition
   if (partitionId) {
