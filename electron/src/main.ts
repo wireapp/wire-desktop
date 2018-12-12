@@ -402,7 +402,7 @@ class ElectronWrapperInit {
             webPreferences.allowRunningInsecureContent = false;
             params.plugins = false;
             params.autosize = false;
-            params.preload = `${fileUrl(PRELOAD_RENDERER_JS)}`;
+            params.preload = fileUrl(PRELOAD_RENDERER_JS);
           });
           break;
 
