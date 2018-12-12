@@ -48,7 +48,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
     }
     console.log(`Deleting session data for account "${accountId}"...`);
     await clearStorage(webviewWebcontent.session);
-    console.log(`Deleted session data for account ${accountId}`);
+    console.log(`Deleted session data for account "${accountId}".`);
   } catch (error) {
     console.log(`Failed to session data for account "${accountId}", reason: "${error.message}".`);
   }
