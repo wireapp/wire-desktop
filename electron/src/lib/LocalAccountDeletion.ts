@@ -77,7 +77,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
     }
     const sessionFolder = path.join(LOG_DIR, accountId);
     await fs.remove(sessionFolder);
-    console.log(`Deleted logs folder for account ${accountId}`);
+    console.log(`Deleted logs folder for account "${accountId}".`);
   } catch (error) {
     console.log(`Failed to delete logs folder for account "${accountId}", reason: "${error.message}".`);
   }
