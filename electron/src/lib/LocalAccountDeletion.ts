@@ -46,7 +46,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
     if (!webviewWebcontent.hostWebContents) {
       throw new Error('Only a webview can have its storage wiped');
     }
-    console.log(`Deleting session data for account ${accountId}...`);
+    console.log(`Deleting session data for account "${accountId}"...`);
     await clearStorage(webviewWebcontent.session);
     console.log(`Deleted session data for account ${accountId}`);
   } catch (error) {
