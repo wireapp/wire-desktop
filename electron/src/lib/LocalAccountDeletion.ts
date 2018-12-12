@@ -66,7 +66,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
       await fs.remove(partitionDir);
       console.log(`Deleted partition "${partitionId}" for account "${accountId}".`);
     } catch (error) {
-      console.log(`Unable to delete partition ${partitionId} for ${accountId}, reason: ${error.message}`);
+      console.log(`Unable to delete partition "${partitionId}" for account "${accountId}", reason: "${error.message}".`);
     }
   }
 
