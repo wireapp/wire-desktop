@@ -346,11 +346,6 @@ const win32Template: ElectronMenuItemWithI18n = {
 const linuxTemplate: ElectronMenuItemWithI18n = {
   label: config.NAME,
   submenu: [
-    {
-      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
-      i18n: 'menuPreferences',
-    },
-    separatorTemplate,
     toggleAutoLaunchTemplate,
     separatorTemplate,
     localeTemplate,

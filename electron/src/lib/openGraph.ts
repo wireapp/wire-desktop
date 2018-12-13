@@ -22,6 +22,7 @@ import * as urlUtil from 'url';
 const {parse: openGraphParse} = require('open-graph');
 
 import {OpenGraphResult} from '../interfaces/';
+import {USER_AGENT} from '../js/config';
 
 const arrayify = <T>(value: T[] | T = []): T[] => (Array.isArray(value) ? value : [value]);
 
@@ -60,7 +61,12 @@ const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
 
   return new Promise<string>((resolve, reject) => {
     let partialBody = '';
-    const getContentRequest = request.get(urlUtil.format(normalizedUrl));
+    const getContentRequest = request.get({
+      headers: {
+        'User-Agent': USER_AGENT,
+      },
+      url: urlUtil.format(normalizedUrl),
+    });
 
     getContentRequest.on('response', response => {
       if (response.statusCode !== 200) {
