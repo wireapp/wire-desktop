@@ -418,10 +418,6 @@ module.exports = function(grunt) {
       '/Frameworks/Electron Framework.framework/',
       `/Frameworks/${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
       `/Frameworks/${options.name} Helper.app/`,
-      `/Frameworks/${options.name} Helper EH.app/Contents/MacOS/${options.name} Helper EH`,
-      `/Frameworks/${options.name} Helper EH.app/`,
-      `/Frameworks/${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
-      `/Frameworks/${options.name} Helper NP.app/`,
       `/Library/LoginItems/${options.name} Login Helper.app/Contents/MacOS/${options.name} Login Helper`,
       `/Library/LoginItems/${options.name} Login Helper.app/`,
     ].forEach(file => {
