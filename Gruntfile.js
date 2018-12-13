@@ -415,7 +415,6 @@ module.exports = function(grunt) {
     [
       '/Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
       '/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
-      '/Frameworks/Electron Framework.framework/Versions/A/Libraries/libnode.dylib',
       '/Frameworks/Electron Framework.framework/',
       `/Frameworks/${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
       `/Frameworks/${options.name} Helper.app/`,
