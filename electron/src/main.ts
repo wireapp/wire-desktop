@@ -55,6 +55,7 @@ const APP_PATH = app.getAppPath();
 const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
+const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer', 'static', 'webview-preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
 LogFactory.LOG_FILE_PATH = LOG_DIR;
@@ -387,6 +388,13 @@ class ElectronWrapperInit {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
 
+            // Verify the URL is being loaded
+            if (!util.isMatchingHost(_url, BASE_URL)) {
+              event.preventDefault();
+              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
+              return;
+            }
+
             // Use secure defaults
             webPreferences.nodeIntegration = false;
             webPreferences.webSecurity = true;
@@ -394,12 +402,7 @@ class ElectronWrapperInit {
             webPreferences.allowRunningInsecureContent = false;
             params.plugins = false;
             params.autosize = false;
-
-            // Verify the URL being loaded
-            if (!util.isMatchingHost(_url, BASE_URL)) {
-              event.preventDefault();
-              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
-            }
+            params.preload = fileUrl(PRELOAD_RENDERER_JS);
           });
           break;
 
