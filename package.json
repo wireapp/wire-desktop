@@ -24,7 +24,7 @@
     "electron": "4.0.0-beta.9",
     "electron-builder": "20.38.3",
     "electron-mocha": "6.0.4",
-    "electron-packager": "12.2.0",
+    "electron-packager": "13.0.1",
     "electron-winstaller": "2.7.0",
     "eslint": "5.10.0",
     "eslint-config-prettier": "3.3.0",
