@@ -25,11 +25,11 @@ import * as util from '../js/util';
 const USER_DATA_DIR = app.getPath('userData');
 const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
-const clearStorage = (sess: Electron.Session) => {
+const clearStorage = (session: Electron.Session) => {
   return new Promise(resolve =>
-    sess.clearStorageData({}, () =>
-      sess.clearCache(() => {
-        sess.flushStorageData();
+    session.clearStorageData({}, () =>
+      session.clearCache(() => {
+        session.flushStorageData();
         resolve();
       })
     )
@@ -66,7 +66,9 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
       await fs.remove(partitionDir);
       console.log(`Deleted partition "${partitionId}" for account "${accountId}".`);
     } catch (error) {
-      console.log(`Unable to delete partition "${partitionId}" for account "${accountId}", reason: "${error.message}".`);
+      console.log(
+        `Unable to delete partition "${partitionId}" for account "${accountId}", reason: "${error.message}".`
+      );
     }
   }
 
