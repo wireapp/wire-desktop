@@ -60,10 +60,11 @@ const setupIpcInterface = (): void => {
   window.sendDeleteAccount = (accountID: string, sessionID?: string): void => {
     const accountWebview = getWebviewById(accountID);
     if (!accountWebview) {
-      console.error('Webview does not exist');
+      console.error(`Webview for account "${accountID}" does not exist`);
       return;
     }
 
+    console.log(`Processing deletion of "${accountID}"`);
     const viewInstanceId = accountWebview.getWebContents().id;
     ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
   };
