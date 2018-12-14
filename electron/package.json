@@ -12,7 +12,7 @@
     "lodash": "4.17.11",
     "logdown": "3.2.7",
     "minimist": "1.2.0",
-    "moment": "2.22.2",
+    "moment": "2.23.0",
     "open-graph": "0.2.4",
     "prop-types": "15.6.2",
     "raygun": "0.10.0",
