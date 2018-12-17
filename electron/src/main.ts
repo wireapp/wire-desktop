@@ -39,6 +39,7 @@ import * as util from './js/util';
 import * as windowManager from './js/window-manager';
 import {download} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
+import {deleteAccount} from './lib/LocalAccountDeletion';
 import {SingleSignOn} from './lib/SingleSignOn';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
@@ -90,31 +91,8 @@ const bindIpcEvents = () => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event: IpcMessageEvent, accountID: string, sessionID?: string) => {
-    // delete webview partition
-    try {
-      if (sessionID) {
-        const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
-        fs.removeSync(partitionDir);
-        logger.log(`Deleted partition for account: ${sessionID}`);
-      } else {
-        logger.log(`Skipping partition deletion for account: ${accountID}`);
-      }
-    } catch (error) {
-      logger.log(`Failed to partition for account: ${sessionID}`);
-    }
-
-    // delete logs
-    try {
-      fs.removeSync(LOG_DIR);
-      logger.log(`Deleted logs folder for account: ${accountID}`);
-    } catch (error) {
-      logger.log(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
-    }
-  });
-
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, deleteAccount);
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
-
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
 };
 
@@ -221,25 +199,6 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
     shell.openExternal(_url);
   });
-
-  const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
-  if (isLocalhostEnvironment) {
-    main.webContents.session.webRequest.onHeadersReceived(
-      {
-        urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
-      },
-      (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
-        // Override remote Access-Control-Allow-Origin
-        details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
-        details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
-
-        callback({
-          cancel: false,
-          responseHeaders: details.responseHeaders,
-        });
-      }
-    );
-  }
 
   main.webContents.on('dom-ready', () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
@@ -410,6 +369,25 @@ class ElectronWrapperInit {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
+
+          // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
+          const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
+          if (isLocalhostEnvironment) {
+            contents.session.webRequest.onHeadersReceived(
+              {
+                urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
+              },
+              (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
+                details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
+                details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+
+                callback({
+                  cancel: false,
+                  responseHeaders: details.responseHeaders,
+                });
+              }
+            );
+          }
 
           contents.session.setCertificateVerifyProc(
             (request: Electron.CertificateVerifyProcRequest, cb: (verificationResult: number) => void) => {
