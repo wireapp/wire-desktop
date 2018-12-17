@@ -84,6 +84,6 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
     await fs.remove(sessionFolder);
     logger.log(`Deleted logs folder for account "${accountId}".`);
   } catch (error) {
-    logger.log(`Failed to delete logs folder for account "${accountId}", reason: "${error.message}".`);
+    logger.error(`Failed to delete logs folder for account "${accountId}", reason: "${error.message}".`);
   }
 }
