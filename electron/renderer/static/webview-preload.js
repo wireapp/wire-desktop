@@ -188,7 +188,6 @@ process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
-  global.notification_icon = path.join(app.getAppPath(), 'img', 'notification.png');
   global.openGraph = getOpenGraphData;
   global.setImmediate = _setImmediate;
 
