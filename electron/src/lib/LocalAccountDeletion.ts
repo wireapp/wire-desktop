@@ -55,7 +55,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
     await clearStorage(webviewWebcontent.session);
     logger.log(`Deleted session data for account "${accountId}".`);
   } catch (error) {
-    logger.log(`Failed to delete session data for account "${accountId}", reason: "${error.message}".`);
+    logger.error(`Failed to delete session data for account "${accountId}", reason: "${error.message}".`);
   }
 
   // Delete the webview partition
