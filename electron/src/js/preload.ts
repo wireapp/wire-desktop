@@ -59,8 +59,14 @@ const setupIpcInterface = (): void => {
 
   window.sendDeleteAccount = (accountID: string, sessionID?: string): void => {
     const accountWebview = getWebviewById(accountID);
-    accountWebview.getWebContents().session.clearStorageData();
-    ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, accountID, sessionID);
+    if (!accountWebview) {
+      console.error(`Webview for account "${accountID}" does not exist`);
+      return;
+    }
+
+    console.log(`Processing deletion of "${accountID}"`);
+    const viewInstanceId = accountWebview.getWebContents().id;
+    ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
   };
 
   window.sendLogoutAccount = (accountId: string): void => {
