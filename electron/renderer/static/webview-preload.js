@@ -25,7 +25,17 @@ const winston = require('winston');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
-const {app} = remote;
+const {app, systemPreferences} = remote;
+
+// Note: Until appearance-changed event is available in a future
+// version of Electron... use AppleInterfaceThemeChangedNotification event
+function subscribeToThemeChange() {
+  if (environment.platform.IS_MAC_OS && z.event.WebApp.PROPERTIES.UPDATE.INTERFACE) {
+    systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () =>
+      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode())
+    );
+  }
+}
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
@@ -197,6 +207,7 @@ window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
     exposeAddressBook();
     subscribeToMainProcessEvents();
+    subscribeToThemeChange();
     subscribeToWebappEvents();
     reportWebappVersion();
     // include context menu
