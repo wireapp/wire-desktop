@@ -17,10 +17,10 @@
  *
  */
 
+import {ValidationUtil} from '@wireapp/commons';
 import {IpcMessageEvent, app, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as util from '../js/util';
 import {LogFactory} from '../util';
 
 const USER_DATA_DIR = app.getPath('userData');
@@ -64,7 +64,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
   // ToDo: Move the first account to a partition
   if (partitionId) {
     try {
-      if (!util.isUUID(partitionId)) {
+      if (!ValidationUtil.isUUIDv4(partitionId)) {
         throw new Error('Partition is not an UUID');
       }
       const partitionDir = path.join(USER_DATA_DIR, 'Partitions', partitionId);
@@ -77,7 +77,7 @@ export async function deleteAccount(event: IpcMessageEvent, id: number, accountI
 
   // Delete logs for this account
   try {
-    if (!util.isUUID(accountId)) {
+    if (!ValidationUtil.isUUIDv4(accountId)) {
       throw new Error('Account is not an UUID');
     }
     const sessionFolder = path.join(LOG_DIR, accountId);
