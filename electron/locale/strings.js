@@ -3,14 +3,18 @@ string.aboutUpdate = 'How Wire Updates Work';
 string.aboutVersion = 'Version';
 string.aboutWebappVersion = 'Wire for Web Version';
 
-string.certificatePinningRetry = 'Retry';
-string.certificatePinningShowCertificate = 'Show certificate';
-string.certificatePinningShowCertificateMessage =
-  'An unexpected certificate was returned for the following domain name:';
-string.certificatePinningWarning =
+string.certificateVerifyProcManagerRetry = 'Retry';
+string.certificateVerifyProcManagerShowDetails = 'Show details';
+string.certificateVerifyProcManagerShowDetailsTextChromium =
+  'Wire encountered an unrecoverable error during the TLS handshake. The certificate returned was for the following domain name:';
+string.certificateVerifyProcManagerShowDetailsTextPinning =
+  'The certificate pinning received an unexpected certificate for the following domain name:';
+string.certificateVerifyProcManagerWarningBypass = 'I know what I’m doing, use Wire on this network';
+string.certificateVerifyProcManagerWarningTextChromium =
+  'Wire warns you when you’re on a network that does not allow secure connections to our servers. There could be multiple reasons for this:\r\n\r\n- You are behind a corporate firewall that intercepts connections\r\n- You are on a public WiFi network, such as a hotel or airport WiFi, that intercepts connections until you have registered through a captive portal\r\n- Someone on the same network is trying to intercept your data with malicious intent\r\n\r\nYou should not use Wire on this network.';
+string.certificateVerifyProcManagerWarningTextPinning =
   'Wire warns you when you’re on a network that does not allow secure connections to our servers. There could be multiple reasons for this:\r\n\r\n- You are behind a corporate firewall that intercepts connections\r\n- You are on a public WiFi network, such as a hotel or airport WiFi, that intercepts connections until you have registered through a captive portal\r\n- Someone on the same network is trying to intercept your data with malicious intent\r\n\r\nYou should not use Wire on this network, unless you know what you are doing.';
-string.certificatePinningWarningBypass = 'I know what I’m doing, use Wire on this network';
-string.certificatePinningWarningTitle = 'Your connection is not private';
+string.certificateVerifyProcManagerWarningTitle = 'Your connection is not private';
 
 string.menuConversation = 'Conversation';
 string.menuStart = 'Start';
