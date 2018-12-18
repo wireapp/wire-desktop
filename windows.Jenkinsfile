@@ -112,7 +112,7 @@ node('node160') {
     } else if (beta) {
       archiveArtifacts 'info.json,wrap\\beta\\WireBeta-win32-ia32\\**'
     } else {
-      archiveArtifacts 'info.json,wrap\\internal\\WireBeta-win32-ia32\\**'
+      archiveArtifacts 'info.json,wrap\\internal\\WireInternal-win32-ia32\\**'
     }
   }
 
