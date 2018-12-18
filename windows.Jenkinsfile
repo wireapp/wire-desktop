@@ -6,7 +6,7 @@ def parseJson(def text) {
 node('node160') {
 
   def production = params.PRODUCTION
-  def beta = params.BETA
+  def beta = false
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
