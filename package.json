@@ -7,7 +7,6 @@
     }
   },
   "dependencies": {
-    "@wireapp/commons": "0.10.4",
     "debug": "4.1.0"
   },
   "devDependencies": {
