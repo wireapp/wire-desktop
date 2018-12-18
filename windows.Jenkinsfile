@@ -28,7 +28,7 @@ node('node160') {
   stage('Build') {
     try {
       bat 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.14.0-windows-x86', type: 'nodejs'
+      def NODE = tool name: 'node-v10.14.2-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         bat 'node -v'
         bat 'npm -v'
@@ -73,7 +73,7 @@ node('node160') {
 
   stage('Build installer') {
     try {
-      def NODE = tool name: 'node-v8.14.0-windows-x86', type: 'nodejs'
+      def NODE = tool name: 'node-v10.14.2-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         if (production) {
           bat 'npx grunt create-windows-installer:prod'
