@@ -42,6 +42,8 @@ class CertificateVerifyProcManager {
   private static bypassCertificatePinning: boolean = false;
   private static isDialogLocked: boolean = false;
 
+  private static readonly dialogUnlockTimeout: number = 6000;
+
   public static readonly CHROMIUM_ERRORS = {
     CERT_AUTHORITY_INVALID: -202,
     CERT_COMMON_NAME_INVALID: -200,
@@ -172,7 +174,8 @@ class CertificateVerifyProcManager {
               }
             }
 
-            this.isDialogLocked = false;
+            // Postpone unlocking of the dialog so the user have time to leave the app
+            setTimeout(() => (this.isDialogLocked = false), this.dialogUnlockTimeout);
             break;
           }
 
