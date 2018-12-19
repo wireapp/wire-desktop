@@ -60,6 +60,7 @@ class CertificateVerifyProcManager {
     SHOW_DETAILS_SAVE_CERTIFICATE: getText('certificateVerifyProcManagerShowDetailsSaveCertificate'),
     SHOW_DETAILS_TEXT_CHROMIUM: getText('certificateVerifyProcManagerShowDetailsTextChromium'),
     SHOW_DETAILS_TEXT_PINNING: getText('certificateVerifyProcManagerShowDetailsTextPinning'),
+    SHOW_DETAILS_TITLE: getText('certificateVerifyProcManagerShowDetailsTitle'),
     WARNING_BYPASS: getText('certificateVerifyProcManagerWarningBypass'),
     WARNING_TEXT_CHROMIUM: getText('certificateVerifyProcManagerWarningTextChromium'),
     WARNING_TEXT_PINNING: getText('certificateVerifyProcManagerWarningTextPinning'),
@@ -98,7 +99,7 @@ class CertificateVerifyProcManager {
         {
           buttons: [this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE, this.LOCALE.SHOW_DETAILS_GO_BACK],
           detail: textDetails,
-          message: '',
+          message: this.LOCALE.SHOW_DETAILS_TITLE,
           type: 'info',
         },
         (response: number) => {
@@ -199,8 +200,6 @@ export const setCertificateVerifyProc = (
   if (hostname === hostnameInternal && environment.app.IS_DEVELOPMENT) {
     return cb(-3);
   }
-
-  CertificateVerifyProcManager.displayCertificateChromiumError(hostname, certificate);
 
   // Check browser results
   if (verificationResult !== 'net::OK') {

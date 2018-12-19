@@ -13,6 +13,7 @@ string.certificateVerifyProcManagerShowDetailsGoBack = 'Go back';
 string.certificateVerifyProcManagerShowDetailsSaveCertificate = 'Save certificate';
 string.certificateVerifyProcManagerShowDetailsTextChromium = 'The application encountered an unrecoverable error during the TLS handshake. The certificate returned was for the following domain name:';
 string.certificateVerifyProcManagerShowDetailsTextPinning = 'The certificate pinning received an unexpected certificate for the following domain name:';
+string.certificateVerifyProcManagerShowDetailsTitle = 'Details';
 string.certificateVerifyProcManagerWarningBypass = 'I know what I’m doing, use Wire on this network';
 string.certificateVerifyProcManagerWarningTextChromium =
   'Wire warns you when you’re on a network that does not allow secure connections to Wire servers. There could be multiple reasons for this:\r\n\r\n- You are behind a corporate firewall that intercepts connections\r\n- You are on a public WiFi network, such as a hotel or airport WiFi, that intercepts connections until you have registered through a captive portal\r\n- Someone on the same network is trying to intercept your data with malicious intent\r\n\r\nYou should not use Wire on this network.';

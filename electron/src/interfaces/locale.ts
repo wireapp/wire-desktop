@@ -30,6 +30,7 @@ export type i18nLanguageIdentifier =
   | 'certificateVerifyProcManagerShowDetailsSaveCertificate'
   | 'certificateVerifyProcManagerShowDetailsTextChromium'
   | 'certificateVerifyProcManagerShowDetailsTextPinning'
+  | 'certificateVerifyProcManagerShowDetailsTitle'
   | 'certificateVerifyProcManagerWarningBypass'
   | 'certificateVerifyProcManagerWarningTextChromium'
   | 'certificateVerifyProcManagerWarningTextPinning'
