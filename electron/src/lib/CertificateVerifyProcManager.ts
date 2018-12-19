@@ -116,7 +116,7 @@ class CertificateVerifyProcManager {
       },
       (response: number, checkboxChecked: boolean) => {
         switch (response) {
-          case this.RESPONSE.RETRY:
+          case this.RESPONSE.RETRY: {
             if (!isChromiumError) {
               this.bypassCertificatePinning = checkboxChecked;
               if (this.bypassCertificatePinning) {
@@ -126,14 +126,16 @@ class CertificateVerifyProcManager {
 
             this.isDialogLocked = false;
             break;
+          }
 
-          case this.RESPONSE.SHOW_DETAILS:
+          case this.RESPONSE.SHOW_DETAILS: {
             this.displayCertificateDetails(hostname, certificate, {
               bypassDialogLock,
               isCheckboxChecked: checkboxChecked,
               isChromiumError,
             });
             break;
+          }
         }
       }
     );
