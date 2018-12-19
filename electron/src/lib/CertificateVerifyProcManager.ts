@@ -19,6 +19,7 @@
 
 import * as certificateUtils from '@wireapp/certificate-check';
 import {app, dialog} from 'electron';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import {URL} from 'url';
 import * as environment from '../js/environment';
@@ -48,10 +49,15 @@ class CertificateVerifyProcManager {
   private static readonly RESPONSE = {
     RETRY: 0,
     SHOW_DETAILS: 1,
+
+    GO_BACK: 1,
+    SAVE_CERTIFICATE: 0,
   };
   private static readonly LOCALE = {
     RETRY: getText('certificateVerifyProcManagerRetry'),
     SHOW_DETAILS: getText('certificateVerifyProcManagerShowDetails'),
+    SHOW_DETAILS_GO_BACK: getText('certificateVerifyProcManagerShowDetailsGoBack'),
+    SHOW_DETAILS_SAVE_CERTIFICATE: getText('certificateVerifyProcManagerShowDetailsSaveCertificate'),
     SHOW_DETAILS_TEXT_CHROMIUM: getText('certificateVerifyProcManagerShowDetailsTextChromium'),
     SHOW_DETAILS_TEXT_PINNING: getText('certificateVerifyProcManagerShowDetailsTextPinning'),
     WARNING_BYPASS: getText('certificateVerifyProcManagerWarningBypass'),
@@ -65,21 +71,61 @@ class CertificateVerifyProcManager {
     certificate: Electron.Certificate,
     options: DisplayCertificateErrorOptions
   ) {
-    dialog.showCertificateTrustDialog(
-      {
-        certificate,
-        message: `${
-          options.isChromiumError ? this.LOCALE.SHOW_DETAILS_TEXT_CHROMIUM : this.LOCALE.SHOW_DETAILS_TEXT_PINNING
-        } ${hostname}`,
-      },
-      () => {
-        // Go back to the dialog
-        this.displayCertificateError(hostname, certificate, {
-          ...options,
-          bypassDialogLock: true,
-        });
-      }
-    );
+    const goBack = () => {
+      // Go back to the dialog
+      this.displayCertificateError(hostname, certificate, {
+        ...options,
+        bypassDialogLock: true,
+      });
+    };
+
+    const textDetails = `${
+      options.isChromiumError ? this.LOCALE.SHOW_DETAILS_TEXT_CHROMIUM : this.LOCALE.SHOW_DETAILS_TEXT_PINNING
+    } ${hostname}`;
+
+    const isTrustDialogSupported = false; //environment.platform.IS_MAC_OS || environment.platform.IS_WINDOWS;
+    if (isTrustDialogSupported) {
+      dialog.showCertificateTrustDialog(
+        {
+          certificate,
+          message: textDetails,
+        },
+        goBack
+      );
+    } else {
+      // For Linux, use a message box with the ability to save the certificate
+      dialog.showMessageBox(
+        {
+          buttons: [this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE, this.LOCALE.SHOW_DETAILS_GO_BACK],
+          detail: textDetails,
+          message: '',
+          type: 'info',
+        },
+        (response: number) => {
+          switch (response) {
+            case this.RESPONSE.SAVE_CERTIFICATE: {
+              dialog.showSaveDialog(
+                {
+                  defaultPath: `${hostname}.pem`,
+                },
+                async chosenPath => {
+                  if (chosenPath !== undefined) {
+                    await fs.writeFile(chosenPath, Buffer.from(certificate.data));
+                  }
+                  goBack();
+                }
+              );
+              break;
+            }
+
+            case this.RESPONSE.GO_BACK: {
+              goBack();
+              break;
+            }
+          }
+        }
+      );
+    }
   }
 
   public static isCertificatePinningEnabled() {
@@ -153,6 +199,7 @@ export const setCertificateVerifyProc = (
   if (hostname === hostnameInternal && environment.app.IS_DEVELOPMENT) {
     return cb(-3);
   }
+
   CertificateVerifyProcManager.displayCertificateChromiumError(hostname, certificate);
 
   // Check browser results

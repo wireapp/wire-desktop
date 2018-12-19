@@ -26,6 +26,8 @@ export type i18nLanguageIdentifier =
   | 'aboutWebappVersion'
   | 'certificateVerifyProcManagerRetry'
   | 'certificateVerifyProcManagerShowDetails'
+  | 'certificateVerifyProcManagerShowDetailsGoBack'
+  | 'certificateVerifyProcManagerShowDetailsSaveCertificate'
   | 'certificateVerifyProcManagerShowDetailsTextChromium'
   | 'certificateVerifyProcManagerShowDetailsTextPinning'
   | 'certificateVerifyProcManagerWarningBypass'
