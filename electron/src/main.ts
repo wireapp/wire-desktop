@@ -358,9 +358,9 @@ class ElectronWrapperInit {
             params.autosize = false;
             params.contextIsolation = true;
             params.plugins = false;
-            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
+            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
             webPreferences.webSecurity = true;
           });
           break;
