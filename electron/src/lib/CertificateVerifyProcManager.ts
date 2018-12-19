@@ -51,8 +51,8 @@ class CertificateVerifyProcManager {
     RETRY: 0,
     SHOW_DETAILS: 1,
 
-    GO_BACK: 1,
-    SAVE_CERTIFICATE: 0,
+    GO_BACK: 0,
+    SAVE_CERTIFICATE: 1,
   };
   private static readonly LOCALE = {
     RETRY: getText('certificateVerifyProcManagerRetry'),
@@ -98,7 +98,8 @@ class CertificateVerifyProcManager {
       // For Linux and Windows, use a message box with the ability to save the certificate
       dialog.showMessageBox(
         {
-          buttons: [this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE, this.LOCALE.SHOW_DETAILS_GO_BACK],
+          buttons: [this.LOCALE.SHOW_DETAILS_GO_BACK, this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE],
+          cancelId: this.RESPONSE.GO_BACK,
           detail: textDetails,
           message: this.LOCALE.SHOW_DETAILS_TITLE,
           type: 'info',
@@ -157,8 +158,10 @@ class CertificateVerifyProcManager {
     dialog.showMessageBox(
       {
         buttons: [this.LOCALE.RETRY, this.LOCALE.SHOW_DETAILS],
+        cancelId: this.RESPONSE.RETRY,
         checkboxChecked: isChromiumError ? undefined : isCheckboxChecked,
         checkboxLabel: isChromiumError ? undefined : this.LOCALE.WARNING_BYPASS,
+        defaultId: this.RESPONSE.RETRY,
         detail: isChromiumError ? this.LOCALE.WARNING_TEXT_CHROMIUM : this.LOCALE.WARNING_TEXT_PINNING,
         message: this.LOCALE.WARNING_TITLE,
         type: 'warning',
