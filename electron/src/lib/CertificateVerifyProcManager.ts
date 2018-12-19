@@ -113,7 +113,8 @@ class CertificateVerifyProcManager {
                   if (chosenPath !== undefined) {
                     await fs.writeFile(chosenPath, Buffer.from(certificate.data));
                   }
-                  goBack();
+                  // Go back on details window
+                  this.displayCertificateDetails(hostname, certificate, options);
                 }
               );
               break;
