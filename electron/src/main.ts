@@ -355,13 +355,13 @@ class ElectronWrapperInit {
             }
 
             // Use secure defaults
+            params.autosize = false;
+            params.contextIsolation = true;
+            params.plugins = false;
+            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
+            webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
             webPreferences.webSecurity = true;
-            params.contextIsolation = true;
-            webPreferences.allowRunningInsecureContent = false;
-            params.plugins = false;
-            params.autosize = false;
-            params.preload = fileUrl(PRELOAD_RENDERER_JS);
           });
           break;
 
