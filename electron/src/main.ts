@@ -364,7 +364,7 @@ class ElectronWrapperInit {
               nodeintegration: false,
               partition: '',
               plugins: false,
-              preload: PRELOAD_RENDERER_JS,
+              preload: '',
               src: _url,
               useragent: '',
               webpreferences: 'backgroundThrottling=false',
