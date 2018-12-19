@@ -33,8 +33,8 @@ const logger = LogFactory.getLogger('CertificateVerifyProcManager.ts', {forceEna
 
 interface DisplayCertificateErrorOptions {
   bypassDialogLock: boolean;
-  isChromiumError: boolean;
   isCheckboxChecked: boolean;
+  isChromiumError: boolean;
 }
 
 class CertificateVerifyProcManager {
@@ -49,6 +49,16 @@ class CertificateVerifyProcManager {
     RETRY: 0,
     SHOW_DETAILS: 1,
   };
+  private static readonly LOCALE = {
+    RETRY: getText('certificateVerifyProcManagerRetry'),
+    SHOW_DETAILS: getText('certificateVerifyProcManagerShowDetails'),
+    SHOW_DETAILS_TEXT_CHROMIUM: getText('certificateVerifyProcManagerShowDetailsTextChromium'),
+    SHOW_DETAILS_TEXT_PINNING: getText('certificateVerifyProcManagerShowDetailsTextPinning'),
+    WARNING_BYPASS: getText('certificateVerifyProcManagerWarningBypass'),
+    WARNING_TEXT_CHROMIUM: getText('certificateVerifyProcManagerWarningTextChromium'),
+    WARNING_TEXT_PINNING: getText('certificateVerifyProcManagerWarningTextPinning'),
+    WARNING_TITLE: getText('certificateVerifyProcManagerWarningTitle'),
+  };
 
   private static displayCertificateDetails(
     hostname: string,
@@ -59,9 +69,7 @@ class CertificateVerifyProcManager {
       {
         certificate,
         message: `${
-          options.isChromiumError
-            ? getText('certificateVerifyProcManagerShowDetailsTextChromium')
-            : getText('certificateVerifyProcManagerShowDetailsTextPinning')
+          options.isChromiumError ? this.LOCALE.SHOW_DETAILS_TEXT_CHROMIUM : this.LOCALE.SHOW_DETAILS_TEXT_PINNING
         } ${hostname}`,
       },
       () => {
@@ -99,13 +107,11 @@ class CertificateVerifyProcManager {
 
     dialog.showMessageBox(
       {
-        buttons: [getText('certificateVerifyProcManagerRetry'), getText('certificateVerifyProcManagerShowDetails')],
+        buttons: [this.LOCALE.RETRY, this.LOCALE.SHOW_DETAILS],
         checkboxChecked: isChromiumError ? undefined : isCheckboxChecked,
-        checkboxLabel: isChromiumError ? undefined : getText('certificateVerifyProcManagerWarningBypass'),
-        detail: isChromiumError
-          ? getText('certificateVerifyProcManagerWarningTextChromium')
-          : getText('certificateVerifyProcManagerWarningTextPinning'),
-        message: getText('certificateVerifyProcManagerWarningTitle'),
+        checkboxLabel: isChromiumError ? undefined : this.LOCALE.WARNING_BYPASS,
+        detail: isChromiumError ? this.LOCALE.WARNING_TEXT_CHROMIUM : this.LOCALE.WARNING_TEXT_PINNING,
+        message: this.LOCALE.WARNING_TITLE,
         type: 'warning',
       },
       (response: number, checkboxChecked: boolean) => {
