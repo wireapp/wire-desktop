@@ -21,7 +21,6 @@ import * as certificateUtils from '@wireapp/certificate-check';
 import {app, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {URL} from 'url';
 import * as environment from '../js/environment';
 import {getText} from '../locale/locale';
 import {LogFactory} from '../util/';
