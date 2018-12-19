@@ -145,6 +145,7 @@ class Webviews extends Component {
               visible={account.visible}
               src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
               partition={account.sessionID}
+              preload="./static/webview-preload.js"
               onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"
             />
