@@ -344,7 +344,7 @@ class ElectronWrapperInit {
 
       switch ((contents as any).getType()) {
         case 'window':
-          contents.on('will-attach-webview', (event, webPreferences: any, params: any) => {
+          contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
 
             // Verify the URL is being loaded
@@ -355,34 +355,13 @@ class ElectronWrapperInit {
             }
 
             // Use secure defaults
-            params = {
-              allowpopups: false,
-              blinkfeatures: '',
-              disableblinkfeatures: '',
-              disablewebsecurity: false,
-              httpreferrer: '',
-              instanceId: params.instanceId,
-              nodeintegration: false,
-              partition: '',
-              plugins: false,
-              preload: '',
-              src: _url,
-              useragent: '',
-              webpreferences: 'backgroundThrottling=false',
-            };
-            webPreferences = {
-              allowRunningInsecureContent: false,
-              backgroundThrottling: false,
-              contextIsolation: true,
-              disableBlinkFeatures: '',
-              enableBlinkFeatures: '',
-              guestInstanceId: webPreferences.guestInstanceId,
-              nodeIntegration: false,
-              plugins: false,
-              preloadURL: fileUrl(PRELOAD_RENDERER_JS),
-              webSecurity: true,
-              zoomFactor: 1,
-            };
+            params.autosize = false;
+            params.contextIsolation = true;
+            params.plugins = false;
+            webPreferences.allowRunningInsecureContent = false;
+            webPreferences.nodeIntegration = false;
+            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
+            webPreferences.webSecurity = true;
           });
           break;
 
