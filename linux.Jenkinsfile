@@ -23,7 +23,7 @@ node('node180') {
 
     stage('Checkout & Clean') {
       git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-      sh returnStatus: true, script: 'rm -rf $WORKSPACE/wrap/ $WORKSPACE/electron/node_modules/ $WORKSPACE/node_modules/'
+      sh returnStatus: true, script: 'rm -rf $WORKSPACE/wrap/ $WORKSPACE/electron/node_modules/ $WORKSPACE/node_modules/ $WORKSPACE/*.sig'
     }
 
     stage('Build') {
