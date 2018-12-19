@@ -84,7 +84,7 @@ class CertificateVerifyProcManager {
       options.isChromiumError ? this.LOCALE.SHOW_DETAILS_TEXT_CHROMIUM : this.LOCALE.SHOW_DETAILS_TEXT_PINNING
     } ${hostname}`;
 
-    const isTrustDialogSupported = false; //environment.platform.IS_MAC_OS || environment.platform.IS_WINDOWS;
+    const isTrustDialogSupported = environment.platform.IS_MAC_OS || environment.platform.IS_WINDOWS;
     if (isTrustDialogSupported) {
       dialog.showCertificateTrustDialog(
         {
