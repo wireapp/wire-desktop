@@ -6,6 +6,7 @@ def parseJson(def text) {
 node('node160') {
 
   def production = params.PRODUCTION
+  def beta = params.BETA
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -27,7 +28,7 @@ node('node160') {
   stage('Build') {
     try {
       bat 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.14.0-windows-x86', type: 'nodejs'
+      def NODE = tool name: 'node-v10.14.2-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         bat 'node -v'
         bat 'npm -v'
@@ -35,8 +36,10 @@ node('node160') {
         bat 'set "VSCMD_START_DIR=%CD%" & "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\VsDevCmd.bat" & yarn'
         bat 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          if(production) {
+          if (production) {
             bat 'npx grunt win-prod'
+          } else if (beta) {
+            bat 'npx grunt win-beta'
           } else {
             bat 'npx grunt win'
           }
@@ -51,9 +54,12 @@ node('node160') {
 
   stage('Sign build') {
     try {
-      if(production) {
+      if (production) {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Update.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Wire.exe"'
+      } else if (beta) {
+        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireBeta-win32-ia32\\Update.exe"'
+        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireBeta-win32-ia32\\WireBeta.exe"'
       } else {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\Update.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\WireInternal.exe"'
@@ -67,10 +73,12 @@ node('node160') {
 
   stage('Build installer') {
     try {
-      def NODE = tool name: 'node-v8.14.0-windows-x86', type: 'nodejs'
+      def NODE = tool name: 'node-v10.14.2-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
-        if(production) {
+        if (production) {
           bat 'npx grunt create-windows-installer:prod'
+        } else if (beta) {
+          bat 'npx grunt create-windows-installer:beta'
         } else {
           bat 'npx grunt create-windows-installer:internal'
         }
@@ -84,8 +92,10 @@ node('node160') {
 
   stage('Sign installer') {
     try {
-      if(production) {
+      if (production) {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\prod\\Wire-win32-ia32\\WireSetup.exe"'
+      } else if (beta) {
+        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\beta\\WireBeta-win32-ia32\\WireBetaSetup.exe"'
       } else {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\internal\\WireInternal-win32-ia32\\WireInternalSetup.exe"'
       }
@@ -97,14 +107,16 @@ node('node160') {
   }
 
   stage('Archive build artifacts') {
-    if(production) {
+    if (production) {
       archiveArtifacts 'info.json,wrap\\prod\\Wire-win32-ia32\\**'
+    } else if (beta) {
+      archiveArtifacts 'info.json,wrap\\beta\\WireBeta-win32-ia32\\**'
     } else {
       archiveArtifacts 'info.json,wrap\\internal\\WireInternal-win32-ia32\\**'
     }
   }
 
-  if(production) {
+  if (production) {
     stage('Upload build as draft to GitHub') {
       withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
         bat 'cd wrap\\prod\\Wire-win32-ia32\\ && python ..\\..\\..\\bin\\github_draft.py'

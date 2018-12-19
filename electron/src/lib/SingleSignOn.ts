@@ -262,7 +262,6 @@ class SingleSignOn {
         devTools: true,
         disableBlinkFeatures: '',
         enableBlinkFeatures: '',
-        experimentalCanvasFeatures: false,
         experimentalFeatures: false,
         images: true,
         javascript: true,
