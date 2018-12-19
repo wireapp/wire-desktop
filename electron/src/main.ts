@@ -18,7 +18,6 @@
  */
 
 // Modules
-import * as certificateUtils from '@wireapp/certificate-check';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -26,7 +25,6 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
-import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
@@ -37,6 +35,7 @@ import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
+import {setCertificateVerifyProc} from './lib/CertificateVerifyProcManager';
 import {download} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
@@ -370,6 +369,8 @@ class ElectronWrapperInit {
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
 
+          contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
+
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
           const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
           if (isLocalhostEnvironment) {
@@ -389,37 +390,6 @@ class ElectronWrapperInit {
             );
           }
 
-          contents.session.setCertificateVerifyProc(
-            (request: Electron.CertificateVerifyProcRequest, cb: (verificationResult: number) => void) => {
-              const {hostname, certificate, verificationResult} = request;
-              const {hostname: hostnameInternal} = new URL(environment.URL_WEBAPP.INTERNAL);
-
-              // Disable TLS verification for development backend
-              if (hostname === hostnameInternal && environment.app.IS_DEVELOPMENT) {
-                return cb(-3);
-              }
-
-              // Check browser results
-              if (verificationResult !== 'net::OK') {
-                logger.error('setCertificateVerifyProc failed', hostname, verificationResult);
-                return cb(-2);
-              }
-
-              // Check certificate pinning
-              if (certificateUtils.hostnameShouldBePinned(hostname)) {
-                const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
-
-                for (const result of Object.values(pinningResults)) {
-                  if (result === false) {
-                    logger.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
-                    return cb(-2);
-                  }
-                }
-              }
-
-              return cb(-3);
-            }
-          );
           break;
       }
     });
@@ -427,7 +397,7 @@ class ElectronWrapperInit {
 }
 
 initRaygun.initClient();
-appInit.ignoreCertificateErrors();
+appInit.ignoreCertificateErrorsInDevelopment();
 appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate();
