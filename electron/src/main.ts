@@ -343,7 +343,7 @@ class ElectronWrapperInit {
 
       switch ((contents as any).getType()) {
         case 'window':
-          contents.on('will-attach-webview', (event, webPreferences, params) => {
+          contents.on('will-attach-webview', (event, webPreferences: any, params: any) => {
             const _url = params.src;
 
             // Verify the URL is being loaded
@@ -354,13 +354,34 @@ class ElectronWrapperInit {
             }
 
             // Use secure defaults
-            webPreferences.nodeIntegration = false;
-            webPreferences.webSecurity = true;
-            params.contextIsolation = true;
-            webPreferences.allowRunningInsecureContent = false;
-            params.plugins = false;
-            params.autosize = false;
-            params.preload = fileUrl(PRELOAD_RENDERER_JS);
+            params = {
+              allowpopups: false,
+              blinkfeatures: '',
+              disableblinkfeatures: '',
+              disablewebsecurity: false,
+              httpreferrer: '',
+              instanceId: params.instanceId,
+              nodeintegration: false,
+              partition: '',
+              plugins: false,
+              preload: '',
+              src: _url,
+              useragent: '',
+              webpreferences: 'backgroundThrottling=false',
+            };
+            webPreferences = {
+              allowRunningInsecureContent: false,
+              backgroundThrottling: false,
+              contextIsolation: true,
+              disableBlinkFeatures: '',
+              enableBlinkFeatures: '',
+              guestInstanceId: webPreferences.guestInstanceId,
+              nodeIntegration: false,
+              plugins: false,
+              preloadURL: fileUrl(PRELOAD_RENDERER_JS),
+              webSecurity: true,
+              zoomFactor: 1,
+            };
           });
           break;
 
