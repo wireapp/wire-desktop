@@ -84,7 +84,7 @@ class CertificateVerifyProcManager {
       options.isChromiumError ? this.LOCALE.SHOW_DETAILS_TEXT_CHROMIUM : this.LOCALE.SHOW_DETAILS_TEXT_PINNING
     } ${hostname}`;
 
-    const isTrustDialogSupported = environment.platform.IS_MAC_OS || environment.platform.IS_WINDOWS;
+    const isTrustDialogSupported = environment.platform.IS_MAC_OS;
     if (isTrustDialogSupported) {
       dialog.showCertificateTrustDialog(
         {
@@ -94,7 +94,7 @@ class CertificateVerifyProcManager {
         goBack
       );
     } else {
-      // For Linux, use a message box with the ability to save the certificate
+      // For Linux and Windows, use a message box with the ability to save the certificate
       dialog.showMessageBox(
         {
           buttons: [this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE, this.LOCALE.SHOW_DETAILS_GO_BACK],
