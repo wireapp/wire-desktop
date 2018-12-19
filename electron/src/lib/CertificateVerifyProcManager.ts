@@ -198,12 +198,6 @@ export const setCertificateVerifyProc = (
   cb: (verificationResult: number) => void
 ) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
-  const {hostname: hostnameInternal} = new URL(environment.URL_WEBAPP.INTERNAL);
-
-  // Disable TLS verification for development backend
-  if (hostname === hostnameInternal && environment.app.IS_DEVELOPMENT) {
-    return cb(-3);
-  }
 
   // Check browser results
   if (verificationResult !== 'net::OK') {
