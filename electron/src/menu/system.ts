@@ -454,9 +454,8 @@ const registerShortcuts = (): void => {
   // Global mute shortcut
   globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
 
-  if (environment.platform.IS_LINUX || environment.platform.IS_WINDOWS) {
-    globalShortcut.register('PageUp', () => void 0);
-  }
+  // fix the scrolling up issue
+  globalShortcut.register('PageUp', () => void 0);
 
   // Global account switching shortcut
   const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
