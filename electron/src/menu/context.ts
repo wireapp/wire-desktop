@@ -163,28 +163,3 @@ const savePicture = (fileName: string, url: RequestInfo) => {
     .then(response => response.arrayBuffer())
     .then(arrayBuffer => ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, fileName, new Uint8Array(arrayBuffer)));
 };
-
-///////////////////////////////////////////////////////////////////////////////
-// Spell Checker
-///////////////////////////////////////////////////////////////////////////////
-
-const isSpellCheckSupported = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
-if (isSpellCheckSupported) {
-  const spellchecker = require('spellchecker');
-
-  webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
-    spellCheck(text) {
-      const isSpellCheckEnabled = settings.restore(SettingsType.SPELL_CHECK, false);
-      if (!isSpellCheckEnabled) {
-        return true;
-      }
-
-      selection.isMisspelled = spellchecker.isMisspelled(text);
-      selection.suggestions = [];
-      if (selection.isMisspelled) {
-        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELLCHECK.SUGGESTIONS);
-      }
-      return !selection.isMisspelled;
-    },
-  });
-}
