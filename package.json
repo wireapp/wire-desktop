@@ -52,11 +52,6 @@
     "webpack": "4.27.1",
     "webpack-cli": "3.1.2"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
     "*.{js,jsx}": [
