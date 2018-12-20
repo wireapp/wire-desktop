@@ -35,7 +35,10 @@ import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
-import {setCertificateVerifyProc} from './lib/CertificateVerifyProcManager';
+import {
+  attachTo as attachCertificateVerifyProcManagerTo,
+  setCertificateVerifyProc,
+} from './lib/CertificateVerifyProcManager';
 import {download} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
@@ -160,6 +163,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   main = new BrowserWindow(options);
 
   mainWindowState.manage(main);
+  attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
   const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
