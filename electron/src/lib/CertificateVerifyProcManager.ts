@@ -40,7 +40,7 @@ interface DisplayCertificateErrorOptions {
 class CertificateVerifyProcManager {
   private static bypassCertificatePinning: boolean = false;
   private static isDialogLocked: boolean = false;
-  public static mainWindow: any;
+  public static mainWindow: Electron.BrowserWindow;
 
   private static readonly dialogUnlockTimeout: number = 6000;
 
