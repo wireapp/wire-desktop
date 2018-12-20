@@ -84,14 +84,17 @@ const createEnvironmentTemplates = () => {
 };
 
 const versionTemplate: Electron.MenuItemConstructorOptions = {
+  enabled: false,
   label: `Wire Version ${config.VERSION || 'Development'}`,
 };
 
 const chromeVersionTemplate: Electron.MenuItemConstructorOptions = {
+  enabled: false,
   label: `Chrome Version ${process.versions.chrome}`,
 };
 
 const electronVersionTemplate: Electron.MenuItemConstructorOptions = {
+  enabled: false,
   label: `Electron Version ${process.versions.electron}`,
 };
 
