@@ -428,6 +428,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
     menuTemplate.unshift(linuxTemplate);
     if (Array.isArray(editTemplate.submenu)) {
       editTemplate.submenu.push(separatorTemplate, {
+        accelerator: 'Ctrl+,',
         click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
         i18n: 'menuPreferences',
       });
