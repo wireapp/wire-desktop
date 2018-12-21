@@ -62,7 +62,7 @@ branches:
 
 after_success:
 - |
-  if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
+  if [ "${TRAVIS_BRANCH}" == "master" ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_EVENT_TYPE}" == "push" ]; then
     yarn global add @wireapp/changelog-bot@1.0.35
-    wire-travis-bot "46b53eba-65da-4bdc-b521-2467b96e8841"
+    wire-changelog-bot -e "${WIRE_WEBAPP_BOT_EMAIL}" -p "${WIRE_WEBAPP_BOT_PASSWORD}" -c "46b53eba-65da-4bdc-b521-2467b96e8841"
   fi
