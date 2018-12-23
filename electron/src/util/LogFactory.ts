@@ -1,4 +1,4 @@
-import * as ansiRegex from 'ansi-regex';
+import ansiRegex = require('ansi-regex');
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as moment from 'moment';
