@@ -9,6 +9,11 @@
   dependencies:
     regenerator-runtime "^0.12.0"
 
+"@types/ansi-regex@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/ansi-regex/-/ansi-regex-4.0.0.tgz#cb20bb66da7700ea9b26f16971f03f0e092eddad"
+  integrity sha512-r1W316vjsZXn1/csLC4HcCJs6jIHIzksHJd7xx+Dl+PAb0S2Dh9cR8ZsIMEfGmbBtP7JNWlf2KKahSkDP6rg3g==
+
 "@types/auto-launch@5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@types/auto-launch/-/auto-launch-5.0.0.tgz#ea0ebe9ccb2f1616d5d528de3b9f74438c1dada5"
@@ -23,6 +28,13 @@
   version "0.0.31"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-0.0.31.tgz#bac8d8aab6a823e91deb7f79083b2a35fa638f33"
   integrity sha512-LS1MCPaQKqspg7FvexuhmDbWUhE2yIJ+4AgVIyObfc06/UKZ8REgxGNjZc82wPLWmbeOm7S+gSsLgo75TanG4A==
+
+"@types/file-type@*":
+  version "10.6.0"
+  resolved "https://registry.yarnpkg.com/@types/file-type/-/file-type-10.6.0.tgz#f8c70976fd10bcbf07e15995aeecce67e3b15b35"
+  integrity sha512-qn06Cjx7HZDMmDIqMn+smKr7JYQMVXoHqwMC2vdg19CxGpL0Q6KwuvnVEkws2sH5wqrWXExmvuztXtWSHs3MBw==
+  dependencies:
+    "@types/node" "*"
 
 "@types/file-url@2.0.0":
   version "2.0.0"
@@ -41,6 +53,14 @@
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.4.tgz#b971134d162cc0497d221adde3dbb67502225599"
   integrity sha512-DsknoBvD8s+RFfSGjmERJ7ZOP1HI0UZRA3FSI+Zakhrc/Gy26YQsLI+m5V5DHxroHRJqCDLKJp7Hixn8zyaF7g==
   dependencies:
+    "@types/node" "*"
+
+"@types/image-type@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/image-type/-/image-type-3.0.0.tgz#b97ea8fd181ee06578bec78189aa15d46e3f6e1a"
+  integrity sha512-PNsnrt0tOp4nvLjora1UShRf36D+OG77Huy5rkScTYl7mrZh99ruyr5m5d+PiVsUP68efWZR/3mY8RYqjUvQPw==
+  dependencies:
+    "@types/file-type" "*"
     "@types/node" "*"
 
 "@types/lodash@4.14.119":
