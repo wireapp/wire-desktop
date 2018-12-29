@@ -115,6 +115,7 @@ gpg2 --batch \
      --homedir "${GPG_TEMP_DIR}" \
      --local-user "${PGP_SIGN_ID}" \
      --no-tty \
+     --output "${BUILD_VERSION}.tar.gz.sig" \
      --pinentry-mode loopback \
      --passphrase-fd 0 \
      --quiet \
