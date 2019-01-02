@@ -182,9 +182,6 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     setTimeout(() => main.show(), 800);
   }
 
-  main.on('focus', () => systemMenu.registerShortcuts());
-  main.on('blur', () => systemMenu.unregisterShortcuts());
-
   main.webContents.on('will-navigate', (event, url) => {
     // Prevent any kind of navigation inside the main window
     event.preventDefault();
@@ -207,7 +204,13 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
 
-  main.on('focus', () => main.flashFrame(false));
+  main.on('focus', () => {
+    systemMenu.registerShortcuts();
+    main.flashFrame(false);
+  });
+
+  main.on('blur', () => systemMenu.unregisterShortcuts());
+
   main.on('page-title-updated', () => tray.showUnreadCount(main));
 
   main.on('close', event => {
@@ -223,6 +226,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
         main.hide();
       }
     }
+    systemMenu.unregisterShortcuts();
   });
 
   main.webContents.on('crashed', () => main.reload());
