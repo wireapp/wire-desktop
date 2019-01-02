@@ -223,6 +223,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
         main.hide();
       }
     }
+    systemMenu.unregisterShortcuts();
   });
 
   main.webContents.on('crashed', () => main.reload());
