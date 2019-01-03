@@ -18,6 +18,7 @@
  */
 
 // Modules
+import {LogFactory} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -51,7 +52,6 @@ import {TrayHandler} from './menu/TrayHandler';
 // Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
-import {LogFactory} from './util/';
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -61,10 +61,7 @@ const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer', 'static', 'webview-preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
-LogFactory.LOG_FILE_PATH = LOG_DIR;
-LogFactory.LOG_FILE_NAME = 'electron.log';
-
-const logger = LogFactory.getLogger('main.ts', {forceEnable: true});
+const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -309,7 +306,7 @@ class ElectronWrapperInit {
   logger: logdown.Logger;
 
   constructor() {
-    this.logger = LogFactory.getLogger('ElectronWrapperInit');
+    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: path.join(LOG_DIR, 'electron.log')});
   }
 
   async run() {
