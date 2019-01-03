@@ -311,7 +311,7 @@ module.exports = function(grunt) {
     electronPkg.version = `${info.version}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
 
-    grunt.log.write(`Version number increased to ${info.version} `).ok();
+    grunt.log.write(`Version number increased to "${info.version}". `).ok();
   });
 
   grunt.registerTask('set-webapp-base', () => {
@@ -336,7 +336,7 @@ module.exports = function(grunt) {
     electronPkg.version =
       buildNumber === '0' ? `${info.version}.0-${commitId}-internal` : `${info.version}.${buildNumber}-internal`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
+    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
   grunt.registerTask('release-prod', () => {
@@ -350,7 +350,7 @@ module.exports = function(grunt) {
     electronPkg.productName = info.name;
     electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
+    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
   grunt.registerTask('release-beta', () => {
@@ -365,7 +365,7 @@ module.exports = function(grunt) {
     electronPkg.version =
       buildNumber === '0' ? `${info.version}.0-${commitId}-beta` : `${info.version}.${buildNumber}-beta`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
+    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
   grunt.registerMultiTask('electron', 'Package Electron apps', function() {
