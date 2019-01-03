@@ -57,11 +57,12 @@ import {SettingsType} from './settings/SettingsType';
 const APP_PATH = app.getAppPath();
 const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
+const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer', 'static', 'webview-preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
-const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});
+const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -298,8 +299,8 @@ const renameWebViewLogFiles = (): void => {
 };
 
 const initElectronLogFile = (): void => {
-  renameFileExtensions([LogFactory.getFileURI()], '.log', '.old');
-  fs.ensureFileSync(LogFactory.getFileURI());
+  renameFileExtensions([LOG_FILE], '.log', '.old');
+  fs.ensureFileSync(LOG_FILE);
 };
 
 class ElectronWrapperInit {
