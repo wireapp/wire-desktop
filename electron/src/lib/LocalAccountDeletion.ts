@@ -17,18 +17,15 @@
  *
  */
 
-import {ValidationUtil} from '@wireapp/commons';
+import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {IpcMessageEvent, app, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {LogFactory} from '../util';
 
 const USER_DATA_DIR = app.getPath('userData');
 const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
-LogFactory.LOG_FILE_PATH = LOG_DIR;
-LogFactory.LOG_FILE_NAME = 'electron.log';
-const logger = LogFactory.getLogger('localAccountDeletion.ts');
+const logger = LogFactory.getLogger(__filename, {logFilePath: path.join(LOG_DIR, 'electron.log')});
 
 const clearStorage = (session: Electron.Session) => {
   return new Promise(resolve =>

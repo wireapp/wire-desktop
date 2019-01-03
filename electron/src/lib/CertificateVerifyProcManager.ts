@@ -18,18 +18,15 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
+import {LogFactory} from '@wireapp/commons';
 import {app, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as environment from '../js/environment';
 import {getText} from '../locale/locale';
-import {LogFactory} from '../util/';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-LogFactory.LOG_FILE_PATH = LOG_DIR;
-LogFactory.LOG_FILE_NAME = 'electron.log';
-
-const logger = LogFactory.getLogger('CertificateVerifyProcManager.ts', {forceEnable: true});
+const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});
 
 interface DisplayCertificateErrorOptions {
   bypassDialogLock: boolean;
