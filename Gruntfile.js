@@ -321,7 +321,7 @@ module.exports = function(grunt) {
     electronPkg.appBase = APP_BASE;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
 
-    grunt.log.write(`Webapp base set to "${APP_BASE}".`).ok();
+    grunt.log.write(`Webapp base set to "${APP_BASE}". `).ok();
   });
 
   grunt.registerTask('release-internal', () => {
