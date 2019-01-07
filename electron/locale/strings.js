@@ -3,6 +3,22 @@ string.aboutUpdate = 'How Wire Updates Work';
 string.aboutVersion = 'Version';
 string.aboutWebappVersion = 'Wire for Web Version';
 
+string.certificateVerifyProcManagerRetry = 'Retry';
+string.certificateVerifyProcManagerShowDetails = 'Show details';
+string.certificateVerifyProcManagerShowDetailsGoBack = 'Go back';
+string.certificateVerifyProcManagerShowDetailsSaveCertificate = 'Save certificate';
+string.certificateVerifyProcManagerShowDetailsTextChromium =
+  'The application encountered an unrecoverable error during the TLS handshake. The certificate returned was for the following domain name:';
+string.certificateVerifyProcManagerShowDetailsTextPinning =
+  'The certificate pinning received an unexpected certificate for the following domain name:';
+string.certificateVerifyProcManagerShowDetailsTitle = 'Details';
+string.certificateVerifyProcManagerWarningBypass = 'I know what I’m doing, use Wire on this network';
+string.certificateVerifyProcManagerWarningTextChromium =
+  'Wire warns you when you’re on a network that does not allow secure connections to Wire servers. There could be multiple reasons for this:\r\n\r\n• You are behind a corporate firewall that intercepts connections\r\n• You are on a public Wi-Fi network, such as a hotel or airport Wi-Fi, that intercepts connections until you have registered through a captive portal\r\n• Attackers might be trying to steal your information\r\n\r\nYou should not use Wire on this network.';
+string.certificateVerifyProcManagerWarningTextPinning =
+  'Wire warns you when you’re on a network that does not allow secure connections to Wire servers. There could be multiple reasons for this:\r\n\r\n• You are behind a corporate firewall that intercepts connections\r\n• You are on a public Wi-Fi network, such as a hotel or airport Wi-Fi, that intercepts connections until you have registered through a captive portal\r\n• Attackers might be trying to steal your information\r\n\r\nYou should not use Wire on this network, unless you know what you are doing.';
+string.certificateVerifyProcManagerWarningTitle = 'Your connection is not private';
+
 string.menuConversation = 'Conversation';
 string.menuStart = 'Start';
 string.menuEdit = 'Edit';
@@ -29,7 +45,6 @@ string.menuCut = 'Cut';
 string.menuCopy = 'Copy';
 string.menuPaste = 'Paste';
 string.menuSelectAll = 'Select All';
-string.menuSpelling = 'Check Spelling While Typing';
 string.menuMinimize = 'Minimize';
 string.menuClose = 'Close';
 string.menuNextConversation = 'Next Conversation';

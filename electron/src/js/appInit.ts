@@ -51,10 +51,4 @@ const handlePortableFlags = () => {
   }
 };
 
-const ignoreCertificateErrors = () => {
-  if (environment.app.IS_DEVELOPMENT) {
-    app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
-  }
-};
-
-export {addLinuxWorkarounds, handlePortableFlags, ignoreCertificateErrors};
+export {addLinuxWorkarounds, handlePortableFlags};

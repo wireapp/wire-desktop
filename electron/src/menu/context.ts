@@ -17,16 +17,13 @@
  *
  */
 
-import {clipboard, ipcRenderer, remote, webFrame} from 'electron';
+import {clipboard, ipcRenderer, remote} from 'electron';
 const Menu = remote.Menu;
-const webContents = remote.getCurrentWebContents();
 
 import {ElectronMenuWithFileAndImage} from '../interfaces/';
 import * as config from '../js/config';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import {settings} from '../settings/ConfigurationPersistence';
-import {SettingsType} from '../settings/SettingsType';
 
 let textMenu: Electron.Menu;
 
@@ -46,11 +43,6 @@ const defaultMenu = Menu.buildFromTemplate([
 ///////////////////////////////////////////////////////////////////////////////
 // Text
 ///////////////////////////////////////////////////////////////////////////////
-
-const selection: {isMisspelled: boolean; suggestions: string[]} = {
-  isMisspelled: false,
-  suggestions: [],
-};
 
 const textMenuTemplate: Electron.MenuItemConstructorOptions[] = [
   {
@@ -76,25 +68,6 @@ const textMenuTemplate: Electron.MenuItemConstructorOptions[] = [
 
 const createTextMenu = () => {
   const template = textMenuTemplate.slice();
-
-  if (selection.isMisspelled) {
-    template.unshift({type: 'separator'});
-
-    if (selection.suggestions.length > 0) {
-      for (const suggestion of selection.suggestions.reverse()) {
-        template.unshift({
-          click: (menuItem: Electron.MenuItem): void => webContents.replaceMisspelling(menuItem.label),
-          label: suggestion,
-        });
-      }
-    } else {
-      template.unshift({
-        enabled: false,
-        label: locale.getText('menuNoSuggestions'),
-      });
-    }
-  }
-
   textMenu = Menu.buildFromTemplate(template);
 };
 
@@ -155,32 +128,11 @@ window.addEventListener(
 );
 
 const savePicture = (fileName: string, url: RequestInfo) => {
-  return fetch(url)
+  return fetch(url, {
+    headers: {
+      'User-Agent': config.USER_AGENT,
+    },
+  })
     .then(response => response.arrayBuffer())
     .then(arrayBuffer => ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, fileName, new Uint8Array(arrayBuffer)));
 };
-
-///////////////////////////////////////////////////////////////////////////////
-// Spell Checker
-///////////////////////////////////////////////////////////////////////////////
-
-const isSpellCheckSupported = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
-if (isSpellCheckSupported) {
-  const spellchecker = require('spellchecker');
-
-  webFrame.setSpellCheckProvider(locale.getCurrent(), false, {
-    spellCheck(text) {
-      const isSpellCheckEnabled = settings.restore(SettingsType.SPELL_CHECK, false);
-      if (!isSpellCheckEnabled) {
-        return true;
-      }
-
-      selection.isMisspelled = spellchecker.isMisspelled(text);
-      selection.suggestions = [];
-      if (selection.isMisspelled) {
-        selection.suggestions = spellchecker.getCorrectionsForMisspelling(text).slice(0, config.SPELLCHECK.SUGGESTIONS);
-      }
-      return !selection.isMisspelled;
-    },
-  });
-}

@@ -33,7 +33,6 @@ string.menuCut = 'Αποκοπή';
 string.menuCopy = 'Αντιγραφή';
 string.menuPaste = 'Επικόλληση';
 string.menuSelectAll = 'Επιλογή Όλων';
-string.menuSpelling = 'Ορθογραφικός έλεγχος κατά την πληκτρολόγηση';
 string.menuMinimize = 'Ελαχιστοποίηση';
 string.menuClose = 'Κλείσιμο';
 string.menuNextConversation = 'Επόμενη συνομιλία';

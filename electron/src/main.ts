@@ -18,7 +18,7 @@
  */
 
 // Modules
-import * as certificateUtils from '@wireapp/certificate-check';
+import {LogFactory} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -26,7 +26,6 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
-import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
@@ -37,8 +36,13 @@ import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
+import {
+  attachTo as attachCertificateVerifyProcManagerTo,
+  setCertificateVerifyProc,
+} from './lib/CertificateVerifyProcManager';
 import {download} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
+import {deleteAccount} from './lib/LocalAccountDeletion';
 import {SingleSignOn} from './lib/SingleSignOn';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
@@ -48,19 +52,17 @@ import {TrayHandler} from './menu/TrayHandler';
 // Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
-import {LogFactory} from './util/';
 
 // Paths
 const APP_PATH = app.getAppPath();
 const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
+const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
+const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer', 'static', 'webview-preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
-LogFactory.LOG_FILE_PATH = LOG_DIR;
-LogFactory.LOG_FILE_NAME = 'electron.log';
-
-const logger = LogFactory.getLogger('main.ts', {forceEnable: true});
+const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -89,31 +91,8 @@ const bindIpcEvents = () => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, (event: IpcMessageEvent, accountID: string, sessionID?: string) => {
-    // delete webview partition
-    try {
-      if (sessionID) {
-        const partitionDir = path.join(app.getPath('userData'), 'Partitions', sessionID);
-        fs.removeSync(partitionDir);
-        logger.log(`Deleted partition for account: ${sessionID}`);
-      } else {
-        logger.log(`Skipping partition deletion for account: ${accountID}`);
-      }
-    } catch (error) {
-      logger.log(`Failed to partition for account: ${sessionID}`);
-    }
-
-    // delete logs
-    try {
-      fs.removeSync(LOG_DIR);
-      logger.log(`Deleted logs folder for account: ${accountID}`);
-    } catch (error) {
-      logger.log(`Failed to delete logs folder for account: ${accountID} with error: ${error.message}`);
-    }
-  });
-
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, deleteAccount);
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
-
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
 };
 
@@ -182,6 +161,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   main = new BrowserWindow(options);
 
   mainWindowState.manage(main);
+  attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
   const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
@@ -199,9 +179,6 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     windowManager.setPrimaryWindowId(main.id);
     setTimeout(() => main.show(), 800);
   }
-
-  main.on('focus', () => systemMenu.registerShortcuts());
-  main.on('blur', () => systemMenu.unregisterShortcuts());
 
   main.webContents.on('will-navigate', (event, url) => {
     // Prevent any kind of navigation inside the main window
@@ -221,30 +198,17 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     shell.openExternal(_url);
   });
 
-  const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
-  if (isLocalhostEnvironment) {
-    main.webContents.session.webRequest.onHeadersReceived(
-      {
-        urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
-      },
-      (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
-        // Override remote Access-Control-Allow-Origin
-        details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
-        details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
-
-        callback({
-          cancel: false,
-          responseHeaders: details.responseHeaders,
-        });
-      }
-    );
-  }
-
   main.webContents.on('dom-ready', () => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
 
-  main.on('focus', () => main.flashFrame(false));
+  main.on('focus', () => {
+    systemMenu.registerShortcuts();
+    main.flashFrame(false);
+  });
+
+  main.on('blur', () => systemMenu.unregisterShortcuts());
+
   main.on('page-title-updated', () => tray.showUnreadCount(main));
 
   main.on('close', event => {
@@ -260,6 +224,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
         main.hide();
       }
     }
+    systemMenu.unregisterShortcuts();
   });
 
   main.webContents.on('crashed', () => main.reload());
@@ -334,15 +299,15 @@ const renameWebViewLogFiles = (): void => {
 };
 
 const initElectronLogFile = (): void => {
-  renameFileExtensions([LogFactory.getFileURI()], '.log', '.old');
-  fs.ensureFileSync(LogFactory.getFileURI());
+  renameFileExtensions([LOG_FILE], '.log', '.old');
+  fs.ensureFileSync(LOG_FILE);
 };
 
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
   constructor() {
-    this.logger = LogFactory.getLogger('ElectronWrapperInit');
+    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: path.join(LOG_DIR, 'electron.log')});
   }
 
   async run() {
@@ -387,19 +352,21 @@ class ElectronWrapperInit {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
 
-            // Use secure defaults
-            webPreferences.nodeIntegration = false;
-            webPreferences.webSecurity = true;
-            params.contextIsolation = true;
-            webPreferences.allowRunningInsecureContent = false;
-            params.plugins = false;
-            params.autosize = false;
-
-            // Verify the URL being loaded
+            // Verify the URL is being loaded
             if (!util.isMatchingHost(_url, BASE_URL)) {
               event.preventDefault();
               this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
+              return;
             }
+
+            // Use secure defaults
+            params.autosize = false;
+            params.contextIsolation = true;
+            params.plugins = false;
+            webPreferences.allowRunningInsecureContent = false;
+            webPreferences.nodeIntegration = false;
+            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
+            webPreferences.webSecurity = true;
           });
           break;
 
@@ -408,37 +375,27 @@ class ElectronWrapperInit {
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
 
-          contents.session.setCertificateVerifyProc(
-            (request: Electron.CertificateVerifyProcRequest, cb: (verificationResult: number) => void) => {
-              const {hostname, certificate, verificationResult} = request;
-              const {hostname: hostnameInternal} = new URL(environment.URL_WEBAPP.INTERNAL);
+          contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
-              // Disable TLS verification for development backend
-              if (hostname === hostnameInternal && environment.app.IS_DEVELOPMENT) {
-                return cb(-3);
+          // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
+          const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
+          if (isLocalhostEnvironment) {
+            contents.session.webRequest.onHeadersReceived(
+              {
+                urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
+              },
+              (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
+                details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
+                details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+
+                callback({
+                  cancel: false,
+                  responseHeaders: details.responseHeaders,
+                });
               }
+            );
+          }
 
-              // Check browser results
-              if (verificationResult !== 'net::OK') {
-                logger.error('setCertificateVerifyProc failed', hostname, verificationResult);
-                return cb(-2);
-              }
-
-              // Check certificate pinning
-              if (certificateUtils.hostnameShouldBePinned(hostname)) {
-                const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
-
-                for (const result of Object.values(pinningResults)) {
-                  if (result === false) {
-                    logger.error(`Certificate verification failed for "${hostname}":\n${pinningResults.errorMessage}`);
-                    return cb(-2);
-                  }
-                }
-              }
-
-              return cb(-3);
-            }
-          );
           break;
       }
     });
@@ -446,7 +403,6 @@ class ElectronWrapperInit {
 }
 
 initRaygun.initClient();
-appInit.ignoreCertificateErrors();
 appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate();

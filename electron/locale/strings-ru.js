@@ -33,7 +33,6 @@ string.menuCut = 'Вырезать';
 string.menuCopy = 'Скопировать';
 string.menuPaste = 'Вставить';
 string.menuSelectAll = 'Выбрать все';
-string.menuSpelling = 'Проверять правописание при вводе';
 string.menuMinimize = 'Свернуть';
 string.menuClose = 'Закрыть';
 string.menuNextConversation = 'Следующий разговор';

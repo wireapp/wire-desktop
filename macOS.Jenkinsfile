@@ -14,7 +14,7 @@ node('master') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/'
+    sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/ *.sig'
   }
 
   def text = readFile('info.json')
@@ -28,7 +28,7 @@ node('master') {
         sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
       }
       sh 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v8.14.0', type: 'nodejs'
+      def NODE = tool name: 'node-v10.15.0', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'

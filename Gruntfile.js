@@ -46,7 +46,8 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
 
   grunt.initConfig({
-    buildNumber: `${process.env.BUILD_NUMBER || '0'}`,
+    appBase: process.env.APP_BASE || 'https://app.wire.com',
+    buildNumber: process.env.BUILD_NUMBER || '0',
 
     clean: {
       build: 'wrap/build',
@@ -59,6 +60,20 @@ module.exports = function(grunt) {
     },
 
     'create-windows-installer': {
+      beta: {
+        appDirectory: 'wrap/build/<%= info.nameBeta %>-win32-ia32',
+        authors: '<%= info.nameBeta %>',
+        description: '<%= info.description %>',
+        exe: '<%= info.nameBeta %>.exe',
+        iconUrl: 'https://wire-app.wire.com/win/prod/wire.ico',
+        loadingGif: 'resources/win/icon.internal.256x256.png',
+        noMsi: true,
+        outputDirectory: 'wrap/beta/<%= info.nameBeta %>-win32-ia32',
+        setupIcon: 'resources/win/wire.ico',
+        title: '<%= info.nameBeta %>',
+        version: '<%= info.version %>.<%= buildNumber %>',
+      },
+
       internal: {
         appDirectory: 'wrap/build/<%= info.nameInternal %>-win32-ia32',
         authors: '<%= info.nameInternal %>',
@@ -122,6 +137,22 @@ module.exports = function(grunt) {
         out: 'wrap/build',
         overwrite: true,
         protocols: [{name: '', schemes: ['wire']}],
+      },
+
+      win_beta: {
+        options: {
+          arch: 'ia32',
+          icon: 'resources/win/wire.ico',
+          name: '<%= info.nameBeta %>',
+          platform: 'win32',
+          win32metadata: {
+            CompanyName: '<%= info.name %>',
+            FileDescription: '<%= info.description %>',
+            InternalName: '<%= info.nameBeta %>.exe',
+            OriginalFilename: '<%= info.nameBeta %>.exe',
+            ProductName: '<%= info.nameBeta %>',
+          },
+        },
       },
 
       win_internal: {
@@ -280,7 +311,17 @@ module.exports = function(grunt) {
     electronPkg.version = `${info.version}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
 
-    grunt.log.write(`Version number increased to ${info.version} `).ok();
+    grunt.log.write(`Version number increased to "${info.version}". `).ok();
+  });
+
+  grunt.registerTask('set-webapp-base', () => {
+    const APP_BASE = grunt.config.get('appBase');
+
+    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    electronPkg.appBase = APP_BASE;
+    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+
+    grunt.log.write(`Webapp base set to "${APP_BASE}". `).ok();
   });
 
   grunt.registerTask('release-internal', () => {
@@ -295,7 +336,7 @@ module.exports = function(grunt) {
     electronPkg.version =
       buildNumber === '0' ? `${info.version}.0-${commitId}-internal` : `${info.version}.${buildNumber}-internal`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
+    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
   grunt.registerTask('release-prod', () => {
@@ -309,7 +350,22 @@ module.exports = function(grunt) {
     electronPkg.productName = info.name;
     electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to ${electronPkg.updateWinUrl} `).ok();
+    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
+  });
+
+  grunt.registerTask('release-beta', () => {
+    const info = grunt.config.get('info');
+    const buildNumber = grunt.config.get('buildNumber');
+    const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
+    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    electronPkg.updateWinUrl = info.updateWinUrlBeta;
+    electronPkg.environment = 'internal';
+    electronPkg.name = info.nameInternal.toLowerCase();
+    electronPkg.productName = info.nameBeta;
+    electronPkg.version =
+      buildNumber === '0' ? `${info.version}.0-${commitId}-beta` : `${info.version}.${buildNumber}-beta`;
+    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
   grunt.registerMultiTask('electron', 'Package Electron apps', function() {
@@ -370,14 +426,9 @@ module.exports = function(grunt) {
     [
       '/Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
       '/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
-      '/Frameworks/Electron Framework.framework/Versions/A/Libraries/libnode.dylib',
       '/Frameworks/Electron Framework.framework/',
       `/Frameworks/${options.name} Helper.app/Contents/MacOS/${options.name} Helper`,
       `/Frameworks/${options.name} Helper.app/`,
-      `/Frameworks/${options.name} Helper EH.app/Contents/MacOS/${options.name} Helper EH`,
-      `/Frameworks/${options.name} Helper EH.app/`,
-      `/Frameworks/${options.name} Helper NP.app/Contents/MacOS/${options.name} Helper NP`,
-      `/Frameworks/${options.name} Helper NP.app/`,
       `/Library/LoginItems/${options.name} Login Helper.app/Contents/MacOS/${options.name} Login Helper`,
       `/Library/LoginItems/${options.name} Login Helper.app/`,
     ].forEach(file => {
@@ -412,6 +463,7 @@ module.exports = function(grunt) {
     'clean:macos',
     'update-keys',
     'gitinfo',
+    'set-webapp-base',
     'release-internal',
     'bundle',
     'electron:macos_internal',
@@ -421,6 +473,7 @@ module.exports = function(grunt) {
     'clean:macos',
     'update-keys',
     'gitinfo',
+    'set-webapp-base',
     'release-prod',
     'bundle',
     'electron:macos_prod',
@@ -431,6 +484,7 @@ module.exports = function(grunt) {
     'clean:win',
     'update-keys',
     'gitinfo',
+    'set-webapp-base',
     'release-internal',
     'bundle',
     'electron:win_internal',
@@ -441,16 +495,29 @@ module.exports = function(grunt) {
     'clean:win',
     'update-keys',
     'gitinfo',
+    'set-webapp-base',
     'release-prod',
     'bundle',
     'electron:win_prod',
     'create-windows-installer:prod',
   ]);
 
+  grunt.registerTask('win-beta', [
+    'clean:win',
+    'update-keys',
+    'gitinfo',
+    'set-webapp-base',
+    'release-beta',
+    'bundle',
+    'electron:win_beta',
+    'create-windows-installer:beta',
+  ]);
+
   grunt.registerTask('linux', [
     'clean:linux',
     'update-keys',
     'gitinfo',
+    'set-webapp-base',
     'release-internal',
     'bundle',
     'electronbuilder:linux_internal',
@@ -460,6 +527,7 @@ module.exports = function(grunt) {
     'clean:linux',
     'update-keys',
     'gitinfo',
+    'set-webapp-base',
     'release-prod',
     'bundle',
     'electronbuilder:linux_prod',
@@ -469,6 +537,7 @@ module.exports = function(grunt) {
     'clean:linux',
     'update-keys',
     'gitinfo',
+    'set-webapp-base',
     'release-internal',
     'bundle',
     'electronbuilder:linux_other',
@@ -478,6 +547,7 @@ module.exports = function(grunt) {
     'clean:linux',
     'update-keys',
     'gitinfo',
+    'set-webapp-base',
     'release-prod',
     'bundle',
     'electronbuilder:linux_other',

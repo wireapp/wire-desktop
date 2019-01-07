@@ -176,8 +176,6 @@ const toggleAutoLaunchTemplate: ElectronMenuItemWithI18n = {
   type: 'checkbox',
 };
 
-const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
-
 const editTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuEdit',
   submenu: [
@@ -218,14 +216,6 @@ const editTemplate: ElectronMenuItemWithI18n = {
     {
       i18n: 'menuSelectAll',
       role: 'selectall',
-    },
-    separatorTemplate,
-    {
-      checked: supportsSpellCheck && settings.restore(SettingsType.SPELL_CHECK, false),
-      click: (menuItem: Electron.MenuItem): boolean => settings.save(SettingsType.SPELL_CHECK, menuItem.checked),
-      enabled: supportsSpellCheck,
-      i18n: 'menuSpelling',
-      type: 'checkbox',
     },
   ],
 };
@@ -346,11 +336,6 @@ const win32Template: ElectronMenuItemWithI18n = {
 const linuxTemplate: ElectronMenuItemWithI18n = {
   label: config.NAME,
   submenu: [
-    {
-      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
-      i18n: 'menuPreferences',
-    },
-    separatorTemplate,
     toggleAutoLaunchTemplate,
     separatorTemplate,
     localeTemplate,
@@ -433,6 +418,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
     menuTemplate.unshift(linuxTemplate);
     if (Array.isArray(editTemplate.submenu)) {
       editTemplate.submenu.push(separatorTemplate, {
+        accelerator: 'Ctrl+,',
         click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
         i18n: 'menuPreferences',
       });
@@ -458,6 +444,10 @@ const createMenu = (isFullScreen: boolean): Menu => {
 const registerShortcuts = (): void => {
   // Global mute shortcut
   globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
+
+  // fix the main window scrolling issues
+  globalShortcut.register('PageDown', () => undefined);
+  globalShortcut.register('PageUp', () => undefined);
 
   // Global account switching shortcut
   const switchAccountShortcut = ['CmdOrCtrl', 'Super'];

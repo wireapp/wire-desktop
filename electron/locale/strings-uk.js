@@ -33,7 +33,6 @@ string.menuCut = 'Вирізати';
 string.menuCopy = 'Скопіювати';
 string.menuPaste = 'Вставити';
 string.menuSelectAll = 'Виділити все';
-string.menuSpelling = 'Перевіряти правопис під час введення';
 string.menuMinimize = 'Згорнути';
 string.menuClose = 'Закрити';
 string.menuNextConversation = 'Наступна розмова';

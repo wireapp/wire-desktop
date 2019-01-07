@@ -19,8 +19,7 @@
 
 import {dialog} from 'electron';
 import * as fs from 'fs';
-
-const imageType = require('image-type');
+import imageType = require('image-type');
 
 const download = (fileName: string, bytes: Uint8Array) => {
   return new Promise((resolve, reject) => {

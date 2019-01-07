@@ -17,10 +17,11 @@
  *
  */
 
-import {MenuItem} from 'electron';
+import {MenuItem, app} from 'electron';
 import * as config from '../js/config';
 import * as environment from '../js/environment';
 import * as windowManager from '../js/window-manager';
+import {settings} from '../settings/ConfigurationPersistence';
 
 const currentEnvironment = environment.getEnvironment();
 
@@ -71,7 +72,9 @@ const createEnvironmentTemplates = () => {
       checked: currentEnvironment === type,
       click: () => {
         environment.setEnvironment(type);
-        getPrimaryWindow().reload();
+        settings.persistToFile();
+        app.relaunch();
+        app.quit();
       },
       label: environment.BackendTypeLabel[key],
       type: 'radio',
@@ -81,14 +84,17 @@ const createEnvironmentTemplates = () => {
 };
 
 const versionTemplate: Electron.MenuItemConstructorOptions = {
+  enabled: false,
   label: `Wire Version ${config.VERSION || 'Development'}`,
 };
 
 const chromeVersionTemplate: Electron.MenuItemConstructorOptions = {
+  enabled: false,
   label: `Chrome Version ${process.versions.chrome}`,
 };
 
 const electronVersionTemplate: Electron.MenuItemConstructorOptions = {
+  enabled: false,
   label: `Electron Version ${process.versions.electron}`,
 };
 

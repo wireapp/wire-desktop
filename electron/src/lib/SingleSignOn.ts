@@ -22,7 +22,8 @@ import {BrowserWindow, app, session} from 'electron';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import {BACKEND_ORIGINS} from '../js/config';
+
+import {BACKEND_ORIGINS, USER_AGENT} from '../js/config';
 
 const argv = minimist(process.argv.slice(1));
 
@@ -36,8 +37,6 @@ class SingleSignOn {
   private static readonly SSO_SESSION_NAME = 'sso';
   private static readonly MAX_LENGTH_ORIGIN_DOMAIN = 255;
   private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + SingleSignOn.MAX_LENGTH_ORIGIN_DOMAIN;
-  private static readonly SSO_USER_AGENT =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
 
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
@@ -216,7 +215,7 @@ class SingleSignOn {
         urls: ['*'],
       },
       (details: any, callback: Function) => {
-        details.requestHeaders['User-Agent'] = SingleSignOn.SSO_USER_AGENT;
+        details.requestHeaders['User-Agent'] = USER_AGENT;
         callback({cancel: false, requestHeaders: details.requestHeaders});
       }
     );
@@ -263,7 +262,6 @@ class SingleSignOn {
         devTools: true,
         disableBlinkFeatures: '',
         enableBlinkFeatures: '',
-        experimentalCanvasFeatures: false,
         experimentalFeatures: false,
         images: true,
         javascript: true,
