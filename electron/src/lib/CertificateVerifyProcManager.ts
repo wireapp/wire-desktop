@@ -18,18 +18,15 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
+import {LogFactory} from '@wireapp/commons';
 import {app, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as environment from '../js/environment';
 import {getText} from '../locale/locale';
-import {LogFactory} from '../util/';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-LogFactory.LOG_FILE_PATH = LOG_DIR;
-LogFactory.LOG_FILE_NAME = 'electron.log';
-
-const logger = LogFactory.getLogger('CertificateVerifyProcManager.ts', {forceEnable: true});
+const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});
 
 interface DisplayCertificateErrorOptions {
   bypassDialogLock: boolean;
@@ -40,6 +37,7 @@ interface DisplayCertificateErrorOptions {
 class CertificateVerifyProcManager {
   private static bypassCertificatePinning: boolean = false;
   private static isDialogLocked: boolean = false;
+  public static mainWindow: Electron.BrowserWindow;
 
   private static readonly dialogUnlockTimeout: number = 6000;
 
@@ -88,6 +86,7 @@ class CertificateVerifyProcManager {
     const isTrustDialogSupported = environment.platform.IS_MAC_OS;
     if (isTrustDialogSupported) {
       dialog.showCertificateTrustDialog(
+        this.mainWindow,
         {
           certificate,
           message: textDetails,
@@ -97,6 +96,7 @@ class CertificateVerifyProcManager {
     } else {
       // For Linux and Windows, use a message box with the ability to save the certificate
       dialog.showMessageBox(
+        this.mainWindow,
         {
           buttons: [this.LOCALE.SHOW_DETAILS_GO_BACK, this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE],
           cancelId: this.RESPONSE.GO_BACK,
@@ -108,6 +108,7 @@ class CertificateVerifyProcManager {
           switch (response) {
             case this.RESPONSE.SAVE_CERTIFICATE: {
               dialog.showSaveDialog(
+                this.mainWindow,
                 {
                   defaultPath: `${hostname}.pem`,
                 },
@@ -156,6 +157,7 @@ class CertificateVerifyProcManager {
     this.isDialogLocked = true;
 
     dialog.showMessageBox(
+      this.mainWindow,
       {
         buttons: [this.LOCALE.RETRY, this.LOCALE.SHOW_DETAILS],
         cancelId: this.RESPONSE.RETRY,
@@ -194,6 +196,10 @@ class CertificateVerifyProcManager {
     );
   }
 }
+
+export const attachTo = (main: Electron.BrowserWindow) => {
+  CertificateVerifyProcManager.mainWindow = main;
+};
 
 export const setCertificateVerifyProc = (
   request: Electron.CertificateVerifyProcRequest,

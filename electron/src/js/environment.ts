@@ -19,7 +19,7 @@
 
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-const pkg: {environment: string; updateWinUrl: string} = require('../../package.json');
+const pkg: {appBase: string; environment: string; updateWinUrl: string} = require('../../package.json');
 
 let currentEnvironment: BackendType;
 
@@ -58,7 +58,7 @@ const URL_WEBAPP = {
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
-  PRODUCTION: 'https://app.wire.com',
+  PRODUCTION: pkg.appBase || 'https://app.wire.com',
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
 

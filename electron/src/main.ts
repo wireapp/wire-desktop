@@ -18,6 +18,7 @@
  */
 
 // Modules
+import {LogFactory} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -35,7 +36,10 @@ import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
 import * as util from './js/util';
 import * as windowManager from './js/window-manager';
-import {setCertificateVerifyProc} from './lib/CertificateVerifyProcManager';
+import {
+  attachTo as attachCertificateVerifyProcManagerTo,
+  setCertificateVerifyProc,
+} from './lib/CertificateVerifyProcManager';
 import {download} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
@@ -48,20 +52,17 @@ import {TrayHandler} from './menu/TrayHandler';
 // Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
-import {LogFactory} from './util/';
 
 // Paths
 const APP_PATH = app.getAppPath();
 const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
+const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer', 'static', 'webview-preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
 
-LogFactory.LOG_FILE_PATH = LOG_DIR;
-LogFactory.LOG_FILE_NAME = 'electron.log';
-
-const logger = LogFactory.getLogger('main.ts', {forceEnable: true});
+const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -160,6 +161,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   main = new BrowserWindow(options);
 
   mainWindowState.manage(main);
+  attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
   const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
@@ -177,9 +179,6 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     windowManager.setPrimaryWindowId(main.id);
     setTimeout(() => main.show(), 800);
   }
-
-  main.on('focus', () => systemMenu.registerShortcuts());
-  main.on('blur', () => systemMenu.unregisterShortcuts());
 
   main.webContents.on('will-navigate', (event, url) => {
     // Prevent any kind of navigation inside the main window
@@ -203,7 +202,13 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
   });
 
-  main.on('focus', () => main.flashFrame(false));
+  main.on('focus', () => {
+    systemMenu.registerShortcuts();
+    main.flashFrame(false);
+  });
+
+  main.on('blur', () => systemMenu.unregisterShortcuts());
+
   main.on('page-title-updated', () => tray.showUnreadCount(main));
 
   main.on('close', event => {
@@ -219,6 +224,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
         main.hide();
       }
     }
+    systemMenu.unregisterShortcuts();
   });
 
   main.webContents.on('crashed', () => main.reload());
@@ -293,15 +299,15 @@ const renameWebViewLogFiles = (): void => {
 };
 
 const initElectronLogFile = (): void => {
-  renameFileExtensions([LogFactory.getFileURI()], '.log', '.old');
-  fs.ensureFileSync(LogFactory.getFileURI());
+  renameFileExtensions([LOG_FILE], '.log', '.old');
+  fs.ensureFileSync(LOG_FILE);
 };
 
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
   constructor() {
-    this.logger = LogFactory.getLogger('ElectronWrapperInit');
+    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: path.join(LOG_DIR, 'electron.log')});
   }
 
   async run() {
@@ -397,7 +403,6 @@ class ElectronWrapperInit {
 }
 
 initRaygun.initClient();
-appInit.ignoreCertificateErrorsInDevelopment();
 appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate();

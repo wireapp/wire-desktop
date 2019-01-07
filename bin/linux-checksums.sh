@@ -111,7 +111,7 @@ _log "Signing source code archive with PGP key..."
 
 echo "${PGP_PASSPHRASE}" | \
 gpg2 --batch \
-     --clearsign \
+     --detach-sign \
      --homedir "${GPG_TEMP_DIR}" \
      --local-user "${PGP_SIGN_ID}" \
      --no-tty \
