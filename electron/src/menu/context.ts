@@ -19,7 +19,6 @@
 
 import {clipboard, ipcRenderer, remote} from 'electron';
 const Menu = remote.Menu;
-const webContents = remote.getCurrentWebContents();
 
 import {ElectronMenuWithFileAndImage} from '../interfaces/';
 import * as config from '../js/config';
@@ -45,11 +44,6 @@ const defaultMenu = Menu.buildFromTemplate([
 // Text
 ///////////////////////////////////////////////////////////////////////////////
 
-const selection: {isMisspelled: boolean; suggestions: string[]} = {
-  isMisspelled: false,
-  suggestions: [],
-};
-
 const textMenuTemplate: Electron.MenuItemConstructorOptions[] = [
   {
     label: locale.getText('menuCut'),
@@ -74,25 +68,6 @@ const textMenuTemplate: Electron.MenuItemConstructorOptions[] = [
 
 const createTextMenu = () => {
   const template = textMenuTemplate.slice();
-
-  if (selection.isMisspelled) {
-    template.unshift({type: 'separator'});
-
-    if (selection.suggestions.length > 0) {
-      for (const suggestion of selection.suggestions.reverse()) {
-        template.unshift({
-          click: (menuItem: Electron.MenuItem): void => webContents.replaceMisspelling(menuItem.label),
-          label: suggestion,
-        });
-      }
-    } else {
-      template.unshift({
-        enabled: false,
-        label: locale.getText('menuNoSuggestions'),
-      });
-    }
-  }
-
   textMenu = Menu.buildFromTemplate(template);
 };
 

@@ -33,7 +33,6 @@ string.menuCut = 'Kopírovat';
 string.menuCopy = 'Vložit';
 string.menuPaste = 'Vložit';
 string.menuSelectAll = 'Vybrat vše';
-string.menuSpelling = 'Kontrolovat pravopis během psaní';
 string.menuMinimize = 'Minimalizovat';
 string.menuClose = 'Zavřít';
 string.menuNextConversation = 'Další konverzace';

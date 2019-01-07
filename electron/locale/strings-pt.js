@@ -33,7 +33,6 @@ string.menuCut = 'Recortar';
 string.menuCopy = 'Copiar';
 string.menuPaste = 'Colar';
 string.menuSelectAll = 'Selecionar tudo';
-string.menuSpelling = 'Verificar Ortografia ao Digitar';
 string.menuMinimize = 'Minimizar';
 string.menuClose = 'Fechar';
 string.menuNextConversation = 'Próxima conversa';

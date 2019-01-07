@@ -72,7 +72,6 @@ export type i18nLanguageIdentifier =
   | 'menuShowAll'
   | 'menuShowHide'
   | 'menuSignOut'
-  | 'menuSpelling'
   | 'menuStart'
   | 'menuStartup'
   | 'menuSupport'

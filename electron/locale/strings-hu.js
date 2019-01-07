@@ -33,7 +33,6 @@ string.menuCut = 'Kivágás';
 string.menuCopy = 'Másolás';
 string.menuPaste = 'Beillesztés';
 string.menuSelectAll = 'Összes kijelölése';
-string.menuSpelling = 'Helyesírás ellenőrzése gépelés közben';
 string.menuMinimize = 'Kis méret';
 string.menuClose = 'Bezárás';
 string.menuNextConversation = 'Következő beszélgetés';
