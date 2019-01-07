@@ -33,7 +33,6 @@ string.menuCut = 'Taie';
 string.menuCopy = 'Copiază';
 string.menuPaste = 'Lipește';
 string.menuSelectAll = 'Selectează tot';
-string.menuSpelling = 'Verifică ortografia în timp ce tastezi';
 string.menuMinimize = 'Minimizează';
 string.menuClose = 'Închide';
 string.menuNextConversation = 'Următoarea conversație';

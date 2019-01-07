@@ -33,7 +33,6 @@ string.menuCut = 'Klip';
 string.menuCopy = 'Kopiér';
 string.menuPaste = 'Indsæt';
 string.menuSelectAll = 'Vælg alle';
-string.menuSpelling = 'Stavekontrol mens du skriver';
 string.menuMinimize = 'Minimer';
 string.menuClose = 'Luk';
 string.menuNextConversation = 'Næste samtale';

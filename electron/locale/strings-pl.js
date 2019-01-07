@@ -33,7 +33,6 @@ string.menuCut = 'Wytnij';
 string.menuCopy = 'Kopiuj';
 string.menuPaste = 'Wklej';
 string.menuSelectAll = 'Zaznacz wszystko';
-string.menuSpelling = 'Sprawdź pisownię w czasie pisania';
 string.menuMinimize = 'Minimalizuj';
 string.menuClose = 'Zamknij';
 string.menuNextConversation = 'Następna rozmowa';

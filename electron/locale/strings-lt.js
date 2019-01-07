@@ -33,7 +33,6 @@ string.menuCut = 'Iškirpti';
 string.menuCopy = 'Kopijuoti';
 string.menuPaste = 'Įdėti';
 string.menuSelectAll = 'Žymėti viską';
-string.menuSpelling = 'Renkant tekstą, tikrinti rašybą';
 string.menuMinimize = 'Suskleisti';
 string.menuClose = 'Užverti';
 string.menuNextConversation = 'Kitas pokalbis';

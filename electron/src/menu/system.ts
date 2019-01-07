@@ -176,8 +176,6 @@ const toggleAutoLaunchTemplate: ElectronMenuItemWithI18n = {
   type: 'checkbox',
 };
 
-const supportsSpellCheck = config.SPELLCHECK.SUPPORTED_LANGUAGES.includes(locale.getCurrent());
-
 const editTemplate: ElectronMenuItemWithI18n = {
   i18n: 'menuEdit',
   submenu: [
@@ -218,14 +216,6 @@ const editTemplate: ElectronMenuItemWithI18n = {
     {
       i18n: 'menuSelectAll',
       role: 'selectall',
-    },
-    separatorTemplate,
-    {
-      checked: supportsSpellCheck && settings.restore(SettingsType.SPELL_CHECK, false),
-      click: (menuItem: Electron.MenuItem): boolean => settings.save(SettingsType.SPELL_CHECK, menuItem.checked),
-      enabled: supportsSpellCheck,
-      i18n: 'menuSpelling',
-      type: 'checkbox',
     },
   ],
 };

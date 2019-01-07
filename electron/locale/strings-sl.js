@@ -33,7 +33,6 @@ string.menuCut = 'Izreži';
 string.menuCopy = 'Kopiraj';
 string.menuPaste = 'Prilepi';
 string.menuSelectAll = 'Izberi vse';
-string.menuSpelling = 'Preverjanje črkovanja med tipkanjem';
 string.menuMinimize = 'Minimiziraj';
 string.menuClose = 'Zapri';
 string.menuNextConversation = 'Naslednji pogovor';

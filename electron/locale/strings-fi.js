@@ -33,7 +33,6 @@ string.menuCut = 'Leikkaa';
 string.menuCopy = 'Kopioi';
 string.menuPaste = 'Liitä';
 string.menuSelectAll = 'Valitse kaikki';
-string.menuSpelling = 'Tarkista oikeinkirjoitus kirjoitettaessa';
 string.menuMinimize = 'Pienennä';
 string.menuClose = 'Sulje';
 string.menuNextConversation = 'Seuraava keskustelu';

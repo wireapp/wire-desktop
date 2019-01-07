@@ -24,7 +24,6 @@ Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireap
 
 - [Node.js](https://nodejs.org/)
 - Git version with submodule functionality
-- Python 2.x (to build [spellchecker](https://www.npmjs.com/package/spellchecker))
 
 ### Clone
 

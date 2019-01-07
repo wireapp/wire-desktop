@@ -33,7 +33,6 @@ string.menuCut = 'Lõika';
 string.menuCopy = 'Kopeeri';
 string.menuPaste = 'Kleebi';
 string.menuSelectAll = 'Vali kõik';
-string.menuSpelling = 'Kontrolli õigekirja kirjutamise ajal';
 string.menuMinimize = 'Minimeeri';
 string.menuClose = 'Sulge';
 string.menuNextConversation = 'Järgmine vestlus';

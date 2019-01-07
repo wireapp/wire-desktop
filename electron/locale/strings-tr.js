@@ -33,7 +33,6 @@ string.menuCut = 'Kes';
 string.menuCopy = 'Kopyala';
 string.menuPaste = 'Yapıştır';
 string.menuSelectAll = 'Hepsini Seç';
-string.menuSpelling = 'Yazarken Doğru Yazıp Yazmadığınızı Kontrol Edin';
 string.menuMinimize = 'Küçült';
 string.menuClose = 'Kapat';
 string.menuNextConversation = 'Sonraki Konuşma';

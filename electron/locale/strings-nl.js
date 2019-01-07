@@ -33,7 +33,6 @@ string.menuCut = 'Knippen';
 string.menuCopy = 'Kopiëren';
 string.menuPaste = 'Plakken';
 string.menuSelectAll = 'Alles selecteren';
-string.menuSpelling = 'Controleer op Spelling Tijdens Typen';
 string.menuMinimize = 'Minimaliseren';
 string.menuClose = 'Sluiten';
 string.menuNextConversation = 'Volgende gesprek';
