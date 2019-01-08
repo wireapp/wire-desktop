@@ -64,11 +64,6 @@ node('node180') {
       archiveArtifacts 'info.json,wrap/dist/*.deb,wrap/dist/*.rpm,wrap/dist/*.AppImage,wrap/dist/debian/**'
     }
 
-    stage('Upload build as draft to GitHub') {
-      withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
-        sh 'cd wrap/dist/ && python ../../bin/github_draft.py'
-      }
-    }
   }
 
   wireSend secret: "${jenkinsbot_secret}", message: "🐧 **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
