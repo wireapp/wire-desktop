@@ -94,6 +94,7 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, deleteAccount);
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
+  ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
 };
 
 const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
@@ -348,7 +349,7 @@ class ElectronWrapperInit {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
       switch ((contents as any).getType()) {
-        case 'window':
+        case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
 
@@ -369,8 +370,8 @@ class ElectronWrapperInit {
             webPreferences.webSecurity = true;
           });
           break;
-
-        case 'webview':
+        }
+        case 'webview': {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
@@ -396,7 +397,13 @@ class ElectronWrapperInit {
             );
           }
 
+          contents.on('before-input-event', (event, input) => {
+            if (input.type === 'keyUp' && input.key === 'Alt') {
+              ipcMain.emit(EVENT_TYPE.UI.TOGGLE_MENU);
+            }
+          });
           break;
+        }
       }
     });
   }

@@ -465,4 +465,14 @@ const unregisterShortcuts = (): void => {
   globalShortcut.unregisterAll();
 };
 
-export {createMenu, registerShortcuts, unregisterShortcuts};
+const toggleMenuBar = (): void => {
+  const mainBrowserWindow = getPrimaryWindow();
+  const isVisible = mainBrowserWindow.isMenuBarVisible();
+  const autoHide = mainBrowserWindow.isMenuBarAutoHide();
+
+  if (autoHide) {
+    mainBrowserWindow.setMenuBarVisibility(!isVisible);
+  }
+};
+
+export {createMenu, registerShortcuts, toggleMenuBar, unregisterShortcuts};
