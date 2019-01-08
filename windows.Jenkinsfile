@@ -116,13 +116,5 @@ node('node160') {
     }
   }
 
-  if (production) {
-    stage('Upload build as draft to GitHub') {
-      withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
-        bat 'cd wrap\\prod\\Wire-win32-ia32\\ && python ..\\..\\..\\bin\\github_draft.py'
-      }
-    }
-  }
-
   wireSend secret: "${jenkinsbot_secret}", message: " **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
 }
