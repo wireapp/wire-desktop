@@ -93,7 +93,7 @@ ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event: CustomEvent, accountInd
   window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
 });
 
-window.addEventListener('DOMContentLoaded', () => addDragRegion());
+window.addEventListener('DOMContentLoaded', addDragRegion);
 
 window.addEventListener('focus', () => {
   const selectedWebview = getSelectedWebview();
