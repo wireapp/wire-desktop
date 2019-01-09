@@ -40,7 +40,8 @@
     "@types/node": "10.12.18",
     "@types/request": "2.48.1",
     "@types/uuid": "3.4.4",
-    "cross-spawn": "6.0.5"
+    "cross-spawn": "6.0.5",
+    "electron-rebuild": "1.8.2"
   },
   "environment": "internal",
   "homepage": "https://wire.com",
@@ -55,6 +56,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
+  },
+  "scripts": {
+    "postinstall": "electron-rebuild -f -w node-addressbook"
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }
