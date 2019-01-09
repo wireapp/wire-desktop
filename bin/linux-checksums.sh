@@ -82,6 +82,8 @@ _log "Preparing gpg configuration..."
 mkdir -p "${GPG_TEMP_KEYS_DIR}"
 chmod 700 "${GPG_TEMP_DIR}"
 
+gpg --version
+
 gpg2 --batch \
      --homedir "${GPG_TEMP_DIR}" \
      --quiet \
