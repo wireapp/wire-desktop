@@ -18,7 +18,7 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 #
 
-set -eu -o pipefail
+set -eux -o pipefail
 
 BUILD_VERSION="${1:-"0"}"
 
