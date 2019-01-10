@@ -68,9 +68,11 @@ chmod 700 "${GPG_TEMP_DIR}"
 gpg --version
 
 echo "allow-loopback-pinentry" > "${HOME}/.gnupg/gpg-agent.conf"
-echo "log-file ./gpg-agent.log" >> "${HOME}/.gnupg/gpg-agent.conf"
+echo "log-file ~/gpg-agent.log" >> "${HOME}/.gnupg/gpg-agent.conf"
 
-source <(gpg-agent --daemon)
+echo "Starting gpg-agent manually 1" >> ~/gpg-agent.log
+
+source <(gpg-agent --homedir "${GPG_TEMP_DIR}" --daemon)
 
 gpg --batch \
     --homedir "${GPG_TEMP_DIR}" \
@@ -78,11 +80,13 @@ gpg --batch \
     --import "${PGP_KEYFILE}"
 
 _log "Updating gpg2 configuration to sign on unattended machines..."
+echo "Killing gpg-agent manually" >> ~/gpg-agent.log
 killall gpg-agent
 
 _log "Signing checksum file with PGP key..."
 
-source <(gpg-agent --daemon)
+echo "Starting gpg-agent manually 2" >> ~/gpg-agent.log
+source <(gpg-agent --homedir "${GPG_TEMP_DIR}" --daemon)
 
 echo "${PGP_PASSPHRASE}" | \
 gpg --batch \
