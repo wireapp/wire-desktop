@@ -18,7 +18,7 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 #
 
-set -eux -o pipefail
+set -eu -o pipefail
 
 BUILD_VERSION="${1:-"0"}"
 
@@ -65,28 +65,16 @@ _log "Preparing gpg configuration..."
 mkdir -p "${GPG_TEMP_KEYS_DIR}"
 chmod 700 "${GPG_TEMP_DIR}"
 
-gpg --version
-
-echo "allow-loopback-pinentry" > "${HOME}/.gnupg/gpg-agent.conf"
-echo "log-file ~/gpg-agent.log" >> "${HOME}/.gnupg/gpg-agent.conf"
-
-echo "Starting gpg-agent manually 1" >> ~/gpg-agent.log
-
-source <(gpg-agent --homedir "${GPG_TEMP_DIR}" --daemon)
-
 gpg --batch \
     --homedir "${GPG_TEMP_DIR}" \
     --quiet \
     --import "${PGP_KEYFILE}"
 
 _log "Updating gpg2 configuration to sign on unattended machines..."
-echo "Killing gpg-agent manually" >> ~/gpg-agent.log
+echo "allow-loopback-pinentry" > "${HOME}/.gnupg/gpg-agent.conf"
 killall gpg-agent
 
 _log "Signing checksum file with PGP key..."
-
-echo "Starting gpg-agent manually 2" >> ~/gpg-agent.log
-source <(gpg-agent --homedir "${GPG_TEMP_DIR}" --daemon)
 
 echo "${PGP_PASSPHRASE}" | \
 gpg --batch \
