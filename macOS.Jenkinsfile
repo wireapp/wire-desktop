@@ -6,6 +6,7 @@ def parseJson(def text) {
 node('master') {
 
   def production = params.PRODUCTION
+  def app_base = params.APP_BASE
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -29,7 +30,7 @@ node('master') {
       }
       sh 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v10.15.0', type: 'nodejs'
-      withEnv(["PATH+NODE=${NODE}/bin"]) {
+      withEnv(["PATH+NODE=${NODE}/bin", "APP_BASE=${app_base}"]) {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm install -g yarn'

@@ -16,6 +16,7 @@ node('node180') {
   def buildInfo = parseJson(text)
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version;
+  def app_base = params.APP_BASE
 
   def environment = docker.build("node", "-f linux.Dockerfile .")
 
@@ -28,13 +29,15 @@ node('node180') {
 
     stage('Build') {
       try {
-        sh 'pip install -r requirements.txt'
-        sh 'node -v'
-        sh 'npm -v'
-        sh 'yarn'
-        sh 'yarn build:ts'
-        withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          sh 'npx grunt linux-prod'
+        withEnv(["APP_BASE=${app_base}"]) {
+          sh 'pip install -r requirements.txt'
+          sh 'node -v'
+          sh 'npm -v'
+          sh 'yarn'
+          sh 'yarn build:ts'
+          withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
+            sh 'npx grunt linux-prod'
+          }
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
