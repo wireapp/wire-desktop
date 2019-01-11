@@ -331,7 +331,7 @@ class ElectronWrapperInit {
         return new SingleSignOn(main, event, url, options).init();
       }
 
-      this.logger.log(`Opening an external window from a webview. URL: ${url}`);
+      this.logger.log(`Opening an external window from a webview.`);
       return shell.openExternal(url);
     };
 
@@ -340,7 +340,7 @@ class ElectronWrapperInit {
       if (util.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
-        this.logger.log(`Preventing navigation inside WebView. URL: ${_url}`);
+        this.logger.log(`Preventing navigation inside <webview>. URL: ${_url}`);
         event.preventDefault();
       }
     };
