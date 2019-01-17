@@ -19,7 +19,7 @@ node('node180') {
 
   currentBuild.displayName = version;
 
-  def environment = docker.build("node", "-f linux.Dockerfile .")
+  def environment = docker.build('node', '-f linux.Dockerfile .')
 
   environment.inside {
 

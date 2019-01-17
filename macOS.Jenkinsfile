@@ -65,7 +65,7 @@ node('master') {
 
   stage('Archive build artifacts') {
     if (production) {
-      archiveArtifacts "info.json,Wire.pkg"
+      archiveArtifacts 'info.json,Wire.pkg'
     } else if (custom) {
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/${app_name}-mas-x64/${app_name}.app/\" \"${WORKSPACE}/wrap/${app_name}.zip\""
       archiveArtifacts "info.json,wrap/${app_name}.zip,${version}.tar.gz.sig"
