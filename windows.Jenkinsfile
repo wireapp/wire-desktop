@@ -6,8 +6,9 @@ def parseJson(def text) {
 node('node160') {
 
   def production = params.PRODUCTION
-  def beta = params.BETA
+  def custom = params.CUSTOM
   def app_base = params.APP_BASE
+  def app_name = params.APP_NAME
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -24,13 +25,13 @@ node('node160') {
   def text = readFile('info.json')
   def buildInfo = parseJson(text)
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
-  currentBuild.displayName = version;
+  currentBuild.displayName = version
 
   stage('Build') {
     try {
       bat 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v10.15.0-windows-x86', type: 'nodejs'
-      withEnv(["PATH+NODE=${NODE}", "npm_config_target_arch=ia32", "wire_target_arch=ia32", "APP_BASE=${app_base}"]) {
+      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32', "APP_BASE=${app_base}"]) {
         bat 'node -v'
         bat 'npm -v'
         bat 'npm install -g yarn'
@@ -39,8 +40,8 @@ node('node160') {
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if (production) {
             bat 'npx grunt win-prod'
-          } else if (beta) {
-            bat 'npx grunt win-beta'
+          } else if (custom) {
+            bat 'npx grunt win-custom'
           } else {
             bat 'npx grunt win'
           }
@@ -58,9 +59,9 @@ node('node160') {
       if (production) {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Update.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Wire.exe"'
-      } else if (beta) {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireBeta-win32-ia32\\Update.exe"'
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireBeta-win32-ia32\\WireBeta.exe"'
+      } else if (custom) {
+        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\Update.exe\""
+        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\${app_name}.exe\""
       } else {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\Update.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\WireInternal.exe"'
@@ -78,8 +79,8 @@ node('node160') {
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         if (production) {
           bat 'npx grunt create-windows-installer:prod'
-        } else if (beta) {
-          bat 'npx grunt create-windows-installer:beta'
+        } else if (custom) {
+          bat 'npx grunt create-windows-installer:custom'
         } else {
           bat 'npx grunt create-windows-installer:internal'
         }
@@ -95,8 +96,8 @@ node('node160') {
     try {
       if (production) {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\prod\\Wire-win32-ia32\\WireSetup.exe"'
-      } else if (beta) {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\beta\\WireBeta-win32-ia32\\WireBetaSetup.exe"'
+      } else if (custom) {
+        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\custom\\${app_name}-win32-ia32\\${app_name}-Setup.exe\""
       } else {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\internal\\WireInternal-win32-ia32\\WireInternalSetup.exe"'
       }
@@ -110,12 +111,12 @@ node('node160') {
   stage('Archive build artifacts') {
     if (production) {
       archiveArtifacts 'info.json,wrap\\prod\\Wire-win32-ia32\\**'
-    } else if (beta) {
-      archiveArtifacts 'info.json,wrap\\beta\\WireBeta-win32-ia32\\**'
+    } else if (custom) {
+      archiveArtifacts "info.json,wrap\\custom\\${app_name}-win32-ia32\\**"
     } else {
       archiveArtifacts 'info.json,wrap\\internal\\WireInternal-win32-ia32\\**'
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: " **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
+  wireSend secret: "${jenkinsbot_secret}", message: "**New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
 }

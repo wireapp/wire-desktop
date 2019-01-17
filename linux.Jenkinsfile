@@ -15,10 +15,11 @@ node('node180') {
   def text = readFile('info.json')
   def buildInfo = parseJson(text)
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
-  currentBuild.displayName = version;
   def app_base = params.APP_BASE
 
-  def environment = docker.build("node", "-f linux.Dockerfile .")
+  currentBuild.displayName = version
+
+  def environment = docker.build('node', '-f linux.Dockerfile .')
 
   environment.inside {
 

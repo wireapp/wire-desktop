@@ -17,7 +17,7 @@
  *
  */
 
-const pkg: {productName: string; version: string} = require('../../package.json');
+const pkg: {maximumAccounts: string; productName: string; version: string} = require('../../package.json');
 
 const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
 
@@ -46,7 +46,9 @@ const EMBED_DOMAINS = [
 
 const LOG_FILE_NAME = 'console.log';
 
-const NAME = pkg.productName;
+const MAXIMUM_ACCOUNTS = pkg.maximumAccounts || 3;
+
+const NAME = pkg.productName || 'Wire';
 
 const RAYGUN_API_KEY = '';
 
@@ -83,4 +85,16 @@ const WINDOW = {
   },
 };
 
-export {BACKEND_ORIGINS, EMBED_DOMAINS, LOG_FILE_NAME, NAME, RAYGUN_API_KEY, UPDATE, URL, USER_AGENT, VERSION, WINDOW};
+export {
+  BACKEND_ORIGINS,
+  EMBED_DOMAINS,
+  LOG_FILE_NAME,
+  MAXIMUM_ACCOUNTS,
+  NAME,
+  RAYGUN_API_KEY,
+  UPDATE,
+  URL,
+  USER_AGENT,
+  VERSION,
+  WINDOW,
+};

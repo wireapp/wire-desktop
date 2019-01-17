@@ -1,5 +1,28 @@
+/*
+ * Wire
+ * Copyright (C) 2018 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
 import uuid from 'uuid/v4';
+
 import verifyObjectProperties from '../lib/verifyObjectProperties';
+import {MAXIMUM_ACCOUNTS} from '../../../dist/js/config';
+
+const maximumAccounts = MAXIMUM_ACCOUNTS || 3;
 
 export const ADD_ACCOUNT = 'ADD_ACCOUNT';
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
@@ -77,7 +100,7 @@ export const abortAccountCreation = id => {
 
 export const addAccountWithSession = () => {
   return (dispatch, getState) => {
-    const hasReachedAccountLimit = getState().accounts.length >= 3;
+    const hasReachedAccountLimit = getState().accounts.length >= maximumAccounts;
 
     if (hasReachedAccountLimit) {
       console.warn('Reached number of maximum accounts');

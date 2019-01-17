@@ -3,9 +3,9 @@
 const string = {};
 
 string.aboutReleases = 'Versioonid';
-string.aboutUpdate = 'Kuidas Wire’i uuendused töötavad';
+string.aboutUpdate = 'Kuidas {{appName}}’i uuendused töötavad';
 string.aboutVersion = 'Versioon';
-string.aboutWebappVersion = 'Wire veebiversioon';
+string.aboutWebappVersion = '{{appName}} veebiversioon';
 
 string.menuConversation = 'Vestlus';
 string.menuStart = 'Alusta';
@@ -13,9 +13,9 @@ string.menuEdit = 'Muuda';
 string.menuWindow = 'Aken';
 string.menuView = 'Vaade';
 string.menuHelp = 'Abi';
-string.menuStartup = 'Käivita Wire süsteemi käivitusel';
+string.menuStartup = 'Käivita {{appName}} süsteemi käivitusel';
 string.menuLocale = 'Keel';
-string.menuAbout = 'Teave Wire kohta';
+string.menuAbout = 'Teave {{appName}} kohta';
 string.menuSignOut = 'Logi välja';
 string.menuPing = 'Ping';
 string.menuCall = 'Kõne';
@@ -42,20 +42,20 @@ string.menuLegal = 'Juriidiline info';
 string.menuPrivacy = 'Privaatsus';
 string.menuLicense = 'Litsentsiteave';
 string.menuSupport = 'Kasutajatoe veebisait';
-string.menuWireURL = 'Wire’i koduleht';
+string.menuWebsiteURL = '{{appName}}’i koduleht';
 string.menuPreferences = 'Eelistused';
 string.menuServices = 'Teenused';
-string.menuHideWire = 'Peida Wire';
+string.menuHideApp = 'Peida {{appName}}';
 string.menuHideOthers = 'Peida teised';
 string.menuShowAll = 'Kuva kõik';
 string.menuSettings = 'Seaded';
-string.menuQuit = 'Sulge Wire';
+string.menuQuit = 'Sulge {{appName}}';
 string.menuShowHide = 'Kuva menüü';
 string.menuSavePictureAs = 'Salvesta pilt nimega...';
 string.menuNoSuggestions = 'Soovitused puuduvad';
 
 string.restartNeeded = 'Taaskäivitamine vajalik';
-string.restartLocale = 'Selle sätte jõustumiseks taaskäivita Wire.';
+string.restartLocale = 'Selle sätte jõustumiseks taaskäivita {{appName}}.';
 string.restartLater = 'Hiljem';
 string.restartNow = 'Taaskäivita nüüd';
 

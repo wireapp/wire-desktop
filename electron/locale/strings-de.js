@@ -3,9 +3,9 @@
 const string = {};
 
 string.aboutReleases = 'Versionshinweise';
-string.aboutUpdate = 'Wie wird Wire aktualisiert';
+string.aboutUpdate = 'Wie wird {{appName}} aktualisiert';
 string.aboutVersion = 'Version';
-string.aboutWebappVersion = 'Wire für Web Version';
+string.aboutWebappVersion = '{{appName}} für Web Version';
 
 string.menuConversation = 'Unterhaltung';
 string.menuStart = 'Unterhaltung beginnen';
@@ -13,9 +13,9 @@ string.menuEdit = 'Bearbeiten';
 string.menuWindow = 'Fenster';
 string.menuView = 'Ansicht';
 string.menuHelp = 'Hilfe';
-string.menuStartup = 'Wire beim Start ausführen';
+string.menuStartup = '{{appName}} beim Start ausführen';
 string.menuLocale = 'Sprache';
-string.menuAbout = 'Über Wire';
+string.menuAbout = 'Über {{appName}}';
 string.menuSignOut = 'Abmelden';
 string.menuPing = 'Ping';
 string.menuCall = 'Anruf';
@@ -42,20 +42,20 @@ string.menuLegal = 'Datenschutz u. AGB';
 string.menuPrivacy = 'Privatsphäre';
 string.menuLicense = 'Lizenzen';
 string.menuSupport = 'Support-Webseite';
-string.menuWireURL = 'Wire-Webseite';
+string.menuWebsiteURL = '{{appName}}-Webseite';
 string.menuPreferences = 'Einstellungen';
 string.menuServices = 'Services';
-string.menuHideWire = 'Wire ausblenden';
+string.menuHideApp = '{{appName}} ausblenden';
 string.menuHideOthers = 'Andere ausblenden';
 string.menuShowAll = 'Alle anzeigen';
 string.menuSettings = 'Einstellungen';
-string.menuQuit = 'Wire beenden';
+string.menuQuit = '{{appName}} beenden';
 string.menuShowHide = 'Menü anzeigen';
 string.menuSavePictureAs = 'Bild speichern unter...';
 string.menuNoSuggestions = 'Keine Vorschläge';
 
 string.restartNeeded = 'Neustart erforderlich';
-string.restartLocale = 'Bitte starte Wire erneut, um diese Einstellung zu übernehmen.';
+string.restartLocale = 'Bitte starte {{appName}} erneut, um diese Einstellung zu übernehmen.';
 string.restartLater = 'Später';
 string.restartNow = 'Jetzt neustarten';
 
