@@ -48,9 +48,6 @@ execSync(`git clone --single-branch -b ${gitConfigurationVersion} ${gitConfigura
   stdio: [0, 1],
 });
 
-// Copy .env file configuration
-// fs.copySync(resolve(configDir, pkg.name, '.env'), resolve(projectDir, '.env'));
-
 process.chdir(src);
 
 const walkSync = (dir, fileList = []) =>
