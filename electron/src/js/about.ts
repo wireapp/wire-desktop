@@ -26,7 +26,7 @@ import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as config from './config';
 
-const pkg: {productName: string; version: string} = require('../../package.json');
+const pkg: {copyright: string; productName: string; version: string} = require('../../package.json');
 
 let webappVersion: string;
 
@@ -124,6 +124,7 @@ const showWindow = () => {
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
+          copyright: pkg.copyright,
           electronVersion: pkg.version,
           productName: pkg.productName,
           webappVersion: webappVersion,

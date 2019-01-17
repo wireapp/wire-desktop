@@ -19,7 +19,13 @@
 
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-const pkg: {appBase: string; environment: string; updateWinUrl: string} = require('../../package.json');
+const pkg: {
+  appBase: string;
+  environment: string;
+  supportUrl: string;
+  updateWinUrl: string;
+  websiteUrl: string;
+} = require('../../package.json');
 
 let currentEnvironment: BackendType;
 
@@ -46,10 +52,10 @@ const URL_ADMIN = {
   STAGING: 'https://wire-admin-staging.zinfra.io',
 };
 
-const URL_SUPPORT = 'https://support.wire.com';
+const URL_SUPPORT = pkg.supportUrl || 'https://support.wire.com';
 
 const URL_WEBSITE = {
-  PRODUCTION: 'https://wire.com',
+  PRODUCTION: pkg.websiteUrl || 'https://wire.com',
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 

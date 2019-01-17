@@ -268,7 +268,7 @@ const helpTemplate: ElectronMenuItemWithI18n = {
     },
     {
       click: () => shell.openExternal(environment.web.getWebsiteUrl()),
-      i18n: 'menuWireURL',
+      i18n: 'menuWebsiteURL',
     },
   ],
 };
@@ -292,7 +292,7 @@ const darwinTemplate: ElectronMenuItemWithI18n = {
     },
     separatorTemplate,
     {
-      i18n: 'menuHideWire',
+      i18n: 'menuHideApp',
       role: 'hide',
     },
     {

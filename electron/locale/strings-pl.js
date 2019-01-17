@@ -3,9 +3,9 @@
 const string = {};
 
 string.aboutReleases = 'Wydania';
-string.aboutUpdate = 'Jak działają aktualizacje Wire';
+string.aboutUpdate = 'Jak działają aktualizacje {{appName}}';
 string.aboutVersion = 'Wersja';
-string.aboutWebappVersion = 'Wire w wersji Web';
+string.aboutWebappVersion = '{{appName}} w wersji Web';
 
 string.menuConversation = 'Rozmowa';
 string.menuStart = 'Start';
@@ -13,9 +13,9 @@ string.menuEdit = 'Edycja';
 string.menuWindow = 'Okno';
 string.menuView = 'Widok';
 string.menuHelp = 'Pomoc';
-string.menuStartup = 'Uruchom Wire podczas uruchamiania systemu';
+string.menuStartup = 'Uruchom {{appName}} podczas uruchamiania systemu';
 string.menuLocale = 'Język';
-string.menuAbout = 'O Wire';
+string.menuAbout = 'O {{appName}}';
 string.menuSignOut = 'Wyloguj';
 string.menuPing = 'Ping';
 string.menuCall = 'Zadzwoń';
@@ -42,10 +42,10 @@ string.menuLegal = 'Nota prawna';
 string.menuPrivacy = 'Prywatność';
 string.menuLicense = 'Informacje o licencji';
 string.menuSupport = 'Witryna pomocy technicznej';
-string.menuWireURL = 'Strona programu Wire';
+string.menuWebsiteURL = 'Strona programu {{appName}}';
 string.menuPreferences = 'Ustawienia';
 string.menuServices = 'Usługi';
-string.menuHideWire = 'Ukryj program';
+string.menuHideApp = 'Ukryj program';
 string.menuHideOthers = 'Ukryj pozostałe';
 string.menuShowAll = 'Pokaż wszystkie';
 string.menuSettings = 'Ustawienia';

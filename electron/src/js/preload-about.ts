@@ -34,6 +34,7 @@ ipcRenderer.once(
   (
     event: Event,
     details: {
+      copyright: string;
       electronVersion: string;
       productName: string;
       webappVersion: string;
@@ -58,6 +59,11 @@ ipcRenderer.once(
           (webappVersionElement.parentNode as any).remove();
         }
       }
+    }
+
+    const copyrightElement = document.getElementById('copyright');
+    if (copyrightElement) {
+      copyrightElement.innerHTML = details.copyright || '&copy; Wire Swiss GmbH';
     }
 
     // Get locales
