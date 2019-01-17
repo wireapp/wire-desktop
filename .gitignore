@@ -6,6 +6,7 @@
 *.pyc
 *.pkg
 /.idea
+/config
 /electron/dist
 /electron/node_modules
 /electron/renderer/dist

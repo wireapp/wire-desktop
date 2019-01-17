@@ -7,7 +7,8 @@
     }
   },
   "dependencies": {
-    "debug": "4.1.1"
+    "debug": "4.1.1",
+    "wire-web-config-default": "https://github.com/wireapp/wire-web-config-default#v0.7.0"
   },
   "devDependencies": {
     "@babel/core": "7.2.2",
@@ -67,6 +68,7 @@
       "git add"
     ]
   },
+  "name": "wire-desktop",
   "private": true,
   "repository": {
     "type": "git",
@@ -80,6 +82,7 @@
     "bundle:dev": "webpack",
     "bundle": "webpack --env.production",
     "clear:ts": "rimraf electron/dist",
+    "configure": "node ./bin/configure.js",
     "fix:js": "yarn lint:js --fix",
     "fix:other": "yarn prettier --write",
     "fix:ts": "yarn lint:ts --fix",
@@ -89,7 +92,7 @@
     "lint:other": "yarn prettier --list-different",
     "lint:ts": "tslint --config tslint.json --project tsconfig.json \"**/*.ts\"",
     "lint": "yarn lint:js && yarn lint:other && yarn lint:ts",
-    "postinstall": "cd electron && yarn",
+    "postinstall": "yarn configure && cd electron && yarn",
     "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
     "start:dev": "yarn start --env=https://wire-webapp-dev.zinfra.io",
