@@ -17,7 +17,7 @@ node('node180') {
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
   def app_base = params.APP_BASE
 
-  currentBuild.displayName = version;
+  currentBuild.displayName = version
 
   def environment = docker.build('node', '-f linux.Dockerfile .')
 

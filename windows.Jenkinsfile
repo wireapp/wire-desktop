@@ -25,7 +25,7 @@ node('node160') {
   def text = readFile('info.json')
   def buildInfo = parseJson(text)
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
-  currentBuild.displayName = version;
+  currentBuild.displayName = version
 
   stage('Build') {
     try {
