@@ -52,12 +52,13 @@ module.exports = function(grunt) {
   baseData.bundleId = process.env.APP_BUNDLE_ID || baseData.bundleId;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
-  baseData.installerIconUrl = process.env.URL_ICON_INSTALLER || baseData.installerIconUrl;
+  baseData.installerIconUrl = process.env.APP_URL_ICON_INSTALLER || baseData.installerIconUrl;
+  baseData.maximumAccounts = Number(process.env.APP_MAXIMUM_ACCOUNTS) || baseData.maximumAccounts;
   baseData.name = process.env.APP_NAME || baseData.name;
   baseData.nameShort = process.env.APP_SHORT_NAME || baseData.nameShort;
-  baseData.supportUrl = process.env.URL_SUPPORT || baseData.supportUrl;
-  baseData.updateWinUrlCustom = process.env.URL_UPDATE_WIN || baseData.updateWinUrlProd;
-  baseData.websiteUrl = process.env.URL_WEBSITE || baseData.websiteUrl;
+  baseData.supportUrl = process.env.APP_URL_SUPPORT || baseData.supportUrl;
+  baseData.updateWinUrlCustom = process.env.APP_URL_UPDATE_WIN || baseData.updateWinUrlProd;
+  baseData.websiteUrl = process.env.APP_URL_WEBSITE || baseData.websiteUrl;
 
   grunt.initConfig({
     buildNumber: process.env.BUILD_NUMBER || '0',
@@ -343,10 +344,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('set-custom-data', () => {
-    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electronPkg.appBase = baseData.appBase;
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-
     grunt.log.write(`Webapp base set to "${baseData.appBase}". `).ok();
     grunt.log.write(`App name set to "${baseData.name}". `).ok();
     grunt.log.write(`App short name set to "${baseData.nameShort}". `).ok();
@@ -355,6 +352,7 @@ module.exports = function(grunt) {
     grunt.log.write(`App copyright set to "${baseData.copyright}". `).ok();
     grunt.log.write(`Website set to "${baseData.websiteUrl}". `).ok();
     grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
+    grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
 
     let customPlist = grunt.file.read(MACOS_CUSTOM_PLIST);
     customPlist = customPlist.replace(/Wire/gm, baseData.name);
@@ -401,8 +399,10 @@ module.exports = function(grunt) {
     const buildNumber = grunt.config.get('buildNumber');
     const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    electronPkg.appBase = info.appBase;
     electronPkg.copyright = info.copyright;
     electronPkg.environment = 'production';
+    electronPkg.maximumAccounts = info.maximumAccounts;
     electronPkg.name = info.nameShort.toLowerCase();
     electronPkg.productName = info.name;
     electronPkg.supportUrl = info.supportUrl;

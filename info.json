@@ -4,6 +4,7 @@
   "copyright": "© Wire Swiss GmbH",
   "description": "Wire",
   "installerIconUrl": "https://wire-app.wire.com/win/prod/wire.ico",
+  "maximumAccounts": 3,
   "name": "Wire",
   "nameInternal": "WireInternal",
   "nameShort": "Wire",
