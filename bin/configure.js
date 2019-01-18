@@ -37,9 +37,9 @@ console.log(
 
 const configDirName = 'config';
 const configDir = resolve(configDirName);
-const src = resolve(configDir, pkg.name, 'content', 'image');
-const projectDir = resolve('./');
-const dest = resolve(projectDir, 'electron', 'img');
+const src = resolve(configDir, pkg.name, 'content');
+const projectDir = resolve('.');
+const dest = projectDir;
 const ignoreList = ['.DS_Store'];
 
 console.log(`Cleaning config directory "${configDir}"`);

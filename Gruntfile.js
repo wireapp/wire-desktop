@@ -80,11 +80,11 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.name %>.exe',
         iconUrl: '<%= info.installerIconUrl %>',
-        loadingGif: 'resources/win/icon.256x256.png',
+        loadingGif: 'electron/img/wire.256.png',
         noMsi: true,
         outputDirectory: 'wrap/custom/<%= info.name %>-win32-ia32',
         setupExe: '<%= info.name %>-Setup.exe',
-        setupIcon: 'resources/win/wire.ico',
+        setupIcon: 'electron/img/wire.ico',
         title: '<%= info.name %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -95,10 +95,10 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.nameInternal %>.exe',
         iconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
-        loadingGif: 'resources/win/icon.internal.256x256.png',
+        loadingGif: 'electron/img/wire.internal.256.png',
         noMsi: true,
         outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32',
-        setupIcon: 'resources/win/wire.internal.ico',
+        setupIcon: 'electron/img/wire.internal.ico',
         title: '<%= info.nameInternal %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -109,10 +109,10 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.name %>.exe',
         iconUrl: 'https://wire-app.wire.com/win/prod/wire.ico',
-        loadingGif: 'resources/win/icon.256x256.png',
+        loadingGif: 'electron/img/wire.256.png',
         noMsi: true,
         outputDirectory: 'wrap/prod/<%= info.name %>-win32-ia32',
-        setupIcon: 'resources/win/wire.ico',
+        setupIcon: 'electron/img/wire.ico',
         title: '<%= info.name %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -168,7 +168,7 @@ module.exports = function(grunt) {
       win_custom: {
         options: {
           arch: 'ia32',
-          icon: 'resources/win/wire.ico',
+          icon: 'electron/img/wire.ico',
           name: '<%= info.name %>',
           platform: 'win32',
           win32metadata: {
@@ -184,7 +184,7 @@ module.exports = function(grunt) {
       win_internal: {
         options: {
           arch: 'ia32',
-          icon: 'resources/win/wire.internal.ico',
+          icon: 'electron/img/wire.internal.ico',
           name: '<%= info.nameInternal %>',
           platform: 'win32',
           win32metadata: {
@@ -200,7 +200,7 @@ module.exports = function(grunt) {
       win_prod: {
         options: {
           arch: 'ia32',
-          icon: 'resources/win/wire.ico',
+          icon: 'electron/img/wire.ico',
           platform: 'win32',
           win32metadata: {
             CompanyName: '<%= info.name %>',
@@ -353,6 +353,7 @@ module.exports = function(grunt) {
     grunt.log.write(`Website set to "${baseData.websiteUrl}". `).ok();
     grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
     grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
+    grunt.log.write(`Installer icon URL set to "${baseData.installerIconUrl}". `).ok();
 
     let customPlist = grunt.file.read(MACOS_CUSTOM_PLIST);
     customPlist = customPlist.replace(/Wire/gm, baseData.name);
