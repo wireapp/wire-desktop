@@ -22,8 +22,6 @@ import uuid from 'uuid/v4';
 import verifyObjectProperties from '../lib/verifyObjectProperties';
 import {MAXIMUM_ACCOUNTS} from '../../../dist/js/config';
 
-const maximumAccounts = MAXIMUM_ACCOUNTS || 3;
-
 export const ADD_ACCOUNT = 'ADD_ACCOUNT';
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
 export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT';
@@ -100,7 +98,7 @@ export const abortAccountCreation = id => {
 
 export const addAccountWithSession = () => {
   return (dispatch, getState) => {
-    const hasReachedAccountLimit = getState().accounts.length >= maximumAccounts;
+    const hasReachedAccountLimit = getState().accounts.length >= MAXIMUM_ACCOUNTS;
 
     if (hasReachedAccountLimit) {
       console.warn('Reached number of maximum accounts');

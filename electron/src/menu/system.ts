@@ -447,7 +447,7 @@ const registerShortcuts = (): void => {
 
   // Global account switching shortcut
   const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
-  const accountLimit = 3;
+  const accountLimit = config.MAXIMUM_ACCOUNTS;
   for (const shortcut of switchAccountShortcut) {
     for (let accountId = 0; accountId < accountLimit; accountId++) {
       globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
