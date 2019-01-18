@@ -35,7 +35,7 @@
     "@types/file-url": "2.0.0",
     "@types/fs-extra": "5.0.4",
     "@types/image-type": "3.0.0",
-    "@types/lodash": "4.14.119",
+    "@types/lodash": "4.14.120",
     "@types/minimist": "1.2.0",
     "@types/node": "10.12.18",
     "@types/request": "2.48.1",
