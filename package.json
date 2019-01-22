@@ -28,7 +28,7 @@
     "electron-packager": "13.0.1",
     "electron-winstaller": "2.7.0",
     "eslint": "5.12.0",
-    "eslint-config-prettier": "3.5.0",
+    "eslint-config-prettier": "3.6.0",
     "eslint-plugin-jasmine": "2.10.1",
     "eslint-plugin-no-unsanitized": "3.0.2",
     "eslint-plugin-prettier": "3.0.1",
