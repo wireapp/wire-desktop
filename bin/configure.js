@@ -41,12 +41,12 @@ const configDir = resolve(configDirName);
 const configSrc = resolve(configDir, pkg.name, 'content');
 const configDest = resolve('.');
 
-const files = [
-  {'image/logo/32x32.png': 'resources/icons/32x32.png'},
-  {'image/logo/256x256.png': ['resources/icons/256x256.png', 'electron/img/wire.256.png']},
-  {'image/logo/wire.icns': 'resources/macos/wire.icns'},
-  {'image/logo/wire.ico': 'electron/img/wire.ico'},
-];
+const files = {
+  'image/logo/32x32.png': 'resources/icons/32x32.png',
+  'image/logo/256x256.png': ['resources/icons/256x256.png', 'electron/img/wire.256.png'],
+  'image/logo/wire.icns': 'resources/macos/wire.icns',
+  'image/logo/wire.ico': 'electron/img/wire.ico',
+};
 
 console.log(`Cleaning config directory "${configDir}" ...`);
 
@@ -58,10 +58,15 @@ execSync(`git clone --depth 1 -b ${gitConfigurationVersion} ${gitConfigurationUr
   stdio: [0, 1],
 });
 
-files.forEach(file => {
+Object.keys(files).forEach(fileSource => {
   const copyFile = (source, destination) => {
     source = join(configSrc, source);
     destination = join(configDest, destination);
+
+    if (!fs.existsSync(source)) {
+      console.error(`File "${source}" does not exist.`);
+      return;
+    }
 
     console.log(`Copying file "${source}" -> "${destination}"`);
 
@@ -69,8 +74,7 @@ files.forEach(file => {
     fs.copySync(source, destination);
   };
 
-  const fileSource = Object.keys(file)[0];
-  const fileDestination = file[fileSource];
+  const fileDestination = files[fileSource];
 
   if (fileDestination instanceof Array) {
     fileDestination.forEach(destination => copyFile(fileSource, destination));
