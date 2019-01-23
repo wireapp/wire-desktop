@@ -66,7 +66,7 @@ fs.removeSync(configDir);
 
 console.log(`Cloning config repository ...`);
 
-execSync(`git clone --depth 1 --single-branch -b ${gitConfigurationVersion} ${gitConfigurationUrl} ${configDirName}`, {
+execSync(`git clone --depth 1 -b ${gitConfigurationVersion} ${gitConfigurationUrl} ${configDirName}`, {
   stdio: [0, 1],
 });
 
