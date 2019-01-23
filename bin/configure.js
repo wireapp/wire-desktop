@@ -18,11 +18,12 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  */
+
 /* eslint-disable no-console */
 
 const fs = require('fs-extra');
 const {execSync} = require('child_process');
-const {resolve, join} = require('path');
+const {dirname, join, resolve} = require('path');
 const pkg = require('../package');
 
 const [defaultGitConfigurationUrl, defaultGitConfigurationVersion] = pkg.dependencies['wire-web-config-default'].split(
@@ -37,33 +38,52 @@ console.log(
 
 const configDirName = 'config';
 const configDir = resolve(configDirName);
-const src = resolve(configDir, pkg.name, 'content');
-const projectDir = resolve('.');
-const dest = projectDir;
-const ignoreList = ['.DS_Store'];
+const configSrc = resolve(configDir, pkg.name, 'content');
+const configDest = resolve('.');
 
-console.log(`Cleaning config directory "${configDir}"`);
+const files = [
+  {
+    dest: 'resources/icons/32x32.png',
+    src: 'image/logo/32x32.png',
+  },
+  {
+    dest: ['resources/icons/256x256.png', 'electron/img/wire.256.png'],
+    src: 'image/logo/256x256.png',
+  },
+  {
+    dest: 'resources/macos/wire.icns',
+    src: 'image/logo/wire.icns',
+  },
+  {
+    dest: 'electron/img/wire.ico',
+    src: 'image/logo/wire.ico',
+  },
+];
+
+console.log(`Cleaning config directory "${configDir}" ...`);
+
 fs.removeSync(configDir);
-execSync(`git clone --single-branch -b ${gitConfigurationVersion} ${gitConfigurationUrl} ${configDirName}`, {
+
+console.log(`Cloning config repository ...`);
+
+execSync(`git clone --depth 1 --single-branch -b ${gitConfigurationVersion} ${gitConfigurationUrl} ${configDirName}`, {
   stdio: [0, 1],
 });
 
-process.chdir(src);
+files.forEach(({dest, src}) => {
+  const copyFile = (s, d) => {
+    const source = join(configSrc, s);
+    const destination = join(configDest, d);
 
-const walkSync = (dir, fileList = []) =>
-  fs.readdirSync(dir).reduce((fileListAccumulator, file) => {
-    const isDirectory = fs.statSync(join(dir, file)).isDirectory();
-    return isDirectory ? walkSync(join(dir, file), fileListAccumulator) : fileListAccumulator.concat([[dir, file]]);
-  }, fileList);
+    console.log(`Copying file "${source}" -> "${destination}"`);
 
-const files = walkSync('./').filter(file => ignoreList.some(ignore => !file.includes(ignore)));
+    fs.mkdirpSync(dirname(destination));
+    fs.copySync(source, destination);
+  };
 
-files.forEach(([dir, file]) => {
-  const source = resolve(dir, file);
-  const destination = resolve(dest, dir, file);
-
-  console.log(`Copy file "${source}" -> "${destination}"`);
-
-  fs.mkdirpSync(resolve(dir));
-  fs.copySync(source, destination);
+  if (dest instanceof Array) {
+    dest.forEach(d => copyFile(src, d));
+  } else {
+    copyFile(src, dest);
+  }
 });
