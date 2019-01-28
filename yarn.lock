@@ -8546,9 +8546,9 @@ widest-line@^2.0.0:
   dependencies:
     string-width "^2.1.1"
 
-"wire-web-config-default@https://github.com/wireapp/wire-web-config-default#v0.7.0":
-  version "0.7.0"
-  resolved "https://github.com/wireapp/wire-web-config-default#b356ca36512986feb77ad6bd322c1932a2b193c5"
+"wire-web-config-default@https://github.com/wireapp/wire-web-config-default#v0.7.1":
+  version "0.7.1"
+  resolved "https://github.com/wireapp/wire-web-config-default#3aaa08455bc3728098d30b01ad5f9ef5bb45c251"
   dependencies:
     adm-zip "0.4.13"
 
