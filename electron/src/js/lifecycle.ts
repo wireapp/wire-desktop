@@ -26,7 +26,7 @@ import * as windowManager from './window-manager';
 let isFirstInstance: boolean | undefined = undefined;
 
 const checkForUpdate = () => {
-  if (environment.platform.IS_WINDOWS && environment.WIN_UPDATE_ENABLED) {
+  if (environment.platform.IS_WINDOWS) {
     const squirrel = require('./squirrel');
     squirrel.handleSquirrelEvent(isFirstInstance);
 
