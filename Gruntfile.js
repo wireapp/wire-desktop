@@ -133,10 +133,10 @@ module.exports = function(grunt) {
     electron: {
       macos_custom: {
         options: {
-          appBundleId: baseData.bundleId,
+          appBundleId: '<%= info.bundleId %>',
           appCategoryType: 'public.app-category.social-networking',
           extendInfo: 'resources/macos/custom.plist',
-          helperBundleId: `${baseData.bundleId}.helper`,
+          helperBundleId: '<%= info.bundleId %>.helper',
           icon: 'resources/macos/wire.icns',
           platform: 'mas',
         },
@@ -423,11 +423,15 @@ module.exports = function(grunt) {
     const buildNumber = grunt.config.get('buildNumber');
     const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    electronPkg.adminUrl = info.adminUrl;
     electronPkg.appBase = info.appBase;
     electronPkg.copyright = info.copyright;
     electronPkg.environment = 'production';
+    electronPkg.legalUrl = info.legalUrl;
+    electronPkg.licensesUrl = info.licensesUrl;
     electronPkg.maximumAccounts = info.maximumAccounts;
     electronPkg.name = info.nameShort.toLowerCase();
+    electronPkg.privacyUrl = info.privacyUrl;
     electronPkg.productName = info.name;
     electronPkg.supportUrl = info.supportUrl;
     electronPkg.updateWinUrl = info.updateWinUrlCustom;
