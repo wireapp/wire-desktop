@@ -16,11 +16,6 @@
   "nameInternal": "WireInternal",
   "nameShort": "Wire",
   "privacyUrl": "https://wire.com/privacy/",
-  "sign": {
-    "app": "3rd Party Mac Developer Application: Wire Swiss GmbH (EDF3JCE8BC)",
-    "internal": "Developer ID Application: Zeta Project Inc.  (T69V8N5973)",
-    "package": "3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)"
-  },
   "supportUrl": "https://support.wire.com",
   "updateWinUrlBeta": "https://wire-app.wire.com/win/beta/",
   "updateWinUrlInternal": "https://wire-app.wire.com/win/internal/",
