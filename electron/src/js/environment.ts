@@ -82,8 +82,6 @@ const app = {
   UPDATE_URL_WIN: pkg.updateWinUrl,
 };
 
-const WIN_UPDATE_ENABLED = app.UPDATE_URL_WIN !== 'disabled';
-
 const getEnvironment = (): BackendType => {
   return <BackendType>(currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase();
 };
@@ -158,5 +156,4 @@ export {
   URL_SUPPORT,
   URL_WEBAPP,
   web,
-  WIN_UPDATE_ENABLED,
 };

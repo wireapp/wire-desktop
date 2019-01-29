@@ -369,7 +369,8 @@ module.exports = function(grunt) {
     grunt.log.write(`Privacy URL set to "${baseData.privacyUrl}". `).ok();
     grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
     grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
-    grunt.log.write(`Installer icon URL set to "${baseData.installerIconUrl}". `).ok();
+    grunt.log.write(`Windows installer icon URL set to "${baseData.installerIconUrl}". `).ok();
+    grunt.log.write(`Windows update URL set to ${baseData.updateWinUrlCustom} `).ok();
     grunt.log.write(`Developer app info set to "${baseData.sign.app}". `).ok();
     grunt.log.write(`Developer package info set to "${baseData.sign.package}". `).ok();
 
