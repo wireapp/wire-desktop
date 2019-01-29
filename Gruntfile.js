@@ -52,6 +52,8 @@ module.exports = function(grunt) {
   baseData.bundleId = process.env.APP_BUNDLE_ID || baseData.bundleId;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
+  baseData.developerId = process.env.APP_DEVELOPER_ID || baseData.developerId;
+  baseData.developerName = process.env.APP_DEVELOPER_NAME || baseData.developerName;
   baseData.installerIconUrl = process.env.APP_URL_ICON_INSTALLER || baseData.installerIconUrl;
   baseData.maximumAccounts = Number(process.env.APP_MAXIMUM_ACCOUNTS) || baseData.maximumAccounts;
   baseData.name = process.env.APP_NAME || baseData.name;
@@ -59,6 +61,12 @@ module.exports = function(grunt) {
   baseData.supportUrl = process.env.APP_URL_SUPPORT || baseData.supportUrl;
   baseData.updateWinUrlCustom = process.env.APP_URL_UPDATE_WIN || baseData.updateWinUrlProd;
   baseData.websiteUrl = process.env.APP_URL_WEBSITE || baseData.websiteUrl;
+
+  baseData.sign = {
+    app: `3rd Party Mac Developer Application: ${baseData.developerName} (${baseData.developerId})`,
+    internal: `Developer ID Application: ${baseData.developerNameInternal} (${baseData.developerIdInternal})`,
+    package: `3rd Party Mac Developer Installer: ${baseData.developerName} (${baseData.developerId})`,
+  };
 
   grunt.initConfig({
     buildNumber: process.env.BUILD_NUMBER || '0',
@@ -354,13 +362,20 @@ module.exports = function(grunt) {
     grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
     grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
     grunt.log.write(`Installer icon URL set to "${baseData.installerIconUrl}". `).ok();
+    grunt.log.write(`Developer app info set to "${baseData.sign.app}". `).ok();
+    grunt.log.write(`Developer package info set to "${baseData.sign.package}". `).ok();
 
     let customPlist = grunt.file.read(MACOS_CUSTOM_PLIST);
-    customPlist = customPlist.replace(/Wire/gm, baseData.name);
+    customPlist = customPlist
+      .replace(/Wire/gm, baseData.name)
+      .replace(/(<key>ElectronTeamID<\/key>\n\s*<string>)[^<]+(<\/string>)/m, `$1${baseData.developerId}$2`);
     grunt.file.write(MACOS_CUSTOM_PLIST, customPlist);
 
     let parentPlist = grunt.file.read(MACOS_PARENT_PLIST);
-    parentPlist = parentPlist.replace(/com\.wearezeta\.zclient\.mac/gm, baseData.bundleId);
+    parentPlist = parentPlist.replace(
+      /(<key>com\.apple\.security\.application-groups<\/key>\n\s*<string>)[^<]+(<\/string>)/m,
+      `$1${baseData.developerId}.${baseData.bundleId}$2`
+    );
     grunt.file.write(MACOS_PARENT_PLIST, parentPlist);
   });
 
