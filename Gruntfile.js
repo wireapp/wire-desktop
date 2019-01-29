@@ -48,14 +48,18 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
 
   const baseData = grunt.file.readJSON(INFO_JSON);
+  baseData.adminUrl = process.env.APP_URL_ADMIN || baseData.adminUrl;
   baseData.appBase = process.env.APP_BASE || baseData.appBase;
   baseData.bundleId = process.env.APP_BUNDLE_ID || baseData.bundleId;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
   baseData.installerIconUrl = process.env.APP_URL_ICON_INSTALLER || baseData.installerIconUrl;
+  baseData.legalUrl = process.env.APP_URL_LEGAL || baseData.legalUrl;
+  baseData.licensesUrl = process.env.APP_URL_LICENSES || baseData.licensesUrl;
   baseData.maximumAccounts = Number(process.env.APP_MAXIMUM_ACCOUNTS) || baseData.maximumAccounts;
   baseData.name = process.env.APP_NAME || baseData.name;
   baseData.nameShort = process.env.APP_SHORT_NAME || baseData.nameShort;
+  baseData.privacyUrl = process.env.APP_URL_PRIVACY || baseData.privacyUrl;
   baseData.supportUrl = process.env.APP_URL_SUPPORT || baseData.supportUrl;
   baseData.updateWinUrlCustom = process.env.APP_URL_UPDATE_WIN || baseData.updateWinUrlProd;
   baseData.websiteUrl = process.env.APP_URL_WEBSITE || baseData.websiteUrl;
@@ -350,7 +354,11 @@ module.exports = function(grunt) {
     grunt.log.write(`App description set to "${baseData.description}". `).ok();
     grunt.log.write(`App bundle ID set to "${baseData.bundleId}". `).ok();
     grunt.log.write(`App copyright set to "${baseData.copyright}". `).ok();
-    grunt.log.write(`Website set to "${baseData.websiteUrl}". `).ok();
+    grunt.log.write(`Website URL set to "${baseData.websiteUrl}". `).ok();
+    grunt.log.write(`Admin URL set to "${baseData.adminUrl}". `).ok();
+    grunt.log.write(`Legal URL set to "${baseData.legalUrl}". `).ok();
+    grunt.log.write(`Licenses URL set to "${baseData.licensesUrl}". `).ok();
+    grunt.log.write(`Privacy URL set to "${baseData.privacyUrl}". `).ok();
     grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
     grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
     grunt.log.write(`Installer icon URL set to "${baseData.installerIconUrl}". `).ok();

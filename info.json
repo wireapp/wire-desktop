@@ -1,13 +1,17 @@
 {
+  "adminUrl": "https://teams.wire.com",
   "appBase": "https://app.wire.com",
   "bundleId": "com.wearezeta.zclient.mac",
   "copyright": "© Wire Swiss GmbH",
   "description": "Wire",
   "installerIconUrl": "https://wire-app.wire.com/win/prod/wire.ico",
+  "legalUrl": "https://wire.com/legal/",
+  "licensesUrl": "https://wire.com/legal/licenses/",
   "maximumAccounts": 3,
   "name": "Wire",
   "nameInternal": "WireInternal",
   "nameShort": "Wire",
+  "privacyUrl": "https://wire.com/privacy/",
   "sign": {
     "app": "3rd Party Mac Developer Application: Wire Swiss GmbH (EDF3JCE8BC)",
     "internal": "Developer ID Application: Zeta Project Inc.  (T69V8N5973)",
