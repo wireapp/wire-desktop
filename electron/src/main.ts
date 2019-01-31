@@ -382,20 +382,21 @@ class ElectronWrapperInit {
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
           const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
           if (isLocalhostEnvironment) {
-            contents.session.webRequest.onHeadersReceived(
-              {
-                urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
-              },
-              (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
-                details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
-                details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+            const filter = {
+              urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
+            };
 
-                callback({
-                  cancel: false,
-                  responseHeaders: details.responseHeaders,
-                });
-              }
-            );
+            const listener = (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
+              details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
+              details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+
+              callback({
+                cancel: false,
+                responseHeaders: details.responseHeaders,
+              });
+            };
+
+            contents.session.webRequest.onHeadersReceived(filter, listener as any);
           }
 
           contents.on('before-input-event', (event, input) => {
