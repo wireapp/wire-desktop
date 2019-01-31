@@ -60,7 +60,5 @@
   "scripts": {
     "postinstall": "electron-rebuild -f -w node-addressbook"
   },
-  "updateWinUrl": "https://wire-app.wire.com/win/internal/",
-  "copyright": "© Wire Swiss GmbH",
-  "version": "3.5.0-a4f3993-internal"
+  "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }
