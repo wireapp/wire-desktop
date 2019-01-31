@@ -57,7 +57,7 @@ class AutomatedSingleSignOn {
       sendCodeToRenderer();
     }
   };
-  private oldClipboard: string | undefined;
+  private oldClipboard?: string;
   private webview!: WebviewTag;
   private webContents!: WebContents;
 
