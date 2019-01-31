@@ -89,6 +89,8 @@ export type i18nLanguageIdentifier =
   | 'trayQuit'
   | 'unreadMessages'
   | 'wrapperAddAccount'
+  | 'wrapperAddAccountErrorTitle'
+  | 'wrapperAddAccountErrorMessage'
   | 'wrapperCreateTeam'
   | 'wrapperLogOut'
   | 'wrapperManageTeam'
