@@ -57,7 +57,7 @@ class AutomatedSingleSignOn {
       sendCodeToRenderer();
     }
   };
-  private oldClipboard!: string;
+  private oldClipboard: string | undefined;
   private webview!: WebviewTag;
   private webContents!: WebContents;
 
@@ -101,7 +101,9 @@ class AutomatedSingleSignOn {
   }
 
   public async restoreClipboard() {
-    await AutomatedSingleSignOn.clipboard.write(this.oldClipboard);
+    if (this.oldClipboard) {
+      await AutomatedSingleSignOn.clipboard.write(this.oldClipboard);
+    }
   }
 
   public async start() {
