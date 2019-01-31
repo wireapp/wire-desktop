@@ -91,7 +91,7 @@ function mapStateToProps(state) {
   const {accounts} = state;
   return {
     accountIds: accounts.map(account => account.id),
-    accounts: accounts,
+    accounts,
     isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
   };
 }
