@@ -1,8 +1,8 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
-    "@wireapp/certificate-check": "0.0.3",
-    "@wireapp/commons": "1.0.1",
+    "@wireapp/certificate-check": "0.0.4",
+    "@wireapp/commons": "1.0.4",
     "ansi-regex": "4.0.0",
     "auto-launch": "5.0.5",
     "axios": "0.18.0",
@@ -14,7 +14,7 @@
     "lodash": "4.17.11",
     "logdown": "3.2.7",
     "minimist": "1.2.0",
-    "moment": "2.23.0",
+    "moment": "2.24.0",
     "open-graph": "0.2.4",
     "prop-types": "15.6.2",
     "raygun": "0.10.0",
@@ -35,12 +35,13 @@
     "@types/file-url": "2.0.0",
     "@types/fs-extra": "5.0.4",
     "@types/image-type": "3.0.0",
-    "@types/lodash": "4.14.119",
+    "@types/lodash": "4.14.120",
     "@types/minimist": "1.2.0",
     "@types/node": "10.12.18",
     "@types/request": "2.48.1",
     "@types/uuid": "3.4.4",
-    "cross-spawn": "6.0.5"
+    "cross-spawn": "6.0.5",
+    "electron-rebuild": "1.8.2"
   },
   "environment": "internal",
   "homepage": "https://wire.com",
@@ -55,6 +56,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
+  },
+  "scripts": {
+    "postinstall": "electron-rebuild -f -w node-addressbook"
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }

@@ -6,6 +6,8 @@ def parseJson(def text) {
 node('master') {
 
   def production = params.PRODUCTION
+  def custom = params.CUSTOM
+  def app_name = params.APP_NAME
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -20,7 +22,7 @@ node('master') {
   def text = readFile('info.json')
   def buildInfo = parseJson(text)
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
-  currentBuild.displayName = version;
+  currentBuild.displayName = version
 
   stage('Build') {
     try {
@@ -37,8 +39,9 @@ node('master') {
         sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if (production) {
-            // Production
             sh 'npx grunt macos-prod'
+          } else if (custom) {
+            sh 'npx grunt macos-custom'
           } else {
             // Internal
             sh 'npx grunt macos'
@@ -52,7 +55,7 @@ node('master') {
     }
   }
 
-  if(production) {
+  if (production) {
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
         sh "bin/macos-checksums.sh ${version}"
@@ -61,21 +64,15 @@ node('master') {
   }
 
   stage('Archive build artifacts') {
-    if(production) {
-      // Production
+    if (production) {
       archiveArtifacts 'info.json,Wire.pkg'
+    } else if (custom) {
+      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/${app_name}-mas-x64/${app_name}.app/\" \"${WORKSPACE}/wrap/${app_name}.zip\""
+      archiveArtifacts "info.json,wrap/${app_name}.zip,${version}.tar.gz.sig"
     } else {
       // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/bin/WireInternal.zip\""
-      archiveArtifacts "info.json,bin/WireInternal.zip,${version}.tar.gz.sig"
-    }
-  }
-
-  if(production) {
-    stage('Upload build as draft to GitHub') {
-      withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
-        sh 'python bin/github_draft.py'
-      }
+      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/WireInternal.zip\""
+      archiveArtifacts "info.json,wrap/WireInternal.zip,${version}.tar.gz.sig"
     }
   }
 

@@ -3,9 +3,9 @@
 const string = {};
 
 string.aboutReleases = 'Kiadási jegyzék';
-string.aboutUpdate = 'Hogyan frissül a Wire';
+string.aboutUpdate = 'Hogyan frissül a {{appName}}';
 string.aboutVersion = 'Verzió:';
-string.aboutWebappVersion = 'Wire Webes verzió';
+string.aboutWebappVersion = '{{appName}} Webes verzió';
 
 string.menuConversation = 'Beszélgetés';
 string.menuStart = 'Új beszélgetés indítása';
@@ -13,9 +13,9 @@ string.menuEdit = 'Szerkesztés';
 string.menuWindow = 'Ablak';
 string.menuView = 'Nézet';
 string.menuHelp = 'Segítség';
-string.menuStartup = 'Wire futtatása indításkor';
+string.menuStartup = '{{appName}} futtatása indításkor';
 string.menuLocale = 'Nyelv';
-string.menuAbout = 'A Wire névjegye';
+string.menuAbout = 'A {{appName}} névjegye';
 string.menuSignOut = 'Kijelentkezés';
 string.menuPing = 'Kopogás';
 string.menuCall = 'Hívás';
@@ -41,21 +41,21 @@ string.menuFullScreen = 'Teljes képernyő';
 string.menuLegal = 'Jogi nyilatkozat';
 string.menuPrivacy = 'Adatvédelem';
 string.menuLicense = 'Licenc információ';
-string.menuSupport = 'Wire Ügyfélszolgálat';
-string.menuWireURL = 'Wire weboldala';
+string.menuSupport = '{{appName}} Ügyfélszolgálat';
+string.menuWebsiteURL = '{{appName}} weboldala';
 string.menuPreferences = 'Beállítások';
 string.menuServices = 'Szolgáltatások';
-string.menuHideWire = 'Wire elrejtése';
+string.menuHideApp = '{{appName}} elrejtése';
 string.menuHideOthers = 'Többi menüpont elrejtése';
 string.menuShowAll = 'Mindet mutat';
 string.menuSettings = 'Beállítások';
-string.menuQuit = 'Kilépés a Wire-ből';
+string.menuQuit = 'Kilépés a {{appName}}-ből';
 string.menuShowHide = 'Menü mutatása';
 string.menuSavePictureAs = 'Kép mentése más néven...';
 string.menuNoSuggestions = 'Nincs javaslat';
 
 string.restartNeeded = 'Újraindítás szükséges';
-string.restartLocale = 'Kérjük, indítsa újra a Wire alkalmazást a módosítások érvénybe lépéséhez.';
+string.restartLocale = 'Kérjük, indítsa újra a {{appName}} alkalmazást a módosítások érvénybe lépéséhez.';
 string.restartLater = 'Később';
 string.restartNow = 'Újraindítás most';
 

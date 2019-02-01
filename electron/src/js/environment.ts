@@ -19,7 +19,17 @@
 
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-const pkg: {appBase: string; environment: string; updateWinUrl: string} = require('../../package.json');
+const pkg: {
+  adminUrl: string;
+  appBase: string;
+  environment: string;
+  legalUrl: string;
+  licensesUrl: string;
+  privacyUrl: string;
+  supportUrl: string;
+  updateWinUrl: string;
+  websiteUrl: string;
+} = require('../../package.json');
 
 let currentEnvironment: BackendType;
 
@@ -42,14 +52,17 @@ enum BackendTypeLabel {
 }
 
 const URL_ADMIN = {
-  PRODUCTION: 'https://teams.wire.com',
+  PRODUCTION: pkg.adminUrl || 'https://teams.wire.com',
   STAGING: 'https://wire-admin-staging.zinfra.io',
 };
 
-const URL_SUPPORT = 'https://support.wire.com';
+const URL_LEGAL = pkg.legalUrl || 'https://wire.com/legal/';
+const URL_LICENSES = pkg.licensesUrl || 'https://wire.com/legal/licenses/';
+const URL_PRIVACY = pkg.privacyUrl || 'https://wire.com/privacy/';
+const URL_SUPPORT = pkg.supportUrl || 'https://support.wire.com';
 
 const URL_WEBSITE = {
-  PRODUCTION: 'https://wire.com',
+  PRODUCTION: pkg.websiteUrl || 'https://wire.com',
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
@@ -109,7 +122,6 @@ const web = {
     const baseUrl = isProdEnvironment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
     return `${baseUrl}${path ? path : ''}`;
   },
-  getSupportUrl: (path?: string): string => `${URL_SUPPORT}${path ? path : ''}`,
   getWebappUrl: (env?: string): string => {
     if (env) {
       return env;
@@ -130,4 +142,18 @@ const web = {
   },
 };
 
-export {BackendType, BackendTypeLabel, URL_WEBAPP, app, getEnvironment, linuxDesktop, platform, setEnvironment, web};
+export {
+  app,
+  BackendType,
+  BackendTypeLabel,
+  getEnvironment,
+  linuxDesktop,
+  platform,
+  setEnvironment,
+  URL_LEGAL,
+  URL_LICENSES,
+  URL_PRIVACY,
+  URL_SUPPORT,
+  URL_WEBAPP,
+  web,
+};

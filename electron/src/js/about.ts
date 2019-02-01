@@ -26,7 +26,12 @@ import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as config from './config';
 
-const pkg: {productName: string; version: string} = require('../../package.json');
+const pkg: {
+  copyright: string;
+  environment: string;
+  productName: string;
+  version: string;
+} = require('../../package.json');
 
 let webappVersion: string;
 
@@ -38,6 +43,7 @@ const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html', 'about.html'));
 const ABOUT_WINDOW_WHITELIST = [
   ABOUT_HTML,
   fileUrl(path.join(APP_PATH, 'img', 'wire.256.png')),
+  fileUrl(path.join(APP_PATH, 'img', 'wire.internal.256.png')),
   fileUrl(path.join(APP_PATH, 'css', 'about.css')),
 ];
 const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload-about.js');
@@ -124,7 +130,9 @@ const showWindow = () => {
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
+          copyright: pkg.copyright,
           electronVersion: pkg.version,
+          environment: pkg.environment,
           productName: pkg.productName,
           webappVersion: webappVersion,
         });

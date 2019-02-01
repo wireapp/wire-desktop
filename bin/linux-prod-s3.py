@@ -46,10 +46,10 @@ def upload_file(source, dest):
 if __name__ == '__main__':
   files = [
     'sha256sum.txt.asc',
-    'wire-%s-i386.AppImage' % VERSION,
-    'wire-%s-x86_64.AppImage' % VERSION,
-    'debian/pool/main/wire_%s_amd64.deb' % VERSION,
-    'debian/pool/main/wire_%s_i386.deb' % VERSION,
+    'Wire-%s-i386.AppImage' % VERSION,
+    'Wire-%s-x86_64.AppImage' % VERSION,
+    'debian/pool/main/Wire-%s-amd64.deb' % VERSION,
+    'debian/pool/main/Wire-%s-i386.deb' % VERSION,
     'debian/dists/stable/Contents-all',
     'debian/dists/stable/Contents-all.bz2',
     'debian/dists/stable/Contents-all.gz',

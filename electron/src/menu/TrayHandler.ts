@@ -81,7 +81,7 @@ class TrayHandler {
         label: locale.getText('trayOpen'),
       },
       {
-        click: async () => lifecycle.quit(),
+        click: () => lifecycle.quit(),
         label: locale.getText('trayQuit'),
       },
     ]);

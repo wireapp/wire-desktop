@@ -251,24 +251,24 @@ const helpTemplate: ElectronMenuItemWithI18n = {
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(environment.web.getWebsiteUrl(config.URL.LEGAL)),
+      click: () => shell.openExternal(environment.URL_LEGAL),
       i18n: 'menuLegal',
     },
     {
-      click: () => shell.openExternal(environment.web.getWebsiteUrl(config.URL.PRIVACY)),
+      click: () => shell.openExternal(environment.URL_PRIVACY),
       i18n: 'menuPrivacy',
     },
     {
-      click: () => shell.openExternal(environment.web.getWebsiteUrl(config.URL.LICENSES)),
+      click: () => shell.openExternal(environment.URL_LICENSES),
       i18n: 'menuLicense',
     },
     {
-      click: () => shell.openExternal(environment.web.getSupportUrl()),
+      click: () => shell.openExternal(environment.URL_SUPPORT),
       i18n: 'menuSupport',
     },
     {
       click: () => shell.openExternal(environment.web.getWebsiteUrl()),
-      i18n: 'menuWireURL',
+      i18n: 'menuWebsiteURL',
     },
   ],
 };
@@ -292,7 +292,7 @@ const darwinTemplate: ElectronMenuItemWithI18n = {
     },
     separatorTemplate,
     {
-      i18n: 'menuHideWire',
+      i18n: 'menuHideApp',
       role: 'hide',
     },
     {
@@ -445,13 +445,9 @@ const registerShortcuts = (): void => {
   // Global mute shortcut
   globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
 
-  // fix the main window scrolling issues
-  globalShortcut.register('PageDown', () => undefined);
-  globalShortcut.register('PageUp', () => undefined);
-
   // Global account switching shortcut
   const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
-  const accountLimit = 3;
+  const accountLimit = config.MAXIMUM_ACCOUNTS;
   for (const shortcut of switchAccountShortcut) {
     for (let accountId = 0; accountId < accountLimit; accountId++) {
       globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
@@ -465,4 +461,14 @@ const unregisterShortcuts = (): void => {
   globalShortcut.unregisterAll();
 };
 
-export {createMenu, registerShortcuts, unregisterShortcuts};
+const toggleMenuBar = (): void => {
+  const mainBrowserWindow = getPrimaryWindow();
+  const isVisible = mainBrowserWindow.isMenuBarVisible();
+  const autoHide = mainBrowserWindow.isMenuBarAutoHide();
+
+  if (autoHide) {
+    mainBrowserWindow.setMenuBarVisibility(!isVisible);
+  }
+};
+
+export {createMenu, registerShortcuts, toggleMenuBar, unregisterShortcuts};

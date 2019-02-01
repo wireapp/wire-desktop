@@ -34,7 +34,9 @@ ipcRenderer.once(
   (
     event: Event,
     details: {
+      copyright: string;
       electronVersion: string;
+      environment: string;
       productName: string;
       webappVersion: string;
     }
@@ -58,6 +60,17 @@ ipcRenderer.once(
           (webappVersionElement.parentNode as any).remove();
         }
       }
+    }
+
+    const copyrightElement = document.getElementById('copyright');
+    if (copyrightElement) {
+      copyrightElement.innerHTML = details.copyright || '&copy; Wire Swiss GmbH';
+    }
+
+    const logoElement = document.getElementById('logo') as HTMLImageElement;
+    if (logoElement) {
+      const internal = details.environment === 'internal' ? '.internal' : '';
+      logoElement.src = `../img/wire${internal}.256.png`;
     }
 
     // Get locales

@@ -94,6 +94,7 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, deleteAccount);
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
+  ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
 };
 
 const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
@@ -330,7 +331,7 @@ class ElectronWrapperInit {
         return new SingleSignOn(main, event, url, options).init();
       }
 
-      this.logger.log(`Opening an external window from a webview. URL: ${url}`);
+      this.logger.log(`Opening an external window from a webview.`);
       return shell.openExternal(url);
     };
 
@@ -339,7 +340,7 @@ class ElectronWrapperInit {
       if (util.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
-        this.logger.log(`Preventing navigation inside WebView. URL: ${_url}`);
+        this.logger.log(`Preventing navigation inside <webview>. URL: ${_url}`);
         event.preventDefault();
       }
     };
@@ -348,7 +349,7 @@ class ElectronWrapperInit {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
       switch ((contents as any).getType()) {
-        case 'window':
+        case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
 
@@ -369,8 +370,8 @@ class ElectronWrapperInit {
             webPreferences.webSecurity = true;
           });
           break;
-
-        case 'webview':
+        }
+        case 'webview': {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
@@ -380,23 +381,30 @@ class ElectronWrapperInit {
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
           const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
           if (isLocalhostEnvironment) {
-            contents.session.webRequest.onHeadersReceived(
-              {
-                urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
-              },
-              (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
-                details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
-                details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+            const filter = {
+              urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
+            };
 
-                callback({
-                  cancel: false,
-                  responseHeaders: details.responseHeaders,
-                });
-              }
-            );
+            const listener = (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
+              details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
+              details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+
+              callback({
+                cancel: false,
+                responseHeaders: details.responseHeaders,
+              });
+            };
+
+            contents.session.webRequest.onHeadersReceived(filter, listener as any);
           }
 
+          contents.on('before-input-event', (event, input) => {
+            if (input.type === 'keyUp' && input.key === 'Alt') {
+              ipcMain.emit(EVENT_TYPE.UI.TOGGLE_MENU);
+            }
+          });
           break;
+        }
       }
     });
   }

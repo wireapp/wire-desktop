@@ -1,7 +1,7 @@
 string.aboutReleases = 'Releases';
-string.aboutUpdate = 'How Wire Updates Work';
+string.aboutUpdate = 'How {{appName}} Updates Work';
 string.aboutVersion = 'Version';
-string.aboutWebappVersion = 'Wire for Web Version';
+string.aboutWebappVersion = '{{appName}} for Web Version';
 
 string.certificateVerifyProcManagerRetry = 'Retry';
 string.certificateVerifyProcManagerShowDetails = 'Show details';
@@ -12,11 +12,11 @@ string.certificateVerifyProcManagerShowDetailsTextChromium =
 string.certificateVerifyProcManagerShowDetailsTextPinning =
   'The certificate pinning received an unexpected certificate for the following domain name:';
 string.certificateVerifyProcManagerShowDetailsTitle = 'Details';
-string.certificateVerifyProcManagerWarningBypass = 'I know what I’m doing, use Wire on this network';
+string.certificateVerifyProcManagerWarningBypass = 'I know what I’m doing, use {{appName}} on this network';
 string.certificateVerifyProcManagerWarningTextChromium =
-  'Wire warns you when you’re on a network that does not allow secure connections to Wire servers. There could be multiple reasons for this:\r\n\r\n• You are behind a corporate firewall that intercepts connections\r\n• You are on a public Wi-Fi network, such as a hotel or airport Wi-Fi, that intercepts connections until you have registered through a captive portal\r\n• Attackers might be trying to steal your information\r\n\r\nYou should not use Wire on this network.';
+  '{{appName}} warns you when you’re on a network that does not allow secure connections to {{appName}} servers. There could be multiple reasons for this:\r\n\r\n• You are behind a corporate firewall that intercepts connections\r\n• You are on a public Wi-Fi network, such as a hotel or airport Wi-Fi, that intercepts connections until you have registered through a captive portal\r\n• Attackers might be trying to steal your information\r\n\r\nYou should not use {{appName}} on this network.';
 string.certificateVerifyProcManagerWarningTextPinning =
-  'Wire warns you when you’re on a network that does not allow secure connections to Wire servers. There could be multiple reasons for this:\r\n\r\n• You are behind a corporate firewall that intercepts connections\r\n• You are on a public Wi-Fi network, such as a hotel or airport Wi-Fi, that intercepts connections until you have registered through a captive portal\r\n• Attackers might be trying to steal your information\r\n\r\nYou should not use Wire on this network, unless you know what you are doing.';
+  '{{appName}} warns you when you’re on a network that does not allow secure connections to {{appName}} servers. There could be multiple reasons for this:\r\n\r\n• You are behind a corporate firewall that intercepts connections\r\n• You are on a public Wi-Fi network, such as a hotel or airport Wi-Fi, that intercepts connections until you have registered through a captive portal\r\n• Attackers might be trying to steal your information\r\n\r\nYou should not use {{appName}} on this network, unless you know what you are doing.';
 string.certificateVerifyProcManagerWarningTitle = 'Your connection is not private';
 
 string.menuConversation = 'Conversation';
@@ -25,9 +25,9 @@ string.menuEdit = 'Edit';
 string.menuWindow = 'Window';
 string.menuView = 'View';
 string.menuHelp = 'Help';
-string.menuStartup = 'Launch Wire on Startup';
+string.menuStartup = 'Launch {{appName}} on Startup';
 string.menuLocale = 'Language';
-string.menuAbout = 'About Wire';
+string.menuAbout = 'About {{appName}}';
 string.menuSignOut = 'Log Out';
 string.menuPing = 'Ping';
 string.menuCall = 'Call';
@@ -54,14 +54,14 @@ string.menuLegal = 'Legal';
 string.menuPrivacy = 'Privacy';
 string.menuLicense = 'License Information';
 string.menuSupport = 'Support Website';
-string.menuWireURL = 'Wire Website';
+string.menuWebsiteURL = '{{appName}} Website';
 string.menuPreferences = 'Preferences';
 string.menuServices = 'Services';
-string.menuHideWire = 'Hide Wire';
+string.menuHideApp = 'Hide {{appName}}';
 string.menuHideOthers = 'Hide Others';
 string.menuShowAll = 'Show All';
 string.menuSettings = 'Settings';
-string.menuQuit = 'Quit Wire';
+string.menuQuit = 'Quit {{appName}}';
 string.menuShowHide = 'Show Menu';
 string.menuSavePictureAs = 'Save Picture As...';
 string.menuNoSuggestions = 'No Suggestions';
