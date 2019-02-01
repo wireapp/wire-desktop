@@ -174,7 +174,9 @@ module.exports = function(grunt) {
         name: '<%= info.name %>',
         out: 'wrap/build',
         overwrite: true,
-        protocols: [{name: '', schemes: ['wire']}],
+        protocols: [
+          {name: '<%= info.customProtocolName %> Core Protocol', schemes: ['<%= info.customProtocolName %>']},
+        ],
       },
 
       win_custom: {
@@ -362,6 +364,7 @@ module.exports = function(grunt) {
     grunt.log.write(`App description set to "${baseData.description}". `).ok();
     grunt.log.write(`App bundle ID set to "${baseData.bundleId}". `).ok();
     grunt.log.write(`App copyright set to "${baseData.copyright}". `).ok();
+    grunt.log.write(`App custom protocol set to "${baseData.customProtocolName}". `).ok();
     grunt.log.write(`Website URL set to "${baseData.websiteUrl}". `).ok();
     grunt.log.write(`Admin URL set to "${baseData.adminUrl}". `).ok();
     grunt.log.write(`Legal URL set to "${baseData.legalUrl}". `).ok();
