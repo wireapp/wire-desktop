@@ -1,6 +1,5 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
-  "customProtocolName": "wire",
   "dependencies": {
     "@wireapp/certificate-check": "0.0.4",
     "@wireapp/commons": "1.0.4",
