@@ -52,6 +52,7 @@ module.exports = function(grunt) {
   baseData.appBase = process.env.APP_BASE || baseData.appBase;
   baseData.bundleId = process.env.APP_BUNDLE_ID || baseData.bundleId;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
+  baseData.customProtocolName = process.env.APP_CUSTOM_PROTOCOL_NAME || baseData.customProtocolName;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
   baseData.developerId = process.env.APP_DEVELOPER_ID || baseData.developerId;
   baseData.developerName = process.env.APP_DEVELOPER_NAME || baseData.developerName;
