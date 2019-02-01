@@ -21,14 +21,13 @@ import {LogFactory} from '@wireapp/commons';
 import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
-import {customProtocolName as CORE_PROTOCOL} from '../../package.json';
-
 import {AutomatedSingleSignOn} from './AutomatedSingleSignOn';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFilePath: LOG_FILE});
 
+const CORE_PROTOCOL = require('../../package.json').customProtocolName;
 const CORE_PROTOCOL_SSO = 'sso-code';
 
 const dispatcher = async (route: URL) => {

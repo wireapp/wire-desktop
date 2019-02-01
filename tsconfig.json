@@ -12,7 +12,6 @@
     "noUnusedParameters": false,
     "outDir": "electron/dist",
     "removeComments": true,
-    "resolveJsonModule": true,
     "rootDir": "electron/src",
     "sourceMap": true,
     "strict": true,
