@@ -18,12 +18,15 @@
  */
 
 import {WebContents, WebviewTag, app, clipboard} from 'electron';
+import {BaseError} from 'make-error-cause';
 import {URL} from 'url';
 const dialog = require('electron').dialog || require('electron').remote.dialog;
-
 import * as windowManager from '../js/window-manager';
 import {getText} from '../locale/locale';
 import {EVENT_TYPE} from './eventType';
+
+class FailedToLoadWebviewError extends BaseError {}
+class MaximumAccountReachedError extends BaseError {}
 
 class AutomatedSingleSignOn {
   private static readonly SSO_ACTION_DELAY = 1000;
@@ -53,6 +56,7 @@ class AutomatedSingleSignOn {
     } else {
       if (!main.isVisible()) {
         main.show();
+        main.focus();
       }
       sendCodeToRenderer();
     }
@@ -78,26 +82,42 @@ class AutomatedSingleSignOn {
     await AutomatedSingleSignOn.sleep(AutomatedSingleSignOn.SSO_ACTION_DELAY);
   }
 
-  private onResponseReceived(event: CustomEvent) {
-    if (event.detail && event.detail.reachedMaximumAccounts) {
-      dialog.showMessageBox({
-        detail: getText('wrapperAddAccountErrorMessage'),
-        message: getText('wrapperAddAccountErrorTitle'),
-        type: 'warning',
+  private executeLogin() {
+    return new Promise((resolve, reject) => {
+      const failedToLoad = () => reject(new FailedToLoadWebviewError('Webview failed to load'));
+      this.webview = document.querySelector('.Webview:not(.hide)') as WebviewTag;
+      this.webContents = this.webview.getWebContents();
+
+      this.webContents.once('did-fail-load', failedToLoad);
+      this.webContents.once('did-finish-load', async () => {
+        this.webContents.removeListener('did-fail-load', failedToLoad);
+        await this.clickOn('a[data-uie-name="go-sign-in-sso"]');
+        await this.clickOn('button[data-uie-name="do-sso-sign-in"]');
+        resolve();
       });
-      return;
-    }
 
-    this.webview = document.querySelector('.Webview:not(.hide)') as WebviewTag;
-    this.webContents = this.webview.getWebContents();
-
-    this.webContents.once('did-finish-load', async () => {
-      await this.clickOn('a[data-uie-name="go-sign-in-sso"]');
-      await this.clickOn('button[data-uie-name="do-sso-sign-in"]');
-      await this.restoreClipboard();
+      this.webContents.loadURL(this.buildUrl());
     });
+  }
 
-    this.webContents.loadURL(this.buildUrl());
+  private async onResponseReceived(event: CustomEvent) {
+    try {
+      if (event.detail && event.detail.reachedMaximumAccounts) {
+        throw new MaximumAccountReachedError('Maximum account reached');
+      }
+
+      await this.executeLogin();
+    } catch (error) {
+      if (error instanceof MaximumAccountReachedError) {
+        dialog.showMessageBox({
+          detail: getText('wrapperAddAccountErrorMessage'),
+          message: getText('wrapperAddAccountErrorTitle'),
+          type: 'warning',
+        });
+      }
+    } finally {
+      await this.restoreClipboard();
+    }
   }
 
   public async restoreClipboard() {

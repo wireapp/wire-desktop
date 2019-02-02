@@ -21,6 +21,7 @@ import {LogFactory} from '@wireapp/commons';
 import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
+import {platform} from '../js/environment';
 import {AutomatedSingleSignOn} from './AutomatedSingleSignOn';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -30,13 +31,14 @@ const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFileP
 const {customProtocolName} = require('../../package.json');
 const CORE_PROTOCOL = customProtocolName || 'wire';
 const CORE_PROTOCOL_SSO = 'sso-code';
+const CORE_PROTOCOL_POSITION = 1;
 
-const dispatcher = async (route: URL) => {
-  // Ensure we got the right protocol
-  if (route.protocol !== `${CORE_PROTOCOL}:`) {
-    logger.log('Received request from unknown protocol');
+const dispatcher = async (url?: string) => {
+  if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`)) {
     return;
   }
+
+  const route = new URL(url);
 
   logger.log('Electron "open-url" event fired');
 
@@ -60,8 +62,19 @@ export const registerCoreProtocol = () => {
     app.setAsDefaultProtocolClient(CORE_PROTOCOL);
   }
 
-  app.on('open-url', async (event, url) => {
-    event.preventDefault();
-    await dispatcher(new URL(url));
-  });
+  if (platform.IS_MAC_OS) {
+    app.on('open-url', async (event, url) => {
+      event.preventDefault();
+      await dispatcher(url);
+    });
+  } else if (platform.IS_WINDOWS) {
+    app.once('ready', async () => {
+      const url = process.argv[CORE_PROTOCOL_POSITION];
+      await dispatcher(url);
+    });
+    app.on('second-instance', async (event, argv) => {
+      const url = argv[CORE_PROTOCOL_POSITION];
+      await dispatcher(url);
+    });
+  }
 };
