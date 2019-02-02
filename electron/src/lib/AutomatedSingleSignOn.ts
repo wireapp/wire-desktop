@@ -26,7 +26,7 @@ import {getText} from '../locale/locale';
 import {EVENT_TYPE} from './eventType';
 
 class FailedToLoadWebviewError extends BaseError {}
-class MaximumAccountReachedError extends BaseError {}
+class MaximumAccountsReachedError extends BaseError {}
 
 class AutomatedSingleSignOn {
   private static readonly SSO_ACTION_DELAY = 1000;
@@ -103,12 +103,12 @@ class AutomatedSingleSignOn {
   private async onResponseReceived(event: CustomEvent) {
     try {
       if (event.detail && event.detail.reachedMaximumAccounts) {
-        throw new MaximumAccountReachedError('Maximum account reached');
+        throw new MaximumAccountsReachedError('Maximum account reached');
       }
 
       await this.executeLogin();
     } catch (error) {
-      if (error instanceof MaximumAccountReachedError) {
+      if (error instanceof MaximumAccountsReachedError) {
         dialog.showMessageBox({
           detail: getText('wrapperAddAccountErrorMessage'),
           message: getText('wrapperAddAccountErrorTitle'),
