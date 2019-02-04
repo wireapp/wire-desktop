@@ -25,13 +25,12 @@ import * as windowManager from '../js/window-manager';
 import {getText} from '../locale/locale';
 import {EVENT_TYPE} from './eventType';
 
-class FailedToLoadWebviewError extends BaseError {}
 class MaximumAccountsReachedError extends BaseError {}
 
 class AutomatedSingleSignOn {
   private static readonly SSO_ACTION_DELAY = 1000;
-  private static readonly SSO_CODE_PREFIX = 'wire-';
   private static readonly SSO_LOGIN_HASH = 'login';
+  private static readonly SSO_CODE_MAX_LENGTH = 255;
   public static readonly clipboard = {
     read: () => clipboard.readText(),
     write: (value: string) => clipboard.writeText(value),
@@ -84,7 +83,7 @@ class AutomatedSingleSignOn {
 
   private executeLogin() {
     return new Promise((resolve, reject) => {
-      const failedToLoad = () => reject(new FailedToLoadWebviewError('Webview failed to load'));
+      const failedToLoad = () => reject('Webview failed to load');
       this.webview = document.querySelector('.Webview:not(.hide)') as WebviewTag;
       this.webContents = this.webview.getWebContents();
 
@@ -127,13 +126,21 @@ class AutomatedSingleSignOn {
   }
 
   public async start() {
+    if (this.ssoCode.length > AutomatedSingleSignOn.SSO_CODE_MAX_LENGTH) {
+      return;
+    }
+
     this.oldClipboard = AutomatedSingleSignOn.clipboard.read();
-    await AutomatedSingleSignOn.clipboard.write(`${AutomatedSingleSignOn.SSO_CODE_PREFIX}${this.ssoCode}`);
+    await AutomatedSingleSignOn.clipboard.write(this.ssoCode);
 
     // Send initial signal to the renderer and wait for a response
-    window.addEventListener(EVENT_TYPE.ACTION.CREATE_ACCOUNT_RESPONSE, (event: any) => this.onResponseReceived(event), {
-      once: true,
-    });
+    window.addEventListener(
+      EVENT_TYPE.ACTION.CREATE_ACCOUNT_RESPONSE,
+      event => this.onResponseReceived(event as CustomEvent),
+      {
+        once: true,
+      }
+    );
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.CREATE_ACCOUNT));
   }
 }
