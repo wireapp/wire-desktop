@@ -560,6 +560,7 @@ module.exports = function(grunt) {
     'release-custom',
     'bundle',
     'electron:macos_custom',
+    'productbuild',
   ]);
 
   grunt.registerTask('win', [
