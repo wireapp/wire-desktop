@@ -30,7 +30,7 @@ const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFileP
 
 const {customProtocolName} = require('../../package.json');
 const CORE_PROTOCOL = customProtocolName || 'wire';
-const CORE_PROTOCOL_SSO = 'sso-code';
+const CORE_PROTOCOL_SSO = 'start-sso';
 const CORE_PROTOCOL_POSITION = 1;
 
 const dispatcher = async (url?: string) => {
