@@ -30,7 +30,6 @@ class MaximumAccountsReachedError extends BaseError {}
 class AutomatedSingleSignOn {
   private static readonly SSO_ACTION_DELAY = 1000;
   private static readonly SSO_LOGIN_HASH = 'login';
-  private static readonly SSO_CODE_MAX_LENGTH = 255;
   public static readonly clipboard = {
     read: () => clipboard.readText(),
     write: (value: string) => clipboard.writeText(value),
@@ -126,10 +125,6 @@ class AutomatedSingleSignOn {
   }
 
   public async start() {
-    if (this.ssoCode.length > AutomatedSingleSignOn.SSO_CODE_MAX_LENGTH) {
-      return;
-    }
-
     this.oldClipboard = AutomatedSingleSignOn.clipboard.read();
     await AutomatedSingleSignOn.clipboard.write(this.ssoCode);
 

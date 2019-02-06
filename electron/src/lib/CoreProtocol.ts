@@ -32,9 +32,10 @@ const {customProtocolName} = require('../../package.json');
 const CORE_PROTOCOL = customProtocolName || 'wire';
 const CORE_PROTOCOL_SSO = 'start-sso';
 const CORE_PROTOCOL_POSITION = 1;
+const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
 const dispatcher = async (url?: string) => {
-  if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`)) {
+  if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
     return;
   }
 
