@@ -874,10 +874,10 @@
     "@webassemblyjs/wast-parser" "1.7.11"
     "@xtuc/long" "4.2.1"
 
-"@wireapp/copy-config@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.2.0.tgz#961f2ee80693007b6d3e3d2fc660450ad2fdea8e"
-  integrity sha512-sATNp95FjIKmBR3fdpiw5amUBQ5iQHiYjqk0MfjMGQizDRo88Jkrk3rtnnP7JyMtTkYg6tnBo0GUMFYNQU/WDg==
+"@wireapp/copy-config@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.2.1.tgz#06514e7e56fdf5ffc8fb7e732781d0fa0575992f"
+  integrity sha512-OsdofSAIAjIICXYCWMiApXxDDy+pXADjOV5GN9RV/tmoDIalGqfbtTsqAqiQdT3pbHtqT5xxw8j5/jdn94wAKA==
   dependencies:
     copy "0.3.2"
     cosmiconfig "5.0.7"
