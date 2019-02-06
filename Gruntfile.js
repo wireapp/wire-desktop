@@ -138,6 +138,7 @@ module.exports = function(grunt) {
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: '<%= info.bundleId %>.helper',
           icon: 'resources/macos/wire.icns',
+          out: 'wrap/dist/',
           platform: 'mas',
         },
       },
