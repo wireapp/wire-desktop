@@ -41,7 +41,7 @@
     "@types/request": "2.48.1",
     "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5",
-    "electron-rebuild": "1.8.2"
+    "electron-rebuild": "1.8.3"
   },
   "environment": "internal",
   "homepage": "https://wire.com",
