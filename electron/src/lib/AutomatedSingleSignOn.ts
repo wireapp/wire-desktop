@@ -17,7 +17,7 @@
  *
  */
 
-import {WebContents, WebviewTag, app, clipboard} from 'electron';
+import {WebContents, WebviewTag, app} from 'electron';
 import {BaseError} from 'make-error-cause';
 import {URL} from 'url';
 const dialog = require('electron').dialog || require('electron').remote.dialog;
@@ -28,13 +28,7 @@ import {EVENT_TYPE} from './eventType';
 class MaximumAccountsReachedError extends BaseError {}
 
 class AutomatedSingleSignOn {
-  private static readonly SSO_ACTION_DELAY = 1000;
-  private static readonly SSO_LOGIN_HASH = 'login';
-  public static readonly clipboard = {
-    read: () => clipboard.readText(),
-    write: (value: string) => clipboard.writeText(value),
-  };
-  private static readonly sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  private static readonly SSO_LOGIN_HASH = 'sso/';
   public static readonly handleProtocolRequest = async (route: URL) => {
     if (typeof route.pathname !== 'string') {
       return;
@@ -59,7 +53,6 @@ class AutomatedSingleSignOn {
       sendCodeToRenderer();
     }
   };
-  private oldClipboard?: string;
   private webview!: WebviewTag;
   private webContents!: WebContents;
 
@@ -71,13 +64,8 @@ class AutomatedSingleSignOn {
     }
     const src = new URL(this.webview.src);
     src.pathname = '/auth/';
-    src.hash = AutomatedSingleSignOn.SSO_LOGIN_HASH;
+    src.hash = `${AutomatedSingleSignOn.SSO_LOGIN_HASH}${this.ssoCode}`;
     return src.href;
-  }
-
-  private async clickOn(element: string) {
-    await this.webContents.executeJavaScript(`document.querySelector('${element}').click();`);
-    await AutomatedSingleSignOn.sleep(AutomatedSingleSignOn.SSO_ACTION_DELAY);
   }
 
   private executeLogin() {
@@ -89,8 +77,6 @@ class AutomatedSingleSignOn {
       this.webContents.once('did-fail-load', failedToLoad);
       this.webContents.once('did-finish-load', async () => {
         this.webContents.removeListener('did-fail-load', failedToLoad);
-        await this.clickOn('a[data-uie-name="go-sign-in-sso"]');
-        await this.clickOn('button[data-uie-name="do-sso-sign-in"]');
         resolve();
       });
 
@@ -113,21 +99,10 @@ class AutomatedSingleSignOn {
           type: 'warning',
         });
       }
-    } finally {
-      await this.restoreClipboard();
-    }
-  }
-
-  public async restoreClipboard() {
-    if (this.oldClipboard) {
-      await AutomatedSingleSignOn.clipboard.write(this.oldClipboard);
     }
   }
 
   public async start() {
-    this.oldClipboard = AutomatedSingleSignOn.clipboard.read();
-    await AutomatedSingleSignOn.clipboard.write(this.ssoCode);
-
     // Send initial signal to the renderer and wait for a response
     window.addEventListener(
       EVENT_TYPE.ACTION.CREATE_ACCOUNT_RESPONSE,
