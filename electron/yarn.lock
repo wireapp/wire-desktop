@@ -536,10 +536,10 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
-electron-rebuild@1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-1.8.3.tgz#10c1dc1d5f8fad012f103e398f67a7db624799bb"
-  integrity sha512-LdhWlCssk0Zig001xGdOtPbur6CUOqrLwEMCTIMEEQ8B7BiFyPwFUQqbX+jOFXtKvntLdbeoHFrxCuquukO82g==
+electron-rebuild@1.8.4:
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-1.8.4.tgz#cd5384d38c2d6b4463103e375f3779d7abbae19b"
+  integrity sha512-QBUZg1due+R0bww5rNd4gEcsKczyhxyLrxSFZlKihwHRxaiHrGut532JAUe0fRz+VIU4WNSfNKyZ/ZwSGjaDhA==
   dependencies:
     colors "^1.3.3"
     debug "^4.1.1"
