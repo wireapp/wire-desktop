@@ -40,6 +40,7 @@ import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
 } from './lib/CertificateVerifyProcManager';
+import {registerCoreProtocol} from './lib/CoreProtocol';
 import {download} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
@@ -250,7 +251,7 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
-  // System Menu & Tray Icon & Show window
+  // System Menu, Tray Icon & Show window
   app.on('ready', () => {
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen);
@@ -410,6 +411,7 @@ class ElectronWrapperInit {
   }
 }
 
+registerCoreProtocol();
 initRaygun.initClient();
 appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();

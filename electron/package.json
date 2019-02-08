@@ -12,6 +12,7 @@
     "jsrsasign": "8.0.12",
     "lodash": "4.17.11",
     "logdown": "3.2.7",
+    "make-error-cause": "2.2.0",
     "minimist": "1.2.0",
     "moment": "2.24.0",
     "open-graph": "0.2.4",

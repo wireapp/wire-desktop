@@ -52,6 +52,7 @@ module.exports = function(grunt) {
   baseData.appBase = process.env.APP_BASE || baseData.appBase;
   baseData.bundleId = process.env.APP_BUNDLE_ID || baseData.bundleId;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
+  baseData.customProtocolName = process.env.APP_CUSTOM_PROTOCOL_NAME || baseData.customProtocolName;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
   baseData.developerId = process.env.APP_DEVELOPER_ID || baseData.developerId;
   baseData.developerName = process.env.APP_DEVELOPER_NAME || baseData.developerName;
@@ -174,7 +175,9 @@ module.exports = function(grunt) {
         name: '<%= info.name %>',
         out: 'wrap/build',
         overwrite: true,
-        protocols: [{name: '', schemes: ['wire']}],
+        protocols: [
+          {name: '<%= info.customProtocolName %> Core Protocol', schemes: ['<%= info.customProtocolName %>']},
+        ],
       },
 
       win_custom: {
@@ -362,6 +365,7 @@ module.exports = function(grunt) {
     grunt.log.write(`App description set to "${baseData.description}". `).ok();
     grunt.log.write(`App bundle ID set to "${baseData.bundleId}". `).ok();
     grunt.log.write(`App copyright set to "${baseData.copyright}". `).ok();
+    grunt.log.write(`App custom protocol set to "${baseData.customProtocolName}". `).ok();
     grunt.log.write(`Website URL set to "${baseData.websiteUrl}". `).ok();
     grunt.log.write(`Admin URL set to "${baseData.adminUrl}". `).ok();
     grunt.log.write(`Legal URL set to "${baseData.legalUrl}". `).ok();
@@ -427,6 +431,7 @@ module.exports = function(grunt) {
     electronPkg.adminUrl = info.adminUrl;
     electronPkg.appBase = info.appBase;
     electronPkg.copyright = info.copyright;
+    electronPkg.customProtocolName = info.customProtocolName;
     electronPkg.environment = 'production';
     electronPkg.legalUrl = info.legalUrl;
     electronPkg.licensesUrl = info.licensesUrl;
