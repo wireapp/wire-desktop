@@ -433,10 +433,10 @@ module.exports = function(grunt) {
     electronPkg.updateWinUrl = info.updateWinUrlProd;
     electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
+    grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
     grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
     grunt.log.write(`App product name set to "${electronPkg.productName}". `).ok();
-    grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
+    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
   grunt.registerTask('release-custom', () => {
@@ -450,10 +450,10 @@ module.exports = function(grunt) {
     electronPkg.updateWinUrl = info.updateWinUrlCustom;
     electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
+    grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
     grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
     grunt.log.write(`App product name set to "${electronPkg.productName}". `).ok();
-    grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
+    grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
   grunt.registerMultiTask('electron', 'Package Electron apps', function() {
