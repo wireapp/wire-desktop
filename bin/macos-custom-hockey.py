@@ -75,7 +75,6 @@ if __name__ == '__main__':
   response_upload = requests.put('%s%s' % (HOCKEY_UPLOAD, response_version), files=request_files, data=request_data, headers=request_headers)
 
   if response_upload.status_code in [200, 201]:
-    os.remove(custom_pkg)
     print 'Version %s successfully uploaded' % response_version
   else:
     print response_upload.json()
