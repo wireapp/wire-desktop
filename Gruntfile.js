@@ -551,6 +551,7 @@ module.exports = function(grunt) {
     'clean:macos',
     'update-keys',
     'gitinfo',
+    'set-custom-data',
     'release-internal',
     'bundle',
     'electron:macos_internal',
