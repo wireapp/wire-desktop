@@ -139,6 +139,7 @@ module.exports = function(grunt) {
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: '<%= info.bundleId %>.helper',
           icon: 'resources/macos/wire.icns',
+          out: 'wrap/dist/',
           platform: 'mas',
         },
       },
@@ -565,6 +566,7 @@ module.exports = function(grunt) {
     'release-custom',
     'bundle',
     'electron:macos_custom',
+    'productbuild',
   ]);
 
   grunt.registerTask('win', [
