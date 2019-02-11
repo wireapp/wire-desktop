@@ -80,7 +80,7 @@ module.exports = function(grunt) {
       build: 'wrap/build',
       dist: 'wrap/dist',
       linux: ['wrap/**/linux*', 'wrap/**/wire*'],
-      macos: ['wrap/**/<%= info.name %>-darwin*'],
+      macos: ['wrap/**/<%= info.name %>-darwin*', '*.pkg'],
       pkg: '*.pkg',
       win: 'wrap/**/<%= info.name %>-win*',
       wrap: 'wrap',
@@ -139,6 +139,7 @@ module.exports = function(grunt) {
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: '<%= info.bundleId %>.helper',
           icon: 'resources/macos/wire.icns',
+          out: 'wrap/dist/',
           platform: 'mas',
         },
       },
@@ -159,7 +160,6 @@ module.exports = function(grunt) {
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: 'com.wearezeta.zclient.mac.helper',
           icon: 'resources/macos/wire.icns',
-          out: 'wrap/dist/',
           platform: 'mas',
         },
       },
@@ -565,6 +565,7 @@ module.exports = function(grunt) {
     'release-custom',
     'bundle',
     'electron:macos_custom',
+    'productbuild',
   ]);
 
   grunt.registerTask('win', [
