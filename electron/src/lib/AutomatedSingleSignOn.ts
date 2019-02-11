@@ -69,7 +69,7 @@ class AutomatedSingleSignOn {
     return src.href;
   }
 
-  private async executeLogin() {
+  private executeLogin() {
     return new Promise((resolve, reject) => {
       const failedToLoad = () => reject('Webview failed to load');
       this.webview = document.querySelector('.Webview:not(.hide)') as WebviewTag;
