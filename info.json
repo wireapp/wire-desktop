@@ -3,6 +3,7 @@
   "appBase": "https://app.wire.com",
   "bundleId": "com.wearezeta.zclient.mac",
   "copyright": "© Wire Swiss GmbH",
+  "customProtocolName": "wire",
   "description": "Wire",
   "developerId": "EDF3JCE8BC",
   "developerIdInternal": "T69V8N5973",
