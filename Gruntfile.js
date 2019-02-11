@@ -360,8 +360,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('set-custom-data', () => {
     grunt.log.write(`Webapp base set to "${baseData.appBase}". `).ok();
-    grunt.log.write(`App name set to "${baseData.name}". `).ok();
-    grunt.log.write(`App short name set to "${baseData.nameShort}". `).ok();
     grunt.log.write(`App description set to "${baseData.description}". `).ok();
     grunt.log.write(`App bundle ID set to "${baseData.bundleId}". `).ok();
     grunt.log.write(`App copyright set to "${baseData.copyright}". `).ok();
@@ -374,9 +372,23 @@ module.exports = function(grunt) {
     grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
     grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
     grunt.log.write(`Windows installer icon URL set to "${baseData.installerIconUrl}". `).ok();
-    grunt.log.write(`Windows update URL set to ${baseData.updateWinUrlCustom} `).ok();
-    grunt.log.write(`Developer app info set to "${baseData.sign.app}". `).ok();
-    grunt.log.write(`Developer package info set to "${baseData.sign.package}". `).ok();
+    grunt.log.write(`macOS developer app info set to "${baseData.sign.app}". `).ok();
+    grunt.log.write(`macOS developer package info set to "${baseData.sign.package}". `).ok();
+
+    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+
+    electronPkg.adminUrl = info.adminUrl;
+    electronPkg.appBase = info.appBase;
+    electronPkg.copyright = info.copyright;
+    electronPkg.customProtocolName = info.customProtocolName;
+    electronPkg.legalUrl = info.legalUrl;
+    electronPkg.licensesUrl = info.licensesUrl;
+    electronPkg.maximumAccounts = info.maximumAccounts;
+    electronPkg.privacyUrl = info.privacyUrl;
+    electronPkg.supportUrl = info.supportUrl;
+    electronPkg.websiteUrl = info.websiteUrl;
+
+    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
 
     let customPlist = grunt.file.read(MACOS_CUSTOM_PLIST);
     customPlist = customPlist
@@ -397,7 +409,6 @@ module.exports = function(grunt) {
     const buildNumber = grunt.config.get('buildNumber');
     const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electronPkg.copyright = info.copyright;
     electronPkg.environment = 'internal';
     electronPkg.name = info.nameInternal.toLowerCase();
     electronPkg.productName = info.nameInternal;
@@ -405,6 +416,9 @@ module.exports = function(grunt) {
     electronPkg.version =
       buildNumber === '0' ? `${info.version}.0-${commitId}-internal` : `${info.version}.${buildNumber}-internal`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
+    grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
+    grunt.log.write(`App product name set to "${electronPkg.productName}". `).ok();
     grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
@@ -413,13 +427,15 @@ module.exports = function(grunt) {
     const buildNumber = grunt.config.get('buildNumber');
     const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electronPkg.copyright = info.copyright;
     electronPkg.environment = 'production';
     electronPkg.name = info.name.toLowerCase();
     electronPkg.productName = info.name;
     electronPkg.updateWinUrl = info.updateWinUrlProd;
     electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
+    grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
+    grunt.log.write(`App product name set to "${electronPkg.productName}". `).ok();
     grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
@@ -428,22 +444,15 @@ module.exports = function(grunt) {
     const buildNumber = grunt.config.get('buildNumber');
     const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electronPkg.adminUrl = info.adminUrl;
-    electronPkg.appBase = info.appBase;
-    electronPkg.copyright = info.copyright;
-    electronPkg.customProtocolName = info.customProtocolName;
     electronPkg.environment = 'production';
-    electronPkg.legalUrl = info.legalUrl;
-    electronPkg.licensesUrl = info.licensesUrl;
-    electronPkg.maximumAccounts = info.maximumAccounts;
     electronPkg.name = info.nameShort.toLowerCase();
-    electronPkg.privacyUrl = info.privacyUrl;
     electronPkg.productName = info.name;
-    electronPkg.supportUrl = info.supportUrl;
     electronPkg.updateWinUrl = info.updateWinUrlCustom;
     electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
-    electronPkg.websiteUrl = info.websiteUrl;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
+    grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
+    grunt.log.write(`App product name set to "${electronPkg.productName}". `).ok();
     grunt.log.write(`Releases URL points to "${electronPkg.updateWinUrl}". `).ok();
   });
 
@@ -551,6 +560,7 @@ module.exports = function(grunt) {
     'clean:macos',
     'update-keys',
     'gitinfo',
+    'set-custom-data',
     'release-prod',
     'bundle',
     'electron:macos_prod',
@@ -572,6 +582,7 @@ module.exports = function(grunt) {
     'clean:win',
     'update-keys',
     'gitinfo',
+    'set-custom-data',
     'release-internal',
     'bundle',
     'electron:win_internal',
@@ -582,6 +593,7 @@ module.exports = function(grunt) {
     'clean:win',
     'update-keys',
     'gitinfo',
+    'set-custom-data',
     'release-prod',
     'bundle',
     'electron:win_prod',
@@ -603,6 +615,7 @@ module.exports = function(grunt) {
     'clean:linux',
     'update-keys',
     'gitinfo',
+    'set-custom-data',
     'release-internal',
     'bundle',
     'electronbuilder:linux_internal',
@@ -612,6 +625,7 @@ module.exports = function(grunt) {
     'clean:linux',
     'update-keys',
     'gitinfo',
+    'set-custom-data',
     'release-prod',
     'bundle',
     'electronbuilder:linux_prod',
@@ -621,6 +635,7 @@ module.exports = function(grunt) {
     'clean:linux',
     'update-keys',
     'gitinfo',
+    'set-custom-data',
     'release-internal',
     'bundle',
     'electronbuilder:linux_other',
@@ -630,6 +645,7 @@ module.exports = function(grunt) {
     'clean:linux',
     'update-keys',
     'gitinfo',
+    'set-custom-data',
     'release-prod',
     'bundle',
     'electronbuilder:linux_other',
