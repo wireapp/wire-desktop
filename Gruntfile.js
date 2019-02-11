@@ -376,6 +376,7 @@ module.exports = function(grunt) {
     grunt.log.write(`macOS developer package info set to "${baseData.sign.package}". `).ok();
 
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    const info = grunt.config.get('info');
 
     electronPkg.adminUrl = info.adminUrl;
     electronPkg.appBase = info.appBase;
