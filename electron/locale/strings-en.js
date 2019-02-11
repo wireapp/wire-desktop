@@ -79,8 +79,10 @@ string.trayQuit = 'Quit';
 string.unreadMessages = 'Unread message';
 
 string.wrapperAddAccount = 'Add Account';
-string.wrapperAddAccountErrorTitle = 'Three accounts active';
-string.wrapperAddAccountErrorMessage = 'You can only be logged in with three accounts at once. Log out from one to add another.';
+string.wrapperAddAccountErrorTitlePlural = '{{maximumAccounts}} accounts already active';
+string.wrapperAddAccountErrorTitleSingular = 'Account already active';
+string.wrapperAddAccountErrorMessagePlural = 'You can only be logged in with {{maximumAccounts}} accounts at once. Log out from one to add another.';
+string.wrapperAddAccountErrorMessageSingular = 'You can only be logged in with one account at once. Log out from this one to add another.';
 string.wrapperCreateTeam = 'Create Team';
 string.wrapperLogOut = 'Log Out';
 string.wrapperManageTeam = 'Manage Team';

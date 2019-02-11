@@ -21,6 +21,7 @@ import {WebContents, WebviewTag, app} from 'electron';
 import {BaseError} from 'make-error-cause';
 import {URL} from 'url';
 const dialog = require('electron').dialog || require('electron').remote.dialog;
+import {MAXIMUM_ACCOUNTS} from '../js/config';
 import * as windowManager from '../js/window-manager';
 import {getText} from '../locale/locale';
 import {EVENT_TYPE} from './eventType';
@@ -68,7 +69,7 @@ class AutomatedSingleSignOn {
     return src.href;
   }
 
-  private executeLogin() {
+  private async executeLogin() {
     return new Promise((resolve, reject) => {
       const failedToLoad = () => reject('Webview failed to load');
       this.webview = document.querySelector('.Webview:not(.hide)') as WebviewTag;
@@ -80,22 +81,31 @@ class AutomatedSingleSignOn {
         resolve();
       });
 
-      this.webContents.loadURL(this.buildUrl());
+      return this.webContents.loadURL(this.buildUrl());
     });
   }
 
   private async onResponseReceived(event: CustomEvent) {
     try {
       if (event.detail && event.detail.reachedMaximumAccounts) {
-        throw new MaximumAccountsReachedError('Maximum account reached');
+        throw new MaximumAccountsReachedError('Maximum accounts reached');
       }
 
       await this.executeLogin();
     } catch (error) {
       if (error instanceof MaximumAccountsReachedError) {
+        const detail =
+          MAXIMUM_ACCOUNTS === 1
+            ? getText('wrapperAddAccountErrorMessageSingular')
+            : getText('wrapperAddAccountErrorMessagePlural');
+        const message =
+          MAXIMUM_ACCOUNTS === 1
+            ? getText('wrapperAddAccountErrorTitleSingular')
+            : getText('wrapperAddAccountErrorTitlePlural');
+
         dialog.showMessageBox({
-          detail: getText('wrapperAddAccountErrorMessage'),
-          message: getText('wrapperAddAccountErrorTitle'),
+          detail,
+          message,
           type: 'warning',
         });
       }
