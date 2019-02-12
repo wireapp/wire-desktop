@@ -2,9 +2,7 @@ import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import * as logdown from 'logdown';
 
 const LOGGER_NAMESPACE = 'wire-desktop';
-const pkg: {
-  environment: string;
-} = require('../../package.json');
+const {environment} = require('../../package.json');
 
 function getLogger(name: string): logdown.Logger {
   const options: LoggerOptions = {
@@ -12,7 +10,7 @@ function getLogger(name: string): logdown.Logger {
     separator: '/',
   };
 
-  if (pkg.environment !== 'production') {
+  if (environment !== 'production') {
     options.forceEnable = true;
   }
 

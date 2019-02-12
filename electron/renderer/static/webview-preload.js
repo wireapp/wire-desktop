@@ -17,13 +17,12 @@
  *
  */
 
-const {getLogger} = require('../../dist/js/getLogger');
-
 const config = require('../../dist/js/config');
 const environment = require('../../dist/js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
+const {getLogger} = require('../../dist/js/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');

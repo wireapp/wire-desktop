@@ -78,10 +78,9 @@ const setupIpcInterface = (): void => {
   };
 
   window.sendLogoutAccount = (accountId: string): void => {
-    logger.log(`Received logout request for account "${accountId}".`);
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
-      logger.log('Found webapp to which we can send the signal.');
+      logger.log(`Sending logout signal to webview for account "${accountId}".`);
       accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
