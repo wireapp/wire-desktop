@@ -106,7 +106,12 @@ class Webviews extends Component {
       }
 
       case EVENT_TYPE.LIFECYCLE.SIGNED_OUT: {
-        this._deleteWebview(account);
+        const [clearData] = args;
+        if (clearData) {
+          this._deleteWebview(account);
+        } else {
+          this.props.resetIdentity(account.id);
+        }
         break;
       }
 

@@ -24,6 +24,7 @@ import {MAXIMUM_ACCOUNTS} from '../../../dist/js/config';
 
 export const ADD_ACCOUNT = 'ADD_ACCOUNT';
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
+export const RESET_IDENTITY = 'RESET_IDENTITY';
 export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT';
 export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
 export const UPDATE_ACCOUNT_BADGE = 'UPDATE_ACCOUNT_BADGE';
@@ -37,6 +38,12 @@ export const addAccount = (withSession = true) => ({
 export const deleteAccount = id => ({
   id,
   type: DELETE_ACCOUNT,
+});
+
+export const resetIdentity = (id = true, isAdding = false) => ({
+  id,
+  isAdding,
+  type: RESET_IDENTITY,
 });
 
 export const switchAccount = id => ({

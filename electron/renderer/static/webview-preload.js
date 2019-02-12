@@ -55,9 +55,7 @@ const subscribeToWebappEvents = () => {
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.SIGNED_OUT, clearData => {
-    if (clearData) {
-      ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT);
-    }
+    ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT, clearData);
   });
 
   amplify.subscribe(z.event.WebApp.LIFECYCLE.UNREAD_COUNT, count => {
