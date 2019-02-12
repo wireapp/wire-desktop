@@ -46,6 +46,13 @@ const accountReducer = (state = [createAccount()], action) => {
       return state.filter(account => account.id !== action.id);
     }
 
+    case ActionCreator.RESET_IDENTITY: {
+      return state.map(account => {
+        const isMatchingAccount = account.id === action.id;
+        return isMatchingAccount ? {...account, isAdding: true, teamID: undefined, userID: undefined} : account;
+      });
+    }
+
     case ActionCreator.SWITCH_ACCOUNT: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
