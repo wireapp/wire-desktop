@@ -4,6 +4,9 @@ const webpack = require('webpack');
 module.exports = (env = {}) => ({
   devtool: env.production ? undefined : 'cheap-eval-source-map',
   entry: path.resolve(__dirname, 'electron/renderer/src/index.jsx'),
+  externals: {
+    'fs-extra': '{}',
+  },
   mode: !env.production ? 'development' : 'production',
   module: {
     rules: [
@@ -17,6 +20,10 @@ module.exports = (env = {}) => ({
         use: ['style-loader', 'css-loader'],
       },
     ],
+  },
+  node: {
+    fs: 'empty',
+    path: 'empty',
   },
   output: {
     filename: 'bundle.js',
@@ -32,7 +39,7 @@ module.exports = (env = {}) => ({
       ]
     : undefined,
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.json'],
   },
   stats: 'errors-only',
 });

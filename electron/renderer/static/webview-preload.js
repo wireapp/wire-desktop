@@ -22,10 +22,13 @@ const environment = require('../../dist/js/environment');
 const fs = require('fs-extra');
 const path = require('path');
 const winston = require('winston');
+const {getLogger} = require('../../dist/js/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app, systemPreferences} = remote;
+
+const logger = getLogger('webview-preload');
 
 // Note: Until appearance-changed event is available in a future
 // version of Electron... use AppleInterfaceThemeChangedNotification event
@@ -128,7 +131,7 @@ const exposeAddressBook = () => {
       try {
         cachedAddressBook = require('node-addressbook');
       } catch (error) {
-        console.info('Failed loading "node-addressbook".', error);
+        logger.info('Failed loading "node-addressbook".', error);
       }
     }
     return cachedAddressBook;
@@ -147,16 +150,16 @@ const enableFileLogging = () => {
     const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
     fs.createFileSync(logFilePath);
 
-    const logger = new winston.Logger();
-    logger.add(winston.transports.File, {
+    const webViewLogger = new winston.Logger();
+    webViewLogger.add(winston.transports.File, {
       filename: logFilePath,
       handleExceptions: true,
     });
 
-    logger.info(config.NAME, 'Version', config.VERSION);
+    webViewLogger.info(config.NAME, 'Version', config.VERSION);
 
     // webapp uses global winston reference to define log level
-    global.winston = logger;
+    global.winston = webViewLogger;
   }
 };
 
