@@ -22,6 +22,9 @@ import {AutomatedSingleSignOn} from '../lib/AutomatedSingleSignOn';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as environment from './environment';
+import {getLogger} from './getLogger';
+
+const logger = getLogger('preload');
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
@@ -75,8 +78,10 @@ const setupIpcInterface = (): void => {
   };
 
   window.sendLogoutAccount = (accountId: string): void => {
+    logger.log(`Received logout request for account "${accountId}".`);
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
+      logger.log('Found webapp to which we can send the signal.');
       accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };

@@ -31,11 +31,13 @@ import {loadState, saveState} from './lib/localStorage';
 
 import './Index.css';
 
+import {environment} from '../../package.json';
+
 const persistedState = loadState();
 
 const middleware = [thunk];
 
-if (process.env.NODE_ENV !== 'production') {
+if (environment !== 'production') {
   middleware.push(logger);
 }
 

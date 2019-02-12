@@ -17,6 +17,8 @@
  *
  */
 
+const {getLogger} = require('../../dist/js/getLogger');
+
 const config = require('../../dist/js/config');
 const environment = require('../../dist/js/environment');
 const fs = require('fs-extra');
@@ -26,6 +28,8 @@ const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {app, systemPreferences} = remote;
+
+const logger = getLogger('webview-preload');
 
 // Note: Until appearance-changed event is available in a future
 // version of Electron... use AppleInterfaceThemeChangedNotification event
@@ -115,6 +119,7 @@ const subscribeToMainProcessEvents = () => {
     amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
   });
   ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
+    logger.log('Received logout signal.');
     amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
   });
   ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
@@ -149,16 +154,16 @@ const enableFileLogging = () => {
     const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
     fs.createFileSync(logFilePath);
 
-    const logger = new winston.Logger();
-    logger.add(winston.transports.File, {
+    const webViewLogger = new winston.Logger();
+    webViewLogger.add(winston.transports.File, {
       filename: logFilePath,
       handleExceptions: true,
     });
 
-    logger.info(config.NAME, 'Version', config.VERSION);
+    webViewLogger.info(config.NAME, 'Version', config.VERSION);
 
     // webapp uses global winston reference to define log level
-    global.winston = logger;
+    global.winston = webViewLogger;
   }
 };
 
