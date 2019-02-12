@@ -40,9 +40,8 @@ export const deleteAccount = id => ({
   type: DELETE_ACCOUNT,
 });
 
-export const resetIdentity = (id = true, isAdding = false) => ({
+export const resetIdentity = (id = true) => ({
   id,
-  isAdding,
   type: RESET_IDENTITY,
 });
 
