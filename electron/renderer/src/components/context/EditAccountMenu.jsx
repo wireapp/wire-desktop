@@ -24,9 +24,6 @@ import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 import {abortAccountCreation, switchAccount} from '../../actions';
 import * as EVENT_TYPE from '../../lib/eventType';
-import {getLogger} from '../../../../dist/js/getLogger';
-
-const logger = getLogger('EditAccountMenu');
 
 function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) {
   return (
@@ -39,7 +36,6 @@ function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...co
       {lifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN && (
         <ContextMenuItem
           onClick={() => {
-            logger.log('clicked');
             connected.switchAccount(accountId);
             window.sendLogoutAccount(accountId);
           }}

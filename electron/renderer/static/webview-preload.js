@@ -118,7 +118,6 @@ const subscribeToMainProcessEvents = () => {
     amplify.publish(z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
   });
   ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
-    logger.log('Received logout signal.');
     amplify.publish(z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
   });
   ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
@@ -134,7 +133,7 @@ const exposeAddressBook = () => {
       try {
         cachedAddressBook = require('node-addressbook');
       } catch (error) {
-        console.info('Failed loading "node-addressbook".', error);
+        logger.info('Failed loading "node-addressbook".', error);
       }
     }
     return cachedAddressBook;
