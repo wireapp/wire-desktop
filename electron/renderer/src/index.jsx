@@ -24,18 +24,18 @@ import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 import throttle from 'lodash/throttle';
-
 import App from './components/App';
 import appStore from './reducers';
 import {loadState, saveState} from './lib/localStorage';
-
 import './Index.css';
+
+import {environment} from '../../package.json';
 
 const persistedState = loadState();
 
 const middleware = [thunk];
 
-if (process.env.NODE_ENV !== 'production') {
+if (environment !== 'production') {
   middleware.push(logger);
 }
 
