@@ -38,14 +38,14 @@ def find(extension, path):
   return None, None
 
 bin_root = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-custom_zip, custom_zip_name = find('.zip', os.path.join(bin_root, 'wrap'))
+custom_pkg, custom_pkg_name = find('.pkg', bin_root)
 
-if custom_zip is None:
-  raise Exception('No .zip file found')
+if custom_pkg is None:
+  raise Exception('No .pkg file found')
 
 if __name__ == '__main__':
 
-  print 'Uploading %s (v%s) ...' % (custom_zip_name, VERSION)
+  print 'Uploading %s (v%s) ...' % (custom_pkg_name, VERSION)
 
   semver_version = VERSION.split('.')
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     'status': 2,
   }
   request_files = {
-    'ipa': open(custom_zip, 'rb')
+    'ipa': open(custom_pkg, 'rb')
   }
 
   response_create = requests.post(HOCKEY_NEW, data=request_data, headers=request_headers)
@@ -75,7 +75,6 @@ if __name__ == '__main__':
   response_upload = requests.put('%s%s' % (HOCKEY_UPLOAD, response_version), files=request_files, data=request_data, headers=request_headers)
 
   if response_upload.status_code in [200, 201]:
-    os.remove(custom_zip)
     print 'Version %s successfully uploaded' % response_version
   else:
     print response_upload.json()

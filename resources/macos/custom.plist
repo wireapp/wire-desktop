@@ -2,6 +2,8 @@
 <dict>
   <key>ElectronTeamID</key>
   <string>EDF3JCE8BC</string>
+  <key>NSPrincipalClass</key>
+  <string>AtomApplication</string>
   <key>NSContactsUsageDescription</key>
   <string>Allow Wire to access your contacts to connect you with others. We anonymize all information and do not share it with anyone else.</string>
   <key>NSMicrophoneUsageDescription</key>

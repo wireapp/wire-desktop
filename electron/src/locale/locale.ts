@@ -122,6 +122,7 @@ const parseLocale = (locale: string): Supportedi18nLanguage => {
 
 const customReplacements: {[key: string]: string} = {
   appName: config.NAME,
+  maximumAccounts: config.MAXIMUM_ACCOUNTS.toString(),
 };
 
 const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
