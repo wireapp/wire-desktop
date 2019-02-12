@@ -160,6 +160,7 @@ module.exports = function(grunt) {
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: 'com.wearezeta.zclient.mac.helper',
           icon: 'resources/macos/wire.icns',
+          out: 'wrap/dist',
           platform: 'mas',
         },
       },
