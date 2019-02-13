@@ -65,16 +65,18 @@ const setupIpcInterface = (): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
   };
 
-  window.sendDeleteAccount = (accountID: string, sessionID?: string): void => {
-    const accountWebview = getWebviewById(accountID);
-    if (!accountWebview) {
-      console.error(`Webview for account "${accountID}" does not exist`);
-      return;
-    }
+  window.sendDeleteAccount = (accountID: string, sessionID?: string) => {
+    return new Promise((resolve, reject) => {
+      const accountWebview = getWebviewById(accountID);
+      if (!accountWebview) {
+        return reject(`Webview for account "${accountID}" does not exist`);
+      }
 
-    console.log(`Processing deletion of "${accountID}"`);
-    const viewInstanceId = accountWebview.getWebContents().id;
-    ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
+      console.log(`Processing deletion of "${accountID}"`);
+      const viewInstanceId = accountWebview.getWebContents().id;
+      ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
+      ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
+    });
   };
 
   window.sendLogoutAccount = (accountId: string): void => {

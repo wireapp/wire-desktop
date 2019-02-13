@@ -18,7 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {IpcMessageEvent, app, webContents} from 'electron';
+import {app, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -38,7 +38,7 @@ const clearStorage = (session: Electron.Session) => {
   );
 };
 
-export async function deleteAccount(event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) {
+export async function deleteAccount(id: number, accountId: string, partitionId?: string) {
   // Delete session data
   try {
     const webviewWebcontent = webContents.fromId(id);
