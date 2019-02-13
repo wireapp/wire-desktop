@@ -31,7 +31,7 @@ const LINUX_DESKTOP = {
   Categories: 'Network;InstantMessaging;Chat;VideoConference',
   GenericName: '<%= info.description %>',
   Keywords: 'chat;encrypt;e2e;messenger;videocall',
-  MimeType: 'x-scheme-handler/wire',
+  MimeType: 'x-scheme-handler/<%= info.customProtocolName %>',
   Name: '<%= info.name %>',
   StartupWMClass: '<%= info.name %>',
   Version: '1.1',
