@@ -22,7 +22,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
-import {addAccountWithSession, switchAccount} from '../actions';
+import {initiateSSO, switchAccount, updateAccount} from '../actions';
 import * as EVENT_TYPE from '../lib/eventType';
 import {MAXIMUM_ACCOUNTS} from '../../../dist/js/config';
 
@@ -33,17 +33,17 @@ class App extends React.Component {
     super(props);
 
     this.switchAccount = this.switchAccount.bind(this);
-    this.addAccountWithSession = this.addAccountWithSession.bind(this);
+    this.initiateSSO = this.initiateSSO.bind(this);
   }
 
   componentDidMount() {
     window.addEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount, false);
-    window.addEventListener(EVENT_TYPE.ACTION.CREATE_ACCOUNT, this.addAccountWithSession, false);
+    window.addEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO, false);
   }
 
   componentWillUnmount() {
     window.removeEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount);
-    window.removeEventListener(EVENT_TYPE.ACTION.CREATE_ACCOUNT, this.addAccountWithSession);
+    window.removeEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO);
   }
 
   switchAccount(event) {
@@ -54,25 +54,28 @@ class App extends React.Component {
     }
   }
 
-  addAccountWithSession(event) {
+  initiateSSO(event) {
     const loggedOutWebviews = this.props.accounts.filter(account => account.userID === undefined);
+    const ssoCode = event.detail.code;
+
     if (loggedOutWebviews.length > 0) {
-      // Make the first account we see that is not logged in as visible
-      this.props.switchAccount(loggedOutWebviews[0].id);
+      const accountId = loggedOutWebviews[0].id;
+      this.props.switchAccount(accountId);
+      this.props.initiateSSO(accountId, ssoCode, this.props.accounts.length == 1);
     } else {
-      // All accounts are logged in, create a new one
       if (this.props.accounts.length >= MAXIMUM_ACCOUNTS) {
         return window.dispatchEvent(
-          new CustomEvent(EVENT_TYPE.ACTION.CREATE_ACCOUNT_RESPONSE, {
+          new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
             detail: {
               reachedMaximumAccounts: true,
             },
           })
         );
       }
-      this.props.addAccountWithSession();
+      // All accounts are logged in, create a new one
+      this.props.initiateSSO(undefined, ssoCode, true);
     }
-    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.CREATE_ACCOUNT_RESPONSE));
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE));
   }
 
   render() {
@@ -97,7 +100,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return {addAccountWithSession, switchAccount};
+  return {initiateSSO, switchAccount, updateAccount};
 }
 
 export default connect(
