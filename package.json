@@ -77,9 +77,12 @@
   },
   "scripts": {
     "build:linux": "yarn build:ts && grunt linux-prod",
+    "build:linux:internal": "yarn build:ts && grunt linux",
     "build:macos": "yarn build:ts && grunt macos-prod",
+    "build:macos:internal": "yarn build:ts && grunt macos",
     "build:ts": "yarn clear:ts && tsc",
     "build:win": "yarn build:ts && grunt win-prod",
+    "build:win:internal": "yarn build:ts && grunt win",
     "bundle:dev": "webpack",
     "bundle": "webpack --env.production",
     "clear:ts": "rimraf electron/dist",
