@@ -18,10 +18,16 @@
  */
 
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
+import {remote} from 'electron';
 import * as logdown from 'logdown';
 
-const LOGGER_NAMESPACE = 'wire-desktop';
 const {environment} = require('../../package.json');
+
+const isDevelopment = environment !== 'production';
+const forceLogging = remote.process.argv.includes('--enable-logging');
+
+const LOGGER_NAMESPACE = 'wire-desktop';
+const ENABLE_LOGGING = isDevelopment || forceLogging;
 
 function getLogger(name: string): logdown.Logger {
   const options: LoggerOptions = {
@@ -29,11 +35,11 @@ function getLogger(name: string): logdown.Logger {
     separator: '/',
   };
 
-  if (environment !== 'production') {
+  if (ENABLE_LOGGING) {
     options.forceEnable = true;
   }
 
   return LogFactory.getLogger(name, options);
 }
 
-export {getLogger, LOGGER_NAMESPACE};
+export {getLogger, LOGGER_NAMESPACE, ENABLE_LOGGING};
