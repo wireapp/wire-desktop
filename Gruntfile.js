@@ -231,6 +231,28 @@ module.exports = function(grunt) {
     },
 
     electronbuilder: {
+      linux_custom: {
+        options: {
+          deb: {
+            ...LINUX_SETTINGS,
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
+            desktop: LINUX_DESKTOP,
+            fpm: ['--name', '<% info.nameShortLinux %>'],
+          },
+          linux: {
+            artifactName: '${productName}-${version}-${arch}.${ext}',
+            category: LINUX_SETTINGS.category,
+            executableName: '<% info.nameShortLinux %>',
+          },
+          rpm: {
+            ...LINUX_SETTINGS,
+            depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+            fpm: ['--name', '<% info.nameShortLinux %>'],
+          },
+          targets: ['deb', 'rpm', 'AppImage'],
+        },
+      },
+
       linux_internal: {
         options: {
           deb: {
@@ -633,6 +655,16 @@ module.exports = function(grunt) {
     'release-prod',
     'bundle',
     'electronbuilder:linux_prod',
+  ]);
+
+  grunt.registerTask('linux-custom', [
+    'clean:linux',
+    'update-keys',
+    'gitinfo',
+    'set-custom-data',
+    'release-custom',
+    'bundle',
+    'electronbuilder:linux_custom',
   ]);
 
   grunt.registerTask('linux-other-internal', [

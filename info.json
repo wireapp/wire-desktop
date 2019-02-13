@@ -16,6 +16,7 @@
   "name": "Wire",
   "nameInternal": "WireInternal",
   "nameShort": "Wire",
+  "nameShortLinux": "wire-desktop",
   "privacyUrl": "https://wire.com/privacy/",
   "supportUrl": "https://support.wire.com",
   "updateWinUrlBeta": "https://wire-app.wire.com/win/beta/",
