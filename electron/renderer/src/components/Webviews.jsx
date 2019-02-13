@@ -42,7 +42,7 @@ class Webviews extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     for (const account of nextProps.accounts) {
       const match = this.props.accounts.find(_account => account.id === _account.id);
-      if (!match || match.visible !== account.visible) {
+      if (!match) {
         return true;
       }
       // If a SSO code is set on a window, use it
@@ -50,6 +50,9 @@ class Webviews extends Component {
         document
           .querySelector(`Webview[data-accountid="${account.id}"]`)
           .loadURL(this._getEnvironmentUrl(account, false));
+      }
+      if (match.visible !== account.visible) {
+        return true;
       }
     }
     return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
@@ -141,8 +144,9 @@ class Webviews extends Component {
   }
 
   _deleteWebview(account) {
-    window.sendDeleteAccount(account.id, account.sessionID);
-    this.props.abortAccountCreation(account.id);
+    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
+      this.props.abortAccountCreation(account.id);
+    });
   }
 
   _canDeleteWebview(account) {

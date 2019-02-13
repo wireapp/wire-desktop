@@ -92,7 +92,13 @@ const bindIpcEvents = () => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, deleteAccount);
+  ipcMain.on(
+    EVENT_TYPE.ACCOUNT.DELETE_DATA,
+    async (event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) => {
+      await deleteAccount(id, accountId, partitionId);
+      main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
+    }
+  );
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);

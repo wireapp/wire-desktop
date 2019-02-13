@@ -45,8 +45,9 @@ function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...co
       )}
       <ContextMenuItem
         onClick={() => {
-          window.sendDeleteAccount(accountId, sessionId);
-          connected.abortAccountCreation(accountId);
+          window.sendDeleteAccount(accountId, sessionId).then(() => {
+            connected.abortAccountCreation(accountId);
+          });
         }}
       >
         {getText('wrapperRemoveAccount')}
