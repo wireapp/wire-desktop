@@ -63,6 +63,7 @@ module.exports = function(grunt) {
   baseData.maximumAccounts = Number(process.env.APP_MAXIMUM_ACCOUNTS) || baseData.maximumAccounts;
   baseData.name = process.env.APP_NAME || baseData.name;
   baseData.nameShort = process.env.APP_SHORT_NAME || baseData.nameShort;
+  baseData.nameShortLinux = process.env.APP_SHORT_NAME_LINUX || baseData.nameShortLinux;
   baseData.privacyUrl = process.env.APP_URL_PRIVACY || baseData.privacyUrl;
   baseData.supportUrl = process.env.APP_URL_SUPPORT || baseData.supportUrl;
   baseData.updateWinUrlCustom = process.env.APP_URL_UPDATE_WIN || baseData.updateWinUrlProd;
