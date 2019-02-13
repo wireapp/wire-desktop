@@ -7,7 +7,6 @@ node('node160') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def app_base = params.APP_BASE
   def app_name = params.APP_NAME
 
   def jenkinsbot_secret = ''
@@ -31,7 +30,7 @@ node('node160') {
     try {
       bat 'pip install -r requirements.txt'
       def NODE = tool name: 'node-v10.15.0-windows-x86', type: 'nodejs'
-      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32', "APP_BASE=${app_base}"]) {
+      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32']) {
         bat 'node -v'
         bat 'npm -v'
         bat 'npm install -g yarn'
