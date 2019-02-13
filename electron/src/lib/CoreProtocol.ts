@@ -68,7 +68,7 @@ export const registerCoreProtocol = () => {
       event.preventDefault();
       await dispatcher(url);
     });
-  } else if (platform.IS_WINDOWS) {
+  } else {
     app.once('ready', async () => {
       const url = process.argv[CORE_PROTOCOL_POSITION];
       await dispatcher(url);
