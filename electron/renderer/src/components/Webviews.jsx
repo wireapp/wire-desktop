@@ -45,6 +45,12 @@ class Webviews extends Component {
       if (!match || match.visible !== account.visible) {
         return true;
       }
+      // If a SSO code is set on a window, use it
+      if (match.ssoCode !== account.ssoCode && account.isAdding) {
+        document
+          .querySelector(`Webview[data-accountid="${account.id}"]`)
+          .loadURL(this._getEnvironmentUrl(account, false));
+      }
     }
     return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
   }
@@ -68,9 +74,14 @@ class Webviews extends Component {
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
-    if (forceLogin) {
+    if (forceLogin || account.ssoCode) {
       url.pathname = '/auth';
+    }
+    if (forceLogin) {
       url.hash = '#login';
+    }
+    if (account.ssoCode && account.isAdding) {
+      url.hash = `#sso/${account.ssoCode}`;
     }
 
     return url.href;
@@ -145,7 +156,7 @@ class Webviews extends Component {
         {this.props.accounts.map((account, index) => (
           <div className="Webviews-container" key={account.id}>
             <Webview
-              className={`Webview ${account.visible ? '' : 'hide'}`}
+              className={`Webview${account.visible ? '' : ' hide'}`}
               data-accountid={account.id}
               visible={account.visible}
               src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
