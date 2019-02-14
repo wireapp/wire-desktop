@@ -14,10 +14,10 @@
   resolved "https://registry.yarnpkg.com/@types/ansi-regex/-/ansi-regex-4.0.0.tgz#cb20bb66da7700ea9b26f16971f03f0e092eddad"
   integrity sha512-r1W316vjsZXn1/csLC4HcCJs6jIHIzksHJd7xx+Dl+PAb0S2Dh9cR8ZsIMEfGmbBtP7JNWlf2KKahSkDP6rg3g==
 
-"@types/auto-launch@5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@types/auto-launch/-/auto-launch-5.0.0.tgz#ea0ebe9ccb2f1616d5d528de3b9f74438c1dada5"
-  integrity sha512-yxT2pVPPhFJNuiYX9kyAqRBA4EV7J/QeA/igZK6c4b/hS5Jn71R/Jl5J866WHNG4+r8uteLo3gojSh0sZmlqew==
+"@types/auto-launch@5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@types/auto-launch/-/auto-launch-5.0.1.tgz#388a047edc0e754d8e8978cbd9ed4672b36be2c4"
+  integrity sha512-+KQ+/koZ7sJXnf5cnCANofY6yXAdYJNEoVZEuWcwJfuWbUp9u6l09I7KhwD+ivU+cdz7JId4V5ukxscWtHdSuw==
 
 "@types/caseless@*":
   version "0.12.1"
