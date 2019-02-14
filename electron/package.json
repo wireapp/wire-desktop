@@ -30,7 +30,7 @@
   "description": "The most secure collaboration platform.",
   "devDependencies": {
     "@types/ansi-regex": "4.0.0",
-    "@types/auto-launch": "5.0.0",
+    "@types/auto-launch": "5.0.1",
     "@types/debug": "4.1.1",
     "@types/file-url": "2.0.0",
     "@types/fs-extra": "5.0.5",
