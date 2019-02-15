@@ -41,7 +41,10 @@
     "@types/request": "2.48.1",
     "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5",
-    "electron-rebuild": "1.8.4"
+    "electron-mocha": "6.0.4",
+    "electron-rebuild": "1.8.4",
+    "istanbul": "1.1.0-alpha.1",
+    "remap-istanbul": "0.13.0"
   },
   "environment": "internal",
   "homepage": "https://wire.com",
@@ -58,6 +61,11 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
+    "coverage:check": "istanbul check-coverage --branches=100 --lines=100 --functions=100 instrumented-code/coverage.json",
+    "coverage:clean": "rimraf coverage instrumented-code",
+    "coverage:instrument": "istanbul instrument dist --no-compact --complete-copy --output instrumented-code",
+    "coverage:report": "remap-istanbul --input instrumented-code/coverage.json --output coverage -t html",
+    "coverage:test": "electron-mocha",
     "postinstall": "electron-rebuild -f -w node-addressbook"
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
