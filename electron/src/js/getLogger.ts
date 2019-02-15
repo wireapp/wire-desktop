@@ -24,7 +24,7 @@ import * as logdown from 'logdown';
 const {environment} = require('../../package.json');
 
 const isDevelopment = environment !== 'production';
-const forceLogging = remote.process.argv.includes('--enable-logging');
+const forceLogging = remote && remote.process.argv.includes('--enable-logging');
 
 const LOGGER_NAMESPACE = 'wire-desktop';
 const ENABLE_LOGGING = isDevelopment || forceLogging;

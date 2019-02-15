@@ -7,7 +7,9 @@
 *.pkg
 /.idea
 /config
+/electron/coverage
 /electron/dist
+/electron/instrumented-code
 /electron/node_modules
 /electron/renderer/dist
 /keys

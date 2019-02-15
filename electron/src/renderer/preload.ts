@@ -18,11 +18,11 @@
  */
 
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+import * as environment from '../js/environment';
+import {getLogger} from '../js/getLogger';
 import {AutomatedSingleSignOn} from '../lib/AutomatedSingleSignOn';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import * as environment from './environment';
-import {getLogger} from './getLogger';
 
 const logger = getLogger('preload');
 
