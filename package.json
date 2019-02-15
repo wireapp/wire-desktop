@@ -105,7 +105,8 @@
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:rc": "yarn start --env=https://wire-webapp-rc.zinfra.io",
     "start": "cross-env NODE_DEBUG=wire-desktop* electron electron --inspect --devtools --enable-logging",
+    "test:electron:main": "cd electron && yarn coverage",
     "test:react": "jest",
-    "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:main"
+    "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:electron:main"
   }
 }
