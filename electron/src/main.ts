@@ -142,7 +142,7 @@ const initWindowStateKeeper = () => {
 };
 
 // App Windows
-const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
+const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
   const options: Electron.BrowserWindowConstructorOptions = {
@@ -173,7 +173,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   checkConfigV0FullScreen(mainWindowState);
 
   const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`);
+  await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`);
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
@@ -194,7 +194,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   });
 
   // Handle the new window event in the main Browser Window
-  main.webContents.on('new-window', (event, _url) => {
+  main.webContents.on('new-window', async (event, _url) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
@@ -203,7 +203,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
       return;
     }
 
-    shell.openExternal(_url);
+    await shell.openExternal(_url);
   });
 
   main.webContents.on('dom-ready', () => {
@@ -258,7 +258,7 @@ const handleAppEvents = () => {
   });
 
   // System Menu, Tray Icon & Show window
-  app.on('ready', () => {
+  app.on('ready', async () => {
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen);
     if (environment.app.IS_DEVELOPMENT) {
@@ -270,7 +270,7 @@ const handleAppEvents = () => {
     if (!environment.platform.IS_MAC_OS) {
       tray.initTray();
     }
-    showMainWindow(mainWindowState);
+    await showMainWindow(mainWindowState);
   });
 };
 
