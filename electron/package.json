@@ -66,6 +66,7 @@
     "coverage:instrument": "istanbul instrument dist --no-compact --complete-copy --output instrumented-code",
     "coverage:report": "remap-istanbul --input instrumented-code/coverage.json --output coverage -t html",
     "coverage:test": "electron-mocha",
+    "coverage": "yarn coverage:clean && yarn coverage:instrument && yarn coverage:test && yarn coverage:report && yarn coverage:check",
     "postinstall": "electron-rebuild -f -w node-addressbook"
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
