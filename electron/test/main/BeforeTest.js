@@ -22,6 +22,4 @@ const loadSourceCode = () => {
   }).forEach(file => require(path.resolve(file)));
 };
 
-before(() => {
-  loadSourceCode();
-});
+before(() => loadSourceCode());

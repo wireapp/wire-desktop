@@ -61,13 +61,13 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
+    "coverage": "yarn coverage:clean && yarn coverage:instrument && yarn test && yarn coverage:report && yarn coverage:check",
     "coverage:check": "istanbul check-coverage --branches=10 --functions=10 --lines=35 --statements=30 instrumented-code/coverage.json",
     "coverage:clean": "rimraf coverage instrumented-code",
     "coverage:instrument": "istanbul instrument dist --no-compact --complete-copy --output instrumented-code",
     "coverage:report": "remap-istanbul --input instrumented-code/coverage.json --output coverage -t html",
-    "coverage:test": "electron-mocha",
-    "coverage": "yarn coverage:clean && yarn coverage:instrument && yarn coverage:test && yarn coverage:report && yarn coverage:check",
-    "postinstall": "electron-rebuild -f -w node-addressbook"
+    "postinstall": "electron-rebuild -f -w node-addressbook",
+    "test": "electron-mocha"
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }
