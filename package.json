@@ -23,7 +23,7 @@
     "commander": "2.19.0",
     "cross-env": "5.2.0",
     "css-loader": "2.1.0",
-    "electron": "4.0.4",
+    "electron": "4.0.5",
     "electron-builder": "20.38.5",
     "electron-mocha": "6.0.4",
     "electron-packager": "13.0.1",
