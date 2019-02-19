@@ -300,7 +300,7 @@ module.exports = function(grunt) {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
           linux: {
-            artifactName: '${productName}-${version}-${arch}.${ext}',
+            artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
             executableName: 'wire-desktop',
           },
