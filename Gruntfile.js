@@ -63,6 +63,7 @@ module.exports = function(grunt) {
   baseData.maximumAccounts = Number(process.env.APP_MAXIMUM_ACCOUNTS) || baseData.maximumAccounts;
   baseData.name = process.env.APP_NAME || baseData.name;
   baseData.nameShort = process.env.APP_SHORT_NAME || baseData.nameShort;
+  baseData.nameShortLinux = process.env.APP_SHORT_NAME_LINUX || baseData.nameShortLinux;
   baseData.privacyUrl = process.env.APP_URL_PRIVACY || baseData.privacyUrl;
   baseData.supportUrl = process.env.APP_URL_SUPPORT || baseData.supportUrl;
   baseData.updateWinUrlCustom = process.env.APP_URL_UPDATE_WIN || baseData.updateWinUrlProd;
@@ -231,6 +232,28 @@ module.exports = function(grunt) {
     },
 
     electronbuilder: {
+      linux_custom: {
+        options: {
+          deb: {
+            ...LINUX_SETTINGS,
+            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
+            desktop: LINUX_DESKTOP,
+            fpm: ['--name', '<% info.nameShortLinux %>'],
+          },
+          linux: {
+            artifactName: '${productName}-${version}_${arch}.${ext}',
+            category: LINUX_SETTINGS.category,
+            executableName: '<% info.nameShortLinux %>',
+          },
+          rpm: {
+            ...LINUX_SETTINGS,
+            depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
+            fpm: ['--name', '<% info.nameShortLinux %>'],
+          },
+          targets: ['deb', 'rpm', 'AppImage'],
+        },
+      },
+
       linux_internal: {
         options: {
           deb: {
@@ -243,7 +266,7 @@ module.exports = function(grunt) {
             fpm: ['--name', 'wire-desktop-internal'],
           },
           linux: {
-            artifactName: '${productName}-${version}-${arch}.${ext}',
+            artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
             executableName: 'wire-desktop-internal',
           },
@@ -260,7 +283,7 @@ module.exports = function(grunt) {
         options: {
           arch: grunt.option('arch') || process.arch,
           linux: {
-            artifactName: '${productName}-${version}-${arch}.${ext}',
+            artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
             desktop: LINUX_DESKTOP,
             executableName: 'wire-desktop',
@@ -633,6 +656,16 @@ module.exports = function(grunt) {
     'release-prod',
     'bundle',
     'electronbuilder:linux_prod',
+  ]);
+
+  grunt.registerTask('linux-custom', [
+    'clean:linux',
+    'update-keys',
+    'gitinfo',
+    'set-custom-data',
+    'release-custom',
+    'bundle',
+    'electronbuilder:linux_custom',
   ]);
 
   grunt.registerTask('linux-other-internal', [

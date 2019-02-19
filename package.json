@@ -8,10 +8,10 @@
   },
   "dependencies": {
     "debug": "4.1.1",
-    "wire-web-config-default": "https://github.com/wireapp/wire-web-config-default#v0.12.6"
+    "wire-web-config-default": "https://github.com/wireapp/wire-web-config-default#v0.13.0"
   },
   "devDependencies": {
-    "@babel/core": "7.2.2",
+    "@babel/core": "7.3.3",
     "@babel/plugin-proposal-object-rest-spread": "7.3.2",
     "@babel/preset-env": "7.3.1",
     "@babel/preset-react": "7.0.0",
@@ -25,10 +25,9 @@
     "css-loader": "2.1.0",
     "electron": "5.0.0-beta.3",
     "electron-builder": "20.38.5",
-    "electron-mocha": "6.0.4",
     "electron-packager": "13.0.1",
     "electron-winstaller": "2.7.0",
-    "eslint": "5.13.0",
+    "eslint": "5.14.1",
     "eslint-config-prettier": "4.0.0",
     "eslint-plugin-jasmine": "2.10.1",
     "eslint-plugin-no-unsanitized": "3.0.2",
@@ -45,13 +44,13 @@
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.16.4",
     "rimraf": "2.6.3",
-    "sinon": "7.2.3",
+    "sinon": "7.2.4",
     "style-loader": "0.23.1",
     "tslint": "5.12.1",
     "tslint-config-prettier": "1.18.0",
     "tslint-plugin-prettier": "2.0.1",
     "typescript": "3.3.3",
-    "webpack": "4.29.3",
+    "webpack": "4.29.5",
     "webpack-cli": "3.2.3"
   },
   "license": "LicenseRef-LICENSE",
@@ -106,8 +105,8 @@
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:rc": "yarn start --env=https://wire-webapp-rc.zinfra.io",
     "start": "cross-env NODE_DEBUG=wire-desktop* electron electron --inspect --devtools --enable-logging",
-    "test:main": "electron-mocha --reporter spec tests/main",
+    "test:electron:main": "cd electron && yarn coverage",
     "test:react": "jest",
-    "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:main"
+    "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:electron:main"
   }
 }

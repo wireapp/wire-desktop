@@ -20,10 +20,10 @@
 import {clipboard, ipcRenderer, remote} from 'electron';
 const Menu = remote.Menu;
 
-import {ElectronMenuWithFileAndImage} from '../interfaces/';
-import * as config from '../js/config';
-import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
+import {ElectronMenuWithFileAndImage} from '../../interfaces';
+import * as config from '../../js/config';
+import {EVENT_TYPE} from '../../lib/eventType';
+import * as locale from '../../locale/locale';
 
 let textMenu: Electron.Menu;
 
