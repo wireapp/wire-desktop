@@ -648,15 +648,16 @@ module.exports = function(grunt) {
     'electronbuilder:linux_internal',
   ]);
 
-  grunt.registerTask('linux-prod', [
+  grunt.registerTask('linux-prod-package', [
     'clean:linux',
     'update-keys',
     'gitinfo',
     'set-custom-data',
     'release-prod',
     'bundle',
-    'electronbuilder:linux_prod',
   ]);
+
+  grunt.registerTask('linux-prod', ['linux-prod-package', 'electronbuilder:linux_prod']);
 
   grunt.registerTask('linux-custom', [
     'clean:linux',
