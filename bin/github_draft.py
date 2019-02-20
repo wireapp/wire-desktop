@@ -24,24 +24,24 @@ import os
 import requests
 import subprocess
 
-JOB_NAME = os.environ.get('JOB_NAME')
+WRAPPER_BUILD = os.environ.get('WRAPPER_BUILD')
 VERSION = os.environ.get('BUILD_ID')
 GITHUB_ACCESS_TOKEN = os.environ.get('GITHUB_ACCESS_TOKEN')
 DRAFT_RESOURCE = 'https://api.github.com/repos/wireapp/wire-desktop/releases?access_token=%s' % (GITHUB_ACCESS_TOKEN)
 
 if __name__ == '__main__':
 
-  print 'Create a draft...'
+  print 'Creating a draft...'
 
   # Get last commit hash
   commitish = subprocess.check_output(['git', 'rev-parse', 'HEAD']).rstrip()
 
   # Get platform
-  if 'Linux' in JOB_NAME:
+  if 'Linux' in WRAPPER_BUILD:
     PLATFORM = 'Linux'
-  if 'Windows' in JOB_NAME:
+  if 'Windows' in WRAPPER_BUILD:
     PLATFORM = 'Windows'
-  if 'macOS' in JOB_NAME:
+  if 'macOS' in WRAPPER_BUILD:
     PLATFORM = 'macOS'
 
   data = {
