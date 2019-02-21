@@ -211,6 +211,6 @@ window.addEventListener('DOMContentLoaded', () => {
     subscribeToWebappEvents();
     reportWebappVersion();
     // include context menu
-    require('../../dist/menu/context');
+    require('../../dist/renderer/menu/context');
   });
 });
