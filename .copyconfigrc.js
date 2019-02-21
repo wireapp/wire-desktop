@@ -1,7 +1,7 @@
 const pkg = require('./package.json');
 const path = require('path');
 
-const logoSource = path.join(pkg.name, 'content', 'image', 'logo');
+const logoSource = path.join(pkg.name, 'content/image/logo');
 const repositoryUrl = pkg.dependencies['wire-web-config-default'];
 
 module.exports = {
