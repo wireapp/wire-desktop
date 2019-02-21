@@ -3243,14 +3243,6 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.0.tgz#55122b6536ea496b4b44893ee2608141d10d9916"
   integrity sha512-R+H8IZclI8AAkSBRQJLVOsxwAoHd6WC40b4QTNWIjzAa6BXOBfQcM587MXDTVPeYaopFNWHUFLx7eNmHDSxMWg==
 
-flopmang@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/flopmang/-/flopmang-0.0.1.tgz#73e4814eeeb94b44b5acfd8206d92756acdfb3e8"
-  integrity sha1-c+SBTu65S0S1rP2CBtknVqzfs+g=
-  dependencies:
-    underscore "^1.6.0"
-    underscore.string "^2.3.3"
-
 flora-colossus@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/flora-colossus/-/flora-colossus-1.0.0.tgz#54729c361edecee014dd441679e1a37c1d773a45"
@@ -3653,13 +3645,6 @@ grunt-contrib-clean@2.0.0:
   dependencies:
     async "^2.6.1"
     rimraf "^2.6.2"
-
-grunt-git@1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/grunt-git/-/grunt-git-1.0.10.tgz#dfa8d1120c557efa77ae8c8cdc753ac5458a8826"
-  integrity sha512-dIRAjHytYkcebw8VNPUHM/aOfOSgDlotVqPUDXU4CIx2sRxxyUL/dEIpDw6WSxPmCGDh8HJrQsWvVN1e8Qlj1A==
-  dependencies:
-    flopmang "^0.0.1"
 
 grunt-gitinfo@0.1.8:
   version "0.1.8"
@@ -8037,11 +8022,6 @@ unc-path-regex@^0.1.0:
   resolved "https://registry.yarnpkg.com/unc-path-regex/-/unc-path-regex-0.1.2.tgz#e73dd3d7b0d7c5ed86fbac6b0ae7d8c6a69d50fa"
   integrity sha1-5z3T17DXxe2G+6xrCufYxqadUPo=
 
-underscore.string@^2.3.3:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/underscore.string/-/underscore.string-2.4.0.tgz#8cdd8fbac4e2d2ea1e7e2e8097c42f442280f85b"
-  integrity sha1-jN2PusTi0uoefi6Al8QvRCKA+Fs=
-
 underscore.string@~3.3.4:
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/underscore.string/-/underscore.string-3.3.5.tgz#fc2ad255b8bd309e239cbc5816fd23a9b7ea4023"
@@ -8049,11 +8029,6 @@ underscore.string@~3.3.4:
   dependencies:
     sprintf-js "^1.0.3"
     util-deprecate "^1.0.2"
-
-underscore@^1.6.0:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
-  integrity sha512-5/4etnCkd9c8gwgowi5/om/mYO5ajCaOgdzj/oW+0eQV9WxKBDZw5+ycmKmeaTXjInS/W0BzpGLo2xR2aBwZdg==
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"
@@ -8404,7 +8379,6 @@ widest-line@^2.0.0:
 
 "wire-web-config-default@https://github.com/wireapp/wire-web-config-default#v0.13.1":
   version "0.13.1"
-  uid a173add89be8e87e36c4cafc51783a9c7047ff0f
   resolved "https://github.com/wireapp/wire-web-config-default#a173add89be8e87e36c4cafc51783a9c7047ff0f"
   dependencies:
     adm-zip "0.4.13"
