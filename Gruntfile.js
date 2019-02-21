@@ -300,7 +300,7 @@ module.exports = function(grunt) {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
           linux: {
-            artifactName: '${productName}-${version}-${arch}.${ext}',
+            artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
             executableName: 'wire-desktop',
           },
@@ -648,15 +648,16 @@ module.exports = function(grunt) {
     'electronbuilder:linux_internal',
   ]);
 
-  grunt.registerTask('linux-prod', [
+  grunt.registerTask('linux-prod-package', [
     'clean:linux',
     'update-keys',
     'gitinfo',
     'set-custom-data',
     'release-prod',
     'bundle',
-    'electronbuilder:linux_prod',
   ]);
+
+  grunt.registerTask('linux-prod', ['linux-prod-package', 'electronbuilder:linux_prod']);
 
   grunt.registerTask('linux-custom', [
     'clean:linux',

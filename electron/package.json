@@ -2,7 +2,7 @@
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
     "@wireapp/certificate-check": "0.0.4",
-    "@wireapp/commons": "1.0.6",
+    "@wireapp/commons": "1.0.7",
     "ansi-regex": "4.0.0",
     "auto-launch": "5.0.5",
     "electron-window-state": "5.0.3",
@@ -19,7 +19,7 @@
     "raygun": "0.10.0",
     "react": "16.8.2",
     "react-dom": "16.8.2",
-    "react-redux": "6.0.0",
+    "react-redux": "6.0.1",
     "redux": "4.0.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
@@ -31,7 +31,7 @@
   "devDependencies": {
     "@types/ansi-regex": "4.0.0",
     "@types/auto-launch": "5.0.1",
-    "@types/debug": "4.1.1",
+    "@types/debug": "4.1.2",
     "@types/file-url": "2.0.0",
     "@types/fs-extra": "5.0.5",
     "@types/image-type": "3.0.0",
