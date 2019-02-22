@@ -39,14 +39,14 @@ let webappVersion: string;
 const APP_PATH = app.getAppPath();
 
 // Local files
-const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html', 'about.html'));
+const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));
 const ABOUT_WINDOW_WHITELIST = [
   ABOUT_HTML,
-  fileUrl(path.join(APP_PATH, 'img', 'wire.256.png')),
-  fileUrl(path.join(APP_PATH, 'img', 'wire.internal.256.png')),
-  fileUrl(path.join(APP_PATH, 'css', 'about.css')),
+  fileUrl(path.join(APP_PATH, 'img/wire.256.png')),
+  fileUrl(path.join(APP_PATH, 'img/wire.internal.256.png')),
+  fileUrl(path.join(APP_PATH, 'css/about.css')),
 ];
-const PRELOAD_JS = path.join(APP_PATH, 'dist', 'renderer', 'menu', 'preload-about.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/menu/preload-about.js');
 
 ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event: IpcMessageEvent, version: string) => (webappVersion = version));
 

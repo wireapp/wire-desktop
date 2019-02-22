@@ -55,7 +55,7 @@ describe('TrayIconHandler', () => {
         sinon.spy(app, 'setBadgeCount');
         sinon.spy(appWindow, 'flashFrame');
 
-        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
         appWindow.webContents.on('dom-ready', () => {
           assert.strictEqual(appWindow.isFocused(), true);
           assert.strictEqual(appWindow.flashFrame.callCount, 0);
@@ -78,7 +78,7 @@ describe('TrayIconHandler', () => {
 
         sinon.spy(appWindow, 'flashFrame');
 
-        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
         appWindow.webContents.on('dom-ready', () => {
           assert.strictEqual(appWindow.isFocused(), true);
           assert.strictEqual(appWindow.flashFrame.callCount, 0);
@@ -101,7 +101,7 @@ describe('TrayIconHandler', () => {
 
         sinon.spy(appWindow, 'flashFrame');
 
-        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
         appWindow.webContents.on('dom-ready', () => {
           assert.strictEqual(appWindow.isFocused(), false);
           tray.showUnreadCount(appWindow, 2);
@@ -124,7 +124,7 @@ describe('TrayIconHandler', () => {
 
         sinon.spy(appWindow, 'flashFrame');
 
-        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
         appWindow.webContents.on('dom-ready', () => {
           assert.strictEqual(appWindow.isFocused(), false);
           tray.showUnreadCount(appWindow, 2);

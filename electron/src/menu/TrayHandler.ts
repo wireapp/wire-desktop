@@ -52,8 +52,8 @@ class TrayHandler {
 
     const iconPaths = {
       badge: path.join(IMAGE_ROOT, 'taskbar.overlay.png'),
-      tray: path.join(IMAGE_ROOT, 'tray-icon', 'tray', trayPng),
-      trayWithBadge: path.join(IMAGE_ROOT, 'tray-icon', 'tray-with-badge', trayBadgePng),
+      tray: path.join(IMAGE_ROOT, 'tray-icon/tray', trayPng),
+      trayWithBadge: path.join(IMAGE_ROOT, 'tray-icon/tray-with-badge', trayBadgePng),
     };
 
     this.icons = {

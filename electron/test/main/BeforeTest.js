@@ -9,7 +9,7 @@ const path = require('path');
  * https://github.com/jprichardson/electron-mocha/issues/19#issuecomment-193374439
  */
 const loadSourceCode = () => {
-  const intrumentedCode = path.join(__dirname, '..', '..', 'instrumented-code');
+  const intrumentedCode = path.join(__dirname, '../../instrumented-code');
 
   /**
    * We exclude code which needs to be run in renderer process because we currently run tests only in Electron's main process:
