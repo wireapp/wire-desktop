@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "debug": "4.1.1",
-    "wire-web-config-default": "https://github.com/wireapp/wire-web-config-default#v0.13.1"
+    "wire-web-config-default": "https://github.com/wireapp/wire-web-config-default#v0.13.2"
   },
   "devDependencies": {
     "@babel/core": "7.3.3",
@@ -38,7 +38,7 @@
     "grunt-gitinfo": "0.1.8",
     "husky": "1.3.1",
     "jest": "24.1.0",
-    "jszip": "3.1.5",
+    "jszip": "3.2.0",
     "lint-staged": "8.1.4",
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.16.4",
@@ -48,7 +48,7 @@
     "tslint": "5.12.1",
     "tslint-config-prettier": "1.18.0",
     "tslint-plugin-prettier": "2.0.1",
-    "typescript": "3.3.3",
+    "typescript": "3.3.3333",
     "webpack": "4.29.5",
     "webpack-cli": "3.2.3"
   },
