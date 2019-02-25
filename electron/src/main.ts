@@ -56,12 +56,12 @@ import {SettingsType} from './settings/SettingsType';
 
 // Paths
 const APP_PATH = app.getAppPath();
-const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
+const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const PRELOAD_JS = path.join(APP_PATH, 'dist', 'renderer', 'preload.js');
-const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer', 'static', 'webview-preload.js');
-const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/preload.js');
+const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer/static/webview-preload.js');
+const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
 
 const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 

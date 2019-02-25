@@ -319,26 +319,6 @@ module.exports = function(grunt) {
       },
     },
 
-    gitcommit: {
-      release: {
-        files: {
-          src: [INFO_JSON],
-        },
-        options: {
-          message: 'Bump version to <%= info.version %>',
-        },
-      },
-    },
-
-    gitpush: {
-      task: {
-        options: {
-          branch: 'master',
-          tags: true,
-        },
-      },
-    },
-
     info: baseData,
 
     pkg: grunt.file.readJSON(PACKAGE_JSON),
@@ -361,26 +341,6 @@ module.exports = function(grunt) {
         config: 'electron/dist/js/config.js',
       },
     },
-  });
-
-  /**
-   * Tasks
-   */
-  grunt.registerTask('version-inc', () => {
-    const info = grunt.config.get('info');
-    const {version} = info;
-    const major = version.substr(0, version.indexOf('.'));
-    const minor = version.substr(version.lastIndexOf('.') + 1);
-
-    info.version = `${major}.${parseInt(minor, 10) + 1}`;
-    grunt.config.set('info', info);
-    grunt.file.write(INFO_JSON, `${JSON.stringify(info, null, 2)}\n`);
-
-    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electronPkg.version = `${info.version}`;
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-
-    grunt.log.write(`Version number increased to "${info.version}". `).ok();
   });
 
   grunt.registerTask('set-custom-data', () => {
@@ -570,8 +530,6 @@ module.exports = function(grunt) {
     const {execSync} = require('child_process');
     execSync('yarn bundle');
   });
-
-  grunt.registerTask('bump-version', ['version-inc', 'gitcommit', 'gitpush']);
 
   grunt.registerTask('macos', [
     'clean:macos',
