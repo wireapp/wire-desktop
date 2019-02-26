@@ -96,11 +96,11 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.name %>.exe',
         iconUrl: '<%= info.installerIconUrl %>',
-        loadingGif: 'electron/img/wire.256.png',
+        loadingGif: 'electron/img/logo.256.png',
         noMsi: true,
         outputDirectory: 'wrap/custom/<%= info.name %>-win32-ia32',
         setupExe: '<%= info.name %>-Setup.exe',
-        setupIcon: 'electron/img/wire.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.name %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -110,11 +110,11 @@ module.exports = function(grunt) {
         authors: '<%= info.nameInternal %>',
         description: '<%= info.description %>',
         exe: '<%= info.nameInternal %>.exe',
-        iconUrl: 'https://wire-app.wire.com/win/internal/wire.ico',
+        iconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
         loadingGif: 'electron/img/wire.256.png',
         noMsi: true,
         outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32',
-        setupIcon: 'electron/img/wire.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.nameInternal %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -128,7 +128,7 @@ module.exports = function(grunt) {
         loadingGif: 'electron/img/wire.256.png',
         noMsi: true,
         outputDirectory: 'wrap/prod/<%= info.name %>-win32-ia32',
-        setupIcon: 'electron/img/wire.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.name %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -187,7 +187,7 @@ module.exports = function(grunt) {
       win_custom: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.ico',
+          icon: 'electron/img/logo.ico',
           name: '<%= info.name %>',
           platform: 'win32',
           win32metadata: {
@@ -203,7 +203,7 @@ module.exports = function(grunt) {
       win_internal: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.ico',
+          icon: 'electron/img/logo.ico',
           name: '<%= info.nameInternal %>',
           platform: 'win32',
           win32metadata: {
@@ -219,7 +219,7 @@ module.exports = function(grunt) {
       win_prod: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.ico',
+          icon: 'electron/img/logo.ico',
           platform: 'win32',
           win32metadata: {
             CompanyName: '<%= info.name %>',

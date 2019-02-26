@@ -10,7 +10,7 @@ module.exports = {
   files: {
     [path.join(logoSource, '32x32.png')]: 'resources/icons/32x32.png',
     [path.join(logoSource, '256x256.png')]: ['resources/icons/256x256.png', 'electron/img/wire.256.png'],
-    [path.join(logoSource, 'wire.ico')]: 'electron/img/wire.ico',
+    [path.join(logoSource, 'logo.ico')]: 'electron/img/logo.ico',
     [path.join(macOsSource, '**')]: 'resources/macos/',
     [path.join(pkg.name, '.env.defaults')]: '.env.defaults',
   },
