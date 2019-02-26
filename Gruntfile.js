@@ -50,25 +50,25 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
 
   const baseData = grunt.file.readJSON(INFO_JSON);
-  baseData.adminUrl = process.env.APP_URL_ADMIN || baseData.adminUrl;
+  baseData.adminUrl = process.env.URL_ADMIN || baseData.adminUrl;
   baseData.appBase = process.env.APP_BASE || baseData.appBase;
-  baseData.bundleId = process.env.APP_BUNDLE_ID || baseData.bundleId;
+  baseData.bundleId = process.env.MACOS_BUNDLE_ID || baseData.bundleId;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
   baseData.customProtocolName = process.env.APP_CUSTOM_PROTOCOL_NAME || baseData.customProtocolName;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
-  baseData.developerId = process.env.APP_DEVELOPER_ID || baseData.developerId;
-  baseData.developerName = process.env.APP_DEVELOPER_NAME || baseData.developerName;
-  baseData.installerIconUrl = process.env.APP_URL_ICON_INSTALLER || baseData.installerIconUrl;
-  baseData.legalUrl = process.env.APP_URL_LEGAL || baseData.legalUrl;
-  baseData.licensesUrl = process.env.APP_URL_LICENSES || baseData.licensesUrl;
+  baseData.developerId = process.env.MACOS_DEVELOPER_ID || baseData.developerId;
+  baseData.developerName = process.env.MACOS_DEVELOPER_NAME || baseData.developerName;
+  baseData.installerIconUrl = process.env.WIN_URL_ICON_INSTALLER || baseData.installerIconUrl;
+  baseData.legalUrl = process.env.URL_LEGAL || baseData.legalUrl;
+  baseData.licensesUrl = process.env.URL_LICENSES || baseData.licensesUrl;
   baseData.maximumAccounts = Number(process.env.APP_MAXIMUM_ACCOUNTS) || baseData.maximumAccounts;
   baseData.name = process.env.APP_NAME || baseData.name;
-  baseData.nameShort = process.env.APP_SHORT_NAME || baseData.nameShort;
-  baseData.nameShortLinux = process.env.APP_SHORT_NAME_LINUX || baseData.nameShortLinux;
-  baseData.privacyUrl = process.env.APP_URL_PRIVACY || baseData.privacyUrl;
-  baseData.supportUrl = process.env.APP_URL_SUPPORT || baseData.supportUrl;
-  baseData.updateWinUrlCustom = process.env.APP_URL_UPDATE_WIN || baseData.updateWinUrlProd;
-  baseData.websiteUrl = process.env.APP_URL_WEBSITE || baseData.websiteUrl;
+  baseData.nameShort = process.env.APP_NAME_SHORT || baseData.nameShort;
+  baseData.nameShortLinux = process.env.LINUX_NAME_SHORT || baseData.nameShortLinux;
+  baseData.privacyUrl = process.env.URL_PRIVACY || baseData.privacyUrl;
+  baseData.supportUrl = process.env.URL_SUPPORT || baseData.supportUrl;
+  baseData.updateWinUrlCustom = process.env.WIN_URL_UPDATE || baseData.updateWinUrlProd;
+  baseData.websiteUrl = process.env.URL_WEBSITE || baseData.websiteUrl;
 
   baseData.sign = {
     app: `3rd Party Mac Developer Application: ${baseData.developerName} (${baseData.developerId})`,
