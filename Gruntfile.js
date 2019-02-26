@@ -110,11 +110,11 @@ module.exports = function(grunt) {
         authors: '<%= info.nameInternal %>',
         description: '<%= info.description %>',
         exe: '<%= info.nameInternal %>.exe',
-        iconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
-        loadingGif: 'electron/img/wire.internal.256.png',
+        iconUrl: 'https://wire-app.wire.com/win/internal/wire.ico',
+        loadingGif: 'electron/img/wire.256.png',
         noMsi: true,
         outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32',
-        setupIcon: 'electron/img/wire.internal.ico',
+        setupIcon: 'electron/img/wire.ico',
         title: '<%= info.nameInternal %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -150,7 +150,7 @@ module.exports = function(grunt) {
       macos_internal: {
         options: {
           appBundleId: 'com.wearezeta.zclient.mac.internal',
-          icon: 'resources/macos/wire.internal.icns',
+          icon: 'resources/macos/wire.icns',
           name: '<%= info.nameInternal %>',
           platform: 'mas',
         },
@@ -203,7 +203,7 @@ module.exports = function(grunt) {
       win_internal: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.internal.ico',
+          icon: 'electron/img/wire.ico',
           name: '<%= info.nameInternal %>',
           platform: 'win32',
           win32metadata: {
