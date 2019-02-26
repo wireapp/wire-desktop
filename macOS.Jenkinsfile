@@ -24,6 +24,12 @@ node('master') {
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version
 
+  if (production || custom) {
+    env.BUILD_ENV = ''
+  } else {
+    env.BUILD_ENV = 'internal'
+  }
+
   stage('Build') {
     try {
       withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
@@ -35,9 +41,6 @@ node('master') {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm install -g yarn'
-        if (!production) {
-          env.BUILD_ENV = 'internal'
-        }
         sh 'yarn'
         sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
