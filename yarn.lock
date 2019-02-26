@@ -8379,9 +8379,9 @@ widest-line@^2.0.0:
   dependencies:
     adm-zip "0.4.13"
 
-"wire-web-config-default-production@https://github.com/wireapp/wire-web-config-wire#v0.14.0":
-  version "0.14.0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#fab2d9bbbfcb039cf409820f105f7a398b77bc09"
+"wire-web-config-default-production@https://github.com/wireapp/wire-web-config-wire#v0.14.1-0":
+  version "0.14.1-0"
+  resolved "https://github.com/wireapp/wire-web-config-wire#cd508388212f095da82715fe4c55f663388dad09"
   dependencies:
     adm-zip "0.4.13"
 
