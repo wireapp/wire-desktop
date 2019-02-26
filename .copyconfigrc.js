@@ -4,7 +4,9 @@ const path = require('path');
 const contentSource = path.join(pkg.name, 'content');
 const logoSource = path.join(contentSource, 'image/logo');
 const macOsSource = path.join(contentSource, 'macos');
-const repositoryUrl = pkg.dependencies['wire-web-config-wire'];
+
+const configurationEntry = `wire-web-config-default-${process.env.NODE_ENV !== 'development' ? 'production' : 'internal'}`;
+const repositoryUrl = pkg.dependencies[configurationEntry];
 
 module.exports = {
   files: {
