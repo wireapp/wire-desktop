@@ -20,12 +20,11 @@
 const {createWindowsInstaller} = require('electron-winstaller');
 const electronPackager = require('electron-packager');
 const electronBuilder = require('electron-builder');
+const dotenv = require('dotenv');
 
 const ELECTRON_PACKAGE_JSON = 'electron/package.json';
 const INFO_JSON = 'info.json';
 const PACKAGE_JSON = 'package.json';
-const MACOS_CUSTOM_PLIST = 'resources/macos/custom.plist';
-const MACOS_PARENT_PLIST = 'resources/macos/entitlements/parent.plist';
 
 const LINUX_DESKTOP = {
   Categories: 'Network;InstantMessaging;Chat;VideoConference',
@@ -44,6 +43,8 @@ const LINUX_SETTINGS = {
   desktop: LINUX_DESKTOP,
   fpm: ['--name', 'wire-desktop'],
 };
+
+dotenv.config('.env.defaults');
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
@@ -375,19 +376,6 @@ module.exports = function(grunt) {
     electronPkg.websiteUrl = info.websiteUrl;
 
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-
-    let customPlist = grunt.file.read(MACOS_CUSTOM_PLIST);
-    customPlist = customPlist
-      .replace(/Wire/gm, baseData.name)
-      .replace(/(<key>ElectronTeamID<\/key>\n\s*<string>)[^<]+(<\/string>)/m, `$1${baseData.developerId}$2`);
-    grunt.file.write(MACOS_CUSTOM_PLIST, customPlist);
-
-    let parentPlist = grunt.file.read(MACOS_PARENT_PLIST);
-    parentPlist = parentPlist.replace(
-      /(<key>com\.apple\.security\.application-groups<\/key>\n\s*<string>)[^<]+(<\/string>)/m,
-      `$1${baseData.developerId}.${baseData.bundleId}$2`
-    );
-    grunt.file.write(MACOS_PARENT_PLIST, parentPlist);
   });
 
   grunt.registerTask('release-internal', () => {
