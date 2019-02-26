@@ -26,6 +26,7 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {enableLogging} from './env/LoggerUtil';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
@@ -173,7 +174,11 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   checkConfigV0FullScreen(mainWindowState);
 
   const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`);
+  let url = `${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`;
+  if (enableLogging) {
+    url += `&enableLogging=@wireapp`;
+  }
+  main.loadURL(url);
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
