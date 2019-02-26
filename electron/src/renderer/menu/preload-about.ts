@@ -69,7 +69,7 @@ ipcRenderer.once(
 
     const logoElement = document.getElementById('logo') as HTMLImageElement;
     if (logoElement) {
-      logoElement.src = `../img/wire.256.png`;
+      logoElement.src = '../img/wire.256.png';
     }
 
     // Get locales
