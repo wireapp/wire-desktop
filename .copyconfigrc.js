@@ -10,11 +10,11 @@ const repositoryUrl = pkg.dependencies[configurationEntry];
 
 module.exports = {
   files: {
-    [path.join(logoSource, '32x32.png')]: 'resources/icons/32x32.png',
-    [path.join(logoSource, '256x256.png')]: ['resources/icons/256x256.png', 'electron/img/logo.256.png'],
-    [path.join(logoSource, 'logo.ico')]: 'electron/img/logo.ico',
-    [path.join(macOsSource, '**')]: 'resources/macos/',
-    [path.join(pkg.name, '.env.defaults')]: '.env.defaults',
+    [`${logoSource}/32x32.png`]: 'resources/icons/32x32.png',
+    [`${logoSource}/256x256.png`]: ['resources/icons/256x256.png', 'electron/img/logo.256.png'],
+    [`${logoSource}/logo.ico`]: 'electron/img/logo.ico',
+    [`${macOsSource}/**`]: 'resources/macos/',
+    [`${pkg.name}/.env.defaults`]: '.env.defaults',
   },
   repositoryUrl,
 }
