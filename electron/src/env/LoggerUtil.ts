@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  */
- 
+
 function enableLogging(): boolean {
   if (process.argv.includes('--enable-logging')) {
     return true;
