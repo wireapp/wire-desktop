@@ -44,7 +44,7 @@ const LINUX_SETTINGS = {
   fpm: ['--name', 'wire-desktop'],
 };
 
-dotenv.config('.env.defaults');
+dotenv.config({path: '.env.defaults'});
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
