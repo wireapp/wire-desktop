@@ -36,7 +36,6 @@ const clearStorage = (session: Electron.Session) => {
         session.clearStorageData({}, () =>
           session.clearCache(() => {
             session.flushStorageData();
-            //(<any>session).destroy();
             resolve();
           })
         )
