@@ -45,11 +45,11 @@ node('master') {
         sh 'yarn'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if (production) {
-            sh 'yarn build macos'
+            sh 'yarn build:macos'
           } else if (custom) {
-            sh 'yarn build macos:custom'
+            sh 'yarn build:macos:custom'
           } else {
-            sh 'yarn build macos:internal'
+            sh 'yarn build:macos:internal'
           }
         }
       }

@@ -69,6 +69,5 @@
     "postinstall": "electron-rebuild -f -w node-addressbook",
     "test": "electron-mocha"
   },
-  "updateWinUrl": "https://wire-app.wire.com/win/internal/",
-  "version": "3.6.0"
+  "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }
