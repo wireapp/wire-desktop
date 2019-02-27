@@ -26,12 +26,6 @@ node('node160') {
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version
 
-  if (production || custom) {
-    env.BUILD_ENV = ''
-  } else {
-    env.BUILD_ENV = 'internal'
-  }
-
   stage('Build') {
     try {
       bat 'pip install -r requirements.txt'

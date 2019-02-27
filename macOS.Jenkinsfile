@@ -24,13 +24,6 @@ node('master') {
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version
 
-  if (production || custom) {
-    env.BUILD_ENV = ''
-  } else {
-    echo 'BUILD_ENV set to "internal"'
-    env.BUILD_ENV = 'internal'
-  }
-
   stage('Build') {
     try {
       withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
