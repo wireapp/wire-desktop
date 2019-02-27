@@ -173,16 +173,14 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  let url = `${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`;
+  let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
   if (enableLogging()) {
-    url += `&enableLogging=@wireapp`;
-  }
-  main.loadURL(url);
-
-  if (argv.devtools) {
+    webappURL += `&enableLogging=@wireapp`;
     main.webContents.openDevTools({mode: 'detach'});
   }
+
+  const url = `${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`;
+  main.loadURL(url);
 
   if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {
