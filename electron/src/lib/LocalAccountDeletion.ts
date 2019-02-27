@@ -28,14 +28,21 @@ const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 const logger = LogFactory.getLogger(__filename, {logFilePath: path.join(LOG_DIR, 'electron.log')});
 
 const clearStorage = (session: Electron.Session) => {
-  return new Promise(resolve =>
-    session.clearStorageData({}, () =>
-      session.clearCache(() => {
-        session.flushStorageData();
-        resolve();
-      })
-    )
-  );
+  return new Promise(resolve => {
+    session.webRequest.onBeforeRequest({urls: ['https://*']}, (details, callback) => callback({cancel: true}));
+
+    session.protocol.uninterceptProtocol('https', () =>
+      setImmediate(() =>
+        session.clearStorageData({}, () =>
+          session.clearCache(() => {
+            session.flushStorageData();
+            //(<any>session).destroy();
+            resolve();
+          })
+        )
+      )
+    );
+  });
 };
 
 export async function deleteAccount(id: number, accountId: string, partitionId?: string) {

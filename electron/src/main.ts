@@ -19,6 +19,7 @@
 
 // Modules
 import {LogFactory} from '@wireapp/commons';
+import {Server} from '@wireapp/desktop-server';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -142,7 +143,7 @@ const initWindowStateKeeper = () => {
 };
 
 // App Windows
-const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
+const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
   const options: Electron.BrowserWindowConstructorOptions = {
@@ -166,7 +167,14 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     y: mainWindowState.y,
   };
 
-  main = new BrowserWindow(options);
+  main = await new Server({
+    browserWindowOptions: options,
+    currentClientVersion: '3.6',
+    currentEnvironment: 'DEV',
+    currentEnvironmentBaseUrl: BASE_URL,
+    trustStore: ['9aad851eb6ae535dc7a6b81ee44dc8418d192539e42709a3f6edf808a40a8849'],
+    updatesEndpoint: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+  }).start();
 
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);
@@ -258,7 +266,7 @@ const handleAppEvents = () => {
   });
 
   // System Menu, Tray Icon & Show window
-  app.on('ready', () => {
+  app.on('ready', async () => {
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen);
     if (environment.app.IS_DEVELOPMENT) {
@@ -270,7 +278,7 @@ const handleAppEvents = () => {
     if (!environment.platform.IS_MAC_OS) {
       tray.initTray();
     }
-    showMainWindow(mainWindowState);
+    await showMainWindow(mainWindowState);
   });
 };
 
