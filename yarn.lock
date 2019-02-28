@@ -2448,7 +2448,7 @@ dotenv-expand@^4.2.0:
   resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-4.2.0.tgz#def1f1ca5d6059d24a766e587942c21106ce1275"
   integrity sha1-3vHxyl1gWdJKdm5YeULCEQbOEnU=
 
-dotenv@^6.2.0:
+dotenv@6.2.0, dotenv@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.2.0.tgz#941c0410535d942c8becf28d3f357dbd9d476064"
   integrity sha512-HygQCKUBSFl8wKQZBSemMywRWcEDNidvNbjGVyZu3nbZ8qq9ubiPoGLMdRDpfSrpkkm9BXYFkpKxxFX38o/76w==
@@ -8280,9 +8280,15 @@ widest-line@^2.0.0:
   dependencies:
     string-width "^2.1.1"
 
-"wire-web-config-default@https://github.com/wireapp/wire-web-config-default#v0.13.2":
-  version "0.13.2"
-  resolved "https://github.com/wireapp/wire-web-config-default#09644c9abdef4fdf8ab96ab5ef4414414972c5d0"
+"wire-web-config-default-internal@https://github.com/wireapp/wire-web-config-default#v0.14.0":
+  version "0.14.0"
+  resolved "https://github.com/wireapp/wire-web-config-default#fab2d9bbbfcb039cf409820f105f7a398b77bc09"
+  dependencies:
+    adm-zip "0.4.13"
+
+"wire-web-config-default-production@https://github.com/wireapp/wire-web-config-wire#v0.14.1-0":
+  version "0.14.1-0"
+  resolved "https://github.com/wireapp/wire-web-config-wire#cd508388212f095da82715fe4c55f663388dad09"
   dependencies:
     adm-zip "0.4.13"
 

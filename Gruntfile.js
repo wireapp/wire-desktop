@@ -20,12 +20,11 @@
 const {createWindowsInstaller} = require('electron-winstaller');
 const electronPackager = require('electron-packager');
 const electronBuilder = require('electron-builder');
+const dotenv = require('dotenv');
 
 const ELECTRON_PACKAGE_JSON = 'electron/package.json';
 const INFO_JSON = 'info.json';
 const PACKAGE_JSON = 'package.json';
-const MACOS_CUSTOM_PLIST = 'resources/macos/custom.plist';
-const MACOS_PARENT_PLIST = 'resources/macos/entitlements/parent.plist';
 
 const LINUX_DESKTOP = {
   Categories: 'Network;InstantMessaging;Chat;VideoConference',
@@ -45,29 +44,31 @@ const LINUX_SETTINGS = {
   fpm: ['--name', 'wire-desktop'],
 };
 
+dotenv.config({path: '.env.defaults'});
+
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
 
   const baseData = grunt.file.readJSON(INFO_JSON);
-  baseData.adminUrl = process.env.APP_URL_ADMIN || baseData.adminUrl;
+  baseData.adminUrl = process.env.URL_ADMIN || baseData.adminUrl;
   baseData.appBase = process.env.APP_BASE || baseData.appBase;
-  baseData.bundleId = process.env.APP_BUNDLE_ID || baseData.bundleId;
+  baseData.bundleId = process.env.MACOS_BUNDLE_ID || baseData.bundleId;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
   baseData.customProtocolName = process.env.APP_CUSTOM_PROTOCOL_NAME || baseData.customProtocolName;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
-  baseData.developerId = process.env.APP_DEVELOPER_ID || baseData.developerId;
-  baseData.developerName = process.env.APP_DEVELOPER_NAME || baseData.developerName;
-  baseData.installerIconUrl = process.env.APP_URL_ICON_INSTALLER || baseData.installerIconUrl;
-  baseData.legalUrl = process.env.APP_URL_LEGAL || baseData.legalUrl;
-  baseData.licensesUrl = process.env.APP_URL_LICENSES || baseData.licensesUrl;
+  baseData.developerId = process.env.MACOS_DEVELOPER_ID || baseData.developerId;
+  baseData.developerName = process.env.MACOS_DEVELOPER_NAME || baseData.developerName;
+  baseData.installerIconUrl = process.env.WIN_URL_ICON_INSTALLER || baseData.installerIconUrl;
+  baseData.legalUrl = process.env.URL_LEGAL || baseData.legalUrl;
+  baseData.licensesUrl = process.env.URL_LICENSES || baseData.licensesUrl;
   baseData.maximumAccounts = Number(process.env.APP_MAXIMUM_ACCOUNTS) || baseData.maximumAccounts;
   baseData.name = process.env.APP_NAME || baseData.name;
-  baseData.nameShort = process.env.APP_SHORT_NAME || baseData.nameShort;
-  baseData.nameShortLinux = process.env.APP_SHORT_NAME_LINUX || baseData.nameShortLinux;
-  baseData.privacyUrl = process.env.APP_URL_PRIVACY || baseData.privacyUrl;
-  baseData.supportUrl = process.env.APP_URL_SUPPORT || baseData.supportUrl;
-  baseData.updateWinUrlCustom = process.env.APP_URL_UPDATE_WIN || baseData.updateWinUrlProd;
-  baseData.websiteUrl = process.env.APP_URL_WEBSITE || baseData.websiteUrl;
+  baseData.nameShort = process.env.APP_NAME_SHORT || baseData.nameShort;
+  baseData.nameShortLinux = process.env.LINUX_NAME_SHORT || baseData.nameShortLinux;
+  baseData.privacyUrl = process.env.URL_PRIVACY || baseData.privacyUrl;
+  baseData.supportUrl = process.env.URL_SUPPORT || baseData.supportUrl;
+  baseData.updateWinUrlCustom = process.env.WIN_URL_UPDATE || baseData.updateWinUrlProd;
+  baseData.websiteUrl = process.env.URL_WEBSITE || baseData.websiteUrl;
 
   baseData.sign = {
     app: `3rd Party Mac Developer Application: ${baseData.developerName} (${baseData.developerId})`,
@@ -95,11 +96,11 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.name %>.exe',
         iconUrl: '<%= info.installerIconUrl %>',
-        loadingGif: 'electron/img/wire.256.png',
+        loadingGif: 'electron/img/logo.256.png',
         noMsi: true,
         outputDirectory: 'wrap/custom/<%= info.name %>-win32-ia32',
         setupExe: '<%= info.name %>-Setup.exe',
-        setupIcon: 'electron/img/wire.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.name %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -110,10 +111,10 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.nameInternal %>.exe',
         iconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
-        loadingGif: 'electron/img/wire.internal.256.png',
+        loadingGif: 'electron/img/logo.256.png',
         noMsi: true,
         outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32',
-        setupIcon: 'electron/img/wire.internal.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.nameInternal %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -124,10 +125,10 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.name %>.exe',
         iconUrl: 'https://wire-app.wire.com/win/prod/wire.ico',
-        loadingGif: 'electron/img/wire.256.png',
+        loadingGif: 'electron/img/logo.256.png',
         noMsi: true,
         outputDirectory: 'wrap/prod/<%= info.name %>-win32-ia32',
-        setupIcon: 'electron/img/wire.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.name %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -140,7 +141,7 @@ module.exports = function(grunt) {
           appCategoryType: 'public.app-category.social-networking',
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: '<%= info.bundleId %>.helper',
-          icon: 'resources/macos/wire.icns',
+          icon: 'resources/macos/logo.icns',
           out: 'wrap/dist/',
           platform: 'mas',
         },
@@ -149,7 +150,7 @@ module.exports = function(grunt) {
       macos_internal: {
         options: {
           appBundleId: 'com.wearezeta.zclient.mac.internal',
-          icon: 'resources/macos/wire.internal.icns',
+          icon: 'resources/macos/logo.icns',
           name: '<%= info.nameInternal %>',
           platform: 'mas',
         },
@@ -161,7 +162,7 @@ module.exports = function(grunt) {
           appCategoryType: 'public.app-category.social-networking',
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: 'com.wearezeta.zclient.mac.helper',
-          icon: 'resources/macos/wire.icns',
+          icon: 'resources/macos/logo.icns',
           out: 'wrap/dist',
           platform: 'mas',
         },
@@ -186,7 +187,7 @@ module.exports = function(grunt) {
       win_custom: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.ico',
+          icon: 'electron/img/logo.ico',
           name: '<%= info.name %>',
           platform: 'win32',
           win32metadata: {
@@ -202,7 +203,7 @@ module.exports = function(grunt) {
       win_internal: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.internal.ico',
+          icon: 'electron/img/logo.ico',
           name: '<%= info.nameInternal %>',
           platform: 'win32',
           win32metadata: {
@@ -218,7 +219,7 @@ module.exports = function(grunt) {
       win_prod: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.ico',
+          icon: 'electron/img/logo.ico',
           platform: 'win32',
           win32metadata: {
             CompanyName: '<%= info.name %>',
@@ -375,19 +376,6 @@ module.exports = function(grunt) {
     electronPkg.websiteUrl = info.websiteUrl;
 
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-
-    let customPlist = grunt.file.read(MACOS_CUSTOM_PLIST);
-    customPlist = customPlist
-      .replace(/Wire/gm, baseData.name)
-      .replace(/(<key>ElectronTeamID<\/key>\n\s*<string>)[^<]+(<\/string>)/m, `$1${baseData.developerId}$2`);
-    grunt.file.write(MACOS_CUSTOM_PLIST, customPlist);
-
-    let parentPlist = grunt.file.read(MACOS_PARENT_PLIST);
-    parentPlist = parentPlist.replace(
-      /(<key>com\.apple\.security\.application-groups<\/key>\n\s*<string>)[^<]+(<\/string>)/m,
-      `$1${baseData.developerId}.${baseData.bundleId}$2`
-    );
-    grunt.file.write(MACOS_PARENT_PLIST, parentPlist);
   });
 
   grunt.registerTask('release-internal', () => {
