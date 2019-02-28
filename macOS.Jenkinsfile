@@ -36,15 +36,13 @@ node('master') {
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
-        sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if (production) {
-            sh 'npx grunt macos-prod'
+            sh 'yarn build:macos'
           } else if (custom) {
-            sh 'npx grunt macos-custom'
+            sh 'yarn build:macos:custom'
           } else {
-            // Internal
-            sh 'npx grunt macos'
+            sh 'yarn build:macos:internal'
           }
         }
       }

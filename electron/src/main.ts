@@ -26,6 +26,7 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {enableLogging} from './env/LoggerUtil';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
@@ -172,12 +173,14 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`).catch(error => logger.error(error));
-
-  if (argv.devtools) {
+  let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+  if (enableLogging()) {
+    webappURL += `&enableLogging=@wireapp`;
     main.webContents.openDevTools({mode: 'detach'});
   }
+
+  const url = `${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`;
+  main.loadURL(url)
 
   if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {

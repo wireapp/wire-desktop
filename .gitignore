@@ -18,3 +18,9 @@
 app.asar
 node_modules
 Wire*.zip
+
+# Configuration imported from https://github.com/wireapp/wire-web-config-wire/
+.env.defaults
+electron/img/logo.*
+resources
+!resources/macos/entitlements/child.plist

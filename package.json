@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "debug": "4.1.1",
-    "wire-web-config-default": "https://github.com/wireapp/wire-web-config-default#v0.13.2"
+    "wire-web-config-default-internal": "https://github.com/wireapp/wire-web-config-default#v0.14.0",
+    "wire-web-config-default-production": "https://github.com/wireapp/wire-web-config-wire#v0.14.1-0"
   },
   "devDependencies": {
     "@babel/core": "7.3.4",
@@ -23,6 +24,7 @@
     "commander": "2.19.0",
     "cross-env": "5.2.0",
     "css-loader": "2.1.0",
+    "dotenv": "6.2.0",
     "electron": "4.0.6",
     "electron-builder": "20.38.5",
     "electron-packager": "13.1.0",
@@ -43,7 +45,7 @@
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.16.4",
     "rimraf": "2.6.3",
-    "sinon": "7.2.4",
+    "sinon": "7.2.5",
     "style-loader": "0.23.1",
     "tslint": "5.13.0",
     "tslint-config-prettier": "1.18.0",
@@ -75,12 +77,15 @@
   },
   "scripts": {
     "build:linux": "yarn build:ts && grunt linux-prod",
-    "build:linux:internal": "yarn build:ts && grunt linux",
+    "build:linux:internal": "cross-env BUILD_ENV=internal yarn configure && yarn build:ts && grunt linux",
+    "build:linux:custom": "yarn build:ts && grunt linux-custom",
     "build:macos": "yarn build:ts && grunt macos-prod",
-    "build:macos:internal": "yarn build:ts && grunt macos",
+    "build:macos:internal": "cross-env BUILD_ENV=internal yarn configure && yarn build:ts && grunt macos",
+    "build:macos:custom": "yarn build:ts && grunt macos-custom",
     "build:ts": "yarn clear:ts && tsc",
     "build:win": "yarn build:ts && grunt win-prod",
-    "build:win:internal": "yarn build:ts && grunt win",
+    "build:win:internal": "cross-env BUILD_ENV=internal yarn configure && yarn build:ts && grunt win",
+    "build:win:custom": "yarn build:ts && grunt win-custom",
     "bundle:dev": "webpack",
     "bundle": "webpack --env.production",
     "clear:ts": "rimraf electron/dist",
