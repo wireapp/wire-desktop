@@ -7,7 +7,6 @@ node('node160') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def app_base = params.APP_BASE
   def app_name = params.APP_NAME
 
   def jenkinsbot_secret = ''
@@ -30,20 +29,19 @@ node('node160') {
   stage('Build') {
     try {
       bat 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v10.15.0-windows-x86', type: 'nodejs'
-      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32', "APP_BASE=${app_base}"]) {
+      def NODE = tool name: 'node-v10.15.1-windows-x86', type: 'nodejs'
+      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32']) {
         bat 'node -v'
         bat 'npm -v'
         bat 'npm install -g yarn'
         bat 'set "VSCMD_START_DIR=%CD%" & "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\VsDevCmd.bat" & yarn'
-        bat 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if (production) {
-            bat 'npx grunt win-prod'
+            bat 'yarn build:win'
           } else if (custom) {
-            bat 'npx grunt win-custom'
+            bat 'yarn build:win:custom'
           } else {
-            bat 'npx grunt win'
+            bat 'yarn build:win:internal'
           }
         }
       }
@@ -75,7 +73,7 @@ node('node160') {
 
   stage('Build installer') {
     try {
-      def NODE = tool name: 'node-v10.15.0-windows-x86', type: 'nodejs'
+      def NODE = tool name: 'node-v10.15.1-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         if (production) {
           bat 'npx grunt create-windows-installer:prod'

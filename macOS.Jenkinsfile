@@ -30,21 +30,19 @@ node('master') {
         sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
       }
       sh 'pip install -r requirements.txt'
-      def NODE = tool name: 'node-v10.15.0', type: 'nodejs'
+      def NODE = tool name: 'node-v10.15.1', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
-        sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if (production) {
-            sh 'npx grunt macos-prod'
+            sh 'yarn build:macos'
           } else if (custom) {
-            sh 'npx grunt macos-custom'
+            sh 'yarn build:macos:custom'
           } else {
-            // Internal
-            sh 'npx grunt macos'
+            sh 'yarn build:macos:internal'
           }
         }
       }

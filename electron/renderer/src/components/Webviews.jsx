@@ -42,7 +42,16 @@ class Webviews extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     for (const account of nextProps.accounts) {
       const match = this.props.accounts.find(_account => account.id === _account.id);
-      if (!match || match.visible !== account.visible) {
+      if (!match) {
+        return true;
+      }
+      // If a SSO code is set on a window, use it
+      if (match.ssoCode !== account.ssoCode && account.isAdding) {
+        document
+          .querySelector(`Webview[data-accountid="${account.id}"]`)
+          .loadURL(this._getEnvironmentUrl(account, false));
+      }
+      if (match.visible !== account.visible) {
         return true;
       }
     }
@@ -68,9 +77,14 @@ class Webviews extends Component {
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
-    if (forceLogin) {
+    if (forceLogin || account.ssoCode) {
       url.pathname = '/auth';
+    }
+    if (forceLogin) {
       url.hash = '#login';
+    }
+    if (account.ssoCode && account.isAdding) {
+      url.hash = `#sso/${account.ssoCode}`;
     }
 
     return url.href;
@@ -106,7 +120,12 @@ class Webviews extends Component {
       }
 
       case EVENT_TYPE.LIFECYCLE.SIGNED_OUT: {
-        this._deleteWebview(account);
+        const [clearData] = args;
+        if (clearData) {
+          this._deleteWebview(account);
+        } else {
+          this.props.resetIdentity(account.id);
+        }
         break;
       }
 
@@ -125,8 +144,9 @@ class Webviews extends Component {
   }
 
   _deleteWebview(account) {
-    window.sendDeleteAccount(account.id, account.sessionID);
-    this.props.abortAccountCreation(account.id);
+    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
+      this.props.abortAccountCreation(account.id);
+    });
   }
 
   _canDeleteWebview(account) {
@@ -140,7 +160,7 @@ class Webviews extends Component {
         {this.props.accounts.map((account, index) => (
           <div className="Webviews-container" key={account.id}>
             <Webview
-              className={`Webview ${account.visible ? '' : 'hide'}`}
+              className={`Webview${account.visible ? '' : ' hide'}`}
               data-accountid={account.id}
               visible={account.visible}
               src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}

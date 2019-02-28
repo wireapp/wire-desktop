@@ -18,7 +18,7 @@
  */
 
 import {IpcMessageEvent, ipcRenderer} from 'electron';
-import {EVENT_TYPE} from '../lib/eventType';
+import {EVENT_TYPE} from '../../lib/eventType';
 
 ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels: string[]) => {
   for (const label in labels) {
@@ -69,8 +69,7 @@ ipcRenderer.once(
 
     const logoElement = document.getElementById('logo') as HTMLImageElement;
     if (logoElement) {
-      const internal = details.environment === 'internal' ? '.internal' : '';
-      logoElement.src = `../img/wire${internal}.256.png`;
+      logoElement.src = '../img/logo.256.png';
     }
 
     // Get locales

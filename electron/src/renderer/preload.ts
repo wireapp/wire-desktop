@@ -18,10 +18,13 @@
  */
 
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+import * as environment from '../js/environment';
+import {getLogger} from '../js/getLogger';
 import {AutomatedSingleSignOn} from '../lib/AutomatedSingleSignOn';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import * as environment from './environment';
+
+const logger = getLogger('preload');
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
@@ -62,21 +65,24 @@ const setupIpcInterface = (): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
   };
 
-  window.sendDeleteAccount = (accountID: string, sessionID?: string): void => {
-    const accountWebview = getWebviewById(accountID);
-    if (!accountWebview) {
-      console.error(`Webview for account "${accountID}" does not exist`);
-      return;
-    }
+  window.sendDeleteAccount = (accountID: string, sessionID?: string) => {
+    return new Promise((resolve, reject) => {
+      const accountWebview = getWebviewById(accountID);
+      if (!accountWebview) {
+        return reject(`Webview for account "${accountID}" does not exist`);
+      }
 
-    console.log(`Processing deletion of "${accountID}"`);
-    const viewInstanceId = accountWebview.getWebContents().id;
-    ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
+      console.log(`Processing deletion of "${accountID}"`);
+      const viewInstanceId = accountWebview.getWebContents().id;
+      ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
+      ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
+    });
   };
 
   window.sendLogoutAccount = (accountId: string): void => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
+      logger.log(`Sending logout signal to webview for account "${accountId}".`);
       accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };

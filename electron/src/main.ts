@@ -26,6 +26,7 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {enableLogging} from './env/LoggerUtil';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
@@ -56,12 +57,12 @@ import {SettingsType} from './settings/SettingsType';
 
 // Paths
 const APP_PATH = app.getAppPath();
-const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
+const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
-const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer', 'static', 'webview-preload.js');
-const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/preload.js');
+const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer/static/webview-preload.js');
+const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
 
 const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 
@@ -92,7 +93,13 @@ const bindIpcEvents = () => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, deleteAccount);
+  ipcMain.on(
+    EVENT_TYPE.ACCOUNT.DELETE_DATA,
+    async (event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) => {
+      await deleteAccount(id, accountId, partitionId);
+      main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
+    }
+  );
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
@@ -166,12 +173,14 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`);
-
-  if (argv.devtools) {
+  let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+  if (enableLogging()) {
+    webappURL += `&enableLogging=@wireapp`;
     main.webContents.openDevTools({mode: 'detach'});
   }
+
+  const url = `${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`;
+  main.loadURL(url);
 
   if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {

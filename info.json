@@ -4,7 +4,7 @@
   "bundleId": "com.wearezeta.zclient.mac",
   "copyright": "© Wire Swiss GmbH",
   "customProtocolName": "wire",
-  "description": "Wire",
+  "description": "The most secure collaboration platform.",
   "developerId": "EDF3JCE8BC",
   "developerIdInternal": "T69V8N5973",
   "developerName": "Wire Swiss GmbH",
@@ -16,11 +16,12 @@
   "name": "Wire",
   "nameInternal": "WireInternal",
   "nameShort": "Wire",
+  "nameShortLinux": "wire-desktop",
   "privacyUrl": "https://wire.com/privacy/",
   "supportUrl": "https://support.wire.com",
   "updateWinUrlBeta": "https://wire-app.wire.com/win/beta/",
   "updateWinUrlInternal": "https://wire-app.wire.com/win/internal/",
   "updateWinUrlProd": "https://wire-app.wire.com/win/prod/",
-  "version": "3.5",
+  "version": "3.6",
   "websiteUrl": "https://wire.com"
 }

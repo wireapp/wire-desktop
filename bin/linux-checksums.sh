@@ -75,7 +75,7 @@ sha256sum *.deb *.rpm *.AppImage > sha256sum.txt
 _log "Creating source code archive for signing..."
 (
   cd ../../
-  git archive -o "wrap/dist/${BUILD_VERSION}.tar.gz" --format tar.gz --prefix "wire-desktop-release-${BUILD_VERSION}/" master
+  git archive -o "wrap/dist/${BUILD_VERSION}.tar.gz" --format tar.gz --prefix "wire-desktop-linux-${BUILD_VERSION}/" master
 )
 
 _log "Preparing gpg configuration..."

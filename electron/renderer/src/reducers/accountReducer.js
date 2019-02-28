@@ -20,7 +20,7 @@
 import uuid from 'uuid/v4';
 import * as ActionCreator from '../actions';
 
-const createAccount = sessionId => ({
+const createAccount = (sessionID, ssoCode = undefined) => ({
   accentID: undefined,
   badgeCount: 0,
   id: uuid(),
@@ -28,7 +28,8 @@ const createAccount = sessionId => ({
   lifecycle: undefined,
   name: undefined,
   picture: undefined,
-  sessionID: sessionId,
+  sessionID,
+  ssoCode,
   teamID: undefined,
   userID: undefined,
   visible: true,
@@ -42,8 +43,30 @@ const accountReducer = (state = [createAccount()], action) => {
       return newState;
     }
 
+    case ActionCreator.INITIATE_SSO: {
+      let newState;
+      if (action.id) {
+        // If an account is given, set the sso code
+        newState = state.map(account => {
+          const isMatchingAccount = account.id === action.id;
+          return isMatchingAccount ? {...account, isAdding: true, ssoCode: action.ssoCode} : account;
+        });
+      } else {
+        newState = state.map(account => ({...account, visible: false}));
+        newState.push(createAccount(action.sessionID, action.ssoCode));
+      }
+      return newState;
+    }
+
     case ActionCreator.DELETE_ACCOUNT: {
       return state.filter(account => account.id !== action.id);
+    }
+
+    case ActionCreator.RESET_IDENTITY: {
+      return state.map(account => {
+        const isMatchingAccount = account.id === action.id;
+        return isMatchingAccount ? {...account, teamID: undefined, userID: undefined} : account;
+      });
     }
 
     case ActionCreator.SWITCH_ACCOUNT: {
@@ -56,7 +79,7 @@ const accountReducer = (state = [createAccount()], action) => {
     case ActionCreator.UPDATE_ACCOUNT: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
-        return isMatchingAccount ? {...account, ...action.data, isAdding: false} : account;
+        return isMatchingAccount ? {...account, ...action.data, isAdding: false, ssoCode: undefined} : account;
       });
     }
 
