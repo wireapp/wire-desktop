@@ -49,7 +49,7 @@ const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/menu/preload-about.js');
 
 ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event: IpcMessageEvent, version: string) => (webappVersion = version));
 
-const showWindow = () => {
+const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
 
   if (!aboutWindow) {
@@ -107,7 +107,7 @@ const showWindow = () => {
     });
 
     // Close window via escape
-    aboutWindow.webContents.on('before-input-event', async (event, input) => {
+    aboutWindow.webContents.on('before-input-event', (event, input) => {
       if (input.type === 'keyDown' && input.key === 'Escape') {
         if (aboutWindow) {
           aboutWindow.close();
