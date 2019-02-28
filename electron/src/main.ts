@@ -180,7 +180,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   }
 
   const url = `${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`;
-  main.loadURL(url)
+  main.loadURL(url);
 
   if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {
@@ -206,7 +206,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
       return;
     }
 
-    shell.openExternal(_url).catch(error => logger.error(error));
+    shell.openExternal(_url);
   });
 
   main.webContents.on('dom-ready', () => {
