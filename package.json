@@ -85,7 +85,7 @@
     "build:ts": "yarn clear:ts && tsc",
     "build:win": "yarn build:ts && grunt win-prod",
     "build:win:internal": "cross-env BUILD_ENV=internal yarn configure && yarn build:ts && grunt win",
-    "build:win:custom": "yarn configure && yarn build:ts && grunt win-custom",
+    "build:win:custom": "yarn build:ts && grunt win-custom",
     "bundle:dev": "webpack",
     "bundle": "webpack --env.production",
     "clear:ts": "rimraf electron/dist",
