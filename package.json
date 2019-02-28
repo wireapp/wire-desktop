@@ -43,7 +43,7 @@
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.16.4",
     "rimraf": "2.6.3",
-    "sinon": "7.2.4",
+    "sinon": "7.2.5",
     "style-loader": "0.23.1",
     "tslint": "5.13.0",
     "tslint-config-prettier": "1.18.0",
