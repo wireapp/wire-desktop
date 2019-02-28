@@ -17,7 +17,8 @@
  *
  */
 
-import * as request from 'request';
+import fetch, {RequestInit as FetchConfig, Response} from 'node-fetch';
+import streamToPromise = require('stream-to-promise');
 import * as urlUtil from 'url';
 const {parse: openGraphParse} = require('open-graph');
 
@@ -31,75 +32,67 @@ const bufferToBase64 = (buffer: string, mimeType?: string): string => {
   return `data:${mimeType};base64,${bufferBase64encoded}`;
 };
 
-const fetchImageAsBase64 = (url: string): Promise<string | undefined> => {
+const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
+  let imageResponse: Response;
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
-  return new Promise(resolve => {
-    const imageRequest = request({encoding: null, url: encodeURI(url)}, (error, response, body: string) => {
-      if (!error && response.statusCode === 200) {
-        resolve(bufferToBase64(body, response.headers['content-type']));
-      } else {
-        // we just skip images that failed to download
-        resolve();
-      }
-    });
 
-    let currentDownloadSize = 0;
-    imageRequest.on('data', buffer => {
-      currentDownloadSize += buffer.length;
-      if (currentDownloadSize > IMAGE_SIZE_LIMIT) {
-        imageRequest.abort();
-        resolve();
-      }
-    });
-  });
+  const fetchConfig: FetchConfig = {
+    headers: {
+      'User-Agent': USER_AGENT,
+    },
+    method: 'get',
+    size: IMAGE_SIZE_LIMIT,
+  };
+
+  try {
+    imageResponse = await fetch(encodeURI(url), fetchConfig);
+  } catch (error) {
+    return;
+  }
+
+  if (imageResponse.status !== 200) {
+    return;
+  }
+
+  const contentType = imageResponse.headers.get('content-type') || '';
+
+  try {
+    const buffer = await streamToPromise(imageResponse.body);
+    return bufferToBase64(buffer.toString(), contentType);
+  } catch (error) {
+    return;
+  }
 };
 
-const fetchOpenGraphData = (url: string): Promise<OpenGraphResult> => {
+const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   const parsedUrl = urlUtil.parse(url);
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
+  const formattedUrl = urlUtil.format(normalizedUrl);
 
-  return new Promise<string>((resolve, reject) => {
-    let partialBody = '';
-    const getContentRequest = request.get({
-      headers: {
-        'User-Agent': USER_AGENT,
-      },
-      url: urlUtil.format(normalizedUrl),
-    });
+  const fetchConfig: FetchConfig = {
+    headers: {
+      'User-Agent': USER_AGENT,
+    },
+    size: CONTENT_SIZE_LIMIT,
+  };
 
-    getContentRequest.on('response', response => {
-      if (response.statusCode !== 200) {
-        return reject(`Request failed with status code "${response.statusCode}".`);
-      }
+  const contentResponse = await fetch(formattedUrl, fetchConfig);
+  const contentType = contentResponse.headers.get('content-type') || '';
 
-      const contentType = response.headers['content-type'] || '';
-      const isHtmlContentType = contentType.match(/.*text\/html/);
+  if (contentResponse.status !== 200) {
+    throw new Error(`Request failed with status code "${contentResponse.status}".`);
+  }
 
-      if (!isHtmlContentType) {
-        getContentRequest.abort();
-        throw new Error(`Unhandled format for open graph generation ('${contentType}')`);
-      }
-    });
+  if (!contentType.match(/.*text\/html/)) {
+    throw new Error(`Unhandled format for open graph generation ('${contentType}')`);
+  }
 
-    getContentRequest.on('data', buffer => {
-      const chunk = buffer.toString();
+  const buffer = await streamToPromise(contentResponse.body);
+  const body = buffer.toString();
 
-      partialBody += chunk;
-
-      if (chunk.match('</head>') || partialBody.length > CONTENT_SIZE_LIMIT) {
-        getContentRequest.abort();
-        resolve(partialBody);
-      }
-    });
-
-    getContentRequest.on('complete', () => reject('No head end tag found in website.'));
-
-    getContentRequest.on('error', error => reject(error));
-  }).then((body: string) => {
-    const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
-    return openGraphParse(head);
-  });
+  const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
+  return openGraphParse(head);
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, image?: string): OpenGraphResult => {
