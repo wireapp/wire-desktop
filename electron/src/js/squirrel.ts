@@ -29,7 +29,7 @@ import * as lifecycle from './lifecycle';
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 
-const logger = getLogger('squirrelTasks');
+const logger = getLogger('squirrel');
 
 const rootFolder = path.resolve(process.execPath, '../../');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
