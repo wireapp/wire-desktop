@@ -42,8 +42,7 @@ const APP_PATH = app.getAppPath();
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));
 const ABOUT_WINDOW_WHITELIST = [
   ABOUT_HTML,
-  fileUrl(path.join(APP_PATH, 'img/wire.256.png')),
-  fileUrl(path.join(APP_PATH, 'img/wire.internal.256.png')),
+  fileUrl(path.join(APP_PATH, 'img/logo.256.png')),
   fileUrl(path.join(APP_PATH, 'css/about.css')),
 ];
 const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/menu/preload-about.js');
