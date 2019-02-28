@@ -35,6 +35,9 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
 
   const axiosConfig: AxiosRequestConfig = {
+    headers: {
+      ['User-Agent']: USER_AGENT,
+    },
     maxContentLength: IMAGE_SIZE_LIMIT,
     method: 'get',
     url,
