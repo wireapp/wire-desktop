@@ -2613,10 +2613,10 @@ electron-winstaller@2.7.0:
     lodash.template "^4.2.2"
     temp "^0.8.3"
 
-electron@5.0.0-beta.3:
-  version "5.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0-beta.3.tgz#6ae11437be5229c30a322c770a5b707defb10412"
-  integrity sha512-yDLB7pvitYEHE85Jvaeq/UmSGFpC27frDvCj10qCEd1D+8T1cu8kbVCuOOvskrRNnlnh1hQKI6JgnEGc372RKg==
+electron@5.0.0-beta.4:
+  version "5.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0-beta.4.tgz#436af638c20c7563e749d9d7599c4267b665759b"
+  integrity sha512-8rBHuR04zcyJP1MfnhbbqExeIywxrbzR9FyKyrLc8O/ho4tEpKbxgGWoRStFDrv9YYL9BEjsaaExPseI7Rwu5A==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
