@@ -18,7 +18,7 @@ node('node180') {
 
   currentBuild.displayName = version
 
-  def environment = docker.build('node', '-f linux.Dockerfile .')
+  def environment = docker.build('node', '-f jenkins/linux.Dockerfile .')
 
   environment.inside {
 
@@ -29,7 +29,7 @@ node('node180') {
 
     stage('Build') {
       try {
-        sh 'pip install -r requirements.txt'
+        sh 'pip install -r jenkins/requirements.txt'
         sh 'node -v'
         sh 'npm -v'
         sh 'yarn'
