@@ -94,36 +94,29 @@ const scheduleUpdate = (): void => {
   setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
-const handleSquirrelEvent = async (isFirstInstance: boolean): Promise<boolean | void> => {
+const handleSquirrelEvent = async (isFirstInstance: boolean): Promise<void> => {
   const squirrelEvent = process.argv[1];
+
+  if (!isFirstInstance) {
+    return lifecycle.quit();
+  }
 
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL: {
       await createStartShortcut();
       await createDesktopShortcut();
-      lifecycle.quit();
-      return true;
-    }
-
-    case SQUIRREL_EVENT.UPDATED: {
-      lifecycle.quit();
-      return true;
+      return lifecycle.quit();
     }
 
     case SQUIRREL_EVENT.UNINSTALL: {
       await removeShortcuts();
       lifecycle.quit();
-      return true;
     }
 
+    case SQUIRREL_EVENT.UPDATED:
     case SQUIRREL_EVENT.OBSOLETE: {
       lifecycle.quit();
-      return true;
     }
-  }
-
-  if (!isFirstInstance) {
-    return lifecycle.quit();
   }
 
   scheduleUpdate();
