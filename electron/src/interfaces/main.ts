@@ -55,7 +55,3 @@ export type Rectangle = {
   x: number;
   y: number;
 };
-
-export type SpawnCallback = (error: SpawnError | null, stdout: string) => void;
-
-export type SpawnError = Error & {code?: number | null; stdout?: string | null};

@@ -173,7 +173,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   checkConfigV0FullScreen(mainWindowState);
 
   const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`);
+  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`).catch(error => logger.error(error));
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
@@ -199,11 +199,11 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
     // Ensure the link does not come from a webview
     if (typeof (event.sender as any).viewInstanceId !== 'undefined') {
-      logger.log('New window was created from a webview, aborting.');
+      logger.info('New window was created from a webview, aborting.');
       return;
     }
 
-    shell.openExternal(_url);
+    shell.openExternal(_url).catch(error => logger.error(error));
   });
 
   main.webContents.on('dom-ready', () => {
@@ -421,7 +421,7 @@ registerCoreProtocol();
 initRaygun.initClient();
 appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate();
+lifecycle.checkForUpdate().catch(error => logger.error(error));
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

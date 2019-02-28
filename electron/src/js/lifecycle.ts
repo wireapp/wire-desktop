@@ -25,10 +25,10 @@ import * as windowManager from './window-manager';
 
 let isFirstInstance: boolean | undefined = undefined;
 
-const checkForUpdate = () => {
+const checkForUpdate = async () => {
   if (environment.platform.IS_WINDOWS) {
     const squirrel = require('./squirrel');
-    squirrel.handleSquirrelEvent(isFirstInstance);
+    await squirrel.handleSquirrelEvent(isFirstInstance);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => squirrel.installUpdate());
   }

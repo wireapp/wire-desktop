@@ -1,0 +1,132 @@
+/*
+ * Wire
+ * Copyright (C) 2018 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
+import {spawn} from 'child_process';
+import {app} from 'electron';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+
+import * as config from './config';
+import * as environment from './environment';
+import {getLogger} from './getLogger';
+import * as lifecycle from './lifecycle';
+
+app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
+
+const logger = getLogger('squirrelTasks');
+
+const rootFolder = path.resolve(process.execPath, '../../');
+const updateDotExe = path.join(rootFolder, 'Update.exe');
+
+const exeName = `${config.NAME}.exe`;
+const linkName = `${config.NAME}.lnk`;
+const windowsAppData = process.env.APPDATA || '';
+
+if (!windowsAppData) {
+  logger.error('No Windows AppData directory found.');
+}
+
+const taskbarLink = path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar');
+
+const shortcutLink = path.resolve(taskbarLink, linkName);
+
+enum SQUIRREL_EVENT {
+  CREATE_SHORTCUT = '--createShortcut',
+  INSTALL = '--squirrel-install',
+  OBSOLETE = '--squirrel-obsolete',
+  REMOVE_SHORTCUT = '--removeShortcut',
+  UNINSTALL = '--squirrel-uninstall',
+  UPDATE = '--update',
+  UPDATED = '--squirrel-updated',
+}
+
+async function spawnAsync(command: string, args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let stdout = '';
+
+    const spawnedProcess = spawn(command, args);
+
+    if (spawnedProcess.stdout) {
+      spawnedProcess.stdout.on('data', data => (stdout += data));
+    }
+
+    spawnedProcess.on('close', (code, signal) => {
+      if (code !== 0) {
+        logger.info({code, stdout, signal});
+        return reject(`Command "${command}" failed with error code "${code}".`);
+      }
+
+      resolve();
+    });
+    spawnedProcess.on('error', processError => reject(processError));
+    spawnedProcess.on('message', message => logger.log(message));
+  });
+}
+
+const spawnUpdate = (args: string[]) => spawnAsync(updateDotExe, args);
+const createStartShortcut = () => spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu']);
+const createDesktopShortcut = () => spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop']);
+const installUpdate = () => spawnUpdate([SQUIRREL_EVENT.UPDATE, environment.app.UPDATE_URL_WIN]);
+
+const removeShortcuts = async (): Promise<void> => {
+  await spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu']);
+  await fs.remove(shortcutLink);
+};
+
+const scheduleUpdate = (): void => {
+  setTimeout(installUpdate, config.UPDATE.DELAY);
+  setInterval(installUpdate, config.UPDATE.INTERVAL);
+};
+
+const handleSquirrelEvent = async (isFirstInstance: boolean): Promise<boolean | void> => {
+  const squirrelEvent = process.argv[1];
+
+  switch (squirrelEvent) {
+    case SQUIRREL_EVENT.INSTALL: {
+      await createStartShortcut();
+      await createDesktopShortcut();
+      lifecycle.quit();
+      return true;
+    }
+
+    case SQUIRREL_EVENT.UPDATED: {
+      lifecycle.quit();
+      return true;
+    }
+
+    case SQUIRREL_EVENT.UNINSTALL: {
+      await removeShortcuts();
+      lifecycle.quit();
+      return true;
+    }
+
+    case SQUIRREL_EVENT.OBSOLETE: {
+      lifecycle.quit();
+      return true;
+    }
+  }
+
+  if (!isFirstInstance) {
+    return lifecycle.quit();
+  }
+
+  scheduleUpdate();
+};
+
+export {handleSquirrelEvent, installUpdate};
