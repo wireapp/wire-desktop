@@ -78,10 +78,10 @@
   "scripts": {
     "build:linux": "yarn build:ts && grunt linux-prod",
     "build:linux:internal": "cross-env BUILD_ENV=internal yarn configure && yarn build:ts && grunt linux",
-    "build:linux:custom": "yarn configure && yarn build:ts && grunt linux-custom",
+    "build:linux:custom": "yarn build:ts && grunt linux-custom",
     "build:macos": "yarn build:ts && grunt macos-prod",
     "build:macos:internal": "cross-env BUILD_ENV=internal yarn configure && yarn build:ts && grunt macos",
-    "build:macos:custom": "yarn configure && yarn build:ts && grunt macos-custom",
+    "build:macos:custom": "yarn build:ts && grunt macos-custom",
     "build:ts": "yarn clear:ts && tsc",
     "build:win": "yarn build:ts && grunt win-prod",
     "build:win:internal": "cross-env BUILD_ENV=internal yarn configure && yarn build:ts && grunt win",
