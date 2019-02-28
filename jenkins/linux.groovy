@@ -35,7 +35,7 @@ node('node180') {
         sh 'node -v'
         sh 'npm -v'
         sh 'yarn'
-        withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')])
+        withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
           if (production) {
             sh 'yarn build:linux'
           } else if (custom) {
@@ -43,6 +43,7 @@ node('node180') {
           } else {
             sh 'yarn build:linux:internal'
           }
+        }
       } catch(e) {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🐧 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
