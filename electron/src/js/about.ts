@@ -49,7 +49,7 @@ const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/menu/preload-about.js');
 
 ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event: IpcMessageEvent, version: string) => (webappVersion = version));
 
-const showWindow = () => {
+const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
 
   if (!aboutWindow) {
@@ -78,28 +78,21 @@ const showWindow = () => {
     // Prevent any kind of navigation
     // will-navigate is broken with sandboxed env, intercepting requests instead
     // see https://github.com/electron/electron/issues/8841
-    aboutWindow.webContents.session.webRequest.onBeforeRequest(
-      {
-        urls: ['*'],
-      },
-      (details, callback) => {
-        const url = details.url;
-
-        // Only allow those URLs to be opened within the window
-        if (ABOUT_WINDOW_WHITELIST.includes(url)) {
-          return callback({cancel: false});
-        }
-
-        // Open HTTPS links in browser instead
-        if (url.startsWith('https://')) {
-          shell.openExternal(url);
-        } else {
-          console.log('Attempt to open URL in window prevented, url: %s', url);
-        }
-
-        callback({redirectURL: ABOUT_HTML});
+    aboutWindow.webContents.session.webRequest.onBeforeRequest({urls: ['*']}, async ({url}, callback) => {
+      // Only allow those URLs to be opened within the window
+      if (ABOUT_WINDOW_WHITELIST.includes(url)) {
+        return callback({cancel: false});
       }
-    );
+
+      // Open HTTPS links in browser instead
+      if (url.startsWith('https://')) {
+        await shell.openExternal(url);
+      } else {
+        console.log('Attempt to open URL in window prevented, url: %s', url);
+      }
+
+      callback({redirectURL: ABOUT_HTML});
+    });
 
     // Locales
     ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event: IpcMessageEvent, labels: i18nLanguageIdentifier[]) => {
@@ -124,7 +117,7 @@ const showWindow = () => {
 
     aboutWindow.on('closed', () => (aboutWindow = undefined));
 
-    aboutWindow.loadURL(ABOUT_HTML);
+    await aboutWindow.loadURL(ABOUT_HTML);
 
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
