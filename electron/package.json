@@ -2,7 +2,7 @@
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
     "@wireapp/certificate-check": "0.0.4",
-    "@wireapp/commons": "1.0.7",
+    "@wireapp/commons": "1.0.10",
     "ansi-regex": "4.0.0",
     "auto-launch": "5.0.5",
     "electron-window-state": "5.0.3",
@@ -37,7 +37,7 @@
     "@types/image-type": "3.0.0",
     "@types/lodash": "4.14.121",
     "@types/minimist": "1.2.0",
-    "@types/node": "10.12.18",
+    "@types/node": "11.9.5",
     "@types/request": "2.48.1",
     "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5",
