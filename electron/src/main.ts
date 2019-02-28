@@ -202,7 +202,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
     // Ensure the link does not come from a webview
     if (typeof (event.sender as any).viewInstanceId !== 'undefined') {
-      logger.info('New window was created from a webview, aborting.');
+      logger.log('New window was created from a webview, aborting.');
       return;
     }
 
