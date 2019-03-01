@@ -28,7 +28,7 @@
     "electron": "4.0.6",
     "electron-builder": "20.38.5",
     "electron-packager": "13.1.0",
-    "electron-winstaller": "2.7.0",
+    "electron-winstaller": "3.0.0",
     "eslint": "5.14.1",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-jasmine": "2.10.1",
