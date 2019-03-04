@@ -18,15 +18,17 @@
  */
 
 import axios, {AxiosRequestConfig} from 'axios';
-import * as urlUtil from 'url';
+import {parse as parseUrl} from 'url';
 const {parse: openGraphParse} = require('open-graph');
 
 import {OpenGraphResult} from '../interfaces/';
 import {USER_AGENT} from '../js/config';
 
+axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
+
 const arrayify = <T>(value: T[] | T = []): T[] => (Array.isArray(value) ? value : [value]);
 
-const bufferToBase64 = (buffer: string, mimeType?: string): string => {
+const bufferToBase64 = (buffer: Buffer, mimeType: string): string => {
   const bufferBase64encoded = Buffer.from(buffer).toString('base64');
   return `data:${mimeType};base64,${bufferBase64encoded}`;
 };
@@ -40,13 +42,14 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     },
     maxContentLength: IMAGE_SIZE_LIMIT,
     method: 'get',
+    responseType: 'arraybuffer',
     url,
   };
 
   let response;
 
   try {
-    response = await axios.request<string>(axiosConfig);
+    response = await axios.request<Buffer>(axiosConfig);
   } catch (error) {
     // we just skip images that failed to download
     return;
@@ -64,24 +67,8 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
 
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
-  const parsedUrl = urlUtil.parse(url);
-  const normalizedUrl = parsedUrl.protocol ? parsedUrl : urlUtil.parse(`http://${url}`);
-
-  axios.interceptors.response.use(
-    response => {
-      const contentType = response.headers['content-type'] || '';
-      const isHtmlContentType = contentType.match(/.*text\/html/);
-
-      if (!isHtmlContentType) {
-        throw new Error(`Unhandled format for open graph generation ('${contentType}')`);
-      }
-
-      return response;
-    },
-    error => {
-      throw error;
-    }
-  );
+  const parsedUrl = parseUrl(url);
+  const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
@@ -143,8 +130,8 @@ const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: Op
 };
 
 const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
-  console.log('using getOpenGraphDataAsync');
   const meta = await fetchOpenGraphData(url);
+
   if (meta.image && meta.image.url) {
     const [imageUrl] = arrayify(meta.image.url);
 
