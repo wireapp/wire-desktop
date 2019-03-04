@@ -65,6 +65,32 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   return bufferToBase64(response.data, contentType);
 };
 
+const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
+  config.responseType = 'stream';
+
+  return new Promise((resolve, reject) => {
+    let partialBody = '';
+
+    return axios.request<NodeJS.ReadableStream>(config).then(response => {
+      if (response.status !== 200) {
+        return reject(`Request failed with status code "${response.status}".`);
+      }
+
+      response.data.on('data', buffer => {
+        const chunk = buffer.toString();
+        partialBody += chunk;
+
+        if (chunk.match('</head>') || partialBody.length > contentLimit) {
+          resolve(partialBody);
+        }
+      });
+
+      response.data.on('error', reject);
+      response.data.on('complete', () => reject('No head end tag found in website.'));
+    });
+  });
+};
+
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   const parsedUrl = parseUrl(url);
@@ -74,18 +100,13 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
     headers: {
       'User-Agent': USER_AGENT,
     },
-    maxContentLength: CONTENT_SIZE_LIMIT,
     method: 'get',
+    responseType: 'stream',
     url: normalizedUrl.href,
   };
 
-  const response = await axios.request<string>(axiosConfig);
-
-  if (response.status !== 200) {
-    throw new Error(`Request failed with status code "${response.status}".`);
-  }
-
-  const [head] = response.data.match(/<head>[\s\S]*?<\/head>/) || [''];
+  const body = await axiosContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
+  const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
 
   return openGraphParse(head);
 };
