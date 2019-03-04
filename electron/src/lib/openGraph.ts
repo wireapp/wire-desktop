@@ -47,10 +47,12 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   try {
     imageResponse = await fetch(encodeURI(url), fetchConfig);
   } catch (error) {
+    // we just skip images that failed to download
     return;
   }
 
   if (imageResponse.status !== 200) {
+    // we just skip images that failed to download
     return;
   }
 
