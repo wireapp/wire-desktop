@@ -36,7 +36,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
-      ['User-Agent']: USER_AGENT,
+      'User-Agent': USER_AGENT,
     },
     maxContentLength: IMAGE_SIZE_LIMIT,
     method: 'get',
@@ -57,7 +57,9 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     return;
   }
 
-  return bufferToBase64(response.data, response.headers['content-type']);
+  const contentType = response.headers['content-type'] || '';
+
+  return bufferToBase64(response.data, contentType);
 };
 
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
@@ -76,21 +78,28 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
 
       return response;
     },
-    error => Promise.reject(error)
+    error => {
+      throw error;
+    }
   );
 
   const axiosConfig: AxiosRequestConfig = {
+    headers: {
+      'User-Agent': USER_AGENT,
+    },
     maxContentLength: CONTENT_SIZE_LIMIT,
     method: 'get',
     url: normalizedUrl.href,
   };
 
   const response = await axios.request<string>(axiosConfig);
+
   if (response.status !== 200) {
     throw new Error(`Request failed with status code "${response.status}".`);
   }
 
   const [head] = response.data.match(/<head>[\s\S]*?<\/head>/) || [''];
+
   return openGraphParse(head);
 };
 
