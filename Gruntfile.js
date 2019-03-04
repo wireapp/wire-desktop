@@ -41,7 +41,7 @@ const LINUX_SETTINGS = {
   afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
   desktop: LINUX_DESKTOP,
-  fpm: ['--name', 'wire-desktop'],
+  fpm: ['--name', '<% info.nameShortLinux %>'],
 };
 
 dotenv.config({path: '.env.defaults'});
@@ -233,28 +233,6 @@ module.exports = function(grunt) {
     },
 
     electronbuilder: {
-      linux_custom: {
-        options: {
-          deb: {
-            ...LINUX_SETTINGS,
-            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
-            desktop: LINUX_DESKTOP,
-            fpm: ['--name', '<% info.nameShortLinux %>'],
-          },
-          linux: {
-            artifactName: '${productName}-${version}_${arch}.${ext}',
-            category: LINUX_SETTINGS.category,
-            executableName: '<% info.nameShortLinux %>',
-          },
-          rpm: {
-            ...LINUX_SETTINGS,
-            depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
-            fpm: ['--name', '<% info.nameShortLinux %>'],
-          },
-          targets: ['deb', 'rpm', 'AppImage'],
-        },
-      },
-
       linux_internal: {
         options: {
           deb: {
@@ -287,9 +265,9 @@ module.exports = function(grunt) {
             artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
             desktop: LINUX_DESKTOP,
-            executableName: 'wire-desktop',
+            executableName: '<% info.nameShortLinux %>',
           },
-          productName: 'wire-desktop',
+          productName: '<% info.nameShortLinux %>',
           targets: [grunt.option('target') || 'dir'],
         },
       },
@@ -303,7 +281,7 @@ module.exports = function(grunt) {
           linux: {
             artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
-            executableName: 'wire-desktop',
+            executableName: '<% info.nameShortLinux %>',
           },
           rpm: {
             ...LINUX_SETTINGS,
@@ -600,7 +578,7 @@ module.exports = function(grunt) {
     'set-custom-data',
     'release-custom',
     'bundle',
-    'electronbuilder:linux_custom',
+    'electronbuilder:linux_prod',
   ]);
 
   grunt.registerTask('linux-other-internal', [
