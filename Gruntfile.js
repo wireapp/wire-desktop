@@ -317,9 +317,16 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('set-custom-data', () => {
-    Object.keys(baseData).forEach(baseDataKey => {
-      grunt.log.write(`baseData.${baseDataKey} set to "${baseData[baseDataKey]}". `).ok();
-    });
+    const logEntries = (obj, name) => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === 'object') {
+          return logEntries(value, `${name}.${key}`);
+        }
+        grunt.log.write(`${name}.${key} set to "${value}". `).ok();
+      });
+    };
+
+    logEntries(baseData, 'baseData');
 
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
     const info = grunt.config.get('info');
