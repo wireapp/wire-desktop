@@ -142,4 +142,19 @@ const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: Op
     });
 };
 
-export {getOpenGraphData};
+const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
+  console.log('using getOpenGraphDataAsync');
+  const meta = await fetchOpenGraphData(url);
+  if (meta.image && meta.image.url) {
+    const [imageUrl] = arrayify(meta.image.url);
+
+    try {
+      const uri = await fetchImageAsBase64(imageUrl);
+      return updateMetaDataWithImage(meta, uri);
+    } catch (error) {}
+  }
+
+  return meta;
+};
+
+export {getOpenGraphData, getOpenGraphDataAsync};
