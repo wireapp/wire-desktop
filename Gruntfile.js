@@ -345,21 +345,9 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('set-custom-data', () => {
-    grunt.log.write(`Webapp base set to "${baseData.appBase}". `).ok();
-    grunt.log.write(`App description set to "${baseData.description}". `).ok();
-    grunt.log.write(`App bundle ID set to "${baseData.bundleId}". `).ok();
-    grunt.log.write(`App copyright set to "${baseData.copyright}". `).ok();
-    grunt.log.write(`App custom protocol set to "${baseData.customProtocolName}". `).ok();
-    grunt.log.write(`Website URL set to "${baseData.websiteUrl}". `).ok();
-    grunt.log.write(`Admin URL set to "${baseData.adminUrl}". `).ok();
-    grunt.log.write(`Legal URL set to "${baseData.legalUrl}". `).ok();
-    grunt.log.write(`Licenses URL set to "${baseData.licensesUrl}". `).ok();
-    grunt.log.write(`Privacy URL set to "${baseData.privacyUrl}". `).ok();
-    grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
-    grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
-    grunt.log.write(`Windows installer icon URL set to "${baseData.installerIconUrl}". `).ok();
-    grunt.log.write(`macOS developer app info set to "${baseData.sign.app}". `).ok();
-    grunt.log.write(`macOS developer package info set to "${baseData.sign.package}". `).ok();
+    Object.keys(baseData).forEach(baseDataKey => {
+      grunt.log.write(`baseData.${baseDataKey} set to "${baseData[baseDataKey]}". `).ok();
+    });
 
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
     const info = grunt.config.get('info');
