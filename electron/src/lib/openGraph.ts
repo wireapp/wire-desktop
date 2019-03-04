@@ -43,19 +43,21 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     url,
   };
 
+  let response;
+
   try {
-    const response = await axios.request<string>(axiosConfig);
-
-    if (response.status !== 200) {
-      throw new Error(`Request failed with status code "${response.status}".`);
-    }
-
-    return bufferToBase64(response.data, response.headers['content-type']);
+    response = await axios.request<string>(axiosConfig);
   } catch (error) {
     // we just skip images that failed to download
-    console.error(error);
     return;
   }
+
+  if (response.status !== 200) {
+    // we just skip images that failed to download
+    return;
+  }
+
+  return bufferToBase64(response.data, response.headers['content-type']);
 };
 
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
@@ -81,9 +83,6 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
     maxContentLength: CONTENT_SIZE_LIMIT,
     method: 'get',
     url: normalizedUrl.href,
-    onDownloadProgress(progress) {
-      console.log('progress', progress);
-    },
   };
 
   const response = await axios.request<string>(axiosConfig);
