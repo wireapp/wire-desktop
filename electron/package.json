@@ -38,7 +38,6 @@
     "@types/lodash": "4.14.121",
     "@types/minimist": "1.2.0",
     "@types/node": "11.10.4",
-    "@types/request": "2.48.1",
     "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5",
     "electron-mocha": "6.0.4",
