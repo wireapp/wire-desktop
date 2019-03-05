@@ -24,6 +24,9 @@ const {parse: openGraphParse} = require('open-graph');
 
 import {OpenGraphResult} from '../interfaces/';
 import {USER_AGENT} from '../js/config';
+import {getLogger} from '../js/getLogger';
+
+const logger = getLogger('openGraph');
 
 axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
 
@@ -47,26 +50,23 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     url,
   };
 
-  let response;
-
-  try {
-    response = await axios.request<Buffer>(axiosConfig);
-  } catch (error) {
-    // we just skip images that failed to download
-    return;
-  }
+  const response = await axios.request<Buffer>(axiosConfig);
 
   if (response.status !== 200) {
-    // we just skip images that failed to download
-    return;
+    throw new Error(`Request failed with status code "${response.status}".`);
   }
 
   const contentType = response.headers['content-type'] || '';
+  const isImageContentType = contentType.match(/.*image\/*/);
+
+  if (!isImageContentType) {
+    throw new Error(`Unhandled format for open graph image ('${contentType}')`);
+  }
 
   return bufferToBase64(response.data, contentType);
 };
 
-const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
+const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
   const CancelToken = axios.CancelToken;
   const cancelSource = CancelToken.source();
 
@@ -83,6 +83,13 @@ const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Pr
           return reject(`Request failed with status code "${response.status}".`);
         }
 
+        const contentType = response.headers['content-type'] || '';
+        const isHtmlContentType = contentType.match(/.*text\/html/);
+
+        if (!isHtmlContentType) {
+          reject(`Unhandled format for open graph generation ('${contentType}')`);
+        }
+
         response.data.on('data', buffer => {
           const chunk = buffer.toString();
           partialBody += chunk;
@@ -96,7 +103,10 @@ const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Pr
         response.data.on('error', reject);
         response.data.on('end', () => resolve(partialBody));
       })
-      .catch(error => (axios.isCancel(error) ? Promise.resolve() : Promise.reject(error)));
+      .catch(error => {
+        logger.error(error);
+        return axios.isCancel(error) ? Promise.resolve('') : Promise.reject(error);
+      });
   });
 };
 
@@ -113,15 +123,23 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
     url: normalizedUrl.href,
   };
 
-  const body = await axiosContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
+  const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
   const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
+
+  if (!head) {
+    logger.error('No head end tag found in website.');
+  }
 
   return openGraphParse(head);
 };
 
-const updateMetaDataWithImage = (meta: OpenGraphResult, image?: string): OpenGraphResult => {
-  if (image) {
-    meta.image.data = image;
+const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
+  if (!meta.image) {
+    meta.image = {};
+  }
+
+  if (imageData) {
+    meta.image.data = imageData;
   } else {
     delete meta.image;
   }
@@ -137,7 +155,12 @@ const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: Op
 
         return fetchImageAsBase64(imageUrl)
           .then(uri => updateMetaDataWithImage(meta, uri))
-          .catch(() => meta);
+          .catch(error => {
+            logger.error(error);
+            return meta;
+          });
+      } else {
+        logger.error('OpenGraph metadata contains no image.');
       }
 
       return meta;
@@ -150,24 +173,31 @@ const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: Op
       return meta;
     })
     .catch(error => {
+      logger.error(error);
+
       if (callback) {
         callback(error);
       }
-
-      throw error;
     });
 };
 
 const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
-  const meta = await fetchOpenGraphData(url);
+  let meta;
+
+  try {
+    meta = await fetchOpenGraphData(url);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 
   if (meta.image && meta.image.url) {
     const [imageUrl] = arrayify(meta.image.url);
 
-    try {
-      const uri = await fetchImageAsBase64(imageUrl);
-      return updateMetaDataWithImage(meta, uri);
-    } catch (error) {}
+    const uri = await fetchImageAsBase64(imageUrl);
+    return updateMetaDataWithImage(meta, uri);
+  } else {
+    logger.error('OpenGraph metadata contains no image.');
   }
 
   return meta;
