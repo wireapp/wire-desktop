@@ -416,7 +416,11 @@ module.exports = function(grunt) {
       return electronBuilder
         .build({
           config: options,
-          targets: electronBuilder.Platform.LINUX.createTarget(targets, electronBuilder.Arch.x64),
+          targets: electronBuilder.Platform.LINUX.createTarget(
+            targets,
+            electronBuilder.Arch.ia32,
+            electronBuilder.Arch.x64
+          ),
         })
         .then(done, done);
     }
