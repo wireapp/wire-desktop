@@ -23,9 +23,26 @@ const {generate} = require('generate-changelog');
 const minimist = require('minimist');
 const {exec} = require('child_process');
 const {promisify} = require('util');
+const electronReleases = require('electron-releases/lite.json');
 
 const execAsync = promisify(exec);
+const electronVersion = require('../package.json').devDependencies.electron;
 const argv = minimist(process.argv.slice(1));
+
+const getDate = () => {
+  const pad = str => str.toString().padStart(2, '0');
+  const date = new Date();
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
+const getChromeVersion = () => {
+  const electronRelease = electronReleases.find(({version}) => version === electronVersion);
+  if (electronRelease) {
+    return electronRelease.deps.chrome;
+  }
+
+  return 'Unknown';
+};
 
 const getLatestTag = async platform => {
   const command = `git describe --abbrev=0 --tags${platform ? ` --match="${platform}/*"` : ''}`;
@@ -33,24 +50,45 @@ const getLatestTag = async platform => {
   if (stderr) {
     throw stderr;
   }
-  return stdout.toString().replace(/[\n\r]/, '');
+  return stdout.toString().trim();
 };
 
 let platform = '';
+let platformName = '';
 
 if (argv.linux) {
   platform = 'linux';
+  platformName = 'Linux';
 }
 
 if (argv.windows) {
   platform = 'windows';
+  platformName = 'Windows';
 }
 
 if (argv.macos) {
   platform = 'macos';
+  platformName = 'macOS';
 }
 
-getLatestTag(platform)
-  .then(tag => generate({exclude: ['build', 'runfix'], tag}))
-  .then(console.log)
-  .catch(console.error);
+if (!platform) {
+  console.error('Error: No platform defined. Example: generate-changelog.js --windows');
+  process.exit(1);
+}
+
+(async () => {
+  const tag = await getLatestTag(platform);
+  let log = await generate({exclude: ['build', 'chore', 'runfix'], tag});
+  log = log.replace(/#+ [\d]+.*/, '').trim();
+  log =
+    `### Release Notes\n\n${log}\n\n` +
+    `### Versions\n\n` +
+    `Electron ${electronVersion}\n` +
+    `Chrome ${getChromeVersion()}\n\n` +
+    `### Public Release Date\n\n` +
+    `${getDate()}\n\n` +
+    `### Changelog\n\n` +
+    `[${platformName}](https://github.com/wireapp/wire-desktop/compare/${tag}...master)`;
+
+  console.log(log);
+})();
