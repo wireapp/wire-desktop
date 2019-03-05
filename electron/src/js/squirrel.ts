@@ -74,8 +74,8 @@ async function spawnAsync(command: string, args: string[]): Promise<void> {
 
       resolve();
     });
-    spawnedProcess.on('error', processError => reject(processError));
-    spawnedProcess.on('message', message => logger.log(message));
+    spawnedProcess.on('error', reject);
+    spawnedProcess.on('message', logger.log);
   });
 }
 
