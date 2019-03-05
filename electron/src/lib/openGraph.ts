@@ -66,7 +66,11 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
 };
 
 const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
+  const CancelToken = axios.CancelToken;
+  const cancelSource = CancelToken.source();
+
   config.responseType = 'stream';
+  config.cancelToken = cancelSource.token;
 
   return new Promise((resolve, reject) => {
     let partialBody = '';
@@ -81,6 +85,7 @@ const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Pr
         partialBody += chunk;
 
         if (chunk.match('</head>') || partialBody.length > contentLimit) {
+          cancelSource.cancel();
           resolve(partialBody);
         }
       });
