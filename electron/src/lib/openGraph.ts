@@ -18,6 +18,7 @@
  */
 
 import axios, {AxiosRequestConfig} from 'axios';
+import {IncomingMessage} from 'http';
 import {parse as parseUrl} from 'url';
 const {parse: openGraphParse} = require('open-graph');
 
@@ -76,7 +77,7 @@ const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Pr
     let partialBody = '';
 
     return axios
-      .request<NodeJS.ReadableStream>(config)
+      .request<IncomingMessage>(config)
       .then(response => {
         if (response.status !== 200) {
           return reject(`Request failed with status code "${response.status}".`);
@@ -93,7 +94,7 @@ const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Pr
         });
 
         response.data.on('error', reject);
-        response.data.on('complete', () => reject('No head end tag found in website.'));
+        response.data.on('end', () => resolve(partialBody));
       })
       .catch(error => (axios.isCancel(error) ? Promise.resolve() : Promise.reject(error)));
   });
@@ -109,7 +110,6 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
       'User-Agent': USER_AGENT,
     },
     method: 'get',
-    responseType: 'stream',
     url: normalizedUrl.href,
   };
 
