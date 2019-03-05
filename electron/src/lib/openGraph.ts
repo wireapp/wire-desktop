@@ -75,24 +75,27 @@ const axiosContentLimit = (config: AxiosRequestConfig, contentLimit: number): Pr
   return new Promise((resolve, reject) => {
     let partialBody = '';
 
-    return axios.request<NodeJS.ReadableStream>(config).then(response => {
-      if (response.status !== 200) {
-        return reject(`Request failed with status code "${response.status}".`);
-      }
-
-      response.data.on('data', buffer => {
-        const chunk = buffer.toString();
-        partialBody += chunk;
-
-        if (chunk.match('</head>') || partialBody.length > contentLimit) {
-          cancelSource.cancel();
-          resolve(partialBody);
+    return axios
+      .request<NodeJS.ReadableStream>(config)
+      .then(response => {
+        if (response.status !== 200) {
+          return reject(`Request failed with status code "${response.status}".`);
         }
-      });
 
-      response.data.on('error', reject);
-      response.data.on('complete', () => reject('No head end tag found in website.'));
-    });
+        response.data.on('data', buffer => {
+          const chunk = buffer.toString();
+          partialBody += chunk;
+
+          if (chunk.match('</head>') || partialBody.length > contentLimit) {
+            cancelSource.cancel();
+            resolve(partialBody);
+          }
+        });
+
+        response.data.on('error', reject);
+        response.data.on('complete', () => reject('No head end tag found in website.'));
+      })
+      .catch(error => (axios.isCancel(error) ? Promise.resolve() : Promise.reject(error)));
   });
 };
 
