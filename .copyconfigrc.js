@@ -1,8 +1,8 @@
 const pkg = require('./package.json');
-const path = require('path');
 
-const imageSource = path.join(pkg.name, 'content/image');
-const macOsSource = path.join(contentSource, 'macos');
+const contentSource = `${pkg.name}/content`;
+const imageSource = `${contentSource}/image`;
+const macOsSource = `${contentSource}/macos`;
 
 const configurationEntry = `wire-web-config-default-${process.env.BUILD_ENV !== 'internal' ? 'production' : 'internal'}`;
 const repositoryUrl = pkg.dependencies[configurationEntry];
