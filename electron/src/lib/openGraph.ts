@@ -57,7 +57,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   }
 
   const contentType = response.headers['content-type'] || '';
-  const isImageContentType = contentType.match(/.*image\/*/);
+  const isImageContentType = contentType.match(/.*image\/.*/);
 
   if (!isImageContentType) {
     throw new Error(`Unhandled format for open graph image ('${contentType}')`);
