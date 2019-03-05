@@ -51,10 +51,10 @@
     "@types/file-type" "*"
     "@types/node" "*"
 
-"@types/lodash@4.14.121":
-  version "4.14.121"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.121.tgz#9327e20d49b95fc2bf983fc2f045b2c6effc80b9"
-  integrity sha512-ORj7IBWj13iYufXt/VXrCNMbUuCTJfhzme5kx9U/UtcIPdJYuvPDUAlHlbNhz/8lKCLy9XGIZnGrqXOtQbPGoQ==
+"@types/lodash@4.14.122":
+  version "4.14.122"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.122.tgz#3e31394c38cf1e5949fb54c1192cbc406f152c6c"
+  integrity sha512-9IdED8wU93ty8gP06ninox+42SBSJHp2IAamsSYMUY76mshRTeUsid/gtbl8ovnOwy8im41ib4cxTiIYMXGKew==
 
 "@types/minimist@1.2.0":
   version "1.2.0"
@@ -90,10 +90,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.0.10.tgz#3a054668102953abc545f53414f6cb91067911ec"
-  integrity sha512-muK7j15iJqQNySqKxEmkP5dWSTKiHZ2g3cEI2Udns9bi5DGvbN+8zUdqlfQcNK43nUaJ9oSy7C4U3KPWVfGvCg==
+"@wireapp/commons@1.0.11":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.0.11.tgz#207944e137a3a3bedeff8c795795491fd98324fa"
+  integrity sha512-OzCtuZ3HyHQok2dliuC85aRH81jYzVM+dGAXr586slcx9BBoY1g8gjNr1rxjHmQcdwOFe82iugDswVG3rW7e5g==
   dependencies:
     "@types/ansi-regex" "4.0.0"
     "@types/node" "11.9.5"
