@@ -2,7 +2,7 @@
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
     "@wireapp/certificate-check": "0.0.4",
-    "@wireapp/commons": "1.0.10",
+    "@wireapp/commons": "1.0.11",
     "ansi-regex": "4.0.0",
     "auto-launch": "5.0.5",
     "electron-window-state": "5.0.3",
