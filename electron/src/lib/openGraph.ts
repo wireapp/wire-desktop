@@ -19,10 +19,9 @@
 
 import axios, {AxiosRequestConfig} from 'axios';
 import {IncomingMessage} from 'http';
+import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 import {parse as parseUrl} from 'url';
-const {parse: openGraphParse} = require('open-graph');
 
-import {OpenGraphResult} from '../interfaces/';
 import {USER_AGENT} from '../js/config';
 import {getLogger} from '../js/getLogger';
 
@@ -138,7 +137,7 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
     meta.image = {};
   }
 
-  if (imageData) {
+  if (imageData && typeof meta.image === 'object' && !Array.isArray(meta.image)) {
     meta.image.data = imageData;
   } else {
     delete meta.image;
@@ -150,7 +149,7 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
 const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: OpenGraphResult) => void) => {
   return fetchOpenGraphData(url)
     .then(meta => {
-      if (meta.image && meta.image.url) {
+      if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
         const [imageUrl] = arrayify(meta.image.url);
 
         return fetchImageAsBase64(imageUrl)
@@ -191,7 +190,7 @@ const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
     throw error;
   }
 
-  if (meta.image && meta.image.url) {
+  if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
     const [imageUrl] = arrayify(meta.image.url);
 
     const uri = await fetchImageAsBase64(imageUrl);
