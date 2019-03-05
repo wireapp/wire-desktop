@@ -2541,10 +2541,10 @@ electron-winstaller@3.0.4:
     pify "^4.0.1"
     temp "^0.9.0"
 
-electron@5.0.0-beta.4:
-  version "5.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0-beta.4.tgz#436af638c20c7563e749d9d7599c4267b665759b"
-  integrity sha512-8rBHuR04zcyJP1MfnhbbqExeIywxrbzR9FyKyrLc8O/ho4tEpKbxgGWoRStFDrv9YYL9BEjsaaExPseI7Rwu5A==
+electron@5.0.0-beta.5:
+  version "5.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0-beta.5.tgz#0b3cc7417a75b36483943f67987fdb4aea27f3a7"
+  integrity sha512-sBYm1WJ4GwC6KLo8EQKdqY0vGmKf+d1VUt79zKtqnKK19FZ1TktMPpLo8hOBesrxjx19qeX9RYF8z2rP5viKmw==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
