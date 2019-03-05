@@ -29,7 +29,7 @@ node('master') {
       withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
         sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
       }
-      sh 'pip install -r requirements.txt'
+      sh 'pip install -r jenkins/requirements.txt'
       def NODE = tool name: 'node-v10.15.1', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'

@@ -41,7 +41,7 @@ const LINUX_SETTINGS = {
   afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
   desktop: LINUX_DESKTOP,
-  fpm: ['--name', 'wire-desktop'],
+  fpm: ['--name', '<%= info.nameShortLinux %>'],
 };
 
 dotenv.config({path: '.env.defaults'});
@@ -80,13 +80,7 @@ module.exports = function(grunt) {
     buildNumber: process.env.BUILD_NUMBER || '0',
 
     clean: {
-      build: 'wrap/build',
-      dist: 'wrap/dist',
-      linux: ['wrap/**/linux*', 'wrap/**/wire*'],
-      macos: ['wrap/**/<%= info.name %>-darwin*', '*.pkg'],
-      pkg: '*.pkg',
-      win: 'wrap/**/<%= info.name %>-win*',
-      wrap: 'wrap',
+      wrap: 'wrap/**',
     },
 
     'create-windows-installer': {
@@ -233,28 +227,6 @@ module.exports = function(grunt) {
     },
 
     electronbuilder: {
-      linux_custom: {
-        options: {
-          deb: {
-            ...LINUX_SETTINGS,
-            depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
-            desktop: LINUX_DESKTOP,
-            fpm: ['--name', '<% info.nameShortLinux %>'],
-          },
-          linux: {
-            artifactName: '${productName}-${version}_${arch}.${ext}',
-            category: LINUX_SETTINGS.category,
-            executableName: '<% info.nameShortLinux %>',
-          },
-          rpm: {
-            ...LINUX_SETTINGS,
-            depends: ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'],
-            fpm: ['--name', '<% info.nameShortLinux %>'],
-          },
-          targets: ['deb', 'rpm', 'AppImage'],
-        },
-      },
-
       linux_internal: {
         options: {
           deb: {
@@ -287,9 +259,9 @@ module.exports = function(grunt) {
             artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
             desktop: LINUX_DESKTOP,
-            executableName: 'wire-desktop',
+            executableName: '<%= info.nameShortLinux %>',
           },
-          productName: 'wire-desktop',
+          productName: '<%= info.nameShortLinux %>',
           targets: [grunt.option('target') || 'dir'],
         },
       },
@@ -303,7 +275,7 @@ module.exports = function(grunt) {
           linux: {
             artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
-            executableName: 'wire-desktop',
+            executableName: '<%= info.nameShortLinux %>',
           },
           rpm: {
             ...LINUX_SETTINGS,
@@ -345,21 +317,16 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('set-custom-data', () => {
-    grunt.log.write(`Webapp base set to "${baseData.appBase}". `).ok();
-    grunt.log.write(`App description set to "${baseData.description}". `).ok();
-    grunt.log.write(`App bundle ID set to "${baseData.bundleId}". `).ok();
-    grunt.log.write(`App copyright set to "${baseData.copyright}". `).ok();
-    grunt.log.write(`App custom protocol set to "${baseData.customProtocolName}". `).ok();
-    grunt.log.write(`Website URL set to "${baseData.websiteUrl}". `).ok();
-    grunt.log.write(`Admin URL set to "${baseData.adminUrl}". `).ok();
-    grunt.log.write(`Legal URL set to "${baseData.legalUrl}". `).ok();
-    grunt.log.write(`Licenses URL set to "${baseData.licensesUrl}". `).ok();
-    grunt.log.write(`Privacy URL set to "${baseData.privacyUrl}". `).ok();
-    grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
-    grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
-    grunt.log.write(`Windows installer icon URL set to "${baseData.installerIconUrl}". `).ok();
-    grunt.log.write(`macOS developer app info set to "${baseData.sign.app}". `).ok();
-    grunt.log.write(`macOS developer package info set to "${baseData.sign.package}". `).ok();
+    const logEntries = (obj, name) => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === 'object') {
+          return logEntries(value, `${name}.${key}`);
+        }
+        grunt.log.write(`${name}.${key} set to "${value}". `).ok();
+      });
+    };
+
+    logEntries(baseData, 'baseData');
 
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
     const info = grunt.config.get('info');
@@ -368,6 +335,7 @@ module.exports = function(grunt) {
     electronPkg.appBase = info.appBase;
     electronPkg.copyright = info.copyright;
     electronPkg.customProtocolName = info.customProtocolName;
+    electronPkg.homepage = info.websiteUrl;
     electronPkg.legalUrl = info.legalUrl;
     electronPkg.licensesUrl = info.licensesUrl;
     electronPkg.maximumAccounts = info.maximumAccounts;
@@ -520,7 +488,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('macos', [
-    'clean:macos',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -530,7 +498,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('macos-prod', [
-    'clean:macos',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -541,7 +509,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('macos-custom', [
-    'clean:macos',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -552,7 +520,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('win', [
-    'clean:win',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -563,7 +531,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('win-prod', [
-    'clean:win',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -574,7 +542,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('win-custom', [
-    'clean:win',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -585,7 +553,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('linux', [
-    'clean:linux',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -595,7 +563,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('linux-prod-package', [
-    'clean:linux',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -606,17 +574,17 @@ module.exports = function(grunt) {
   grunt.registerTask('linux-prod', ['linux-prod-package', 'electronbuilder:linux_prod']);
 
   grunt.registerTask('linux-custom', [
-    'clean:linux',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
     'release-custom',
     'bundle',
-    'electronbuilder:linux_custom',
+    'electronbuilder:linux_prod',
   ]);
 
   grunt.registerTask('linux-other-internal', [
-    'clean:linux',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -626,7 +594,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('linux-other', [
-    'clean:linux',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
