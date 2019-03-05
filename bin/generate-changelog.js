@@ -24,10 +24,12 @@ const minimist = require('minimist');
 const {exec} = require('child_process');
 const {promisify} = require('util');
 const electronReleases = require('electron-releases/lite.json');
+const path = require('path');
 
 const execAsync = promisify(exec);
 const electronVersion = require('../package.json').devDependencies.electron;
 const argv = minimist(process.argv.slice(1));
+const toolname = path.basename(__filename);
 
 const getDate = () => {
   const pad = str => str.toString().padStart(2, '0');
@@ -44,41 +46,44 @@ const getChromeVersion = () => {
   return 'Unknown';
 };
 
-const getLatestTag = async platform => {
-  const command = `git describe --abbrev=0 --tags${platform ? ` --match="${platform}/*"` : ''}`;
-  const {stderr, stdout} = await execAsync(command);
-  if (stderr) {
-    throw stderr;
+const getTagRange = async platform => {
+  const latestTagCommand = `git describe --abbrev=0 --tags --match="${platform}/*"`;
+  const {stderr: errLatest, stdout: latestTag} = await execAsync(latestTagCommand);
+  if (errLatest) {
+    throw new Error(errLatest);
   }
-  return stdout.toString().trim();
+
+  const previousTagCommant = `${latestTagCommand} "${latestTag.trim()}^"`;
+  const {stderr: errPrevious, stdout: previousTag} = await execAsync(previousTagCommant);
+  if (errPrevious) {
+    throw new Error(errPrevious);
+  }
+
+  return `${previousTag.trim()}...${latestTag.trim()}`;
 };
 
 let platform = '';
-let platformName = '';
 
 if (argv.linux) {
-  platform = 'linux';
-  platformName = 'Linux';
+  platform = 'Linux';
 }
 
 if (argv.windows) {
-  platform = 'windows';
-  platformName = 'Windows';
+  platform = 'Windows';
 }
 
 if (argv.macos) {
-  platform = 'macos';
-  platformName = 'macOS';
+  platform = 'macOS';
 }
 
 if (!platform) {
-  console.error('Error: No platform defined. Example: generate-changelog.js --windows');
+  console.error(`Error: No platform defined. Example: ${toolname} --windows`);
   process.exit(1);
 }
 
 (async () => {
-  const tag = await getLatestTag(platform);
-  let log = await generate({exclude: ['build', 'chore', 'runfix'], tag});
+  const tagRange = await getTagRange(platform.toLowerCase());
+  let log = await generate({exclude: ['build', 'chore', 'runfix'], tag: tagRange});
   log = log.replace(/#+ [\d]+.*/, '').trim();
   log =
     `### Release Notes\n\n${log}\n\n` +
@@ -88,7 +93,7 @@ if (!platform) {
     `### Public Release Date\n\n` +
     `${getDate()}\n\n` +
     `### Changelog\n\n` +
-    `[${platformName}](https://github.com/wireapp/wire-desktop/compare/${tag}...master)`;
+    `[${platform}](https://github.com/wireapp/wire-desktop/compare/${tagRange})`;
 
   console.log(log);
 })();
