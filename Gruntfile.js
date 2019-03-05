@@ -335,6 +335,7 @@ module.exports = function(grunt) {
     electronPkg.appBase = info.appBase;
     electronPkg.copyright = info.copyright;
     electronPkg.customProtocolName = info.customProtocolName;
+    electronPkg.homepage = info.websiteUrl;
     electronPkg.legalUrl = info.legalUrl;
     electronPkg.licensesUrl = info.licensesUrl;
     electronPkg.maximumAccounts = info.maximumAccounts;
