@@ -424,7 +424,7 @@ registerCoreProtocol();
 initRaygun.initClient();
 appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate();
+lifecycle.checkForUpdate().catch(logger.error);
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
@@ -433,5 +433,5 @@ if (lifecycle.isFirstInstance) {
   handleAppEvents();
   renameWebViewLogFiles();
   initElectronLogFile();
-  new ElectronWrapperInit().run().catch(error => logger.error(error));
+  new ElectronWrapperInit().run().catch(logger.error);
 }
