@@ -25,7 +25,7 @@
     "cross-env": "5.2.0",
     "css-loader": "2.1.0",
     "dotenv": "6.2.0",
-    "electron": "4.0.6",
+    "electron": "4.0.7",
     "electron-builder": "20.38.5",
     "electron-packager": "13.1.0",
     "electron-winstaller": "3.0.4",
