@@ -108,11 +108,11 @@ node('node160') {
 
   stage('Archive build artifacts') {
     if (production) {
-      archiveArtifacts 'info.json,wrap\\prod\\Wire-win32-ia32\\**'
+      archiveArtifacts 'wrap\\prod\\Wire-win32-ia32\\**'
     } else if (custom) {
-      archiveArtifacts "info.json,wrap\\custom\\${app_name}-win32-ia32\\**"
+      archiveArtifacts "wrap\\custom\\${app_name}-win32-ia32\\**"
     } else {
-      archiveArtifacts 'info.json,wrap\\internal\\WireInternal-win32-ia32\\**'
+      archiveArtifacts 'wrap\\internal\\WireInternal-win32-ia32\\**'
     }
   }
 
