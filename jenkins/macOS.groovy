@@ -65,6 +65,7 @@ node('master') {
     if (production) {
       archiveArtifacts 'info.json,Wire.pkg'
     } else if (custom) {
+      echo "Archiving ${app_name}.pkg"
       archiveArtifacts "info.json,${app_name}.pkg"
     } else {
       // Internal
