@@ -2478,10 +2478,10 @@ electron-osx-sign@0.4.11, electron-osx-sign@^0.4.11:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-packager@13.1.0:
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-13.1.0.tgz#be2d2ecb5ca08932d8e2ec20d02925c245e3780d"
-  integrity sha512-XHoDqgG90NGBfgUJ3NcOmELAuvHucOIYzi7AhZKIC8FivRR45PDs0pXSf53OqTXXOkdL/1xSveogvJLjKJwkAQ==
+electron-packager@13.1.1:
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-13.1.1.tgz#04e199786216e009c96d938e0c0092dae5e82129"
+  integrity sha512-3Drgcw8OEOP3Psw/PprloAFJSkSUSQgjUq3AmWffJGB3Kj5WXmZl6A3GOUs8aT7bP/8GWg4oYqSiCSnA5PQkdQ==
   dependencies:
     asar "^1.0.0"
     debug "^4.0.1"
