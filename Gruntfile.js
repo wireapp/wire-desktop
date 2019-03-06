@@ -585,11 +585,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('linux-custom', ['linux-custom-package', 'electronbuilder:linux_prod']);
 
-  grunt.registerTask('linux-other-internal-package', ['linux-package']);
+  grunt.registerTask('linux-other-internal', ['linux-package', 'electronbuilder:linux_other']);
 
-  grunt.registerTask('linux-other-internal', ['linux-other-internal-package', 'electronbuilder:linux_other']);
-
-  grunt.registerTask('linux-other-package', ['linux-prod-package']);
-
-  grunt.registerTask('linux-other', ['linux-other-package', 'electronbuilder:linux_other']);
+  grunt.registerTask('linux-other', ['linux-prod-package', 'electronbuilder:linux_other']);
 };
