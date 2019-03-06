@@ -561,8 +561,6 @@ module.exports = function(grunt) {
     'bundle',
   ]);
 
-  grunt.registerTask('linux', ['linux-package', 'electronbuilder:linux_internal']);
-
   grunt.registerTask('linux-prod-package', [
     'clean:wrap',
     'update-keys',
@@ -572,8 +570,6 @@ module.exports = function(grunt) {
     'bundle',
   ]);
 
-  grunt.registerTask('linux-prod', ['linux-prod-package', 'electronbuilder:linux_prod']);
-
   grunt.registerTask('linux-custom-package', [
     'clean:wrap',
     'update-keys',
@@ -582,6 +578,10 @@ module.exports = function(grunt) {
     'release-custom',
     'bundle',
   ]);
+
+  grunt.registerTask('linux', ['linux-package', 'electronbuilder:linux_internal']);
+
+  grunt.registerTask('linux-prod', ['linux-prod-package', 'electronbuilder:linux_prod']);
 
   grunt.registerTask('linux-custom', ['linux-custom-package', 'electronbuilder:linux_prod']);
 
