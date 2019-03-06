@@ -76,7 +76,7 @@ switch (true) {
     platform = 'macOS';
     break;
   default:
-    console.error(`Error: No or invalid platform defined. Example: ${toolname} --{linux,macos,windows}`);
+    console.error(`Error: No or invalid platform defined. Use ${toolname} --{linux,macos,windows}`);
     process.exit(1);
 }
 
