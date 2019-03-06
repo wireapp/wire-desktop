@@ -19,15 +19,20 @@
  *
  */
 
-const {generate} = require('generate-changelog');
-const minimist = require('minimist');
+//@ts-check
+
 const {exec} = require('child_process');
 const {promisify} = require('util');
-const electronReleases = require('electron-releases/lite.json');
 const path = require('path');
 
+const minimist = require('minimist');
+const {generate: generateChangelog} = require('generate-changelog');
+
+//@ts-ignore
+const electronReleases = require('electron-releases/lite.json');
+//@ts-ignore
+const {electron: electronVersion} = require('../package.json').devDependencies;
 const execAsync = promisify(exec);
-const electronVersion = require('../package.json').devDependencies.electron;
 const argv = minimist(process.argv.slice(1));
 const toolname = path.basename(__filename);
 
@@ -39,11 +44,7 @@ const getDate = () => {
 
 const getChromeVersion = () => {
   const electronRelease = electronReleases.find(({version}) => version === electronVersion);
-  if (electronRelease) {
-    return electronRelease.deps.chrome;
-  }
-
-  return 'Unknown';
+  return electronRelease ? electronRelease.deps.chrome : 'Unknown';
 };
 
 const getTagRange = async platform => {
@@ -59,41 +60,44 @@ const getTagRange = async platform => {
     throw new Error(errPrevious);
   }
 
-  return `${previousTag.trim()}...${latestTag.trim()}`;
+  return {latestTag: latestTag.trim(), previousTag: previousTag.trim()};
 };
 
 let platform = '';
 
-if (argv.linux) {
-  platform = 'Linux';
-}
-
-if (argv.windows) {
-  platform = 'Windows';
-}
-
-if (argv.macos) {
-  platform = 'macOS';
-}
-
-if (!platform) {
-  console.error(`Error: No platform defined. Example: ${toolname} --windows`);
-  process.exit(1);
+switch (true) {
+  case !!argv.linux:
+    platform = 'Linux';
+    break;
+  case argv.windows:
+    platform = 'Windows';
+    break;
+  case !!argv.macos:
+    platform = 'macOS';
+    break;
+  default:
+    console.error(`Error: No or invalid platform defined. Example: ${toolname} --{linux,macos,windows}`);
+    process.exit(1);
 }
 
 (async () => {
-  const tagRange = await getTagRange(platform.toLowerCase());
-  let log = await generate({exclude: ['build', 'chore', 'runfix'], tag: tagRange});
-  log = log.replace(/#+ [\d]+.*/, '').trim();
-  log =
-    `### Release Notes\n\n${log}\n\n` +
-    `### Versions\n\n` +
-    `Electron ${electronVersion}\n` +
-    `Chrome ${getChromeVersion()}\n\n` +
-    `### Public Release Date\n\n` +
-    `${getDate()}\n\n` +
-    `### Changelog\n\n` +
-    `[${platform}](https://github.com/wireapp/wire-desktop/compare/${tagRange})`;
+  try {
+    const {latestTag, previousTag} = await getTagRange(platform.toLowerCase());
+    let log = await generateChangelog({exclude: ['build', 'chore', 'runfix'], tag: previousTag});
+    log = log.replace(/#+ [\d]+.*/, '').trim();
+    log =
+      `### Release Notes\n\n${log}\n\n` +
+      `### Versions\n\n` +
+      `Electron ${electronVersion}\n` +
+      `Chrome ${getChromeVersion()}\n\n` +
+      `### Public Release Date\n\n` +
+      `${getDate()}\n\n` +
+      `### Changelog\n\n` +
+      `[${platform}](https://github.com/wireapp/wire-desktop/compare/${previousTag}...${latestTag})`;
 
-  console.log(log);
+    console.log(log);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
 })();
