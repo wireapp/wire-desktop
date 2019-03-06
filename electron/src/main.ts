@@ -19,7 +19,7 @@
 
 // Modules
 import {LogFactory} from '@wireapp/commons';
-import {Server} from '@wireapp/desktop-server';
+import {Server} from '@wireapp/desktop-updater';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -172,7 +172,10 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     currentClientVersion: '3.6',
     currentEnvironment: 'DEV',
     currentEnvironmentBaseUrl: BASE_URL,
-    trustStore: ['9aad851eb6ae535dc7a6b81ee44dc8418d192539e42709a3f6edf808a40a8849'],
+    trustStore: [
+      '9aad851eb6ae535dc7a6b81ee44dc8418d192539e42709a3f6edf808a40a8849',
+      '01fcf315049c59b82e0902121f743872573699e33134feddb3d068648258330b',
+    ],
     updatesEndpoint: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
   }).start();
 
