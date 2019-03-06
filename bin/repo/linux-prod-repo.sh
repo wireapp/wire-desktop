@@ -40,7 +40,7 @@ _error_exit() {
   exit 1
 }
 
-mkdir -p "${BINARY_DIR}" "${STABLE_DIR}/main/binary-"{all,i386,amd64} "${CONF_DIR}" "${CACHE_DIR}"
+mkdir -p "${BINARY_DIR}" "${STABLE_DIR}/main/binary-amd64" "${CONF_DIR}" "${CACHE_DIR}"
 
 if ! _command_exist "gpg2"; then
   _error_exit "Could not find gpg2. Please install package 'gnupg2' version 2.0.x."

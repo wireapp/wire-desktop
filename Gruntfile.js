@@ -254,7 +254,7 @@ module.exports = function(grunt) {
 
       linux_other: {
         options: {
-          arch: grunt.option('arch') || process.arch,
+          arch: 'x64',
           linux: {
             artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
@@ -286,7 +286,7 @@ module.exports = function(grunt) {
       },
 
       options: {
-        arch: 'all',
+        arch: 'x64',
         asar: false,
         publish: null,
       },
@@ -412,19 +412,6 @@ module.exports = function(grunt) {
     delete options.arch;
 
     const done = this.async();
-
-    if (arch === 'all') {
-      return electronBuilder
-        .build({
-          config: options,
-          targets: electronBuilder.Platform.LINUX.createTarget(
-            targets,
-            electronBuilder.Arch.ia32,
-            electronBuilder.Arch.x64
-          ),
-        })
-        .then(done, done);
-    }
 
     electronBuilder
       .build({
@@ -552,14 +539,13 @@ module.exports = function(grunt) {
     'create-windows-installer:custom',
   ]);
 
-  grunt.registerTask('linux', [
+  grunt.registerTask('linux-package', [
     'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
     'release-internal',
     'bundle',
-    'electronbuilder:linux_internal',
   ]);
 
   grunt.registerTask('linux-prod-package', [
@@ -571,35 +557,22 @@ module.exports = function(grunt) {
     'bundle',
   ]);
 
-  grunt.registerTask('linux-prod', ['linux-prod-package', 'electronbuilder:linux_prod']);
-
-  grunt.registerTask('linux-custom', [
+  grunt.registerTask('linux-custom-package', [
     'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
     'release-custom',
     'bundle',
-    'electronbuilder:linux_prod',
   ]);
 
-  grunt.registerTask('linux-other-internal', [
-    'clean:wrap',
-    'update-keys',
-    'gitinfo',
-    'set-custom-data',
-    'release-internal',
-    'bundle',
-    'electronbuilder:linux_other',
-  ]);
+  grunt.registerTask('linux', ['linux-package', 'electronbuilder:linux_internal']);
 
-  grunt.registerTask('linux-other', [
-    'clean:wrap',
-    'update-keys',
-    'gitinfo',
-    'set-custom-data',
-    'release-prod',
-    'bundle',
-    'electronbuilder:linux_other',
-  ]);
+  grunt.registerTask('linux-prod', ['linux-prod-package', 'electronbuilder:linux_prod']);
+
+  grunt.registerTask('linux-custom', ['linux-custom-package', 'electronbuilder:linux_prod']);
+
+  grunt.registerTask('linux-other-internal', ['linux-package', 'electronbuilder:linux_other']);
+
+  grunt.registerTask('linux-other', ['linux-prod-package', 'electronbuilder:linux_other']);
 };

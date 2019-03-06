@@ -33,18 +33,4 @@ export interface OnHeadersReceivedDetails {
   };
 }
 
-export interface OpenGraphResult {
-  description?: string;
-  image?: {
-    data?: string;
-    height?: string;
-    url?: string;
-    width?: string;
-  };
-  site_name?: string;
-  title: string;
-  type?: string;
-  url?: string;
-}
-
 export type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;
