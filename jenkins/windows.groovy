@@ -55,13 +55,13 @@ node('node160') {
   stage('Sign build') {
     try {
       if (production) {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Update.exe"'
+        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Squirrel.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Wire.exe"'
       } else if (custom) {
-        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\Update.exe\""
+        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\Squirrel.exe\""
         bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\${app_name}.exe\""
       } else {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\Update.exe"'
+        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\Squirrel.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\WireInternal.exe"'
       }
     } catch(e) {
