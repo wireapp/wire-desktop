@@ -254,7 +254,7 @@ module.exports = function(grunt) {
 
       linux_other: {
         options: {
-          arch: grunt.option('arch') || process.arch,
+          arch: 'x64',
           linux: {
             artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
@@ -286,7 +286,7 @@ module.exports = function(grunt) {
       },
 
       options: {
-        arch: 'all',
+        arch: 'x64',
         asar: false,
         publish: null,
       },
@@ -412,19 +412,6 @@ module.exports = function(grunt) {
     delete options.arch;
 
     const done = this.async();
-
-    if (arch === 'all') {
-      return electronBuilder
-        .build({
-          config: options,
-          targets: electronBuilder.Platform.LINUX.createTarget(
-            targets,
-            electronBuilder.Arch.ia32,
-            electronBuilder.Arch.x64
-          ),
-        })
-        .then(done, done);
-    }
 
     electronBuilder
       .build({
