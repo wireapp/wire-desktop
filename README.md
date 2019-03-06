@@ -58,15 +58,15 @@ yarn build:win
 yarn build:linux
 ```
 
-### Other Linux targets or architectures
+### Other Linux targets
 
-If you would like to build for another Linux target or architecture, run the following command:
+If you would like to build for another Linux target, run the following command:
 
 ```shell
-grunt --arch=<arch> --target=<target> linux-other
+grunt --target=<target> linux-other
 ```
 
-Replace `<arch>` and `<target>` with your desired architecture (e.g. `"ia32"`) and target (e.g. `"rpm"`). Have a look at the [documentation for `electron-builder`](https://github.com/electron-userland/electron-builder/wiki/Options) for the available options. Note that we cannot offer support for uncommon architectures or targets.
+Replace `<target>` with your desired target (e.g. `"rpm"`). Have a look at the [documentation for `electron-builder`](https://www.electron.build/configuration/linux) for the available options. Note that we cannot offer support for uncommon targets.
 
 ### Troubleshooting
 
