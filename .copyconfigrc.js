@@ -11,7 +11,8 @@ module.exports = {
   files: {
     [`${imageSource}/**`]: 'electron/img/',
     [`${macOsSource}/**`]: 'resources/macos/',
-    [`${imageSource}/logo/256x256.png`]: ['resources/icons/256x256.png', 'electron/img/logo.256.png'],
+    [`${imageSource}/logo/256x256.png`]: 'electron/img/logo.256.png',
+    [`${imageSource}/logo/logo.ico`]: 'electron/img/logo.ico',
     [`${pkg.name}/.env.defaults`]: '.env.defaults',
   },
   repositoryUrl,
