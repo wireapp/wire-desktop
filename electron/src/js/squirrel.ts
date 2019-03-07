@@ -38,7 +38,7 @@ const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
 const windowsAppData = process.env.APPDATA || '';
 
-if (!windowsAppData) {
+if (!windowsAppData && environment.platform.IS_WINDOWS) {
   logger.error('No Windows AppData directory found.');
 }
 
