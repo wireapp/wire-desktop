@@ -28,7 +28,7 @@ const downloadImage = (bytes: Uint8Array, timestamp?: string) => {
     const options: SaveDialogOptions = {};
 
     const dateObj = new Date(Number(timestamp));
-    if (!isNaN(dateObj.getTime())) {
+    if (dateObj.getTime() && !isNaN(dateObj.getTime())) {
       const momentObj = moment(dateObj);
       const filename = `Wire ${momentObj.format('YYYY-MM-DD')} at ${momentObj.format('H.mm.ss')}`;
       options.defaultPath = filename;
