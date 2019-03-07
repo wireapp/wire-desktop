@@ -17,16 +17,13 @@
  *
  */
 
-import {dialog} from 'electron';
+import {SaveDialogOptions, dialog} from 'electron';
 import * as fs from 'fs';
-import imageType = require('image-type');
+import imageType from 'image-type';
 
 const download = (fileName: string, bytes: Uint8Array) => {
   return new Promise((resolve, reject) => {
-    const options: {
-      defaultPath?: string;
-      filters?: {extensions: string[]; name: string}[];
-    } = {};
+    const options: SaveDialogOptions = {};
     const type = imageType(bytes);
 
     if (fileName) {
@@ -46,7 +43,7 @@ const download = (fileName: string, bytes: Uint8Array) => {
       if (chosenPath !== undefined) {
         fs.writeFile(chosenPath, new Buffer(bytes.buffer), error => (error ? reject(error) : resolve()));
       } else {
-        reject('no path specified');
+        reject(new Error('no path specified'));
       }
     });
   });
