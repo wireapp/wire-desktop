@@ -37,7 +37,7 @@
     "@types/image-type": "3.0.0",
     "@types/lodash": "4.14.122",
     "@types/minimist": "1.2.0",
-    "@types/node": "11.10.4",
+    "@types/node": "11.10.5",
     "@types/open-graph": "0.2.0",
     "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5",
