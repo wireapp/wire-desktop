@@ -20,14 +20,18 @@
 import {SaveDialogOptions, dialog} from 'electron';
 import * as fs from 'fs';
 import imageType from 'image-type';
+import * as moment from 'moment';
 
-const download = (fileName: string, bytes: Uint8Array) => {
+const downloadImage = (bytes: Uint8Array, timestamp?: string) => {
   return new Promise((resolve, reject) => {
-    const options: SaveDialogOptions = {};
     const type = imageType(bytes);
+    const options: SaveDialogOptions = {};
 
-    if (fileName) {
-      options.defaultPath = fileName;
+    const dateObj = new Date(Number(timestamp));
+    if (dateObj.getTime() && !isNaN(dateObj.getTime())) {
+      const momentObj = moment(dateObj);
+      const filename = `Wire ${momentObj.format('YYYY-MM-DD')} at ${momentObj.format('H.mm.ss')}`;
+      options.defaultPath = filename;
     }
 
     if (type && type.ext) {
@@ -37,16 +41,15 @@ const download = (fileName: string, bytes: Uint8Array) => {
           name: 'Images',
         },
       ];
+      options.defaultPath += `.${type.ext}`;
     }
 
     dialog.showSaveDialog(options, chosenPath => {
-      if (chosenPath !== undefined) {
+      if (chosenPath) {
         fs.writeFile(chosenPath, new Buffer(bytes.buffer), error => (error ? reject(error) : resolve()));
-      } else {
-        reject(new Error('no path specified'));
       }
     });
   });
 };
 
-export {download};
+export {downloadImage};
