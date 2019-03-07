@@ -7,7 +7,6 @@ node('master') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def app_name = params.APP_NAME
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
