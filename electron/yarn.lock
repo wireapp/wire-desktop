@@ -886,10 +886,10 @@ fast-levenshtein@~2.0.4:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
-file-type@^4.1.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/file-type/-/file-type-4.4.0.tgz#1b600e5fca1fbdc6e80c0a70c71c8dba5f7906c5"
-  integrity sha1-G2AOX8ofvcboDApwxxyNul95BsU=
+file-type@^10.9.0:
+  version "10.9.0"
+  resolved "https://registry.yarnpkg.com/file-type/-/file-type-10.9.0.tgz#f6c12c7cb9e6b8aeefd6917555fd4f9eadf31891"
+  integrity sha512-9C5qtGR/fNibHC5gzuMmmgnjH3QDDLKMa8lYe9CiZVmAnI4aUaoMh40QyUPzzs0RYo837SOBKh7TYwle4G8E4w==
 
 file-url@2.0.2:
   version "2.0.2"
@@ -1127,12 +1127,12 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-image-type@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/image-type/-/image-type-3.0.0.tgz#1502af3135f906e122c877c31e94af7b7a9146c5"
-  integrity sha1-FQKvMTX5BuEiyHfDHpSve3qRRsU=
+image-type@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/image-type/-/image-type-4.0.0.tgz#91e84c887451644706ff3297360ff3d89881fac5"
+  integrity sha512-V1NCIexmmA9dBoO07NOFXe2nTU06siLuuaGD1zLRbLfTYmGMLPShPakPf3ts6J0ctdpLpJRKFcJWKjuacwZzWA==
   dependencies:
-    file-type "^4.1.0"
+    file-type "^10.9.0"
 
 inflight@^1.0.4:
   version "1.0.6"
