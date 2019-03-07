@@ -42,7 +42,7 @@ import {
   setCertificateVerifyProc,
 } from './lib/CertificateVerifyProcManager';
 import {registerCoreProtocol} from './lib/CoreProtocol';
-import {download} from './lib/download';
+import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {SingleSignOn} from './lib/SingleSignOn';
@@ -81,8 +81,8 @@ let main: BrowserWindow;
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event: IpcMessageEvent, fileName: string, bytes: Uint8Array) => {
-    await download(fileName, bytes);
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
+    return downloadImage(bytes, timestamp);
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
