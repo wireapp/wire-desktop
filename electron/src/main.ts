@@ -169,6 +169,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   main = await new Server({
     browserWindowOptions: options,
+    connectivityCheckEndpoints: ['https://prod-nginz-https.wire.com', 'https://prod-assets.wire.com'],
     currentClientVersion: '3.6',
     currentEnvironment: 'DEV',
     currentEnvironmentBaseUrl: BASE_URL,
