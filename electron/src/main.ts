@@ -316,6 +316,12 @@ const initElectronLogFile = (): void => {
   fs.ensureFileSync(LOG_FILE);
 };
 
+const getWebViewId = (contents: Electron.WebContents): string => {
+  const url = contents.getURL();
+  const search = '&id=';
+  return url.substr(url.indexOf(search) + search.length);
+};
+
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
@@ -357,10 +363,10 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (webviewEvent, contents) => {
+    app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
-      switch ((contents as any).getType()) {
+      switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
@@ -387,6 +393,17 @@ class ElectronWrapperInit {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
+          contents.on('console-message', async (event, level, message) => {
+            const webViewId = getWebViewId(contents);
+            if (webViewId) {
+              const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
+              try {
+                await LogFactory.writeMessage(message, logFilePath);
+              } catch (error) {
+                logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+              }
+            }
+          });
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 

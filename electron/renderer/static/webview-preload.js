@@ -167,8 +167,6 @@ process.once('loaded', () => {
   global.openGraph = getOpenGraphData;
   global.openGraphAsync = getOpenGraphDataAsync;
   global.setImmediate = _setImmediate;
-
-  enableFileLogging();
 });
 
 // Expose SSO capability to webapp before anything is rendered
