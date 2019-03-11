@@ -182,7 +182,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     main.webContents.openDevTools({mode: 'detach'});
   }
 
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
+  await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {

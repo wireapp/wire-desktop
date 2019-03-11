@@ -74,12 +74,13 @@ ipcRenderer.once(
 
     // Get locales
     const labels = [];
-    const dataStrings = document.querySelectorAll<any>('[data-string]');
+    const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
 
     for (const index in dataStrings) {
       const label = dataStrings[index];
       labels.push(label.dataset.string);
     }
+
     ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
   }
 );
