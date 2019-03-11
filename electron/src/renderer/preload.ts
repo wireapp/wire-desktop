@@ -90,7 +90,7 @@ const setupIpcInterface = (): void => {
 
 const addDragRegion = (): void => {
   if (environment.platform.IS_MAC_OS) {
-    // add titlebar ghost to prevent interactions with the content while dragging
+    // add title bar ghost to prevent interactions with the content while dragging
     const titleBar = document.createElement('div');
     titleBar.className = 'drag-region';
     document.body.appendChild(titleBar);

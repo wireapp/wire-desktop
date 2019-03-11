@@ -18,7 +18,7 @@
  */
 
 // Modules
-import {LogFactory} from '@wireapp/commons';
+import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -26,6 +26,7 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
@@ -175,7 +176,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
 
   if (argv['enable-logging']) {
-    webappURL += `&enableLogging=@wireapp`;
+    webappURL += `&enableLogging=@wireapp/*`;
   }
 
   if (argv.devtools) {
@@ -316,6 +317,11 @@ const initElectronLogFile = (): void => {
   fs.ensureFileSync(LOG_FILE);
 };
 
+const getWebViewId = (contents: Electron.WebContents): string | null => {
+  const currentLocation = new URL(contents.getURL());
+  return currentLocation.searchParams.get('id');
+};
+
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
@@ -357,10 +363,10 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (webviewEvent, contents) => {
+    app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
-      switch ((contents as any).getType()) {
+      switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
@@ -387,6 +393,17 @@ class ElectronWrapperInit {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
+          contents.on('console-message', async (event, level, message) => {
+            const webViewId = getWebViewId(contents);
+            if (webViewId && ValidationUtil.isUUIDv4(webViewId)) {
+              const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
+              try {
+                await LogFactory.writeMessage(message, logFilePath);
+              } catch (error) {
+                logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+              }
+            }
+          });
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
