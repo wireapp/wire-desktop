@@ -30,7 +30,7 @@ node('master') {
         sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
       }
       sh 'pip install -r jenkins/requirements.txt'
-      def NODE = tool name: 'node-v10.15.1', type: 'nodejs'
+      def NODE = tool name: 'node-v10.15.3', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
@@ -63,13 +63,13 @@ node('master') {
 
   stage('Archive build artifacts') {
     if (production) {
-      archiveArtifacts 'info.json,Wire.pkg'
+      archiveArtifacts 'Wire.pkg'
     } else if (custom) {
-      archiveArtifacts "info.json,${app_name}.pkg"
+      archiveArtifacts "${app_name}.pkg"
     } else {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/WireInternal.zip\""
-      archiveArtifacts "info.json,wrap/WireInternal.zip,${version}.tar.gz.sig"
+      archiveArtifacts "wrap/WireInternal.zip,${version}.tar.gz.sig"
     }
   }
 

@@ -70,15 +70,13 @@ node('node180') {
     stage('Test packaging') {
         if (production) {
           sh 'dpkg-deb --info wrap/dist/debian/pool/main/*amd64.deb'
-          sh 'dpkg-deb --info wrap/dist/debian/pool/main/*i386.deb'
         } else {
           sh 'dpkg-deb --info wrap/dist/*amd64.deb'
-          sh 'dpkg-deb --info wrap/dist/*i386.deb'
         }
     }
 
     stage('Save .deb, .rpm, AppImage and repo files') {
-      archiveArtifacts 'info.json,wrap/dist/*.deb,wrap/dist/*.rpm,wrap/dist/*.AppImage,wrap/dist/debian/**'
+      archiveArtifacts 'wrap/dist/*.deb,wrap/dist/*.rpm,wrap/dist/*.AppImage,wrap/dist/debian/**'
     }
 
   }

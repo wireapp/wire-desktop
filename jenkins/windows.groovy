@@ -29,7 +29,7 @@ node('node160') {
   stage('Build') {
     try {
       bat 'pip install -r jenkins/requirements.txt'
-      def NODE = tool name: 'node-v10.15.1-windows-x86', type: 'nodejs'
+      def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32']) {
         bat 'node -v'
         bat 'npm -v'
@@ -55,13 +55,13 @@ node('node160') {
   stage('Sign build') {
     try {
       if (production) {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Update.exe"'
+        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Squirrel.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Wire.exe"'
       } else if (custom) {
-        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\Update.exe\""
+        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\Squirrel.exe\""
         bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\${app_name}.exe\""
       } else {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\Update.exe"'
+        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\Squirrel.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\WireInternal.exe"'
       }
     } catch(e) {
@@ -73,7 +73,7 @@ node('node160') {
 
   stage('Build installer') {
     try {
-      def NODE = tool name: 'node-v10.15.1-windows-x86', type: 'nodejs'
+      def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         if (production) {
           bat 'npx grunt create-windows-installer:prod'
@@ -108,11 +108,11 @@ node('node160') {
 
   stage('Archive build artifacts') {
     if (production) {
-      archiveArtifacts 'info.json,wrap\\prod\\Wire-win32-ia32\\**'
+      archiveArtifacts 'wrap\\prod\\Wire-win32-ia32\\**'
     } else if (custom) {
-      archiveArtifacts "info.json,wrap\\custom\\${app_name}-win32-ia32\\**"
+      archiveArtifacts "wrap\\custom\\${app_name}-win32-ia32\\**"
     } else {
-      archiveArtifacts 'info.json,wrap\\internal\\WireInternal-win32-ia32\\**'
+      archiveArtifacts 'wrap\\internal\\WireInternal-win32-ia32\\**'
     }
   }
 

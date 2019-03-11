@@ -26,7 +26,6 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
-import {enableLogging} from './env/LoggerUtil';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
@@ -42,7 +41,7 @@ import {
   setCertificateVerifyProc,
 } from './lib/CertificateVerifyProcManager';
 import {registerCoreProtocol} from './lib/CoreProtocol';
-import {download} from './lib/download';
+import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {SingleSignOn} from './lib/SingleSignOn';
@@ -81,8 +80,8 @@ let main: BrowserWindow;
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event: IpcMessageEvent, fileName: string, bytes: Uint8Array) => {
-    await download(fileName, bytes);
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
+    return downloadImage(bytes, timestamp);
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
@@ -174,13 +173,16 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   checkConfigV0FullScreen(mainWindowState);
 
   let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  if (enableLogging()) {
+
+  if (argv['enable-logging']) {
     webappURL += `&enableLogging=@wireapp`;
+  }
+
+  if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
   }
 
-  const url = `${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`;
-  await main.loadURL(url);
+  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {
