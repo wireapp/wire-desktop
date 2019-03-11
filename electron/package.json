@@ -24,8 +24,7 @@
     "redux": "4.0.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
-    "uuid": "3.3.2",
-    "winston": "https://github.com/wireapp/winston.git#2.2.0-e"
+    "uuid": "3.3.2"
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {

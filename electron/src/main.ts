@@ -175,7 +175,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
 
   if (argv['enable-logging']) {
-    webappURL += `&enableLogging=@wireapp`;
+    webappURL += `&enableLogging=@wireapp/*`;
   }
 
   if (argv.devtools) {
