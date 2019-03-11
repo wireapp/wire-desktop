@@ -18,7 +18,7 @@
  */
 
 // Modules
-import {LogFactory} from '@wireapp/commons';
+import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -26,6 +26,7 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
@@ -316,10 +317,9 @@ const initElectronLogFile = (): void => {
   fs.ensureFileSync(LOG_FILE);
 };
 
-const getWebViewId = (contents: Electron.WebContents): string => {
-  const url = contents.getURL();
-  const search = '&id=';
-  return url.substr(url.indexOf(search) + search.length);
+const getWebViewId = (contents: Electron.WebContents): string | null => {
+  const currentLocation = new URL(contents.getURL());
+  return currentLocation.searchParams.get('id');
 };
 
 class ElectronWrapperInit {
@@ -395,7 +395,7 @@ class ElectronWrapperInit {
           contents.on('will-navigate', willNavigateInWebview);
           contents.on('console-message', async (event, level, message) => {
             const webViewId = getWebViewId(contents);
-            if (webViewId) {
+            if (webViewId && ValidationUtil.isUUIDv4(webViewId)) {
               const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
               try {
                 await LogFactory.writeMessage(message, logFilePath);
