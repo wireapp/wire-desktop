@@ -47,7 +47,7 @@ node('node160') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -66,7 +66,7 @@ node('node160') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} ${version} signing failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -85,7 +85,7 @@ node('node160') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} ${version} building installer failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} building installer failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -101,7 +101,7 @@ node('node160') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "**${JOB_NAME} ${version} signing installer failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -116,5 +116,5 @@ node('node160') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "**New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
 }
