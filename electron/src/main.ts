@@ -173,6 +173,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     currentClientVersion: '3.6',
     currentEnvironment: 'DEV',
     currentEnvironmentBaseUrl: BASE_URL,
+    enableSecureUpdater: true,
     trustStore: [
       '9aad851eb6ae535dc7a6b81ee44dc8418d192539e42709a3f6edf808a40a8849',
       '01fcf315049c59b82e0902121f743872573699e33134feddb3d068648258330b',
