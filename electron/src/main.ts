@@ -317,13 +317,13 @@ const initElectronLogFile = (): void => {
   fs.ensureFileSync(LOG_FILE);
 };
 
-const getWebViewId = (contents: Electron.WebContents): string | null => {
+const getWebViewId = (contents: Electron.WebContents): string | undefined => {
   try {
     const currentLocation = new URL(contents.getURL());
     const webViewId = currentLocation.searchParams.get('id');
-    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : null;
+    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
   } catch (error) {
-    return null;
+    return undefined;
   }
 };
 
