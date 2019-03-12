@@ -7,7 +7,6 @@ node('node160') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def app_name = params.APP_NAME
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -58,8 +57,7 @@ node('node160') {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Squirrel.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Wire.exe"'
       } else if (custom) {
-        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\Squirrel.exe\""
-        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\build\\${app_name}-win32-ia32\\${app_name}.exe\""
+        bat 'for /d %%d in ("wrap\\build\\*-win32-ia32") do for %%f in ("%%d\\*.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
       } else {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\Squirrel.exe"'
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\WireInternal.exe"'
@@ -95,7 +93,7 @@ node('node160') {
       if (production) {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\prod\\Wire-win32-ia32\\WireSetup.exe"'
       } else if (custom) {
-        bat "\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe\" sign /t http://timestamp.digicert.com /fd SHA256 /a \"wrap\\custom\\${app_name}-win32-ia32\\${app_name}-Setup.exe\""
+        bat 'for /d %%d in ("wrap\\build\\*-win32-ia32") do for %%f in ("%%d\\*-Setup.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
       } else {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\internal\\WireInternal-win32-ia32\\WireInternalSetup.exe"'
       }
@@ -110,7 +108,7 @@ node('node160') {
     if (production) {
       archiveArtifacts 'wrap\\prod\\Wire-win32-ia32\\**'
     } else if (custom) {
-      archiveArtifacts "wrap\\custom\\${app_name}-win32-ia32\\**"
+      archiveArtifacts 'wrap\\custom\\*-win32-ia32\\**'
     } else {
       archiveArtifacts 'wrap\\internal\\WireInternal-win32-ia32\\**'
     }
