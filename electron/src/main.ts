@@ -42,7 +42,7 @@ import {
   setCertificateVerifyProc,
 } from './lib/CertificateVerifyProcManager';
 import {registerCoreProtocol} from './lib/CoreProtocol';
-import {download} from './lib/download';
+import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {SingleSignOn} from './lib/SingleSignOn';
@@ -81,8 +81,8 @@ let main: BrowserWindow;
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event: IpcMessageEvent, fileName: string, bytes: Uint8Array) => {
-    await download(fileName, bytes);
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
+    return downloadImage(bytes, timestamp);
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
@@ -184,12 +184,17 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`);
+  let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+
+  if (argv['enable-logging']) {
+    webappURL += `&enableLogging=@wireapp`;
+  }
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
   }
+
+  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {
@@ -433,7 +438,7 @@ registerCoreProtocol();
 initRaygun.initClient();
 appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate();
+lifecycle.checkForUpdate().catch(logger.error);
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
@@ -442,5 +447,5 @@ if (lifecycle.isFirstInstance) {
   handleAppEvents();
   renameWebViewLogFiles();
   initElectronLogFile();
-  new ElectronWrapperInit().run().catch(error => logger.error(error));
+  new ElectronWrapperInit().run().catch(logger.error);
 }

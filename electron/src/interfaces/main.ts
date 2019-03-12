@@ -25,9 +25,9 @@ export interface ElectronMenuWithI18n extends Electron.Menu {
   i18n?: i18nLanguageIdentifier;
 }
 
-export interface ElectronMenuWithFileAndImage extends Electron.Menu {
-  file?: string;
+export interface ElectronMenuWithTimeAndImage extends Electron.Menu {
   image?: string;
+  timestamp?: string;
 }
 
 export interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {
@@ -55,7 +55,3 @@ export type Rectangle = {
   x: number;
   y: number;
 };
-
-export type SpawnCallback = (error: SpawnError | null, stdout: string) => void;
-
-export type SpawnError = Error & {code?: number | null; stdout?: string | null};

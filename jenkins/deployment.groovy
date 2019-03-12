@@ -44,7 +44,7 @@ node('master') {
             step ([$class: 'CopyArtifact',
             projectName: "$projectName",
             selector: [$class: 'SpecificBuildSelector', buildNumber: "$version"],
-            filter: 'info.json,*.pkg,wrap/**']);
+            filter: '*.pkg,wrap/**']);
         } catch (e) {
             wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts from of ${version} from ${projectName}** see: ${JOB_URL}"
             throw e
