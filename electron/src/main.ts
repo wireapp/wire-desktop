@@ -317,9 +317,14 @@ const initElectronLogFile = (): void => {
   fs.ensureFileSync(LOG_FILE);
 };
 
-const getWebViewId = (contents: Electron.WebContents): string | null => {
-  const currentLocation = new URL(contents.getURL());
-  return currentLocation.searchParams.get('id');
+const getWebViewId = (contents: Electron.WebContents): string | undefined => {
+  try {
+    const currentLocation = new URL(contents.getURL());
+    const webViewId = currentLocation.searchParams.get('id');
+    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
+  } catch (error) {
+    return undefined;
+  }
 };
 
 class ElectronWrapperInit {
@@ -396,7 +401,7 @@ class ElectronWrapperInit {
           if (ENABLE_LOGGING) {
             contents.on('console-message', async (event, level, message) => {
               const webViewId = getWebViewId(contents);
-              if (webViewId && ValidationUtil.isUUIDv4(webViewId)) {
+              if (webViewId) {
                 const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
                 try {
                   await LogFactory.writeMessage(message, logFilePath);
