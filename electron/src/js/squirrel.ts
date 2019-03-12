@@ -32,7 +32,7 @@ app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 const logger = getLogger('squirrel');
 
 const rootFolder = path.resolve(process.execPath, '../../');
-const updateDotExe = path.join(rootFolder, 'Squirrel.exe');
+const updateDotExe = path.join(rootFolder, 'Update.exe');
 
 const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
