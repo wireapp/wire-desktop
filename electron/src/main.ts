@@ -33,6 +33,7 @@ import * as about from './js/about';
 import * as appInit from './js/appInit';
 import * as config from './js/config';
 import * as environment from './js/environment';
+import {ENABLE_LOGGING} from './js/getLogger';
 import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
 import * as util from './js/util';
@@ -51,7 +52,6 @@ import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
-// Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 
@@ -175,7 +175,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
   let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
 
-  if (argv['enable-logging']) {
+  if (ENABLE_LOGGING) {
     webappURL += `&enableLogging=@wireapp/*`;
   }
 
@@ -393,17 +393,19 @@ class ElectronWrapperInit {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
-          contents.on('console-message', async (event, level, message) => {
-            const webViewId = getWebViewId(contents);
-            if (webViewId && ValidationUtil.isUUIDv4(webViewId)) {
-              const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
-              try {
-                await LogFactory.writeMessage(message, logFilePath);
-              } catch (error) {
-                logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+          if (ENABLE_LOGGING) {
+            contents.on('console-message', async (event, level, message) => {
+              const webViewId = getWebViewId(contents);
+              if (webViewId && ValidationUtil.isUUIDv4(webViewId)) {
+                const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
+                try {
+                  await LogFactory.writeMessage(message, logFilePath);
+                } catch (error) {
+                  logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                }
               }
-            }
-          });
+            });
+          }
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
