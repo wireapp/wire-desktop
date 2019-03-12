@@ -33,7 +33,7 @@
     "@types/debug": "4.1.2",
     "@types/file-url": "2.0.0",
     "@types/fs-extra": "5.0.5",
-    "@types/lodash": "4.14.122",
+    "@types/lodash": "4.14.123",
     "@types/minimist": "1.2.0",
     "@types/node": "10.12.29",
     "@types/open-graph": "0.2.0",
