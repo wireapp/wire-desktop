@@ -21,14 +21,14 @@ import {app, ipcMain} from 'electron';
 import {EVENT_TYPE} from '../lib/eventType';
 import {settings} from '../settings/ConfigurationPersistence';
 import * as environment from './environment';
-import * as squirrel from './squirrel';
 import * as windowManager from './window-manager';
 
-let isFirstInstance: boolean = false;
+let isFirstInstance: boolean | undefined = undefined;
 
-const checkForUpdate = async () => {
+const checkForUpdate = () => {
   if (environment.platform.IS_WINDOWS) {
-    await squirrel.handleSquirrelEvent(isFirstInstance);
+    const squirrel = require('./squirrel');
+    squirrel.handleSquirrelEvent(isFirstInstance);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => squirrel.installUpdate());
   }
