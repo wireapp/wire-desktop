@@ -1054,10 +1054,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/copy-config@0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.4.0.tgz#f519da00d737386b6d6a819cdb7966f9d345891a"
-  integrity sha512-NKQLjgDa7KcZAueJHAEoY1nQPZZIxEJ/mcc42zQIsOPiDnFSfVDvRpo1Nuyn/3sZg5FtW0ZSgc/AXkPzwpP5rw==
+"@wireapp/copy-config@0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.4.1.tgz#1f5a2183c68d7458a98e61c998f913700a9d1d76"
+  integrity sha512-ovwjT/Ht6XV2Ung29lInCTKZv1T61XSMWX5xlA6tXDaMGh5D4kUMhWS0pi3r3tfQ+knz1LvZgGRL6EK5KMdOKw==
   dependencies:
     axios "0.18.0"
     copy "0.3.2"
@@ -8365,14 +8365,12 @@ widest-line@^2.0.0:
 
 "wire-web-config-default-internal@https://github.com/wireapp/wire-web-config-default#v0.16.1":
   version "0.16.1"
-  uid "394041dc3def1a86c5b80670dc93c64b68bfba64"
   resolved "https://github.com/wireapp/wire-web-config-default#394041dc3def1a86c5b80670dc93c64b68bfba64"
   dependencies:
     adm-zip "0.4.13"
 
 "wire-web-config-default-production@https://github.com/wireapp/wire-web-config-wire#v0.16.1":
   version "0.16.1"
-  uid "394041dc3def1a86c5b80670dc93c64b68bfba64"
   resolved "https://github.com/wireapp/wire-web-config-wire#394041dc3def1a86c5b80670dc93c64b68bfba64"
   dependencies:
     adm-zip "0.4.13"
