@@ -102,10 +102,7 @@ const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number)
         response.data.on('error', reject);
         response.data.on('end', () => resolve(partialBody));
       })
-      .catch(error => {
-        logger.error(error);
-        return axios.isCancel(error) ? Promise.resolve('') : Promise.reject(error);
-      });
+      .catch(error => (axios.isCancel(error) ? Promise.resolve('') : Promise.reject(error)));
   });
 };
 
@@ -126,7 +123,7 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
 
   if (!head) {
-    logger.error('No head end tag found in website.');
+    throw new Error('No head end tag found in website.');
   }
 
   return openGraphParse(head);
@@ -146,23 +143,19 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
   return meta;
 };
 
-const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: OpenGraphResult) => void) => {
+const getOpenGraphData = (
+  url: string,
+  callback: (error: Error | null, meta?: OpenGraphResult) => void
+): Promise<OpenGraphResult | void> => {
   return fetchOpenGraphData(url)
     .then(meta => {
       if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
         const [imageUrl] = arrayify(meta.image.url);
 
-        return fetchImageAsBase64(imageUrl)
-          .then(uri => updateMetaDataWithImage(meta, uri))
-          .catch(error => {
-            logger.error(error);
-            return meta;
-          });
+        return fetchImageAsBase64(imageUrl).then(uri => updateMetaDataWithImage(meta, uri));
       } else {
-        logger.error('OpenGraph metadata contains no image.');
+        return Promise.reject(new Error('OpenGraph metadata contains no image.'));
       }
-
-      return meta;
     })
     .then(meta => {
       if (callback) {
@@ -172,23 +165,16 @@ const getOpenGraphData = (url: string, callback: (error: Error | null, meta?: Op
       return meta;
     })
     .catch(error => {
-      logger.error(error);
-
       if (callback) {
         callback(error);
+      } else {
+        logger.info(error);
       }
     });
 };
 
 const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
-  let meta;
-
-  try {
-    meta = await fetchOpenGraphData(url);
-  } catch (error) {
-    logger.error(error);
-    throw error;
-  }
+  const meta = await fetchOpenGraphData(url);
 
   if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
     const [imageUrl] = arrayify(meta.image.url);
@@ -196,10 +182,8 @@ const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
     const uri = await fetchImageAsBase64(imageUrl);
     return updateMetaDataWithImage(meta, uri);
   } else {
-    logger.error('OpenGraph metadata contains no image.');
+    throw new Error('OpenGraph metadata contains no image.');
   }
-
-  return meta;
 };
 
 export {getOpenGraphData, getOpenGraphDataAsync};
