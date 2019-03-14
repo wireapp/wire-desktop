@@ -17,16 +17,12 @@
  *
  */
 
-const config = require('../../dist/js/config');
 const environment = require('../../dist/js/environment');
-const fs = require('fs-extra');
-const path = require('path');
-const winston = require('winston');
 const {getLogger} = require('../../dist/js/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
-const {app, systemPreferences} = remote;
+const {systemPreferences} = remote;
 
 const logger = getLogger('webview-preload');
 
@@ -142,27 +138,6 @@ const exposeAddressBook = () => {
   }
 };
 
-const enableFileLogging = () => {
-  const currentLocation = new URL(window.location.href);
-  const id = currentLocation.searchParams.get('id');
-
-  if (id) {
-    const logFilePath = path.join(app.getPath('userData'), 'logs', id, config.LOG_FILE_NAME);
-    fs.createFileSync(logFilePath);
-
-    const webViewLogger = new winston.Logger();
-    webViewLogger.add(winston.transports.File, {
-      filename: logFilePath,
-      handleExceptions: true,
-    });
-
-    webViewLogger.info(config.NAME, 'Version', config.VERSION);
-
-    // webapp uses global winston reference to define log level
-    global.winston = webViewLogger;
-  }
-};
-
 const reportWebappVersion = () => ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, z.util.Environment.version(false));
 
 const checkAvailability = callback => {
@@ -184,15 +159,14 @@ const checkAvailability = callback => {
 const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
 process.once('loaded', () => {
-  const {getOpenGraphData} = require('../../dist/lib/openGraph');
+  const {getOpenGraphData, getOpenGraphDataAsync} = require('../../dist/lib/openGraph');
 
   global.clearImmediate = _clearImmediate;
   global.desktopCapturer = desktopCapturer;
   global.environment = environment;
   global.openGraph = getOpenGraphData;
+  global.openGraphAsync = getOpenGraphDataAsync;
   global.setImmediate = _setImmediate;
-
-  enableFileLogging();
 });
 
 // Expose SSO capability to webapp before anything is rendered
@@ -211,6 +185,6 @@ window.addEventListener('DOMContentLoaded', () => {
     subscribeToWebappEvents();
     reportWebappVersion();
     // include context menu
-    require('../../dist/menu/context');
+    require('../../dist/renderer/menu/context');
   });
 });

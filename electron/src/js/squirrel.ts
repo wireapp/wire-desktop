@@ -26,11 +26,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as config from './config';
 import * as environment from './environment';
+import {getLogger} from './getLogger';
 import * as lifecycle from './lifecycle';
 
 import {SpawnCallback, SpawnError} from '../interfaces/';
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
+const logger = getLogger('squirrel');
 
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
@@ -40,14 +42,9 @@ const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
 const windowsAppData = process.env.APPDATA || '';
 
-const taskbarLink = path.resolve(
-  windowsAppData,
-  'Microsoft',
-  'Internet Explorer',
-  'Quick Launch',
-  'User Pinned',
-  'TaskBar'
-);
+logger.error('No Windows AppData directory found.');
+
+const taskbarLink = path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar');
 
 const shortcutLink = path.resolve(taskbarLink, linkName);
 
@@ -73,7 +70,9 @@ const spawn = (command: string, args: string[], callback?: SpawnCallback) => {
     return process.nextTick(() => (typeof callback === 'function' ? callback(error, stdout) : void 0));
   }
 
-  spawnedProcess.stdout.on('data', data => (stdout += data));
+  if (spawnedProcess.stdout) {
+    spawnedProcess.stdout.on('data', data => (stdout += data));
+  }
 
   error = null;
   spawnedProcess.on('error', processError => (error != null ? error : (error = processError)));

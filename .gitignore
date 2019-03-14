@@ -7,7 +7,9 @@
 *.pkg
 /.idea
 /config
+/electron/coverage
 /electron/dist
+/electron/instrumented-code
 /electron/node_modules
 /electron/renderer/dist
 /keys
@@ -16,3 +18,10 @@
 app.asar
 node_modules
 Wire*.zip
+
+# Configuration imported from https://github.com/wireapp/wire-web-config-wire/
+.env.defaults
+electron/img/
+!electron/img/taskbar.overlay.png
+resources
+!resources/macos/entitlements/child.plist

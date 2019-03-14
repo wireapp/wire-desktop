@@ -20,12 +20,11 @@
 const {createWindowsInstaller} = require('electron-winstaller');
 const electronPackager = require('electron-packager');
 const electronBuilder = require('electron-builder');
+const dotenv = require('dotenv');
 
 const ELECTRON_PACKAGE_JSON = 'electron/package.json';
 const INFO_JSON = 'info.json';
 const PACKAGE_JSON = 'package.json';
-const MACOS_CUSTOM_PLIST = 'resources/macos/custom.plist';
-const MACOS_PARENT_PLIST = 'resources/macos/entitlements/parent.plist';
 
 const LINUX_DESKTOP = {
   Categories: 'Network;InstantMessaging;Chat;VideoConference',
@@ -42,31 +41,34 @@ const LINUX_SETTINGS = {
   afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
   desktop: LINUX_DESKTOP,
-  fpm: ['--name', 'wire-desktop'],
+  fpm: ['--name', '<%= info.nameShortLinux %>'],
 };
+
+dotenv.config({path: '.env.defaults'});
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
 
   const baseData = grunt.file.readJSON(INFO_JSON);
-  baseData.adminUrl = process.env.APP_URL_ADMIN || baseData.adminUrl;
+  baseData.adminUrl = process.env.URL_ADMIN || baseData.adminUrl;
   baseData.appBase = process.env.APP_BASE || baseData.appBase;
-  baseData.bundleId = process.env.APP_BUNDLE_ID || baseData.bundleId;
+  baseData.bundleId = process.env.MACOS_BUNDLE_ID || baseData.bundleId;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
   baseData.customProtocolName = process.env.APP_CUSTOM_PROTOCOL_NAME || baseData.customProtocolName;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
-  baseData.developerId = process.env.APP_DEVELOPER_ID || baseData.developerId;
-  baseData.developerName = process.env.APP_DEVELOPER_NAME || baseData.developerName;
-  baseData.installerIconUrl = process.env.APP_URL_ICON_INSTALLER || baseData.installerIconUrl;
-  baseData.legalUrl = process.env.APP_URL_LEGAL || baseData.legalUrl;
-  baseData.licensesUrl = process.env.APP_URL_LICENSES || baseData.licensesUrl;
+  baseData.developerId = process.env.MACOS_DEVELOPER_ID || baseData.developerId;
+  baseData.developerName = process.env.MACOS_DEVELOPER_NAME || baseData.developerName;
+  baseData.installerIconUrl = process.env.WIN_URL_ICON_INSTALLER || baseData.installerIconUrl;
+  baseData.legalUrl = process.env.URL_LEGAL || baseData.legalUrl;
+  baseData.licensesUrl = process.env.URL_LICENSES || baseData.licensesUrl;
   baseData.maximumAccounts = Number(process.env.APP_MAXIMUM_ACCOUNTS) || baseData.maximumAccounts;
   baseData.name = process.env.APP_NAME || baseData.name;
-  baseData.nameShort = process.env.APP_SHORT_NAME || baseData.nameShort;
-  baseData.privacyUrl = process.env.APP_URL_PRIVACY || baseData.privacyUrl;
-  baseData.supportUrl = process.env.APP_URL_SUPPORT || baseData.supportUrl;
-  baseData.updateWinUrlCustom = process.env.APP_URL_UPDATE_WIN || baseData.updateWinUrlProd;
-  baseData.websiteUrl = process.env.APP_URL_WEBSITE || baseData.websiteUrl;
+  baseData.nameShort = process.env.APP_NAME_SHORT || baseData.nameShort;
+  baseData.nameShortLinux = process.env.LINUX_NAME_SHORT || baseData.nameShortLinux;
+  baseData.privacyUrl = process.env.URL_PRIVACY || baseData.privacyUrl;
+  baseData.supportUrl = process.env.URL_SUPPORT || baseData.supportUrl;
+  baseData.updateWinUrlCustom = process.env.WIN_URL_UPDATE || baseData.updateWinUrlProd;
+  baseData.websiteUrl = process.env.URL_WEBSITE || baseData.websiteUrl;
 
   baseData.sign = {
     app: `3rd Party Mac Developer Application: ${baseData.developerName} (${baseData.developerId})`,
@@ -78,13 +80,7 @@ module.exports = function(grunt) {
     buildNumber: process.env.BUILD_NUMBER || '0',
 
     clean: {
-      build: 'wrap/build',
-      dist: 'wrap/dist',
-      linux: ['wrap/**/linux*', 'wrap/**/wire*'],
-      macos: ['wrap/**/<%= info.name %>-darwin*', '*.pkg'],
-      pkg: '*.pkg',
-      win: 'wrap/**/<%= info.name %>-win*',
-      wrap: 'wrap',
+      wrap: 'wrap/**',
     },
 
     'create-windows-installer': {
@@ -94,11 +90,11 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.name %>.exe',
         iconUrl: '<%= info.installerIconUrl %>',
-        loadingGif: 'electron/img/wire.256.png',
+        loadingGif: 'electron/img/logo.256.png',
         noMsi: true,
         outputDirectory: 'wrap/custom/<%= info.name %>-win32-ia32',
         setupExe: '<%= info.name %>-Setup.exe',
-        setupIcon: 'electron/img/wire.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.name %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -109,10 +105,10 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.nameInternal %>.exe',
         iconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
-        loadingGif: 'electron/img/wire.internal.256.png',
+        loadingGif: 'electron/img/logo.256.png',
         noMsi: true,
         outputDirectory: 'wrap/internal/<%= info.nameInternal %>-win32-ia32',
-        setupIcon: 'electron/img/wire.internal.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.nameInternal %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -123,10 +119,10 @@ module.exports = function(grunt) {
         description: '<%= info.description %>',
         exe: '<%= info.name %>.exe',
         iconUrl: 'https://wire-app.wire.com/win/prod/wire.ico',
-        loadingGif: 'electron/img/wire.256.png',
+        loadingGif: 'electron/img/logo.256.png',
         noMsi: true,
         outputDirectory: 'wrap/prod/<%= info.name %>-win32-ia32',
-        setupIcon: 'electron/img/wire.ico',
+        setupIcon: 'electron/img/logo.ico',
         title: '<%= info.name %>',
         version: '<%= info.version %>.<%= buildNumber %>',
       },
@@ -139,7 +135,7 @@ module.exports = function(grunt) {
           appCategoryType: 'public.app-category.social-networking',
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: '<%= info.bundleId %>.helper',
-          icon: 'resources/macos/wire.icns',
+          icon: 'resources/macos/logo.icns',
           out: 'wrap/dist/',
           platform: 'mas',
         },
@@ -148,7 +144,7 @@ module.exports = function(grunt) {
       macos_internal: {
         options: {
           appBundleId: 'com.wearezeta.zclient.mac.internal',
-          icon: 'resources/macos/wire.internal.icns',
+          icon: 'resources/macos/logo.icns',
           name: '<%= info.nameInternal %>',
           platform: 'mas',
         },
@@ -160,7 +156,7 @@ module.exports = function(grunt) {
           appCategoryType: 'public.app-category.social-networking',
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: 'com.wearezeta.zclient.mac.helper',
-          icon: 'resources/macos/wire.icns',
+          icon: 'resources/macos/logo.icns',
           out: 'wrap/dist',
           platform: 'mas',
         },
@@ -185,7 +181,7 @@ module.exports = function(grunt) {
       win_custom: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.ico',
+          icon: 'electron/img/logo.ico',
           name: '<%= info.name %>',
           platform: 'win32',
           win32metadata: {
@@ -201,7 +197,7 @@ module.exports = function(grunt) {
       win_internal: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.internal.ico',
+          icon: 'electron/img/logo.ico',
           name: '<%= info.nameInternal %>',
           platform: 'win32',
           win32metadata: {
@@ -217,7 +213,7 @@ module.exports = function(grunt) {
       win_prod: {
         options: {
           arch: 'ia32',
-          icon: 'electron/img/wire.ico',
+          icon: 'electron/img/logo.ico',
           platform: 'win32',
           win32metadata: {
             CompanyName: '<%= info.name %>',
@@ -243,7 +239,7 @@ module.exports = function(grunt) {
             fpm: ['--name', 'wire-desktop-internal'],
           },
           linux: {
-            artifactName: '${productName}-${version}-${arch}.${ext}',
+            artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
             executableName: 'wire-desktop-internal',
           },
@@ -258,14 +254,14 @@ module.exports = function(grunt) {
 
       linux_other: {
         options: {
-          arch: grunt.option('arch') || process.arch,
+          arch: 'x64',
           linux: {
-            artifactName: '${productName}-${version}-${arch}.${ext}',
+            artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
             desktop: LINUX_DESKTOP,
-            executableName: 'wire-desktop',
+            executableName: '<%= info.nameShortLinux %>',
           },
-          productName: 'wire-desktop',
+          productName: '<%= info.nameShortLinux %>',
           targets: [grunt.option('target') || 'dir'],
         },
       },
@@ -277,9 +273,9 @@ module.exports = function(grunt) {
             depends: ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'],
           },
           linux: {
-            artifactName: '${productName}-${version}-${arch}.${ext}',
+            artifactName: '${productName}-${version}_${arch}.${ext}',
             category: LINUX_SETTINGS.category,
-            executableName: 'wire-desktop',
+            executableName: '<%= info.nameShortLinux %>',
           },
           rpm: {
             ...LINUX_SETTINGS,
@@ -290,29 +286,9 @@ module.exports = function(grunt) {
       },
 
       options: {
-        arch: 'all',
+        arch: 'x64',
         asar: false,
         publish: null,
-      },
-    },
-
-    gitcommit: {
-      release: {
-        files: {
-          src: [INFO_JSON],
-        },
-        options: {
-          message: 'Bump version to <%= info.version %>',
-        },
-      },
-    },
-
-    gitpush: {
-      task: {
-        options: {
-          branch: 'master',
-          tags: true,
-        },
       },
     },
 
@@ -340,42 +316,17 @@ module.exports = function(grunt) {
     },
   });
 
-  /**
-   * Tasks
-   */
-  grunt.registerTask('version-inc', () => {
-    const info = grunt.config.get('info');
-    const {version} = info;
-    const major = version.substr(0, version.indexOf('.'));
-    const minor = version.substr(version.lastIndexOf('.') + 1);
-
-    info.version = `${major}.${parseInt(minor, 10) + 1}`;
-    grunt.config.set('info', info);
-    grunt.file.write(INFO_JSON, `${JSON.stringify(info, null, 2)}\n`);
-
-    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
-    electronPkg.version = `${info.version}`;
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-
-    grunt.log.write(`Version number increased to "${info.version}". `).ok();
-  });
-
   grunt.registerTask('set-custom-data', () => {
-    grunt.log.write(`Webapp base set to "${baseData.appBase}". `).ok();
-    grunt.log.write(`App description set to "${baseData.description}". `).ok();
-    grunt.log.write(`App bundle ID set to "${baseData.bundleId}". `).ok();
-    grunt.log.write(`App copyright set to "${baseData.copyright}". `).ok();
-    grunt.log.write(`App custom protocol set to "${baseData.customProtocolName}". `).ok();
-    grunt.log.write(`Website URL set to "${baseData.websiteUrl}". `).ok();
-    grunt.log.write(`Admin URL set to "${baseData.adminUrl}". `).ok();
-    grunt.log.write(`Legal URL set to "${baseData.legalUrl}". `).ok();
-    grunt.log.write(`Licenses URL set to "${baseData.licensesUrl}". `).ok();
-    grunt.log.write(`Privacy URL set to "${baseData.privacyUrl}". `).ok();
-    grunt.log.write(`Support website set to "${baseData.supportUrl}". `).ok();
-    grunt.log.write(`Maximum accounts set to "${baseData.maximumAccounts}". `).ok();
-    grunt.log.write(`Windows installer icon URL set to "${baseData.installerIconUrl}". `).ok();
-    grunt.log.write(`macOS developer app info set to "${baseData.sign.app}". `).ok();
-    grunt.log.write(`macOS developer package info set to "${baseData.sign.package}". `).ok();
+    const logEntries = (obj, name) => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === 'object') {
+          return logEntries(value, `${name}.${key}`);
+        }
+        grunt.log.write(`${name}.${key} set to "${value}". `).ok();
+      });
+    };
+
+    logEntries(baseData, 'baseData');
 
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
     const info = grunt.config.get('info');
@@ -384,6 +335,7 @@ module.exports = function(grunt) {
     electronPkg.appBase = info.appBase;
     electronPkg.copyright = info.copyright;
     electronPkg.customProtocolName = info.customProtocolName;
+    electronPkg.homepage = info.websiteUrl;
     electronPkg.legalUrl = info.legalUrl;
     electronPkg.licensesUrl = info.licensesUrl;
     electronPkg.maximumAccounts = info.maximumAccounts;
@@ -392,19 +344,6 @@ module.exports = function(grunt) {
     electronPkg.websiteUrl = info.websiteUrl;
 
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
-
-    let customPlist = grunt.file.read(MACOS_CUSTOM_PLIST);
-    customPlist = customPlist
-      .replace(/Wire/gm, baseData.name)
-      .replace(/(<key>ElectronTeamID<\/key>\n\s*<string>)[^<]+(<\/string>)/m, `$1${baseData.developerId}$2`);
-    grunt.file.write(MACOS_CUSTOM_PLIST, customPlist);
-
-    let parentPlist = grunt.file.read(MACOS_PARENT_PLIST);
-    parentPlist = parentPlist.replace(
-      /(<key>com\.apple\.security\.application-groups<\/key>\n\s*<string>)[^<]+(<\/string>)/m,
-      `$1${baseData.developerId}.${baseData.bundleId}$2`
-    );
-    grunt.file.write(MACOS_PARENT_PLIST, parentPlist);
   });
 
   grunt.registerTask('release-internal', () => {
@@ -474,19 +413,6 @@ module.exports = function(grunt) {
 
     const done = this.async();
 
-    if (arch === 'all') {
-      return electronBuilder
-        .build({
-          config: options,
-          targets: electronBuilder.Platform.LINUX.createTarget(
-            targets,
-            electronBuilder.Arch.ia32,
-            electronBuilder.Arch.x64
-          ),
-        })
-        .then(done, done);
-    }
-
     electronBuilder
       .build({
         config: options,
@@ -548,10 +474,8 @@ module.exports = function(grunt) {
     execSync('yarn bundle');
   });
 
-  grunt.registerTask('bump-version', ['version-inc', 'gitcommit', 'gitpush']);
-
   grunt.registerTask('macos', [
-    'clean:macos',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -561,7 +485,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('macos-prod', [
-    'clean:macos',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -572,7 +496,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('macos-custom', [
-    'clean:macos',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -583,7 +507,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('win', [
-    'clean:win',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -594,7 +518,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('win-prod', [
-    'clean:win',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -605,7 +529,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('win-custom', [
-    'clean:win',
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
@@ -615,43 +539,40 @@ module.exports = function(grunt) {
     'create-windows-installer:custom',
   ]);
 
-  grunt.registerTask('linux', [
-    'clean:linux',
+  grunt.registerTask('linux-package', [
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
     'release-internal',
     'bundle',
-    'electronbuilder:linux_internal',
   ]);
 
-  grunt.registerTask('linux-prod', [
-    'clean:linux',
+  grunt.registerTask('linux-prod-package', [
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
     'release-prod',
     'bundle',
-    'electronbuilder:linux_prod',
   ]);
 
-  grunt.registerTask('linux-other-internal', [
-    'clean:linux',
+  grunt.registerTask('linux-custom-package', [
+    'clean:wrap',
     'update-keys',
     'gitinfo',
     'set-custom-data',
-    'release-internal',
+    'release-custom',
     'bundle',
-    'electronbuilder:linux_other',
   ]);
 
-  grunt.registerTask('linux-other', [
-    'clean:linux',
-    'update-keys',
-    'gitinfo',
-    'set-custom-data',
-    'release-prod',
-    'bundle',
-    'electronbuilder:linux_other',
-  ]);
+  grunt.registerTask('linux', ['linux-package', 'electronbuilder:linux_internal']);
+
+  grunt.registerTask('linux-prod', ['linux-prod-package', 'electronbuilder:linux_prod']);
+
+  grunt.registerTask('linux-custom', ['linux-custom-package', 'electronbuilder:linux_prod']);
+
+  grunt.registerTask('linux-other-internal', ['linux-package', 'electronbuilder:linux_other']);
+
+  grunt.registerTask('linux-other', ['linux-prod-package', 'electronbuilder:linux_other']);
 };

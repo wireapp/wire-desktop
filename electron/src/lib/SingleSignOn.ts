@@ -29,7 +29,7 @@ const argv = minimist(process.argv.slice(1));
 
 class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS: string[] = BACKEND_ORIGINS;
-  private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist', 'js', 'preload-sso.js');
+  private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist/renderer/preload-sso.js');
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
   private static readonly SSO_PROTOCOL_HOST = 'response';

@@ -46,31 +46,17 @@ def upload_file(source, dest):
 if __name__ == '__main__':
   files = [
     'sha256sum.txt.asc',
-    'Wire-%s-i386.AppImage' % VERSION,
     'Wire-%s-x86_64.AppImage' % VERSION,
     'debian/pool/main/Wire-%s-amd64.deb' % VERSION,
-    'debian/pool/main/Wire-%s-i386.deb' % VERSION,
-    'debian/dists/stable/Contents-all',
-    'debian/dists/stable/Contents-all.bz2',
-    'debian/dists/stable/Contents-all.gz',
     'debian/dists/stable/Contents-amd64',
     'debian/dists/stable/Contents-amd64.bz2',
     'debian/dists/stable/Contents-amd64.gz',
-    'debian/dists/stable/Contents-i386',
-    'debian/dists/stable/Contents-i386.bz2',
-    'debian/dists/stable/Contents-i386.gz',
     'debian/dists/stable/InRelease',
     'debian/dists/stable/Release',
     'debian/dists/stable/Release.gpg',
-    'debian/dists/stable/main/binary-all/Packages',
-    'debian/dists/stable/main/binary-all/Packages.bz2',
-    'debian/dists/stable/main/binary-all/Packages.gz',
     'debian/dists/stable/main/binary-amd64/Packages',
     'debian/dists/stable/main/binary-amd64/Packages.bz2',
     'debian/dists/stable/main/binary-amd64/Packages.gz',
-    'debian/dists/stable/main/binary-i386/Packages',
-    'debian/dists/stable/main/binary-i386/Packages.bz2',
-    'debian/dists/stable/main/binary-i386/Packages.gz',
   ]
 
   for filename in files:

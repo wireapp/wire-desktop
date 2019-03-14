@@ -7,6 +7,9 @@ node('node180') {
 
   checkout scm
 
+  def production = params.PRODUCTION
+  def custom = params.CUSTOM
+
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
@@ -15,10 +18,9 @@ node('node180') {
   def text = readFile('info.json')
   def buildInfo = parseJson(text)
   def version = buildInfo.version + '.' + env.BUILD_NUMBER
-
   currentBuild.displayName = version
 
-  def environment = docker.build('node', '-f linux.Dockerfile .')
+  def environment = docker.build('node', '-f jenkins/linux.Dockerfile .')
 
   environment.inside {
 
@@ -29,13 +31,18 @@ node('node180') {
 
     stage('Build') {
       try {
-        sh 'pip install -r requirements.txt'
+        sh 'pip install -r jenkins/requirements.txt'
         sh 'node -v'
         sh 'npm -v'
         sh 'yarn'
-        sh 'yarn build:ts'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          sh 'npx grunt linux-prod'
+          if (production) {
+            sh 'yarn build:linux'
+          } else if (custom) {
+            sh 'yarn build:linux:custom'
+          } else {
+            sh 'yarn build:linux:internal'
+          }
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
@@ -46,23 +53,30 @@ node('node180') {
 
     stage('Generate repository') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-        sh 'cd wrap/dist/ && ../../bin/repo/linux-prod-repo.sh'
+        if (production) {
+          sh 'cd wrap/dist/ && ../../bin/repo/linux-prod-repo.sh'
+        }
       }
     }
 
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-        sh "cd wrap/dist/ && ../../bin/linux-checksums.sh ${version}"
+        if (production) {
+          sh "cd wrap/dist/ && ../../bin/linux-checksums.sh ${version}"
+        }
       }
     }
 
     stage('Test packaging') {
-      sh 'dpkg-deb --info wrap/dist/debian/pool/main/*amd64.deb'
-      sh 'dpkg-deb --info wrap/dist/debian/pool/main/*i386.deb'
+        if (production) {
+          sh 'dpkg-deb --info wrap/dist/debian/pool/main/*amd64.deb'
+        } else {
+          sh 'dpkg-deb --info wrap/dist/*amd64.deb'
+        }
     }
 
     stage('Save .deb, .rpm, AppImage and repo files') {
-      archiveArtifacts 'info.json,wrap/dist/*.deb,wrap/dist/*.rpm,wrap/dist/*.AppImage,wrap/dist/debian/**'
+      archiveArtifacts 'wrap/dist/*.deb,wrap/dist/*.rpm,wrap/dist/*.AppImage,wrap/dist/debian/**'
     }
 
   }

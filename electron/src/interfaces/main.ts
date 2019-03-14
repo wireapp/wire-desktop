@@ -25,9 +25,9 @@ export interface ElectronMenuWithI18n extends Electron.Menu {
   i18n?: i18nLanguageIdentifier;
 }
 
-export interface ElectronMenuWithFileAndImage extends Electron.Menu {
-  file?: string;
+export interface ElectronMenuWithTimeAndImage extends Electron.Menu {
   image?: string;
+  timestamp?: string;
 }
 
 export interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {

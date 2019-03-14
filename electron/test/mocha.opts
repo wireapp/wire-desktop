@@ -1,0 +1,4 @@
+# https://mochajs.org/#mochaopts
+--bail
+--reporter spec
+test/main

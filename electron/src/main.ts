@@ -18,7 +18,7 @@
  */
 
 // Modules
-import {LogFactory} from '@wireapp/commons';
+import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -26,12 +26,14 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
 import * as appInit from './js/appInit';
 import * as config from './js/config';
 import * as environment from './js/environment';
+import {ENABLE_LOGGING} from './js/getLogger';
 import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
 import * as util from './js/util';
@@ -41,7 +43,7 @@ import {
   setCertificateVerifyProc,
 } from './lib/CertificateVerifyProcManager';
 import {registerCoreProtocol} from './lib/CoreProtocol';
-import {download} from './lib/download';
+import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {SingleSignOn} from './lib/SingleSignOn';
@@ -50,18 +52,17 @@ import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
-// Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 
 // Paths
 const APP_PATH = app.getAppPath();
-const INDEX_HTML = path.join(APP_PATH, 'renderer', 'index.html');
+const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const PRELOAD_JS = path.join(APP_PATH, 'dist', 'js', 'preload.js');
-const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer', 'static', 'webview-preload.js');
-const WRAPPER_CSS = path.join(APP_PATH, 'css', 'wrapper.css');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/preload.js');
+const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer/static/webview-preload.js');
+const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
 
 const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 
@@ -80,8 +81,8 @@ let main: BrowserWindow;
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, async (event: IpcMessageEvent, fileName: string, bytes: Uint8Array) => {
-    await download(fileName, bytes);
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
+    return downloadImage(bytes, timestamp);
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
@@ -172,12 +173,17 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  const baseURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(baseURL)}`);
+  let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+
+  if (ENABLE_LOGGING) {
+    webappURL += `&enableLogging=@wireapp/*`;
+  }
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
   }
+
+  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
     if (!util.isInView(main)) {
@@ -311,6 +317,16 @@ const initElectronLogFile = (): void => {
   fs.ensureFileSync(LOG_FILE);
 };
 
+const getWebViewId = (contents: Electron.WebContents): string | undefined => {
+  try {
+    const currentLocation = new URL(contents.getURL());
+    const webViewId = currentLocation.searchParams.get('id');
+    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
+  } catch (error) {
+    return undefined;
+  }
+};
+
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
@@ -352,10 +368,10 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (webviewEvent, contents) => {
+    app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
-      switch ((contents as any).getType()) {
+      switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
@@ -382,6 +398,19 @@ class ElectronWrapperInit {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
+          if (ENABLE_LOGGING) {
+            contents.on('console-message', async (event, level, message) => {
+              const webViewId = getWebViewId(contents);
+              if (webViewId) {
+                const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
+                try {
+                  await LogFactory.writeMessage(message, logFilePath);
+                } catch (error) {
+                  logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                }
+              }
+            });
+          }
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 

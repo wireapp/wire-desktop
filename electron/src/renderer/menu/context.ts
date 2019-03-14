@@ -20,10 +20,10 @@
 import {clipboard, ipcRenderer, remote} from 'electron';
 const Menu = remote.Menu;
 
-import {ElectronMenuWithFileAndImage} from '../interfaces/';
-import * as config from '../js/config';
-import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
+import {ElectronMenuWithTimeAndImage as ElectronMenuWithImageAndTime} from '../../interfaces';
+import * as config from '../../js/config';
+import {EVENT_TYPE} from '../../lib/eventType';
+import * as locale from '../../locale/locale';
 
 let textMenu: Electron.Menu;
 
@@ -75,9 +75,9 @@ const createTextMenu = () => {
 // Images
 ///////////////////////////////////////////////////////////////////////////////
 
-const imageMenu: ElectronMenuWithFileAndImage = Menu.buildFromTemplate([
+const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
   {
-    click: () => savePicture(imageMenu.file || '', imageMenu.image || ''),
+    click: () => savePicture(imageMenu.image || '', imageMenu.timestamp),
     label: locale.getText('menuSavePictureAs'),
   },
 ]);
@@ -97,6 +97,12 @@ window.addEventListener(
     } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
       event.preventDefault();
       const elementSource = (element as HTMLImageElement).src;
+      const parentElement = element.closest('.message-body') as HTMLDivElement;
+      const timeElement = parentElement.getElementsByTagName('time')[0];
+      if (timeElement) {
+        const imageTimestamp = timeElement.dataset['timestamp'];
+        imageMenu.timestamp = imageTimestamp;
+      }
       imageMenu.image = elementSource;
       imageMenu.popup({window: remote.getCurrentWindow()});
     } else if (element.nodeName === 'A') {
@@ -127,12 +133,12 @@ window.addEventListener(
   false
 );
 
-const savePicture = (fileName: string, url: RequestInfo) => {
+const savePicture = (url: RequestInfo, timestamp?: string) => {
   return fetch(url, {
     headers: {
       'User-Agent': config.USER_AGENT,
     },
   })
     .then(response => response.arrayBuffer())
-    .then(arrayBuffer => ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, fileName, new Uint8Array(arrayBuffer)));
+    .then(arrayBuffer => ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(arrayBuffer), timestamp));
 };

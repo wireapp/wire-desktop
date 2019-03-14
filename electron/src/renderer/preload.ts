@@ -18,11 +18,11 @@
  */
 
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+import * as environment from '../js/environment';
+import {getLogger} from '../js/getLogger';
 import {AutomatedSingleSignOn} from '../lib/AutomatedSingleSignOn';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import * as environment from './environment';
-import {getLogger} from './getLogger';
 
 const logger = getLogger('preload');
 
@@ -90,7 +90,7 @@ const setupIpcInterface = (): void => {
 
 const addDragRegion = (): void => {
   if (environment.platform.IS_MAC_OS) {
-    // add titlebar ghost to prevent interactions with the content while dragging
+    // add title bar ghost to prevent interactions with the content while dragging
     const titleBar = document.createElement('div');
     titleBar.className = 'drag-region';
     document.body.appendChild(titleBar);

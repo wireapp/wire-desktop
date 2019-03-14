@@ -23,7 +23,7 @@ const {app} = require('electron');
 const assert = require('assert');
 const path = require('path');
 const sinon = require('sinon');
-const {TrayHandler} = require('../../electron/dist/menu/TrayHandler');
+const {TrayHandler} = require('../../instrumented-code/menu/TrayHandler');
 const {BrowserWindow} = require('electron');
 
 describe('TrayIconHandler', () => {
@@ -38,10 +38,10 @@ describe('TrayIconHandler', () => {
     it('creates native images for all tray icons and sets a default tray icon', () => {
       const tray = new TrayHandler();
       tray.initTray(TrayMock);
-      assert.equal(Object.keys(tray.icons).length, 3);
-      assert.equal(tray.icons.badge.constructor.name, 'NativeImage');
-      assert.equal(tray.icons.tray.constructor.name, 'NativeImage');
-      assert.equal(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
+      assert.strictEqual(Object.keys(tray.icons).length, 3);
+      assert.strictEqual(tray.icons.badge.constructor.name, 'NativeImage');
+      assert.strictEqual(tray.icons.tray.constructor.name, 'NativeImage');
+      assert.strictEqual(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
       sinon.assert.match(tray.trayIcon, sinon.match.defined);
     });
   });
@@ -55,14 +55,14 @@ describe('TrayIconHandler', () => {
         sinon.spy(app, 'setBadgeCount');
         sinon.spy(appWindow, 'flashFrame');
 
-        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
         appWindow.webContents.on('dom-ready', () => {
-          assert.equal(appWindow.isFocused(), true);
-          assert.equal(appWindow.flashFrame.callCount, 0);
+          assert.strictEqual(appWindow.isFocused(), true);
+          assert.strictEqual(appWindow.flashFrame.callCount, 0);
           tray.showUnreadCount(appWindow, 1);
           assert.ok(app.setBadgeCount.getCall(0).calledWith(1));
           assert.ok(appWindow.flashFrame.getCall(0).calledWith(false));
-          assert.equal(tray.lastUnreadCount, 1);
+          assert.strictEqual(tray.lastUnreadCount, 1);
           appWindow.flashFrame.restore();
           app.setBadgeCount.restore();
           done();
@@ -78,13 +78,13 @@ describe('TrayIconHandler', () => {
 
         sinon.spy(appWindow, 'flashFrame');
 
-        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
         appWindow.webContents.on('dom-ready', () => {
-          assert.equal(appWindow.isFocused(), true);
-          assert.equal(appWindow.flashFrame.callCount, 0);
+          assert.strictEqual(appWindow.isFocused(), true);
+          assert.strictEqual(appWindow.flashFrame.callCount, 0);
           tray.showUnreadCount(appWindow, 10);
           assert.ok(appWindow.flashFrame.getCall(0).calledWith(false));
-          assert.equal(tray.lastUnreadCount, 10);
+          assert.strictEqual(tray.lastUnreadCount, 10);
           appWindow.flashFrame.restore();
           done();
         });
@@ -101,9 +101,9 @@ describe('TrayIconHandler', () => {
 
         sinon.spy(appWindow, 'flashFrame');
 
-        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
         appWindow.webContents.on('dom-ready', () => {
-          assert.equal(appWindow.isFocused(), false);
+          assert.strictEqual(appWindow.isFocused(), false);
           tray.showUnreadCount(appWindow, 2);
           assert.ok(appWindow.flashFrame.getCall(0).calledWith(true));
           appWindow.flashFrame.restore();
@@ -124,11 +124,11 @@ describe('TrayIconHandler', () => {
 
         sinon.spy(appWindow, 'flashFrame');
 
-        appWindow.loadURL(`file://${path.join(__dirname, '..', 'fixtures', 'badge.html')}`);
+        appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
         appWindow.webContents.on('dom-ready', () => {
-          assert.equal(appWindow.isFocused(), false);
+          assert.strictEqual(appWindow.isFocused(), false);
           tray.showUnreadCount(appWindow, 2);
-          assert.equal(appWindow.flashFrame.callCount, 0);
+          assert.strictEqual(appWindow.flashFrame.callCount, 0);
           appWindow.flashFrame.restore();
           done();
         });
