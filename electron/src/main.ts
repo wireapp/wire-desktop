@@ -28,15 +28,12 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
-// Wrapper modules
-import * as about from './js/about';
 import * as appInit from './js/appInit';
 import * as config from './js/config';
 import * as environment from './js/environment';
 import {ENABLE_LOGGING} from './js/getLogger';
 import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
-import * as util from './js/util';
 import * as windowManager from './js/window-manager';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
@@ -54,6 +51,10 @@ import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import {OriginValidator} from './util/OriginValidator';
+import * as ViewUtil from './util/ViewUtil';
+// Wrapper modules
+import * as about from './window/AboutWindow';
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -63,6 +64,12 @@ const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/preload.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer/static/webview-preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
+const WINDOW_SIZE = {
+  DEFAULT_HEIGHT: 768,
+  DEFAULT_WIDTH: 1024,
+  MIN_HEIGHT: 512,
+  MIN_WIDTH: 760,
+};
 
 const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 
@@ -114,8 +121,8 @@ const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
 
 const initWindowStateKeeper = () => {
   const loadedWindowBounds = settings.restore(SettingsType.WINDOW_BOUNDS, {
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+    height: WINDOW_SIZE.DEFAULT_HEIGHT,
+    width: WINDOW_SIZE.DEFAULT_WIDTH,
   });
 
   // load version 0 full screen setting
@@ -151,8 +158,8 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     backgroundColor: '#f7f8fa',
     height: mainWindowState.height,
     icon: ICON_PATH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    minHeight: WINDOW_SIZE.MIN_HEIGHT,
+    minWidth: WINDOW_SIZE.MIN_WIDTH,
     show: false,
     title: config.NAME,
     titleBarStyle: 'hiddenInset',
@@ -186,7 +193,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
-    if (!util.isInView(main)) {
+    if (!ViewUtil.isInView(main)) {
       main.center();
     }
 
@@ -360,7 +367,7 @@ class ElectronWrapperInit {
 
     const willNavigateInWebview = (event: Event, _url: string) => {
       // Ensure navigation is to a whitelisted domain
-      if (util.isMatchingHost(_url, BASE_URL)) {
+      if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
         this.logger.log(`Preventing navigation inside <webview>. URL: ${_url}`);
@@ -377,7 +384,7 @@ class ElectronWrapperInit {
             const _url = params.src;
 
             // Verify the URL is being loaded
-            if (!util.isMatchingHost(_url, BASE_URL)) {
+            if (!OriginValidator.isMatchingHost(_url, BASE_URL)) {
               event.preventDefault();
               this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
               return;
