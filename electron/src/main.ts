@@ -52,9 +52,8 @@ import {TrayHandler} from './menu/TrayHandler';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {OriginValidator} from './util/OriginValidator';
-import * as ViewUtil from './util/ViewUtil';
-// Wrapper modules
-import * as about from './window/AboutWindow';
+import ViewUtil from './util/ViewUtil';
+import AboutWindow from './window/AboutWindow';
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -108,7 +107,7 @@ const bindIpcEvents = () => {
     }
   );
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
-  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
+  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
 };
 
