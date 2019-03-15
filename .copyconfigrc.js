@@ -4,7 +4,7 @@ const contentSource = `${pkg.name}/content`;
 const imageSource = `${contentSource}/image`;
 const macOsSource = `${contentSource}/macos`;
 
-const configurationEntry = `wire-web-config-default-${process.env.BUILD_ENV !== 'internal' ? 'production' : 'internal'}`;
+const configurationEntry = `wire-web-config-${process.env.BUILD_ENV !== 'internal' ? 'production' : 'internal'}`;
 const repositoryUrl = pkg.dependencies[configurationEntry];
 
 module.exports = {
