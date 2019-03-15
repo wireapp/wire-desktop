@@ -8390,11 +8390,13 @@ widest-line@^2.0.0:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-default-production@https://github.com/wireapp/wire-web-config-wire#v0.16.1":
-  version "0.16.1"
-  resolved "https://github.com/wireapp/wire-web-config-wire#394041dc3def1a86c5b80670dc93c64b68bfba64"
+"wire-web-config-default-production@https://github.com/wireapp/wire-web-config-wire#v0.16.4":
+  version "0.16.4"
+  uid "742ab0fbdb0cfb814fbd55b6c2dca9e72328919a"
+  resolved "https://github.com/wireapp/wire-web-config-wire#742ab0fbdb0cfb814fbd55b6c2dca9e72328919a"
   dependencies:
     adm-zip "0.4.13"
+    sort-json "2.0.0"
 
 wordwrap@~0.0.2:
   version "0.0.3"
