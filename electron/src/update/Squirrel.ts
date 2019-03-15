@@ -122,4 +122,4 @@ const handleSquirrelEvent = async (isFirstInstance: boolean): Promise<void> => {
   scheduleUpdate();
 };
 
-export default {handleSquirrelEvent, installUpdate};
+export const Squirrel = {handleSquirrelEvent, installUpdate};

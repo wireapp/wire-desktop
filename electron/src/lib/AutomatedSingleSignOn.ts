@@ -22,7 +22,7 @@ import {URL} from 'url';
 const dialog = require('electron').dialog || require('electron').remote.dialog;
 import {MAXIMUM_ACCOUNTS} from '../js/config';
 import {getText} from '../locale/locale';
-import WindowManager from '../window/WindowManager';
+import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
 class AutomatedSingleSignOn {

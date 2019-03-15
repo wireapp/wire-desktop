@@ -51,9 +51,9 @@ import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import * as EnvironmentUtil from './util/EnvironmentUtil';
 import {OriginValidator} from './util/OriginValidator';
-import ViewUtil from './util/ViewUtil';
-import AboutWindow from './window/AboutWindow';
-import WindowManager from './window/WindowManager';
+import {ViewUtil} from './util/ViewUtil';
+import {AboutWindow} from './window/AboutWindow';
+import {WindowManager} from './window/WindowManager';
 
 // Paths
 const APP_PATH = app.getAppPath();

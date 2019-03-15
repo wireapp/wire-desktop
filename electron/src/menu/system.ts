@@ -27,7 +27,7 @@ import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-import WindowManager from '../window/WindowManager';
+import {WindowManager} from '../window/WindowManager';
 
 import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/';
 import * as EnvironmentUtil from '../util/EnvironmentUtil';

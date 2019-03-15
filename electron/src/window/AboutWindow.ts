@@ -147,4 +147,4 @@ const showWindow = () => {
   aboutWindow.show();
 };
 
-export default {showWindow};
+export const AboutWindow = {showWindow};
