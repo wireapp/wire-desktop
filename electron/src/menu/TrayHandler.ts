@@ -23,7 +23,7 @@ import * as path from 'path';
 import * as config from '../js/config';
 import * as lifecycle from '../js/lifecycle';
 import * as locale from '../locale/locale';
-import * as EnvironmentUtil from '../util/EnvironmentUtil';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {WindowManager} from '../window/WindowManager';
 
 class TrayHandler {

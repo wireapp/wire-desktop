@@ -19,8 +19,8 @@
 
 import {MenuItem, app} from 'electron';
 import * as config from '../js/config';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {settings} from '../settings/ConfigurationPersistence';
-import * as EnvironmentUtil from '../util/EnvironmentUtil';
 import {WindowManager} from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();

@@ -19,9 +19,9 @@
 
 import {app, ipcMain} from 'electron';
 import {EVENT_TYPE} from '../lib/eventType';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {settings} from '../settings/ConfigurationPersistence';
 import {Squirrel} from '../update/Squirrel';
-import * as EnvironmentUtil from '../util/EnvironmentUtil';
 import {WindowManager} from '../window/WindowManager';
 
 let isFirstInstance: boolean = false;

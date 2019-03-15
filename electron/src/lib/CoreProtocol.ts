@@ -21,7 +21,7 @@ import {LogFactory} from '@wireapp/commons';
 import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
-import {platform} from '../util/EnvironmentUtil';
+import {platform} from '../runtime/EnvironmentUtil';
 import {AutomatedSingleSignOn} from './AutomatedSingleSignOn';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');

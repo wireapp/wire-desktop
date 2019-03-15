@@ -47,13 +47,13 @@ import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
+import * as EnvironmentUtil from './runtime/EnvironmentUtil';
+import {OriginValidator} from './runtime/OriginValidator';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
-import * as EnvironmentUtil from './util/EnvironmentUtil';
-import {OriginValidator} from './util/OriginValidator';
-import {ViewUtil} from './util/ViewUtil';
 import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
+import {WindowUtil} from './window/WindowUtil';
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -192,7 +192,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
-    if (!ViewUtil.isInView(main)) {
+    if (!WindowUtil.isInView(main)) {
       main.center();
     }
 

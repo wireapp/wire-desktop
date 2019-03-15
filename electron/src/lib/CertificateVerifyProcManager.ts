@@ -23,7 +23,7 @@ import {app, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {getText} from '../locale/locale';
-import * as EnvironmentUtil from '../util/EnvironmentUtil';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});

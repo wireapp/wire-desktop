@@ -17,7 +17,7 @@
  *
  */
 
-const environment = require('../../dist/util/EnvironmentUtil');
+const environment = require('../../dist/runtime/EnvironmentUtil');
 const {getLogger} = require('../../dist/js/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 

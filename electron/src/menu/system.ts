@@ -30,7 +30,7 @@ import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
 
 import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/';
-import * as EnvironmentUtil from '../util/EnvironmentUtil';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 

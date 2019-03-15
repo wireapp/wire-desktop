@@ -25,7 +25,7 @@ import * as path from 'path';
 import * as config from '../js/config';
 import {getLogger} from '../js/getLogger';
 import * as lifecycle from '../js/lifecycle';
-import * as EnvironmentUtil from '../util/EnvironmentUtil';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 

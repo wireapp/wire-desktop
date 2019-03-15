@@ -22,7 +22,7 @@ import {getLogger} from '../js/getLogger';
 import {AutomatedSingleSignOn} from '../lib/AutomatedSingleSignOn';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import * as EnvironmentUtil from '../util/EnvironmentUtil';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const logger = getLogger('preload');
 

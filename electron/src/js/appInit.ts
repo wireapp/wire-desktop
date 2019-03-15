@@ -20,7 +20,7 @@
 import {app} from 'electron';
 import * as minimist from 'minimist';
 import * as path from 'path';
-import * as EnvironmentUtil from '../util/EnvironmentUtil';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const argv = minimist(process.argv.slice(1));
 

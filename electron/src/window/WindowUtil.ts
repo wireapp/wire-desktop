@@ -42,4 +42,4 @@ const isInView = (win: Electron.BrowserWindow): boolean => {
   return upperLeftVisible || lowerRightVisible;
 };
 
-export const ViewUtil = {pointInRectangle, isInView};
+export const WindowUtil = {pointInRectangle, isInView};
