@@ -18,7 +18,7 @@
  */
 
 // Modules
-import {LogFactory} from '@wireapp/commons';
+import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {Server} from '@wireapp/desktop-updater';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
@@ -27,12 +27,14 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
+import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 // Wrapper modules
 import * as about from './js/about';
 import * as appInit from './js/appInit';
 import * as config from './js/config';
 import * as environment from './js/environment';
+import {ENABLE_LOGGING} from './js/getLogger';
 import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
 import * as util from './js/util';
@@ -51,7 +53,6 @@ import * as locale from './locale/locale';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
-// Configuration persistence
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 
@@ -187,8 +188,8 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
 
-  if (argv['enable-logging']) {
-    webappURL += `&enableLogging=@wireapp`;
+  if (ENABLE_LOGGING) {
+    webappURL += `&enableLogging=@wireapp/*`;
   }
 
   if (argv.devtools) {
@@ -329,6 +330,16 @@ const initElectronLogFile = (): void => {
   fs.ensureFileSync(LOG_FILE);
 };
 
+const getWebViewId = (contents: Electron.WebContents): string | undefined => {
+  try {
+    const currentLocation = new URL(contents.getURL());
+    const webViewId = currentLocation.searchParams.get('id');
+    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
+  } catch (error) {
+    return undefined;
+  }
+};
+
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
@@ -370,10 +381,10 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (webviewEvent, contents) => {
+    app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
-      switch ((contents as any).getType()) {
+      switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
             const _url = params.src;
@@ -400,6 +411,19 @@ class ElectronWrapperInit {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
+          if (ENABLE_LOGGING) {
+            contents.on('console-message', async (event, level, message) => {
+              const webViewId = getWebViewId(contents);
+              if (webViewId) {
+                const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
+                try {
+                  await LogFactory.writeMessage(message, logFilePath);
+                } catch (error) {
+                  logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                }
+              }
+            });
+          }
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
@@ -439,7 +463,7 @@ registerCoreProtocol();
 initRaygun.initClient();
 appInit.handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate().catch(logger.error);
+lifecycle.checkForUpdate();
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
@@ -448,5 +472,5 @@ if (lifecycle.isFirstInstance) {
   handleAppEvents();
   renameWebViewLogFiles();
   initElectronLogFile();
-  new ElectronWrapperInit().run().catch(logger.error);
+  new ElectronWrapperInit().run().catch(error => logger.error(error));
 }

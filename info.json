@@ -22,6 +22,6 @@
   "updateWinUrlBeta": "https://wire-app.wire.com/win/beta/",
   "updateWinUrlInternal": "https://wire-app.wire.com/win/internal/",
   "updateWinUrlProd": "https://wire-app.wire.com/win/prod/",
-  "version": "3.6",
+  "version": "3.7",
   "websiteUrl": "https://wire.com"
 }

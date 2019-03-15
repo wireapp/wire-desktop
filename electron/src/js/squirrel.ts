@@ -17,76 +17,105 @@
  *
  */
 
-import {spawn} from 'child_process';
-import {app} from 'electron';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.js
 
+import {app} from 'electron';
+
+import * as cp from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as config from './config';
 import * as environment from './environment';
 import {getLogger} from './getLogger';
 import * as lifecycle from './lifecycle';
 
-app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
+import {SpawnCallback, SpawnError} from '../interfaces/';
 
+app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 const logger = getLogger('squirrel');
 
-const rootFolder = path.resolve(process.execPath, '../../');
-const updateDotExe = path.join(rootFolder, 'Squirrel.exe');
+const appFolder = path.resolve(process.execPath, '..');
+const rootFolder = path.resolve(appFolder, '..');
+const updateDotExe = path.join(rootFolder, 'Update.exe');
 
 const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
 const windowsAppData = process.env.APPDATA || '';
 
-if (!windowsAppData && environment.platform.IS_WINDOWS) {
-  logger.error('No Windows AppData directory found.');
-}
+logger.error('No Windows AppData directory found.');
 
 const taskbarLink = path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar');
 
 const shortcutLink = path.resolve(taskbarLink, linkName);
 
-enum SQUIRREL_EVENT {
-  CREATE_SHORTCUT = '--createShortcut',
-  INSTALL = '--squirrel-install',
-  OBSOLETE = '--squirrel-obsolete',
-  REMOVE_SHORTCUT = '--removeShortcut',
-  UNINSTALL = '--squirrel-uninstall',
-  UPDATE = '--update',
-  UPDATED = '--squirrel-updated',
-}
+const SQUIRREL_EVENT = {
+  CREATE_SHORTCUT: '--createShortcut',
+  INSTALL: '--squirrel-install',
+  OBSOLETE: '--squirrel-obsolete',
+  REMOVE_SHORTCUT: '--removeShortcut',
+  UNINSTALL: '--squirrel-uninstall',
+  UPDATE: '--update',
+  UPDATED: '--squirrel-updated',
+};
 
-async function spawnAsync(command: string, args: string[]): Promise<void> {
-  return new Promise((resolve, reject) => {
-    let stdout = '';
+const spawn = (command: string, args: string[], callback?: SpawnCallback) => {
+  let error: SpawnError | null;
+  let spawnedProcess;
+  let stdout = '';
 
-    const spawnedProcess = spawn(command, args);
+  try {
+    spawnedProcess = cp.spawn(command, args);
+  } catch (_error) {
+    error = _error;
+    return process.nextTick(() => (typeof callback === 'function' ? callback(error, stdout) : void 0));
+  }
 
-    if (spawnedProcess.stdout) {
-      spawnedProcess.stdout.on('data', data => (stdout += data));
-    }
+  if (spawnedProcess.stdout) {
+    spawnedProcess.stdout.on('data', data => (stdout += data));
+  }
 
-    spawnedProcess.on('close', (code, signal) => {
-      if (code !== 0) {
-        logger.info({code, stdout, signal});
-        return reject(`Command "${command}" failed with error code "${code}".`);
+  error = null;
+  spawnedProcess.on('error', processError => (error != null ? error : (error = processError)));
+  spawnedProcess.on('close', (code, signal) => {
+    if (code !== 0) {
+      if (error == null) {
+        error = new Error(`Command failed: ${signal != null ? signal : code}`);
       }
-
-      resolve();
-    });
-    spawnedProcess.on('error', reject);
-    spawnedProcess.on('message', logger.log);
+    }
+    if (error != null) {
+      if (error.code == null) {
+        error.code = code;
+      }
+    }
+    if (error != null) {
+      if (error.stdout == null) {
+        error.stdout = stdout;
+      }
+    }
+    return typeof callback === 'function' ? callback(error, stdout) : void 0;
   });
-}
+};
 
-const spawnUpdate = (args: string[]) => spawnAsync(updateDotExe, args);
-const createStartShortcut = () => spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu']);
-const createDesktopShortcut = () => spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop']);
-const installUpdate = () => spawnUpdate([SQUIRREL_EVENT.UPDATE, environment.app.UPDATE_URL_WIN]);
+const spawnUpdate = (args: string[], callback?: SpawnCallback): void => {
+  spawn(updateDotExe, args, callback);
+};
 
-const removeShortcuts = async (): Promise<void> => {
-  await spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu']);
-  await fs.remove(shortcutLink);
+const createStartShortcut = (callback?: SpawnCallback): void => {
+  spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu'], callback);
+};
+
+const createDesktopShortcut = (callback?: SpawnCallback): void => {
+  spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop'], callback);
+};
+
+const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void): void => {
+  spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
+    fs.unlink(shortcutLink, callback)
+  );
+};
+
+const installUpdate = (): void => {
+  spawnUpdate([SQUIRREL_EVENT.UPDATE, environment.app.UPDATE_URL_WIN]);
 };
 
 const scheduleUpdate = (): void => {
@@ -94,29 +123,37 @@ const scheduleUpdate = (): void => {
   setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
-const handleSquirrelEvent = async (isFirstInstance: boolean): Promise<void> => {
-  const squirrelEvent = process.argv[1];
-
-  if (!isFirstInstance) {
-    return lifecycle.quit();
-  }
+const handleSquirrelEvent = (isFirstInstance: boolean): boolean | void => {
+  const [, squirrelEvent] = process.argv;
 
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL: {
-      await createStartShortcut();
-      await createDesktopShortcut();
-      return lifecycle.quit();
+      createStartShortcut(() => {
+        createDesktopShortcut(() => {
+          lifecycle.quit();
+        });
+      });
+      return true;
+    }
+
+    case SQUIRREL_EVENT.UPDATED: {
+      lifecycle.quit();
+      return true;
     }
 
     case SQUIRREL_EVENT.UNINSTALL: {
-      await removeShortcuts();
-      lifecycle.quit();
+      removeShortcuts(() => lifecycle.quit());
+      return true;
     }
 
-    case SQUIRREL_EVENT.UPDATED:
     case SQUIRREL_EVENT.OBSOLETE: {
       lifecycle.quit();
+      return true;
     }
+  }
+
+  if (!isFirstInstance) {
+    return lifecycle.quit();
   }
 
   scheduleUpdate();

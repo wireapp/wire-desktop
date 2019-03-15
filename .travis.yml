@@ -59,6 +59,7 @@ notifications:
 branches:
   only:
     - master
+    - staging
 
 after_success:
 - |
