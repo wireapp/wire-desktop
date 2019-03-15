@@ -20,8 +20,8 @@
 import {app} from 'electron';
 import {URL} from 'url';
 const dialog = require('electron').dialog || require('electron').remote.dialog;
-import {MAXIMUM_ACCOUNTS} from '../js/config';
 import {getText} from '../locale/locale';
+import {MAXIMUM_ACCOUNTS} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 

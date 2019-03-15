@@ -21,9 +21,9 @@ import {clipboard, ipcRenderer, remote} from 'electron';
 const Menu = remote.Menu;
 
 import {ElectronMenuWithTimeAndImage as ElectronMenuWithImageAndTime} from '../../interfaces';
-import * as config from '../../js/config';
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
+import * as config from '../../settings/config';
 
 let textMenu: Electron.Menu;
 

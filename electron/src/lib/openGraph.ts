@@ -22,8 +22,8 @@ import {IncomingMessage} from 'http';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 import {parse as parseUrl} from 'url';
 
-import {USER_AGENT} from '../js/config';
 import {getLogger} from '../js/getLogger';
+import {USER_AGENT} from '../settings/config';
 
 const logger = getLogger('openGraph');
 

@@ -17,7 +17,7 @@
  *
  */
 
-import * as config from './config';
+import * as config from '../settings/config';
 const raygun = require('raygun');
 
 let raygunClient;

@@ -20,10 +20,10 @@
 import {Menu, Tray, app, nativeImage} from 'electron';
 import * as path from 'path';
 
-import * as config from '../js/config';
 import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
+import * as config from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
 class TrayHandler {
