@@ -28,8 +28,6 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
-import {ENABLE_LOGGING} from './js/getLogger';
-import * as initRaygun from './js/initRaygun';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -41,6 +39,8 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import {SingleSignOn} from './lib/SingleSignOn';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
+import {ENABLE_LOGGING} from './logging/getLogger';
+import {Raygun} from './logging/initRaygun';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
@@ -479,7 +479,7 @@ class ElectronWrapperInit {
 }
 
 registerCoreProtocol();
-initRaygun.initClient();
+Raygun.initClient();
 handlePortableFlags();
 lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate().catch(logger.error);

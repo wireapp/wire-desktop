@@ -38,6 +38,7 @@
     "@types/minimist": "1.2.0",
     "@types/node": "10.12.29",
     "@types/open-graph": "0.2.0",
+    "@types/raygun": "0.10.1",
     "@types/uuid": "3.4.4",
     "cross-spawn": "6.0.5",
     "electron-mocha": "6.0.4",

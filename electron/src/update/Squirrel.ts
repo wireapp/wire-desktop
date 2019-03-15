@@ -22,7 +22,7 @@ import {app} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {getLogger} from '../js/getLogger';
+import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import * as config from '../settings/config';

@@ -22,7 +22,7 @@ import {IncomingMessage} from 'http';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 import {parse as parseUrl} from 'url';
 
-import {getLogger} from '../js/getLogger';
+import {getLogger} from '../logging/getLogger';
 import {USER_AGENT} from '../settings/config';
 
 const logger = getLogger('openGraph');
