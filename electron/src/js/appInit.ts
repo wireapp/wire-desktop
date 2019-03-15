@@ -20,19 +20,19 @@
 import {app} from 'electron';
 import * as minimist from 'minimist';
 import * as path from 'path';
-import * as environment from './environment';
+import * as EnvironmentUtil from '../util/EnvironmentUtil';
 
 const argv = minimist(process.argv.slice(1));
 
 const addLinuxWorkarounds = () => {
-  if (environment.platform.IS_LINUX) {
+  if (EnvironmentUtil.platform.IS_LINUX) {
     // Fix indicator icon on Unity
     // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
 
     if (
-      environment.linuxDesktop.isUbuntuUnity ||
-      environment.linuxDesktop.isPopOS ||
-      environment.linuxDesktop.isGnome
+      EnvironmentUtil.linuxDesktop.isUbuntuUnity ||
+      EnvironmentUtil.linuxDesktop.isPopOS ||
+      EnvironmentUtil.linuxDesktop.isGnome
     ) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity';
     }

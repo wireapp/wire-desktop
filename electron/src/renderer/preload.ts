@@ -18,11 +18,11 @@
  */
 
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
-import * as environment from '../js/environment';
 import {getLogger} from '../js/getLogger';
 import {AutomatedSingleSignOn} from '../lib/AutomatedSingleSignOn';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
+import * as EnvironmentUtil from '../util/EnvironmentUtil';
 
 const logger = getLogger('preload');
 
@@ -32,7 +32,7 @@ webFrame.setVisualZoomLevelLimits(1, 1);
 window.locStrings = locale.LANGUAGES[locale.getCurrent()];
 window.locStringsDefault = locale.LANGUAGES.en;
 
-window.isMac = environment.platform.IS_MAC_OS;
+window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
 const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)') as WebviewTag;
 const getWebviewById = (id: string): WebviewTag => {
@@ -89,7 +89,7 @@ const setupIpcInterface = (): void => {
 };
 
 const addDragRegion = (): void => {
-  if (environment.platform.IS_MAC_OS) {
+  if (EnvironmentUtil.platform.IS_MAC_OS) {
     // add title bar ghost to prevent interactions with the content while dragging
     const titleBar = document.createElement('div');
     titleBar.className = 'drag-region';

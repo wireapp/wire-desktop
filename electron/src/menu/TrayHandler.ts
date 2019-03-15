@@ -21,9 +21,9 @@ import {Menu, Tray, app, nativeImage} from 'electron';
 import * as path from 'path';
 
 import * as config from '../js/config';
-import {linuxDesktop, platform} from '../js/environment';
 import * as lifecycle from '../js/lifecycle';
 import * as locale from '../locale/locale';
+import * as EnvironmentUtil from '../util/EnvironmentUtil';
 import WindowManager from '../window/WindowManager';
 
 class TrayHandler {
@@ -45,9 +45,9 @@ class TrayHandler {
     let trayPng = 'tray.png';
     let trayBadgePng = 'tray.badge.png';
 
-    if (platform.IS_LINUX) {
-      trayPng = `tray${linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
-      trayBadgePng = `tray.badge${linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
+    if (EnvironmentUtil.platform.IS_LINUX) {
+      trayPng = `tray${EnvironmentUtil.linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
+      trayBadgePng = `tray.badge${EnvironmentUtil.linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
     }
 
     const iconPaths = {

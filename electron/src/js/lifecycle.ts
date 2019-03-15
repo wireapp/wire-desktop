@@ -20,17 +20,17 @@
 import {app, ipcMain} from 'electron';
 import {EVENT_TYPE} from '../lib/eventType';
 import {settings} from '../settings/ConfigurationPersistence';
+import Squirrel from '../update/Squirrel';
+import * as EnvironmentUtil from '../util/EnvironmentUtil';
 import WindowManager from '../window/WindowManager';
-import * as environment from './environment';
-import * as squirrel from './squirrel';
 
 let isFirstInstance: boolean = false;
 
 const checkForUpdate = async () => {
-  if (environment.platform.IS_WINDOWS) {
-    await squirrel.handleSquirrelEvent(isFirstInstance);
+  if (EnvironmentUtil.platform.IS_WINDOWS) {
+    await Squirrel.handleSquirrelEvent(isFirstInstance);
 
-    ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => squirrel.installUpdate());
+    ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => Squirrel.installUpdate());
   }
 };
 
@@ -40,7 +40,7 @@ const checkSingleInstance = () => {
   } else {
     isFirstInstance = app.requestSingleInstanceLock();
 
-    if (!environment.platform.IS_WINDOWS && !isFirstInstance) {
+    if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
       quit();
     } else {
       app.on('second-instance', () => WindowManager.showPrimaryWindow());
@@ -56,7 +56,7 @@ const quit = () => {
 };
 
 const relaunch = () => {
-  if (environment.platform.IS_MAC_OS) {
+  if (EnvironmentUtil.platform.IS_MAC_OS) {
     /* on MacOS, it is not possible to relaunch the app, so just fallback
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696

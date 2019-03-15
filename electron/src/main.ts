@@ -30,7 +30,6 @@ import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 import * as appInit from './js/appInit';
 import * as config from './js/config';
-import * as environment from './js/environment';
 import {ENABLE_LOGGING} from './js/getLogger';
 import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
@@ -50,6 +49,7 @@ import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import * as EnvironmentUtil from './util/EnvironmentUtil';
 import {OriginValidator} from './util/OriginValidator';
 import ViewUtil from './util/ViewUtil';
 import AboutWindow from './window/AboutWindow';
@@ -74,10 +74,10 @@ const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath:
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = environment.web.getWebappUrl(argv.env);
+const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 
 // Icon
-const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
+const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 let tray: TrayHandler;
 
@@ -253,7 +253,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 // App Events
 const handleAppEvents = () => {
   app.on('window-all-closed', async () => {
-    if (!environment.platform.IS_MAC_OS) {
+    if (!EnvironmentUtil.platform.IS_MAC_OS) {
       await lifecycle.quit();
     }
   });
@@ -273,13 +273,13 @@ const handleAppEvents = () => {
   app.on('ready', () => {
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen);
-    if (environment.app.IS_DEVELOPMENT) {
+    if (EnvironmentUtil.app.IS_DEVELOPMENT) {
       appMenu.append(developerMenu);
     }
 
     Menu.setApplicationMenu(appMenu);
     tray = new TrayHandler();
-    if (!environment.platform.IS_MAC_OS) {
+    if (!EnvironmentUtil.platform.IS_MAC_OS) {
       tray.initTray();
     }
     showMainWindow(mainWindowState);
@@ -421,7 +421,7 @@ class ElectronWrapperInit {
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
-          const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
+          const isLocalhostEnvironment = EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST;
           if (isLocalhostEnvironment) {
             const filter = {
               urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),

@@ -21,7 +21,6 @@ import autoLaunch = require('auto-launch');
 import {Menu, dialog, globalShortcut, ipcMain, shell} from 'electron';
 
 import * as config from '../js/config';
-import * as environment from '../js/environment';
 import * as lifecycle from '../js/lifecycle';
 import {EVENT_TYPE} from '../lib/eventType';
 import {WebViewFocus} from '../lib/webViewFocus';
@@ -31,6 +30,7 @@ import {SettingsType} from '../settings/SettingsType';
 import WindowManager from '../window/WindowManager';
 
 import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/';
+import * as EnvironmentUtil from '../util/EnvironmentUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -156,7 +156,7 @@ const toggleMenuTemplate: ElectronMenuItemWithI18n = {
 };
 
 const toggleFullScreenTemplate: ElectronMenuItemWithI18n = {
-  accelerator: environment.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
+  accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
   click: () => {
     const mainBrowserWindow = getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
@@ -234,12 +234,12 @@ const windowTemplate: ElectronMenuItemWithI18n = {
     },
     separatorTemplate,
     {
-      accelerator: environment.platform.IS_MAC_OS ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
+      accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
       click: () => sendAction(EVENT_TYPE.CONVERSATION.SHOW_NEXT),
       i18n: 'menuNextConversation',
     },
     {
-      accelerator: environment.platform.IS_MAC_OS ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
+      accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
       click: () => sendAction(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
       i18n: 'menuPreviousConversation',
     },
@@ -251,23 +251,23 @@ const helpTemplate: ElectronMenuItemWithI18n = {
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(environment.URL_LEGAL),
+      click: () => shell.openExternal(EnvironmentUtil.URL_LEGAL),
       i18n: 'menuLegal',
     },
     {
-      click: () => shell.openExternal(environment.URL_PRIVACY),
+      click: () => shell.openExternal(EnvironmentUtil.URL_PRIVACY),
       i18n: 'menuPrivacy',
     },
     {
-      click: () => shell.openExternal(environment.URL_LICENSES),
+      click: () => shell.openExternal(EnvironmentUtil.URL_LICENSES),
       i18n: 'menuLicense',
     },
     {
-      click: () => shell.openExternal(environment.URL_SUPPORT),
+      click: () => shell.openExternal(EnvironmentUtil.URL_SUPPORT),
       i18n: 'menuSupport',
     },
     {
-      click: () => shell.openExternal(environment.web.getWebsiteUrl()),
+      click: () => shell.openExternal(EnvironmentUtil.web.getWebsiteUrl()),
       i18n: 'menuWebsiteURL',
     },
   ],
@@ -373,7 +373,7 @@ const changeLocale = (language: Supportedi18nLanguage): void => {
     {
       buttons: [
         locale.getText('restartLater'),
-        environment.platform.IS_MAC_OS ? locale.getText('menuQuit') : locale.getText('restartNow'),
+        EnvironmentUtil.platform.IS_MAC_OS ? locale.getText('menuQuit') : locale.getText('restartNow'),
       ],
       message: locale.getText('restartLocale'),
       title: locale.getText('restartNeeded'),
@@ -381,7 +381,7 @@ const changeLocale = (language: Supportedi18nLanguage): void => {
     },
     response => {
       if (response === 1) {
-        return environment.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
+        return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
       }
     }
   );
@@ -398,7 +398,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
     helpTemplate.submenu = [];
   }
 
-  if (environment.platform.IS_MAC_OS) {
+  if (EnvironmentUtil.platform.IS_MAC_OS) {
     menuTemplate.unshift(darwinTemplate);
     if (Array.isArray(windowTemplate.submenu)) {
       windowTemplate.submenu.push(separatorTemplate, showWireTemplate, separatorTemplate, toggleFullScreenTemplate);
@@ -406,7 +406,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
     toggleFullScreenTemplate.checked = isFullScreen;
   }
 
-  if (environment.platform.IS_WINDOWS) {
+  if (EnvironmentUtil.platform.IS_WINDOWS) {
     menuTemplate.unshift(win32Template);
     windowTemplate.i18n = 'menuView';
     if (Array.isArray(windowTemplate.submenu)) {
@@ -414,7 +414,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
     }
   }
 
-  if (environment.platform.IS_LINUX) {
+  if (EnvironmentUtil.platform.IS_LINUX) {
     menuTemplate.unshift(linuxTemplate);
     if (Array.isArray(editTemplate.submenu)) {
       editTemplate.submenu.push(separatorTemplate, {
@@ -429,7 +429,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
     toggleFullScreenTemplate.checked = isFullScreen;
   }
 
-  if (!environment.platform.IS_MAC_OS) {
+  if (!EnvironmentUtil.platform.IS_MAC_OS) {
     if (Array.isArray(helpTemplate.submenu)) {
       helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
     }
