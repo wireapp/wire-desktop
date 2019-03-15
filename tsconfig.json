@@ -15,7 +15,13 @@
     "rootDir": "electron/src",
     "sourceMap": true,
     "strict": true,
-    "target": "es5"
+    "target": "es5",
+
+    // Fix for Electron double definitions
+    "baseUrl": ".",
+    "paths": {
+      "electron": ["./node_modules/electron/electron.d.ts"]
+    }
   },
   "exclude": ["electron/dist", "electron/instrumented-code", "node_modules", "electron/node_modules", "wrap"]
 }
