@@ -22,9 +22,10 @@ import {remote} from 'electron';
 import * as logdown from 'logdown';
 
 const {environment} = require('../../package.json');
+const mainProcess = remote ? remote.process : process;
 
 const isDevelopment = environment !== 'production';
-const forceLogging = remote && remote.process.argv.includes('--enable-logging');
+const forceLogging = mainProcess.argv.includes('--enable-logging');
 
 const LOGGER_NAMESPACE = '@wireapp/desktop';
 const ENABLE_LOGGING = isDevelopment || forceLogging;

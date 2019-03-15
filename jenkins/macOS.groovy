@@ -7,7 +7,6 @@ node('master') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def app_name = params.APP_NAME
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -65,7 +64,7 @@ node('master') {
     if (production) {
       archiveArtifacts 'Wire.pkg'
     } else if (custom) {
-      archiveArtifacts "${app_name}.pkg"
+      archiveArtifacts '*.pkg'
     } else {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/WireInternal.zip\""
