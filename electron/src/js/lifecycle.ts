@@ -20,9 +20,9 @@
 import {app, ipcMain} from 'electron';
 import {EVENT_TYPE} from '../lib/eventType';
 import {settings} from '../settings/ConfigurationPersistence';
+import WindowManager from '../window/WindowManager';
 import * as environment from './environment';
 import * as squirrel from './squirrel';
-import * as windowManager from './window-manager';
 
 let isFirstInstance: boolean = false;
 
@@ -43,7 +43,7 @@ const checkSingleInstance = () => {
     if (!environment.platform.IS_WINDOWS && !isFirstInstance) {
       quit();
     } else {
-      app.on('second-instance', () => windowManager.showPrimaryWindow());
+      app.on('second-instance', () => WindowManager.showPrimaryWindow());
     }
   }
 };
@@ -61,7 +61,7 @@ const relaunch = () => {
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696
      */
-    windowManager.getPrimaryWindow().webContents.send(EVENT_TYPE.WRAPPER.RELOAD);
+    WindowManager.getPrimaryWindow().webContents.send(EVENT_TYPE.WRAPPER.RELOAD);
   } else {
     app.relaunch();
     quit();

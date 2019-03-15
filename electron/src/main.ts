@@ -34,7 +34,6 @@ import * as environment from './js/environment';
 import {ENABLE_LOGGING} from './js/getLogger';
 import * as initRaygun from './js/initRaygun';
 import * as lifecycle from './js/lifecycle';
-import * as windowManager from './js/window-manager';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -54,6 +53,7 @@ import {SettingsType} from './settings/SettingsType';
 import {OriginValidator} from './util/OriginValidator';
 import ViewUtil from './util/ViewUtil';
 import AboutWindow from './window/AboutWindow';
+import WindowManager from './window/WindowManager';
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -92,7 +92,7 @@ const bindIpcEvents = () => {
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
-    windowManager.showPrimaryWindow();
+    WindowManager.showPrimaryWindow();
   });
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: IpcMessageEvent, count: number) => {
@@ -196,7 +196,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
       main.center();
     }
 
-    windowManager.setPrimaryWindowId(main.id);
+    WindowManager.setPrimaryWindowId(main.id);
     setTimeout(() => main.show(), 800);
   }
 

@@ -23,12 +23,12 @@ import {Menu, dialog, globalShortcut, ipcMain, shell} from 'electron';
 import * as config from '../js/config';
 import * as environment from '../js/environment';
 import * as lifecycle from '../js/lifecycle';
-import * as windowManager from '../js/window-manager';
 import {EVENT_TYPE} from '../lib/eventType';
 import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
+import WindowManager from '../window/WindowManager';
 
 import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/';
 
@@ -42,7 +42,7 @@ const launcher = new autoLaunch({
   path: launchCmd,
 });
 
-const getPrimaryWindow = (): Electron.BrowserWindow => windowManager.getPrimaryWindow();
+const getPrimaryWindow = (): Electron.BrowserWindow => WindowManager.getPrimaryWindow();
 
 // TODO: disable menus when not in focus
 const sendAction = (action: string): void => {

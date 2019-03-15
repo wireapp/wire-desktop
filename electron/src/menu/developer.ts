@@ -20,12 +20,12 @@
 import {MenuItem, app} from 'electron';
 import * as config from '../js/config';
 import * as environment from '../js/environment';
-import * as windowManager from '../js/window-manager';
 import {settings} from '../settings/ConfigurationPersistence';
+import WindowManager from '../window/WindowManager';
 
 const currentEnvironment = environment.getEnvironment();
 
-const getPrimaryWindow = () => windowManager.getPrimaryWindow();
+const getPrimaryWindow = () => WindowManager.getPrimaryWindow();
 
 const reloadTemplate: Electron.MenuItemConstructorOptions = {
   click: () => getPrimaryWindow().reload(),
