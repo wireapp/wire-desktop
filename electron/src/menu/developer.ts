@@ -18,8 +18,8 @@
  */
 
 import {MenuItem, app} from 'electron';
-import * as config from '../js/config';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import * as config from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {WindowManager} from '../window/WindowManager';
 

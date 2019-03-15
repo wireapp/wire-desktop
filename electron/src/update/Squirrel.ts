@@ -22,10 +22,10 @@ import {app} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import * as config from '../js/config';
 import {getLogger} from '../js/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
+import * as config from '../settings/config';
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 

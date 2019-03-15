@@ -28,7 +28,6 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
-import * as config from './js/config';
 import {ENABLE_LOGGING} from './js/getLogger';
 import * as initRaygun from './js/initRaygun';
 import {
@@ -48,6 +47,7 @@ import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import * as lifecycle from './runtime/lifecycle';
 import {OriginValidator} from './runtime/OriginValidator';
+import * as config from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {AboutWindow} from './window/AboutWindow';

@@ -22,9 +22,9 @@ import * as path from 'path';
 
 import fileUrl = require('file-url');
 import {i18nLanguageIdentifier} from '../interfaces';
-import * as config from '../js/config';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
+import * as config from '../settings/config';
 
 const pkg: {
   copyright: string;
