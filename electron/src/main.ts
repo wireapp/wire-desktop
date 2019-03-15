@@ -28,11 +28,9 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
-import * as appInit from './js/appInit';
 import * as config from './js/config';
 import {ENABLE_LOGGING} from './js/getLogger';
 import * as initRaygun from './js/initRaygun';
-import * as lifecycle from './js/lifecycle';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -48,6 +46,7 @@ import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
+import * as lifecycle from './runtime/lifecycle';
 import {OriginValidator} from './runtime/OriginValidator';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
@@ -323,6 +322,33 @@ const initElectronLogFile = (): void => {
   fs.ensureFileSync(LOG_FILE);
 };
 
+const addLinuxWorkarounds = () => {
+  if (EnvironmentUtil.platform.IS_LINUX) {
+    // Fix indicator icon on Unity
+    // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
+
+    if (
+      EnvironmentUtil.linuxDesktop.isUbuntuUnity ||
+      EnvironmentUtil.linuxDesktop.isPopOS ||
+      EnvironmentUtil.linuxDesktop.isGnome
+    ) {
+      process.env.XDG_CURRENT_DESKTOP = 'Unity';
+    }
+
+    // https://github.com/electron/electron/issues/13415
+    app.disableHardwareAcceleration();
+  }
+};
+
+const handlePortableFlags = () => {
+  if (argv.portable || argv.user_data_dir) {
+    const USER_PATH = argv.user_data_dir || path.join(process.env.APPIMAGE || process.execPath, '../Data');
+
+    console.log(`Saving user data to ${USER_PATH}`);
+    app.setPath('userData', USER_PATH);
+  }
+};
+
 const getWebViewId = (contents: Electron.WebContents): string | undefined => {
   try {
     const currentLocation = new URL(contents.getURL());
@@ -454,13 +480,13 @@ class ElectronWrapperInit {
 
 registerCoreProtocol();
 initRaygun.initClient();
-appInit.handlePortableFlags();
+handlePortableFlags();
 lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate().catch(logger.error);
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
-  appInit.addLinuxWorkarounds();
+  addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
   renameWebViewLogFiles();

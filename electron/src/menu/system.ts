@@ -21,10 +21,10 @@ import autoLaunch = require('auto-launch');
 import {Menu, dialog, globalShortcut, ipcMain, shell} from 'electron';
 
 import * as config from '../js/config';
-import * as lifecycle from '../js/lifecycle';
 import {EVENT_TYPE} from '../lib/eventType';
 import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
+import * as lifecycle from '../runtime/lifecycle';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';

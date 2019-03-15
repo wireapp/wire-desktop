@@ -21,9 +21,9 @@ import {Menu, Tray, app, nativeImage} from 'electron';
 import * as path from 'path';
 
 import * as config from '../js/config';
-import * as lifecycle from '../js/lifecycle';
 import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import * as lifecycle from '../runtime/lifecycle';
 import {WindowManager} from '../window/WindowManager';
 
 class TrayHandler {
