@@ -53,11 +53,14 @@ module.exports = function(grunt) {
   baseData.adminUrl = process.env.URL_ADMIN || baseData.adminUrl;
   baseData.appBase = process.env.APP_BASE || baseData.appBase;
   baseData.bundleId = process.env.MACOS_BUNDLE_ID || baseData.bundleId;
+  baseData.connectivityCheckEndpoint =
+    JSON.parse(process.env.CONNECTIVITY_CHECK_ENDPOINTS) || baseData.connectivityCheckEndpoint;
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
   baseData.customProtocolName = process.env.APP_CUSTOM_PROTOCOL_NAME || baseData.customProtocolName;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
   baseData.developerId = process.env.MACOS_DEVELOPER_ID || baseData.developerId;
   baseData.developerName = process.env.MACOS_DEVELOPER_NAME || baseData.developerName;
+  baseData.enableSecureUpdater = JSON.parse(process.env.ENABLE_SECURE_UPDATER) || baseData.enableSecureUpdater;
   baseData.installerIconUrl = process.env.WIN_URL_ICON_INSTALLER || baseData.installerIconUrl;
   baseData.legalUrl = process.env.URL_LEGAL || baseData.legalUrl;
   baseData.licensesUrl = process.env.URL_LICENSES || baseData.licensesUrl;
@@ -67,7 +70,9 @@ module.exports = function(grunt) {
   baseData.nameShortLinux = process.env.LINUX_NAME_SHORT || baseData.nameShortLinux;
   baseData.privacyUrl = process.env.URL_PRIVACY || baseData.privacyUrl;
   baseData.supportUrl = process.env.URL_SUPPORT || baseData.supportUrl;
+  baseData.trustStore = JSON.parse(process.env.TRUST_STORE) || baseData.trustStore;
   baseData.updateWinUrlCustom = process.env.WIN_URL_UPDATE || baseData.updateWinUrlProd;
+  baseData.updatesEndpoint = process.env.UPDATES_ENDPOINT || baseData.updatesEndpoint;
   baseData.websiteUrl = process.env.URL_WEBSITE || baseData.websiteUrl;
 
   baseData.sign = {
@@ -333,14 +338,18 @@ module.exports = function(grunt) {
 
     electronPkg.adminUrl = info.adminUrl;
     electronPkg.appBase = info.appBase;
+    electronPkg.connectivityCheckEndpoint = info.connectivityCheckEndpoint;
     electronPkg.copyright = info.copyright;
     electronPkg.customProtocolName = info.customProtocolName;
+    electronPkg.enableSecureUpdater = info.enableSecureUpdater;
     electronPkg.homepage = info.websiteUrl;
     electronPkg.legalUrl = info.legalUrl;
     electronPkg.licensesUrl = info.licensesUrl;
     electronPkg.maximumAccounts = info.maximumAccounts;
     electronPkg.privacyUrl = info.privacyUrl;
     electronPkg.supportUrl = info.supportUrl;
+    electronPkg.trustStore = info.trustStore;
+    electronPkg.updatesEndpoint = info.updatesEndpoint;
     electronPkg.websiteUrl = info.websiteUrl;
 
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);

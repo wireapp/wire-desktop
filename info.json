@@ -2,6 +2,7 @@
   "adminUrl": "https://teams.wire.com",
   "appBase": "https://app.wire.com",
   "bundleId": "com.wearezeta.zclient.mac",
+  "connectivityCheckEndpoint": ["https://prod-nginz-https.wire.com"],
   "copyright": "© Wire Swiss GmbH",
   "customProtocolName": "wire",
   "description": "The most secure collaboration platform.",
@@ -9,6 +10,7 @@
   "developerIdInternal": "T69V8N5973",
   "developerName": "Wire Swiss GmbH",
   "developerNameInternal": "Zeta Project Inc.",
+  "enableSecureUpdater": true,
   "installerIconUrl": "https://wire-app.wire.com/win/prod/wire.ico",
   "legalUrl": "https://wire.com/legal/",
   "licensesUrl": "https://wire.com/legal/licenses/",
@@ -19,9 +21,15 @@
   "nameShortLinux": "wire-desktop",
   "privacyUrl": "https://wire.com/privacy/",
   "supportUrl": "https://support.wire.com",
+  "trustStore": [
+    "9aad851eb6ae535dc7a6b81ee44dc8418d192539e42709a3f6edf808a40a8a49",
+    "01fcf31504ww59b82e0902121f743872573699e33134feddb3d068648258330b",
+    "3942e683bf97a2d84beb6df14bbe25ee5e327a3fc4b05723ff835cd6d6e8d96b"
+  ],
   "updateWinUrlBeta": "https://wire-app.wire.com/win/beta/",
   "updateWinUrlInternal": "https://wire-app.wire.com/win/internal/",
   "updateWinUrlProd": "https://wire-app.wire.com/win/prod/",
+  "updatesEndpoint": "https://s3-eu-west-1.amazonaws.com/sabri-dev/v1",
   "version": "3.7",
   "websiteUrl": "https://wire.com"
 }

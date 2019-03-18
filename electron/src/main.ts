@@ -54,6 +54,13 @@ import {SettingsType} from './settings/SettingsType';
 import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
+const pkg: {
+  connectivityCheckEndpoint: string[];
+  enableSecureUpdater: boolean;
+  trustStore: string[];
+  updatesEndpoint: string;
+  version: string;
+} = require('../package.json');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -175,17 +182,13 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   main = await new Server({
     browserWindowOptions: options,
-    connectivityCheckEndpoints: ['https://prod-nginz-https.wire.com', 'https://prod-assets.wire.com'],
-    currentClientVersion: '3.6',
-    currentEnvironment: 'DEV',
+    connectivityCheckEndpoints: pkg.connectivityCheckEndpoint,
+    currentClientVersion: pkg.version,
+    currentEnvironment: EnvironmentUtil.getEnvironment(),
     currentEnvironmentBaseUrl: BASE_URL,
-    enableSecureUpdater: true,
-    trustStore: [
-      '9aad851eb6ae535dc7a6b81ee44dc8418d192539e42709a3f6edf808a40a8849',
-      '01fcf315049c59b82e0902121f743872573699e33134feddb3d068648258330b',
-      '3942e683bb97a2d84beb6df14bbe25ee5e327a3fc4b05723ff835cd6d6e8d96b',
-    ],
-    updatesEndpoint: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+    enableSecureUpdater: pkg.enableSecureUpdater,
+    trustStore: pkg.trustStore,
+    updatesEndpoint: pkg.updatesEndpoint,
   }).start();
 
   mainWindowState.manage(main);
