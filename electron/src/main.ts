@@ -60,7 +60,7 @@ const pkg: {
   trustStore: string[];
   updatesEndpoint: string;
   version: string;
-} = require('../package.json');
+} = require('../../info.json');
 
 // Paths
 const APP_PATH = app.getAppPath();
