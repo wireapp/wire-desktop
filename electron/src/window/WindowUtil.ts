@@ -18,9 +18,16 @@
  */
 
 import * as Electron from 'electron';
-import * as url from 'url';
 
-import {pointInRectangle} from '../lib/pointInRect';
+import {Point, Rectangle} from '../interfaces';
+
+const pointInRectangle = (point: Point, rectangle: Rectangle) => {
+  const [x, y] = point;
+  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
+  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
+
+  return xInRange && yInRange;
+};
 
 const isInView = (win: Electron.BrowserWindow): boolean => {
   const windowBounds = win.getBounds();
@@ -35,6 +42,4 @@ const isInView = (win: Electron.BrowserWindow): boolean => {
   return upperLeftVisible || lowerRightVisible;
 };
 
-const isMatchingHost = (_url: string, _baseUrl: string): boolean => url.parse(_url).host === url.parse(_baseUrl).host;
-
-export {isInView, isMatchingHost};
+export const WindowUtil = {pointInRectangle, isInView};

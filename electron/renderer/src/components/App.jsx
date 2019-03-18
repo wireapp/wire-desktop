@@ -24,7 +24,7 @@ import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
 import {initiateSSO, switchAccount, updateAccount} from '../actions';
 import * as EVENT_TYPE from '../lib/eventType';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/js/config';
+import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
 import {UpdateBar} from '@wireapp/desktop-updater-ui';
 
 import './App.css';

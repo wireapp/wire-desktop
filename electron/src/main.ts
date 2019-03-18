@@ -29,16 +29,6 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
-// Wrapper modules
-import * as about from './js/about';
-import * as appInit from './js/appInit';
-import * as config from './js/config';
-import * as environment from './js/environment';
-import {ENABLE_LOGGING} from './js/getLogger';
-import * as initRaygun from './js/initRaygun';
-import * as lifecycle from './js/lifecycle';
-import * as util from './js/util';
-import * as windowManager from './js/window-manager';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -50,11 +40,20 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import {SingleSignOn} from './lib/SingleSignOn';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
+import {ENABLE_LOGGING} from './logging/getLogger';
+import {Raygun} from './logging/initRaygun';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
+import * as EnvironmentUtil from './runtime/EnvironmentUtil';
+import * as lifecycle from './runtime/lifecycle';
+import {OriginValidator} from './runtime/OriginValidator';
+import * as config from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import {AboutWindow} from './window/AboutWindow';
+import {WindowManager} from './window/WindowManager';
+import {WindowUtil} from './window/WindowUtil';
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -64,15 +63,21 @@ const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/preload.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer/static/webview-preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
+const WINDOW_SIZE = {
+  DEFAULT_HEIGHT: 768,
+  DEFAULT_WIDTH: 1024,
+  MIN_HEIGHT: 512,
+  MIN_WIDTH: 760,
+};
 
 const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = environment.web.getWebappUrl(argv.env);
+const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 
 // Icon
-const ICON = `wire.${environment.platform.IS_WINDOWS ? 'ico' : 'png'}`;
+const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const ICON_PATH = path.join(APP_PATH, 'img', ICON);
 let tray: TrayHandler;
 
@@ -87,7 +92,7 @@ const bindIpcEvents = () => {
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
-    windowManager.showPrimaryWindow();
+    WindowManager.showPrimaryWindow();
   });
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: IpcMessageEvent, count: number) => {
@@ -102,7 +107,7 @@ const bindIpcEvents = () => {
     }
   );
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
-  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, about.showWindow);
+  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
 };
 
@@ -115,8 +120,8 @@ const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
 
 const initWindowStateKeeper = () => {
   const loadedWindowBounds = settings.restore(SettingsType.WINDOW_BOUNDS, {
-    height: config.WINDOW.MAIN.DEFAULT_HEIGHT,
-    width: config.WINDOW.MAIN.DEFAULT_WIDTH,
+    height: WINDOW_SIZE.DEFAULT_HEIGHT,
+    width: WINDOW_SIZE.DEFAULT_WIDTH,
   });
 
   // load version 0 full screen setting
@@ -152,8 +157,8 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     backgroundColor: '#f7f8fa',
     height: mainWindowState.height,
     icon: ICON_PATH,
-    minHeight: config.WINDOW.MAIN.MIN_HEIGHT,
-    minWidth: config.WINDOW.MAIN.MIN_WIDTH,
+    minHeight: WINDOW_SIZE.MIN_HEIGHT,
+    minWidth: WINDOW_SIZE.MIN_WIDTH,
     show: false,
     title: config.NAME,
     titleBarStyle: 'hiddenInset',
@@ -200,11 +205,11 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
-    if (!util.isInView(main)) {
+    if (!WindowUtil.isInView(main)) {
       main.center();
     }
 
-    windowManager.setPrimaryWindowId(main.id);
+    WindowManager.setPrimaryWindowId(main.id);
     setTimeout(() => main.show(), 800);
   }
 
@@ -261,7 +266,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 // App Events
 const handleAppEvents = () => {
   app.on('window-all-closed', async () => {
-    if (!environment.platform.IS_MAC_OS) {
+    if (!EnvironmentUtil.platform.IS_MAC_OS) {
       await lifecycle.quit();
     }
   });
@@ -281,13 +286,13 @@ const handleAppEvents = () => {
   app.on('ready', async () => {
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen);
-    if (environment.app.IS_DEVELOPMENT) {
+    if (EnvironmentUtil.app.IS_DEVELOPMENT) {
       appMenu.append(developerMenu);
     }
 
     Menu.setApplicationMenu(appMenu);
     tray = new TrayHandler();
-    if (!environment.platform.IS_MAC_OS) {
+    if (!EnvironmentUtil.platform.IS_MAC_OS) {
       tray.initTray();
     }
     await showMainWindow(mainWindowState);
@@ -329,6 +334,33 @@ const renameWebViewLogFiles = (): void => {
 const initElectronLogFile = (): void => {
   renameFileExtensions([LOG_FILE], '.log', '.old');
   fs.ensureFileSync(LOG_FILE);
+};
+
+const addLinuxWorkarounds = () => {
+  if (EnvironmentUtil.platform.IS_LINUX) {
+    // Fix indicator icon on Unity
+    // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
+
+    if (
+      EnvironmentUtil.linuxDesktop.isUbuntuUnity ||
+      EnvironmentUtil.linuxDesktop.isPopOS ||
+      EnvironmentUtil.linuxDesktop.isGnome
+    ) {
+      process.env.XDG_CURRENT_DESKTOP = 'Unity';
+    }
+
+    // https://github.com/electron/electron/issues/13415
+    app.disableHardwareAcceleration();
+  }
+};
+
+const handlePortableFlags = () => {
+  if (argv.portable || argv.user_data_dir) {
+    const USER_PATH = argv.user_data_dir || path.join(process.env.APPIMAGE || process.execPath, '../Data');
+
+    console.log(`Saving user data to ${USER_PATH}`);
+    app.setPath('userData', USER_PATH);
+  }
 };
 
 const getWebViewId = (contents: Electron.WebContents): string | undefined => {
@@ -374,7 +406,7 @@ class ElectronWrapperInit {
 
     const willNavigateInWebview = (event: Event, _url: string) => {
       // Ensure navigation is to a whitelisted domain
-      if (util.isMatchingHost(_url, BASE_URL)) {
+      if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
       } else {
         this.logger.log(`Preventing navigation inside <webview>. URL: ${_url}`);
@@ -391,7 +423,7 @@ class ElectronWrapperInit {
             const _url = params.src;
 
             // Verify the URL is being loaded
-            if (!util.isMatchingHost(_url, BASE_URL)) {
+            if (!OriginValidator.isMatchingHost(_url, BASE_URL)) {
               event.preventDefault();
               this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
               return;
@@ -429,7 +461,7 @@ class ElectronWrapperInit {
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
-          const isLocalhostEnvironment = environment.getEnvironment() == environment.BackendType.LOCALHOST;
+          const isLocalhostEnvironment = EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST;
           if (isLocalhostEnvironment) {
             const filter = {
               urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
@@ -461,14 +493,14 @@ class ElectronWrapperInit {
 }
 
 registerCoreProtocol();
-initRaygun.initClient();
-appInit.handlePortableFlags();
+Raygun.initClient();
+handlePortableFlags();
 lifecycle.checkSingleInstance();
 lifecycle.checkForUpdate().catch(logger.error);
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
-  appInit.addLinuxWorkarounds();
+  addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
   renameWebViewLogFiles();

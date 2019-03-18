@@ -31,7 +31,7 @@ import {
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/js/config';
+import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
 
 import './Sidebar.css';
 

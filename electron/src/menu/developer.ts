@@ -18,14 +18,14 @@
  */
 
 import {MenuItem, app} from 'electron';
-import * as config from '../js/config';
-import * as environment from '../js/environment';
-import * as windowManager from '../js/window-manager';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import * as config from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
+import {WindowManager} from '../window/WindowManager';
 
-const currentEnvironment = environment.getEnvironment();
+const currentEnvironment = EnvironmentUtil.getEnvironment();
 
-const getPrimaryWindow = () => windowManager.getPrimaryWindow();
+const getPrimaryWindow = () => WindowManager.getPrimaryWindow();
 
 const reloadTemplate: Electron.MenuItemConstructorOptions = {
   click: () => getPrimaryWindow().reload(),
@@ -66,17 +66,17 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = () => {
   const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
-  for (const key in environment.BackendType) {
-    const type: environment.BackendType = <environment.BackendType>environment.BackendType[key];
+  for (const key in EnvironmentUtil.BackendType) {
+    const type: EnvironmentUtil.BackendType = <EnvironmentUtil.BackendType>EnvironmentUtil.BackendType[key];
     environmentTemplate.push({
       checked: currentEnvironment === type,
       click: () => {
-        environment.setEnvironment(type);
+        EnvironmentUtil.setEnvironment(type);
         settings.persistToFile();
         app.relaunch();
         app.quit();
       },
-      label: environment.BackendTypeLabel[key],
+      label: EnvironmentUtil.BackendTypeLabel[key],
       type: 'radio',
     });
   }

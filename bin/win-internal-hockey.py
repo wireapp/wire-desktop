@@ -34,14 +34,12 @@ bin_root = os.path.dirname(os.path.realpath(__file__))
 wire_exe = os.path.join(bin_root, '..', 'wrap', 'internal', 'WireInternal-win32-ia32', 'WireInternalSetup.exe')
 wire_zip = os.path.join(bin_root, 'WireInternalSetup.zip')
 
-
 def zipit(source, dest):
   os.chdir(os.path.dirname(os.path.abspath(source)))
   filename = os.path.basename(source)
   zipf = zipfile.ZipFile(dest, 'w')
   zipf.write(filename)
   zipf.close()
-
 
 if __name__ == '__main__':
 
