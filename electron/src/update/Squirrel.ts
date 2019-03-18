@@ -22,10 +22,10 @@ import {app} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import * as config from './config';
-import * as environment from './environment';
-import {getLogger} from './getLogger';
-import * as lifecycle from './lifecycle';
+import {getLogger} from '../logging/getLogger';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import * as lifecycle from '../runtime/lifecycle';
+import * as config from '../settings/config';
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
 
@@ -38,7 +38,7 @@ const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
 const windowsAppData = process.env.APPDATA || '';
 
-if (!windowsAppData && environment.platform.IS_WINDOWS) {
+if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
   logger.error('No Windows AppData directory found.');
 }
 
@@ -82,7 +82,7 @@ async function spawnAsync(command: string, args: string[]): Promise<void> {
 const spawnUpdate = (args: string[]) => spawnAsync(updateDotExe, args);
 const createStartShortcut = () => spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu']);
 const createDesktopShortcut = () => spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop']);
-const installUpdate = () => spawnUpdate([SQUIRREL_EVENT.UPDATE, environment.app.UPDATE_URL_WIN]);
+const installUpdate = () => spawnUpdate([SQUIRREL_EVENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
 
 const removeShortcuts = async (): Promise<void> => {
   await spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu']);
@@ -122,4 +122,4 @@ const handleSquirrelEvent = async (isFirstInstance: boolean): Promise<void> => {
   scheduleUpdate();
 };
 
-export {handleSquirrelEvent, installUpdate};
+export const Squirrel = {handleSquirrelEvent, installUpdate};

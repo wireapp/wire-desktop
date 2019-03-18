@@ -18,7 +18,7 @@
  */
 
 import * as Electron from 'electron';
-import * as config from '../js/config';
+import * as config from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 

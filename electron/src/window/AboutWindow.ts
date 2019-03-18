@@ -18,13 +18,13 @@
  */
 
 import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'electron';
-import fileUrl = require('file-url');
 import * as path from 'path';
 
-import {i18nLanguageIdentifier} from '../interfaces/';
+import fileUrl = require('file-url');
+import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import * as config from './config';
+import * as config from '../settings/config';
 
 const pkg: {
   copyright: string;
@@ -47,6 +47,11 @@ const ABOUT_WINDOW_WHITELIST = [
 ];
 const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/menu/preload-about.js');
 
+const WINDOW_SIZE = {
+  HEIGHT: 256,
+  WIDTH: 304,
+};
+
 ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event: IpcMessageEvent, version: string) => (webappVersion = version));
 
 const showWindow = async () => {
@@ -57,7 +62,7 @@ const showWindow = async () => {
       alwaysOnTop: true,
       backgroundColor: '#ececec',
       fullscreen: false,
-      height: config.WINDOW.ABOUT.HEIGHT,
+      height: WINDOW_SIZE.HEIGHT,
       maximizable: false,
       minimizable: false,
       resizable: false,
@@ -71,7 +76,7 @@ const showWindow = async () => {
         session: session.fromPartition('about-window'),
         webviewTag: false,
       },
-      width: config.WINDOW.ABOUT.WIDTH,
+      width: WINDOW_SIZE.WIDTH,
     });
     aboutWindow.setMenuBarVisibility(false);
 
@@ -135,4 +140,4 @@ const showWindow = async () => {
   aboutWindow.show();
 };
 
-export {showWindow};
+export const AboutWindow = {showWindow};

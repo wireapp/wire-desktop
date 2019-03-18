@@ -23,7 +23,7 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {BACKEND_ORIGINS, USER_AGENT} from '../js/config';
+import {BACKEND_ORIGINS, USER_AGENT} from '../settings/config';
 
 const argv = minimist(process.argv.slice(1));
 

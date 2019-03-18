@@ -17,8 +17,8 @@
  *
  */
 
-const environment = require('../../dist/js/environment');
-const {getLogger} = require('../../dist/js/getLogger');
+const environment = require('../../dist/runtime/EnvironmentUtil');
+const {getLogger} = require('../../dist/logging/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');

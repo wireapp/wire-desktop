@@ -29,7 +29,7 @@
     "electron-builder": "20.39.0",
     "electron-packager": "13.1.1",
     "electron-winstaller": "3.0.4",
-    "eslint": "5.15.1",
+    "eslint": "5.15.2",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-jasmine": "2.10.1",
     "eslint-plugin-no-unsanitized": "3.0.2",
@@ -52,7 +52,7 @@
     "tslint-plugin-prettier": "2.0.1",
     "typescript": "3.3.3333",
     "webpack": "4.29.6",
-    "webpack-cli": "3.2.3"
+    "webpack-cli": "3.3.0"
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {

@@ -67,7 +67,7 @@ node('master') {
             }
           } else {
             withCredentials([string(credentialsId: 'WIN_HOCKEY_TOKEN', variable: 'WIN_HOCKEY_TOKEN'), string(credentialsId: 'WIN_HOCKEY_ID', variable: 'WIN_HOCKEY_ID')]) {
-              sh 'python bin/win-hockey.py'
+              sh 'python bin/win-internal-hockey.py'
             }
           }
         } catch(e) {
@@ -100,7 +100,7 @@ node('master') {
       try {
         if (params.Release.equals('Production')) {
           withCredentials([string(credentialsId: 'MACOS_MAS_HOCKEY_TOKEN', variable: 'MACOS_MAS_HOCKEY_TOKEN')]) {
-            sh './bin/macos-mas-hockey.sh'
+            sh './bin/macos-prod-hockey.sh'
           }
         } else if (params.Release.equals('Custom')) {
           withCredentials([string(credentialsId: "${params.MACOS_CUSTOM_HOCKEY_ID}", variable: 'MACOS_CUSTOM_HOCKEY_ID'), string(credentialsId: "${params.MACOS_CUSTOM_HOCKEY_TOKEN}", variable: 'MACOS_CUSTOM_HOCKEY_TOKEN')]) {
@@ -108,7 +108,7 @@ node('master') {
           }
         } else {
           withCredentials([string(credentialsId: 'MACOS_HOCKEY_TOKEN', variable: 'MACOS_HOCKEY_TOKEN')]) {
-            sh 'python bin/macos-hockey.py'
+            sh './bin/macos-internal-hockey.py'
           }
         }
       } catch(e) {
@@ -123,6 +123,12 @@ node('master') {
             withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
               sh './bin/linux-prod-s3.py'
             }
+          }
+        } else if (params.Release.equals('Custom')) {
+          // do nothing
+        } else {
+          withCredentials([string(credentialsId: 'LINUX_HOCKEY_ID', variable: 'LINUX_HOCKEY_ID'), string(credentialsId: 'LINUX_HOCKEY_TOKEN', variable: 'LINUX_HOCKEY_TOKEN')]) {
+            sh './bin/linux-internal-hockey.py'
           }
         }
       } catch(e) {
