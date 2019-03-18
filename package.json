@@ -52,7 +52,7 @@
     "tslint-plugin-prettier": "2.0.1",
     "typescript": "3.3.3333",
     "webpack": "4.29.6",
-    "webpack-cli": "3.2.3"
+    "webpack-cli": "3.3.0"
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
