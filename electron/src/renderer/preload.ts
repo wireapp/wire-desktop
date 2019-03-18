@@ -17,6 +17,7 @@
  *
  */
 
+import {UpdaterBridgeIPC} from '@wireapp/desktop-updater';
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
 import * as environment from '../js/environment';
 import {getLogger} from '../js/getLogger';
@@ -112,3 +113,5 @@ window.addEventListener('focus', () => {
     selectedWebview.focus();
   }
 });
+
+UpdaterBridgeIPC();

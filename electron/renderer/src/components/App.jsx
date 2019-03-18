@@ -25,6 +25,7 @@ import WebviewsContainer from '../containers/WebviewsContainer';
 import {initiateSSO, switchAccount, updateAccount} from '../actions';
 import * as EVENT_TYPE from '../lib/eventType';
 import {MAXIMUM_ACCOUNTS} from '../../../dist/js/config';
+import {UpdateBar} from '@wireapp/desktop-updater-ui';
 
 import './App.css';
 
@@ -81,10 +82,12 @@ class App extends React.Component {
   render() {
     return (
       <IsOnline>
-        <div className="App">
-          <Sidebar />
-          <WebviewsContainer />
-        </div>
+        <UpdateBar>
+          <div className="App">
+            <Sidebar />
+            <WebviewsContainer />
+          </div>
+        </UpdateBar>
       </IsOnline>
     );
   }
