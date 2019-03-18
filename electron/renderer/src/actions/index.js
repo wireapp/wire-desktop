@@ -20,7 +20,7 @@
 import uuid from 'uuid/v4';
 
 import verifyObjectProperties from '../lib/verifyObjectProperties';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/js/config';
+import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
 
 export const ADD_ACCOUNT = 'ADD_ACCOUNT';
 export const INITIATE_SSO = 'INITIATE_SSO';

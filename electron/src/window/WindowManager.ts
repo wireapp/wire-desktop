@@ -44,4 +44,4 @@ const showPrimaryWindow = (): void => {
   }
 };
 
-export {getPrimaryWindow, setPrimaryWindowId, showPrimaryWindow};
+export const WindowManager = {getPrimaryWindow, setPrimaryWindowId, showPrimaryWindow};
