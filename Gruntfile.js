@@ -358,14 +358,12 @@ module.exports = function(grunt) {
   grunt.registerTask('release-internal', () => {
     const info = grunt.config.get('info');
     const buildNumber = grunt.config.get('buildNumber');
-    const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
     const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
     electronPkg.environment = 'internal';
     electronPkg.name = info.nameInternal.toLowerCase();
     electronPkg.productName = info.nameInternal;
     electronPkg.updateWinUrl = info.updateWinUrlInternal;
-    electronPkg.version =
-      buildNumber === '0' ? `${info.version}.0-${commitId}-internal` : `${info.version}.${buildNumber}-internal`;
+    electronPkg.version = `${info.version}.${buildNumber}`;
     grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
     grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
     grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
