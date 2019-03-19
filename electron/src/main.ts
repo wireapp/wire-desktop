@@ -54,13 +54,20 @@ import {SettingsType} from './settings/SettingsType';
 import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
-const pkg: {
+
+// Note: Temporary until solution is found
+let pkg: {
   connectivityCheckEndpoint: string[];
   enableSecureUpdater: boolean;
   trustStore: string[];
   updatesEndpoint: string;
   version: string;
-} = require('../../info.json');
+};
+try {
+  pkg = require('../../info.json');
+} catch (error) {
+  pkg = require('../package.json');
+}
 
 // Paths
 const APP_PATH = app.getAppPath();
