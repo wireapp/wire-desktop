@@ -187,16 +187,21 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     y: mainWindowState.y,
   };
 
-  main = await new Server({
-    browserWindowOptions: options,
-    connectivityCheckEndpoints: pkg.connectivityCheckEndpoint,
-    currentClientVersion: pkg.version,
-    currentEnvironment: EnvironmentUtil.getEnvironment(),
-    currentEnvironmentBaseUrl: BASE_URL,
-    enableSecureUpdater: pkg.enableSecureUpdater,
-    trustStore: pkg.trustStore,
-    updatesEndpoint: pkg.updatesEndpoint,
-  }).start();
+  try {
+    main = await new Server({
+      browserWindowOptions: options,
+      connectivityCheckEndpoints: pkg.connectivityCheckEndpoint,
+      currentClientVersion: pkg.version,
+      currentEnvironment: EnvironmentUtil.getEnvironment(),
+      currentEnvironmentBaseUrl: BASE_URL,
+      enableSecureUpdater: pkg.enableSecureUpdater,
+      trustStore: pkg.trustStore,
+      updatesEndpoint: pkg.updatesEndpoint,
+    }).start();
+  } catch (error) {
+    logger.log(error);
+    return;
+  }
 
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);
