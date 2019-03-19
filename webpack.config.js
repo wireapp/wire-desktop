@@ -40,6 +40,11 @@ module.exports = (env = {}) => ({
     : undefined,
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
+    modules: [
+      path.join(__dirname, 'electron', 'node_modules'),
+      'node_modules',
+      '/Users/sabri/Desktop/Repositories/wire-desktop-packages/node_modules',
+    ],
   },
   stats: 'errors-only',
 });
