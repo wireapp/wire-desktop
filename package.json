@@ -12,7 +12,7 @@
     "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.16.5-0"
   },
   "devDependencies": {
-    "@babel/core": "7.3.4",
+    "@babel/core": "7.4.0",
     "@babel/plugin-proposal-object-rest-spread": "7.4.0",
     "@babel/preset-env": "7.4.1",
     "@babel/preset-react": "7.0.0",
