@@ -42,11 +42,9 @@ const launcher = new autoLaunch({
   path: launchCmd,
 });
 
-const getPrimaryWindow = (): Electron.BrowserWindow => WindowManager.getPrimaryWindow();
-
 // TODO: disable menus when not in focus
 const sendAction = (action: string): void => {
-  const primaryWindow = getPrimaryWindow();
+  const primaryWindow = WindowManager.getPrimaryWindow();
   if (primaryWindow) {
     primaryWindow.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, action);
   }
@@ -133,14 +131,14 @@ const conversationTemplate: ElectronMenuItemWithI18n = {
 
 const showWireTemplate: ElectronMenuItemWithI18n = {
   accelerator: 'CmdOrCtrl+0',
-  click: () => getPrimaryWindow().show(),
+  click: () => WindowManager.getPrimaryWindow().show(),
   label: config.NAME,
 };
 
 const toggleMenuTemplate: ElectronMenuItemWithI18n = {
   checked: settings.restore(SettingsType.SHOW_MENU_BAR, true),
   click: () => {
-    const mainBrowserWindow = getPrimaryWindow();
+    const mainBrowserWindow = WindowManager.getPrimaryWindow();
     const showMenu = mainBrowserWindow.isMenuBarAutoHide();
 
     mainBrowserWindow.setAutoHideMenuBar(!showMenu);
@@ -158,7 +156,7 @@ const toggleMenuTemplate: ElectronMenuItemWithI18n = {
 const toggleFullScreenTemplate: ElectronMenuItemWithI18n = {
   accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
   click: () => {
-    const mainBrowserWindow = getPrimaryWindow();
+    const mainBrowserWindow = WindowManager.getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
   i18n: 'menuFullScreen',
@@ -451,7 +449,7 @@ const registerShortcuts = (): void => {
   for (const shortcut of switchAccountShortcut) {
     for (let accountId = 0; accountId < accountLimit; accountId++) {
       globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
-        getPrimaryWindow().webContents.send(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
+        WindowManager.getPrimaryWindow().webContents.send(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
       );
     }
   }
@@ -462,7 +460,7 @@ const unregisterShortcuts = (): void => {
 };
 
 const toggleMenuBar = (): void => {
-  const mainBrowserWindow = getPrimaryWindow();
+  const mainBrowserWindow = WindowManager.getPrimaryWindow();
   const isVisible = mainBrowserWindow.isMenuBarVisible();
   const autoHide = mainBrowserWindow.isMenuBarAutoHide();
 
