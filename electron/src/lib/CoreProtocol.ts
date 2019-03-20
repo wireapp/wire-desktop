@@ -17,7 +17,7 @@
  *
  */
 
-import {LogFactory} from '@wireapp/commons';
+import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
@@ -57,9 +57,9 @@ const dispatcher = async (url?: string) => {
     case SHOW_CONVERSATION: {
       logger.log('Clicked on a custom protocol link to show a conversation...');
       const primaryWindow = WindowManager.getPrimaryWindow();
-      const conversationId = 'afbb5d60-1187-4385-9c29-7361dea79647';
-      if (primaryWindow) {
-        primaryWindow.webContents.send(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
+      const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
+      if (primaryWindow && conversationIds) {
+        primaryWindow.webContents.send(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
       }
       break;
     }
