@@ -19,8 +19,9 @@
 
 // https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.js
 
-import * as cp from 'child_process';
 import {app} from 'electron';
+
+import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -30,9 +31,9 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import * as config from '../settings/config';
 
-const logger = getLogger('squirrel');
-
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
+
+const logger = getLogger('squirrel');
 
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
@@ -161,4 +162,4 @@ const handleSquirrelEvent = (isFirstInstance?: boolean): boolean | void => {
   scheduleUpdate();
 };
 
-export const Squirrel = {handleSquirrelEvent, installUpdate};
+export {handleSquirrelEvent, installUpdate};
