@@ -162,4 +162,4 @@ const handleSquirrelEvent = (isFirstInstance?: boolean): boolean | void => {
   scheduleUpdate();
 };
 
-export {handleSquirrelEvent, installUpdate};
+export const Squirrel = {handleSquirrelEvent, installUpdate};
