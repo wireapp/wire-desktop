@@ -55,12 +55,9 @@ const dispatcher = async (url?: string) => {
       break;
     }
     case SHOW_CONVERSATION: {
-      logger.log('Clicked on a custom protocol link to show a conversation...');
       const primaryWindow = WindowManager.getPrimaryWindow();
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
-      logger.log('Matched', conversationIds);
       if (primaryWindow && conversationIds) {
-        logger.log('We have all the things we need...');
         primaryWindow.webContents.send(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
       }
       break;

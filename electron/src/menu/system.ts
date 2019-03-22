@@ -43,6 +43,7 @@ const launcher = new autoLaunch({
 });
 
 // TODO: disable menus when not in focus
+// TODO: Make "sendAction" a util function
 const sendAction = (action: string): void => {
   const primaryWindow = WindowManager.getPrimaryWindow();
   if (primaryWindow) {
