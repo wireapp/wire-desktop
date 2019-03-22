@@ -32,12 +32,13 @@ const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFileP
 
 const {customProtocolName} = require('../../package.json');
 const CORE_PROTOCOL = customProtocolName || 'wire';
-// @see https://github.com/wearezeta/documentation/tree/master/topics/client-API#available-endpoints
-const CORE_PROTOCOL_SSO = 'start-sso';
-// wire://conversation/afbb5d60-1187-4385-9c29-7361dea79647
-const SHOW_CONVERSATION = 'conversation';
 const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
+
+enum ProtocolCommand {
+  SHOW_CONVERSATION = 'conversation',
+  START_SSO_FLOW = 'start-sso',
+}
 
 const dispatcher = async (url?: string) => {
   if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
@@ -49,12 +50,12 @@ const dispatcher = async (url?: string) => {
   logger.log('Electron "open-url" event fired');
 
   switch (route.host) {
-    case CORE_PROTOCOL_SSO: {
+    case ProtocolCommand.START_SSO_FLOW: {
       logger.log('Automatic SSO detected');
       await AutomatedSingleSignOn.handleProtocolRequest(route);
       break;
     }
-    case SHOW_CONVERSATION: {
+    case ProtocolCommand.SHOW_CONVERSATION: {
       const primaryWindow = WindowManager.getPrimaryWindow();
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
       if (primaryWindow && conversationIds) {
