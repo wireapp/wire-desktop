@@ -34,13 +34,6 @@ window.locStringsDefault = locale.LANGUAGES.en;
 
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
-declare global {
-  interface Window {
-    amplify: any;
-    z: any;
-  }
-}
-
 const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)') as WebviewTag;
 const getWebviewById = (id: string): WebviewTag => {
   return document.querySelector(`.Webview[data-accountid="${id}"]`) as WebviewTag;
