@@ -125,7 +125,7 @@ const exposeAddressBook = () => {
   const getAddressBook = () => {
     if (!cachedAddressBook) {
       try {
-        cachedAddressBook = require('node-addressbook');
+        cachedAddressBook = require('@wireapp/node-addressbook');
       } catch (error) {
         logger.info('Failed loading "node-addressbook".', error);
       }
