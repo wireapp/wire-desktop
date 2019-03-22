@@ -491,5 +491,5 @@ if (lifecycle.isFirstInstance) {
   handleAppEvents();
   renameWebViewLogFiles();
   initElectronLogFile();
-  new ElectronWrapperInit().run().catch(error => logger.error(error));
+  new ElectronWrapperInit().run().catch(logger.error);
 }
