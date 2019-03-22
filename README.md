@@ -63,7 +63,8 @@ yarn build:linux
 If you would like to build for another Linux target, run the following command:
 
 ```shell
-grunt --target=<target> linux-other
+export LINUX_TARGET=<target>
+yarn build:linux
 ```
 
 Replace `<target>` with your desired target (e.g. `"rpm"`). Have a look at the [documentation for `electron-builder`](https://www.electron.build/configuration/linux) for the available options. Note that we cannot offer support for uncommon targets.

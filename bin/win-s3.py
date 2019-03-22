@@ -26,7 +26,7 @@ BUCKET = os.environ.get('BUCKET')
 VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
-build_root = os.path.join(bin_root, '..', 'wrap', 'internal', 'WireInternal-win32-ia32')
+build_root = os.path.join(bin_root, '..', 'wrap', 'dist')
 releases = os.path.join(build_root, 'RELEASES')
 
 S3_PATH = 'win/internal/'
@@ -47,7 +47,7 @@ def upload_file(source, dest):
 if __name__ == '__main__':
   wire_nupkg = 'wireinternal-%s-full.nupkg' % VERSION
   wire_nupkg_full = os.path.join(build_root, wire_nupkg)
-  wire_exe_full = os.path.join(build_root, 'WireInternalSetup.exe')
+  wire_exe_full = os.path.join(build_root, 'WireInternal-Setup.exe')
 
   upload_file(wire_nupkg_full, '%s%s' % (S3_PATH, wire_nupkg))
   upload_file(wire_exe_full, '%swire-internal-%s.exe' % (S3_PATH, VERSION))

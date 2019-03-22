@@ -24,16 +24,15 @@ Custom (needs special env variables)
 */
 node('master') {
 
-  def jenkinsbot_secret = ""
+  def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: 'JENKINSBOT_WRAPPER_CHAT', variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
   stage('Checkout & Clean') {
     git branch: 'master', url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf wrap/'
-    sh returnStatus: true, script: 'rm -rf info.json'
-    sh returnStatus: true, script: 'rm -rf *.pkg'
+    sh returnStatus: true, script: 'rm -rf *.pkg info.json'
+    sh returnStatus: true, script: 'pip install -r jenkins/requirements.txt'
   }
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
@@ -168,7 +167,7 @@ node('master') {
       try {
         if (projectName.contains('Windows')) {
           withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
-            sh 'cd wrap/prod/Wire-win32-ia32/ && python ../../../bin/github_draft.py'
+            sh 'cd wrap/dist/ && python ../../../bin/github_draft.py'
           }
         } else if (projectName.contains('macOS')) {
           withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {

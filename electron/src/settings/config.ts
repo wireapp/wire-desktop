@@ -17,17 +17,22 @@
  *
  */
 
-const pkg: {maximumAccounts: string; productName: string; version: string} = require('../../package.json');
+const config: {
+  maximumAccounts: string;
+  name: string;
+  raygunApiKey: string;
+  version: string;
+} = require('../../wire.json');
 
 const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
 
 const LOG_FILE_NAME = 'console.log';
 
-const MAXIMUM_ACCOUNTS = pkg.maximumAccounts || 3;
+const MAXIMUM_ACCOUNTS = Number(config.maximumAccounts);
 
-const NAME = pkg.productName || 'Wire';
+const NAME = config.name;
 
-const RAYGUN_API_KEY = '';
+const RAYGUN_API_KEY = config.raygunApiKey;
 
 const UPDATE = {
   DELAY: 5 * 60 * 1000,
@@ -37,6 +42,6 @@ const UPDATE = {
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
 
-const VERSION = pkg.version;
+const VERSION = config.version;
 
 export {BACKEND_ORIGINS, LOG_FILE_NAME, MAXIMUM_ACCOUNTS, NAME, RAYGUN_API_KEY, UPDATE, USER_AGENT, VERSION};

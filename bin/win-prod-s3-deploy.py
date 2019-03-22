@@ -36,7 +36,7 @@ NEW_RELEASE_KEY = S3_PATH + NEW_RELEASE
 NEW_EXE_KEY = S3_PATH + NEW_EXE
 
 OLD_RELEASE_KEY = S3_PATH + 'RELEASES'
-OLD_EXE_KEY = S3_PATH + 'WireSetup.exe'
+OLD_EXE_KEY = S3_PATH + 'Wire-Setup.exe'
 
 s3 = boto3.resource('s3')
 

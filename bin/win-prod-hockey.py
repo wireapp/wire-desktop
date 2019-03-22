@@ -31,7 +31,7 @@ HOCKEY_UPLOAD = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/' % HOCKE
 HOCKEY_NEW = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/new' % HOCKEY_ID
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
-wire_exe = os.path.join(bin_root, '..', 'wrap', 'prod', 'Wire-win32-ia32', 'WireSetup.exe')
+wire_exe = os.path.join(bin_root, '..', 'wrap', 'dist', 'Wire-Setup.exe')
 wire_zip = os.path.join(bin_root, 'WireSetup.zip')
 
 

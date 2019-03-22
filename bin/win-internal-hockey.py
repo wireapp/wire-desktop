@@ -31,7 +31,7 @@ HOCKEY_UPLOAD = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/' % HOCKE
 HOCKEY_NEW = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/new' % HOCKEY_ID
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
-wire_exe = os.path.join(bin_root, '..', 'wrap', 'internal', 'WireInternal-win32-ia32', 'WireInternalSetup.exe')
+wire_exe = os.path.join(bin_root, '..', 'wrap', 'dist', 'WireInternal-Setup.exe')
 wire_zip = os.path.join(bin_root, 'WireInternalSetup.zip')
 
 def zipit(source, dest):

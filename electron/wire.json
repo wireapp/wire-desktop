@@ -1,0 +1,19 @@
+{
+  "adminUrl": "https://teams.wire.com",
+  "appBase": "https://app.wire.com",
+  "buildNumber": "0",
+  "copyright": "© Wire Swiss GmbH",
+  "customProtocolName": "wire",
+  "description": "The most secure collaboration platform.",
+  "environment": "internal",
+  "legalUrl": "https://wire.com/legal/",
+  "licensesUrl": "https://wire.com/legal/licenses/",
+  "maximumAccounts": "3",
+  "name": "WireInternal",
+  "nameShort": "WireInternal",
+  "privacyUrl": "https://wire.com/privacy/",
+  "raygunApiKey": "",
+  "supportUrl": "https://support.wire.com",
+  "version": "0.0.0",
+  "websiteUrl": "https://wire.com"
+}
