@@ -49,6 +49,17 @@ dotenv.config({path: '.env.defaults'});
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
 
+  const LCBOptions = {
+    extraResources: [
+      {
+        filter: ['**/*'],
+        from: './.bundle/',
+        to: '.bundle',
+      },
+    ],
+    files: ['!./.bundle/'],
+  };
+
   const baseData = grunt.file.readJSON(INFO_JSON);
   baseData.adminUrl = process.env.URL_ADMIN || baseData.adminUrl;
   baseData.appBase = process.env.APP_BASE || baseData.appBase;
@@ -180,6 +191,7 @@ module.exports = function(grunt) {
         protocols: [
           {name: '<%= info.customProtocolName %> Core Protocol', schemes: ['<%= info.customProtocolName %>']},
         ],
+        ...LCBOptions,
       },
 
       win_custom: {
