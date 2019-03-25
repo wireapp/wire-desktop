@@ -52,7 +52,7 @@
   "main": "dist/main.js",
   "name": "wireinternal",
   "optionalDependencies": {
-    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
+    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#v3.0.2"
   },
   "private": true,
   "productName": "WireInternal",

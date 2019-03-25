@@ -1603,10 +1603,10 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
 
-nan@^2.4.0:
-  version "2.12.1"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.12.1.tgz#7b1aa193e9aa86057e3c7bbd0ac448e770925552"
-  integrity sha512-JY7V6lRkStKcKTvHO5NVSQRv+RV+FIL5pvDoLiAtSL9pKlC5x9PKQcZDsq7m4FO4d57mkhC6Z+QhAh3Jdk5JFw==
+nan@2.13.1:
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.13.1.tgz#a15bee3790bde247e8f38f1d446edcdaeb05f2dd"
+  integrity sha512-I6YB/YEuDeUZMmhscXKxGgZlFnhsn5y0hgOZBadkzfTRrZBtJDZeg6eQf7PYMIEclwmorTKK8GztsyOUSVBREA==
 
 nice-try@^1.0.4:
   version "1.0.5"
@@ -1635,11 +1635,12 @@ node-abi@^2.7.0:
   dependencies:
     semver "^5.4.1"
 
-"node-addressbook@https://github.com/wireapp/node-addressbook.git#2.0.0":
-  version "1.2.0"
-  resolved "https://github.com/wireapp/node-addressbook.git#5799991759e017d92931075c5fd6eed9e66936b9"
+"node-addressbook@https://github.com/wireapp/node-addressbook.git#v3.0.2":
+  version "3.0.2"
+  uid "272a2e97d25b6992a6a3bbe7358e9fdf1651f55b"
+  resolved "https://github.com/wireapp/node-addressbook.git#272a2e97d25b6992a6a3bbe7358e9fdf1651f55b"
   dependencies:
-    nan "^2.4.0"
+    nan "2.13.1"
 
 node-gyp@^3.8.0:
   version "3.8.0"
