@@ -61,7 +61,7 @@ const relaunch = () => {
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696
      */
-    WindowManager.getPrimaryWindow().webContents.send(EVENT_TYPE.WRAPPER.RELOAD);
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WRAPPER.RELOAD);
   } else {
     app.relaunch();
     quit();

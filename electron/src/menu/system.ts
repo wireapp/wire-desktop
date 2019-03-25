@@ -42,15 +42,6 @@ const launcher = new autoLaunch({
   path: launchCmd,
 });
 
-// TODO: disable menus when not in focus
-// TODO: Make "sendAction" a util function
-const sendAction = (action: string): void => {
-  const primaryWindow = WindowManager.getPrimaryWindow();
-  if (primaryWindow) {
-    primaryWindow.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, action);
-  }
-};
-
 const separatorTemplate: ElectronMenuItemWithI18n = {
   type: 'separator',
 };
@@ -80,7 +71,7 @@ const aboutTemplate: ElectronMenuItemWithI18n = {
 };
 
 const signOutTemplate: ElectronMenuItemWithI18n = {
-  click: () => sendAction(EVENT_TYPE.ACTION.SIGN_OUT),
+  click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.ACTION.SIGN_OUT),
   i18n: 'menuSignOut',
 };
 
@@ -89,42 +80,44 @@ const conversationTemplate: ElectronMenuItemWithI18n = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+N',
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.START),
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.START),
       i18n: 'menuStart',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+K',
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.PING),
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PING),
       i18n: 'menuPing',
     },
     {
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.CALL),
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.CALL),
       i18n: 'menuCall',
     },
     {
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.VIDEO_CALL),
+      click: () =>
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.VIDEO_CALL),
       i18n: 'menuVideoCall',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+I',
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.PEOPLE),
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PEOPLE),
       i18n: 'menuPeople',
     },
     {
       accelerator: 'Shift+CmdOrCtrl+K',
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.ADD_PEOPLE),
+      click: () =>
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.ADD_PEOPLE),
       i18n: 'menuAddPeople',
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+D',
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.ARCHIVE),
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.ARCHIVE),
       i18n: 'menuArchive',
     },
     {
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.DELETE),
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.DELETE),
       i18n: 'menuDelete',
     },
   ],
@@ -234,12 +227,14 @@ const windowTemplate: ElectronMenuItemWithI18n = {
     separatorTemplate,
     {
       accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.SHOW_NEXT),
+      click: () =>
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_NEXT),
       i18n: 'menuNextConversation',
     },
     {
       accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
-      click: () => sendAction(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
+      click: () =>
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
       i18n: 'menuPreviousConversation',
     },
   ],
@@ -279,7 +274,7 @@ const darwinTemplate: ElectronMenuItemWithI18n = {
     separatorTemplate,
     {
       accelerator: 'Command+,',
-      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
       i18n: 'menuPreferences',
     },
     separatorTemplate,
@@ -317,7 +312,7 @@ const win32Template: ElectronMenuItemWithI18n = {
   submenu: [
     {
       accelerator: 'Ctrl+,',
-      click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
       i18n: 'menuSettings',
     },
     localeTemplate,
@@ -418,7 +413,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
     if (Array.isArray(editTemplate.submenu)) {
       editTemplate.submenu.push(separatorTemplate, {
         accelerator: 'Ctrl+,',
-        click: () => sendAction(EVENT_TYPE.PREFERENCES.SHOW),
+        click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
         i18n: 'menuPreferences',
       });
     }
@@ -442,7 +437,9 @@ const createMenu = (isFullScreen: boolean): Menu => {
 
 const registerShortcuts = (): void => {
   // Global mute shortcut
-  globalShortcut.register('CmdOrCtrl+Alt+M', () => sendAction(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE));
+  globalShortcut.register('CmdOrCtrl+Alt+M', () =>
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE)
+  );
 
   // Global account switching shortcut
   const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
@@ -450,7 +447,7 @@ const registerShortcuts = (): void => {
   for (const shortcut of switchAccountShortcut) {
     for (let accountId = 0; accountId < accountLimit; accountId++) {
       globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
-        WindowManager.getPrimaryWindow().webContents.send(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
       );
     }
   }

@@ -44,4 +44,11 @@ const showPrimaryWindow = (): void => {
   }
 };
 
-export const WindowManager = {getPrimaryWindow, setPrimaryWindowId, showPrimaryWindow};
+const sendActionToPrimaryWindow = (channel: string, ...args: any[]): void => {
+  const primaryWindow = getPrimaryWindow();
+  if (primaryWindow) {
+    primaryWindow.webContents.send(channel, ...args);
+  }
+};
+
+export const WindowManager = {getPrimaryWindow, sendActionToPrimaryWindow, setPrimaryWindowId, showPrimaryWindow};

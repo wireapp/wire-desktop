@@ -50,17 +50,16 @@ const dispatcher = async (url?: string) => {
   logger.log('Electron "open-url" event fired');
 
   switch (route.host) {
+    case ProtocolCommand.SHOW_CONVERSATION: {
+      const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
+      if (conversationIds) {
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
+      }
+      break;
+    }
     case ProtocolCommand.START_SSO_FLOW: {
       logger.log('Automatic SSO detected');
       await AutomatedSingleSignOn.handleProtocolRequest(route);
-      break;
-    }
-    case ProtocolCommand.SHOW_CONVERSATION: {
-      const primaryWindow = WindowManager.getPrimaryWindow();
-      const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
-      if (primaryWindow && conversationIds) {
-        primaryWindow.webContents.send(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
-      }
       break;
     }
     default: {
