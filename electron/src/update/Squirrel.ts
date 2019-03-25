@@ -17,7 +17,7 @@
  *
  */
 
-// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.js
+// https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
 import {app} from 'electron';
 
