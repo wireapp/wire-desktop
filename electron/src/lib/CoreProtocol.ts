@@ -47,13 +47,14 @@ const dispatcher = async (url?: string) => {
 
   const route = new URL(url);
 
-  logger.log('Electron "open-url" event fired');
+  logger.log(`Electron "open-url" event fired: ${url}`);
 
   switch (route.host) {
     case ProtocolCommand.SHOW_CONVERSATION: {
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
       if (conversationIds) {
         const sendCodeToRenderer = () => {
+          logger.log(`Deep link: Show conversation "${conversationIds[0]}"`);
           main.webContents.send(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
         };
 
