@@ -55,6 +55,10 @@ const subscribeToMainProcessEvents = () => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
+    } else {
+      logger.warn(
+        `Deep link: Couldn't find WebView, so the request to show the conversation "${conversationId}" couldn't be forwarded.`
+      );
     }
   });
 
