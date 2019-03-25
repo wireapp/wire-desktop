@@ -46,7 +46,6 @@
     "istanbul": "1.1.0-alpha.1",
     "remap-istanbul": "0.13.0"
   },
-  "environment": "internal",
   "license": "GPL-3.0",
   "main": "dist/main.js",
   "name": "wireinternal",

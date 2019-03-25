@@ -1,11 +1,4 @@
 {
-  "build": {
-    "directories": {
-      "app": "electron",
-      "buildResources": "resources",
-      "output": "wrap/dist"
-    }
-  },
   "dependencies": {
     "debug": "4.1.1",
     "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.16.4",

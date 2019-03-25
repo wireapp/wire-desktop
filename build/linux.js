@@ -80,6 +80,11 @@ const builderConfig = {
     ...platformSpecificConfig,
     depends: debDepends,
   },
+  directories: {
+    app: 'electron',
+    buildResources: 'resources',
+    output: 'wrap/dist',
+  },
   extraMetadata: {
     homepage: commonConfig.websiteUrl,
   },
