@@ -19,8 +19,8 @@
     "open-graph": "0.2.4",
     "prop-types": "15.7.2",
     "raygun": "0.10.1",
-    "react": "16.8.4",
-    "react-dom": "16.8.4",
+    "react": "16.8.5",
+    "react-dom": "16.8.5",
     "react-redux": "6.0.1",
     "redux": "4.0.1",
     "redux-logger": "3.0.6",
@@ -52,7 +52,7 @@
   "main": "dist/main.js",
   "name": "wireinternal",
   "optionalDependencies": {
-    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
+    "@wireapp/node-addressbook": "3.0.2"
   },
   "private": true,
   "productName": "WireInternal",
@@ -66,7 +66,7 @@
     "coverage:clean": "rimraf coverage instrumented-code",
     "coverage:instrument": "istanbul instrument dist --no-compact --complete-copy --output instrumented-code",
     "coverage:report": "remap-istanbul --input instrumented-code/coverage.json --output coverage -t html",
-    "postinstall": "electron-rebuild -f -w node-addressbook",
+    "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
     "test": "electron-mocha"
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
