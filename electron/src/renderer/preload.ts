@@ -51,6 +51,13 @@ const subscribeToMainProcessEvents = () => {
     }
   });
 
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, (event: IpcMessageEvent, conversationId: string) => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.send(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
+    }
+  });
+
   ipcRenderer.on(
     EVENT_TYPE.WRAPPER.RELOAD,
     (): void => {
