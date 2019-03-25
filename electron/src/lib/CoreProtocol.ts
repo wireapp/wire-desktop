@@ -53,7 +53,22 @@ const dispatcher = async (url?: string) => {
     case ProtocolCommand.SHOW_CONVERSATION: {
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
       if (conversationIds) {
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
+        const sendCodeToRenderer = () => {
+          main.webContents.send(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
+        };
+
+        await app.whenReady();
+
+        const main = WindowManager.getPrimaryWindow();
+        if (main.webContents.isLoading()) {
+          main.webContents.once('did-finish-load', () => sendCodeToRenderer());
+        } else {
+          if (!main.isVisible()) {
+            main.show();
+            main.focus();
+          }
+          sendCodeToRenderer();
+        }
       }
       break;
     }
