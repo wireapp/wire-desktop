@@ -60,10 +60,12 @@ const dispatcher = async (url?: string) => {
       break;
     }
     case ProtocolCommand.START_SSO_FLOW: {
-      logger.log('Starting SSO flow...');
-      await app.whenReady();
-      const code = route.pathname.trim().substr(1);
-      WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      if (typeof route.pathname === 'string') {
+        logger.log('Starting SSO flow...');
+        const code = route.pathname.trim().substr(1);
+        await app.whenReady();
+        WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      }
       break;
     }
     default: {

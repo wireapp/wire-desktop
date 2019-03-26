@@ -17,36 +17,13 @@
  *
  */
 
-import {URL} from 'url';
-const dialog = require('electron').dialog || require('electron').remote.dialog;
 import {getText} from '../locale/locale';
 import {MAXIMUM_ACCOUNTS} from '../settings/config';
-import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
+const dialog = require('electron').dialog || require('electron').remote.dialog;
+
 class AutomatedSingleSignOn {
-  public static readonly handleProtocolRequest = async (route: URL) => {
-    if (typeof route.pathname !== 'string') {
-      return;
-    }
-
-    const sendCodeToRenderer = () => {
-      main.webContents.send();
-    };
-
-    const main = WindowManager.getPrimaryWindow();
-    if (main.webContents.isLoading()) {
-      // App is booting
-      main.webContents.once('did-finish-load', () => sendCodeToRenderer());
-    } else {
-      if (!main.isVisible()) {
-        main.show();
-        main.focus();
-      }
-      sendCodeToRenderer();
-    }
-  };
-
   constructor(private readonly ssoCode: string) {}
 
   private onResponseReceived(event: CustomEvent) {
