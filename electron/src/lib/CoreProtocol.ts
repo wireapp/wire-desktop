@@ -39,58 +39,60 @@ enum ProtocolCommand {
   START_SSO_FLOW = 'start-sso',
 }
 
-const dispatcher = async (url?: string) => {
-  if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
-    return;
-  }
+export class CustomProtocolHandler {
+  public hashLocation: string = '';
 
-  const route = new URL(url);
+  async dispatcher(url?: string) {
+    if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
+      return;
+    }
 
-  switch (route.host) {
-    case ProtocolCommand.SHOW_CONVERSATION: {
-      const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
-      if (conversationIds) {
-        const conversationId = conversationIds[0];
-        logger.log(`Showing conversation "${conversationId}"...`);
-        await app.whenReady();
-        WindowManager.sendActionAndFocusWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
+    const route = new URL(url);
+
+    switch (route.host) {
+      case ProtocolCommand.SHOW_CONVERSATION: {
+        const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
+        if (conversationIds) {
+          const conversationId = conversationIds[0];
+          this.hashLocation = `/conversation/${conversationId}`;
+        }
+        break;
       }
-      break;
-    }
-    case ProtocolCommand.START_SSO_FLOW: {
-      if (typeof route.pathname === 'string') {
-        logger.log('Starting SSO flow...');
-        const code = route.pathname.trim().substr(1);
-        await app.whenReady();
-        WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      case ProtocolCommand.START_SSO_FLOW: {
+        if (typeof route.pathname === 'string') {
+          logger.log('Starting SSO flow...');
+          const code = route.pathname.trim().substr(1);
+          await app.whenReady();
+          WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+        }
+        break;
       }
-      break;
+      default: {
+        logger.log(`Unknown route detected. Full URL: ${route.toString()}`);
+        break;
+      }
     }
-    default: {
-      logger.log(`Unknown route detected. Full URL: ${route.toString()}`);
-      break;
-    }
-  }
-};
-
-export const registerCoreProtocol = () => {
-  if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
-    app.setAsDefaultProtocolClient(CORE_PROTOCOL);
   }
 
-  if (platform.IS_MAC_OS) {
-    app.on('open-url', async (event, url) => {
-      event.preventDefault();
-      await dispatcher(url);
-    });
-  } else {
-    app.once('ready', async () => {
-      const url = process.argv[CORE_PROTOCOL_POSITION];
-      await dispatcher(url);
-    });
-    app.on('second-instance', async (event, argv) => {
-      const url = argv[CORE_PROTOCOL_POSITION];
-      await dispatcher(url);
-    });
+  public registerCoreProtocol() {
+    if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
+      app.setAsDefaultProtocolClient(CORE_PROTOCOL);
+    }
+
+    if (platform.IS_MAC_OS) {
+      app.on('open-url', async (event, url) => {
+        event.preventDefault();
+        await this.dispatcher(url);
+      });
+    } else {
+      app.once('ready', async () => {
+        const url = process.argv[CORE_PROTOCOL_POSITION];
+        await this.dispatcher(url);
+      });
+      app.on('second-instance', async (event, argv) => {
+        const url = argv[CORE_PROTOCOL_POSITION];
+        await this.dispatcher(url);
+      });
+    }
   }
-};
+}
