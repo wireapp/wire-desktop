@@ -26,7 +26,7 @@ import {EVENT_TYPE} from './eventType';
 const dialog = mainDialog || remote.dialog;
 
 class AutomatedSingleSignOn {
-  private onResponseReceived(event: CustomEvent<CreateSSOAccountResponse>) {
+  private onResponseReceived(event: CreateSSOAccountResponse) {
     if (event.detail.reachedMaximumAccounts) {
       this.showError();
     }
