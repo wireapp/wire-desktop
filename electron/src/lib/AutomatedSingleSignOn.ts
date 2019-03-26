@@ -17,7 +17,6 @@
  *
  */
 
-import {app} from 'electron';
 import {URL} from 'url';
 const dialog = require('electron').dialog || require('electron').remote.dialog;
 import {getText} from '../locale/locale';
@@ -32,11 +31,8 @@ class AutomatedSingleSignOn {
     }
 
     const sendCodeToRenderer = () => {
-      const code = route.pathname.trim().substr(1);
-      main.webContents.send(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      main.webContents.send();
     };
-
-    await app.whenReady();
 
     const main = WindowManager.getPrimaryWindow();
     if (main.webContents.isLoading()) {

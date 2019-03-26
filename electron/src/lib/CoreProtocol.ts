@@ -23,7 +23,6 @@ import * as path from 'path';
 import {URL} from 'url';
 import {platform} from '../runtime/EnvironmentUtil';
 import {WindowManager} from '../window/WindowManager';
-import {AutomatedSingleSignOn} from './AutomatedSingleSignOn';
 import {EVENT_TYPE} from './eventType';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -51,15 +50,19 @@ const dispatcher = async (url?: string) => {
 
   switch (route.host) {
     case ProtocolCommand.SHOW_CONVERSATION: {
+      logger.log('Starting SSO flow...');
+      await app.whenReady();
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
       if (conversationIds) {
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
+        WindowManager.sendActionAndFocusWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
       }
       break;
     }
     case ProtocolCommand.START_SSO_FLOW: {
-      logger.log('Automatic SSO detected');
-      await AutomatedSingleSignOn.handleProtocolRequest(route);
+      logger.log('Starting SSO flow...');
+      await app.whenReady();
+      const code = route.pathname.trim().substr(1);
+      WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
       break;
     }
     default: {
