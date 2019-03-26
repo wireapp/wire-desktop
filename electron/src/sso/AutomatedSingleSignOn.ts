@@ -18,10 +18,10 @@
  */
 
 import {dialog as mainDialog, remote} from 'electron';
-import {CreateSSOAccountResponse} from '../event/CreateSSOAccountResponse';
+import {EVENT_TYPE} from '../lib/eventType';
 import {getText} from '../locale/locale';
 import {MAXIMUM_ACCOUNTS} from '../settings/config';
-import {EVENT_TYPE} from './eventType';
+import {CreateSSOAccountResponse} from './CreateSSOAccountResponse';
 
 const dialog = mainDialog || remote.dialog;
 
