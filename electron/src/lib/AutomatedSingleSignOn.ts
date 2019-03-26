@@ -21,7 +21,8 @@ import {getText} from '../locale/locale';
 import {MAXIMUM_ACCOUNTS} from '../settings/config';
 import {EVENT_TYPE} from './eventType';
 
-const dialog = require('electron').dialog || require('electron').remote.dialog;
+import {dialog: mainDialog, remote} from 'electron'
+const dialog = mainDialog || remote.dialog;
 
 class AutomatedSingleSignOn {
   constructor(private readonly ssoCode: string) {}
