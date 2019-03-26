@@ -36,6 +36,7 @@ const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
 enum ProtocolCommand {
   SHOW_CONVERSATION = 'conversation',
+  SHOW_USER = 'user',
   START_SSO_FLOW = 'start-sso',
 }
 
@@ -56,6 +57,15 @@ export class CustomProtocolHandler {
           const conversationId = conversationIds[0];
           this.hashLocation = `/conversation/${conversationId}`;
           WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
+        }
+        break;
+      }
+      case ProtocolCommand.SHOW_USER: {
+        const userIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
+        if (userIds) {
+          const userId = userIds[0];
+          this.hashLocation = `/user/${userId}`;
+          WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.USER.SHOW, userId);
         }
         break;
       }
