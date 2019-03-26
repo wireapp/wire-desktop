@@ -53,7 +53,7 @@ const dispatcher = async (url?: string) => {
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
       if (conversationIds) {
         const conversationId = conversationIds[0];
-        logger.log(`Show conversation "${conversationId}"...`);
+        logger.log(`Showing conversation "${conversationId}"...`);
         await app.whenReady();
         WindowManager.sendActionAndFocusWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
       }
