@@ -55,6 +55,7 @@ export class CustomProtocolHandler {
         if (conversationIds) {
           const conversationId = conversationIds[0];
           this.hashLocation = `/conversation/${conversationId}`;
+          WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
         }
         break;
       }
