@@ -20,7 +20,7 @@
 import {IpcMessageEvent, ipcRenderer} from 'electron';
 import {EVENT_TYPE} from '../../lib/eventType';
 
-ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels: string[]) => {
+ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (_: IpcMessageEvent, labels: string[]) => {
   for (const label in labels) {
     const labelElement = document.querySelector(`[data-string="${label}"]`);
     if (labelElement) {
@@ -32,7 +32,7 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels
 ipcRenderer.once(
   EVENT_TYPE.ABOUT.LOADED,
   (
-    event: Event,
+    _: Event,
     details: {
       copyright: string;
       electronVersion: string;
@@ -57,7 +57,7 @@ ipcRenderer.once(
         webappVersionElement.innerHTML = details.webappVersion;
       } else {
         if (webappVersionElement.parentNode) {
-          (webappVersionElement.parentNode as any).remove();
+          (webappVersionElement.parentNode as HTMLDivElement).remove();
         }
       }
     }
@@ -74,7 +74,7 @@ ipcRenderer.once(
 
     // Get locales
     const labels = [];
-    const dataStrings = document.querySelectorAll<any>('[data-string]');
+    const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
 
     for (const index in dataStrings) {
       const label = dataStrings[index];
