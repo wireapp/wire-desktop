@@ -46,8 +46,6 @@ const dispatcher = async (url?: string) => {
 
   const route = new URL(url);
 
-  logger.log('Electron "open-url" event fired');
-
   switch (route.host) {
     case ProtocolCommand.SHOW_CONVERSATION: {
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
@@ -76,7 +74,6 @@ const dispatcher = async (url?: string) => {
 };
 
 export const registerCoreProtocol = () => {
-  // Immediately register the protocol system-wide if needed
   if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
     app.setAsDefaultProtocolClient(CORE_PROTOCOL);
   }

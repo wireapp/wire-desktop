@@ -25,28 +25,30 @@ import {EVENT_TYPE} from './eventType';
 const dialog = mainDialog || remote.dialog;
 
 class AutomatedSingleSignOn {
-  constructor(private readonly ssoCode: string) {}
-
   private onResponseReceived(event: CustomEvent) {
     if (event.detail && event.detail.reachedMaximumAccounts) {
-      const detail =
-        MAXIMUM_ACCOUNTS === 1
-          ? getText('wrapperAddAccountErrorMessageSingular')
-          : getText('wrapperAddAccountErrorMessagePlural');
-      const message =
-        MAXIMUM_ACCOUNTS === 1
-          ? getText('wrapperAddAccountErrorTitleSingular')
-          : getText('wrapperAddAccountErrorTitlePlural');
-
-      dialog.showMessageBox({
-        detail,
-        message,
-        type: 'warning',
-      });
+      this.showError();
     }
   }
 
-  public async start() {
+  private showError() {
+    const detail =
+      MAXIMUM_ACCOUNTS === 1
+        ? getText('wrapperAddAccountErrorMessageSingular')
+        : getText('wrapperAddAccountErrorMessagePlural');
+    const message =
+      MAXIMUM_ACCOUNTS === 1
+        ? getText('wrapperAddAccountErrorTitleSingular')
+        : getText('wrapperAddAccountErrorTitlePlural');
+
+    dialog.showMessageBox({
+      detail,
+      message,
+      type: 'warning',
+    });
+  }
+
+  public async start(ssoCode: string) {
     // Send initial signal to the renderer and wait for a response
     window.addEventListener(
       EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE,
@@ -59,7 +61,7 @@ class AutomatedSingleSignOn {
     window.dispatchEvent(
       new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, {
         detail: {
-          code: this.ssoCode,
+          code: ssoCode,
         },
       })
     );
