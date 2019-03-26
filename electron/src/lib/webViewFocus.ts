@@ -29,7 +29,7 @@ class WebViewFocus {
   public static readonly bindTracker = (webviewEvent: Electron.Event, contents: Electron.WebContents): void => {
     if (contents.getType() === 'webview') {
       // Undocumented event @ https://github.com/electron/electron/pull/14344/files
-      (contents as any).on('focus-change', (event: {}, isFocus: boolean, guestInstanceId: number) => {
+      (<any>contents).on('focus-change', (event: {}, isFocus: boolean, guestInstanceId: number) => {
         if (isFocus) {
           WebViewFocus.current = guestInstanceId;
         }
@@ -41,8 +41,8 @@ class WebViewFocus {
     let webContentFound: Electron.WebContents | undefined;
     for (const webContent of webContents.getAllWebContents()) {
       if (
-        typeof (webContent as any).viewInstanceId == 'number' &&
-        (webContent as any).viewInstanceId === WebViewFocus.current
+        typeof (<any>webContent).viewInstanceId == 'number' &&
+        (<any>webContent).viewInstanceId === WebViewFocus.current
       ) {
         webContentFound = webContent;
         break;

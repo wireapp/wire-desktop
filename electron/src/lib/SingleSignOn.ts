@@ -236,7 +236,7 @@ class SingleSignOn {
 
   private readonly createBrowserWindow = (): Electron.BrowserWindow => {
     // Discard old preload URL
-    delete (this.windowOptions.webPreferences as any).preloadURL;
+    delete (<any>this.windowOptions.webPreferences).preloadURL;
 
     const SingleSignOnLoginWindow = new BrowserWindow({
       ...this.windowOptions,
@@ -283,7 +283,7 @@ class SingleSignOn {
       width: this.windowOptions.width || 480,
     });
 
-    (this.senderEvent as any).newGuest = SingleSignOnLoginWindow;
+    (<any>this.senderEvent).newGuest = SingleSignOnLoginWindow;
 
     SingleSignOnLoginWindow.once('closed', async () => {
       if (this.session) {
