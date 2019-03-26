@@ -17,11 +17,11 @@
  *
  */
 
+import {dialog as mainDialog, remote} from 'electron';
 import {getText} from '../locale/locale';
 import {MAXIMUM_ACCOUNTS} from '../settings/config';
 import {EVENT_TYPE} from './eventType';
 
-import {dialog: mainDialog, remote} from 'electron'
 const dialog = mainDialog || remote.dialog;
 
 class AutomatedSingleSignOn {
