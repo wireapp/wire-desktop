@@ -482,7 +482,7 @@ registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate().catch(logger.error);
+lifecycle.checkForUpdate();
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

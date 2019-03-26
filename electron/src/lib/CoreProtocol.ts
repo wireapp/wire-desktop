@@ -17,12 +17,14 @@
  *
  */
 
-import {LogFactory} from '@wireapp/commons';
+import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 import {platform} from '../runtime/EnvironmentUtil';
+import {WindowManager} from '../window/WindowManager';
 import {AutomatedSingleSignOn} from './AutomatedSingleSignOn';
+import {EVENT_TYPE} from './eventType';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
@@ -30,9 +32,13 @@ const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFileP
 
 const {customProtocolName} = require('../../package.json');
 const CORE_PROTOCOL = customProtocolName || 'wire';
-const CORE_PROTOCOL_SSO = 'start-sso';
 const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
+
+enum ProtocolCommand {
+  SHOW_CONVERSATION = 'conversation',
+  START_SSO_FLOW = 'start-sso',
+}
 
 const dispatcher = async (url?: string) => {
   if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
@@ -44,12 +50,18 @@ const dispatcher = async (url?: string) => {
   logger.log('Electron "open-url" event fired');
 
   switch (route.host) {
-    case CORE_PROTOCOL_SSO: {
+    case ProtocolCommand.SHOW_CONVERSATION: {
+      const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
+      if (conversationIds) {
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
+      }
+      break;
+    }
+    case ProtocolCommand.START_SSO_FLOW: {
       logger.log('Automatic SSO detected');
       await AutomatedSingleSignOn.handleProtocolRequest(route);
       break;
     }
-
     default: {
       logger.log(`Unknown route detected. Full URL: ${route.toString()}`);
       break;

@@ -2,7 +2,7 @@
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
     "@wireapp/certificate-check": "0.0.4",
-    "@wireapp/commons": "1.4.0",
+    "@wireapp/commons": "1.4.3",
     "ansi-regex": "4.1.0",
     "auto-launch": "5.0.5",
     "axios": "0.18.0",
@@ -13,14 +13,14 @@
     "image-type": "4.0.0",
     "jsrsasign": "8.0.12",
     "lodash": "4.17.11",
-    "logdown": "3.2.7",
+    "logdown": "3.2.8",
     "minimist": "1.2.0",
     "moment": "2.24.0",
     "open-graph": "0.2.4",
     "prop-types": "15.7.2",
     "raygun": "0.10.1",
-    "react": "16.8.4",
-    "react-dom": "16.8.4",
+    "react": "16.8.5",
+    "react-dom": "16.8.5",
     "react-redux": "6.0.1",
     "redux": "4.0.1",
     "redux-logger": "3.0.6",
@@ -40,7 +40,6 @@
     "@types/open-graph": "0.2.0",
     "@types/raygun": "0.10.1",
     "@types/uuid": "3.4.4",
-    "cross-spawn": "6.0.5",
     "electron-mocha": "6.0.4",
     "electron-rebuild": "1.8.4",
     "istanbul": "1.1.0-alpha.1",
@@ -52,7 +51,7 @@
   "main": "dist/main.js",
   "name": "wireinternal",
   "optionalDependencies": {
-    "node-addressbook": "https://github.com/wireapp/node-addressbook.git#2.0.0"
+    "@wireapp/node-addressbook": "3.0.2"
   },
   "private": true,
   "productName": "WireInternal",
@@ -66,7 +65,7 @@
     "coverage:clean": "rimraf coverage instrumented-code",
     "coverage:instrument": "istanbul instrument dist --no-compact --complete-copy --output instrumented-code",
     "coverage:report": "remap-istanbul --input instrumented-code/coverage.json --output coverage -t html",
-    "postinstall": "electron-rebuild -f -w node-addressbook",
+    "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
     "test": "electron-mocha"
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
