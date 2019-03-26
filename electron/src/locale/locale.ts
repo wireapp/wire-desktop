@@ -24,80 +24,80 @@ import {SettingsType} from '../settings/SettingsType';
 
 import {Supportedi18nLanguage, Supportedi18nLanguageObject, i18nLanguageIdentifier} from '../interfaces/';
 
-const cs = require('../../locale/strings-cs');
-const da = require('../../locale/strings-da');
-const de = require('../../locale/strings-de');
-const el = require('../../locale/strings-el');
-const en = require('../../locale/strings-en');
-const es = require('../../locale/strings-es');
-const et = require('../../locale/strings-et');
-const fi = require('../../locale/strings-fi');
-const fr = require('../../locale/strings-fr');
-const hr = require('../../locale/strings-hr');
-const hu = require('../../locale/strings-hu');
-const it = require('../../locale/strings-it');
-const lt = require('../../locale/strings-lt');
-const nl = require('../../locale/strings-nl');
-const pl = require('../../locale/strings-pl');
-const pt = require('../../locale/strings-pt');
-const ro = require('../../locale/strings-ro');
-const ru = require('../../locale/strings-ru');
-const sk = require('../../locale/strings-sk');
-const sl = require('../../locale/strings-sl');
-const tr = require('../../locale/strings-tr');
-const uk = require('../../locale/strings-uk');
+const cs_CZ = require('../../locale/cs-CZ');
+const da_DK = require('../../locale/da-DK');
+const de_DE = require('../../locale/de-DE');
+const el_GR = require('../../locale/el-GR');
+const en_US = require('../../locale/en-US');
+const es_ES = require('../../locale/es-ES');
+const et_EE = require('../../locale/et-EE');
+const fi_FI = require('../../locale/fi-FI');
+const fr_FR = require('../../locale/fr-FR');
+const hr_HR = require('../../locale/hr-HR');
+const hu_HU = require('../../locale/hu-HU');
+const it_IT = require('../../locale/it-IT');
+const lt_LT = require('../../locale/lt-LT');
+const nl_NL = require('../../locale/nl-NL');
+const pl_PL = require('../../locale/pl-PL');
+const pt_BR = require('../../locale/pt-BR');
+const ro_RO = require('../../locale/ro-RO');
+const ru_RU = require('../../locale/ru-RU');
+const sk_SK = require('../../locale/sk-SK');
+const sl_SI = require('../../locale/sl-SI');
+const tr_TR = require('../../locale/tr-TR');
+const uk_UA = require('../../locale/uk-UA');
 
 const app = Electron.app || Electron.remote.app;
 
 const LANGUAGES: Supportedi18nLanguageObject = {
-  cs,
-  da,
-  de,
-  el,
-  en,
-  es,
-  et,
-  fi,
-  fr,
-  hr,
-  hu,
-  it,
-  lt,
-  nl,
-  pl,
-  pt,
-  ro,
-  ru,
-  sk,
-  sl,
-  tr,
-  uk,
+  cs_CZ,
+  da_DK,
+  de_DE,
+  el_GR,
+  en_US,
+  es_ES,
+  et_EE,
+  fi_FI,
+  fr_FR,
+  hr_HR,
+  hu_HU,
+  it_IT,
+  lt_LT,
+  nl_NL,
+  pl_PL,
+  pt_BR,
+  ro_RO,
+  ru_RU,
+  sk_SK,
+  sl_SI,
+  tr_TR,
+  uk_UA,
 };
 
 /* tslint:disable:object-literal-sort-keys */
 const SUPPORTED_LANGUAGES = {
-  en: 'English',
-  cs: 'Čeština',
-  da: 'Dansk',
-  de: 'Deutsch',
-  el: 'Ελληνικά',
-  et: 'Eesti',
-  es: 'Español',
-  fr: 'Français',
-  hr: 'Hrvatski',
-  it: 'Italiano',
-  lt: 'Lietuvos',
-  hu: 'Magyar',
-  nl: 'Nederlands',
-  pl: 'Polski',
-  pt: 'Português do Brasil',
-  ro: 'Română',
-  ru: 'Русский',
-  sk: 'Slovenčina',
-  sl: 'Slovenščina',
-  fi: 'Suomi',
-  tr: 'Türkçe',
-  uk: 'Українська',
+  en_US: 'English',
+  cs_CZ: 'Čeština',
+  da_DK: 'Dansk',
+  de_DE: 'Deutsch',
+  el_GR: 'Ελληνικά',
+  et_EE: 'Eesti',
+  es_ES: 'Español',
+  fr_FR: 'Français',
+  hr_HR: 'Hrvatski',
+  it_IT: 'Italiano',
+  lt_LT: 'Lietuvos',
+  hu_HU: 'Magyar',
+  nl_NL: 'Nederlands',
+  pl_PL: 'Polski',
+  pt_BR: 'Português do Brasil',
+  ro_RO: 'Română',
+  ru_RU: 'Русский',
+  sk_SK: 'Slovenčina',
+  sl_SI: 'Slovenščina',
+  fi_FI: 'Suomi',
+  tr_TR: 'Türkçe',
+  uk_UA: 'Українська',
 };
 /* tslint:enable:object-literal-sort-keys */
 
@@ -108,8 +108,7 @@ const getSupportedLanguageKeys = (): Supportedi18nLanguage[] =>
 
 const getCurrent = (): Supportedi18nLanguage => {
   if (!current) {
-    // We care only about the language part and not the country (en_US, de_DE)
-    const defaultLocale = parseLocale(app.getLocale().substr(0, 2));
+    const defaultLocale = parseLocale(app.getLocale());
     current = settings.restore(SettingsType.LOCALE, defaultLocale);
   }
   return current;
@@ -127,7 +126,7 @@ const customReplacements: {[key: string]: string} = {
 
 const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
   const strings = getCurrent();
-  let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier] || '';
+  let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en_US[stringIdentifier] || '';
 
   if (str) {
     for (const replacement of Object.keys(customReplacements)) {
