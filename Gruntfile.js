@@ -50,14 +50,8 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {pattern: ['grunt-*']});
 
   const LCBOptions = {
-    extraResources: [
-      {
-        filter: ['**/*'],
-        from: './.bundle/',
-        to: '.bundle',
-      },
-    ],
-    files: ['!./.bundle/'],
+    extraResource: ['./.bundle/'],
+    ignore: ['./.bundle/'],
   };
 
   const baseData = grunt.file.readJSON(INFO_JSON);
@@ -184,14 +178,14 @@ module.exports = function(grunt) {
         asar: true,
         buildVersion: '<%= buildNumber %>',
         dir: 'electron',
-        ignore: 'electron/renderer/src',
+        extraResource: LCBOptions.extraResource,
+        ignore: ['electron/renderer/src', ...LCBOptions.ignore],
         name: '<%= info.name %>',
         out: 'wrap/build',
         overwrite: true,
         protocols: [
           {name: '<%= info.customProtocolName %> Core Protocol', schemes: ['<%= info.customProtocolName %>']},
         ],
-        ...LCBOptions,
       },
 
       win_custom: {
