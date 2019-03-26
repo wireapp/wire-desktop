@@ -30,7 +30,7 @@ webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
 window.locStrings = locale.LANGUAGES[locale.getCurrent()];
-window.locStringsDefault = locale.LANGUAGES.en;
+window.locStringsDefault = locale.LANGUAGES.en_US;
 
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
