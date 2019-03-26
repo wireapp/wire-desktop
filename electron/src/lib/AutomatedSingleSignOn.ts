@@ -18,6 +18,7 @@
  */
 
 import {dialog as mainDialog, remote} from 'electron';
+import {CreateSSOAccountResponse} from '../event/CreateSSOAccountResponse';
 import {getText} from '../locale/locale';
 import {MAXIMUM_ACCOUNTS} from '../settings/config';
 import {EVENT_TYPE} from './eventType';
@@ -25,21 +26,20 @@ import {EVENT_TYPE} from './eventType';
 const dialog = mainDialog || remote.dialog;
 
 class AutomatedSingleSignOn {
-  private onResponseReceived(event: CustomEvent) {
-    if (event.detail && event.detail.reachedMaximumAccounts) {
+  private onResponseReceived(event: CustomEvent<CreateSSOAccountResponse>) {
+    if (event.detail.reachedMaximumAccounts) {
       this.showError();
     }
   }
 
   private showError() {
-    const detail =
-      MAXIMUM_ACCOUNTS === 1
-        ? getText('wrapperAddAccountErrorMessageSingular')
-        : getText('wrapperAddAccountErrorMessagePlural');
-    const message =
-      MAXIMUM_ACCOUNTS === 1
-        ? getText('wrapperAddAccountErrorTitleSingular')
-        : getText('wrapperAddAccountErrorTitlePlural');
+    let detail = getText('wrapperAddAccountErrorMessagePlural');
+    let message = getText('wrapperAddAccountErrorTitlePlural');
+
+    if (MAXIMUM_ACCOUNTS === 1) {
+      detail = getText('wrapperAddAccountErrorMessageSingular');
+      message = getText('wrapperAddAccountErrorTitleSingular');
+    }
 
     dialog.showMessageBox({
       detail,
@@ -49,7 +49,6 @@ class AutomatedSingleSignOn {
   }
 
   public async start(ssoCode: string) {
-    // Send initial signal to the renderer and wait for a response
     window.addEventListener(
       EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE,
       event => this.onResponseReceived(event as CustomEvent),
