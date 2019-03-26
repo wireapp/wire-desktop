@@ -21,12 +21,12 @@ import {dialog as mainDialog, remote} from 'electron';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getText} from '../locale/locale';
 import {MAXIMUM_ACCOUNTS} from '../settings/config';
-import {CreateSSOAccountResponse} from './CreateSSOAccountResponse';
+import {CreateSSOAccountDetail} from './CreateSSOAccountDetail';
 
 const dialog = mainDialog || remote.dialog;
 
 class AutomatedSingleSignOn {
-  private onResponseReceived(event: CreateSSOAccountResponse) {
+  private onResponseReceived(event: CustomEvent<CreateSSOAccountDetail>) {
     if (event.detail.reachedMaximumAccounts) {
       this.showError();
     }
