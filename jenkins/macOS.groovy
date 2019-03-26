@@ -4,7 +4,6 @@ def parseJson(def text) {
 }
 
 node('master') {
-
   def production = params.PRODUCTION
   def custom = params.CUSTOM
 
@@ -15,7 +14,7 @@ node('master') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/ *.sig'
+    sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/ *.sig *.dmg'
   }
 
   def text = readFile('info.json')
@@ -39,7 +38,9 @@ node('master') {
           if (production) {
             sh 'yarn build:macos'
           } else if (custom) {
-            sh 'yarn build:macos:custom'
+            withCredentials([string(credentialsId: "${params.NOTARIZE_APPLE_ID}", variable: 'NOTARIZE_APPLE_ID'), string(credentialsId: "${params.NOTARIZE_APPLE_PASSWORD}", variable: 'NOTARIZE_APPLE_PASSWORD')]) {
+              sh 'yarn build:macos:custom'
+            }
           } else {
             sh 'yarn build:macos:internal'
           }
@@ -64,7 +65,8 @@ node('master') {
     if (production) {
       archiveArtifacts 'Wire.pkg'
     } else if (custom) {
-      archiveArtifacts '*.pkg'
+      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/${app_name}-mas-x64/${app_name}.app/\" \"${WORKSPACE}/wrap/${app_name}.zip\""
+      archiveArtifacts "wrap/${app_name}.zip"
     } else {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/WireInternal.zip\""

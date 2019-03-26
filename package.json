@@ -26,6 +26,7 @@
     "dotenv": "7.0.0",
     "electron": "4.1.1",
     "electron-builder": "20.39.0",
+    "electron-notarize": "0.0.5",
     "electron-packager": "13.1.1",
     "electron-winstaller": "2.7.0",
     "eslint": "5.15.3",

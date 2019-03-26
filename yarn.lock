@@ -2759,7 +2759,7 @@ electron-download@^4.1.0, electron-download@^4.1.1:
     semver "^5.4.1"
     sumchecker "^2.0.2"
 
-electron-notarize@^0.0.5:
+electron-notarize@0.0.5, electron-notarize@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/electron-notarize/-/electron-notarize-0.0.5.tgz#d9e95c763a6af853ce16d31dde72d73cb25b0703"
   integrity sha512-YzrqZ6RDQ7Wt2RWlxzRoQUuxnTeXrfp7laH7XKcmQqrZ6GaAr50DMPvFMpqDKdrZSHSbcgZgB7ktIQbjvITmCQ==

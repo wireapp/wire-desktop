@@ -20,6 +20,7 @@
 const {createWindowsInstaller} = require('electron-winstaller');
 const electronPackager = require('electron-packager');
 const electronBuilder = require('electron-builder');
+const path = require('path');
 const dotenv = require('dotenv');
 
 const ELECTRON_PACKAGE_JSON = 'electron/package.json';
@@ -56,7 +57,8 @@ module.exports = function(grunt) {
   baseData.copyright = process.env.APP_COPYRIGHT || baseData.copyright;
   baseData.customProtocolName = process.env.APP_CUSTOM_PROTOCOL_NAME || baseData.customProtocolName;
   baseData.description = process.env.APP_DESCRIPTION || baseData.description;
-  baseData.developerId = process.env.MACOS_DEVELOPER_ID || baseData.developerId;
+  baseData.certNameApplication = process.env.MACOS_CERTIFICATE_NAME_APPLICATION || baseData.certNameApplication;
+  baseData.certNameInstaller = process.env.MACOS_CERTIFICATE_NAME_INSTALLER || baseData.certNameInstaller;
   baseData.developerName = process.env.MACOS_DEVELOPER_NAME || baseData.developerName;
   baseData.installerIconUrl = process.env.WIN_URL_ICON_INSTALLER || baseData.installerIconUrl;
   baseData.legalUrl = process.env.URL_LEGAL || baseData.legalUrl;
@@ -69,18 +71,22 @@ module.exports = function(grunt) {
   baseData.supportUrl = process.env.URL_SUPPORT || baseData.supportUrl;
   baseData.updateWinUrlCustom = process.env.WIN_URL_UPDATE || baseData.updateWinUrlProd;
   baseData.websiteUrl = process.env.URL_WEBSITE || baseData.websiteUrl;
-
-  baseData.sign = {
-    app: `3rd Party Mac Developer Application: ${baseData.developerName} (${baseData.developerId})`,
-    internal: `Developer ID Application: ${baseData.developerNameInternal} (${baseData.developerIdInternal})`,
-    package: `3rd Party Mac Developer Installer: ${baseData.developerName} (${baseData.developerId})`,
-  };
+  baseData.notarizeAppleId = process.env.NOTARIZE_APPLE_ID || null;
+  baseData.notarizeApplePassword = process.env.NOTARIZE_APPLE_PASSWORD || null;
 
   grunt.initConfig({
     buildNumber: process.env.BUILD_NUMBER || '0',
 
     clean: {
       wrap: 'wrap/**',
+    },
+
+    'create-macos-installer': {
+      options: {
+        appFile: 'wrap/build/<%= info.name %>-mas-x64/<%= info.name %>.app',
+        certNameInstaller: baseData.certNameInstaller,
+        name: '<%= info.name %>',
+      },
     },
 
     'create-windows-installer': {
@@ -157,7 +163,7 @@ module.exports = function(grunt) {
           extendInfo: 'resources/macos/custom.plist',
           helperBundleId: 'com.wearezeta.zclient.mac.helper',
           icon: 'resources/macos/logo.icns',
-          out: 'wrap/dist',
+          out: 'wrap/dist/',
           platform: 'mas',
         },
       },
@@ -296,16 +302,14 @@ module.exports = function(grunt) {
 
     pkg: grunt.file.readJSON(PACKAGE_JSON),
 
-    productbuild: {
+    'sign-macos-build': {
       options: {
+        appFile: 'wrap/build/<%= info.name %>-mas-x64/<%= info.name %>.app',
+        certNameApplication: baseData.certNameApplication,
         child: 'resources/macos/entitlements/child.plist',
-        dir: 'wrap/dist/<%= info.name %>-mas-x64/<%= info.name %>.app',
+        loginhelper: 'resources/macos/entitlements/loginhelper.plist',
         name: '<%= info.name %>',
         parent: 'resources/macos/entitlements/parent.plist',
-        sign: {
-          app: '<%= info.sign.app %>',
-          package: '<%= info.sign.package %>',
-        },
       },
     },
 
@@ -436,9 +440,23 @@ module.exports = function(grunt) {
     grunt.warn('Failed updating keys in config');
   });
 
-  grunt.registerTask('productbuild', 'Build Mac Appstore package', function() {
+  grunt.registerTask('notarize', 'Notarize macOS AppStore package', function() {
+    const {notarize} = require('electron-notarize');
+    const done = this.async();
+
+    notarize({
+      appBundleId: baseData.bundleId,
+      appPath: path.resolve(`wrap/build/${baseData.name}-mas-x64/${baseData.name}.app`),
+      appleId: baseData.notarizeAppleId,
+      appleIdPassword: baseData.notarizeApplePassword,
+    }).then(done, done);
+  });
+
+  grunt.registerTask('sign-macos-build', 'Sign macOS app build', function() {
     const {execSync} = require('child_process');
     const options = this.options();
+
+    const notarizeFlags = `--timestamp --options runtime --preserve-metadata=identifier,entitlements,requirements,runtime`;
 
     [
       '/Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
@@ -449,15 +467,46 @@ module.exports = function(grunt) {
       `/Library/LoginItems/${options.name} Login Helper.app/Contents/MacOS/${options.name} Login Helper`,
       `/Library/LoginItems/${options.name} Login Helper.app/`,
     ].forEach(file => {
-      const fileName = `${options.dir}/Contents${file}`;
-      execSync(`codesign --deep -fs '${options.sign.app}' --entitlements '${options.child}' '${fileName}'`);
+      const fileName = `${options.appFile}/Contents${file}`;
+      console.log(
+        `codesign ${notarizeFlags} -v --deep -fs "${options.certNameApplication}" --entitlements "${
+          options.child
+        }" "${fileName}"`
+      );
+      execSync(
+        `codesign ${notarizeFlags} -v --deep -fs "${options.certNameApplication}" --entitlements "${
+          options.child
+        }" "${fileName}"`
+      );
     });
 
-    const appName = `${options.dir}/Contents/MacOS/${options.name}`;
-    execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.child}' '${appName}'`);
-    execSync(`codesign -fs '${options.sign.app}' --entitlements '${options.parent}' '${options.dir}'`);
+    const appName = `${options.appFile}/Contents/MacOS/${options.name}`;
+    console.log(
+      `codesign ${notarizeFlags} -v -fs "${options.certNameApplication}" --entitlements "${options.child}" "${appName}"`
+    );
     execSync(
-      `productbuild --component '${options.dir}' /Applications --sign '${options.sign.package}' '${options.name}.pkg'`
+      `codesign ${notarizeFlags} -v -fs "${options.certNameApplication}" --entitlements "${options.child}" "${appName}"`
+    );
+    console.log(
+      `codesign ${notarizeFlags} -v -fs "${options.certNameApplication}" --entitlements "${options.parent}" "${
+        options.appFile
+      }"`
+    );
+    execSync(
+      `codesign ${notarizeFlags} -v -fs "${options.certNameApplication}" --entitlements "${options.parent}" "${
+        options.appFile
+      }"`
+    );
+  });
+
+  grunt.registerTask('create-macos-installer', 'Create and sign macOS installer', function() {
+    const {execSync} = require('child_process');
+    const options = this.options();
+
+    execSync(
+      `productbuild --component "${options.appFile}" /Applications --sign "${options.certNameInstaller}" "${
+        options.name
+      }.pkg"`
     );
   });
 
@@ -492,7 +541,8 @@ module.exports = function(grunt) {
     'release-prod',
     'bundle',
     'electron:macos_prod',
-    'productbuild',
+    'sign-macos-build',
+    'create-macos-installer',
   ]);
 
   grunt.registerTask('macos-custom', [
@@ -503,7 +553,8 @@ module.exports = function(grunt) {
     'release-custom',
     'bundle',
     'electron:macos_custom',
-    'productbuild',
+    'sign-macos-build',
+    'notarize',
   ]);
 
   grunt.registerTask('win', [
