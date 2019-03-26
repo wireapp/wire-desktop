@@ -18,11 +18,11 @@
  */
 
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
-import {AutomatedSingleSignOn} from '../lib/AutomatedSingleSignOn';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
 
 const logger = getLogger('preload');
 
@@ -41,13 +41,20 @@ const getWebviewById = (id: string): WebviewTag => {
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event: IpcMessageEvent, code: string) =>
-    new AutomatedSingleSignOn(code).start()
+    new AutomatedSingleSignOn().start(code)
   );
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: IpcMessageEvent, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(action);
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, (event: IpcMessageEvent, conversationId: string) => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.send(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
     }
   });
 
