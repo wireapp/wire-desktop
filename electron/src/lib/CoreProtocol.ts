@@ -23,7 +23,6 @@ import * as path from 'path';
 import {URL} from 'url';
 import {platform} from '../runtime/EnvironmentUtil';
 import {WindowManager} from '../window/WindowManager';
-import {AutomatedSingleSignOn} from './AutomatedSingleSignOn';
 import {EVENT_TYPE} from './eventType';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -47,19 +46,24 @@ const dispatcher = async (url?: string) => {
 
   const route = new URL(url);
 
-  logger.log('Electron "open-url" event fired');
-
   switch (route.host) {
     case ProtocolCommand.SHOW_CONVERSATION: {
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
       if (conversationIds) {
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
+        const conversationId = conversationIds[0];
+        logger.log(`Showing conversation "${conversationId}"...`);
+        await app.whenReady();
+        WindowManager.sendActionAndFocusWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
       }
       break;
     }
     case ProtocolCommand.START_SSO_FLOW: {
-      logger.log('Automatic SSO detected');
-      await AutomatedSingleSignOn.handleProtocolRequest(route);
+      if (typeof route.pathname === 'string') {
+        logger.log('Starting SSO flow...');
+        const code = route.pathname.trim().substr(1);
+        await app.whenReady();
+        WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      }
       break;
     }
     default: {
@@ -70,7 +74,6 @@ const dispatcher = async (url?: string) => {
 };
 
 export const registerCoreProtocol = () => {
-  // Immediately register the protocol system-wide if needed
   if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
     app.setAsDefaultProtocolClient(CORE_PROTOCOL);
   }
