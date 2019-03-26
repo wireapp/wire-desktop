@@ -50,11 +50,12 @@ const dispatcher = async (url?: string) => {
 
   switch (route.host) {
     case ProtocolCommand.SHOW_CONVERSATION: {
-      logger.log('Starting SSO flow...');
-      await app.whenReady();
       const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
       if (conversationIds) {
-        WindowManager.sendActionAndFocusWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
+        const conversationId = conversationIds[0];
+        logger.log(`Show conversation "${conversationId}"...`);
+        await app.whenReady();
+        WindowManager.sendActionAndFocusWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
       }
       break;
     }
