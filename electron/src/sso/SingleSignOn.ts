@@ -227,7 +227,7 @@ class SingleSignOn {
     await SingleSignOn.protocol.register(this.session, (type: string) => this.finalizeLogin(type));
 
     // Show the window(s)
-    SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
+    await SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
 
     if (argv.devtools) {
       SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
@@ -236,7 +236,7 @@ class SingleSignOn {
 
   private readonly createBrowserWindow = (): Electron.BrowserWindow => {
     // Discard old preload URL
-    delete (this.windowOptions as any).webPreferences.preloadURL;
+    delete (<any>this.windowOptions.webPreferences).preloadURL;
 
     const SingleSignOnLoginWindow = new BrowserWindow({
       ...this.windowOptions,

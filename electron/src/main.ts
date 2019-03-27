@@ -217,7 +217,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     main.webContents.openDevTools({mode: 'detach'});
   }
 
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
+  await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
     if (!WindowUtil.isInView(main)) {
@@ -234,7 +234,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   });
 
   // Handle the new window event in the main Browser Window
-  main.webContents.on('new-window', (event, _url) => {
+  main.webContents.on('new-window', async (event, _url) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
@@ -243,7 +243,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       return;
     }
 
-    shell.openExternal(_url);
+    await shell.openExternal(_url);
   });
 
   main.webContents.on('dom-ready', () => {
