@@ -21,16 +21,34 @@
 
 import boto3
 import os
+import re
 
-BUCKET = os.environ.get('BUCKET')
+BUCKET = os.environ.get('WIN_S3_BUCKET')
 VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
+S3_PATH = os.environ.get('WIN_S3_PATH')
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
-build_root = os.path.join(bin_root, '..', 'wrap', 'internal', 'WireInternal-win32-ia32')
+custom_root = os.path.join(bin_root, '..', 'wrap', 'custom')
+regex = re.compile('(.+)-Setup\.exe', re.IGNORECASE)
+
+def find(extension, path):
+  for root, dirs, files in os.walk(path):
+    for file in files:
+      if file.lower().endswith(extension.lower()):
+        return os.path.join(root, file), file
+  return None, None
+
+setup_exe_full, setup_exe_name = find('-Setup.exe', custom_root)
+
+if setup_exe_full is None:
+  raise Exception('No setup executable found')
+
+print 'found executable %s' % setup_exe_full
+
+app_name = regex.search(setup_exe_name).group(1)
+build_root = os.path.join(custom_root, '..', 'wrap', 'custom')
+
 releases = os.path.join(build_root, 'RELEASES')
-
-S3_PATH = 'win/internal/'
-
 
 def upload_file(source, dest):
   if not os.path.isfile(source):
@@ -45,10 +63,9 @@ def upload_file(source, dest):
   print '- OK'
 
 if __name__ == '__main__':
-  wire_nupkg = 'wireinternal-%s-full.nupkg' % VERSION
-  wire_nupkg_full = os.path.join(build_root, wire_nupkg)
-  wire_exe_full = os.path.join(build_root, 'WireInternalSetup.exe')
+  app_nupkg = '%s-%s-full.nupkg' % (app_name, VERSION)
+  app_nupkg_full = os.path.join(build_root, app_nupkg)
 
-  upload_file(wire_nupkg_full, '%s%s' % (S3_PATH, wire_nupkg))
-  upload_file(wire_exe_full, '%swire-internal-%s.exe' % (S3_PATH, VERSION))
-  upload_file(releases, '%swire-internal-%s-RELEASES' % (S3_PATH, VERSION))
+  upload_file(app_nupkg_full, '%s/%s' % (S3_PATH, app_nupkg))
+  upload_file(setup_exe_full, '%s/%s-%s.exe' % (S3_PATH, app_name, VERSION))
+  upload_file(releases, '%s/%s-%s-RELEASES' % (S3_PATH, app_name, VERSION))

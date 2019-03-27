@@ -83,10 +83,12 @@ node('master') {
                 sh 'python bin/win-prod-s3.py'
               }
             } else if (params.Release.equals('Custom')) {
-              // do nothing
+              withCredentials([string(credentialsId: "${params.AWS_CUSTOM_ACCESS_KEY_ID}", variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: "${params.AWS_CUSTOM_SECRET_ACCESS_KEY}", variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                sh 'python bin/win-custom-s3.py'
+              }
             } else {
               withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                sh 'python bin/win-s3.py'
+                sh 'python bin/win-internal-s3.py'
               }
             }
           }
@@ -145,13 +147,15 @@ node('master') {
         withEnv(['BUCKET=wire-taco']) {
           if (params.Release.equals('Production')) {
             withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-              sh 'python bin/win-prod-s3-deploy.py'
+              sh 'python bin/win-prod-s3-releases.py'
             }
           } else if (params.Release.equals('Custom')) {
-              // do nothing
+            withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+              sh 'python bin/win-custom-s3-releases.py'
+            }
           } else {
             withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-              sh 'python bin/win-s3-deploy.py'
+              sh 'python bin/win-internal-s3-releases.py'
             }
           }
         }
