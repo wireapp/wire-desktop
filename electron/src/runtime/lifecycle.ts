@@ -18,17 +18,18 @@
  */
 
 import {app, ipcMain} from 'electron';
+
 import {EVENT_TYPE} from '../lib/eventType';
 import {settings} from '../settings/ConfigurationPersistence';
 import {Squirrel} from '../update/Squirrel';
 import {WindowManager} from '../window/WindowManager';
 import * as EnvironmentUtil from './EnvironmentUtil';
 
-let isFirstInstance: boolean = false;
+let isFirstInstance: boolean | undefined = undefined;
 
-const checkForUpdate = async () => {
+const checkForUpdate = () => {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
-    await Squirrel.handleSquirrelEvent(isFirstInstance);
+    Squirrel.handleSquirrelEvent(isFirstInstance);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => Squirrel.installUpdate());
   }
@@ -61,7 +62,7 @@ const relaunch = () => {
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696
      */
-    WindowManager.getPrimaryWindow().webContents.send(EVENT_TYPE.WRAPPER.RELOAD);
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WRAPPER.RELOAD);
   } else {
     app.relaunch();
     quit();

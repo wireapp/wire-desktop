@@ -96,7 +96,7 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, conversationId => {
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, (event, conversationId) => {
     amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
@@ -125,7 +125,7 @@ const exposeAddressBook = () => {
   const getAddressBook = () => {
     if (!cachedAddressBook) {
       try {
-        cachedAddressBook = require('node-addressbook');
+        cachedAddressBook = require('@wireapp/node-addressbook');
       } catch (error) {
         logger.info('Failed loading "node-addressbook".', error);
       }

@@ -37,7 +37,6 @@ import {registerCoreProtocol} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
-import {SingleSignOn} from './lib/SingleSignOn';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING} from './logging/getLogger';
@@ -51,6 +50,7 @@ import {OriginValidator} from './runtime/OriginValidator';
 import * as config from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
@@ -511,7 +511,7 @@ registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate().catch(logger.error);
+lifecycle.checkForUpdate();
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
