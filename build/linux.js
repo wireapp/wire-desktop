@@ -55,7 +55,7 @@ const linuxConfig = {
 const linuxDesktopConfig = {
   Categories: linuxConfig.categories,
   GenericName: commonConfig.description,
-  Keywords: linuxConfig.categories,
+  Keywords: linuxConfig.keywords,
   MimeType: `x-scheme-handler/${commonConfig.customProtocolName}`,
   Name: commonConfig.nameShort,
   StartupWMClass: commonConfig.nameShort,
@@ -63,8 +63,8 @@ const linuxDesktopConfig = {
 };
 
 const platformSpecificConfig = {
-  afterInstall: path.resolve(__dirname, '../bin/deb/after-install.tpl'),
-  afterRemove: path.resolve(__dirname, '../bin/deb/after-remove.tpl'),
+  afterInstall: 'bin/deb/after-install.tpl',
+  afterRemove: 'bin/deb/after-remove.tpl',
   category: 'Network',
   desktop: linuxDesktopConfig,
   fpm: ['--name', linuxConfig.nameShort],
@@ -96,6 +96,7 @@ const builderConfig = {
     target: linuxConfig.targets,
   },
   productName: commonConfig.name,
+  publish: null,
   rpm: {
     ...platformSpecificConfig,
     depends: rpmDepends,
