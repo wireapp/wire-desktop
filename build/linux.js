@@ -39,10 +39,6 @@ const linuxDefaultConfig = {
   targets: ['AppImage', 'deb', 'rpm'],
 };
 
-if (commonConfig.environment === 'internal') {
-  linuxDefaultConfig.artifactName = '${productName}-${version}-internal_${arch}.${ext}';
-}
-
 /** @type {import('./Config').LinuxConfig} */
 const linuxConfig = {
   ...linuxDefaultConfig,

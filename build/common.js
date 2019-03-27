@@ -56,7 +56,7 @@ const commonConfig = {
   raygunApiKey: process.env.RAYGUN_API_KEY || defaultConfig.raygunApiKey,
   supportUrl: process.env.URL_SUPPORT || defaultConfig.supportUrl,
   version: `${version.replace(/\.0$/, '')}.${process.env.BUILD_NUMBER || `0-${commitId}`}${
-    IS_PRODUCTION ? '-internal' : ''
+    IS_PRODUCTION ? '' : '-internal'
   }`,
   websiteUrl: process.env.URL_WEBSITE || defaultConfig.websiteUrl,
 };
