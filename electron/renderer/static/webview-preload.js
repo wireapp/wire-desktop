@@ -97,7 +97,10 @@ const subscribeToMainProcessEvents = () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PREV);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, (event, conversationId) => {
-    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId);
+    window.location.hash = `/conversation/${conversationId}`;
+  });
+  ipcRenderer.on(EVENT_TYPE.USER.SHOW, (event, userId) => {
+    window.location.hash = `/user/${userId}`;
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
