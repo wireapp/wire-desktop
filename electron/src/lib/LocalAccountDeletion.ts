@@ -29,7 +29,6 @@ const logger = LogFactory.getLogger(__filename, {logFilePath: path.join(LOG_DIR,
 
 const clearStorage = (session: Electron.Session) => {
   return new Promise(resolve => {
-    session.webRequest.onBeforeRequest({urls: ['https://*']}, (details, callback) => callback({cancel: true}));
     session.protocol.uninterceptProtocol('https', () =>
       session.clearStorageData({}, () =>
         session.clearCache(() => {
