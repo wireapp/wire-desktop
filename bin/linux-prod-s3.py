@@ -28,6 +28,7 @@ VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
 build_root = os.path.join(bin_root, '..', 'wrap', 'dist')
+
 S3_PATH = 'linux/'
 
 def upload_file(source, dest):

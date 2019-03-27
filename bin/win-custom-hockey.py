@@ -46,7 +46,7 @@ def zipit(source, dest):
   zipf.close()
 
 bin_root = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-custom_exe, custom_exe_name = find('.exe', os.path.join(bin_root, 'wrap'))
+custom_exe, custom_exe_name = find('-Setup.exe', os.path.join(bin_root, 'wrap'))
 
 if custom_exe is None:
   raise Exception('No .exe file found')

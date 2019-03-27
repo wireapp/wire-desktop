@@ -31,7 +31,7 @@ HOCKEY_UPLOAD = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/' % HOCKE
 HOCKEY_NEW = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/new' % HOCKEY_ID
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
-wire_deb = os.path.join(bin_root, '..', 'wrap', 'dist', 'Wire-%s_amd64.deb' % VERSION)
+wire_deb = os.path.join(bin_root, '..', 'wrap', 'dist', 'WireInternal-%s-internal_amd64.deb' % VERSION)
 
 def zipit(source, dest):
   os.chdir(os.path.dirname(os.path.abspath(source)))
