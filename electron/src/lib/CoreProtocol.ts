@@ -17,7 +17,7 @@
  *
  */
 
-import {LogFactory, ValidationUtil} from '@wireapp/commons';
+import {LogFactory} from '@wireapp/commons';
 import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
@@ -31,12 +31,11 @@ const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFileP
 
 const {customProtocolName} = require('../../package.json');
 const CORE_PROTOCOL = customProtocolName || 'wire';
+const CORE_PROTOCOL_PREFIX = `${CORE_PROTOCOL}://`;
 const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
 enum ProtocolCommand {
-  SHOW_CONVERSATION = 'conversation',
-  SHOW_USER = 'user',
   START_SSO_FLOW = 'start-sso',
 }
 
@@ -44,31 +43,13 @@ export class CustomProtocolHandler {
   public hashLocation: string = '';
 
   async dispatcher(url?: string) {
-    if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
+    if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
       return;
     }
 
     const route = new URL(url);
 
     switch (route.host) {
-      case ProtocolCommand.SHOW_CONVERSATION: {
-        const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
-        if (conversationIds) {
-          const conversationId = conversationIds[0];
-          this.hashLocation = `/conversation/${conversationId}`;
-          WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
-        }
-        break;
-      }
-      case ProtocolCommand.SHOW_USER: {
-        const userIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
-        if (userIds) {
-          const userId = userIds[0];
-          this.hashLocation = `/user/${userId}`;
-          WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.USER.SHOW, userId);
-        }
-        break;
-      }
       case ProtocolCommand.START_SSO_FLOW: {
         if (typeof route.pathname === 'string') {
           logger.log('Starting SSO flow...');
@@ -79,7 +60,9 @@ export class CustomProtocolHandler {
         break;
       }
       default: {
-        logger.log(`Unknown route detected. Full URL: ${route.toString()}`);
+        const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
+        this.hashLocation = `/${location}`;
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
         break;
       }
     }

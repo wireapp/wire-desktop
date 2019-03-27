@@ -96,11 +96,8 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, (event, conversationId) => {
-    window.location.hash = `/conversation/${conversationId}`;
-  });
-  ipcRenderer.on(EVENT_TYPE.USER.SHOW, (event, userId) => {
-    window.location.hash = `/user/${userId}`;
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event, hash) => {
+    window.location.hash = hash;
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
