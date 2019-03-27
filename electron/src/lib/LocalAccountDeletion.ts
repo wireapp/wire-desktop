@@ -27,15 +27,10 @@ const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
 const logger = LogFactory.getLogger(__filename, {logFilePath: path.join(LOG_DIR, 'electron.log')});
 
-const clearStorage = (session: Electron.Session) => {
+const clearStorage = (session: Electron.Session): Promise<void> => {
   return new Promise(resolve => {
     session.protocol.uninterceptProtocol('https', () =>
-      session.clearStorageData({}, () =>
-        session.clearCache(() => {
-          session.flushStorageData();
-          resolve();
-        })
-      )
+      session.clearStorageData({}, () => session.clearCache(() => resolve(session.flushStorageData())))
     );
   });
 };
