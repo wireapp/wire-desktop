@@ -39,9 +39,13 @@ def find(extension, path):
   return None, None
 
 setup_exe_full, setup_exe_name = find('-Setup.exe', custom_root)
+app_nupkg_full = find('-full.nupkg', custom_root)
 
 if setup_exe_full is None:
   raise Exception('No setup executable found')
+
+if app_nupkg_full is None:
+  raise Exception('No nupkg package found')
 
 print 'found executable %s' % setup_exe_full
 
@@ -52,8 +56,7 @@ releases = os.path.join(build_root, 'RELEASES')
 
 def upload_file(source, dest):
   if not os.path.isfile(source):
-    print '%s not found' % source
-    return
+    raise Exception('%s not found' % source)
 
   print 'Uploading %s to %s' % (os.path.basename(source), dest),
 
@@ -64,7 +67,6 @@ def upload_file(source, dest):
 
 if __name__ == '__main__':
   app_nupkg = '%s-%s-full.nupkg' % (app_name, VERSION)
-  app_nupkg_full = os.path.join(build_root, app_nupkg)
 
   upload_file(app_nupkg_full, '%s/%s' % (S3_PATH, app_nupkg))
   upload_file(setup_exe_full, '%s/%s-%s.exe' % (S3_PATH, app_name, VERSION))

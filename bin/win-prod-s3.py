@@ -33,8 +33,7 @@ S3_PATH = 'win/prod/'
 
 def upload_file(source, dest):
   if not os.path.isfile(source):
-    print '%s not found' % source
-    return
+    raise Exception('%s not found' % source)
 
   print 'Uploading %s to %s' % (os.path.basename(source), dest),
 
