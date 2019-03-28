@@ -52,10 +52,10 @@ const subscribeToMainProcessEvents = () => {
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, (event: IpcMessageEvent, conversationId: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event: IpcMessageEvent, hash: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      selectedWebview.send(EVENT_TYPE.CONVERSATION.SHOW, conversationId);
+      selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
     }
   });
 

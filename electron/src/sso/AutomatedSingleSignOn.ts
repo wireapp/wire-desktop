@@ -51,7 +51,11 @@ class AutomatedSingleSignOn {
   public async start(ssoCode: string) {
     window.addEventListener(
       EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE,
-      event => this.onResponseReceived(event as CustomEvent),
+      (event: Event) => {
+        if ((event as CustomEvent).detail) {
+          this.onResponseReceived(event as CustomEvent);
+        }
+      },
       {
         once: true,
       }
