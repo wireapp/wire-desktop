@@ -17,21 +17,22 @@
  *
  */
 
-// https://github.com/atom/atom/blob/master/src/main-process/squirrel-update.js
+// https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
 import {app} from 'electron';
 
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as config from './config';
-import * as environment from './environment';
-import {getLogger} from './getLogger';
-import * as lifecycle from './lifecycle';
 
 import {SpawnCallback, SpawnError} from '../interfaces/';
+import {getLogger} from '../logging/getLogger';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import * as lifecycle from '../runtime/lifecycle';
+import * as config from '../settings/config';
 
 app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
+
 const logger = getLogger('squirrel');
 
 const appFolder = path.resolve(process.execPath, '..');
@@ -42,7 +43,9 @@ const exeName = `${config.NAME}.exe`;
 const linkName = `${config.NAME}.lnk`;
 const windowsAppData = process.env.APPDATA || '';
 
-logger.error('No Windows AppData directory found.');
+if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
+  logger.error('No Windows AppData directory found.');
+}
 
 const taskbarLink = path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar');
 
@@ -115,7 +118,7 @@ const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void): void =
 };
 
 const installUpdate = (): void => {
-  spawnUpdate([SQUIRREL_EVENT.UPDATE, environment.app.UPDATE_URL_WIN]);
+  spawnUpdate([SQUIRREL_EVENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
 };
 
 const scheduleUpdate = (): void => {
@@ -123,7 +126,7 @@ const scheduleUpdate = (): void => {
   setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
 
-const handleSquirrelEvent = (isFirstInstance: boolean): boolean | void => {
+const handleSquirrelEvent = (isFirstInstance?: boolean): boolean | void => {
   const [, squirrelEvent] = process.argv;
 
   switch (squirrelEvent) {
@@ -159,4 +162,4 @@ const handleSquirrelEvent = (isFirstInstance: boolean): boolean | void => {
   scheduleUpdate();
 };
 
-export {handleSquirrelEvent, installUpdate};
+export const Squirrel = {handleSquirrelEvent, installUpdate};

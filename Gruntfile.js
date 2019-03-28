@@ -311,7 +311,7 @@ module.exports = function(grunt) {
 
     'update-keys': {
       options: {
-        config: 'electron/dist/js/config.js',
+        config: 'electron/dist/settings/config.js',
       },
     },
   });

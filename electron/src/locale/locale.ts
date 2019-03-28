@@ -18,60 +18,60 @@
  */
 
 import * as Electron from 'electron';
-import * as config from '../js/config';
+import * as config from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
 import {Supportedi18nLanguage, Supportedi18nLanguageObject, i18nLanguageIdentifier} from '../interfaces/';
 
-const cs = require('../../locale/strings-cs');
-const da = require('../../locale/strings-da');
-const de = require('../../locale/strings-de');
-const el = require('../../locale/strings-el');
-const en = require('../../locale/strings-en');
-const es = require('../../locale/strings-es');
-const et = require('../../locale/strings-et');
-const fi = require('../../locale/strings-fi');
-const fr = require('../../locale/strings-fr');
-const hr = require('../../locale/strings-hr');
-const hu = require('../../locale/strings-hu');
-const it = require('../../locale/strings-it');
-const lt = require('../../locale/strings-lt');
-const nl = require('../../locale/strings-nl');
-const pl = require('../../locale/strings-pl');
-const pt = require('../../locale/strings-pt');
-const ro = require('../../locale/strings-ro');
-const ru = require('../../locale/strings-ru');
-const sk = require('../../locale/strings-sk');
-const sl = require('../../locale/strings-sl');
-const tr = require('../../locale/strings-tr');
-const uk = require('../../locale/strings-uk');
+const cs_CZ = require('../../locale/cs-CZ');
+const da_DK = require('../../locale/da-DK');
+const de_DE = require('../../locale/de-DE');
+const el_GR = require('../../locale/el-GR');
+const en_US = require('../../locale/en-US');
+const es_ES = require('../../locale/es-ES');
+const et_EE = require('../../locale/et-EE');
+const fi_FI = require('../../locale/fi-FI');
+const fr_FR = require('../../locale/fr-FR');
+const hr_HR = require('../../locale/hr-HR');
+const hu_HU = require('../../locale/hu-HU');
+const it_IT = require('../../locale/it-IT');
+const lt_LT = require('../../locale/lt-LT');
+const nl_NL = require('../../locale/nl-NL');
+const pl_PL = require('../../locale/pl-PL');
+const pt_BR = require('../../locale/pt-BR');
+const ro_RO = require('../../locale/ro-RO');
+const ru_RU = require('../../locale/ru-RU');
+const sk_SK = require('../../locale/sk-SK');
+const sl_SI = require('../../locale/sl-SI');
+const tr_TR = require('../../locale/tr-TR');
+const uk_UA = require('../../locale/uk-UA');
 
 const app = Electron.app || Electron.remote.app;
 
 const LANGUAGES: Supportedi18nLanguageObject = {
-  cs,
-  da,
-  de,
-  el,
-  en,
-  es,
-  et,
-  fi,
-  fr,
-  hr,
-  hu,
-  it,
-  lt,
-  nl,
-  pl,
-  pt,
-  ro,
-  ru,
-  sk,
-  sl,
-  tr,
-  uk,
+  cs: cs_CZ,
+  da: da_DK,
+  de: de_DE,
+  el: el_GR,
+  en: en_US,
+  es: es_ES,
+  et: et_EE,
+  fi: fi_FI,
+  fr: fr_FR,
+  hr: hr_HR,
+  hu: hu_HU,
+  it: it_IT,
+  lt: lt_LT,
+  nl: nl_NL,
+  pl: pl_PL,
+  pt: pt_BR,
+  ro: ro_RO,
+  ru: ru_RU,
+  sk: sk_SK,
+  sl: sl_SI,
+  tr: tr_TR,
+  uk: uk_UA,
 };
 
 /* tslint:disable:object-literal-sort-keys */

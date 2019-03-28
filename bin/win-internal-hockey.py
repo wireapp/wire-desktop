@@ -32,8 +32,7 @@ HOCKEY_NEW = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/new' % HOCKE
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
 wire_exe = os.path.join(bin_root, '..', 'wrap', 'internal', 'WireInternal-win32-ia32', 'WireInternalSetup.exe')
-wire_zip = os.path.join(bin_root, 'WireInternalSetup.zip')
-
+wire_zip = os.path.join(bin_root, '..', 'wrap', 'WireInternalSetup.zip')
 
 def zipit(source, dest):
   os.chdir(os.path.dirname(os.path.abspath(source)))
@@ -41,7 +40,6 @@ def zipit(source, dest):
   zipf = zipfile.ZipFile(dest, 'w')
   zipf.write(filename)
   zipf.close()
-
 
 if __name__ == '__main__':
 
@@ -71,5 +69,6 @@ if __name__ == '__main__':
 
   if response.status_code in [200, 201]:
     print 'Uploaded!'
+    os.remove(wire_zip)
   else:
     print 'Error :('

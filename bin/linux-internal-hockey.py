@@ -23,16 +23,16 @@ import os
 import requests
 import zipfile
 
-HOCKEY_ID = os.environ.get('WIN_PROD_HOCKEY_ID')
-HOCKEY_TOKEN = os.environ.get('WIN_PROD_HOCKEY_TOKEN')
+HOCKEY_ID = os.environ.get('LINUX_HOCKEY_ID')
+HOCKEY_TOKEN = os.environ.get('LINUX_HOCKEY_TOKEN')
 VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
 
 HOCKEY_UPLOAD = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/' % HOCKEY_ID
 HOCKEY_NEW = 'https://rink.hockeyapp.net/api/2/apps/%s/app_versions/new' % HOCKEY_ID
 
 bin_root = os.path.dirname(os.path.realpath(__file__))
-wire_exe = os.path.join(bin_root, '..', 'wrap', 'prod', 'Wire-win32-ia32', 'WireSetup.exe')
-wire_zip = os.path.join(bin_root, '..', 'wrap', 'WireSetup.zip')
+wire_deb = os.path.join(bin_root, '..', 'wrap', 'dist', 'Wire-%s_amd64.deb' % VERSION)
+wire_zip = os.path.join(bin_root, '..', 'wrap', 'Wire-%s_amd64.zip' % VERSION)
 
 def zipit(source, dest):
   os.chdir(os.path.dirname(os.path.abspath(source)))
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
   print 'Compressing...'
 
-  zipit(wire_exe, wire_zip)
+  zipit(wire_deb, wire_zip)
 
   print 'Uploading %s...' % VERSION
   semver_version = VERSION.split('.')

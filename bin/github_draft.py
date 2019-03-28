@@ -25,7 +25,7 @@ import requests
 import subprocess
 
 WRAPPER_BUILD = os.environ.get('WRAPPER_BUILD')
-VERSION = os.environ.get('BUILD_ID')
+VERSION = os.environ.get('WRAPPER_BUILD').split('#')[1]
 GITHUB_ACCESS_TOKEN = os.environ.get('GITHUB_ACCESS_TOKEN')
 DRAFT_RESOURCE = 'https://api.github.com/repos/wireapp/wire-desktop/releases?access_token=%s' % (GITHUB_ACCESS_TOKEN)
 

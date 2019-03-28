@@ -17,8 +17,8 @@
  *
  */
 
-const environment = require('../../dist/js/environment');
-const {getLogger} = require('../../dist/js/getLogger');
+const environment = require('../../dist/runtime/EnvironmentUtil');
+const {getLogger} = require('../../dist/logging/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
@@ -96,8 +96,8 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW, conversationId => {
-    amplify.publish(z.event.WebApp.CONVERSATION.SHOW, conversationId);
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event, hash) => {
+    window.location.hash = hash;
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
     amplify.publish(z.event.WebApp.SHORTCUT.SILENCE);
@@ -125,7 +125,7 @@ const exposeAddressBook = () => {
   const getAddressBook = () => {
     if (!cachedAddressBook) {
       try {
-        cachedAddressBook = require('node-addressbook');
+        cachedAddressBook = require('@wireapp/node-addressbook');
       } catch (error) {
         logger.info('Failed loading "node-addressbook".', error);
       }

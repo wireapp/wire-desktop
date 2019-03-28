@@ -21,29 +21,6 @@ const pkg: {maximumAccounts: string; productName: string; version: string} = req
 
 const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
 
-const EMBED_DOMAINS = [
-  {
-    allowedExternalLinks: ['www.youtube.com'],
-    hostname: ['www.youtube-nocookie.com'],
-    name: 'YouTube',
-  },
-  {
-    allowedExternalLinks: ['vimeo.com', 'player.vimeo.com'],
-    hostname: ['player.vimeo.com'],
-    name: 'Vimeo',
-  },
-  {
-    allowedExternalLinks: ['soundcloud.com'],
-    hostname: ['w.soundcloud.com'],
-    name: 'SoundCloud',
-  },
-  {
-    allowedExternalLinks: ['www.spotify.com', 'developer.spotify.com'],
-    hostname: ['open.spotify.com', 'embed.spotify.com'],
-    name: 'Spotify',
-  },
-];
-
 const LOG_FILE_NAME = 'console.log';
 
 const MAXIMUM_ACCOUNTS = pkg.maximumAccounts || 3;
@@ -62,32 +39,4 @@ const USER_AGENT =
 
 const VERSION = pkg.version;
 
-const WINDOW = {
-  ABOUT: {
-    HEIGHT: 256,
-    WIDTH: 304,
-  },
-  AUTH: {
-    HEIGHT: 576,
-    WIDTH: 400,
-  },
-  MAIN: {
-    DEFAULT_HEIGHT: 768,
-    DEFAULT_WIDTH: 1024,
-    MIN_HEIGHT: 512,
-    MIN_WIDTH: 760,
-  },
-};
-
-export {
-  BACKEND_ORIGINS,
-  EMBED_DOMAINS,
-  LOG_FILE_NAME,
-  MAXIMUM_ACCOUNTS,
-  NAME,
-  RAYGUN_API_KEY,
-  UPDATE,
-  USER_AGENT,
-  VERSION,
-  WINDOW,
-};
+export {BACKEND_ORIGINS, LOG_FILE_NAME, MAXIMUM_ACCOUNTS, NAME, RAYGUN_API_KEY, UPDATE, USER_AGENT, VERSION};

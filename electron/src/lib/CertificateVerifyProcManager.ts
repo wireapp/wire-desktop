@@ -22,8 +22,8 @@ import {LogFactory} from '@wireapp/commons';
 import {app, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as environment from '../js/environment';
 import {getText} from '../locale/locale';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});
@@ -83,7 +83,7 @@ class CertificateVerifyProcManager {
       options.isChromiumError ? this.LOCALE.SHOW_DETAILS_TEXT_CHROMIUM : this.LOCALE.SHOW_DETAILS_TEXT_PINNING
     } ${hostname}`;
 
-    const isTrustDialogSupported = environment.platform.IS_MAC_OS;
+    const isTrustDialogSupported = EnvironmentUtil.platform.IS_MAC_OS;
     if (isTrustDialogSupported) {
       dialog.showCertificateTrustDialog(
         this.mainWindow,

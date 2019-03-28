@@ -44,4 +44,32 @@ const showPrimaryWindow = (): void => {
   }
 };
 
-export {getPrimaryWindow, setPrimaryWindowId, showPrimaryWindow};
+const sendActionToPrimaryWindow = (channel: string, ...args: any[]): void => {
+  const primaryWindow = getPrimaryWindow();
+  if (primaryWindow) {
+    primaryWindow.webContents.send(channel, ...args);
+  }
+};
+
+const sendActionAndFocusWindow = (channel: string, ...args: any[]) => {
+  const main = getPrimaryWindow();
+  if (main.webContents.isLoading()) {
+    main.webContents.once('did-finish-load', () => {
+      main.webContents.send(channel, ...args);
+    });
+  } else {
+    if (!main.isVisible()) {
+      main.show();
+      main.focus();
+    }
+    main.webContents.send(channel, ...args);
+  }
+};
+
+export const WindowManager = {
+  getPrimaryWindow,
+  sendActionAndFocusWindow,
+  sendActionToPrimaryWindow,
+  setPrimaryWindowId,
+  showPrimaryWindow,
+};

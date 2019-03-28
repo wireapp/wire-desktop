@@ -30,7 +30,6 @@ bin_root = os.path.dirname(os.path.realpath(__file__))
 build_root = os.path.join(bin_root, '..', 'wrap', 'dist')
 S3_PATH = 'linux/'
 
-
 def upload_file(source, dest):
   if not os.path.isfile(source):
     print '%s not found' % source
@@ -45,9 +44,8 @@ def upload_file(source, dest):
 
 if __name__ == '__main__':
   files = [
-    'sha256sum.txt.asc',
-    'Wire-%s-x86_64.AppImage' % VERSION,
-    'debian/pool/main/Wire-%s-amd64.deb' % VERSION,
+    'Wire-%s_x86_64.AppImage' % VERSION,
+    'debian/pool/main/Wire-%s_amd64.deb' % VERSION,
     'debian/dists/stable/Contents-amd64',
     'debian/dists/stable/Contents-amd64.bz2',
     'debian/dists/stable/Contents-amd64.gz',

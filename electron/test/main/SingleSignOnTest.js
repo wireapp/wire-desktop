@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {SingleSignOn} = require('../../instrumented-code/lib/SingleSignOn');
+const {SingleSignOn} = require('../../instrumented-code/sso/SingleSignOn');
 
 describe('generateSecret', () => {
   it('generates a secret of a specified size', async () => {

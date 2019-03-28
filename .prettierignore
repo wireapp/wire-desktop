@@ -1,4 +1,6 @@
 /config
+/.github/issue_template.md
 instrumented-code
 package.json
 package-lock.json
+electron/locale

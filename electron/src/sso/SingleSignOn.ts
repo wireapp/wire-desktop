@@ -23,7 +23,7 @@ import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {BACKEND_ORIGINS, USER_AGENT} from '../js/config';
+import {BACKEND_ORIGINS, USER_AGENT} from '../settings/config';
 
 const argv = minimist(process.argv.slice(1));
 
@@ -236,7 +236,7 @@ class SingleSignOn {
 
   private readonly createBrowserWindow = (): Electron.BrowserWindow => {
     // Discard old preload URL
-    delete (<any>this.windowOptions).webPreferences.preloadURL;
+    delete (this.windowOptions as any).webPreferences.preloadURL;
 
     const SingleSignOnLoginWindow = new BrowserWindow({
       ...this.windowOptions,
@@ -283,7 +283,7 @@ class SingleSignOn {
       width: this.windowOptions.width || 480,
     });
 
-    (<any>this.senderEvent).newGuest = SingleSignOnLoginWindow;
+    (this.senderEvent as any).newGuest = SingleSignOnLoginWindow;
 
     SingleSignOnLoginWindow.once('closed', async () => {
       if (this.session) {

@@ -4,7 +4,10 @@ Please remember that this is a bug tracker in a source code repository and not a
 If you have a feature request that affects Wire in general, was kindly ask you to file it at https://github.com/wireapp/wire/issues. Please direct feature requests specifically targeted at wire-desktop to our customer support at https://support.wire.com and/or social media channels.
 --->
 
-Wire version: <Check the About dialog> Wire for web version: <Check the About dialog> Operating system: <OS/distribution and version number> Which antivirus software do you have installed: <This helps us to find out if there are compatibility issues with antivirus software>
+Wire version: <Check the About dialog>
+Wire for web version: <Check the About dialog>
+Operating system: <OS/distribution and version number>
+Which antivirus software do you have installed: <This helps us to find out if there are compatibility issues with antivirus software>
 
 What steps will reproduce the problem?
 
