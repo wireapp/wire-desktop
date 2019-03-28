@@ -28,9 +28,6 @@ HOCKEY_TOKEN = os.environ.get('MACOS_HOCKEY_TOKEN')
 bin_root = os.path.dirname(os.path.realpath(__file__))
 wire_zip = os.path.join(bin_root, '..', 'wrap', 'WireInternal.zip')
 
-def ditto(source, dest):
-  os.system('ditto -c -k --sequesterRsrc --keepParent %s %s' % (source, dest))
-
 if __name__ == '__main__':
 
   print 'Uploading...'

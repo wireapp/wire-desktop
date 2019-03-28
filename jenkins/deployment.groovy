@@ -30,7 +30,7 @@ node('master') {
   }
 
   stage('Checkout & Clean') {
-    git branch: 'master', url: 'https://github.com/wireapp/wire-desktop.git'
+    git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     sh returnStatus: true, script: 'rm -rf *.pkg info.json'
     sh returnStatus: true, script: 'pip install -r jenkins/requirements.txt'
   }
