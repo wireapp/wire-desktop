@@ -262,7 +262,7 @@ const helpTemplate: ElectronMenuItemWithI18n = {
     },
     {
       click: () => shell.openExternal(EnvironmentUtil.web.getWebsiteUrl()),
-      i18n: 'menuWebsiteURL',
+      i18n: 'menuWireURL',
     },
   ],
 };
