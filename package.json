@@ -8,15 +8,15 @@
   },
   "dependencies": {
     "debug": "4.1.1",
-    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.16.4",
-    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.16.5-0"
+    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.17.2",
+    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.17.1-0"
   },
   "devDependencies": {
     "@babel/core": "7.4.0",
     "@babel/plugin-proposal-object-rest-spread": "7.4.0",
     "@babel/preset-env": "7.4.2",
     "@babel/preset-react": "7.0.0",
-    "@wireapp/copy-config": "0.5.1",
+    "@wireapp/copy-config": "0.5.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
     "babel-jest": "24.5.0",
@@ -44,7 +44,7 @@
     "load-grunt-tasks": "4.0.0",
     "prettier": "1.16.4",
     "rimraf": "2.6.3",
-    "sinon": "7.3.0",
+    "sinon": "7.3.1",
     "style-loader": "0.23.1",
     "tslint": "5.14.0",
     "tslint-config-prettier": "1.18.0",

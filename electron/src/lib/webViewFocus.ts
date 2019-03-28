@@ -17,7 +17,7 @@
  *
  */
 
-import {webContents} from 'electron';
+import {Event, WebContents, webContents} from 'electron';
 
 // Note: webContents.getFocusedWebContents() is broken, always returns the last one
 // Note: Pretty much anything near focus/blur behavior with webviews are broken
@@ -25,11 +25,11 @@ import {webContents} from 'electron';
 // (undocumented) focus-change event added in Electron 3
 
 class WebViewFocus {
-  private static current: number = 0;
-  public static readonly bindTracker = (webviewEvent: Electron.Event, contents: Electron.WebContents): void => {
+  private static current = 0;
+  public static readonly bindTracker = (event: Event, contents: WebContents): void => {
     if (contents.getType() === 'webview') {
       // Undocumented event @ https://github.com/electron/electron/pull/14344/files
-      (<any>contents).on('focus-change', (event: {}, isFocus: boolean, guestInstanceId: number) => {
+      (contents as any).on('focus-change', (event: Event, isFocus: boolean, guestInstanceId: number) => {
         if (isFocus) {
           WebViewFocus.current = guestInstanceId;
         }
@@ -37,12 +37,12 @@ class WebViewFocus {
     }
   };
 
-  public static readonly getFocusedWebContents = (): Electron.WebContents | undefined => {
-    let webContentFound: Electron.WebContents | undefined;
+  public static readonly getFocusedWebContents = (): WebContents | undefined => {
+    let webContentFound: WebContents | undefined;
     for (const webContent of webContents.getAllWebContents()) {
       if (
-        typeof (<any>webContent).viewInstanceId == 'number' &&
-        (<any>webContent).viewInstanceId === WebViewFocus.current
+        typeof (webContent as any).viewInstanceId == 'number' &&
+        (webContent as any).viewInstanceId === WebViewFocus.current
       ) {
         webContentFound = webContent;
         break;

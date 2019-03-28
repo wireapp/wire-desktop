@@ -32,11 +32,10 @@ import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
 } from './lib/CertificateVerifyProcManager';
-import {registerCoreProtocol} from './lib/CoreProtocol';
+import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
-import {SingleSignOn} from './lib/SingleSignOn';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING} from './logging/getLogger';
@@ -50,6 +49,7 @@ import {OriginValidator} from './runtime/OriginValidator';
 import * as config from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
@@ -70,6 +70,7 @@ const WINDOW_SIZE = {
 };
 
 const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
+const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
@@ -182,6 +183,10 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   if (ENABLE_LOGGING) {
     webappURL += `&enableLogging=@wireapp/*`;
+  }
+
+  if (customProtocolHandler.hashLocation) {
+    webappURL += `#${customProtocolHandler.hashLocation}`;
   }
 
   if (argv.devtools) {
@@ -478,7 +483,7 @@ class ElectronWrapperInit {
   }
 }
 
-registerCoreProtocol();
+customProtocolHandler.registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
 lifecycle.checkSingleInstance();

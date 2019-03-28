@@ -29,58 +29,53 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels
   }
 });
 
-ipcRenderer.once(
-  EVENT_TYPE.ABOUT.LOADED,
-  (
-    event: Event,
-    details: {
-      copyright: string;
-      electronVersion: string;
-      environment: string;
-      productName: string;
-      webappVersion: string;
-    }
-  ) => {
-    const nameElement = document.getElementById('name');
-    if (nameElement) {
-      nameElement.innerHTML = details.productName;
-    }
+interface Details {
+  copyright: string;
+  electronVersion: string;
+  environment: string;
+  productName: string;
+  webappVersion: string;
+}
 
-    const versionElement = document.getElementById('version');
-    if (versionElement) {
-      versionElement.innerHTML = details.electronVersion || 'Development';
-    }
+ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (event: Event, details: Details) => {
+  const nameElement = document.getElementById('name');
+  if (nameElement) {
+    nameElement.innerHTML = details.productName;
+  }
 
-    const webappVersionElement = document.getElementById('webappVersion');
-    if (webappVersionElement) {
-      if (details.webappVersion) {
-        webappVersionElement.innerHTML = details.webappVersion;
-      } else {
-        if (webappVersionElement.parentNode) {
-          (webappVersionElement.parentNode as any).remove();
-        }
+  const versionElement = document.getElementById('version');
+  if (versionElement) {
+    versionElement.innerHTML = details.electronVersion || 'Development';
+  }
+
+  const webappVersionElement = document.getElementById('webappVersion');
+  if (webappVersionElement) {
+    if (details.webappVersion) {
+      webappVersionElement.innerHTML = details.webappVersion;
+    } else {
+      if (webappVersionElement.parentElement) {
+        webappVersionElement.parentElement.remove();
       }
     }
-
-    const copyrightElement = document.getElementById('copyright');
-    if (copyrightElement) {
-      copyrightElement.innerHTML = details.copyright || '&copy; Wire Swiss GmbH';
-    }
-
-    const logoElement = document.getElementById('logo') as HTMLImageElement;
-    if (logoElement) {
-      logoElement.src = '../img/logo.256.png';
-    }
-
-    // Get locales
-    const labels = [];
-    const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
-
-    for (const index in dataStrings) {
-      const label = dataStrings[index];
-      labels.push(label.dataset.string);
-    }
-
-    ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
   }
-);
+
+  const copyrightElement = document.getElementById('copyright');
+  if (copyrightElement) {
+    copyrightElement.innerHTML = details.copyright || '&copy; Wire Swiss GmbH';
+  }
+
+  const logoElement = document.getElementById('logo') as HTMLImageElement;
+  if (logoElement) {
+    logoElement.src = '../img/logo.256.png';
+  }
+
+  // Get locales
+  const labels = [];
+  const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
+
+  for (const index in dataStrings) {
+    const label = dataStrings[index];
+    labels.push(label.dataset.string);
+  }
+  ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
+});

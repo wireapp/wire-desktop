@@ -17,13 +17,12 @@
  *
  */
 
-import {LogFactory, ValidationUtil} from '@wireapp/commons';
+import {LogFactory} from '@wireapp/commons';
 import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 import {platform} from '../runtime/EnvironmentUtil';
 import {WindowManager} from '../window/WindowManager';
-import {AutomatedSingleSignOn} from './AutomatedSingleSignOn';
 import {EVENT_TYPE} from './eventType';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -32,62 +31,62 @@ const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFileP
 
 const {customProtocolName} = require('../../package.json');
 const CORE_PROTOCOL = customProtocolName || 'wire';
+const CORE_PROTOCOL_PREFIX = `${CORE_PROTOCOL}://`;
 const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
 enum ProtocolCommand {
-  SHOW_CONVERSATION = 'conversation',
   START_SSO_FLOW = 'start-sso',
 }
 
-const dispatcher = async (url?: string) => {
-  if (typeof url === 'undefined' || !url.startsWith(`${CORE_PROTOCOL}://`) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
-    return;
-  }
+export class CustomProtocolHandler {
+  public hashLocation: string = '';
 
-  const route = new URL(url);
+  async dispatcher(url?: string) {
+    if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
+      return;
+    }
 
-  logger.log('Electron "open-url" event fired');
+    const route = new URL(url);
 
-  switch (route.host) {
-    case ProtocolCommand.SHOW_CONVERSATION: {
-      const conversationIds = route.pathname.match(ValidationUtil.PATTERN.UUID_V4);
-      if (conversationIds) {
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.CONVERSATION.SHOW, conversationIds[0]);
+    switch (route.host) {
+      case ProtocolCommand.START_SSO_FLOW: {
+        if (typeof route.pathname === 'string') {
+          logger.log('Starting SSO flow...');
+          const code = route.pathname.trim().substr(1);
+          await app.whenReady();
+          WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+        }
+        break;
       }
-      break;
+      default: {
+        const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
+        this.hashLocation = `/${location}`;
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
+        break;
+      }
     }
-    case ProtocolCommand.START_SSO_FLOW: {
-      logger.log('Automatic SSO detected');
-      await AutomatedSingleSignOn.handleProtocolRequest(route);
-      break;
-    }
-    default: {
-      logger.log(`Unknown route detected. Full URL: ${route.toString()}`);
-      break;
-    }
-  }
-};
-
-export const registerCoreProtocol = () => {
-  // Immediately register the protocol system-wide if needed
-  if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
-    app.setAsDefaultProtocolClient(CORE_PROTOCOL);
   }
 
-  if (platform.IS_MAC_OS) {
-    app.on('open-url', async (event, url) => {
-      event.preventDefault();
-      await dispatcher(url);
-    });
-  } else {
-    app.once('ready', async () => {
-      const url = process.argv[CORE_PROTOCOL_POSITION];
-      await dispatcher(url);
-    });
-    app.on('second-instance', async (event, argv) => {
-      const url = argv[CORE_PROTOCOL_POSITION];
-      await dispatcher(url);
-    });
+  public registerCoreProtocol() {
+    if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
+      app.setAsDefaultProtocolClient(CORE_PROTOCOL);
+    }
+
+    if (platform.IS_MAC_OS) {
+      app.on('open-url', async (event, url) => {
+        event.preventDefault();
+        await this.dispatcher(url);
+      });
+    } else {
+      app.once('ready', async () => {
+        const url = process.argv[CORE_PROTOCOL_POSITION];
+        await this.dispatcher(url);
+      });
+      app.on('second-instance', async (event, argv) => {
+        const url = argv[CORE_PROTOCOL_POSITION];
+        await this.dispatcher(url);
+      });
+    }
   }
-};
+}

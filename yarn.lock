@@ -871,10 +871,10 @@
     "@sinonjs/commons" "^1"
     "@sinonjs/samsam" "^3.1.0"
 
-"@sinonjs/samsam@^3.1.0", "@sinonjs/samsam@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@sinonjs/samsam/-/samsam-3.3.0.tgz#9557ea89cd39dbc94ffbd093c8085281cac87416"
-  integrity sha512-beHeJM/RRAaLLsMJhsCvHK31rIqZuobfPLa/80yGH5hnD8PV1hyh9xJBJNFfNmO7yWqm+zomijHsXpI6iTQJfQ==
+"@sinonjs/samsam@^3.1.0", "@sinonjs/samsam@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@sinonjs/samsam/-/samsam-3.3.1.tgz#e88c53fbd9d91ad9f0f2b0140c16c7c107fe0d07"
+  integrity sha512-wRSfmyd81swH0hA1bxJZJ57xr22kC07a1N4zuIL47yTS04bDk6AoCkczcqHEjcRPmJ+FruGJ9WBQiJwMtIElFw==
   dependencies:
     "@sinonjs/commons" "^1.0.2"
     array-from "^2.1.1"
@@ -1089,17 +1089,17 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/copy-config@0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.5.1.tgz#ca503679dd6719cbd1565c974c7e45afcc74bbb1"
-  integrity sha512-GyctE0FRaK0Qyik7mpNCe5HyuctMwUrOgwoJkYt3aIAvk7UPT+n/+A9E3IXLcyTozKYYfkEHXCsMP8rf4rdAAA==
+"@wireapp/copy-config@0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.5.2.tgz#4b41af878d13f85fef3f59c2607324419b935820"
+  integrity sha512-HWLBcNuK1Njx070fVlm5/U4Tsnvsqn73TcmOFbztsOeRJ36FJU+SZzBlC3JJF1kjNNaJrjTRL0Md+DDbHs6Nsg==
   dependencies:
     axios "0.18.0"
     copy "0.3.2"
     cosmiconfig "5.2.0"
     fs-extra "7.0.1"
     jszip "3.2.1"
-    logdown "3.2.7"
+    logdown "3.2.8"
     rimraf "2.6.3"
 
 "@xtuc/ieee754@^1.2.0":
@@ -5520,10 +5520,10 @@ log-update@^2.3.0:
     cli-cursor "^2.0.0"
     wrap-ansi "^3.0.1"
 
-logdown@3.2.7:
-  version "3.2.7"
-  resolved "https://registry.yarnpkg.com/logdown/-/logdown-3.2.7.tgz#4dd24375bf5b757064f65aeb8c3459ae66cde1b9"
-  integrity sha512-ddzzl63qXd0pRSCE5O1bT4/NTK4Vvm3c353mNOiQtA2b23C3oqUezrlccV9t9cBYRLKO39VD31DEOPBARqyKiw==
+logdown@3.2.8:
+  version "3.2.8"
+  resolved "https://registry.yarnpkg.com/logdown/-/logdown-3.2.8.tgz#0bfff0c260a4a55f289f6b4420daefec30479843"
+  integrity sha512-ia/AslkwnxwWzaReeADifBwfh2xtUd/T/qdsnkrPlQbefKt4LkUWGSn/xWuhEwY3p2zSIhAZYcWCEGGIy9Lr2w==
   dependencies:
     chalk "^2.3.0"
 
@@ -7433,14 +7433,14 @@ single-line-log@^1.1.2:
   dependencies:
     string-width "^1.0.1"
 
-sinon@7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/sinon/-/sinon-7.3.0.tgz#fd409432bf2ef8ee6a302cf47ca1b0c95fd4de38"
-  integrity sha512-0pYvgRv46fODzT/PByqb79MVNpyxsxf38WEiXTABOF8RfIMcIARfZ+1ORuxwAmHkreZ/jST3UDBdKCRhUy/e1A==
+sinon@7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/sinon/-/sinon-7.3.1.tgz#e8276522104e6c08d1cb52a907270b0e316655c4"
+  integrity sha512-eQKMaeWovtOtYe2xThEvaHmmxf870Di+bim10c3ZPrL5bZhLGtu8cz+rOBTFz0CwBV4Q/7dYwZiqZbGVLZ+vjQ==
   dependencies:
     "@sinonjs/commons" "^1.4.0"
     "@sinonjs/formatio" "^3.2.1"
-    "@sinonjs/samsam" "^3.3.0"
+    "@sinonjs/samsam" "^3.3.1"
     diff "^3.5.0"
     lolex "^3.1.0"
     nise "^1.4.10"
@@ -8575,16 +8575,17 @@ widest-line@^2.0.0:
   dependencies:
     string-width "^2.1.1"
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.16.4":
-  version "0.16.4"
-  resolved "https://github.com/wireapp/wire-web-config-default#742ab0fbdb0cfb814fbd55b6c2dca9e72328919a"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.2":
+  version "0.17.2"
+  uid "1588f747e84254dbacf563c551d9706c0f0d64c0"
+  resolved "https://github.com/wireapp/wire-web-config-default#1588f747e84254dbacf563c551d9706c0f0d64c0"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.16.5-0":
-  version "0.16.5-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#ceb776f33dd7fbf3f726487845794bb122a95797"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.17.1-0":
+  version "0.17.1-0"
+  resolved "https://github.com/wireapp/wire-web-config-wire#3b0b11f12fc00893e3139bf3a91a9d0e81c83bc5"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
