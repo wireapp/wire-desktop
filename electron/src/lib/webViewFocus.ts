@@ -17,7 +17,7 @@
  *
  */
 
-import {Event, WebContents} from 'electron';
+import {Event, WebContents, webContents} from 'electron';
 
 // Note: webContents.getFocusedWebContents() is broken, always returns the last one
 // Note: Pretty much anything near focus/blur behavior with webviews are broken
@@ -39,7 +39,7 @@ class WebViewFocus {
 
   public static readonly getFocusedWebContents = (): WebContents | undefined => {
     let webContentFound: WebContents | undefined;
-    for (const webContent of WebContents.getAllWebContents()) {
+    for (const webContent of webContents.getAllWebContents()) {
       if (
         typeof (webContent as any).viewInstanceId == 'number' &&
         (webContent as any).viewInstanceId === WebViewFocus.current
