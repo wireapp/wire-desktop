@@ -49,7 +49,7 @@ export type i18nLanguageIdentifier =
   | 'menuFullScreen'
   | 'menuHelp'
   | 'menuHideOthers'
-  | 'menuHideApp'
+  | 'menuHideWire'
   | 'menuLeave'
   | 'menuLegal'
   | 'menuLicense'
