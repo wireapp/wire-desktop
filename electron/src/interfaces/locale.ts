@@ -80,7 +80,7 @@ export type i18nLanguageIdentifier =
   | 'menuVideoCall'
   | 'menuView'
   | 'menuWindow'
-  | 'menuWebsiteURL'
+  | 'menuWireURL'
   | 'restartLater'
   | 'restartLocale'
   | 'restartNeeded'
