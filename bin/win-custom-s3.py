@@ -39,7 +39,7 @@ def find(extension, path):
   return None, None
 
 setup_exe_full, setup_exe_name = find('-Setup.exe', custom_root)
-app_nupkg_full = find('-full.nupkg', custom_root)
+app_nupkg_full, app_nupkg_name = find('-full.nupkg', custom_root)
 
 if setup_exe_full is None:
   raise Exception('No setup executable found')
