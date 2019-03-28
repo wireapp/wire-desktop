@@ -124,29 +124,10 @@
   resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.10.tgz#780d552467824be4a241b29510a7873a7432c4a6"
   integrity sha512-fOM/Jhv51iyugY7KOBZz2ThfT1gwvsGCfWxpLpZDgkGjpEO4Le9cld07OdskikLjDUQJ43dzDaVRSFwQlpdqVg==
 
-"@types/color-convert@*":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@types/color-convert/-/color-convert-1.9.0.tgz#bfa8203e41e7c65471e9841d7e306a7cd8b5172d"
-  integrity sha512-OKGEfULrvSL2VRbkl/gnjjgbbF7ycIlpSsX7Nkab4MOWi5XxmgBYvuiQ7lcCFY5cPDz7MUNaKgxte2VRmtr4Fg==
-  dependencies:
-    "@types/color-name" "*"
-
-"@types/color-name@*":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
-  integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
-
-"@types/color@3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@types/color/-/color-3.0.0.tgz#40f8a6bf2fd86e969876b339a837d8ff1b0a6e30"
-  integrity sha512-5qqtNia+m2I0/85+pd2YzAXaTyKO8j+svirO5aN+XaQJ5+eZ8nx0jPtEWZLxCi50xwYsX10xUHetFzfb1WEs4Q==
-  dependencies:
-    "@types/color-convert" "*"
-
-"@types/debug@4.1.2":
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.2.tgz#84824e9259fc583dd9385635738359c9582f7f82"
-  integrity sha512-jkf6UiWUjcOqdQbatbvOm54/YbCdjt3JjiAzT/9KS2XtMmOkYHdKsI5u8fulhbuTUuiqNBfa6J5GSDiwjK+zLA==
+"@types/debug@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.3.tgz#4965a87531d7c6863f5b097b2c518b825e926cc7"
+  integrity sha512-PQverGatRgqIhRLracrC8k/j5A6QOASVLR0wuURx6ROQZx3OQ9PnTc/5Xrznny/xaO0TwdxSgGyG90NCzk37Rg==
 
 "@types/file-url@2.0.0":
   version "2.0.0"
@@ -180,10 +161,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
   integrity sha1-aaI6OtKcrwCX8G7aWbNh7i8GOfY=
 
-"@types/node@*", "@types/node@11.11.6":
-  version "11.11.6"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.11.6.tgz#df929d1bb2eee5afdda598a41930fe50b43eaa6a"
-  integrity sha512-Exw4yUWMBXM3X+8oqzJNRqZSwUAaS4+7NdvHqQuFi/d+synz++xmX3QIf+BFqneW8N31R8Ky+sikfZUXq07ggQ==
+"@types/node@*", "@types/node@11.12.0":
+  version "11.12.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.12.0.tgz#ec5594728811dc2797e42396cfcdf786f2052c12"
+  integrity sha512-Lg00egj78gM+4aE0Erw05cuDbvX9sLJbaaPwwRtdCdAMnIudqrQZ0oZX98Ek0yiSK/A2nubHgJfvII/rTT2Dwg==
 
 "@types/node@10.12.29":
   version "10.12.29"
@@ -252,20 +233,20 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.4.3.tgz#c8e28ad322607c7f69a19e830ba519984a087e13"
-  integrity sha512-CLaxcHkIo+AI5uSr+ykT3AYCX1iRstZA9ADce3+Q+hOCsdGCHZVmzIbnbLagd3ntyvH16D/n/kx/0MkSVFL1sw==
+"@wireapp/commons@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.4.4.tgz#fb2cdc4e934286d6ffb411dacc9d729fae7377bc"
+  integrity sha512-bM11f2MDWGa6V8rEWDOmEpgp8QusX7Flm4FX8dEXJKkCOJyvxee6lgV3kwhceBio19XYsOuomOOV+2RNHHIbYw==
   dependencies:
     "@types/ansi-regex" "4.0.0"
-    "@types/node" "11.11.6"
+    "@types/node" "11.12.0"
     "@types/platform" "1.3.2"
     ansi-regex "4.1.0"
     fs-extra "7.0.1"
-    logdown "3.2.7"
+    logdown "3.2.8"
     moment "2.24.0"
     platform "1.3.5"
-    url-search-params-polyfill "5.0.0"
+    url-search-params-polyfill "5.0.1"
 
 "@wireapp/desktop-updater-core@file:../../wire-desktop-packages/packages/desktop-updater-core":
   version "0.0.1"
@@ -2223,13 +2204,6 @@ log-symbols@^2.2.0:
   dependencies:
     chalk "^2.0.1"
 
-logdown@3.2.7:
-  version "3.2.7"
-  resolved "https://registry.yarnpkg.com/logdown/-/logdown-3.2.7.tgz#4dd24375bf5b757064f65aeb8c3459ae66cde1b9"
-  integrity sha512-ddzzl63qXd0pRSCE5O1bT4/NTK4Vvm3c353mNOiQtA2b23C3oqUezrlccV9t9cBYRLKO39VD31DEOPBARqyKiw==
-  dependencies:
-    chalk "^2.3.0"
-
 logdown@3.2.8:
   version "3.2.8"
   resolved "https://registry.yarnpkg.com/logdown/-/logdown-3.2.8.tgz#0bfff0c260a4a55f289f6b4420daefec30479843"
@@ -3745,10 +3719,10 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-url-search-params-polyfill@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/url-search-params-polyfill/-/url-search-params-polyfill-5.0.0.tgz#09b98337c89dcf6c6a6a0bfeb096f6ba83b7526b"
-  integrity sha512-+SCD22QJp4UnqPOI5UTTR0Ljuh8cHbjEf1lIiZrZ8nHTlTixqwVsVQTSfk5vrmDz7N09/Y+ka5jQr0ff35FnQQ==
+url-search-params-polyfill@5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/url-search-params-polyfill/-/url-search-params-polyfill-5.0.1.tgz#ccf5c10dd55a5d31b6ea8ec0ae814f984fb72a06"
+  integrity sha512-OJRkM8f7rkjn2PLgc41SVnCpoT6QUNL5SGMYkaeEFJ6OPysjk02WnZu/6AAtAVyT8Qh/c0VnrRoXS86ISC1OXw==
 
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
