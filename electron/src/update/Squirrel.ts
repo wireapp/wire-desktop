@@ -23,6 +23,7 @@ import {app} from 'electron';
 
 import * as cp from 'child_process';
 import * as fs from 'fs';
+import * as moment from 'moment';
 import * as path from 'path';
 
 import {SpawnCallback, SpawnError} from '../interfaces/';
@@ -100,6 +101,7 @@ const spawn = (command: string, args: string[], callback?: SpawnCallback) => {
 };
 
 const spawnUpdate = (args: string[], callback?: SpawnCallback): void => {
+  logger.info(`Installing update ...`);
   spawn(updateDotExe, args, callback);
 };
 
@@ -121,12 +123,15 @@ const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void): void =
 };
 
 const installUpdate = (): void => {
-  logger.info(`Installing update from "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
+  logger.info(`Checking for updates on "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
   spawnUpdate([SQUIRREL_EVENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
 };
 
 const scheduleUpdate = (): void => {
-  logger.info(`Scheduling update ...`);
+  const delay = moment.duration(config.UPDATE.DELAY).humanize();
+  const interval = moment.duration(config.UPDATE.INTERVAL).asDays();
+  logger.info(`Scheduling update to check in "${delay}" and every "${interval} day${interval === 1 ? '' : 's'}" ...`);
+
   setTimeout(installUpdate, config.UPDATE.DELAY);
   setInterval(installUpdate, config.UPDATE.INTERVAL);
 };
