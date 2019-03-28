@@ -128,9 +128,12 @@ const installUpdate = (): void => {
 };
 
 const scheduleUpdate = (): void => {
-  const delay = moment.duration(config.UPDATE.DELAY).humanize();
-  const interval = moment.duration(config.UPDATE.INTERVAL).asDays();
-  logger.info(`Scheduling update to check in "${delay}" and every "${interval} day${interval === 1 ? '' : 's'}" ...`);
+  const pluralize = (num: number, str: string) => `${num} ${str + (num === 1 ? '' : 's')}`;
+  const nextCheck = moment.duration(config.UPDATE.DELAY).asMinutes();
+  const everyCheck = moment.duration(config.UPDATE.INTERVAL).asHours();
+  logger.info(
+    `Scheduling update to check in "${pluralize(nextCheck, 'minute')}" and every "${pluralize(everyCheck, 'hour')}" ...`
+  );
 
   setTimeout(installUpdate, config.UPDATE.DELAY);
   setInterval(installUpdate, config.UPDATE.INTERVAL);
