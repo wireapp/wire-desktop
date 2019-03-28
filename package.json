@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "debug": "4.1.1",
-    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.17.0",
+    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.17.2",
     "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.17.1-0"
   },
   "devDependencies": {
