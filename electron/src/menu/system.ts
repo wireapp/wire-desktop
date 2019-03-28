@@ -286,7 +286,7 @@ const darwinTemplate: ElectronMenuItemWithI18n = {
     },
     separatorTemplate,
     {
-      i18n: 'menuHideApp',
+      i18n: 'menuHideWire',
       role: 'hide',
     },
     {
