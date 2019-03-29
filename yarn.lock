@@ -8574,9 +8574,10 @@ widest-line@^2.0.0:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.17.1-0":
-  version "0.17.1-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#3b0b11f12fc00893e3139bf3a91a9d0e81c83bc5"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.17.3-0":
+  version "0.17.3-0"
+  uid "2488c6f08b0fc7e986d26ddd734ba03c302f5d5d"
+  resolved "https://github.com/wireapp/wire-web-config-wire#2488c6f08b0fc7e986d26ddd734ba03c302f5d5d"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
