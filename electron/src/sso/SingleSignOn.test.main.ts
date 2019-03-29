@@ -1,5 +1,5 @@
-import * as assert from "assert";
-import {SingleSignOn} from "./SingleSignOn";
+import * as assert from 'assert';
+import {SingleSignOn} from './SingleSignOn';
 
 describe('generateSecret', () => {
   it('generates a secret of a specified size', async () => {
