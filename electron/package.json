@@ -28,20 +28,25 @@
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
+    "@babel/core": "7.4.0",
+    "@babel/plugin-proposal-class-properties": "7.4.0",
+    "@babel/preset-env": "7.4.2",
+    "@babel/preset-typescript": "7.3.3",
+    "@babel/register": "7.4.0",
     "@types/ansi-regex": "4.0.0",
     "@types/auto-launch": "5.0.1",
     "@types/file-url": "2.0.0",
     "@types/fs-extra": "5.0.5",
     "@types/lodash": "4.14.123",
     "@types/minimist": "1.2.0",
+    "@types/mocha": "5.2.6",
     "@types/node": "10.12.29",
     "@types/open-graph": "0.2.0",
     "@types/raygun": "0.10.1",
+    "@types/sinon": "7.0.10",
     "@types/uuid": "3.4.4",
     "electron-mocha": "6.0.4",
-    "electron-rebuild": "1.8.4",
-    "istanbul": "1.1.0-alpha.1",
-    "remap-istanbul": "0.13.0"
+    "electron-rebuild": "1.8.4"
   },
   "environment": "internal",
   "homepage": "https://wire.com",
@@ -58,13 +63,9 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "coverage": "yarn coverage:clean && yarn coverage:instrument && yarn test && yarn coverage:report && yarn coverage:check",
-    "coverage:check": "exit 0",
-    "coverage:clean": "rimraf coverage instrumented-code",
-    "coverage:instrument": "istanbul instrument dist --no-compact --complete-copy --output instrumented-code",
-    "coverage:report": "remap-istanbul --input instrumented-code/coverage.json --output coverage -t html",
+    "coverage": "yarn test",
     "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
-    "test": "electron-mocha"
+    "test": "electron-mocha --require ./babel-register.js \"src/**/*.test?(.main).ts\""
   },
   "updateWinUrl": "https://wire-app.wire.com/win/internal/"
 }
