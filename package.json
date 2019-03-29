@@ -7,6 +7,7 @@
     }
   },
   "dependencies": {
+    "core-js": "2.6.5",
     "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.17.2",
     "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.17.3-0"
   },
@@ -54,17 +55,22 @@
   },
   "license": "LicenseRef-LICENSE",
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.ts": [
-      "tslint --config tslint.json --project tsconfig.json --fix",
-      "git add"
-    ],
-    "*.{json,md,css}": [
-      "prettier --write",
-      "git add"
+    "linters": {
+      "*.{js,jsx}": [
+        "eslint --fix",
+        "git add"
+      ],
+      "*.ts": [
+        "tslint --config tslint.json --project tsconfig.json --fix",
+        "git add"
+      ],
+      "*.{json,md,css}": [
+        "prettier --write",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "electron/**/*.test*.ts"
     ]
   },
   "name": "wire-desktop",
@@ -95,7 +101,7 @@
     "jest": "jest",
     "lint:js": "eslint --ignore-path .gitignore --ext .js,.jsx .",
     "lint:other": "yarn prettier --list-different",
-    "lint:ts": "tslint --config tslint.json --project tsconfig.json \"**/*.ts\"",
+    "lint:ts": "tslint --config tslint.json --project tsconfig.json",
     "lint": "yarn lint:js && yarn lint:other && yarn lint:ts",
     "postinstall": "yarn configure && cd electron && yarn",
     "prestart": "yarn build:ts && yarn bundle:dev",
