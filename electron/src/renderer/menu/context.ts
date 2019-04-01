@@ -114,7 +114,7 @@ window.addEventListener(
     } else if (element.classList.contains('text')) {
       event.preventDefault();
 
-      copyContext = window.getSelection().toString() || element.innerText.trim();
+      copyContext = (window.getSelection() || '').toString() || element.innerText.trim();
       defaultMenu.popup({window: remote.getCurrentWindow()});
     } else {
       // Maybe we are in a code block _inside_ an element with the 'text' class?
@@ -125,7 +125,7 @@ window.addEventListener(
       }
       if (parentNode !== document) {
         event.preventDefault();
-        copyContext = window.getSelection().toString() || (parentNode as HTMLElement).innerText.trim();
+        copyContext = (window.getSelection() || '').toString() || (parentNode as HTMLElement).innerText.trim();
         defaultMenu.popup({window: remote.getCurrentWindow()});
       }
     }

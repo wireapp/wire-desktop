@@ -35,7 +35,9 @@ const NAME = config.name;
 const RAYGUN_API_KEY = config.raygunApiKey;
 
 const UPDATE = {
+  /** 5 minutes */
   DELAY: 5 * 60 * 1000,
+  /** 24 hours */
   INTERVAL: 24 * 60 * 60 * 1000,
 };
 
