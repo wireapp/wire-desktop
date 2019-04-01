@@ -16,6 +16,7 @@
     "@babel/plugin-proposal-object-rest-spread": "7.4.0",
     "@babel/preset-env": "7.4.2",
     "@babel/preset-react": "7.0.0",
+    "@types/jest": "24.0.11",
     "@wireapp/copy-config": "0.5.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
@@ -59,8 +60,12 @@
       "eslint --fix",
       "git add"
     ],
-    "*.ts": [
-      "tslint --config tslint.json --project tsconfig.json --fix",
+    "**/!(*.test*).ts": [
+      "tslint --project tsconfig.json --fix",
+      "git add"
+    ],
+    "**/*.test*.ts": [
+      "tslint --project tsconfig.jest.json --fix",
       "git add"
     ],
     "*.{json,md,css}": [
@@ -92,12 +97,14 @@
     "fix:js": "yarn lint:js --fix",
     "fix:other": "yarn prettier --write",
     "fix:ts": "yarn lint:ts --fix",
-    "fix": "yarn fix:js && yarn fix:other && yarn fix:ts",
+    "fix:ts:tests": "yarn lint:ts:tests --fix",
+    "fix": "yarn fix:js && yarn fix:other && yarn fix:ts && yarn fix:ts:tests",
     "jest": "jest",
     "lint:js": "eslint --ignore-path .gitignore --ext .js,.jsx .",
     "lint:other": "yarn prettier --list-different",
-    "lint:ts": "tslint --config tslint.json --project tsconfig.json \"**/*.ts\"",
-    "lint": "yarn lint:js && yarn lint:other && yarn lint:ts",
+    "lint:ts": "tslint --project tsconfig.json",
+    "lint:ts:tests": "tslint --project tsconfig.jest.json",
+    "lint": "yarn lint:js && yarn lint:other && yarn lint:ts && yarn lint:ts:tests",
     "postinstall": "yarn configure && cd electron && yarn",
     "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
