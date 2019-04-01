@@ -63,13 +63,15 @@ export class CustomProtocolHandler {
     this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
   }
 
-  private handleSSOLogin(route: URL): Promise<void> {
+  private async handleSSOLogin(route: URL): Promise<void> {
     if (typeof route.pathname === 'string') {
       logger.log('Starting SSO flow...');
       const code = route.pathname.trim().substr(1);
-      this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code).catch(error => {
+      try {
+        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      } catch (error) {
         logger.error(`Cannot start SSO flow: ${error.message}`, error);
-      });
+      }
     }
   }
 
