@@ -29,7 +29,7 @@ const pkg: {
   supportUrl: string;
   updateWinUrl: string;
   websiteUrl: string;
-} = require('../../package.json');
+} = require('../../../package.json');
 
 let currentEnvironment: BackendType;
 

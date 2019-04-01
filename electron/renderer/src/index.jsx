@@ -29,7 +29,7 @@ import appStore from './reducers';
 import {loadState, saveState} from './lib/localStorage';
 import './Index.css';
 
-import {environment} from '../../package.json';
+import {environment} from '../../../package.json';
 
 const persistedState = loadState();
 

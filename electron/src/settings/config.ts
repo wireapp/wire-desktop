@@ -17,7 +17,7 @@
  *
  */
 
-const pkg: {maximumAccounts: string; productName: string; version: string} = require('../../package.json');
+const pkg: {maximumAccounts: string; productName: string; version: string} = require('../../../package.json');
 
 const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
 

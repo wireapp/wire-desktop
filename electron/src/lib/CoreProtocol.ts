@@ -29,7 +29,7 @@ const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFilePath: LOG_FILE});
 
-const {customProtocolName} = require('../../package.json');
+const {customProtocolName} = require('../../../package.json');
 const CORE_PROTOCOL = customProtocolName || 'wire';
 const CORE_PROTOCOL_PREFIX = `${CORE_PROTOCOL}://`;
 const CORE_PROTOCOL_POSITION = 1;

@@ -22,7 +22,6 @@ const electronPackager = require('electron-packager');
 const electronBuilder = require('electron-builder');
 const dotenv = require('dotenv');
 
-const ELECTRON_PACKAGE_JSON = 'electron/package.json';
 const INFO_JSON = 'info.json';
 const PACKAGE_JSON = 'package.json';
 
@@ -328,7 +327,7 @@ module.exports = function(grunt) {
 
     logEntries(baseData, 'baseData');
 
-    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    const electronPkg = grunt.file.readJSON(PACKAGE_JSON);
     const info = grunt.config.get('info');
 
     electronPkg.adminUrl = info.adminUrl;
@@ -343,21 +342,21 @@ module.exports = function(grunt) {
     electronPkg.supportUrl = info.supportUrl;
     electronPkg.websiteUrl = info.websiteUrl;
 
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.file.write(PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
   });
 
   grunt.registerTask('release-internal', () => {
     const info = grunt.config.get('info');
     const buildNumber = grunt.config.get('buildNumber');
     const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
-    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    const electronPkg = grunt.file.readJSON(PACKAGE_JSON);
     electronPkg.environment = 'internal';
     electronPkg.name = info.nameInternal.toLowerCase();
     electronPkg.productName = info.nameInternal;
     electronPkg.updateWinUrl = info.updateWinUrlInternal;
     electronPkg.version =
       buildNumber === '0' ? `${info.version}.0-${commitId}-internal` : `${info.version}.${buildNumber}-internal`;
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.file.write(PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
     grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
     grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
     grunt.log.write(`App product name set to "${electronPkg.productName}". `).ok();
@@ -368,13 +367,13 @@ module.exports = function(grunt) {
     const info = grunt.config.get('info');
     const buildNumber = grunt.config.get('buildNumber');
     const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
-    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    const electronPkg = grunt.file.readJSON(PACKAGE_JSON);
     electronPkg.environment = 'production';
     electronPkg.name = info.name.toLowerCase();
     electronPkg.productName = info.name;
     electronPkg.updateWinUrl = info.updateWinUrlProd;
     electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.file.write(PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
     grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
     grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
     grunt.log.write(`App product name set to "${electronPkg.productName}". `).ok();
@@ -385,13 +384,13 @@ module.exports = function(grunt) {
     const info = grunt.config.get('info');
     const buildNumber = grunt.config.get('buildNumber');
     const commitId = grunt.config('gitinfo.local.branch.current.shortSHA');
-    const electronPkg = grunt.file.readJSON(ELECTRON_PACKAGE_JSON);
+    const electronPkg = grunt.file.readJSON(PACKAGE_JSON);
     electronPkg.environment = 'production';
     electronPkg.name = info.nameShort.toLowerCase();
     electronPkg.productName = info.name;
     electronPkg.updateWinUrl = info.updateWinUrlCustom;
     electronPkg.version = buildNumber === '0' ? `${info.version}.0-${commitId}` : `${info.version}.${buildNumber}`;
-    grunt.file.write(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
+    grunt.file.write(PACKAGE_JSON, `${JSON.stringify(electronPkg, null, 2)}\n`);
     grunt.log.write(`App environment set to "${electronPkg.environment}". `).ok();
     grunt.log.write(`App name set to "${electronPkg.name}". `).ok();
     grunt.log.write(`App product name set to "${electronPkg.productName}". `).ok();

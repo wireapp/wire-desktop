@@ -41,7 +41,6 @@ cache:
   directories:
     - $HOME/.npm
     - node_modules
-    - electron/node_modules
 
 before_install:
   - eval "${MATRIX_EVAL}"

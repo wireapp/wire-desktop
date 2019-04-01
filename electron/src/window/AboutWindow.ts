@@ -31,7 +31,7 @@ const pkg: {
   environment: string;
   productName: string;
   version: string;
-} = require('../../package.json');
+} = require('../../../package.json');
 
 let webappVersion: string;
 
