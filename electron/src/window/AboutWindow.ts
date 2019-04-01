@@ -36,7 +36,7 @@ const pkg: {
 let webappVersion: string;
 
 // Paths
-const APP_PATH = app.getAppPath();
+const APP_PATH = path.join(app.getAppPath(), 'electron');
 
 // Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));

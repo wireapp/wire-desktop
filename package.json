@@ -151,7 +151,7 @@
     "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
     "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
-    "start": "cross-env NODE_DEBUG=wire-desktop* electron electron --inspect --devtools --enable-logging",
+    "start": "cross-env NODE_DEBUG=wire-desktop* electron . --inspect --devtools --enable-logging",
     "start:dev": "yarn start --env=https://wire-webapp-dev.zinfra.io",
     "start:edge": "yarn start --env=https://wire-webapp-edge.zinfra.io",
     "start:internal": "yarn start --env=https://wire-webapp-staging.wire.com",

@@ -55,7 +55,7 @@ import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
 // Paths
-const APP_PATH = app.getAppPath();
+const APP_PATH = path.join(app.getAppPath(), 'electron');
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
