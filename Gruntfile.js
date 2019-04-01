@@ -167,7 +167,6 @@ module.exports = function(grunt) {
         arch: 'all',
         asar: true,
         buildVersion: '<%= buildNumber %>',
-        dir: 'electron',
         ignore: 'electron/renderer/src',
         name: '<%= info.name %>',
         out: 'wrap/build',
