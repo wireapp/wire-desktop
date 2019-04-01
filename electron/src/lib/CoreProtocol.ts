@@ -41,6 +41,7 @@ enum ProtocolCommand {
 
 export class CustomProtocolHandler {
   hashLocation: string = '';
+  private readonly windowManager = WindowManager;
 
   async dispatcher(url?: string) {
     if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
@@ -59,7 +60,7 @@ export class CustomProtocolHandler {
   private forwardHashLocation(route: URL): void {
     const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
     this.hashLocation = `/${location}`;
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
+    this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
   }
 
   private async handleSSOLogin(route: URL): Promise<void> {
@@ -67,7 +68,7 @@ export class CustomProtocolHandler {
       logger.log('Starting SSO flow...');
       const code = route.pathname.trim().substr(1);
       await app.whenReady();
-      WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
     }
   }
 
