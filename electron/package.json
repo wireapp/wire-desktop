@@ -43,7 +43,7 @@
     "@types/node": "10.12.29",
     "@types/open-graph": "0.2.0",
     "@types/raygun": "0.10.1",
-    "@types/sinon": "7.0.10",
+    "@types/sinon": "7.0.11",
     "@types/uuid": "3.4.4",
     "electron-mocha": "6.0.4",
     "electron-rebuild": "1.8.4"
