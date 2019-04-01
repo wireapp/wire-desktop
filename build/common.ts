@@ -17,15 +17,13 @@
  *
  */
 
-//@ts-check
+import * as dotenv from 'dotenv';
+import * as gitRev from 'git-rev-sync';
 
-const gitRev = require('git-rev-sync');
-const dotenv = require('dotenv');
+import {CommonConfig} from './Config';
 
-//@ts-ignore
-const {version} = require('../package.json');
-//@ts-ignore
-const defaultConfig = require('../electron/wire.json');
+const {version}: {version: string} = require('../package.json');
+const defaultConfig: CommonConfig = require('../electron/wire.json');
 
 dotenv.config({path: '.env.defaults'});
 
@@ -37,8 +35,7 @@ try {
 
 const IS_PRODUCTION = process.env.APP_ENV !== 'internal';
 
-/** @type {import('./Config').CommonConfig} */
-const commonConfig = {
+const commonConfig: CommonConfig = {
   ...defaultConfig,
   adminUrl: process.env.URL_ADMIN || defaultConfig.adminUrl,
   appBase: process.env.APP_BASE || defaultConfig.appBase,
@@ -61,13 +58,9 @@ const commonConfig = {
   websiteUrl: process.env.URL_WEBSITE || defaultConfig.websiteUrl,
 };
 
-/**
- * @param {object} config
- * @param {string} name
- */
-const logEntries = (config, name) =>
+const logEntries = <T extends {}>(config: T, name: string): void =>
   Object.entries(config).forEach(([key, value]) => {
     console.info(`${name}.${key} set to "${value}". `);
   });
 
-module.exports = {commonConfig, defaultConfig, logEntries};
+export {commonConfig, defaultConfig, logEntries};

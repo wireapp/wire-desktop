@@ -10,6 +10,11 @@
     "@babel/preset-env": "7.4.2",
     "@babel/preset-react": "7.0.0",
     "@types/jest": "24.0.11",
+    "@types/dotenv": "6.1.1",
+    "@types/electron-packager": "13.0.0",
+    "@types/electron-winstaller": "2.6.2",
+    "@types/fs-extra": "5.0.5",
+    "@types/git-rev-sync": "1.12.0",
     "@wireapp/copy-config": "0.5.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
@@ -38,6 +43,7 @@
     "rimraf": "2.6.3",
     "sinon": "7.3.1",
     "style-loader": "0.23.1",
+    "ts-node": "8.0.3",
     "tslint": "5.14.0",
     "tslint-config-prettier": "1.18.0",
     "tslint-plugin-prettier": "2.0.1",
@@ -51,11 +57,15 @@
       "eslint --fix",
       "git add"
     ],
-    "**/!(*.test*).ts": [
+    "build/**/*.ts": [
+      "tslint --project tsconfig.tools.json --fix",
+      "git add"
+    ],
+    "electron/**/!(*.test*).ts": [
       "tslint --project tsconfig.json --fix",
       "git add"
     ],
-    "**/*.test*.ts": [
+    "electron/**/*.test*.ts": [
       "tslint --project tsconfig.jest.json --fix",
       "git add"
     ],
@@ -71,14 +81,14 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "build:linux": "yarn clear:wrap && yarn build:ts && yarn bundle && node ./build/linux.js",
+    "build:linux": "yarn clear:wrap && yarn build:ts && yarn bundle && ts-node -P tsconfig.tools.json ./build/linux.ts",
     "build:linux:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:linux\"",
     "build:linux:custom": "yarn build:linux",
-    "build:macos": "yarn clear:wrap && yarn build:ts && yarn bundle && node ./build/macos.js",
+    "build:macos": "yarn clear:wrap && yarn build:ts && yarn bundle && ts-node -P tsconfig.tools.json ./build/macos.ts",
     "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos\"",
     "build:macos:custom": "yarn build:macos",
     "build:ts": "yarn clear:ts && tsc",
-    "build:win": "yarn clear:wrap && yarn build:ts && yarn bundle && node ./build/windows.js && node ./build/windows-installer.js",
+    "build:win": "yarn clear:wrap && yarn build:ts && yarn bundle && ts-node -P tsconfig.tools.json ./build/windows.ts && ts-node -P tsconfig.tools.json ./build/windows-installer.ts",
     "build:win:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:win\"",
     "build:win:custom": "yarn build:win",
     "bundle:dev": "webpack",
@@ -96,6 +106,7 @@
     "lint:other": "yarn prettier --list-different",
     "lint:ts": "tslint --project tsconfig.json",
     "lint:ts:tests": "tslint --project tsconfig.jest.json",
+    "lint:ts:tools": "tslint --project tsconfig.tools.json",
     "lint": "yarn lint:js && yarn lint:other && yarn lint:ts && yarn lint:ts:tests",
     "postinstall": "yarn configure && cd electron && yarn",
     "prestart": "yarn build:ts && yarn bundle:dev",

@@ -19,19 +19,16 @@
  *
  */
 
-//@ts-check
-
-const fs = require('fs-extra');
-const path = require('path');
-const electronPackager = require('electron-packager');
-const {commonConfig, defaultConfig, logEntries} = require('./common');
+import * as electronPackager from 'electron-packager';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import {commonConfig, defaultConfig, logEntries} from './common';
 
 const CONFIG_JSON = path.resolve(__dirname, '../electron/wire.json');
 const ELECTRON_PACKAGE_JSON = path.resolve(__dirname, '../electron/package.json');
 const originalElectronJson = require(ELECTRON_PACKAGE_JSON);
 
-/** @type {import('electron-packager').Options}  */
-const packagerOptions = {
+const packagerOptions: electronPackager.Options = {
   appCopyright: commonConfig.copyright,
   appVersion: commonConfig.version,
   arch: 'ia32',
@@ -68,13 +65,16 @@ logEntries(commonConfig, 'commonConfig');
   await fs.writeFile(ELECTRON_PACKAGE_JSON, `${JSON.stringify(newElectronPackageJson, null, 2)}\n`);
   await fs.writeFile(CONFIG_JSON, `${JSON.stringify(commonConfig, null, 2)}\n`);
 
-  try {
-    const [buildDir] = await electronPackager(packagerOptions);
-    console.log(`Built package in "${buildDir}".`);
-  } catch (error) {
+  const [buildDir] = await electronPackager(packagerOptions);
+  console.log(`Built package in "${buildDir}".`);
+})()
+  .finally(() =>
+    Promise.all([
+      fs.writeFile(CONFIG_JSON, `${JSON.stringify(defaultConfig, null, 2)}\n`),
+      fs.writeFile(ELECTRON_PACKAGE_JSON, `${JSON.stringify(originalElectronJson, null, 2)}\n`),
+    ])
+  )
+  .catch(error => {
     console.error(error);
-  } finally {
-    await fs.writeFile(CONFIG_JSON, `${JSON.stringify(defaultConfig, null, 2)}\n`);
-    await fs.writeFile(ELECTRON_PACKAGE_JSON, `${JSON.stringify(originalElectronJson, null, 2)}\n`);
-  }
-})();
+    process.exit(1);
+  });

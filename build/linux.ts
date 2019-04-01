@@ -19,19 +19,17 @@
  *
  */
 
-//@ts-check
-
-const fs = require('fs-extra');
-const path = require('path');
-const electronBuilder = require('electron-builder');
-const {commonConfig, defaultConfig, logEntries} = require('./common');
+import * as electronBuilder from 'electron-builder';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import {commonConfig, defaultConfig, logEntries} from './common';
+import {LinuxConfig} from './Config';
 
 const CONFIG_JSON = path.resolve(__dirname, '../electron/wire.json');
 const ELECTRON_PACKAGE_JSON = path.resolve(__dirname, '../electron/package.json');
 const electronMetadata = require(ELECTRON_PACKAGE_JSON);
 
-/** @type {import('./Config').LinuxConfig} */
-const linuxDefaultConfig = {
+const linuxDefaultConfig: LinuxConfig = {
   artifactName: '${productName}-${version}_${arch}.${ext}',
   categories: 'Network;InstantMessaging;Chat;VideoConference',
   keywords: 'chat;encrypt;e2e;messenger;videocall',
@@ -69,8 +67,7 @@ const platformSpecificConfig = {
 const rpmDepends = ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'];
 const debDepends = ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'];
 
-/** @type {import('electron-builder').Configuration}  */
-const builderConfig = {
+const builderConfig: electronBuilder.Configuration = {
   asar: false,
   deb: {
     ...platformSpecificConfig,
@@ -117,15 +114,18 @@ logEntries(commonConfig, 'commonConfig');
   await fs.writeFile(ELECTRON_PACKAGE_JSON, `${JSON.stringify(newElectronMetadata, null, 2)}\n`);
   await fs.writeFile(CONFIG_JSON, `${JSON.stringify(commonConfig, null, 2)}\n`);
 
-  try {
-    const buildFiles = await electronBuilder.build({config: builderConfig, targets});
-    buildFiles.forEach(buildFile => {
-      console.log(`Built package "${buildFile}".`);
-    });
-  } catch (error) {
+  const buildFiles = await electronBuilder.build({config: builderConfig, targets});
+  buildFiles.forEach(buildFile => {
+    console.log(`Built package "${buildFile}".`);
+  });
+})()
+  .finally(() =>
+    Promise.all([
+      fs.writeFile(CONFIG_JSON, `${JSON.stringify(defaultConfig, null, 2)}\n`),
+      fs.writeFile(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronMetadata, null, 2)}\n`),
+    ])
+  )
+  .catch(error => {
     console.error(error);
-  } finally {
-    await fs.writeFile(CONFIG_JSON, `${JSON.stringify(defaultConfig, null, 2)}\n`);
-    await fs.writeFile(ELECTRON_PACKAGE_JSON, `${JSON.stringify(electronMetadata, null, 2)}\n`);
-  }
-})();
+    process.exit(1);
+  });

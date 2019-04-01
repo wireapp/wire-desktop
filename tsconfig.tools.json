@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "rootDir": "build"
+  },
+  "include": ["build"],
+  "exclude": []
+}

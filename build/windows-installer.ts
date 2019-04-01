@@ -19,28 +19,24 @@
  *
  */
 
-//@ts-check
+import * as electronWinstaller from 'electron-winstaller';
+import * as path from 'path';
+import {commonConfig} from './common';
+import {WindowsConfig} from './Config';
 
-const path = require('path');
-const {createWindowsInstaller} = require('electron-winstaller');
-const {commonConfig} = require('./common');
-
-/** @type {import('./Config').WindowsConfig} */
-const windowsDefaultConfig = {
+const windowsDefaultConfig: WindowsConfig = {
   installerIconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
   loadingGif: 'electron/img/logo.256.png',
   updateUrl: 'https://wire-app.wire.com/win/internal/',
 };
 
-/** @type {import('./Config').WindowsConfig} */
-const windowsConfig = {
+const windowsConfig: WindowsConfig = {
   ...windowsDefaultConfig,
   installerIconUrl: process.env.WIN_URL_ICON_INSTALLER || windowsDefaultConfig.installerIconUrl,
   updateUrl: process.env.WIN_URL_UPDATE || windowsDefaultConfig.updateUrl,
 };
 
-/** @type {import('electron-winstaller').Options} */
-const wInstallerOptions = {
+const wInstallerOptions: electronWinstaller.Options = {
   appDirectory: `wrap/build/${commonConfig.name}-win32-ia32`,
   authors: commonConfig.name,
   description: commonConfig.description,
@@ -56,8 +52,9 @@ const wInstallerOptions = {
 
 console.info(`Building ${commonConfig.name} Installer for Windows ...`);
 
-createWindowsInstaller(wInstallerOptions)
-  .then(() => console.log(`Built installer in "${path.resolve(wInstallerOptions.outputDirectory)}"`))
+electronWinstaller
+  .createWindowsInstaller(wInstallerOptions)
+  .then(() => console.log(`Built installer in "${path.resolve(wInstallerOptions.outputDirectory!)}"`))
   .catch(error => {
     console.error(error);
     process.exit(1);
