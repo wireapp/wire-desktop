@@ -43,7 +43,7 @@ export class CustomProtocolHandler {
   hashLocation: string = '';
   private readonly windowManager = WindowManager;
 
-  async dispatcher(url?: string) {
+  async dispatchDeepLink(url?: string): Promise<void> {
     if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
       return;
     }
@@ -63,7 +63,7 @@ export class CustomProtocolHandler {
     this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
   }
 
-  private async handleSSOLogin(route: URL): Promise<void> {
+  private async handleSSOLogin(route: URL): void {
     if (typeof route.pathname === 'string') {
       logger.log('Starting SSO flow...');
       const code = route.pathname.trim().substr(1);
@@ -75,7 +75,7 @@ export class CustomProtocolHandler {
     }
   }
 
-  registerCoreProtocol() {
+  public async registerCoreProtocol(): void {
     if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
       app.setAsDefaultProtocolClient(CORE_PROTOCOL);
     }
@@ -83,16 +83,16 @@ export class CustomProtocolHandler {
     if (platform.IS_MAC_OS) {
       app.on('open-url', async (event, url) => {
         event.preventDefault();
-        await this.dispatcher(url);
+        await this.dispatchDeepLink(url);
       });
     } else {
       app.once('ready', async () => {
         const url = process.argv[CORE_PROTOCOL_POSITION];
-        await this.dispatcher(url);
+        await this.dispatchDeepLink(url);
       });
       app.on('second-instance', async (event, argv) => {
         const url = argv[CORE_PROTOCOL_POSITION];
-        await this.dispatcher(url);
+        await this.dispatchDeepLink(url);
       });
     }
   }
