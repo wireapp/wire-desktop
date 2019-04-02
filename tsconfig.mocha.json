@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "types": ["mocha"]
+  },
+  "extends": "./tsconfig.json",
+  "exclude": [],
+  "include": ["electron/**/*.test*.ts"]
+}

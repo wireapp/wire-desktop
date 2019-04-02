@@ -693,11 +693,6 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
   integrity sha1-aaI6OtKcrwCX8G7aWbNh7i8GOfY=
 
-"@types/mocha@5.2.6":
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.2.6.tgz#b8622d50557dd155e9f2f634b7d68fd38de5e94b"
-  integrity sha512-1axi39YdtBI7z957vdqXI4Ac25e7YihYQtJa+Clnxg1zTJEaIRbndt71O3sP4GAMgiAm0pY26/b9BrY4MR/PMw==
-
 "@types/node@*", "@types/node@11.12.0":
   version "11.12.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-11.12.0.tgz#ec5594728811dc2797e42396cfcdf786f2052c12"
@@ -725,10 +720,10 @@
   resolved "https://registry.yarnpkg.com/@types/raygun/-/raygun-0.10.1.tgz#944c438e78bfa3400172924d7e049832001dcba5"
   integrity sha512-uYXq9FD3frzEsyWcMjr+IWVv4jrqVmU1pAqbDe5dCZVN/yA1dq5mhadaQ+ZvIqJislgRYFmPzV4NE8HWewGMkw==
 
-"@types/sinon@7.0.10":
-  version "7.0.10"
-  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-7.0.10.tgz#1f921f0c347b19f754e61dbc671c088df73fe1ff"
-  integrity sha512-4w7SvsiUOtd4mUfund9QROPSJ5At/GQskDpqd87pJIRI6ULWSJqHI3GIZE337wQuN3aznroJGr94+o8fwvL37Q==
+"@types/sinon@7.0.11":
+  version "7.0.11"
+  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-7.0.11.tgz#6f28f005a36e779b7db0f1359b9fb9eef72aae88"
+  integrity sha512-6ee09Ugx6GyEr0opUIakmxIWFNmqYPjkqa3/BuxCBokA0klsOLPgMD5K4q40lH7/yZVuJVzOfQpd7pipwjngkQ==
 
 "@types/uuid@3.4.4":
   version "3.4.4"
@@ -744,10 +739,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@1.4.5":
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.4.5.tgz#cc94777af3a2f743403eb37dfba4bae983f6bba0"
-  integrity sha512-m2RaLlueabXb56qeCXND/dfN/JvYrtMWN4x/Us/wEhbD3e83JdADbLIuZrkcswD95Jq6fjxyNM/QAeO8jeWJsA==
+"@wireapp/commons@1.4.7":
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.4.7.tgz#9df403021952cd349c49ecd08a78324930da5745"
+  integrity sha512-V44t6OyHF2dPS6h9klUMIbFhWNsqYPu0MechpNFfZDxeBa9Vt4PtcQMO4DWKfkyoRZ+39kGkeeXIH7HgY/L3aQ==
   dependencies:
     "@types/ansi-regex" "4.0.0"
     "@types/node" "11.12.0"
