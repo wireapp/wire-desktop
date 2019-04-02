@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["jest"]
+    "types": ["mocha"]
   },
   "extends": "./tsconfig.json",
   "exclude": [],
