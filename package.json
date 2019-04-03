@@ -109,7 +109,7 @@
     "lint:ts": "tslint --project tsconfig.json",
     "lint:ts:tools": "tslint --project tsconfig.tools.json",
     "lint:ts:tests": "tslint --project tsconfig.mocha.json",
-    "lint": "yarn lint:js && yarn lint:other && yarn lint:ts && yarn lint:ts:tests",
+    "lint": "yarn lint:js && yarn lint:other && yarn lint:ts && yarn lint:ts:tests && yarn lint:ts:tools",
     "postinstall": "yarn configure && cd electron && yarn",
     "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",
