@@ -123,5 +123,5 @@
     "test:react": "jest",
     "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:electron:main"
   },
-  "version": "3.8.0"
+  "version": "3.9.0"
 }
