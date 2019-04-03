@@ -28,7 +28,7 @@
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
-    "@babel/core": "7.4.0",
+    "@babel/core": "7.4.3",
     "@babel/plugin-proposal-class-properties": "7.4.0",
     "@babel/preset-env": "7.4.2",
     "@babel/preset-typescript": "7.3.3",
