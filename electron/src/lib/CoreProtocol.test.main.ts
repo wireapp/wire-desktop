@@ -24,7 +24,7 @@ import {EVENT_TYPE} from './eventType';
 
 let protocolHandler: CustomProtocolHandler = undefined;
 
-describe('dispatcher', () => {
+describe('dispatchDeepLink', () => {
   const sendActionSpy: sinon.SinonSpy = sinon.spy();
 
   beforeEach(() => {
