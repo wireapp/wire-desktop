@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow} from 'electron';
+import {BrowserWindow, app} from 'electron';
 
 let primaryWindowId: number | undefined;
 
@@ -51,7 +51,8 @@ const sendActionToPrimaryWindow = (channel: string, ...args: any[]): void => {
   }
 };
 
-const sendActionAndFocusWindow = (channel: string, ...args: any[]) => {
+const sendActionAndFocusWindow = async (channel: string, ...args: any[]) => {
+  await app.whenReady();
   const main = getPrimaryWindow();
   if (main.webContents.isLoading()) {
     main.webContents.once('did-finish-load', () => {

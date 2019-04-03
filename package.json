@@ -6,6 +6,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.4.0",
+    "@types/mocha": "5.2.6",
     "@babel/plugin-proposal-object-rest-spread": "7.4.0",
     "@babel/preset-env": "7.4.2",
     "@babel/preset-react": "7.0.0",
@@ -66,7 +67,7 @@
       "git add"
     ],
     "electron/**/*.test*.ts": [
-      "tslint --project tsconfig.jest.json --fix",
+      "tslint --project tsconfig.mocha.json --fix",
       "git add"
     ],
     "*.{json,md,css}": [
@@ -105,8 +106,8 @@
     "lint:js": "eslint --ignore-path .gitignore --ext .js,.jsx .",
     "lint:other": "yarn prettier --list-different",
     "lint:ts": "tslint --project tsconfig.json",
-    "lint:ts:tests": "tslint --project tsconfig.jest.json",
     "lint:ts:tools": "tslint --project tsconfig.tools.json",
+    "lint:ts:tests": "tslint --project tsconfig.mocha.json",
     "lint": "yarn lint:js && yarn lint:other && yarn lint:ts && yarn lint:ts:tests",
     "postinstall": "yarn configure && cd electron && yarn",
     "prestart": "yarn build:ts && yarn bundle:dev",
