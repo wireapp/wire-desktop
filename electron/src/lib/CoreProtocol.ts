@@ -63,7 +63,7 @@ export class CustomProtocolHandler {
     this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
   }
 
-  private async handleSSOLogin(route: URL): void {
+  private async handleSSOLogin(route: URL): Promise<void> {
     if (typeof route.pathname === 'string') {
       logger.log('Starting SSO flow...');
       const code = route.pathname.trim().substr(1);
@@ -75,7 +75,7 @@ export class CustomProtocolHandler {
     }
   }
 
-  public async registerCoreProtocol(): void {
+  public registerCoreProtocol(): void {
     if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
       app.setAsDefaultProtocolClient(CORE_PROTOCOL);
     }
