@@ -34,7 +34,7 @@ const pkg: {
 
 let currentEnvironment: BackendType;
 
-enum BackendType {
+export enum BackendType {
   DEV = 'DEV',
   EDGE = 'EDGE',
   INTERNAL = 'INTERNAL',
@@ -43,7 +43,7 @@ enum BackendType {
   RC = 'RC',
 }
 
-enum BackendTypeLabel {
+export enum BackendTypeLabel {
   DEV = 'Development',
   EDGE = 'Edge',
   INTERNAL = 'Internal',
@@ -153,18 +153,15 @@ const web = {
 };
 
 export {
-  BackendType,
-  BackendTypeLabel,
-  URL_LEGAL,
-  URL_LICENSES,
-  URL_PRIVACY,
-  URL_SUPPORT,
-  URL_UPDATER_ENDPOINT,
-  URL_WEBAPP,
   app,
   getEnvironment,
   linuxDesktop,
   platform,
   setEnvironment,
+  URL_LEGAL,
+  URL_LICENSES,
+  URL_PRIVACY,
+  URL_SUPPORT,
+  URL_WEBAPP,
   web,
 };

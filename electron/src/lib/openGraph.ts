@@ -49,10 +49,12 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     url,
   };
 
-  const response = await axios.request<Buffer>(axiosConfig);
+  let response;
 
-  if (response.status !== 200) {
-    throw new Error(`Request failed with status code "${response.status}".`);
+  try {
+    response = await axios.request<Buffer>(axiosConfig);
+  } catch (error) {
+    throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
   }
 
   const contentType = response.headers['content-type'] || '';
@@ -78,10 +80,6 @@ const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number)
     return axios
       .request<IncomingMessage>(config)
       .then(response => {
-        if (response.status !== 200) {
-          return reject(`Request failed with status code "${response.status}".`);
-        }
-
         const contentType = response.headers['content-type'] || '';
         const isHtmlContentType = contentType.match(/.*text\/html/);
 

@@ -19,7 +19,7 @@
 
 import * as crypto from 'crypto';
 import {BrowserWindow, app, session} from 'electron';
-import * as minimist from 'minimist';
+const minimist = require('minimist');
 import * as path from 'path';
 import {URL} from 'url';
 

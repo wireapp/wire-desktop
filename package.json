@@ -7,11 +7,13 @@
     }
   },
   "dependencies": {
+    "core-js": "2.6.5",
     "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.17.2",
     "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.17.3-0"
   },
   "devDependencies": {
     "@babel/core": "7.4.0",
+    "@types/mocha": "5.2.6",
     "@babel/plugin-proposal-object-rest-spread": "7.4.0",
     "@babel/preset-env": "7.4.2",
     "@babel/preset-react": "7.0.0",
@@ -27,7 +29,7 @@
     "electron-builder": "20.39.0",
     "electron-packager": "13.1.1",
     "electron-winstaller": "2.7.0",
-    "eslint": "5.15.3",
+    "eslint": "5.16.0",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-jasmine": "2.10.1",
     "eslint-plugin-no-unsanitized": "3.0.2",
@@ -48,7 +50,7 @@
     "tslint": "5.14.0",
     "tslint-config-prettier": "1.18.0",
     "tslint-plugin-prettier": "2.0.1",
-    "typescript": "3.3.4000",
+    "typescript": "3.4.1",
     "webpack": "4.29.6",
     "webpack-cli": "3.3.0"
   },
@@ -58,8 +60,12 @@
       "eslint --fix",
       "git add"
     ],
-    "*.ts": [
-      "tslint --config tslint.json --project tsconfig.json --fix",
+    "**/!(*.test*).ts": [
+      "tslint --project tsconfig.json --fix",
+      "git add"
+    ],
+    "**/*.test*.ts": [
+      "tslint --project tsconfig.mocha.json --fix",
       "git add"
     ],
     "*.{json,md,css}": [
@@ -91,12 +97,14 @@
     "fix:js": "yarn lint:js --fix",
     "fix:other": "yarn prettier --write",
     "fix:ts": "yarn lint:ts --fix",
-    "fix": "yarn fix:js && yarn fix:other && yarn fix:ts",
+    "fix:ts:tests": "yarn lint:ts:tests --fix",
+    "fix": "yarn fix:js && yarn fix:other && yarn fix:ts && yarn fix:ts:tests",
     "jest": "jest",
     "lint:js": "eslint --ignore-path .gitignore --ext .js,.jsx .",
     "lint:other": "yarn prettier --list-different",
-    "lint:ts": "tslint --config tslint.json --project tsconfig.json \"**/*.ts\"",
-    "lint": "yarn lint:js && yarn lint:other && yarn lint:ts",
+    "lint:ts": "tslint --project tsconfig.json",
+    "lint:ts:tests": "tslint --project tsconfig.mocha.json",
+    "lint": "yarn lint:js && yarn lint:other && yarn lint:ts && yarn lint:ts:tests",
     "postinstall": "yarn configure && cd electron && yarn",
     "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css}\"",

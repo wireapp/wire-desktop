@@ -26,6 +26,6 @@
   "updateWinUrlInternal": "https://wire-app.wire.com/win/internal/",
   "updateWinUrlProd": "https://wire-app.wire.com/win/prod/",
   "updatesEndpoint": "https://s3-eu-west-1.amazonaws.com/sabri-dev/v1",
-  "version": "3.8",
+  "version": "3.9",
   "websiteUrl": "https://wire.com"
 }
