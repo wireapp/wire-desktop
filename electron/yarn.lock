@@ -876,10 +876,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/certificate-check@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/certificate-check/-/certificate-check-0.1.0.tgz#8109d87b5e8b78e16bc59003df9b635f3ce3bf3d"
-  integrity sha512-ORDBtniyomTb+2ZzQY7Xc9UF4abH7EwqK/T3seqJZsom4rfvSaA3YRpT8M34KRiNlwh6PizNGtPTs5icAQyTZw==
+"@wireapp/certificate-check@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/certificate-check/-/certificate-check-0.1.1.tgz#02e4c7b95570d241793980e45cc30b1d709d17c7"
+  integrity sha512-GsUMFlh6buc6HRS8IHYfKj88hxnTRr78oMQWlAb9f7dD4XP+NlgzoqePJWqheo5U2uaXOeThFVrHddVdZJr3QQ==
   dependencies:
     jsrsasign "8.0.12"
 
@@ -898,21 +898,21 @@
     platform "1.3.5"
     url-search-params-polyfill "5.1.0"
 
-"@wireapp/desktop-updater-core@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/desktop-updater-core/-/desktop-updater-core-0.1.0.tgz#cd337e1b1ad7b96d6f2b6f9553c203c6d58acdfe"
-  integrity sha512-2lrmI31ZnA4gaZ1IIS6xY4lDXoMwBqbJ64ZXT+chXBluCw1Tw2O8yBQM9lBRqTxY3v/ysudnpEGAyCF/Td/EiA==
+"@wireapp/desktop-updater-core@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/desktop-updater-core/-/desktop-updater-core-0.1.1.tgz#7192e46c7ca09ef785d819781e14c8dd5a1d40de"
+  integrity sha512-S89LS8FbQOMPeMDNlHAmGsMI5KJ7rtN5/W1FWpnDkN5baXFsheobvEvhSiqPBkb87OhV1jvjXLklXsqAlYFxng==
   dependencies:
     "@types/luxon" "1.11.1"
-    "@wireapp/desktop-updater-spec" "0.1.0"
-    "@wireapp/desktop-updater-ui" "0.1.0"
+    "@wireapp/desktop-updater-spec" "0.1.1"
+    "@wireapp/desktop-updater-ui" "0.1.1"
     axios "0.18.0"
     compare-versions "3.4.0"
     debug "4.1.1"
-    i18next "15.0.7"
+    i18next "15.0.9"
     i18next-electron-language-detector "0.0.10"
-    i18next-node-fs-backend "2.1.1"
-    jasmine "3.3.1"
+    i18next-node-fs-backend "2.1.2"
+    jasmine "3.4.0"
     jasmine-console-reporter "3.1.0"
     jasmine-ts "0.3.0"
     libsodium-wrappers "0.7.4"
@@ -920,47 +920,48 @@
     luxon "1.11.4"
     make-error-cause "2.2.0"
     protobufjs "6.8.8"
-    random-js "2.0.0-rc3"
+    random-js "2.0.0"
     raygun "0.10.1"
     react "16.8.4"
     react-dom "16.8.4"
     throttle-debounce "2.1.0"
     vm2 "3.6.10"
 
-"@wireapp/desktop-updater-spec@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/desktop-updater-spec/-/desktop-updater-spec-0.1.0.tgz#3b8cd90314b85f1695a487ef4a4f4950e3e8a9b5"
-  integrity sha512-mPKb4PEBn83P7uE9jizBDXJZ/f8+VE5qvkzTNEs1VBvhh09Fu2DNAwrvBaT04ckJXGLGRAoiqAihjlbUKhj7+Q==
+"@wireapp/desktop-updater-spec@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/desktop-updater-spec/-/desktop-updater-spec-0.1.1.tgz#de39e2aa08a4fbee2e43627b34c38ca921e8eec8"
+  integrity sha512-kEPYYLyo2zc+ZkDSiC1VdpBYRS8y9WqpE93tVqcSlnP/h8pxtygGAhi0GOq1nZMlFeeOOwh39G8/2OrlOMC0nA==
   dependencies:
     "@types/long" "4.0.0"
     "@types/node" "11.13.0"
     long "4.0.0"
+    protobufjs "6.8.8"
 
-"@wireapp/desktop-updater-ui@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/desktop-updater-ui/-/desktop-updater-ui-0.1.0.tgz#53842bbb685b2a11c102f4c6d76dd364e141c012"
-  integrity sha512-5bJYJtoJYpyp5p4F2s1/RZh1Vj1fsrBxnI9ELhLgXcFIjca80OyUvZak1bw6+ZhKO41lRmTPMM0Eyb0hTybG/A==
+"@wireapp/desktop-updater-ui@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/desktop-updater-ui/-/desktop-updater-ui-0.1.1.tgz#aa61ca92a53fca57a803d11abaa43a6158230caf"
+  integrity sha512-BrxV3O2iPiisGM0ywXhFPnkqOuuvoxYDPqj6j+LQoDzoepOA2tdDZhZkcrtZ7xsDGxrsLBJ2DAVaX80Icv4vRQ==
   dependencies:
     "@wireapp/react-ui-kit" "4.3.42"
     animejs "3.0.1"
-    react-i18next "10.5.3"
+    react-i18next "10.6.1"
     react-markdown "4.0.6"
     styled-components "4.2.0"
 
-"@wireapp/desktop-updater@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/desktop-updater/-/desktop-updater-0.1.0.tgz#3a6d56c88c72d885fbbab98ef20c3f67be087d46"
-  integrity sha512-/LZJFnhHVZ8vJaEQLg4ann8phc5tSO2r3aredklPdBBw9d+zfIE9PWJcKvgEqRvlKm5CPyWeobqTZa0Pl27/XA==
+"@wireapp/desktop-updater@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/desktop-updater/-/desktop-updater-0.1.1.tgz#61849c4f3de62197461b25a633541ed55a41893d"
+  integrity sha512-DDUByhhQipa3x8fViAYJK6XBNGe7XL7YfFoCUi6SuZujYOnhMlH/NrM3p3SynAD3nIbe/8OOGHQepOy3ihBhSQ==
   dependencies:
-    "@wireapp/certificate-check" "0.1.0"
-    "@wireapp/desktop-updater-core" "0.1.0"
+    "@wireapp/certificate-check" "0.1.1"
+    "@wireapp/desktop-updater-core" "0.1.1"
     axios "0.18.0"
     finalhandler "1.1.1"
     fs-extra "7.0.1"
     jsrsasign "8.0.12"
     libsodium-wrappers "0.7.4"
     mime-types "2.1.22"
-    random-js "2.0.0-rc3"
+    random-js "2.0.0"
     serve-static "1.13.2"
     set-cookie-parser "2.3.5"
     vm2 "3.6.10"
@@ -1973,7 +1974,7 @@ glob@7.1.2:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^7.0.3, glob@^7.0.6, glob@^7.1.3:
+glob@^7.0.3, glob@^7.1.3:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.3.tgz#3960832d3f1574108342dafd3a67b332c0969df1"
   integrity sha512-vcfuiIxogLV4DlGBHIUOwI0IbrJ8HWPc4MU7HzviGeNho/UJDfi6B5p3sHeWIQ0KGIU0Jpxi5ZHxemQfLkkAwQ==
@@ -2099,18 +2100,18 @@ i18next-electron-language-detector@0.0.10:
   resolved "https://registry.yarnpkg.com/i18next-electron-language-detector/-/i18next-electron-language-detector-0.0.10.tgz#6fdb01df5a47c40ca3821458449da88220c4baf8"
   integrity sha512-l/CdtK5i6BB7h5OGKadUK+Q0q4e4EYXZSDV+Hetxjdv4C8RoYPNbqfTIpcc4RpIO3Dty05Xt8TxV+HyFd6opeA==
 
-i18next-node-fs-backend@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/i18next-node-fs-backend/-/i18next-node-fs-backend-2.1.1.tgz#ee700fc504c39bf8726ae11bda0311aa325fc01d"
-  integrity sha512-OW3wv6/b93L1Ks7IFm0bZ1ljRnOS3FAwU7JcGlznT1o0SKVPO5W13KoNFQa6QAArYm+ksQezgIZCda+CrNtE6g==
+i18next-node-fs-backend@2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/i18next-node-fs-backend/-/i18next-node-fs-backend-2.1.2.tgz#08e24543daaf7da32bc7bbf8cc89aece164f8b20"
+  integrity sha512-bRihLVJbJIUFdsnAvkSK6XTOSF3MhRi7caXKfcVHsCJ7TatVHc24ekXR4GohoDiiBAPVah/1/YwBG1Y/OQwI8w==
   dependencies:
-    js-yaml "3.12.0"
+    js-yaml "3.13.0"
     json5 "2.0.0"
 
-i18next@15.0.7:
-  version "15.0.7"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-15.0.7.tgz#2f61240c8b2b6656233217a8eee07a09a5707fea"
-  integrity sha512-KCSmTOE0nsku53cI0sSBY21ftXhsAfCjcNQBx54Y0AxcTxSs+v+qGFQ38ab+vi6F4NZEm8JupO36vlWoeF47cA==
+i18next@15.0.9:
+  version "15.0.9"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-15.0.9.tgz#42536407a921bb5a8535a4c090a26f16827a1884"
+  integrity sha512-IdVj7DqErUuMbGuj2dFT431T7zKlmDci63eae6pNA/bMwgBZKT74/KnwHXE0WH7ivo2EV/LNme4pP4Yw6vB79w==
   dependencies:
     "@babel/runtime" "^7.3.1"
 
@@ -2273,10 +2274,10 @@ jasmine-console-reporter@3.1.0:
     ora "^3.0.0"
     perfy "^1.1.5"
 
-jasmine-core@~3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.3.0.tgz#dea1cdc634bc93c7e0d4ad27185df30fa971b10e"
-  integrity sha512-3/xSmG/d35hf80BEN66Y6g9Ca5l/Isdeg/j6zvbTYlTzeKinzmaTM4p9am5kYqOmE05D7s1t8FGjzdSnbUbceA==
+jasmine-core@~3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.4.0.tgz#2a74618e966026530c3518f03e9f845d26473ce3"
+  integrity sha512-HU/YxV4i6GcmiH4duATwAbJQMlE0MsDIR5XmSVxURxKHn3aGAdbY1/ZJFmVRbKtnLwIxxMJD7gYaPsypcbYimg==
 
 jasmine-ts@0.3.0:
   version "0.3.0"
@@ -2285,13 +2286,13 @@ jasmine-ts@0.3.0:
   dependencies:
     yargs "^8.0.2"
 
-jasmine@3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.3.1.tgz#d61bb1dd8888859bd11ea83074a78ee13d949905"
-  integrity sha512-/vU3/H7U56XsxIXHwgEuWpCgQ0bRi2iiZeUpx7Nqo8n1TpoDHfZhkPIc7CO8I4pnMzYsi3XaSZEiy8cnTfujng==
+jasmine@3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.4.0.tgz#0fa68903ff0c9697459cd044b44f4dcef5ec8bdc"
+  integrity sha512-sR9b4n+fnBFDEd7VS2el2DeHgKcPiMVn44rtKFumq9q7P/t8WrxsVIZPob4UDdgcDNCwyDqwxCt4k9TDRmjPoQ==
   dependencies:
-    glob "^7.0.6"
-    jasmine-core "~3.3.0"
+    glob "^7.1.3"
+    jasmine-core "~3.4.0"
 
 js-levenshtein@^1.1.3:
   version "1.1.6"
@@ -2303,10 +2304,10 @@ js-levenshtein@^1.1.3:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-yaml@3.12.0:
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.0.tgz#eaed656ec8344f10f527c6bfa1b6e2244de167d1"
-  integrity sha512-PIt2cnwmPfL4hKNwqeiuz4bKfnzHTBv6HyVgjahA6mPLwPDzjDWrplJBMjHUFxku/N3FlmrbyPclad+I+4mJ3A==
+js-yaml@3.13.0:
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.13.0.tgz#38ee7178ac0eea2c97ff6d96fff4b18c7d8cf98e"
+  integrity sha512-pZZoSxcCYco+DIKBTimr67J6Hy+EYGZDY/HCWC+iAEA9h1ByhMXAIVUXMcMFpOCxQ/xjXmPI2MkDL5HRm5eFrQ==
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
@@ -3167,10 +3168,10 @@ ramda@^0.26:
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
   integrity sha512-hLWjpy7EnsDBb0p+Z3B7rPi3GDeRG5ZtiI33kJhTt+ORCd38AbAIjB/9zRIUoeTbE/AVX5ZkU7m6bznsvrf8eQ==
 
-random-js@2.0.0-rc3:
-  version "2.0.0-rc3"
-  resolved "https://registry.yarnpkg.com/random-js/-/random-js-2.0.0-rc3.tgz#eb4341f02fa9d5fb9efea253e4a43dc26833cd49"
-  integrity sha512-nMo6E19XcyRS6InGlKFk4QOA6BZ1QoeJIu6ZeLcbq8ri3HdyHczwvvQ4cVCSqqJrNJm0vivFSNKrBPfF5v7lSQ==
+random-js@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/random-js/-/random-js-2.0.0.tgz#c1f236517acc0f8fbec76c0199017ad470a85ecb"
+  integrity sha512-7+LxCZeEcI2/uVM1TCYVj834QupkIu9XygTnXaGOqNr5qbdpCOw8+3x8D4itOID0DmQAGLX5vtvlSnSvi+trGQ==
 
 range-parser@~1.2.0:
   version "1.2.0"
@@ -3216,10 +3217,10 @@ react-dom@16.8.6:
     prop-types "^15.6.2"
     scheduler "^0.13.6"
 
-react-i18next@10.5.3:
-  version "10.5.3"
-  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-10.5.3.tgz#96e0fdbd406d226b00d1be9712bc2ec9d93a6679"
-  integrity sha512-RW4oj15dHDNXv06XcAbXfwp3GTXOzjiNfztexS81NfiKnknKBq/XRBgHhX/ODu8jiFm3LFv82OHpyLKkZvBIcg==
+react-i18next@10.6.1:
+  version "10.6.1"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-10.6.1.tgz#044c39fb463a8d96cc548509187a1bb316e660fa"
+  integrity sha512-uuLksWCYR0i9tRZyKsQpcbJ0kiXYVDcaFXPVapZe8mYXReXvKsBgaOb6EwtqdXqiidO+HJAbyLOq9g3yzuZDEQ==
   dependencies:
     "@babel/runtime" "^7.3.1"
     html-parse-stringify2 "2.0.1"
