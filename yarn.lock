@@ -2841,10 +2841,10 @@ electron-winstaller@2.7.0:
     lodash.template "^4.2.2"
     temp "^0.8.3"
 
-electron@5.0.0-beta.7:
-  version "5.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0-beta.7.tgz#072fda102c9a08abbd003a81ac2f75c6423fee25"
-  integrity sha512-3Rij+MomuSnUG6cNoZutIg8fq6B3zj42HjzMU3rcKKHh/Lu1Q0epTIR/n2VxmMkQ/CnuyZty1OJAcqxAuZqz0g==
+electron@5.0.0-beta.8:
+  version "5.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0-beta.8.tgz#f8f7e8a128ab91d69b4cc7c77b83b5c19fc0a2f7"
+  integrity sha512-fjnxYGSOttNDwL6en5mBRTOHi+dXQBfkQrxpl6964hrvGG6/TicpsYzhD9dYSO2f7ZYapby/buFzYgpYcoCFHg==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
@@ -8577,7 +8577,6 @@ widest-line@^2.0.0:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.2":
   version "0.17.2"
-  uid "1588f747e84254dbacf563c551d9706c0f0d64c0"
   resolved "https://github.com/wireapp/wire-web-config-default#1588f747e84254dbacf563c551d9706c0f0d64c0"
   dependencies:
     adm-zip "0.4.13"
