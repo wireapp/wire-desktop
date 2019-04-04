@@ -197,7 +197,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       currentEnvironmentBaseUrl: BASE_URL,
       enableSecureUpdater: pkg.enableSecureUpdater,
       trustStore: pkg.trustStore,
-      updatesEndpoint: pkg.updatesEndpoint,
+      updatesEndpoint: EnvironmentUtil.URL_UPDATER_ENDPOINT[EnvironmentUtil.getEnvironment()],
     }).start();
   } catch (error) {
     logger.log(error);

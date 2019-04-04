@@ -28,6 +28,7 @@ const pkg: {
   privacyUrl: string;
   supportUrl: string;
   updateWinUrl: string;
+  updatesEndpoint: string;
   websiteUrl: string;
 } = require('../../package.json');
 
@@ -73,6 +74,15 @@ const URL_WEBAPP = {
   LOCALHOST: 'http://localhost:8081',
   PRODUCTION: pkg.appBase || 'https://app.wire.com',
   RC: 'https://wire-webapp-rc.zinfra.io',
+};
+
+const URL_UPDATER_ENDPOINT: {[key in keyof typeof BackendType]: string} = {
+  DEV: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+  EDGE: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+  INTERNAL: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+  LOCALHOST: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+  PRODUCTION: pkg.updatesEndpoint || 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+  RC: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
 };
 
 const app = {
@@ -143,17 +153,18 @@ const web = {
 };
 
 export {
-  app,
   BackendType,
   BackendTypeLabel,
-  getEnvironment,
-  linuxDesktop,
-  platform,
-  setEnvironment,
   URL_LEGAL,
   URL_LICENSES,
   URL_PRIVACY,
   URL_SUPPORT,
+  URL_UPDATER_ENDPOINT,
   URL_WEBAPP,
+  app,
+  getEnvironment,
+  linuxDesktop,
+  platform,
+  setEnvironment,
   web,
 };
