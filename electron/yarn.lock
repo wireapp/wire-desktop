@@ -693,10 +693,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
   integrity sha1-aaI6OtKcrwCX8G7aWbNh7i8GOfY=
 
-"@types/node@*", "@types/node@11.12.0":
-  version "11.12.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.12.0.tgz#ec5594728811dc2797e42396cfcdf786f2052c12"
-  integrity sha512-Lg00egj78gM+4aE0Erw05cuDbvX9sLJbaaPwwRtdCdAMnIudqrQZ0oZX98Ek0yiSK/A2nubHgJfvII/rTT2Dwg==
+"@types/node@*", "@types/node@11.13.0":
+  version "11.13.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.13.0.tgz#b0df8d6ef9b5001b2be3a94d909ce3c29a80f9e1"
+  integrity sha512-rx29MMkRdVmzunmiA4lzBYJNnXsW/PhG4kMBy2ATsYaDjGGR75dCFEVVROKpNwlVdcUX3xxlghKQOeDPBJobng==
 
 "@types/node@10.12.29":
   version "10.12.29"
@@ -739,13 +739,13 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@1.4.7":
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.4.7.tgz#9df403021952cd349c49ecd08a78324930da5745"
-  integrity sha512-V44t6OyHF2dPS6h9klUMIbFhWNsqYPu0MechpNFfZDxeBa9Vt4PtcQMO4DWKfkyoRZ+39kGkeeXIH7HgY/L3aQ==
+"@wireapp/commons@1.4.9":
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.4.9.tgz#ec8b49973770033256d36b2fbcde68b9e52a3354"
+  integrity sha512-72lbC4gevy+w0tLl4M4xB65Oo0oggsoKPLlx5QsANd/Zl8PCkONHCWObFzMxacEcmc/PR9jQ/aQJfjgHKKmyJQ==
   dependencies:
     "@types/ansi-regex" "4.0.0"
-    "@types/node" "11.12.0"
+    "@types/node" "11.13.0"
     "@types/platform" "1.3.2"
     ansi-regex "4.1.0"
     fs-extra "7.0.1"
