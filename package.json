@@ -14,7 +14,7 @@
   "devDependencies": {
     "@babel/core": "7.4.3",
     "@types/mocha": "5.2.6",
-    "@babel/plugin-proposal-object-rest-spread": "7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.4.3",
     "@babel/preset-env": "7.4.2",
     "@babel/preset-react": "7.0.0",
     "@wireapp/copy-config": "0.5.3",
