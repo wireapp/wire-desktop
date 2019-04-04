@@ -1,9 +1,9 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
-    "@wireapp/desktop-updater": "file:/Users/sabri/Desktop/Repositories/wire-desktop-packages/packages/desktop-updater",
-    "@wireapp/desktop-updater-ui": "file:/Users/sabri/Desktop/Repositories/wire-desktop-packages/packages/desktop-updater-ui",
-    "@wireapp/desktop-updater-spec": "file:/Users/sabri/Desktop/Repositories/wire-desktop-packages/packages/desktop-updater-spec",
+    "@wireapp/desktop-updater": "0.1.0",
+    "@wireapp/desktop-updater-ui": "0.1.0",
+    "@wireapp/desktop-updater-spec": "0.1.0",
     "@wireapp/certificate-check": "0.0.4",
     "@wireapp/commons": "1.4.5",
     "ansi-regex": "4.1.0",
