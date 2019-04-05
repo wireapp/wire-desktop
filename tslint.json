@@ -31,6 +31,6 @@
     "space-within-parens": [true, 0]
   },
   "linterOptions": {
-    "exclude": ["**/bower_components/**", "**/dist/**", "**/node_modules/**"]
+    "exclude": ["**/dist/**", "**/node_modules/**"]
   }
 }

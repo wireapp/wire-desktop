@@ -31,7 +31,6 @@ node('node180') {
 
     stage('Build') {
       try {
-        sh 'pip install -r jenkins/requirements.txt'
         sh 'node -v'
         sh 'npm -v'
         sh 'yarn'
