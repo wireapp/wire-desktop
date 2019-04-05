@@ -6,6 +6,7 @@ def parseJson(def text) {
 node('node160') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
+  def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -29,7 +30,6 @@ node('node160') {
 
   stage('Build') {
     try {
-      def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32']) {
         bat 'node -v'
         bat 'npm -v'
@@ -66,7 +66,6 @@ node('node160') {
 
   stage('Build installer') {
     try {
-      def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         bat 'node build/windows-installer.js'
       }

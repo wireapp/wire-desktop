@@ -6,6 +6,7 @@ def parseJson(def text) {
 node('master') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
+  def NODE = tool name: 'node-v10.15.3', type: 'nodejs'
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -31,7 +32,6 @@ node('master') {
       withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
         sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
       }
-      def NODE = tool name: 'node-v10.15.3', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
