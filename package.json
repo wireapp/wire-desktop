@@ -76,15 +76,15 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "build:linux": "yarn build:prepare && wire-build-linux",
+    "build:linux": "yarn build:prepare && wire-build-linux -w electron/wire.json -p electron/package.json",
     "build:linux:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:linux\"",
     "build:linux:custom": "yarn build:linux",
-    "build:macos": "yarn build:prepare && wire-build-macos",
+    "build:macos": "yarn build:prepare && wire-build-macos -w electron/wire.json -p electron/package.json",
     "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos\"",
     "build:macos:custom": "yarn build:macos",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
     "build:ts": "yarn clear:ts && tsc",
-    "build:win": "yarn build:prepare && wire-build-win && wire-build-win-installer",
+    "build:win": "yarn build:prepare && wire-build-win -w electron/wire.json -p electron/package.json && wire-build-win-installer -w electron/wire.json -p electron/package.json",
     "build:win:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:win\"",
     "build:win:custom": "yarn build:win",
     "bundle": "webpack --env.production",
