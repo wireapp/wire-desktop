@@ -7,6 +7,7 @@ node('node160') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
+  def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -27,8 +28,6 @@ node('node160') {
 
   stage('Build') {
     try {
-      bat 'pip install -r jenkins/requirements.txt'
-      def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32']) {
         bat 'node -v'
         bat 'npm -v'
@@ -71,7 +70,6 @@ node('node160') {
 
   stage('Build installer') {
     try {
-      def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
         if (production) {
           bat 'npx grunt create-windows-installer:prod'
@@ -93,7 +91,7 @@ node('node160') {
       if (production) {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\prod\\Wire-win32-ia32\\WireSetup.exe"'
       } else if (custom) {
-        bat 'for /d %%d in ("wrap\\build\\*-win32-ia32") do for %%f in ("%%d\\*-Setup.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
+        bat 'for /d %%d in ("wrap\\custom\\*-win32-ia32") do for %%f in ("%%d\\*-Setup.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
       } else {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\internal\\WireInternal-win32-ia32\\WireInternalSetup.exe"'
       }

@@ -22,7 +22,6 @@
 .Icon export-ignore
 .vscode export-ignore
 *.log export-ignore
-*.pyc export-ignore
 *.pkg export-ignore
 /.idea export-ignore
 /electron/dist export-ignore
