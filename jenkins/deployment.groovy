@@ -30,7 +30,7 @@ node('master') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf wrap/ info.json *.pkg'
+    sh returnStatus: true, script: 'rm -rf *.pkg *.zip'
   }
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
@@ -75,13 +75,12 @@ node('master') {
           def HOCKEY_TOKEN = ''
           def S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
-          def SEARCH_PATH = ''
+          def SEARCH_PATH = './wrap/dist/'
 
           if (params.Release.equals('Production')) {
             HOCKEY_ID = credentials('WIN_PROD_HOCKEY_ID')
             HOCKEY_TOKEN = credentials('WIN_PROD_HOCKEY_TOKEN')
             S3_PATH = 'win/prod'
-            SEARCH_PATH = './wrap/prod/'
           } else if (params.Release.equals('Custom')) {
             AWS_ACCESS_KEY_ID = credentials("${params.AWS_CUSTOM_ACCESS_KEY_ID}")
             AWS_SECRET_ACCESS_KEY = credentials("${params.AWS_CUSTOM_SECRET_ACCESS_KEY}")
@@ -89,12 +88,10 @@ node('master') {
             HOCKEY_TOKEN = credentials("${params.WIN_CUSTOM_HOCKEY_TOKEN}")
             S3_BUCKET = "${params.WIN_S3_BUCKET}"
             S3_PATH = "${params.WIN_S3_PATH}"
-            SEARCH_PATH = './wrap/'
           } else {
             HOCKEY_ID = credentials('WIN_HOCKEY_TOKEN')
             HOCKEY_TOKEN = credentials('WIN_HOCKEY_ID')
             S3_PATH = 'win/internal'
-            SEARCH_PATH = './wrap/internal/'
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
@@ -173,20 +170,17 @@ node('master') {
           def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
           def S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
-          def SEARCH_PATH = ''
+          def SEARCH_PATH = './wrap/dist/'
 
           if (params.Release.equals('Production')) {
             S3_PATH = 'win/prod'
-            SEARCH_PATH = './wrap/prod/'
           } else if (params.Release.equals('Custom')) {
             S3_PATH = "${params.WIN_S3_PATH}"
             S3_BUCKET = "${params.WIN_S3_BUCKET}"
             AWS_ACCESS_KEY_ID = credentials("${params.AWS_CUSTOM_ACCESS_KEY_ID}")
             AWS_SECRET_ACCESS_KEY = credentials("${params.AWS_CUSTOM_SECRET_ACCESS_KEY}")
-            SEARCH_PATH = './wrap/'
           } else {
             S3_PATH = 'win/internal'
-            SEARCH_PATH = './wrap/internal/'
           }
 
           sh "npx wire-deploy-s3-win-releases --bucket \"${S3_BUCKET}\" --path \"${S3_PATH}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
@@ -203,15 +197,11 @@ node('master') {
     stage('Upload build as draft to GitHub') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
-          def SEARCH_PATH = ''
+          def SEARCH_PATH = 'wrap/dist/'
           def GITHUB_ACCESS_TOKEN = credentials('GITHUB_ACCESS_TOKEN')
 
-          if (projectName.contains('Windows')) {
-            SEARCH_PATH = 'wrap/prod/Wire-win32-ia32/'
-          } else if (projectName.contains('macOS')) {
+          if (projectName.contains('macOS')) {
             SEARCH_PATH = '.'
-          } else if (projectName.contains('Linux')) {
-            SEARCH_PATH = 'wrap/dist'
           }
 
           sh "npx wire-deploy-github-draft --github-token \"${GITHUB_ACCESS_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""

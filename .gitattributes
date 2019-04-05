@@ -18,7 +18,6 @@
 
 # Ignore files when creating archive
 .DS_Store export-ignore
-.grunt export-ignore
 .Icon export-ignore
 .vscode export-ignore
 *.log export-ignore

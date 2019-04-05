@@ -1,13 +1,19 @@
+//@ts-check
+
+/** @typedef {import('@wireapp/copy-config').CopyConfigOptions} CopyConfigOptions */
+
+//@ts-ignore
 const pkg = require('./package.json');
 
 const contentSource = `${pkg.name}/content`;
 const imageSource = `${contentSource}/image`;
 const macOsSource = `${contentSource}/macos`;
 
-const configurationEntry = `wire-web-config-${process.env.BUILD_ENV !== 'internal' ? 'production' : 'internal'}`;
+const configurationEntry = `wire-web-config-${process.env.APP_ENV !== 'internal' ? 'production' : 'internal'}`;
 const repositoryUrl = pkg.dependencies[configurationEntry];
 
-module.exports = {
+/** @type {CopyConfigOptions} */
+const options = {
   files: {
     [`${imageSource}/**`]: 'electron/img/',
     [`${macOsSource}/**`]: 'resources/macos/',
@@ -19,3 +25,5 @@ module.exports = {
   },
   repositoryUrl,
 }
+
+module.exports = options;
