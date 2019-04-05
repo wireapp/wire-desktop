@@ -1,8 +1,8 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
-    "@wireapp/certificate-check": "0.0.4",
-    "@wireapp/commons": "1.4.7",
+    "@wireapp/certificate-check": "0.1.1",
+    "@wireapp/commons": "1.4.9",
     "ansi-regex": "4.1.0",
     "auto-launch": "5.0.5",
     "axios": "0.18.0",
@@ -28,9 +28,9 @@
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
-    "@babel/core": "7.4.0",
+    "@babel/core": "7.4.3",
     "@babel/plugin-proposal-class-properties": "7.4.0",
-    "@babel/preset-env": "7.4.2",
+    "@babel/preset-env": "7.4.3",
     "@babel/preset-typescript": "7.3.3",
     "@babel/register": "7.4.0",
     "@types/ansi-regex": "4.0.0",
@@ -44,7 +44,7 @@
     "@types/raygun": "0.10.1",
     "@types/sinon": "7.0.11",
     "@types/uuid": "3.4.4",
-    "electron-mocha": "6.0.4",
+    "electron-mocha": "7.0.0",
     "electron-rebuild": "1.8.4"
   },
   "license": "GPL-3.0",
