@@ -4,7 +4,6 @@ def parseJson(def text) {
 }
 
 node('node180') {
-
   checkout scm
 
   def production = params.PRODUCTION
@@ -15,9 +14,13 @@ node('node180') {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
-  def text = readFile('info.json')
+  if (!production && !custom) {
+    env.APP_ENV = 'internal'
+  }
+
+  def text = readFile('package.json')
   def buildInfo = parseJson(text)
-  def version = buildInfo.version + '.' + env.BUILD_NUMBER
+  def version = buildInfo.version.getAt(0..2) + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version
 
   def environment = docker.build('node', '-f jenkins/linux.Dockerfile .')
@@ -26,23 +29,16 @@ node('node180') {
 
     stage('Checkout & Clean') {
       git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-      sh returnStatus: true, script: 'rm -rf $WORKSPACE/wrap/ $WORKSPACE/node_modules/ $WORKSPACE/*.sig'
+      sh returnStatus: true, script: 'rm -rf $WORKSPACE/node_modules/ $WORKSPACE/*.sig'
     }
 
     stage('Build') {
       try {
-        sh 'pip install -r jenkins/requirements.txt'
         sh 'node -v'
         sh 'npm -v'
         sh 'yarn'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          if (production) {
-            sh 'yarn build:linux'
-          } else if (custom) {
-            sh 'yarn build:linux:custom'
-          } else {
-            sh 'yarn build:linux:internal'
-          }
+          sh 'yarn build:linux'
         }
       } catch(e) {
         currentBuild.result = 'FAILED'

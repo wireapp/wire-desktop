@@ -21,7 +21,7 @@ import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import {remote} from 'electron';
 import * as logdown from 'logdown';
 
-const {environment} = require('../../../package.json');
+const {environment} = require('../../wire.json');
 const mainProcess = remote ? remote.process : process;
 
 const isDevelopment = environment !== 'production';

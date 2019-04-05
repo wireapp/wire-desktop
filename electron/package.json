@@ -1,0 +1,66 @@
+{
+  "author": "Wire Swiss <wireapp@wire.com>",
+  "dependencies": {
+    "@wireapp/certificate-check": "0.1.1",
+    "@wireapp/commons": "1.4.9",
+    "ansi-regex": "4.1.0",
+    "auto-launch": "5.0.5",
+    "axios": "0.18.0",
+    "electron-window-state": "5.0.3",
+    "file-url": "2.0.2",
+    "fs-extra": "7.0.1",
+    "image-type": "4.0.0",
+    "jsrsasign": "8.0.12",
+    "lodash": "4.17.11",
+    "logdown": "3.2.8",
+    "minimist": "1.2.0",
+    "moment": "2.24.0",
+    "open-graph": "0.2.4",
+    "prop-types": "15.7.2",
+    "raygun": "0.10.1",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "react-redux": "6.0.1",
+    "redux": "4.0.1",
+    "redux-logger": "3.0.6",
+    "redux-thunk": "2.3.0",
+    "uuid": "3.3.2"
+  },
+  "description": "The most secure collaboration platform.",
+  "devDependencies": {
+    "@babel/core": "7.4.3",
+    "@babel/plugin-proposal-class-properties": "7.4.0",
+    "@babel/preset-env": "7.4.3",
+    "@babel/preset-typescript": "7.3.3",
+    "@babel/register": "7.4.0",
+    "@types/ansi-regex": "4.0.0",
+    "@types/auto-launch": "5.0.1",
+    "@types/file-url": "2.0.0",
+    "@types/fs-extra": "5.0.5",
+    "@types/lodash": "4.14.123",
+    "@types/minimist": "1.2.0",
+    "@types/node": "11.13.0",
+    "@types/open-graph": "0.2.0",
+    "@types/raygun": "0.10.1",
+    "@types/sinon": "7.0.11",
+    "@types/uuid": "3.4.4",
+    "electron-mocha": "7.0.0",
+    "electron-rebuild": "1.8.4"
+  },
+  "license": "GPL-3.0",
+  "main": "dist/main.js",
+  "name": "wireinternal",
+  "optionalDependencies": {
+    "@wireapp/node-addressbook": "3.0.2"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wireapp/wire-desktop.git"
+  },
+  "scripts": {
+    "coverage": "yarn test",
+    "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
+    "test": "electron-mocha --require ./babel-register.js \"src/**/*.test?(.main).ts\""
+  }
+}
