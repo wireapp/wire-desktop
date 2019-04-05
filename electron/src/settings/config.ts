@@ -28,7 +28,7 @@ const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-
 
 const LOG_FILE_NAME = 'console.log';
 
-const MAXIMUM_ACCOUNTS = Number(config.maximumAccounts);
+const MAXIMUM_ACCOUNTS = parseInt(config.maximumAccounts, 10);
 
 const NAME = config.name;
 
