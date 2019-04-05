@@ -17,5 +17,5 @@
     "strict": true,
     "target": "es5"
   },
-  "exclude": ["electron/dist", "build", "electron/**/*.test*.ts", "node_modules", "electron/node_modules", "wrap"]
+  "exclude": ["electron/dist", "electron/**/*.test*.ts", "node_modules", "electron/node_modules", "wrap"]
 }
