@@ -6,6 +6,8 @@
 .grunt
 .vscode
 /.bundle/*
+*.log
+*.pkg
 /.idea
 /config
 /electron/coverage

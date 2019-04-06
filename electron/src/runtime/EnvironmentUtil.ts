@@ -30,7 +30,7 @@ const pkg: {
   updateWinUrl: string;
   updatesEndpoint: string;
   websiteUrl: string;
-} = require('../../package.json');
+} = require('../../wire.json');
 
 let currentEnvironment: BackendType;
 
@@ -53,17 +53,17 @@ export enum BackendTypeLabel {
 }
 
 const URL_ADMIN = {
-  PRODUCTION: pkg.adminUrl || 'https://teams.wire.com',
+  PRODUCTION: pkg.adminUrl,
   STAGING: 'https://wire-admin-staging.zinfra.io',
 };
 
-const URL_LEGAL = pkg.legalUrl || 'https://wire.com/legal/';
-const URL_LICENSES = pkg.licensesUrl || 'https://wire.com/legal/licenses/';
-const URL_PRIVACY = pkg.privacyUrl || 'https://wire.com/privacy/';
-const URL_SUPPORT = pkg.supportUrl || 'https://support.wire.com';
+const URL_LEGAL = pkg.legalUrl;
+const URL_LICENSES = pkg.licensesUrl;
+const URL_PRIVACY = pkg.privacyUrl;
+const URL_SUPPORT = pkg.supportUrl;
 
 const URL_WEBSITE = {
-  PRODUCTION: pkg.websiteUrl || 'https://wire.com',
+  PRODUCTION: pkg.websiteUrl,
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
@@ -72,7 +72,7 @@ const URL_WEBAPP = {
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
-  PRODUCTION: pkg.appBase || 'https://app.wire.com',
+  PRODUCTION: pkg.appBase,
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
 

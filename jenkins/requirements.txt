@@ -1,2 +1,0 @@
-requests[security]==2.20.0
-boto3==1.2.6

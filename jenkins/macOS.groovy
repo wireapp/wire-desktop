@@ -4,23 +4,27 @@ def parseJson(def text) {
 }
 
 node('master') {
-
   def production = params.PRODUCTION
   def custom = params.CUSTOM
+  def NODE = tool name: 'node-v10.15.3', type: 'nodejs'
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
-  stage('Checkout & Clean') {
-    git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf wrap/ electron/node_modules/ node_modules/ *.sig'
+  if (!production && !custom) {
+    env.APP_ENV = 'internal'
   }
 
-  def text = readFile('info.json')
+  stage('Checkout & Clean') {
+    git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
+    sh returnStatus: true, script: 'rm -rf electron/node_modules/ node_modules/ *.sig'
+  }
+
+  def text = readFile('package.json')
   def buildInfo = parseJson(text)
-  def version = buildInfo.version + '.' + env.BUILD_NUMBER
+  def version = buildInfo.version.getAt(0..2) + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version
 
   stage('Build') {
@@ -28,21 +32,13 @@ node('master') {
       withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
         sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
       }
-      sh 'pip install -r jenkins/requirements.txt'
-      def NODE = tool name: 'node-v10.15.3', type: 'nodejs'
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
         withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          if (production) {
-            sh 'yarn build:macos'
-          } else if (custom) {
-            sh 'yarn build:macos:custom'
-          } else {
-            sh 'yarn build:macos:internal'
-          }
+          sh 'yarn build:macos'
         }
       }
     } catch(e) {

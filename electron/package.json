@@ -1,11 +1,11 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
+    "@wireapp/certificate-check": "0.1.1",
+    "@wireapp/commons": "1.4.9",
     "@wireapp/desktop-updater": "0.1.6",
-    "@wireapp/desktop-updater-ui": "0.1.2",
     "@wireapp/desktop-updater-spec": "0.1.2",
-    "@wireapp/certificate-check": "0.0.4",
-    "@wireapp/commons": "1.4.7",
+    "@wireapp/desktop-updater-ui": "0.1.2",
     "ansi-regex": "4.1.0",
     "auto-launch": "5.0.5",
     "axios": "0.18.0",
@@ -31,9 +31,9 @@
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
-    "@babel/core": "7.4.0",
+    "@babel/core": "7.4.3",
     "@babel/plugin-proposal-class-properties": "7.4.0",
-    "@babel/preset-env": "7.4.2",
+    "@babel/preset-env": "7.4.3",
     "@babel/preset-typescript": "7.3.3",
     "@babel/register": "7.4.0",
     "@types/ansi-regex": "4.0.0",
@@ -42,16 +42,14 @@
     "@types/fs-extra": "5.0.5",
     "@types/lodash": "4.14.123",
     "@types/minimist": "1.2.0",
-    "@types/node": "10.12.29",
+    "@types/node": "11.13.0",
     "@types/open-graph": "0.2.0",
     "@types/raygun": "0.10.1",
     "@types/sinon": "7.0.11",
     "@types/uuid": "3.4.4",
-    "electron-mocha": "6.0.4",
+    "electron-mocha": "7.0.0",
     "electron-rebuild": "1.8.4"
   },
-  "environment": "internal",
-  "homepage": "https://wire.com",
   "license": "GPL-3.0",
   "main": "dist/main.js",
   "name": "wireinternal",
@@ -59,7 +57,6 @@
     "@wireapp/node-addressbook": "3.0.2"
   },
   "private": true,
-  "productName": "WireInternal",
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
@@ -68,6 +65,5 @@
     "coverage": "yarn test",
     "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
     "test": "electron-mocha --require ./babel-register.js \"src/**/*.test?(.main).ts\""
-  },
-  "updateWinUrl": "https://wire-app.wire.com/win/internal/"
+  }
 }
