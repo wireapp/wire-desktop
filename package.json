@@ -10,7 +10,7 @@
     "@babel/preset-env": "7.4.3",
     "@babel/preset-react": "7.0.0",
     "@types/mocha": "5.2.6",
-    "@wireapp/build-tools": "0.1.0",
+    "@wireapp/build-tools": "0.1.2",
     "@wireapp/copy-config": "0.5.3",
     "@wireapp/deploy-tools": "0.1.0",
     "babel-core": "7.0.0-bridge.0",
