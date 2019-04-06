@@ -68,13 +68,13 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "build:linux": "yarn build:prepare && wire-build-linux -w electron/wire.json -p electron/package.json",
+    "build:linux": "yarn build:prepare && wire-build-linux -w electron/wire.json",
     "build:linux:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:linux\"",
-    "build:macos": "yarn build:prepare && wire-build-macos -w electron/wire.json -p electron/package.json",
+    "build:macos": "yarn build:prepare && wire-build-macos -w electron/wire.json",
     "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos\"",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
     "build:ts": "yarn clear:ts && tsc",
-    "build:win": "yarn build:prepare && wire-build-win -w electron/wire.json -p electron/package.json && wire-build-win-installer -w electron/wire.json -p electron/package.json",
+    "build:win": "yarn build:prepare && wire-build-win -w electron/wire.json && wire-build-win-installer -w electron/wire.json",
     "build:win:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:win\"",
     "bundle": "webpack --env.production",
     "bundle:dev": "webpack",
@@ -104,6 +104,5 @@
     "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:electron:main",
     "test:electron:main": "cd electron && yarn coverage",
     "test:react": "jest"
-  },
-  "version": "3.9.0"
+  }
 }
