@@ -56,7 +56,6 @@ import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
 const pkg: {
-  connectivityCheckEndpoint: string[];
   enableSecureUpdater: boolean;
   trustStore: string[];
   updatesEndpoint: string;

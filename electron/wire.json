@@ -1,7 +1,6 @@
 {
   "adminUrl": "https://teams.wire.com",
   "appBase": "https://app.wire.com",
-  "connectivityCheckEndpoint": ["https://prod-nginz-https.wire.com"],
   "copyright": "© Wire Swiss GmbH",
   "customProtocolName": "wire",
   "description": "The most secure collaboration platform.",
