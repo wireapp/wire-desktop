@@ -86,6 +86,7 @@
     "fix:other": "yarn prettier --write",
     "fix:ts": "yarn lint:ts --fix",
     "fix:ts:tests": "yarn lint:ts:tests --fix",
+    "link-updater": "cd electron && yarn link @wireapp/desktop-updater @wireapp/desktop-updater-spec @wireapp/desktop-updater-ui",
     "lint": "yarn lint:js && yarn lint:other && yarn lint:ts && yarn lint:ts:tests",
     "lint:js": "eslint --ignore-path .gitignore --ext .js,.jsx .",
     "lint:other": "yarn prettier --list-different",

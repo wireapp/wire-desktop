@@ -55,19 +55,13 @@ import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
-// Note: Temporary until solution is found
-let pkg: {
+const pkg: {
   connectivityCheckEndpoint: string[];
   enableSecureUpdater: boolean;
   trustStore: string[];
   updatesEndpoint: string;
   version: string;
-};
-try {
-  pkg = require('../../info.json');
-} catch (error) {
-  pkg = require('../package.json');
-}
+} = require('../wire.json');
 
 // Paths
 const APP_PATH = app.getAppPath();
@@ -191,7 +185,6 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   try {
     main = await new Server({
       browserWindowOptions: options,
-      connectivityCheckEndpoints: pkg.connectivityCheckEndpoint,
       currentClientVersion: pkg.version,
       currentEnvironment: EnvironmentUtil.getEnvironment(),
       currentEnvironmentBaseUrl: BASE_URL,
@@ -200,11 +193,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       updatesEndpoint: EnvironmentUtil.URL_UPDATER_ENDPOINT[EnvironmentUtil.getEnvironment()],
       webConfig: {
         ANALYTICS_API_KEY: '',
-        APP_BASE: 'https://app.wire.com',
         APP_NAME: 'Webapp',
         BACKEND_REST: 'https://prod-nginz-https.wire.com',
         BACKEND_WS: 'wss://prod-nginz-ssl.wire.com',
-        ENVIRONMENT: 'production',
         FEATURE: {
           CHECK_CONSENT: true,
           ENABLE_ACCOUNT_REGISTRATION: true,
@@ -224,7 +215,6 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
           TERMS_OF_USE_TEAMS: 'https://wire.com/legal/terms/teams',
           WEBSITE_BASE: 'https://wire.com',
         },
-        VERSION: '2019-03-29-09-38',
       },
     }).start();
   } catch (error) {
