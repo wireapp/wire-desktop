@@ -16,5 +16,30 @@
   "trustStore": ["3942e683bb97a2d84beb6df14bbe25ee5e327a3fc4b05723ff835cd6d6e8d96b"],
   "updatesEndpoint": "https://s3-eu-west-1.amazonaws.com/sabri-dev/v1",
   "version": "3.9.0",
+  "webConfig": {
+    "ANALYTICS_API_KEY": "",
+    "APP_NAME": "Webapp",
+    "BACKEND_REST": "https://prod-nginz-https.wire.com",
+    "BACKEND_WS": "wss://prod-nginz-ssl.wire.com",
+    "FEATURE": {
+      "CHECK_CONSENT": true,
+      "ENABLE_ACCOUNT_REGISTRATION": true,
+      "ENABLE_DEBUG": false,
+      "ENABLE_PHONE_LOGIN": true,
+      "ENABLE_SSO": true,
+      "SHOW_LOADING_INFORMATION": false
+    },
+    "RAYGUN_API_KEY": "M42DQTY4yMriY1JQcGOQ5Q",
+    "URL": {
+      "ACCOUNT_BASE": "https://account.wire.com",
+      "MOBILE_BASE": "",
+      "PRIVACY_POLICY": "https://wire.com/security",
+      "SUPPORT_BASE": "https://support.wire.com",
+      "TEAMS_BASE": "https://teams.wire.com",
+      "TERMS_OF_USE_PERSONAL": "https://wire.com/legal/terms/personal",
+      "TERMS_OF_USE_TEAMS": "https://wire.com/legal/terms/teams",
+      "WEBSITE_BASE": "https://wire.com"
+    }
+  },
   "websiteUrl": "https://wire.com"
 }

@@ -20,6 +20,7 @@
 // Modules
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {Server} from '@wireapp/desktop-updater';
+import {ServerWebConfigInterface} from '@wireapp/desktop-updater-spec';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -60,6 +61,7 @@ const pkg: {
   trustStore: string[];
   updatesEndpoint: string;
   version: string;
+  webConfig: ServerWebConfigInterface;
 } = require('../wire.json');
 
 // Paths
@@ -190,31 +192,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       enableSecureUpdater: pkg.enableSecureUpdater,
       trustStore: pkg.trustStore,
       updatesEndpoint: EnvironmentUtil.URL_UPDATER_ENDPOINT[EnvironmentUtil.getEnvironment()],
-      webConfig: {
-        ANALYTICS_API_KEY: '',
-        APP_NAME: 'Webapp',
-        BACKEND_REST: 'https://prod-nginz-https.wire.com',
-        BACKEND_WS: 'wss://prod-nginz-ssl.wire.com',
-        FEATURE: {
-          CHECK_CONSENT: true,
-          ENABLE_ACCOUNT_REGISTRATION: true,
-          ENABLE_DEBUG: false,
-          ENABLE_PHONE_LOGIN: true,
-          ENABLE_SSO: true,
-          SHOW_LOADING_INFORMATION: false,
-        },
-        RAYGUN_API_KEY: 'M42DQTY4yMriY1JQcGOQ5Q',
-        URL: {
-          ACCOUNT_BASE: 'https://account.wire.com',
-          MOBILE_BASE: '',
-          PRIVACY_POLICY: 'https://wire.com/security',
-          SUPPORT_BASE: 'https://support.wire.com',
-          TEAMS_BASE: 'https://teams.wire.com',
-          TERMS_OF_USE_PERSONAL: 'https://wire.com/legal/terms/personal',
-          TERMS_OF_USE_TEAMS: 'https://wire.com/legal/terms/teams',
-          WEBSITE_BASE: 'https://wire.com',
-        },
-      },
+      webConfig: pkg.webConfig,
     }).start();
   } catch (error) {
     logger.log(error);
