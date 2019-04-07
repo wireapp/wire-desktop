@@ -38,7 +38,6 @@ function subscribeToThemeChange() {
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
-webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, () => {
