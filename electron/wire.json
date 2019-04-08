@@ -5,6 +5,8 @@
   "customProtocolName": "wire",
   "description": "The most secure collaboration platform.",
   "enableSecureUpdater": true,
+  "electronDirectory": "electron",
+  "environment": "internal",
   "legalUrl": "https://wire.com/legal/",
   "licensesUrl": "https://wire.com/legal/licenses/",
   "maximumAccounts": "3",

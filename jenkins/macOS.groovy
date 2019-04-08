@@ -22,7 +22,7 @@ node('master') {
     sh returnStatus: true, script: 'rm -rf electron/node_modules/ node_modules/ *.sig'
   }
 
-  def text = readFile('package.json')
+  def text = readFile('electron/wire.json')
   def buildInfo = parseJson(text)
   def version = buildInfo.version.getAt(0..2) + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version

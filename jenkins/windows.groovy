@@ -23,7 +23,7 @@ node('node160') {
     bat returnStatus: true, script: 'rmdir /s /q "electron\\node_modules"'
   }
 
-  def text = readFile('package.json')
+  def text = readFile('electron/wire.json')
   def buildInfo = parseJson(text)
   def version = buildInfo.version.getAt(0..2) + '.' + env.BUILD_NUMBER
   currentBuild.displayName = version

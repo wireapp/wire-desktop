@@ -1126,10 +1126,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/build-tools@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.0.tgz#43c0fc16e1e4d747b160d19cdfbcb297aa89e4d3"
-  integrity sha512-0N3IRMvh0EPKxnkgPPR+2XWm/jvj1ZhNq2JU+ExF+YhNSQBbcF86VgfDVhnmpzLnEU2BA9vkHCzoscCFhisfqw==
+"@wireapp/build-tools@0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.2.tgz#70e67719a6eb2b9e99862dc639bf079def3c5af7"
+  integrity sha512-OKKgS1FDhgZ8fs51wFH+AzNrH2dWYArQHNhkF0QXtL06+7hFPy5TkDKhfbkeNlFSktn5FuEGuxCSAXefNFDvlQ==
   dependencies:
     commander "2.20.0"
     dotenv "7.0.0"
@@ -8168,10 +8168,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.1.tgz#b6691be11a881ffa9a05765a205cb7383f3b63c6"
-  integrity sha512-3NSMb2VzDQm8oBTLH6Nj55VVtUEpe/rgkIzMir0qVoLyjDZlnMBva0U6vDiV3IH+sl/Yu6oP5QwsAQtHPmDd2Q==
+typescript@3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.2.tgz#9ed4e6475d906f589200193be056f5913caed481"
+  integrity sha512-Og2Vn6Mk7JAuWA1hQdDQN/Ekm/SchX80VzLhjKN9ETYrIepBFAd8PkOdOTK2nKt0FCkmMZKBJvQ1dV1gIxPu/A==
 
 uglify-js@^3.1.4:
   version "3.5.3"
@@ -8538,9 +8538,10 @@ widest-line@^2.0.0:
   dependencies:
     string-width "^2.1.1"
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.4":
-  version "0.17.4"
-  resolved "https://github.com/wireapp/wire-web-config-default#17fb8412b085eb45a306b9389226543922f7c75f"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.6":
+  version "0.17.6"
+  uid e2dde181c9e4d7618028273ab5029036bb796d34
+  resolved "https://github.com/wireapp/wire-web-config-default#e2dde181c9e4d7618028273ab5029036bb796d34"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"

@@ -2,7 +2,7 @@
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
     "@wireapp/certificate-check": "0.1.1",
-    "@wireapp/commons": "1.4.9",
+    "@wireapp/commons": "1.4.10",
     "@wireapp/desktop-updater": "0.1.6",
     "@wireapp/desktop-updater-spec": "0.1.2",
     "@wireapp/desktop-updater-ui": "0.1.2",
