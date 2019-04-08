@@ -1143,10 +1143,10 @@
     logdown "3.2.8"
     rimraf "2.6.3"
 
-"@wireapp/deploy-tools@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.0.tgz#618e6a8af5af3e734f2772ac28750dd75d81a784"
-  integrity sha512-9SDFkFUbI0hFc6bf5+J7JlbHWm/WlJqQoD8vHNoGdj03qkNYFtCJLyVTaO0SK89W0KNouG1rciiptAtnp9tNeQ==
+"@wireapp/deploy-tools@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.1.tgz#3e314067cfe605e4b7b99d0e4e7976e42f41ad21"
+  integrity sha512-YQIPm5M3yLSFQ8VFqGk8HUqpd4zS1vrnwm7H4/F+LtxJNLWy9KFD/nXM0OeELSfXFm7yYoNxVbHh8XbAKKQnDg==
   dependencies:
     aws-sdk "2.436.0"
     axios "0.18.0"
@@ -2237,12 +2237,12 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2.20.0:
+commander@2.20.0, commander@^2.12.1, commander@^2.14.1, commander@^2.19.0, commander@^2.9.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
-commander@^2.12.1, commander@^2.14.1, commander@^2.19.0, commander@^2.9.0, commander@~2.19.0:
+commander@~2.19.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
   integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
