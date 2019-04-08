@@ -5,6 +5,7 @@
   "copyright": "© Wire Swiss GmbH",
   "customProtocolName": "wire",
   "description": "The most secure collaboration platform.",
+  "electronDirectory": "electron",
   "environment": "internal",
   "legalUrl": "https://wire.com/legal/",
   "licensesUrl": "https://wire.com/legal/licenses/",
