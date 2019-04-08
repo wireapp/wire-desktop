@@ -1117,10 +1117,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/build-tools@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.0.tgz#43c0fc16e1e4d747b160d19cdfbcb297aa89e4d3"
-  integrity sha512-0N3IRMvh0EPKxnkgPPR+2XWm/jvj1ZhNq2JU+ExF+YhNSQBbcF86VgfDVhnmpzLnEU2BA9vkHCzoscCFhisfqw==
+"@wireapp/build-tools@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.1.tgz#a5911e89f2476df24180d13ef02c8b5be707d263"
+  integrity sha512-uaZKjMGyZV/QcFPiqv5QbVnjPNWbPDNUat+k6zHuiXJNVs+9tkGtpuEbutzgIM48oiDlYryGd5watQ7AeJnn3Q==
   dependencies:
     commander "2.20.0"
     dotenv "7.0.0"
@@ -2237,12 +2237,12 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2.20.0:
+commander@2.20.0, commander@^2.12.1, commander@^2.14.1, commander@^2.19.0, commander@^2.9.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
-commander@^2.12.1, commander@^2.14.1, commander@^2.19.0, commander@^2.9.0, commander@~2.19.0:
+commander@~2.19.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
   integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
