@@ -777,10 +777,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@1.4.9":
-  version "1.4.9"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.4.9.tgz#ec8b49973770033256d36b2fbcde68b9e52a3354"
-  integrity sha512-72lbC4gevy+w0tLl4M4xB65Oo0oggsoKPLlx5QsANd/Zl8PCkONHCWObFzMxacEcmc/PR9jQ/aQJfjgHKKmyJQ==
+"@wireapp/commons@1.4.10":
+  version "1.4.10"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.4.10.tgz#43c111a85d7c04f55502374ad2da8f531e1439c0"
+  integrity sha512-ypXo4f6zHAMzGo/42KBHDG3P5YAKxVSNuVUfWx6Kj8axRUWClEPuf6LuDQXkyiZ7xu05Kh/8GtSnEvr5mJCtBA==
   dependencies:
     "@types/ansi-regex" "4.0.0"
     "@types/node" "11.13.0"
