@@ -770,10 +770,10 @@
   dependencies:
     "@types/node" "*"
 
-"@wireapp/certificate-check@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@wireapp/certificate-check/-/certificate-check-0.1.1.tgz#02e4c7b95570d241793980e45cc30b1d709d17c7"
-  integrity sha512-GsUMFlh6buc6HRS8IHYfKj88hxnTRr78oMQWlAb9f7dD4XP+NlgzoqePJWqheo5U2uaXOeThFVrHddVdZJr3QQ==
+"@wireapp/certificate-check@0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@wireapp/certificate-check/-/certificate-check-0.1.2.tgz#22cce3db1b91a5531434e0d7f276fb19df871cd5"
+  integrity sha512-3nXwmM6L7r+AiRwUe2TP7PtwAhp1mwpzQKh4v9zTHsGdPwxDyKG6rqRHZCm7exM5vfsnXcN8/ikAd4EsKzu34A==
   dependencies:
     jsrsasign "8.0.12"
 
