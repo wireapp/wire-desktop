@@ -1130,10 +1130,10 @@
     fs-extra "7.0.1"
     logdown "3.2.8"
 
-"@wireapp/copy-config@0.5.3":
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.5.3.tgz#4052f5e58f235c706531158848a05d28cf8b0688"
-  integrity sha512-Lo3hrac8CraC4Sg5sojtGBqUA8c+Mlhk4tqtifxmPQYBeL76E6S2ayLxFQQtokQqBI2AM8Lc84i0S4xjPzGEFQ==
+"@wireapp/copy-config@0.5.4":
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.5.4.tgz#55ededb67cd1794fbef07d21f21434328b4fd143"
+  integrity sha512-73aXKMUuzjBYQ1Osfe/MsgHXhn7CGAg3HJ9yNsJ9pPcLsZv0WY4iPdo1RGp2h4D9EqBHc8Yhtej5ZWBpea18yQ==
   dependencies:
     axios "0.18.0"
     copy "0.3.2"
