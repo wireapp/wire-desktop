@@ -1614,10 +1614,10 @@ fast-json-stable-stringify@^2.0.0:
   resolved "https://registry.yarnpkg.com/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
   integrity sha1-1RQsDK7msRifh9OnYREGT4bIu/I=
 
-file-type@^10.9.0:
-  version "10.9.0"
-  resolved "https://registry.yarnpkg.com/file-type/-/file-type-10.9.0.tgz#f6c12c7cb9e6b8aeefd6917555fd4f9eadf31891"
-  integrity sha512-9C5qtGR/fNibHC5gzuMmmgnjH3QDDLKMa8lYe9CiZVmAnI4aUaoMh40QyUPzzs0RYo837SOBKh7TYwle4G8E4w==
+file-type@^10.10.0:
+  version "10.10.0"
+  resolved "https://registry.yarnpkg.com/file-type/-/file-type-10.10.0.tgz#b7cbc8ec48871edd7a3629e0a6d01b2b80a4d56c"
+  integrity sha512-3CTQE/db3dnK2jsfd4XiXMKw9nD0QVEMRLdBzqYDRr5BvYMUccDpP8hMc1uPb1VZ9Iw/cAJjYPNwJ5UzxGqsRg==
 
 file-url@2.0.2:
   version "2.0.2"
@@ -1925,12 +1925,12 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-image-type@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/image-type/-/image-type-4.0.0.tgz#91e84c887451644706ff3297360ff3d89881fac5"
-  integrity sha512-V1NCIexmmA9dBoO07NOFXe2nTU06siLuuaGD1zLRbLfTYmGMLPShPakPf3ts6J0ctdpLpJRKFcJWKjuacwZzWA==
+image-type@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/image-type/-/image-type-4.1.0.tgz#72a88d64ff5021371ed67b9a466442100be57cd1"
+  integrity sha512-CFJMJ8QK8lJvRlTCEgarL4ro6hfDQKif2HjSvYCdQZESaIPV4v9imrf7BQHK+sQeTeNeMpWciR9hyC/g8ybXEg==
   dependencies:
-    file-type "^10.9.0"
+    file-type "^10.10.0"
 
 inflight@^1.0.4:
   version "1.0.6"
