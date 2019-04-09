@@ -1117,10 +1117,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/build-tools@0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.2.tgz#70e67719a6eb2b9e99862dc639bf079def3c5af7"
-  integrity sha512-OKKgS1FDhgZ8fs51wFH+AzNrH2dWYArQHNhkF0QXtL06+7hFPy5TkDKhfbkeNlFSktn5FuEGuxCSAXefNFDvlQ==
+"@wireapp/build-tools@0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.3.tgz#656b6d2262ff392d135c696f03530a14df0f8f31"
+  integrity sha512-P4sAs6NMHEjqqvf+qOLh6TNPpY225ICsK2Y5PahCDhMBQ/XdUkkGFZbcJRx3TOwjYtVXESvCgzib3B3FXMj+SQ==
   dependencies:
     commander "2.20.0"
     dotenv "7.0.0"
@@ -8531,7 +8531,6 @@ widest-line@^2.0.0:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.6":
   version "0.17.6"
-  uid e2dde181c9e4d7618028273ab5029036bb796d34
   resolved "https://github.com/wireapp/wire-web-config-default#e2dde181c9e4d7618028273ab5029036bb796d34"
   dependencies:
     adm-zip "0.4.13"
