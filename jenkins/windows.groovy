@@ -90,5 +90,15 @@ node('node160') {
     archiveArtifacts 'wrap\\dist\\**'
   }
 
+  stage('Trigger smoke tests') {
+    if (production) {
+      try {
+        build job: 'Wrapper_Windows_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-rc.zinfra.io/')], wait: false
+      } catch(e) {
+        wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} Unable to trigger smoke tests for ${version}** see: ${JOB_URL}"
+      }
+    }
+  }
+
   wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
 }
