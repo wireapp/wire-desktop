@@ -30,7 +30,7 @@ node('node130') {
 
   stage('Build') {
     try {
-      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32', 'wire_target_arch=ia32']) {
+      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32']) {
         bat 'node -v'
         bat 'npm -v'
         bat 'npm install -g yarn'
@@ -66,8 +66,8 @@ node('node130') {
 
   stage('Build installer') {
     try {
-      withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32','wire_target_arch=ia32']) {
-        bat 'node build/windows-installer.js'
+      withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32']) {
+        bat 'yarn build:win:installer'
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
