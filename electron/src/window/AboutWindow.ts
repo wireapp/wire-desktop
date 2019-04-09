@@ -29,7 +29,7 @@ import * as config from '../settings/config';
 const pkg: {
   copyright: string;
   environment: string;
-  productName: string;
+  name: string;
   version: string;
 } = require('../../wire.json');
 
@@ -130,7 +130,7 @@ const showWindow = () => {
           copyright: pkg.copyright,
           electronVersion: pkg.version,
           environment: pkg.environment,
-          productName: pkg.productName,
+          productName: pkg.name,
           webappVersion: webappVersion,
         });
       }
