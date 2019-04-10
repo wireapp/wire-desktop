@@ -1143,10 +1143,10 @@
     logdown "3.2.8"
     rimraf "2.6.3"
 
-"@wireapp/deploy-tools@0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.2.tgz#3300aab2f0a23c220c4462c7cd85c4a0995e298a"
-  integrity sha512-kCfmlNxLmhKS1IHUxdUDKpdzAuOYXTp30oY0bj3ULZXk0vP/XZDbsj10k4tYWrQxJg3S3T2QUYWH/CFWC6g2QA==
+"@wireapp/deploy-tools@0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.3.tgz#700aa5854c7c8346debdbfc8423087dc315e46ae"
+  integrity sha512-FUS60DRkdpSl66ZR4ziu8NV/E1MenHFWPTD7Wt4MF1FCTO2e98bdqq23OI5z5Mg//xcU5n61wSe7dfIBAQnG0A==
   dependencies:
     aws-sdk "2.437.0"
     axios "0.18.0"
