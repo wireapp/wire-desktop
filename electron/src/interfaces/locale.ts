@@ -98,10 +98,8 @@ export type i18nLanguageIdentifier =
   | 'wrapperManageTeam'
   | 'wrapperRemoveAccount';
 
-export type i18nStrings = {[identifier in i18nLanguageIdentifier]: string};
-
-export type Supportedi18nStrings = Partial<i18nStrings>;
+export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 
 export type Supportedi18nLanguage = keyof typeof SupportedLanguages;
 
-export type Supportedi18nLanguageObject = {[id in Supportedi18nLanguage]: Supportedi18nStrings};
+export type Supportedi18nLanguageObject = Record<Supportedi18nLanguage, i18nStrings>;

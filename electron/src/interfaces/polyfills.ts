@@ -28,9 +28,7 @@ export interface jsRsaSignPublicKey {
 }
 
 export interface OnHeadersReceivedDetails {
-  responseHeaders: {
-    [key: string]: string[];
-  };
+  responseHeaders: Record<string, string[]>;
 }
 
 export type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;

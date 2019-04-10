@@ -104,7 +104,7 @@ const showWindow = () => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {
-          const resultLabels: {[index: string]: string} = {};
+          const resultLabels: Record<string, string> = {};
           labels.forEach(label => (resultLabels[label] = locale.getText(label)));
           event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
         }
