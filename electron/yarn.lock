@@ -1304,10 +1304,10 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
-electron-mocha@8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/electron-mocha/-/electron-mocha-8.0.0.tgz#bf222b8b1cb3c260ba9331ebbbb38cbc0e147fb5"
-  integrity sha512-SGUCBiWP5Xekg9Hp0EQVk3ObzztjVFxEXYomSAG2u+tyAL9ok/frLaXXVsJis8XI5OcmJCSeKaKa6RjFcpVDNg==
+electron-mocha@8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/electron-mocha/-/electron-mocha-8.0.1.tgz#2f218c5ff948e7e87bb5781b13e6d2adfdadbf34"
+  integrity sha512-FG7viwoP8zmpdNkX1dyTa95+Wn1JEDu/GA/QhBnpLJD/Kh9/b3al6tSgiviPK+qPW4J27UtDWJbJcKDKMOWDiw==
   dependencies:
     ansi-colors "^3.2.4"
     electron-window "^0.8.0"
