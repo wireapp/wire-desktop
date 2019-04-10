@@ -71,8 +71,8 @@ node('node180') {
         }
     }
 
-    stage('Save .deb, .rpm, AppImage and repo files') {
-      archiveArtifacts 'wrap/dist/*.deb,wrap/dist/*.rpm,wrap/dist/*.AppImage,wrap/dist/debian/**'
+    stage('Save .deb, AppImage and repo files') {
+      archiveArtifacts 'wrap/dist/*.deb,wrap/dist/*.AppImage,wrap/dist/debian/**,wrap/dist/sha256sum.txt.asc'
     }
 
   }
