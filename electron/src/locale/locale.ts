@@ -18,7 +18,6 @@
  */
 
 import * as Electron from 'electron';
-import * as config from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
@@ -120,25 +119,9 @@ const parseLocale = (locale: string): Supportedi18nLanguage => {
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
-const customReplacements: {[key: string]: string} = {
-  appName: config.NAME,
-  maximumAccounts: config.MAXIMUM_ACCOUNTS.toString(),
-};
-
 const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
   const strings = getCurrent();
-  let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier] || '';
-
-  if (str) {
-    for (const replacement of Object.keys(customReplacements)) {
-      const regex = new RegExp(`{{${replacement}}}`, 'g');
-      if (str.match(regex)) {
-        str = str.replace(regex, customReplacements[replacement]);
-      }
-    }
-  }
-
-  return str;
+  return LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
 };
 
 const setLocale = (locale: string): void => {

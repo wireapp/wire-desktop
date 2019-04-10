@@ -54,6 +54,7 @@
     "@wireapp/node-addressbook": "3.0.2"
   },
   "private": true,
+  "productName": "WireInternal",
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
