@@ -20,7 +20,7 @@
 import {dialog as mainDialog, remote} from 'electron';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getText} from '../locale/locale';
-import {MAXIMUM_ACCOUNTS} from '../settings/config';
+import {COMMON_CONFIG} from '../settings/config';
 import {CreateSSOAccountDetail} from './CreateSSOAccountDetail';
 
 const dialog = mainDialog || remote.dialog;
@@ -36,7 +36,7 @@ class AutomatedSingleSignOn {
     let detail = getText('wrapperAddAccountErrorMessagePlural');
     let message = getText('wrapperAddAccountErrorTitlePlural');
 
-    if (MAXIMUM_ACCOUNTS === 1) {
+    if (COMMON_CONFIG.MAXIMUM_ACCOUNTS === 1) {
       detail = getText('wrapperAddAccountErrorMessageSingular');
       message = getText('wrapperAddAccountErrorTitleSingular');
     }

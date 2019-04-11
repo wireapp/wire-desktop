@@ -24,14 +24,7 @@ import fileUrl = require('file-url');
 import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import * as config from '../settings/config';
-
-const pkg: {
-  copyright: string;
-  environment: string;
-  name: string;
-  version: string;
-} = require('../../wire.json');
+import {COMMON_CONFIG} from '../settings/config';
 
 let webappVersion: string;
 
@@ -67,7 +60,7 @@ const showWindow = () => {
       minimizable: false,
       resizable: false,
       show: false,
-      title: config.NAME,
+      title: COMMON_CONFIG.NAME,
       webPreferences: {
         javascript: false,
         nodeIntegration: false,
@@ -127,10 +120,10 @@ const showWindow = () => {
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-          copyright: pkg.copyright,
-          electronVersion: pkg.version,
-          environment: pkg.environment,
-          productName: pkg.name,
+          copyright: COMMON_CONFIG.COPYRIGHT,
+          electronVersion: COMMON_CONFIG.VERSION,
+          environment: COMMON_CONFIG.ENVIRONMENT,
+          productName: COMMON_CONFIG.NAME,
           webappVersion: webappVersion,
         });
       }

@@ -23,7 +23,7 @@ import * as path from 'path';
 import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
-import * as config from '../settings/config';
+import {COMMON_CONFIG} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
 class TrayHandler {
@@ -89,7 +89,7 @@ class TrayHandler {
     if (this.trayIcon) {
       this.trayIcon.on('click', () => WindowManager.showPrimaryWindow());
       this.trayIcon.setContextMenu(contextMenu);
-      this.trayIcon.setToolTip(config.NAME);
+      this.trayIcon.setToolTip(COMMON_CONFIG.NAME);
     }
   }
 

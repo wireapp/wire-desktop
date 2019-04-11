@@ -17,22 +17,68 @@
  *
  */
 
-const config: {
+import {LogFactory} from '@wireapp/commons';
+import {app} from 'electron';
+import * as path from 'path';
+
+interface CommonConfig {
+  adminUrl: string;
+  appBase: string;
+  buildNumber: string;
+  copyright: string;
+  customProtocolName: string;
+  description: string;
+  electronDirectory: string;
+  environment: 'internal' | 'production';
+  legalUrl: string;
+  licensesUrl: string;
   maximumAccounts: string;
   name: string;
+  nameShort: string;
+  privacyUrl: string;
   raygunApiKey: string;
+  supportUrl: string;
+  updateUrl: string;
   version: string;
-} = require('../../wire.json');
+  websiteUrl: string;
+}
+
+const LOG_DIR = path.join(app.getPath('userData'), 'logs');
+const LOG_FILE = path.join(LOG_DIR, 'electron.log');
+const config: CommonConfig = require('../../wire.json');
+const logger = LogFactory.getLogger('config', {forceEnable: true, logFilePath: LOG_FILE});
+
+const COMMON_CONFIG = {
+  ADMIN_URL: config.adminUrl,
+  APP_BASE: config.appBase,
+  BUILD_NUMBER: config.buildNumber,
+  COPYRIGHT: config.copyright,
+  CUSTOM_PROTOCOL_NAME: config.customProtocolName,
+  DESCRIPTION: config.description,
+  ELECTRON_DIRECTORY: config.electronDirectory,
+  ENVIRONMENT: config.environment,
+  LEGAL_URL: config.legalUrl,
+  LICENSES_URL: config.licensesUrl,
+  MAXIMUM_ACCOUNTS: parseInt(config.maximumAccounts, 10),
+  NAME: config.name,
+  NAME_SHORT: config.nameShort,
+  PRIVACY_URL: config.privacyUrl,
+  RAYGUN_API_KEY: config.raygunApiKey,
+  SUPPORT_URL: config.supportUrl,
+  UPDATE_URL: config.updateUrl,
+  VERSION: config.version,
+  WEBSITE_URL: config.websiteUrl,
+};
+
+Object.keys(COMMON_CONFIG).forEach(configKey => {
+  if (typeof configKey === 'undefined') {
+    logger.warn(`Configuration key "${configKey}" not defined.`);
+  }
+});
 
 const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
 
 const LOG_FILE_NAME = 'console.log';
-
-const MAXIMUM_ACCOUNTS = parseInt(config.maximumAccounts, 10);
-
-const NAME = config.name;
-
-const RAYGUN_API_KEY = config.raygunApiKey;
 
 const UPDATE = {
   /** 5 minutes */
@@ -44,6 +90,4 @@ const UPDATE = {
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
 
-const VERSION = config.version;
-
-export {BACKEND_ORIGINS, LOG_FILE_NAME, MAXIMUM_ACCOUNTS, NAME, RAYGUN_API_KEY, UPDATE, USER_AGENT, VERSION};
+export {BACKEND_ORIGINS, COMMON_CONFIG, LOG_FILE_NAME, UPDATE, USER_AGENT};

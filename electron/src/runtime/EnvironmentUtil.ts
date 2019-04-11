@@ -17,19 +17,9 @@
  *
  */
 
+import {COMMON_CONFIG} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-const pkg: {
-  adminUrl: string;
-  appBase: string;
-  environment: string;
-  legalUrl: string;
-  licensesUrl: string;
-  privacyUrl: string;
-  supportUrl: string;
-  updateWinUrl: string;
-  websiteUrl: string;
-} = require('../../wire.json');
 
 let currentEnvironment: BackendType;
 
@@ -52,17 +42,17 @@ export enum BackendTypeLabel {
 }
 
 const URL_ADMIN = {
-  PRODUCTION: pkg.adminUrl,
+  PRODUCTION: COMMON_CONFIG.ADMIN_URL,
   STAGING: 'https://wire-admin-staging.zinfra.io',
 };
 
-const URL_LEGAL = pkg.legalUrl;
-const URL_LICENSES = pkg.licensesUrl;
-const URL_PRIVACY = pkg.privacyUrl;
-const URL_SUPPORT = pkg.supportUrl;
+const URL_LEGAL = COMMON_CONFIG.LEGAL_URL;
+const URL_LICENSES = COMMON_CONFIG.LICENSES_URL;
+const URL_PRIVACY = COMMON_CONFIG.PRIVACY_URL;
+const URL_SUPPORT = COMMON_CONFIG.SUPPORT_URL;
 
 const URL_WEBSITE = {
-  PRODUCTION: pkg.websiteUrl,
+  PRODUCTION: COMMON_CONFIG.WEBSITE_URL,
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
@@ -71,15 +61,15 @@ const URL_WEBAPP = {
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
-  PRODUCTION: pkg.appBase,
+  PRODUCTION: COMMON_CONFIG.APP_BASE,
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
 const app = {
-  ENV: pkg.environment,
-  IS_DEVELOPMENT: pkg.environment !== 'production',
-  IS_PRODUCTION: pkg.environment === 'production',
-  UPDATE_URL_WIN: pkg.updateWinUrl,
+  ENV: COMMON_CONFIG.ENVIRONMENT,
+  IS_DEVELOPMENT: COMMON_CONFIG.ENVIRONMENT !== 'production',
+  IS_PRODUCTION: COMMON_CONFIG.ENVIRONMENT === 'production',
+  UPDATE_URL_WIN: COMMON_CONFIG.UPDATE_URL,
 };
 
 const getEnvironment = (): BackendType => {

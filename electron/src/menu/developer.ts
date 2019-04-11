@@ -19,7 +19,7 @@
 
 import {MenuItem, app} from 'electron';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import * as config from '../settings/config';
+import {COMMON_CONFIG} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {WindowManager} from '../window/WindowManager';
 
@@ -85,7 +85,7 @@ const createEnvironmentTemplates = () => {
 
 const versionTemplate: Electron.MenuItemConstructorOptions = {
   enabled: false,
-  label: `${config.NAME} Version ${config.VERSION || 'Development'}`,
+  label: `${COMMON_CONFIG.NAME} Version ${COMMON_CONFIG.VERSION || 'Development'}`,
 };
 
 const chromeVersionTemplate: Electron.MenuItemConstructorOptions = {
