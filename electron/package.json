@@ -44,8 +44,7 @@
     "@types/raygun": "0.10.1",
     "@types/sinon": "7.0.11",
     "@types/uuid": "3.4.4",
-    "electron-mocha": "8.0.1",
-    "electron-rebuild": "1.8.4"
+    "electron-mocha": "8.0.1"
   },
   "license": "GPL-3.0",
   "main": "dist/main.js",
@@ -61,7 +60,7 @@
   },
   "scripts": {
     "coverage": "yarn test",
-    "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
+    "postinstall": "electron-builder install-app-deps",
     "test": "electron-mocha --require ./babel-register.js \"src/**/*.test?(.main).ts\""
   }
 }
