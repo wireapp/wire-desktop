@@ -26,7 +26,7 @@ import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as config from '../settings/config';
 
-const config: {
+const pkg: {
   copyright: string;
   environment: string;
   name: string;
@@ -127,10 +127,10 @@ const showWindow = () => {
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-          copyright: config.copyright,
-          electronVersion: config.version,
-          environment: config.environment,
-          productName: config.name,
+          copyright: pkg.copyright,
+          electronVersion: pkg.version,
+          environment: pkg.environment,
+          productName: pkg.name,
           webappVersion: webappVersion,
         });
       }
