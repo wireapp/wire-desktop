@@ -23,7 +23,7 @@ import * as path from 'path';
 import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
-import * as config from '../settings/config';
+import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
 class TrayHandler {
@@ -40,7 +40,7 @@ class TrayHandler {
   }
 
   initTray(trayIcon = new Tray(nativeImage.createEmpty())) {
-    const IMAGE_ROOT = path.join(app.getAppPath(), 'electron/img');
+    const IMAGE_ROOT = path.join(app.getAppPath(), config.electronDirectory, 'img');
 
     let trayPng = 'tray.png';
     let trayBadgePng = 'tray.badge.png';
@@ -89,7 +89,7 @@ class TrayHandler {
     if (this.trayIcon) {
       this.trayIcon.on('click', () => WindowManager.showPrimaryWindow());
       this.trayIcon.setContextMenu(contextMenu);
-      this.trayIcon.setToolTip(config.NAME);
+      this.trayIcon.setToolTip(config.name);
     }
   }
 
