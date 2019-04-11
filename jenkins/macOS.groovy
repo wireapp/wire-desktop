@@ -37,9 +37,7 @@ node('master') {
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
-        withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          sh 'yarn build:macos'
-        }
+        sh 'yarn build:macos'
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
