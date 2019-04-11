@@ -782,10 +782,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.5.1.tgz#fa4ec4b246ad0a0e51e4babe29ed7e9e8d75a129"
-  integrity sha512-9CLHFHSq7ltrKyzclRNIe3nb0yJtuj49ceYkU8Mpq0FI7iaPTjazaBVRhr9PFxE3+3ErfWP7su7r7i9CpEA83Q==
+"@wireapp/commons@1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.6.1.tgz#966fec9f7755a3daf976c2eec8049562533e327c"
+  integrity sha512-Y9hu2dhH6mYqq7ALdnL09+AyRtjcky4Ng1aD7EQUQldvMmir9GwKKIySQ2hJuJS3PXyf3VdruP2CsnAwWWMvLQ==
   dependencies:
     "@types/ansi-regex" "4.0.0"
     "@types/node" "11.13.0"
