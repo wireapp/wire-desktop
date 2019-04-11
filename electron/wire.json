@@ -16,5 +16,6 @@
   "raygunApiKey": "",
   "supportUrl": "https://support.wire.com",
   "version": "3.9.0",
+  "updateUrl": "https://wire-app.wire.com/win/prod/",
   "websiteUrl": "https://wire.com"
 }

@@ -27,15 +27,14 @@ import throttle from 'lodash/throttle';
 import App from './components/App';
 import appStore from './reducers';
 import {loadState, saveState} from './lib/localStorage';
+import {config} from '../../dist/settings/config';
 import './Index.css';
-
-import {environment} from '../../wire.json';
 
 const persistedState = loadState();
 
 const middleware = [thunk];
 
-if (environment !== 'production') {
+if (config.environment !== 'production') {
   middleware.push(logger);
 }
 
