@@ -22,7 +22,7 @@ import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 import {platform} from '../runtime/EnvironmentUtil';
-import {COMMON_CONFIG} from '../settings/config';
+import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
@@ -32,7 +32,7 @@ const logger = LogFactory.getLogger('CoreProtocol', {
   logFilePath: path.join(LOG_DIR, 'electron.log'),
 });
 
-const CORE_PROTOCOL_PREFIX = `${COMMON_CONFIG.customProtocolName}://`;
+const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
@@ -77,8 +77,8 @@ export class CustomProtocolHandler {
   }
 
   public registerCoreProtocol(): void {
-    if (!app.isDefaultProtocolClient(COMMON_CONFIG.customProtocolName)) {
-      app.setAsDefaultProtocolClient(COMMON_CONFIG.customProtocolName);
+    if (!app.isDefaultProtocolClient(config.customProtocolName)) {
+      app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
     if (platform.IS_MAC_OS) {

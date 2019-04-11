@@ -23,7 +23,7 @@ const Menu = remote.Menu;
 import {ElectronMenuWithTimeAndImage as ElectronMenuWithImageAndTime} from '../../interfaces';
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
-import * as config from '../../settings/config';
+import {config} from '../../settings/config';
 
 let textMenu: Electron.Menu;
 
@@ -136,7 +136,7 @@ window.addEventListener(
 const savePicture = (url: RequestInfo, timestamp?: string) => {
   return fetch(url, {
     headers: {
-      'User-Agent': config.USER_AGENT,
+      'User-Agent': config.userAgent,
     },
   })
     .then(response => response.arrayBuffer())

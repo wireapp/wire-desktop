@@ -23,7 +23,7 @@ import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 import {parse as parseUrl} from 'url';
 
 import {getLogger} from '../logging/getLogger';
-import {USER_AGENT} from '../settings/config';
+import {config} from '../settings/config';
 
 const logger = getLogger('openGraph');
 
@@ -41,7 +41,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
-      'User-Agent': USER_AGENT,
+      'User-Agent': config.userAgent,
     },
     maxContentLength: IMAGE_SIZE_LIMIT,
     method: 'get',
@@ -111,7 +111,7 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
-      'User-Agent': USER_AGENT,
+      'User-Agent': config.userAgent,
     },
     method: 'get',
     url: normalizedUrl.href,

@@ -20,11 +20,11 @@
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import {remote} from 'electron';
 import * as logdown from 'logdown';
-import {COMMON_CONFIG} from '../settings/config';
+import {config} from '../settings/config';
 
 const mainProcess = remote ? remote.process : process;
 
-const isDevelopment = COMMON_CONFIG.environment !== 'production';
+const isDevelopment = config.environment !== 'production';
 const forceLogging = mainProcess.argv.includes('--enable-logging');
 
 const LOGGER_NAMESPACE = '@wireapp/desktop';

@@ -23,12 +23,12 @@ import * as path from 'path';
 import {URL} from 'url';
 const minimist = require('minimist');
 
-import {BACKEND_ORIGINS, USER_AGENT} from '../settings/config';
+import {config} from '../settings/config';
 
 const argv = minimist(process.argv.slice(1));
 
 class SingleSignOn {
-  private static readonly ALLOWED_BACKEND_ORIGINS: string[] = BACKEND_ORIGINS;
+  private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
   private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist/renderer/preload-sso.js');
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
@@ -215,7 +215,7 @@ class SingleSignOn {
         urls: ['*'],
       },
       (details: any, callback: Function) => {
-        details.requestHeaders['User-Agent'] = USER_AGENT;
+        details.requestHeaders['User-Agent'] = config.userAgent;
         callback({cancel: false, requestHeaders: details.requestHeaders});
       }
     );

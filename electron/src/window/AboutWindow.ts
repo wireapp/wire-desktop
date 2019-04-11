@@ -24,7 +24,7 @@ import fileUrl = require('file-url');
 import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import {COMMON_CONFIG} from '../settings/config';
+import {config} from '../settings/config';
 
 let webappVersion: string;
 
@@ -60,7 +60,7 @@ const showWindow = () => {
       minimizable: false,
       resizable: false,
       show: false,
-      title: COMMON_CONFIG.name,
+      title: config.name,
       webPreferences: {
         javascript: false,
         nodeIntegration: false,
@@ -120,10 +120,10 @@ const showWindow = () => {
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-          copyright: COMMON_CONFIG.copyright,
-          electronVersion: COMMON_CONFIG.version,
-          environment: COMMON_CONFIG.environment,
-          productName: COMMON_CONFIG.name,
+          copyright: config.copyright,
+          electronVersion: config.version,
+          environment: config.environment,
+          productName: config.name,
           webappVersion: webappVersion,
         });
       }

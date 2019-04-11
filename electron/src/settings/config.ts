@@ -39,25 +39,23 @@ interface CommonConfig {
   websiteUrl: string;
 }
 
-const config: CommonConfig = require('../../wire.json');
+const wireJson: CommonConfig = require('../../wire.json');
 
-const COMMON_CONFIG = {
-  ...config,
-  maximumAccounts: parseInt(config.maximumAccounts, 10),
-};
-
-const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
-
-const LOG_FILE_NAME = 'console.log';
-
-const UPDATE = {
+const squirrelUpdateInterval = {
   /** 5 minutes */
   DELAY: 5 * 60 * 1000,
   /** 24 hours */
   INTERVAL: 24 * 60 * 60 * 1000,
 };
 
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
+const config = {
+  ...wireJson,
+  backendOrigins: ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'],
+  logFileName: 'console.log',
+  maximumAccounts: parseInt(wireJson.maximumAccounts, 10),
+  squirrelUpdateInterval,
+  userAgent:
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
+};
 
-export {BACKEND_ORIGINS, COMMON_CONFIG, LOG_FILE_NAME, UPDATE, USER_AGENT};
+export {config};

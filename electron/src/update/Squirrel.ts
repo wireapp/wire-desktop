@@ -30,9 +30,9 @@ import {SpawnCallback, SpawnError} from '../interfaces/';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
-import {COMMON_CONFIG, UPDATE} from '../settings/config';
+import {config} from '../settings/config';
 
-app.setAppUserModelId(`com.squirrel.wire.${COMMON_CONFIG.name.toLowerCase()}`);
+app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 const logger = getLogger('squirrel');
 
@@ -40,8 +40,8 @@ const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-const exeName = `${COMMON_CONFIG.name}.exe`;
-const linkName = `${COMMON_CONFIG.name}.lnk`;
+const exeName = `${config.name}.exe`;
+const linkName = `${config.name}.lnk`;
 const windowsAppData = process.env.APPDATA || '';
 
 if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
@@ -129,14 +129,14 @@ const installUpdate = (): void => {
 
 const scheduleUpdate = (): void => {
   const pluralize = (num: number, str: string) => `${num} ${str + (num === 1 ? '' : 's')}`;
-  const nextCheck = moment.duration(UPDATE.DELAY).asMinutes();
-  const everyCheck = moment.duration(UPDATE.INTERVAL).asHours();
+  const nextCheck = moment.duration(config.squirrelUpdateInterval.DELAY).asMinutes();
+  const everyCheck = moment.duration(config.squirrelUpdateInterval.INTERVAL).asHours();
   logger.info(
     `Scheduling update to check in "${pluralize(nextCheck, 'minute')}" and every "${pluralize(everyCheck, 'hour')}" ...`
   );
 
-  setTimeout(installUpdate, UPDATE.DELAY);
-  setInterval(installUpdate, UPDATE.INTERVAL);
+  setTimeout(installUpdate, config.squirrelUpdateInterval.DELAY);
+  setInterval(installUpdate, config.squirrelUpdateInterval.INTERVAL);
 };
 
 const handleSquirrelEvent = (isFirstInstance?: boolean): boolean | void => {
