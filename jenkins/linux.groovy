@@ -37,9 +37,7 @@ node('node180') {
         sh 'node -v'
         sh 'npm -v'
         sh 'yarn'
-        withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          sh 'yarn build:linux'
-        }
+        sh 'yarn build:linux'
       } catch(e) {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🐧 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"

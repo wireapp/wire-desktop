@@ -8529,16 +8529,16 @@ widest-line@^2.0.0:
   dependencies:
     string-width "^2.1.1"
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.10":
-  version "0.17.10"
-  resolved "https://github.com/wireapp/wire-web-config-default#a4ba622186d64fd48481cee75c68f24ef51ab852"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.16":
+  version "0.17.16"
+  resolved "https://github.com/wireapp/wire-web-config-default#1895d2d9b2dc37254ca3cfbbdf2b5d7c78a9c97b"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.17.3-0":
-  version "0.17.3-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#2488c6f08b0fc7e986d26ddd734ba03c302f5d5d"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.17.17-0":
+  version "0.17.17-0"
+  resolved "https://github.com/wireapp/wire-web-config-wire#746f8616ce8250e9f354e722a87d7ab1d4d508b2"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
