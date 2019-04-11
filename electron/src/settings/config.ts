@@ -17,10 +17,6 @@
  *
  */
 
-import {LogFactory} from '@wireapp/commons';
-import {app} from 'electron';
-import * as path from 'path';
-
 interface CommonConfig {
   adminUrl: string;
   appBase: string;
@@ -43,21 +39,12 @@ interface CommonConfig {
   websiteUrl: string;
 }
 
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const config: CommonConfig = require('../../wire.json');
-const logger = LogFactory.getLogger('config', {forceEnable: true, logFilePath: LOG_FILE});
 
 const COMMON_CONFIG = {
   ...config,
   maximumAccounts: parseInt(config.maximumAccounts, 10),
 };
-
-Object.entries(config).forEach(([key, value]) => {
-  if (typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) {
-    logger.warn(`Configuration key "${key}" not defined.`);
-  }
-});
 
 const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
 

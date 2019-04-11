@@ -85,6 +85,12 @@ let isFullScreen = false;
 let isQuitting = false;
 let main: BrowserWindow;
 
+Object.entries(COMMON_CONFIG).forEach(([key, value]) => {
+  if (typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) {
+    logger.warn(`Configuration key "${key}" not defined.`);
+  }
+});
+
 // IPC events
 const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
@@ -368,7 +374,7 @@ class ElectronWrapperInit {
   logger: logdown.Logger;
 
   constructor() {
-    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: path.join(LOG_DIR, 'electron.log')});
+    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: LOG_FILE});
   }
 
   async run() {

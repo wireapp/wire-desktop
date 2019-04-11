@@ -27,8 +27,10 @@ import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFilePath: LOG_FILE});
+const logger = LogFactory.getLogger('CoreProtocol', {
+  forceEnable: true,
+  logFilePath: path.join(LOG_DIR, 'electron.log'),
+});
 
 const CORE_PROTOCOL_PREFIX = `${COMMON_CONFIG.customProtocolName}://`;
 const CORE_PROTOCOL_POSITION = 1;
