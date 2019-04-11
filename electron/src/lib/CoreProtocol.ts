@@ -30,7 +30,7 @@ const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFilePath: LOG_FILE});
 
-const CORE_PROTOCOL_PREFIX = `${COMMON_CONFIG.CUSTOM_PROTOCOL_NAME}://`;
+const CORE_PROTOCOL_PREFIX = `${COMMON_CONFIG.customProtocolName}://`;
 const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
@@ -75,8 +75,8 @@ export class CustomProtocolHandler {
   }
 
   public registerCoreProtocol(): void {
-    if (!app.isDefaultProtocolClient(COMMON_CONFIG.CUSTOM_PROTOCOL_NAME)) {
-      app.setAsDefaultProtocolClient(COMMON_CONFIG.CUSTOM_PROTOCOL_NAME);
+    if (!app.isDefaultProtocolClient(COMMON_CONFIG.customProtocolName)) {
+      app.setAsDefaultProtocolClient(COMMON_CONFIG.customProtocolName);
     }
 
     if (platform.IS_MAC_OS) {

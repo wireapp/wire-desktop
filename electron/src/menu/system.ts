@@ -38,7 +38,7 @@ let menu: Menu;
 
 const launcher = new autoLaunch({
   isHidden: true,
-  name: COMMON_CONFIG.NAME,
+  name: COMMON_CONFIG.name,
   path: launchCmd,
 });
 
@@ -126,7 +126,7 @@ const conversationTemplate: ElectronMenuItemWithI18n = {
 const showWireTemplate: ElectronMenuItemWithI18n = {
   accelerator: 'CmdOrCtrl+0',
   click: () => WindowManager.getPrimaryWindow().show(),
-  label: COMMON_CONFIG.NAME,
+  label: COMMON_CONFIG.name,
 };
 
 const toggleMenuTemplate: ElectronMenuItemWithI18n = {
@@ -245,19 +245,19 @@ const helpTemplate: ElectronMenuItemWithI18n = {
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(COMMON_CONFIG.LEGAL_URL),
+      click: () => shell.openExternal(COMMON_CONFIG.legalUrl),
       i18n: 'menuLegal',
     },
     {
-      click: () => shell.openExternal(COMMON_CONFIG.PRIVACY_URL),
+      click: () => shell.openExternal(COMMON_CONFIG.privacyUrl),
       i18n: 'menuPrivacy',
     },
     {
-      click: () => shell.openExternal(COMMON_CONFIG.LICENSES_URL),
+      click: () => shell.openExternal(COMMON_CONFIG.licensesUrl),
       i18n: 'menuLicense',
     },
     {
-      click: () => shell.openExternal(COMMON_CONFIG.SUPPORT_URL),
+      click: () => shell.openExternal(COMMON_CONFIG.supportUrl),
       i18n: 'menuSupport',
     },
     {
@@ -268,7 +268,7 @@ const helpTemplate: ElectronMenuItemWithI18n = {
 };
 
 const darwinTemplate: ElectronMenuItemWithI18n = {
-  label: COMMON_CONFIG.NAME,
+  label: COMMON_CONFIG.name,
   submenu: [
     aboutTemplate,
     separatorTemplate,
@@ -308,7 +308,7 @@ const darwinTemplate: ElectronMenuItemWithI18n = {
 };
 
 const win32Template: ElectronMenuItemWithI18n = {
-  label: COMMON_CONFIG.NAME,
+  label: COMMON_CONFIG.name,
   submenu: [
     {
       accelerator: 'Ctrl+,',
@@ -328,7 +328,7 @@ const win32Template: ElectronMenuItemWithI18n = {
 };
 
 const linuxTemplate: ElectronMenuItemWithI18n = {
-  label: COMMON_CONFIG.NAME,
+  label: COMMON_CONFIG.name,
   submenu: [
     toggleAutoLaunchTemplate,
     separatorTemplate,
@@ -443,7 +443,7 @@ const registerShortcuts = (): void => {
 
   // Global account switching shortcut
   const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
-  const accountLimit = COMMON_CONFIG.MAXIMUM_ACCOUNTS;
+  const accountLimit = COMMON_CONFIG.maximumAccounts;
   for (const shortcut of switchAccountShortcut) {
     for (let accountId = 0; accountId < accountLimit; accountId++) {
       globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>

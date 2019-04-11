@@ -24,7 +24,7 @@ import {COMMON_CONFIG} from '../settings/config';
 
 const mainProcess = remote ? remote.process : process;
 
-const isDevelopment = COMMON_CONFIG.ENVIRONMENT !== 'production';
+const isDevelopment = COMMON_CONFIG.environment !== 'production';
 const forceLogging = mainProcess.argv.includes('--enable-logging');
 
 const LOGGER_NAMESPACE = '@wireapp/desktop';

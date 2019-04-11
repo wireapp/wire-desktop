@@ -49,25 +49,8 @@ const config: CommonConfig = require('../../wire.json');
 const logger = LogFactory.getLogger('config', {forceEnable: true, logFilePath: LOG_FILE});
 
 const COMMON_CONFIG = {
-  ADMIN_URL: config.adminUrl,
-  APP_BASE: config.appBase,
-  BUILD_NUMBER: config.buildNumber,
-  COPYRIGHT: config.copyright,
-  CUSTOM_PROTOCOL_NAME: config.customProtocolName,
-  DESCRIPTION: config.description,
-  ELECTRON_DIRECTORY: config.electronDirectory,
-  ENVIRONMENT: config.environment,
-  LEGAL_URL: config.legalUrl,
-  LICENSES_URL: config.licensesUrl,
-  MAXIMUM_ACCOUNTS: parseInt(config.maximumAccounts, 10),
-  NAME: config.name,
-  NAME_SHORT: config.nameShort,
-  PRIVACY_URL: config.privacyUrl,
-  RAYGUN_API_KEY: config.raygunApiKey,
-  SUPPORT_URL: config.supportUrl,
-  UPDATE_URL: config.updateUrl,
-  VERSION: config.version,
-  WEBSITE_URL: config.websiteUrl,
+  ...config,
+  maximumAccounts: parseInt(config.maximumAccounts, 10),
 };
 
 Object.keys(COMMON_CONFIG).forEach(configKey => {

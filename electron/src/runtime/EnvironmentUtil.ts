@@ -35,12 +35,12 @@ type BackendTypeLabelKey = keyof typeof BackendTypeLabel;
 let currentEnvironment: BackendTypeLabelKey;
 
 const URL_ADMIN = {
-  PRODUCTION: COMMON_CONFIG.ADMIN_URL,
+  PRODUCTION: COMMON_CONFIG.adminUrl,
   STAGING: 'https://wire-admin-staging.zinfra.io',
 };
 
 const URL_WEBSITE = {
-  PRODUCTION: COMMON_CONFIG.WEBSITE_URL,
+  PRODUCTION: COMMON_CONFIG.websiteUrl,
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
@@ -49,15 +49,15 @@ const URL_WEBAPP = {
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
-  PRODUCTION: COMMON_CONFIG.APP_BASE,
+  PRODUCTION: COMMON_CONFIG.appBase,
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
 const app = {
-  ENV: COMMON_CONFIG.ENVIRONMENT,
-  IS_DEVELOPMENT: COMMON_CONFIG.ENVIRONMENT !== 'production',
-  IS_PRODUCTION: COMMON_CONFIG.ENVIRONMENT === 'production',
-  UPDATE_URL_WIN: COMMON_CONFIG.UPDATE_URL,
+  ENV: COMMON_CONFIG.environment,
+  IS_DEVELOPMENT: COMMON_CONFIG.environment !== 'production',
+  IS_PRODUCTION: COMMON_CONFIG.environment === 'production',
+  UPDATE_URL_WIN: COMMON_CONFIG.updateUrl,
 };
 
 const getEnvironment = (): BackendTypeLabelKey => {

@@ -36,7 +36,7 @@ class AutomatedSingleSignOn {
     let detail = getText('wrapperAddAccountErrorMessagePlural');
     let message = getText('wrapperAddAccountErrorTitlePlural');
 
-    if (COMMON_CONFIG.MAXIMUM_ACCOUNTS === 1) {
+    if (COMMON_CONFIG.maximumAccounts === 1) {
       detail = getText('wrapperAddAccountErrorMessageSingular');
       message = getText('wrapperAddAccountErrorTitleSingular');
     }

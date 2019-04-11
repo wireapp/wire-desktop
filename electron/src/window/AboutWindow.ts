@@ -60,7 +60,7 @@ const showWindow = () => {
       minimizable: false,
       resizable: false,
       show: false,
-      title: COMMON_CONFIG.NAME,
+      title: COMMON_CONFIG.name,
       webPreferences: {
         javascript: false,
         nodeIntegration: false,
@@ -120,10 +120,10 @@ const showWindow = () => {
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-          copyright: COMMON_CONFIG.COPYRIGHT,
-          electronVersion: COMMON_CONFIG.VERSION,
-          environment: COMMON_CONFIG.ENVIRONMENT,
-          productName: COMMON_CONFIG.NAME,
+          copyright: COMMON_CONFIG.copyright,
+          electronVersion: COMMON_CONFIG.version,
+          environment: COMMON_CONFIG.environment,
+          productName: COMMON_CONFIG.name,
           webappVersion: webappVersion,
         });
       }

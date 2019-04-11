@@ -32,7 +32,7 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {COMMON_CONFIG, UPDATE} from '../settings/config';
 
-app.setAppUserModelId(`com.squirrel.wire.${COMMON_CONFIG.NAME.toLowerCase()}`);
+app.setAppUserModelId(`com.squirrel.wire.${COMMON_CONFIG.name.toLowerCase()}`);
 
 const logger = getLogger('squirrel');
 
@@ -40,8 +40,8 @@ const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-const exeName = `${COMMON_CONFIG.NAME}.exe`;
-const linkName = `${COMMON_CONFIG.NAME}.lnk`;
+const exeName = `${COMMON_CONFIG.name}.exe`;
+const linkName = `${COMMON_CONFIG.name}.lnk`;
 const windowsAppData = process.env.APPDATA || '';
 
 if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {

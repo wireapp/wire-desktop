@@ -160,7 +160,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     minHeight: WINDOW_SIZE.MIN_HEIGHT,
     minWidth: WINDOW_SIZE.MIN_WIDTH,
     show: false,
-    title: COMMON_CONFIG.NAME,
+    title: COMMON_CONFIG.name,
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,

@@ -22,7 +22,7 @@ import {COMMON_CONFIG} from '../settings/config';
 
 const Raygun = {
   initClient: () => {
-    const raygunClient = new raygun.Client().init({apiKey: COMMON_CONFIG.RAYGUN_API_KEY});
+    const raygunClient = new raygun.Client().init({apiKey: COMMON_CONFIG.raygunApiKey});
     raygunClient.onBeforeSend((payload: any) => {
       delete payload.details.machineName;
       return payload;

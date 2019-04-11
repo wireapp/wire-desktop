@@ -89,7 +89,7 @@ class TrayHandler {
     if (this.trayIcon) {
       this.trayIcon.on('click', () => WindowManager.showPrimaryWindow());
       this.trayIcon.setContextMenu(contextMenu);
-      this.trayIcon.setToolTip(COMMON_CONFIG.NAME);
+      this.trayIcon.setToolTip(COMMON_CONFIG.name);
     }
   }
 

@@ -85,7 +85,7 @@ const createEnvironmentTemplates = () => {
 
 const versionTemplate: Electron.MenuItemConstructorOptions = {
   enabled: false,
-  label: `${COMMON_CONFIG.NAME} Version ${COMMON_CONFIG.VERSION || 'Development'}`,
+  label: `${COMMON_CONFIG.name} Version ${COMMON_CONFIG.version || 'Development'}`,
 };
 
 const chromeVersionTemplate: Electron.MenuItemConstructorOptions = {
