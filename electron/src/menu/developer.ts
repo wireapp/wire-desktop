@@ -66,8 +66,8 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = () => {
   const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
-  for (const key in EnvironmentUtil.BackendType) {
-    const type: EnvironmentUtil.BackendType = <EnvironmentUtil.BackendType>EnvironmentUtil.BackendType[key];
+  for (const key in EnvironmentUtil.BackendTypeLabel) {
+    const type = EnvironmentUtil.BackendTypeLabel[key] as EnvironmentUtil.BackendTypeLabelKey;
     environmentTemplate.push({
       checked: currentEnvironment === type,
       click: () => {

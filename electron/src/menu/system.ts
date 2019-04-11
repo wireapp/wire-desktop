@@ -245,19 +245,19 @@ const helpTemplate: ElectronMenuItemWithI18n = {
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_LEGAL),
+      click: () => shell.openExternal(COMMON_CONFIG.LEGAL_URL),
       i18n: 'menuLegal',
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_PRIVACY),
+      click: () => shell.openExternal(COMMON_CONFIG.PRIVACY_URL),
       i18n: 'menuPrivacy',
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_LICENSES),
+      click: () => shell.openExternal(COMMON_CONFIG.LICENSES_URL),
       i18n: 'menuLicense',
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_SUPPORT),
+      click: () => shell.openExternal(COMMON_CONFIG.SUPPORT_URL),
       i18n: 'menuSupport',
     },
     {
