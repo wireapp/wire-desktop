@@ -8540,7 +8540,6 @@ widest-line@^2.0.0:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.6":
   version "0.17.6"
-  uid e2dde181c9e4d7618028273ab5029036bb796d34
   resolved "https://github.com/wireapp/wire-web-config-default#e2dde181c9e4d7618028273ab5029036bb796d34"
   dependencies:
     adm-zip "0.4.13"

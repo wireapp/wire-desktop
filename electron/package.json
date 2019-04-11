@@ -3,9 +3,9 @@
   "dependencies": {
     "@wireapp/certificate-check": "0.1.1",
     "@wireapp/commons": "1.4.10",
-    "@wireapp/desktop-updater": "0.2.1",
-    "@wireapp/desktop-updater-spec": "0.1.4",
-    "@wireapp/desktop-updater-ui": "0.1.4",
+    "@wireapp/desktop-updater": "0.2.6",
+    "@wireapp/desktop-updater-spec": "0.1.6",
+    "@wireapp/desktop-updater-ui": "0.1.7",
     "ansi-regex": "4.1.0",
     "auto-launch": "5.0.5",
     "axios": "0.18.0",
