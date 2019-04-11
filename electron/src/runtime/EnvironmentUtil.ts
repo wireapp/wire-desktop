@@ -21,7 +21,7 @@ import {COMMON_CONFIG} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
-enum BackendTypeLabel {
+export enum BackendTypeLabel {
   DEV = 'Development',
   EDGE = 'Edge',
   INTERNAL = 'Internal',
@@ -30,7 +30,7 @@ enum BackendTypeLabel {
   RC = 'RC',
 }
 
-type BackendTypeLabelKey = keyof typeof BackendTypeLabel;
+export type BackendTypeLabelKey = keyof typeof BackendTypeLabel;
 
 let currentEnvironment: BackendTypeLabelKey;
 
@@ -121,14 +121,4 @@ const web = {
   },
 };
 
-export {
-  app,
-  BackendTypeLabel,
-  BackendTypeLabelKey,
-  getEnvironment,
-  linuxDesktop,
-  platform,
-  setEnvironment,
-  URL_WEBAPP,
-  web,
-};
+export {app, getEnvironment, linuxDesktop, platform, setEnvironment, URL_WEBAPP, web};
