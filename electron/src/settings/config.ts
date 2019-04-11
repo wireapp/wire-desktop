@@ -17,7 +17,7 @@
  *
  */
 
-interface CommonConfig {
+interface WireJson {
   adminUrl: string;
   appBase: string;
   buildNumber: string;
@@ -39,7 +39,7 @@ interface CommonConfig {
   websiteUrl: string;
 }
 
-const wireJson: CommonConfig = require('../../wire.json');
+const wireJson: WireJson = require('../../wire.json');
 
 const squirrelUpdateInterval = {
   /** 5 minutes */
