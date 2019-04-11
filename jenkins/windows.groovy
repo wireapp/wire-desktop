@@ -35,9 +35,7 @@ node('node130') {
         bat 'npm -v'
         bat 'npm install -g yarn'
         bat 'set "VSCMD_START_DIR=%CD%" & "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\VsDevCmd.bat" & yarn'
-        withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          bat 'yarn build:win'
-        }
+        bat 'yarn build:win'
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
