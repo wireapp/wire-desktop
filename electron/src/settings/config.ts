@@ -53,9 +53,9 @@ const COMMON_CONFIG = {
   maximumAccounts: parseInt(config.maximumAccounts, 10),
 };
 
-Object.keys(COMMON_CONFIG).forEach(configKey => {
-  if (typeof configKey === 'undefined') {
-    logger.warn(`Configuration key "${configKey}" not defined.`);
+Object.entries(config).forEach(([key, value]) => {
+  if (typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) {
+    logger.warn(`Configuration key "${key}" not defined.`);
   }
 });
 
