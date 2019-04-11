@@ -29,7 +29,7 @@ import * as config from '../settings/config';
 const pkg: {
   copyright: string;
   environment: string;
-  productName: string;
+  name: string;
   version: string;
 } = require('../../wire.json');
 
@@ -104,7 +104,7 @@ const showWindow = () => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {
-          const resultLabels: {[index: string]: string} = {};
+          const resultLabels: Record<string, string> = {};
           labels.forEach(label => (resultLabels[label] = locale.getText(label)));
           event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
         }
@@ -130,7 +130,7 @@ const showWindow = () => {
           copyright: pkg.copyright,
           electronVersion: pkg.version,
           environment: pkg.environment,
-          productName: pkg.productName,
+          productName: pkg.name,
           webappVersion: webappVersion,
         });
       }

@@ -17,13 +17,13 @@
  *
  */
 
-import {Supportedi18nStrings} from './locale';
+import {i18nStrings} from './locale';
 
 declare global {
   interface Window {
     isMac: boolean;
-    locStrings: Supportedi18nStrings;
-    locStringsDefault: Supportedi18nStrings;
+    locStrings: i18nStrings;
+    locStringsDefault: i18nStrings;
     sendBadgeCount: (count: number) => void;
     sendDeleteAccount: (accountId: string, sessionId?: string) => Promise<void>;
     sendLogoutAccount: (accountId: string) => void;

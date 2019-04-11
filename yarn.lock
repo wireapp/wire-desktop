@@ -1257,10 +1257,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/build-tools@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.0.tgz#43c0fc16e1e4d747b160d19cdfbcb297aa89e4d3"
-  integrity sha512-0N3IRMvh0EPKxnkgPPR+2XWm/jvj1ZhNq2JU+ExF+YhNSQBbcF86VgfDVhnmpzLnEU2BA9vkHCzoscCFhisfqw==
+"@wireapp/build-tools@0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.6.tgz#b3bd96d57569d59f35f64d86d896afbdeb19118c"
+  integrity sha512-QQp8eOWIZ5xDUruCf7FnCtcmKws30D8xLGK35D60awBNqiy7e+BjtBZXQc0fxZn6sQeV+kicIioILxuRxF/dmw==
   dependencies:
     commander "2.20.0"
     dotenv "7.0.0"
@@ -1292,10 +1292,10 @@
     platform "1.3.5"
     url-search-params-polyfill "5.1.0"
 
-"@wireapp/copy-config@0.5.3":
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.5.3.tgz#4052f5e58f235c706531158848a05d28cf8b0688"
-  integrity sha512-Lo3hrac8CraC4Sg5sojtGBqUA8c+Mlhk4tqtifxmPQYBeL76E6S2ayLxFQQtokQqBI2AM8Lc84i0S4xjPzGEFQ==
+"@wireapp/copy-config@0.5.4":
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@wireapp/copy-config/-/copy-config-0.5.4.tgz#55ededb67cd1794fbef07d21f21434328b4fd143"
+  integrity sha512-73aXKMUuzjBYQ1Osfe/MsgHXhn7CGAg3HJ9yNsJ9pPcLsZv0WY4iPdo1RGp2h4D9EqBHc8Yhtej5ZWBpea18yQ==
   dependencies:
     axios "0.18.0"
     copy "0.3.2"
@@ -1305,12 +1305,12 @@
     logdown "3.2.8"
     rimraf "2.6.3"
 
-"@wireapp/deploy-tools@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.0.tgz#618e6a8af5af3e734f2772ac28750dd75d81a784"
-  integrity sha512-9SDFkFUbI0hFc6bf5+J7JlbHWm/WlJqQoD8vHNoGdj03qkNYFtCJLyVTaO0SK89W0KNouG1rciiptAtnp9tNeQ==
+"@wireapp/deploy-tools@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.4.tgz#35f501037bf547686f3cd2d2a8c2a65de1da437f"
+  integrity sha512-AFjZ5g/4YaZruV+XPFX4DS2XeQdV98/j2dpGVEHuv1GYXuXlxv6xvTB7yQkTK4BGp1c0UXzcBLpnzhxLTNYI0Q==
   dependencies:
-    aws-sdk "2.436.0"
+    aws-sdk "2.437.0"
     axios "0.18.0"
     commander "2.20.0"
     form-data "2.3.3"
@@ -1723,10 +1723,10 @@ auto-launch@5.0.5:
     untildify "^3.0.2"
     winreg "1.2.4"
 
-aws-sdk@2.436.0:
-  version "2.436.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.436.0.tgz#8882b823818cdb593cdc5540e6261ed7d7357be3"
-  integrity sha512-ncUefjtddjums7B4j8JGChwArc48is5SKFKxmf3UEixLvRW509SaiC+Di2NfO5YpUnYHGTbpcgCF+DFtxJXChA==
+aws-sdk@2.437.0:
+  version "2.437.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.437.0.tgz#94e41a2ff112aa020ddbe4950dd5f73187889b8b"
+  integrity sha512-sDZb5QBOO6FOMvuKDEdO16YQRk0WUhnQd38EaSt0yUCi4Gev8uypODyYONgODZcXe8Cr1GMwC8scUKr00S/I5w==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -2471,12 +2471,12 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2.20.0:
+commander@2.20.0, commander@^2.12.1, commander@^2.14.1, commander@^2.19.0, commander@^2.9.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
-commander@^2.12.1, commander@^2.14.1, commander@^2.19.0, commander@^2.9.0, commander@~2.19.0:
+commander@~2.19.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
   integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
@@ -8733,10 +8733,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.1.tgz#b6691be11a881ffa9a05765a205cb7383f3b63c6"
-  integrity sha512-3NSMb2VzDQm8oBTLH6Nj55VVtUEpe/rgkIzMir0qVoLyjDZlnMBva0U6vDiV3IH+sl/Yu6oP5QwsAQtHPmDd2Q==
+typescript@3.4.3:
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.3.tgz#0eb320e4ace9b10eadf5bc6103286b0f8b7c224f"
+  integrity sha512-FFgHdPt4T/duxx6Ndf7hwgMZZjZpB+U0nMNGVCYPq0rEzWKjEDobm4J6yb3CS7naZ0yURFqdw9Gwc7UOh/P9oQ==
 
 uglify-js@^3.1.4:
   version "3.5.3"
