@@ -19,7 +19,7 @@
 
 import {MenuItem, app} from 'electron';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import * as config from '../settings/config';
+import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {WindowManager} from '../window/WindowManager';
 
@@ -66,8 +66,8 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = () => {
   const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
-  for (const key in EnvironmentUtil.BackendType) {
-    const type: EnvironmentUtil.BackendType = <EnvironmentUtil.BackendType>EnvironmentUtil.BackendType[key];
+  for (const key in EnvironmentUtil.BackendTypeLabel) {
+    const type = EnvironmentUtil.BackendTypeLabel[key] as EnvironmentUtil.BackendTypeLabelKey;
     environmentTemplate.push({
       checked: currentEnvironment === type,
       click: () => {
@@ -85,7 +85,7 @@ const createEnvironmentTemplates = () => {
 
 const versionTemplate: Electron.MenuItemConstructorOptions = {
   enabled: false,
-  label: `${config.NAME} Version ${config.VERSION || 'Development'}`,
+  label: `${config.name} Version ${config.version || 'Development'}`,
 };
 
 const chromeVersionTemplate: Electron.MenuItemConstructorOptions = {

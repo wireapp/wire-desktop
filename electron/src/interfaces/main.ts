@@ -43,9 +43,7 @@ export interface PinningResult {
   verifiedPublicKeyInfo?: boolean;
 }
 
-export interface Schemata {
-  [version: string]: any;
-}
+export type Schemata = {[version: string]: any};
 
 export type Point = [number, number];
 

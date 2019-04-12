@@ -23,7 +23,7 @@ import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 import {parse as parseUrl} from 'url';
 
 import {getLogger} from '../logging/getLogger';
-import {USER_AGENT} from '../settings/config';
+import {config} from '../settings/config';
 
 const logger = getLogger('openGraph');
 
@@ -41,7 +41,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
-      'User-Agent': USER_AGENT,
+      'User-Agent': config.userAgent,
     },
     maxContentLength: IMAGE_SIZE_LIMIT,
     method: 'get',
@@ -49,10 +49,12 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     url,
   };
 
-  const response = await axios.request<Buffer>(axiosConfig);
+  let response;
 
-  if (response.status !== 200) {
-    throw new Error(`Request failed with status code "${response.status}".`);
+  try {
+    response = await axios.request<Buffer>(axiosConfig);
+  } catch (error) {
+    throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
   }
 
   const contentType = response.headers['content-type'] || '';
@@ -78,10 +80,6 @@ const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number)
     return axios
       .request<IncomingMessage>(config)
       .then(response => {
-        if (response.status !== 200) {
-          return reject(`Request failed with status code "${response.status}".`);
-        }
-
         const contentType = response.headers['content-type'] || '';
         const isHtmlContentType = contentType.match(/.*text\/html/);
 
@@ -113,7 +111,7 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
-      'User-Agent': USER_AGENT,
+      'User-Agent': config.userAgent,
     },
     method: 'get',
     url: normalizedUrl.href,

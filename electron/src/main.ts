@@ -46,7 +46,7 @@ import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import * as lifecycle from './runtime/lifecycle';
 import {OriginValidator} from './runtime/OriginValidator';
-import * as config from './settings/config';
+import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
@@ -84,6 +84,12 @@ let tray: TrayHandler;
 let isFullScreen = false;
 let isQuitting = false;
 let main: BrowserWindow;
+
+Object.entries(config).forEach(([key, value]) => {
+  if (typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) {
+    logger.warn(`Configuration key "${key}" not defined.`);
+  }
+});
 
 // IPC events
 const bindIpcEvents = () => {
@@ -160,7 +166,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     minHeight: WINDOW_SIZE.MIN_HEIGHT,
     minWidth: WINDOW_SIZE.MIN_WIDTH,
     show: false,
-    title: config.NAME,
+    title: config.name,
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
@@ -317,7 +323,7 @@ const renameWebViewLogFiles = (): void => {
       return logger.log(`Failed to read log directory with error: ${readError.message}`);
     }
 
-    const logFiles = contents.map(file => path.join(LOG_DIR, file, config.LOG_FILE_NAME));
+    const logFiles = contents.map(file => path.join(LOG_DIR, file, config.logFileName));
     renameFileExtensions(logFiles, '.log', '.old');
   });
 };
@@ -368,7 +374,7 @@ class ElectronWrapperInit {
   logger: logdown.Logger;
 
   constructor() {
-    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: path.join(LOG_DIR, 'electron.log')});
+    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: LOG_FILE});
   }
 
   async run() {
@@ -439,7 +445,7 @@ class ElectronWrapperInit {
             contents.on('console-message', async (event, level, message) => {
               const webViewId = getWebViewId(contents);
               if (webViewId) {
-                const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.LOG_FILE_NAME);
+                const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.logFileName);
                 try {
                   await LogFactory.writeMessage(message, logFilePath);
                 } catch (error) {
@@ -452,10 +458,11 @@ class ElectronWrapperInit {
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
-          const isLocalhostEnvironment = EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST;
+          const isLocalhostEnvironment =
+            EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendTypeLabel.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
             const filter = {
-              urls: config.BACKEND_ORIGINS.map(value => `${value}/*`),
+              urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
             const listener = (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {

@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2019 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
- *
  */
 
-import raygun = require('raygun');
-import {config} from '../settings/config';
+import * as assert from 'assert';
+import {SingleSignOn} from './SingleSignOn';
 
-const Raygun = {
-  initClient: () => {
-    const raygunClient = new raygun.Client().init({apiKey: config.raygunApiKey});
-    raygunClient.onBeforeSend((payload: any) => {
-      delete payload.details.machineName;
-      return payload;
-    });
-  },
-};
-
-export {Raygun};
+describe('generateSecret', () => {
+  it('generates a secret of a specified size', async () => {
+    const size = 24;
+    const loginAuthorizationSecret = await SingleSignOn['protocol'].generateSecret(size);
+    assert.strictEqual(loginAuthorizationSecret.length, size * 2);
+  });
+});

@@ -22,16 +22,17 @@ import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 import {platform} from '../runtime/EnvironmentUtil';
+import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFilePath: LOG_FILE});
+const logger = LogFactory.getLogger('CoreProtocol', {
+  forceEnable: true,
+  logFilePath: path.join(LOG_DIR, 'electron.log'),
+});
 
-const {customProtocolName} = require('../../package.json');
-const CORE_PROTOCOL = customProtocolName || 'wire';
-const CORE_PROTOCOL_PREFIX = `${CORE_PROTOCOL}://`;
+const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
@@ -40,52 +41,59 @@ enum ProtocolCommand {
 }
 
 export class CustomProtocolHandler {
-  public hashLocation: string = '';
+  hashLocation: string = '';
+  private readonly windowManager = WindowManager;
 
-  async dispatcher(url?: string) {
+  async dispatchDeepLink(url?: string): Promise<void> {
     if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
       return;
     }
 
     const route = new URL(url);
 
-    switch (route.host) {
-      case ProtocolCommand.START_SSO_FLOW: {
-        if (typeof route.pathname === 'string') {
-          logger.log('Starting SSO flow...');
-          const code = route.pathname.trim().substr(1);
-          await app.whenReady();
-          WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
-        }
-        break;
-      }
-      default: {
-        const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
-        this.hashLocation = `/${location}`;
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
-        break;
+    if (route.host === ProtocolCommand.START_SSO_FLOW) {
+      await this.handleSSOLogin(route);
+    } else {
+      this.forwardHashLocation(route);
+    }
+  }
+
+  private forwardHashLocation(route: URL): void {
+    const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
+    this.hashLocation = `/${location}`;
+    this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
+  }
+
+  private async handleSSOLogin(route: URL): Promise<void> {
+    if (typeof route.pathname === 'string') {
+      logger.log('Starting SSO flow...');
+      const code = route.pathname.trim().substr(1);
+      try {
+        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      } catch (error) {
+        logger.error(`Cannot start SSO flow: ${error.message}`, error);
       }
     }
   }
 
-  public registerCoreProtocol() {
-    if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
-      app.setAsDefaultProtocolClient(CORE_PROTOCOL);
+  public registerCoreProtocol(): void {
+    if (!app.isDefaultProtocolClient(config.customProtocolName)) {
+      app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
     if (platform.IS_MAC_OS) {
       app.on('open-url', async (event, url) => {
         event.preventDefault();
-        await this.dispatcher(url);
+        await this.dispatchDeepLink(url);
       });
     } else {
       app.once('ready', async () => {
         const url = process.argv[CORE_PROTOCOL_POSITION];
-        await this.dispatcher(url);
+        await this.dispatchDeepLink(url);
       });
       app.on('second-instance', async (event, argv) => {
         const url = argv[CORE_PROTOCOL_POSITION];
-        await this.dispatcher(url);
+        await this.dispatchDeepLink(url);
       });
     }
   }

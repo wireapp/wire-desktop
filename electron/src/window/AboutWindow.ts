@@ -24,14 +24,7 @@ import fileUrl = require('file-url');
 import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import * as config from '../settings/config';
-
-const pkg: {
-  copyright: string;
-  environment: string;
-  productName: string;
-  version: string;
-} = require('../../package.json');
+import {config} from '../settings/config';
 
 let webappVersion: string;
 
@@ -67,7 +60,7 @@ const showWindow = async () => {
       minimizable: false,
       resizable: false,
       show: false,
-      title: config.NAME,
+      title: config.name,
       webPreferences: {
         javascript: false,
         nodeIntegration: false,
@@ -93,7 +86,7 @@ const showWindow = async () => {
       if (url.startsWith('https://')) {
         await shell.openExternal(url);
       } else {
-        console.log('Attempt to open URL in window prevented, url: %s', url);
+        console.log('Attempt to open URL in window prevented, url:', url);
       }
 
       callback({redirectURL: ABOUT_HTML});
@@ -104,7 +97,7 @@ const showWindow = async () => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {
-          const resultLabels: {[index: string]: string} = {};
+          const resultLabels: Record<string, string> = {};
           labels.forEach(label => (resultLabels[label] = locale.getText(label)));
           event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
         }
@@ -127,10 +120,10 @@ const showWindow = async () => {
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-          copyright: pkg.copyright,
-          electronVersion: pkg.version,
-          environment: pkg.environment,
-          productName: pkg.productName,
+          copyright: config.copyright,
+          electronVersion: config.version,
+          environment: config.environment,
+          productName: config.name,
           webappVersion: webappVersion,
         });
       }

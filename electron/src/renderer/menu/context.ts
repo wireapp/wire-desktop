@@ -23,7 +23,7 @@ const Menu = remote.Menu;
 import {ElectronMenuWithTimeAndImage as ElectronMenuWithImageAndTime} from '../../interfaces';
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
-import * as config from '../../settings/config';
+import {config} from '../../settings/config';
 
 let textMenu: Electron.Menu;
 
@@ -114,7 +114,7 @@ window.addEventListener(
     } else if (element.classList.contains('text')) {
       event.preventDefault();
 
-      copyContext = window.getSelection().toString() || element.innerText.trim();
+      copyContext = (window.getSelection() || '').toString() || element.innerText.trim();
       defaultMenu.popup({window: remote.getCurrentWindow()});
     } else {
       // Maybe we are in a code block _inside_ an element with the 'text' class?
@@ -125,7 +125,7 @@ window.addEventListener(
       }
       if (parentNode !== document) {
         event.preventDefault();
-        copyContext = window.getSelection().toString() || (parentNode as HTMLElement).innerText.trim();
+        copyContext = (window.getSelection() || '').toString() || (parentNode as HTMLElement).innerText.trim();
         defaultMenu.popup({window: remote.getCurrentWindow()});
       }
     }
@@ -136,7 +136,7 @@ window.addEventListener(
 const savePicture = (url: RequestInfo, timestamp?: string) => {
   return fetch(url, {
     headers: {
-      'User-Agent': config.USER_AGENT,
+      'User-Agent': config.userAgent,
     },
   })
     .then(response => response.arrayBuffer())

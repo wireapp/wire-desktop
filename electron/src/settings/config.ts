@@ -17,26 +17,45 @@
  *
  */
 
-const pkg: {maximumAccounts: string; productName: string; version: string} = require('../../package.json');
+interface WireJson {
+  adminUrl: string;
+  appBase: string;
+  buildNumber: string;
+  copyright: string;
+  customProtocolName: string;
+  description: string;
+  electronDirectory: string;
+  environment: 'internal' | 'production';
+  legalUrl: string;
+  licensesUrl: string;
+  maximumAccounts: string;
+  name: string;
+  nameShort: string;
+  privacyUrl: string;
+  raygunApiKey: string;
+  supportUrl: string;
+  updateUrl: string;
+  version: string;
+  websiteUrl: string;
+}
 
-const BACKEND_ORIGINS = ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'];
+const wireJson: WireJson = require('../../wire.json');
 
-const LOG_FILE_NAME = 'console.log';
-
-const MAXIMUM_ACCOUNTS = pkg.maximumAccounts || 3;
-
-const NAME = pkg.productName || 'Wire';
-
-const RAYGUN_API_KEY = '';
-
-const UPDATE = {
+const squirrelUpdateInterval = {
+  /** 5 minutes */
   DELAY: 5 * 60 * 1000,
+  /** 24 hours */
   INTERVAL: 24 * 60 * 60 * 1000,
 };
 
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
+const config = {
+  ...wireJson,
+  backendOrigins: ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'],
+  logFileName: 'console.log',
+  maximumAccounts: parseInt(wireJson.maximumAccounts, 10),
+  squirrelUpdateInterval,
+  userAgent:
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
+};
 
-const VERSION = pkg.version;
-
-export {BACKEND_ORIGINS, LOG_FILE_NAME, MAXIMUM_ACCOUNTS, NAME, RAYGUN_API_KEY, UPDATE, USER_AGENT, VERSION};
+export {config};
