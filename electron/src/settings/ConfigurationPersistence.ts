@@ -38,29 +38,29 @@ class ConfigurationPersistence {
   }
 
   delete(name: string): true {
-    this.logger.log('Deleting %s', name);
+    this.logger.log(`Deleting "${name}"`);
     delete global._ConfigurationPersistence[name];
     return true;
   }
 
   save<T>(name: string, value: T): true {
-    this.logger.log('Saving %s with value "%o"', name, value);
+    this.logger.log(`Saving "${name}" with value:`, value);
     global._ConfigurationPersistence[name] = value;
     return true;
   }
 
   restore<T>(name: string, defaultValue?: T): T {
-    this.logger.log('Restoring %s', name);
+    this.logger.log(`Restoring "${name}"`);
     const value = global._ConfigurationPersistence[name];
     return typeof value !== 'undefined' ? value : defaultValue;
   }
 
   persistToFile() {
-    this.logger.log('Saving configuration to persistent storage: %o', global._ConfigurationPersistence);
+    this.logger.log('Saving configuration to persistent storage:', global._ConfigurationPersistence);
     try {
       return fs.writeJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
     } catch (error) {
-      this.logger.log('An error occurred while persisting the configuration: %s', error);
+      this.logger.log('An error occurred while persisting the configuration', error);
     }
   }
 
