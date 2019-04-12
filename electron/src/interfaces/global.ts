@@ -18,6 +18,7 @@
  */
 
 import {i18nStrings} from './locale';
+import {Schemata} from './main';
 
 declare global {
   interface Window {
@@ -31,7 +32,7 @@ declare global {
 
   namespace NodeJS {
     interface Global {
-      _ConfigurationPersistence: any;
+      _ConfigurationPersistence: Schemata;
     }
   }
 }

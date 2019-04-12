@@ -19,6 +19,7 @@
 
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
+import {Schemata} from '../interfaces/main';
 import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';
 
@@ -64,10 +65,10 @@ class ConfigurationPersistence {
     }
   }
 
-  readFromFile(): any {
+  readFromFile(): Schemata {
     this.logger.log(`Reading config file "${this.configFile}"...`);
     try {
-      return fs.readJSONSync(this.configFile);
+      return fs.readJSONSync(this.configFile) as Schemata;
     } catch (error) {
       const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:
