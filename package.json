@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "core-js": "2.6.5",
-    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.17.17",
+    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.17.19",
     "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.17.17-0"
   },
   "devDependencies": {
