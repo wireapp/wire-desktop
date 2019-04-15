@@ -32,6 +32,12 @@ matrix:
       osx_image: xcode8
       env:
         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+    - os: windows
+      env:
+        - PATH=/c/Python27:/c/Python27/Scripts:$PATH
+      before_install:
+        - choco install python2 vcredist-all
+        - npm install --global windows-build-tools
 
 git:
   submodules: false
