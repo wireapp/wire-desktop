@@ -13,6 +13,7 @@
     "@wireapp/build-tools": "0.1.7",
     "@wireapp/copy-config": "0.5.4",
     "@wireapp/deploy-tools": "0.1.4",
+    "@wireapp/prettier-config": "0.1.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
     "babel-jest": "24.7.1",
@@ -62,6 +63,7 @@
     ]
   },
   "name": "wire-desktop",
+  "prettier": "@wireapp/prettier-config",
   "private": true,
   "repository": {
     "type": "git",
