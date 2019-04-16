@@ -46,7 +46,8 @@ class ContextMenu extends Component {
   }
 
   _handleKeyDown(event) {
-    if (event.keyCode === 27) {
+    const KEY_ESCAPE = 27;
+    if (event.keyCode === KEY_ESCAPE) {
       this._hide();
     }
   }

@@ -6,7 +6,6 @@
   "plugins": ["jasmine"],
   "rules": {
     "handle-callback-err": 2,
-    "no-magic-numbers": 0,
     "no-undef": 0
   }
 }

@@ -17,6 +17,8 @@
  *
  */
 
+/* eslint-disable no-magic-numbers */
+
 import {addAccount, deleteAccount, switchAccount, updateAccount, updateAccountBadge} from '../../actions';
 import accountReducer from '../accountReducer';
 

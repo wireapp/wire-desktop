@@ -30,6 +30,8 @@ import {render} from 'react-dom';
 import throttle from 'lodash/throttle';
 import thunk from 'redux-thunk';
 
+const HALF_SECOND = 500;
+
 const persistedState = loadState();
 
 const middleware = [thunk];
@@ -52,7 +54,7 @@ store.subscribe(
         };
       }),
     });
-  }, 500)
+  }, HALF_SECOND)
 );
 
 render(

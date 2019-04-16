@@ -17,6 +17,8 @@
  *
  */
 
+/* eslint-disable no-magic-numbers */
+
 import verifyObjectProperties from '../verifyObjectProperties';
 
 describe('verifyObjectProperties', () => {

@@ -18,6 +18,7 @@
  */
 
 const isType = (type, object) => {
+  // eslint-disable-next-line no-magic-numbers
   const getType = Object.prototype.toString.call(object).slice(8, -1);
   return object && getType === type;
 };
