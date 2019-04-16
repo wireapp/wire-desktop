@@ -17,16 +17,15 @@
  *
  */
 
+import './App.css';
+import * as EVENT_TYPE from '../lib/eventType';
+import {initiateSSO, switchAccount, updateAccount} from '../actions';
 import IsOnline from './IsOnline';
+import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
 import React from 'react';
-import {connect} from 'react-redux';
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
-import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import * as EVENT_TYPE from '../lib/eventType';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
-
-import './App.css';
+import {connect} from 'react-redux';
 
 class App extends React.Component {
   constructor(props) {

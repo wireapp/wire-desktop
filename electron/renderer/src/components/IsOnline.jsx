@@ -17,9 +17,8 @@
  *
  */
 
-import React, {Component} from 'react';
-
 import './IsOnline.css';
+import React, {Component} from 'react';
 
 class IsOnline extends Component {
   constructor(props) {

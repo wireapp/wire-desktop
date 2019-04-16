@@ -3,21 +3,13 @@
     "jasmine": true
   },
   "extends": "@wireapp/eslint-config",
-  "parserOptions": {
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true
-    }
-  },
   "plugins": ["jasmine"],
   "rules": {
     "handle-callback-err": 2,
     "id-length": 0,
     "no-console": 0,
     "no-magic-numbers": 0,
-    "no-undef": 0,
-    "react/jsx-uses-react": 2,
-    "react/jsx-uses-vars": 2,
-    "sort-imports": 0
+    "no-undef": 0
   },
   "settings": {
     "react": {

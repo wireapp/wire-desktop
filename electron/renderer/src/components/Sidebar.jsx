@@ -17,23 +17,22 @@
  *
  */
 
-import {colorFromId} from '../lib/accentColor';
-import {connect} from 'react-redux';
-import {preventFocus} from '../lib/util';
-import AddAccountTrigger from './context/AddAccountTrigger';
-import EditAccountMenu from './context/EditAccountMenu';
-import PersonalIcon from './PersonalIcon';
-import React from 'react';
-import TeamIcon from './TeamIcon';
+import './Sidebar.css';
 import {
   addAccountWithSession,
   setAccountContextHidden,
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
+import AddAccountTrigger from './context/AddAccountTrigger';
+import EditAccountMenu from './context/EditAccountMenu';
 import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
-
-import './Sidebar.css';
+import PersonalIcon from './PersonalIcon';
+import React from 'react';
+import TeamIcon from './TeamIcon';
+import {colorFromId} from '../lib/accentColor';
+import {connect} from 'react-redux';
+import {preventFocus} from '../lib/util';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
