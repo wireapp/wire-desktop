@@ -17,6 +17,8 @@
  *
  */
 
+/* eslint-disable no-console */
+
 import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
 import uuid from 'uuid/v4';
 import verifyObjectProperties from '../lib/verifyObjectProperties';
