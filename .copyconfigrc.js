@@ -10,10 +10,11 @@ const imageSource = `${contentSource}/image`;
 const macOsSource = `${contentSource}/macos`;
 
 const configurationEntry = `wire-web-config-${process.env.APP_ENV !== 'internal' ? 'production' : 'internal'}`;
-const repositoryUrl = pkg.dependencies[configurationEntry];
+const repositoryUrl = pkg.devDependencies[configurationEntry];
 
 /** @type {CopyConfigOptions} */
 const options = {
+  externalDir: `node_modules/${configurationEntry}`,
   files: {
     [`${imageSource}/**`]: 'electron/img/',
     [`${macOsSource}/**`]: 'resources/macos/',
