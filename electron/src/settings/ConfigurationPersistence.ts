@@ -19,6 +19,7 @@
 
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
+import {Schemata} from '../interfaces/main';
 import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';
 
@@ -38,36 +39,36 @@ class ConfigurationPersistence {
   }
 
   delete(name: string): true {
-    this.logger.log('Deleting %s', name);
+    this.logger.log(`Deleting "${name}"`);
     delete global._ConfigurationPersistence[name];
     return true;
   }
 
   save<T>(name: string, value: T): true {
-    this.logger.log('Saving %s with value "%o"', name, value);
+    this.logger.log(`Saving "${name}" with value:`, value);
     global._ConfigurationPersistence[name] = value;
     return true;
   }
 
   restore<T>(name: string, defaultValue?: T): T {
-    this.logger.log('Restoring %s', name);
+    this.logger.log(`Restoring "${name}"`);
     const value = global._ConfigurationPersistence[name];
     return typeof value !== 'undefined' ? value : defaultValue;
   }
 
   persistToFile() {
-    this.logger.log('Saving configuration to persistent storage: %o', global._ConfigurationPersistence);
+    this.logger.log('Saving configuration to persistent storage:', global._ConfigurationPersistence);
     try {
       return fs.writeJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
     } catch (error) {
-      this.logger.log('An error occurred while persisting the configuration: %s', error);
+      this.logger.log('An error occurred while persisting the configuration', error);
     }
   }
 
-  readFromFile(): any {
+  readFromFile(): Schemata {
     this.logger.log(`Reading config file "${this.configFile}"...`);
     try {
-      return fs.readJSONSync(this.configFile);
+      return fs.readJSONSync(this.configFile) as Schemata;
     } catch (error) {
       const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:
