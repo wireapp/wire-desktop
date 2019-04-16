@@ -17,9 +17,8 @@
  *
  */
 
-import React, {Component} from 'react';
-
 import './Webview.css';
+import React, {Component} from 'react';
 
 class Webview extends Component {
   constructor(props) {

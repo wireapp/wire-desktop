@@ -17,10 +17,11 @@
  *
  */
 
-import uuid from 'uuid/v4';
+/* eslint-disable no-console */
 
-import verifyObjectProperties from '../lib/verifyObjectProperties';
 import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
+import uuid from 'uuid/v4';
+import verifyObjectProperties from '../lib/verifyObjectProperties';
 
 export const ADD_ACCOUNT = 'ADD_ACCOUNT';
 export const INITIATE_SSO = 'INITIATE_SSO';
@@ -84,12 +85,12 @@ export const setAccountContextHidden = () => ({
   type: HIDE_CONTEXT_MENUS,
 });
 
-export const toggleEditAccountMenuVisibility = (x, y, accountId, sessionId, lifecycle, isAtLeastAdmin) => ({
+export const toggleEditAccountMenuVisibility = (centerX, centerY, accountId, sessionId, lifecycle, isAtLeastAdmin) => ({
   payload: {
     accountId,
     isAtLeastAdmin,
     lifecycle,
-    position: {x, y},
+    position: {centerX, centerY},
     sessionId,
   },
   type: TOGGLE_EDIT_ACCOUNT_VISIBILITY,

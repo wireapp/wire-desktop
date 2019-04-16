@@ -17,10 +17,10 @@
  *
  */
 
-import React, {Component} from 'react';
-import Webview from './Webview';
 import './Webviews.css';
 import * as EVENT_TYPE from '../lib/eventType';
+import React, {Component} from 'react';
+import Webview from './Webview';
 
 class Webviews extends Component {
   constructor(props) {

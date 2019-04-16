@@ -17,12 +17,10 @@
  *
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-
-import {colorFromId} from '../lib/accentColor';
-
 import './PersonalIcon.css';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {colorFromId} from '../lib/accentColor';
 
 const PersonalIcon = ({account, accentID, onClick}) => (
   <div
