@@ -86,8 +86,8 @@ class ContextMenu extends Component {
       const menuWidth = menu.offsetWidth;
       const menuHeight = menu.offsetHeight;
 
-      menu.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : x}px`;
-      menu.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : y}px`;
+      menu.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
+      menu.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
     }
   }
 
