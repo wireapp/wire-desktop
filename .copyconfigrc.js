@@ -14,6 +14,7 @@ const repositoryUrl = pkg.devDependencies[configurationEntry];
 
 /** @type {CopyConfigOptions} */
 const options = {
+  externalDir: `node_modules/${configurationEntry}`,
   files: {
     [`${imageSource}/**`]: 'electron/img/',
     [`${macOsSource}/**`]: 'resources/macos/',
