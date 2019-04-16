@@ -30,14 +30,13 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels
 });
 
 interface Details {
-  copyright: string;
-  electronVersion: string;
-  environment: string;
+  copyright?: string;
+  electronVersion?: string;
   productName: string;
-  webappVersion: string;
+  webappVersion?: string;
 }
 
-ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (event: Event, details: Details) => {
+export function loadedAboutScreen(event: Event, details: Details) {
   const nameElement = document.getElementById('name');
   if (nameElement) {
     nameElement.innerHTML = details.productName;
@@ -75,7 +74,12 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, (event: Event, details: Details) => {
 
   for (const index in dataStrings) {
     const label = dataStrings[index];
-    labels.push(label.dataset.string);
+    if (label.dataset) {
+      labels.push(label.dataset.string);
+    }
   }
+
   ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
-});
+}
+
+ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, loadedAboutScreen);
