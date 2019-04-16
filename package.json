@@ -1,7 +1,4 @@
 {
-  "dependencies": {
-    "core-js": "2.6.5"
-  },
   "devDependencies": {
     "@babel/core": "7.4.3",
     "@babel/plugin-proposal-object-rest-spread": "7.4.3",
@@ -16,6 +13,7 @@
     "babel-eslint": "10.0.1",
     "babel-jest": "24.7.1",
     "babel-loader": "8.0.5",
+    "core-js": "2.6.5",
     "cross-env": "5.2.0",
     "css-loader": "2.1.1",
     "dotenv": "7.0.0",
