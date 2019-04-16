@@ -9,10 +9,5 @@
     "no-console": 0,
     "no-magic-numbers": 0,
     "no-undef": 0
-  },
-  "settings": {
-    "react": {
-      "version": "16"
-    }
   }
 }
