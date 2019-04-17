@@ -30,8 +30,8 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels
 });
 
 interface Details {
-  copyright?: string;
-  electronVersion?: string;
+  copyright: string;
+  electronVersion: string;
   productName: string;
   webappVersion: string;
 }
@@ -44,7 +44,7 @@ export function loadedAboutScreen(event: Event, details: Details) {
 
   const versionElement = document.getElementById('version');
   if (versionElement) {
-    versionElement.innerHTML = details.electronVersion || 'Development';
+    versionElement.innerHTML = details.electronVersion;
   }
 
   const webappVersionElement = document.getElementById('webappVersion');
@@ -54,7 +54,7 @@ export function loadedAboutScreen(event: Event, details: Details) {
 
   const copyrightElement = document.getElementById('copyright');
   if (copyrightElement) {
-    copyrightElement.innerHTML = details.copyright || '&copy; Wire Swiss GmbH';
+    copyrightElement.innerHTML = details.copyright;
   }
 
   const logoElement = document.getElementById('logo') as HTMLImageElement;

@@ -11,6 +11,11 @@ describe('loadedAboutScreen', () => {
       done();
     });
 
-    loadedAboutScreen(new Event('test'), {productName: 'Wire', webappVersion: '2019.04.10.0901'});
+    loadedAboutScreen(new Event('test'), {
+      copyright: '&copy; Wire Swiss GmbH',
+      electronVersion: 'Development',
+      productName: 'Wire',
+      webappVersion: '2019.04.10.0901',
+    });
   });
 });
