@@ -1252,10 +1252,9 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/build-tools@0.1.8":
+"@wireapp/build-tools@https://github.com/wireapp/wire-desktop-packages#refactor/build-tools/single-package-json":
   version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.1.8.tgz#6e17029160294b8b9e32ec6a061c0f556b460461"
-  integrity sha512-B/LqQesWMwjTSrarRfCKYtN3FCLEX3+n5zUEZKxT3D/z/qHu0BrK9V1vlyxRUNkJEmHC4cKcPIs1IIQ+TI9R1A==
+  resolved "https://github.com/wireapp/wire-desktop-packages#04d828c6b64fc366c8139202b6f697c9ae7120dc"
   dependencies:
     commander "2.20.0"
     dotenv "7.0.0"
