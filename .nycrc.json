@@ -2,7 +2,7 @@
   "all": true,
   "exclude": ["**/*.test*.ts"],
   "extension": [".ts"],
-  "include": ["src/**/*.ts"],
+  "include": ["electron/src/**/*.ts"],
   "per-file": false,
   "reporter": ["html"]
 }
