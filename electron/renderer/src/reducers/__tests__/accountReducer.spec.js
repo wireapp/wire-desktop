@@ -17,8 +17,10 @@
  *
  */
 
+/* eslint-disable no-magic-numbers */
+
+import {addAccount, deleteAccount, switchAccount, updateAccount, updateAccountBadge} from '../../actions';
 import accountReducer from '../accountReducer';
-import {updateAccount, addAccount, switchAccount, updateAccountBadge, deleteAccount} from '../../actions';
 
 describe('accounts reducer', () => {
   it('should return the initial state with one account', () => {

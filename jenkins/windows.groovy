@@ -20,7 +20,6 @@ node('node130') {
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     bat returnStatus: true, script: 'rmdir /s /q "node_modules"'
-    bat returnStatus: true, script: 'rmdir /s /q "electron\\node_modules"'
   }
 
   def text = readFile('electron/wire.json')

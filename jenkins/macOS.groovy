@@ -19,7 +19,7 @@ node('master') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf electron/node_modules/ node_modules/ *.sig'
+    sh returnStatus: true, script: 'rm -rf node_modules/ *.sig'
   }
 
   def text = readFile('electron/wire.json')

@@ -40,7 +40,7 @@ class TrayHandler {
   }
 
   initTray(trayIcon = new Tray(nativeImage.createEmpty())) {
-    const IMAGE_ROOT = path.join(app.getAppPath(), 'img');
+    const IMAGE_ROOT = path.join(app.getAppPath(), config.electronDirectory, 'img');
 
     let trayPng = 'tray.png';
     let trayBadgePng = 'tray.badge.png';

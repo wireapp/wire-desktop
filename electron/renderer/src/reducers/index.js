@@ -17,8 +17,8 @@
  *
  */
 
-import {combineReducers} from 'redux';
 import accountReducer from './accountReducer';
+import {combineReducers} from 'redux';
 import contextMenuReducer from './contextMenuReducer';
 
 const store = combineReducers({
