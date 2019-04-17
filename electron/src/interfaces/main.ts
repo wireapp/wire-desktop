@@ -36,24 +36,10 @@ export interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOp
   submenu?: ElectronMenuItemWithI18n[] | ElectronMenuWithI18n;
 }
 
-export interface PinningResult {
-  decoding?: boolean;
-  errorMessage?: string;
-  verifiedIssuerRootPubkeys?: boolean;
-  verifiedPublicKeyInfo?: boolean;
-}
-
 export type Schemata = {[version: string]: any};
 
-export type Point = [number, number];
+export interface OnHeadersReceivedDetails {
+  responseHeaders: Record<string, string[]>;
+}
 
-export type Rectangle = {
-  height: number;
-  width: number;
-  x: number;
-  y: number;
-};
-
-export type SpawnCallback = (error: SpawnError | null, stdout: string) => void;
-
-export type SpawnError = Error & {code?: number | null; stdout?: string | null};
+export type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;

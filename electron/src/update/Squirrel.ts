@@ -26,11 +26,13 @@ import * as fs from 'fs';
 import * as moment from 'moment';
 import * as path from 'path';
 
-import {SpawnCallback, SpawnError} from '../interfaces/';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
+
+type SpawnCallback = (error: SpawnError | null, stdout: string) => void;
+type SpawnError = Error & {code?: number | null; stdout?: string | null};
 
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
