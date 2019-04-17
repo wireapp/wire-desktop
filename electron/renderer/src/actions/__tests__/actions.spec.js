@@ -17,20 +17,19 @@
  *
  */
 
-import uuid from 'uuid/v4';
-
 import {
   ADD_ACCOUNT,
+  DELETE_ACCOUNT,
   SWITCH_ACCOUNT,
   UPDATE_ACCOUNT,
   UPDATE_ACCOUNT_BADGE,
-  DELETE_ACCOUNT,
-  updateAccount,
   addAccount,
-  switchAccount,
-  updateAccountBadge,
   deleteAccount,
+  switchAccount,
+  updateAccount,
+  updateAccountBadge,
 } from '../';
+import uuid from 'uuid/v4';
 
 describe('action creators', () => {
   describe('addAccount', () => {

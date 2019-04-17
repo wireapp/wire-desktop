@@ -1314,6 +1314,11 @@
     jszip "3.2.1"
     logdown "3.2.8"
 
+"@wireapp/eslint-config@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@wireapp/eslint-config/-/eslint-config-0.1.0.tgz#f2e12c61c83d55c7e840f09a3805315e5870657a"
+  integrity sha512-0gz4RNUdGlVxCuR65PoMrVWiafTrTXmUqSFjTYCMN0JAyPkXbT02PNs4f4mYgPfiZWm2gOMj5Ce5XK/aoR0k2w==
+
 "@wireapp/node-addressbook@3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@wireapp/node-addressbook/-/node-addressbook-3.0.2.tgz#a59e3144ee19bfe827c0aa52447666d0ac27b87a"
@@ -1321,10 +1326,10 @@
   dependencies:
     nan "2.13.1"
 
-"@wireapp/prettier-config@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.1.0.tgz#9013de56087eb865b7fd3559d6d3a81558573719"
-  integrity sha512-/NnQFYE+Hbz46Cfz3NhiOT9JxfaKFON4lHI+qzg19Zb2d8B0pxd/I6HZRSRH6ofV29IP+OT+IynvUFQOO2WUpg==
+"@wireapp/prettier-config@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@wireapp/prettier-config/-/prettier-config-0.2.0.tgz#822f5d1db902550c09c8ef5efda2a36ca263a481"
+  integrity sha512-wgFtwop3vWW1MaXwkcbDiwM9NP1JHRWwr09RLTAMQhCs9J1z8ciBnfpty/LxY2LXTRWZt1gEL2a+am/a0xpVPA==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -1765,15 +1770,6 @@ axios@0.18.0:
   dependencies:
     follow-redirects "^1.3.0"
     is-buffer "^1.1.5"
-
-babel-code-frame@^6.22.0:
-  version "6.26.0"
-  resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.26.0.tgz#63fd43f7dc1e3bb7ce35947db8fe369a3f58c74b"
-  integrity sha1-Y/1D99weO7fONZR9uP42mj9Yx0s=
-  dependencies:
-    chalk "^1.1.3"
-    esutils "^2.0.2"
-    js-tokens "^3.0.2"
 
 babel-core@7.0.0-bridge.0:
   version "7.0.0-bridge.0"
@@ -2512,6 +2508,11 @@ commander@~2.19.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
   integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
+
+comment-parser@^0.5.4:
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-0.5.4.tgz#089840b9cccacad2b769b231ed43081d501b9487"
+  integrity sha512-0h7W6Y1Kb6zKQMJqdX41C5qf9ITCVIsD2qP2RaqDF3GFkXFrmuAuv5zUOuo19YzyC9scjBNpqzuaRQ2Sy5pxMQ==
 
 commondir@^1.0.1:
   version "1.0.1"
@@ -3438,6 +3439,15 @@ eslint-plugin-jasmine@2.10.1:
   version "2.10.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-2.10.1.tgz#5733b709e751f4bc40e31e1c16989bd2cdfbec97"
   integrity sha1-VzO3CedR9LxA4x4cFpib0s377Jc=
+
+eslint-plugin-jsdoc@4.8.3:
+  version "4.8.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-4.8.3.tgz#1060e8b5c1ac83b2dd613c2d62fe1612394aafa9"
+  integrity sha512-lKOaphUUzv0qKJrAdEwQGEWcNN2Foae5W111u1ASKQeliyJkKXCVxia0dakATuI/s2ojr6Q3FVzWwT6uE1icBg==
+  dependencies:
+    comment-parser "^0.5.4"
+    jsdoctypeparser "3.1.0"
+    lodash "^4.17.11"
 
 eslint-plugin-no-unsanitized@3.0.2:
   version "3.0.2"
@@ -5532,11 +5542,6 @@ js-levenshtein@^1.1.3:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-tokens@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-3.0.2.tgz#9866df395102130e38f7f996bceb65443209c25b"
-  integrity sha1-mGbfOVECEw449/mWvOtlRDIJwls=
-
 js-yaml@3.13.0, js-yaml@^3.12.0, js-yaml@^3.12.1, js-yaml@^3.13.0:
   version "3.13.0"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.13.0.tgz#38ee7178ac0eea2c97ff6d96fff4b18c7d8cf98e"
@@ -5549,6 +5554,11 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
+
+jsdoctypeparser@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/jsdoctypeparser/-/jsdoctypeparser-3.1.0.tgz#2f65f75165c4d9c632bb4fda13ed36b78321a43b"
+  integrity sha512-JNbkKpDFqbYjg+IU3FNo7qjX7Opy7CwjHywT32zgAcz/d4lX6Umn5jOHVETUdnNNgGrMk0nEx1gvP0F4M0hzlQ==
 
 jsdom@^11.5.1:
   version "11.12.0"
@@ -8907,12 +8917,12 @@ tslint-plugin-prettier@2.0.1:
     lines-and-columns "^1.1.6"
     tslib "^1.7.1"
 
-tslint@5.15.0:
-  version "5.15.0"
-  resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.15.0.tgz#6ffb180986d63afa1e531feb2a134dbf961e27d3"
-  integrity sha512-6bIEujKR21/3nyeoX2uBnE8s+tMXCQXhqMmaIPJpHmXJoBJPTLcI7/VHRtUwMhnLVdwLqqY3zmd8Dxqa5CVdJA==
+tslint@5.16.0:
+  version "5.16.0"
+  resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.16.0.tgz#ae61f9c5a98d295b9a4f4553b1b1e831c1984d67"
+  integrity sha512-UxG2yNxJ5pgGwmMzPMYh/CCnCnh0HfPgtlVRDs1ykZklufFBL1ZoTlWFRz2NQjcoEiDoRp+JyT0lhBbbH/obyA==
   dependencies:
-    babel-code-frame "^6.22.0"
+    "@babel/code-frame" "^7.0.0"
     builtin-modules "^1.1.1"
     chalk "^2.3.0"
     commander "^2.12.1"
@@ -9359,9 +9369,9 @@ winreg@1.2.4:
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.16":
-  version "0.17.16"
-  resolved "https://github.com/wireapp/wire-web-config-default#1895d2d9b2dc37254ca3cfbbdf2b5d7c78a9c97b"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.21":
+  version "0.17.21"
+  resolved "https://github.com/wireapp/wire-web-config-default#1a5fc05cb19aa258839c3e55a85363f6ba71e2e4"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"

@@ -17,12 +17,10 @@
  *
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-
-import {colorFromId} from '../lib/accentColor';
-
 import './TeamIcon.css';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {colorFromId} from '../lib/accentColor';
 
 const TeamIcon = ({account, accentID}) => (
   <div className="TeamIcon" title={account.name} data-uie-name="item-team" data-uie-value={account.name}>
