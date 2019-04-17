@@ -91,16 +91,16 @@
   "homepage": "https://wire.com",
   "license": "GPL-3.0",
   "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ],
     "**/!(*.test*).ts": [
       "tslint --project tsconfig.json --fix",
       "git add"
     ],
     "**/*.test*.ts": [
       "tslint --project tsconfig.mocha.json --fix",
-      "git add"
-    ],
-    "*.{js,jsx}": [
-      "eslint --fix",
       "git add"
     ],
     "*.{json,md,css}": [
