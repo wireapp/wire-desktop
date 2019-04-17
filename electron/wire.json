@@ -43,5 +43,6 @@
       "WEBSITE_BASE": "https://wire.com"
     }
   },
+  "updateUrl": "https://wire-app.wire.com/win/prod/",
   "websiteUrl": "https://wire.com"
 }

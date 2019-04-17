@@ -19,7 +19,7 @@ node('master') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf electron/node_modules/ node_modules/ *.sig'
+    sh returnStatus: true, script: 'rm -rf node_modules/ *.sig'
   }
 
   def text = readFile('electron/wire.json')
@@ -37,9 +37,7 @@ node('master') {
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
-        withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          sh 'yarn build:macos'
-        }
+        sh 'yarn build:macos'
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
@@ -65,6 +63,16 @@ node('master') {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/WireInternal.zip\""
       archiveArtifacts "wrap/WireInternal.zip,${version}.tar.gz.sig"
+    }
+  }
+
+  stage('Trigger smoke tests') {
+    if (production) {
+      try {
+        build job: 'Wrapper_macOS_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_macOS_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-rc.zinfra.io/')], wait: false
+      } catch(e) {
+        wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} Unable to trigger smoke tests for ${version}** see: ${JOB_URL}"
+      }
     }
   }
 

@@ -22,16 +22,17 @@ import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 import {platform} from '../runtime/EnvironmentUtil';
+import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const logger = LogFactory.getLogger('CoreProtocol', {forceEnable: true, logFilePath: LOG_FILE});
+const logger = LogFactory.getLogger('CoreProtocol', {
+  forceEnable: true,
+  logFilePath: path.join(LOG_DIR, 'electron.log'),
+});
 
-const {customProtocolName} = require('../../wire.json');
-const CORE_PROTOCOL = customProtocolName;
-const CORE_PROTOCOL_PREFIX = `${CORE_PROTOCOL}://`;
+const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
@@ -76,8 +77,8 @@ export class CustomProtocolHandler {
   }
 
   public registerCoreProtocol(): void {
-    if (!app.isDefaultProtocolClient(CORE_PROTOCOL)) {
-      app.setAsDefaultProtocolClient(CORE_PROTOCOL);
+    if (!app.isDefaultProtocolClient(config.customProtocolName)) {
+      app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
     if (platform.IS_MAC_OS) {

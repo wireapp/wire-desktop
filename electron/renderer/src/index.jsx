@@ -17,25 +17,26 @@
  *
  */
 
-import React from 'react';
-import {render} from 'react-dom';
-import {applyMiddleware, createStore} from 'redux';
-import {Provider} from 'react-redux';
-import thunk from 'redux-thunk';
-import logger from 'redux-logger';
-import throttle from 'lodash/throttle';
-import App from './components/App';
-import appStore from './reducers';
-import {loadState, saveState} from './lib/localStorage';
 import './Index.css';
+import {applyMiddleware, createStore} from 'redux';
+import {loadState, saveState} from './lib/localStorage';
+import App from './components/App';
+import {Provider} from 'react-redux';
+import React from 'react';
+import appStore from './reducers';
+import {config} from '../../dist/settings/config';
+import logger from 'redux-logger';
+import {render} from 'react-dom';
+import throttle from 'lodash/throttle';
+import thunk from 'redux-thunk';
 
-import {environment} from '../../wire.json';
+const HALF_SECOND = 500;
 
 const persistedState = loadState();
 
 const middleware = [thunk];
 
-if (environment !== 'production') {
+if (config.environment !== 'production') {
   middleware.push(logger);
 }
 
@@ -53,7 +54,7 @@ store.subscribe(
         };
       }),
     });
-  }, 500)
+  }, HALF_SECOND)
 );
 
 render(

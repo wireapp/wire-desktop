@@ -17,31 +17,9 @@
  *
  */
 
+import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-const pkg: {
-  adminUrl: string;
-  appBase: string;
-  environment: string;
-  legalUrl: string;
-  licensesUrl: string;
-  privacyUrl: string;
-  supportUrl: string;
-  updateWinUrl: string;
-  updatesEndpoint: string;
-  websiteUrl: string;
-} = require('../../wire.json');
-
-let currentEnvironment: BackendType;
-
-export enum BackendType {
-  DEV = 'DEV',
-  EDGE = 'EDGE',
-  INTERNAL = 'INTERNAL',
-  LOCALHOST = 'LOCALHOST',
-  PRODUCTION = 'PRODUCTION',
-  RC = 'RC',
-}
 
 export enum BackendTypeLabel {
   DEV = 'Development',
@@ -52,18 +30,17 @@ export enum BackendTypeLabel {
   RC = 'RC',
 }
 
+export type BackendTypeLabelKey = keyof typeof BackendTypeLabel;
+
+let currentEnvironment: BackendTypeLabelKey;
+
 const URL_ADMIN = {
-  PRODUCTION: pkg.adminUrl,
+  PRODUCTION: config.adminUrl,
   STAGING: 'https://wire-admin-staging.zinfra.io',
 };
 
-const URL_LEGAL = pkg.legalUrl;
-const URL_LICENSES = pkg.licensesUrl;
-const URL_PRIVACY = pkg.privacyUrl;
-const URL_SUPPORT = pkg.supportUrl;
-
 const URL_WEBSITE = {
-  PRODUCTION: pkg.websiteUrl,
+  PRODUCTION: config.websiteUrl,
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
@@ -72,7 +49,7 @@ const URL_WEBAPP = {
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
-  PRODUCTION: pkg.appBase,
+  PRODUCTION: config.appBase,
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
@@ -86,18 +63,20 @@ const URL_UPDATER_ENDPOINT: {[key in keyof typeof BackendType]: string} = {
 };
 
 const app = {
-  ENV: pkg.environment,
-  IS_DEVELOPMENT: pkg.environment !== 'production',
-  IS_PRODUCTION: pkg.environment === 'production',
-  UPDATE_URL_WIN: pkg.updateWinUrl,
+  ENV: config.environment,
+  IS_DEVELOPMENT: config.environment !== 'production',
+  IS_PRODUCTION: config.environment === 'production',
+  UPDATE_URL_WIN: config.updateUrl,
 };
 
-const getEnvironment = (): BackendType => {
-  return <BackendType>(currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase();
+const getEnvironment = (): BackendTypeLabelKey => {
+  return (currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase() as BackendTypeLabelKey;
 };
 
 const isProdEnvironment = (): boolean => {
-  return [BackendType.INTERNAL, BackendType.PRODUCTION].includes(getEnvironment());
+  return [BackendTypeLabel.INTERNAL.toUpperCase(), BackendTypeLabel.PRODUCTION.toUpperCase()].includes(
+    getEnvironment()
+  );
 };
 
 const isLinuxDesktop = (identifier: string): boolean => {
@@ -117,12 +96,11 @@ const linuxDesktop = {
   isUbuntuUnity: isLinuxDesktop('Unity'),
 };
 
-const restoreEnvironment = (): BackendType => {
-  currentEnvironment = settings.restore(SettingsType.ENV, BackendType.INTERNAL);
-  return <BackendType>currentEnvironment;
+const restoreEnvironment = (): BackendTypeLabelKey => {
+  return settings.restore(SettingsType.ENV, BackendTypeLabel.INTERNAL.toUpperCase() as BackendTypeLabelKey);
 };
 
-const setEnvironment = (env: BackendType): void => {
+const setEnvironment = (env: BackendTypeLabelKey): void => {
   currentEnvironment = env ? env : restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment.toUpperCase());
 };
@@ -140,7 +118,7 @@ const web = {
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
       if (currentEnvironment) {
-        return URL_WEBAPP[<BackendType>currentEnvironment.toUpperCase()];
+        return URL_WEBAPP[currentEnvironment.toUpperCase() as BackendTypeLabelKey];
       }
     }
 
@@ -152,17 +130,4 @@ const web = {
   },
 };
 
-export {
-  app,
-  getEnvironment,
-  linuxDesktop,
-  platform,
-  setEnvironment,
-  URL_LEGAL,
-  URL_LICENSES,
-  URL_PRIVACY,
-  URL_SUPPORT,
-  URL_UPDATER_ENDPOINT,
-  URL_WEBAPP,
-  web,
-};
+export {app, getEnvironment, linuxDesktop, platform, setEnvironment, URL_WEBAPP, web};

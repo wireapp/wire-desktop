@@ -8,12 +8,12 @@
 /.bundle/*
 *.log
 *.pkg
-/.idea
+coverage
+.nyc_output
 /config
-/electron/coverage
+/.idea
 /electron/dist
 /electron/instrumented-code
-/electron/node_modules
 /electron/renderer/dist
 /keys
 /temp

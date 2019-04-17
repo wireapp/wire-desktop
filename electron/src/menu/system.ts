@@ -24,7 +24,7 @@ import {EVENT_TYPE} from '../lib/eventType';
 import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import * as lifecycle from '../runtime/lifecycle';
-import * as config from '../settings/config';
+import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
@@ -38,7 +38,7 @@ let menu: Menu;
 
 const launcher = new autoLaunch({
   isHidden: true,
-  name: config.NAME,
+  name: config.name,
   path: launchCmd,
 });
 
@@ -126,7 +126,7 @@ const conversationTemplate: ElectronMenuItemWithI18n = {
 const showWireTemplate: ElectronMenuItemWithI18n = {
   accelerator: 'CmdOrCtrl+0',
   click: () => WindowManager.getPrimaryWindow().show(),
-  label: config.NAME,
+  label: config.name,
 };
 
 const toggleMenuTemplate: ElectronMenuItemWithI18n = {
@@ -245,19 +245,19 @@ const helpTemplate: ElectronMenuItemWithI18n = {
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_LEGAL),
+      click: () => shell.openExternal(config.legalUrl),
       i18n: 'menuLegal',
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_PRIVACY),
+      click: () => shell.openExternal(config.privacyUrl),
       i18n: 'menuPrivacy',
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_LICENSES),
+      click: () => shell.openExternal(config.licensesUrl),
       i18n: 'menuLicense',
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_SUPPORT),
+      click: () => shell.openExternal(config.supportUrl),
       i18n: 'menuSupport',
     },
     {
@@ -268,7 +268,7 @@ const helpTemplate: ElectronMenuItemWithI18n = {
 };
 
 const darwinTemplate: ElectronMenuItemWithI18n = {
-  label: config.NAME,
+  label: config.name,
   submenu: [
     aboutTemplate,
     separatorTemplate,
@@ -308,7 +308,7 @@ const darwinTemplate: ElectronMenuItemWithI18n = {
 };
 
 const win32Template: ElectronMenuItemWithI18n = {
-  label: config.NAME,
+  label: config.name,
   submenu: [
     {
       accelerator: 'Ctrl+,',
@@ -328,7 +328,7 @@ const win32Template: ElectronMenuItemWithI18n = {
 };
 
 const linuxTemplate: ElectronMenuItemWithI18n = {
-  label: config.NAME,
+  label: config.name,
   submenu: [
     toggleAutoLaunchTemplate,
     separatorTemplate,
@@ -443,7 +443,7 @@ const registerShortcuts = (): void => {
 
   // Global account switching shortcut
   const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
-  const accountLimit = config.MAXIMUM_ACCOUNTS;
+  const accountLimit = config.maximumAccounts;
   for (const shortcut of switchAccountShortcut) {
     for (let accountId = 0; accountId < accountLimit; accountId++) {
       globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>

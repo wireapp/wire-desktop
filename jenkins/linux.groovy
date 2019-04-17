@@ -29,7 +29,7 @@ node('node180') {
 
     stage('Checkout & Clean') {
       git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-      sh returnStatus: true, script: 'rm -rf $WORKSPACE/electron/node_modules/ $WORKSPACE/node_modules/ $WORKSPACE/*.sig'
+      sh returnStatus: true, script: 'rm -rf $WORKSPACE/node_modules/ $WORKSPACE/*.sig'
     }
 
     stage('Build') {
@@ -37,9 +37,7 @@ node('node180') {
         sh 'node -v'
         sh 'npm -v'
         sh 'yarn'
-        withCredentials([string(credentialsId: 'RAYGUN_API_KEY', variable: 'RAYGUN_API_KEY')]) {
-          sh 'yarn build:linux'
-        }
+        sh 'yarn build:linux'
       } catch(e) {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🐧 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
@@ -71,8 +69,8 @@ node('node180') {
         }
     }
 
-    stage('Save .deb, .rpm, AppImage and repo files') {
-      archiveArtifacts 'wrap/dist/*.deb,wrap/dist/*.rpm,wrap/dist/*.AppImage,wrap/dist/debian/**'
+    stage('Save .deb, AppImage and repo files') {
+      archiveArtifacts 'wrap/dist/*.deb,wrap/dist/*.AppImage,wrap/dist/debian/**,wrap/dist/sha256sum.txt.asc'
     }
 
   }

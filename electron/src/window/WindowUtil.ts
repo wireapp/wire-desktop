@@ -19,9 +19,14 @@
 
 import * as Electron from 'electron';
 
-import {Point, Rectangle} from '../interfaces';
+type Rectangle = {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+};
 
-const pointInRectangle = (point: Point, rectangle: Rectangle) => {
+const pointInRectangle = (point: [number, number], rectangle: Rectangle) => {
   const [x, y] = point;
   const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
   const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;

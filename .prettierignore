@@ -1,5 +1,8 @@
 /config
+/wrap
 /.github/issue_template.md
+coverage
+.nyc_output
 instrumented-code
 package.json
 package-lock.json

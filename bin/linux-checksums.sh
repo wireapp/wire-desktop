@@ -61,22 +61,12 @@ if ! ls ./*.deb > /dev/null 2>&1; then
   _error_exit "No deb files found. Add some in ${PWD}."
 fi
 
-if ! ls ./*.rpm > /dev/null 2>&1; then
-  _error_exit "No rpm files found. Add some in ${PWD}."
-fi
-
 if ! ls ./*.AppImage > /dev/null 2>&1; then
   _error_exit "No AppImage files found. Add some in ${PWD}."
 fi
 
 _log "Creating checksums..."
-sha256sum *.deb *.rpm *.AppImage > sha256sum.txt
-
-_log "Creating source code archive for signing..."
-(
-  cd ../../
-  git archive -o "wrap/dist/${BUILD_VERSION}.tar.gz" --format tar.gz --prefix "wire-desktop-linux-${BUILD_VERSION}/" master
-)
+sha256sum *.deb *.AppImage > sha256sum.txt
 
 _log "Preparing gpg configuration..."
 mkdir -p "${GPG_TEMP_KEYS_DIR}"
@@ -106,23 +96,6 @@ gpg2 --batch \
      --quiet \
      --yes \
      "sha256sum.txt"
-
-_log "Signing source code archive with PGP key..."
-
-echo "${PGP_PASSPHRASE}" | \
-gpg2 --batch \
-     --detach-sign \
-     --homedir "${GPG_TEMP_DIR}" \
-     --local-user "${PGP_SIGN_ID}" \
-     --no-tty \
-     --output "${BUILD_VERSION}.tar.gz.sig" \
-     --pinentry-mode loopback \
-     --passphrase-fd 0 \
-     --quiet \
-     --yes \
-     "${BUILD_VERSION}.tar.gz"
-
-rm "${BUILD_VERSION}.tar.gz"
 
 if [ "${SHRED_STATUS}" == "unavailable" ]; then
   _log "Info: shred not found. Using insecure way of deleting."

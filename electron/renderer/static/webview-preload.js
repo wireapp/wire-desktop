@@ -140,6 +140,8 @@ const exposeAddressBook = () => {
 const reportWebappVersion = () => ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, z.util.Environment.version(false));
 
 const checkAvailability = callback => {
+  const HALF_SECOND = 500;
+
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);
@@ -151,7 +153,7 @@ const checkAvailability = callback => {
       clearInterval(intervalId);
       location.reload();
     }
-  }, 500);
+  }, HALF_SECOND);
 };
 
 // https://github.com/electron/electron/issues/2984
