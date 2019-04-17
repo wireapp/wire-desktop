@@ -11,6 +11,6 @@ describe('loadedAboutScreen', () => {
       done();
     });
 
-    loadedAboutScreen(new Event('test'), {productName: 'Wire'});
+    loadedAboutScreen(new Event('test'), {productName: 'Wire', webappVersion: '2019.04.10.0901'});
   });
 });

@@ -33,7 +33,7 @@ interface Details {
   copyright?: string;
   electronVersion?: string;
   productName: string;
-  webappVersion?: string;
+  webappVersion: string;
 }
 
 export function loadedAboutScreen(event: Event, details: Details) {
@@ -49,13 +49,7 @@ export function loadedAboutScreen(event: Event, details: Details) {
 
   const webappVersionElement = document.getElementById('webappVersion');
   if (webappVersionElement) {
-    if (details.webappVersion) {
-      webappVersionElement.innerHTML = details.webappVersion;
-    } else {
-      if (webappVersionElement.parentElement) {
-        webappVersionElement.parentElement.remove();
-      }
-    }
+    webappVersionElement.innerHTML = details.webappVersion;
   }
 
   const copyrightElement = document.getElementById('copyright');
