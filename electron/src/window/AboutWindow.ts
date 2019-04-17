@@ -122,7 +122,6 @@ const showWindow = () => {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
           copyright: config.copyright,
           electronVersion: config.version,
-          environment: config.environment,
           productName: config.name,
           webappVersion: webappVersion,
         });

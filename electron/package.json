@@ -61,6 +61,8 @@
   "scripts": {
     "coverage": "yarn test",
     "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
-    "test": "electron-mocha --require ./babel-register.js \"src/**/*.test?(.main).ts\""
+    "test": "yarn test:main && yarn test:renderer",
+    "test:main": "electron-mocha --require ./babel-register.js \"src/**/*.test?(.main).ts\"",
+    "test:renderer": "electron-mocha --renderer --require ./babel-register.js \"src/**/*.test?(.renderer).ts\""
   }
 }
