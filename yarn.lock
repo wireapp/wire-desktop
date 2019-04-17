@@ -1162,10 +1162,10 @@
   resolved "https://registry.yarnpkg.com/@wireapp/eslint-config/-/eslint-config-0.1.0.tgz#f2e12c61c83d55c7e840f09a3805315e5870657a"
   integrity sha512-0gz4RNUdGlVxCuR65PoMrVWiafTrTXmUqSFjTYCMN0JAyPkXbT02PNs4f4mYgPfiZWm2gOMj5Ce5XK/aoR0k2w==
 
-"@wireapp/prettier-config@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.1.0.tgz#9013de56087eb865b7fd3559d6d3a81558573719"
-  integrity sha512-/NnQFYE+Hbz46Cfz3NhiOT9JxfaKFON4lHI+qzg19Zb2d8B0pxd/I6HZRSRH6ofV29IP+OT+IynvUFQOO2WUpg==
+"@wireapp/prettier-config@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@wireapp/prettier-config/-/prettier-config-0.2.0.tgz#822f5d1db902550c09c8ef5efda2a36ca263a481"
+  integrity sha512-wgFtwop3vWW1MaXwkcbDiwM9NP1JHRWwr09RLTAMQhCs9J1z8ciBnfpty/LxY2LXTRWZt1gEL2a+am/a0xpVPA==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
