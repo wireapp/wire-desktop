@@ -1252,10 +1252,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/build-tools@1.0.0-beta":
-  version "1.0.0-beta"
-  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-1.0.0-beta.tgz#e37c7c185578d1c06bd88d2c2a4a4fc264c245a7"
-  integrity sha512-PBgPn2UYGOGoFs6y9pUFZn4XoWoXlz79JsiGx/0sJX+5YJKIBmFNhKhUw5uxBK/h5Q6yJqF6vzve6odUaNhcsQ==
+"@wireapp/build-tools@beta":
+  version "1.0.1-beta"
+  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-1.0.1-beta.tgz#a28037f4503a44d27b6b72d7a918d1cd2919be75"
+  integrity sha512-GveDJdB3L+z/WsaV74cNAxt28MyxkllSOVLG8cI5f90ax97R1DwClAXAco+wXd3EzYqYwrUYq7xWWbnSb7R2iA==
   dependencies:
     commander "2.20.0"
     dotenv "7.0.0"

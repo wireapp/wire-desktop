@@ -47,7 +47,7 @@
     "@types/raygun": "0.10.1",
     "@types/sinon": "7.0.11",
     "@types/uuid": "3.4.4",
-    "@wireapp/build-tools": "1.0.0-beta",
+    "@wireapp/build-tools": "beta",
     "@wireapp/copy-config": "0.5.5",
     "@wireapp/deploy-tools": "0.1.4",
     "@wireapp/eslint-config": "0.1.0",
