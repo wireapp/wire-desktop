@@ -9,7 +9,6 @@ coverage
 /.idea
 /electron/dist
 /electron/instrumented-code
-/electron/node_modules
 /electron/renderer/dist
 /keys
 /temp

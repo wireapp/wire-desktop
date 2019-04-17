@@ -29,7 +29,7 @@ import {config} from '../settings/config';
 let webappVersion: string;
 
 // Paths
-const APP_PATH = app.getAppPath();
+const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 
 // Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));

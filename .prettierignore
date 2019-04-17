@@ -1,4 +1,5 @@
 /config
+/wrap
 /.github/issue_template.md
 coverage
 .nyc_output

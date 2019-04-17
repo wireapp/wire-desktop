@@ -17,20 +17,20 @@
  *
  */
 
-import * as Electron from 'electron';
+import {Menu, MenuItemConstructorOptions} from 'electron';
 
 import {i18nLanguageIdentifier} from './locale';
 
-export interface ElectronMenuWithI18n extends Electron.Menu {
+export interface ElectronMenuWithI18n extends Menu {
   i18n?: i18nLanguageIdentifier;
 }
 
-export interface ElectronMenuWithTimeAndImage extends Electron.Menu {
+export interface ElectronMenuWithTimeAndImage extends Menu {
   image?: string;
   timestamp?: string;
 }
 
-export interface ElectronMenuItemWithI18n extends Electron.MenuItemConstructorOptions {
+export interface ElectronMenuItemWithI18n extends MenuItemConstructorOptions {
   i18n?: i18nLanguageIdentifier;
   selector?: string;
   submenu?: ElectronMenuItemWithI18n[] | ElectronMenuWithI18n;
