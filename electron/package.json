@@ -43,8 +43,10 @@
     "@types/raygun": "0.10.1",
     "@types/sinon": "7.0.11",
     "@types/uuid": "3.4.4",
+    "babel-plugin-istanbul": "5.1.2",
     "electron-mocha": "8.0.1",
-    "electron-rebuild": "1.8.4"
+    "electron-rebuild": "1.8.4",
+    "nyc": "14.0.0"
   },
   "license": "GPL-3.0",
   "main": "dist/main.js",
@@ -59,7 +61,8 @@
     "url": "https://github.com/wireapp/wire-desktop.git"
   },
   "scripts": {
-    "coverage": "yarn test",
+    "clear:coverage": "rimraf .nyc_output coverage",
+    "coverage": "yarn clear:coverage && yarn test && nyc report",
     "postinstall": "electron-rebuild -f -w @wireapp/node-addressbook",
     "test": "yarn test:main && yarn test:renderer",
     "test:main": "electron-mocha --require ./babel-register.js \"src/**/*.test?(.main).ts\"",
