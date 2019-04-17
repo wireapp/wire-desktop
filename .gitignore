@@ -3,9 +3,10 @@
 .vscode
 *.log
 *.pkg
-/.idea
+coverage
+.nyc_output
 /config
-/electron/coverage
+/.idea
 /electron/dist
 /electron/instrumented-code
 /electron/renderer/dist
