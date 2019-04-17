@@ -20,4 +20,3 @@
 export * from './global';
 export * from './locale';
 export * from './main';
-export * from './polyfills';
