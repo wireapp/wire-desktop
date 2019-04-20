@@ -1283,10 +1283,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@1.6.4":
-  version "1.6.4"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.6.4.tgz#2a611bb6f9dc9a1a83088c2c9917c4b6337036c0"
-  integrity sha512-q1LHDtvHHRM1iAN4Jlin9YaLRWmm+KBqX8YH6X6F5QrLYUcmBkJ6fqh+idJy04xj5zNCnZweir5ei11pIq/lig==
+"@wireapp/commons@1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.6.5.tgz#43fc6a57ce606581aa24e5330e3a07648b8f9549"
+  integrity sha512-7qxw2M73Lq7HQC3ca3t8gKcM1mWHPqViKIcev02Qzew5LnA75KLCeR1duXLumax5qHNrsPVRzga4OnoZZc9Gjg==
   dependencies:
     "@types/ansi-regex" "4.0.0"
     "@types/node" "11.13.4"
@@ -9586,9 +9586,10 @@ winreg@1.2.4:
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.23":
-  version "0.17.23"
-  resolved "https://github.com/wireapp/wire-web-config-default#3bd4398d191815891ff35effa5d90cacf4423fb4"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.17.24":
+  version "0.17.24"
+  uid "5774d793100110d75bd9792be81de717bb0f2c2b"
+  resolved "https://github.com/wireapp/wire-web-config-default#5774d793100110d75bd9792be81de717bb0f2c2b"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
