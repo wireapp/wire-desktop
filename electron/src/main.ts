@@ -20,7 +20,6 @@
 // Modules
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {Server} from '@wireapp/desktop-updater';
-import {ServerWebConfigInterface} from '@wireapp/desktop-updater-spec';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -55,14 +54,6 @@ import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
-
-const pkg: {
-  enableSecureUpdater: boolean;
-  trustStore: string[];
-  updatesEndpoint: string;
-  version: string;
-  webConfig: ServerWebConfigInterface;
-} = require('../wire.json');
 
 // Paths
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
@@ -192,13 +183,13 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   try {
     main = await new Server({
       browserWindowOptions: options,
-      currentClientVersion: pkg.version,
+      currentClientVersion: config.version,
       currentEnvironment: EnvironmentUtil.getEnvironment(),
       currentEnvironmentBaseUrl: BASE_URL,
-      enableSecureUpdater: pkg.enableSecureUpdater,
-      trustStore: pkg.trustStore,
+      enableSecureUpdater: config.enableSecureUpdater,
+      trustStore: config.trustStore,
       updatesEndpoint: EnvironmentUtil.URL_UPDATER_ENDPOINT[EnvironmentUtil.getEnvironment()],
-      webConfig: pkg.webConfig,
+      webConfig: config.webConfig,
     }).start();
   } catch (error) {
     logger.log(error);

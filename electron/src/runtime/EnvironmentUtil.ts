@@ -53,12 +53,12 @@ const URL_WEBAPP = {
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
-const URL_UPDATER_ENDPOINT: {[key in keyof typeof BackendType]: string} = {
+const URL_UPDATER_ENDPOINT: {[key in BackendTypeLabelKey]: string} = {
   DEV: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
   EDGE: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
   INTERNAL: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
   LOCALHOST: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
-  PRODUCTION: pkg.updatesEndpoint || 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+  PRODUCTION: config.updatesEndpoint || 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
   RC: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
 };
 
@@ -130,4 +130,4 @@ const web = {
   },
 };
 
-export {app, getEnvironment, linuxDesktop, platform, setEnvironment, URL_WEBAPP, web};
+export {app, getEnvironment, linuxDesktop, platform, setEnvironment, URL_UPDATER_ENDPOINT, URL_WEBAPP, web};

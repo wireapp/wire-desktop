@@ -17,6 +17,8 @@
  *
  */
 
+import {ServerWebConfigInterface} from '@wireapp/desktop-updater-spec';
+
 interface WireJson {
   adminUrl: string;
   appBase: string;
@@ -25,6 +27,7 @@ interface WireJson {
   customProtocolName: string;
   description: string;
   electronDirectory: string;
+  enableSecureUpdater: boolean;
   environment: 'internal' | 'production';
   legalUrl: string;
   licensesUrl: string;
@@ -34,8 +37,11 @@ interface WireJson {
   privacyUrl: string;
   raygunApiKey: string;
   supportUrl: string;
+  trustStore: string[];
   updateUrl: string;
+  updatesEndpoint: string;
   version: string;
+  webConfig: ServerWebConfigInterface;
   websiteUrl: string;
 }
 
