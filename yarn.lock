@@ -1015,13 +1015,6 @@
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
   integrity sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==
 
-"@types/file-url@3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@types/file-url/-/file-url-3.0.2.tgz#74d6d4578133c8814385a7420ea686c3ad3e2fe7"
-  integrity sha512-J/TUhtQjCG2I77BpXvRwUp+IZSuxub7gbrW/9/mprI5Hr9HvbdB+JXArkTJHJdqQlE351QVqxnl1KkayCgjUMw==
-  dependencies:
-    file-url "*"
-
 "@types/fs-extra@5.0.5":
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.5.tgz#080d90a792f3fa2c5559eb44bd8ef840aae9104b"
@@ -3358,10 +3351,10 @@ electron-winstaller@2.7.0:
     lodash.template "^4.2.2"
     temp "^0.8.3"
 
-electron@5.0.0-beta.9:
-  version "5.0.0-beta.9"
-  resolved "https://registry.npmjs.org/electron/-/electron-5.0.0-beta.9.tgz#dc429c418e11e7c6886fd8bda60db8a5a2143773"
-  integrity sha512-9NV36qvnkJs9N2vS0lwq6jvFfHs3LSUyLKKIXltFpwgDt7VOcDZh4BPvO8A7S/XemTCsyCTsHGEiDSfSWLfUHg==
+electron@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0.tgz#d8352e2c9625b3be0112ce0c1bf5c9b6f692557e"
+  integrity sha512-++emIe4vLihiYiAVL+E8DT5vSNVFEIuQCRxA+VfpDRVBcog85UB28vi4ogRmMOK3UffzKdWV6e1jqp3T0KpBoA==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
@@ -3927,7 +3920,7 @@ file-type@^10.10.0:
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-10.10.0.tgz#b7cbc8ec48871edd7a3629e0a6d01b2b80a4d56c"
   integrity sha512-3CTQE/db3dnK2jsfd4XiXMKw9nD0QVEMRLdBzqYDRr5BvYMUccDpP8hMc1uPb1VZ9Iw/cAJjYPNwJ5UzxGqsRg==
 
-file-url@*, file-url@3.0.0:
+file-url@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/file-url/-/file-url-3.0.0.tgz#247a586a746ce9f7a8ed05560290968afc262a77"
   integrity sha512-g872QGsHexznxkIAdK8UiZRe7SkE6kvylShU4Nsj8NvfvZag7S0QuQ4IgvPDkk75HxgjIVDwycFTDAgIiO4nDA==
