@@ -83,7 +83,7 @@
     "webpack": "4.30.0",
     "webpack-cli": "3.3.1",
     "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.17.25",
-    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.17.26-0"
+    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.17.27-0"
   },
   "homepage": "https://wire.com",
   "license": "GPL-3.0",
