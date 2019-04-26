@@ -20,7 +20,7 @@
 import './Webview.css';
 import React, {Component} from 'react';
 
-class Webview extends Component {
+export class Webview extends Component {
   constructor(props) {
     super(props);
 
@@ -71,5 +71,3 @@ class Webview extends Component {
     return <webview {...validProps} ref={webview => (this.webview = webview)} />;
   }
 }
-
-export default Webview;

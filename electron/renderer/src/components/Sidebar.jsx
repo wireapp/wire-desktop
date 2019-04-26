@@ -24,12 +24,12 @@ import {
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
-import AddAccountTrigger from './context/AddAccountTrigger';
-import EditAccountMenu from './context/EditAccountMenu';
+import {AddAccountTrigger} from './context/AddAccountTrigger';
+import {EditAccountMenu} from './context/EditAccountMenu';
 import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
-import PersonalIcon from './PersonalIcon';
+import {PersonalIcon} from './PersonalIcon';
 import React from 'react';
-import TeamIcon from './TeamIcon';
+import {TeamIcon} from './TeamIcon';
 import {colorFromId} from '../lib/accentColor';
 import {connect} from 'react-redux';
 import {preventFocus} from '../lib/util';
@@ -47,7 +47,7 @@ const getClassName = account => {
   return `Sidebar-icon${showIconBadge}${showIconCursor}`;
 };
 
-const Sidebar = ({
+const _Sidebar = ({
   accounts,
   currentAccentID,
   hasCreatedAccount,
@@ -100,7 +100,7 @@ const Sidebar = ({
   </div>
 );
 
-export default connect(
+export const Sidebar = connect(
   ({accounts, contextMenuState}) => ({
     accounts,
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
@@ -115,4 +115,4 @@ export default connect(
     switchAccount,
     toggleEditAccountMenuVisibility,
   }
-)(Sidebar);
+)(_Sidebar);

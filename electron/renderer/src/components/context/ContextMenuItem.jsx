@@ -26,8 +26,8 @@ const ContextMenuItem = props => (
   </div>
 );
 
-export default ContextMenuItem;
-
 ContextMenuItem.propTypes = {
   onClick: PropTypes.func,
 };
+
+export {ContextMenuItem};
