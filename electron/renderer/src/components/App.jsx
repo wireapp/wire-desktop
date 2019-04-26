@@ -21,10 +21,10 @@ import './App.css';
 import * as EVENT_TYPE from '../lib/eventType';
 import {initiateSSO, switchAccount, updateAccount} from '../actions';
 import IsOnline from './IsOnline';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
 import React from 'react';
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
+import {config} from '../../../dist/settings/config';
 import {connect} from 'react-redux';
 
 class App extends React.Component {
@@ -62,7 +62,7 @@ class App extends React.Component {
       this.props.switchAccount(accountId);
       this.props.initiateSSO(accountId, ssoCode, this.props.accounts.length == 1);
     } else {
-      if (this.props.accounts.length >= MAXIMUM_ACCOUNTS) {
+      if (this.props.accounts.length >= config.MAXIMUM_ACCOUNTS) {
         return window.dispatchEvent(
           new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
             detail: {

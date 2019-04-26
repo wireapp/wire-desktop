@@ -19,7 +19,7 @@
 
 /* eslint-disable no-console */
 
-import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
+import {config} from '../../../dist/settings/config';
 import uuid from 'uuid/v4';
 import verifyObjectProperties from '../lib/verifyObjectProperties';
 
@@ -113,7 +113,7 @@ export const abortAccountCreation = id => {
 
 export const addAccountWithSession = () => {
   return (dispatch, getState) => {
-    const hasReachedAccountLimit = getState().accounts.length >= MAXIMUM_ACCOUNTS;
+    const hasReachedAccountLimit = getState().accounts.length >= config.MAXIMUM_ACCOUNTS;
 
     if (hasReachedAccountLimit) {
       console.warn('Reached number of maximum accounts');
