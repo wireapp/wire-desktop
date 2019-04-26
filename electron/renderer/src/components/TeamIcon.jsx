@@ -54,4 +54,4 @@ TeamIcon.propTypes = {
   onClick: PropTypes.func,
 };
 
-export default TeamIcon;
+export {TeamIcon};

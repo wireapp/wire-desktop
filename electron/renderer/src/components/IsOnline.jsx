@@ -20,7 +20,7 @@
 import './IsOnline.css';
 import React, {Component} from 'react';
 
-class IsOnline extends Component {
+export class IsOnline extends Component {
   constructor(props) {
     super(props);
 
@@ -45,5 +45,3 @@ class IsOnline extends Component {
     return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
   }
 }
-
-export default IsOnline;
