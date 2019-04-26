@@ -113,7 +113,7 @@ export const abortAccountCreation = id => {
 
 export const addAccountWithSession = () => {
   return (dispatch, getState) => {
-    const hasReachedAccountLimit = getState().accounts.length >= config.MAXIMUM_ACCOUNTS;
+    const hasReachedAccountLimit = getState().accounts.length >= config.maximumAccounts;
 
     if (hasReachedAccountLimit) {
       console.warn('Reached number of maximum accounts');

@@ -62,7 +62,7 @@ class App extends React.Component {
       this.props.switchAccount(accountId);
       this.props.initiateSSO(accountId, ssoCode, this.props.accounts.length == 1);
     } else {
-      if (this.props.accounts.length >= config.MAXIMUM_ACCOUNTS) {
+      if (this.props.accounts.length >= config.maximumAccounts) {
         return window.dispatchEvent(
           new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
             detail: {
