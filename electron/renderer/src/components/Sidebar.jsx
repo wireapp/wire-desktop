@@ -26,11 +26,11 @@ import {
 } from '../actions';
 import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
 import PersonalIcon from './PersonalIcon';
 import React from 'react';
 import TeamIcon from './TeamIcon';
 import {colorFromId} from '../lib/accentColor';
+import {config} from '../../../dist/settings/config';
 import {connect} from 'react-redux';
 import {preventFocus} from '../lib/util';
 
@@ -105,7 +105,7 @@ export default connect(
     accounts,
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
-    hasReachedLimitOfAccounts: accounts.length >= MAXIMUM_ACCOUNTS,
+    hasReachedLimitOfAccounts: accounts.length >= config.maximumAccounts,
     isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
     isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
   }),
