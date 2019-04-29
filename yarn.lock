@@ -1272,10 +1272,10 @@
     fs-extra "7.0.1"
     logdown "3.2.8"
 
-"@wireapp/certificate-check@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@wireapp/certificate-check/-/certificate-check-0.1.4.tgz#9f71e11a4e0b655b17a0d347fca4f8b5b90bca7b"
-  integrity sha512-oglpQOCF4uuTIVipRZke7GNY6rD0q1ZhoN7/R3IvjtESL8reauINCzY2QcN9491vUFHQJQwB/OaDzxig35tVgw==
+"@wireapp/certificate-check@0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@wireapp/certificate-check/-/certificate-check-0.1.5.tgz#e7be24b0fe01b893a62a2fde6d131d6f041ba101"
+  integrity sha512-9r5JxiMCarMnhQ+AC/9lPR1YKTtme3oYddvkm814XSPBoBO2+NfgsQvSkeeL4lQpM/HH+TWH+MDSG7V5dWOdHA==
   dependencies:
     jsrsasign "8.0.12"
 
