@@ -18,14 +18,14 @@
  */
 
 import * as assert from 'assert';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import {CustomProtocolHandler} from './CoreProtocol';
 import {EVENT_TYPE} from './eventType';
 
-let protocolHandler: CustomProtocolHandler = undefined;
+let protocolHandler: CustomProtocolHandler;
 
 describe('dispatchDeepLink', () => {
-  const sendActionSpy: sinon.SinonSpy = sinon.spy();
+  const sendActionSpy = sinon.spy();
 
   beforeEach(() => {
     protocolHandler = new CustomProtocolHandler();
