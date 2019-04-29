@@ -22,7 +22,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {setAccountContextHidden} from '../../actions';
 
-class ContextMenu extends Component {
+class _ContextMenu extends Component {
   constructor(props) {
     super(props);
 
@@ -101,9 +101,9 @@ class ContextMenu extends Component {
   }
 }
 
-export default connect(
+export const ContextMenu = connect(
   state => ({
     position: state.contextMenuState.position,
   }),
   {setAccountContextHidden}
-)(ContextMenu);
+)(_ContextMenu);

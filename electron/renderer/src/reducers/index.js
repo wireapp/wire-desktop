@@ -17,13 +17,11 @@
  *
  */
 
-import accountReducer from './accountReducer';
+import {accountReducer} from './accountReducer';
 import {combineReducers} from 'redux';
-import contextMenuReducer from './contextMenuReducer';
+import {contextMenuReducer} from './contextMenuReducer';
 
-const store = combineReducers({
+export const appStore = combineReducers({
   accounts: accountReducer,
   contextMenuState: contextMenuReducer,
 });
-
-export default store;
