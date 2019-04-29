@@ -125,6 +125,7 @@
     "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos\"",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
     "build:ts": "yarn clear:ts && tsc",
+    "build:ts:tests": "tsc -P tsconfig.mocha.json --noEmit",
     "build:win": "yarn build:prepare && wire-build-win -w electron/wire.json",
     "build:win:installer": "rimraf wrap/dist && wire-build-win-installer -w electron/wire.json",
     "build:win:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:win\"",
@@ -156,7 +157,7 @@
     "start:localhost": "yarn start --env=http://localhost:8081",
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:rc": "yarn start --env=https://wire-webapp-rc.zinfra.io",
-    "test": "yarn lint && yarn build:ts && yarn test:react && yarn test:main && yarn test:renderer && yarn coverage",
+    "test": "yarn lint && yarn build:ts && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn coverage",
     "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\"",
     "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\"",
     "test:react": "jest"
