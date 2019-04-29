@@ -72,7 +72,7 @@ describe('showUnreadCount', () => {
 
       const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
-      appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
+      appWindow.loadFile(path.join(__dirname, '../fixtures/badge.html'));
       appWindow.webContents.on('dom-ready', () => {
         assert.strictEqual(appWindow.isFocused(), true);
         assert.ok(flashFrameSpy.notCalled);
