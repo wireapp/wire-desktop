@@ -20,7 +20,7 @@
 import * as assert from 'assert';
 import {BrowserWindow, Tray, app} from 'electron';
 import * as path from 'path';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 
 import {TrayHandler} from './TrayHandler';
 
@@ -30,10 +30,10 @@ describe('initTray', () => {
   it('creates native images for all tray icons and sets a default tray icon', () => {
     const tray = new TrayHandler();
     tray.initTray(TrayMock);
-    assert.strictEqual(Object.keys(tray.icons).length, 3);
-    assert.strictEqual(tray.icons.badge.constructor.name, 'NativeImage');
-    assert.strictEqual(tray.icons.tray.constructor.name, 'NativeImage');
-    assert.strictEqual(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
+    assert.strictEqual(Object.keys(tray.icons || {}).length, 3);
+    assert.strictEqual(tray.icons!.badge.constructor.name, 'NativeImage');
+    assert.strictEqual(tray.icons!.tray.constructor.name, 'NativeImage');
+    assert.strictEqual(tray.icons!.trayWithBadge.constructor.name, 'NativeImage');
     sinon.assert.match(tray.trayIcon, sinon.match.defined);
   });
 });
@@ -50,11 +50,13 @@ describe('showUnreadCount', () => {
       appWindow.loadURL('about:blank');
       appWindow.webContents.on('dom-ready', () => {
         assert.strictEqual(appWindow.isFocused(), true);
-        sinon.assert.notCalled(flashFrameSpy);
+        assert.ok(flashFrameSpy.notCalled);
         tray.showUnreadCount(appWindow, 1);
-        sinon.assert.calledWith(badgeCountSpy.firstCall, 1);
-        sinon.assert.calledWith(flashFrameSpy.firstCall, false);
+
+        assert.ok(badgeCountSpy.firstCall.calledWith(1));
+        assert.ok(flashFrameSpy.firstCall.calledWith(false));
         assert.strictEqual(tray.lastUnreadCount, 1);
+
         flashFrameSpy.restore();
         badgeCountSpy.restore();
         done();
@@ -73,9 +75,9 @@ describe('showUnreadCount', () => {
       appWindow.loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
       appWindow.webContents.on('dom-ready', () => {
         assert.strictEqual(appWindow.isFocused(), true);
-        sinon.assert.notCalled(flashFrameSpy);
+        assert.ok(flashFrameSpy.notCalled);
         tray.showUnreadCount(appWindow, 10);
-        sinon.assert.calledWith(flashFrameSpy.firstCall, false);
+        assert.ok(flashFrameSpy.firstCall.calledWith(false));
         assert.strictEqual(tray.lastUnreadCount, 10);
         flashFrameSpy.restore();
         done();
@@ -97,7 +99,7 @@ describe('showUnreadCount', () => {
       appWindow.webContents.on('dom-ready', () => {
         assert.strictEqual(appWindow.isFocused(), false);
         tray.showUnreadCount(appWindow, 2);
-        sinon.assert.calledWith(flashFrameSpy.firstCall, true);
+        assert.ok(flashFrameSpy.firstCall.calledWith(true));
         flashFrameSpy.restore();
         done();
       });
@@ -120,7 +122,7 @@ describe('showUnreadCount', () => {
       appWindow.webContents.on('dom-ready', () => {
         assert.strictEqual(appWindow.isFocused(), false);
         tray.showUnreadCount(appWindow, 2);
-        sinon.assert.notCalled(flashFrameSpy);
+        assert.ok(flashFrameSpy.notCalled);
         flashFrameSpy.restore();
         done();
       });
