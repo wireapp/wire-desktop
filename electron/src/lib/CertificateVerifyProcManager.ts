@@ -229,10 +229,8 @@ export const setCertificateVerifyProc = (
     const falsyValue = Object.values(pinningResults).some(val => val === false);
 
     if (falsyValue || pinningResults.errorMessage) {
-      const errorMessage = `Certificate verification failed for "${hostname}":\n${
-        pinningResults.errorMessage
-      }, showing certificate pinning error dialog.`;
-      logger.error(errorMessage);
+      logger.error(`Certificate verification failed for "${hostname}":`);
+      logger.error(`${pinningResults.errorMessage}, displaying certificate pinning error dialog.`);
       CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
       return cb(-2);
     }
