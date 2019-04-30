@@ -19,8 +19,8 @@ node('node180') {
   }
 
   def text = readFile('electron/wire.json')
-  def buildInfo = parseJson(text)
-  def version = buildInfo.version.getAt(0..2) + '.' + env.BUILD_NUMBER
+  def (major, minor) = parseJson(text).version.tokenize('.')
+  def version = "${major}.${minor}.${env.BUILD_NUMBER}"
   currentBuild.displayName = version
 
   def environment = docker.build('node', '-f jenkins/linux.Dockerfile .')
