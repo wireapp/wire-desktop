@@ -226,17 +226,15 @@ export const setCertificateVerifyProc = (
   // Check certificate pinning
   if (certificateUtils.hostnameShouldBePinned(hostname) && CertificateVerifyProcManager.isCertificatePinningEnabled()) {
     const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
+    const falsyValue = Object.values(pinningResults).some(val => val === false);
 
-    for (const result of Object.values(pinningResults)) {
-      if (result === false) {
-        logger.error(
-          `Certificate verification failed for "${hostname}":\n${
-            pinningResults.errorMessage
-          }, showing certificate pinning error dialog.`
-        );
-        CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
-        return cb(-2);
-      }
+    if (falsyValue || pinningResults.errorMessage) {
+      const errorMessage = `Certificate verification failed for "${hostname}":\n${
+        pinningResults.errorMessage
+      }, showing certificate pinning error dialog.`;
+      logger.error(errorMessage);
+      CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
+      return cb(-2);
     }
   }
 
