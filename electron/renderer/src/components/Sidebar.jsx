@@ -69,7 +69,7 @@ const _Sidebar = ({
           className={getClassName(account)}
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
-            const isAtLeastAdmin = [z.team.TeamRole.ROLE.OWNER, z.team.TeamRole.ROLE.ADMIN].includes(account.teamRole);
+            const isAtLeastAdmin = [z.team.ROLE.OWNER, z.team.ROLE.ADMIN].includes(account.teamRole);
             const {centerX, centerY} = centerOfEventTarget(event);
             connected.toggleEditAccountMenuVisibility(
               centerX,
