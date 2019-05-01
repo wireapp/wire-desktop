@@ -4,6 +4,8 @@ sudo: false
 # https://docs.travis-ci.com/user/encryption-keys/
 env:
   global:
+    - CC=gcc-4.9
+    - CXX=g++-4.9
     # WIRE_WEBAPP_BOT_EMAIL
     - secure: "lDNwgwVMAU5YJJ9beATPfRqRHhHpU647XFEObTjrR2mpKIfIvAd2jY9imK2xHfVKdqJdEGSFy/FkWTuzaeawyE3F9iPEt+twAF+xos6EA8G3M2Aj2HVO4EjSFwHkKC7XYcOikCzT1j+MpXbYJvZY4K8r2TmQ97yeYrvwjgavFkQrH3VffiPV+v30Uh94uL6kPv+HcdzjQMM3II8Qd7C016c3xMHYHNhB+bEmMaCOd2P6zFGgDBPYh72lU61wjwwWrVl54OOAXUxqqkodmEVSCp7xWnx/8xbu3cYjDxHyG5MFBEA2nJapfqiHFrA/XL5yaLc5EV3DtGTQmeNDkpgRscheerqEyWnPI41R7qYJMke1rom1d0CoSlR0AGXwe1t40Be3GO2OW8/Buiuvx1VuNqQM/swR+oe0VPf9QI5XzbtIyQdfKKU4ZUOUKX5O/TnDGAlHgavZm+va3FEBbFfG2ScGLd36ZEBpll1CUSulIjsmWg3GF5NOZiUThHdoD2BfFaOGMHjTkKxkK1IpxlARxqJmZUeMdMbm9OJLnkJuB9cta34BDhKgAuDhXLQsEjs55y5usU7iCrIubl1kjFTvvvBC1ngEBnPJzFciZQ4Jww49N5JacpzDqDtpmUxdCqk3vjl17b/1gF66P1wRqTQgnuJw9RVPzZ8y3727jEuObxw="
     # WIRE_WEBAPP_BOT_PASSWORD
@@ -26,12 +28,8 @@ matrix:
             - g++-4.9
       before_script:
         - export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
-      env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - os: osx
       osx_image: xcode8
-      env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
 git:
   submodules: false
@@ -41,9 +39,6 @@ cache:
   directories:
     - $HOME/.npm
     - node_modules
-
-before_install:
-  - eval "${MATRIX_EVAL}"
 
 install:
   - yarn
