@@ -117,7 +117,7 @@ const createDesktopShortcut = (callback?: SpawnCallback): void => {
   spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop'], callback);
 };
 
-const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void): void => {
+const removeShortcuts = (callback: (err: NodeJS.ErrnoException | null) => void): void => {
   logger.info(`Removing all shortcuts ...`);
   spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
     fs.unlink(shortcutLink, callback)

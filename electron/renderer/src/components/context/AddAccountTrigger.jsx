@@ -19,7 +19,7 @@
 
 import React from 'react';
 
-const AddAccountTrigger = ({onClick, forceVisible}) => (
+export const AddAccountTrigger = ({onClick, forceVisible}) => (
   <div
     className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
     onClick={onClick}
@@ -32,5 +32,3 @@ const AddAccountTrigger = ({onClick, forceVisible}) => (
     </div>
   </div>
 );
-
-export default AddAccountTrigger;

@@ -20,15 +20,14 @@
 import './App.css';
 import * as EVENT_TYPE from '../lib/eventType';
 import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import IsOnline from './IsOnline';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
+import {IsOnline} from './IsOnline';
 import React from 'react';
-import Sidebar from './Sidebar';
+import {Sidebar} from './Sidebar';
 import {UpdateBar} from '@wireapp/desktop-updater-ui';
-import WebviewsContainer from '../containers/WebviewsContainer';
+import {WebviewsContainer} from '../containers/WebviewsContainer';
 import {connect} from 'react-redux';
 
-class App extends React.Component {
+class _App extends React.Component {
   constructor(props) {
     super(props);
 
@@ -63,7 +62,7 @@ class App extends React.Component {
       this.props.switchAccount(accountId);
       this.props.initiateSSO(accountId, ssoCode, this.props.accounts.length == 1);
     } else {
-      if (this.props.accounts.length >= MAXIMUM_ACCOUNTS) {
+      if (this.props.accounts.length >= config.maximumAccounts) {
         return window.dispatchEvent(
           new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
             detail: {
@@ -105,7 +104,7 @@ function mapDispatchToProps(dispatch) {
   return {initiateSSO, switchAccount, updateAccount};
 }
 
-export default connect(
+export const App = connect(
   mapStateToProps,
   mapDispatchToProps()
-)(App);
+)(_App);

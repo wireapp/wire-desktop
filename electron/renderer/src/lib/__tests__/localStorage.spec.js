@@ -18,8 +18,7 @@
  */
 
 import {loadState, saveState} from '../localStorage';
-
-import LocalStorageMock from '../__mocks__/localStorage';
+import {LocalStorageMock} from '../__mocks__/localStorage';
 
 describe('localStorage', () => {
   beforeEach(() => {
