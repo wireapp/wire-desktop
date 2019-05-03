@@ -57,7 +57,7 @@
     "core-js": "2.6.5",
     "cross-env": "5.2.0",
     "css-loader": "2.1.1",
-    "electron": "4.1.5",
+    "electron": "4.2.0",
     "electron-mocha": "8.0.1",
     "electron-rebuild": "1.8.4",
     "eslint": "5.16.0",
