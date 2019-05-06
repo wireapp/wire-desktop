@@ -35,7 +35,7 @@ node('master') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
-  def NODE = tool name: 'node-v10.15.3', type: 'nodejs'
+  def NODE = tool name: 'node-v12.1.0', type: 'nodejs'
 
   stage('Get build artifacts') {
     try {
