@@ -87,6 +87,11 @@
     "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.17.27-0"
   },
   "homepage": "https://wire.com",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "license": "GPL-3.0",
   "lint-staged": {
     "*.{js,jsx}": [
@@ -101,7 +106,7 @@
       "tslint --project tsconfig.mocha.json --fix",
       "git add"
     ],
-    "*.{json,md,css}": [
+    "*.{json,md,css,yml}": [
       "prettier --write",
       "git add"
     ]
