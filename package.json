@@ -3,6 +3,8 @@
   "dependencies": {
     "@wireapp/certificate-check": "0.1.6",
     "@wireapp/commons": "1.6.6",
+    "@wireapp/desktop-updater": "0.2.9",
+    "@wireapp/desktop-updater-spec": "0.1.8",
     "auto-launch": "5.0.5",
     "axios": "0.18.0",
     "electron-window-state": "5.0.3",
@@ -52,8 +54,8 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
     "babel-jest": "24.7.1",
-    "babel-plugin-istanbul": "5.1.4",
     "babel-loader": "8.0.5",
+    "babel-plugin-istanbul": "5.1.4",
     "core-js": "2.6.5",
     "cross-env": "5.2.0",
     "css-loader": "2.1.1",
