@@ -18,26 +18,22 @@
  */
 
 import * as assert from 'assert';
-import {BrowserWindow, app} from 'electron';
+import {BrowserWindow, Tray, app} from 'electron';
 import * as path from 'path';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
+
 import {TrayHandler} from './TrayHandler';
 
-const TrayMock = {
-  on: () => {},
-  setContextMenu: () => {},
-  setImage: () => {},
-  setToolTip: () => {},
-};
+const TrayMock = new Tray(path.join(__dirname, '../../test/fixtures/tray.png'));
 
 describe('initTray', () => {
   it('creates native images for all tray icons and sets a default tray icon', () => {
     const tray = new TrayHandler();
     tray.initTray(TrayMock);
-    assert.strictEqual(Object.keys(tray.icons).length, 3);
-    assert.strictEqual(tray.icons.badge.constructor.name, 'NativeImage');
-    assert.strictEqual(tray.icons.tray.constructor.name, 'NativeImage');
-    assert.strictEqual(tray.icons.trayWithBadge.constructor.name, 'NativeImage');
+    assert.strictEqual(Object.keys(tray.icons!).length, 3);
+    assert.strictEqual(tray.icons!.badge.constructor.name, 'NativeImage');
+    assert.strictEqual(tray.icons!.tray.constructor.name, 'NativeImage');
+    assert.strictEqual(tray.icons!.trayWithBadge.constructor.name, 'NativeImage');
     sinon.assert.match(tray.trayIcon, sinon.match.defined);
   });
 });
@@ -48,21 +44,23 @@ describe('showUnreadCount', () => {
       const tray = new TrayHandler();
       const appWindow = new BrowserWindow();
 
-      sinon.spy(app, 'setBadgeCount');
-      sinon.spy(appWindow, 'flashFrame');
+      const badgeCountSpy = sinon.spy(app, 'setBadgeCount');
+      const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
       appWindow
         .loadURL('about:blank')
         .then(() => {
           appWindow.webContents.on('dom-ready', () => {
             assert.strictEqual(appWindow.isFocused(), true);
-            assert.strictEqual(appWindow.flashFrame.callCount, 0);
+            assert.ok(flashFrameSpy.notCalled);
             tray.showUnreadCount(appWindow, 1);
-            assert.ok(app.setBadgeCount.getCall(0).calledWith(1));
-            assert.ok(appWindow.flashFrame.getCall(0).calledWith(false));
+
+            assert.ok(badgeCountSpy.firstCall.calledWith(1));
+            assert.ok(flashFrameSpy.firstCall.calledWith(false));
             assert.strictEqual(tray.lastUnreadCount, 1);
-            appWindow.flashFrame.restore();
-            app.setBadgeCount.restore();
+
+            flashFrameSpy.restore();
+            badgeCountSpy.restore();
             done();
           });
         })
@@ -76,18 +74,18 @@ describe('showUnreadCount', () => {
       tray.initTray(TrayMock);
       const appWindow = new BrowserWindow();
 
-      sinon.spy(appWindow, 'flashFrame');
+      const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
       appWindow
-        .loadURL(`file://${path.join(__dirname, '../fixtures/badge.html')}`)
+        .loadFile(`file://${path.join(__dirname, '../fixtures/badge.html')}`)
         .then(() => {
           appWindow.webContents.on('dom-ready', () => {
             assert.strictEqual(appWindow.isFocused(), true);
-            assert.strictEqual(appWindow.flashFrame.callCount, 0);
+            assert.ok(flashFrameSpy.notCalled);
             tray.showUnreadCount(appWindow, 10);
-            assert.ok(appWindow.flashFrame.getCall(0).calledWith(false));
+            assert.ok(flashFrameSpy.firstCall.calledWith(false));
             assert.strictEqual(tray.lastUnreadCount, 10);
-            appWindow.flashFrame.restore();
+            flashFrameSpy.restore();
             done();
           });
         })
@@ -103,7 +101,7 @@ describe('showUnreadCount', () => {
         useContentSize: true,
       });
 
-      sinon.spy(appWindow, 'flashFrame');
+      const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
       appWindow
         .loadURL('about:blank')
@@ -111,8 +109,8 @@ describe('showUnreadCount', () => {
           appWindow.webContents.on('dom-ready', () => {
             assert.strictEqual(appWindow.isFocused(), false);
             tray.showUnreadCount(appWindow, 2);
-            assert.ok(appWindow.flashFrame.getCall(0).calledWith(true));
-            appWindow.flashFrame.restore();
+            assert.ok(flashFrameSpy.firstCall.calledWith(true));
+            flashFrameSpy.restore();
             done();
           });
           appWindow.showInactive();
@@ -130,7 +128,7 @@ describe('showUnreadCount', () => {
         useContentSize: true,
       });
 
-      sinon.spy(appWindow, 'flashFrame');
+      const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
       appWindow
         .loadURL('about:blank')
@@ -138,8 +136,8 @@ describe('showUnreadCount', () => {
           appWindow.webContents.on('dom-ready', () => {
             assert.strictEqual(appWindow.isFocused(), false);
             tray.showUnreadCount(appWindow, 2);
-            assert.strictEqual(appWindow.flashFrame.callCount, 0);
-            appWindow.flashFrame.restore();
+            assert.ok(flashFrameSpy.notCalled);
+            flashFrameSpy.restore();
             done();
           });
           appWindow.showInactive();
