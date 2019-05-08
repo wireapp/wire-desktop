@@ -36,7 +36,7 @@ export interface ElectronMenuItemWithI18n extends MenuItemConstructorOptions {
   submenu?: ElectronMenuItemWithI18n[] | ElectronMenuWithI18n;
 }
 
-export type Schemata = {[version: string]: any};
+export type Schemata = Record<string, any>;
 
 export interface OnHeadersReceivedDetails {
   responseHeaders: Record<string, string[]>;
