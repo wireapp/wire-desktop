@@ -1384,12 +1384,12 @@
   resolved "https://registry.yarnpkg.com/@wireapp/eslint-config/-/eslint-config-1.0.1.tgz#f23cc0d20c43ef9ece425a5be8d33132fc67e6a9"
   integrity sha512-Q4tNKQegWDEqnBBOwIDit6X/91XyJ1nO9NXVf9HfdI+8IBYp7ny/nPzYcsUA2sdvTjMuQZ7uUFgob0s6HIaHjQ==
 
-"@wireapp/node-addressbook@3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@wireapp/node-addressbook/-/node-addressbook-3.0.2.tgz#a59e3144ee19bfe827c0aa52447666d0ac27b87a"
-  integrity sha512-qG8YOyRhxPKyDjf7Of19TSUlh9WsHKEz27XxCeD9bBe3CyiGzBwWR2/33Nc+hcHFIE6oTgrNoZvDg6NiU5i7vQ==
+"@wireapp/node-addressbook@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@wireapp/node-addressbook/-/node-addressbook-3.1.0.tgz#379e6f12b750426b22bfed7a0a10add4eed4c656"
+  integrity sha512-/LTgD3bpLnApjK5NBJeQQE0JSO79c6u5Co9DClU682bMBj6bV2zbmJvtg1ui1gq1ke1WrCEXnqUz1Iy+Cj0tlg==
   dependencies:
-    nan "2.13.1"
+    nan "2.13.2"
 
 "@wireapp/prettier-config@0.2.0":
   version "0.2.0"
@@ -6593,12 +6593,7 @@ mute-stream@0.0.7:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
 
-nan@2.13.1:
-  version "2.13.1"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.13.1.tgz#a15bee3790bde247e8f38f1d446edcdaeb05f2dd"
-  integrity sha512-I6YB/YEuDeUZMmhscXKxGgZlFnhsn5y0hgOZBadkzfTRrZBtJDZeg6eQf7PYMIEclwmorTKK8GztsyOUSVBREA==
-
-nan@^2.9.2:
+nan@2.13.2, nan@^2.9.2:
   version "2.13.2"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.13.2.tgz#f51dc7ae66ba7d5d55e1e6d4d8092e802c9aefe7"
   integrity sha512-TghvYc72wlMGMVMluVo9WRJc0mB8KxxF/gZ4YYFy7V2ZQX9l7rgbPg7vjS9mt6U5HXODVFVI2bOduCzwOMv/lw==
