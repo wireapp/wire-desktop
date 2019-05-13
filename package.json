@@ -7,7 +7,7 @@
     "axios": "0.18.0",
     "electron-window-state": "5.0.3",
     "file-url": "3.0.0",
-    "fs-extra": "7.0.1",
+    "fs-extra": "8.0.0",
     "image-type": "4.1.0",
     "lodash": "4.17.11",
     "logdown": "3.2.8",
