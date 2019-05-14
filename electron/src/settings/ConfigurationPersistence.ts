@@ -56,7 +56,7 @@ class ConfigurationPersistence {
     return typeof value !== 'undefined' ? value : defaultValue;
   }
 
-  persistToFile() {
+  persistToFile(): void {
     this.logger.log('Saving configuration to persistent storage:', global._ConfigurationPersistence);
     try {
       return fs.writeJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});

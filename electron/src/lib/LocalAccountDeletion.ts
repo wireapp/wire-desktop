@@ -27,7 +27,7 @@ const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
 const logger = LogFactory.getLogger(__filename, {logFilePath: path.join(LOG_DIR, 'electron.log')});
 
-const clearStorage = (session: Electron.Session) => {
+const clearStorage = (session: Electron.Session): Promise<void> => {
   return new Promise(resolve =>
     session.clearStorageData({}, () =>
       session.clearCache(() => {
@@ -38,7 +38,7 @@ const clearStorage = (session: Electron.Session) => {
   );
 };
 
-export async function deleteAccount(id: number, accountId: string, partitionId?: string) {
+export async function deleteAccount(id: number, accountId: string, partitionId?: string): Promise<void> {
   // Delete session data
   try {
     const webviewWebcontent = webContents.fromId(id);

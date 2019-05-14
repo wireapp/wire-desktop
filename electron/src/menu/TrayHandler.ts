@@ -27,19 +27,19 @@ import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
 class TrayHandler {
-  lastUnreadCount: number;
-  trayIcon?: Tray;
   icons?: {
     badge: nativeImage;
     tray: nativeImage;
     trayWithBadge: nativeImage;
   };
+  lastUnreadCount: number;
+  trayIcon?: Tray;
 
   constructor() {
     this.lastUnreadCount = 0;
   }
 
-  initTray(trayIcon = new Tray(nativeImage.createEmpty())) {
+  initTray(trayIcon = new Tray(nativeImage.createEmpty())): void {
     const IMAGE_ROOT = path.join(app.getAppPath(), config.electronDirectory, 'img');
 
     let trayPng = 'tray.png';
@@ -68,13 +68,13 @@ class TrayHandler {
     this.buildTrayMenu();
   }
 
-  showUnreadCount(win: Electron.BrowserWindow, count?: number) {
+  showUnreadCount(win: Electron.BrowserWindow, count?: number): void {
     this.updateIcons(win, count);
     this.flashApplicationWindow(win, count);
     this.updateBadgeCount(count);
   }
 
-  private buildTrayMenu() {
+  private buildTrayMenu(): void {
     const contextMenu = Menu.buildFromTemplate([
       {
         click: () => WindowManager.showPrimaryWindow(),
@@ -93,7 +93,7 @@ class TrayHandler {
     }
   }
 
-  private flashApplicationWindow(win: Electron.BrowserWindow, count?: number) {
+  private flashApplicationWindow(win: Electron.BrowserWindow, count?: number): void {
     if (win.isFocused() || !count) {
       win.flashFrame(false);
     } else if (count > this.lastUnreadCount) {
@@ -101,14 +101,14 @@ class TrayHandler {
     }
   }
 
-  private updateBadgeCount(count?: number) {
+  private updateBadgeCount(count?: number): void {
     if (typeof count !== 'undefined') {
       app.setBadgeCount(count);
       this.lastUnreadCount = count;
     }
   }
 
-  private updateIcons(win: Electron.BrowserWindow, count?: number) {
+  private updateIcons(win: Electron.BrowserWindow, count?: number): void {
     if (this.icons) {
       const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
 
