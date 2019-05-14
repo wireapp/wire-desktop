@@ -47,7 +47,7 @@
     "@wireapp/build-tools": "0.2.1",
     "@wireapp/copy-config": "0.5.8",
     "@wireapp/deploy-tools": "0.1.6",
-    "@wireapp/eslint-config": "1.0.1",
+    "@wireapp/eslint-config": "1.1.0",
     "@wireapp/prettier-config": "0.2.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
