@@ -109,7 +109,7 @@
   "main": "electron/dist/main.js",
   "name": "wire-desktop",
   "optionalDependencies": {
-    "@wireapp/node-addressbook": "3.1.0"
+    "@wireapp/node-addressbook": "3.2.0"
   },
   "prettier": "@wireapp/prettier-config",
   "private": true,
