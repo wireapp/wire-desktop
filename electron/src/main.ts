@@ -377,13 +377,13 @@ class ElectronWrapperInit {
     this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: LOG_FILE});
   }
 
-  async run() {
+  async run(): Promise<void> {
     this.logger.log('webviewProtection init');
     this.webviewProtection();
   }
 
   // <webview> hardening
-  webviewProtection() {
+  webviewProtection(): void {
     const openLinkInNewWindow = (
       event: Electron.Event,
       url: string,
