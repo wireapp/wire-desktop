@@ -70,7 +70,7 @@ class CertificateVerifyProcManager {
     hostname: string,
     certificate: Electron.Certificate,
     options: DisplayCertificateErrorOptions
-  ) {
+  ): void {
     const goBack = () => {
       // Go back to the dialog
       this.displayCertificateError(hostname, certificate, {
@@ -133,10 +133,11 @@ class CertificateVerifyProcManager {
     }
   }
 
-  public static isCertificatePinningEnabled() {
+  public static isCertificatePinningEnabled(): boolean {
     return !this.bypassCertificatePinning;
   }
-  public static displayCertificateChromiumError(hostname: string, certificate: Electron.Certificate) {
+
+  public static displayCertificateChromiumError(hostname: string, certificate: Electron.Certificate): void {
     this.displayCertificateError(hostname, certificate, {isChromiumError: true});
   }
 
@@ -144,7 +145,7 @@ class CertificateVerifyProcManager {
     hostname: string,
     certificate: Electron.Certificate,
     options?: Partial<DisplayCertificateErrorOptions>
-  ) {
+  ): void {
     const {bypassDialogLock, isChromiumError, isCheckboxChecked} = {
       bypassDialogLock: false,
       isCheckboxChecked: false,

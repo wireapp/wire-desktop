@@ -26,13 +26,13 @@ import {CreateSSOAccountDetail} from './CreateSSOAccountDetail';
 const dialog = mainDialog || remote.dialog;
 
 class AutomatedSingleSignOn {
-  private onResponseReceived(event: CustomEvent<CreateSSOAccountDetail>) {
+  private onResponseReceived(event: CustomEvent<CreateSSOAccountDetail>): void {
     if (event.detail.reachedMaximumAccounts) {
       this.showError();
     }
   }
 
-  private showError() {
+  private showError(): void {
     let detail = getText('wrapperAddAccountErrorMessagePlural');
     let message = getText('wrapperAddAccountErrorTitlePlural');
 
@@ -48,7 +48,7 @@ class AutomatedSingleSignOn {
     });
   }
 
-  public async start(ssoCode: string) {
+  public async start(ssoCode: string): Promise<void> {
     window.addEventListener(
       EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE,
       (event: Event) => {
