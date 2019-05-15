@@ -36,7 +36,7 @@ type SpawnError = Error & {code?: number | null; stdout?: string | null};
 
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
-const logger = getLogger('squirrel');
+const logger = getLogger(__filename);
 
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
