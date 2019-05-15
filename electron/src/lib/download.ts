@@ -19,7 +19,7 @@
 
 import {SaveDialogOptions, dialog} from 'electron';
 import * as fs from 'fs';
-import imageType from 'image-type';
+import imageType = require('image-type');
 import * as moment from 'moment';
 
 const downloadImage = (bytes: Uint8Array, timestamp?: string) => {

@@ -25,7 +25,7 @@ import {parse as parseUrl} from 'url';
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
-const logger = getLogger('openGraph');
+const logger = getLogger(__filename);
 
 axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
 
