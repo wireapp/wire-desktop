@@ -25,7 +25,7 @@ import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
 
-const logger = getLogger('preload');
+const logger = getLogger(__filename);
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
