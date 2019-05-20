@@ -55,7 +55,7 @@
     "babel-jest": "24.8.0",
     "babel-loader": "8.0.6",
     "babel-plugin-istanbul": "5.1.4",
-    "core-js": "2.6.5",
+    "core-js": "2.6.6",
     "cross-env": "5.2.0",
     "css-loader": "2.1.1",
     "electron": "4.2.1",
