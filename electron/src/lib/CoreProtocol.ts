@@ -17,20 +17,15 @@
  *
  */
 
-import {LogFactory} from '@wireapp/commons';
 import {app} from 'electron';
-import * as path from 'path';
 import {URL} from 'url';
+import {getLogger} from '../logging/getLogger';
 import {platform} from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const logger = LogFactory.getLogger('CoreProtocol', {
-  forceEnable: true,
-  logFilePath: path.join(LOG_DIR, 'electron.log'),
-});
+const logger = getLogger(__filename);
 
 const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_POSITION = 1;

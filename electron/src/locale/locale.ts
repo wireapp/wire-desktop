@@ -127,7 +127,6 @@ const customReplacements: Record<string, string> = {
 const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
   const strings = getCurrent();
   let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
-  console.log({str, stringIdentifier});
 
   for (const replacement of Object.keys(customReplacements)) {
     const regex = new RegExp(`{${replacement}}`, 'g');

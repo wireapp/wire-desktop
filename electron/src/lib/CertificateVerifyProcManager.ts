@@ -18,15 +18,13 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
-import {LogFactory} from '@wireapp/commons';
-import {app, dialog} from 'electron';
+import {dialog} from 'electron';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import {getText} from '../locale/locale';
+import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});
+const logger = getLogger(__filename);
 
 interface DisplayCertificateErrorOptions {
   bypassDialogLock: boolean;
