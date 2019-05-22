@@ -18,15 +18,13 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
-import {LogFactory} from '@wireapp/commons';
-import {app, dialog} from 'electron';
+import {dialog} from 'electron';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import {getText} from '../locale/locale';
+import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});
+const logger = getLogger(__filename);
 
 interface DisplayCertificateErrorOptions {
   bypassDialogLock: boolean;
@@ -70,7 +68,7 @@ class CertificateVerifyProcManager {
     hostname: string,
     certificate: Electron.Certificate,
     options: DisplayCertificateErrorOptions
-  ) {
+  ): void {
     const goBack = () => {
       // Go back to the dialog
       this.displayCertificateError(hostname, certificate, {
@@ -133,10 +131,11 @@ class CertificateVerifyProcManager {
     }
   }
 
-  public static isCertificatePinningEnabled() {
+  public static isCertificatePinningEnabled(): boolean {
     return !this.bypassCertificatePinning;
   }
-  public static displayCertificateChromiumError(hostname: string, certificate: Electron.Certificate) {
+
+  public static displayCertificateChromiumError(hostname: string, certificate: Electron.Certificate): void {
     this.displayCertificateError(hostname, certificate, {isChromiumError: true});
   }
 
@@ -144,7 +143,7 @@ class CertificateVerifyProcManager {
     hostname: string,
     certificate: Electron.Certificate,
     options?: Partial<DisplayCertificateErrorOptions>
-  ) {
+  ): void {
     const {bypassDialogLock, isChromiumError, isCheckboxChecked} = {
       bypassDialogLock: false,
       isCheckboxChecked: false,

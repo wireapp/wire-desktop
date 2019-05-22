@@ -17,17 +17,18 @@
  *
  */
 
-import {LogFactory, ValidationUtil} from '@wireapp/commons';
+import {ValidationUtil} from '@wireapp/commons';
 import {app, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import {getLogger} from '../logging/getLogger';
 
 const USER_DATA_DIR = app.getPath('userData');
 const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
-const logger = LogFactory.getLogger(__filename, {logFilePath: path.join(LOG_DIR, 'electron.log')});
+const logger = getLogger(__filename);
 
-const clearStorage = (session: Electron.Session) => {
+const clearStorage = (session: Electron.Session): Promise<void> => {
   return new Promise(resolve =>
     session.clearStorageData({}, () =>
       session.clearCache(() => {
@@ -38,7 +39,7 @@ const clearStorage = (session: Electron.Session) => {
   );
 };
 
-export async function deleteAccount(id: number, accountId: string, partitionId?: string) {
+export async function deleteAccount(id: number, accountId: string, partitionId?: string): Promise<void> {
   // Delete session data
   try {
     const webviewWebcontent = webContents.fromId(id);

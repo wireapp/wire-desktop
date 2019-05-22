@@ -24,7 +24,7 @@ const {EVENT_TYPE} = require('../../dist/lib/eventType');
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {systemPreferences} = remote;
 
-const logger = getLogger('webview-preload');
+const logger = getLogger(__filename);
 
 // Note: Until appearance-changed event is available in a future
 // version of Electron... use AppleInterfaceThemeChangedNotification event

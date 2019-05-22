@@ -38,7 +38,7 @@ import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
-import {ENABLE_LOGGING} from './logging/getLogger';
+import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -69,12 +69,18 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 
-const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
+
+if (argv.version) {
+  console.log(config.version);
+  process.exit();
+}
+
+const logger = getLogger(__filename);
 
 // Icon
 const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -377,13 +383,13 @@ class ElectronWrapperInit {
     this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: LOG_FILE});
   }
 
-  async run() {
+  async run(): Promise<void> {
     this.logger.log('webviewProtection init');
     this.webviewProtection();
   }
 
   // <webview> hardening
-  webviewProtection() {
+  webviewProtection(): void {
     const openLinkInNewWindow = (
       event: Electron.Event,
       url: string,
