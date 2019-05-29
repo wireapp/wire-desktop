@@ -1312,17 +1312,17 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/build-tools@0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.2.1.tgz#1b8516562009b376127fa796327f4e177d8de2de"
-  integrity sha512-lS2y0sJkQC/Fbekm1K3nr7/j5vdW/R/PQpsaKIeacOE4Haqt92o3Ty2Rhki9I9gWjIwwZqyX1ebey6WzYq8hYg==
+"@wireapp/build-tools@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.2.2.tgz#1d752a34387f16f5ae5efc9fcbdade5c08cbf9e5"
+  integrity sha512-iqfnW5bCpoYrlqKjgBRja28t9Wqvoqcgkq5EiI1WMwz+C4fyFhVxBwifrytSwBIvtUa6fCDh0JBdeUJUE6qDxA==
   dependencies:
     commander "2.20.0"
-    dotenv "7.0.0"
+    dotenv "8.0.0"
     electron-builder "20.39.0"
     electron-packager "13.1.1"
     electron-winstaller "2.7.0"
-    fs-extra "7.0.1"
+    fs-extra "8.0.1"
     logdown "3.2.8"
 
 "@wireapp/certificate-check@0.1.6":
@@ -3217,10 +3217,10 @@ dotenv-expand@^4.2.0:
   resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-4.2.0.tgz#def1f1ca5d6059d24a766e587942c21106ce1275"
   integrity sha1-3vHxyl1gWdJKdm5YeULCEQbOEnU=
 
-dotenv@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-7.0.0.tgz#a2be3cd52736673206e8a85fb5210eea29628e7c"
-  integrity sha512-M3NhsLbV1i6HuGzBUH8vXrtxOk+tWmzWKDMbAVSUp3Zsjm7ywFeuwrUXhmhQyRK1q5B5GGy7hcXPbj3bnfZg2g==
+dotenv@8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.0.0.tgz#ed310c165b4e8a97bb745b0a9d99c31bda566440"
+  integrity sha512-30xVGqjLjiUOArT4+M5q9sYdvuR4riM6yK9wMcas9Vbp6zZa+ocC9dp6QoftuhTPhFAiLK/0C5Ni2nou/Bk8lg==
 
 dotenv@^6.2.0:
   version "6.2.0"
