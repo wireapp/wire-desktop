@@ -1360,16 +1360,16 @@
     logdown "3.2.8"
     rimraf "2.6.3"
 
-"@wireapp/deploy-tools@0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.6.tgz#1fb93319a7eed76457b447a10c2b85aa7e67cfa2"
-  integrity sha512-nQPDjL0BMVUKj3qNAyMlENdRjrXPzUFpYLuVWBiN5nU+JutAkjgnvKVfrhrK3/JotGbjUKba7rF4oARUwxF1nw==
+"@wireapp/deploy-tools@0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.7.tgz#90917dc4e07b58a00b5dcdcfa8adaaf74c57d0b2"
+  integrity sha512-wllkCoh6Ue8F5o88vFYStQFaFDLRjYSCylEL2WR7Q08n4UkDN3PTwRnz9VIns7frkUTS7wN7Cs6NKIKqv2P0Bw==
   dependencies:
-    aws-sdk "2.445.0"
+    aws-sdk "2.463.0"
     axios "0.18.0"
     commander "2.20.0"
     form-data "2.3.3"
-    fs-extra "7.0.1"
+    fs-extra "8.0.1"
     globby "9.2.0"
     jszip "3.2.1"
     logdown "3.2.8"
@@ -1801,10 +1801,10 @@ auto-launch@5.0.5:
     untildify "^3.0.2"
     winreg "1.2.4"
 
-aws-sdk@2.445.0:
-  version "2.445.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.445.0.tgz#30046be1d4b89c1ba5421514e7cfedf6b102e556"
-  integrity sha512-VontdYjQs7218Mw73IYIVhmbRlnHsbbNxuatOFgKvhFCWh4+ze4joM95ViKOUVofSWwlm1HmNasdhb2kOTg+MA==
+aws-sdk@2.463.0:
+  version "2.463.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.463.0.tgz#57562a95aa9b071ee16bb9e18ddd5c6c27c6eda6"
+  integrity sha512-bl0S6mxA2o8Hpy9LsMcPC9kVnrL4+B4qayiMlNMrp+8gcEMzJSMzfrUDX4SCWsqGYT25sZn8TDqTGJp7XIh3yw==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
