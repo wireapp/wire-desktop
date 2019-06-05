@@ -54,12 +54,12 @@ const URL_WEBAPP = {
 };
 
 const URL_UPDATER_ENDPOINT: {[key in BackendTypeLabelKey]: string} = {
-  DEV: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
-  EDGE: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
-  INTERNAL: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
-  LOCALHOST: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
-  PRODUCTION: config.updatesEndpoint || 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
-  RC: 'https://s3-eu-west-1.amazonaws.com/sabri-dev/v1',
+  DEV: 'https://sabri.s3.eu-central-1.amazonaws.com/v1',
+  EDGE: 'https://sabri.s3.eu-central-1.amazonaws.com/v1',
+  INTERNAL: 'https://sabri.s3.eu-central-1.amazonaws.com/v1',
+  LOCALHOST: 'https://sabri.s3.eu-central-1.amazonaws.com/v1',
+  PRODUCTION: config.updatesEndpoint || 'https://sabri.s3.eu-central-1.amazonaws.com/v1',
+  RC: 'https://sabri.s3.eu-central-1.amazonaws.com/v1',
 };
 
 const app = {

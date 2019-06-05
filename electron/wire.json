@@ -15,8 +15,7 @@
   "privacyUrl": "https://wire.com/privacy/",
   "raygunApiKey": "",
   "supportUrl": "https://support.wire.com",
-  "trustStore": ["3942e683bb97a2d84beb6df14bbe25ee5e327a3fc4b05723ff835cd6d6e8d96b"],
-  "updatesEndpoint": "https://s3-eu-west-1.amazonaws.com/sabri-dev/v1",
+  "trustStore": ["ffbab1f0d42ef879c589dd2b85437875b63b9f706ffaa8926fccfb5b8e9abc53"],
   "version": "3.10.0",
   "webConfig": {
     "ANALYTICS_API_KEY": "",
