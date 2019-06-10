@@ -85,7 +85,7 @@
     "tslint-react-hooks": "2.1.0",
     "typescript": "3.5.1",
     "webpack": "4.33.0",
-    "webpack-cli": "3.3.2",
+    "webpack-cli": "3.3.3",
     "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.20.2",
     "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.19.8-0"
   },
