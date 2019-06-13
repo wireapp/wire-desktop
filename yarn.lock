@@ -1325,10 +1325,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@1.8.1":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.8.1.tgz#39bee8451d16fc5765454ea2d49dbf8bfe62d8b5"
-  integrity sha512-uLctPOsoBkZJu0WvR+DIrK+Tr78lPcilBGalG/1ag1vlVP+2J9CK5d+N12PKgR8AKFIfuy1ejwjkUV5PSZj7lQ==
+"@wireapp/commons@1.8.2":
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-1.8.2.tgz#8e0bea33ba4d14f63df42c29dbe12b39ffd4f541"
+  integrity sha512-OdyrL4hTBMGxlPeov0+vQUytKeHSWC0mG31VJB0/b6ES/Fjsl6T8Cbd5PlZY+TsPRDOxOH8jaER19mxkKe+Q2g==
   dependencies:
     "@types/ansi-regex" "4.0.0"
     "@types/fs-extra" "7.0.0"
