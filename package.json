@@ -62,7 +62,7 @@
     "electron-mocha": "8.0.2",
     "electron-rebuild": "1.8.5",
     "eslint": "5.16.0",
-    "eslint-config-prettier": "4.3.0",
+    "eslint-config-prettier": "5.0.0",
     "eslint-plugin-import": "2.17.3",
     "eslint-plugin-jasmine": "2.10.1",
     "eslint-plugin-jsdoc": "8.0.1",
