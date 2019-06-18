@@ -340,9 +340,7 @@ class SingleSignOn {
 
     // Fake postMessage to the webview
     await this.senderWebContents.executeJavaScript(
-      `window.dispatchEvent(new MessageEvent('message', {origin: '${
-        this.windowOriginUrl.origin
-      }', data: {type: '${type}'}, type: {isTrusted: true}}));`
+      `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}, type: {isTrusted: true}}));`
     );
   };
 

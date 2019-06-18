@@ -65,7 +65,7 @@ describe('showUnreadCount', () => {
   });
 
   describe('with tray icon initialization', async () => {
-    it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', done => {
+    it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', async done => {
       const tray = new TrayHandler();
       tray.initTray(TrayMock);
       const appWindow = new BrowserWindow();

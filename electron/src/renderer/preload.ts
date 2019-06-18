@@ -59,13 +59,10 @@ const subscribeToMainProcessEvents = () => {
     }
   });
 
-  ipcRenderer.on(
-    EVENT_TYPE.WRAPPER.RELOAD,
-    (): void => {
-      const webviews = document.querySelectorAll<WebviewTag>('webview');
-      webviews.forEach(webview => webview.reload());
-    }
-  );
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
+    const webviews = document.querySelectorAll<WebviewTag>('webview');
+    webviews.forEach(webview => webview.reload());
+  });
 };
 
 const setupIpcInterface = (): void => {
