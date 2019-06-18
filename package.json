@@ -51,7 +51,7 @@
     "@wireapp/prettier-config": "0.2.0",
     "@wireapp/tslint-config": "1.1.0",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "10.0.1",
+    "babel-eslint": "10.0.2",
     "babel-jest": "24.8.0",
     "babel-loader": "8.0.6",
     "babel-plugin-istanbul": "5.1.4",
