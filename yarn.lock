@@ -9618,10 +9618,10 @@ winreg@1.2.4:
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.20.4":
-  version "0.20.4"
-  uid "504976ad1f37b9e64bab1da7a19888af5cee2703"
-  resolved "https://github.com/wireapp/wire-web-config-default#504976ad1f37b9e64bab1da7a19888af5cee2703"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.21.2":
+  version "0.21.2"
+  uid "22e070dd08164199b2c2a2b3ca843cb372519ab3"
+  resolved "https://github.com/wireapp/wire-web-config-default#22e070dd08164199b2c2a2b3ca843cb372519ab3"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
