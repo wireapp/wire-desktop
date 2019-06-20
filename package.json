@@ -34,7 +34,6 @@
     "@babel/preset-typescript": "7.3.3",
     "@babel/register": "7.4.4",
     "@types/auto-launch": "5.0.1",
-    "@types/file-url": "3.0.2",
     "@types/fs-extra": "7.0.0",
     "@types/lodash": "4.14.134",
     "@types/minimist": "1.2.0",

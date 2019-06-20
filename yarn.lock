@@ -1037,13 +1037,6 @@
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
   integrity sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==
 
-"@types/file-url@3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@types/file-url/-/file-url-3.0.2.tgz#74d6d4578133c8814385a7420ea686c3ad3e2fe7"
-  integrity sha512-J/TUhtQjCG2I77BpXvRwUp+IZSuxub7gbrW/9/mprI5Hr9HvbdB+JXArkTJHJdqQlE351QVqxnl1KkayCgjUMw==
-  dependencies:
-    file-url "*"
-
 "@types/fs-extra@7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-7.0.0.tgz#9c4ad9e1339e7448a76698829def1f159c1b636c"
@@ -4018,7 +4011,7 @@ file-type@^10.10.0:
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-10.10.0.tgz#b7cbc8ec48871edd7a3629e0a6d01b2b80a4d56c"
   integrity sha512-3CTQE/db3dnK2jsfd4XiXMKw9nD0QVEMRLdBzqYDRr5BvYMUccDpP8hMc1uPb1VZ9Iw/cAJjYPNwJ5UzxGqsRg==
 
-file-url@*, file-url@3.0.0:
+file-url@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/file-url/-/file-url-3.0.0.tgz#247a586a746ce9f7a8ed05560290968afc262a77"
   integrity sha512-g872QGsHexznxkIAdK8UiZRe7SkE6kvylShU4Nsj8NvfvZag7S0QuQ4IgvPDkk75HxgjIVDwycFTDAgIiO4nDA==
@@ -9621,7 +9614,6 @@ winreg@1.2.4:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.21.2":
   version "0.21.2"
-  uid "22e070dd08164199b2c2a2b3ca843cb372519ab3"
   resolved "https://github.com/wireapp/wire-web-config-default#22e070dd08164199b2c2a2b3ca843cb372519ab3"
   dependencies:
     adm-zip "0.4.13"
@@ -9629,7 +9621,6 @@ winreg@1.2.4:
 
 "wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.21.1-0":
   version "0.21.1-0"
-  uid f50252d1835126259bfe518e89dee2f89bf8f642
   resolved "https://github.com/wireapp/wire-web-config-wire#f50252d1835126259bfe518e89dee2f89bf8f642"
   dependencies:
     adm-zip "0.4.13"
