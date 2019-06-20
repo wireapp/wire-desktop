@@ -25,7 +25,7 @@ import {CreateSSOAccountDetail} from './CreateSSOAccountDetail';
 
 const dialog = mainDialog || remote.dialog;
 
-class AutomatedSingleSignOn {
+export class AutomatedSingleSignOn {
   private onResponseReceived(event: CustomEvent<CreateSSOAccountDetail>): void {
     if (event.detail.reachedMaximumAccounts) {
       this.showError();
@@ -70,5 +70,3 @@ class AutomatedSingleSignOn {
     );
   }
 }
-
-export {AutomatedSingleSignOn};

@@ -17,7 +17,7 @@
  *
  */
 
-const SettingsType = {
+export const SettingsType = {
   AUTO_LAUNCH: 'shouldAutoLaunch',
   ENV: 'env',
   FULL_SCREEN: 'fullscreen',
@@ -25,5 +25,3 @@ const SettingsType = {
   SHOW_MENU_BAR: 'showMenu',
   WINDOW_BOUNDS: 'bounds',
 };
-
-export {SettingsType};

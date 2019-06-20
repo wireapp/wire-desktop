@@ -24,8 +24,8 @@ import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';
 
 class ConfigurationPersistence {
-  configFile: string;
-  logger: logdown.Logger;
+  private readonly configFile: string;
+  private readonly logger: logdown.Logger;
 
   constructor() {
     this.configFile = SchemaUpdater.updateToVersion1();
@@ -77,6 +77,4 @@ class ConfigurationPersistence {
   }
 }
 
-const settings = new ConfigurationPersistence();
-
-export {settings};
+export const settings = new ConfigurationPersistence();

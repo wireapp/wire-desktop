@@ -22,7 +22,7 @@ import * as fs from 'fs';
 import imageType = require('image-type');
 import * as moment from 'moment';
 
-const downloadImage = (bytes: Uint8Array, timestamp?: string) => {
+export const downloadImage = (bytes: Uint8Array, timestamp?: string) => {
   return new Promise((resolve, reject) => {
     const type = imageType(bytes);
     const options: SaveDialogOptions = {};
@@ -51,5 +51,3 @@ const downloadImage = (bytes: Uint8Array, timestamp?: string) => {
     });
   });
 };
-
-export {downloadImage};

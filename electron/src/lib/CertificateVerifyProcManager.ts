@@ -33,23 +33,24 @@ interface DisplayCertificateErrorOptions {
 }
 
 class CertificateVerifyProcManager {
-  private static bypassCertificatePinning: boolean = false;
-  private static isDialogLocked: boolean = false;
+  private static bypassCertificatePinning = false;
+  private static isDialogLocked = false;
   public static mainWindow: Electron.BrowserWindow;
 
-  private static readonly dialogUnlockTimeout: number = 6000;
+  private static readonly dialogUnlockTimeout = 6000;
 
   public static readonly CHROMIUM_ERRORS = {
     CERT_AUTHORITY_INVALID: -202,
     CERT_COMMON_NAME_INVALID: -200,
   };
-  private static readonly RESPONSE = {
-    RETRY: 0,
-    SHOW_DETAILS: 1,
 
+  private static readonly RESPONSE = {
     GO_BACK: 0,
+    RETRY: 0,
     SAVE_CERTIFICATE: 1,
+    SHOW_DETAILS: 1,
   };
+
   private static readonly LOCALE = {
     RETRY: getText('certificateVerifyProcManagerRetry'),
     SHOW_DETAILS: getText('certificateVerifyProcManagerShowDetails'),

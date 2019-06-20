@@ -36,7 +36,7 @@ enum ProtocolCommand {
 }
 
 export class CustomProtocolHandler {
-  hashLocation: string = '';
+  hashLocation = '';
   private readonly windowManager = WindowManager;
 
   async dispatchDeepLink(url?: string): Promise<void> {

@@ -17,8 +17,6 @@
  *
  */
 
-interface CreateSSOAccountDetail {
+export interface CreateSSOAccountDetail {
   reachedMaximumAccounts: boolean;
 }
-
-export {CreateSSOAccountDetail};

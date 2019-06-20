@@ -141,37 +141,36 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
   return meta;
 };
 
-const getOpenGraphData = (
+export const getOpenGraphData = async (
   url: string,
   callback: (error: Error | null, meta?: OpenGraphResult) => void
 ): Promise<OpenGraphResult | void> => {
-  return fetchOpenGraphData(url)
-    .then(meta => {
-      if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
-        const [imageUrl] = arrayify(meta.image.url);
+  try {
+    let meta = await fetchOpenGraphData(url);
+    if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
+      const [imageUrl] = arrayify(meta.image.url);
 
-        return fetchImageAsBase64(imageUrl).then(uri => updateMetaDataWithImage(meta, uri));
-      } else {
-        return Promise.reject(new Error('OpenGraph metadata contains no image.'));
-      }
-    })
-    .then(meta => {
-      if (callback) {
-        callback(null, meta);
-      }
+      const uri = await fetchImageAsBase64(imageUrl);
+      meta = await updateMetaDataWithImage(meta, uri);
+    } else {
+      throw new Error('OpenGraph metadata contains no image.');
+    }
 
-      return meta;
-    })
-    .catch(error => {
-      if (callback) {
-        callback(error);
-      } else {
-        logger.info(error);
-      }
-    });
+    if (callback) {
+      callback(null, meta);
+    }
+
+    return meta;
+  } catch (error) {
+    if (callback) {
+      callback(error);
+    } else {
+      logger.info(error);
+    }
+  }
 };
 
-const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
+export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
   const meta = await fetchOpenGraphData(url);
 
   if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
@@ -183,5 +182,3 @@ const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
     throw new Error('OpenGraph metadata contains no image.');
   }
 };
-
-export {getOpenGraphData, getOpenGraphDataAsync};

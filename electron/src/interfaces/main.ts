@@ -37,9 +37,3 @@ export interface ElectronMenuItemWithI18n extends MenuItemConstructorOptions {
 }
 
 export type Schemata = Record<string, any>;
-
-export interface OnHeadersReceivedDetails {
-  responseHeaders: Record<string, string[]>;
-}
-
-export type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;

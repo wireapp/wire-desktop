@@ -27,7 +27,6 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -471,17 +470,23 @@ class ElectronWrapperInit {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
-            const listener = (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
-              details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
-              details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+            const listener = (
+              details: Electron.OnHeadersReceivedDetails,
+              callback: (response: Electron.OnHeadersReceivedResponse) => void
+            ) => {
+              const responseHeaders = {
+                ...details.responseHeaders,
+                'Access-Control-Allow-Credentials': ['true'],
+                'Access-Control-Allow-Origin': ['http://localhost:8081'],
+              };
 
               callback({
                 cancel: false,
-                responseHeaders: details.responseHeaders,
+                responseHeaders: responseHeaders,
               });
             };
 
-            contents.session.webRequest.onHeadersReceived(filter, listener as any);
+            contents.session.webRequest.onHeadersReceived(filter, listener);
           }
 
           contents.on('before-input-event', (event, input) => {
