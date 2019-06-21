@@ -1361,10 +1361,10 @@
     jszip "3.2.1"
     logdown "3.2.8"
 
-"@wireapp/eslint-config@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@wireapp/eslint-config/-/eslint-config-1.1.1.tgz#339a3199c59a891575cefd6945e987ebd90bbb15"
-  integrity sha512-13WZG+txWsvESjxhUcsoXJRNUpKTY/GZWQidd8BGQQOBf/LF3b2qi83vKUlrj0wcjoZZAuTacJehNSDOb/986Q==
+"@wireapp/eslint-config@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@wireapp/eslint-config/-/eslint-config-1.2.0.tgz#7345f5a8f4763435efef6a46d0ff6c006a0e0064"
+  integrity sha512-UNpt4uA1KIW29WP3Nb9GpI/hriy+HVTbkA/KZwHPST2OXCOX9sGAF39tuutiKAZll3WxG1M3XnxXBL/CtBmgVA==
 
 "@wireapp/node-addressbook@3.3.1":
   version "3.3.1"
