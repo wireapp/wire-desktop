@@ -123,7 +123,7 @@ const showWindow = async () => {
           copyright: config.copyright,
           electronVersion: config.version,
           productName: config.name,
-          webappVersion: webappVersion,
+          webappVersion,
         });
       }
     });
