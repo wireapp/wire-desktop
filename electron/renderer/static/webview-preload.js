@@ -31,7 +31,7 @@ const logger = getLogger(__filename);
 function subscribeToThemeChange() {
   if (environment.platform.IS_MAC_OS && z.event.WebApp.PROPERTIES.UPDATE.INTERFACE) {
     systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () =>
-      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode())
+      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode()),
     );
   }
 }

@@ -32,7 +32,7 @@ class SingleSignOn {
   private static readonly PRELOAD_SSO_JS = path.join(
     app.getAppPath(),
     config.electronDirectory,
-    'dist/renderer/preload-sso.js'
+    'dist/renderer/preload-sso.js',
   );
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
@@ -199,7 +199,7 @@ class SingleSignOn {
     private readonly mainBrowserWindow: Electron.BrowserWindow,
     private readonly senderEvent: Electron.Event,
     windowOriginUrl: string,
-    private readonly windowOptions: Electron.BrowserWindowConstructorOptions
+    private readonly windowOptions: Electron.BrowserWindowConstructorOptions,
   ) {
     this.senderWebContents = senderEvent.sender;
     this.mainSession = this.senderWebContents.session;
@@ -340,7 +340,7 @@ class SingleSignOn {
 
     // Fake postMessage to the webview
     await this.senderWebContents.executeJavaScript(
-      `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}, type: {isTrusted: true}}));`
+      `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}, type: {isTrusted: true}}));`,
     );
   };
 

@@ -66,7 +66,7 @@ const getEnvironment = (): BackendTypeLabelKey => {
 
 const isProdEnvironment = (): boolean => {
   return [BackendTypeLabel.INTERNAL.toUpperCase(), BackendTypeLabel.PRODUCTION.toUpperCase()].includes(
-    getEnvironment()
+    getEnvironment(),
   );
 };
 

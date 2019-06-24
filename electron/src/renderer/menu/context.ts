@@ -130,7 +130,7 @@ window.addEventListener(
       }
     }
   },
-  false
+  false,
 );
 
 const savePicture = (url: RequestInfo, timestamp?: string) => {

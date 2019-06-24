@@ -116,7 +116,7 @@ const bindIpcEvents = () => {
     async (event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) => {
       await deleteAccount(id, accountId, partitionId);
       main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
-    }
+    },
   );
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
@@ -396,7 +396,7 @@ class ElectronWrapperInit {
       url: string,
       frameName: string,
       disposition: string,
-      options: Electron.Options
+      options: Electron.Options,
     ) => {
       event.preventDefault();
 

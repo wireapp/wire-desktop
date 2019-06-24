@@ -37,5 +37,5 @@ export const WebviewsContainer = connect(
     updateAccountBadgeCount,
     updateAccountData,
     updateAccountLifecycle,
-  }
+  },
 )(Webviews);
