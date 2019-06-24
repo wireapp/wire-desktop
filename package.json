@@ -44,7 +44,7 @@
     "@types/sinon": "7.0.13",
     "@types/uuid": "3.4.4",
     "@wireapp/build-tools": "0.2.2",
-    "@wireapp/copy-config": "0.5.14",
+    "@wireapp/copy-config": "0.6.0",
     "@wireapp/deploy-tools": "0.1.7",
     "@wireapp/eslint-config": "1.2.0",
     "@wireapp/prettier-config": "0.2.0",
