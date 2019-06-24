@@ -143,7 +143,7 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
 
 const getOpenGraphData = (
   url: string,
-  callback: (error: Error | null, meta?: OpenGraphResult) => void
+  callback: (error: Error | null, meta?: OpenGraphResult) => void,
 ): Promise<OpenGraphResult | void> => {
   return fetchOpenGraphData(url)
     .then(meta => {

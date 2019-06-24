@@ -64,7 +64,7 @@ export class Webviews extends Component {
         ...accumulator,
         [account.id]: this._canDeleteWebview(account),
       }),
-      {}
+      {},
     );
   }
 

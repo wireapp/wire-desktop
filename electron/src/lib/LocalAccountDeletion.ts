@@ -34,8 +34,8 @@ const clearStorage = (session: Electron.Session): Promise<void> => {
       session.clearCache(() => {
         session.flushStorageData();
         resolve();
-      })
-    )
+      }),
+    ),
   );
 };
 

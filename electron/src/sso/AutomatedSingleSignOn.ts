@@ -58,7 +58,7 @@ class AutomatedSingleSignOn {
       },
       {
         once: true,
-      }
+      },
     );
 
     window.dispatchEvent(
@@ -66,7 +66,7 @@ class AutomatedSingleSignOn {
         detail: {
           code: ssoCode,
         },
-      })
+      }),
     );
   }
 }

@@ -41,7 +41,7 @@ const getWebviewById = (id: string): WebviewTag => {
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event: IpcMessageEvent, code: string) =>
-    new AutomatedSingleSignOn().start(code)
+    new AutomatedSingleSignOn().start(code),
   );
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: IpcMessageEvent, action: string) => {

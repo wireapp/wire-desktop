@@ -120,7 +120,7 @@ const createDesktopShortcut = (callback?: SpawnCallback): void => {
 const removeShortcuts = (callback: (err: NodeJS.ErrnoException | null) => void): void => {
   logger.info(`Removing all shortcuts ...`);
   spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
-    fs.unlink(shortcutLink, callback)
+    fs.unlink(shortcutLink, callback),
   );
 };
 
@@ -134,7 +134,10 @@ const scheduleUpdate = (): void => {
   const nextCheck = moment.duration(config.squirrelUpdateInterval.DELAY).asMinutes();
   const everyCheck = moment.duration(config.squirrelUpdateInterval.INTERVAL).asHours();
   logger.info(
-    `Scheduling update to check in "${pluralize(nextCheck, 'minute')}" and every "${pluralize(everyCheck, 'hour')}" ...`
+    `Scheduling update to check in "${pluralize(nextCheck, 'minute')}" and every "${pluralize(
+      everyCheck,
+      'hour',
+    )}" ...`,
   );
 
   setTimeout(installUpdate, config.squirrelUpdateInterval.DELAY);

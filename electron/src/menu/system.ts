@@ -56,7 +56,7 @@ const createLanguageTemplate = (languageCode: Supportedi18nLanguage): ElectronMe
 
 const createLanguageSubmenu = (): ElectronMenuItemWithI18n[] => {
   return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage =>
-    createLanguageTemplate(supportedLanguage as Supportedi18nLanguage)
+    createLanguageTemplate(supportedLanguage as Supportedi18nLanguage),
   );
 };
 
@@ -377,7 +377,7 @@ const changeLocale = (language: Supportedi18nLanguage): void => {
       if (response === 1) {
         return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
       }
-    }
+    },
   );
 };
 
@@ -438,7 +438,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
 const registerShortcuts = (): void => {
   // Global mute shortcut
   globalShortcut.register('CmdOrCtrl+Alt+M', () =>
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE)
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
   );
 
   // Global account switching shortcut
@@ -447,7 +447,7 @@ const registerShortcuts = (): void => {
   for (const shortcut of switchAccountShortcut) {
     for (let accountId = 0; accountId < accountLimit; accountId++) {
       globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId),
       );
     }
   }
