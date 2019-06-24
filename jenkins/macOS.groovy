@@ -56,9 +56,9 @@ node('master') {
 
   stage('Archive build artifacts') {
     if (production) {
-      archiveArtifacts 'Wire.pkg'
+      archiveArtifacts 'wrap/build/Wire.pkg'
     } else if (custom) {
-      archiveArtifacts '*.pkg'
+      archiveArtifacts 'wrap/build/*.pkg'
     } else {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/WireInternal.zip\""

@@ -30,7 +30,7 @@ node('master') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf *.pkg *.zip'
+    sh returnStatus: true, script: 'rm -rf wrap *.pkg *.zip'
   }
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
@@ -42,7 +42,7 @@ node('master') {
       step ([$class: 'CopyArtifact',
       projectName: "$projectName",
       selector: [$class: 'SpecificBuildSelector', buildNumber: "$version"],
-      filter: '*.pkg,wrap/**']);
+      filter: 'wrap/build/*.pkg,wrap/build/*.app']);
     } catch (e) {
       wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts from of ${version} from ${projectName}** see: ${JOB_URL}"
       throw e
