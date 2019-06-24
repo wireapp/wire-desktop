@@ -1104,9 +1104,9 @@
   integrity sha512-NJ4yuEVw5podZbINp3tEqUIImMSAEHaCXRiWCf3KC32l6hIKf0iPJEh2uZdT0fELfRYk310yLmMXqy2leZQUbg==
 
 "@types/node@^10.12.18", "@types/node@~10":
-  version "10.14.9"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.9.tgz#2e8d678039d27943ce53a1913386133227fd9066"
-  integrity sha512-NelG/dSahlXYtSoVPErrp06tYFrvzj8XLWmKA+X8x0W//4MqbUyZu++giUG/v0bjAT6/Qxa8IjodrfdACyb0Fg==
+  version "10.14.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.10.tgz#e491484c6060af8d461e12ec81c0da8a3282b8de"
+  integrity sha512-V8wj+w2YMNvGuhgl/MA5fmTxgjmVHVoasfIaxMMZJV6Y8Kk+Ydpi1z2whoShDCJ2BuNVoqH/h1hrygnBxkrw/Q==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
