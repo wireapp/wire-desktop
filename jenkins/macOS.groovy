@@ -42,7 +42,7 @@ node('master') {
 
       if (production) {
         rm 'wrap/build/Wire.pkg'
-        productbuild --component 'wrap/build/WireInternal-mas-x64/Wire.app' '/Applications' --sign 'wrap/build/Wire.pkg'
+        sh "productbuild --component 'wrap/build/WireInternal-mas-x64/Wire.app' '/Applications' --sign 'wrap/build/Wire.pkg'"
       }
 
     } catch(e) {
