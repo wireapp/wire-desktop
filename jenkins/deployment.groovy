@@ -43,7 +43,10 @@ node('master') {
         $class: 'CopyArtifact',
         filter: 'wrap/build/**',
         projectName: "$projectName",
-        selector: [$class: 'SpecificBuildSelector', buildNumber: "$version"]
+        selector: [
+          $class: 'SpecificBuildSelector',
+          buildNumber: "$version"
+        ]
       ]);
     } catch (e) {
       wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts from of ${version} from ${projectName}** see: ${JOB_URL}"
