@@ -43,7 +43,7 @@
     "@types/raygun": "0.10.1",
     "@types/sinon": "7.0.13",
     "@types/uuid": "3.4.4",
-    "@wireapp/build-tools": "0.4.0",
+    "@wireapp/build-tools": "0.5.0-beta",
     "@wireapp/copy-config": "0.6.0",
     "@wireapp/deploy-tools": "0.1.8",
     "@wireapp/eslint-config": "1.2.1",
@@ -128,7 +128,7 @@
   "scripts": {
     "build:linux": "yarn build:prepare && wire-build-linux -w electron/wire.json",
     "build:linux:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:linux\"",
-    "build:macos": "yarn build:prepare && wire-build-macos -w electron/wire.json",
+    "build:macos": "yarn build:prepare && wire-build-macos -m -w electron/wire.json",
     "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos\"",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
     "build:ts": "yarn clear:ts && tsc",
