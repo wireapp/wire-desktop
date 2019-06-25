@@ -39,12 +39,6 @@ node('master') {
         sh 'yarn'
         sh 'yarn build:macos'
       }
-
-      if (production) {
-        sh "rm 'wrap/build/Wire.pkg'"
-        sh "productbuild --component 'wrap/build/Wire-mas-x64/Wire.app' '/Applications' --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' 'wrap/build/Wire.pkg'"
-      }
-
     } catch(e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
