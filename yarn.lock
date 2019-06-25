@@ -1326,10 +1326,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/build-tools@0.5.0-beta":
-  version "0.5.0-beta"
-  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.5.0-beta.tgz#32f43318b8ac541c808c5a470e3e59377243b2f7"
-  integrity sha512-AnjL4F33Ac84t/8q0w5p1N8OhgsbehpUsvycnK4EGjTFXheFqXvkTACGErEUZFq8e9CcGAZyyQjrgx8Km2nRkA==
+"@wireapp/build-tools@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@wireapp/build-tools/-/build-tools-0.5.0.tgz#1d7d57c792206f8e230d91d72b4f9965ef78d49d"
+  integrity sha512-2Ug2Pna62iYTwxTQtutQ2QsezPfdTQopXCksZNQTwXIQnhSUygHqXPC1jeLabQizEuKU/EVxe3YgyXu2WItwLw==
   dependencies:
     commander "2.20.0"
     dotenv "8.0.0"
@@ -1376,12 +1376,12 @@
     logdown "3.2.8"
     rimraf "2.6.3"
 
-"@wireapp/deploy-tools@0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.8.tgz#d44fe514e21e80ae4770f315f2f5b5605791e3c6"
-  integrity sha512-MJvjj2bxgSafx0YAw/mbkAnrI2YKsW5/Zw7VGdE1I+42aGV5VIZIB7jCEElAvXrTvz9NR6tfjtefJwdYuhdckg==
+"@wireapp/deploy-tools@0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@wireapp/deploy-tools/-/deploy-tools-0.1.9.tgz#e8eae4a789ef94bf475ae90b5d83a8569bab9d74"
+  integrity sha512-TSXjhK5qEaSmWqUGAe/MvXHNG9AYc6gHcA2LGX4YQpwKe8QUiz/5q0ZrUi9NLzmsBQUD2BmiQPdMots6qbOlEg==
   dependencies:
-    aws-sdk "2.480.0"
+    aws-sdk "2.481.0"
     axios "0.19.0"
     commander "2.20.0"
     form-data "2.4.0"
@@ -1811,10 +1811,10 @@ auto-launch@5.0.5:
     untildify "^3.0.2"
     winreg "1.2.4"
 
-aws-sdk@2.480.0:
-  version "2.480.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.480.0.tgz#ab4bb7ad2f4372fa5aa1051fc1553e82d34b27ca"
-  integrity sha512-X6xOgBeg8ZZJPnL4/wHXFIP6QF2SBABqw/F5l5zT/vEPUfmrIg24LVSUwPXmV6ZMh4hwsuuOjO910MbjNoHXXg==
+aws-sdk@2.481.0:
+  version "2.481.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.481.0.tgz#61f46b830100947cd9156d721369975125c19f36"
+  integrity sha512-uwFGzwb2bKkh2KdX0nsebGqQNItZZ6j8+oL03jqSxCouO4FvFZpo8jd0ZnmkEeL6mWvv52WqV8HHhQNEyWkfNQ==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
