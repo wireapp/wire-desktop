@@ -23,7 +23,7 @@ import {getText} from '../locale/locale';
 import {config} from '../settings/config';
 
 export interface CreateSSOAccountDetail {
-  reachedMaximumAccounts: boolean;
+  reachedMaximumAccounts?: boolean;
 }
 
 const dialog = mainDialog || remote.dialog;
