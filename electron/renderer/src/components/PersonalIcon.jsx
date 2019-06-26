@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {colorFromId} from '../lib/accentColor';
 
-const PersonalIcon = ({account, accentID, onClick}) => (
+export const PersonalIcon = ({account, accentID, onClick}) => (
   <div
     className="PersonalIcon"
     title={account.name}
@@ -40,5 +40,3 @@ PersonalIcon.propTypes = {
   account: PropTypes.object.isRequired,
   onClick: PropTypes.func,
 };
-
-export {PersonalIcon};

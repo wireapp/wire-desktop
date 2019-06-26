@@ -27,7 +27,7 @@ import {config} from '../settings/config';
 
 const argv = minimist(process.argv.slice(1));
 
-class SingleSignOn {
+export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
   private static readonly PRELOAD_SSO_JS = path.join(
     app.getAppPath(),
@@ -354,5 +354,3 @@ class SingleSignOn {
     });
   };
 }
-
-export {SingleSignOn};

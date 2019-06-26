@@ -381,7 +381,7 @@ const changeLocale = (language: Supportedi18nLanguage): void => {
   );
 };
 
-const createMenu = (isFullScreen: boolean): Menu => {
+export const createMenu = (isFullScreen: boolean): Menu => {
   if (!windowTemplate.submenu) {
     windowTemplate.submenu = [];
   }
@@ -435,7 +435,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
   return menu;
 };
 
-const registerShortcuts = (): void => {
+export const registerShortcuts = (): void => {
   // Global mute shortcut
   globalShortcut.register('CmdOrCtrl+Alt+M', () =>
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
@@ -453,11 +453,7 @@ const registerShortcuts = (): void => {
   }
 };
 
-const unregisterShortcuts = (): void => {
-  globalShortcut.unregisterAll();
-};
-
-const toggleMenuBar = (): void => {
+export const toggleMenuBar = (): void => {
   const mainBrowserWindow = WindowManager.getPrimaryWindow();
   const isVisible = mainBrowserWindow.isMenuBarVisible();
   const autoHide = mainBrowserWindow.isMenuBarAutoHide();
@@ -467,4 +463,6 @@ const toggleMenuBar = (): void => {
   }
 };
 
-export {createMenu, registerShortcuts, toggleMenuBar, unregisterShortcuts};
+export const unregisterShortcuts = (): void => {
+  globalShortcut.unregisterAll();
+};
