@@ -3605,10 +3605,10 @@ eslint-plugin-jasmine@2.10.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-2.10.1.tgz#5733b709e751f4bc40e31e1c16989bd2cdfbec97"
   integrity sha1-VzO3CedR9LxA4x4cFpib0s377Jc=
 
-eslint-plugin-jsdoc@9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-9.0.0.tgz#69d83373e3fca232d9f7e590dd72f0f8d3b15327"
-  integrity sha512-N3GSid5pj8ELOyUXUdbbcP+JVsc6niGe4zURNy4yTOQ0aCufnlgGtGkOON7jFhg6PYerOyaMnkNsdGo60ih7kA==
+eslint-plugin-jsdoc@9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-9.0.1.tgz#9fb1fc09a623a0990369e406eb897a89c6bfa5c0"
+  integrity sha512-4Sd6rjpMJ5YOd2WnCcgWW7K/EIawKKYgn4ObtDG0pyDP+QpN9EyRoPvY62IQtUOz5KkAS/EpFvEIMUo3qUyeyQ==
   dependencies:
     comment-parser "^0.5.5"
     debug "^4.1.1"
