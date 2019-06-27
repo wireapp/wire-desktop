@@ -51,12 +51,12 @@ if ! _command_exist "shasum"; then
   _error_exit "Could not find sha256sum. Please install package 'coreutils'."
 fi
 
-if ! ls ./*.pkg > /dev/null 2>&1; then
+if ! ls ./wrap/build/*.pkg > /dev/null 2>&1; then
   _error_exit "No pkg files found. Add some in ${PWD}."
 fi
 
 _log "Creating checksums..."
-shasum -a 256 *.pkg > sha256sum.txt
+shasum -a 256 wrap/build/*.pkg > sha256sum.txt
 
 _log "Creating source code archive for signing..."
 git archive -o "${BUILD_VERSION}.tar.gz" --format tar.gz --prefix "wire-desktop-release-${BUILD_VERSION}/" master

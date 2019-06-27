@@ -20,7 +20,7 @@
 import raygun = require('raygun');
 import {config} from '../settings/config';
 
-const Raygun = {
+export const Raygun = {
   initClient: () => {
     const raygunClient = new raygun.Client().init({apiKey: config.raygunApiKey});
     raygunClient.onBeforeSend((payload: any) => {
@@ -29,5 +29,3 @@ const Raygun = {
     });
   },
 };
-
-export {Raygun};

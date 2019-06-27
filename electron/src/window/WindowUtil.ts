@@ -41,7 +41,7 @@ const isInView = (win: Electron.BrowserWindow): boolean => {
   const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
   const lowerRightVisible = pointInRectangle(
     [windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height],
-    nearestWorkArea
+    nearestWorkArea,
   );
 
   return upperLeftVisible || lowerRightVisible;

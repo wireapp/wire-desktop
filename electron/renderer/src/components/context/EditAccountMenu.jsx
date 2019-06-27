@@ -66,5 +66,5 @@ export const EditAccountMenu = connect(
   {
     abortAccountCreation,
     switchAccount,
-  }
+  },
 )(_EditAccountMenu);

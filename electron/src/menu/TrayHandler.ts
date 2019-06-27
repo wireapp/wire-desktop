@@ -26,7 +26,7 @@ import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
-class TrayHandler {
+export class TrayHandler {
   icons?: {
     badge: nativeImage;
     tray: nativeImage;
@@ -121,5 +121,3 @@ class TrayHandler {
     }
   }
 }
-
-export {TrayHandler};

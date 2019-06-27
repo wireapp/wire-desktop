@@ -36,7 +36,7 @@ export class IsOnline extends Component {
         event => {
           this.setState({isOnline: true});
         },
-        {once: true}
+        {once: true},
       );
     }
   }

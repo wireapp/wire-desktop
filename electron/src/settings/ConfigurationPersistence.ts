@@ -77,6 +77,4 @@ class ConfigurationPersistence {
   }
 }
 
-const settings = new ConfigurationPersistence();
-
-export {settings};
+export const settings = new ConfigurationPersistence();

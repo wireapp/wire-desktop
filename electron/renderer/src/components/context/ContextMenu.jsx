@@ -105,5 +105,5 @@ export const ContextMenu = connect(
   state => ({
     position: state.contextMenuState.position,
   }),
-  {setAccountContextHidden}
+  {setAccountContextHidden},
 )(_ContextMenu);

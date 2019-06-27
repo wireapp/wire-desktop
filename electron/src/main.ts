@@ -116,7 +116,7 @@ const bindIpcEvents = () => {
     async (event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) => {
       await deleteAccount(id, accountId, partitionId);
       main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
-    }
+    },
   );
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
@@ -359,7 +359,8 @@ const addLinuxWorkarounds = () => {
 
 const handlePortableFlags = () => {
   if (argv.portable || argv.user_data_dir) {
-    const USER_PATH = argv.user_data_dir || path.join(process.env.APPIMAGE || process.execPath, '../Data');
+    const USER_PATH =
+      path.resolve(argv.user_data_dir) || path.join(process.env.APPIMAGE || process.execPath, '../Data');
 
     console.log(`Saving user data to ${USER_PATH}`);
     app.setPath('userData', USER_PATH);
@@ -395,7 +396,7 @@ class ElectronWrapperInit {
       url: string,
       frameName: string,
       disposition: string,
-      options: Electron.Options
+      options: Electron.Options,
     ) => {
       event.preventDefault();
 

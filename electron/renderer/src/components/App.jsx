@@ -67,7 +67,7 @@ class _App extends React.Component {
             detail: {
               reachedMaximumAccounts: true,
             },
-          })
+          }),
         );
       }
       // All accounts are logged in, create a new one
@@ -103,5 +103,5 @@ function mapDispatchToProps(dispatch) {
 
 export const App = connect(
   mapStateToProps,
-  mapDispatchToProps()
+  mapDispatchToProps(),
 )(_App);

@@ -48,7 +48,7 @@ const squirrelUpdateInterval = {
   INTERVAL: 24 * 60 * 60 * 1000,
 };
 
-const config = {
+export const config = {
   ...wireJson,
   backendOrigins: ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'],
   logFileName: 'console.log',
@@ -57,5 +57,3 @@ const config = {
   userAgent:
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
 };
-
-export {config};
