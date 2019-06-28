@@ -351,9 +351,6 @@ const addLinuxWorkarounds = () => {
     ) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity';
     }
-
-    // https://github.com/electron/electron/issues/13415
-    app.disableHardwareAcceleration();
   }
 };
 
