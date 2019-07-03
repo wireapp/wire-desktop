@@ -1407,10 +1407,10 @@
   resolved "https://registry.yarnpkg.com/@wireapp/prettier-config/-/prettier-config-0.3.0.tgz#e8129b31021c81d90d564d9c4ff0f7f7b514e943"
   integrity sha512-BFokvX4NZlkhWq5/OoJUCS8Iels+MeRgzpd5V9QR3hj5swwCFGxJOAL7soPXkSNWo91gI1qwiTp8szB1O9aCfQ==
 
-"@wireapp/tslint-config@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@wireapp/tslint-config/-/tslint-config-1.2.0.tgz#9ac658e031bf4796770e939d233214a5b096da97"
-  integrity sha512-TZWfPvu5c1gz+cl6y68oxa8HhonxIs7ur4MkcWf/W9IGQeVO5vwn6nRsPVlbcVyKj/f6RcjoWdtlqV61elujQg==
+"@wireapp/tslint-config@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@wireapp/tslint-config/-/tslint-config-1.3.0.tgz#1c69915cf160477b383e2ce6d2ce5d2ba244b957"
+  integrity sha512-yyjcHlv8TmoRILn/4di2/AD1qfhvHRc7b8EZM49fymS3DQFDiClx/IMkiME6b9KgYeoOR5RvJ46ODrx5TUli7A==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
