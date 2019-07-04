@@ -24,6 +24,7 @@ import {IsOnline} from './IsOnline';
 import React from 'react';
 import {Sidebar} from './Sidebar';
 import {WebviewsContainer} from '../containers/WebviewsContainer';
+import {config} from '../../../dist/settings/config';
 import {connect} from 'react-redux';
 
 class _App extends React.Component {
