@@ -50,11 +50,6 @@ export class SingleSignOn {
 
   public static loginAuthorizationSecret: string | undefined;
 
-  private session: Electron.Session | undefined;
-  private readonly mainSession: Electron.Session;
-  private readonly senderWebContents: Electron.WebContents;
-  private readonly windowOriginUrl: URL;
-
   private static readonly cookies = {
     copy: async (from: Electron.Session, to: Electron.Session, url: URL) => {
       const cookies = await SingleSignOn.cookies.getBackendCookies(from, url);
@@ -205,6 +200,11 @@ export class SingleSignOn {
     this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginUrl);
   }
+
+  private session: Electron.Session | undefined;
+  private readonly mainSession: Electron.Session;
+  private readonly senderWebContents: Electron.WebContents;
+  private readonly windowOriginUrl: URL;
 
   public readonly init = async (): Promise<void> => {
     // Create a ephemeral and isolated session

@@ -53,24 +53,6 @@ export class CustomProtocolHandler {
     }
   }
 
-  private forwardHashLocation(route: URL): void {
-    const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
-    this.hashLocation = `/${location}`;
-    this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
-  }
-
-  private async handleSSOLogin(route: URL): Promise<void> {
-    if (typeof route.pathname === 'string') {
-      logger.log('Starting SSO flow...');
-      const code = route.pathname.trim().substr(1);
-      try {
-        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
-      } catch (error) {
-        logger.error(`Cannot start SSO flow: ${error.message}`, error);
-      }
-    }
-  }
-
   public registerCoreProtocol(): void {
     if (!app.isDefaultProtocolClient(config.customProtocolName)) {
       app.setAsDefaultProtocolClient(config.customProtocolName);
@@ -90,6 +72,24 @@ export class CustomProtocolHandler {
         const url = argv[CORE_PROTOCOL_POSITION];
         await this.dispatchDeepLink(url);
       });
+    }
+  }
+
+  private forwardHashLocation(route: URL): void {
+    const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
+    this.hashLocation = `/${location}`;
+    this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
+  }
+
+  private async handleSSOLogin(route: URL): Promise<void> {
+    if (typeof route.pathname === 'string') {
+      logger.log('Starting SSO flow...');
+      const code = route.pathname.trim().substr(1);
+      try {
+        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+      } catch (error) {
+        logger.error(`Cannot start SSO flow: ${error.message}`, error);
+      }
     }
   }
 }
