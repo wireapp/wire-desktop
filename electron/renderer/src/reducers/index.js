@@ -17,8 +17,9 @@
  *
  */
 
-import {accountReducer} from './accountReducer';
 import {combineReducers} from 'redux';
+
+import {accountReducer} from './accountReducer';
 import {contextMenuReducer} from './contextMenuReducer';
 
 export const appStore = combineReducers({

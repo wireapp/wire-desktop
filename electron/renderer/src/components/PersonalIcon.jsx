@@ -18,8 +18,10 @@
  */
 
 import './PersonalIcon.css';
+
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import {colorFromId} from '../lib/accentColor';
 
 export const PersonalIcon = ({account, accentID, onClick}) => (

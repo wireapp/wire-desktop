@@ -18,17 +18,19 @@
  */
 
 import './Index.css';
-import {applyMiddleware, createStore} from 'redux';
-import {loadState, saveState} from './lib/localStorage';
-import {App} from './components/App';
-import {Provider} from 'react-redux';
-import React from 'react';
-import {appStore} from './reducers';
-import {config} from '../../dist/settings/config';
-import logger from 'redux-logger';
-import {render} from 'react-dom';
+
 import throttle from 'lodash/throttle';
+import React from 'react';
+import {render} from 'react-dom';
+import {Provider} from 'react-redux';
+import {applyMiddleware, createStore} from 'redux';
+import logger from 'redux-logger';
 import thunk from 'redux-thunk';
+
+import {config} from '../../dist/settings/config';
+import {App} from './components/App';
+import {loadState, saveState} from './lib/localStorage';
+import {appStore} from './reducers';
 
 const HALF_SECOND = 500;
 

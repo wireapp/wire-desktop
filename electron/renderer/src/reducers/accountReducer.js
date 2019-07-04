@@ -17,8 +17,9 @@
  *
  */
 
-import * as ActionCreator from '../actions';
 import uuid from 'uuid/v4';
+
+import * as ActionCreator from '../actions';
 
 const createAccount = (sessionID, ssoCode = undefined) => ({
   accentID: undefined,
