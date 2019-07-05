@@ -304,10 +304,10 @@
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-syntax-json-strings" "^7.2.0"
 
-"@babel/plugin-proposal-object-rest-spread@7.4.4", "@babel/plugin-proposal-object-rest-spread@^7.4.4":
-  version "7.4.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.4.4.tgz#1ef173fcf24b3e2df92a678f027673b55e7e3005"
-  integrity sha512-dMBG6cSPBbHeEBdFXeQ2QLc5gUpg4Vkaz8octD4aoW/ISO+jBOcsuxYL7bsb5WSu8RLP6boxrBIALEHgoHtO9g==
+"@babel/plugin-proposal-object-rest-spread@7.5.0", "@babel/plugin-proposal-object-rest-spread@^7.4.4":
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.5.0.tgz#4838ce3cbc9a84dd00bce7a17e9e9c36119f83a0"
+  integrity sha512-G1qy5EdcO3vYhbxlXjRSR2SXB8GsxYv9hoRKT1Jdn3qy/NUnFqUUnqymKZ00Pbj+3FXNh06B+BUZzecrp3sxNw==
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-syntax-object-rest-spread" "^7.2.0"
