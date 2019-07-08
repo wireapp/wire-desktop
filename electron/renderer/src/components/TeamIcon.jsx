@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {colorFromId} from '../lib/accentColor';
 
-export const TeamIcon = ({account, accentID}) => (
+const TeamIcon = ({account, accentID}) => (
   <div className="TeamIcon" title={account.name} data-uie-name="item-team" data-uie-value={account.name}>
     {account.visible && (
       <svg
@@ -53,3 +53,5 @@ TeamIcon.propTypes = {
   account: PropTypes.object.isRequired,
   onClick: PropTypes.func,
 };
+
+export default TeamIcon;

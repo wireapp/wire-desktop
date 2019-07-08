@@ -20,14 +20,14 @@
 import './App.css';
 import * as EVENT_TYPE from '../lib/eventType';
 import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import {IsOnline} from './IsOnline';
+import IsOnline from './IsOnline';
 import React from 'react';
-import {Sidebar} from './Sidebar';
-import {WebviewsContainer} from '../containers/WebviewsContainer';
+import Sidebar from './Sidebar';
+import WebviewsContainer from '../containers/WebviewsContainer';
 import {config} from '../../../dist/settings/config';
 import {connect} from 'react-redux';
 
-class _App extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
 
@@ -102,7 +102,7 @@ function mapDispatchToProps(dispatch) {
   return {initiateSSO, switchAccount, updateAccount};
 }
 
-export const App = connect(
+export default connect(
   mapStateToProps,
   mapDispatchToProps(),
-)(_App);
+)(App);

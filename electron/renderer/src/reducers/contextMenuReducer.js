@@ -28,7 +28,7 @@ const DEFAULT_STATE = {
   sessionId: '',
 };
 
-export const contextMenuReducer = (state = DEFAULT_STATE, action) => {
+export default (state = DEFAULT_STATE, action) => {
   switch (action.type) {
     case ActionCreator.HIDE_CONTEXT_MENUS: {
       return {...DEFAULT_STATE};
@@ -54,7 +54,8 @@ export const contextMenuReducer = (state = DEFAULT_STATE, action) => {
       };
     }
 
-    default:
+    default: {
       return state;
+    }
   }
 };
