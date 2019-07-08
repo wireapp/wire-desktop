@@ -48,7 +48,7 @@ const ShapeIcon = ({visible, accentID}) => (
 );
 
 const PictureIcon = ({pictureUrl}) => (
-  <div className="PersonalIcon-inner">
+  <div className="TeamIcon-inner">
     <img src={pictureUrl} />
   </div>
 );
