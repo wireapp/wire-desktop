@@ -35,7 +35,7 @@ const createAccount = (sessionID, ssoCode = undefined) => ({
   visible: true,
 });
 
-export const accountReducer = (state = [createAccount()], action) => {
+export default (state = [createAccount()], action) => {
   switch (action.type) {
     case ActionCreator.ADD_ACCOUNT: {
       const newState = state.map(account => ({...account, visible: false}));
