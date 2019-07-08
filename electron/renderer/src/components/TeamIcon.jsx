@@ -22,9 +22,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {colorFromId} from '../lib/accentColor';
 
-const TeamIcon = ({account, accentID}) => (
-  <div className="TeamIcon" title={account.name} data-uie-name="item-team" data-uie-value={account.name}>
-    {account.visible && (
+const ShapeIcon = ({visible, accentID}) => (
+  <>
+    {visible && (
       <svg
         style={{fill: colorFromId(accentID)}}
         width="38"
@@ -44,9 +44,27 @@ const TeamIcon = ({account, accentID}) => (
         fillRule="evenodd"
       />
     </svg>
-    <span>{[...account.name][0]}</span>
+  </>
+);
+
+const PictureIcon = ({pictureUrl}) => (
+  <div className="PersonalIcon-inner">
+    <img src={pictureUrl} />
   </div>
 );
+
+const TeamIcon = ({account, accentID}) => {
+  return (
+    <div className="TeamIcon" title={account.name} data-uie-name="item-team" data-uie-value={account.name}>
+      {account.picture ? (
+        <PictureIcon pictureUrl={account.picture} />
+      ) : (
+        <ShapeIcon visible={account.visible} accentID={accentID} />
+      )}
+      <span>{[...account.name][0]}</span>
+    </div>
+  );
+};
 
 TeamIcon.propTypes = {
   accentID: PropTypes.number,
