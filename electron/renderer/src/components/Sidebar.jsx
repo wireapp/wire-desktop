@@ -18,21 +18,23 @@
  */
 
 import './Sidebar.css';
+
+import React from 'react';
+import {connect} from 'react-redux';
+
+import {config} from '../../../dist/settings/config';
 import {
   addAccountWithSession,
   setAccountContextHidden,
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
+import {colorFromId} from '../lib/accentColor';
+import {preventFocus} from '../lib/util';
 import {AddAccountTrigger} from './context/AddAccountTrigger';
 import {EditAccountMenu} from './context/EditAccountMenu';
 import {PersonalIcon} from './PersonalIcon';
-import React from 'react';
 import {TeamIcon} from './TeamIcon';
-import {colorFromId} from '../lib/accentColor';
-import {config} from '../../../dist/settings/config';
-import {connect} from 'react-redux';
-import {preventFocus} from '../lib/util';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
@@ -69,7 +71,9 @@ const _Sidebar = ({
           className={getClassName(account)}
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
-            const isAtLeastAdmin = [z.team.ROLE.OWNER, z.team.ROLE.ADMIN].includes(account.teamRole);
+            const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
+              account.teamRole,
+            );
             const {centerX, centerY} = centerOfEventTarget(event);
             connected.toggleEditAccountMenuVisibility(
               centerX,
@@ -77,7 +81,7 @@ const _Sidebar = ({
               account.id,
               account.sessionID,
               account.lifecycle,
-              isAtLeastAdmin
+              isAtLeastAdmin,
             );
           })}
           onMouseDown={preventFocus()}
@@ -112,5 +116,5 @@ export const Sidebar = connect(
     setAccountContextHidden,
     switchAccount,
     toggleEditAccountMenuVisibility,
-  }
+  },
 )(_Sidebar);

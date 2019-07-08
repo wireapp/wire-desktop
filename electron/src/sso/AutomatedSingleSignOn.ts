@@ -21,7 +21,10 @@ import {dialog as mainDialog, remote} from 'electron';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getText} from '../locale/locale';
 import {config} from '../settings/config';
-import {CreateSSOAccountDetail} from './CreateSSOAccountDetail';
+
+export interface CreateSSOAccountDetail {
+  reachedMaximumAccounts?: boolean;
+}
 
 const dialog = mainDialog || remote.dialog;
 
@@ -58,7 +61,7 @@ export class AutomatedSingleSignOn {
       },
       {
         once: true,
-      }
+      },
     );
 
     window.dispatchEvent(
@@ -66,7 +69,7 @@ export class AutomatedSingleSignOn {
         detail: {
           code: ssoCode,
         },
-      })
+      }),
     );
   }
 }

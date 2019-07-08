@@ -18,8 +18,10 @@
  */
 
 import './ContextMenu.css';
+
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+
 import {setAccountContextHidden} from '../../actions';
 
 class _ContextMenu extends Component {
@@ -105,5 +107,5 @@ export const ContextMenu = connect(
   state => ({
     position: state.contextMenuState.position,
   }),
-  {setAccountContextHidden}
+  {setAccountContextHidden},
 )(_ContextMenu);

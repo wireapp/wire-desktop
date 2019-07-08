@@ -18,8 +18,10 @@
  */
 
 import './Webviews.css';
-import * as EVENT_TYPE from '../lib/eventType';
+
 import React, {Component} from 'react';
+
+import * as EVENT_TYPE from '../lib/eventType';
 import {Webview} from './Webview';
 
 export class Webviews extends Component {
@@ -64,7 +66,7 @@ export class Webviews extends Component {
         ...accumulator,
         [account.id]: this._canDeleteWebview(account),
       }),
-      {}
+      {},
     );
   }
 

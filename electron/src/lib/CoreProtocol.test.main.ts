@@ -40,15 +40,15 @@ describe('dispatchDeepLink', () => {
     assert.ok(
       sendActionSpy.calledWith(
         EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH,
-        '/conversation/8cdb44a0-418b-4188-9a53-7c477a7848dd'
-      )
+        '/conversation/8cdb44a0-418b-4188-9a53-7c477a7848dd',
+      ),
     );
   });
 
   it('forwards user profile deep links to the webapp', async () => {
     await protocolHandler.dispatchDeepLink('wire://user/266d36c0-ae62-48b5-91b5-b10ed42f1a0f');
     assert.ok(
-      sendActionSpy.calledWith(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, '/user/266d36c0-ae62-48b5-91b5-b10ed42f1a0f')
+      sendActionSpy.calledWith(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, '/user/266d36c0-ae62-48b5-91b5-b10ed42f1a0f'),
     );
   });
 

@@ -18,13 +18,16 @@
  */
 
 import './App.css';
-import * as EVENT_TYPE from '../lib/eventType';
-import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import {IsOnline} from './IsOnline';
+
 import React from 'react';
-import {Sidebar} from './Sidebar';
-import {WebviewsContainer} from '../containers/WebviewsContainer';
 import {connect} from 'react-redux';
+
+import {config} from '../../../dist/settings/config';
+import {initiateSSO, switchAccount, updateAccount} from '../actions';
+import {WebviewsContainer} from '../containers/WebviewsContainer';
+import * as EVENT_TYPE from '../lib/eventType';
+import {IsOnline} from './IsOnline';
+import {Sidebar} from './Sidebar';
 
 class _App extends React.Component {
   constructor(props) {
@@ -67,7 +70,7 @@ class _App extends React.Component {
             detail: {
               reachedMaximumAccounts: true,
             },
-          })
+          }),
         );
       }
       // All accounts are logged in, create a new one
@@ -103,5 +106,5 @@ function mapDispatchToProps(dispatch) {
 
 export const App = connect(
   mapStateToProps,
-  mapDispatchToProps()
+  mapDispatchToProps(),
 )(_App);

@@ -17,6 +17,8 @@
  *
  */
 
+import {connect} from 'react-redux';
+
 import {
   abortAccountCreation,
   resetIdentity,
@@ -26,7 +28,6 @@ import {
   updateAccountLifecycle,
 } from '../actions';
 import {Webviews} from '../components/Webviews';
-import {connect} from 'react-redux';
 
 export const WebviewsContainer = connect(
   state => ({accounts: state.accounts}),
@@ -37,5 +38,5 @@ export const WebviewsContainer = connect(
     updateAccountBadgeCount,
     updateAccountData,
     updateAccountLifecycle,
-  }
+  },
 )(Webviews);

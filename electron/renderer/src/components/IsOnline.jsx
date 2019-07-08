@@ -18,6 +18,7 @@
  */
 
 import './IsOnline.css';
+
 import React, {Component} from 'react';
 
 export class IsOnline extends Component {
@@ -36,7 +37,7 @@ export class IsOnline extends Component {
         event => {
           this.setState({isOnline: true});
         },
-        {once: true}
+        {once: true},
       );
     }
   }
