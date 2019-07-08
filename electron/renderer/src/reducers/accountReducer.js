@@ -17,7 +17,7 @@
  *
  */
 
-import * as ActionCreator from '../actions';
+import {ActionType} from '../actions';
 import uuid from 'uuid/v4';
 
 const createAccount = (sessionID, ssoCode = undefined) => ({
@@ -37,13 +37,13 @@ const createAccount = (sessionID, ssoCode = undefined) => ({
 
 export default (state = [createAccount()], action) => {
   switch (action.type) {
-    case ActionCreator.ADD_ACCOUNT: {
+    case ActionType.ADD_ACCOUNT: {
       const newState = state.map(account => ({...account, visible: false}));
       newState.push(createAccount(action.sessionID));
       return newState;
     }
 
-    case ActionCreator.INITIATE_SSO: {
+    case ActionType.INITIATE_SSO: {
       let newState;
       if (action.id) {
         // If an account is given, set the sso code
@@ -58,39 +58,39 @@ export default (state = [createAccount()], action) => {
       return newState;
     }
 
-    case ActionCreator.DELETE_ACCOUNT: {
+    case ActionType.DELETE_ACCOUNT: {
       return state.filter(account => account.id !== action.id);
     }
 
-    case ActionCreator.RESET_IDENTITY: {
+    case ActionType.RESET_IDENTITY: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, teamID: undefined, userID: undefined} : account;
       });
     }
 
-    case ActionCreator.SWITCH_ACCOUNT: {
+    case ActionType.SWITCH_ACCOUNT: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return {...account, visible: isMatchingAccount};
       });
     }
 
-    case ActionCreator.UPDATE_ACCOUNT: {
+    case ActionType.UPDATE_ACCOUNT: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, ...action.data, isAdding: false, ssoCode: undefined} : account;
       });
     }
 
-    case ActionCreator.UPDATE_ACCOUNT_BADGE: {
+    case ActionType.UPDATE_ACCOUNT_BADGE: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, badgeCount: action.count} : account;
       });
     }
 
-    case ActionCreator.UPDATE_ACCOUNT_LIFECYCLE: {
+    case ActionType.UPDATE_ACCOUNT_LIFECYCLE: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, lifecycle: action.data} : account;

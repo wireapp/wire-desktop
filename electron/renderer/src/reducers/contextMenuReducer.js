@@ -17,7 +17,7 @@
  *
  */
 
-import * as ActionCreator from '../actions';
+import {ActionType} from '../actions';
 
 const DEFAULT_STATE = {
   accountId: '',
@@ -30,11 +30,11 @@ const DEFAULT_STATE = {
 
 export default (state = DEFAULT_STATE, action) => {
   switch (action.type) {
-    case ActionCreator.HIDE_CONTEXT_MENUS: {
+    case ActionType.HIDE_CONTEXT_MENUS: {
       return {...DEFAULT_STATE};
     }
 
-    case ActionCreator.TOGGLE_ADD_ACCOUNT_VISIBILITY: {
+    case ActionType.TOGGLE_ADD_ACCOUNT_VISIBILITY: {
       return {
         ...state,
         isEditAccountMenuVisible: false,
@@ -42,7 +42,7 @@ export default (state = DEFAULT_STATE, action) => {
       };
     }
 
-    case ActionCreator.TOGGLE_EDIT_ACCOUNT_VISIBILITY: {
+    case ActionType.TOGGLE_EDIT_ACCOUNT_VISIBILITY: {
       return {
         ...state,
         accountId: action.payload.accountId,
