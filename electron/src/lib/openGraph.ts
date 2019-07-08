@@ -141,33 +141,34 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
   return meta;
 };
 
-export const getOpenGraphData = async (
+export const getOpenGraphData = (
   url: string,
   callback: (error: Error | null, meta?: OpenGraphResult) => void,
 ): Promise<OpenGraphResult | void> => {
-  try {
-    let meta = await fetchOpenGraphData(url);
-    if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
-      const [imageUrl] = arrayify(meta.image.url);
+  return fetchOpenGraphData(url)
+    .then(meta => {
+      if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
+        const [imageUrl] = arrayify(meta.image.url);
 
-      const uri = await fetchImageAsBase64(imageUrl);
-      meta = await updateMetaDataWithImage(meta, uri);
-    } else {
-      throw new Error('OpenGraph metadata contains no image.');
-    }
+        return fetchImageAsBase64(imageUrl).then(uri => updateMetaDataWithImage(meta, uri));
+      } else {
+        return Promise.reject(new Error('OpenGraph metadata contains no image.'));
+      }
+    })
+    .then(meta => {
+      if (callback) {
+        callback(null, meta);
+      }
 
-    if (callback) {
-      callback(null, meta);
-    }
-
-    return meta;
-  } catch (error) {
-    if (callback) {
-      callback(error);
-    } else {
-      logger.info(error);
-    }
-  }
+      return meta;
+    })
+    .catch(error => {
+      if (callback) {
+        callback(error);
+      } else {
+        logger.info(error);
+      }
+    });
 };
 
 export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
