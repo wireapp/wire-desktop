@@ -24,26 +24,19 @@
   height: 38px;
 }
 
-.TeamIcon > * {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.TeamIcon > span {
-  color: var(--graphite-dark);
-  font-size: 11px;
-  text-transform: uppercase;
-  user-select: none;
-}
-
 .TeamIcon-inner {
   overflow: hidden;
   width: 28px;
   height: 28px;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: #fff;
   border-radius: 20%;
+}
+
+.TeamIcon-inner > span {
+  color: var(--graphite-dark);
+  font-size: 11px;
+  text-transform: uppercase;
+  user-select: none;
 }
 
 .TeamIcon-inner > img {
