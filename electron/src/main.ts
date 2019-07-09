@@ -17,16 +17,16 @@
  *
  */
 
+// Modules
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
-import minimist = require('minimist');
+import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-
 import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
@@ -54,6 +54,7 @@ import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
+// Paths
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -70,6 +71,7 @@ const WINDOW_SIZE = {
 
 const customProtocolHandler = new CustomProtocolHandler();
 
+// Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 

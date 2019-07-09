@@ -19,9 +19,9 @@
 
 import * as crypto from 'crypto';
 import {BrowserWindow, app, session} from 'electron';
-import minimist = require('minimist');
 import * as path from 'path';
 import {URL} from 'url';
+const minimist = require('minimist');
 
 import {config} from '../settings/config';
 
