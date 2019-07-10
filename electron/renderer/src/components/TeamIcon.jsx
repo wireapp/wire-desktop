@@ -27,7 +27,7 @@ const TeamIcon = ({account, accentID}) => {
     <div className="TeamIcon" title={account.name} data-uie-name="item-team" data-uie-value={account.name}>
       {account.visible && <div className="TeamIcon-border" style={{borderColor: colorFromId(accentID)}} />}
       <div className="TeamIcon-inner">
-        {account.picture ? <img src={account.picture} /> : <span>{[...account.name][0]}</span>}
+        {account.picture ? <img src={account.picture} /> : <div>{[...account.name][0]}</div>}
       </div>
     </div>
   );
