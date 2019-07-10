@@ -56,8 +56,7 @@
 }
 
 .TeamIcon-border {
-  border: 1.5px solid #fff;
+  border: 2px solid #fff;
   width: 32px;
   height: 32px;
-  border-radius: 20%;
 }
