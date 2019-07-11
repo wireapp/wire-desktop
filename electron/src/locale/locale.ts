@@ -49,7 +49,7 @@ const uk_UA = require('../../locale/uk-UA');
 
 const app = Electron.app || Electron.remote.app;
 
-const LANGUAGES: Supportedi18nLanguageObject = {
+export const LANGUAGES: Supportedi18nLanguageObject = {
   cs: cs_CZ,
   da: da_DK,
   de: de_DE,
@@ -75,7 +75,7 @@ const LANGUAGES: Supportedi18nLanguageObject = {
 };
 
 /* tslint:disable:object-literal-sort-keys */
-const SUPPORTED_LANGUAGES = {
+export const SUPPORTED_LANGUAGES = {
   en: 'English',
   cs: 'Čeština',
   da: 'Dansk',
@@ -106,7 +106,7 @@ let current: Supportedi18nLanguage | undefined;
 const getSupportedLanguageKeys = (): Supportedi18nLanguage[] =>
   Object.keys(SUPPORTED_LANGUAGES) as Supportedi18nLanguage[];
 
-const getCurrent = (): Supportedi18nLanguage => {
+export const getCurrent = (): Supportedi18nLanguage => {
   if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
     const defaultLocale = parseLocale(app.getLocale().substr(0, 2));
@@ -124,7 +124,7 @@ const customReplacements: Record<string, string> = {
   brandName: config.name,
 };
 
-const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
+export const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
   const strings = getCurrent();
   let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
 
@@ -138,9 +138,7 @@ const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
   return str;
 };
 
-const setLocale = (locale: string): void => {
+export const setLocale = (locale: string): void => {
   current = parseLocale(locale);
   settings.save(SettingsType.LOCALE, current);
 };
-
-export {getCurrent, getText, LANGUAGES, setLocale, SUPPORTED_LANGUAGES};

@@ -41,4 +41,4 @@ PersonalIcon.propTypes = {
   onClick: PropTypes.func,
 };
 
-export {PersonalIcon};
+export default PersonalIcon;

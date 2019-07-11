@@ -31,7 +31,7 @@ const logger = getLogger(__filename);
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
 const defaultPathV1 = path.join(app.getPath('userData'), 'config/init.json');
 
-class SchemaUpdater {
+export class SchemaUpdater {
   static SCHEMATA: Schemata = {
     VERSION_1: {
       configVersion: 1,
@@ -71,5 +71,3 @@ class SchemaUpdater {
     return configFileV1;
   }
 }
-
-export {SchemaUpdater};

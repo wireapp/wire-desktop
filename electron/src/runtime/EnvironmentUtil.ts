@@ -44,7 +44,7 @@ const URL_WEBSITE = {
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
-const URL_WEBAPP = {
+export const URL_WEBAPP = {
   DEV: 'https://wire-webapp-dev.zinfra.io',
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/',
@@ -53,20 +53,20 @@ const URL_WEBAPP = {
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
-const app = {
+export const app = {
   ENV: config.environment,
   IS_DEVELOPMENT: config.environment !== 'production',
   IS_PRODUCTION: config.environment === 'production',
   UPDATE_URL_WIN: config.updateUrl,
 };
 
-const getEnvironment = (): BackendTypeLabelKey => {
+export const getEnvironment = (): BackendTypeLabelKey => {
   return (currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase() as BackendTypeLabelKey;
 };
 
 const isProdEnvironment = (): boolean => {
   return [BackendTypeLabel.INTERNAL.toUpperCase(), BackendTypeLabel.PRODUCTION.toUpperCase()].includes(
-    getEnvironment()
+    getEnvironment(),
   );
 };
 
@@ -75,13 +75,13 @@ const isLinuxDesktop = (identifier: string): boolean => {
   return !!xdgDesktop && xdgDesktop.includes(identifier);
 };
 
-const platform = {
+export const platform = {
   IS_LINUX: process.platform === 'linux',
   IS_MAC_OS: process.platform === 'darwin',
   IS_WINDOWS: process.platform === 'win32',
 };
 
-const linuxDesktop = {
+export const linuxDesktop = {
   isGnome: isLinuxDesktop('GNOME'),
   isPopOS: isLinuxDesktop('pop'),
   isUbuntuUnity: isLinuxDesktop('Unity'),
@@ -91,12 +91,12 @@ const restoreEnvironment = (): BackendTypeLabelKey => {
   return settings.restore(SettingsType.ENV, BackendTypeLabel.INTERNAL.toUpperCase() as BackendTypeLabelKey);
 };
 
-const setEnvironment = (env: BackendTypeLabelKey): void => {
+export const setEnvironment = (env: BackendTypeLabelKey): void => {
   currentEnvironment = env ? env : restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment.toUpperCase());
 };
 
-const web = {
+export const web = {
   getAdminUrl: (path?: string): string => {
     const baseUrl = isProdEnvironment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
     return `${baseUrl}${path ? path : ''}`;
@@ -120,5 +120,3 @@ const web = {
     return `${baseUrl}${path ? path : ''}`;
   },
 };
-
-export {app, getEnvironment, linuxDesktop, platform, setEnvironment, URL_WEBAPP, web};

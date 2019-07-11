@@ -19,21 +19,44 @@
 
 .TeamIcon {
   position: relative;
-  fill: #fff;
   width: 38px;
   height: 38px;
 }
 
 .TeamIcon > * {
+  overflow: hidden;
+  border-radius: 20%;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
 
-.TeamIcon > span {
+.TeamIcon-inner {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+.TeamIcon-inner > div {
   color: var(--graphite-dark);
-  font-size: 11px;
+  font-size: 20px;
   text-transform: uppercase;
   user-select: none;
+  background-color: #fff;
+  width: 28px;
+  line-height: 28px;
+  text-align: center;
+  height: 28px;
+}
+
+.TeamIcon-inner > img {
+  width: 28px;
+  height: 28px;
+}
+
+.TeamIcon-border {
+  border: 2px solid #fff;
+  width: 32px;
+  height: 32px;
 }

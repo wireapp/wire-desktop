@@ -117,6 +117,4 @@ const menuTemplate: Electron.MenuItemConstructorOptions = {
   ],
 };
 
-const menuItem = new MenuItem(menuTemplate);
-
-export {menuItem};
+export const menuItem = new MenuItem(menuTemplate);

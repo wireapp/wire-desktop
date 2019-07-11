@@ -41,7 +41,7 @@ const getWebviewById = (id: string): WebviewTag => {
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event: IpcMessageEvent, code: string) =>
-    new AutomatedSingleSignOn().start(code)
+    new AutomatedSingleSignOn().start(code),
   );
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: IpcMessageEvent, action: string) => {
@@ -58,13 +58,10 @@ const subscribeToMainProcessEvents = () => {
     }
   });
 
-  ipcRenderer.on(
-    EVENT_TYPE.WRAPPER.RELOAD,
-    (): void => {
-      const webviews = document.querySelectorAll<WebviewTag>('webview');
-      webviews.forEach(webview => webview.reload());
-    }
-  );
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
+    const webviews = document.querySelectorAll<WebviewTag>('webview');
+    webviews.forEach(webview => webview.reload());
+  });
 };
 
 const setupIpcInterface = (): void => {

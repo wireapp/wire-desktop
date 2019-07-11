@@ -24,11 +24,11 @@ import {
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
-import {AddAccountTrigger} from './context/AddAccountTrigger';
-import {EditAccountMenu} from './context/EditAccountMenu';
-import {PersonalIcon} from './PersonalIcon';
+import AddAccountTrigger from './context/AddAccountTrigger';
+import EditAccountMenu from './context/EditAccountMenu';
+import PersonalIcon from './PersonalIcon';
 import React from 'react';
-import {TeamIcon} from './TeamIcon';
+import TeamIcon from './TeamIcon';
 import {colorFromId} from '../lib/accentColor';
 import {config} from '../../../dist/settings/config';
 import {connect} from 'react-redux';
@@ -47,7 +47,7 @@ const getClassName = account => {
   return `Sidebar-icon${showIconBadge}${showIconCursor}`;
 };
 
-const _Sidebar = ({
+const Sidebar = ({
   accounts,
   currentAccentID,
   hasCreatedAccount,
@@ -69,7 +69,9 @@ const _Sidebar = ({
           className={getClassName(account)}
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
-            const isAtLeastAdmin = [z.team.ROLE.OWNER, z.team.ROLE.ADMIN].includes(account.teamRole);
+            const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
+              account.teamRole,
+            );
             const {centerX, centerY} = centerOfEventTarget(event);
             connected.toggleEditAccountMenuVisibility(
               centerX,
@@ -77,7 +79,7 @@ const _Sidebar = ({
               account.id,
               account.sessionID,
               account.lifecycle,
-              isAtLeastAdmin
+              isAtLeastAdmin,
             );
           })}
           onMouseDown={preventFocus()}
@@ -98,7 +100,7 @@ const _Sidebar = ({
   </div>
 );
 
-export const Sidebar = connect(
+export default connect(
   ({accounts, contextMenuState}) => ({
     accounts,
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
@@ -112,5 +114,5 @@ export const Sidebar = connect(
     setAccountContextHidden,
     switchAccount,
     toggleEditAccountMenuVisibility,
-  }
-)(_Sidebar);
+  },
+)(Sidebar);

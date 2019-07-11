@@ -20,10 +20,10 @@
 import './Index.css';
 import {applyMiddleware, createStore} from 'redux';
 import {loadState, saveState} from './lib/localStorage';
-import {App} from './components/App';
+import App from './components/App';
 import {Provider} from 'react-redux';
 import React from 'react';
-import {appStore} from './reducers';
+import appStore from './reducers';
 import {config} from '../../dist/settings/config';
 import logger from 'redux-logger';
 import {render} from 'react-dom';
@@ -54,12 +54,12 @@ store.subscribe(
         };
       }),
     });
-  }, HALF_SECOND)
+  }, HALF_SECOND),
 );
 
 render(
   <Provider store={store}>
     <App />
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

@@ -67,7 +67,7 @@ class CertificateVerifyProcManager {
   private static displayCertificateDetails(
     hostname: string,
     certificate: Electron.Certificate,
-    options: DisplayCertificateErrorOptions
+    options: DisplayCertificateErrorOptions,
   ): void {
     const goBack = () => {
       // Go back to the dialog
@@ -89,7 +89,7 @@ class CertificateVerifyProcManager {
           certificate,
           message: textDetails,
         },
-        goBack
+        goBack,
       );
     } else {
       // For Linux and Windows, use a message box with the ability to save the certificate
@@ -116,7 +116,7 @@ class CertificateVerifyProcManager {
                   }
                   // Go back on details window
                   this.displayCertificateDetails(hostname, certificate, options);
-                }
+                },
               );
               break;
             }
@@ -126,7 +126,7 @@ class CertificateVerifyProcManager {
               break;
             }
           }
-        }
+        },
       );
     }
   }
@@ -142,7 +142,7 @@ class CertificateVerifyProcManager {
   public static displayCertificateError(
     hostname: string,
     certificate: Electron.Certificate,
-    options?: Partial<DisplayCertificateErrorOptions>
+    options?: Partial<DisplayCertificateErrorOptions>,
   ): void {
     const {bypassDialogLock, isChromiumError, isCheckboxChecked} = {
       bypassDialogLock: false,
@@ -191,7 +191,7 @@ class CertificateVerifyProcManager {
             break;
           }
         }
-      }
+      },
     );
   }
 }
@@ -202,14 +202,14 @@ export const attachTo = (main: Electron.BrowserWindow) => {
 
 export const setCertificateVerifyProc = (
   request: Electron.CertificateVerifyProcRequest,
-  cb: (verificationResult: number) => void
+  cb: (verificationResult: number) => void,
 ) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
 
   // Check browser results
   if (verificationResult !== 'net::OK') {
     logger.error(
-      `Internal Chrome TLS verification failed. Hostname: ${hostname}. Verification result: ${verificationResult}. Error code: ${errorCode}`
+      `Internal Chrome TLS verification failed. Hostname: ${hostname}. Verification result: ${verificationResult}. Error code: ${errorCode}`,
     );
 
     const isCommonCertificateError =

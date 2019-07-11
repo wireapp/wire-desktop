@@ -59,7 +59,7 @@ class ConfigurationPersistence {
   persistToFile(): void {
     this.logger.log('Saving configuration to persistent storage:', global._ConfigurationPersistence);
     try {
-      return fs.writeJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
+      return fs.outputJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
     } catch (error) {
       this.logger.log('An error occurred while persisting the configuration', error);
     }
@@ -77,6 +77,4 @@ class ConfigurationPersistence {
   }
 }
 
-const settings = new ConfigurationPersistence();
-
-export {settings};
+export const settings = new ConfigurationPersistence();

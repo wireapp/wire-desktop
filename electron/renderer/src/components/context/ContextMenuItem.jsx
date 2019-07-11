@@ -30,4 +30,4 @@ ContextMenuItem.propTypes = {
   onClick: PropTypes.func,
 };
 
-export {ContextMenuItem};
+export default ContextMenuItem;

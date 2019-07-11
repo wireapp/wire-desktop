@@ -17,13 +17,11 @@
  *
  */
 
-const SettingsType = {
-  AUTO_LAUNCH: 'shouldAutoLaunch',
-  ENV: 'env',
-  FULL_SCREEN: 'fullscreen',
-  LOCALE: 'locale',
-  SHOW_MENU_BAR: 'showMenu',
-  WINDOW_BOUNDS: 'bounds',
-};
-
-export {SettingsType};
+export enum SettingsType {
+  AUTO_LAUNCH = 'shouldAutoLaunch',
+  ENV = 'env',
+  FULL_SCREEN = 'fullscreen',
+  LOCALE = 'locale',
+  SHOW_MENU_BAR = 'showMenu',
+  WINDOW_BOUNDS = 'bounds',
+}

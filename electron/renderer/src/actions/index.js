@@ -23,66 +23,67 @@ import {config} from '../../../dist/settings/config';
 import uuid from 'uuid/v4';
 import {verifyObjectProperties} from '../lib/verifyObjectProperties';
 
-export const ADD_ACCOUNT = 'ADD_ACCOUNT';
-export const INITIATE_SSO = 'INITIATE_SSO';
-export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
-export const RESET_IDENTITY = 'RESET_IDENTITY';
-export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT';
-export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
-export const UPDATE_ACCOUNT_BADGE = 'UPDATE_ACCOUNT_BADGE';
-export const UPDATE_ACCOUNT_LIFECYCLE = 'UPDATE_ACCOUNT_LIFECYCLE';
+export const ActionType = {
+  ADD_ACCOUNT: 'ADD_ACCOUNT',
+  DELETE_ACCOUNT: 'DELETE_ACCOUNT',
+  HIDE_CONTEXT_MENUS: 'HIDE_CONTEXT_MENUS',
+  INITIATE_SSO: 'INITIATE_SSO',
+  RESET_IDENTITY: 'RESET_IDENTITY',
+  SWITCH_ACCOUNT: 'SWITCH_ACCOUNT',
+  TOGGLE_ADD_ACCOUNT_VISIBILITY: 'TOGGLE_ADD_ACCOUNT_VISIBILITY',
+  TOGGLE_EDIT_ACCOUNT_VISIBILITY: 'TOGGLE_EDIT_ACCOUNT_VISIBILITY',
+  UPDATE_ACCOUNT: 'UPDATE_ACCOUNT',
+  UPDATE_ACCOUNT_BADGE: 'UPDATE_ACCOUNT_BADGE',
+  UPDATE_ACCOUNT_LIFECYCLE: 'UPDATE_ACCOUNT_LIFECYCLE',
+};
 
 export const addAccount = (withSession = true) => ({
   sessionID: withSession ? uuid() : undefined,
-  type: ADD_ACCOUNT,
+  type: ActionType.ADD_ACCOUNT,
 });
 
 export const initiateSSO = (id, ssoCode = undefined, withSession = true) => ({
   id,
   sessionID: withSession ? uuid() : undefined,
   ssoCode,
-  type: INITIATE_SSO,
+  type: ActionType.INITIATE_SSO,
 });
 
 export const deleteAccount = id => ({
   id,
-  type: DELETE_ACCOUNT,
+  type: ActionType.DELETE_ACCOUNT,
 });
 
 export const resetIdentity = (id = true) => ({
   id,
-  type: RESET_IDENTITY,
+  type: ActionType.RESET_IDENTITY,
 });
 
 export const switchAccount = id => ({
   id,
-  type: SWITCH_ACCOUNT,
+  type: ActionType.SWITCH_ACCOUNT,
 });
 
 export const updateAccount = (id, data) => ({
   data,
   id,
-  type: UPDATE_ACCOUNT,
+  type: ActionType.UPDATE_ACCOUNT,
 });
 
 export const updateAccountLifecycle = (id, channel) => ({
   data: channel,
   id,
-  type: UPDATE_ACCOUNT_LIFECYCLE,
+  type: ActionType.UPDATE_ACCOUNT_LIFECYCLE,
 });
 
 export const updateAccountBadge = (id, count) => ({
   count,
   id,
-  type: UPDATE_ACCOUNT_BADGE,
+  type: ActionType.UPDATE_ACCOUNT_BADGE,
 });
 
-export const HIDE_CONTEXT_MENUS = 'HIDE_CONTEXT_MENUS';
-export const TOGGLE_ADD_ACCOUNT_VISIBILITY = 'TOGGLE_ADD_ACCOUNT_VISIBILITY';
-export const TOGGLE_EDIT_ACCOUNT_VISIBILITY = 'TOGGLE_EDIT_ACCOUNT_VISIBILITY';
-
 export const setAccountContextHidden = () => ({
-  type: HIDE_CONTEXT_MENUS,
+  type: ActionType.HIDE_CONTEXT_MENUS,
 });
 
 export const toggleEditAccountMenuVisibility = (centerX, centerY, accountId, sessionId, lifecycle, isAtLeastAdmin) => ({
@@ -93,7 +94,7 @@ export const toggleEditAccountMenuVisibility = (centerX, centerY, accountId, ses
     position: {centerX, centerY},
     sessionId,
   },
-  type: TOGGLE_EDIT_ACCOUNT_VISIBILITY,
+  type: ActionType.TOGGLE_EDIT_ACCOUNT_VISIBILITY,
 });
 
 export const abortAccountCreation = id => {
@@ -137,7 +138,7 @@ export const updateAccountData = (id, data) => {
     if (validatedAccountData) {
       dispatch(updateAccount(id, validatedAccountData));
     } else {
-      console.warn(`Got invalid account data ${JSON.stringify(data)}`);
+      console.warn('Got invalid account data:', data);
     }
   };
 };
