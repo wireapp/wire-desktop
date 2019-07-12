@@ -19,6 +19,7 @@
 
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
+
 import {Schemata} from '../interfaces/main';
 import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';

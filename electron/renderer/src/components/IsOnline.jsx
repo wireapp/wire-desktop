@@ -21,7 +21,7 @@ import './IsOnline.css';
 
 import React, {Component} from 'react';
 
-export class IsOnline extends Component {
+export default class IsOnline extends Component {
   constructor(props) {
     super(props);
 
@@ -32,13 +32,7 @@ export class IsOnline extends Component {
 
   componentDidMount() {
     if (this.state.isOnline === false) {
-      window.addEventListener(
-        'online',
-        event => {
-          this.setState({isOnline: true});
-        },
-        {once: true},
-      );
+      window.addEventListener('online', event => this.setState({isOnline: true}), {once: true});
     }
   }
 

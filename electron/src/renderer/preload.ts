@@ -18,6 +18,7 @@
  */
 
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';

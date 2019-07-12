@@ -19,6 +19,7 @@
 
 import {app} from 'electron';
 import {URL} from 'url';
+
 import {getLogger} from '../logging/getLogger';
 import {platform} from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';

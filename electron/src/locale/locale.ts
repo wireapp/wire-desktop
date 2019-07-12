@@ -18,6 +18,7 @@
  */
 
 import * as Electron from 'electron';
+
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';

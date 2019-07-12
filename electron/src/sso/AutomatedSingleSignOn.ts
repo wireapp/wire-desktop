@@ -18,6 +18,7 @@
  */
 
 import {dialog as mainDialog, remote} from 'electron';
+
 import {EVENT_TYPE} from '../lib/eventType';
 import {getText} from '../locale/locale';
 import {config} from '../settings/config';

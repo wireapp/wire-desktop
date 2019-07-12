@@ -17,16 +17,15 @@
  *
  */
 
+import * as EVENT_TYPE from '../../lib/eventType';
+import {abortAccountCreation, switchAccount} from '../../actions';
+import ContextMenu from './ContextMenu';
+import ContextMenuItem from './ContextMenuItem';
 import React from 'react';
 import {connect} from 'react-redux';
-
-import {abortAccountCreation, switchAccount} from '../../actions';
-import * as EVENT_TYPE from '../../lib/eventType';
 import {getText} from '../../lib/locale';
-import {ContextMenu} from './ContextMenu';
-import {ContextMenuItem} from './ContextMenuItem';
 
-function _EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) {
+function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) {
   return (
     <ContextMenu>
       {isAtLeastAdmin && (
@@ -57,7 +56,7 @@ function _EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...c
   );
 }
 
-export const EditAccountMenu = connect(
+export default connect(
   ({contextMenuState}) => ({
     accountId: contextMenuState.accountId,
     isAtLeastAdmin: contextMenuState.isAtLeastAdmin,
@@ -68,4 +67,4 @@ export const EditAccountMenu = connect(
     abortAccountCreation,
     switchAccount,
   },
-)(_EditAccountMenu);
+)(EditAccountMenu);

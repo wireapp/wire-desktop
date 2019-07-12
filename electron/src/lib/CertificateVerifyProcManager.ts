@@ -20,6 +20,7 @@
 import * as certificateUtils from '@wireapp/certificate-check';
 import {dialog} from 'electron';
 import * as fs from 'fs-extra';
+
 import {getText} from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';

@@ -17,26 +17,40 @@
  *
  */
 
-import './PersonalIcon.css';
+import './AccountIcon.css';
+
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import {colorFromId} from '../lib/accentColor';
 
-export const PersonalIcon = ({account, accentID, onClick}) => (
-  <div
-    className="PersonalIcon"
-    title={account.name}
-    onClick={onClick}
-    data-uie-name="item-team"
-    data-uie-value={account.name}
-  >
-    {account.visible && <div className="PersonalIcon-border" style={{borderColor: colorFromId(accentID)}} />}
-    <div className="PersonalIcon-inner">{account.picture && <img src={account.picture} />}</div>
-  </div>
-);
+const AccountIcon = ({account, ...props}) => {
+  const accountType = () => {
+    if (!account.name) {
+      return 'new';
+    }
 
-PersonalIcon.propTypes = {
-  accentID: PropTypes.number,
-  account: PropTypes.object.isRequired,
-  onClick: PropTypes.func,
+    return account.teamID ? 'team' : 'personal';
+  };
+
+  return (
+    <div
+      className={`AccountIcon AccountIcon-${accountType()}`}
+      title={account.name}
+      data-uie-name="item-team"
+      data-uie-value={account.name}
+      {...props}
+    >
+      {account.visible && <div className="AccountIcon-border" style={{borderColor: colorFromId(account.accentID)}} />}
+      <div className="AccountIcon-inner">
+        {account.picture ? <img src={account.picture} /> : <div>{account.name && [...account.name][0]}</div>}
+      </div>
+    </div>
+  );
 };
+
+AccountIcon.propTypes = {
+  account: PropTypes.object.isRequired,
+};
+
+export default AccountIcon;

@@ -17,7 +17,6 @@
  *
  */
 
-// Modules
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
@@ -27,6 +26,7 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -53,7 +53,6 @@ import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
-// Paths
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');

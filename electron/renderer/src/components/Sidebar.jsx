@@ -18,23 +18,20 @@
  */
 
 import './Sidebar.css';
-
-import React from 'react';
-import {connect} from 'react-redux';
-
-import {config} from '../../../dist/settings/config';
 import {
   addAccountWithSession,
   setAccountContextHidden,
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
+import AccountIcon from './AccountIcon';
+import AddAccountTrigger from './context/AddAccountTrigger';
+import EditAccountMenu from './context/EditAccountMenu';
+import React from 'react';
 import {colorFromId} from '../lib/accentColor';
+import {config} from '../../../dist/settings/config';
+import {connect} from 'react-redux';
 import {preventFocus} from '../lib/util';
-import {AddAccountTrigger} from './context/AddAccountTrigger';
-import {EditAccountMenu} from './context/EditAccountMenu';
-import {PersonalIcon} from './PersonalIcon';
-import {TeamIcon} from './TeamIcon';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
@@ -49,7 +46,7 @@ const getClassName = account => {
   return `Sidebar-icon${showIconBadge}${showIconCursor}`;
 };
 
-const _Sidebar = ({
+const Sidebar = ({
   accounts,
   currentAccentID,
   hasCreatedAccount,
@@ -86,11 +83,7 @@ const _Sidebar = ({
           })}
           onMouseDown={preventFocus()}
         >
-          {account.teamID ? (
-            <TeamIcon account={account} accentID={currentAccentID} />
-          ) : (
-            <PersonalIcon account={account} accentID={currentAccentID} />
-          )}
+          <AccountIcon account={account} />
         </div>
       </div>
     ))}
@@ -102,7 +95,7 @@ const _Sidebar = ({
   </div>
 );
 
-export const Sidebar = connect(
+export default connect(
   ({accounts, contextMenuState}) => ({
     accounts,
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
@@ -117,4 +110,4 @@ export const Sidebar = connect(
     switchAccount,
     toggleEditAccountMenuVisibility,
   },
-)(_Sidebar);
+)(Sidebar);

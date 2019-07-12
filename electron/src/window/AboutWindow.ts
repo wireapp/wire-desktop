@@ -18,9 +18,9 @@
  */
 
 import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'electron';
+import fileUrl = require('file-url');
 import * as path from 'path';
 
-import fileUrl = require('file-url');
 import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';

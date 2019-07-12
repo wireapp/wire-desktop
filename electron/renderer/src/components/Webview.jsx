@@ -18,9 +18,10 @@
  */
 
 import './Webview.css';
+
 import React, {Component} from 'react';
 
-export class Webview extends Component {
+export default class Webview extends Component {
   constructor(props) {
     super(props);
 

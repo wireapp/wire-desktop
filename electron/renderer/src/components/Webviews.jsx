@@ -21,10 +21,9 @@ import './Webviews.css';
 
 import React, {Component} from 'react';
 
-import * as EVENT_TYPE from '../lib/eventType';
-import {Webview} from './Webview';
+import Webview from './Webview';
 
-export class Webviews extends Component {
+export default class Webviews extends Component {
   constructor(props) {
     super(props);
     this.state = {
