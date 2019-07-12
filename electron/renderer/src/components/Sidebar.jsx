@@ -24,11 +24,10 @@ import {
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
+import AccountIcon from './AccountIcon';
 import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
-import PersonalIcon from './PersonalIcon';
 import React from 'react';
-import TeamIcon from './TeamIcon';
 import {colorFromId} from '../lib/accentColor';
 import {config} from '../../../dist/settings/config';
 import {connect} from 'react-redux';
@@ -84,11 +83,7 @@ const Sidebar = ({
           })}
           onMouseDown={preventFocus()}
         >
-          {account.teamID ? (
-            <TeamIcon account={account} accentID={currentAccentID} />
-          ) : (
-            <PersonalIcon account={account} accentID={currentAccentID} />
-          )}
+          <AccountIcon account={account} />
         </div>
       </div>
     ))}
