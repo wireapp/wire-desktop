@@ -22,23 +22,30 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {colorFromId} from '../lib/accentColor';
 
-const AccountIcon = ({account, ...props}) =>  {
+const AccountIcon = ({account, ...props}) => {
   const accountType = () => {
     if (!account.name) {
       return 'new';
     }
 
-    return account.teamID ? 'team' : 'personal'
-  }
+    return account.teamID ? 'team' : 'personal';
+  };
 
   return (
-    <div className={`AccountIcon AccountIcon-${accountType()}`} title={account.name} data-uie-name="item-team" data-uie-value={account.name} {...props}>
+    <div
+      className={`AccountIcon AccountIcon-${accountType()}`}
+      title={account.name}
+      data-uie-name="item-team"
+      data-uie-value={account.name}
+      {...props}
+    >
       {account.visible && <div className="AccountIcon-border" style={{borderColor: colorFromId(account.accentID)}} />}
       <div className="AccountIcon-inner">
         {account.picture ? <img src={account.picture} /> : <div>{account.name && [...account.name][0]}</div>}
       </div>
     </div>
-  );}
+  );
+};
 
 AccountIcon.propTypes = {
   account: PropTypes.object.isRequired,
