@@ -31,7 +31,6 @@ const createAccount = (sessionID, ssoCode = undefined) => ({
   sessionID,
   ssoCode,
   teamID: undefined,
-  type: 'new',
   userID: undefined,
   visible: true,
 });
