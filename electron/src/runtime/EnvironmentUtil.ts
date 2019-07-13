@@ -70,9 +70,15 @@ const isProdEnvironment = (): boolean => {
   );
 };
 
-const isLinuxDesktop = (identifier: string): boolean => {
-  const xdgDesktop = process.env.XDG_CURRENT_DESKTOP;
-  return !!xdgDesktop && xdgDesktop.includes(identifier);
+const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
+  let envVarContent = process.env[envVar] || '';
+
+  if (!caseSensitive) {
+    envVar = envVar.toLowerCase();
+    envVarContent = envVarContent.toLowerCase();
+  }
+
+  return envVarContent.includes(value);
 };
 
 export const platform = {
@@ -82,9 +88,9 @@ export const platform = {
 };
 
 export const linuxDesktop = {
-  isGnome: isLinuxDesktop('GNOME'),
-  isPopOS: isLinuxDesktop('pop'),
-  isUbuntuUnity: isLinuxDesktop('Unity'),
+  isGnomeX11: isEnvVar('XDG_CURRENT_DESKTOP', 'gnome') && isEnvVar('XDG_SESSION_TYPE', 'x11'),
+  isPopOS: isEnvVar('XDG_CURRENT_DESKTOP', 'pop'),
+  isUbuntuUnity: isEnvVar('XDG_CURRENT_DESKTOP', 'Unity'),
 };
 
 const restoreEnvironment = (): BackendTypeLabelKey => {
