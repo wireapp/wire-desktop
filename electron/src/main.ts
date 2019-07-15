@@ -191,21 +191,19 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+  let webappUrl = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
 
   if (ENABLE_LOGGING) {
-    webappURL += `&enableLogging=@wireapp/*`;
+    webappUrl += `&enableLogging=@wireapp/*`;
   }
 
   if (customProtocolHandler.hashLocation) {
-    webappURL += `#${customProtocolHandler.hashLocation}`;
+    webappUrl += `#${customProtocolHandler.hashLocation}`;
   }
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
   }
-
-  await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
     if (!WindowUtil.isInView(main)) {
@@ -234,10 +232,6 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     await shell.openExternal(_url);
   });
 
-  main.webContents.on('dom-ready', () => {
-    main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
-  });
-
   main.on('focus', () => {
     systemMenu.registerShortcuts();
     main.flashFrame(false);
@@ -264,6 +258,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   });
 
   main.webContents.on('crashed', () => main.reload());
+
+  await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
+  main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
 };
 
 // App Events
@@ -351,9 +348,6 @@ const addLinuxWorkarounds = () => {
     ) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity';
     }
-
-    // https://github.com/electron/electron/issues/13415
-    app.disableHardwareAcceleration();
   }
 };
 

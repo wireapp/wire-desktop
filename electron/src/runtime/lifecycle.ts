@@ -58,7 +58,8 @@ export const quit = () => {
 
 export const relaunch = () => {
   if (EnvironmentUtil.platform.IS_MAC_OS) {
-    /* on MacOS, it is not possible to relaunch the app, so just fallback
+    /*
+     * on MacOS, it is not possible to relaunch the app, so just fallback
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696
      */
