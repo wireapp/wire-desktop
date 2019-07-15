@@ -117,16 +117,14 @@ const showWindow = async () => {
 
     await aboutWindow.loadURL(ABOUT_HTML);
 
-    aboutWindow.webContents.on('dom-ready', () => {
-      if (aboutWindow) {
-        aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-          copyright: config.copyright,
-          electronVersion: config.version,
-          productName: config.name,
-          webappVersion,
-        });
-      }
-    });
+    if (aboutWindow) {
+      aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
+        copyright: config.copyright,
+        electronVersion: config.version,
+        productName: config.name,
+        webappVersion,
+      });
+    }
   }
 
   aboutWindow.show();
