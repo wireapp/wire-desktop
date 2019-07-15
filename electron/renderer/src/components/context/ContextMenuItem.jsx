@@ -20,7 +20,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export const ContextMenuItem = props => (
+const ContextMenuItem = props => (
   <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
     {props.children}
   </div>
@@ -29,3 +29,5 @@ export const ContextMenuItem = props => (
 ContextMenuItem.propTypes = {
   onClick: PropTypes.func,
 };
+
+export default ContextMenuItem;

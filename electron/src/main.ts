@@ -344,7 +344,7 @@ const addLinuxWorkarounds = () => {
     if (
       EnvironmentUtil.linuxDesktop.isUbuntuUnity ||
       EnvironmentUtil.linuxDesktop.isPopOS ||
-      EnvironmentUtil.linuxDesktop.isGnome
+      EnvironmentUtil.linuxDesktop.isGnomeX11
     ) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity';
     }
