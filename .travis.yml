@@ -1,5 +1,6 @@
 # http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
+dist: xenial
 
 # https://docs.travis-ci.com/user/encryption-keys/
 env:
