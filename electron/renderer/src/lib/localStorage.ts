@@ -17,6 +17,12 @@
  *
  */
 
+import {AccountData} from '../reducers/accountReducer';
+
+export interface LocalStorageState {
+  accounts: AccountData[];
+}
+
 const STATE_NAME = 'state';
 
 export const loadState = () => {
@@ -29,7 +35,7 @@ export const loadState = () => {
   }
 };
 
-export const saveState = state => {
+export const saveState = (state: LocalStorageState) => {
   try {
     const serializedState = JSON.stringify(state);
     localStorage.setItem(STATE_NAME, serializedState);

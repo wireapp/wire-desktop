@@ -17,10 +17,27 @@
  *
  */
 
-import {ActionType} from '../actions';
 import uuid from 'uuid/v4';
+import {ActionType} from '../actions';
+import {LIFECYCLE} from '../lib/eventType';
 
-const createAccount = (sessionID, ssoCode = undefined) => ({
+export interface AccountData {
+  accentID?: number;
+  badgeCount: number;
+  id: string;
+  isAdding: boolean;
+  lifecycle?: LIFECYCLE;
+  name?: string;
+  picture?: string;
+  sessionID?: string;
+  ssoCode?: string;
+  teamID?: string;
+  teamRole?: string;
+  userID?: string;
+  visible: boolean;
+}
+
+const createAccount = (sessionID?: string, ssoCode: string | undefined = undefined): AccountData => ({
   accentID: undefined,
   badgeCount: 0,
   id: uuid(),
@@ -35,7 +52,9 @@ const createAccount = (sessionID, ssoCode = undefined) => ({
   visible: true,
 });
 
-export default (state = [createAccount()], action) => {
+const initialState = [createAccount()];
+
+const accountReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case ActionType.ADD_ACCOUNT: {
       const newState = state.map(account => ({...account, visible: false}));
@@ -102,3 +121,5 @@ export default (state = [createAccount()], action) => {
     }
   }
 };
+
+export default accountReducer;

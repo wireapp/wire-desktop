@@ -17,30 +17,51 @@
  *
  */
 
-import './Sidebar.css';
+import React from 'react';
+import {connect} from 'react-redux';
+
+import {config} from '../../../dist/settings/config';
 import {
   addAccountWithSession,
   setAccountContextHidden,
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
+import {colorFromId} from '../lib/accentColor';
+import {preventFocus} from '../lib/util';
+import {RootState} from '../reducers';
+import {AccountData} from '../reducers/accountReducer';
 import AccountIcon from './AccountIcon';
 import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
-import React from 'react';
-import {colorFromId} from '../lib/accentColor';
-import {config} from '../../../dist/settings/config';
-import {connect} from 'react-redux';
-import {preventFocus} from '../lib/util';
+import './Sidebar.css';
 
-const centerOfEventTarget = event => {
-  const clientRectangle = event.currentTarget.getBoundingClientRect();
+export type Props = React.HTMLProps<HTMLDivElement>;
+
+export interface DispatchProps {
+  addAccountWithSession: () => void;
+  setAccountContextHidden: typeof setAccountContextHidden;
+  switchAccount: typeof switchAccount;
+  toggleEditAccountMenuVisibility: typeof toggleEditAccountMenuVisibility;
+}
+
+export interface ConnectedProps {
+  accounts: AccountData[];
+  currentAccentID?: number;
+  hasCreatedAccount: boolean;
+  hasReachedLimitOfAccounts: boolean;
+  isAddingAccount: boolean;
+  isEditAccountMenuVisible: boolean;
+}
+
+const centerOfEventTarget = (event: React.SyntheticEvent) => {
+  const clientRectangle = (event.currentTarget as Element).getBoundingClientRect();
   const centerX = clientRectangle.left + clientRectangle.width / 2;
   const centerY = clientRectangle.top + clientRectangle.height / 2;
   return {centerX, centerY};
 };
 
-const getClassName = account => {
+const getClassName = (account: AccountData) => {
   const showIconBadge = account.badgeCount > 0 ? ' Sidebar-icon-badge' : '';
   const showIconCursor = account.visible ? '' : ' Sidebar-icon-cursor';
   return `Sidebar-icon${showIconBadge}${showIconCursor}`;
@@ -54,7 +75,7 @@ const Sidebar = ({
   isAddingAccount,
   isEditAccountMenuVisible,
   ...connected
-}) => (
+}: Props & ConnectedProps & DispatchProps) => (
   <div
     className="Sidebar"
     style={hasCreatedAccount ? {} : {display: 'none'}}
@@ -64,12 +85,12 @@ const Sidebar = ({
     {accounts.map(account => (
       <div className="Sidebar-cell" key={account.id}>
         <div
-          style={{color: colorFromId(currentAccentID)}}
+          style={{color: colorFromId(currentAccentID || 0)}}
           className={getClassName(account)}
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
             const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
-              account.teamRole,
+              account.teamRole || '',
             );
             const {centerX, centerY} = centerOfEventTarget(event);
             connected.toggleEditAccountMenuVisibility(
@@ -96,9 +117,9 @@ const Sidebar = ({
 );
 
 export default connect(
-  ({accounts, contextMenuState}) => ({
+  ({accounts, contextMenuState}: RootState) => ({
     accounts,
-    currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
+    currentAccentID: (accounts.find(account => account.visible) || {accentID: undefined}).accentID,
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
     hasReachedLimitOfAccounts: accounts.length >= config.maximumAccounts,
     isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),

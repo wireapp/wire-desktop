@@ -17,43 +17,61 @@
  *
  */
 
-import './App.css';
-import * as EVENT_TYPE from '../lib/eventType';
-import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import IsOnline from './IsOnline';
 import React from 'react';
-import Sidebar from './Sidebar';
-import WebviewsContainer from '../containers/WebviewsContainer';
-import {config} from '../../../dist/settings/config';
 import {connect} from 'react-redux';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+import {config} from '../../../dist/settings/config';
+import {initiateSSO, switchAccount, updateAccount} from '../actions/';
+import WebviewsContainer from '../containers/WebviewsContainer';
+import {ACTION} from '../lib/eventType';
+import {RootState} from '../reducers';
+import {AccountData} from '../reducers/accountReducer';
+import './App.css';
+import IsOnline, {Props as IsOnlineProps} from './IsOnline';
+import Sidebar from './Sidebar';
 
-    this.switchAccount = this.switchAccount.bind(this);
-    this.initiateSSO = this.initiateSSO.bind(this);
-  }
+export interface AccountEvent {
+  accountIndex: number;
+}
 
+export interface SSOEvent {
+  code?: string;
+}
+
+export type Props = React.HTMLProps<IsOnlineProps>;
+
+export interface ConnectedProps {
+  accounts: AccountData[];
+  accountIds: string[];
+  isAddingAccount: boolean;
+}
+
+export interface DispatchProps {
+  switchAccount: typeof switchAccount;
+  initiateSSO: typeof initiateSSO;
+  updateAccount: typeof updateAccount;
+}
+
+class App extends React.Component<Props & ConnectedProps & DispatchProps> {
   componentDidMount() {
-    window.addEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount, false);
-    window.addEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO, false);
+    window.addEventListener(ACTION.SWITCH_ACCOUNT, this.switchAccount as any, false);
+    window.addEventListener(ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO as any, false);
   }
 
   componentWillUnmount() {
-    window.removeEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount);
-    window.removeEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO);
+    window.removeEventListener(ACTION.SWITCH_ACCOUNT, this.switchAccount as any);
+    window.removeEventListener(ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO as any);
   }
 
-  switchAccount(event) {
+  switchAccount = (event: CustomEvent<AccountEvent>) => {
     const {accountIndex} = event.detail;
     const accountId = this.props.accountIds[accountIndex];
     if (accountId) {
       this.props.switchAccount(accountId);
     }
-  }
+  };
 
-  initiateSSO(event) {
+  initiateSSO = (event: CustomEvent<SSOEvent>) => {
     const loggedOutWebviews = this.props.accounts.filter(account => account.userID === undefined);
     const ssoCode = event.detail.code;
 
@@ -64,7 +82,7 @@ class App extends React.Component {
     } else {
       if (this.props.accounts.length >= config.maximumAccounts) {
         return window.dispatchEvent(
-          new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
+          new CustomEvent(ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
             detail: {
               reachedMaximumAccounts: true,
             },
@@ -74,8 +92,8 @@ class App extends React.Component {
       // All accounts are logged in, create a new one
       this.props.initiateSSO(undefined, ssoCode, true);
     }
-    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE));
-  }
+    return window.dispatchEvent(new CustomEvent(ACTION.CREATE_SSO_ACCOUNT_RESPONSE));
+  };
 
   render() {
     return (
@@ -89,20 +107,11 @@ class App extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  const {accounts} = state;
-  return {
-    accountIds: accounts.map(account => account.id),
-    accounts,
-    isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
-  };
-}
-
-function mapDispatchToProps() {
-  return {initiateSSO, switchAccount, updateAccount};
-}
-
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps(),
+  ({accounts}: RootState) => ({
+    accountIds: accounts.map((account: AccountData) => account.id),
+    accounts,
+    isAddingAccount: !!accounts.length && accounts.some((account: AccountData) => account.userID === undefined),
+  }),
+  {initiateSSO, switchAccount, updateAccount},
 )(App);

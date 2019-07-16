@@ -17,14 +17,17 @@
  *
  */
 
-import './AccountIcon.css';
-
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import {colorFromId} from '../lib/accentColor';
+import {AccountData} from '../reducers/accountReducer';
+import './AccountIcon.css';
 
-const AccountIcon = ({account, ...props}) => {
+export interface Props extends React.HTMLProps<HTMLDivElement> {
+  account: AccountData;
+}
+
+const accountIcon = ({account, ...props}: Props) => {
   const accountType = () => {
     if (!account.name) {
       return 'new';
@@ -45,7 +48,7 @@ const AccountIcon = ({account, ...props}) => {
         <div
           className="AccountIcon-border"
           data-uie-name="item-selected"
-          style={{borderColor: colorFromId(account.accentID)}}
+          style={{borderColor: colorFromId(account.accentID || 0)}}
         />
       )}
       <div className="AccountIcon-inner">
@@ -55,8 +58,4 @@ const AccountIcon = ({account, ...props}) => {
   );
 };
 
-AccountIcon.propTypes = {
-  account: PropTypes.object.isRequired,
-};
-
-export default AccountIcon;
+export default accountIcon;

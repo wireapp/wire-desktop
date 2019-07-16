@@ -23,16 +23,18 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 import {setAccountContextHidden} from '../../actions';
+import {RootState} from '../../reducers';
 
-class ContextMenu extends Component {
-  constructor(props) {
+export interface Props extends React.HTMLProps<HTMLDivElement> {
+  setAccountContextHidden: typeof setAccountContextHidden;
+  position: {centerX: number; centerY: number};
+}
+
+class ContextMenu extends Component<Props> {
+  private menu?: HTMLDivElement | null;
+
+  constructor(props: Props) {
     super(props);
-
-    this._handleKeyDown = this._handleKeyDown.bind(this);
-    this._hide = this._hide.bind(this);
-    this._handleMouseDown = this._handleMouseDown.bind(this);
-    this._handleMouseWheel = this._handleMouseWheel.bind(this);
-    this._handleRef = this._handleRef.bind(this);
   }
 
   componentDidMount() {
@@ -43,42 +45,42 @@ class ContextMenu extends Component {
     this._unregisterListeners();
   }
 
-  _hide() {
+  private readonly _hide = () => {
     this.props.setAccountContextHidden();
-  }
+  };
 
-  _handleKeyDown(event) {
+  private readonly _handleKeyDown = (event: KeyboardEvent) => {
     const KEY_ESCAPE = 27;
     if (event.keyCode === KEY_ESCAPE) {
       this._hide();
     }
-  }
+  };
 
-  _handleMouseDown(event) {
-    if (this.menu && !this.menu.contains(event.target)) {
+  private readonly _handleMouseDown = (event: MouseEvent) => {
+    if (this.menu && !this.menu.contains(event.target as Node)) {
       this._hide();
     }
-  }
+  };
 
-  _handleMouseWheel(event) {
+  private readonly _handleMouseWheel = (event: MouseEvent) => {
     event.preventDefault();
-  }
+  };
 
-  _registerListeners() {
+  private _registerListeners() {
     window.addEventListener('keydown', this._handleKeyDown);
     window.addEventListener('mousedown', this._handleMouseDown);
     window.addEventListener('resize', this._hide);
     window.addEventListener('wheel', this._handleMouseWheel);
   }
 
-  _unregisterListeners() {
+  private _unregisterListeners() {
     window.removeEventListener('keydown', this._handleKeyDown);
     window.removeEventListener('mousedown', this._handleMouseDown);
     window.removeEventListener('resize', this._hide);
     window.removeEventListener('wheel', this._handleMouseWheel);
   }
 
-  _handleRef(menu) {
+  private readonly _handleRef = (menu: HTMLDivElement | null) => {
     if (menu) {
       this.menu = menu;
       const {centerX, centerY} = this.props.position;
@@ -92,7 +94,7 @@ class ContextMenu extends Component {
       menu.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
       menu.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
     }
-  }
+  };
 
   render() {
     return (
@@ -104,8 +106,8 @@ class ContextMenu extends Component {
 }
 
 export default connect(
-  state => ({
-    position: state.contextMenuState.position,
+  ({contextMenuState}: RootState) => ({
+    position: contextMenuState.position,
   }),
   {setAccountContextHidden},
 )(ContextMenu);

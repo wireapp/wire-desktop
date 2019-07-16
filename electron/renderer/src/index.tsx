@@ -17,24 +17,36 @@
  *
  */
 
-import './Index.css';
-import {applyMiddleware, createStore} from 'redux';
-import {loadState, saveState} from './lib/localStorage';
-import App from './components/App';
-import {Provider} from 'react-redux';
-import React from 'react';
-import appStore from './reducers';
-import {config} from '../../dist/settings/config';
-import logger from 'redux-logger';
-import {render} from 'react-dom';
 import throttle from 'lodash/throttle';
+import React from 'react';
+import {render} from 'react-dom';
+import {Provider} from 'react-redux';
+import {Middleware, applyMiddleware, createStore} from 'redux';
+import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 
+import {config} from '../../dist/settings/config';
+import App from './components/App';
+import './Index.css';
+import {loadState, saveState} from './lib/localStorage';
+import appStore from './reducers';
+
+declare global {
+  interface Window {
+    locStrings: Record<string, string>;
+    locStringsDefault: Record<string, string>;
+    sendBadgeCount: (count: number) => void;
+    sendDeleteAccount: (accountId: string, sessionId?: string) => Promise<void>;
+    sendLogoutAccount: (accountId: string) => void;
+  }
+}
+
+window.locStrings = window.locStrings || {};
+window.locStringsDefault = window.locStringsDefault || {};
+
 const HALF_SECOND = 500;
-
 const persistedState = loadState();
-
-const middleware = [thunk];
+const middleware: Middleware[] = [thunk];
 
 if (config.environment !== 'production') {
   middleware.push(logger);

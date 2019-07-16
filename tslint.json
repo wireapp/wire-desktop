@@ -2,5 +2,9 @@
   "extends": ["@wireapp/tslint-config"],
   "linterOptions": {
     "exclude": ["**/dist/**", "**/node_modules/**"]
+  },
+  "rules": {
+    "no-default-export": false,
+    "typedef": false
   }
 }

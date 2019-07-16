@@ -19,6 +19,8 @@
 
 import {ActionType} from '../actions';
 
+export type ContextMenuState = typeof DEFAULT_STATE;
+
 const DEFAULT_STATE = {
   accountId: '',
   isAtLeastAdmin: false,
@@ -28,7 +30,7 @@ const DEFAULT_STATE = {
   sessionId: '',
 };
 
-export default (state = DEFAULT_STATE, action) => {
+const contextMenuReducer = (state = DEFAULT_STATE, action: any) => {
   switch (action.type) {
     case ActionType.HIDE_CONTEXT_MENUS: {
       return {...DEFAULT_STATE};
@@ -59,3 +61,5 @@ export default (state = DEFAULT_STATE, action) => {
     }
   }
 };
+
+export default contextMenuReducer;

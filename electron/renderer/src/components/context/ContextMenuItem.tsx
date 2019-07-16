@@ -17,12 +17,16 @@
  *
  */
 
-export const noop = () => {};
+import React from 'react';
 
-export const preventFocus = (fn = noop) => {
-  return event => {
-    event.stopPropagation();
-    event.preventDefault();
-    fn(event);
-  };
-};
+export interface Props extends React.HTMLProps<HTMLDivElement> {
+  onClick: () => void;
+}
+
+const ContextMenuItem = (props: Props) => (
+  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
+    {props.children}
+  </div>
+);
+
+export default ContextMenuItem;

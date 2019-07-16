@@ -21,26 +21,44 @@ import './Webviews.css';
 
 import React, {Component} from 'react';
 
+import {WebviewTag} from 'electron';
+import {resetIdentity, switchAccount, updateAccountLifecycle} from '../actions';
+import {ACCOUNT, ACTION, LIFECYCLE} from '../lib/eventType';
+import {AccountData} from '../reducers/accountReducer';
 import Webview from './Webview';
 
-export default class Webviews extends Component {
-  constructor(props) {
+export interface Props extends React.HTMLProps<HTMLUListElement> {
+  abortAccountCreation: (accountId: string) => void;
+  accounts: AccountData[];
+  resetIdentity: typeof resetIdentity;
+  switchAccount: typeof switchAccount;
+  updateAccountBadgeCount: (id: string, count: number) => void;
+  updateAccountData: (id: string, data: AccountData) => void;
+  updateAccountLifecycle: typeof updateAccountLifecycle;
+}
+
+export interface State {
+  canDelete: Record<string, boolean>;
+}
+
+export interface IpcData {
+  channel: string;
+  args: any[];
+}
+
+export default class Webviews extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       canDelete: this._getCanDeletes(props.accounts),
     };
-    this._getCanDeletes = this._getCanDeletes.bind(this);
-    this._onUnreadCountUpdated = this._onUnreadCountUpdated.bind(this);
-    this._onIpcMessage = this._onIpcMessage.bind(this);
-    this._onWebviewClose = this._onWebviewClose.bind(this);
-    this._deleteWebview = this._deleteWebview.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     this.setState({canDelete: this._getCanDeletes(nextProps.accounts)});
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps: Props, nextState: State) {
     for (const account of nextProps.accounts) {
       const match = this.props.accounts.find(_account => account.id === _account.id);
       if (!match) {
@@ -48,9 +66,10 @@ export default class Webviews extends Component {
       }
       // If a SSO code is set on a window, use it
       if (match.ssoCode !== account.ssoCode && account.isAdding) {
-        document
-          .querySelector(`Webview[data-accountid="${account.id}"]`)
-          .loadURL(this._getEnvironmentUrl(account, false));
+        const webviewElement: WebviewTag | null = document.querySelector(`Webview[data-accountid="${account.id}"]`);
+        if (webviewElement) {
+          webviewElement.loadURL(this._getEnvironmentUrl(account, false));
+        }
       }
       if (match.visible !== account.visible) {
         return true;
@@ -59,19 +78,16 @@ export default class Webviews extends Component {
     return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
   }
 
-  _getCanDeletes(accounts) {
-    return accounts.reduce(
-      (accumulator, account) => ({
-        ...accumulator,
-        [account.id]: this._canDeleteWebview(account),
-      }),
-      {},
-    );
-  }
+  private readonly _getCanDeletes = (accounts: AccountData[]): Record<string, boolean> => {
+    return accounts.reduce((accumulator: Record<string, boolean>, account) => {
+      accumulator[account.id] = this._canDeleteWebview(account);
+      return accumulator;
+    }, {});
+  };
 
-  _getEnvironmentUrl(account, forceLogin) {
+  _getEnvironmentUrl(account: AccountData, forceLogin: boolean) {
     const currentLocation = new URL(window.location.href);
-    const envParam = currentLocation.searchParams.get('env');
+    const envParam = currentLocation.searchParams.get('env') || '';
     const decodedEnvParam = decodeURIComponent(envParam);
     const url = new URL(decodedEnvParam);
 
@@ -91,46 +107,46 @@ export default class Webviews extends Component {
     return url.href;
   }
 
-  _accumulateBadgeCount(accounts) {
+  _accumulateBadgeCount(accounts: AccountData[]) {
     return accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
   }
 
-  _onUnreadCountUpdated(accountId, unreadCount) {
+  private readonly _onUnreadCountUpdated = (accountId: string, unreadCount: number) => {
     this.props.updateAccountBadgeCount(accountId, unreadCount);
     const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
     window.sendBadgeCount(accumulatedCount);
-  }
+  };
 
-  _onIpcMessage(account, {channel, args}) {
+  private readonly _onIpcMessage = async (account: AccountData, {channel, args}: IpcData) => {
     switch (channel) {
-      case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
+      case ACCOUNT.UPDATE_INFO: {
         const [accountData] = args;
         this.props.updateAccountData(account.id, accountData);
         break;
       }
 
-      case EVENT_TYPE.ACTION.NOTIFICATION_CLICK: {
+      case ACTION.NOTIFICATION_CLICK: {
         this.props.switchAccount(account.id);
         break;
       }
 
-      case EVENT_TYPE.LIFECYCLE.SIGNED_IN:
-      case EVENT_TYPE.LIFECYCLE.SIGN_OUT: {
+      case LIFECYCLE.SIGNED_IN:
+      case LIFECYCLE.SIGN_OUT: {
         this.props.updateAccountLifecycle(account.id, channel);
         break;
       }
 
-      case EVENT_TYPE.LIFECYCLE.SIGNED_OUT: {
+      case LIFECYCLE.SIGNED_OUT: {
         const [clearData] = args;
         if (clearData) {
-          this._deleteWebview(account);
+          await this._deleteWebview(account);
         } else {
           this.props.resetIdentity(account.id);
         }
         break;
       }
 
-      case EVENT_TYPE.LIFECYCLE.UNREAD_COUNT: {
+      case LIFECYCLE.UNREAD_COUNT: {
         const [badgeCount] = args;
         this._onUnreadCountUpdated(account.id, badgeCount);
         break;
@@ -138,19 +154,18 @@ export default class Webviews extends Component {
     }
 
     this.setState({canDelete: {...this.state.canDelete, [account.id]: this._canDeleteWebview(account)}});
-  }
+  };
 
-  _onWebviewClose(account) {
-    this._deleteWebview(account);
-  }
+  private readonly _onWebviewClose = async (account: AccountData) => {
+    await this._deleteWebview(account);
+  };
 
-  _deleteWebview(account) {
-    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
-      this.props.abortAccountCreation(account.id);
-    });
-  }
+  private readonly _deleteWebview = async (account: AccountData) => {
+    await window.sendDeleteAccount(account.id, account.sessionID);
+    this.props.abortAccountCreation(account.id);
+  };
 
-  _canDeleteWebview(account) {
+  private _canDeleteWebview(account: AccountData) {
     const match = this.props.accounts.find(_account => account.id === _account.id);
     return !match || (!match.userID && !!match.sessionID);
   }
@@ -166,7 +181,7 @@ export default class Webviews extends Component {
               visible={account.visible}
               src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
               partition={account.sessionID}
-              onIpcMessage={event => this._onIpcMessage(account, event)}
+              onIpcMessage={(event: IpcData) => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"
             />
             {this.state.canDelete[account.id] && account.visible && (

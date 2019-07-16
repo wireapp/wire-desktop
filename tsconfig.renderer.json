@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "lib": ["dom", "esnext"],
+    "module": "CommonJS",
+    "outDir": "electron/renderer/dist",
+    "rootDir": "electron/renderer/src"
+  },
+  "extends": "./tsconfig.json",
+  "exclude": ["electron/dist", "electron/src", "electron/**/*.test*.ts", "node_modules", "wrap"]
+}

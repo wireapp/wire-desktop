@@ -17,26 +17,21 @@
  *
  */
 
-import './IsOnline.css';
+import {AnyAction, combineReducers} from 'redux';
+import {ThunkAction as ReduxThunkAction, ThunkDispatch as ReduxThunkDispatch} from 'redux-thunk';
 
-import React, {Component} from 'react';
+import accountReducer, {AccountData} from './accountReducer';
+import contextMenuReducer, {ContextMenuState} from './contextMenuReducer';
 
-export default class IsOnline extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isOnline: navigator.onLine,
-    };
-  }
-
-  componentDidMount() {
-    if (this.state.isOnline === false) {
-      window.addEventListener('online', event => this.setState({isOnline: true}), {once: true});
-    }
-  }
-
-  render() {
-    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
-  }
+export interface RootState {
+  accounts: AccountData[];
+  contextMenuState: ContextMenuState;
 }
+
+export type ThunkAction<T = void> = ReduxThunkAction<T, RootState, {}, AnyAction>;
+export type ThunkDispatch = ReduxThunkDispatch<RootState, {}, AnyAction>;
+
+export default combineReducers<RootState>({
+  accounts: accountReducer,
+  contextMenuState: contextMenuReducer,
+});

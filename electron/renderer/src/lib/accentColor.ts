@@ -55,7 +55,7 @@ export const VIOLET = {
 
 export const ACCENT_COLORS = [STRONG_BLUE, STRONG_LIME_GREEN, VIVID_RED, BRIGHT_ORANGE, SOFT_PINK, VIOLET];
 
-export const colorFromId = id => {
+export const colorFromId = (id: number) => {
   const accentColor = ACCENT_COLORS.find(color => color.id === id);
   return accentColor && accentColor.color;
 };

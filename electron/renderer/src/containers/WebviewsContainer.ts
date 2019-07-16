@@ -17,17 +17,27 @@
  *
  */
 
-import PropTypes from 'prop-types';
-import React from 'react';
+import {connect} from 'react-redux';
 
-const ContextMenuItem = props => (
-  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
-    {props.children}
-  </div>
-);
+import {
+  abortAccountCreation,
+  resetIdentity,
+  switchAccount,
+  updateAccountBadgeCount,
+  updateAccountData,
+  updateAccountLifecycle,
+} from '../actions';
+import Webviews from '../components/Webviews';
+import {RootState} from '../reducers';
 
-ContextMenuItem.propTypes = {
-  onClick: PropTypes.func,
-};
-
-export default ContextMenuItem;
+export default connect(
+  ({accounts}: RootState) => ({accounts}),
+  {
+    abortAccountCreation,
+    resetIdentity,
+    switchAccount,
+    updateAccountBadgeCount,
+    updateAccountData,
+    updateAccountLifecycle,
+  },
+)(Webviews);

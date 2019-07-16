@@ -17,25 +17,31 @@
  *
  */
 
-import {
-  abortAccountCreation,
-  resetIdentity,
-  switchAccount,
-  updateAccountBadgeCount,
-  updateAccountData,
-  updateAccountLifecycle,
-} from '../actions';
-import Webviews from '../components/Webviews';
-import {connect} from 'react-redux';
+import React, {Component} from 'react';
+import './IsOnline.css';
 
-export default connect(
-  state => ({accounts: state.accounts}),
-  {
-    abortAccountCreation,
-    resetIdentity,
-    switchAccount,
-    updateAccountBadgeCount,
-    updateAccountData,
-    updateAccountLifecycle,
-  },
-)(Webviews);
+export interface State {
+  isOnline: boolean;
+}
+
+export type Props = React.HTMLProps<HTMLDivElement>;
+
+export default class IsOnline extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      isOnline: navigator.onLine,
+    };
+  }
+
+  componentDidMount() {
+    if (this.state.isOnline === false) {
+      window.addEventListener('online', event => this.setState({isOnline: true}), {once: true});
+    }
+  }
+
+  render() {
+    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
+  }
+}

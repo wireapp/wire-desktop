@@ -3,7 +3,7 @@ const webpack = require('webpack');
 
 module.exports = (env = {}) => ({
   devtool: env.production ? undefined : 'cheap-eval-source-map',
-  entry: path.resolve(__dirname, 'electron/renderer/src/index.jsx'),
+  entry: path.resolve(__dirname, 'electron/renderer/src/index.tsx'),
   externals: {
     'fs-extra': '{}',
   },
@@ -12,7 +12,7 @@ module.exports = (env = {}) => ({
     rules: [
       {
         exclude: /node_modules/,
-        test: /\.jsx?$/,
+        test: /\.tsx?$/,
         use: ['babel-loader'],
       },
       {
@@ -39,7 +39,7 @@ module.exports = (env = {}) => ({
       ]
     : undefined,
   resolve: {
-    extensions: ['.js', '.jsx', '.json'],
+    extensions: ['.ts', '.tsx'],
   },
   stats: 'errors-only',
 });
