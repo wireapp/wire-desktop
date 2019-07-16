@@ -19,8 +19,8 @@
 
 import * as url from 'url';
 
-export namespace OriginValidator {
-  export function isMatchingHost(urlString: string, baseUrl: string): boolean {
+export const OriginValidator = {
+  isMatchingHost(urlString: string, baseUrl: string): boolean {
     return url.parse(urlString).host === url.parse(baseUrl).host;
-  }
-}
+  },
+};

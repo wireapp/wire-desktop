@@ -20,12 +20,12 @@
 import raygun = require('raygun');
 import {config} from '../settings/config';
 
-export namespace Raygun {
-  export function initClient(): void {
+export const Raygun = {
+  initClient(): void {
     const raygunClient = new raygun.Client().init({apiKey: config.raygunApiKey});
     raygunClient.onBeforeSend(payload => {
       delete payload.details.machineName;
       return payload;
     });
-  }
-}
+  },
+};
