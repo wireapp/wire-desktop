@@ -33,6 +33,11 @@ matrix:
       env:
         - MATRIX_EVAL="CC=clang && CXX=clang++"
     - os: windows
+      env:
+        - PATH="/c/Python27:/c/Python27/Scripts:$PATH"
+      before_install:
+        - choco install python2 vcredist-all
+        - yarn global add windows-build-tools
 
 git:
   submodules: false
