@@ -18,15 +18,14 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
-import {LogFactory} from '@wireapp/commons';
-import {app, dialog} from 'electron';
+import {dialog} from 'electron';
 import * as fs from 'fs-extra';
-import * as path from 'path';
+
 import {getText} from '../locale/locale';
+import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: path.join(LOG_DIR, 'electron.log')});
+const logger = getLogger(__filename);
 
 interface DisplayCertificateErrorOptions {
   bypassDialogLock: boolean;
@@ -35,23 +34,24 @@ interface DisplayCertificateErrorOptions {
 }
 
 class CertificateVerifyProcManager {
-  private static bypassCertificatePinning: boolean = false;
-  private static isDialogLocked: boolean = false;
+  private static bypassCertificatePinning = false;
+  private static isDialogLocked = false;
   public static mainWindow: Electron.BrowserWindow;
 
-  private static readonly dialogUnlockTimeout: number = 6000;
+  private static readonly dialogUnlockTimeout = 6000;
 
   public static readonly CHROMIUM_ERRORS = {
     CERT_AUTHORITY_INVALID: -202,
     CERT_COMMON_NAME_INVALID: -200,
   };
-  private static readonly RESPONSE = {
-    RETRY: 0,
-    SHOW_DETAILS: 1,
 
+  private static readonly RESPONSE = {
     GO_BACK: 0,
+    RETRY: 0,
     SAVE_CERTIFICATE: 1,
+    SHOW_DETAILS: 1,
   };
+
   private static readonly LOCALE = {
     RETRY: getText('certificateVerifyProcManagerRetry'),
     SHOW_DETAILS: getText('certificateVerifyProcManagerShowDetails'),
@@ -69,8 +69,8 @@ class CertificateVerifyProcManager {
   private static displayCertificateDetails(
     hostname: string,
     certificate: Electron.Certificate,
-    options: DisplayCertificateErrorOptions
-  ) {
+    options: DisplayCertificateErrorOptions,
+  ): void {
     const goBack = () => {
       // Go back to the dialog
       this.displayCertificateError(hostname, certificate, {
@@ -91,7 +91,7 @@ class CertificateVerifyProcManager {
           certificate,
           message: textDetails,
         },
-        goBack
+        goBack,
       );
     } else {
       // For Linux and Windows, use a message box with the ability to save the certificate
@@ -118,7 +118,7 @@ class CertificateVerifyProcManager {
                   }
                   // Go back on details window
                   this.displayCertificateDetails(hostname, certificate, options);
-                }
+                },
               );
               break;
             }
@@ -128,23 +128,24 @@ class CertificateVerifyProcManager {
               break;
             }
           }
-        }
+        },
       );
     }
   }
 
-  public static isCertificatePinningEnabled() {
+  public static isCertificatePinningEnabled(): boolean {
     return !this.bypassCertificatePinning;
   }
-  public static displayCertificateChromiumError(hostname: string, certificate: Electron.Certificate) {
+
+  public static displayCertificateChromiumError(hostname: string, certificate: Electron.Certificate): void {
     this.displayCertificateError(hostname, certificate, {isChromiumError: true});
   }
 
   public static displayCertificateError(
     hostname: string,
     certificate: Electron.Certificate,
-    options?: Partial<DisplayCertificateErrorOptions>
-  ) {
+    options?: Partial<DisplayCertificateErrorOptions>,
+  ): void {
     const {bypassDialogLock, isChromiumError, isCheckboxChecked} = {
       bypassDialogLock: false,
       isCheckboxChecked: false,
@@ -192,7 +193,7 @@ class CertificateVerifyProcManager {
             break;
           }
         }
-      }
+      },
     );
   }
 }
@@ -203,14 +204,14 @@ export const attachTo = (main: Electron.BrowserWindow) => {
 
 export const setCertificateVerifyProc = (
   request: Electron.CertificateVerifyProcRequest,
-  cb: (verificationResult: number) => void
+  cb: (verificationResult: number) => void,
 ) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
 
   // Check browser results
   if (verificationResult !== 'net::OK') {
     logger.error(
-      `Internal Chrome TLS verification failed. Hostname: ${hostname}. Verification result: ${verificationResult}. Error code: ${errorCode}`
+      `Internal Chrome TLS verification failed. Hostname: ${hostname}. Verification result: ${verificationResult}. Error code: ${errorCode}`,
     );
 
     const isCommonCertificateError =
@@ -226,17 +227,13 @@ export const setCertificateVerifyProc = (
   // Check certificate pinning
   if (certificateUtils.hostnameShouldBePinned(hostname) && CertificateVerifyProcManager.isCertificatePinningEnabled()) {
     const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
+    const falsyValue = Object.values(pinningResults).some(val => val === false);
 
-    for (const result of Object.values(pinningResults)) {
-      if (result === false) {
-        logger.error(
-          `Certificate verification failed for "${hostname}":\n${
-            pinningResults.errorMessage
-          }, showing certificate pinning error dialog.`
-        );
-        CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
-        return cb(-2);
-      }
+    if (falsyValue || pinningResults.errorMessage) {
+      logger.error(`Certificate verification failed for "${hostname}".`);
+      logger.error(`Error: "${pinningResults.errorMessage}". Displaying certificate pinning error dialog.`);
+      CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
+      return cb(-2);
     }
   }
 

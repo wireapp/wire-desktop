@@ -25,9 +25,9 @@ import {Squirrel} from '../update/Squirrel';
 import {WindowManager} from '../window/WindowManager';
 import * as EnvironmentUtil from './EnvironmentUtil';
 
-let isFirstInstance: boolean | undefined = undefined;
+export let isFirstInstance: boolean | undefined = undefined;
 
-const checkForUpdate = () => {
+export const checkForUpdate = () => {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
     Squirrel.handleSquirrelEvent(isFirstInstance);
 
@@ -35,7 +35,7 @@ const checkForUpdate = () => {
   }
 };
 
-const checkSingleInstance = () => {
+export const checkSingleInstance = () => {
   if (process.mas) {
     isFirstInstance = true;
   } else {
@@ -51,14 +51,15 @@ const checkSingleInstance = () => {
 
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-const quit = () => {
+export const quit = () => {
   settings.persistToFile();
   app.exit();
 };
 
-const relaunch = () => {
+export const relaunch = () => {
   if (EnvironmentUtil.platform.IS_MAC_OS) {
-    /* on MacOS, it is not possible to relaunch the app, so just fallback
+    /**
+     * on MacOS, it is not possible to relaunch the app, so just fallback
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696
      */
@@ -68,5 +69,3 @@ const relaunch = () => {
     quit();
   }
 };
-
-export {checkForUpdate, checkSingleInstance, isFirstInstance, quit, relaunch};

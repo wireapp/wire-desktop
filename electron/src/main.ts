@@ -17,7 +17,6 @@
  *
  */
 
-// Modules
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
@@ -27,7 +26,7 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import {OnHeadersReceivedCallback, OnHeadersReceivedDetails} from './interfaces/';
+
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -38,7 +37,7 @@ import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
-import {ENABLE_LOGGING} from './logging/getLogger';
+import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -54,8 +53,7 @@ import {AboutWindow} from './window/AboutWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
-// Paths
-const APP_PATH = app.getAppPath();
+const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
@@ -69,12 +67,18 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 
-const logger = LogFactory.getLogger(__filename, {forceEnable: true, logFilePath: LOG_FILE});
 const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
+
+if (argv.version) {
+  console.log(config.version);
+  process.exit();
+}
+
+const logger = getLogger(__filename);
 
 // Icon
 const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -110,7 +114,7 @@ const bindIpcEvents = () => {
     async (event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) => {
       await deleteAccount(id, accountId, partitionId);
       main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
-    }
+    },
   );
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
@@ -341,19 +345,17 @@ const addLinuxWorkarounds = () => {
     if (
       EnvironmentUtil.linuxDesktop.isUbuntuUnity ||
       EnvironmentUtil.linuxDesktop.isPopOS ||
-      EnvironmentUtil.linuxDesktop.isGnome
+      EnvironmentUtil.linuxDesktop.isGnomeX11
     ) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity';
     }
-
-    // https://github.com/electron/electron/issues/13415
-    app.disableHardwareAcceleration();
   }
 };
 
 const handlePortableFlags = () => {
   if (argv.portable || argv.user_data_dir) {
-    const USER_PATH = argv.user_data_dir || path.join(process.env.APPIMAGE || process.execPath, '../Data');
+    const USER_PATH =
+      path.resolve(argv.user_data_dir) || path.join(process.env.APPIMAGE || process.execPath, '../Data');
 
     console.log(`Saving user data to ${USER_PATH}`);
     app.setPath('userData', USER_PATH);
@@ -377,19 +379,19 @@ class ElectronWrapperInit {
     this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: LOG_FILE});
   }
 
-  async run() {
+  async run(): Promise<void> {
     this.logger.log('webviewProtection init');
     this.webviewProtection();
   }
 
   // <webview> hardening
-  webviewProtection() {
+  webviewProtection(): void {
     const openLinkInNewWindow = (
       event: Electron.Event,
       url: string,
       frameName: string,
       disposition: string,
-      options: Electron.Options
+      options: Electron.Options,
     ) => {
       event.preventDefault();
 
@@ -465,17 +467,23 @@ class ElectronWrapperInit {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
-            const listener = (details: OnHeadersReceivedDetails, callback: OnHeadersReceivedCallback) => {
-              details.responseHeaders['Access-Control-Allow-Origin'] = ['http://localhost:8081'];
-              details.responseHeaders['Access-Control-Allow-Credentials'] = ['true'];
+            const listener = (
+              details: Electron.OnHeadersReceivedDetails,
+              callback: (response: Electron.OnHeadersReceivedResponse) => void,
+            ) => {
+              const responseHeaders = {
+                ...details.responseHeaders,
+                'Access-Control-Allow-Credentials': ['true'],
+                'Access-Control-Allow-Origin': ['http://localhost:8081'],
+              };
 
               callback({
                 cancel: false,
-                responseHeaders: details.responseHeaders,
+                responseHeaders: responseHeaders,
               });
             };
 
-            contents.session.webRequest.onHeadersReceived(filter, listener as any);
+            contents.session.webRequest.onHeadersReceived(filter, listener);
           }
 
           contents.on('before-input-event', (event, input) => {

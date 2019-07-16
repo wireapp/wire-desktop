@@ -17,11 +17,11 @@
  *
  */
 
-import React, {Component} from 'react';
-
 import './IsOnline.css';
 
-class IsOnline extends Component {
+import React, {Component} from 'react';
+
+export default class IsOnline extends Component {
   constructor(props) {
     super(props);
 
@@ -32,13 +32,7 @@ class IsOnline extends Component {
 
   componentDidMount() {
     if (this.state.isOnline === false) {
-      window.addEventListener(
-        'online',
-        event => {
-          this.setState({isOnline: true});
-        },
-        {once: true}
-      );
+      window.addEventListener('online', event => this.setState({isOnline: true}), {once: true});
     }
   }
 
@@ -46,5 +40,3 @@ class IsOnline extends Component {
     return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
   }
 }
-
-export default IsOnline;

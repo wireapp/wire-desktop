@@ -25,7 +25,7 @@ import {parse as parseUrl} from 'url';
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
-const logger = getLogger('openGraph');
+const logger = getLogger(__filename);
 
 axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
 
@@ -141,9 +141,9 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
   return meta;
 };
 
-const getOpenGraphData = (
+export const getOpenGraphData = (
   url: string,
-  callback: (error: Error | null, meta?: OpenGraphResult) => void
+  callback: (error: Error | null, meta?: OpenGraphResult) => void,
 ): Promise<OpenGraphResult | void> => {
   return fetchOpenGraphData(url)
     .then(meta => {
@@ -171,7 +171,7 @@ const getOpenGraphData = (
     });
 };
 
-const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
+export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
   const meta = await fetchOpenGraphData(url);
 
   if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
@@ -183,5 +183,3 @@ const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
     throw new Error('OpenGraph metadata contains no image.');
   }
 };
-
-export {getOpenGraphData, getOpenGraphDataAsync};

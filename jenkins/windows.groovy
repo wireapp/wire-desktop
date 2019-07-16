@@ -20,12 +20,11 @@ node('node130') {
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     bat returnStatus: true, script: 'rmdir /s /q "node_modules"'
-    bat returnStatus: true, script: 'rmdir /s /q "electron\\node_modules"'
   }
 
   def text = readFile('electron/wire.json')
-  def buildInfo = parseJson(text)
-  def version = buildInfo.version.getAt(0..2) + '.' + env.BUILD_NUMBER
+  def (major, minor) = parseJson(text).version.tokenize('.')
+  def version = "${major}.${minor}.${env.BUILD_NUMBER}"
   currentBuild.displayName = version
 
   stage('Build') {
@@ -40,24 +39,6 @@ node('node130') {
     } catch(e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
-      throw e
-    }
-  }
-
-  stage('Sign build') {
-    try {
-      if (production) {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Update.exe"'
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\Wire-win32-ia32\\Wire.exe"'
-      } else if (custom) {
-        bat 'for /d %%d in ("wrap\\build\\*-win32-ia32") do for %%f in ("%%d\\*.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
-      } else {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\Update.exe"'
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "wrap\\build\\WireInternal-win32-ia32\\WireInternal.exe"'
-      }
-    } catch(e) {
-      currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing failed** see: ${JOB_URL}"
       throw e
     }
   }
@@ -91,9 +72,10 @@ node('node130') {
   stage('Trigger smoke tests') {
     if (production) {
       try {
-        build job: 'Wrapper_Windows_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-rc.zinfra.io/')], wait: false
+        build job: 'Wrapper_Windows_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-master.zinfra.io/')], wait: false
       } catch(e) {
         wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} Unable to trigger smoke tests for ${version}** see: ${JOB_URL}"
+        print e
       }
     }
   }

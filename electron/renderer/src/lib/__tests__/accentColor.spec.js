@@ -17,6 +17,8 @@
  *
  */
 
+/* eslint-disable no-magic-numbers */
+
 import {colorFromId} from '../accentColor';
 
 describe('colorFromId', () => {

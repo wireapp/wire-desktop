@@ -17,23 +17,62 @@
  *
  */
 
-.TeamIcon {
+.AccountIcon {
   position: relative;
-  fill: #fff;
   width: 38px;
   height: 38px;
 }
 
-.TeamIcon > * {
+.AccountIcon-team > *,
+.AccountIcon-personal > *,
+.AccountIcon-new > * {
+  overflow: hidden;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
 
-.TeamIcon > span {
+.AccountIcon-team > * {
+  border-radius: 20%;
+}
+
+.AccountIcon-personal > *,
+.AccountIcon-new > * {
+  border-radius: 50%;
+}
+
+.AccountIcon-inner {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+.AccountIcon-inner > div {
   color: var(--graphite-dark);
-  font-size: 11px;
+  font-size: 20px;
   text-transform: uppercase;
   user-select: none;
+  background-color: rgba(255, 255, 255, 0.4);
+  width: 28px;
+  line-height: 28px;
+  text-align: center;
+  height: 28px;
+}
+
+.AccountIcon-team .AccountIcon-inner > div,
+.AccountIcon-personal .AccountIcon-inner > div {
+  background-color: #fff;
+}
+
+.AccountIcon-inner > img {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+}
+
+.AccountIcon-border {
+  border: 2px solid #fff;
+  width: 32px;
+  height: 32px;
 }

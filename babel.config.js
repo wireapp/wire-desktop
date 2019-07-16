@@ -6,6 +6,7 @@ const buildPresets = ({modules = false, debug = false}) => {
     [
       '@babel/preset-env',
       {
+        corejs: '2',
         debug,
         modules,
         targets: {

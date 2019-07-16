@@ -27,18 +27,18 @@ import {SettingsType} from './SettingsType';
 
 const app = Electron.app || Electron.remote.app;
 
-const logger = getLogger('SchemaUpdate');
+const logger = getLogger(__filename);
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
 const defaultPathV1 = path.join(app.getPath('userData'), 'config/init.json');
 
-class SchemaUpdater {
+export class SchemaUpdater {
   static SCHEMATA: Schemata = {
     VERSION_1: {
       configVersion: 1,
     },
   };
 
-  static updateToVersion1(configFileV0: string = defaultPathV0, configFileV1: string = defaultPathV1): string {
+  static updateToVersion1(configFileV0 = defaultPathV0, configFileV1 = defaultPathV1): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
     if (fs.existsSync(configFileV0)) {
@@ -71,5 +71,3 @@ class SchemaUpdater {
     return configFileV1;
   }
 }
-
-export {SchemaUpdater};

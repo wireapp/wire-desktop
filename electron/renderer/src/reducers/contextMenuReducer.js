@@ -17,24 +17,24 @@
  *
  */
 
-import * as ActionCreator from '../actions';
+import {ActionType} from '../actions';
 
 const DEFAULT_STATE = {
   accountId: '',
   isAtLeastAdmin: false,
   isEditAccountMenuVisible: false,
   lifecycle: false,
-  position: {x: 0, y: 0},
+  position: {centerX: 0, centerY: 0},
   sessionId: '',
 };
 
-const contextMenuReducer = (state = DEFAULT_STATE, action) => {
+export default (state = DEFAULT_STATE, action) => {
   switch (action.type) {
-    case ActionCreator.HIDE_CONTEXT_MENUS: {
+    case ActionType.HIDE_CONTEXT_MENUS: {
       return {...DEFAULT_STATE};
     }
 
-    case ActionCreator.TOGGLE_ADD_ACCOUNT_VISIBILITY: {
+    case ActionType.TOGGLE_ADD_ACCOUNT_VISIBILITY: {
       return {
         ...state,
         isEditAccountMenuVisible: false,
@@ -42,7 +42,7 @@ const contextMenuReducer = (state = DEFAULT_STATE, action) => {
       };
     }
 
-    case ActionCreator.TOGGLE_EDIT_ACCOUNT_VISIBILITY: {
+    case ActionType.TOGGLE_EDIT_ACCOUNT_VISIBILITY: {
       return {
         ...state,
         accountId: action.payload.accountId,
@@ -54,9 +54,8 @@ const contextMenuReducer = (state = DEFAULT_STATE, action) => {
       };
     }
 
-    default:
+    default: {
       return state;
+    }
   }
 };
-
-export default contextMenuReducer;

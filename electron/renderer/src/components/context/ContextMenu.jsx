@@ -17,11 +17,12 @@
  *
  */
 
+import './ContextMenu.css';
+
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {setAccountContextHidden} from '../../actions';
 
-import './ContextMenu.css';
+import {setAccountContextHidden} from '../../actions';
 
 class ContextMenu extends Component {
   constructor(props) {
@@ -47,7 +48,8 @@ class ContextMenu extends Component {
   }
 
   _handleKeyDown(event) {
-    if (event.keyCode === 27) {
+    const KEY_ESCAPE = 27;
+    if (event.keyCode === KEY_ESCAPE) {
       this._hide();
     }
   }
@@ -79,7 +81,7 @@ class ContextMenu extends Component {
   _handleRef(menu) {
     if (menu) {
       this.menu = menu;
-      const {x, y} = this.props.position;
+      const {centerX, centerY} = this.props.position;
 
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
@@ -87,8 +89,8 @@ class ContextMenu extends Component {
       const menuWidth = menu.offsetWidth;
       const menuHeight = menu.offsetHeight;
 
-      menu.style.left = `${windowWidth - x < menuWidth ? x - menuWidth : x}px`;
-      menu.style.top = `${windowHeight - y < menuHeight ? y - menuHeight : y}px`;
+      menu.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
+      menu.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
     }
   }
 
@@ -105,5 +107,5 @@ export default connect(
   state => ({
     position: state.contextMenuState.position,
   }),
-  {setAccountContextHidden}
+  {setAccountContextHidden},
 )(ContextMenu);

@@ -18,21 +18,25 @@
  */
 
 import {dialog as mainDialog, remote} from 'electron';
+
 import {EVENT_TYPE} from '../lib/eventType';
 import {getText} from '../locale/locale';
 import {config} from '../settings/config';
-import {CreateSSOAccountDetail} from './CreateSSOAccountDetail';
+
+export interface CreateSSOAccountDetail {
+  reachedMaximumAccounts?: boolean;
+}
 
 const dialog = mainDialog || remote.dialog;
 
-class AutomatedSingleSignOn {
-  private onResponseReceived(event: CustomEvent<CreateSSOAccountDetail>) {
+export class AutomatedSingleSignOn {
+  private onResponseReceived(event: CustomEvent<CreateSSOAccountDetail>): void {
     if (event.detail.reachedMaximumAccounts) {
       this.showError();
     }
   }
 
-  private showError() {
+  private showError(): void {
     let detail = getText('wrapperAddAccountErrorMessagePlural');
     let message = getText('wrapperAddAccountErrorTitlePlural');
 
@@ -48,7 +52,7 @@ class AutomatedSingleSignOn {
     });
   }
 
-  public async start(ssoCode: string) {
+  public async start(ssoCode: string): Promise<void> {
     window.addEventListener(
       EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE,
       (event: Event) => {
@@ -58,7 +62,7 @@ class AutomatedSingleSignOn {
       },
       {
         once: true,
-      }
+      },
     );
 
     window.dispatchEvent(
@@ -66,9 +70,7 @@ class AutomatedSingleSignOn {
         detail: {
           code: ssoCode,
         },
-      })
+      }),
     );
   }
 }
-
-export {AutomatedSingleSignOn};

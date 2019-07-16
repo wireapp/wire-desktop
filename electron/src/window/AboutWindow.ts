@@ -18,9 +18,9 @@
  */
 
 import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'electron';
+import fileUrl = require('file-url');
 import * as path from 'path';
 
-import fileUrl = require('file-url');
 import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
@@ -29,7 +29,7 @@ import {config} from '../settings/config';
 let webappVersion: string;
 
 // Paths
-const APP_PATH = app.getAppPath();
+const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 
 // Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));
@@ -122,9 +122,8 @@ const showWindow = () => {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
           copyright: config.copyright,
           electronVersion: config.version,
-          environment: config.environment,
           productName: config.name,
-          webappVersion: webappVersion,
+          webappVersion,
         });
       }
     });

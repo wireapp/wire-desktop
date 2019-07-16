@@ -19,8 +19,8 @@ node('node180') {
   }
 
   def text = readFile('electron/wire.json')
-  def buildInfo = parseJson(text)
-  def version = buildInfo.version.getAt(0..2) + '.' + env.BUILD_NUMBER
+  def (major, minor) = parseJson(text).version.tokenize('.')
+  def version = "${major}.${minor}.${env.BUILD_NUMBER}"
   currentBuild.displayName = version
 
   def environment = docker.build('node', '-f jenkins/linux.Dockerfile .')
@@ -29,7 +29,7 @@ node('node180') {
 
     stage('Checkout & Clean') {
       git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-      sh returnStatus: true, script: 'rm -rf $WORKSPACE/electron/node_modules/ $WORKSPACE/node_modules/ $WORKSPACE/*.sig'
+      sh returnStatus: true, script: 'rm -rf $WORKSPACE/node_modules/ $WORKSPACE/*.sig'
     }
 
     stage('Build') {

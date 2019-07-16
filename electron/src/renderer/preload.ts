@@ -18,13 +18,14 @@
  */
 
 import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
 
-const logger = getLogger('preload');
+const logger = getLogger(__filename);
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
@@ -41,7 +42,7 @@ const getWebviewById = (id: string): WebviewTag => {
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event: IpcMessageEvent, code: string) =>
-    new AutomatedSingleSignOn().start(code)
+    new AutomatedSingleSignOn().start(code),
   );
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: IpcMessageEvent, action: string) => {
@@ -58,13 +59,10 @@ const subscribeToMainProcessEvents = () => {
     }
   });
 
-  ipcRenderer.on(
-    EVENT_TYPE.WRAPPER.RELOAD,
-    (): void => {
-      const webviews = document.querySelectorAll<WebviewTag>('webview');
-      webviews.forEach(webview => webview.reload());
-    }
-  );
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
+    const webviews = document.querySelectorAll<WebviewTag>('webview');
+    webviews.forEach(webview => webview.reload());
+  });
 };
 
 const setupIpcInterface = (): void => {

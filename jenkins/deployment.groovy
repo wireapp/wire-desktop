@@ -39,10 +39,15 @@ node('master') {
 
   stage('Get build artifacts') {
     try {
-      step ([$class: 'CopyArtifact',
-      projectName: "$projectName",
-      selector: [$class: 'SpecificBuildSelector', buildNumber: "$version"],
-      filter: '*.pkg,wrap/**']);
+      step ([
+        $class: 'CopyArtifact',
+        filter: 'wrap/build/**',
+        projectName: "$projectName",
+        selector: [
+          $class: 'SpecificBuildSelector',
+          buildNumber: "$version"
+        ]
+      ]);
     } catch (e) {
       wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts from of ${version} from ${projectName}** see: ${JOB_URL}"
       throw e
@@ -197,7 +202,7 @@ node('master') {
     stage('Upload build as draft to GitHub') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
-          def SEARCH_PATH = 'wrap/dist/'
+          def SEARCH_PATH = './wrap/dist/'
           def GITHUB_ACCESS_TOKEN = credentials('GITHUB_ACCESS_TOKEN')
 
           if (projectName.contains('macOS')) {

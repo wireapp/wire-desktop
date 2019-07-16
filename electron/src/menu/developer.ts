@@ -18,6 +18,7 @@
  */
 
 import {MenuItem, app} from 'electron';
+
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
@@ -67,7 +68,7 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
 const createEnvironmentTemplates = () => {
   const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
   for (const key in EnvironmentUtil.BackendTypeLabel) {
-    const type = EnvironmentUtil.BackendTypeLabel[key] as EnvironmentUtil.BackendTypeLabelKey;
+    const type = EnvironmentUtil.BackendTypeLabel[key].toUpperCase() as EnvironmentUtil.BackendTypeLabelKey;
     environmentTemplate.push({
       checked: currentEnvironment === type,
       click: () => {
@@ -104,7 +105,7 @@ const separatorTemplate: Electron.MenuItemConstructorOptions = {
 
 const menuTemplate: Electron.MenuItemConstructorOptions = {
   id: 'Developer',
-  label: 'Developer',
+  label: '&Developer',
   submenu: [
     devToolsTemplate,
     reloadTemplate,
@@ -117,6 +118,4 @@ const menuTemplate: Electron.MenuItemConstructorOptions = {
   ],
 };
 
-const menuItem = new MenuItem(menuTemplate);
-
-export {menuItem};
+export const menuItem = new MenuItem(menuTemplate);

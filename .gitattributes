@@ -24,7 +24,6 @@
 *.pkg export-ignore
 /.idea export-ignore
 /electron/dist export-ignore
-/electron/node_modules export-ignore
 /electron/renderer/dist export-ignore
 /keys export-ignore
 /temp export-ignore
