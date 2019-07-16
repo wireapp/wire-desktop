@@ -41,7 +41,13 @@ const AccountIcon = ({account, ...props}) => {
       data-uie-value={account.name}
       {...props}
     >
-      {account.visible && <div className="AccountIcon-border" style={{borderColor: colorFromId(account.accentID)}} />}
+      {account.visible && (
+        <div
+          className="AccountIcon-border"
+          data-uie-name="item-selected"
+          style={{borderColor: colorFromId(account.accentID)}}
+        />
+      )}
       <div className="AccountIcon-inner">
         {account.picture ? <img src={account.picture} /> : <div>{account.name && [...account.name][0]}</div>}
       </div>
