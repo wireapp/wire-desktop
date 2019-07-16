@@ -18,6 +18,7 @@
  */
 
 import {MenuItem, app} from 'electron';
+
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';

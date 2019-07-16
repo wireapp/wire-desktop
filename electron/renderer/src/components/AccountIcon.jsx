@@ -18,8 +18,10 @@
  */
 
 import './AccountIcon.css';
+
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import {colorFromId} from '../lib/accentColor';
 
 const AccountIcon = ({account, ...props}) => {

@@ -21,6 +21,7 @@ import {ValidationUtil} from '@wireapp/commons';
 import {app, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+
 import {getLogger} from '../logging/getLogger';
 
 const USER_DATA_DIR = app.getPath('userData');

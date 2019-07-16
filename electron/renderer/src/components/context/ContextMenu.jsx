@@ -18,8 +18,10 @@
  */
 
 import './ContextMenu.css';
+
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+
 import {setAccountContextHidden} from '../../actions';
 
 class ContextMenu extends Component {

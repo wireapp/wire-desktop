@@ -103,7 +103,6 @@ export class SingleSignOn {
           if (error) {
             return reject(error);
           }
-
           resolve(bytes.toString('hex'));
         });
       });
@@ -347,7 +346,7 @@ export class SingleSignOn {
   private readonly wipeSessionData = () => {
     return new Promise(resolve => {
       if (this.session) {
-        this.session.clearStorageData({}, () => resolve());
+        this.session.clearStorageData(undefined, () => resolve());
       } else {
         resolve();
       }

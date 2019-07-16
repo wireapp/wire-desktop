@@ -17,7 +17,7 @@
  *
  */
 
-import * as Electron from 'electron';
+import {BrowserWindow, screen} from 'electron';
 
 type Rectangle = {
   height: number;
@@ -34,9 +34,9 @@ const pointInRectangle = (point: [number, number], rectangle: Rectangle) => {
   return xInRange && yInRange;
 };
 
-const isInView = (win: Electron.BrowserWindow): boolean => {
+const isInView = (win: BrowserWindow): boolean => {
   const windowBounds = win.getBounds();
-  const nearestWorkArea = Electron.screen.getDisplayMatching(windowBounds).workArea;
+  const nearestWorkArea = screen.getDisplayMatching(windowBounds).workArea;
 
   const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
   const lowerRightVisible = pointInRectangle(

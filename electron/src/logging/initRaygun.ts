@@ -21,9 +21,9 @@ import raygun = require('raygun');
 import {config} from '../settings/config';
 
 export const Raygun = {
-  initClient: () => {
+  initClient(): void {
     const raygunClient = new raygun.Client().init({apiKey: config.raygunApiKey});
-    raygunClient.onBeforeSend((payload: any) => {
+    raygunClient.onBeforeSend(payload => {
       delete payload.details.machineName;
       return payload;
     });
