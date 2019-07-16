@@ -104,7 +104,7 @@ const separatorTemplate: Electron.MenuItemConstructorOptions = {
 
 const menuTemplate: Electron.MenuItemConstructorOptions = {
   id: 'Developer',
-  label: 'Developer',
+  label: '&Developer',
   submenu: [
     devToolsTemplate,
     reloadTemplate,
