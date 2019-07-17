@@ -34,10 +34,6 @@ export interface Props extends React.HTMLProps<WebviewTag> {
 export default class Webview extends Component<Props> {
   private webview?: WebviewTag | null;
 
-  constructor(props: Props) {
-    super(props);
-  }
-
   componentDidMount() {
     if (this.webview) {
       // set unknown props
