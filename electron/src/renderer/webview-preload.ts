@@ -17,9 +17,9 @@
  *
  */
 
-import {platform} from '../runtime/EnvironmentUtil';
-import {getLogger} from '../logging/getLogger';
 import {EVENT_TYPE} from '../lib/eventType';
+import {getLogger} from '../logging/getLogger';
+import {platform} from '../runtime/EnvironmentUtil';
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {systemPreferences} = remote;
@@ -31,7 +31,10 @@ const logger = getLogger(__filename);
 function subscribeToThemeChange() {
   if (platform.IS_MAC_OS && window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE) {
     systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () =>
-      window.amplify.publish(window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode()),
+      window.amplify.publish(
+        window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE,
+        systemPreferences.isDarkMode(),
+      ),
     );
   }
 }
@@ -138,7 +141,8 @@ const exposeAddressBook = () => {
   }
 };
 
-const reportWebappVersion = () => ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
+const reportWebappVersion = () =>
+  ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
 
 const checkAvailability = (callback: () => void) => {
   const HALF_SECOND = 500;
