@@ -69,7 +69,7 @@ store.subscribe(
   }, 500),
 );
 
-const render = Component =>
+const render = (Component: any) =>
   ReactDOM.render(
     <AppContainer>
       <Provider store={store}>
