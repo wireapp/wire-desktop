@@ -144,7 +144,6 @@
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
     "build:ts": "yarn clear:ts && tsc",
     "build:ts:tests": "tsc -P tsconfig.mocha.json --noEmit",
-    "build:ts:renderer": "yarn clear:ts:renderer && tsc -P tsconfig.renderer.json",
     "build:win": "yarn build:prepare && wire-build-win -w electron/wire.json",
     "build:win:installer": "rimraf wrap/dist && wire-build-win-installer -w electron/wire.json",
     "build:win:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:win\"",
