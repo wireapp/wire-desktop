@@ -1,5 +1,6 @@
 # http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
+dist: xenial
 
 # https://docs.travis-ci.com/user/encryption-keys/
 env:
@@ -26,8 +27,8 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      before_script:
-        - export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
+      services:
+        - xvfb
     - os: osx
       osx_image: xcode8
       env:
