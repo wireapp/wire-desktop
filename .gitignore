@@ -10,6 +10,7 @@ coverage
 /electron/dist
 /electron/instrumented-code
 /electron/renderer/dist
+/electron/renderer/cache
 /keys
 /temp
 /wrap

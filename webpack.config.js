@@ -20,13 +20,25 @@
 const path = require('path');
 const webpack = require('webpack');
 
-module.exports = (env = {}) => ({
-  devtool: env.production ? undefined : 'source-map',
-  entry: path.resolve(__dirname, 'electron/renderer/src/index.tsx'),
+const tsxEntry = path.resolve(__dirname, 'electron/renderer/src/index.tsx');
+const htmlEntry = path.resolve(__dirname, 'electron/renderer');
+const production = process.env.NODE_ENV === 'production';
+
+module.exports = {
+  devServer: production
+    ? undefined
+    : {
+        contentBase: htmlEntry,
+        hotOnly: true,
+        port: 8080,
+        writeToDisk: true,
+      },
+  devtool: production ? undefined : 'source-map',
+  entry: tsxEntry,
   externals: {
     'fs-extra': '{}',
   },
-  mode: !env.production ? 'development' : 'production',
+  mode: !production ? 'development' : 'production',
   module: {
     rules: [
       {
@@ -45,10 +57,13 @@ module.exports = (env = {}) => ({
     path: 'empty',
   },
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'electron/renderer/dist'),
+    filename: 'dist/bundle.js',
+    hotUpdateChunkFilename: 'cache/[id].[hash].hot-update.js',
+    hotUpdateMainFilename: 'cache/[hash].hot-update.json',
+    path: path.resolve(__dirname, 'electron/renderer'),
+    publicPath: 'http://localhost:8080/',
   },
-  plugins: env.production
+  plugins: production
     ? [
         new webpack.DefinePlugin({
           'process.env': {
@@ -56,9 +71,14 @@ module.exports = (env = {}) => ({
           },
         }),
       ]
-    : undefined,
+    : [new webpack.HotModuleReplacementPlugin(), new webpack.NamedModulesPlugin()],
   resolve: {
+    alias: production
+      ? undefined
+      : {
+          'react-dom': '@hot-loader/react-dom',
+        },
     extensions: ['.js', '.ts', '.tsx'],
   },
   stats: 'errors-only',
-});
+};

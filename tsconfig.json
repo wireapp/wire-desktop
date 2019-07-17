@@ -17,5 +17,5 @@
     "strict": true,
     "target": "es6"
   },
-  "exclude": ["electron/dist", "electron/renderer", "electron/**/*.test*.ts", "node_modules", "wrap"]
+  "exclude": ["electron/dist", "electron/renderer", "electron/**/*.test*.ts", "node_modules", "wrap", "webpack.config.ts"]
 }

@@ -19,7 +19,8 @@
 
 import throttle from 'lodash/throttle';
 import React from 'react';
-import {render} from 'react-dom';
+import ReactDOM from 'react-dom';
+import {AppContainer} from 'react-hot-loader';
 import {Provider} from 'react-redux';
 import {Middleware, applyMiddleware, createStore} from 'redux';
 import logger from 'redux-logger';
@@ -68,9 +69,24 @@ store.subscribe(
   }, 500),
 );
 
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root'),
-);
+const render = Component =>
+  ReactDOM.render(
+    <AppContainer>
+      <Provider store={store}>
+        <Component />
+      </Provider>
+    </AppContainer>,
+    document.getElementById('root'),
+  );
+
+function runApp() {
+  render(App);
+  if (module.hot) {
+    module.hot.accept('./components/App', () => {
+      const NextApp = require('./components/App').default;
+      render(NextApp);
+    });
+  }
+}
+
+runApp();
