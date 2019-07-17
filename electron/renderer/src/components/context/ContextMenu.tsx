@@ -33,10 +33,6 @@ export interface Props extends React.HTMLProps<HTMLDivElement> {
 class ContextMenu extends Component<Props> {
   private menu?: HTMLDivElement | null;
 
-  constructor(props: Props) {
-    super(props);
-  }
-
   componentDidMount() {
     this._registerListeners();
   }

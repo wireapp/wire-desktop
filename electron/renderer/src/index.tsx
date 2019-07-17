@@ -44,7 +44,6 @@ declare global {
 window.locStrings = window.locStrings || {};
 window.locStringsDefault = window.locStringsDefault || {};
 
-const HALF_SECOND = 500;
 const persistedState = loadState();
 const middleware: Middleware[] = [thunk];
 
@@ -66,7 +65,7 @@ store.subscribe(
         };
       }),
     });
-  }, HALF_SECOND),
+  }, 500),
 );
 
 render(

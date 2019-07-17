@@ -27,13 +27,9 @@ export interface State {
 export type Props = React.HTMLProps<HTMLDivElement>;
 
 export default class IsOnline extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      isOnline: navigator.onLine,
-    };
-  }
+  state = {
+    isOnline: navigator.onLine,
+  };
 
   componentDidMount() {
     if (this.state.isOnline === false) {
