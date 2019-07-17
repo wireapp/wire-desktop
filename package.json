@@ -45,7 +45,7 @@
     "@types/uuid": "3.4.4",
     "@wireapp/build-tools": "0.5.2",
     "@wireapp/copy-config": "0.8.2",
-    "@wireapp/deploy-tools": "0.1.10",
+    "@wireapp/deploy-tools": "0.1.11",
     "@wireapp/eslint-config": "1.2.1",
     "@wireapp/prettier-config": "0.3.0",
     "@wireapp/tslint-config": "1.4.1",
