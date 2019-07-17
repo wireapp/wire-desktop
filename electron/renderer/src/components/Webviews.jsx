@@ -19,7 +19,7 @@
 
 import './Webviews.css';
 
-import * as EVENT_TYPE from '../../lib/eventType';
+import * as EVENT_TYPE from '../lib/eventType';
 import React, {Component} from 'react';
 
 import Webview from './Webview';
