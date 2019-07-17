@@ -179,9 +179,9 @@
     "start:localhost": "yarn start --env=http://localhost:8081",
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:rc": "yarn start --env=https://wire-webapp-rc.zinfra.io",
-    "test": "yarn lint && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn coverage",
+    "test": "yarn lint && yarn test:types && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn coverage",
     "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\"",
-    "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\"",
+    "test:types": "tsc --noEmit -P tsconfig.renderer.json",
     "test:react": "jest"
   }
 }
