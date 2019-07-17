@@ -28,6 +28,9 @@ declare global {
     sendBadgeCount: (count: number) => void;
     sendDeleteAccount: (accountId: string, sessionId?: string) => Promise<void>;
     sendLogoutAccount: (accountId: string) => void;
+    wire: any;
+    z: any;
+    amplify: any;
   }
 
   namespace NodeJS {
