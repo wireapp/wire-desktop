@@ -17,13 +17,12 @@
  *
  */
 
-import './ContextMenu.css';
-
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 import {setAccountContextHidden} from '../../actions';
 import {RootState} from '../../reducers';
+import './ContextMenu.css';
 
 export interface Props extends React.HTMLProps<HTMLDivElement> {
   setAccountContextHidden: typeof setAccountContextHidden;

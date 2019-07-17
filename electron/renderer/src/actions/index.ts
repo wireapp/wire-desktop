@@ -17,8 +17,6 @@
  *
  */
 
-/* eslint-disable no-console */
-
 import uuid from 'uuid/v4';
 
 import {config} from '../../../dist/settings/config';

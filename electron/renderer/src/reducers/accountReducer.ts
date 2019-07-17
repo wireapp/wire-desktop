@@ -18,6 +18,7 @@
  */
 
 import uuid from 'uuid/v4';
+
 import {ActionType} from '../actions';
 import {LIFECYCLE} from '../lib/eventType';
 

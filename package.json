@@ -99,7 +99,7 @@
   },
   "license": "GPL-3.0",
   "lint-staged": {
-    "*.{js,jsx}": [
+    "*.js": [
       "eslint --fix",
       "git add"
     ],
@@ -169,7 +169,7 @@
     "lint:ts:tests": "tslint --project tsconfig.mocha.json",
     "lint:ts:renderer": "tslint --project tsconfig.renderer.json",
     "postinstall": "yarn configure && yarn rebuild",
-    "prestart": "yarn build:ts && yarn build:ts:renderer && yarn bundle:dev",
+    "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css,yml}\"",
     "rebuild": "electron-rebuild -f -w @wireapp/node-addressbook",
     "start": "cross-env NODE_DEBUG=@wireapp* electron . --inspect --devtools --enable-logging",
