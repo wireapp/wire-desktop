@@ -18,6 +18,7 @@
  */
 
 import './IsOnline.css';
+
 import React, {Component} from 'react';
 
 export default class IsOnline extends Component {

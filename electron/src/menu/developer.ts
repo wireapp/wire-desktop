@@ -18,6 +18,7 @@
  */
 
 import {MenuItem, app} from 'electron';
+
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
@@ -104,7 +105,7 @@ const separatorTemplate: Electron.MenuItemConstructorOptions = {
 
 const menuTemplate: Electron.MenuItemConstructorOptions = {
   id: 'Developer',
-  label: 'Developer',
+  label: '&Developer',
   submenu: [
     devToolsTemplate,
     reloadTemplate,

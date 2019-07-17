@@ -19,13 +19,14 @@
 
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
+
 import {Schemata} from '../interfaces/main';
 import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';
 
 class ConfigurationPersistence {
-  configFile: string;
-  logger: logdown.Logger;
+  private readonly configFile: string;
+  private readonly logger: logdown.Logger;
 
   constructor() {
     this.configFile = SchemaUpdater.updateToVersion1();

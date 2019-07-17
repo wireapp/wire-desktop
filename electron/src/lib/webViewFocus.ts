@@ -19,10 +19,13 @@
 
 import {Event, WebContents, webContents} from 'electron';
 
-// Note: webContents.getFocusedWebContents() is broken, always returns the last one
-// Note: Pretty much anything near focus/blur behavior with webviews are broken
-// in Electron 3 so we had to do our own webview focus tracking for now using the
-// (undocumented) focus-change event added in Electron 3
+/*
+ * Note: webContents.getFocusedWebContents() is broken, always returns the last one
+ *
+ * Note: Pretty much anything near focus/blur behavior with webviews are broken
+ * in Electron 3 so we had to do our own webview focus tracking for now using the
+ * (undocumented) focus-change event added in Electron 3
+ */
 
 export class WebViewFocus {
   private static current = 0;
