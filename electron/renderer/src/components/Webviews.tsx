@@ -20,8 +20,8 @@
 import './Webviews.css';
 
 import React, {Component} from 'react';
-
 import {WebviewTag} from 'electron';
+
 import {resetIdentity, switchAccount, updateAccountLifecycle} from '../actions';
 import {ACCOUNT, ACTION, LIFECYCLE} from '../lib/eventType';
 import {AccountData} from '../reducers/accountReducer';
