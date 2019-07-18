@@ -18,7 +18,9 @@
  */
 
 import axios, {AxiosRequestConfig} from 'axios';
+import {parse as parseContentType} from 'content-type';
 import {IncomingMessage} from 'http';
+import {decode as iconvDecode} from 'iconv-lite';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 import {parse as parseUrl} from 'url';
 
@@ -57,7 +59,14 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
   }
 
-  const contentType = response.headers['content-type'] || '';
+  let contentType;
+
+  try {
+    contentType = parseContentType(response.headers['content-type'] || '').type;
+  } catch (error) {
+    throw new Error(`Could not parse content type: "${error.message}"`);
+  }
+
   const isImageContentType = contentType.match(/.*image\/.*/);
 
   if (!isImageContentType) {
@@ -80,15 +89,24 @@ const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number)
     return axios
       .request<IncomingMessage>(config)
       .then(response => {
-        const contentType = response.headers['content-type'] || '';
-        const isHtmlContentType = contentType.match(/.*text\/html/);
+        let contentType;
+
+        try {
+          contentType = parseContentType(response.headers['content-type'] || '');
+        } catch (error) {
+          return reject(`Could not parse content type: "${error.message}"`);
+        }
+
+        const isHtmlContentType = contentType.type.match(/.*text\/html/);
 
         if (!isHtmlContentType) {
           reject(`Unhandled format for open graph generation ('${contentType}')`);
         }
 
-        response.data.on('data', buffer => {
-          const chunk = buffer.toString();
+        const charset = contentType.parameters.charset;
+
+        response.data.on('data', (buffer: Buffer) => {
+          const chunk = charset ? iconvDecode(buffer, charset) : buffer.toString('utf8');
           partialBody += chunk;
 
           if (chunk.match('</head>') || partialBody.length > contentLimit) {
@@ -172,13 +190,13 @@ export const getOpenGraphData = (
 };
 
 export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
-  const meta = await fetchOpenGraphData(url);
+  const metadata = await fetchOpenGraphData(url);
 
-  if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
-    const [imageUrl] = arrayify(meta.image.url);
+  if (typeof metadata.image === 'object' && !Array.isArray(metadata.image) && metadata.image.url) {
+    const [imageUrl] = arrayify(metadata.image.url);
 
     const uri = await fetchImageAsBase64(imageUrl);
-    return updateMetaDataWithImage(meta, uri);
+    return updateMetaDataWithImage(metadata, uri);
   } else {
     throw new Error('OpenGraph metadata contains no image.');
   }
