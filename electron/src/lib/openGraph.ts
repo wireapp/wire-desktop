@@ -97,9 +97,7 @@ const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number)
           return reject(`Could not parse content type: "${error.message}"`);
         }
 
-        const isHtmlContentType = /text\/html/.test(contentType.type);
-
-        if (!isHtmlContentType) {
+        if (!contentType.type.includes('text/html')) {
           reject(`Unhandled format for open graph generation ('${contentType}')`);
         }
 
