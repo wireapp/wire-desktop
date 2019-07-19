@@ -27,9 +27,9 @@ const defaultMessage = 'Hello from nock!';
 const defaultMessageUtf8 = [72, 101, 108, 108, 111, 32, 102, 114, 111, 109, 32, 110, 111, 99, 107, 33];
 
 const russianMessage = 'Привет из нока!';
-const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 110, 111, 99, 107, 33];
+const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 206, 207, 203, 193, 33];
 /* tslint:disable-next-line */
-const russianMessageUtf8 = [208, 159, 209, 128, 208, 184, 208, 178, 208, 181, 209, 130, 32, 208, 184, 208, 183, 32, 110, 111, 99, 107, 33];
+const russianMessageUtf8 = [208, 159, 209, 128, 208, 184, 208, 178, 208, 181, 209, 130, 32, 208, 184, 208, 183, 32, 208, 189, 208, 190, 208, 186, 208, 176, 33];
 
 const doRequest = (contentType: string, contentArray: number[]) => {
   nock(exampleUrl)
@@ -83,8 +83,9 @@ describe('openGraph', () => {
   it('throws on missing content type', async () => {
     try {
       await doRequest('', []);
+      assert.fail(`Request didn't throw`);
     } catch (error) {
-      assert.notStrictEqual(error.message, 'Could not parse content type');
+      assert.equal(true, error.message.includes('Could not parse content type'));
     }
   });
 });
