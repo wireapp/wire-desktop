@@ -31,7 +31,7 @@ const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 110
 /* tslint:disable-next-line */
 const russianMessageUtf8 = [208, 159, 209, 128, 208, 184, 208, 178, 208, 181, 209, 130, 32, 208, 184, 208, 183, 32, 110, 111, 99, 107, 33];
 
-const prepareNock = (contentType: string, encodedContent: number[]) =>
+const doRequest = (contentType: string, encodedContent: number[]) => {
   nock(exampleUrl)
     .get('/')
     .reply(() => {
@@ -43,80 +43,46 @@ const prepareNock = (contentType: string, encodedContent: number[]) =>
         },
       ];
     });
+  return axiosWithContentLimit(
+    {
+      method: 'get',
+      url: exampleUrl,
+    },
+    1e6,
+  );
+};
 
 describe('openGraph', () => {
   afterEach(() => nock.cleanAll());
 
   it('decodes a text encoded with UTF-8', async () => {
-    prepareNock('text/html; charset=utf-8', defaultMessageUtf8);
-    const result = await axiosWithContentLimit(
-      {
-        method: 'get',
-        url: exampleUrl,
-      },
-      1e6,
-    );
+    const result = await doRequest('text/html; charset=utf-8', defaultMessageUtf8);
     assert.strictEqual(result, defaultMessage);
   });
 
   it('decodes a russian text encoded with koi8-r', async () => {
-    prepareNock('text/html; charset=koi8-r', russianMessageKoi8r);
-    const result = await axiosWithContentLimit(
-      {
-        method: 'get',
-        url: exampleUrl,
-      },
-      1e6,
-    );
+    const result = await doRequest('text/html; charset=koi8-r', russianMessageKoi8r);
     assert.strictEqual(result, russianMessage);
   });
 
   it('decodes a russian text encoded with UTF-8', async () => {
-    prepareNock('text/html; charset=utf-8', russianMessageUtf8);
-    const result = await axiosWithContentLimit(
-      {
-        method: 'get',
-        url: exampleUrl,
-      },
-      1e6,
-    );
+    const result = await doRequest('text/html; charset=utf-8', russianMessageUtf8);
     assert.strictEqual(result, russianMessage);
   });
 
   it('defaults to utf8 on invalid charsets', async () => {
-    prepareNock('text/html; charset=invalid', defaultMessageUtf8);
-    const result = await axiosWithContentLimit(
-      {
-        method: 'get',
-        url: exampleUrl,
-      },
-      1e6,
-    );
+    const result = await doRequest('text/html; charset=invalid', defaultMessageUtf8);
     assert.strictEqual(result, defaultMessage);
   });
 
   it('defaults to utf8 on missing charset', async () => {
-    prepareNock('text/html', defaultMessageUtf8);
-    const result = await axiosWithContentLimit(
-      {
-        method: 'get',
-        url: exampleUrl,
-      },
-      1e6,
-    );
+    const result = await doRequest('text/html', defaultMessageUtf8);
     assert.strictEqual(result, defaultMessage);
   });
 
   it('throws on missing content type', async () => {
-    prepareNock('', []);
     try {
-      await axiosWithContentLimit(
-        {
-          method: 'get',
-          url: exampleUrl,
-        },
-        1e6,
-      );
+      await doRequest('', []);
     } catch (error) {
       assert.notStrictEqual(error.message, 'Could not parse content type');
     }
