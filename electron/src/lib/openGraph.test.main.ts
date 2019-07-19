@@ -31,13 +31,13 @@ const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 110
 /* tslint:disable-next-line */
 const russianMessageUtf8 = [208, 159, 209, 128, 208, 184, 208, 178, 208, 181, 209, 130, 32, 208, 184, 208, 183, 32, 110, 111, 99, 107, 33];
 
-const doRequest = (contentType: string, encodedContent: number[]) => {
+const doRequest = (contentType: string, contentArray: number[]) => {
   nock(exampleUrl)
     .get('/')
     .reply(() => {
       return [
         200,
-        Buffer.from(encodedContent),
+        Buffer.from(contentArray),
         {
           'content-type': contentType,
         },
