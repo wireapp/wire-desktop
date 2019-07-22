@@ -30,6 +30,7 @@ describe('initTray', () => {
   it('creates native images for all tray icons and sets a default tray icon', () => {
     const tray = new TrayHandler();
     tray.initTray(TrayMock);
+
     assert.strictEqual(Object.keys(tray.icons!).length, 3);
     assert.strictEqual(tray.icons!.badge.constructor.name, 'NativeImage');
     assert.strictEqual(tray.icons!.tray.constructor.name, 'NativeImage');
@@ -42,8 +43,9 @@ describe('showUnreadCount', () => {
   describe('without tray icon initialization', () => {
     it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', async () => {
       const tray = new TrayHandler();
-      const appWindow = new BrowserWindow();
+      tray.initTray(TrayMock);
 
+      const appWindow = new BrowserWindow();
       const badgeCountSpy = sinon.spy(app, 'setBadgeCount');
       const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
@@ -65,11 +67,11 @@ describe('showUnreadCount', () => {
     it('updates the badge counter and stops flashing the app frame when app is in focus while receiving new messages', async () => {
       const tray = new TrayHandler();
       tray.initTray(TrayMock);
-      const appWindow = new BrowserWindow();
 
+      const appWindow = new BrowserWindow();
       const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
-      await appWindow.loadFile(`file://${path.join(__dirname, '../fixtures/badge.html')}`);
+      await appWindow.loadFile(path.join(__dirname, '../fixtures/badge.html'));
       assert.strictEqual(appWindow.isFocused(), true);
       assert.ok(flashFrameSpy.notCalled);
       tray.showUnreadCount(appWindow, 10);
