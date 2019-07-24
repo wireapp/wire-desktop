@@ -24,7 +24,8 @@ import * as sinon from 'sinon';
 
 import {TrayHandler} from './TrayHandler';
 
-const TrayMock = new Tray(path.join(__dirname, '../../test/fixtures/tray.png'));
+const fixturesDir = path.join(__dirname, '../../test/fixtures');
+const TrayMock = new Tray(path.join(fixturesDir, 'tray.png'));
 
 describe('initTray', () => {
   it('creates native images for all tray icons and sets a default tray icon', () => {
@@ -72,7 +73,7 @@ describe('showUnreadCount', () => {
 
       const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
-      appWindow.loadFile(path.join(__dirname, '../fixtures/badge.html'));
+      appWindow.loadFile(path.join(fixturesDir, 'badge.html'));
       appWindow.webContents.on('dom-ready', () => {
         assert.strictEqual(appWindow.isFocused(), true);
         assert.ok(flashFrameSpy.notCalled);

@@ -9929,7 +9929,6 @@ winreg@1.2.4:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.22.8":
   version "0.22.8"
-  uid bb647e4fa7feb67347f6e7b30eaee8f26142e6a7
   resolved "https://github.com/wireapp/wire-web-config-default#bb647e4fa7feb67347f6e7b30eaee8f26142e6a7"
   dependencies:
     adm-zip "0.4.13"
