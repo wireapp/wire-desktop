@@ -20,6 +20,7 @@
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import {remote} from 'electron';
 import * as logdown from 'logdown';
+
 import {config} from '../settings/config';
 
 const mainProcess = remote ? remote.process : process;

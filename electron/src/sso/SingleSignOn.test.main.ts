@@ -17,6 +17,7 @@
  */
 
 import * as assert from 'assert';
+
 import {SingleSignOn} from './SingleSignOn';
 
 describe('generateSecret', () => {

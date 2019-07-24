@@ -19,6 +19,7 @@
 
 import * as assert from 'assert';
 import {IpcMessageEvent, remote} from 'electron';
+
 import {i18nLanguageIdentifier} from '../../interfaces';
 import {EVENT_TYPE} from '../../lib/eventType';
 import {loadedAboutScreen} from './preload-about';

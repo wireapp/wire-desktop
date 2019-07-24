@@ -19,6 +19,7 @@
 
 import {app} from 'electron';
 import {URL} from 'url';
+
 import {getLogger} from '../logging/getLogger';
 import {platform} from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
@@ -36,7 +37,7 @@ enum ProtocolCommand {
 }
 
 export class CustomProtocolHandler {
-  hashLocation: string = '';
+  hashLocation = '';
   private readonly windowManager = WindowManager;
 
   async dispatchDeepLink(url?: string): Promise<void> {

@@ -38,7 +38,7 @@ export class SchemaUpdater {
     },
   };
 
-  static updateToVersion1(configFileV0: string = defaultPathV0, configFileV1: string = defaultPathV1): string {
+  static updateToVersion1(configFileV0 = defaultPathV0, configFileV1 = defaultPathV1): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
     if (fs.existsSync(configFileV0)) {

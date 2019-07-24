@@ -21,8 +21,8 @@ import {Menu, Tray, app, nativeImage} from 'electron';
 import * as path from 'path';
 
 import * as locale from '../locale/locale';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import * as lifecycle from '../runtime/lifecycle';
+import {linuxDesktop, platform} from '../runtime/EnvironmentUtil';
+import {quit as lifecycleQuit} from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
@@ -45,9 +45,9 @@ export class TrayHandler {
     let trayPng = 'tray.png';
     let trayBadgePng = 'tray.badge.png';
 
-    if (EnvironmentUtil.platform.IS_LINUX) {
-      trayPng = `tray${EnvironmentUtil.linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
-      trayBadgePng = `tray.badge${EnvironmentUtil.linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
+    if (platform.IS_LINUX) {
+      trayPng = `tray${linuxDesktop.isGnomeX11 ? '.gnome' : '@3x'}.png`;
+      trayBadgePng = `tray.badge${linuxDesktop.isGnomeX11 ? '.gnome' : '@3x'}.png`;
     }
 
     const iconPaths = {
@@ -81,7 +81,7 @@ export class TrayHandler {
         label: locale.getText('trayOpen'),
       },
       {
-        click: () => lifecycle.quit(),
+        click: () => lifecycleQuit(),
         label: locale.getText('trayQuit'),
       },
     ]);
