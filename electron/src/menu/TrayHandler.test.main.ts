@@ -25,7 +25,6 @@ import * as sinon from 'sinon';
 import {TrayHandler} from './TrayHandler';
 
 const fixturesDir = path.join(__dirname, '../../test/fixtures');
-
 const TrayMock = new Tray(path.join(fixturesDir, 'tray.png'));
 
 describe('initTray', () => {

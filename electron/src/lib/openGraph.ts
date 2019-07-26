@@ -58,6 +58,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   try {
     response = await axios.request<Buffer>(axiosConfig);
   } catch (error) {
+    logger.error(error);
     throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
   }
 
