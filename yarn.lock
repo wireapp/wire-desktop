@@ -3308,10 +3308,10 @@ electron-download@^4.1.0:
     semver "^5.4.1"
     sumchecker "^2.0.2"
 
-electron-mocha@8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/electron-mocha/-/electron-mocha-8.1.0.tgz#de23643548540b31701e032114ccc55135d3e636"
-  integrity sha512-cunLTUxxtUryS8Zs+n6xDr1yDPZdrxH6rWFDZCQL6duTE7pkqDfTcckL4RrxBc6kvCuQY5O+vqUeUvkSDbO0gA==
+electron-mocha@8.1.1:
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/electron-mocha/-/electron-mocha-8.1.1.tgz#e540e7d9ba80a024007a18533ae491c18f9a0ce2"
+  integrity sha512-/tba/uMivpDdECIFPDIb5Qa5V/9LhY8HbtDo3hOsOXw3zeRyCnLdhSHSPXWBm+C7GxaJheEyoHEMkiMnCbVbvg==
   dependencies:
     ansi-colors "^4.1.1"
     electron-window "^0.8.0"
