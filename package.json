@@ -80,7 +80,7 @@
     "prettier": "1.18.2",
     "react": "16.8.6",
     "rimraf": "2.6.3",
-    "sinon": "7.3.2",
+    "sinon": "7.4.0",
     "style-loader": "0.23.1",
     "tslint": "5.18.0",
     "tslint-config-prettier": "1.18.0",
