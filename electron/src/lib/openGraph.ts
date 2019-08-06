@@ -146,13 +146,15 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
+  const matches = body.match(/.*property="og:[^"]+".*/gim) || [''];
 
-  if (!head) {
-    throw new Error('No head end tag found in website.');
+  if (!matches) {
+    throw new Error('No open graph tags found in website.');
   }
 
-  return openGraphParse(head);
+  const openGraphTags = matches.join(' ');
+
+  return openGraphParse(openGraphTags);
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
