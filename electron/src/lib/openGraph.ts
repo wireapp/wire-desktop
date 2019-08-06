@@ -148,7 +148,7 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  const matches = body.match(/.*property="og:[^"]+".*/gim) || [''];
+  const matches = body.match(/.*property=(["'])og:.+?\1.*/gim) || [''];
 
   if (!matches) {
     throw new Error('No open graph tags found in website.');
