@@ -55,7 +55,7 @@ const cookieRequest = (cookieText: string) => {
   nock(exampleUrl, {reqheaders: {Cookie: cookieText}})
     .get('/')
     .reply(200);
-  return axiosWithCookie<null>({
+  return axiosWithCookie({
     method: 'get',
     url: exampleUrl,
   });
