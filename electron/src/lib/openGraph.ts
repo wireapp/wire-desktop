@@ -42,6 +42,8 @@ const bufferToBase64 = (buffer: Buffer, mimeType: string): string => {
 
 const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
+  const parsedUrl = parseUrl(encodeURI(url));
+  const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
@@ -50,7 +52,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     maxContentLength: IMAGE_SIZE_LIMIT,
     method: 'get',
     responseType: 'arraybuffer',
-    url,
+    url: normalizedUrl.href,
   };
 
   let response;
@@ -134,7 +136,7 @@ export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: 
 
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
-  const parsedUrl = parseUrl(url);
+  const parsedUrl = parseUrl(encodeURI(url));
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
 
   const axiosConfig: AxiosRequestConfig = {
@@ -146,13 +148,16 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
+  // For the regex, see https://regex101.com/r/U62pCH/1
+  const matches = body.match(/.*property=(["'])og:.+?\1.*/gim) || [''];
 
-  if (!head) {
-    throw new Error('No head end tag found in website.');
+  if (!matches) {
+    throw new Error('No open graph tags found in website.');
   }
 
-  return openGraphParse(head);
+  const openGraphTags = matches.join(' ');
+
+  return openGraphParse(openGraphTags);
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
