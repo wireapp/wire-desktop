@@ -86,10 +86,10 @@ export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<Ax
     const response = await axios.request<T>({...config, maxRedirects: 0, withCredentials: true});
     return response;
   } catch (error) {
-    if (!error.isAxiosError) {
+    const response = error.response;
+    if (!response) {
       throw error;
     }
-    const response = error.response;
     if (response.status === 301 || response.status === 302) {
       const setCookie = response.headers['set-cookie'];
       if (setCookie) {
