@@ -49,12 +49,14 @@ const contentLimitRequest = (contentType: string, contentArray: number[]) => {
 const cookieRequest = (cookieText: string) => {
   nock(exampleUrl)
     .get('/')
-    .reply(302, null, {
+    .reply(302, '', {
       'set-cookie': cookieText,
     });
+
   nock(exampleUrl, {reqheaders: {Cookie: cookieText}})
     .get('/')
     .reply(200);
+
   return axiosWithCookie({
     method: 'get',
     url: exampleUrl,
