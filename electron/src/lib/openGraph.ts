@@ -17,7 +17,7 @@
  *
  */
 
-import axios, {AxiosRequestConfig} from 'axios';
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {parse as parseContentType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
@@ -56,7 +56,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   let response;
 
   try {
-    response = await axios.request<Buffer>(axiosConfig);
+    response = await axiosWithCookie<Buffer>(axiosConfig);
   } catch (error) {
     logger.error(error);
     throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
@@ -79,6 +79,26 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   return bufferToBase64(response.data, contentType.type);
 };
 
+export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> => {
+  try {
+    const response = await axios.request<T>({...config, maxRedirects: 0, withCredentials: true});
+    return response;
+  } catch (error) {
+    if (!error.isAxiosError) {
+      throw error;
+    }
+    const response = error.response;
+    if (response.status === 301 || response.status === 302) {
+      const setCookie = response.headers['set-cookie'];
+      if (setCookie) {
+        const Cookie = Array.isArray(setCookie) ? setCookie.join('; ') : setCookie;
+        config.headers = {...config.headers, Cookie};
+      }
+    }
+    return axios.request(config);
+  }
+};
+
 export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
   const CancelToken = axios.CancelToken;
   const cancelSource = CancelToken.source();
@@ -89,8 +109,7 @@ export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: 
   return new Promise((resolve, reject) => {
     let partialBody = '';
 
-    return axios
-      .request<IncomingMessage>(config)
+    return axiosWithCookie<IncomingMessage>(config)
       .then(response => {
         let contentType;
 
