@@ -42,6 +42,8 @@ const bufferToBase64 = (buffer: Buffer, mimeType: string): string => {
 
 const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
+  const parsedUrl = parseUrl(encodeURI(url));
+  const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
@@ -50,7 +52,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     maxContentLength: IMAGE_SIZE_LIMIT,
     method: 'get',
     responseType: 'arraybuffer',
-    url,
+    url: normalizedUrl.href,
   };
 
   let response;
