@@ -17,7 +17,7 @@
  *
  */
 
-import axios, {AxiosRequestConfig} from 'axios';
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {parse as parseContentType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
@@ -42,6 +42,8 @@ const bufferToBase64 = (buffer: Buffer, mimeType: string): string => {
 
 const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
+  const parsedUrl = parseUrl(encodeURI(url));
+  const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
@@ -50,13 +52,13 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
     maxContentLength: IMAGE_SIZE_LIMIT,
     method: 'get',
     responseType: 'arraybuffer',
-    url,
+    url: normalizedUrl.href,
   };
 
   let response;
 
   try {
-    response = await axios.request<Buffer>(axiosConfig);
+    response = await axiosWithCookie<Buffer>(axiosConfig);
   } catch (error) {
     logger.error(error);
     throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
@@ -79,6 +81,26 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   return bufferToBase64(response.data, contentType.type);
 };
 
+export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> => {
+  try {
+    const response = await axios.request<T>({...config, maxRedirects: 0, withCredentials: true});
+    return response;
+  } catch (error) {
+    const response = error.response;
+    if (!response) {
+      throw error;
+    }
+    if (response.status === 301 || response.status === 302) {
+      const setCookie = response.headers['set-cookie'];
+      if (setCookie) {
+        const Cookie = Array.isArray(setCookie) ? setCookie.join('; ') : setCookie;
+        config.headers = {...config.headers, Cookie};
+      }
+    }
+    return axios.request(config);
+  }
+};
+
 export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
   const CancelToken = axios.CancelToken;
   const cancelSource = CancelToken.source();
@@ -89,8 +111,7 @@ export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: 
   return new Promise((resolve, reject) => {
     let partialBody = '';
 
-    return axios
-      .request<IncomingMessage>(config)
+    return axiosWithCookie<IncomingMessage>(config)
       .then(response => {
         let contentType;
 
@@ -134,7 +155,7 @@ export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: 
 
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
-  const parsedUrl = parseUrl(url);
+  const parsedUrl = parseUrl(encodeURI(url));
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
 
   const axiosConfig: AxiosRequestConfig = {
@@ -146,13 +167,16 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  const [head] = body.match(/<head>[\s\S]*?<\/head>/) || [''];
+  // For the regex, see https://regex101.com/r/U62pCH/1
+  const matches = body.match(/.*property=(["'])og:.+?\1.*/gim) || [''];
 
-  if (!head) {
-    throw new Error('No head end tag found in website.');
+  if (!matches) {
+    throw new Error('No open graph tags found in website.');
   }
 
-  return openGraphParse(head);
+  const openGraphTags = matches.join(' ');
+
+  return openGraphParse(openGraphTags);
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
