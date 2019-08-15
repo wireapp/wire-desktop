@@ -114,7 +114,7 @@ node('master') {
           }
         }, s3: {
           try {
-            sh "npx wire-deploy-s3 --bucket \"${S3_BUCKET}\" --s3-path \"${S3_PATH}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+            sh "npx wire-deploy-s3 --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
           } catch(e) {
             currentBuild.result = 'FAILED'
             wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
