@@ -44,7 +44,7 @@
     "@types/nock": "10.0.3",
     "@types/node": "~10",
     "@types/open-graph": "0.2.0",
-    "@types/raygun": "0.10.1",
+    "@types/raygun": "0.10.2",
     "@types/sinon": "7.0.13",
     "@types/uuid": "3.4.4",
     "@wireapp/build-tools": "0.5.3",
