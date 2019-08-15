@@ -46,7 +46,7 @@
     "@types/open-graph": "0.2.0",
     "@types/raygun": "0.10.2",
     "@types/sinon": "7.0.13",
-    "@types/uuid": "3.4.4",
+    "@types/uuid": "3.4.5",
     "@wireapp/build-tools": "0.5.3",
     "@wireapp/copy-config": "0.8.2",
     "@wireapp/deploy-tools": "0.1.11",
