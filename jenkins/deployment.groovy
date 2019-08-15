@@ -41,7 +41,7 @@ node('master') {
     try {
       step ([
         $class: 'CopyArtifact',
-        filter: 'wrap/build/**',
+        filter: 'wrap/build/**,wrap/dist/**',
         projectName: "$projectName",
         selector: [
           $class: 'SpecificBuildSelector',
