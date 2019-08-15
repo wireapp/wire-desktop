@@ -225,7 +225,7 @@ export class SingleSignOn {
     await SingleSignOn.protocol.register(this.session, (type: string) => this.finalizeLogin(type));
 
     // Show the window(s)
-    SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
+    await SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
 
     if (argv.devtools) {
       SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
