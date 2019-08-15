@@ -301,6 +301,7 @@ const darwinTemplate: MenuItemConstructorOptions = {
     signOutTemplate,
     {
       accelerator: 'Command+Q',
+      click: () => lifecycle.quit(),
       label: locale.getText('menuQuit'),
     },
   ],
