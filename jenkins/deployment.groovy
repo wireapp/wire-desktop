@@ -114,7 +114,7 @@ node('master') {
           }
         }, s3: {
           try {
-            sh "npx wire-deploy-s3 --bucket \"$S3_BUCKET\" --s3path \"$S3_PATH\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
+            sh "npx wire-deploy-s3 --key-id \"$AWS_ACCESS_KEY_ID\" --secret-key \"$AWS_SECRET_ACCESS_KEY\" --bucket \"$S3_BUCKET\" --s3path \"$S3_PATH\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
           } catch(e) {
             currentBuild.result = 'FAILED'
             wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for $version** see: $JOB_URL"
@@ -149,7 +149,7 @@ node('master') {
             def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
             def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
 
-            sh "npx wire-deploy-s3 --bucket wire-taco --s3path linux --wrapper-build \"$WRAPPER_BUILD\" --path ./wrap/dist"
+            sh "npx wire-deploy-s3 --key-id \"$AWS_ACCESS_KEY_ID\" --secret-key \"$AWS_SECRET_ACCESS_KEY\" --bucket wire-taco --s3path linux --wrapper-build \"$WRAPPER_BUILD\" --path ./wrap/dist"
           } else if (params.Release.equals('Custom')) {
             // do nothing
           } else {
@@ -188,7 +188,7 @@ node('master') {
             S3_PATH = 'win/internal'
           }
 
-          sh "npx wire-deploy-s3-win-releases --bucket \"$S3_BUCKET\" --path \"$S3_PATH\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
+          sh "npx wire-deploy-s3-win-releases --key-id \"$AWS_ACCESS_KEY_ID\" --secret-key \"$AWS_SECRET_ACCESS_KEY\" --bucket \"$S3_BUCKET\" --path \"$S3_PATH\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
