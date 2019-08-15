@@ -29,7 +29,7 @@ node('master') {
   }
 
   stage('Checkout & Clean') {
-    git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
+    git branch: "$GIT_BRANCH", url: 'https://github.com/wireapp/wire-desktop.git'
     sh returnStatus: true, script: 'rm -rf *.pkg *.zip'
   }
 
@@ -42,36 +42,36 @@ node('master') {
       step ([
         $class: 'CopyArtifact',
         filter: 'wrap/build/**,wrap/dist/**',
-        projectName: "${projectName}",
+        projectName: "$projectName",
         selector: [
           $class: 'SpecificBuildSelector',
-          buildNumber: "${version}"
+          buildNumber: "$version"
         ]
       ]);
     } catch (e) {
-      wireSend secret: "${jenkinsbot_secret}", message: "**Could not get build artifacts from of ${version} from ${projectName}** see: ${JOB_URL}"
+      wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts from of $version from $projectName** see: $JOB_URL"
       throw e
     }
   }
 
-  currentBuild.displayName = "Deploy ${projectName} ${version}"
+  currentBuild.displayName = "Deploy $projectName $version"
 
   stage('Install dependencies') {
     try {
-      withEnv(["PATH+NODE=${NODE}/bin"]) {
+      withEnv(["PATH+NODE=$NODE/bin"]) {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn --ignore-scripts'
       }
     } catch (e) {
-      wireSend secret: "${jenkinsbot_secret}", message: "**Could not get build artifacts of ${version} from ${projectName}** see: ${JOB_URL}"
+      wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts of $version from $projectName** see: $JOB_URL"
       throw e
     }
   }
 
   stage('Upload to S3 and/or Hockey') {
-    withEnv(["PATH+NODE=${NODE}/bin"]) {
+    withEnv(["PATH+NODE=$NODE/bin"]) {
       if (projectName.contains('Windows')) {
         def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
@@ -87,12 +87,12 @@ node('master') {
             HOCKEY_TOKEN = credentials('WIN_PROD_HOCKEY_TOKEN')
             S3_PATH = 'win/prod'
           } else if (params.Release.equals('Custom')) {
-            AWS_ACCESS_KEY_ID = credentials("${params.AWS_CUSTOM_ACCESS_KEY_ID}")
-            AWS_SECRET_ACCESS_KEY = credentials("${params.AWS_CUSTOM_SECRET_ACCESS_KEY}")
-            HOCKEY_ID = credentials("${params.WIN_CUSTOM_HOCKEY_ID}")
-            HOCKEY_TOKEN = credentials("${params.WIN_CUSTOM_HOCKEY_TOKEN}")
-            S3_BUCKET = "${params.WIN_S3_BUCKET}"
-            S3_PATH = "${params.WIN_S3_PATH}"
+            AWS_ACCESS_KEY_ID = credentials("$params.AWS_CUSTOM_ACCESS_KEY_ID")
+            AWS_SECRET_ACCESS_KEY = credentials("$params.AWS_CUSTOM_SECRET_ACCESS_KEY")
+            HOCKEY_ID = credentials("$params.WIN_CUSTOM_HOCKEY_ID")
+            HOCKEY_TOKEN = credentials("$params.WIN_CUSTOM_HOCKEY_TOKEN")
+            S3_BUCKET = "$params.WIN_S3_BUCKET"
+            S3_PATH = "$params.WIN_S3_PATH"
           } else {
             HOCKEY_ID = credentials('WIN_HOCKEY_TOKEN')
             HOCKEY_TOKEN = credentials('WIN_HOCKEY_ID')
@@ -100,7 +100,7 @@ node('master') {
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
-          wireSend secret: "${jenkinsbot_secret}", message: "**Setting environment variables failed for ${version}** see: ${JOB_URL}"
+          wireSend secret: "$jenkinsbot_secret", message: "**Setting environment variables failed for $version** see: $JOB_URL"
           throw e
         }
 
@@ -109,7 +109,7 @@ node('master') {
             sh "npx wire-deploy-hockey --hockey-id \"$HOCKEY_ID\" --hockey-token \"$HOCKEY_TOKEN\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
           } catch(e) {
             currentBuild.result = 'FAILED'
-            wireSend secret: "${jenkinsbot_secret}", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
+            wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for $version** see: $JOB_URL"
             throw e
           }
         }, s3: {
@@ -117,7 +117,7 @@ node('master') {
             sh "npx wire-deploy-s3 --bucket \"$S3_BUCKET\" --s3path \"$S3_PATH\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
           } catch(e) {
             currentBuild.result = 'FAILED'
-            wireSend secret: "${jenkinsbot_secret}", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
+            wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for $version** see: $JOB_URL"
             throw e
           }
         }, failFast: true
@@ -130,17 +130,17 @@ node('master') {
             MACOS_HOCKEY_ID = credentials('MACOS_MAS_HOCKEY_ID')
             MACOS_HOCKEY_TOKEN = credentials('MACOS_MAS_HOCKEY_TOKEN')
           } else if (params.Release.equals('Custom')) {
-            MACOS_HOCKEY_ID = credentials("${params.MACOS_CUSTOM_HOCKEY_ID}")
-            MACOS_HOCKEY_TOKEN = credentials("${params.MACOS_CUSTOM_HOCKEY_TOKEN}")
+            MACOS_HOCKEY_ID = credentials("$params.MACOS_CUSTOM_HOCKEY_ID")
+            MACOS_HOCKEY_TOKEN = credentials("$params.MACOS_CUSTOM_HOCKEY_TOKEN")
           } else {
             MACOS_HOCKEY_ID = credentials('MACOS_HOCKEY_ID')
             MACOS_HOCKEY_TOKEN = credentials('MACOS_HOCKEY_TOKEN')
           }
 
-          sh "npx wire-deploy-hockey --hockey-id \"${MACOS_HOCKEY_ID}\" --hockey-token \"${MACOS_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ."
+          sh "npx wire-deploy-hockey --hockey-id \"$MACOS_HOCKEY_ID\" --hockey-token \"$MACOS_HOCKEY_TOKEN\" --wrapper-build \"$WRAPPER_BUILD\" --path ."
         } catch(e) {
           currentBuild.result = 'FAILED'
-          wireSend secret: "${jenkinsbot_secret}", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
+          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for $version** see: $JOB_URL"
           throw e
         }
       } else if (projectName.contains('Linux')) {
@@ -149,18 +149,18 @@ node('master') {
             def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
             def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
 
-            sh "npx wire-deploy-s3 --bucket wire-taco --s3path linux --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+            sh "npx wire-deploy-s3 --bucket wire-taco --s3path linux --wrapper-build \"$WRAPPER_BUILD\" --path ./wrap/dist"
           } else if (params.Release.equals('Custom')) {
             // do nothing
           } else {
             def LINUX_HOCKEY_ID = credentials('LINUX_HOCKEY_ID')
             def LINUX_HOCKEY_TOKEN = credentials('LINUX_HOCKEY_TOKEN')
 
-            sh "npx wire-deploy-hockey --hockey-id \"${LINUX_HOCKEY_ID}\" --hockey-token \"${LINUX_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+            sh "npx wire-deploy-hockey --hockey-id \"$LINUX_HOCKEY_ID\" --hockey-token \"$LINUX_HOCKEY_TOKEN\" --wrapper-build \"$WRAPPER_BUILD\" --path ./wrap/dist"
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
-          wireSend secret: "${jenkinsbot_secret}", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
+          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for $version** see: $JOB_URL"
           throw e
         }
       }
@@ -170,7 +170,7 @@ node('master') {
   if (projectName.contains('Windows')) {
     stage('Update RELEASES file') {
       try {
-        withEnv(["PATH+NODE=${NODE}/bin"]) {
+        withEnv(["PATH+NODE=$NODE/bin"]) {
           def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
           def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
           def S3_BUCKET = 'wire-taco'
@@ -180,19 +180,19 @@ node('master') {
           if (params.Release.equals('Production')) {
             S3_PATH = 'win/prod'
           } else if (params.Release.equals('Custom')) {
-            S3_PATH = "${params.WIN_S3_PATH}"
-            S3_BUCKET = "${params.WIN_S3_BUCKET}"
-            AWS_ACCESS_KEY_ID = credentials("${params.AWS_CUSTOM_ACCESS_KEY_ID}")
-            AWS_SECRET_ACCESS_KEY = credentials("${params.AWS_CUSTOM_SECRET_ACCESS_KEY}")
+            S3_PATH = "$params.WIN_S3_PATH"
+            S3_BUCKET = "$params.WIN_S3_BUCKET"
+            AWS_ACCESS_KEY_ID = credentials("$params.AWS_CUSTOM_ACCESS_KEY_ID")
+            AWS_SECRET_ACCESS_KEY = credentials("$params.AWS_CUSTOM_SECRET_ACCESS_KEY")
           } else {
             S3_PATH = 'win/internal'
           }
 
-          sh "npx wire-deploy-s3-win-releases --bucket \"${S3_BUCKET}\" --path \"${S3_PATH}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+          sh "npx wire-deploy-s3-win-releases --bucket \"$S3_BUCKET\" --path \"$S3_PATH\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
-        wireSend secret: "${jenkinsbot_secret}", message: "**Changing RELEASES file failed for ${version}** see: ${JOB_URL}"
+        wireSend secret: "$jenkinsbot_secret", message: "**Changing RELEASES file failed for $version** see: $JOB_URL"
         throw e
       }
     }
@@ -201,7 +201,7 @@ node('master') {
   if (params.Release.equals('Production')) {
     stage('Upload build as draft to GitHub') {
       try {
-        withEnv(["PATH+NODE=${NODE}/bin"]) {
+        withEnv(["PATH+NODE=$NODE/bin"]) {
           def SEARCH_PATH = './wrap/dist/'
           def GITHUB_ACCESS_TOKEN = credentials('GITHUB_ACCESS_TOKEN')
 
@@ -209,11 +209,11 @@ node('master') {
             SEARCH_PATH = '.'
           }
 
-          sh "npx wire-deploy-github-draft --github-token \"${GITHUB_ACCESS_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+          sh "npx wire-deploy-github-draft --github-token \"$GITHUB_ACCESS_TOKEN\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
-        wireSend secret: "${jenkinsbot_secret}", message: "**Upload build as draft to Github failed for ${version}** see: ${JOB_URL}"
+        wireSend secret: "$jenkinsbot_secret", message: "**Upload build as draft to Github failed for $version** see: $JOB_URL"
         throw e
       }
     }
