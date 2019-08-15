@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2019 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,23 +14,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
- *
  */
 
-export interface GoogleAccessTokenResult {
-  access_token: string;
-}
+import * as assert from 'assert';
 
-export interface jsRsaSignPublicKey {
-  algoid: string;
-  algparam: string | null;
-  keyhex: string;
-}
+import {SingleSignOn} from './SingleSignOn';
 
-export interface OnHeadersReceivedDetails {
-  responseHeaders: {
-    [key: string]: string[];
-  };
-}
-
-export type OnHeadersReceivedCallback = (config: OnHeadersReceivedDetails & {cancel?: boolean}) => void;
+describe('generateSecret', () => {
+  it('generates a secret of a specified size', async () => {
+    const size = 24;
+    const loginAuthorizationSecret = await SingleSignOn['protocol'].generateSecret(size);
+    assert.strictEqual(loginAuthorizationSecret.length, size * 2);
+  });
+});

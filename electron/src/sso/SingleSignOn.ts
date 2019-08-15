@@ -19,17 +19,21 @@
 
 import * as crypto from 'crypto';
 import {BrowserWindow, app, session} from 'electron';
-import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+const minimist = require('minimist');
 
-import {BACKEND_ORIGINS, USER_AGENT} from '../settings/config';
+import {config} from '../settings/config';
 
 const argv = minimist(process.argv.slice(1));
 
-class SingleSignOn {
-  private static readonly ALLOWED_BACKEND_ORIGINS: string[] = BACKEND_ORIGINS;
-  private static readonly PRELOAD_SSO_JS = path.join(app.getAppPath(), 'dist/renderer/preload-sso.js');
+export class SingleSignOn {
+  private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
+  private static readonly PRELOAD_SSO_JS = path.join(
+    app.getAppPath(),
+    config.electronDirectory,
+    'dist/renderer/preload-sso.js',
+  );
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
   private static readonly SSO_PROTOCOL_HOST = 'response';
@@ -99,7 +103,6 @@ class SingleSignOn {
           if (error) {
             return reject(error);
           }
-
           resolve(bytes.toString('hex'));
         });
       });
@@ -195,7 +198,7 @@ class SingleSignOn {
     private readonly mainBrowserWindow: Electron.BrowserWindow,
     private readonly senderEvent: Electron.Event,
     windowOriginUrl: string,
-    private readonly windowOptions: Electron.BrowserWindowConstructorOptions
+    private readonly windowOptions: Electron.BrowserWindowConstructorOptions,
   ) {
     this.senderWebContents = senderEvent.sender;
     this.mainSession = this.senderWebContents.session;
@@ -210,15 +213,10 @@ class SingleSignOn {
     this.session.setPermissionRequestHandler((webContents, permission, callback) => callback(false));
 
     // User-agent normalization
-    this.session.webRequest.onBeforeSendHeaders(
-      {
-        urls: ['*'],
-      },
-      (details: any, callback: Function) => {
-        details.requestHeaders['User-Agent'] = USER_AGENT;
-        callback({cancel: false, requestHeaders: details.requestHeaders});
-      }
-    );
+    this.session.webRequest.onBeforeSendHeaders({urls: ['*']}, (details: any, callback: Function) => {
+      details.requestHeaders['User-Agent'] = config.userAgent;
+      callback({cancel: false, requestHeaders: details.requestHeaders});
+    });
 
     const SingleSignOnLoginWindow = this.createBrowserWindow();
 
@@ -341,21 +339,17 @@ class SingleSignOn {
 
     // Fake postMessage to the webview
     await this.senderWebContents.executeJavaScript(
-      `window.dispatchEvent(new MessageEvent('message', {origin: '${
-        this.windowOriginUrl.origin
-      }', data: {type: '${type}'}, type: {isTrusted: true}}));`
+      `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}, type: {isTrusted: true}}));`,
     );
   };
 
   private readonly wipeSessionData = () => {
     return new Promise(resolve => {
       if (this.session) {
-        this.session.clearStorageData({}, () => resolve());
+        this.session.clearStorageData(undefined, () => resolve());
       } else {
         resolve();
       }
     });
   };
 }
-
-export {SingleSignOn};

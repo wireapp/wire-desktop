@@ -17,7 +17,9 @@
  *
  */
 
-import verifyObjectProperties from '../verifyObjectProperties';
+/* eslint-disable no-magic-numbers */
+
+import {verifyObjectProperties} from '../verifyObjectProperties';
 
 describe('verifyObjectProperties', () => {
   it('should return the object if object contains all properties specified in the config', () => {

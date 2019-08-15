@@ -17,12 +17,14 @@
  *
  */
 
-import React, {Component} from 'react';
-import Webview from './Webview';
 import './Webviews.css';
-import * as EVENT_TYPE from '../lib/eventType';
 
-class Webviews extends Component {
+import * as EVENT_TYPE from '../lib/eventType';
+import React, {Component} from 'react';
+
+import Webview from './Webview';
+
+export default class Webviews extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -64,7 +66,7 @@ class Webviews extends Component {
         ...accumulator,
         [account.id]: this._canDeleteWebview(account),
       }),
-      {}
+      {},
     );
   }
 
@@ -184,5 +186,3 @@ class Webviews extends Component {
     );
   }
 }
-
-export default Webviews;

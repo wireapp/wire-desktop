@@ -24,14 +24,14 @@ const {EVENT_TYPE} = require('../../dist/lib/eventType');
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {systemPreferences} = remote;
 
-const logger = getLogger('webview-preload');
+const logger = getLogger(__filename);
 
 // Note: Until appearance-changed event is available in a future
 // version of Electron... use AppleInterfaceThemeChangedNotification event
 function subscribeToThemeChange() {
   if (environment.platform.IS_MAC_OS && z.event.WebApp.PROPERTIES.UPDATE.INTERFACE) {
     systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () =>
-      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode())
+      amplify.publish(z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode()),
     );
   }
 }
@@ -141,6 +141,8 @@ const exposeAddressBook = () => {
 const reportWebappVersion = () => ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, z.util.Environment.version(false));
 
 const checkAvailability = callback => {
+  const HALF_SECOND = 500;
+
   const intervalId = setInterval(() => {
     if (window.wire) {
       clearInterval(intervalId);
@@ -152,7 +154,7 @@ const checkAvailability = callback => {
       clearInterval(intervalId);
       location.reload();
     }
-  }, 500);
+  }, HALF_SECOND);
 };
 
 // https://github.com/electron/electron/issues/2984

@@ -18,11 +18,12 @@
  */
 
 const isType = (type, object) => {
+  // eslint-disable-next-line no-magic-numbers
   const getType = Object.prototype.toString.call(object).slice(8, -1);
   return object && getType === type;
 };
 
-export default function(data, config) {
+export function verifyObjectProperties(data, config) {
   const validatedData = {};
 
   const isValidObject = Object.keys(config).every(key => {

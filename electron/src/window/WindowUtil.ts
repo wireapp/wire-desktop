@@ -17,11 +17,16 @@
  *
  */
 
-import * as Electron from 'electron';
+import {BrowserWindow, screen} from 'electron';
 
-import {Point, Rectangle} from '../interfaces';
+type Rectangle = {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+};
 
-const pointInRectangle = (point: Point, rectangle: Rectangle) => {
+const pointInRectangle = (point: [number, number], rectangle: Rectangle) => {
   const [x, y] = point;
   const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
   const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
@@ -29,14 +34,14 @@ const pointInRectangle = (point: Point, rectangle: Rectangle) => {
   return xInRange && yInRange;
 };
 
-const isInView = (win: Electron.BrowserWindow): boolean => {
+const isInView = (win: BrowserWindow): boolean => {
   const windowBounds = win.getBounds();
-  const nearestWorkArea = Electron.screen.getDisplayMatching(windowBounds).workArea;
+  const nearestWorkArea = screen.getDisplayMatching(windowBounds).workArea;
 
   const upperLeftVisible = pointInRectangle([windowBounds.x, windowBounds.y], nearestWorkArea);
   const lowerRightVisible = pointInRectangle(
     [windowBounds.x + windowBounds.width, windowBounds.y + windowBounds.height],
-    nearestWorkArea
+    nearestWorkArea,
   );
 
   return upperLeftVisible || lowerRightVisible;

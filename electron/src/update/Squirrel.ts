@@ -23,24 +23,27 @@ import {app} from 'electron';
 
 import * as cp from 'child_process';
 import * as fs from 'fs';
+import * as moment from 'moment';
 import * as path from 'path';
 
-import {SpawnCallback, SpawnError} from '../interfaces/';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
-import * as config from '../settings/config';
+import {config} from '../settings/config';
 
-app.setAppUserModelId(`com.squirrel.wire.${config.NAME.toLowerCase()}`);
+type SpawnCallback = (error: SpawnError | null, stdout: string) => void;
+type SpawnError = Error & {code?: number | null; stdout?: string | null};
 
-const logger = getLogger('squirrel');
+app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
+
+const logger = getLogger(__filename);
 
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-const exeName = `${config.NAME}.exe`;
-const linkName = `${config.NAME}.lnk`;
+const exeName = `${config.name}.exe`;
+const linkName = `${config.name}.lnk`;
 const windowsAppData = process.env.APPDATA || '';
 
 if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
@@ -100,30 +103,45 @@ const spawn = (command: string, args: string[], callback?: SpawnCallback) => {
 };
 
 const spawnUpdate = (args: string[], callback?: SpawnCallback): void => {
+  logger.info(`Installing update ...`);
   spawn(updateDotExe, args, callback);
 };
 
 const createStartShortcut = (callback?: SpawnCallback): void => {
+  logger.info(`Creating shortcut in the start menu ...`);
   spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu'], callback);
 };
 
 const createDesktopShortcut = (callback?: SpawnCallback): void => {
+  logger.info(`Creating shortcut on the desktop ...`);
   spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop'], callback);
 };
 
-const removeShortcuts = (callback: (err: NodeJS.ErrnoException) => void): void => {
+const removeShortcuts = (callback: (err: NodeJS.ErrnoException | null) => void): void => {
+  logger.info(`Removing all shortcuts ...`);
   spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu'], () =>
-    fs.unlink(shortcutLink, callback)
+    fs.unlink(shortcutLink, callback),
   );
 };
 
 const installUpdate = (): void => {
+  logger.info(`Checking for updates on "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
   spawnUpdate([SQUIRREL_EVENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
 };
 
 const scheduleUpdate = (): void => {
-  setTimeout(installUpdate, config.UPDATE.DELAY);
-  setInterval(installUpdate, config.UPDATE.INTERVAL);
+  const pluralize = (num: number, str: string) => `${num} ${str + (num === 1 ? '' : 's')}`;
+  const nextCheck = moment.duration(config.squirrelUpdateInterval.DELAY).asMinutes();
+  const everyCheck = moment.duration(config.squirrelUpdateInterval.INTERVAL).asHours();
+  logger.info(
+    `Scheduling update to check in "${pluralize(nextCheck, 'minute')}" and every "${pluralize(
+      everyCheck,
+      'hour',
+    )}" ...`,
+  );
+
+  setTimeout(installUpdate, config.squirrelUpdateInterval.DELAY);
+  setInterval(installUpdate, config.squirrelUpdateInterval.INTERVAL);
 };
 
 const handleSquirrelEvent = (isFirstInstance?: boolean): boolean | void => {

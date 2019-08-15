@@ -17,56 +17,59 @@
  *
  */
 
-import * as debug from 'debug';
 import * as fs from 'fs-extra';
+import * as logdown from 'logdown';
+
+import {Schemata} from '../interfaces/main';
+import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';
 
 class ConfigurationPersistence {
-  configFile: string;
-  debug: debug.IDebugger;
+  private readonly configFile: string;
+  private readonly logger: logdown.Logger;
 
   constructor() {
     this.configFile = SchemaUpdater.updateToVersion1();
-    this.debug = debug('ConfigurationPersistence');
+    this.logger = getLogger('ConfigurationPersistence');
 
     if (typeof global._ConfigurationPersistence === 'undefined') {
       global._ConfigurationPersistence = this.readFromFile();
     }
 
-    this.debug('Init ConfigurationPersistence');
+    this.logger.log('Init ConfigurationPersistence');
   }
 
   delete(name: string): true {
-    this.debug('Deleting %s', name);
+    this.logger.log(`Deleting "${name}"`);
     delete global._ConfigurationPersistence[name];
     return true;
   }
 
   save<T>(name: string, value: T): true {
-    this.debug('Saving %s with value "%o"', name, value);
+    this.logger.log(`Saving "${name}" with value:`, value);
     global._ConfigurationPersistence[name] = value;
     return true;
   }
 
   restore<T>(name: string, defaultValue?: T): T {
-    this.debug('Restoring %s', name);
+    this.logger.log(`Restoring "${name}"`);
     const value = global._ConfigurationPersistence[name];
     return typeof value !== 'undefined' ? value : defaultValue;
   }
 
-  persistToFile() {
-    this.debug('Saving configuration to persistent storage: %o', global._ConfigurationPersistence);
+  persistToFile(): void {
+    this.logger.log('Saving configuration to persistent storage:', global._ConfigurationPersistence);
     try {
-      return fs.writeJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
+      return fs.outputJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
     } catch (error) {
-      this.debug('An error occurred while persisting the configuration: %s', error);
+      this.logger.log('An error occurred while persisting the configuration', error);
     }
   }
 
-  readFromFile(): any {
-    this.debug(`Reading config file "${this.configFile}"...`);
+  readFromFile(): Schemata {
+    this.logger.log(`Reading config file "${this.configFile}"...`);
     try {
-      return fs.readJSONSync(this.configFile);
+      return fs.readJSONSync(this.configFile) as Schemata;
     } catch (error) {
       const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:
@@ -75,6 +78,4 @@ class ConfigurationPersistence {
   }
 }
 
-const settings = new ConfigurationPersistence();
-
-export {settings};
+export const settings = new ConfigurationPersistence();

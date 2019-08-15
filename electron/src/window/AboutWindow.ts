@@ -18,25 +18,18 @@
  */
 
 import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'electron';
+import fileUrl = require('file-url');
 import * as path from 'path';
 
-import fileUrl = require('file-url');
 import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import * as config from '../settings/config';
-
-const pkg: {
-  copyright: string;
-  environment: string;
-  productName: string;
-  version: string;
-} = require('../../package.json');
+import {config} from '../settings/config';
 
 let webappVersion: string;
 
 // Paths
-const APP_PATH = app.getAppPath();
+const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 
 // Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));
@@ -67,7 +60,7 @@ const showWindow = () => {
       minimizable: false,
       resizable: false,
       show: false,
-      title: config.NAME,
+      title: config.name,
       webPreferences: {
         javascript: false,
         nodeIntegration: false,
@@ -83,35 +76,28 @@ const showWindow = () => {
     // Prevent any kind of navigation
     // will-navigate is broken with sandboxed env, intercepting requests instead
     // see https://github.com/electron/electron/issues/8841
-    aboutWindow.webContents.session.webRequest.onBeforeRequest(
-      {
-        urls: ['*'],
-      },
-      (details, callback) => {
-        const url = details.url;
-
-        // Only allow those URLs to be opened within the window
-        if (ABOUT_WINDOW_WHITELIST.includes(url)) {
-          return callback({cancel: false});
-        }
-
-        // Open HTTPS links in browser instead
-        if (url.startsWith('https://')) {
-          shell.openExternal(url);
-        } else {
-          console.log('Attempt to open URL in window prevented, url: %s', url);
-        }
-
-        callback({redirectURL: ABOUT_HTML});
+    aboutWindow.webContents.session.webRequest.onBeforeRequest({urls: ['*']}, async ({url}, callback) => {
+      // Only allow those URLs to be opened within the window
+      if (ABOUT_WINDOW_WHITELIST.includes(url)) {
+        return callback({cancel: false});
       }
-    );
+
+      // Open HTTPS links in browser instead
+      if (url.startsWith('https://')) {
+        shell.openExternal(url);
+      } else {
+        console.log('Attempt to open URL in window prevented, url:', url);
+      }
+
+      callback({redirectURL: ABOUT_HTML});
+    });
 
     // Locales
     ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event: IpcMessageEvent, labels: i18nLanguageIdentifier[]) => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {
-          const resultLabels: {[index: string]: string} = {};
+          const resultLabels: Record<string, string> = {};
           labels.forEach(label => (resultLabels[label] = locale.getText(label)));
           event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
         }
@@ -134,11 +120,10 @@ const showWindow = () => {
     aboutWindow.webContents.on('dom-ready', () => {
       if (aboutWindow) {
         aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-          copyright: pkg.copyright,
-          electronVersion: pkg.version,
-          environment: pkg.environment,
-          productName: pkg.productName,
-          webappVersion: webappVersion,
+          copyright: config.copyright,
+          electronVersion: config.version,
+          productName: config.name,
+          webappVersion,
         });
       }
     });

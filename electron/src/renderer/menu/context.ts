@@ -17,19 +17,19 @@
  *
  */
 
-import {clipboard, ipcRenderer, remote} from 'electron';
+import {Menu as ElectronMenu, clipboard, ipcRenderer, remote} from 'electron';
 const Menu = remote.Menu;
 
-import {ElectronMenuWithTimeAndImage as ElectronMenuWithImageAndTime} from '../../interfaces';
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
-import * as config from '../../settings/config';
+import {config} from '../../settings/config';
+
+interface ElectronMenuWithImageAndTime extends ElectronMenu {
+  image?: string;
+  timestamp?: string;
+}
 
 let textMenu: Electron.Menu;
-
-///////////////////////////////////////////////////////////////////////////////
-// Default
-///////////////////////////////////////////////////////////////////////////////
 
 let copyContext = '';
 
@@ -39,10 +39,6 @@ const defaultMenu = Menu.buildFromTemplate([
     label: locale.getText('menuCopy'),
   },
 ]);
-
-///////////////////////////////////////////////////////////////////////////////
-// Text
-///////////////////////////////////////////////////////////////////////////////
 
 const textMenuTemplate: Electron.MenuItemConstructorOptions[] = [
   {
@@ -70,10 +66,6 @@ const createTextMenu = () => {
   const template = textMenuTemplate.slice();
   textMenu = Menu.buildFromTemplate(template);
 };
-
-///////////////////////////////////////////////////////////////////////////////
-// Images
-///////////////////////////////////////////////////////////////////////////////
 
 const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
   {
@@ -114,7 +106,7 @@ window.addEventListener(
     } else if (element.classList.contains('text')) {
       event.preventDefault();
 
-      copyContext = window.getSelection().toString() || element.innerText.trim();
+      copyContext = (window.getSelection() || '').toString() || element.innerText.trim();
       defaultMenu.popup({window: remote.getCurrentWindow()});
     } else {
       // Maybe we are in a code block _inside_ an element with the 'text' class?
@@ -125,20 +117,20 @@ window.addEventListener(
       }
       if (parentNode !== document) {
         event.preventDefault();
-        copyContext = window.getSelection().toString() || (parentNode as HTMLElement).innerText.trim();
+        copyContext = (window.getSelection() || '').toString() || (parentNode as HTMLElement).innerText.trim();
         defaultMenu.popup({window: remote.getCurrentWindow()});
       }
     }
   },
-  false
+  false,
 );
 
-const savePicture = (url: RequestInfo, timestamp?: string) => {
-  return fetch(url, {
+const savePicture = async (url: RequestInfo, timestamp?: string) => {
+  const response = await fetch(url, {
     headers: {
-      'User-Agent': config.USER_AGENT,
+      'User-Agent': config.userAgent,
     },
-  })
-    .then(response => response.arrayBuffer())
-    .then(arrayBuffer => ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(arrayBuffer), timestamp));
+  });
+  const arrayBuffer = await response.arrayBuffer();
+  return ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(arrayBuffer), timestamp);
 };

@@ -17,33 +17,12 @@
  *
  */
 
+import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-const pkg: {
-  adminUrl: string;
-  appBase: string;
-  environment: string;
-  legalUrl: string;
-  licensesUrl: string;
-  privacyUrl: string;
-  supportUrl: string;
-  updateWinUrl: string;
-  websiteUrl: string;
-} = require('../../package.json');
 
-let currentEnvironment: BackendType;
-
-enum BackendType {
-  DEV = 'DEV',
-  EDGE = 'EDGE',
-  INTERNAL = 'INTERNAL',
-  LOCALHOST = 'LOCALHOST',
-  PRODUCTION = 'PRODUCTION',
-  RC = 'RC',
-}
-
-enum BackendTypeLabel {
-  DEV = 'Development',
+export enum BackendTypeLabel {
+  DEVELOPMENT = 'Development',
   EDGE = 'Edge',
   INTERNAL = 'Internal',
   LOCALHOST = 'Localhost',
@@ -51,73 +30,79 @@ enum BackendTypeLabel {
   RC = 'RC',
 }
 
+export type BackendTypeLabelKey = keyof typeof BackendTypeLabel;
+
+let currentEnvironment: BackendTypeLabelKey;
+
 const URL_ADMIN = {
-  PRODUCTION: pkg.adminUrl || 'https://teams.wire.com',
+  PRODUCTION: config.adminUrl,
   STAGING: 'https://wire-admin-staging.zinfra.io',
 };
 
-const URL_LEGAL = pkg.legalUrl || 'https://wire.com/legal/';
-const URL_LICENSES = pkg.licensesUrl || 'https://wire.com/legal/licenses/';
-const URL_PRIVACY = pkg.privacyUrl || 'https://wire.com/privacy/';
-const URL_SUPPORT = pkg.supportUrl || 'https://support.wire.com';
-
 const URL_WEBSITE = {
-  PRODUCTION: pkg.websiteUrl || 'https://wire.com',
+  PRODUCTION: config.websiteUrl,
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
-const URL_WEBAPP = {
-  DEV: 'https://wire-webapp-dev.zinfra.io',
+export const URL_WEBAPP = {
+  DEVELOPMENT: 'https://wire-webapp-dev.zinfra.io',
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com/',
   LOCALHOST: 'http://localhost:8081',
-  PRODUCTION: pkg.appBase || 'https://app.wire.com',
+  PRODUCTION: config.appBase,
   RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
-const app = {
-  ENV: pkg.environment,
-  IS_DEVELOPMENT: pkg.environment !== 'production',
-  IS_PRODUCTION: pkg.environment === 'production',
-  UPDATE_URL_WIN: pkg.updateWinUrl,
+export const app = {
+  ENV: config.environment,
+  IS_DEVELOPMENT: config.environment !== 'production',
+  IS_PRODUCTION: config.environment === 'production',
+  UPDATE_URL_WIN: config.updateUrl,
 };
 
-const getEnvironment = (): BackendType => {
-  return <BackendType>(currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase();
+export const getEnvironment = (): BackendTypeLabelKey => {
+  return (currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase() as BackendTypeLabelKey;
 };
 
 const isProdEnvironment = (): boolean => {
-  return [BackendType.INTERNAL, BackendType.PRODUCTION].includes(getEnvironment());
+  return [BackendTypeLabel.INTERNAL.toUpperCase(), BackendTypeLabel.PRODUCTION.toUpperCase()].includes(
+    getEnvironment(),
+  );
 };
 
-const isLinuxDesktop = (identifier: string): boolean => {
-  const xdgDesktop = process.env.XDG_CURRENT_DESKTOP;
-  return !!xdgDesktop && xdgDesktop.includes(identifier);
+const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
+  let envVarContent = process.env[envVar] || '';
+
+  if (!caseSensitive) {
+    envVar = envVar.toLowerCase();
+    envVarContent = envVarContent.toLowerCase();
+  }
+
+  return envVarContent.includes(value);
 };
 
-const platform = {
+export const platform = {
   IS_LINUX: process.platform === 'linux',
   IS_MAC_OS: process.platform === 'darwin',
   IS_WINDOWS: process.platform === 'win32',
 };
 
-const linuxDesktop = {
-  isGnome: isLinuxDesktop('GNOME'),
-  isPopOS: isLinuxDesktop('pop'),
-  isUbuntuUnity: isLinuxDesktop('Unity'),
+export const linuxDesktop = {
+  isGnomeX11: isEnvVar('XDG_CURRENT_DESKTOP', 'gnome') && isEnvVar('XDG_SESSION_TYPE', 'x11'),
+  isPopOS: isEnvVar('XDG_CURRENT_DESKTOP', 'pop'),
+  isUbuntuUnity: isEnvVar('XDG_CURRENT_DESKTOP', 'Unity'),
 };
 
-const restoreEnvironment = (): BackendType => {
-  currentEnvironment = settings.restore(SettingsType.ENV, BackendType.INTERNAL);
-  return <BackendType>currentEnvironment;
+const restoreEnvironment = (): BackendTypeLabelKey => {
+  return settings.restore(SettingsType.ENV, BackendTypeLabel.INTERNAL.toUpperCase() as BackendTypeLabelKey);
 };
 
-const setEnvironment = (env: BackendType): void => {
+export const setEnvironment = (env: BackendTypeLabelKey): void => {
   currentEnvironment = env ? env : restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment.toUpperCase());
 };
 
-const web = {
+export const web = {
   getAdminUrl: (path?: string): string => {
     const baseUrl = isProdEnvironment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
     return `${baseUrl}${path ? path : ''}`;
@@ -130,7 +115,7 @@ const web = {
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
       if (currentEnvironment) {
-        return URL_WEBAPP[<BackendType>currentEnvironment.toUpperCase()];
+        return URL_WEBAPP[currentEnvironment.toUpperCase() as BackendTypeLabelKey];
       }
     }
 
@@ -140,20 +125,4 @@ const web = {
     const baseUrl = isProdEnvironment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
     return `${baseUrl}${path ? path : ''}`;
   },
-};
-
-export {
-  app,
-  BackendType,
-  BackendTypeLabel,
-  getEnvironment,
-  linuxDesktop,
-  platform,
-  setEnvironment,
-  URL_LEGAL,
-  URL_LICENSES,
-  URL_PRIVACY,
-  URL_SUPPORT,
-  URL_WEBAPP,
-  web,
 };

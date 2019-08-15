@@ -17,28 +17,28 @@
  *
  */
 
-import * as debug from 'debug';
 import * as Electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import {Schemata} from '../interfaces/';
+import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
 
 const app = Electron.app || Electron.remote.app;
 
-const debugLogger = debug('SchemaUpdate');
+const logger = getLogger(__filename);
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
 const defaultPathV1 = path.join(app.getPath('userData'), 'config/init.json');
 
-class SchemaUpdater {
+export class SchemaUpdater {
   static SCHEMATA: Schemata = {
     VERSION_1: {
       configVersion: 1,
     },
   };
 
-  static updateToVersion1(configFileV0: string = defaultPathV0, configFileV1: string = defaultPathV1): string {
+  static updateToVersion1(configFileV0 = defaultPathV0, configFileV1 = defaultPathV1): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
     if (fs.existsSync(configFileV0)) {
@@ -46,7 +46,7 @@ class SchemaUpdater {
         fs.moveSync(configFileV0, configFileV1, {overwrite: true});
         Object.assign(config, fs.readJSONSync(configFileV1));
       } catch (error) {
-        debugLogger(`Could not upgrade "${configFileV0}" to "${configFileV1}": ${error.message}`, error);
+        logger.log(`Could not upgrade "${configFileV0}" to "${configFileV1}": ${error.message}`, error);
       }
 
       const getSetting = (setting: string) => (config.hasOwnProperty(setting) ? config[setting] : undefined);
@@ -56,7 +56,7 @@ class SchemaUpdater {
         [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS].forEach(setting => {
           if (typeof getSetting(setting) !== 'undefined') {
             delete config[setting];
-            debugLogger(`Deleted "${setting}" property from old init file.`);
+            logger.log(`Deleted "${setting}" property from old init file.`);
           }
         });
       }
@@ -64,12 +64,10 @@ class SchemaUpdater {
       try {
         fs.writeJsonSync(configFileV1, config, {spaces: 2});
       } catch (error) {
-        debugLogger(`Failed to write config to "${configFileV1}": ${error.message}`, error);
+        logger.log(`Failed to write config to "${configFileV1}": ${error.message}`, error);
       }
     }
 
     return configFileV1;
   }
 }
-
-export {SchemaUpdater};

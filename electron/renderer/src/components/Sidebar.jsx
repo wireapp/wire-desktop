@@ -17,29 +17,27 @@
  *
  */
 
-import {colorFromId} from '../lib/accentColor';
-import {connect} from 'react-redux';
-import {preventFocus} from '../lib/util';
-import AddAccountTrigger from './context/AddAccountTrigger';
-import EditAccountMenu from './context/EditAccountMenu';
-import PersonalIcon from './PersonalIcon';
-import React from 'react';
-import TeamIcon from './TeamIcon';
+import './Sidebar.css';
 import {
   addAccountWithSession,
   setAccountContextHidden,
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
-
-import './Sidebar.css';
+import AccountIcon from './AccountIcon';
+import AddAccountTrigger from './context/AddAccountTrigger';
+import EditAccountMenu from './context/EditAccountMenu';
+import React from 'react';
+import {colorFromId} from '../lib/accentColor';
+import {config} from '../../../dist/settings/config';
+import {connect} from 'react-redux';
+import {preventFocus} from '../lib/util';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
   const centerX = clientRectangle.left + clientRectangle.width / 2;
   const centerY = clientRectangle.top + clientRectangle.height / 2;
-  return {x: centerX, y: centerY};
+  return {centerX, centerY};
 };
 
 const getClassName = account => {
@@ -71,25 +69,21 @@ const Sidebar = ({
           onClick={() => connected.switchAccount(account.id)}
           onContextMenu={preventFocus(event => {
             const isAtLeastAdmin = ['z.team.TeamRole.ROLE.OWNER', 'z.team.TeamRole.ROLE.ADMIN'].includes(
-              account.teamRole
+              account.teamRole,
             );
-            const center = centerOfEventTarget(event);
+            const {centerX, centerY} = centerOfEventTarget(event);
             connected.toggleEditAccountMenuVisibility(
-              center.x,
-              center.y,
+              centerX,
+              centerY,
               account.id,
               account.sessionID,
               account.lifecycle,
-              isAtLeastAdmin
+              isAtLeastAdmin,
             );
           })}
           onMouseDown={preventFocus()}
         >
-          {account.teamID ? (
-            <TeamIcon account={account} accentID={currentAccentID} />
-          ) : (
-            <PersonalIcon account={account} accentID={currentAccentID} />
-          )}
+          <AccountIcon account={account} />
         </div>
       </div>
     ))}
@@ -106,7 +100,7 @@ export default connect(
     accounts,
     currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
     hasCreatedAccount: accounts.some(account => account.userID !== undefined),
-    hasReachedLimitOfAccounts: accounts.length >= MAXIMUM_ACCOUNTS,
+    hasReachedLimitOfAccounts: accounts.length >= config.maximumAccounts,
     isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
     isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
   }),
@@ -115,5 +109,5 @@ export default connect(
     setAccountContextHidden,
     switchAccount,
     toggleEditAccountMenuVisibility,
-  }
+  },
 )(Sidebar);

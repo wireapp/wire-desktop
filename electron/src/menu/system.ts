@@ -18,18 +18,18 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {Menu, dialog, globalShortcut, ipcMain, shell} from 'electron';
+import {Menu, MenuItemConstructorOptions, dialog, globalShortcut, ipcMain, shell} from 'electron';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import * as lifecycle from '../runtime/lifecycle';
-import * as config from '../settings/config';
+import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
 
-import {ElectronMenuItemWithI18n, Supportedi18nLanguage} from '../interfaces/';
+import {Supportedi18nLanguage} from '../interfaces/';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
@@ -38,15 +38,15 @@ let menu: Menu;
 
 const launcher = new autoLaunch({
   isHidden: true,
-  name: config.NAME,
+  name: config.name,
   path: launchCmd,
 });
 
-const separatorTemplate: ElectronMenuItemWithI18n = {
+const separatorTemplate: MenuItemConstructorOptions = {
   type: 'separator',
 };
 
-const createLanguageTemplate = (languageCode: Supportedi18nLanguage): ElectronMenuItemWithI18n => {
+const createLanguageTemplate = (languageCode: Supportedi18nLanguage): MenuItemConstructorOptions => {
   return {
     click: () => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
@@ -54,82 +54,82 @@ const createLanguageTemplate = (languageCode: Supportedi18nLanguage): ElectronMe
   };
 };
 
-const createLanguageSubmenu = (): ElectronMenuItemWithI18n[] => {
+const createLanguageSubmenu = (): MenuItemConstructorOptions[] => {
   return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage =>
-    createLanguageTemplate(supportedLanguage as Supportedi18nLanguage)
+    createLanguageTemplate(supportedLanguage as Supportedi18nLanguage),
   );
 };
 
-const localeTemplate: ElectronMenuItemWithI18n = {
-  i18n: 'menuLocale',
+const localeTemplate: MenuItemConstructorOptions = {
+  label: locale.getText('menuLocale'),
   submenu: createLanguageSubmenu(),
 };
 
-const aboutTemplate: ElectronMenuItemWithI18n = {
+const aboutTemplate: MenuItemConstructorOptions = {
   click: () => ipcMain.emit(EVENT_TYPE.ABOUT.SHOW),
-  i18n: 'menuAbout',
+  label: locale.getText('menuAbout'),
 };
 
-const signOutTemplate: ElectronMenuItemWithI18n = {
+const signOutTemplate: MenuItemConstructorOptions = {
   click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.ACTION.SIGN_OUT),
-  i18n: 'menuSignOut',
+  label: locale.getText('menuSignOut'),
 };
 
-const conversationTemplate: ElectronMenuItemWithI18n = {
-  i18n: 'menuConversation',
+const conversationTemplate: MenuItemConstructorOptions = {
+  label: `&${locale.getText('menuConversation')}`,
   submenu: [
     {
       accelerator: 'CmdOrCtrl+N',
       click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.START),
-      i18n: 'menuStart',
+      label: locale.getText('menuStart'),
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+K',
       click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PING),
-      i18n: 'menuPing',
+      label: locale.getText('menuPing'),
     },
     {
       click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.CALL),
-      i18n: 'menuCall',
+      label: locale.getText('menuCall'),
     },
     {
       click: () =>
         WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.VIDEO_CALL),
-      i18n: 'menuVideoCall',
+      label: locale.getText('menuVideoCall'),
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+I',
       click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PEOPLE),
-      i18n: 'menuPeople',
+      label: locale.getText('menuPeople'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+K',
       click: () =>
         WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.ADD_PEOPLE),
-      i18n: 'menuAddPeople',
+      label: locale.getText('menuAddPeople'),
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+D',
       click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.ARCHIVE),
-      i18n: 'menuArchive',
+      label: locale.getText('menuArchive'),
     },
     {
       click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.DELETE),
-      i18n: 'menuDelete',
+      label: locale.getText('menuDelete'),
     },
   ],
 };
 
-const showWireTemplate: ElectronMenuItemWithI18n = {
+const showWireTemplate: MenuItemConstructorOptions = {
   accelerator: 'CmdOrCtrl+0',
   click: () => WindowManager.getPrimaryWindow().show(),
-  label: config.NAME,
+  label: `&${config.name}`,
 };
 
-const toggleMenuTemplate: ElectronMenuItemWithI18n = {
+const toggleMenuTemplate: MenuItemConstructorOptions = {
   checked: settings.restore(SettingsType.SHOW_MENU_BAR, true),
   click: () => {
     const mainBrowserWindow = WindowManager.getPrimaryWindow();
@@ -143,33 +143,33 @@ const toggleMenuTemplate: ElectronMenuItemWithI18n = {
 
     settings.save(SettingsType.SHOW_MENU_BAR, showMenu);
   },
-  i18n: 'menuShowHide',
+  label: locale.getText('menuShowHide'),
   type: 'checkbox',
 };
 
-const toggleFullScreenTemplate: ElectronMenuItemWithI18n = {
+const toggleFullScreenTemplate: MenuItemConstructorOptions = {
   accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
   click: () => {
     const mainBrowserWindow = WindowManager.getPrimaryWindow();
     mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
   },
-  i18n: 'menuFullScreen',
+  label: locale.getText('menuFullScreen'),
   type: 'checkbox',
 };
 
-const toggleAutoLaunchTemplate: ElectronMenuItemWithI18n = {
+const toggleAutoLaunchTemplate: MenuItemConstructorOptions = {
   checked: settings.restore(SettingsType.AUTO_LAUNCH, false),
   click: () => {
     const shouldAutoLaunch = !settings.restore(SettingsType.AUTO_LAUNCH);
     settings.save(SettingsType.AUTO_LAUNCH, shouldAutoLaunch);
     return shouldAutoLaunch ? launcher.enable() : launcher.disable();
   },
-  i18n: 'menuStartup',
+  label: locale.getText('menuStartup'),
   type: 'checkbox',
 };
 
-const editTemplate: ElectronMenuItemWithI18n = {
-  i18n: 'menuEdit',
+const editTemplate: MenuItemConstructorOptions = {
+  label: `&${locale.getText('menuEdit')}`,
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
@@ -179,7 +179,7 @@ const editTemplate: ElectronMenuItemWithI18n = {
           focusedWebContents.undo();
         }
       },
-      i18n: 'menuUndo',
+      label: locale.getText('menuUndo'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
@@ -189,39 +189,39 @@ const editTemplate: ElectronMenuItemWithI18n = {
           focusedWebContents.redo();
         }
       },
-      i18n: 'menuRedo',
+      label: locale.getText('menuRedo'),
     },
     separatorTemplate,
     {
-      i18n: 'menuCut',
+      label: locale.getText('menuCut'),
       role: 'cut',
     },
     {
-      i18n: 'menuCopy',
+      label: locale.getText('menuCopy'),
       role: 'copy',
     },
     {
-      i18n: 'menuPaste',
+      label: locale.getText('menuPaste'),
       role: 'paste',
     },
     separatorTemplate,
     {
-      i18n: 'menuSelectAll',
+      label: locale.getText('menuSelectAll'),
       role: 'selectall',
     },
   ],
 };
 
-const windowTemplate: ElectronMenuItemWithI18n = {
-  i18n: 'menuWindow',
+const windowTemplate: MenuItemConstructorOptions = {
+  label: `&${locale.getText('menuWindow')}`,
   role: 'window',
   submenu: [
     {
-      i18n: 'menuMinimize',
+      label: locale.getText('menuMinimize'),
       role: 'minimize',
     },
     {
-      i18n: 'menuClose',
+      label: locale.getText('menuClose'),
       role: 'close',
     },
     separatorTemplate,
@@ -229,91 +229,91 @@ const windowTemplate: ElectronMenuItemWithI18n = {
       accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
       click: () =>
         WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_NEXT),
-      i18n: 'menuNextConversation',
+      label: locale.getText('menuNextConversation'),
     },
     {
       accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
       click: () =>
         WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
-      i18n: 'menuPreviousConversation',
+      label: locale.getText('menuPreviousConversation'),
     },
   ],
 };
 
-const helpTemplate: ElectronMenuItemWithI18n = {
-  i18n: 'menuHelp',
+const helpTemplate: MenuItemConstructorOptions = {
+  label: `&${locale.getText('menuHelp')}`,
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_LEGAL),
-      i18n: 'menuLegal',
+      click: () => shell.openExternal(config.legalUrl),
+      label: locale.getText('menuLegal'),
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_PRIVACY),
-      i18n: 'menuPrivacy',
+      click: () => shell.openExternal(config.privacyUrl),
+      label: locale.getText('menuPrivacy'),
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_LICENSES),
-      i18n: 'menuLicense',
+      click: () => shell.openExternal(config.licensesUrl),
+      label: locale.getText('menuLicense'),
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.URL_SUPPORT),
-      i18n: 'menuSupport',
+      click: () => shell.openExternal(config.supportUrl),
+      label: locale.getText('menuSupport'),
     },
     {
       click: () => shell.openExternal(EnvironmentUtil.web.getWebsiteUrl()),
-      i18n: 'menuWireURL',
+      label: locale.getText('menuAppURL'),
     },
   ],
 };
 
-const darwinTemplate: ElectronMenuItemWithI18n = {
-  label: config.NAME,
+const darwinTemplate: MenuItemConstructorOptions = {
+  label: `&${config.name}`,
   submenu: [
     aboutTemplate,
     separatorTemplate,
     {
       accelerator: 'Command+,',
       click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
-      i18n: 'menuPreferences',
+      label: locale.getText('menuPreferences'),
     },
     separatorTemplate,
     localeTemplate,
     {
-      i18n: 'menuServices',
+      label: locale.getText('menuServices'),
       role: 'services',
       submenu: [],
     },
     separatorTemplate,
     {
-      i18n: 'menuHideWire',
+      label: locale.getText('menuHideApp'),
       role: 'hide',
     },
     {
-      i18n: 'menuHideOthers',
+      label: locale.getText('menuHideOthers'),
       role: 'hideothers',
     },
     {
-      i18n: 'menuShowAll',
+      label: locale.getText('menuShowAll'),
       role: 'unhide',
     },
     separatorTemplate,
     signOutTemplate,
     {
       accelerator: 'Command+Q',
-      i18n: 'menuQuit',
-      selector: 'terminate:',
+      click: () => lifecycle.quit(),
+      label: locale.getText('menuQuit'),
     },
   ],
 };
 
-const win32Template: ElectronMenuItemWithI18n = {
-  label: config.NAME,
+const win32Template: MenuItemConstructorOptions = {
+  label: `&${config.name}`,
   submenu: [
     {
       accelerator: 'Ctrl+,',
       click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
-      i18n: 'menuSettings',
+      label: locale.getText('menuSettings'),
     },
     localeTemplate,
     toggleAutoLaunchTemplate,
@@ -322,13 +322,13 @@ const win32Template: ElectronMenuItemWithI18n = {
     {
       accelerator: 'Alt+F4',
       click: () => lifecycle.quit(),
-      i18n: 'menuQuit',
+      label: locale.getText('menuQuit'),
     },
   ],
 };
 
-const linuxTemplate: ElectronMenuItemWithI18n = {
-  label: config.NAME,
+const linuxTemplate: MenuItemConstructorOptions = {
+  label: `&${config.name}`,
   submenu: [
     toggleAutoLaunchTemplate,
     separatorTemplate,
@@ -338,25 +338,21 @@ const linuxTemplate: ElectronMenuItemWithI18n = {
     {
       accelerator: 'Ctrl+Q',
       click: () => lifecycle.quit(),
-      i18n: 'menuQuit',
+      label: locale.getText('menuQuit'),
     },
   ],
 };
 
-const menuTemplate: ElectronMenuItemWithI18n[] = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
+const menuTemplate: MenuItemConstructorOptions[] = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
 
-const processMenu = (template: Iterable<ElectronMenuItemWithI18n>, language: Supportedi18nLanguage) => {
+const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: Supportedi18nLanguage) => {
   for (const item of template) {
     if (item.submenu) {
-      processMenu(item.submenu as Iterable<ElectronMenuItemWithI18n>, language);
+      processMenu(item.submenu as Iterable<MenuItemConstructorOptions>, language);
     }
 
     if (locale.SUPPORTED_LANGUAGES[language] === item.label) {
       item.checked = true;
-    }
-
-    if (item.i18n) {
-      item.label = locale.getText(item.i18n);
     }
   }
 };
@@ -377,11 +373,11 @@ const changeLocale = (language: Supportedi18nLanguage): void => {
       if (response === 1) {
         return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
       }
-    }
+    },
   );
 };
 
-const createMenu = (isFullScreen: boolean): Menu => {
+export const createMenu = (isFullScreen: boolean): Menu => {
   if (!windowTemplate.submenu) {
     windowTemplate.submenu = [];
   }
@@ -402,7 +398,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
 
   if (EnvironmentUtil.platform.IS_WINDOWS) {
     menuTemplate.unshift(win32Template);
-    windowTemplate.i18n = 'menuView';
+    windowTemplate.label = locale.getText('menuView');
     if (Array.isArray(windowTemplate.submenu)) {
       windowTemplate.submenu.unshift(toggleMenuTemplate, separatorTemplate);
     }
@@ -414,7 +410,7 @@ const createMenu = (isFullScreen: boolean): Menu => {
       editTemplate.submenu.push(separatorTemplate, {
         accelerator: 'Ctrl+,',
         click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
-        i18n: 'menuPreferences',
+        label: locale.getText('menuPreferences'),
       });
     }
     if (Array.isArray(windowTemplate.submenu)) {
@@ -435,29 +431,25 @@ const createMenu = (isFullScreen: boolean): Menu => {
   return menu;
 };
 
-const registerShortcuts = (): void => {
+export const registerShortcuts = (): void => {
   // Global mute shortcut
   globalShortcut.register('CmdOrCtrl+Alt+M', () =>
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE)
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
   );
 
   // Global account switching shortcut
   const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
-  const accountLimit = config.MAXIMUM_ACCOUNTS;
+  const accountLimit = config.maximumAccounts;
   for (const shortcut of switchAccountShortcut) {
     for (let accountId = 0; accountId < accountLimit; accountId++) {
       globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId)
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId),
       );
     }
   }
 };
 
-const unregisterShortcuts = (): void => {
-  globalShortcut.unregisterAll();
-};
-
-const toggleMenuBar = (): void => {
+export const toggleMenuBar = (): void => {
   const mainBrowserWindow = WindowManager.getPrimaryWindow();
   const isVisible = mainBrowserWindow.isMenuBarVisible();
   const autoHide = mainBrowserWindow.isMenuBarAutoHide();
@@ -467,4 +459,6 @@ const toggleMenuBar = (): void => {
   }
 };
 
-export {createMenu, registerShortcuts, toggleMenuBar, unregisterShortcuts};
+export const unregisterShortcuts = (): void => {
+  globalShortcut.unregisterAll();
+};

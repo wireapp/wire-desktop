@@ -18,7 +18,7 @@ No license is granted to the Wire trademark and its associated logos, all of whi
 
 ## Wire Desktop
 
-Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp). Based on [Electron](http://electron.atom.io).
+Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp). Based on [Electron](https://electronjs.org).
 
 ### Prerequisites
 
@@ -63,7 +63,8 @@ yarn build:linux
 If you would like to build for another Linux target, run the following command:
 
 ```shell
-grunt --target=<target> linux-other
+export LINUX_TARGET=<target>
+yarn build:linux
 ```
 
 Replace `<target>` with your desired target (e.g. `"rpm"`). Have a look at the [documentation for `electron-builder`](https://www.electron.build/configuration/linux) for the available options. Note that we cannot offer support for uncommon targets.

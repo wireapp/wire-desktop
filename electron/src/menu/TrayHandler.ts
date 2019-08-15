@@ -21,33 +21,33 @@ import {Menu, Tray, app, nativeImage} from 'electron';
 import * as path from 'path';
 
 import * as locale from '../locale/locale';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import * as lifecycle from '../runtime/lifecycle';
-import * as config from '../settings/config';
+import {linuxDesktop, platform} from '../runtime/EnvironmentUtil';
+import {quit as lifecycleQuit} from '../runtime/lifecycle';
+import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
-class TrayHandler {
-  lastUnreadCount: number;
-  trayIcon?: Tray;
+export class TrayHandler {
   icons?: {
     badge: nativeImage;
     tray: nativeImage;
     trayWithBadge: nativeImage;
   };
+  lastUnreadCount: number;
+  trayIcon?: Tray;
 
   constructor() {
     this.lastUnreadCount = 0;
   }
 
-  initTray(trayIcon = new Tray(nativeImage.createEmpty())) {
-    const IMAGE_ROOT = path.join(app.getAppPath(), 'img');
+  initTray(trayIcon = new Tray(nativeImage.createEmpty())): void {
+    const IMAGE_ROOT = path.join(app.getAppPath(), config.electronDirectory, 'img');
 
     let trayPng = 'tray.png';
     let trayBadgePng = 'tray.badge.png';
 
-    if (EnvironmentUtil.platform.IS_LINUX) {
-      trayPng = `tray${EnvironmentUtil.linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
-      trayBadgePng = `tray.badge${EnvironmentUtil.linuxDesktop.isGnome ? '.gnome' : '@3x'}.png`;
+    if (platform.IS_LINUX) {
+      trayPng = `tray${linuxDesktop.isGnomeX11 ? '.gnome' : '@3x'}.png`;
+      trayBadgePng = `tray.badge${linuxDesktop.isGnomeX11 ? '.gnome' : '@3x'}.png`;
     }
 
     const iconPaths = {
@@ -68,20 +68,20 @@ class TrayHandler {
     this.buildTrayMenu();
   }
 
-  showUnreadCount(win: Electron.BrowserWindow, count?: number) {
+  showUnreadCount(win: Electron.BrowserWindow, count?: number): void {
     this.updateIcons(win, count);
     this.flashApplicationWindow(win, count);
     this.updateBadgeCount(count);
   }
 
-  private buildTrayMenu() {
+  private buildTrayMenu(): void {
     const contextMenu = Menu.buildFromTemplate([
       {
         click: () => WindowManager.showPrimaryWindow(),
         label: locale.getText('trayOpen'),
       },
       {
-        click: () => lifecycle.quit(),
+        click: () => lifecycleQuit(),
         label: locale.getText('trayQuit'),
       },
     ]);
@@ -89,11 +89,11 @@ class TrayHandler {
     if (this.trayIcon) {
       this.trayIcon.on('click', () => WindowManager.showPrimaryWindow());
       this.trayIcon.setContextMenu(contextMenu);
-      this.trayIcon.setToolTip(config.NAME);
+      this.trayIcon.setToolTip(config.name);
     }
   }
 
-  private flashApplicationWindow(win: Electron.BrowserWindow, count?: number) {
+  private flashApplicationWindow(win: Electron.BrowserWindow, count?: number): void {
     if (win.isFocused() || !count) {
       win.flashFrame(false);
     } else if (count > this.lastUnreadCount) {
@@ -101,14 +101,14 @@ class TrayHandler {
     }
   }
 
-  private updateBadgeCount(count?: number) {
+  private updateBadgeCount(count?: number): void {
     if (typeof count !== 'undefined') {
       app.setBadgeCount(count);
       this.lastUnreadCount = count;
     }
   }
 
-  private updateIcons(win: Electron.BrowserWindow, count?: number) {
+  private updateIcons(win: Electron.BrowserWindow, count?: number): void {
     if (this.icons) {
       const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
 
@@ -121,5 +121,3 @@ class TrayHandler {
     }
   }
 }
-
-export {TrayHandler};

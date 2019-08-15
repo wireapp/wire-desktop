@@ -18,16 +18,14 @@
  */
 
 import raygun = require('raygun');
-import * as config from '../settings/config';
+import {config} from '../settings/config';
 
-const Raygun = {
-  initClient: () => {
-    const raygunClient = new raygun.Client().init({apiKey: config.RAYGUN_API_KEY});
-    raygunClient.onBeforeSend((payload: any) => {
+export const Raygun = {
+  initClient(): void {
+    const raygunClient = new raygun.Client().init({apiKey: config.raygunApiKey});
+    raygunClient.onBeforeSend(payload => {
       delete payload.details.machineName;
       return payload;
     });
   },
 };
-
-export {Raygun};

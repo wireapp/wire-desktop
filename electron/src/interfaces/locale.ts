@@ -37,6 +37,7 @@ export type i18nLanguageIdentifier =
   | 'certificateVerifyProcManagerWarningTitle'
   | 'menuAbout'
   | 'menuAddPeople'
+  | 'menuAppURL'
   | 'menuArchive'
   | 'menuBlock'
   | 'menuCall'
@@ -48,8 +49,8 @@ export type i18nLanguageIdentifier =
   | 'menuEdit'
   | 'menuFullScreen'
   | 'menuHelp'
+  | 'menuHideApp'
   | 'menuHideOthers'
-  | 'menuHideWire'
   | 'menuLeave'
   | 'menuLegal'
   | 'menuLicense'
@@ -80,7 +81,6 @@ export type i18nLanguageIdentifier =
   | 'menuVideoCall'
   | 'menuView'
   | 'menuWindow'
-  | 'menuWireURL'
   | 'restartLater'
   | 'restartLocale'
   | 'restartNeeded'
@@ -89,19 +89,17 @@ export type i18nLanguageIdentifier =
   | 'trayQuit'
   | 'unreadMessages'
   | 'wrapperAddAccount'
-  | 'wrapperAddAccountErrorTitlePlural'
-  | 'wrapperAddAccountErrorTitleSingular'
   | 'wrapperAddAccountErrorMessagePlural'
   | 'wrapperAddAccountErrorMessageSingular'
+  | 'wrapperAddAccountErrorTitlePlural'
+  | 'wrapperAddAccountErrorTitleSingular'
   | 'wrapperCreateTeam'
   | 'wrapperLogOut'
   | 'wrapperManageTeam'
   | 'wrapperRemoveAccount';
 
-export type i18nStrings = {[identifier in i18nLanguageIdentifier]: string};
-
-export type Supportedi18nStrings = Partial<i18nStrings>;
+export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 
 export type Supportedi18nLanguage = keyof typeof SupportedLanguages;
 
-export type Supportedi18nLanguageObject = {[id in Supportedi18nLanguage]: Supportedi18nStrings};
+export type Supportedi18nLanguageObject = Record<Supportedi18nLanguage, i18nStrings>;

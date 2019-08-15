@@ -17,16 +17,15 @@
  *
  */
 
+import './App.css';
+import * as EVENT_TYPE from '../lib/eventType';
+import {initiateSSO, switchAccount, updateAccount} from '../actions';
 import IsOnline from './IsOnline';
 import React from 'react';
-import {connect} from 'react-redux';
 import Sidebar from './Sidebar';
 import WebviewsContainer from '../containers/WebviewsContainer';
-import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import * as EVENT_TYPE from '../lib/eventType';
-import {MAXIMUM_ACCOUNTS} from '../../../dist/settings/config';
-
-import './App.css';
+import {config} from '../../../dist/settings/config';
+import {connect} from 'react-redux';
 
 class App extends React.Component {
   constructor(props) {
@@ -63,13 +62,13 @@ class App extends React.Component {
       this.props.switchAccount(accountId);
       this.props.initiateSSO(accountId, ssoCode, this.props.accounts.length == 1);
     } else {
-      if (this.props.accounts.length >= MAXIMUM_ACCOUNTS) {
+      if (this.props.accounts.length >= config.maximumAccounts) {
         return window.dispatchEvent(
           new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
             detail: {
               reachedMaximumAccounts: true,
             },
-          })
+          }),
         );
       }
       // All accounts are logged in, create a new one
@@ -99,11 +98,11 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps() {
   return {initiateSSO, switchAccount, updateAccount};
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps()
+  mapDispatchToProps(),
 )(App);

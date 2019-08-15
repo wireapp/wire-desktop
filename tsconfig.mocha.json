@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "types": ["mocha"]
+  },
+  "extends": "./tsconfig.json",
+  "exclude": [],
+  "include": ["electron/**/*.test*.ts"]
+}
