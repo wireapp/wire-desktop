@@ -42,14 +42,14 @@ node('master') {
       step ([
         $class: 'CopyArtifact',
         filter: 'wrap/build/**,wrap/dist/**',
-        projectName: "$projectName",
+        projectName: "${projectName}",
         selector: [
           $class: 'SpecificBuildSelector',
-          buildNumber: "$version"
+          buildNumber: "${version}"
         ]
       ]);
     } catch (e) {
-      wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts from of ${version} from ${projectName}** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "**Could not get build artifacts from of ${version} from ${projectName}** see: ${JOB_URL}"
       throw e
     }
   }
@@ -65,7 +65,7 @@ node('master') {
         sh 'yarn --ignore-scripts'
       }
     } catch (e) {
-      wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts of ${version} from ${projectName}** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "**Could not get build artifacts of ${version} from ${projectName}** see: ${JOB_URL}"
       throw e
     }
   }
@@ -73,15 +73,15 @@ node('master') {
   stage('Upload to S3 and/or Hockey') {
     withEnv(["PATH+NODE=${NODE}/bin"]) {
       if (projectName.contains('Windows')) {
-        try {
-          def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-          def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-          def HOCKEY_ID = ''
-          def HOCKEY_TOKEN = ''
-          def S3_BUCKET = 'wire-taco'
-          def S3_PATH = ''
-          def SEARCH_PATH = './wrap/dist/'
+        def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        def HOCKEY_ID = ''
+        def HOCKEY_TOKEN = ''
+        def S3_BUCKET = 'wire-taco'
+        def S3_PATH = ''
+        def SEARCH_PATH = './wrap/dist/'
 
+        try {
           if (params.Release.equals('Production')) {
             HOCKEY_ID = credentials('WIN_PROD_HOCKEY_ID')
             HOCKEY_TOKEN = credentials('WIN_PROD_HOCKEY_TOKEN')
@@ -100,32 +100,32 @@ node('master') {
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
-          wireSend secret: "$jenkinsbot_secret", message: "**Setting environment variables failed for ${version}** see: ${JOB_URL}"
+          wireSend secret: "${jenkinsbot_secret}", message: "**Setting environment variables failed for ${version}** see: ${JOB_URL}"
           throw e
         }
 
         parallel hockey: {
           try {
-            sh "npx wire-deploy-hockey --hockey-id \"${HOCKEY_ID}\" --hockey-token \"${HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+            sh "npx wire-deploy-hockey --hockey-id \"$HOCKEY_ID\" --hockey-token \"$HOCKEY_TOKEN\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
           } catch(e) {
             currentBuild.result = 'FAILED'
-            wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
+            wireSend secret: "${jenkinsbot_secret}", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
             throw e
           }
         }, s3: {
           try {
-            sh "npx wire-deploy-s3 --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+            sh "npx wire-deploy-s3 --bucket \"$S3_BUCKET\" --s3path \"$S3_PATH\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\""
           } catch(e) {
             currentBuild.result = 'FAILED'
-            wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
+            wireSend secret: "${jenkinsbot_secret}", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
             throw e
           }
         }, failFast: true
       } else if (projectName.contains('macOS')) {
-        try {
           def MACOS_HOCKEY_ID = ''
           def MACOS_HOCKEY_TOKEN = ''
 
+        try {
           if (params.Release.equals('Production')) {
             MACOS_HOCKEY_ID = credentials('MACOS_MAS_HOCKEY_ID')
             MACOS_HOCKEY_TOKEN = credentials('MACOS_MAS_HOCKEY_TOKEN')
@@ -140,7 +140,7 @@ node('master') {
           sh "npx wire-deploy-hockey --hockey-id \"${MACOS_HOCKEY_ID}\" --hockey-token \"${MACOS_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ."
         } catch(e) {
           currentBuild.result = 'FAILED'
-          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
+          wireSend secret: "${jenkinsbot_secret}", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
           throw e
         }
       } else if (projectName.contains('Linux')) {
@@ -160,7 +160,7 @@ node('master') {
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
-          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
+          wireSend secret: "${jenkinsbot_secret}", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
           throw e
         }
       }
@@ -192,7 +192,7 @@ node('master') {
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
-        wireSend secret: "$jenkinsbot_secret", message: "**Changing RELEASES file failed for ${version}** see: ${JOB_URL}"
+        wireSend secret: "${jenkinsbot_secret}", message: "**Changing RELEASES file failed for ${version}** see: ${JOB_URL}"
         throw e
       }
     }
@@ -213,7 +213,7 @@ node('master') {
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
-        wireSend secret: "$jenkinsbot_secret", message: "**Upload build as draft to Github failed for ${version}** see: ${JOB_URL}"
+        wireSend secret: "${jenkinsbot_secret}", message: "**Upload build as draft to Github failed for ${version}** see: ${JOB_URL}"
         throw e
       }
     }
