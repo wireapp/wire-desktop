@@ -17,13 +17,14 @@
  *
  */
 
-import * as EVENT_TYPE from '../../lib/eventType';
-import {abortAccountCreation, switchAccount} from '../../actions';
-import ContextMenu from './ContextMenu';
-import ContextMenuItem from './ContextMenuItem';
 import React from 'react';
 import {connect} from 'react-redux';
+
+import {abortAccountCreation, switchAccount} from '../../actions';
+import * as EVENT_TYPE from '../../lib/eventType';
 import {getText} from '../../lib/locale';
+import ContextMenu from './ContextMenu';
+import ContextMenuItem from './ContextMenuItem';
 
 function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) {
   return (
