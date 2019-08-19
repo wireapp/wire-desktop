@@ -17,8 +17,9 @@
  *
  */
 
-import {ActionType, addAccount, deleteAccount, switchAccount, updateAccount, updateAccountBadge} from '../';
 import uuid from 'uuid/v4';
+
+import {ActionType, addAccount, deleteAccount, switchAccount, updateAccount, updateAccountBadge} from '../';
 
 describe('action creators', () => {
   describe('addAccount', () => {
