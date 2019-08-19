@@ -79,7 +79,7 @@
     "nyc": "14.1.1",
     "prettier": "1.18.2",
     "react": "16.9.0",
-    "rimraf": "2.6.3",
+    "rimraf": "3.0.0",
     "sinon": "7.4.1",
     "style-loader": "1.0.0",
     "tslint": "5.18.0",
