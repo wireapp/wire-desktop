@@ -6,7 +6,7 @@ def parseJson(def text) {
 node('node130') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def NODE = tool name: 'node-v10.15.3-windows-x86', type: 'nodejs'
+  def NODE = tool name: 'node-v10.16.3-windows-x86', type: 'nodejs'
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
