@@ -213,9 +213,9 @@ export class SingleSignOn {
     this.session.setPermissionRequestHandler((webContents, permission, callback) => callback(false));
 
     // User-agent normalization
-    this.session.webRequest.onBeforeSendHeaders((details, callback) => {
-      (details as any).requestHeaders['User-Agent'] = config.userAgent;
-      callback({cancel: false, requestHeaders: details.requestHeaders});
+    this.session.webRequest.onBeforeSendHeaders(({requestHeaders}: any, callback) => {
+      requestHeaders['User-Agent'] = config.userAgent;
+      callback({cancel: false, requestHeaders});
     });
 
     const SingleSignOnLoginWindow = this.createBrowserWindow();
