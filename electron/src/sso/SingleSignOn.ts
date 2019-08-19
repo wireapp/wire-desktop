@@ -213,16 +213,16 @@ export class SingleSignOn {
     this.session.setPermissionRequestHandler((webContents, permission, callback) => callback(false));
 
     // User-agent normalization
-    this.session.webRequest.onBeforeSendHeaders({urls: ['*']}, (details: any, callback: Function) => {
-      details.requestHeaders['User-Agent'] = config.userAgent;
-      callback({cancel: false, requestHeaders: details.requestHeaders});
+    this.session.webRequest.onBeforeSendHeaders(({requestHeaders}: any, callback) => {
+      requestHeaders['User-Agent'] = config.userAgent;
+      callback({cancel: false, requestHeaders});
     });
 
     const SingleSignOnLoginWindow = this.createBrowserWindow();
 
     // Register protocol
     // Note: we need to create the window before otherwise it does not work
-    await SingleSignOn.protocol.register(this.session, (type: string) => this.finalizeLogin(type));
+    await SingleSignOn.protocol.register(this.session, type => this.finalizeLogin(type));
 
     // Show the window(s)
     await SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
@@ -292,8 +292,8 @@ export class SingleSignOn {
     });
 
     // Prevent title updates and new windows
-    SingleSignOnLoginWindow.on('page-title-updated', (event: Electron.Event) => event.preventDefault());
-    SingleSignOnLoginWindow.webContents.on('new-window', (event: Electron.Event) => event.preventDefault());
+    SingleSignOnLoginWindow.on('page-title-updated', event => event.preventDefault());
+    SingleSignOnLoginWindow.webContents.on('new-window', event => event.preventDefault());
 
     // Note: will-navigate is broken in Electron 3
     // see https://github.com/electron/electron/issues/14751

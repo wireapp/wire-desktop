@@ -76,7 +76,7 @@ const showWindow = async () => {
     // Prevent any kind of navigation
     // will-navigate is broken with sandboxed env, intercepting requests instead
     // see https://github.com/electron/electron/issues/8841
-    aboutWindow.webContents.session.webRequest.onBeforeRequest({urls: ['*']}, async ({url}, callback) => {
+    aboutWindow.webContents.session.webRequest.onBeforeRequest(async ({url}, callback) => {
       // Only allow those URLs to be opened within the window
       if (ABOUT_WINDOW_WHITELIST.includes(url)) {
         return callback({cancel: false});
