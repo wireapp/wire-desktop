@@ -115,7 +115,7 @@ node('master') {
             S3_PATH = "${params.WIN_S3_PATH}"
           } else {
             withCredentials([
-              string(credentialsId: 'WIN_HOCKEY_ID', variable: 'WIN_HOCKEY_ID',
+              string(credentialsId: 'WIN_HOCKEY_ID', variable: 'WIN_HOCKEY_ID'),
               string(credentialsId: 'WIN_HOCKEY_TOKEN', variable: 'WIN_HOCKEY_TOKEN')
             ]) {
               WIN_HOCKEY_ID = env.WIN_HOCKEY_ID
