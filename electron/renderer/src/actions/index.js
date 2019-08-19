@@ -19,8 +19,9 @@
 
 /* eslint-disable no-console */
 
-import {config} from '../../../dist/settings/config';
 import uuid from 'uuid/v4';
+
+import {config} from '../../../dist/settings/config';
 import {verifyObjectProperties} from '../lib/verifyObjectProperties';
 
 export const ActionType = {

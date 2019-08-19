@@ -18,14 +18,16 @@
  */
 
 import './App.css';
-import * as EVENT_TYPE from '../lib/eventType';
-import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import IsOnline from './IsOnline';
+
 import React from 'react';
-import Sidebar from './Sidebar';
-import WebviewsContainer from '../containers/WebviewsContainer';
-import {config} from '../../../dist/settings/config';
 import {connect} from 'react-redux';
+
+import {config} from '../../../dist/settings/config';
+import {initiateSSO, switchAccount, updateAccount} from '../actions';
+import WebviewsContainer from '../containers/WebviewsContainer';
+import * as EVENT_TYPE from '../lib/eventType';
+import IsOnline from './IsOnline';
+import Sidebar from './Sidebar';
 
 class App extends React.Component {
   constructor(props) {
