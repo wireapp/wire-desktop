@@ -1166,9 +1166,9 @@
   integrity sha512-CBR5avlLcu0YCILJiDIXeU2pTw7UK/NIxfC63m7d7CVamho1qDEzXKkOtEauQRPMy6MI8mLozth+JJkas7HY6g==
 
 "@types/node@~12":
-  version "12.0.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.1.tgz#3dde31f8da274dfeb90e96abf55038fef46285f0"
-  integrity sha512-7sy7DKVJrCTbaAERJZq/CU12bzdmpjRr321/Ne9QmzhB3iZ//L16Cizcni5hHNbANxDbxwMb9EFoWkM8KPkp0A==
+  version "12.7.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.2.tgz#c4e63af5e8823ce9cc3f0b34f7b998c2171f0c44"
+  integrity sha512-dyYO+f6ihZEtNPDcWNR1fkoTDf3zAK3lAABDze3mz6POyIercH0lEUawUFXlG8xaQZmm1yEBON/4TsYv/laDYg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -9972,7 +9972,6 @@ winreg@1.2.4:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.23.5":
   version "0.23.5"
-  uid fc39997463860343685e86166c639ccbcbd3f28f
   resolved "https://github.com/wireapp/wire-web-config-default#fc39997463860343685e86166c639ccbcbd3f28f"
   dependencies:
     adm-zip "0.4.13"
@@ -9980,7 +9979,6 @@ winreg@1.2.4:
 
 "wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.23.6-0":
   version "0.23.6-0"
-  uid "47d13c32de910e3d1ac12690f144b06c0bb70f89"
   resolved "https://github.com/wireapp/wire-web-config-wire#47d13c32de910e3d1ac12690f144b06c0bb70f89"
   dependencies:
     adm-zip "0.4.13"
