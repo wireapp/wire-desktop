@@ -18,20 +18,22 @@
  */
 
 import './Sidebar.css';
+
+import React from 'react';
+import {connect} from 'react-redux';
+
+import {config} from '../../../dist/settings/config';
 import {
   addAccountWithSession,
   setAccountContextHidden,
   switchAccount,
   toggleEditAccountMenuVisibility,
 } from '../actions';
+import {colorFromId} from '../lib/accentColor';
+import {preventFocus} from '../lib/util';
 import AccountIcon from './AccountIcon';
 import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
-import React from 'react';
-import {colorFromId} from '../lib/accentColor';
-import {config} from '../../../dist/settings/config';
-import {connect} from 'react-redux';
-import {preventFocus} from '../lib/util';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
