@@ -63,7 +63,7 @@
     "css-loader": "3.2.0",
     "electron": "5.0.9",
     "electron-mocha": "8.1.1",
-    "electron-rebuild": "1.8.5",
+    "electron-rebuild": "1.8.6",
     "eslint": "6.1.0",
     "eslint-config-prettier": "6.0.0",
     "eslint-plugin-import": "2.18.2",
