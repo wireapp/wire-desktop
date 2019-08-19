@@ -159,7 +159,7 @@ const initWindowStateKeeper = () => {
 };
 
 // App Windows
-const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
+const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
   const options: Electron.BrowserWindowConstructorOptions = {
@@ -189,21 +189,19 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  let webappURL = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+  let webappUrl = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
 
   if (ENABLE_LOGGING) {
-    webappURL += `&enableLogging=@wireapp/*`;
+    webappUrl += `&enableLogging=@wireapp/*`;
   }
 
   if (customProtocolHandler.hashLocation) {
-    webappURL += `#${customProtocolHandler.hashLocation}`;
+    webappUrl += `#${customProtocolHandler.hashLocation}`;
   }
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
   }
-
-  main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
     if (!WindowUtil.isInView(main)) {
@@ -220,7 +218,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   });
 
   // Handle the new window event in the main Browser Window
-  main.webContents.on('new-window', (event, _url) => {
+  main.webContents.on('new-window', async (event, _url) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
@@ -229,11 +227,7 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
       return;
     }
 
-    shell.openExternal(_url);
-  });
-
-  main.webContents.on('dom-ready', () => {
-    main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
+    await shell.openExternal(_url);
   });
 
   main.on('focus', () => {
@@ -262,6 +256,9 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
   });
 
   main.webContents.on('crashed', () => main.reload());
+
+  await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
+  main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
 };
 
 // App Events
@@ -284,7 +281,7 @@ const handleAppEvents = () => {
   });
 
   // System Menu, Tray Icon & Show window
-  app.on('ready', () => {
+  app.on('ready', async () => {
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen);
     if (EnvironmentUtil.app.IS_DEVELOPMENT) {
@@ -296,7 +293,7 @@ const handleAppEvents = () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
       tray.initTray();
     }
-    showMainWindow(mainWindowState);
+    await showMainWindow(mainWindowState);
   });
 };
 

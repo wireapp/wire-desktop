@@ -21,7 +21,7 @@ const environment = require('../../dist/runtime/EnvironmentUtil');
 const {getLogger} = require('../../dist/logging/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
-const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
+const {ipcRenderer, remote, webFrame} = require('electron');
 const {systemPreferences} = remote;
 
 const logger = getLogger(__filename);
@@ -38,7 +38,6 @@ function subscribeToThemeChange() {
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
-webFrame.registerURLSchemeAsBypassingCSP('file');
 
 const subscribeToWebappEvents = () => {
   amplify.subscribe(z.event.WebApp.LIFECYCLE.RESTART, () => {
@@ -164,7 +163,6 @@ process.once('loaded', () => {
   const {getOpenGraphData, getOpenGraphDataAsync} = require('../../dist/lib/openGraph');
 
   global.clearImmediate = _clearImmediate;
-  global.desktopCapturer = desktopCapturer;
   global.environment = environment;
   global.openGraph = getOpenGraphData;
   global.openGraphAsync = getOpenGraphDataAsync;
