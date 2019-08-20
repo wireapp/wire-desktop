@@ -24,7 +24,7 @@
     "redux": "4.0.4",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
-    "uuid": "3.3.2"
+    "uuid": "3.3.3"
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
