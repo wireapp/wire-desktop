@@ -20,3 +20,7 @@ fi
 
 # Link to the binary
 ln -sf '/opt/${productFilename}/${executable}' '/usr/bin/${executable}'
+
+# Prepare Chrome sandbox
+chown root '/opt/${productFilename}/chrome-sandbox'
+chmod 4755 '/opt/${productFilename}/chrome-sandbox'
