@@ -1,4 +1,4 @@
-FROM node:12.8.1-stretch
+FROM node:12.9.0-stretch
 
 ENV USE_HARD_LINKS false
 
