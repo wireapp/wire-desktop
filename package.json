@@ -42,7 +42,7 @@
     "@types/minimist": "1.2.0",
     "@types/mocha": "5.2.7",
     "@types/nock": "10.0.3",
-    "@types/node": "~10",
+    "@types/node": "~12",
     "@types/open-graph": "0.2.0",
     "@types/raygun": "0.10.2",
     "@types/sinon": "7.0.13",
