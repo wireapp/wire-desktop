@@ -444,7 +444,7 @@ class ElectronWrapperInit {
             contents.on('console-message', async (event, level, message) => {
               const webViewId = getWebViewId(contents);
               if (webViewId) {
-                const logFilePath = path.join(app.getPath('userData'), 'logs', webViewId, config.logFileName);
+                const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
                 try {
                   await LogFactory.writeMessage(message, logFilePath);
                 } catch (error) {
