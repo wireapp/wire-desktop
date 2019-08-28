@@ -24,7 +24,7 @@ BUILD_VERSION="${1:-"0"}"
 
 SCRIPT_NAME="${0##*/}"
 
-GPG_TEMP_DIR=".gpg-temporary"
+GPG_TEMP_DIR="$(mktemp -d)"
 GPG_TEMP_KEYS_DIR="${GPG_TEMP_DIR}/private-keys-v1.d"
 PGP_SIGN_ID="D599C1AA126762B1"
 PGP_KEYFILE="${PGP_PRIVATE_KEY_FILE:-${PGP_SIGN_ID}.asc}"
@@ -96,6 +96,8 @@ gpg2 --batch \
      --quiet \
      --yes \
      "sha256sum.txt"
+
+rm sha256sum.txt
 
 if [ "${SHRED_STATUS}" == "unavailable" ]; then
   _log "Info: shred not found. Using insecure way of deleting."

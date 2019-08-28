@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "rootDir": "bin",
+    "types": ["debug", "electron-packager", "electron-winstaller", "builder-util", "fs-extra", "mocha", "node"]
+  },
+  "exclude": ["electron", "node_modules", "wrap"],
+  "extends": "./tsconfig.json",
+  "include": ["bin/**/*.ts"]
+}

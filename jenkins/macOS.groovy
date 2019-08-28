@@ -49,21 +49,17 @@ node('master') {
   if (production) {
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-        sh "bin/macos-checksums.sh ${version}"
+        sh "cd wrap/dist && ../../bin/macos-checksums.sh ${version}"
       }
     }
   }
 
   stage('Archive build artifacts') {
-    if (production) {
-      archiveArtifacts 'wrap/build/Wire.pkg'
-    } else if (custom) {
-      archiveArtifacts 'wrap/build/*.pkg'
-    } else {
+    if (!production && !custom) {
       // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/WireInternal.zip\""
-      archiveArtifacts "wrap/WireInternal.zip,${version}.tar.gz.sig"
+      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
     }
+    archiveArtifacts "wrap/dist/**"
   }
 
   stage('Trigger smoke tests') {
