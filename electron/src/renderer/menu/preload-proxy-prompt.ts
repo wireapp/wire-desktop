@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2019 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import {IpcMessageEvent, ipcRenderer} from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 
-ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels: string[]) => {
+ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (event: IpcMessageEvent, labels: string[]) => {
   for (const label in labels) {
     const labelElement = document.querySelector(`[data-string="${label}"]`);
     if (labelElement) {
@@ -30,32 +30,7 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event: IpcMessageEvent, labels
   }
 });
 
-interface Details {
-  copyright: string;
-  electronVersion: string;
-  productName: string;
-  webappVersion: string;
-}
-
-function setElementText(elementId: string, text: string): void {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.innerHTML = text;
-  }
-}
-
-export function loadedAboutScreen(event: Event, details: Details): void {
-  setElementText('name', details.productName);
-  setElementText('version', details.electronVersion);
-  setElementText('webappVersion', details.webappVersion);
-  setElementText('copyright', details.copyright);
-
-  const logoElement = document.getElementById('logo') as HTMLImageElement;
-  if (logoElement) {
-    logoElement.src = '../img/logo.256.png';
-  }
-
-  // Get locales
+export function loadedPrompt(): void {
   const labels = [];
   const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
 
@@ -66,7 +41,7 @@ export function loadedAboutScreen(event: Event, details: Details): void {
     }
   }
 
-  ipcRenderer.send(EVENT_TYPE.ABOUT.LOCALE_VALUES, labels);
+  ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, labels);
 }
 
-ipcRenderer.once(EVENT_TYPE.ABOUT.LOADED, loadedAboutScreen);
+ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, loadedPrompt);

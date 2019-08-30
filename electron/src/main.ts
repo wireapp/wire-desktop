@@ -18,7 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, dialog as mainDialog, ipcMain, remote, shell} from 'electron';
+import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -26,7 +26,6 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-const prompt = require('electron-prompt');
 
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
@@ -51,6 +50,7 @@ import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
+import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
@@ -284,30 +284,11 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
-  app.on('login', (event, webContents, request, authInfo, callback) => {
-    const dialog = mainDialog || remote.dialog;
+  app.on('login', async (event, webContents, request, authInfo, callback) => {
     event.preventDefault();
     console.log('authInfo', authInfo);
-
-    if (authInfo.isProxy) {
-      return prompt({
-        label: 'Proxy username',
-        title: 'Proxy authentication',
-      }).then((username: string) => {
-        if (username) {
-          return prompt({
-            label: 'Proxy password',
-            title: 'Proxy authentication',
-          }).then((password: string) => {
-            if (password) {
-              return callback(username, password);
-            }
-            dialog.showErrorBox('Error', 'No password entered.');
-          });
-        }
-        dialog.showErrorBox('Error', 'No username entered.');
-      });
-    }
+    await ProxyPromptWindow.showWindow();
+    callback('', '');
   });
 
   // System Menu, Tray Icon & Show window
