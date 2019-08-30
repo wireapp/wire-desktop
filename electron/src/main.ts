@@ -18,7 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
+import {BrowserWindow, Event, IpcMessageEvent, Menu, app, dialog as mainDialog, ipcMain, remote, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -26,6 +26,7 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+const prompt = require('electron-prompt');
 
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
@@ -255,7 +256,10 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     systemMenu.unregisterShortcuts();
   });
 
-  main.webContents.on('crashed', () => main.reload());
+  main.webContents.on('crashed', event => {
+    logger.error(`"${event.sender}" crashed the app.`);
+    main.reload();
+  });
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
@@ -278,6 +282,32 @@ const handleAppEvents = () => {
   app.on('before-quit', () => {
     settings.persistToFile();
     isQuitting = true;
+  });
+
+  app.on('login', (event, webContents, request, authInfo, callback) => {
+    const dialog = mainDialog || remote.dialog;
+    event.preventDefault();
+    console.log('authInfo', authInfo);
+
+    if (authInfo.isProxy) {
+      return prompt({
+        label: 'Proxy username',
+        title: 'Proxy authentication',
+      }).then((username: string) => {
+        if (username) {
+          return prompt({
+            label: 'Proxy password',
+            title: 'Proxy authentication',
+          }).then((password: string) => {
+            if (password) {
+              return callback(username, password);
+            }
+            dialog.showErrorBox('Error', 'No password entered.');
+          });
+        }
+        dialog.showErrorBox('Error', 'No username entered.');
+      });
+    }
   });
 
   // System Menu, Tray Icon & Show window
