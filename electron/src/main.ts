@@ -286,9 +286,13 @@ const handleAppEvents = () => {
 
   app.on('login', async (event, webContents, request, authInfo, callback) => {
     event.preventDefault();
-    console.log('authInfo', authInfo);
+    ipcMain.on(
+      EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+      (event: IpcMessageEvent, data: {password: string; username: string}) => {
+        callback(data.username, data.password);
+      },
+    );
     await ProxyPromptWindow.showWindow();
-    callback('', '');
   });
 
   // System Menu, Tray Icon & Show window

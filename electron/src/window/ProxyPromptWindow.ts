@@ -33,7 +33,7 @@ const proxyPromptWindowWhitelist = [promptHtmlPath, fileUrl(path.join(appPath, '
 const preloadPath = path.join(appPath, 'dist/renderer/menu/preload-proxy-prompt.js');
 
 const windowSize = {
-  HEIGHT: 150,
+  HEIGHT: 200,
   WIDTH: 400,
 };
 
@@ -91,6 +91,12 @@ const showWindow = async () => {
           labels.forEach(label => (resultLabels[label] = locale.getText(label)));
           event.sender.send(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, resultLabels);
         }
+      }
+    });
+
+    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.CANCELED, () => {
+      if (proxyPromptWindow) {
+        proxyPromptWindow.close();
       }
     });
 

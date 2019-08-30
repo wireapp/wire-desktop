@@ -30,7 +30,7 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (event: IpcMessageEvent,
   }
 });
 
-export function loadedPrompt(): void {
+ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
   const labels = [];
   const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
 
@@ -42,6 +42,24 @@ export function loadedPrompt(): void {
   }
 
   ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, labels);
-}
 
-ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, loadedPrompt);
+  const okButton = document.querySelector<HTMLButtonElement>('#okButton');
+  const cancelButton = document.querySelector<HTMLButtonElement>('#cancelButton');
+  const usernameInput = document.querySelector<HTMLInputElement>('#usernameInput');
+  const passwordInput = document.querySelector<HTMLInputElement>('#passwordInput');
+
+  if (cancelButton && okButton && usernameInput && passwordInput) {
+    okButton.addEventListener('click', () => {
+      alert('ok button clicked');
+      ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, {
+        password: passwordInput.value,
+        username: usernameInput.value,
+      });
+    });
+
+    cancelButton.addEventListener('click', () => {
+      alert('cancel button clicked');
+      ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
+    });
+  }
+});
