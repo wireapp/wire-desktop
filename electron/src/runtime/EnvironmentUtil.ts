@@ -96,8 +96,8 @@ const restoreEnvironment = (): BackendTypeKey => {
   return settings.restore(SettingsType.ENV, BackendType.INTERNAL.toUpperCase() as BackendTypeKey);
 };
 
-export const setEnvironment = (env: BackendTypeKey): void => {
-  currentEnvironment = env ? env : restoreEnvironment();
+export const setEnvironment = (env?: BackendTypeKey): void => {
+  currentEnvironment = env || restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment.toUpperCase());
 };
 
