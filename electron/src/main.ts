@@ -299,7 +299,6 @@ const handleAppEvents = () => {
 
   app.on('login', async (event, webContents, request, authInfo, callback) => {
     event.preventDefault();
-    console.log({authenticatedProxyInfo});
 
     if (authInfo.scheme !== 'basic') {
       logger.warn(`Unexpected authenticated proxy scheme: "${authInfo.scheme}"`);
@@ -453,7 +452,6 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
-      logger.info('authenticatedProxyInfo', authenticatedProxyInfo);
 
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin) {
         const proxyRules = authenticatedProxyInfo.origin;
@@ -464,11 +462,7 @@ class ElectronWrapperInit {
             proxyBypassRules: '',
             proxyRules,
           },
-          () => {
-            contents.session.resolveProxy('https://app.wire.com', proxy =>
-              logger.info('Successfully set proxy.', {proxy}),
-            );
-          },
+          () => {},
         );
       }
 
