@@ -317,6 +317,13 @@ const handleAppEvents = () => {
       },
     );
 
+    ipcMain.on(
+      EVENT_TYPE.PROXY_PROMPT.CANCELED,
+      (event: IpcMessageEvent, data: {password: string; username: string}) => {
+        callback('', '');
+      },
+    );
+
     await ProxyPromptWindow.showWindow();
   });
 

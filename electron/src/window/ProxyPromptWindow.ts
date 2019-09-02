@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'electron';
+import {BrowserWindow, IpcMessageEvent, app, ipcMain, ipcRenderer, session, shell} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
@@ -52,7 +52,7 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
-        javascript: false,
+        javascript: true,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         preload: preloadPath,
@@ -100,11 +100,18 @@ const showWindow = async () => {
       }
     });
 
+    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, () => {
+      if (proxyPromptWindow) {
+        proxyPromptWindow.close();
+      }
+    });
+
     // Close window via escape
     proxyPromptWindow.webContents.on('before-input-event', (event, input) => {
       if (input.type === 'keyDown' && input.key === 'Escape') {
         if (proxyPromptWindow) {
           proxyPromptWindow.close();
+          ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
         }
       }
     });

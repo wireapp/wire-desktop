@@ -50,7 +50,6 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
 
   if (cancelButton && okButton && usernameInput && passwordInput) {
     okButton.addEventListener('click', () => {
-      alert('ok button clicked');
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, {
         password: passwordInput.value,
         username: usernameInput.value,
@@ -58,7 +57,6 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
     });
 
     cancelButton.addEventListener('click', () => {
-      alert('cancel button clicked');
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
     });
   }
