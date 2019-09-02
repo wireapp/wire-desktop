@@ -450,19 +450,21 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
+    app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin) {
         const proxyRules = authenticatedProxyInfo.origin;
         logger.info(`Setting proxy to URL "${proxyRules}" ...`);
-        contents.session.setProxy(
-          {
-            pacScript: '',
-            proxyBypassRules: '',
-            proxyRules,
-          },
-          () => {},
+        await new Promise(resolve =>
+          contents.session.setProxy(
+            {
+              pacScript: '',
+              proxyBypassRules: '',
+              proxyRules,
+            },
+            () => resolve(),
+          ),
         );
       }
 
