@@ -67,6 +67,7 @@ const WINDOW_SIZE = {
   MIN_HEIGHT: 512,
   MIN_WIDTH: 760,
 };
+let authenticatedProxyInfo: URL | undefined;
 
 const customProtocolHandler = new CustomProtocolHandler();
 
@@ -74,12 +75,24 @@ const customProtocolHandler = new CustomProtocolHandler();
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 
+const logger = getLogger(__filename);
+
 if (argv.version) {
   console.log(config.version);
   process.exit();
 }
 
-const logger = getLogger(__filename);
+if (argv['proxy-server-auth']) {
+  try {
+    authenticatedProxyInfo = new URL(argv['proxy-server-auth']);
+    if (authenticatedProxyInfo.origin === 'null') {
+      authenticatedProxyInfo = undefined;
+      throw new Error('No protocol specified.');
+    }
+  } catch (error) {
+    logger.error(`Could not parse authenticated proxy URL: "${error.message}"`);
+  }
+}
 
 // Icon
 const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -286,12 +299,25 @@ const handleAppEvents = () => {
 
   app.on('login', async (event, webContents, request, authInfo, callback) => {
     event.preventDefault();
+    console.log({authenticatedProxyInfo});
+
+    if (authInfo.scheme !== 'basic') {
+      logger.warn(`Unexpected authenticated proxy scheme: "${authInfo.scheme}"`);
+      return callback('', '');
+    }
+
+    if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
+      logger.info('Sending provided credentials to authenticated proxy ...', authenticatedProxyInfo);
+      return callback(authenticatedProxyInfo.username, authenticatedProxyInfo.password);
+    }
+
     ipcMain.on(
       EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
       (event: IpcMessageEvent, data: {password: string; username: string}) => {
         callback(data.username, data.password);
       },
     );
+
     await ProxyPromptWindow.showWindow();
   });
 
@@ -427,6 +453,24 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
+      logger.info('authenticatedProxyInfo', authenticatedProxyInfo);
+
+      if (authenticatedProxyInfo && authenticatedProxyInfo.origin) {
+        const proxyRules = authenticatedProxyInfo.origin;
+        logger.info(`Setting proxy to URL "${proxyRules}" ...`);
+        contents.session.setProxy(
+          {
+            pacScript: '',
+            proxyBypassRules: '',
+            proxyRules,
+          },
+          () => {
+            contents.session.resolveProxy('https://app.wire.com', proxy =>
+              logger.info('Successfully set proxy.', {proxy}),
+            );
+          },
+        );
+      }
 
       switch (contents.getType()) {
         case 'window': {

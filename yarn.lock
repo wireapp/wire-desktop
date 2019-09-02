@@ -10008,16 +10008,14 @@ winreg@1.2.4:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.23.8":
   version "0.23.8"
-  uid "6583706c2b9d2a6fc91289af60b99e233c4d9004"
   resolved "https://github.com/wireapp/wire-web-config-default#6583706c2b9d2a6fc91289af60b99e233c4d9004"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.23.9-0":
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#feat/wire-desktop/proxy-prompt":
   version "0.23.9-0"
-  uid ad151bfc94a8e93e08c2a6ce831f4307ffda13c2
-  resolved "https://github.com/wireapp/wire-web-config-wire#ad151bfc94a8e93e08c2a6ce831f4307ffda13c2"
+  resolved "https://github.com/wireapp/wire-web-config-wire#e3dea842f0b349d013f1bb1e9ba537a522b7ed90"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
