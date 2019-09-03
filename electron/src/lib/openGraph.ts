@@ -167,16 +167,7 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  // For the regex, see https://regex101.com/r/U62pCH/2
-  const matches = body.match(/.*property=(["'])?og:.+?\1.*/gim) || [''];
-
-  if (!matches) {
-    throw new Error('No open graph tags found in website.');
-  }
-
-  const openGraphTags = matches.join(' ');
-
-  return openGraphParse(openGraphTags);
+  return openGraphParse(body);
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
@@ -200,7 +191,7 @@ export const getOpenGraphData = async (url: string, callback: GetDataCallback): 
       const [imageUrl] = arrayify(meta.image.url);
 
       const uri = await fetchImageAsBase64(imageUrl);
-      meta = await updateMetaDataWithImage(meta, uri);
+      meta = updateMetaDataWithImage(meta, uri);
     } else {
       throw new Error('OpenGraph metadata contains no image.');
     }
