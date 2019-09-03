@@ -306,7 +306,7 @@ const handleAppEvents = () => {
     }
 
     if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
-      logger.info('Sending provided credentials to authenticated proxy ...', authenticatedProxyInfo);
+      logger.info('Sending provided credentials to authenticated proxy ...');
       return callback(authenticatedProxyInfo.username, authenticatedProxyInfo.password);
     }
 
