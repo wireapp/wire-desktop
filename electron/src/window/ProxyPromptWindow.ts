@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, IpcMessageEvent, app, ipcMain, ipcRenderer, session, shell} from 'electron';
+import {BrowserWindow, IpcMessageEvent, app, ipcMain, session} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
@@ -72,17 +72,9 @@ const showWindow = async () => {
         return callback({cancel: false});
       }
 
-      // Open HTTPS links in browser instead
-      if (url.startsWith('https://')) {
-        await shell.openExternal(url);
-      } else {
-        console.log('Attempt to open URL in window prevented, url:', url);
-      }
-
       callback({redirectURL: promptHtmlPath});
     });
 
-    // Locales
     ipcMain.on(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, (event: IpcMessageEvent, labels: i18nLanguageIdentifier[]) => {
       if (proxyPromptWindow) {
         const isExpected = event.sender.id === proxyPromptWindow.webContents.id;
@@ -90,28 +82,6 @@ const showWindow = async () => {
           const resultLabels: Record<string, string> = {};
           labels.forEach(label => (resultLabels[label] = locale.getText(label)));
           event.sender.send(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, resultLabels);
-        }
-      }
-    });
-
-    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.CANCELED, () => {
-      if (proxyPromptWindow) {
-        proxyPromptWindow.close();
-      }
-    });
-
-    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, () => {
-      if (proxyPromptWindow) {
-        proxyPromptWindow.close();
-      }
-    });
-
-    // Close window via escape
-    proxyPromptWindow.webContents.on('before-input-event', (event, input) => {
-      if (input.type === 'keyDown' && input.key === 'Escape') {
-        if (proxyPromptWindow) {
-          proxyPromptWindow.close();
-          ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
         }
       }
     });

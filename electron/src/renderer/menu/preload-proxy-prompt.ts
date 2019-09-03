@@ -49,15 +49,26 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
   const passwordInput = document.querySelector<HTMLInputElement>('#passwordInput');
 
   if (cancelButton && okButton && usernameInput && passwordInput) {
-    okButton.addEventListener('click', () => {
+    const sendData = () => {
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, {
         password: passwordInput.value,
         username: usernameInput.value,
       });
-    });
+      window.close();
+    };
+
+    okButton.addEventListener('click', () => sendData);
 
     cancelButton.addEventListener('click', () => {
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
+    });
+
+    window.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        sendData();
+      } else if (event.key === 'Escape') {
+        window.close();
+      }
     });
   }
 });
