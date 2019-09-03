@@ -47,7 +47,7 @@ const WINDOW_SIZE = {
 
 ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event: IpcMessageEvent, version: string) => (webappVersion = version));
 
-const showWindow = () => {
+const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
 
   if (!aboutWindow) {
@@ -76,7 +76,7 @@ const showWindow = () => {
     // Prevent any kind of navigation
     // will-navigate is broken with sandboxed env, intercepting requests instead
     // see https://github.com/electron/electron/issues/8841
-    aboutWindow.webContents.session.webRequest.onBeforeRequest({urls: ['*']}, async ({url}, callback) => {
+    aboutWindow.webContents.session.webRequest.onBeforeRequest(async ({url}, callback) => {
       // Only allow those URLs to be opened within the window
       if (ABOUT_WINDOW_WHITELIST.includes(url)) {
         return callback({cancel: false});
@@ -84,7 +84,7 @@ const showWindow = () => {
 
       // Open HTTPS links in browser instead
       if (url.startsWith('https://')) {
-        shell.openExternal(url);
+        await shell.openExternal(url);
       } else {
         console.log('Attempt to open URL in window prevented, url:', url);
       }
@@ -115,18 +115,16 @@ const showWindow = () => {
 
     aboutWindow.on('closed', () => (aboutWindow = undefined));
 
-    aboutWindow.loadURL(ABOUT_HTML);
+    await aboutWindow.loadURL(ABOUT_HTML);
 
-    aboutWindow.webContents.on('dom-ready', () => {
-      if (aboutWindow) {
-        aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-          copyright: config.copyright,
-          electronVersion: config.version,
-          productName: config.name,
-          webappVersion,
-        });
-      }
-    });
+    if (aboutWindow) {
+      aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
+        copyright: config.copyright,
+        electronVersion: config.version,
+        productName: config.name,
+        webappVersion,
+      });
+    }
   }
 
   aboutWindow.show();

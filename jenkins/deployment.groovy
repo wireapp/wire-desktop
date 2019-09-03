@@ -35,7 +35,7 @@ node('master') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
-  def NODE = tool name: 'node-v10.15.3', type: 'nodejs'
+  def NODE = tool name: 'node-v12.9.0', type: 'nodejs'
 
   stage('Get build artifacts') {
     try {
@@ -74,28 +74,53 @@ node('master') {
     withEnv(["PATH+NODE=${NODE}/bin"]) {
       if (projectName.contains('Windows')) {
         try {
-          def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-          def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-          def HOCKEY_ID = ''
-          def HOCKEY_TOKEN = ''
+          def AWS_ACCESS_KEY_ID = ''
+          def AWS_SECRET_ACCESS_KEY = ''
+          def WIN_HOCKEY_ID = ''
+          def WIN_HOCKEY_TOKEN = ''
           def S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
           def SEARCH_PATH = './wrap/dist/'
 
+          withCredentials([
+            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID')],
+            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+          ]) {
+            AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
+          }
+
           if (params.Release.equals('Production')) {
-            HOCKEY_ID = credentials('WIN_PROD_HOCKEY_ID')
-            HOCKEY_TOKEN = credentials('WIN_PROD_HOCKEY_TOKEN')
+            withCredentials([
+              string(credentialsId: 'WIN_PROD_HOCKEY_ID', variable: 'WIN_PROD_HOCKEY_ID'),
+              string(credentialsId: 'WIN_PROD_HOCKEY_TOKEN', variable: 'WIN_PROD_HOCKEY_TOKEN')
+            ]) {
+              WIN_HOCKEY_ID = env.WIN_PROD_HOCKEY_ID
+              WIN_HOCKEY_TOKEN = env.WIN_PROD_HOCKEY_TOKEN
+            }
             S3_PATH = 'win/prod'
           } else if (params.Release.equals('Custom')) {
-            AWS_ACCESS_KEY_ID = credentials("${params.AWS_CUSTOM_ACCESS_KEY_ID}")
-            AWS_SECRET_ACCESS_KEY = credentials("${params.AWS_CUSTOM_SECRET_ACCESS_KEY}")
-            HOCKEY_ID = credentials("${params.WIN_CUSTOM_HOCKEY_ID}")
-            HOCKEY_TOKEN = credentials("${params.WIN_CUSTOM_HOCKEY_TOKEN}")
+            withCredentials([
+              string(credentialsId: "${params.AWS_CUSTOM_ACCESS_KEY_ID}", variable: 'AWS_CUSTOM_ACCESS_KEY_ID'),
+              string(credentialsId: "${params.AWS_CUSTOM_SECRET_ACCESS_KEY}", variable: 'AWS_CUSTOM_SECRET_ACCESS_KEY'),
+              string(credentialsId: "${params.WIN_CUSTOM_HOCKEY_ID}", variable: 'WIN_CUSTOM_HOCKEY_ID'),
+              string(credentialsId: "${params.WIN_CUSTOM_HOCKEY_TOKEN}", variable: 'WIN_CUSTOM_HOCKEY_TOKEN')
+            ]) {
+              AWS_ACCESS_KEY_ID = env.AWS_CUSTOM_ACCESS_KEY_ID
+              AWS_SECRET_ACCESS_KEY = env.AWS_CUSTOM_SECRET_ACCESS_KEY
+              WIN_HOCKEY_ID = env.WIN_CUSTOM_HOCKEY_ID
+              WIN_HOCKEY_TOKEN = env.WIN_CUSTOM_HOCKEY_TOKEN
+            }
             S3_BUCKET = "${params.WIN_S3_BUCKET}"
             S3_PATH = "${params.WIN_S3_PATH}"
           } else {
-            HOCKEY_ID = credentials('WIN_HOCKEY_TOKEN')
-            HOCKEY_TOKEN = credentials('WIN_HOCKEY_ID')
+            withCredentials([
+              string(credentialsId: 'WIN_HOCKEY_ID', variable: 'WIN_HOCKEY_ID'),
+              string(credentialsId: 'WIN_HOCKEY_TOKEN', variable: 'WIN_HOCKEY_TOKEN')
+            ]) {
+              WIN_HOCKEY_ID = env.WIN_HOCKEY_ID
+              WIN_HOCKEY_TOKEN = env.WIN_HOCKEY_TOKEN
+            }
             S3_PATH = 'win/internal'
           }
         } catch(e) {
@@ -106,7 +131,7 @@ node('master') {
 
         parallel hockey: {
           try {
-            sh "npx wire-deploy-hockey --hockey-id \"${HOCKEY_ID}\" --hockey-token \"${HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+            sh "npx wire-deploy-hockey --hockey-id \"${WIN_HOCKEY_ID}\" --hockey-token \"${WIN_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
           } catch(e) {
             currentBuild.result = 'FAILED'
             wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
@@ -114,7 +139,7 @@ node('master') {
           }
         }, s3: {
           try {
-            sh "npx wire-deploy-s3 --bucket \"${S3_BUCKET}\" --s3-path \"${S3_PATH}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+            sh "npx wire-deploy-s3 --bucket \"${S3_BUCKET}\" --s3-path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\"  --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
           } catch(e) {
             currentBuild.result = 'FAILED'
             wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
@@ -127,14 +152,26 @@ node('master') {
           def MACOS_HOCKEY_TOKEN = ''
 
           if (params.Release.equals('Production')) {
-            MACOS_HOCKEY_ID = credentials('MACOS_MAS_HOCKEY_ID')
-            MACOS_HOCKEY_TOKEN = credentials('MACOS_MAS_HOCKEY_TOKEN')
+            withCredentials([
+              string(credentialsId: 'MACOS_MAS_HOCKEY_ID', variable: 'MACOS_MAS_HOCKEY_ID'),
+              string(credentialsId: 'MACOS_MAS_HOCKEY_TOKEN', variable: 'MACOS_MAS_HOCKEY_TOKEN')
+            ]) {
+              MACOS_HOCKEY_ID = env.MACOS_MAS_HOCKEY_ID
+              MACOS_HOCKEY_TOKEN = env.MACOS_MAS_HOCKEY_TOKEN
+            }
           } else if (params.Release.equals('Custom')) {
-            MACOS_HOCKEY_ID = credentials("${params.MACOS_CUSTOM_HOCKEY_ID}")
-            MACOS_HOCKEY_TOKEN = credentials("${params.MACOS_CUSTOM_HOCKEY_TOKEN}")
+            withCredentials([
+              string(credentialsId: "${params.MACOS_CUSTOM_HOCKEY_ID}", variable: 'MACOS_CUSTOM_HOCKEY_ID'),
+              string(credentialsId: "${params.MACOS_CUSTOM_HOCKEY_TOKEN}", variable: 'MACOS_CUSTOM_HOCKEY_TOKEN')
+            ]) {
+              MACOS_HOCKEY_ID = env.MACOS_CUSTOM_HOCKEY_ID
+              MACOS_HOCKEY_TOKEN = env.MACOS_CUSTOM_HOCKEY_TOKEN
+            }
           } else {
-            MACOS_HOCKEY_ID = credentials('MACOS_HOCKEY_ID')
-            MACOS_HOCKEY_TOKEN = credentials('MACOS_HOCKEY_TOKEN')
+            withCredentials([string(credentialsId: 'MACOS_HOCKEY_ID', variable: 'MACOS_HOCKEY_ID'), string(credentialsId: 'MACOS_HOCKEY_TOKEN', variable: 'MACOS_HOCKEY_TOKEN')]) {
+              MACOS_HOCKEY_ID = env.MACOS_HOCKEY_ID
+              MACOS_HOCKEY_TOKEN = env.MACOS_HOCKEY_TOKEN
+            }
           }
 
           sh "npx wire-deploy-hockey --hockey-id \"${MACOS_HOCKEY_ID}\" --hockey-token \"${MACOS_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ."
@@ -146,17 +183,22 @@ node('master') {
       } else if (projectName.contains('Linux')) {
         try {
           if (params.Release.equals('Production')) {
-            def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-            def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+            withCredentials([
+              string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+              string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
+            ]) {
+              sh "npx wire-deploy-s3 --bucket wire-taco --s3path linux --key-id \"${env.AWS_ACCESS_KEY_ID}\" --secret-key \"${env.AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+            }
 
-            sh "npx wire-deploy-s3 --bucket wire-taco --s3path linux --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
           } else if (params.Release.equals('Custom')) {
             // do nothing
           } else {
-            def LINUX_HOCKEY_ID = credentials('LINUX_HOCKEY_ID')
-            def LINUX_HOCKEY_TOKEN = credentials('LINUX_HOCKEY_TOKEN')
-
-            sh "npx wire-deploy-hockey --hockey-id \"${LINUX_HOCKEY_ID}\" --hockey-token \"${LINUX_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+            withCredentials([
+              string(credentialsId: 'LINUX_HOCKEY_ID', variable: 'LINUX_HOCKEY_ID'),
+              string(credentialsId: 'LINUX_HOCKEY_TOKEN', variable: 'LINUX_HOCKEY_TOKEN')
+            ]) {
+              sh "npx wire-deploy-hockey --hockey-id \"${env.LINUX_HOCKEY_ID}\" --hockey-token \"${env.LINUX_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+            }
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
@@ -171,24 +213,37 @@ node('master') {
     stage('Update RELEASES file') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
-          def AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-          def AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+          def AWS_ACCESS_KEY_ID = ''
+          def AWS_SECRET_ACCESS_KEY = ''
           def S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
           def SEARCH_PATH = './wrap/dist/'
 
+          withCredentials([
+            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
+          ]) {
+            AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
+          }
+
           if (params.Release.equals('Production')) {
             S3_PATH = 'win/prod'
           } else if (params.Release.equals('Custom')) {
+            withCredentials([
+              string(credentialsId: "${params.AWS_CUSTOM_ACCESS_KEY_ID}", variable: 'AWS_ACCESS_KEY_ID'),
+              string(credentialsId: "${params.AWS_CUSTOM_SECRET_ACCESS_KEY}", variable: 'AWS_SECRET_ACCESS_KEY')
+            ]) {
+              AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
+              AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
+            }
             S3_PATH = "${params.WIN_S3_PATH}"
             S3_BUCKET = "${params.WIN_S3_BUCKET}"
-            AWS_ACCESS_KEY_ID = credentials("${params.AWS_CUSTOM_ACCESS_KEY_ID}")
-            AWS_SECRET_ACCESS_KEY = credentials("${params.AWS_CUSTOM_SECRET_ACCESS_KEY}")
           } else {
             S3_PATH = 'win/internal'
           }
 
-          sh "npx wire-deploy-s3-win-releases --bucket \"${S3_BUCKET}\" --path \"${S3_PATH}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+          sh "npx wire-deploy-s3-win-releases --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\"  --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
@@ -203,13 +258,14 @@ node('master') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
           def SEARCH_PATH = './wrap/dist/'
-          def GITHUB_ACCESS_TOKEN = credentials('GITHUB_ACCESS_TOKEN')
 
           if (projectName.contains('macOS')) {
             SEARCH_PATH = '.'
           }
 
-          sh "npx wire-deploy-github-draft --github-token \"${GITHUB_ACCESS_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+          withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
+            sh "npx wire-deploy-github-draft --github-token \"${env.GITHUB_ACCESS_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+          }
         }
       } catch(e) {
         currentBuild.result = 'FAILED'

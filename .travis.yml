@@ -13,7 +13,7 @@ env:
 # http://docs.travis-ci.com/user/languages/javascript-with-nodejs/
 language: node_js
 node_js:
-  - '10'
+  - '12'
 
 # https://docs.travis-ci.com/user/languages/c/#build-matrix
 matrix:

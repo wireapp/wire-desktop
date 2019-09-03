@@ -21,18 +21,18 @@ import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
-export enum BackendTypeLabel {
-  DEVELOPMENT = 'Development',
-  EDGE = 'Edge',
-  INTERNAL = 'Internal',
-  LOCALHOST = 'Localhost',
-  PRODUCTION = 'Production',
-  RC = 'RC',
-}
+export const BackendType = {
+  DEVELOPMENT: 'Development',
+  EDGE: 'Edge',
+  INTERNAL: 'Internal',
+  LOCALHOST: 'Localhost',
+  PRODUCTION: 'Production',
+  RC: 'RC',
+};
 
-export type BackendTypeLabelKey = keyof typeof BackendTypeLabel;
+export type BackendTypeKey = keyof typeof BackendType;
 
-let currentEnvironment: BackendTypeLabelKey;
+let currentEnvironment: BackendTypeKey;
 
 const URL_ADMIN = {
   PRODUCTION: config.adminUrl,
@@ -60,14 +60,13 @@ export const app = {
   UPDATE_URL_WIN: config.updateUrl,
 };
 
-export const getEnvironment = (): BackendTypeLabelKey => {
-  return (currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase() as BackendTypeLabelKey;
+export const getEnvironment = (): BackendTypeKey => {
+  return (currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase() as BackendTypeKey;
 };
 
 const isProdEnvironment = (): boolean => {
-  return [BackendTypeLabel.INTERNAL.toUpperCase(), BackendTypeLabel.PRODUCTION.toUpperCase()].includes(
-    getEnvironment(),
-  );
+  const env = getEnvironment();
+  return env === BackendType.INTERNAL.toUpperCase() || env === BackendType.PRODUCTION.toUpperCase();
 };
 
 const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
@@ -93,19 +92,19 @@ export const linuxDesktop = {
   isUbuntuUnity: isEnvVar('XDG_CURRENT_DESKTOP', 'Unity'),
 };
 
-const restoreEnvironment = (): BackendTypeLabelKey => {
-  return settings.restore(SettingsType.ENV, BackendTypeLabel.INTERNAL.toUpperCase() as BackendTypeLabelKey);
+const restoreEnvironment = (): BackendTypeKey => {
+  return settings.restore(SettingsType.ENV, BackendType.INTERNAL.toUpperCase() as BackendTypeKey);
 };
 
-export const setEnvironment = (env: BackendTypeLabelKey): void => {
-  currentEnvironment = env ? env : restoreEnvironment();
+export const setEnvironment = (env?: BackendTypeKey): void => {
+  currentEnvironment = env || restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment.toUpperCase());
 };
 
 export const web = {
   getAdminUrl: (path?: string): string => {
     const baseUrl = isProdEnvironment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
-    return `${baseUrl}${path ? path : ''}`;
+    return `${baseUrl}${path || ''}`;
   },
   getWebappUrl: (env?: string): string => {
     if (env) {
@@ -115,7 +114,7 @@ export const web = {
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
       if (currentEnvironment) {
-        return URL_WEBAPP[currentEnvironment.toUpperCase() as BackendTypeLabelKey];
+        return URL_WEBAPP[currentEnvironment.toUpperCase() as BackendTypeKey];
       }
     }
 
@@ -123,6 +122,6 @@ export const web = {
   },
   getWebsiteUrl: (path?: string): string => {
     const baseUrl = isProdEnvironment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
-    return `${baseUrl}${path ? path : ''}`;
+    return `${baseUrl}${path || ''}`;
   },
 };
