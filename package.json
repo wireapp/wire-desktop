@@ -171,8 +171,8 @@
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:rc": "yarn start --env=https://wire-webapp-rc.zinfra.io",
     "test": "yarn lint && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn coverage",
-    "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\" --no-sandbox",
-    "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\" --no-sandbox",
+    "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\"",
+    "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\"",
     "test:react": "jest"
   }
 }
