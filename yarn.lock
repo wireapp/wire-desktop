@@ -1121,13 +1121,6 @@
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.2.7.tgz#315d570ccb56c53452ff8638738df60726d5b6ea"
   integrity sha512-NYrtPht0wGzhwe9+/idPaBB+TqkY9AhTvOLMkThm0IoEfLaiVQZwBwyJ5puCkO3AUCWrmcoePjp2mbFocKy4SQ==
 
-"@types/nock@10.0.3":
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/@types/nock/-/nock-10.0.3.tgz#dab1d18ffbccfbf2db811dab9584304eeb6e1c4c"
-  integrity sha512-OthuN+2FuzfZO3yONJ/QVjKmLEuRagS9TV9lEId+WHL9KhftYG+/2z+pxlr0UgVVXSpVD8woie/3fzQn8ft/Ow==
-  dependencies:
-    "@types/node" "*"
-
 "@types/node@*", "@types/node@~12":
   version "12.7.3"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.3.tgz#27b3f40addaf2f580459fdb405222685542f907a"
@@ -10009,7 +10002,6 @@ winreg@1.2.4:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.23.9":
   version "0.23.9"
-  uid c384787788f5860c33167fa21bba17012d745dd4
   resolved "https://github.com/wireapp/wire-web-config-default#c384787788f5860c33167fa21bba17012d745dd4"
   dependencies:
     adm-zip "0.4.13"
@@ -10017,7 +10009,6 @@ winreg@1.2.4:
 
 "wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.23.9-0":
   version "0.23.9-0"
-  uid ad151bfc94a8e93e08c2a6ce831f4307ffda13c2
   resolved "https://github.com/wireapp/wire-web-config-wire#ad151bfc94a8e93e08c2a6ce831f4307ffda13c2"
   dependencies:
     adm-zip "0.4.13"
