@@ -61,6 +61,7 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
 
     cancelButton.addEventListener('click', () => {
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
+      window.close();
     });
 
     window.addEventListener('keydown', event => {
