@@ -22,6 +22,7 @@ import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from '
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
+import {getProxySettings} from 'get-proxy-settings';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
@@ -298,33 +299,42 @@ const handleAppEvents = () => {
   });
 
   app.on('login', async (event, webContents, request, authInfo, callback) => {
-    event.preventDefault();
+    if (authInfo.isProxy) {
+      event.preventDefault();
 
-    if (authInfo.scheme !== 'basic') {
-      logger.warn(`Unexpected authenticated proxy scheme: "${authInfo.scheme}"`);
-      return callback('', '');
+      if (authInfo.scheme !== 'basic') {
+        logger.warn(`Unexpected authenticated proxy scheme: "${authInfo.scheme}"`);
+        return callback('', '');
+      }
+
+      if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
+        logger.info('Sending provided credentials to authenticated proxy ...');
+        return callback(authenticatedProxyInfo.username, authenticatedProxyInfo.password);
+      }
+
+      const systemProxy = await getProxySettings();
+      const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
+
+      if (systemProxySettings) {
+        return callback(systemProxySettings.credentials.username, systemProxySettings.credentials.password);
+      }
+
+      ipcMain.on(
+        EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+        (event: IpcMessageEvent, data: {password: string; username: string}) => {
+          callback(data.username, data.password);
+        },
+      );
+
+      ipcMain.on(
+        EVENT_TYPE.PROXY_PROMPT.CANCELED,
+        (event: IpcMessageEvent, data: {password: string; username: string}) => {
+          callback('', '');
+        },
+      );
+
+      await ProxyPromptWindow.showWindow();
     }
-
-    if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
-      logger.info('Sending provided credentials to authenticated proxy ...');
-      return callback(authenticatedProxyInfo.username, authenticatedProxyInfo.password);
-    }
-
-    ipcMain.on(
-      EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
-      (event: IpcMessageEvent, data: {password: string; username: string}) => {
-        callback(data.username, data.password);
-      },
-    );
-
-    ipcMain.on(
-      EVENT_TYPE.PROXY_PROMPT.CANCELED,
-      (event: IpcMessageEvent, data: {password: string; username: string}) => {
-        callback('', '');
-      },
-    );
-
-    await ProxyPromptWindow.showWindow();
   });
 
   // System Menu, Tray Icon & Show window
