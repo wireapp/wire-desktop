@@ -10000,9 +10000,10 @@ winreg@1.2.4:
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.23.9":
-  version "0.23.9"
-  resolved "https://github.com/wireapp/wire-web-config-default#c384787788f5860c33167fa21bba17012d745dd4"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.23.11":
+  version "0.23.11"
+  uid ab1274f1d72818c962aa7ff6753a2c01726bbed7
+  resolved "https://github.com/wireapp/wire-web-config-default#ab1274f1d72818c962aa7ff6753a2c01726bbed7"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
