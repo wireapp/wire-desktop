@@ -1,0 +1,74 @@
+name: GitHub Workflow
+
+on:
+  push:
+    branches:
+      - master
+      - staging
+  pull_request:
+    paths:
+      - '*'
+
+jobs:
+  # build_test_linux:
+  #   name: Build and test (Linux)
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v1
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 12.x
+  #     - name: Build and test
+  #       if: |
+  #         contains(github.event.commits[0].message, '[skip ci]') == false &&
+  #         contains(github.event.commits[0].message, '[ci skip]') == false
+  #       env:
+  #         CC: gcc-7
+  #         CXX: g++-7
+  #         DISPLAY: :99.0
+  #       run: |
+  #         # manually starting xvfb to run GUI tests
+  #         sudo /usr/bin/Xvfb :99 -screen 0 1024x768x24 &
+  #         yarn
+  #         yarn test
+  #
+  # build_test_macos:
+  #   name: Build and test (macOS)
+  #   runs-on: macOS-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v1
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 12.x
+  #     - name: Build and test
+  #       if: |
+  #         contains(github.event.commits[0].message, '[skip ci]') == false &&
+  #         contains(github.event.commits[0].message, '[ci skip]') == false
+  #       env:
+  #         CC: clang
+  #         CXX: clang++
+  #       run: |
+  #         yarn
+  #         yarn test
+  #
+  build_test_windows:
+    name: Build and test (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Build and test
+        if: |
+          contains(github.event.commits[0].message, '[skip ci]') == false &&
+          contains(github.event.commits[0].message, '[ci skip]') == false
+        run: |
+          yarn
+          yarn test
