@@ -19,9 +19,8 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
-import {app} from 'electron';
-
 import * as cp from 'child_process';
+import {app} from 'electron';
 import * as fs from 'fs';
 import * as moment from 'moment';
 import * as path from 'path';
@@ -36,7 +35,7 @@ type SpawnError = Error & {code?: number | null; stdout?: string | null};
 
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
