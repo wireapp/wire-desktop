@@ -18,6 +18,7 @@
  */
 
 import {app} from 'electron';
+import * as path from 'path';
 import {URL} from 'url';
 
 import {getLogger} from '../logging/getLogger';
@@ -26,7 +27,7 @@ import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_POSITION = 1;

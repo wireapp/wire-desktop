@@ -7,3 +7,4 @@ instrumented-code
 package.json
 package-lock.json
 electron/locale
+.vscode

@@ -19,8 +19,7 @@ node_js:
 matrix:
   include:
     - os: linux
-      env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+      compiler: gcc
       addons:
         apt:
           sources:
@@ -31,8 +30,7 @@ matrix:
         - xvfb
     - os: osx
       osx_image: xcode8
-      env:
-        - MATRIX_EVAL="CC=clang && CXX=clang++"
+      compiler: clang
 
 git:
   submodules: false

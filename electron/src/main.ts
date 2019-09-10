@@ -78,7 +78,7 @@ if (argv.version) {
   process.exit();
 }
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 // Icon
 const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
