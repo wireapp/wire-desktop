@@ -20,12 +20,13 @@
 import * as certificateUtils from '@wireapp/certificate-check';
 import {dialog} from 'electron';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 import {getText} from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 interface DisplayCertificateErrorOptions {
   bypassDialogLock: boolean;

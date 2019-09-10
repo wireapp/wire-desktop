@@ -22,6 +22,7 @@ import {parse as parseContentType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
+import * as path from 'path';
 import {parse as parseUrl} from 'url';
 
 import {getLogger} from '../logging/getLogger';
@@ -29,7 +30,7 @@ import {config} from '../settings/config';
 
 type GetDataCallback = (error: Error | null, meta?: OpenGraphResult) => void;
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
 

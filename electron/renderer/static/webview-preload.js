@@ -17,6 +17,8 @@
  *
  */
 
+const path = require('path');
+
 const environment = require('../../dist/runtime/EnvironmentUtil');
 const {getLogger} = require('../../dist/logging/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
@@ -24,7 +26,7 @@ const {EVENT_TYPE} = require('../../dist/lib/eventType');
 const {ipcRenderer, remote, webFrame} = require('electron');
 const {systemPreferences} = remote;
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 // Note: Until appearance-changed event is available in a future
 // version of Electron... use AppleInterfaceThemeChangedNotification event
