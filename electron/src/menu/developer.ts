@@ -67,16 +67,16 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = () => {
   const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
-  for (const key in EnvironmentUtil.BackendType) {
+  for (const backendType of Object.values(EnvironmentUtil.BackendType)) {
     environmentTemplate.push({
-      checked: currentEnvironment === key,
+      checked: currentEnvironment === backendType,
       click: () => {
-        EnvironmentUtil.setEnvironment(key as EnvironmentUtil.BackendType);
+        EnvironmentUtil.setEnvironment(backendType);
         settings.persistToFile();
         app.relaunch();
         app.quit();
       },
-      label: EnvironmentUtil.URL_WEBAPP[key as EnvironmentUtil.BackendType].replace(/^https?:\/\//, ''),
+      label: EnvironmentUtil.URL_WEBAPP[backendType].replace(/^https?:\/\//, ''),
       type: 'radio',
     });
   }
