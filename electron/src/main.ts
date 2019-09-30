@@ -18,10 +18,11 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
+import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, net, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
+import {getProxySettings} from 'get-proxy-settings';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
@@ -50,6 +51,7 @@ import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
+import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
@@ -67,18 +69,32 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 
+let authenticatedProxyInfo: URL | undefined;
+
 const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 
+const logger = getLogger(__filename);
+
 if (argv.version) {
   console.log(config.version);
   process.exit();
 }
 
-const logger = getLogger(__filename);
+if (argv['proxy-server-auth']) {
+  try {
+    authenticatedProxyInfo = new URL(argv['proxy-server-auth']);
+    if (authenticatedProxyInfo.origin === 'null') {
+      authenticatedProxyInfo = undefined;
+      throw new Error('No protocol specified.');
+    }
+  } catch (error) {
+    logger.error(`Could not parse authenticated proxy URL: "${error.message}"`);
+  }
+}
 
 // Icon
 const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -283,6 +299,72 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
+  app.on('login', async (event, webContents, request, authInfo, callback) => {
+    if (authInfo.isProxy) {
+      event.preventDefault();
+
+      if (authInfo.scheme !== 'basic') {
+        logger.warn(`Unexpected authenticated proxy scheme: "${authInfo.scheme}"`);
+        return callback('', '');
+      }
+
+      let username = '';
+      let password = '';
+
+      logger.info('Starting request ...');
+      const req = net.request({
+        method: request.method,
+        url: request.url,
+      });
+
+      req.on('response', response => {
+        logger.info('Got response ...', response);
+        if (response.statusCode > 400) {
+          callback('', '');
+        } else {
+          callback(username, password);
+        }
+        response.on('error', (error: any) => {
+          logger.error(error);
+          callback('', '');
+        });
+      });
+
+      req.on('login', async (loginAuthInfo, loginCallback) => {
+        if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
+          logger.info('Sending provided credentials to authenticated proxy ...');
+          username = authenticatedProxyInfo.username;
+          password = authenticatedProxyInfo.password;
+          return loginCallback(username, password);
+        }
+
+        const systemProxy = await getProxySettings();
+        const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
+
+        if (systemProxySettings) {
+          username = systemProxySettings.credentials.username;
+          password = systemProxySettings.credentials.password;
+          return loginCallback(username, password);
+        }
+
+        ipcMain.on(
+          EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+          (event: IpcMessageEvent, data: {password: string; username: string}) => {
+            username = data.username;
+            password = data.password;
+            loginCallback(data.username, data.password);
+          },
+        );
+
+        ipcMain.on(EVENT_TYPE.PROXY_PROMPT.CANCELED, (event: IpcMessageEvent) => {
+          loginCallback('', '');
+        });
+
+        ProxyPromptWindow.showWindow();
+      });
+    }
+  });
+
   // System Menu, Tray Icon & Show window
   app.on('ready', () => {
     const mainWindowState = initWindowStateKeeper();
@@ -413,8 +495,23 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
+    app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
+
+      if (authenticatedProxyInfo && authenticatedProxyInfo.origin) {
+        const proxyRules = authenticatedProxyInfo.origin;
+        logger.info(`Setting proxy to URL "${proxyRules}" ...`);
+        await new Promise(resolve =>
+          contents.session.setProxy(
+            {
+              pacScript: '',
+              proxyBypassRules: '',
+              proxyRules,
+            },
+            () => resolve(),
+          ),
+        );
+      }
 
       switch (contents.getType()) {
         case 'window': {

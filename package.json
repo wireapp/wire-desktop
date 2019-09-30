@@ -9,6 +9,7 @@
     "electron-window-state": "5.0.3",
     "file-url": "3.0.0",
     "fs-extra": "8.0.1",
+    "get-proxy-settings": "0.1.10",
     "iconv-lite": "0.5.0",
     "image-type": "4.1.0",
     "lodash": "4.17.15",
@@ -90,8 +91,8 @@
     "typescript": "3.5.3",
     "webpack": "4.39.1",
     "webpack-cli": "3.3.6",
-    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.22.12",
-    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.22.11-0"
+    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.24.7",
+    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.24.8-0"
   },
   "homepage": "https://wire.com",
   "husky": {
@@ -125,7 +126,7 @@
   },
   "prettier": "@wireapp/prettier-config",
   "private": true,
-  "productName": "WireInternal",
+  "productName": "WireInternal2",
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
