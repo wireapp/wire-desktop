@@ -27,7 +27,7 @@ import {getLogger} from '../logging/getLogger';
 const USER_DATA_DIR = app.getPath('userData');
 const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 const clearStorage = (session: Electron.Session): Promise<void> => {
   return new Promise(resolve =>

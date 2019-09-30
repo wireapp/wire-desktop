@@ -22,6 +22,7 @@ import {parse as parseContentType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
+import * as path from 'path';
 import {parse as parseUrl} from 'url';
 
 import {getLogger} from '../logging/getLogger';
@@ -29,7 +30,7 @@ import {config} from '../settings/config';
 
 type GetDataCallback = (error: Error | null, meta?: OpenGraphResult) => void;
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
 
@@ -167,16 +168,7 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  // For the regex, see https://regex101.com/r/U62pCH/2
-  const matches = body.match(/.*property=(["'])?og:.+?\1.*/gim) || [''];
-
-  if (!matches) {
-    throw new Error('No open graph tags found in website.');
-  }
-
-  const openGraphTags = matches.join(' ');
-
-  return openGraphParse(openGraphTags);
+  return openGraphParse(body);
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
@@ -200,7 +192,7 @@ export const getOpenGraphData = async (url: string, callback: GetDataCallback): 
       const [imageUrl] = arrayify(meta.image.url);
 
       const uri = await fetchImageAsBase64(imageUrl);
-      meta = await updateMetaDataWithImage(meta, uri);
+      meta = updateMetaDataWithImage(meta, uri);
     } else {
       throw new Error('OpenGraph metadata contains no image.');
     }
