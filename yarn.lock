@@ -10051,16 +10051,16 @@ winreg@1.2.4:
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.6":
-  version "0.24.6"
-  resolved "https://github.com/wireapp/wire-web-config-default#50a277d4dd44fc77002b2650bae1d02ba21bd9f7"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.7":
+  version "0.24.7"
+  resolved "https://github.com/wireapp/wire-web-config-default#bdfa4fb96629929e516e4e550bf0d8e937e1bc34"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#feat/wire-desktop/proxy-prompt":
-  version "0.23.9-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#e3dea842f0b349d013f1bb1e9ba537a522b7ed90"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.8-0":
+  version "0.24.8-0"
+  resolved "https://github.com/wireapp/wire-web-config-wire#58ff4f0fff77c3bcb026da7ca1d7f252cb8d2209"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
