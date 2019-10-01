@@ -18,7 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, net, shell} from 'electron';
+import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -308,60 +308,30 @@ const handleAppEvents = () => {
         return callback('', '');
       }
 
-      let username = '';
-      let password = '';
+      if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
+        logger.info('Sending provided credentials to authenticated proxy ...');
+        return callback(authenticatedProxyInfo.username, authenticatedProxyInfo.password);
+      }
 
-      logger.info('Starting request ...');
-      const req = net.request({
-        method: request.method,
-        url: request.url,
+      const systemProxy = await getProxySettings();
+      const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
+
+      if (systemProxySettings) {
+        return callback(systemProxySettings.credentials.username, systemProxySettings.credentials.password);
+      }
+
+      ipcMain.on(
+        EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+        (event: IpcMessageEvent, data: {password: string; username: string}) => {
+          callback(data.username, data.password);
+        },
+      );
+
+      ipcMain.on(EVENT_TYPE.PROXY_PROMPT.CANCELED, (event: IpcMessageEvent) => {
+        callback('', '');
       });
 
-      req.on('response', response => {
-        logger.info('Got response ...', response);
-        if (response.statusCode > 400) {
-          callback('', '');
-        } else {
-          callback(username, password);
-        }
-        response.on('error', (error: any) => {
-          logger.error(error);
-          callback('', '');
-        });
-      });
-
-      req.on('login', async (loginAuthInfo, loginCallback) => {
-        if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
-          logger.info('Sending provided credentials to authenticated proxy ...');
-          username = authenticatedProxyInfo.username;
-          password = authenticatedProxyInfo.password;
-          return loginCallback(username, password);
-        }
-
-        const systemProxy = await getProxySettings();
-        const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
-
-        if (systemProxySettings) {
-          username = systemProxySettings.credentials.username;
-          password = systemProxySettings.credentials.password;
-          return loginCallback(username, password);
-        }
-
-        ipcMain.on(
-          EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
-          (event: IpcMessageEvent, data: {password: string; username: string}) => {
-            username = data.username;
-            password = data.password;
-            loginCallback(data.username, data.password);
-          },
-        );
-
-        ipcMain.on(EVENT_TYPE.PROXY_PROMPT.CANCELED, (event: IpcMessageEvent) => {
-          loginCallback('', '');
-        });
-
-        ProxyPromptWindow.showWindow();
-      });
+      ProxyPromptWindow.showWindow();
     }
   });
 
@@ -498,7 +468,7 @@ class ElectronWrapperInit {
     app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
-      if (authenticatedProxyInfo && authenticatedProxyInfo.origin) {
+      if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
         const proxyRules = authenticatedProxyInfo.origin;
         logger.info(`Setting proxy to URL "${proxyRules}" ...`);
         await new Promise(resolve =>
