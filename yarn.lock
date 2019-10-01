@@ -10017,9 +10017,10 @@ winreg@1.2.4:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.6-0":
-  version "0.24.6-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#cc5eb34fabb6e2d4394754eb14a331c68abab4cc"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.8-0":
+  version "0.24.8-0"
+  uid "58ff4f0fff77c3bcb026da7ca1d7f252cb8d2209"
+  resolved "https://github.com/wireapp/wire-web-config-wire#58ff4f0fff77c3bcb026da7ca1d7f252cb8d2209"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
