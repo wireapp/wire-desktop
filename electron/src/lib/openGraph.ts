@@ -154,11 +154,8 @@ export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: 
           return resolve('');
         }
 
-        if (error.isAxiosError) {
-          return reject(new Error(`Request failed with code "${error.code}"`));
-        }
-
-        return reject(error);
+        const mappedError = error.isAxiosError ? new Error(`Request failed with code "${error.code}"`) : error;
+        return reject(mappedError);
       });
   });
 };
