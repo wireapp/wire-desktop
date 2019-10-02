@@ -61,7 +61,6 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   try {
     response = await axiosWithCookie<Buffer>(axiosConfig);
   } catch (error) {
-    logger.error(error);
     throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
   }
 
@@ -150,7 +149,17 @@ export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: 
         response.data.on('error', reject);
         response.data.on('end', () => resolve(partialBody));
       })
-      .catch(error => (axios.isCancel(error) ? Promise.resolve('') : Promise.reject(error)));
+      .catch(error => {
+        if (axios.isCancel(error)) {
+          resolve('');
+        }
+
+        if (error.isAxiosError) {
+          reject(new Error(`Request failed with code "${error.code}"`));
+        }
+
+        reject(error);
+      });
   });
 };
 
