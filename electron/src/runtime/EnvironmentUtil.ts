@@ -21,18 +21,15 @@ import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
-export const BackendType = {
-  DEVELOPMENT: 'Development',
-  EDGE: 'Edge',
-  INTERNAL: 'Internal',
-  LOCALHOST: 'Localhost',
-  PRODUCTION: 'Production',
-  RC: 'RC',
-};
+export enum BackendType {
+  DEVELOPMENT = 'DEVELOPMENT',
+  EDGE = 'EDGE',
+  INTERNAL = 'INTERNAL',
+  LOCALHOST = 'LOCALHOST',
+  PRODUCTION = 'PRODUCTION',
+}
 
-export type BackendTypeKey = keyof typeof BackendType;
-
-let currentEnvironment: BackendTypeKey;
+let currentEnvironment: BackendType;
 
 const URL_ADMIN = {
   PRODUCTION: config.adminUrl,
@@ -44,13 +41,12 @@ const URL_WEBSITE = {
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
-export const URL_WEBAPP = {
+export const URL_WEBAPP: Record<BackendType, string> = {
   DEVELOPMENT: 'https://wire-webapp-dev.zinfra.io',
   EDGE: 'https://wire-webapp-edge.zinfra.io',
-  INTERNAL: 'https://wire-webapp-staging.wire.com/',
+  INTERNAL: 'https://wire-webapp-staging.wire.com',
   LOCALHOST: 'http://localhost:8081',
   PRODUCTION: config.appBase,
-  RC: 'https://wire-webapp-rc.zinfra.io',
 };
 
 export const app = {
@@ -60,13 +56,13 @@ export const app = {
   UPDATE_URL_WIN: config.updateUrl,
 };
 
-export const getEnvironment = (): BackendTypeKey => {
-  return (currentEnvironment ? currentEnvironment : restoreEnvironment()).toUpperCase() as BackendTypeKey;
+export const getEnvironment = (): BackendType => {
+  return currentEnvironment ? currentEnvironment : restoreEnvironment();
 };
 
 const isProdEnvironment = (): boolean => {
   const env = getEnvironment();
-  return env === BackendType.INTERNAL.toUpperCase() || env === BackendType.PRODUCTION.toUpperCase();
+  return env === BackendType.INTERNAL || env === BackendType.PRODUCTION;
 };
 
 const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
@@ -92,13 +88,18 @@ export const linuxDesktop = {
   isUbuntuUnity: isEnvVar('XDG_CURRENT_DESKTOP', 'Unity'),
 };
 
-const restoreEnvironment = (): BackendTypeKey => {
-  return settings.restore(SettingsType.ENV, BackendType.INTERNAL.toUpperCase() as BackendTypeKey);
+const restoreEnvironment = (): BackendType => {
+  let restoredEnvironment = settings.restore(SettingsType.ENV, BackendType.INTERNAL);
+  if (!Object.values(BackendType).includes(restoredEnvironment)) {
+    restoredEnvironment = BackendType.INTERNAL;
+    setEnvironment(restoredEnvironment);
+  }
+  return restoredEnvironment;
 };
 
-export const setEnvironment = (env?: BackendTypeKey): void => {
+export const setEnvironment = (env?: BackendType): void => {
   currentEnvironment = env || restoreEnvironment();
-  settings.save(SettingsType.ENV, currentEnvironment.toUpperCase());
+  settings.save(SettingsType.ENV, currentEnvironment);
 };
 
 export const web = {
@@ -114,7 +115,7 @@ export const web = {
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
       if (currentEnvironment) {
-        return URL_WEBAPP[currentEnvironment.toUpperCase() as BackendTypeKey];
+        return URL_WEBAPP[currentEnvironment];
       }
     }
 
