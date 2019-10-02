@@ -151,14 +151,14 @@ export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: 
       })
       .catch(error => {
         if (axios.isCancel(error)) {
-          resolve('');
+          return resolve('');
         }
 
         if (error.isAxiosError) {
-          reject(new Error(`Request failed with code "${error.code}"`));
+          return reject(new Error(`Request failed with code "${error.code}"`));
         }
 
-        reject(error);
+        return reject(error);
       });
   });
 };
