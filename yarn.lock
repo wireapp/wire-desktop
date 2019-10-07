@@ -1830,14 +1830,14 @@ auto-launch@5.0.5:
     untildify "^3.0.2"
     winreg "1.2.4"
 
-aws-sdk@2.507.0:
-  version "2.507.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.507.0.tgz#afb30dd2a0a5166aa7c2f808064f2d03e4dc3619"
-  integrity sha512-sOtaZONTfUx1jh9HzrWMLwoA2cZK2Xn2RAmGV4Y11NM2qhMePOQ501dhAq/ygKMZRffjw23b8mT1rAaDGTn05g==
+aws-sdk@2.543.0:
+  version "2.543.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.543.0.tgz#08b69a6fab9b3ab08e329888d06a8c4ee583f26d"
+  integrity sha512-ABHsA4W7LLYnTBCgtbTt0NF7+66nMCtdcJuAn30+RGzF0bOw3lCguqzootFrMlIOXklddQFJ9kKTXd+p/+uCVQ==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
-    ieee754 "1.1.8"
+    ieee754 "1.1.13"
     jmespath "0.15.0"
     querystring "0.2.0"
     sax "1.2.1"
@@ -2603,10 +2603,10 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-3.0.0.tgz#0641ea00838c7a964627f04cddc336a2deddd60a"
-  integrity sha512-pl3QrGOBa9RZaslQiqnnKX2J068wcQw7j9AIaBQ9/JEp5RY6je4jKTImg0Bd+rpoONSe7GUFSgkxLeo17m3Pow==
+commander@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-3.0.2.tgz#6837c3fb677ad9933d1cfba42dd14d5117d6b39e"
+  integrity sha512-Gar0ASD4BDyKC4hl4DwHqDrmvjoxWKZigVnAbn5H1owvm4CxCPdb0HQDehwNYMJpla5+M2tPmPARzhtYuwpHow==
 
 commander@^2.12.1, commander@^2.20.0, commander@^2.9.0, commander@~2.20.0:
   version "2.20.0"
@@ -3392,7 +3392,19 @@ electron-osx-sign@0.4.11:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-osx-sign@0.4.12, electron-osx-sign@^0.4.11:
+electron-osx-sign@0.4.14:
+  version "0.4.14"
+  resolved "https://registry.yarnpkg.com/electron-osx-sign/-/electron-osx-sign-0.4.14.tgz#770397c0eb604adfe8a3ec044795db3c123e59d3"
+  integrity sha512-72vtrz9I3dOeFDaNvO5thwIjrimDiXMmYEbN0hEBqnvcSSMOWugjim2wiY9ox3dhuBFUhxp3owmuZCoH3Ij08A==
+  dependencies:
+    bluebird "^3.5.0"
+    compare-version "^0.1.2"
+    debug "^2.6.8"
+    isbinaryfile "^3.0.2"
+    minimist "^1.2.0"
+    plist "^3.0.1"
+
+electron-osx-sign@^0.4.11:
   version "0.4.12"
   resolved "https://registry.yarnpkg.com/electron-osx-sign/-/electron-osx-sign-0.4.12.tgz#e526bf4fb95ae9e831f3e946c16aeeab50dec014"
   integrity sha512-L/+VcwO76EtP+E4Gh/HJH0exaKeYLPZlNNBFdl+Vw3il9jRBRjInpqtegLAu8t/cGGJn+tZ47Uc6mymQYNpJ6g==
@@ -3404,10 +3416,10 @@ electron-osx-sign@0.4.12, electron-osx-sign@^0.4.11:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-packager@14.0.4:
-  version "14.0.4"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-14.0.4.tgz#f5e56cc7ef0fc2ec105993040be05ce8993a4f6d"
-  integrity sha512-YTZHPU2PESY86BAmTxJ8VVOvwsE2Tc/NUuBYoo/F8Qj4t4GNGBVy5VfusxEem9g7Fnn0uS9KFN60fn/OlzRaMw==
+electron-packager@14.0.6:
+  version "14.0.6"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-14.0.6.tgz#e187f2ef83cc29a97a0f940b7c3bb5e4edc8a8e2"
+  integrity sha512-X+ikV+TnnNkIrK93vOjsjPeykCQBFxBS7LXKMTE1s62rXWirGMdjWL+edVkBOMRkH0ROJyFmWM28Dpj6sfEg+A==
   dependencies:
     "@electron/get" "^1.3.0"
     asar "^2.0.1"
@@ -4900,12 +4912,7 @@ icss-utils@^4.0.0, icss-utils@^4.1.1:
   dependencies:
     postcss "^7.0.14"
 
-ieee754@1.1.8:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
-  integrity sha1-vjPUCsEO8ZJnAfbwii2G+/0a0+Q=
-
-ieee754@^1.1.4:
+ieee754@1.1.13, ieee754@^1.1.4:
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
   integrity sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
@@ -6738,7 +6745,36 @@ mksnapshot@^0.3.0:
     fs-extra "0.26.7"
     request "2.x"
 
-mocha@6.2.0, mocha@~6.2.0:
+mocha@6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/mocha/-/mocha-6.2.1.tgz#da941c99437da9bac412097859ff99543969f94c"
+  integrity sha512-VCcWkLHwk79NYQc8cxhkmI8IigTIhsCwZ6RTxQsqK6go4UvEhzJkYuHm8B2YtlSxcYq2fY+ucr4JBwoD6ci80A==
+  dependencies:
+    ansi-colors "3.2.3"
+    browser-stdout "1.3.1"
+    debug "3.2.6"
+    diff "3.5.0"
+    escape-string-regexp "1.0.5"
+    find-up "3.0.0"
+    glob "7.1.3"
+    growl "1.10.5"
+    he "1.2.0"
+    js-yaml "3.13.1"
+    log-symbols "2.2.0"
+    minimatch "3.0.4"
+    mkdirp "0.5.1"
+    ms "2.1.1"
+    node-environment-flags "1.0.5"
+    object.assign "4.1.0"
+    strip-json-comments "2.0.1"
+    supports-color "6.0.0"
+    which "1.3.1"
+    wide-align "1.1.3"
+    yargs "13.3.0"
+    yargs-parser "13.1.1"
+    yargs-unparser "1.6.0"
+
+mocha@~6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/mocha/-/mocha-6.2.0.tgz#f896b642843445d1bb8bca60eabd9206b8916e56"
   integrity sha512-qwfFgY+7EKAAUAdv7VYMZQknI7YJSGesxHyhn6qD52DV8UcSZs5XwCifcZGMVIE4a5fbmhvbotxC0DLQ0oKohQ==
@@ -9411,10 +9447,10 @@ truncate-utf8-bytes@^1.0.0:
   dependencies:
     utf8-byte-length "^1.0.1"
 
-ts-node@8.3.0:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.3.0.tgz#e4059618411371924a1fb5f3b125915f324efb57"
-  integrity sha512-dyNS/RqyVTDcmNM4NIBAeDMpsAdaQ+ojdf0GOLqE6nwJOgzEkdRNzJywhDfwnuvB10oa6NLVG1rUJQCpRN7qoQ==
+ts-node@8.4.1:
+  version "8.4.1"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.4.1.tgz#270b0dba16e8723c9fa4f9b4775d3810fd994b4f"
+  integrity sha512-5LpRN+mTiCs7lI5EtbXmF/HfMeCjzt7DH9CZwtkr6SywStrNQC723wG+aOWFiLNn7zT3kD/RnFqi3ZUfr4l5Qw==
   dependencies:
     arg "^4.1.0"
     diff "^4.0.1"
@@ -10087,18 +10123,18 @@ yargs-parser@13.0.0:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
-yargs-parser@^11.1.1:
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-11.1.1.tgz#879a0865973bca9f6bab5cbdf3b1c67ec7d3bcf4"
-  integrity sha512-C6kB/WJDiaxONLJQnF8ccx9SEeoTTLek8RVbaOIsrAUS8VrBEXfmeSnCZxygc+XC2sNMBIwOOnfcxiynjHsVSQ==
+yargs-parser@13.1.1, yargs-parser@^13.0.0, yargs-parser@^13.1.0, yargs-parser@^13.1.1:
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-13.1.1.tgz#d26058532aa06d365fe091f6a1fc06b2f7e5eca0"
+  integrity sha512-oVAVsHz6uFrg3XQheFII8ESO2ssAf9luWuAd6Wexsu4F3OtIW0o8IribPXYrD4WC24LWtPrJlGy87y5udK+dxQ==
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
-yargs-parser@^13.0.0, yargs-parser@^13.1.0, yargs-parser@^13.1.1:
-  version "13.1.1"
-  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-13.1.1.tgz#d26058532aa06d365fe091f6a1fc06b2f7e5eca0"
-  integrity sha512-oVAVsHz6uFrg3XQheFII8ESO2ssAf9luWuAd6Wexsu4F3OtIW0o8IribPXYrD4WC24LWtPrJlGy87y5udK+dxQ==
+yargs-parser@^11.1.1:
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-11.1.1.tgz#879a0865973bca9f6bab5cbdf3b1c67ec7d3bcf4"
+  integrity sha512-C6kB/WJDiaxONLJQnF8ccx9SEeoTTLek8RVbaOIsrAUS8VrBEXfmeSnCZxygc+XC2sNMBIwOOnfcxiynjHsVSQ==
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
@@ -10111,6 +10147,15 @@ yargs-unparser@1.5.0:
     flat "^4.1.0"
     lodash "^4.17.11"
     yargs "^12.0.5"
+
+yargs-unparser@1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/yargs-unparser/-/yargs-unparser-1.6.0.tgz#ef25c2c769ff6bd09e4b0f9d7c605fb27846ea9f"
+  integrity sha512-W9tKgmSn0DpSatfri0nx52Joq5hVXgeLiqR/5G0sZNDoLZFOr/xjBUDcShCOGNsBnEMNo1KAMBkTej1Hm62HTw==
+  dependencies:
+    flat "^4.1.0"
+    lodash "^4.17.15"
+    yargs "^13.3.0"
 
 yargs@13.2.2:
   version "13.2.2"
@@ -10146,6 +10191,22 @@ yargs@13.2.4:
     y18n "^4.0.0"
     yargs-parser "^13.1.0"
 
+yargs@13.3.0, yargs@^13.2.2, yargs@^13.2.4, yargs@^13.3.0:
+  version "13.3.0"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-13.3.0.tgz#4c657a55e07e5f2cf947f8a366567c04a0dedc83"
+  integrity sha512-2eehun/8ALW8TLoIl7MVaRUrg+yCnenu8B4kBlRxj3GJGDKU1Og7sMXPNm1BYyM1DOJmTZ4YeN/Nwxv+8XJsUA==
+  dependencies:
+    cliui "^5.0.0"
+    find-up "^3.0.0"
+    get-caller-file "^2.0.1"
+    require-directory "^2.1.1"
+    require-main-filename "^2.0.0"
+    set-blocking "^2.0.0"
+    string-width "^3.0.0"
+    which-module "^2.0.0"
+    y18n "^4.0.0"
+    yargs-parser "^13.1.1"
+
 yargs@^12.0.5:
   version "12.0.5"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-12.0.5.tgz#05f5997b609647b64f66b81e3b4b10a368e7ad13"
@@ -10163,22 +10224,6 @@ yargs@^12.0.5:
     which-module "^2.0.0"
     y18n "^3.2.1 || ^4.0.0"
     yargs-parser "^11.1.1"
-
-yargs@^13.2.2, yargs@^13.2.4, yargs@^13.3.0:
-  version "13.3.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-13.3.0.tgz#4c657a55e07e5f2cf947f8a366567c04a0dedc83"
-  integrity sha512-2eehun/8ALW8TLoIl7MVaRUrg+yCnenu8B4kBlRxj3GJGDKU1Og7sMXPNm1BYyM1DOJmTZ4YeN/Nwxv+8XJsUA==
-  dependencies:
-    cliui "^5.0.0"
-    find-up "^3.0.0"
-    get-caller-file "^2.0.1"
-    require-directory "^2.1.1"
-    require-main-filename "^2.0.0"
-    set-blocking "^2.0.0"
-    string-width "^3.0.0"
-    which-module "^2.0.0"
-    y18n "^4.0.0"
-    yargs-parser "^13.1.1"
 
 yargs@^14.0.0:
   version "14.0.0"
