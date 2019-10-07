@@ -153,6 +153,7 @@
     "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos\"",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
     "build:ts": "yarn clear:ts && tsc",
+    "build:ts:bin": "tsc -P tsconfig.bin.json --noEmit",
     "build:ts:tests": "tsc -P tsconfig.mocha.json --noEmit",
     "build:win": "yarn build:prepare && ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts windows",
     "build:win:installer": "rimraf wrap/dist && ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts windows-installer",
