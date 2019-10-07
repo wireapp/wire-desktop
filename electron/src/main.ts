@@ -355,7 +355,7 @@ const handlePortableFlags = () => {
       ? path.resolve(argv.user_data_dir)
       : path.join(process.env.APPIMAGE || process.execPath, '../Data');
 
-    logger.log(`Saving user data to ${USER_PATH}.`);
+    logger.log(`Saving user data to "${USER_PATH}".`);
     app.setPath('userData', USER_PATH);
   }
 };
