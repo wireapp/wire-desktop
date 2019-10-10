@@ -475,14 +475,14 @@ class ElectronWrapperInit {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
-        const proxyRules = authenticatedProxyInfo.origin;
-        logger.info(`Setting proxy to URL "${proxyRules}" ...`);
+        const proxyURL = authenticatedProxyInfo.origin;
+        logger.info(`Setting proxy to URL "${proxyURL}" ...`);
         await new Promise(resolve =>
           contents.session.setProxy(
             {
               pacScript: '',
               proxyBypassRules: '',
-              proxyRules,
+              proxyRules: proxyURL,
             },
             () => resolve(),
           ),
