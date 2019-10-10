@@ -17,16 +17,11 @@
  *
  */
 
-const path = require('path');
-
 const environment = require('../../dist/runtime/EnvironmentUtil');
-const {getLogger} = require('../../dist/logging/getLogger');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
 const {ipcRenderer, remote, webFrame} = require('electron');
 const {systemPreferences} = remote;
-
-const logger = getLogger(path.basename(__filename));
 
 // Note: Until appearance-changed event is available in a future
 // version of Electron... use AppleInterfaceThemeChangedNotification event
@@ -121,17 +116,8 @@ const subscribeToMainProcessEvents = () => {
 };
 
 const exposeAddressBook = () => {
-  let cachedAddressBook;
-
   const getAddressBook = () => {
-    if (!cachedAddressBook) {
-      try {
-        cachedAddressBook = require('@wireapp/node-addressbook');
-      } catch (error) {
-        logger.info('Failed loading "node-addressbook".', error);
-      }
-    }
-    return cachedAddressBook;
+    return undefined;
   };
 
   if (environment.platform.IS_MAC_OS) {
