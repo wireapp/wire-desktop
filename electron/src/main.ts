@@ -470,7 +470,7 @@ class ElectronWrapperInit {
     app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
-      if (authenticatedProxyInfo && authenticatedProxyInfo.origin) {
+      if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
         const proxyRules = authenticatedProxyInfo.origin;
         logger.info(`Setting proxy to URL "${proxyRules}" ...`);
         await new Promise(resolve =>

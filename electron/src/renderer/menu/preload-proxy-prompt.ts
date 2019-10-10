@@ -68,6 +68,7 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
       if (event.key === 'Enter') {
         sendData();
       } else if (event.key === 'Escape') {
+        ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
         window.close();
       }
     });
