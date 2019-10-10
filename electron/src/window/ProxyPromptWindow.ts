@@ -33,8 +33,8 @@ const proxyPromptWindowWhitelist = [promptHtmlPath, fileUrl(path.join(appPath, '
 const preloadPath = path.join(appPath, 'dist/renderer/menu/preload-proxy-prompt.js');
 
 const windowSize = {
-  HEIGHT: 200,
-  WIDTH: 400,
+  HEIGHT: 350,
+  WIDTH: 550,
 };
 
 const showWindow = async () => {
