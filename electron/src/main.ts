@@ -88,7 +88,7 @@ if (argv['proxy-server-auth']) {
     authenticatedProxyInfo = new URL(argv['proxy-server-auth']);
     if (authenticatedProxyInfo.origin === 'null') {
       authenticatedProxyInfo = undefined;
-      throw new Error('No protocol specified.');
+      throw new Error('No protocol for the proxy server specified.');
     }
   } catch (error) {
     logger.error(`Could not parse authenticated proxy URL: "${error.message}"`);
@@ -102,6 +102,7 @@ let tray: TrayHandler;
 
 let isFullScreen = false;
 let isQuitting = false;
+let triedProxy = false;
 let main: BrowserWindow;
 
 Object.entries(config).forEach(([key, value]) => {
@@ -281,9 +282,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
 // App Events
 const handleAppEvents = () => {
-  app.on('window-all-closed', async () => {
+  app.on('window-all-closed', () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
-      await lifecycle.quit();
+      lifecycle.quit();
     }
   });
 
@@ -319,21 +320,23 @@ const handleAppEvents = () => {
         return callback(systemProxySettings.credentials.username, systemProxySettings.credentials.password);
       }
 
-      ipcMain.on(
+      ipcMain.once(
         EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
         (event: IpcMessageEvent, data: {password: string; username: string}) => {
+          logger.log('Proxy prompt was submitted');
           callback(data.username, data.password);
         },
       );
 
-      ipcMain.on(
-        EVENT_TYPE.PROXY_PROMPT.CANCELED,
-        (event: IpcMessageEvent, data: {password: string; username: string}) => {
-          callback('', '');
-        },
-      );
+      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, () => {
+        logger.log('Proxy prompt was canceled');
+        callback('', '');
+      });
 
-      await ProxyPromptWindow.showWindow();
+      if (!triedProxy) {
+        await ProxyPromptWindow.showWindow();
+        triedProxy = true;
+      }
     }
   });
 
