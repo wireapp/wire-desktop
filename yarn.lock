@@ -9916,10 +9916,10 @@ winreg@1.2.4:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.12-0":
-  version "0.24.12-0"
-  uid "9c3b900afe5c5cdb423104b9c75a854b2901214b"
-  resolved "https://github.com/wireapp/wire-web-config-wire#9c3b900afe5c5cdb423104b9c75a854b2901214b"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.13-0":
+  version "0.24.13-0"
+  uid a46233812339901400894f9c35222edc6b0534c5
+  resolved "https://github.com/wireapp/wire-web-config-wire#a46233812339901400894f9c35222edc6b0534c5"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
