@@ -72,7 +72,7 @@
     "eslint-plugin-react": "7.16.0",
     "eslint-plugin-simple-import-sort": "4.0.0",
     "eslint-plugin-sort-keys-fix": "1.0.1",
-    "husky": "3.0.8",
+    "husky": "3.0.9",
     "jest": "24.9.0",
     "lint-staged": "9.4.2",
     "nock": "11.4.0",
