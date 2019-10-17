@@ -1120,6 +1120,13 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
+"@types/jszip@3.1.6":
+  version "3.1.6"
+  resolved "https://registry.yarnpkg.com/@types/jszip/-/jszip-3.1.6.tgz#0512574a2b35f3194b41769c56e4b35065e67000"
+  integrity sha512-m8uFcI+O2EupCfbEVQWsBM/4nhbegjOHL7cQgBpM95FeF98kdFJXzy9/8yhx4b3lCRl/gMBhcvyh30Qt3X+XPQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/lodash@4.14.144":
   version "4.14.144"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.144.tgz#12e57fc99064bce45e5ab3c8bc4783feb75eab8e"
@@ -9917,7 +9924,6 @@ winreg@1.2.4:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.12":
   version "0.24.12"
-  uid c87fdbb74ff310844850e233bede5ad148b62b13
   resolved "https://github.com/wireapp/wire-web-config-default#c87fdbb74ff310844850e233bede5ad148b62b13"
   dependencies:
     adm-zip "0.4.13"
@@ -9925,7 +9931,6 @@ winreg@1.2.4:
 
 "wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.13-0":
   version "0.24.13-0"
-  uid a46233812339901400894f9c35222edc6b0534c5
   resolved "https://github.com/wireapp/wire-web-config-wire#a46233812339901400894f9c35222edc6b0534c5"
   dependencies:
     adm-zip "0.4.13"
