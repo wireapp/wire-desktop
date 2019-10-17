@@ -473,6 +473,7 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
+      contents.session.allowNTLMCredentialsForDomains('*');
 
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
         const proxyURL = authenticatedProxyInfo.origin;
