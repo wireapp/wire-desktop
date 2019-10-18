@@ -25,16 +25,16 @@ import * as path from 'path';
 const logDir = path.join(app.getPath('userData'), 'logs');
 
 export async function gatherLogs(): Promise<string> {
-  const files = await globby('**/*', {cwd: logDir, followSymbolicLinks: false});
-  if (!files.length) {
-    return 'No log files found.';
-  }
   let log = '';
+
+  const files = await globby('**/*', {cwd: logDir, followSymbolicLinks: false});
+
   for (const filePath of files) {
     const resolvedPath = path.join(logDir, filePath);
     log += `\n\n+++++++ ${filePath} +++++++\n`;
-    log += await fs.readFile(resolvedPath);
+    log += await fs.readFile(resolvedPath, 'utf-8');
     log += '++++++++++++++++++++++++++++\n';
   }
-  return log;
+
+  return log || 'No log files found.';
 }
