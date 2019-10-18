@@ -49,6 +49,8 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
   const passwordInput = document.querySelector<HTMLInputElement>('#passwordInput');
 
   if (cancelButton && okButton && usernameInput && passwordInput) {
+    usernameInput.focus();
+
     const sendData = () => {
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, {
         password: passwordInput.value,
