@@ -39,6 +39,7 @@ import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
+import {getLogFiles} from './logging/loggerUtils';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
@@ -263,9 +264,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
 // App Events
 const handleAppEvents = () => {
-  app.on('window-all-closed', async () => {
+  app.on('window-all-closed', () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
-      await lifecycle.quit();
+      lifecycle.quit();
     }
   });
 
@@ -297,41 +298,33 @@ const handleAppEvents = () => {
   });
 };
 
-const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string): void => {
-  files
-    .filter(file => {
-      try {
-        return fs.statSync(file).isFile();
-      } catch (statError) {
-        return false;
+const renameFileExtensions = async (files: string[], oldExtension: string, newExtension: string): Promise<void> => {
+  for (const file of files) {
+    try {
+      const isFile = (await fs.stat(file)).isFile();
+      if (isFile && file.endsWith(oldExtension)) {
+        await fs.rename(file, file.replace(oldExtension, newExtension));
       }
-    })
-    .forEach(file => {
-      if (file.endsWith(oldExtension)) {
-        try {
-          fs.renameSync(file, file.replace(oldExtension, newExtension));
-        } catch (error) {
-          logger.error(`Failed to rename log file: "${error.message}"`);
-        }
-      }
-    });
-};
-
-const renameWebViewLogFiles = (): void => {
-  // Rename "console.log" to "console.old" (for every log directory of every account)
-  fs.readdir(LOG_DIR, (readError, contents) => {
-    if (readError) {
-      return logger.log(`Failed to read log directory with error: ${readError.message}`);
+    } catch (error) {
+      logger.error(`Failed to rename log file: "${error.message}"`);
     }
-
-    const logFiles = contents.map(file => path.join(LOG_DIR, file, config.logFileName));
-    renameFileExtensions(logFiles, '.log', '.old');
-  });
+  }
 };
 
-const initElectronLogFile = (): void => {
-  renameFileExtensions([LOG_FILE], '.log', '.old');
-  fs.ensureFileSync(LOG_FILE);
+const renameWebViewLogFiles = async (): Promise<void> => {
+  try {
+    await fs.ensureDir(LOG_DIR);
+    // Rename "console.log" to "console.old" (for every log directory of every account)
+    const logFiles = await getLogFiles(LOG_DIR);
+    await renameFileExtensions(logFiles, '.log', '.old');
+  } catch (readError) {
+    logger.log(`Failed to read log directory with error: ${readError.message}`);
+  }
+};
+
+const initElectronLogFile = async (): Promise<void> => {
+  await renameFileExtensions([LOG_FILE], '.log', '.old');
+  await fs.ensureFile(LOG_FILE);
 };
 
 const addLinuxWorkarounds = () => {
@@ -507,7 +500,8 @@ if (lifecycle.isFirstInstance) {
   addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
-  renameWebViewLogFiles();
-  initElectronLogFile();
-  new ElectronWrapperInit().run().catch(logger.error);
+  renameWebViewLogFiles()
+    .then(() => initElectronLogFile())
+    .then(() => new ElectronWrapperInit().run())
+    .catch(error => logger.error(error));
 }
