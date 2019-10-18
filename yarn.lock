@@ -1368,10 +1368,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@2.2.18":
-  version "2.2.18"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-2.2.18.tgz#3dc315cc4279afad5b3496ac55929394d26b12bb"
-  integrity sha512-R21KDEaB8sC/V8wsK/o6Sm+cSTcHlKwgpDDwUa1ovI9Kbos4tBuc9uZhmptop3KD+oJE3LGqyeybMCwoA7FPqQ==
+"@wireapp/commons@2.2.19":
+  version "2.2.19"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-2.2.19.tgz#e46950b6c4380ad418dd0844bb2b710fdf7e2957"
+  integrity sha512-preS+3pUivj7Ecp1/x6tzLNgV/4Rk2ntKZ752AzxrcqwSo3VtA/hdJR3VEqDKQMreHGaCR3fuFkAc5cvFHq6fw==
   dependencies:
     "@types/ansi-regex" "5.0.0"
     "@types/fs-extra" "8.0.0"
