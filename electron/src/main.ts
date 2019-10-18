@@ -307,11 +307,6 @@ const handleAppEvents = () => {
     if (authInfo.isProxy) {
       event.preventDefault();
 
-      if (authInfo.scheme !== 'basic') {
-        logger.warn(`Unexpected authenticated proxy scheme: "${authInfo.scheme}"`);
-        return callback('', '');
-      }
-
       if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
         logger.info('Sending provided credentials to authenticated proxy ...');
         return callback(authenticatedProxyInfo.username, authenticatedProxyInfo.password);
