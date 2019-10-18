@@ -20,49 +20,9 @@
 import {app} from 'electron';
 import * as fs from 'fs-extra';
 import * as globby from 'globby';
-import * as JSZip from 'jszip';
-import * as os from 'os';
 import * as path from 'path';
 
 const logDir = path.join(app.getPath('userData'), 'logs');
-
-function createTempDir(): Promise<string> {
-  const prefix = path.join(os.tmpdir(), 'wire-desktop-');
-  return fs.mkdtemp(prefix);
-}
-
-async function createZip(files: string[]): Promise<string> {
-  const tempDir = await createTempDir();
-  const filePath = path.join(tempDir, 'logs.zip');
-  const jszip = new JSZip();
-
-  for (const filePath of files) {
-    const resolvedPath = path.join(logDir, filePath);
-    const fileStat = await fs.lstat(resolvedPath);
-    const fileData = await fs.readFile(resolvedPath);
-    jszip.file(filePath, fileData, {
-      createFolders: true,
-      date: fileStat.mtime,
-      unixPermissions: fileStat.mode,
-    });
-  }
-
-  const data = await jszip.generateAsync({
-    compression: 'DEFLATE',
-    compressionOptions: {
-      level: 5,
-    },
-    type: 'nodebuffer',
-  });
-
-  await fs.writeFile(filePath, data);
-  return filePath;
-}
-
-export async function zipLogs(): Promise<string> {
-  const files = await globby('**/*', {cwd: logDir, followSymbolicLinks: false});
-  return createZip(files);
-}
 
 export async function gatherLogs(): Promise<string> {
   const files = await globby('**/*', {cwd: logDir, followSymbolicLinks: false});
