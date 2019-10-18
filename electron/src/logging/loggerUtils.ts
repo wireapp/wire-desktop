@@ -27,12 +27,16 @@ const logDir = path.join(app.getPath('userData'), 'logs');
 export async function gatherLogs(): Promise<string> {
   let log = '';
 
-  const files = await globby('**/*', {cwd: logDir, followSymbolicLinks: false});
+  const relativeFilePaths = await globby('**/*', {cwd: logDir, followSymbolicLinks: false});
 
-  for (const filePath of files) {
-    const resolvedPath = path.join(logDir, filePath);
-    log += `\n\n+++++++ ${filePath} +++++++\n`;
-    log += await fs.readFile(resolvedPath, 'utf-8');
+  for (const relativeFilePath of relativeFilePaths) {
+    const resolvedPath = path.join(logDir, relativeFilePath);
+    log += `\n\n+++++++ ${relativeFilePath} +++++++\n`;
+    try {
+      log += await fs.readFile(resolvedPath, 'utf-8');
+    } catch (error) {
+      log += 'File not readable.';
+    }
     log += '++++++++++++++++++++++++++++\n';
   }
 

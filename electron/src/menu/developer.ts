@@ -36,9 +36,9 @@ const reloadTemplate: Electron.MenuItemConstructorOptions = {
 
 const sendLogTemplate: Electron.MenuItemConstructorOptions = {
   click: async () => {
-    const logs = await gatherLogs();
+    const logText = await gatherLogs();
     const subject = encodeURIComponent('Wire Desktop Log');
-    const body = encodeURIComponent(logs);
+    const body = encodeURIComponent(logText);
     const mailToLink = `mailto:support+web@wire.com?subject=${subject}&body=${body}`;
     await shell.openExternal(mailToLink);
   },
