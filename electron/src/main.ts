@@ -316,6 +316,9 @@ const handleAppEvents = () => {
       const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
 
       if (systemProxySettings) {
+        authenticatedProxyInfo = new URL(
+          `http://${systemProxySettings.credentials.username}:${systemProxySettings.credentials.password}@${authInfo.host}:${authInfo.port}`,
+        );
         return callback(systemProxySettings.credentials.username, systemProxySettings.credentials.password);
       }
 
@@ -323,6 +326,9 @@ const handleAppEvents = () => {
         EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
         (event: IpcMessageEvent, data: {password: string; username: string}) => {
           logger.log('Proxy prompt was submitted');
+          authenticatedProxyInfo = new URL(
+            `http://${data.username}:${data.password}@${authInfo.host}:${authInfo.port}`,
+          );
           callback(data.username, data.password);
         },
       );
