@@ -57,7 +57,7 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
       window.close();
     };
 
-    okButton.addEventListener('click', () => sendData);
+    okButton.addEventListener('click', () => sendData());
 
     cancelButton.addEventListener('click', () => {
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
