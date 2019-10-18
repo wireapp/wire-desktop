@@ -18,7 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
+import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, session, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -218,6 +218,10 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
+  }
+
+  if (session.defaultSession) {
+    session.defaultSession.allowNTLMCredentialsForDomains('*');
   }
 
   main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
@@ -473,7 +477,6 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
-      contents.session.allowNTLMCredentialsForDomains('*');
 
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
         const proxyURL = authenticatedProxyInfo.origin;
