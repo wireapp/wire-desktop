@@ -18,13 +18,10 @@
  */
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getLogger} from '../logging/getLogger';
 import {platform} from '../runtime/EnvironmentUtil';
 
 const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {systemPreferences} = remote;
-
-const logger = getLogger(__filename);
 
 // Note: Until appearance-changed event is available in a future
 // version of Electron... use AppleInterfaceThemeChangedNotification event
@@ -123,17 +120,8 @@ const subscribeToMainProcessEvents = () => {
 };
 
 const exposeAddressBook = () => {
-  let cachedAddressBook: any;
-
   const getAddressBook = () => {
-    if (!cachedAddressBook) {
-      try {
-        cachedAddressBook = require('@wireapp/node-addressbook');
-      } catch (error) {
-        logger.info('Failed loading "node-addressbook".', error);
-      }
-    }
-    return cachedAddressBook;
+    return undefined;
   };
 
   if (platform.IS_MAC_OS) {
