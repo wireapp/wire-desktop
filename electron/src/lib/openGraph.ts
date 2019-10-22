@@ -187,13 +187,18 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
 export const getOpenGraphData = async (url: string, callback: GetDataCallback): Promise<void> => {
   try {
     let meta = await fetchOpenGraphData(url);
+
+    if (Array.isArray(meta.image)) {
+      meta.image = meta.image[0];
+    }
+
     if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
       const [imageUrl] = arrayify(meta.image.url);
 
       const uri = await fetchImageAsBase64(imageUrl);
       meta = updateMetaDataWithImage(meta, uri);
     } else {
-      throw new Error('OpenGraph metadata contains no image.');
+      delete meta.image;
     }
 
     if (callback) {
@@ -211,12 +216,17 @@ export const getOpenGraphData = async (url: string, callback: GetDataCallback): 
 export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
   const metadata = await fetchOpenGraphData(url);
 
+  if (Array.isArray(metadata.image)) {
+    metadata.image = metadata.image[0];
+  }
+
   if (typeof metadata.image === 'object' && !Array.isArray(metadata.image) && metadata.image.url) {
     const [imageUrl] = arrayify(metadata.image.url);
 
     const uri = await fetchImageAsBase64(imageUrl);
     return updateMetaDataWithImage(metadata, uri);
   } else {
-    throw new Error('OpenGraph metadata contains no image.');
+    delete metadata.image;
+    return metadata;
   }
 };
