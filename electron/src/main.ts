@@ -37,7 +37,7 @@ import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
-import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
+import {ENABLE_LOGGING, LOG_DIR, LOG_FILE, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
 import {getLogFiles} from './logging/loggerUtils';
 import {menuItem as developerMenu} from './menu/developer';
@@ -56,8 +56,6 @@ import {WindowUtil} from './window/WindowUtil';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/preload.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'renderer/static/webview-preload.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
@@ -315,16 +313,11 @@ const renameWebViewLogFiles = async (): Promise<void> => {
   try {
     await fs.ensureDir(LOG_DIR);
     // Rename "console.log" to "console.old" (for every log directory of every account)
-    const logFiles = await getLogFiles(LOG_DIR);
+    const logFiles = await getLogFiles(LOG_DIR, true);
     await renameFileExtensions(logFiles, '.log', '.old');
   } catch (readError) {
     logger.log(`Failed to read log directory with error: ${readError.message}`);
   }
-};
-
-const initElectronLogFile = async (): Promise<void> => {
-  await renameFileExtensions([LOG_FILE], '.log', '.old');
-  await fs.ensureFile(LOG_FILE);
 };
 
 const addLinuxWorkarounds = () => {
@@ -501,7 +494,7 @@ if (lifecycle.isFirstInstance) {
   bindIpcEvents();
   handleAppEvents();
   renameWebViewLogFiles()
-    .then(() => initElectronLogFile())
+    .then(() => fs.ensureFile(LOG_FILE))
     .then(() => new ElectronWrapperInit().run())
     .catch(error => logger.error(error));
 }
