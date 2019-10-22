@@ -2,7 +2,7 @@
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
     "@wireapp/certificate-check": "0.1.9",
-    "@wireapp/commons": "2.2.20",
+    "@wireapp/commons": "2.2.21",
     "auto-launch": "5.0.5",
     "axios": "0.19.0",
     "content-type": "1.0.4",
@@ -91,8 +91,8 @@
     "typescript": "3.6.4",
     "webpack": "4.41.2",
     "webpack-cli": "3.3.9",
-    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.24.12",
-    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.24.13-0"
+    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.24.14",
+    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.24.15-0"
   },
   "homepage": "https://wire.com",
   "husky": {
