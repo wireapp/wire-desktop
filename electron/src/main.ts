@@ -220,10 +220,6 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     main.webContents.openDevTools({mode: 'detach'});
   }
 
-  if (session.defaultSession) {
-    session.defaultSession.allowNTLMCredentialsForDomains('*');
-  }
-
   main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappURL)}`);
 
   if (!argv.startup && !argv.hidden) {
@@ -306,31 +302,39 @@ const handleAppEvents = () => {
 
   app.on('login', async (event, webContents, request, authInfo, callback) => {
     if (authInfo.isProxy) {
+      if (session.defaultSession) {
+        session.defaultSession.allowNTLMCredentialsForDomains(authInfo.host);
+      }
+
       event.preventDefault();
 
-      if (authenticatedProxyInfo && authenticatedProxyInfo.username && authenticatedProxyInfo.password) {
+      if (authenticatedProxyInfo) {
+        const {username, password} = authenticatedProxyInfo;
         logger.info('Sending provided credentials to authenticated proxy ...');
-        return callback(authenticatedProxyInfo.username, authenticatedProxyInfo.password);
+        return callback(username, password);
       }
 
       const systemProxy = await getProxySettings();
       const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
 
       if (systemProxySettings) {
+        const {
+          credentials: {username, password},
+        } = systemProxySettings;
         authenticatedProxyInfo = new URL(
-          `http://${systemProxySettings.credentials.username}:${systemProxySettings.credentials.password}@${authInfo.host}:${authInfo.port}`,
+          `http${systemProxy.https ? 's' : ''}://${username}:${password}@${authInfo.host}`,
         );
-        return callback(systemProxySettings.credentials.username, systemProxySettings.credentials.password);
+        return callback(username, password);
       }
 
       ipcMain.once(
         EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
-        (event: IpcMessageEvent, data: {password: string; username: string}) => {
+        (event: IpcMessageEvent, promptData: {password: string; username: string}) => {
+          const {username, password} = promptData;
+
           logger.log('Proxy prompt was submitted');
-          authenticatedProxyInfo = new URL(
-            `http://${data.username}:${data.password}@${authInfo.host}:${authInfo.port}`,
-          );
-          callback(data.username, data.password);
+          authenticatedProxyInfo = new URL(`http://${username}:${password}@${authInfo.host}`);
+          callback(username, password);
         },
       );
 
@@ -482,6 +486,11 @@ class ElectronWrapperInit {
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
         const proxyURL = authenticatedProxyInfo.origin;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
+
+        if (session.defaultSession) {
+          session.defaultSession.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
+        }
+
         await new Promise(resolve =>
           contents.session.setProxy(
             {
