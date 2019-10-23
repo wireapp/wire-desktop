@@ -113,7 +113,7 @@
       "tslint --project tsconfig.mocha.json --fix",
       "git add"
     ],
-    "*.{json,md,css,yml}": [
+    "*.{json,md,css,yml,html}": [
       "prettier --write",
       "git add"
     ]
@@ -157,7 +157,7 @@
     "lint:ts:tests": "tslint --project tsconfig.mocha.json",
     "postinstall": "yarn configure",
     "prestart": "yarn build:ts && yarn bundle:dev",
-    "prettier": "prettier \"**/*.{json,md,css,yml}\"",
+    "prettier": "prettier \"**/*.{json,md,css,yml,html}\"",
     "start": "cross-env NODE_DEBUG=@wireapp* electron . --no-sandbox --inspect --devtools --enable-logging",
     "start:dev": "yarn start --env=https://wire-webapp-dev.zinfra.io",
     "start:edge": "yarn start --env=https://wire-webapp-edge.zinfra.io",
