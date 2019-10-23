@@ -152,7 +152,7 @@ export class SingleSignOn {
         if (!isHandled) {
           session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest, error => {
             if (error) {
-              throw new Error(`Failed to register protocol. Error: ${error}`);
+              throw new Error(`Failed to register protocol: "${error}"`);
             }
           });
         }
@@ -161,10 +161,7 @@ export class SingleSignOn {
     unregister: (session: Electron.Session): Promise<void> => {
       return new Promise((resolve, reject) => {
         session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
-          if (error) {
-            reject(error);
-          }
-          resolve();
+          return error ? reject(error) : resolve();
         });
       });
     },
