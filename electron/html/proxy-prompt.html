@@ -5,21 +5,21 @@
     <link rel="stylesheet" href="../css/proxy-prompt.css" />
   </head>
   <body>
-    <div id="container">
+    <div id="container" data-uie-name="proxy">
       <div id="form">
         <h1 data-string="proxyPromptTitle"></h1>
         <p class="copy"><span data-string="proxyPromptHeadline"></span></p>
         <p>
-          <label for="usernameInput" data-string="proxyPromptUsername"></label>
+          <label for="usernameInput" data-string="proxyPromptUsername" data-uie-name="input-username"></label>
           <input type="text" id="usernameInput" />
         </p>
         <p>
-          <label for="passwordInput" data-string="proxyPromptPassword"></label>
+          <label for="passwordInput" data-string="proxyPromptPassword" data-uie-name="input-password"></label>
           <input type="password" id="passwordInput" />
         </p>
         <p class="buttons">
-          <button id="cancelButton" data-string="proxyPromptCancel" type="reset"></button>
-          <button id="okButton" data-string="proxyPromptOk" type="submit"></button>
+          <button id="cancelButton" data-string="proxyPromptCancel" data-uie-name="do-cancel" type="reset"></button>
+          <button id="okButton" data-string="proxyPromptOk" data-uie-name="do-ok" type="submit"></button>
         </p>
       </div>
     </div>
