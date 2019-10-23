@@ -47,8 +47,9 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
   const cancelButton = document.querySelector<HTMLButtonElement>('#cancelButton');
   const usernameInput = document.querySelector<HTMLInputElement>('#usernameInput');
   const passwordInput = document.querySelector<HTMLInputElement>('#passwordInput');
+  const form = document.querySelector<HTMLInputElement>('#form');
 
-  if (cancelButton && okButton && usernameInput && passwordInput) {
+  if (cancelButton && okButton && usernameInput && passwordInput && form) {
     usernameInput.focus();
 
     const sendData = () => {
@@ -59,17 +60,15 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
       window.close();
     };
 
-    okButton.addEventListener('click', () => sendData());
-
     cancelButton.addEventListener('click', () => {
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
       window.close();
     });
 
+    form.addEventListener('submit', () => sendData());
+
     window.addEventListener('keydown', event => {
-      if (event.key === 'Enter') {
-        sendData();
-      } else if (event.key === 'Escape') {
+      if (event.key === 'Escape') {
         ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
         window.close();
       }
