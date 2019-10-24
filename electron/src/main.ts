@@ -301,8 +301,8 @@ const handleAppEvents = () => {
 const renameFileExtensions = async (files: string[], oldExtension: string, newExtension: string): Promise<void> => {
   for (const file of files) {
     try {
-      const stat = await fs.stat(file);
-      if (stat.isFile() && file.endsWith(oldExtension)) {
+      const fileStat = await fs.stat(file);
+      if (fileStat.isFile() && file.endsWith(oldExtension)) {
         await fs.rename(file, file.replace(oldExtension, newExtension));
       }
     } catch (error) {
