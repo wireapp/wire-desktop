@@ -18,9 +18,8 @@
  */
 
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
-import {app, remote} from 'electron';
+import {remote} from 'electron';
 import * as logdown from 'logdown';
-import * as path from 'path';
 
 import {config} from '../settings/config';
 
@@ -28,20 +27,19 @@ const mainProcess = remote ? remote.process : process;
 
 const isDevelopment = config.environment !== 'production';
 const forceLogging = mainProcess.argv.includes('--enable-logging');
-const userDataDir = (remote ? remote.app : app).getPath('userData');
 
 export const LOGGER_NAMESPACE = '@wireapp/desktop';
 export const ENABLE_LOGGING = isDevelopment || forceLogging;
-export const LOG_DIR = path.join(userDataDir, 'logs');
-export const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 
 export function getLogger(name: string): logdown.Logger {
   const options: LoggerOptions = {
-    forceEnable: ENABLE_LOGGING,
-    logFilePath: LOG_FILE,
     namespace: LOGGER_NAMESPACE,
     separator: '/',
   };
+
+  if (ENABLE_LOGGING) {
+    options.forceEnable = true;
+  }
 
   return LogFactory.getLogger(name, options);
 }
