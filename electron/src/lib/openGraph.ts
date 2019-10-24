@@ -167,16 +167,7 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  // For the regex, see https://regex101.com/r/U62pCH/1
-  const matches = body.match(/.*property=(["'])og:.+?\1.*/gim) || [''];
-
-  if (!matches) {
-    throw new Error('No open graph tags found in website.');
-  }
-
-  const openGraphTags = matches.join(' ');
-
-  return openGraphParse(openGraphTags);
+  return openGraphParse(body);
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
@@ -196,13 +187,18 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
 export const getOpenGraphData = async (url: string, callback: GetDataCallback): Promise<void> => {
   try {
     let meta = await fetchOpenGraphData(url);
+
+    if (Array.isArray(meta.image)) {
+      meta.image = meta.image[0];
+    }
+
     if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
       const [imageUrl] = arrayify(meta.image.url);
 
       const uri = await fetchImageAsBase64(imageUrl);
-      meta = await updateMetaDataWithImage(meta, uri);
+      meta = updateMetaDataWithImage(meta, uri);
     } else {
-      throw new Error('OpenGraph metadata contains no image.');
+      delete meta.image;
     }
 
     if (callback) {
@@ -220,12 +216,17 @@ export const getOpenGraphData = async (url: string, callback: GetDataCallback): 
 export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
   const metadata = await fetchOpenGraphData(url);
 
+  if (Array.isArray(metadata.image)) {
+    metadata.image = metadata.image[0];
+  }
+
   if (typeof metadata.image === 'object' && !Array.isArray(metadata.image) && metadata.image.url) {
     const [imageUrl] = arrayify(metadata.image.url);
 
     const uri = await fetchImageAsBase64(imageUrl);
     return updateMetaDataWithImage(metadata, uri);
   } else {
-    throw new Error('OpenGraph metadata contains no image.');
+    delete metadata.image;
+    return metadata;
   }
 };

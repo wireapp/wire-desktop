@@ -148,19 +148,20 @@ export class SingleSignOn {
         }
       };
 
-      session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest, error => {
-        if (error) {
-          throw new Error(`Failed to register protocol. Error: ${error}`);
+      session.protocol.isProtocolHandled(SingleSignOn.SSO_PROTOCOL, (isHandled: any) => {
+        if (!isHandled) {
+          session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest, error => {
+            if (error) {
+              throw new Error(`Failed to register protocol: "${error}"`);
+            }
+          });
         }
       });
     },
     unregister: (session: Electron.Session): Promise<void> => {
       return new Promise((resolve, reject) => {
         session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
-          if (error) {
-            reject(error);
-          }
-          resolve();
+          return error ? reject(error) : resolve();
         });
       });
     },
