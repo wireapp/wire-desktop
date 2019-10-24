@@ -31,7 +31,7 @@ export function getLogFiles(base: string = '.', absolute?: boolean): Promise<str
 export async function gatherLogs(): Promise<string> {
   let log = '';
 
-  const relativeFilePaths = await getLogFiles(logDir);
+  const relativeFilePaths = await getLogFiles(logDir, false);
 
   for (const relativeFilePath of relativeFilePaths) {
     const resolvedPath = path.join(logDir, relativeFilePath);
