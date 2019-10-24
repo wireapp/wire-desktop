@@ -17,8 +17,9 @@
  *
  */
 
-import {MenuItem, app} from 'electron';
+import {MenuItem, app, shell} from 'electron';
 
+import {gatherLogs} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
@@ -31,6 +32,17 @@ const getPrimaryWindow = () => WindowManager.getPrimaryWindow();
 const reloadTemplate: Electron.MenuItemConstructorOptions = {
   click: () => getPrimaryWindow().reload(),
   label: 'Reload',
+};
+
+const sendLogTemplate: Electron.MenuItemConstructorOptions = {
+  click: async () => {
+    const logText = await gatherLogs();
+    const subject = encodeURIComponent('Wire Desktop Log');
+    const body = encodeURIComponent(logText);
+    const mailToLink = `mailto:support+web@wire.com?subject=${subject}&body=${body}`;
+    await shell.openExternal(mailToLink);
+  },
+  label: 'Send Debug Logs',
 };
 
 const devToolsTemplate: Electron.MenuItemConstructorOptions = {
@@ -108,6 +120,7 @@ const menuTemplate: Electron.MenuItemConstructorOptions = {
   submenu: [
     devToolsTemplate,
     reloadTemplate,
+    sendLogTemplate,
     separatorTemplate,
     {
       enabled: false,
