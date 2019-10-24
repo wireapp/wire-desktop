@@ -255,7 +255,17 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     systemMenu.unregisterShortcuts();
   });
 
-  main.webContents.on('crashed', () => main.reload());
+  main.webContents.on('crashed', event => {
+    logger.error('WebContents crashed. Will reload the window.');
+    logger.error(event);
+    main.reload();
+  });
+
+  app.on('gpu-process-crashed', event => {
+    logger.error('GPU process crashed. Will reload the window.');
+    logger.error(event);
+    main.reload();
+  });
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
