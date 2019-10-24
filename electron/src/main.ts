@@ -346,9 +346,19 @@ const handleAppEvents = () => {
         },
       );
 
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, () => {
+      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
         logger.log('Proxy prompt was canceled');
-        callback('', '');
+        webContents.session.setProxy(
+          {
+            pacScript: '',
+            proxyBypassRules: '',
+            proxyRules: '',
+          },
+          () => {
+            callback('', '');
+            main.reload();
+          },
+        );
       });
 
       if (!triedProxy) {
