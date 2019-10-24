@@ -20,6 +20,7 @@
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import {app, remote} from 'electron';
 import * as logdown from 'logdown';
+import * as path from 'path';
 
 import {config} from '../settings/config';
 
