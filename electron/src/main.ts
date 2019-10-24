@@ -314,7 +314,7 @@ const renameFileExtensions = async (files: string[], oldExtension: string, newEx
 const renameWebViewLogFiles = async (): Promise<void> => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   try {
-    const logFiles = await getLogFiles();
+    const logFiles = await getLogFiles(LOG_DIR, true);
     await renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
     logger.log(`Failed to read log directory with error: ${error.message}`);
