@@ -489,7 +489,7 @@ class ElectronWrapperInit {
       WebViewFocus.bindTracker(webviewEvent, contents);
 
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
-        const proxyURL = authenticatedProxyInfo.origin;
+        const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
 
         contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
