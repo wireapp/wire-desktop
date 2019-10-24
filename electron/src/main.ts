@@ -313,10 +313,6 @@ const handleAppEvents = () => {
 
   app.on('login', async (event, webContents, request, authInfo, callback) => {
     if (authInfo.isProxy) {
-      if (session.defaultSession) {
-        session.defaultSession.allowNTLMCredentialsForDomains(authInfo.host);
-      }
-
       event.preventDefault();
 
       if (authenticatedProxyInfo) {
@@ -332,9 +328,7 @@ const handleAppEvents = () => {
         const {
           credentials: {username, password},
         } = systemProxySettings;
-        authenticatedProxyInfo = new URL(
-          `http${systemProxy.https ? 's' : ''}://${username}:${password}@${authInfo.host}`,
-        );
+        authenticatedProxyInfo = new URL(`${systemProxySettings.protocol}//${username}:${password}@${authInfo.host}`);
         return callback(username, password);
       }
 
@@ -344,7 +338,9 @@ const handleAppEvents = () => {
           const {username, password} = promptData;
 
           logger.log('Proxy prompt was submitted');
-          authenticatedProxyInfo = new URL(`http://${username}:${password}@${authInfo.host}`);
+          const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
+          const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
+          authenticatedProxyInfo = new URL(`${protocol}://${username}:${password}@${authInfo.host}`);
           callback(username, password);
         },
       );
