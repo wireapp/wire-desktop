@@ -18,7 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, session, shell} from 'electron';
+import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -327,8 +327,9 @@ const handleAppEvents = () => {
       if (systemProxySettings) {
         const {
           credentials: {username, password},
+          protocol,
         } = systemProxySettings;
-        authenticatedProxyInfo = new URL(`${systemProxySettings.protocol}//${username}:${password}@${authInfo.host}`);
+        authenticatedProxyInfo = new URL(`${protocol}//${username}:${password}@${authInfo.host}`);
         return callback(username, password);
       }
 
@@ -340,7 +341,7 @@ const handleAppEvents = () => {
           logger.log('Proxy prompt was submitted');
           const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
           const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
-          authenticatedProxyInfo = new URL(`${protocol}://${username}:${password}@${authInfo.host}`);
+          authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
           callback(username, password);
         },
       );
@@ -481,9 +482,7 @@ class ElectronWrapperInit {
         const proxyURL = authenticatedProxyInfo.origin;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
 
-        if (session.defaultSession) {
-          session.defaultSession.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
-        }
+        contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
 
         await new Promise(resolve =>
           contents.session.setProxy(
