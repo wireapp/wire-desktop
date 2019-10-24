@@ -37,9 +37,10 @@ export async function gatherLogs(): Promise<string> {
     const resolvedPath = path.join(logDir, relativeFilePath);
     log += `\n\n+++++++ ${relativeFilePath} +++++++\n`;
     try {
-      log += await fs.readFile(resolvedPath, 'utf-8');
+      const fileContent = await fs.readFile(resolvedPath, 'utf-8');
+      log += fileContent || '(no content)\n';
     } catch (error) {
-      log += 'File not readable.';
+      log += '(fle not readable)\n';
     }
     log += '++++++++++++++++++++++++++++\n';
   }
