@@ -261,7 +261,17 @@ const showMainWindow = (mainWindowState: WindowStateKeeper.State) => {
     systemMenu.unregisterShortcuts();
   });
 
-  main.webContents.on('crashed', () => main.reload());
+  main.webContents.on('crashed', event => {
+    logger.error('WebContents crashed. Will reload the window.');
+    logger.error(event);
+    main.reload();
+  });
+
+  app.on('gpu-process-crashed', event => {
+    logger.error('GPU process crashed. Will reload the window.');
+    logger.error(event);
+    main.reload();
+  });
 };
 
 // App Events
