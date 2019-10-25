@@ -22,6 +22,7 @@ import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from '
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
+import {getProxySettings} from 'get-proxy-settings';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
@@ -51,6 +52,7 @@ import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
+import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
@@ -68,18 +70,32 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 
+let authenticatedProxyInfo: URL | undefined;
+
 const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 
+const logger = getLogger(__filename);
+
 if (argv.version) {
   console.log(config.version);
   process.exit();
 }
 
-const logger = getLogger(path.basename(__filename));
+if (argv['proxy-server-auth']) {
+  try {
+    authenticatedProxyInfo = new URL(argv['proxy-server-auth']);
+    if (authenticatedProxyInfo.origin === 'null') {
+      authenticatedProxyInfo = undefined;
+      throw new Error('No protocol for the proxy server specified.');
+    }
+  } catch (error) {
+    logger.error(`Could not parse authenticated proxy URL: "${error.message}"`);
+  }
+}
 
 // Icon
 const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -88,6 +104,7 @@ let tray: TrayHandler;
 
 let isFullScreen = false;
 let isQuitting = false;
+let triedProxy = false;
 let main: BrowserWindow;
 
 Object.entries(config).forEach(([key, value]) => {
@@ -291,6 +308,63 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
+  app.on('login', async (event, webContents, request, authInfo, callback) => {
+    if (authInfo.isProxy) {
+      event.preventDefault();
+
+      if (authenticatedProxyInfo) {
+        const {username, password} = authenticatedProxyInfo;
+        logger.info('Sending provided credentials to authenticated proxy ...');
+        return callback(username, password);
+      }
+
+      const systemProxy = await getProxySettings();
+      const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
+
+      if (systemProxySettings) {
+        const {
+          credentials: {username, password},
+          protocol,
+        } = systemProxySettings;
+        authenticatedProxyInfo = new URL(`${protocol}//${username}:${password}@${authInfo.host}`);
+        return callback(username, password);
+      }
+
+      ipcMain.once(
+        EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+        (event: IpcMessageEvent, promptData: {password: string; username: string}) => {
+          const {username, password} = promptData;
+
+          logger.log('Proxy prompt was submitted');
+          const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
+          const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
+          authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
+          callback(username, password);
+        },
+      );
+
+      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
+        logger.log('Proxy prompt was canceled');
+        webContents.session.setProxy(
+          {
+            pacScript: '',
+            proxyBypassRules: '',
+            proxyRules: '',
+          },
+          () => {
+            callback('', '');
+            main.reload();
+          },
+        );
+      });
+
+      if (!triedProxy) {
+        await ProxyPromptWindow.showWindow();
+        triedProxy = true;
+      }
+    }
+  });
+
   // System Menu, Tray Icon & Show window
   app.on('ready', async () => {
     const mainWindowState = initWindowStateKeeper();
@@ -408,8 +482,26 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
+    app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
+
+      if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
+        const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
+        logger.info(`Setting proxy to URL "${proxyURL}" ...`);
+
+        contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
+
+        await new Promise(resolve =>
+          contents.session.setProxy(
+            {
+              pacScript: '',
+              proxyBypassRules: '',
+              proxyRules: proxyURL,
+            },
+            () => resolve(),
+          ),
+        );
+      }
 
       switch (contents.getType()) {
         case 'window': {
