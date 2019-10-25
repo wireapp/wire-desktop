@@ -191,9 +191,16 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
   return meta;
 };
 
+/**
+ * @deprecated Use `getOpenGraphDataAsync()`
+ */
 export const getOpenGraphData = async (url: string, callback: GetDataCallback): Promise<void> => {
   try {
     let meta = await fetchOpenGraphData(url);
+
+    if (!meta.description && !meta.image && !meta.type && !meta.url) {
+      throw new Error('No openGraph data found');
+    }
 
     if (Array.isArray(meta.image)) {
       meta.image = meta.image[0];
@@ -222,6 +229,10 @@ export const getOpenGraphData = async (url: string, callback: GetDataCallback): 
 
 export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
   const metadata = await fetchOpenGraphData(url);
+
+  if (!metadata.description && !metadata.image && !metadata.type && !metadata.url) {
+    throw new Error('No openGraph data found');
+  }
 
   if (Array.isArray(metadata.image)) {
     metadata.image = metadata.image[0];
