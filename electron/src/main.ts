@@ -69,6 +69,7 @@ const WINDOW_SIZE = {
   MIN_HEIGHT: 512,
   MIN_WIDTH: 760,
 };
+
 let authenticatedProxyInfo: URL | undefined;
 
 const customProtocolHandler = new CustomProtocolHandler();
@@ -218,10 +219,6 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
-  }
-
-  if (session.defaultSession) {
-    session.defaultSession.allowNTLMCredentialsForDomains('*');
   }
 
   if (!argv.startup && !argv.hidden) {

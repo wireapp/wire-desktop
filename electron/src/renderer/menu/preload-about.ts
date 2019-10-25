@@ -37,18 +37,26 @@ interface Details {
   webappVersion: string;
 }
 
-function setElementText(elementId: string, text: string): void {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.innerHTML = text;
-  }
-}
-
 export function loadedAboutScreen(event: Event, details: Details): void {
-  setElementText('name', details.productName);
-  setElementText('version', details.electronVersion);
-  setElementText('webappVersion', details.webappVersion);
-  setElementText('copyright', details.copyright);
+  const nameElement = document.getElementById('name');
+  if (nameElement) {
+    nameElement.innerHTML = details.productName;
+  }
+
+  const versionElement = document.getElementById('version');
+  if (versionElement) {
+    versionElement.innerHTML = details.electronVersion;
+  }
+
+  const webappVersionElement = document.getElementById('webappVersion');
+  if (webappVersionElement) {
+    webappVersionElement.innerHTML = details.webappVersion;
+  }
+
+  const copyrightElement = document.getElementById('copyright');
+  if (copyrightElement) {
+    copyrightElement.innerHTML = details.copyright;
+  }
 
   const logoElement = document.getElementById('logo') as HTMLImageElement;
   if (logoElement) {
