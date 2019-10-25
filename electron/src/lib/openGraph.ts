@@ -27,8 +27,6 @@ import {parse as parseUrl} from 'url';
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
-type GetDataCallback = (error: Error | null, meta?: OpenGraphResult) => void;
-
 const logger = getLogger(__filename);
 
 axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
@@ -184,37 +182,12 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
   return meta;
 };
 
-export const getOpenGraphData = async (url: string, callback: GetDataCallback): Promise<void> => {
-  try {
-    let meta = await fetchOpenGraphData(url);
-
-    if (Array.isArray(meta.image)) {
-      meta.image = meta.image[0];
-    }
-
-    if (typeof meta.image === 'object' && !Array.isArray(meta.image) && meta.image.url) {
-      const [imageUrl] = arrayify(meta.image.url);
-
-      const uri = await fetchImageAsBase64(imageUrl);
-      meta = updateMetaDataWithImage(meta, uri);
-    } else {
-      delete meta.image;
-    }
-
-    if (callback) {
-      callback(null, meta);
-    }
-  } catch (error) {
-    if (callback) {
-      callback(error);
-    } else {
-      logger.info(error);
-    }
-  }
-};
-
 export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
   const metadata = await fetchOpenGraphData(url);
+
+  if (!metadata.description && !metadata.image && !metadata.type && !metadata.url) {
+    throw new Error('No openGraph data found');
+  }
 
   if (Array.isArray(metadata.image)) {
     metadata.image = metadata.image[0];
