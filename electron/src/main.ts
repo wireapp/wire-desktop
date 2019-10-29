@@ -22,6 +22,7 @@ import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from '
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
+import {getProxySettings} from 'get-proxy-settings';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
@@ -39,6 +40,7 @@ import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
+import {getLogFiles} from './logging/loggerUtils';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
@@ -50,6 +52,7 @@ import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
+import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
@@ -67,18 +70,32 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 
+let authenticatedProxyInfo: URL | undefined;
+
 const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 
+const logger = getLogger(__filename);
+
 if (argv.version) {
   console.log(config.version);
   process.exit();
 }
 
-const logger = getLogger(path.basename(__filename));
+if (argv['proxy-server-auth']) {
+  try {
+    authenticatedProxyInfo = new URL(argv['proxy-server-auth']);
+    if (authenticatedProxyInfo.origin === 'null') {
+      authenticatedProxyInfo = undefined;
+      throw new Error('No protocol for the proxy server specified.');
+    }
+  } catch (error) {
+    logger.error(`Could not parse authenticated proxy URL: "${error.message}"`);
+  }
+}
 
 // Icon
 const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
@@ -87,6 +104,7 @@ let tray: TrayHandler;
 
 let isFullScreen = false;
 let isQuitting = false;
+let triedProxy = false;
 let main: BrowserWindow;
 
 Object.entries(config).forEach(([key, value]) => {
@@ -255,7 +273,17 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     systemMenu.unregisterShortcuts();
   });
 
-  main.webContents.on('crashed', () => main.reload());
+  main.webContents.on('crashed', event => {
+    logger.error('WebContents crashed. Will reload the window.');
+    logger.error(event);
+    main.reload();
+  });
+
+  app.on('gpu-process-crashed', event => {
+    logger.error('GPU process crashed. Will reload the window.');
+    logger.error(event);
+    main.reload();
+  });
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
@@ -263,9 +291,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
 // App Events
 const handleAppEvents = () => {
-  app.on('window-all-closed', async () => {
+  app.on('window-all-closed', () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
-      await lifecycle.quit();
+      lifecycle.quit();
     }
   });
 
@@ -278,6 +306,63 @@ const handleAppEvents = () => {
   app.on('before-quit', () => {
     settings.persistToFile();
     isQuitting = true;
+  });
+
+  app.on('login', async (event, webContents, request, authInfo, callback) => {
+    if (authInfo.isProxy) {
+      event.preventDefault();
+
+      if (authenticatedProxyInfo) {
+        const {username, password} = authenticatedProxyInfo;
+        logger.info('Sending provided credentials to authenticated proxy ...');
+        return callback(username, password);
+      }
+
+      const systemProxy = await getProxySettings();
+      const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
+
+      if (systemProxySettings) {
+        const {
+          credentials: {username, password},
+          protocol,
+        } = systemProxySettings;
+        authenticatedProxyInfo = new URL(`${protocol}//${username}:${password}@${authInfo.host}`);
+        return callback(username, password);
+      }
+
+      ipcMain.once(
+        EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+        (event: IpcMessageEvent, promptData: {password: string; username: string}) => {
+          const {username, password} = promptData;
+
+          logger.log('Proxy prompt was submitted');
+          const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
+          const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
+          authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
+          callback(username, password);
+        },
+      );
+
+      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
+        logger.log('Proxy prompt was canceled');
+        webContents.session.setProxy(
+          {
+            pacScript: '',
+            proxyBypassRules: '',
+            proxyRules: '',
+          },
+          () => {
+            callback('', '');
+            main.reload();
+          },
+        );
+      });
+
+      if (!triedProxy) {
+        await ProxyPromptWindow.showWindow();
+        triedProxy = true;
+      }
+    }
   });
 
   // System Menu, Tray Icon & Show window
@@ -298,40 +383,26 @@ const handleAppEvents = () => {
 };
 
 const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string): void => {
-  files
-    .filter(file => {
-      try {
-        return fs.statSync(file).isFile();
-      } catch (statError) {
-        return false;
+  for (const file of files) {
+    try {
+      const fileStat = fs.statSync(file);
+      if (fileStat.isFile() && file.endsWith(oldExtension)) {
+        fs.renameSync(file, file.replace(oldExtension, newExtension));
       }
-    })
-    .forEach(file => {
-      if (file.endsWith(oldExtension)) {
-        try {
-          fs.renameSync(file, file.replace(oldExtension, newExtension));
-        } catch (error) {
-          logger.error(`Failed to rename log file: "${error.message}"`);
-        }
-      }
-    });
+    } catch (error) {
+      logger.error(`Failed to rename log file: "${error.message}"`);
+    }
+  }
 };
 
 const renameWebViewLogFiles = (): void => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
-  fs.readdir(LOG_DIR, (readError, contents) => {
-    if (readError) {
-      return logger.log(`Failed to read log directory with error: ${readError.message}`);
-    }
-
-    const logFiles = contents.map(file => path.join(LOG_DIR, file, config.logFileName));
+  try {
+    const logFiles = getLogFiles(LOG_DIR, true);
     renameFileExtensions(logFiles, '.log', '.old');
-  });
-};
-
-const initElectronLogFile = (): void => {
-  renameFileExtensions([LOG_FILE], '.log', '.old');
-  fs.ensureFileSync(LOG_FILE);
+  } catch (error) {
+    logger.log(`Failed to read log directory with error: ${error.message}`);
+  }
 };
 
 const addLinuxWorkarounds = () => {
@@ -411,8 +482,26 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
+    app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
       WebViewFocus.bindTracker(webviewEvent, contents);
+
+      if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
+        const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
+        logger.info(`Setting proxy to URL "${proxyURL}" ...`);
+
+        contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
+
+        await new Promise(resolve =>
+          contents.session.setProxy(
+            {
+              pacScript: '',
+              proxyBypassRules: '',
+              proxyRules: proxyURL,
+            },
+            () => resolve(),
+          ),
+        );
+      }
 
       switch (contents.getType()) {
         case 'window': {
@@ -508,6 +597,6 @@ if (lifecycle.isFirstInstance) {
   bindIpcEvents();
   handleAppEvents();
   renameWebViewLogFiles();
-  initElectronLogFile();
-  new ElectronWrapperInit().run().catch(logger.error);
+  fs.ensureFileSync(LOG_FILE);
+  new ElectronWrapperInit().run().catch(error => logger.error(error));
 }
