@@ -38,7 +38,7 @@ node('node130') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
       throw e
     }
   }
@@ -50,7 +50,7 @@ node('node130') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} building installer failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} building installer failed**\n${BUILD_URL}"
       throw e
     }
   }
@@ -60,7 +60,7 @@ node('node130') {
       bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed** see: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
       throw e
     }
   }
@@ -74,11 +74,11 @@ node('node130') {
       try {
         build job: 'Wrapper_Windows_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-master.zinfra.io/')], wait: false
       } catch(e) {
-        wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} Unable to trigger smoke tests for ${version}** see: ${JOB_URL}"
+        wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} Unable to trigger smoke tests for ${version}**\n${BUILD_URL}"
         print e
       }
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version}**\nDownload from [Jenkins](${BUILD_URL})"
 }
