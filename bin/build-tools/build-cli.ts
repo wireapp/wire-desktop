@@ -46,55 +46,46 @@ commander
 const platform = (commander.args[0] || '').toLowerCase();
 
 new Promise(() => {
+  const {
+    envFile,
+    manualSign,
+    wireJson,
+    packageJson,
+  }: {envFile: string; manualSign?: boolean; wireJson: string; packageJson: string} = commander as any;
+
   switch (platform) {
     case 'win':
     case 'windows': {
-      const {packagerConfig} = buildWindowsConfig(commander.wireJson, commander.envFile);
+      const {packagerConfig} = buildWindowsConfig(wireJson, envFile);
 
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
-      return buildWindowsWrapper(packagerConfig, commander.packageJson, commander.wireJson, commander.envFile);
+      return buildWindowsWrapper(packagerConfig, packageJson, wireJson, envFile);
     }
 
     case 'windows-installer': {
-      const {wInstallerOptions} = buildWindowsInstallerConfig(commander.wireJson, commander.envFile);
+      const {wInstallerOptions} = buildWindowsInstallerConfig(wireJson, envFile);
 
       logEntries(wInstallerOptions, 'wInstallerOptions', toolName);
 
-      return buildWindowsInstaller(commander.wireJson, commander.envFile, wInstallerOptions);
+      return buildWindowsInstaller(wireJson, envFile, wInstallerOptions);
     }
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, packagerConfig} = buildMacOSConfig(
-        commander.wireJson,
-        commander.envFile,
-        commander.manualSign,
-      );
+      const {macOSConfig, packagerConfig} = buildMacOSConfig(wireJson, envFile, manualSign);
 
       logEntries(packagerConfig, 'builderConfig', toolName);
 
-      return buildMacOSWrapper(
-        packagerConfig,
-        macOSConfig,
-        commander.packageJson,
-        commander.wireJson,
-        commander.manualSign,
-      );
+      return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
     }
 
     case 'linux': {
-      const {linuxConfig, builderConfig} = buildLinuxConfig(commander.wireJson, commander.envFile);
+      const {linuxConfig, builderConfig} = buildLinuxConfig(wireJson, envFile);
 
       logEntries(builderConfig, 'builderConfig', toolName);
 
-      return buildLinuxWrapper(
-        builderConfig,
-        linuxConfig,
-        commander.packageJson,
-        commander.wireJson,
-        commander.envFile,
-      );
+      return buildLinuxWrapper(builderConfig, linuxConfig, packageJson, wireJson, envFile);
     }
 
     default: {
