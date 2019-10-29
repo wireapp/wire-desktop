@@ -40,7 +40,7 @@ node('node180') {
         sh 'yarn build:linux'
       } catch(e) {
         currentBuild.result = 'FAILED'
-        wireSend secret: "${jenkinsbot_secret}", message: "🐧 **${JOB_NAME} ${version} build failed** see: ${JOB_URL}"
+        wireSend secret: "${jenkinsbot_secret}", message: "🐧 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
         throw e
       }
     }
@@ -75,5 +75,5 @@ node('node180') {
 
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🐧 **New build of ${JOB_NAME} ${version} available for download on** ${JOB_URL}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🐧 **New build of ${JOB_NAME} ${version}**\nDownload from [Jenkins](${BUILD_URL})"
 }
