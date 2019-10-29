@@ -3,8 +3,19 @@ version: 2.1
 orbs:
   win: circleci/windows@1.0.0
 
-jobs:
+workflows:
+  version: 2
   build:
+    jobs:
+      - build_test_windows:
+        filters:
+          branches:
+            only:
+              - master
+              - staging
+
+jobs:
+  build_test_windows:
     executor: win/vs2019
     steps:
       - checkout
