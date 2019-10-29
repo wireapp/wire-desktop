@@ -3,7 +3,7 @@
     "allowSyntheticDefaultImports": true,
     "types": ["mocha"]
   },
+  "exclude": ["bin", "node_modules", "wrap", "electron/**/!(*.test*).ts"],
   "extends": "./tsconfig.json",
-  "exclude": [],
   "include": ["electron/**/*.test*.ts"]
 }

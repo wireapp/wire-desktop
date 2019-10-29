@@ -33,7 +33,7 @@ node('node130') {
         bat 'node -v'
         bat 'npm -v'
         bat 'npm install -g yarn'
-        bat 'set "VSCMD_START_DIR=%CD%" & "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\VsDevCmd.bat" & yarn'
+        bat 'yarn'
         bat 'yarn build:win'
       }
     } catch(e) {

@@ -96,7 +96,7 @@ describe('openGraph', () => {
       await contentLimitRequest('', []);
       assert.fail(`Request didn't throw`);
     } catch (error) {
-      assert.equal(true, error.message.includes('Could not parse content type'));
+      assert.strictEqual(true, error.message.includes('Could not parse content type'));
     }
   });
 

@@ -36,12 +36,13 @@ node('master') {
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
   def NODE = tool name: 'node-v12.9.0', type: 'nodejs'
+  def DRY_RUN = params.DRY_RUN ? "--dry-run" : ""
 
   stage('Get build artifacts') {
     try {
       step ([
         $class: 'CopyArtifact',
-        filter: 'wrap/build/**',
+        filter: 'wrap/build/**,wrap/dist/**',
         projectName: "$projectName",
         selector: [
           $class: 'SpecificBuildSelector',
@@ -72,6 +73,8 @@ node('master') {
 
   stage('Upload to S3 and/or Hockey') {
     withEnv(["PATH+NODE=${NODE}/bin"]) {
+      def SEARCH_PATH = './wrap/dist/'
+
       if (projectName.contains('Windows')) {
         try {
           def AWS_ACCESS_KEY_ID = ''
@@ -80,11 +83,10 @@ node('master') {
           def WIN_HOCKEY_TOKEN = ''
           def S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
-          def SEARCH_PATH = './wrap/dist/'
 
           withCredentials([
-            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID')],
-            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
             AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
             AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
@@ -131,7 +133,7 @@ node('master') {
 
         parallel hockey: {
           try {
-            sh "npx wire-deploy-hockey --hockey-id \"${WIN_HOCKEY_ID}\" --hockey-token \"${WIN_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+            sh "jenkins/ts-node.sh ./bin/deploy-tools/hockey-cli.ts --hockey-id \"${WIN_HOCKEY_ID}\" --hockey-token \"${WIN_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
           } catch(e) {
             currentBuild.result = 'FAILED'
             wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
@@ -139,7 +141,7 @@ node('master') {
           }
         }, s3: {
           try {
-            sh "npx wire-deploy-s3 --bucket \"${S3_BUCKET}\" --s3-path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\"  --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+            sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
           } catch(e) {
             currentBuild.result = 'FAILED'
             wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
@@ -168,13 +170,16 @@ node('master') {
               MACOS_HOCKEY_TOKEN = env.MACOS_CUSTOM_HOCKEY_TOKEN
             }
           } else {
-            withCredentials([string(credentialsId: 'MACOS_HOCKEY_ID', variable: 'MACOS_HOCKEY_ID'), string(credentialsId: 'MACOS_HOCKEY_TOKEN', variable: 'MACOS_HOCKEY_TOKEN')]) {
+            withCredentials([
+              string(credentialsId: 'MACOS_HOCKEY_ID', variable: 'MACOS_HOCKEY_ID'),
+              string(credentialsId: 'MACOS_HOCKEY_TOKEN', variable: 'MACOS_HOCKEY_TOKEN')
+            ]) {
               MACOS_HOCKEY_ID = env.MACOS_HOCKEY_ID
               MACOS_HOCKEY_TOKEN = env.MACOS_HOCKEY_TOKEN
             }
           }
 
-          sh "npx wire-deploy-hockey --hockey-id \"${MACOS_HOCKEY_ID}\" --hockey-token \"${MACOS_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ."
+          sh "jenkins/ts-node.sh ./bin/deploy-tools/hockey-cli.ts --hockey-id \"${MACOS_HOCKEY_ID}\" --hockey-token \"${MACOS_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
         } catch(e) {
           currentBuild.result = 'FAILED'
           wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
@@ -187,7 +192,7 @@ node('master') {
               string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
               string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
             ]) {
-              sh "npx wire-deploy-s3 --bucket wire-taco --s3path linux --key-id \"${env.AWS_ACCESS_KEY_ID}\" --secret-key \"${env.AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+              sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket wire-taco --s3path linux --key-id \"${env.AWS_ACCESS_KEY_ID}\" --secret-key \"${env.AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
             }
 
           } else if (params.Release.equals('Custom')) {
@@ -197,7 +202,7 @@ node('master') {
               string(credentialsId: 'LINUX_HOCKEY_ID', variable: 'LINUX_HOCKEY_ID'),
               string(credentialsId: 'LINUX_HOCKEY_TOKEN', variable: 'LINUX_HOCKEY_TOKEN')
             ]) {
-              sh "npx wire-deploy-hockey --hockey-id \"${env.LINUX_HOCKEY_ID}\" --hockey-token \"${env.LINUX_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path ./wrap/dist"
+              sh "jenkins/ts-node.sh ./bin/deploy-tools/hockey-cli.ts --hockey-id \"${env.LINUX_HOCKEY_ID}\" --hockey-token \"${env.LINUX_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
             }
           }
         } catch(e) {
@@ -243,7 +248,7 @@ node('master') {
             S3_PATH = 'win/internal'
           }
 
-          sh "npx wire-deploy-s3-win-releases --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\"  --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+          sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-win-releases-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
@@ -259,17 +264,13 @@ node('master') {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
           def SEARCH_PATH = './wrap/dist/'
 
-          if (projectName.contains('macOS')) {
-            SEARCH_PATH = '.'
-          }
-
           withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
-            sh "npx wire-deploy-github-draft --github-token \"${env.GITHUB_ACCESS_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\""
+            sh "jenkins/ts-node.sh ./bin/deploy-tools/github-draft-cli.ts --github-token \"${env.GITHUB_ACCESS_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
           }
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
-        wireSend secret: "$jenkinsbot_secret", message: "**Upload build as draft to Github failed for ${version}** see: ${JOB_URL}"
+        wireSend secret: "$jenkinsbot_secret", message: "**Upload build as draft to GitHub failed for ${version}** see: ${JOB_URL}"
         throw e
       }
     }

@@ -24,7 +24,7 @@ BUILD_VERSION="${1:-"0"}"
 
 SCRIPT_NAME="${0##*/}"
 
-GPG_TEMP_DIR=".gpg-temporary"
+GPG_TEMP_DIR="$(mktemp -d)"
 GPG_TEMP_KEYS_DIR="${GPG_TEMP_DIR}/private-keys-v1.d"
 PGP_SIGN_ID="D599C1AA126762B1"
 PGP_KEYFILE="${PGP_PRIVATE_KEY_FILE:-${PGP_SIGN_ID}.asc}"
@@ -44,22 +44,19 @@ _error_exit() {
 }
 
 if ! _command_exist "gpg"; then
-  _error_exit "Could not find gpg. Please install package 'gnupg2' version 2.1.x."
+  _error_exit "Could not find \"gpg\". Please install package 'gnupg2' version 2.1.x."
 fi
 
 if ! _command_exist "shasum"; then
-  _error_exit "Could not find sha256sum. Please install package 'coreutils'."
+  _error_exit "Could not find \"sha256sum\". Please install package 'coreutils'."
 fi
 
-if ! ls ./wrap/build/*.pkg > /dev/null 2>&1; then
-  _error_exit "No pkg files found. Add some in ${PWD}."
+if ! ls *.pkg > /dev/null 2>&1; then
+  _error_exit "No pkg files found in \"${PWD}\"."
 fi
 
 _log "Creating checksums..."
-shasum -a 256 wrap/build/*.pkg > sha256sum.txt
-
-_log "Creating source code archive for signing..."
-git archive -o "${BUILD_VERSION}.tar.gz" --format tar.gz --prefix "wire-desktop-release-${BUILD_VERSION}/" master
+shasum -a 256 *.pkg > sha256sum.txt
 
 _log "Preparing gpg configuration..."
 mkdir -p "${GPG_TEMP_KEYS_DIR}"
@@ -89,22 +86,7 @@ gpg --batch \
     --yes \
     "sha256sum.txt"
 
-_log "Signing source code archive with PGP key..."
-
-echo "${PGP_PASSPHRASE}" | \
-gpg --batch \
-    --clearsign \
-    --homedir "${GPG_TEMP_DIR}" \
-    --local-user "${PGP_SIGN_ID}" \
-    --no-tty \
-    --output "${BUILD_VERSION}.tar.gz.sig" \
-    --pinentry-mode loopback \
-    --passphrase-fd 0 \
-    --quiet \
-    --yes \
-    "${BUILD_VERSION}.tar.gz"
-
-rm "${BUILD_VERSION}.tar.gz"
+rm sha256sum.txt
 
 _log "Info: Deleting temp files in a secure way."
 find "${GPG_TEMP_DIR}" -type f -exec rm -P {} \;

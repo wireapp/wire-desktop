@@ -67,7 +67,14 @@ export LINUX_TARGET=<target>
 yarn build:linux
 ```
 
-Replace `<target>` with your desired target (e.g. `"rpm"`). Have a look at the [documentation for `electron-builder`](https://www.electron.build/configuration/linux) for the available options. Note that we cannot offer support for uncommon targets.
+Replace `<target>` with your desired target (e.g. `rpm`). Have a look at the [documentation for `electron-builder`](https://www.electron.build/configuration/linux) for the available targets. Multiple targets can be combined by comma separation (e.g. `rpm,deb`). Note that we cannot offer support for uncommon targets.
+
+Furthermore, you can disable [asar packaging](https://electronjs.org/docs/tutorial/application-packaging) (not recommended, but e.g. needed for target `dir`) by setting `ENABLE_ASAR="false"` before building. Example:
+
+```shell
+export ENABLE_ASAR="false"
+yarn build:linux
+```
 
 ### Troubleshooting
 
