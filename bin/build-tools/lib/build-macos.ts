@@ -167,17 +167,17 @@ export async function manualMacOSSign(
 
   if (macOSConfig.certNameApplication) {
     const filesToSign = [
-      '/Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
-      '/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
-      '/Frameworks/Electron Framework.framework/',
-      `/Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,
-      `/Frameworks/${commonConfig.name} Helper.app/`,
-      `/Library/LoginItems/${commonConfig.name} Login Helper.app/Contents/MacOS/${commonConfig.name} Login Helper`,
-      `/Library/LoginItems/${commonConfig.name} Login Helper.app/`,
+      'Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
+      'Frameworks/Electron Framework.framework/',
+      `Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,
+      `Frameworks/${commonConfig.name} Helper.app/`,
+      `Library/LoginItems/${commonConfig.name} Login Helper.app/Contents/MacOS/${commonConfig.name} Login Helper`,
+      `Library/LoginItems/${commonConfig.name} Login Helper.app/`,
     ];
 
     for (const fileName of filesToSign) {
-      const fullPath = `${appFile}/Contents${fileName}`;
+      const fullPath = `${appFile}/Contents/${fileName}`;
       execSync(
         `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${fullPath}'`,
       );
@@ -186,9 +186,11 @@ export async function manualMacOSSign(
     if (macOSConfig.certNameInstaller) {
       const appExecutable = `${appFile}/Contents/MacOS/${commonConfig.name}`;
       execSync(
-        `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
+        `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
       );
-      execSync(`codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`);
+      execSync(
+        `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`,
+      );
       execSync(
         `productbuild --component '${appFile}' /Applications --sign '${macOSConfig.certNameInstaller}' '${pkgFile}'`,
       );
