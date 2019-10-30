@@ -75,7 +75,7 @@
     "electron-osx-sign": "0.4.14",
     "electron-packager": "14.1.0",
     "electron-winstaller": "2.7.0",
-    "eslint": "6.5.1",
+    "eslint": "6.6.0",
     "eslint-config-prettier": "6.5.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-jasmine": "2.10.1",
