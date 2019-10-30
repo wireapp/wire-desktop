@@ -190,6 +190,7 @@ window.addEventListener('DOMContentLoaded', () => {
     subscribeToThemeChange();
     subscribeToWebappEvents();
     reportWebappVersion();
+    // include context menu
     import('./menu/context').catch(error => logger.error(error));
   });
 });
