@@ -36,38 +36,38 @@ class ConfigurationPersistence {
       global._ConfigurationPersistence = this.readFromFile();
     }
 
-    this.logger.log('Init ConfigurationPersistence');
+    this.logger.info('Initializing ConfigurationPersistence');
   }
 
   delete(name: string): true {
-    this.logger.log(`Deleting "${name}"`);
+    this.logger.info(`Deleting "${name}"`);
     delete global._ConfigurationPersistence[name];
     return true;
   }
 
   save<T>(name: string, value: T): true {
-    this.logger.log(`Saving "${name}" with value:`, value);
+    this.logger.info(`Saving "${name}" with value:`, value);
     global._ConfigurationPersistence[name] = value;
     return true;
   }
 
   restore<T>(name: string, defaultValue?: T): T {
-    this.logger.log(`Restoring "${name}"`);
+    this.logger.info(`Restoring "${name}"`);
     const value = global._ConfigurationPersistence[name];
     return typeof value !== 'undefined' ? value : defaultValue;
   }
 
   persistToFile(): void {
-    this.logger.log('Saving configuration to persistent storage:', global._ConfigurationPersistence);
+    this.logger.info('Saving configuration to persistent storage:', global._ConfigurationPersistence);
     try {
       return fs.outputJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
     } catch (error) {
-      this.logger.log('An error occurred while persisting the configuration', error);
+      this.logger.error('An error occurred while persisting the configuration', error);
     }
   }
 
   readFromFile(): Schemata {
-    this.logger.log(`Reading config file "${this.configFile}"...`);
+    this.logger.info(`Reading config file "${this.configFile}"...`);
     try {
       return fs.readJSONSync(this.configFile) as Schemata;
     } catch (error) {
