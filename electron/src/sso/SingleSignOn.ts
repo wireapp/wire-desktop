@@ -32,7 +32,7 @@ export class SingleSignOn {
   private static readonly PRELOAD_SSO_JS = path.join(
     app.getAppPath(),
     config.electronDirectory,
-    'dist/renderer/preload-sso.js',
+    'dist/renderer/sso-preload.js',
   );
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = 'wire-sso';
