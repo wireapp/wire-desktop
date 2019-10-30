@@ -25,8 +25,6 @@ import {getOpenGraphDataAsync} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
-const logger = getLogger(path.basename(__filename));
-
 interface TeamAccountInfo {
   accentID: string;
   name: string;
@@ -37,6 +35,8 @@ interface TeamAccountInfo {
 }
 
 const systemPreferences = remote.systemPreferences;
+
+const logger = getLogger(path.basename(__filename));
 
 // Note: Until appearance-changed event is available in a future
 // version of Electron use `AppleInterfaceThemeChangedNotification` event
@@ -158,6 +158,7 @@ const checkAvailability = (callback: () => void) => {
     if (navigator.onLine) {
       // Loading webapp failed
       clearInterval(intervalId);
+      logger.error('Failed loading the WebApp.');
       location.reload();
     }
   }, HALF_SECOND);

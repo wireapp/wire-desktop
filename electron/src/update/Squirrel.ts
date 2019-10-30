@@ -124,7 +124,7 @@ const removeShortcuts = (callback: (err: NodeJS.ErrnoException | null) => void):
 };
 
 const installUpdate = (): void => {
-  logger.info(`Checking for updates on "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
+  logger.info(`Checking for Windows updates at "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
   spawnUpdate([SQUIRREL_EVENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
 };
 
