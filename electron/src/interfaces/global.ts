@@ -17,6 +17,7 @@
  *
  */
 
+import {DesktopCapturer} from 'electron';
 import {Data as OpenGraphResult} from 'open-graph';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -103,6 +104,7 @@ declare global {
 
   namespace NodeJS {
     interface Global {
+      desktopCapturer: DesktopCapturer;
       environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;
       _ConfigurationPersistence: Schemata;

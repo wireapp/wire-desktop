@@ -17,7 +17,7 @@
  *
  */
 
-import {IpcMessageEvent, ipcRenderer, remote, webFrame} from 'electron';
+import {IpcMessageEvent, desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -170,6 +170,7 @@ const _setImmediate = setImmediate;
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
   global.environment = EnvironmentUtil;
+  global.desktopCapturer = desktopCapturer;
   global.openGraphAsync = getOpenGraphDataAsync;
   global.setImmediate = _setImmediate;
 });
