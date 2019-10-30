@@ -18,17 +18,22 @@
  */
 
 import {app, ipcMain} from 'electron';
+import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
+import {getLogger} from '../logging/getLogger';
 import {settings} from '../settings/ConfigurationPersistence';
 import {Squirrel} from '../update/Squirrel';
 import {WindowManager} from '../window/WindowManager';
 import * as EnvironmentUtil from './EnvironmentUtil';
 
+const logger = getLogger(path.basename(__filename));
+
 export let isFirstInstance: boolean | undefined = undefined;
 
 export const checkForUpdate = () => {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
+    logger.info('Checking for Windows update ...');
     Squirrel.handleSquirrelEvent(isFirstInstance);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => Squirrel.installUpdate());
@@ -40,6 +45,7 @@ export const checkSingleInstance = () => {
     isFirstInstance = true;
   } else {
     isFirstInstance = app.requestSingleInstanceLock();
+    logger.info('Checking if we are the first instance...', isFirstInstance);
 
     if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
       quit();
@@ -52,11 +58,13 @@ export const checkSingleInstance = () => {
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
 export const quit = () => {
+  logger.info('Quitting the app ...');
   settings.persistToFile();
   app.exit();
 };
 
 export const relaunch = () => {
+  logger.info('Relaunching the app ...');
   if (EnvironmentUtil.platform.IS_MAC_OS) {
     /*
      * on MacOS, it is not possible to relaunch the app, so just fallback

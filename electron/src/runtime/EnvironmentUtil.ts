@@ -103,9 +103,9 @@ export const setEnvironment = (env?: BackendType): void => {
 };
 
 export const web = {
-  getAdminUrl: (path?: string): string => {
+  getAdminUrl: (path: string = ''): string => {
     const baseUrl = isProdEnvironment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
-    return `${baseUrl}${path || ''}`;
+    return `${baseUrl}${path}`;
   },
   getWebappUrl: (env?: string): string => {
     if (env) {
