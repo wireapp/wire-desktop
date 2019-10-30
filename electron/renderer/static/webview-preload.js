@@ -22,7 +22,7 @@ const path = require('path');
 const environment = require('../../dist/runtime/EnvironmentUtil');
 const {EVENT_TYPE} = require('../../dist/lib/eventType');
 
-const {ipcRenderer, remote, webFrame} = require('electron');
+const {desktopCapturer, ipcRenderer, remote, webFrame} = require('electron');
 const {systemPreferences} = remote;
 
 const logger = getLogger(path.basename(__filename));
@@ -157,6 +157,7 @@ process.once('loaded', () => {
 
   global.clearImmediate = _clearImmediate;
   global.environment = environment;
+  global.desktopCapturer = desktopCapturer;
   global.openGraphAsync = getOpenGraphDataAsync;
   global.setImmediate = _setImmediate;
 });

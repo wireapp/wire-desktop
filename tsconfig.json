@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "alwaysStrict": true,
     "declaration": true,
     "downlevelIteration": true,
     "forceConsistentCasingInFileNames": true,
