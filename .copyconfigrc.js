@@ -17,7 +17,7 @@ const options = {
   files: {
     [`${imageSource}/**`]: 'electron/img/',
     [`${macOsSource}/**`]: 'resources/macos/',
-    [`${imageSource}/logo/256x256.png`]: ['resources/icons/256x256.png', 'electron/img/logo.256.png'],
+    [`${imageSource}/logo/256x256.png`]: ['resources/icons/256x256.png', 'electron/img/logo.256.png', 'electron/img/logo.png'],
     [`${imageSource}/logo/32x32.png`]: 'resources/icons/32x32.png',
     [`${imageSource}/logo/logo.ico`]: 'electron/img/logo.ico',
     [`${contentSource}/translation/**`]: 'electron/locale/',
