@@ -17,17 +17,20 @@
  *
  */
 
-import {MenuItem, app, shell} from 'electron';
+import {MenuItem, app, dialog} from 'electron';
+import * as openExternal from 'open';
+import * as path from 'path';
 
-import {gatherLogs} from '../logging/loggerUtils';
+import {getLogger} from '../logging/getLogger';
+import {gatherLogs, logDir} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {WindowManager} from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
-
 const getPrimaryWindow = () => WindowManager.getPrimaryWindow();
+const logger = getLogger(path.basename(__filename));
 
 const reloadTemplate: Electron.MenuItemConstructorOptions = {
   click: () => getPrimaryWindow().reload(),
@@ -40,7 +43,26 @@ const sendLogTemplate: Electron.MenuItemConstructorOptions = {
     const subject = encodeURIComponent('Wire Desktop Log');
     const body = encodeURIComponent(logText);
     const mailToLink = `mailto:support+web@wire.com?subject=${subject}&body=${body}`;
-    await shell.openExternal(mailToLink);
+    try {
+      await openExternal(mailToLink);
+    } catch (error) {
+      logger.error(error);
+
+      const dialogResponse: number = await new Promise(resolve =>
+        dialog.showMessageBox(
+          {
+            buttons: ['Cancel', 'OK'],
+            message: 'Too many logs to send via email. Would you like to open the logs folder instead?',
+            title: 'Too many logs',
+          },
+          response => resolve(response),
+        ),
+      );
+
+      if (dialogResponse === 1) {
+        await openExternal(logDir);
+      }
+    }
   },
   label: 'Send Debug Logs',
 };
