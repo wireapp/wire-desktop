@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, IpcMessageEvent, app, ipcMain, session, shell} from 'electron';
+import {BrowserWindow, app, ipcMain, session, shell} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
@@ -45,7 +45,7 @@ const WINDOW_SIZE = {
   WIDTH: 304,
 };
 
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event: IpcMessageEvent, version: string) => (webappVersion = version));
+ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event, version: string) => (webappVersion = version));
 
 const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
@@ -93,7 +93,7 @@ const showWindow = async () => {
     });
 
     // Locales
-    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event: IpcMessageEvent, labels: i18nLanguageIdentifier[]) => {
+    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: i18nLanguageIdentifier[]) => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {

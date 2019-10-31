@@ -64,35 +64,19 @@ export class SingleSignOn {
       await SingleSignOn.cookies.flushCookies(to);
     },
     flushCookies: (session: Electron.Session): Promise<void> => {
-      return new Promise(resolve => {
-        session.cookies.flushStore(resolve);
-      });
+      return session.cookies.flushStore();
     },
     getBackendCookies: (session: Electron.Session, url: URL): Promise<Electron.Cookie[]> => {
-      return new Promise((resolve, reject) => {
-        const rootDomain = url.hostname
-          .split('.')
-          .reverse()
-          .splice(0, 2)
-          .reverse()
-          .join('.');
-        session.cookies.get({domain: rootDomain, secure: true}, (error, cookies) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(cookies);
-        });
-      });
+      const rootDomain = url.hostname
+        .split('.')
+        .reverse()
+        .splice(0, 2)
+        .reverse()
+        .join('.');
+      return session.cookies.get({domain: rootDomain, secure: true});
     },
-    setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string) => {
-      return new Promise((resolve, reject) => {
-        session.cookies.set({url, ...(<Electron.Details>cookie)}, error => {
-          if (error) {
-            return reject(error);
-          }
-          resolve();
-        });
-      });
+    setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string): Promise<void> => {
+      return session.cookies.set({url, ...(<Electron.Details>cookie)});
     },
   };
 
@@ -111,7 +95,7 @@ export class SingleSignOn {
       // Generate a new secret to authenticate the custom protocol (wire-sso)
       SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
 
-      const handleRequest = (request: Electron.RegisterStringProtocolRequest, response: (data?: string) => void) => {
+      const handleRequest = (request: Electron.ProtocolRequest, response: (data?: string) => void) => {
         try {
           const url = new URL(request.url);
 
@@ -200,7 +184,7 @@ export class SingleSignOn {
     windowOriginUrl: string,
     private readonly windowOptions: Electron.BrowserWindowConstructorOptions,
   ) {
-    this.senderWebContents = senderEvent.sender;
+    this.senderWebContents = (senderEvent as any).sender;
     this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginUrl);
   }
@@ -343,13 +327,9 @@ export class SingleSignOn {
     );
   };
 
-  private readonly wipeSessionData = () => {
-    return new Promise(resolve => {
-      if (this.session) {
-        this.session.clearStorageData(undefined, () => resolve());
-      } else {
-        resolve();
-      }
-    });
+  private readonly wipeSessionData = async () => {
+    if (this.session) {
+      await this.session.clearStorageData(undefined);
+    }
   };
 }

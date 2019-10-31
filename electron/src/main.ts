@@ -18,7 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
+import {BrowserWindow, Event, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -115,7 +115,7 @@ Object.entries(config).forEach(([key, value]) => {
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
 
@@ -123,17 +123,14 @@ const bindIpcEvents = () => {
     WindowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: IpcMessageEvent, count: number) => {
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count: number) => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(
-    EVENT_TYPE.ACCOUNT.DELETE_DATA,
-    async (event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) => {
-      await deleteAccount(id, accountId, partitionId);
-      main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
-    },
-  );
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (event, id: number, accountId: string, partitionId?: string) => {
+    await deleteAccount(id, accountId, partitionId);
+    main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
+  });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
@@ -240,7 +237,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
-    if (typeof (event.sender as any).viewInstanceId !== 'undefined') {
+    if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
       logger.log('New window was created from a webview, aborting.');
       return;
     }
@@ -286,7 +283,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   });
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
-  main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
+  await main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
 };
 
 // App Events
@@ -330,32 +327,24 @@ const handleAppEvents = () => {
         return callback(username, password);
       }
 
-      ipcMain.once(
-        EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
-        (event: IpcMessageEvent, promptData: {password: string; username: string}) => {
-          const {username, password} = promptData;
+      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (event, promptData: {password: string; username: string}) => {
+        const {username, password} = promptData;
 
-          logger.log('Proxy prompt was submitted');
-          const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
-          const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
-          authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
-          callback(username, password);
-        },
-      );
+        logger.log('Proxy prompt was submitted');
+        const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
+        const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
+        authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
+        callback(username, password);
+      });
 
       ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
         logger.log('Proxy prompt was canceled');
-        webContents.session.setProxy(
-          {
-            pacScript: '',
-            proxyBypassRules: '',
-            proxyRules: '',
-          },
-          () => {
-            callback('', '');
-            main.reload();
-          },
-        );
+        await webContents.session.setProxy({
+          pacScript: '',
+          proxyBypassRules: '',
+          proxyRules: '',
+        });
+        main.reload();
       });
 
       if (!triedProxy) {
@@ -460,7 +449,7 @@ class ElectronWrapperInit {
       url: string,
       frameName: string,
       disposition: string,
-      options: Electron.Options,
+      options: Electron.BrowserWindowConstructorOptions,
     ) => {
       event.preventDefault();
 
@@ -491,16 +480,11 @@ class ElectronWrapperInit {
 
         contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
 
-        await new Promise(resolve =>
-          contents.session.setProxy(
-            {
-              pacScript: '',
-              proxyBypassRules: '',
-              proxyRules: proxyURL,
-            },
-            () => resolve(),
-          ),
-        );
+        await contents.session.setProxy({
+          pacScript: '',
+          proxyBypassRules: '',
+          proxyRules: proxyURL,
+        });
       }
 
       switch (contents.getType()) {
@@ -516,12 +500,12 @@ class ElectronWrapperInit {
             }
 
             // Use secure defaults
-            params.autosize = false;
-            params.contextIsolation = true;
-            params.plugins = false;
+            params.autosize = 'false';
+            params.contextIsolation = 'true';
+            params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
-            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
+            webPreferences.preload = fileUrl(PRELOAD_RENDERER_JS);
             webPreferences.webSecurity = true;
           });
           break;
@@ -550,23 +534,23 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter = {
+            const filter: Electron.OnHeadersReceivedFilter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
             const listener = (
-              details: Electron.OnHeadersReceivedDetails,
-              callback: (response: Electron.OnHeadersReceivedResponse) => void,
+              details: Electron.OnHeadersReceivedListenerDetails,
+              callback: (response: Electron.CallbackResponse) => void,
             ) => {
               const responseHeaders = {
-                ...details.responseHeaders,
-                'Access-Control-Allow-Credentials': ['true'],
-                'Access-Control-Allow-Origin': ['http://localhost:8081'],
+                'Access-Control-Allow-Credentials': 'true',
+                'Access-Control-Allow-Origin': 'http://localhost:8081',
               };
 
               callback({
                 cancel: false,
-                responseHeaders: responseHeaders,
+                // TODO: Were `responseHeaders` really renamed to `requestHeaders` or are the types wrong?
+                requestHeaders: responseHeaders,
               });
             };
 
