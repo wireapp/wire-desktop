@@ -17,7 +17,7 @@
  *
  */
 
-import {remote, webFrame} from 'electron';
+const {webFrame, remote} = require('electron');
 const {SingleSignOn} = remote.require('./sso/SingleSignOn');
 
 // Only execute the helper if the origin is the backend
