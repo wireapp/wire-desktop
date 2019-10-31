@@ -30,13 +30,13 @@ export interface CreateSSOAccountDetail {
 const dialog = mainDialog || remote.dialog;
 
 export class AutomatedSingleSignOn {
-  private onResponseReceived(event: CustomEvent<CreateSSOAccountDetail>): void {
+  private async onResponseReceived(event: CustomEvent<CreateSSOAccountDetail>): Promise<void> {
     if (event.detail.reachedMaximumAccounts) {
-      this.showError();
+      await this.showError();
     }
   }
 
-  private showError(): void {
+  private async showError(): Promise<void> {
     let detail = getText('wrapperAddAccountErrorMessagePlural');
     let message = getText('wrapperAddAccountErrorTitlePlural');
 
@@ -45,7 +45,7 @@ export class AutomatedSingleSignOn {
       message = getText('wrapperAddAccountErrorTitleSingular');
     }
 
-    dialog.showMessageBox({
+    await dialog.showMessageBox({
       detail,
       message,
       type: 'warning',
@@ -55,9 +55,9 @@ export class AutomatedSingleSignOn {
   public async start(ssoCode: string): Promise<void> {
     window.addEventListener(
       EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE,
-      (event: Event) => {
+      async (event: Event) => {
         if ((event as CustomEvent).detail) {
-          this.onResponseReceived(event as CustomEvent);
+          await this.onResponseReceived(event as CustomEvent);
         }
       },
       {

@@ -17,7 +17,7 @@
  *
  */
 
-import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+import {WebviewTag, ipcRenderer, webFrame} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -42,18 +42,16 @@ const getWebviewById = (id: string): WebviewTag => {
 };
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event: IpcMessageEvent, code: string) =>
-    new AutomatedSingleSignOn().start(code),
-  );
+  ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event, code: string) => new AutomatedSingleSignOn().start(code));
 
-  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: IpcMessageEvent, action: string) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(action);
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event: IpcMessageEvent, hash: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event, hash: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
@@ -106,7 +104,7 @@ const addDragRegion = (): void => {
 setupIpcInterface();
 subscribeToMainProcessEvents();
 
-ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event: CustomEvent, accountIndex: number) => {
+ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
   window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
 });
 

@@ -200,7 +200,7 @@ export class SingleSignOn {
     windowOriginUrl: string,
     private readonly windowOptions: Electron.BrowserWindowConstructorOptions,
   ) {
-    this.senderWebContents = senderEvent.sender;
+    this.senderWebContents = (senderEvent as any).sender;
     this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginUrl);
   }
