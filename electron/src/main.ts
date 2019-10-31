@@ -78,7 +78,7 @@ const customProtocolHandler = new CustomProtocolHandler();
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 
-const logger = getLogger(__filename);
+const logger = getLogger(path.basename(__filename));
 
 if (argv.version) {
   console.log(config.version);
