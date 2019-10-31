@@ -17,6 +17,7 @@
     "logdown": "3.2.8",
     "minimist": "1.2.0",
     "moment": "2.24.0",
+    "open": "7.0.0",
     "open-graph": "0.2.4",
     "prop-types": "15.7.2",
     "raygun": "0.10.1",
