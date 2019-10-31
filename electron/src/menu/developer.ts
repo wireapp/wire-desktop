@@ -17,12 +17,12 @@
  *
  */
 
-import {MenuItem, app} from 'electron';
+import {MenuItem, app, dialog} from 'electron';
 import * as openExternal from 'open';
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
-import {gatherLogs} from '../logging/loggerUtils';
+import {gatherLogs, logDir} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
@@ -47,6 +47,21 @@ const sendLogTemplate: Electron.MenuItemConstructorOptions = {
       await openExternal(mailToLink);
     } catch (error) {
       logger.error(error);
+
+      const dialogResponse: number = await new Promise(resolve =>
+        dialog.showMessageBox(
+          {
+            buttons: ['Cancel', 'OK'],
+            message: 'Too many logs to send via email. Would you like to open the logs folder instead?',
+            title: 'Too many logs',
+          },
+          response => resolve(response),
+        ),
+      );
+
+      if (dialogResponse === 1) {
+        await openExternal(logDir);
+      }
     }
   },
   label: 'Send Debug Logs',
