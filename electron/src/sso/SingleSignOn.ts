@@ -160,10 +160,7 @@ export class SingleSignOn {
     unregister: (session: Electron.Session): Promise<void> => {
       return new Promise((resolve, reject) => {
         session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
-          if (error) {
-            reject(error);
-          }
-          resolve();
+          return error ? reject(error) : resolve();
         });
       });
     },
