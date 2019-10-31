@@ -1,0 +1,102 @@
+/*
+ * Wire
+ * Copyright (C) 2019 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  align-items: center;
+  background-color: #fff;
+  color: #34383b;
+  cursor: default;
+  display: flex;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  height: 100%;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+#container {
+}
+
+#form {
+  width: 100%;
+}
+
+h1 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+}
+
+p {
+  margin: 0 0 16px;
+}
+
+label {
+  display: inline-block;
+  width: 80px;
+  text-align: right;
+  margin-right: 8px;
+}
+
+input {
+  padding: 0.5em;
+  border-radius: 4px;
+  border: 1px solid #bac8d1;
+  width: 160px;
+  font-size: 14px;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 2px;
+  margin: 0 4px;
+  border: 0;
+  line-height: 1em;
+  padding: 8px 8px;
+  width: 80px;
+  font-size: 12px;
+}
+.copy {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e1e7eb;
+}
+
+.buttons {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e1e7eb;
+}
+
+#okButton {
+  background-color: #3879d9;
+  color: white;
+}
+
+#cancelButton {
+  background-color: #ddd;
+  color: black;
+}

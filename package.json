@@ -9,6 +9,8 @@
     "electron-window-state": "5.0.3",
     "file-url": "3.0.0",
     "fs-extra": "8.0.1",
+    "get-proxy-settings": "0.1.10",
+    "globby": "10.0.1",
     "iconv-lite": "0.5.0",
     "image-type": "4.1.0",
     "lodash": "4.17.15",
@@ -61,7 +63,7 @@
     "core-js": "2.6.9",
     "cross-env": "5.2.0",
     "css-loader": "3.2.0",
-    "electron": "4.2.9",
+    "electron": "4.2.12",
     "electron-mocha": "8.1.1",
     "eslint": "6.1.0",
     "eslint-config-prettier": "6.0.0",
@@ -89,8 +91,8 @@
     "typescript": "3.5.3",
     "webpack": "4.39.1",
     "webpack-cli": "3.3.6",
-    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.22.12",
-    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.22.11-0"
+    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.24.7",
+    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.24.8-0"
   },
   "homepage": "https://wire.com",
   "husky": {

@@ -2589,6 +2589,14 @@ concat-stream@1.6.2, concat-stream@^1.5.0:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
+config-chain@^1.1.11:
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/config-chain/-/config-chain-1.1.12.tgz#0fde8d091200eb5e808caf25fe618c02f48e4efa"
+  integrity sha512-a1eOIcu8+7lUInge4Rpf/n4Krkf3Dd9lqhljRzII1/Zno/kRtUWnznPO3jOKBmTEktkt3fkxisUcivoj0ebzoA==
+  dependencies:
+    ini "^1.3.4"
+    proto-list "~1.2.1"
+
 configstore@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/configstore/-/configstore-4.0.0.tgz#5933311e95d3687efb592c528b922d9262d227e7"
@@ -3386,10 +3394,10 @@ electron-winstaller@2.7.0:
     lodash.template "^4.2.2"
     temp "^0.8.3"
 
-electron@4.2.9:
-  version "4.2.9"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-4.2.9.tgz#81226aa1ba58e1b05388474faf5a815010a11ea2"
-  integrity sha512-zC7K3GOiZKmxqllVG/qq/Gx+qQvyolKj5xKKwXMqIGekfokEW2hvoIO5Yh7KCoAh5dqBtpzOJjS4fj1se+YBcg==
+electron@4.2.12:
+  version "4.2.12"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-4.2.12.tgz#8e8926a6a6654cde5eb0612952fed98a56941875"
+  integrity sha512-EES8eMztoW8gEP5E4GQLP8slrfS2jqTYtHbu36mlu3k1xYAaNPyQQr6mCILkYxqj4l3la4CT2Vcs89CUG62vcQ==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
@@ -4376,6 +4384,13 @@ get-package-info@^1.0.0:
     debug "^2.2.0"
     lodash.get "^4.0.0"
     read-pkg-up "^2.0.0"
+
+get-proxy-settings@0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/get-proxy-settings/-/get-proxy-settings-0.1.10.tgz#8ea511c694185a60fb13952b1364b96591ba4c98"
+  integrity sha512-RWGOYh7vQND3Ou43PUjJwZaFXWikZPBaKApkE8S7+4wHy8utXjV/+BxoFwaCSfdh5+YWlh2FZp99xKhl8fw8Kw==
+  dependencies:
+    npm-conf "~1.1.3"
 
 get-stdin@^4.0.1:
   version "4.0.1"
@@ -6950,6 +6965,14 @@ npm-bundled@^1.0.1:
   resolved "https://registry.yarnpkg.com/npm-bundled/-/npm-bundled-1.0.6.tgz#e7ba9aadcef962bb61248f91721cd932b3fe6bdd"
   integrity sha512-8/JCaftHwbd//k6y2rEWp6k1wxVfpFzB6t1p825+cUb7Ym2XQfhwIC5KwhrvzZRJu+LtDE585zVaS32+CGtf0g==
 
+npm-conf@~1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/npm-conf/-/npm-conf-1.1.3.tgz#256cc47bd0e218c259c4e9550bf413bc2192aff9"
+  integrity sha512-Yic4bZHJOt9RCFbRP3GgpqhScOY4HH3V2P8yBj6CeYq118Qr+BLXqT2JvpJ00mryLESpgOxf5XlFv4ZjXxLScw==
+  dependencies:
+    config-chain "^1.1.11"
+    pify "^3.0.0"
+
 npm-packlist@^1.1.6:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.4.4.tgz#866224233850ac534b63d1a6e76050092b5d2f44"
@@ -7778,6 +7801,11 @@ propagate@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/propagate/-/propagate-1.0.0.tgz#00c2daeedda20e87e3782b344adba1cddd6ad709"
   integrity sha1-AMLa7t2iDofjeCs0Stuhzd1q1wk=
+
+proto-list@~1.2.1:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
+  integrity sha1-IS1b/hMYMGpCD2QCuOJv85ZHqEk=
 
 prr@~1.0.1:
   version "1.0.1"
@@ -9806,16 +9834,16 @@ winreg@1.2.4:
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.22.12":
-  version "0.22.12"
-  resolved "https://github.com/wireapp/wire-web-config-default#67009e696080bf07053fc2e0af4536c680cb736c"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.7":
+  version "0.24.7"
+  resolved "https://github.com/wireapp/wire-web-config-default#bdfa4fb96629929e516e4e550bf0d8e937e1bc34"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.22.11-0":
-  version "0.22.11-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#8f29ef087891546e6d499748599e0ec4641c9b42"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.8-0":
+  version "0.24.8-0"
+  resolved "https://github.com/wireapp/wire-web-config-wire#58ff4f0fff77c3bcb026da7ca1d7f252cb8d2209"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
