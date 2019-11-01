@@ -24,7 +24,7 @@ import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import {settings} from '../settings/ConfigurationPersistence';
 import {Squirrel} from '../update/Squirrel';
-import {WindowManager} from '../window/WindowManager';
+import * as WindowManager from '../window/WindowManager';
 import * as EnvironmentUtil from './EnvironmentUtil';
 
 const logger = getLogger(path.basename(__filename));

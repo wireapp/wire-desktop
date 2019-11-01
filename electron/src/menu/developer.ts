@@ -26,14 +26,18 @@ import {gatherLogs, logDir} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
-import {WindowManager} from '../window/WindowManager';
+import * as WindowManager from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
-const getPrimaryWindow = () => WindowManager.getPrimaryWindow();
 const logger = getLogger(path.basename(__filename));
 
 const reloadTemplate: Electron.MenuItemConstructorOptions = {
-  click: () => getPrimaryWindow().reload(),
+  click: () => {
+    const primaryWindow = WindowManager.getPrimaryWindow();
+    if (primaryWindow) {
+      primaryWindow.reload();
+    }
+  },
   label: 'Reload',
 };
 
@@ -72,27 +76,41 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'Alt+CmdOrCtrl+I',
-      click: () => getPrimaryWindow().webContents.toggleDevTools(),
+      click: () => {
+        const primaryWindow = WindowManager.getPrimaryWindow();
+        if (primaryWindow) {
+          primaryWindow.webContents.toggleDevTools();
+        }
+      },
       label: 'Sidebar',
     },
     {
-      click: () => {
-        const command = 'document.getElementsByTagName("webview")[0].openDevTools({mode: "detach"})';
-        return getPrimaryWindow().webContents.executeJavaScript(command);
+      click: async () => {
+        const primaryWindow = WindowManager.getPrimaryWindow();
+        if (primaryWindow) {
+          const command = 'document.getElementsByTagName("webview")[0].openDevTools({mode: "detach"})';
+          await primaryWindow.webContents.executeJavaScript(command);
+        }
       },
       label: 'First',
     },
     {
-      click: () => {
-        const command = 'document.getElementsByTagName("webview")[1].openDevTools({mode: "detach"})';
-        return getPrimaryWindow().webContents.executeJavaScript(command);
+      click: async () => {
+        const primaryWindow = WindowManager.getPrimaryWindow();
+        if (primaryWindow) {
+          const command = 'document.getElementsByTagName("webview")[1].openDevTools({mode: "detach"})';
+          await primaryWindow.webContents.executeJavaScript(command);
+        }
       },
       label: 'Second',
     },
     {
-      click: () => {
-        const command = 'document.getElementsByTagName("webview")[2].openDevTools({mode: "detach"})';
-        return getPrimaryWindow().webContents.executeJavaScript(command);
+      click: async () => {
+        const primaryWindow = WindowManager.getPrimaryWindow();
+        if (primaryWindow) {
+          const command = 'document.getElementsByTagName("webview")[2].openDevTools({mode: "detach"})';
+          await primaryWindow.webContents.executeJavaScript(command);
+        }
       },
       label: 'Third',
     },

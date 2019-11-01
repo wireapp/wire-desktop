@@ -18,6 +18,11 @@
  */
 
 import {Event, WebContents, webContents} from 'electron';
+import * as path from 'path';
+
+import {getLogger} from '../logging/getLogger';
+
+const logger = getLogger(path.basename(__filename));
 
 /*
  * Note: webContents.getFocusedWebContents() is broken, always returns the last one
@@ -29,28 +34,27 @@ import {Event, WebContents, webContents} from 'electron';
 
 export class WebViewFocus {
   private static current = 0;
+
   public static readonly bindTracker = (event: Event, contents: WebContents): void => {
     if (contents.getType() === 'webview') {
       // Undocumented event @ https://github.com/electron/electron/pull/14344/files
       (contents as any).on('focus-change', (event: Event, isFocus: boolean, guestInstanceId: number) => {
         if (isFocus) {
+          logger.info(`Setting WebViewFocus ID to "${guestInstanceId}" ...`);
           WebViewFocus.current = guestInstanceId;
         }
       });
     }
   };
 
-  public static readonly getFocusedWebContents = (): WebContents | undefined => {
-    let webContentFound: WebContents | undefined;
+  public static readonly getFocusedWebContents = (): WebContents | void => {
     for (const webContent of webContents.getAllWebContents()) {
       if (
         typeof (webContent as any).viewInstanceId == 'number' &&
         (webContent as any).viewInstanceId === WebViewFocus.current
       ) {
-        webContentFound = webContent;
-        break;
+        return webContent;
       }
     }
-    return webContentFound;
   };
 }
