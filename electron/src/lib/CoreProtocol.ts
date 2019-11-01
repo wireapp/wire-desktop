@@ -24,13 +24,12 @@ import {URL} from 'url';
 import {getLogger} from '../logging/getLogger';
 import {platform} from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
-import {WindowManager} from '../window/WindowManager';
+import * as WindowManager from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
 const logger = getLogger(path.basename(__filename));
 
 const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
-const CORE_PROTOCOL_POSITION = 1;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 
 enum ProtocolCommand {
@@ -38,19 +37,23 @@ enum ProtocolCommand {
 }
 
 export class CustomProtocolHandler {
-  hashLocation = '';
+  public hashLocation = '';
   private readonly windowManager = WindowManager;
 
   async dispatchDeepLink(url?: string): Promise<void> {
+    logger.info(`Received deep link "${url}"`);
     if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
+      logger.info('Invalid deep link, ignoring');
       return;
     }
 
     const route = new URL(url);
 
     if (route.host === ProtocolCommand.START_SSO_FLOW) {
+      logger.info('Deep link is a SSO link, triggering SSO login ...');
       await this.handleSSOLogin(route);
     } else {
+      logger.info('Triggering hash location change ...');
       this.forwardHashLocation(route);
     }
   }
@@ -58,12 +61,13 @@ export class CustomProtocolHandler {
   private forwardHashLocation(route: URL): void {
     const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
     this.hashLocation = `/${location}`;
+    logger.info(`New hash location: "${this.hashLocation}"`);
     this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
   }
 
   private async handleSSOLogin(route: URL): Promise<void> {
     if (typeof route.pathname === 'string') {
-      logger.log('Starting SSO flow...');
+      logger.log('Starting SSO flow ...');
       const code = route.pathname.trim().substr(1);
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
@@ -73,8 +77,17 @@ export class CustomProtocolHandler {
     }
   }
 
+  private findDeepLink(argv: string[]): string | void {
+    for (const arg of argv) {
+      if (arg.startsWith(CORE_PROTOCOL_PREFIX)) {
+        return arg;
+      }
+    }
+  }
+
   public registerCoreProtocol(): void {
     if (!app.isDefaultProtocolClient(config.customProtocolName)) {
+      logger.log(`Registering custom protocol "${config.customProtocolName}" ...`);
       app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
@@ -85,12 +98,16 @@ export class CustomProtocolHandler {
       });
     } else {
       app.once('ready', async () => {
-        const url = process.argv[CORE_PROTOCOL_POSITION];
-        await this.dispatchDeepLink(url);
+        const deepLink = this.findDeepLink(process.argv);
+        if (deepLink) {
+          await this.dispatchDeepLink(deepLink);
+        }
       });
       app.on('second-instance', async (event, argv) => {
-        const url = argv[CORE_PROTOCOL_POSITION];
-        await this.dispatchDeepLink(url);
+        const deepLink = this.findDeepLink(argv);
+        if (deepLink) {
+          await this.dispatchDeepLink(deepLink);
+        }
       });
     }
   }
