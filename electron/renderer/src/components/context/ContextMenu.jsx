@@ -27,12 +27,6 @@ import {setAccountContextHidden} from '../../actions';
 class ContextMenu extends Component {
   constructor(props) {
     super(props);
-
-    this._handleKeyDown = this._handleKeyDown.bind(this);
-    this._hide = this._hide.bind(this);
-    this._handleMouseDown = this._handleMouseDown.bind(this);
-    this._handleMouseWheel = this._handleMouseWheel.bind(this);
-    this._handleRef = this._handleRef.bind(this);
   }
 
   componentDidMount() {
@@ -43,26 +37,26 @@ class ContextMenu extends Component {
     this._unregisterListeners();
   }
 
-  _hide() {
+  _hide = () => {
     this.props.setAccountContextHidden();
-  }
+  };
 
-  _handleKeyDown(event) {
+  _handleKeyDown = event => {
     const KEY_ESCAPE = 27;
     if (event.keyCode === KEY_ESCAPE) {
       this._hide();
     }
-  }
+  };
 
-  _handleMouseDown(event) {
+  _handleMouseDown = event => {
     if (this.menu && !this.menu.contains(event.target)) {
       this._hide();
     }
-  }
+  };
 
-  _handleMouseWheel(event) {
+  _handleMouseWheel = event => {
     event.preventDefault();
-  }
+  };
 
   _registerListeners() {
     window.addEventListener('keydown', this._handleKeyDown);
@@ -78,7 +72,7 @@ class ContextMenu extends Component {
     window.removeEventListener('wheel', this._handleMouseWheel);
   }
 
-  _handleRef(menu) {
+  _handleRef = menu => {
     if (menu) {
       this.menu = menu;
       const {centerX, centerY} = this.props.position;
@@ -92,7 +86,7 @@ class ContextMenu extends Component {
       menu.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
       menu.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
     }
-  }
+  };
 
   render() {
     return (
