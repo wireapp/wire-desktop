@@ -61,8 +61,6 @@ export const quit = () => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
 
-  logger.info('Unregistering all global shortcuts ...');
-
   logger.info('Exiting ...');
   app.exit();
 };
