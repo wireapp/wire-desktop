@@ -429,13 +429,13 @@ export const createMenu = (isFullScreen: boolean): Menu => {
       visible: false,
     };
 
-    const switchShortcuts: MenuItemConstructorOptions[] = [...Array(config.maximumAccounts).keys()].map(accountId => {
-      const switchAccelerator = `CmdOrCtrl+${accountId + 1}`;
+    const switchShortcuts: MenuItemConstructorOptions[] = [...Array(config.maximumAccounts).keys()].map(index => {
+      const switchAccelerator = `CmdOrCtrl+${index + 1}`;
       logger.info(`Registering account switching shortcut "${switchAccelerator}" ...`);
       return {
         accelerator: switchAccelerator,
-        click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId),
-        label: `Switch to account ${accountId + 1}`,
+        click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
+        label: `Switch to account ${index + 1}`,
         visible: false,
       };
     });
