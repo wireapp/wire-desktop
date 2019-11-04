@@ -17,7 +17,7 @@
  *
  */
 
-import {app, globalShortcut, ipcMain} from 'electron';
+import {app, ipcMain} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -62,7 +62,6 @@ export const quit = () => {
   settings.persistToFile();
 
   logger.info('Unregistering all global shortcuts ...');
-  globalShortcut.unregisterAll();
 
   logger.info('Exiting ...');
   app.exit();
