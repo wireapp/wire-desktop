@@ -29,7 +29,7 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 
 describe('commonConfig', () => {
   describe('getCommonConfig', () => {
-    it('honors environment variables', () => {
+    it('honors environment variables', async () => {
       const adminUrl = uuid();
       const appBase = uuid();
       const buildNumber = uuid();
@@ -64,7 +64,7 @@ describe('commonConfig', () => {
       process.env.URL_SUPPORT = supportUrl;
       process.env.URL_WEBSITE = websiteUrl;
 
-      const {commonConfig} = getCommonConfig(envFilePath, wireJsonPath);
+      const {commonConfig} = await getCommonConfig(envFilePath, wireJsonPath);
 
       assert.strictEqual(commonConfig.adminUrl, adminUrl);
       assert.strictEqual(commonConfig.appBase, appBase);
@@ -132,7 +132,7 @@ describe('commonConfig', () => {
       await fs.writeJSON(tempWireJsonPath, wireJson);
       await fs.writeFile(tempEnvFilePath, '', 'utf-8');
 
-      const {commonConfig} = getCommonConfig(tempEnvFilePath, tempWireJsonPath);
+      const {commonConfig} = await getCommonConfig(tempEnvFilePath, tempWireJsonPath);
 
       assert.strictEqual(commonConfig.appBase, wireJson.appBase);
       assert.strictEqual(commonConfig.buildDir, wireJson.buildDir);
@@ -181,20 +181,20 @@ describe('commonConfig', () => {
 
       // Test 1: only wire.json is available
       await fs.writeJSON(tempWireJsonPath, wireJson);
-      let config = getCommonConfig(tempEnvFilePath, tempWireJsonPath);
+      let config = await getCommonConfig(tempEnvFilePath, tempWireJsonPath);
 
       assert.strictEqual(config.commonConfig.adminUrl, wireJson.adminUrl);
 
       // Test 2: .env file is available, too
       await fs.writeFile(tempEnvFilePath, `URL_ADMIN = ${envFile.adminUrl}`, 'utf-8');
-      config = getCommonConfig(tempEnvFilePath, tempWireJsonPath);
+      config = await getCommonConfig(tempEnvFilePath, tempWireJsonPath);
 
       assert.strictEqual(config.commonConfig.adminUrl, envFile.adminUrl);
       assert.notStrictEqual(config.commonConfig.adminUrl, wireJson.adminUrl);
 
       // Test 3: environment variable is available, too
       process.env.URL_ADMIN = uuid();
-      config = getCommonConfig(tempEnvFilePath, tempWireJsonPath);
+      config = await getCommonConfig(tempEnvFilePath, tempWireJsonPath);
 
       assert.strictEqual(config.commonConfig.adminUrl, process.env.URL_ADMIN);
       assert.notStrictEqual(config.commonConfig.adminUrl, envFile.adminUrl);

@@ -27,7 +27,7 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 
 describe('build-linux', () => {
   describe('buildLinuxConfig', () => {
-    it('honors environment variables', () => {
+    it('honors environment variables', async () => {
       const categories = uuid();
       const keywords = uuid();
       const nameShort = uuid();
@@ -38,7 +38,7 @@ describe('build-linux', () => {
       process.env.LINUX_NAME_SHORT = nameShort;
       process.env.LINUX_TARGET = targets.join(',');
 
-      const {linuxConfig} = buildLinuxConfig(wireJsonPath, envFilePath);
+      const {linuxConfig} = await buildLinuxConfig(wireJsonPath, envFilePath);
 
       assert.strictEqual(linuxConfig.categories, categories);
       assert.strictEqual(linuxConfig.executableName, nameShort);
