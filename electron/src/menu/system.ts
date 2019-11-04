@@ -27,7 +27,7 @@ import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-import {WindowManager} from '../window/WindowManager';
+import * as WindowManager from '../window/WindowManager';
 
 import {Supportedi18nLanguage} from '../interfaces/';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -125,7 +125,12 @@ const conversationTemplate: MenuItemConstructorOptions = {
 
 const showWireTemplate: MenuItemConstructorOptions = {
   accelerator: 'CmdOrCtrl+0',
-  click: () => WindowManager.getPrimaryWindow().show(),
+  click: () => {
+    const primaryWindow = WindowManager.getPrimaryWindow();
+    if (primaryWindow) {
+      primaryWindow.show();
+    }
+  },
   label: `&${config.name}`,
 };
 
@@ -133,15 +138,18 @@ const toggleMenuTemplate: MenuItemConstructorOptions = {
   checked: settings.restore(SettingsType.SHOW_MENU_BAR, true),
   click: () => {
     const mainBrowserWindow = WindowManager.getPrimaryWindow();
-    const showMenu = mainBrowserWindow.isMenuBarAutoHide();
 
-    mainBrowserWindow.setAutoHideMenuBar(!showMenu);
+    if (mainBrowserWindow) {
+      const showMenu = mainBrowserWindow.isMenuBarAutoHide();
 
-    if (!showMenu) {
-      mainBrowserWindow.setMenuBarVisibility(showMenu);
+      mainBrowserWindow.setAutoHideMenuBar(!showMenu);
+
+      if (!showMenu) {
+        mainBrowserWindow.setMenuBarVisibility(showMenu);
+      }
+
+      settings.save(SettingsType.SHOW_MENU_BAR, showMenu);
     }
-
-    settings.save(SettingsType.SHOW_MENU_BAR, showMenu);
   },
   label: locale.getText('menuShowHide'),
   type: 'checkbox',
@@ -151,7 +159,10 @@ const toggleFullScreenTemplate: MenuItemConstructorOptions = {
   accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Command+F' : 'F11',
   click: () => {
     const mainBrowserWindow = WindowManager.getPrimaryWindow();
-    mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
+
+    if (mainBrowserWindow) {
+      mainBrowserWindow.setFullScreen(!mainBrowserWindow.isFullScreen());
+    }
   },
   label: locale.getText('menuFullScreen'),
   type: 'checkbox',
@@ -173,7 +184,7 @@ const editTemplate: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
-      click: (menuItem: Electron.MenuItem, focusedWin: Electron.BrowserWindow) => {
+      click: () => {
         const focusedWebContents = WebViewFocus.getFocusedWebContents();
         if (focusedWebContents) {
           focusedWebContents.undo();
@@ -183,7 +194,7 @@ const editTemplate: MenuItemConstructorOptions = {
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
-      click: (menuItem: Electron.MenuItem, focusedWin: Electron.BrowserWindow) => {
+      click: () => {
         const focusedWebContents = WebViewFocus.getFocusedWebContents();
         if (focusedWebContents) {
           focusedWebContents.redo();
@@ -447,11 +458,14 @@ export const registerShortcuts = (): void => {
 
 export const toggleMenuBar = (): void => {
   const mainBrowserWindow = WindowManager.getPrimaryWindow();
-  const isVisible = mainBrowserWindow.isMenuBarVisible();
-  const autoHide = mainBrowserWindow.isMenuBarAutoHide();
 
-  if (autoHide) {
-    mainBrowserWindow.setMenuBarVisibility(!isVisible);
+  if (mainBrowserWindow) {
+    const isVisible = mainBrowserWindow.isMenuBarVisible();
+    const autoHide = mainBrowserWindow.isMenuBarAutoHide();
+
+    if (autoHide) {
+      mainBrowserWindow.setMenuBarVisibility(!isVisible);
+    }
   }
 };
 

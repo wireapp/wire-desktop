@@ -24,12 +24,15 @@ import * as path from 'path';
 import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 
 let webappVersion: string;
 
 // Paths
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
+const iconFileName = `logo.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
+const iconPath = path.join(APP_PATH, 'img', iconFileName);
 
 // Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));
@@ -56,6 +59,7 @@ const showWindow = async () => {
       backgroundColor: '#ececec',
       fullscreen: false,
       height: WINDOW_SIZE.HEIGHT,
+      icon: iconPath,
       maximizable: false,
       minimizable: false,
       resizable: false,
