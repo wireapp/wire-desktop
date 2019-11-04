@@ -18,7 +18,7 @@
  */
 
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
-import {parse as parseContentType} from 'content-type';
+import {ParsedMediaType, parse as parseContentType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
@@ -99,33 +99,33 @@ export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<Ax
   }
 };
 
-export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
-  const CancelToken = axios.CancelToken;
-  const cancelSource = CancelToken.source();
+export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
+  const cancelSource = axios.CancelToken.source();
 
   config.responseType = 'stream';
   config.cancelToken = cancelSource.token;
 
-  return new Promise((resolve, reject) => {
-    let partialBody = '';
+  try {
+    const response = await axiosWithCookie<IncomingMessage>(config);
+    let contentType: ParsedMediaType;
 
-    return axiosWithCookie<IncomingMessage>(config)
-      .then(response => {
-        let contentType;
+    try {
+      contentType = parseContentType(response.headers['content-type']);
+    } catch (error) {
+      throw new Error(`Could not parse content type: "${error.message}"`);
+    }
 
-        try {
-          contentType = parseContentType(response.headers['content-type']);
-        } catch (error) {
-          return reject(new Error(`Could not parse content type: "${error.message}"`));
-        }
+    if (!contentType.type.includes('text/html')) {
+      throw new Error(`Unhandled format for open graph generation ("${contentType}")`);
+    }
 
-        if (!contentType.type.includes('text/html')) {
-          return reject(new Error(`Unhandled format for open graph generation ('${contentType}')`));
-        }
+    const charset = contentType.parameters.charset;
 
-        const charset = contentType.parameters.charset;
+    const body = await new Promise<string>((resolve, reject) => {
+      let partialBody = '';
 
-        response.data.on('data', (buffer: Buffer) => {
+      response.data
+        .on('data', (buffer: Buffer) => {
           let chunk = buffer.toString('utf8');
 
           if (charset) {
@@ -142,20 +142,20 @@ export const axiosWithContentLimit = (config: AxiosRequestConfig, contentLimit: 
             cancelSource.cancel();
             resolve(partialBody);
           }
-        });
+        })
+        .on('error', error => reject(error))
+        .on('end', () => resolve(partialBody));
+    });
 
-        response.data.on('error', reject);
-        response.data.on('end', () => resolve(partialBody));
-      })
-      .catch(error => {
-        if (axios.isCancel(error)) {
-          return resolve('');
-        }
+    return body;
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      return '';
+    }
 
-        const mappedError = error.isAxiosError ? new Error(`Request failed with code "${error.code}"`) : error;
-        return reject(mappedError);
-      });
-  });
+    const mappedError = error.isAxiosError ? new Error(`Request failed with code "${error.code}"`) : error;
+    throw mappedError;
+  }
 };
 
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
