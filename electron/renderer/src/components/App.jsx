@@ -53,6 +53,8 @@ class App extends React.Component {
     if (accountId) {
       this.props.switchAccount(accountId);
     }
+
+    event.target.focus();
   }
 
   initiateSSO(event) {

@@ -22,6 +22,7 @@ import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
+import * as systemMenu from '../menu/system';
 import {settings} from '../settings/ConfigurationPersistence';
 import {Squirrel} from '../update/Squirrel';
 import * as WindowManager from '../window/WindowManager';
@@ -60,6 +61,7 @@ export const checkSingleInstance = () => {
 export const quit = () => {
   logger.info('Quitting the app ...');
   settings.persistToFile();
+  systemMenu.unregisterGlobalShortcuts();
   app.exit();
 };
 
