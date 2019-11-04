@@ -20,8 +20,7 @@ import commander from 'commander';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {execSync} from 'child_process';
-import {checkCommanderOptions, getLogger} from '../bin-utils';
+import {checkCommanderOptions, execAsync, getLogger} from '../bin-utils';
 import {FileExtension} from './lib/deploy-utils';
 import {GitHubDraftDeployer} from './lib/GitHubDraftDeployer';
 
@@ -69,9 +68,7 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
     throw new Error(`Invalid platform "${platform}"`);
   }
 
-  const commitish = execSync('git rev-parse HEAD')
-    .toString()
-    .trim();
+  const commitish = await execAsync('git rev-parse HEAD');
   const changelog = '...';
   const githubToken = commander.githubToken;
 
@@ -103,7 +100,7 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
     logger.log(`Asset "${fileName}" uploaded.`);
   }
 
-  logger.log('Done.');
+  logger.log('Done creating GitHub draft.');
 })().catch(error => {
   logger.error(error);
   process.exit(1);

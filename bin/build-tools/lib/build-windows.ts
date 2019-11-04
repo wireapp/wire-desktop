@@ -27,13 +27,14 @@ import {getCommonConfig} from './commonConfig';
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
-export function buildWindowsConfig(
-  wireJsonPath: string,
-  envFilePath: string,
-): {packagerConfig: electronPackager.Options} {
+interface WindowsConfigResult {
+  packagerConfig: electronPackager.Options;
+}
+
+export async function buildWindowsConfig(wireJsonPath: string, envFilePath: string): Promise<WindowsConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const packagerConfig: electronPackager.Options = {
     appCopyright: commonConfig.copyright,
@@ -72,7 +73,7 @@ export async function buildWindowsWrapper(
   const packageJson = path.resolve(packageJsonPath);
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {defaultConfig, commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {defaultConfig, commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} for Windows ...`);
 
