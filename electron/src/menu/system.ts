@@ -18,7 +18,7 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {Menu, MenuItemConstructorOptions, dialog, globalShortcut, ipcMain, shell} from 'electron';
+import {Menu, MenuItemConstructorOptions, dialog, ipcMain, shell} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -356,8 +356,6 @@ const linuxTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-const menuTemplate: MenuItemConstructorOptions[] = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
-
 const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: Supportedi18nLanguage) => {
   for (const item of template) {
     if (item.submenu) {
@@ -391,6 +389,8 @@ const changeLocale = (language: Supportedi18nLanguage): void => {
 };
 
 export const createMenu = (isFullScreen: boolean): Menu => {
+  const menuTemplate = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
+
   if (!windowTemplate.submenu) {
     windowTemplate.submenu = [];
   }
@@ -414,6 +414,30 @@ export const createMenu = (isFullScreen: boolean): Menu => {
     windowTemplate.label = locale.getText('menuView');
     if (Array.isArray(windowTemplate.submenu)) {
       windowTemplate.submenu.unshift(toggleMenuTemplate, separatorTemplate);
+    }
+  }
+
+  if (Array.isArray(windowTemplate.submenu)) {
+    const muteShortcut = 'CmdOrCtrl+Alt+M';
+    logger.info(`Registering mute shortcut "${muteShortcut}" ...`);
+
+    windowTemplate.submenu.push({
+      accelerator: muteShortcut,
+      click: () =>
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
+      label: 'Toggle mute',
+      visible: false,
+    });
+
+    const accountLimit = config.maximumAccounts;
+    for (let accountId = 0; accountId < accountLimit; accountId++) {
+      logger.info(`Registering account switching shortcut "CmdOrCtrl+${accountId + 1}" ...`);
+      windowTemplate.submenu.push({
+        accelerator: `CmdOrCtrl+${accountId + 1}`,
+        click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId),
+        label: `Switch to account ${accountId + 1}`,
+        visible: false,
+      });
     }
   }
 
@@ -442,25 +466,6 @@ export const createMenu = (isFullScreen: boolean): Menu => {
   return Menu.buildFromTemplate(menuTemplate);
 };
 
-export const registerShortcuts = (): void => {
-  // Global mute shortcut
-  const muteShortcut = 'CmdOrCtrl+Alt+M';
-  logger.info(`Registering global mute shortcut "${muteShortcut}" ...`);
-  globalShortcut.register(muteShortcut, () =>
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
-  );
-
-  // Global account switching shortcut
-  const accountLimit = config.maximumAccounts;
-  for (let accountId = 0; accountId < accountLimit; accountId++) {
-    logger.info(`Registering global account switching shortcut "CmdOrCtrl+${accountId + 1}" ...`);
-    globalShortcut.register(`CmdOrCtrl+${accountId + 1}`, () => {
-      logger.info(`Switching to account "${accountId}" ...`);
-      WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId);
-    });
-  }
-};
-
 export const toggleMenuBar = (): void => {
   const mainBrowserWindow = WindowManager.getPrimaryWindow();
 
@@ -472,9 +477,4 @@ export const toggleMenuBar = (): void => {
       mainBrowserWindow.setMenuBarVisibility(!isVisible);
     }
   }
-};
-
-export const unregisterGlobalShortcuts = (): void => {
-  logger.info('Unregistering all global shortcuts ...');
-  globalShortcut.unregisterAll();
 };
