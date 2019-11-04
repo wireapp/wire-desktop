@@ -418,27 +418,29 @@ export const createMenu = (isFullScreen: boolean): Menu => {
   }
 
   if (Array.isArray(windowTemplate.submenu)) {
-    const muteShortcut = 'CmdOrCtrl+Alt+M';
-    logger.info(`Registering mute shortcut "${muteShortcut}" ...`);
+    const muteAccelerator = 'CmdOrCtrl+Alt+M';
+    logger.info(`Registering mute shortcut "${muteAccelerator}" ...`);
 
-    windowTemplate.submenu.push({
-      accelerator: muteShortcut,
+    const muteShortcut: MenuItemConstructorOptions = {
+      accelerator: muteAccelerator,
       click: () =>
         WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
       label: 'Toggle mute',
       visible: false,
-    });
+    };
 
-    const accountLimit = config.maximumAccounts;
-    for (let accountId = 0; accountId < accountLimit; accountId++) {
-      logger.info(`Registering account switching shortcut "CmdOrCtrl+${accountId + 1}" ...`);
-      windowTemplate.submenu.push({
-        accelerator: `CmdOrCtrl+${accountId + 1}`,
+    const switchShortcuts: MenuItemConstructorOptions[] = [...Array(config.maximumAccounts).keys()].map(accountId => {
+      const switchAccelerator = `CmdOrCtrl+${accountId + 1}`;
+      logger.info(`Registering account switching shortcut "${switchAccelerator}" ...`);
+      return {
+        accelerator: switchAccelerator,
         click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId),
         label: `Switch to account ${accountId + 1}`,
         visible: false,
-      });
-    }
+      };
+    });
+
+    windowTemplate.submenu.push(muteShortcut, ...switchShortcuts);
   }
 
   if (EnvironmentUtil.platform.IS_LINUX) {
