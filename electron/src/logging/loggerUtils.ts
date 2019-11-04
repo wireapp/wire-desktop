@@ -22,7 +22,7 @@ import * as fs from 'fs-extra';
 import * as globby from 'globby';
 import * as path from 'path';
 
-const logDir = path.join(app.getPath('userData'), 'logs');
+export const logDir = path.join(app.getPath('userData'), 'logs');
 
 export function getLogFiles(base: string = logDir, absolute: boolean = false): string[] {
   return globby.sync('**/*.{log,old}', {cwd: base, followSymbolicLinks: false, onlyFiles: true, absolute});

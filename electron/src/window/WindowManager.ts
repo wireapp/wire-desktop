@@ -18,19 +18,29 @@
  */
 
 import {BrowserWindow, app} from 'electron';
+import * as path from 'path';
+
+import {WebViewFocus} from '../lib/webViewFocus';
+import {getLogger} from '../logging/getLogger';
+
+const logger = getLogger(path.basename(__filename));
 
 let primaryWindowId: number | undefined;
 
-const getPrimaryWindow = () => {
+export const getPrimaryWindow = (): BrowserWindow | void => {
   const [primaryWindow] = primaryWindowId ? [BrowserWindow.fromId(primaryWindowId)] : BrowserWindow.getAllWindows();
-  return primaryWindow;
+  if (primaryWindow) {
+    logger.info(`Got primaryWindow with ID "${primaryWindow.id}"`);
+    return primaryWindow;
+  }
 };
 
-const setPrimaryWindowId = (newPrimaryWindowId: number): void => {
+export const setPrimaryWindowId = (newPrimaryWindowId: number): void => {
+  logger.info(`Setting primary window ID to "${newPrimaryWindowId}" ...`);
   primaryWindowId = newPrimaryWindowId;
 };
 
-const showPrimaryWindow = (): void => {
+export const showPrimaryWindow = (): void => {
   const browserWindow = getPrimaryWindow();
 
   if (browserWindow) {
@@ -44,33 +54,36 @@ const showPrimaryWindow = (): void => {
   }
 };
 
-const sendActionToPrimaryWindow = (channel: string, ...args: any[]): void => {
+export const sendActionToPrimaryWindow = (channel: string, ...args: any[]): void => {
   const primaryWindow = getPrimaryWindow();
+
   if (primaryWindow) {
-    primaryWindow.webContents.send(channel, ...args);
-  }
-};
-
-const sendActionAndFocusWindow = async (channel: string, ...args: any[]) => {
-  await app.whenReady();
-  const main = getPrimaryWindow();
-  if (main.webContents.isLoading()) {
-    main.webContents.once('did-finish-load', () => {
-      main.webContents.send(channel, ...args);
-    });
-  } else {
-    if (!main.isVisible()) {
-      main.show();
-      main.focus();
+    logger.info(`Sending action "${channel}" to window with ID "${primaryWindow.id}":`, ...args);
+    const focusedWebContents = WebViewFocus.getFocusedWebContents();
+    if (focusedWebContents) {
+      logger.info('Got focusedWebContents:', focusedWebContents.id);
+      focusedWebContents.send(channel, ...args);
+    } else {
+      logger.info('Got no focusedWebContents, using primaryWindow webContents:', primaryWindow.webContents.id);
+      primaryWindow.webContents.send(channel, ...args);
     }
-    main.webContents.send(channel, ...args);
   }
 };
 
-export const WindowManager = {
-  getPrimaryWindow,
-  sendActionAndFocusWindow,
-  sendActionToPrimaryWindow,
-  setPrimaryWindowId,
-  showPrimaryWindow,
+export const sendActionAndFocusWindow = async (channel: string, ...args: any[]) => {
+  await app.whenReady();
+
+  const primaryWindow = getPrimaryWindow();
+
+  if (primaryWindow) {
+    if (primaryWindow.webContents.isLoading()) {
+      primaryWindow.webContents.once('did-finish-load', () => primaryWindow.webContents.send(channel, ...args));
+    } else {
+      if (!primaryWindow.isVisible()) {
+        primaryWindow.show();
+        primaryWindow.focus();
+      }
+      primaryWindow.webContents.send(channel, ...args);
+    }
+  }
 };

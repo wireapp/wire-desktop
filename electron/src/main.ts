@@ -53,7 +53,7 @@ import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
-import {WindowManager} from './window/WindowManager';
+import * as WindowManager from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
@@ -97,9 +97,8 @@ if (argv['proxy-server-auth']) {
   }
 }
 
-// Icon
-const ICON = `wire.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
-const ICON_PATH = path.join(APP_PATH, 'img', ICON);
+const iconFileName = `logo.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
+const iconPath = path.join(APP_PATH, 'img', iconFileName);
 let tray: TrayHandler;
 
 let isFullScreen = false;
@@ -181,7 +180,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     autoHideMenuBar: !showMenuBar,
     backgroundColor: '#f7f8fa',
     height: mainWindowState.height,
-    icon: ICON_PATH,
+    icon: iconPath,
     minHeight: WINDOW_SIZE.MIN_HEIGHT,
     minWidth: WINDOW_SIZE.MIN_WIDTH,
     show: false,
