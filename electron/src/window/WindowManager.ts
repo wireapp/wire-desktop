@@ -20,7 +20,6 @@
 import {BrowserWindow, app} from 'electron';
 import * as path from 'path';
 
-import {WebViewFocus} from '../lib/webViewFocus';
 import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
@@ -58,15 +57,9 @@ export const sendActionToPrimaryWindow = (channel: string, ...args: any[]): void
   const primaryWindow = getPrimaryWindow();
 
   if (primaryWindow) {
-    logger.info(`Sending action "${channel}" to window with ID "${primaryWindow.id}":`, ...args);
-    const focusedWebContents = WebViewFocus.getFocusedWebContents();
-    if (focusedWebContents) {
-      logger.info('Got focusedWebContents:', focusedWebContents.id);
-      focusedWebContents.send(channel, ...args);
-    } else {
-      logger.info('Got no focusedWebContents, using primaryWindow webContents:', primaryWindow.webContents.id);
-      primaryWindow.webContents.send(channel, ...args);
-    }
+    logger.info(`Sending action "${channel}" to window with ID "${primaryWindow.id}":`, {args});
+    logger.info('Got no focusedWebContents, using primaryWindow webContents:', primaryWindow.webContents.id);
+    primaryWindow.webContents.send(channel, ...args);
   }
 };
 

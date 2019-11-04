@@ -17,7 +17,7 @@
  *
  */
 
-import {app, ipcMain} from 'electron';
+import {app, globalShortcut, ipcMain} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -58,8 +58,13 @@ export const checkSingleInstance = () => {
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
 export const quit = () => {
-  logger.info('Quitting the app ...');
+  logger.info('Initiating app quit ...');
   settings.persistToFile();
+
+  logger.info('Unregistering all global shortcuts ...');
+  globalShortcut.unregisterAll();
+
+  logger.info('Exiting ...');
   app.exit();
 };
 

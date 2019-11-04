@@ -19,10 +19,12 @@
 
 import autoLaunch = require('auto-launch');
 import {Menu, MenuItemConstructorOptions, dialog, globalShortcut, ipcMain, shell} from 'electron';
+import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
+import {getLogger} from '../logging/getLogger';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
@@ -34,7 +36,7 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
-let menu: Menu;
+const logger = getLogger(path.basename(__filename));
 
 const launcher = new autoLaunch({
   isHidden: true,
@@ -437,26 +439,25 @@ export const createMenu = (isFullScreen: boolean): Menu => {
   }
 
   processMenu(menuTemplate, locale.getCurrent());
-  menu = Menu.buildFromTemplate(menuTemplate);
-
-  return menu;
+  return Menu.buildFromTemplate(menuTemplate);
 };
 
 export const registerShortcuts = (): void => {
   // Global mute shortcut
-  globalShortcut.register('CmdOrCtrl+Alt+M', () =>
+  const muteShortcut = 'CmdOrCtrl+Alt+M';
+  logger.info(`Registering global mute shortcut "${muteShortcut}" ...`);
+  globalShortcut.register(muteShortcut, () =>
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
   );
 
   // Global account switching shortcut
-  const switchAccountShortcut = ['CmdOrCtrl', 'Super'];
   const accountLimit = config.maximumAccounts;
-  for (const shortcut of switchAccountShortcut) {
-    for (let accountId = 0; accountId < accountLimit; accountId++) {
-      globalShortcut.register(`${shortcut}+${accountId + 1}`, () =>
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId),
-      );
-    }
+  for (let accountId = 0; accountId < accountLimit; accountId++) {
+    logger.info(`Registering global account switching shortcut "CmdOrCtrl+${accountId + 1}" ...`);
+    globalShortcut.register(`CmdOrCtrl+${accountId + 1}`, () => {
+      logger.info(`Switching to account "${accountId}" ...`);
+      WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, accountId);
+    });
   }
 };
 
@@ -473,6 +474,7 @@ export const toggleMenuBar = (): void => {
   }
 };
 
-export const unregisterShortcuts = (): void => {
+export const unregisterGlobalShortcuts = (): void => {
+  logger.info('Unregistering all global shortcuts ...');
   globalShortcut.unregisterAll();
 };
