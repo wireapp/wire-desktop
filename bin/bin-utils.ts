@@ -22,13 +22,13 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
-export const createTempDir = () => fs.mkdtemp(path.join(os.tmpdir(), 'wire-build-'));
-
 interface BackupResult {
   backupPaths: string[];
   originalPaths: string[];
   tempDir: string;
 }
+
+const createTempDir = () => fs.mkdtemp(path.join(os.tmpdir(), 'wire-build-'));
 
 export async function backupFiles(filePaths: string[]): Promise<BackupResult> {
   const tempDir = await createTempDir();
