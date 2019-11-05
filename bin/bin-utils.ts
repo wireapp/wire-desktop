@@ -32,9 +32,13 @@ const createTempDir = () => fs.mkdtemp(path.join(os.tmpdir(), 'wire-build-'));
 
 export async function backupFiles(filePaths: string[]): Promise<BackupResult> {
   const tempDir = await createTempDir();
-  const backupPaths = filePaths.map(filePath => path.join(tempDir, path.basename(filePath)));
-
-  await Promise.all(filePaths.map((filePath, index) => fs.copy(path.resolve(filePath), backupPaths[index])));
+  const backupPaths = await Promise.all(
+    filePaths.map(async filePath => {
+      const backupPath = path.join(tempDir, path.basename(filePath));
+      await fs.copy(path.resolve(filePath), backupPath);
+      return backupPath;
+    }),
+  );
 
   return {backupPaths, originalPaths: filePaths, tempDir};
 }
