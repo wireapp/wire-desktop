@@ -21,7 +21,7 @@ import * as electronWinstaller from 'electron-winstaller';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {getLogger} from '../../bin-utils';
+import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {WindowsConfig} from './Config';
 
@@ -78,16 +78,20 @@ export async function buildWindowsInstaller(
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {defaultConfig, commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} Installer for Windows ...`);
+
+  const backup = await backupFiles([wireJsonResolved]);
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
     await electronWinstaller.createWindowsInstaller(wInstallerOptions);
     const buildDir = path.resolve(wInstallerOptions.outputDirectory!);
     logger.log(`Built installer in "${buildDir}"`);
-  } finally {
-    await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+  } catch (error) {
+    logger.error(error);
   }
+
+  await restoreFiles(backup);
 }
