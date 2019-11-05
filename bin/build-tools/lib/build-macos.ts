@@ -154,10 +154,11 @@ export async function buildMacOSWrapper(
 
       logger.log(`Built installer in "${commonConfig.distDir}".`);
     }
-  } finally {
-    await fs.writeJson(packageJsonResolved, originalPackageJson, {spaces: 2});
-    await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+  } catch (error) {
+    logger.error(error);
   }
+  await fs.writeJson(packageJsonResolved, originalPackageJson, {spaces: 2});
+  await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
 }
 
 export async function manualMacOSSign(
@@ -184,7 +185,6 @@ export async function manualMacOSSign(
       const fullPath = `${appFile}/Contents/${fileName}`;
       await execAsync(
         `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${fullPath}'`,
-        true,
       );
     }
 

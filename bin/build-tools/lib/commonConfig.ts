@@ -21,7 +21,7 @@ import * as dotenv from 'dotenv';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {execAsync, getLogger} from '../../bin-utils';
+import {execAsync} from '../../bin-utils';
 import {CommonConfig} from './Config';
 
 interface Result {
@@ -29,10 +29,7 @@ interface Result {
   defaultConfig: CommonConfig;
 }
 
-const toolName = path.basename(__filename).replace('.ts', '');
-const logger = getLogger('deploy-tools', toolName);
-
-export const getCommonConfig = async (envFile: string, wireJson: string): Promise<Result> => {
+export async function getCommonConfig(envFile: string, wireJson: string): Promise<Result> {
   const defaultConfig: CommonConfig = await fs.readJson(wireJson);
   const envFileResolved = path.resolve(envFile);
 
@@ -41,13 +38,7 @@ export const getCommonConfig = async (envFile: string, wireJson: string): Promis
   const IS_PRODUCTION = process.env.APP_ENV !== 'internal';
 
   const getProjectVersion = async () => {
-    let commitId = 'unknown';
-
-    try {
-      commitId = await execAsync('git rev-parse --short HEAD');
-    } catch (error) {
-      logger.info(error);
-    }
+    const {stdout: commitId} = await execAsync('git rev-parse --short HEAD', false);
 
     const versionWithoutZero = (defaultConfig.version || '0').replace(/\.0$/, '');
     const buildNumber = `${process.env.BUILD_NUMBER || `0-${commitId}`}`;
@@ -82,4 +73,4 @@ export const getCommonConfig = async (envFile: string, wireJson: string): Promis
   };
 
   return {commonConfig, defaultConfig};
-};
+}

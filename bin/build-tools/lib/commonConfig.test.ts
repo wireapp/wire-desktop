@@ -129,7 +129,7 @@ describe('commonConfig', () => {
         websiteUrl: uuid(),
       };
 
-      await fs.writeJSON(tempWireJsonPath, wireJson);
+      await fs.writeJson(tempWireJsonPath, wireJson);
       await fs.writeFile(tempEnvFilePath, '', 'utf-8');
 
       const {commonConfig} = await getCommonConfig(tempEnvFilePath, tempWireJsonPath);

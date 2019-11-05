@@ -92,7 +92,8 @@ export async function buildWindowsInstaller(
     await electronWinstaller.createWindowsInstaller(wInstallerOptions);
     const buildDir = path.resolve(wInstallerOptions.outputDirectory!);
     logger.log(`Built installer in "${buildDir}"`);
-  } finally {
-    await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+  } catch (error) {
+    logger.error(error);
   }
+  await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
 }

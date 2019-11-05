@@ -89,8 +89,9 @@ export async function buildWindowsWrapper(
   try {
     const [buildDir] = await electronPackager(packagerConfig);
     logger.log(`Built package in "${buildDir}".`);
-  } finally {
-    await fs.writeJson(packageJson, originalPackageJson, {spaces: 2});
-    await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+  } catch (error) {
+    logger.error(error);
   }
+  await fs.writeJson(packageJson, originalPackageJson, {spaces: 2});
+  await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
 }

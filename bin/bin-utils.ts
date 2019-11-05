@@ -52,12 +52,14 @@ export function logEntries<T extends Object>(config: T, name: string, callee: st
   });
 }
 
-export async function execAsync(command: string, throwOnError: false): Promise<{stderr: string; stdout: string}>;
+interface ExecResult {
+  stderr: string;
+  stdout: string;
+}
+
+export async function execAsync(command: string, throwOnError: false): Promise<ExecResult>;
 export async function execAsync(command: string, throwOnError?: true): Promise<string>;
-export async function execAsync(
-  command: string,
-  throwOnError: boolean = true,
-): Promise<{stderr: string; stdout: string} | string> {
+export async function execAsync(command: string, throwOnError: boolean = true): Promise<ExecResult | string> {
   const {stderr, stdout} = await promisify(exec)(command);
   if (throwOnError) {
     if (!!stderr) {

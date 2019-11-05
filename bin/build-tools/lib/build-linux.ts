@@ -127,7 +127,9 @@ export async function buildLinuxWrapper(
   );
 
   logger.info(
-    `Building ${commonConfig.name} ${commonConfig.version} for Linux (targets: ${linuxConfig.targets.join(', ')}) ...`,
+    `Building ${commonConfig.name} ${commonConfig.version} for Linux (target${
+      linuxConfig.targets.length > 1 ? 's' : ''
+    }: ${linuxConfig.targets.join(', ')}) ...`,
   );
 
   const originalPackageJson = await fs.readJson(packageJsonResolved);
@@ -142,8 +144,9 @@ export async function buildLinuxWrapper(
   try {
     const buildFiles = await electronBuilder.build({config: builderConfig, targets});
     buildFiles.forEach(buildFile => logger.log(`Built package "${buildFile}".`));
-  } finally {
-    await fs.writeJson(packageJsonResolved, originalPackageJson, {spaces: 2});
-    await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+  } catch (error) {
+    logger.error(error);
   }
+  await fs.writeJson(packageJsonResolved, originalPackageJson, {spaces: 2});
+  await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
 }
