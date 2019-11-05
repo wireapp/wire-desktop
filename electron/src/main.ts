@@ -245,11 +245,8 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   });
 
   main.on('focus', () => {
-    systemMenu.registerShortcuts();
     main.flashFrame(false);
   });
-
-  main.on('blur', () => systemMenu.unregisterShortcuts());
 
   main.on('page-title-updated', () => tray.showUnreadCount(main));
 
@@ -266,7 +263,6 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
         main.hide();
       }
     }
-    systemMenu.unregisterShortcuts();
   });
 
   main.webContents.on('crashed', event => {

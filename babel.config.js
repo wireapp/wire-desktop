@@ -1,4 +1,4 @@
-const buildPlugins = () => ['@babel/plugin-proposal-object-rest-spread'];
+const plugins = ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-object-rest-spread'];
 
 const buildPresets = ({modules = false, debug = false}) => {
   return [
@@ -21,10 +21,10 @@ const buildPresets = ({modules = false, debug = false}) => {
 module.exports = {
   env: {
     test: {
-      plugins: buildPlugins(),
+      plugins,
       presets: buildPresets({modules: 'commonjs'}),
     },
   },
-  plugins: buildPlugins(),
+  plugins,
   presets: buildPresets({modules: false}),
 };

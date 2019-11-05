@@ -17,7 +17,7 @@
  *
  */
 
-import {MenuItem, app, dialog} from 'electron';
+import {MenuItem, MenuItemConstructorOptions, app, dialog} from 'electron';
 import * as openExternal from 'open';
 import * as path from 'path';
 
@@ -31,7 +31,7 @@ import * as WindowManager from '../window/WindowManager';
 const currentEnvironment = EnvironmentUtil.getEnvironment();
 const logger = getLogger(path.basename(__filename));
 
-const reloadTemplate: Electron.MenuItemConstructorOptions = {
+const reloadTemplate: MenuItemConstructorOptions = {
   click: () => {
     const primaryWindow = WindowManager.getPrimaryWindow();
     if (primaryWindow) {
@@ -41,7 +41,7 @@ const reloadTemplate: Electron.MenuItemConstructorOptions = {
   label: 'Reload',
 };
 
-const sendLogTemplate: Electron.MenuItemConstructorOptions = {
+const sendLogTemplate: MenuItemConstructorOptions = {
   click: async () => {
     const logText = await gatherLogs();
     const subject = encodeURIComponent('Wire Desktop Log');
@@ -66,7 +66,7 @@ const sendLogTemplate: Electron.MenuItemConstructorOptions = {
   label: 'Send Debug Logs',
 };
 
-const devToolsTemplate: Electron.MenuItemConstructorOptions = {
+const devToolsTemplate: MenuItemConstructorOptions = {
   label: 'Toggle DevTools',
   submenu: [
     {
@@ -113,7 +113,7 @@ const devToolsTemplate: Electron.MenuItemConstructorOptions = {
 };
 
 const createEnvironmentTemplates = () => {
-  const environmentTemplate: Electron.MenuItemConstructorOptions[] = [];
+  const environmentTemplate: MenuItemConstructorOptions[] = [];
   for (const backendType of Object.values(EnvironmentUtil.BackendType)) {
     environmentTemplate.push({
       checked: currentEnvironment === backendType,
@@ -130,26 +130,26 @@ const createEnvironmentTemplates = () => {
   return environmentTemplate;
 };
 
-const versionTemplate: Electron.MenuItemConstructorOptions = {
+const versionTemplate: MenuItemConstructorOptions = {
   enabled: false,
   label: `${config.name} Version ${config.version || 'Development'}`,
 };
 
-const chromeVersionTemplate: Electron.MenuItemConstructorOptions = {
+const chromeVersionTemplate: MenuItemConstructorOptions = {
   enabled: false,
   label: `Chrome Version ${process.versions.chrome}`,
 };
 
-const electronVersionTemplate: Electron.MenuItemConstructorOptions = {
+const electronVersionTemplate: MenuItemConstructorOptions = {
   enabled: false,
   label: `Electron Version ${process.versions.electron}`,
 };
 
-const separatorTemplate: Electron.MenuItemConstructorOptions = {
+const separatorTemplate: MenuItemConstructorOptions = {
   type: 'separator',
 };
 
-const menuTemplate: Electron.MenuItemConstructorOptions = {
+const menuTemplate: MenuItemConstructorOptions = {
   id: 'Developer',
   label: '&Developer',
   submenu: [
