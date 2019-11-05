@@ -128,7 +128,7 @@ export async function buildLinuxWrapper(
 
   logger.info(
     `Building ${commonConfig.name} ${commonConfig.version} for Linux (target${
-      linuxConfig.targets.length > 1 ? 's' : ''
+      linuxConfig.targets.length === 1 ? '' : 's'
     }: ${linuxConfig.targets.join(', ')}) ...`,
   );
 

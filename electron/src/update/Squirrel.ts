@@ -129,7 +129,7 @@ const installUpdate = (): void => {
 };
 
 const scheduleUpdate = (): void => {
-  const pluralize = (num: number, str: string) => `${num} ${str + (num === 1 ? '' : 's')}`;
+  const pluralize = (num: number, str: string) => `${num} ${str}${num === 1 ? '' : 's'}`;
   const nextCheck = moment.duration(config.squirrelUpdateInterval.DELAY).asMinutes();
   const everyCheck = moment.duration(config.squirrelUpdateInterval.INTERVAL).asHours();
   logger.info(
