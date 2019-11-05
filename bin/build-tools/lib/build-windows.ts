@@ -21,7 +21,7 @@ import electronPackager from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {getLogger} from '../../bin-utils';
+import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
@@ -70,18 +70,19 @@ export async function buildWindowsWrapper(
   wireJsonPath: string,
   envFilePath: string,
 ): Promise<void> {
-  const packageJson = path.resolve(packageJsonPath);
   const wireJsonResolved = path.resolve(wireJsonPath);
+  const packageJsonResolved = path.resolve(packageJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {defaultConfig, commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} for Windows ...`);
 
-  const originalPackageJson = await fs.readJson(packageJson);
+  const backup = await backupFiles([packageJsonResolved, wireJsonResolved]);
+  const packageJsonContent = await fs.readJson(packageJsonResolved);
 
   await fs.writeJson(
-    packageJson,
-    {...originalPackageJson, productName: commonConfig.name, version: commonConfig.version},
+    packageJsonResolved,
+    {...packageJsonContent, productName: commonConfig.name, version: commonConfig.version},
     {spaces: 2},
   );
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
@@ -92,6 +93,6 @@ export async function buildWindowsWrapper(
   } catch (error) {
     logger.error(error);
   }
-  await fs.writeJson(packageJson, originalPackageJson, {spaces: 2});
-  await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+
+  await restoreFiles(backup);
 }

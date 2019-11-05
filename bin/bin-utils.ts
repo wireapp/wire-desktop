@@ -19,7 +19,36 @@
 import {LogFactory, Logger} from '@wireapp/commons/dist/commonjs/LogFactory';
 import {exec} from 'child_process';
 import commander from 'commander';
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
 import {promisify} from 'util';
+
+interface BackupResult {
+  backupPaths: string[];
+  originalPaths: string[];
+  tempDir: string;
+}
+
+const createTempDir = () => fs.mkdtemp(path.join(os.tmpdir(), 'wire-build-'));
+
+export async function backupFiles(filePaths: string[]): Promise<BackupResult> {
+  const tempDir = await createTempDir();
+  const backupPaths = await Promise.all(
+    filePaths.map(async filePath => {
+      const backupPath = path.join(tempDir, path.basename(filePath));
+      await fs.copy(path.resolve(filePath), backupPath);
+      return backupPath;
+    }),
+  );
+
+  return {backupPaths, originalPaths: filePaths, tempDir};
+}
+
+export async function restoreFiles({originalPaths, backupPaths, tempDir}: BackupResult): Promise<void> {
+  await Promise.all(backupPaths.map((tempPath, index) => fs.copy(tempPath, originalPaths[index], {overwrite: true})));
+  await fs.remove(tempDir);
+}
 
 export const getLogger = (namespace: string, name: string) =>
   LogFactory.getLogger(name, {namespace: `@wireapp/${namespace}`, forceEnable: true, separator: '/'});

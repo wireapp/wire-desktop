@@ -30,11 +30,6 @@ export default class Webviews extends Component {
     this.state = {
       canDelete: this._getCanDeletes(props.accounts),
     };
-    this._getCanDeletes = this._getCanDeletes.bind(this);
-    this._onUnreadCountUpdated = this._onUnreadCountUpdated.bind(this);
-    this._onIpcMessage = this._onIpcMessage.bind(this);
-    this._onWebviewClose = this._onWebviewClose.bind(this);
-    this._deleteWebview = this._deleteWebview.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,7 +55,7 @@ export default class Webviews extends Component {
     return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
   }
 
-  _getCanDeletes(accounts) {
+  _getCanDeletes = accounts => {
     return accounts.reduce(
       (accumulator, account) => ({
         ...accumulator,
@@ -68,7 +63,7 @@ export default class Webviews extends Component {
       }),
       {},
     );
-  }
+  };
 
   _getEnvironmentUrl(account, forceLogin) {
     const currentLocation = new URL(window.location.href);
@@ -96,13 +91,13 @@ export default class Webviews extends Component {
     return accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
   }
 
-  _onUnreadCountUpdated(accountId, unreadCount) {
+  _onUnreadCountUpdated = (accountId, unreadCount) => {
     this.props.updateAccountBadgeCount(accountId, unreadCount);
     const accumulatedCount = this._accumulateBadgeCount(this.props.accounts);
     window.sendBadgeCount(accumulatedCount);
-  }
+  };
 
-  _onIpcMessage(account, {channel, args}) {
+  _onIpcMessage = (account, {channel, args}) => {
     switch (channel) {
       case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
         const [accountData] = args;
@@ -139,17 +134,17 @@ export default class Webviews extends Component {
     }
 
     this.setState({canDelete: {...this.state.canDelete, [account.id]: this._canDeleteWebview(account)}});
-  }
+  };
 
-  _onWebviewClose(account) {
+  _onWebviewClose = account => {
     this._deleteWebview(account);
-  }
+  };
 
-  _deleteWebview(account) {
+  _deleteWebview = account => {
     window.sendDeleteAccount(account.id, account.sessionID).then(() => {
       this.props.abortAccountCreation(account.id);
     });
-  }
+  };
 
   _canDeleteWebview(account) {
     const match = this.props.accounts.find(_account => account.id === _account.id);

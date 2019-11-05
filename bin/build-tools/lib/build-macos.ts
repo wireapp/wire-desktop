@@ -22,7 +22,7 @@ import electronPackager from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {execAsync, getLogger} from '../../bin-utils';
+import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {CommonConfig, MacOSConfig} from './Config';
 
@@ -114,15 +114,16 @@ export async function buildMacOSWrapper(
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {defaultConfig, commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} for macOS ...`);
 
-  const originalPackageJson = await fs.readJson(packageJsonResolved);
+  const backup = await backupFiles([packageJsonResolved, wireJsonResolved]);
+  const packageJsonContent = await fs.readJson(packageJsonResolved);
 
   await fs.writeJson(
     packageJsonResolved,
-    {...originalPackageJson, productName: commonConfig.name, version: commonConfig.version},
+    {...packageJsonContent, productName: commonConfig.name, version: commonConfig.version},
     {spaces: 2},
   );
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
@@ -157,8 +158,8 @@ export async function buildMacOSWrapper(
   } catch (error) {
     logger.error(error);
   }
-  await fs.writeJson(packageJsonResolved, originalPackageJson, {spaces: 2});
-  await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+
+  await restoreFiles(backup);
 }
 
 export async function manualMacOSSign(
