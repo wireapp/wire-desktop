@@ -3742,10 +3742,10 @@ eslint-plugin-jasmine@2.10.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-2.10.1.tgz#5733b709e751f4bc40e31e1c16989bd2cdfbec97"
   integrity sha1-VzO3CedR9LxA4x4cFpib0s377Jc=
 
-eslint-plugin-jsdoc@17.0.1:
-  version "17.0.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-17.0.1.tgz#fd7c01b810184ebe3697374261605e1338476e22"
-  integrity sha512-5L8nNpZmc3IWP2YXuMelSCGdsKBxaXPBYIs8ug7gHWqmFtGIUhPZfKTuFIT6K5Hbcsg/zXhjTEHpCMe2M7slJQ==
+eslint-plugin-jsdoc@17.1.0:
+  version "17.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-17.1.0.tgz#4367ed2ae4c9e04c909c068d661c09bae0e07f9a"
+  integrity sha512-nIsSjuJOa95O5ayhFDdtaa1y0t1CGAksemcqXGTkXE49xOzZSMUChixzCP6feL+hfRcDZHWoHk17lOlblGFkaw==
   dependencies:
     comment-parser "^0.7.0"
     debug "^4.1.1"
@@ -10185,16 +10185,18 @@ winreg@1.2.4:
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.14":
-  version "0.24.14"
-  resolved "https://github.com/wireapp/wire-web-config-default#255e9a3b7a2a82e88b228a5f0565be3c443e0564"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.15":
+  version "0.24.15"
+  uid bab26c5dd3a652531c3e10b8132cf3f5ff777f1f
+  resolved "https://github.com/wireapp/wire-web-config-default#bab26c5dd3a652531c3e10b8132cf3f5ff777f1f"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.15-0":
-  version "0.24.15-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#ac62c52e0aab602155d7232aaaa95bfb5308aac6"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.16-0":
+  version "0.24.16-0"
+  uid c02fe0fa42ea00617dcf53a708de9012492c8fb0
+  resolved "https://github.com/wireapp/wire-web-config-wire#c02fe0fa42ea00617dcf53a708de9012492c8fb0"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
