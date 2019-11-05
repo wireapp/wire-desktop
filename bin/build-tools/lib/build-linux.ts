@@ -21,7 +21,7 @@ import * as electronBuilder from 'electron-builder';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {getLogger} from '../../bin-utils';
+import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {LinuxConfig} from './Config';
 
@@ -117,7 +117,7 @@ export async function buildLinuxWrapper(
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {defaultConfig, commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
 
   const targets = electronBuilder.Platform.LINUX.createTarget(
     linuxConfig.targets,
@@ -128,20 +128,22 @@ export async function buildLinuxWrapper(
     `Building ${commonConfig.name} ${commonConfig.version} for Linux (targets: ${linuxConfig.targets.join(', ')}) ...`,
   );
 
-  const originalPackageJson = await fs.readJson(packageJsonResolved);
+  const backup = await backupFiles([packageJsonResolved, wireJsonResolved]);
+  const packageJsonContent = await fs.readJson(packageJsonResolved);
 
   await fs.writeJson(
     packageJsonResolved,
-    {...originalPackageJson, productName: commonConfig.name, version: commonConfig.version},
+    {...packageJsonContent, productName: commonConfig.name, version: commonConfig.version},
     {spaces: 2},
   );
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    const buildFiles = await electronBuilder.build({config: builderConfig, targets});
-    buildFiles.forEach(buildFile => logger.log(`Built package "${buildFile}".`));
-  } finally {
-    await fs.writeJson(packageJsonResolved, originalPackageJson, {spaces: 2});
-    await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+    const builtPackages = await electronBuilder.build({config: builderConfig, targets});
+    builtPackages.forEach(builtPackage => logger.log(`Built package "${builtPackage}".`));
+  } catch (error) {
+    logger.error(error);
   }
+
+  await restoreFiles(backup);
 }
