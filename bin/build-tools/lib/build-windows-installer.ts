@@ -31,6 +31,7 @@ const logger = getLogger('build-tools', libraryName);
 export function buildWindowsInstallerConfig(
   wireJsonPath: string,
   envFilePath: string,
+  manualSign?: boolean,
 ): {windowsConfig: WindowsConfig; wInstallerOptions: electronWinstaller.Options} {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -61,10 +62,13 @@ export function buildWindowsInstallerConfig(
     outputDirectory: commonConfig.distDir,
     setupExe: `${commonConfig.name}-Setup.exe`,
     setupIcon: `${commonConfig.electronDirectory}/img/logo.ico`,
-    signWithParams: '/t http://timestamp.digicert.com /fd SHA256 /a',
     title: commonConfig.name,
     version: commonConfig.version.replace(/-.*$/, ''),
   };
+
+  if (!manualSign) {
+    wInstallerOptions.signWithParams = '/t http://timestamp.digicert.com /fd SHA256 /a';
+  }
 
   commonConfig.updateUrl = windowsConfig.updateUrl;
 
