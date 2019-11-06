@@ -58,6 +58,8 @@ enum SQUIRREL_EVENT {
 }
 
 function spawn(command: string, args: string[]): Promise<void> {
+  const commandFile = path.basename(command);
+
   return new Promise(resolve => {
     const spawnedProcess = childProcess
       .spawn(command, args)
@@ -65,7 +67,7 @@ function spawn(command: string, args: string[]): Promise<void> {
       .on('close', (code, signal) => {
         if (code !== 0) {
           const exitReason = signal || `exit code ${code}`;
-          logger.error(`spawn: command "${command}" failed: received ${exitReason}`);
+          logger.error(`Running command "${command}" failed: received ${exitReason}`);
         }
         resolve();
       });
@@ -74,7 +76,7 @@ function spawn(command: string, args: string[]): Promise<void> {
       spawnedProcess.stdout.on('data', (data: Buffer) => {
         const stringifiedData = data.toString().trim();
         if (stringifiedData) {
-          logger.info(`spawn: ${stringifiedData}`);
+          logger.info(`${commandFile}: ${stringifiedData}`);
         }
       });
     }
@@ -82,7 +84,7 @@ function spawn(command: string, args: string[]): Promise<void> {
       spawnedProcess.stderr.on('data', (data: Buffer) => {
         const stringifiedData = data.toString().trim();
         if (stringifiedData) {
-          logger.error(`spawn: ${stringifiedData}`);
+          logger.error(`${commandFile}: ${stringifiedData}`);
         }
       });
     }
