@@ -44,7 +44,10 @@ commander
     'Build the Wire wrapper for your platform.\n\nValid values for platform are: "windows", "windows-installer", "macos", "linux".',
   )
   .option('-e, --env-file <path>', 'Specify the env file path', path.join(appSource, '.env.defaults'))
-  .option('-m, --manual-sign', `Manually sign and package the app (i.e. don't use electron-packager, macOS only)`)
+  .option(
+    '-m, --manual-sign',
+    `Manually sign and package the app (i.e. don't use electron-packager, macOS and Windows only)`,
+  )
   .option('-p, --package-json <path>', 'Specify the package.json path', path.join(appSource, 'package.json'))
   .option('-w, --wire-json <path>', 'Specify the wire.json path', path.join(appSource, 'electron/wire.json'))
   .arguments('<platform>')
@@ -66,7 +69,7 @@ const platform = (commander.args[0] || '').toLowerCase();
     }
 
     case 'windows-installer': {
-      const {wInstallerOptions} = await buildWindowsInstallerConfig(wireJson, envFile);
+      const {wInstallerOptions} = await buildWindowsInstallerConfig(wireJson, envFile, manualSign);
 
       logEntries(wInstallerOptions, 'wInstallerOptions', toolName);
 
