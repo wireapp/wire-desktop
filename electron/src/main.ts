@@ -112,6 +112,9 @@ Object.entries(config).forEach(([key, value]) => {
   }
 });
 
+// Squirrel setup
+app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
+
 // IPC events
 const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
@@ -584,7 +587,7 @@ customProtocolHandler.registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate();
+lifecycle.checkForUpdate().catch(error => logger.error(error));
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

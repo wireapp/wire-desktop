@@ -23,7 +23,7 @@ import * as path from 'path';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import {settings} from '../settings/ConfigurationPersistence';
-import {Squirrel} from '../update/Squirrel';
+import * as Squirrel from '../update/squirrel';
 import * as WindowManager from '../window/WindowManager';
 import * as EnvironmentUtil from './EnvironmentUtil';
 
@@ -31,14 +31,14 @@ const logger = getLogger(path.basename(__filename));
 
 export let isFirstInstance: boolean | undefined = undefined;
 
-export const checkForUpdate = () => {
+export async function checkForUpdate(): Promise<void> {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
     logger.info('Checking for Windows update ...');
-    Squirrel.handleSquirrelEvent(isFirstInstance);
+    await Squirrel.handleSquirrelEvent(isFirstInstance);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => Squirrel.installUpdate());
   }
-};
+}
 
 export const checkSingleInstance = () => {
   if (process.mas) {
@@ -57,7 +57,7 @@ export const checkSingleInstance = () => {
 
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-export const quit = () => {
+export const quit = (): void => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
 
