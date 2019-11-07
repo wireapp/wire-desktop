@@ -29,7 +29,7 @@ import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-import * as WindowManager from '../window/WindowManager';
+import {WindowManager} from '../window/WindowManager';
 
 import {Supportedi18nLanguage} from '../interfaces/';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';

@@ -24,7 +24,7 @@ import * as locale from '../locale/locale';
 import {linuxDesktop, platform} from '../runtime/EnvironmentUtil';
 import {quit as lifecycleQuit} from '../runtime/lifecycle';
 import {config} from '../settings/config';
-import * as WindowManager from '../window/WindowManager';
+import {WindowManager} from '../window/WindowManager';
 
 export class TrayHandler {
   icons?: {
