@@ -75,6 +75,10 @@ export function buildLinuxConfig(
   const debDepends = ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'];
 
   const builderConfig: electronBuilder.Configuration = {
+    appImage: {
+      ...platformSpecificConfig,
+      systemIntegration: 'doNotAsk',
+    },
     asar: commonConfig.enableAsar,
     buildVersion: commonConfig.version,
     deb: {
