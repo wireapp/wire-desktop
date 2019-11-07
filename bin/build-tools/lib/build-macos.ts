@@ -22,22 +22,26 @@ import electronPackager from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {execSync} from 'child_process';
-import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
+import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {CommonConfig, MacOSConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
-export function buildMacOSConfig(
+interface MacOSConfigResult {
+  macOSConfig: MacOSConfig;
+  packagerConfig: electronPackager.Options;
+}
+
+export async function buildMacOSConfig(
   wireJsonPath: string,
   envFilePath: string,
   signManually?: boolean,
-): {macOSConfig: MacOSConfig; packagerConfig: electronPackager.Options} {
+): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOsDefaultConfig: MacOSConfig = {
     bundleId: 'com.wearezeta.zclient.mac',
@@ -110,7 +114,7 @@ export async function buildMacOSWrapper(
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} for macOS ...`);
 
@@ -169,29 +173,31 @@ export async function manualMacOSSign(
 
   if (macOSConfig.certNameApplication) {
     const filesToSign = [
-      '/Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
-      '/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
-      '/Frameworks/Electron Framework.framework/',
-      `/Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,
-      `/Frameworks/${commonConfig.name} Helper.app/`,
-      `/Library/LoginItems/${commonConfig.name} Login Helper.app/Contents/MacOS/${commonConfig.name} Login Helper`,
-      `/Library/LoginItems/${commonConfig.name} Login Helper.app/`,
+      'Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
+      'Frameworks/Electron Framework.framework/',
+      `Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,
+      `Frameworks/${commonConfig.name} Helper.app/`,
+      `Library/LoginItems/${commonConfig.name} Login Helper.app/Contents/MacOS/${commonConfig.name} Login Helper`,
+      `Library/LoginItems/${commonConfig.name} Login Helper.app/`,
     ];
 
     for (const fileName of filesToSign) {
-      const fullPath = `${appFile}/Contents${fileName}`;
-      execSync(
+      const fullPath = `${appFile}/Contents/${fileName}`;
+      await execAsync(
         `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${fullPath}'`,
       );
     }
 
     if (macOSConfig.certNameInstaller) {
       const appExecutable = `${appFile}/Contents/MacOS/${commonConfig.name}`;
-      execSync(
+      await execAsync(
         `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
       );
-      execSync(`codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`);
-      execSync(
+      await execAsync(
+        `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`,
+      );
+      await execAsync(
         `productbuild --component '${appFile}' /Applications --sign '${macOSConfig.certNameInstaller}' '${pkgFile}'`,
       );
     }

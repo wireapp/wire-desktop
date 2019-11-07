@@ -79,7 +79,7 @@ export function zip(originalFile: string, zipFile: string): Promise<string> {
   const resolvedOriginal = path.resolve(originalFile);
   const resolvedZip = path.resolve(zipFile);
 
-  const jszipOptions = {
+  const jszipOptions: JSZip.JSZipGeneratorOptions<'nodebuffer'> = {
     compressionOptions: {level: 9},
     streamFiles: true,
   };

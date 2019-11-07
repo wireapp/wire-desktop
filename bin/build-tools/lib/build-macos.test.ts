@@ -27,7 +27,7 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 
 describe('build-macos', () => {
   describe('buildMacOSConfig', () => {
-    it('honors environment variables', () => {
+    it('honors environment variables', async () => {
       const bundleId = uuid();
       const certNameApplication = uuid();
       const certNameInstaller = uuid();
@@ -40,7 +40,7 @@ describe('build-macos', () => {
       process.env.MACOS_NOTARIZE_APPLE_ID = notarizeAppleId;
       process.env.MACOS_NOTARIZE_APPLE_PASSWORD = notarizeApplePassword;
 
-      const {macOSConfig} = buildMacOSConfig(wireJsonPath, envFilePath);
+      const {macOSConfig} = await buildMacOSConfig(wireJsonPath, envFilePath);
 
       assert.strictEqual(macOSConfig.bundleId, bundleId);
       assert.strictEqual(macOSConfig.certNameApplication, certNameApplication);

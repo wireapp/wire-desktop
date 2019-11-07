@@ -28,14 +28,19 @@ import {WindowsConfig} from './Config';
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
-export function buildWindowsInstallerConfig(
+interface WindowsInstallerConfigResult {
+  windowsConfig: WindowsConfig;
+  wInstallerOptions: electronWinstallerOptions;
+}
+
+export async function buildWindowsInstallerConfig(
   wireJsonPath: string,
   envFilePath: string,
   manualSign?: boolean,
-): {windowsConfig: WindowsConfig; wInstallerOptions: electronWinstallerOptions} {
+): Promise<WindowsInstallerConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const windowsDefaultConfig: WindowsConfig = {
     installerIconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
@@ -82,7 +87,7 @@ export async function buildWindowsInstaller(
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} Installer for Windows ...`);
 

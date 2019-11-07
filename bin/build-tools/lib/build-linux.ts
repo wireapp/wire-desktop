@@ -28,13 +28,15 @@ import {LinuxConfig} from './Config';
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
-export function buildLinuxConfig(
-  wireJsonPath: string,
-  envFilePath: string,
-): {builderConfig: electronBuilder.Configuration; linuxConfig: LinuxConfig} {
+interface LinuxConfigResult {
+  builderConfig: electronBuilder.Configuration;
+  linuxConfig: LinuxConfig;
+}
+
+export async function buildLinuxConfig(wireJsonPath: string, envFilePath: string): Promise<LinuxConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const linuxDefaultConfig: LinuxConfig = {
     /* tslint:disable:no-invalid-template-strings */
@@ -117,7 +119,7 @@ export async function buildLinuxWrapper(
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const targets = electronBuilder.Platform.LINUX.createTarget(
     linuxConfig.targets,
@@ -125,7 +127,9 @@ export async function buildLinuxWrapper(
   );
 
   logger.info(
-    `Building ${commonConfig.name} ${commonConfig.version} for Linux (targets: ${linuxConfig.targets.join(', ')}) ...`,
+    `Building ${commonConfig.name} ${commonConfig.version} for Linux (target${
+      linuxConfig.targets.length === 1 ? '' : 's'
+    }: ${linuxConfig.targets.join(', ')}) ...`,
   );
 
   const backup = await backupFiles([packageJsonResolved, wireJsonResolved]);
