@@ -27,13 +27,13 @@ import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
 export class TrayHandler {
-  icons?: {
+  private icons?: {
     badge: nativeImage;
     tray: nativeImage;
     trayWithBadge: nativeImage;
   };
-  lastUnreadCount: number;
-  trayIcon?: Tray;
+  private lastUnreadCount: number;
+  private trayIcon?: Tray;
 
   constructor() {
     this.lastUnreadCount = 0;
