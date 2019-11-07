@@ -86,7 +86,7 @@
     "eslint-plugin-react": "7.16.0",
     "eslint-plugin-simple-import-sort": "4.0.0",
     "eslint-plugin-sort-keys-fix": "1.0.1",
-    "form-data": "2.5.1",
+    "form-data": "3.0.0",
     "globby": "10.0.1",
     "husky": "3.0.9",
     "is-ci": "2.0.0",
