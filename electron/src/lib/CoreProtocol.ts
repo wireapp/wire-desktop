@@ -24,7 +24,7 @@ import {URL} from 'url';
 import {getLogger} from '../logging/getLogger';
 import {platform} from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
-import * as WindowManager from '../window/WindowManager';
+import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
 const logger = getLogger(path.basename(__filename));
