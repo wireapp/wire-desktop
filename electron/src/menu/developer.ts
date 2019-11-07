@@ -26,7 +26,7 @@ import {gatherLogs, logDir} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
-import * as WindowManager from '../window/WindowManager';
+import {WindowManager} from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
 const logger = getLogger(path.basename(__filename));

@@ -53,7 +53,7 @@ import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
-import * as WindowManager from './window/WindowManager';
+import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
@@ -111,6 +111,9 @@ Object.entries(config).forEach(([key, value]) => {
     logger.warn(`Configuration key "${key}" not defined.`);
   }
 });
+
+// Squirrel setup
+app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
 const bindIpcEvents = () => {
@@ -584,7 +587,7 @@ customProtocolHandler.registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate();
+lifecycle.checkForUpdate().catch(error => logger.error(error));
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

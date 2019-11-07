@@ -17,7 +17,7 @@
  *
  */
 
-import * as electronWinstaller from 'electron-winstaller';
+import {Options as electronWinstallerOptions, createWindowsInstaller} from 'electron-winstaller';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -30,7 +30,7 @@ const logger = getLogger('build-tools', libraryName);
 
 interface WindowsInstallerConfigResult {
   windowsConfig: WindowsConfig;
-  wInstallerOptions: electronWinstaller.Options;
+  wInstallerOptions: electronWinstallerOptions;
 }
 
 export async function buildWindowsInstallerConfig(
@@ -54,7 +54,7 @@ export async function buildWindowsInstallerConfig(
     updateUrl: process.env.WIN_URL_UPDATE || windowsDefaultConfig.updateUrl,
   };
 
-  const wInstallerOptions: electronWinstaller.Options = {
+  const wInstallerOptions: electronWinstallerOptions = {
     appDirectory: `${commonConfig.buildDir}/${commonConfig.name}-win32-ia32`,
     authors: commonConfig.name,
     copyright: commonConfig.copyright,
@@ -83,7 +83,7 @@ export async function buildWindowsInstallerConfig(
 export async function buildWindowsInstaller(
   wireJsonPath: string,
   envFilePath: string,
-  wInstallerOptions: electronWinstaller.Options,
+  wInstallerOptions: electronWinstallerOptions,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -95,7 +95,7 @@ export async function buildWindowsInstaller(
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    await electronWinstaller.createWindowsInstaller(wInstallerOptions);
+    await createWindowsInstaller(wInstallerOptions);
     const buildDir = path.resolve(wInstallerOptions.outputDirectory!);
     logger.log(`Built installer in "${buildDir}"`);
   } catch (error) {
