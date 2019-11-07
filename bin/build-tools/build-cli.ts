@@ -78,7 +78,8 @@ new Promise(() => {
     case 'macos': {
       const {macOSConfig, packagerConfig} = buildMacOSConfig(wireJson, envFile, manualSign);
 
-      logEntries(packagerConfig, 'builderConfig', toolName);
+      logEntries(macOSConfig, 'macOSConfig', toolName);
+      logEntries(packagerConfig, 'packagerConfig', toolName);
 
       return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
     }
@@ -86,6 +87,7 @@ new Promise(() => {
     case 'linux': {
       const {linuxConfig, builderConfig} = buildLinuxConfig(wireJson, envFile);
 
+      logEntries(linuxConfig, 'linuxConfig', toolName);
       logEntries(builderConfig, 'builderConfig', toolName);
 
       return buildLinuxWrapper(builderConfig, linuxConfig, packageJson, wireJson, envFile);
