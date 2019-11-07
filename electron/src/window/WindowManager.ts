@@ -53,30 +53,33 @@ export const showPrimaryWindow = (): void => {
   }
 };
 
-export const sendActionToPrimaryWindow = (channel: string, ...args: any[]): void => {
+export const sendActionToPrimaryWindow = (action: string, ...args: any[]): void => {
   const primaryWindow = getPrimaryWindow();
 
   if (primaryWindow) {
-    logger.info(`Sending action "${channel}" to window with ID "${primaryWindow.id}":`, {args});
-    logger.info('Got no focusedWebContents, using primaryWindow webContents:', primaryWindow.webContents.id);
-    primaryWindow.webContents.send(channel, ...args);
+    logger.info(`Sending action "${action}" to window with ID "${primaryWindow.id}":`, {args});
+    primaryWindow.webContents.send(action, ...args);
+  } else {
+    logger.warn(`Got no primary window, can't send action "${action}".`);
   }
 };
 
-export const sendActionAndFocusWindow = async (channel: string, ...args: any[]) => {
+export const sendActionAndFocusWindow = async (action: string, ...args: any[]) => {
   await app.whenReady();
 
   const primaryWindow = getPrimaryWindow();
 
   if (primaryWindow) {
     if (primaryWindow.webContents.isLoading()) {
-      primaryWindow.webContents.once('did-finish-load', () => primaryWindow.webContents.send(channel, ...args));
+      primaryWindow.webContents.once('did-finish-load', () => primaryWindow.webContents.send(action, ...args));
     } else {
       if (!primaryWindow.isVisible()) {
         primaryWindow.show();
         primaryWindow.focus();
       }
-      primaryWindow.webContents.send(channel, ...args);
+      primaryWindow.webContents.send(action, ...args);
     }
+  } else {
+    logger.warn(`Got no primary window, can't send action "${action}".`);
   }
 };
