@@ -24,8 +24,6 @@ import React, {Component} from 'react';
 export default class Webview extends Component {
   constructor(props) {
     super(props);
-
-    this._onIpcMessage = this._onIpcMessage.bind(this);
   }
 
   componentDidMount() {
@@ -55,9 +53,9 @@ export default class Webview extends Component {
     return this.props.visible !== nextProps.visible;
   }
 
-  _onIpcMessage(event) {
+  _onIpcMessage = event => {
     this.props.onIpcMessage(event);
-  }
+  };
 
   _focusWebview() {
     if (this.props.visible && this.webview) {

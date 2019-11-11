@@ -17,24 +17,30 @@
  *
  */
 
-import * as electronWinstaller from 'electron-winstaller';
+import {Options as electronWinstallerOptions, createWindowsInstaller} from 'electron-winstaller';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {getLogger} from '../../bin-utils';
+import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {WindowsConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
-export function buildWindowsInstallerConfig(
+interface WindowsInstallerConfigResult {
+  windowsConfig: WindowsConfig;
+  wInstallerOptions: electronWinstallerOptions;
+}
+
+export async function buildWindowsInstallerConfig(
   wireJsonPath: string,
   envFilePath: string,
-): {windowsConfig: WindowsConfig; wInstallerOptions: electronWinstaller.Options} {
+  manualSign?: boolean,
+): Promise<WindowsInstallerConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const windowsDefaultConfig: WindowsConfig = {
     installerIconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
@@ -48,7 +54,7 @@ export function buildWindowsInstallerConfig(
     updateUrl: process.env.WIN_URL_UPDATE || windowsDefaultConfig.updateUrl,
   };
 
-  const wInstallerOptions: electronWinstaller.Options = {
+  const wInstallerOptions: electronWinstallerOptions = {
     appDirectory: `${commonConfig.buildDir}/${commonConfig.name}-win32-ia32`,
     authors: commonConfig.name,
     copyright: commonConfig.copyright,
@@ -61,10 +67,13 @@ export function buildWindowsInstallerConfig(
     outputDirectory: commonConfig.distDir,
     setupExe: `${commonConfig.name}-Setup.exe`,
     setupIcon: `${commonConfig.electronDirectory}/img/logo.ico`,
-    signWithParams: '/t http://timestamp.digicert.com /fd SHA256 /a',
     title: commonConfig.name,
     version: commonConfig.version.replace(/-.*$/, ''),
   };
+
+  if (!manualSign) {
+    wInstallerOptions.signWithParams = '/t http://timestamp.digicert.com /fd SHA256 /a';
+  }
 
   commonConfig.updateUrl = windowsConfig.updateUrl;
 
@@ -74,20 +83,24 @@ export function buildWindowsInstallerConfig(
 export async function buildWindowsInstaller(
   wireJsonPath: string,
   envFilePath: string,
-  wInstallerOptions: electronWinstaller.Options,
+  wInstallerOptions: electronWinstallerOptions,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {defaultConfig, commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} Installer for Windows ...`);
+
+  const backup = await backupFiles([wireJsonResolved]);
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    await electronWinstaller.createWindowsInstaller(wInstallerOptions);
+    await createWindowsInstaller(wInstallerOptions);
     const buildDir = path.resolve(wInstallerOptions.outputDirectory!);
     logger.log(`Built installer in "${buildDir}"`);
-  } finally {
-    await fs.writeJson(wireJsonResolved, defaultConfig, {spaces: 2});
+  } catch (error) {
+    logger.error(error);
   }
+
+  await restoreFiles(backup);
 }

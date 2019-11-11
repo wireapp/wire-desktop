@@ -32,9 +32,6 @@ import Sidebar from './Sidebar';
 class App extends React.Component {
   constructor(props) {
     super(props);
-
-    this.switchAccount = this.switchAccount.bind(this);
-    this.initiateSSO = this.initiateSSO.bind(this);
   }
 
   componentDidMount() {
@@ -47,15 +44,17 @@ class App extends React.Component {
     window.removeEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO);
   }
 
-  switchAccount(event) {
+  switchAccount = event => {
     const {accountIndex} = event.detail;
     const accountId = this.props.accountIds[accountIndex];
     if (accountId) {
       this.props.switchAccount(accountId);
     }
-  }
 
-  initiateSSO(event) {
+    event.target.focus();
+  };
+
+  initiateSSO = event => {
     const loggedOutWebviews = this.props.accounts.filter(account => account.userID === undefined);
     const ssoCode = event.detail.code;
 
@@ -77,7 +76,7 @@ class App extends React.Component {
       this.props.initiateSSO(undefined, ssoCode, true);
     }
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE));
-  }
+  };
 
   render() {
     return (

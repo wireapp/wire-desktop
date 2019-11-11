@@ -53,7 +53,7 @@ import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
-import * as WindowManager from './window/WindowManager';
+import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
@@ -99,6 +99,7 @@ if (argv['proxy-server-auth']) {
 
 const iconFileName = `logo.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const iconPath = path.join(APP_PATH, 'img', iconFileName);
+// This needs to stay global, see https://github.com/electron/electron/blob/v4.2.12/docs/faq.md#my-apps-windowtray-disappeared-after-a-few-minutes
 let tray: TrayHandler;
 
 let isFullScreen = false;
@@ -111,6 +112,9 @@ Object.entries(config).forEach(([key, value]) => {
     logger.warn(`Configuration key "${key}" not defined.`);
   }
 });
+
+// Squirrel setup
+app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
 const bindIpcEvents = () => {
@@ -248,11 +252,8 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   });
 
   main.on('focus', () => {
-    systemMenu.registerShortcuts();
     main.flashFrame(false);
   });
-
-  main.on('blur', () => systemMenu.unregisterShortcuts());
 
   main.on('page-title-updated', () => tray.showUnreadCount(main));
 
@@ -269,7 +270,6 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
         main.hide();
       }
     }
-    systemMenu.unregisterShortcuts();
   });
 
   main.webContents.on('crashed', event => {
@@ -588,7 +588,7 @@ customProtocolHandler.registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate();
+lifecycle.checkForUpdate().catch(error => logger.error(error));
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

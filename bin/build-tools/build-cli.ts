@@ -27,6 +27,13 @@ import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
 
+interface CommanderData {
+  envFile: string;
+  manualSign?: boolean;
+  wireJson: string;
+  packageJson: string;
+}
+
 const toolName = path.basename(__filename).replace('.ts', '');
 const logger = LogFactory.getLogger(toolName, {namespace: '@wireapp/build-tools', forceEnable: true});
 const appSource = path.join(__dirname, '../../');
@@ -37,7 +44,10 @@ commander
     'Build the Wire wrapper for your platform.\n\nValid values for platform are: "windows", "windows-installer", "macos", "linux".',
   )
   .option('-e, --env-file <path>', 'Specify the env file path', path.join(appSource, '.env.defaults'))
-  .option('-m, --manual-sign', `Manually sign and package the app (i.e. don't use electron-packager, macOS only)`)
+  .option(
+    '-m, --manual-sign',
+    `Manually sign and package the app (i.e. don't use electron-packager, macOS and Windows only)`,
+  )
   .option('-p, --package-json <path>', 'Specify the package.json path', path.join(appSource, 'package.json'))
   .option('-w, --wire-json <path>', 'Specify the wire.json path', path.join(appSource, 'electron/wire.json'))
   .arguments('<platform>')
@@ -45,18 +55,13 @@ commander
 
 const platform = (commander.args[0] || '').toLowerCase();
 
-new Promise(() => {
-  const {
-    envFile,
-    manualSign,
-    wireJson,
-    packageJson,
-  }: {envFile: string; manualSign?: boolean; wireJson: string; packageJson: string} = commander as any;
+(async () => {
+  const {envFile, manualSign, wireJson, packageJson}: CommanderData = commander as any;
 
   switch (platform) {
     case 'win':
     case 'windows': {
-      const {packagerConfig} = buildWindowsConfig(wireJson, envFile);
+      const {packagerConfig} = await buildWindowsConfig(wireJson, envFile);
 
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
@@ -64,7 +69,7 @@ new Promise(() => {
     }
 
     case 'windows-installer': {
-      const {wInstallerOptions} = buildWindowsInstallerConfig(wireJson, envFile);
+      const {wInstallerOptions} = await buildWindowsInstallerConfig(wireJson, envFile, manualSign);
 
       logEntries(wInstallerOptions, 'wInstallerOptions', toolName);
 
@@ -73,16 +78,18 @@ new Promise(() => {
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, packagerConfig} = buildMacOSConfig(wireJson, envFile, manualSign);
+      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign);
 
-      logEntries(packagerConfig, 'builderConfig', toolName);
+      logEntries(macOSConfig, 'macOSConfig', toolName);
+      logEntries(packagerConfig, 'packagerConfig', toolName);
 
       return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
     }
 
     case 'linux': {
-      const {linuxConfig, builderConfig} = buildLinuxConfig(wireJson, envFile);
+      const {linuxConfig, builderConfig} = await buildLinuxConfig(wireJson, envFile);
 
+      logEntries(linuxConfig, 'linuxConfig', toolName);
       logEntries(builderConfig, 'builderConfig', toolName);
 
       return buildLinuxWrapper(builderConfig, linuxConfig, packageJson, wireJson, envFile);
@@ -93,7 +100,7 @@ new Promise(() => {
       return commander.help();
     }
   }
-}).catch(error => {
+})().catch(error => {
   logger.error(error);
   process.exit(1);
 });
