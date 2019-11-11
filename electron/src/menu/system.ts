@@ -491,16 +491,14 @@ export const registerGlobalShortcuts = (): void => {
       WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
     );
 
-    for (const index in Array.from({length: config.maximumAccounts})) {
+    Array.from({length: config.maximumAccounts}, (_, index) => {
       const switchAccelerator = `Cmd+${index + 1}`;
       logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
 
-      if (EnvironmentUtil.platform.IS_MAC_OS) {
-        globalShortcut.register(switchAccelerator, () => {
-          WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index);
-        });
-      }
-    }
+      globalShortcut.register(switchAccelerator, () => {
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index);
+      });
+    });
   }
 };
 
