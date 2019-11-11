@@ -418,7 +418,7 @@ export const createMenu = (isFullScreen: boolean): Menu => {
   }
 
   if (Array.isArray(windowTemplate.submenu)) {
-    const muteAccelerator = 'CmdOrCtrl+Alt+M';
+    const muteAccelerator = 'Ctrl+Alt+M';
     logger.info(`Registering mute shortcut "${muteAccelerator}" ...`);
 
     const muteShortcut: MenuItemConstructorOptions = {
@@ -429,8 +429,8 @@ export const createMenu = (isFullScreen: boolean): Menu => {
       visible: false,
     };
 
-    const switchShortcuts: MenuItemConstructorOptions[] = [...Array(config.maximumAccounts)].map((_, index) => {
-      const switchAccelerator = `CmdOrCtrl+${index + 1}`;
+    const switchShortcuts: MenuItemConstructorOptions[] = Array.from({length: config.maximumAccounts}, (_, index) => {
+      const switchAccelerator = `Ctrl+${index + 1}`;
       logger.info(`Registering account switching shortcut "${switchAccelerator}" ...`);
 
       return {
@@ -484,15 +484,15 @@ export const toggleMenuBar = (): void => {
 
 export const registerGlobalShortcuts = (): void => {
   if (EnvironmentUtil.platform.IS_MAC_OS) {
-    const muteAccelerator = 'CmdOrCtrl+Alt+M';
+    const muteAccelerator = 'Cmd+Alt+M';
     logger.info(`Registering global mute shortcut "${muteAccelerator}" ...`);
 
     globalShortcut.register(muteAccelerator, () =>
       WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
     );
 
-    for (const index in [...Array(config.maximumAccounts)]) {
-      const switchAccelerator = `CmdOrCtrl+${index + 1}`;
+    for (const index in Array.from({length: config.maximumAccounts})) {
+      const switchAccelerator = `Cmd+${index + 1}`;
       logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
 
       if (EnvironmentUtil.platform.IS_MAC_OS) {
