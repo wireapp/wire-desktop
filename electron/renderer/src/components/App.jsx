@@ -103,7 +103,4 @@ function mapDispatchToProps() {
   return {initiateSSO, switchAccount, updateAccount};
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps(),
-)(App);
+export default connect(mapStateToProps, mapDispatchToProps())(App);
