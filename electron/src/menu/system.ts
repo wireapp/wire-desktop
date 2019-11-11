@@ -18,7 +18,7 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {Menu, MenuItemConstructorOptions, dialog, ipcMain, shell} from 'electron';
+import {Menu, MenuItemConstructorOptions, dialog, globalShortcut, ipcMain, shell} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -429,13 +429,14 @@ export const createMenu = (isFullScreen: boolean): Menu => {
       visible: false,
     };
 
-    const switchShortcuts: MenuItemConstructorOptions[] = [...Array(config.maximumAccounts).keys()].map(index => {
+    const switchShortcuts: MenuItemConstructorOptions[] = [...Array(config.maximumAccounts)].map((_, index) => {
       const switchAccelerator = `CmdOrCtrl+${index + 1}`;
       logger.info(`Registering account switching shortcut "${switchAccelerator}" ...`);
+
       return {
         accelerator: switchAccelerator,
         click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
-        label: `Switch to account ${index + 1}`,
+        label: `Switch to Account ${index + 1}`,
         visible: false,
       };
     });
@@ -478,5 +479,34 @@ export const toggleMenuBar = (): void => {
     if (autoHide) {
       mainBrowserWindow.setMenuBarVisibility(!isVisible);
     }
+  }
+};
+
+export const registerGlobalShortcuts = (): void => {
+  if (EnvironmentUtil.platform.IS_MAC_OS) {
+    const muteAccelerator = 'CmdOrCtrl+Alt+M';
+    logger.info(`Registering global mute shortcut "${muteAccelerator}" ...`);
+
+    globalShortcut.register(muteAccelerator, () =>
+      WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
+    );
+
+    for (const index in [...Array(config.maximumAccounts)]) {
+      const switchAccelerator = `CmdOrCtrl+${index + 1}`;
+      logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
+
+      if (EnvironmentUtil.platform.IS_MAC_OS) {
+        globalShortcut.register(switchAccelerator, () => {
+          WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index);
+        });
+      }
+    }
+  }
+};
+
+export const unregisterGlobalShortcuts = (): void => {
+  if (EnvironmentUtil.platform.IS_MAC_OS) {
+    logger.info('Unregistering all global shortcuts ...');
+    globalShortcut.unregisterAll();
   }
 };
