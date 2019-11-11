@@ -53,7 +53,7 @@ import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
-import * as WindowManager from './window/WindowManager';
+import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
@@ -99,6 +99,7 @@ if (argv['proxy-server-auth']) {
 
 const iconFileName = `logo.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const iconPath = path.join(APP_PATH, 'img', iconFileName);
+// This needs to stay global, see https://github.com/electron/electron/blob/v4.2.12/docs/faq.md#my-apps-windowtray-disappeared-after-a-few-minutes
 let tray: TrayHandler;
 
 let isFullScreen = false;

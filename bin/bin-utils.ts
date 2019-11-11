@@ -17,10 +17,12 @@
  */
 
 import {LogFactory, Logger} from '@wireapp/commons/dist/commonjs/LogFactory';
+import {exec} from 'child_process';
 import commander from 'commander';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+import {promisify} from 'util';
 
 interface BackupResult {
   backupPaths: string[];
@@ -65,7 +67,7 @@ export function checkCommanderOptions(
   });
 }
 
-export const logEntries = <T extends Object>(config: T, name: string, callee: string): void => {
+export function logEntries<T extends Object>(config: T, name: string, callee: string): void {
   const logger = getLogger(callee, 'build-tools');
 
   Object.entries(config).forEach(([key, value]) => {
@@ -77,4 +79,22 @@ export const logEntries = <T extends Object>(config: T, name: string, callee: st
       logger.info(`${name}.${key} set to "${value}". `);
     }
   });
-};
+}
+
+interface ExecResult {
+  stderr: string;
+  stdout: string;
+}
+
+export async function execAsync(command: string, throwOnError: false): Promise<ExecResult>;
+export async function execAsync(command: string, throwOnError?: true): Promise<string>;
+export async function execAsync(command: string, throwOnError: boolean = true): Promise<ExecResult | string> {
+  const {stderr, stdout} = await promisify(exec)(command);
+  if (throwOnError) {
+    if (!!stderr) {
+      throw new Error(stderr);
+    }
+    return stdout.trim();
+  }
+  return {stderr: stderr.trim(), stdout: stdout.trim()};
+}

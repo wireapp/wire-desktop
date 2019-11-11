@@ -27,14 +27,14 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 
 describe('build-windows-installer', () => {
   describe('buildWindowsInstallerConfig', () => {
-    it('honors environment variables', () => {
+    it('honors environment variables', async () => {
       const installerIconUrl = uuid();
       const updateUrl = uuid();
 
       process.env.WIN_URL_ICON_INSTALLER = installerIconUrl;
       process.env.WIN_URL_UPDATE = updateUrl;
 
-      const {windowsConfig} = buildWindowsInstallerConfig(wireJsonPath, envFilePath);
+      const {windowsConfig} = await buildWindowsInstallerConfig(wireJsonPath, envFilePath);
 
       assert.strictEqual(windowsConfig.installerIconUrl, installerIconUrl);
       assert.strictEqual(windowsConfig.updateUrl, updateUrl);
