@@ -22,22 +22,26 @@ import electronPackager from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {execSync} from 'child_process';
-import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
+import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {CommonConfig, MacOSConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
-export function buildMacOSConfig(
+interface MacOSConfigResult {
+  macOSConfig: MacOSConfig;
+  packagerConfig: electronPackager.Options;
+}
+
+export async function buildMacOSConfig(
   wireJsonPath: string,
   envFilePath: string,
   signManually?: boolean,
-): {macOSConfig: MacOSConfig; packagerConfig: electronPackager.Options} {
+): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOsDefaultConfig: MacOSConfig = {
     bundleId: 'com.wearezeta.zclient.mac',
@@ -110,7 +114,7 @@ export async function buildMacOSWrapper(
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const {commonConfig} = getCommonConfig(envFileResolved, wireJsonResolved);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} for macOS ...`);
 
@@ -190,20 +194,20 @@ export async function manualMacOSSign(
 
     for (const fileName of filesToSign) {
       const fullPath = `${appFile}/Contents/${fileName}`;
-      execSync(
+      await execAsync(
         `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${fullPath}'`,
       );
     }
 
     if (macOSConfig.certNameInstaller) {
       const appExecutable = `${appFile}/Contents/MacOS/${commonConfig.name}`;
-      execSync(
-        `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
+      await execAsync(
+        `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
       );
-      execSync(
-        `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`,
+      await execAsync(
+        `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`,
       );
-      execSync(
+      await execAsync(
         `productbuild --component '${appFile}' /Applications --sign '${macOSConfig.certNameInstaller}' '${pkgFile}'`,
       );
     }

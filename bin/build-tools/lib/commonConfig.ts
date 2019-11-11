@@ -17,29 +17,28 @@
  *
  */
 
-import {execSync} from 'child_process';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+import {execAsync} from '../../bin-utils';
 import {CommonConfig} from './Config';
 
-export const getCommonConfig = (envFile: string, wireJson: string) => {
-  const defaultConfig: CommonConfig = fs.readJsonSync(wireJson);
+interface Result {
+  commonConfig: CommonConfig;
+  defaultConfig: CommonConfig;
+}
+
+export async function getCommonConfig(envFile: string, wireJson: string): Promise<Result> {
+  const defaultConfig: CommonConfig = await fs.readJson(wireJson);
   const envFileResolved = path.resolve(envFile);
 
   dotenv.config({path: envFileResolved});
 
   const IS_PRODUCTION = process.env.APP_ENV !== 'internal';
 
-  const getProjectVersion = () => {
-    let commitId = 'unknown';
-
-    try {
-      commitId = execSync('git rev-parse --short HEAD')
-        .toString()
-        .trim();
-    } catch (error) {}
+  const getProjectVersion = async () => {
+    const {stdout: commitId} = await execAsync('git rev-parse --short HEAD', false);
 
     const versionWithoutZero = (defaultConfig.version || '0').replace(/\.0$/, '');
     const buildNumber = `${process.env.BUILD_NUMBER || `0-${commitId}`}`;
@@ -69,9 +68,9 @@ export const getCommonConfig = (envFile: string, wireJson: string) => {
     privacyUrl: process.env.URL_PRIVACY || defaultConfig.privacyUrl,
     raygunApiKey: process.env.RAYGUN_API_KEY || defaultConfig.raygunApiKey,
     supportUrl: process.env.URL_SUPPORT || defaultConfig.supportUrl,
-    version: getProjectVersion(),
+    version: await getProjectVersion(),
     websiteUrl: process.env.URL_WEBSITE || defaultConfig.websiteUrl,
   };
 
   return {commonConfig, defaultConfig};
-};
+}

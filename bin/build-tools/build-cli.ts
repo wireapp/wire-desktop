@@ -27,6 +27,13 @@ import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
 
+interface CommanderData {
+  envFile: string;
+  manualSign?: boolean;
+  wireJson: string;
+  packageJson: string;
+}
+
 const toolName = path.basename(__filename).replace('.ts', '');
 const logger = LogFactory.getLogger(toolName, {namespace: '@wireapp/build-tools', forceEnable: true});
 const appSource = path.join(__dirname, '../../');
@@ -48,18 +55,13 @@ commander
 
 const platform = (commander.args[0] || '').toLowerCase();
 
-new Promise(() => {
-  const {
-    envFile,
-    manualSign,
-    wireJson,
-    packageJson,
-  }: {envFile: string; manualSign?: boolean; wireJson: string; packageJson: string} = commander as any;
+(async () => {
+  const {envFile, manualSign, wireJson, packageJson}: CommanderData = commander as any;
 
   switch (platform) {
     case 'win':
     case 'windows': {
-      const {packagerConfig} = buildWindowsConfig(wireJson, envFile);
+      const {packagerConfig} = await buildWindowsConfig(wireJson, envFile);
 
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
@@ -67,7 +69,7 @@ new Promise(() => {
     }
 
     case 'windows-installer': {
-      const {wInstallerOptions} = buildWindowsInstallerConfig(wireJson, envFile, manualSign);
+      const {wInstallerOptions} = await buildWindowsInstallerConfig(wireJson, envFile, manualSign);
 
       logEntries(wInstallerOptions, 'wInstallerOptions', toolName);
 
@@ -76,7 +78,7 @@ new Promise(() => {
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, packagerConfig} = buildMacOSConfig(wireJson, envFile, manualSign);
+      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
@@ -85,7 +87,7 @@ new Promise(() => {
     }
 
     case 'linux': {
-      const {linuxConfig, builderConfig} = buildLinuxConfig(wireJson, envFile);
+      const {linuxConfig, builderConfig} = await buildLinuxConfig(wireJson, envFile);
 
       logEntries(linuxConfig, 'linuxConfig', toolName);
       logEntries(builderConfig, 'builderConfig', toolName);
@@ -98,7 +100,7 @@ new Promise(() => {
       return commander.help();
     }
   }
-}).catch(error => {
+})().catch(error => {
   logger.error(error);
   process.exit(1);
 });

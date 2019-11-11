@@ -22,7 +22,7 @@ import path from 'path';
 import {checkCommanderOptions, getLogger} from '../bin-utils';
 import {S3Deployer} from './lib/S3Deployer';
 
-const toolName = path.basename(__filename).replace('.ts', '');
+const toolName = path.basename(__filename).replace(/\.[jt]s$/, '');
 const logger = getLogger('deploy-tools', toolName);
 
 commander
@@ -55,17 +55,19 @@ if (!commander.wrapperBuild.includes('#')) {
 
   const files = await s3Deployer.findUploadFiles(platform, searchBasePath, version);
 
-  for (const file of files) {
-    const {fileName, filePath} = file;
-    const s3Path = `${s3BasePath}${fileName}`.replace('//', '/');
+  await Promise.all(
+    files.map(file => {
+      const {fileName, filePath} = file;
+      const s3Path = `${s3BasePath}${fileName}`.replace('//', '/');
 
-    logger.log(`Uploading "${fileName}" to "${bucket}/${s3Path}" ...`);
-    await s3Deployer.uploadToS3({
-      bucket,
-      filePath,
-      s3Path,
-    });
-  }
+      logger.log(`Uploading "${fileName}" to "${bucket}/${s3Path}" ...`);
+      return s3Deployer.uploadToS3({
+        bucket,
+        filePath,
+        s3Path,
+      });
+    }),
+  );
 
   logger.log('Done uploading to S3.');
 })().catch(error => {
