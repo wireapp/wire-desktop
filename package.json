@@ -76,7 +76,7 @@
     "electron-packager": "14.1.0",
     "electron-winstaller": "4.0.0",
     "eslint": "6.6.0",
-    "eslint-config-prettier": "6.5.0",
+    "eslint-config-prettier": "6.6.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-jasmine": "4.0.0",
     "eslint-plugin-jsdoc": "17.1.2",
