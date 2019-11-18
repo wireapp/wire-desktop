@@ -29,14 +29,11 @@ import {
 } from '../actions';
 import Webviews from '../components/Webviews';
 
-export default connect(
-  state => ({accounts: state.accounts}),
-  {
-    abortAccountCreation,
-    resetIdentity,
-    switchAccount,
-    updateAccountBadgeCount,
-    updateAccountData,
-    updateAccountLifecycle,
-  },
-)(Webviews);
+export default connect(state => ({accounts: state.accounts}), {
+  abortAccountCreation,
+  resetIdentity,
+  switchAccount,
+  updateAccountBadgeCount,
+  updateAccountData,
+  updateAccountLifecycle,
+})(Webviews);
