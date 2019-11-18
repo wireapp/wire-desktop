@@ -194,22 +194,36 @@ export async function manualMacOSSign(
 
     for (const fileName of filesToSign) {
       const fullPath = `${appFile}/Contents/${fileName}`;
-      await execAsync(
+      const {stderr, stdout} = await execAsync(
         `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${fullPath}'`,
+        false,
       );
+      logger.log(stdout);
+      logger.warn(stderr);
     }
 
     if (macOSConfig.certNameInstaller) {
       const appExecutable = `${appFile}/Contents/MacOS/${commonConfig.name}`;
-      await execAsync(
+      const {stderr: stderrSignExecutable, stdout: stdoutSignExecutable} = await execAsync(
         `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
+        false,
       );
-      await execAsync(
+      logger.log(stdoutSignExecutable);
+      logger.warn(stderrSignExecutable);
+
+      const {stderr: stderrSignApp, stdout: stdoutSignApp} = await execAsync(
         `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`,
+        false,
       );
-      await execAsync(
+      logger.log(stdoutSignApp);
+      logger.warn(stderrSignApp);
+
+      const {stderr: stderrPkg, stdout: stdoutPkg} = await execAsync(
         `productbuild --component '${appFile}' /Applications --sign '${macOSConfig.certNameInstaller}' '${pkgFile}'`,
+        false,
       );
+      logger.log(stdoutPkg);
+      logger.warn(stderrPkg);
     }
   }
 }
