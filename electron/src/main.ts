@@ -18,7 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, Menu, app, ipcMain, shell} from 'electron';
+import {BrowserWindow, Event, Filter as ElectronFilter, Menu, app, ipcMain, shell} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -537,7 +537,7 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter: Electron.OnHeadersReceivedFilter = {
+            const filter: ElectronFilter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 

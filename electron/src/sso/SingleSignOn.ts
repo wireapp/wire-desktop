@@ -76,7 +76,7 @@ export class SingleSignOn {
       return session.cookies.get({domain: rootDomain, secure: true});
     },
     setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string): Promise<void> => {
-      return session.cookies.set({url, ...(<Electron.Details>cookie)});
+      return session.cookies.set({url, ...cookie});
     },
   };
 
