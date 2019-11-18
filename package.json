@@ -22,7 +22,7 @@
     "prop-types": "15.7.2",
     "raygun": "0.10.1",
     "react": "16.12.0",
-    "react-dom": "16.11.0",
+    "react-dom": "16.12.0",
     "react-redux": "7.1.3",
     "redux": "4.0.4",
     "redux-logger": "3.0.6",
