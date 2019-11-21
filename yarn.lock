@@ -1294,10 +1294,10 @@
   resolved "https://registry.yarnpkg.com/@types/raygun/-/raygun-0.10.2.tgz#798538491f1821a4e6f5c83184e798c6b92e397f"
   integrity sha512-vdBRrp/Z4U0904H9Zr1SSFT1Ib5xZIaAm+I7/BK3lgXnaOiaCB5NJvIMWB3BZC84abuwuO8fgGRV5BNpzEbWtA==
 
-"@types/sinon@7.5.0":
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-7.5.0.tgz#f5a10c27175465a0b001b68d8b9f761582967cc6"
-  integrity sha512-NyzhuSBy97B/zE58cDw4NyGvByQbAHNP9069KVSgnXt/sc0T6MFRh0InKAeBVHJWdSXG1S3+PxgVIgKo9mTHbw==
+"@types/sinon@7.5.1":
+  version "7.5.1"
+  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-7.5.1.tgz#d27b81af0d1cfe1f9b24eebe7a24f74ae40f5b7c"
+  integrity sha512-EZQUP3hSZQyTQRfiLqelC9NMWd1kqLcmQE0dMiklxBkgi84T+cHOhnKpgk4NnOWpGX863yE6+IaGnOXUNFqDnQ==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
