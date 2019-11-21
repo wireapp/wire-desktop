@@ -69,7 +69,7 @@
     "cross-env": "6.0.3",
     "css-loader": "3.2.0",
     "dotenv": "8.2.0",
-    "electron": "6.1.4",
+    "electron": "6.1.5",
     "electron-builder": "20.44.4",
     "electron-mocha": "8.1.2",
     "electron-osx-sign": "0.4.14",
