@@ -1315,10 +1315,10 @@
   resolved "https://registry.yarnpkg.com/@types/raygun/-/raygun-0.10.2.tgz#798538491f1821a4e6f5c83184e798c6b92e397f"
   integrity sha512-vdBRrp/Z4U0904H9Zr1SSFT1Ib5xZIaAm+I7/BK3lgXnaOiaCB5NJvIMWB3BZC84abuwuO8fgGRV5BNpzEbWtA==
 
-"@types/sinon@7.5.0":
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-7.5.0.tgz#f5a10c27175465a0b001b68d8b9f761582967cc6"
-  integrity sha512-NyzhuSBy97B/zE58cDw4NyGvByQbAHNP9069KVSgnXt/sc0T6MFRh0InKAeBVHJWdSXG1S3+PxgVIgKo9mTHbw==
+"@types/sinon@7.5.1":
+  version "7.5.1"
+  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-7.5.1.tgz#d27b81af0d1cfe1f9b24eebe7a24f74ae40f5b7c"
+  integrity sha512-EZQUP3hSZQyTQRfiLqelC9NMWd1kqLcmQE0dMiklxBkgi84T+cHOhnKpgk4NnOWpGX863yE6+IaGnOXUNFqDnQ==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -1497,10 +1497,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@2.2.23":
-  version "2.2.23"
-  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-2.2.23.tgz#2beaa6ea0673d0d87719a3fc2ae37346f7963440"
-  integrity sha512-yVhEMEJ9+a1IcBVl6GHJ/f7ke8AbL1p+MPND1aCh7bOhnf7oGh5phYJj3Z8iqjyDt6kCxLKyBMSJxdJnNMHj3g==
+"@wireapp/commons@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@wireapp/commons/-/commons-3.0.0.tgz#0344b162796242ef5ff65ddeb4f2f217db4b800a"
+  integrity sha512-enbffcroZX3iScwNfUOAmcc2/WL//+WR59H4shue7yBchlr0q6e6r1LJn0PzZ6gpSFQN5Kuz7FzXk1bPCF/XSQ==
   dependencies:
     "@types/ansi-regex" "5.0.0"
     "@types/fs-extra" "8.0.1"
@@ -3748,10 +3748,10 @@ eslint-plugin-jasmine@4.1.0:
   resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.1.0.tgz#4f6d41b1a8622348c97559cbcd29badffa74dbfa"
   integrity sha512-Vfuk2Sm1ULR7MqGjVIOOEdQWyoFBfSwvwUeo9MrajVGJB3C24c9Mmj1Cgf8Qwmf3aS2bezPt1sckpKXWpd74Dw==
 
-eslint-plugin-jsdoc@18.1.3:
-  version "18.1.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-18.1.3.tgz#d5a8adfff8d76b6eedb05e06c26fa34aa686a8aa"
-  integrity sha512-QmdxsDzGG9eb20VD3V8hw4huehTnU6x1/we9tN56p8MOkJNEiHDFW59stcS2/sk+BSnsJy61qZ+6wCPya8B45w==
+eslint-plugin-jsdoc@18.1.4:
+  version "18.1.4"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-18.1.4.tgz#462b49f17acf3cc29b15c0eb124caaadf39be128"
+  integrity sha512-X3jXbAZAFwr2xZXpz8cyozDuu9ea2eWf8qiIgmgUbAo3vs8xWL0g4hVmCo/Pwg5T2qL6/+iksY3m+xjmd8NAig==
   dependencies:
     comment-parser "^0.7.0"
     debug "^4.1.1"
@@ -9871,9 +9871,9 @@ winreg@1.2.4:
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.23":
-  version "0.24.23"
-  resolved "https://github.com/wireapp/wire-web-config-default#199bbe0390b8e870be421671d7cafd70c69aa04c"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.25":
+  version "0.24.25"
+  resolved "https://github.com/wireapp/wire-web-config-default#7eaca33582e5aeb8c292b82613bed4fc862b6646"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
