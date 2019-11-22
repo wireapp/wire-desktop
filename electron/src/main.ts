@@ -543,7 +543,7 @@ class ElectronWrapperInit {
 
             const listener = (
               details: Electron.OnHeadersReceivedListenerDetails,
-              callback: (response: Electron.CallbackResponse) => void,
+              callback: (response: Electron.HeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
                 'Access-Control-Allow-Credentials': 'true',
@@ -552,8 +552,7 @@ class ElectronWrapperInit {
 
               callback({
                 cancel: false,
-                // TODO: Were `responseHeaders` really renamed to `requestHeaders` or are the types wrong?
-                requestHeaders: responseHeaders,
+                responseHeaders,
               });
             };
 
