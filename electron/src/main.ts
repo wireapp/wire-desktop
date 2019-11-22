@@ -508,7 +508,7 @@ class ElectronWrapperInit {
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
-            webPreferences.preload = fileUrl(PRELOAD_RENDERER_JS);
+            webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.webSecurity = true;
           });
           break;
