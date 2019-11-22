@@ -195,6 +195,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
+      enableBlinkFeatures: '',
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -526,6 +527,7 @@ class ElectronWrapperInit {
             webPreferences.nodeIntegration = false;
             webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
             webPreferences.webSecurity = true;
+            webPreferences.enableBlinkFeatures = '';
           });
           break;
         }
