@@ -25,6 +25,7 @@ export enum BackendType {
   DEVELOPMENT = 'DEVELOPMENT',
   EDGE = 'EDGE',
   INTERNAL = 'INTERNAL',
+  MASTER = 'MASTER',
   LOCALHOST = 'LOCALHOST',
   PRODUCTION = 'PRODUCTION',
 }
@@ -46,6 +47,7 @@ export const URL_WEBAPP: Record<BackendType, string> = {
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com',
   LOCALHOST: 'http://localhost:8081',
+  MASTER: 'https://wire-webapp-master.zinfra.io',
   PRODUCTION: config.appBase,
 };
 
