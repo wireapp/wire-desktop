@@ -39,12 +39,13 @@ node('master') {
         sh 'yarn'
         if (production) {
           sh 'yarn build:macos'
-          sh 'bin/macos-check_private_apis.sh'
+          sh 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"'
         } else if (custom) {
           sh 'yarn build:macos'
         } else {
           // internal
           sh 'yarn build:macos:internal'
+          sh 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-x64/WireInternal.app"'
         }
       }
     } catch(e) {
