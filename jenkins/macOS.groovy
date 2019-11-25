@@ -37,9 +37,11 @@ node('master') {
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
-        if (production || custom) {
+        if (production) {
           sh 'yarn build:macos'
-          sh 'bin/check_macos_private_apis.sh'
+          sh 'bin/macos-check_private_apis.sh'
+        } else if (custom) {
+          sh 'yarn build:macos'
         } else {
           // internal
           sh 'yarn build:macos:internal'
