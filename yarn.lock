@@ -2331,11 +2331,6 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.npmjs.org/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-builtins@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/builtins/-/builtins-1.0.3.tgz#cb94faeb61c8696451db36534e1422f94f0aee88"
-  integrity sha1-y5T662HIaWRR2zZTThQi+U8K7og=
-
 cacache@^12.0.2:
   version "12.0.2"
   resolved "https://registry.npmjs.org/cacache/-/cacache-12.0.2.tgz#8db03205e36089a3df6954c66ce92541441ac46c"
@@ -3821,12 +3816,10 @@ eslint-plugin-react@7.16.0:
     prop-types "^15.7.2"
     resolve "^1.12.0"
 
-eslint-plugin-simple-import-sort@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/eslint-plugin-simple-import-sort/-/eslint-plugin-simple-import-sort-4.0.0.tgz#048736c170b9b43f0a8c3ef85ba53881c389f3ff"
-  integrity sha512-QsxOMrXhhqvSiTmZafPc/lvSET9lhblaO2kaaSbFo1FVU/AW9mFQDXadiHJ5OqG6i0N6+Qd+RZ95iQbkg4p+0w==
-  dependencies:
-    validate-npm-package-name "^3.0.0"
+eslint-plugin-simple-import-sort@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/eslint-plugin-simple-import-sort/-/eslint-plugin-simple-import-sort-5.0.0.tgz#fd2abac52c0ae6050baf340c004b0b5d9aa76e8e"
+  integrity sha512-Zn6OppySnbwl/UonkzmMBbiFXZwe/tI9ZlSXwQek5h1FfPv3hcDTE3kG0SC70pBsKuVE8IMwZCMl0tKwcY89rw==
 
 eslint-plugin-sort-keys-fix@1.1.0:
   version "1.1.0"
@@ -9943,13 +9936,6 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
-
-validate-npm-package-name@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/validate-npm-package-name/-/validate-npm-package-name-3.0.0.tgz#5fa912d81eb7d0c74afc140de7317f0ca7df437e"
-  integrity sha1-X6kS2B630MdK/BQN5zF/DKffQ34=
-  dependencies:
-    builtins "^1.0.3"
 
 verror@1.10.0:
   version "1.10.0"
