@@ -52,6 +52,7 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
+        enableBlinkFeatures: '',
         javascript: true,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
