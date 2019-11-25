@@ -36,7 +36,7 @@
     "@babel/plugin-proposal-object-rest-spread": "7.7.4",
     "@babel/preset-env": "7.7.1",
     "@babel/preset-react": "7.7.4",
-    "@babel/preset-typescript": "7.7.2",
+    "@babel/preset-typescript": "7.7.4",
     "@babel/register": "7.7.4",
     "@types/auto-launch": "5.0.1",
     "@types/content-type": "1.1.3",
