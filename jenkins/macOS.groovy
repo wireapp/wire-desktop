@@ -37,7 +37,13 @@ node('master') {
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
-        sh 'yarn build:macos'
+        if (production || custom) {
+          sh 'yarn build:macos'
+          sh 'bin/check_macos_private_apis.sh'
+        } else {
+          // internal
+          sh 'yarn build:macos:internal'
+        }
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
