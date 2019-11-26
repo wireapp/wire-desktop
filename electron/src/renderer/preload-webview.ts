@@ -92,14 +92,13 @@ const subscribeToWebappEvents = () => {
   });
 
   window.amplify.subscribe(window.z.event.WebApp.TEAM.INFO, (info: TeamAccountInfo) => {
-    info = {
+    const debugInfo = {
       ...info,
-      picture: `${(info.picture || '').substring(0, 100)}...`,
+      picture: typeof info.picture === 'string' ? `${info.picture.substring(0, 100)}...` : '',
     };
     logger.info(
-      `Received amplify event "${window.z.event.WebApp.TEAM.INFO}" (info: "${JSON.stringify(
-        info,
-      )}"), forwarding event ...`,
+      `Received amplify event "${window.z.event.WebApp.TEAM.INFO}":`,
+      `"${JSON.stringify(debugInfo)}", forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
