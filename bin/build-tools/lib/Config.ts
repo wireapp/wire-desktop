@@ -55,6 +55,7 @@ export interface MacOSConfig {
   category: string;
   certNameApplication: string | null;
   certNameInstaller: string | null;
+  electronMirror: string | null;
   notarizeAppleId: string | null;
   notarizeApplePassword: string | null;
 }
