@@ -43,22 +43,24 @@ export async function buildMacOSConfig(
   const envFileResolved = path.resolve(envFilePath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
-  const macOsDefaultConfig: MacOSConfig = {
+  const macOSDefaultConfig: MacOSConfig = {
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
     certNameApplication: null,
     certNameInstaller: null,
+    electronMirror: null,
     notarizeAppleId: null,
     notarizeApplePassword: null,
   };
 
   const macOSConfig: MacOSConfig = {
-    ...macOsDefaultConfig,
-    bundleId: process.env.MACOS_BUNDLE_ID || macOsDefaultConfig.bundleId,
-    certNameApplication: process.env.MACOS_CERTIFICATE_NAME_APPLICATION || macOsDefaultConfig.certNameApplication,
-    certNameInstaller: process.env.MACOS_CERTIFICATE_NAME_INSTALLER || macOsDefaultConfig.certNameInstaller,
-    notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOsDefaultConfig.notarizeAppleId,
-    notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOsDefaultConfig.notarizeApplePassword,
+    ...macOSDefaultConfig,
+    bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
+    certNameApplication: process.env.MACOS_CERTIFICATE_NAME_APPLICATION || macOSDefaultConfig.certNameApplication,
+    certNameInstaller: process.env.MACOS_CERTIFICATE_NAME_INSTALLER || macOSDefaultConfig.certNameInstaller,
+    electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
+    notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
+    notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };
 
   const packagerConfig: electronPackager.Options = {
@@ -82,6 +84,14 @@ export async function buildMacOSConfig(
     prune: true,
     quiet: false,
   };
+
+  if (macOSConfig.electronMirror) {
+    packagerConfig.download = {
+      mirrorOptions: {
+        mirror: macOSConfig.electronMirror,
+      },
+    };
+  }
 
   if (!signManually) {
     if (macOSConfig.certNameApplication) {
