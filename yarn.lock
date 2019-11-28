@@ -3411,10 +3411,10 @@ electron-osx-sign@0.4.11:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-osx-sign@0.4.14, electron-osx-sign@^0.4.11:
-  version "0.4.14"
-  resolved "https://registry.npmjs.org/electron-osx-sign/-/electron-osx-sign-0.4.14.tgz#770397c0eb604adfe8a3ec044795db3c123e59d3"
-  integrity sha512-72vtrz9I3dOeFDaNvO5thwIjrimDiXMmYEbN0hEBqnvcSSMOWugjim2wiY9ox3dhuBFUhxp3owmuZCoH3Ij08A==
+electron-osx-sign@0.4.15, electron-osx-sign@^0.4.11:
+  version "0.4.15"
+  resolved "https://registry.npmjs.org/electron-osx-sign/-/electron-osx-sign-0.4.15.tgz#560e190297f0dbf40d4c192e06f160f669c2d015"
+  integrity sha512-1QtPNpjIji9bGZ0VRFwtJUyU1uHi7q3XUAOG0qFsvAUfs5H0T8hbgUfyg3xvPzmF1ruV8T8pQmQ86vNfLrcRiA==
   dependencies:
     bluebird "^3.5.0"
     compare-version "^0.1.2"
