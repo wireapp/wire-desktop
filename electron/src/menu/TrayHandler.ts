@@ -103,7 +103,7 @@ export class TrayHandler {
 
   private updateBadgeCount(count?: number): void {
     if (typeof count !== 'undefined') {
-      app.setBadgeCount(count);
+      app.badgeCount = count;
       this.lastUnreadCount = count;
     }
   }
