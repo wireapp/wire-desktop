@@ -51,29 +51,30 @@ export class SingleSignOn {
   public static loginAuthorizationSecret: string | undefined;
 
   private session: Electron.Session | undefined;
+  private readonly mainBrowserWindow: Electron.BrowserWindow;
   private readonly mainSession: Electron.Session;
+  private readonly senderEvent: Electron.Event;
   private readonly senderWebContents: Electron.WebContents;
+  private readonly windowOptions: Electron.BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
 
   private static readonly cookies = {
-    copy: async (from: Electron.Session, to: Electron.Session, url: URL) => {
-      const cookies = await SingleSignOn.cookies.getBackendCookies(from, url);
+    copy: async (from: Electron.Session, to: Electron.Session, domain: string) => {
+      const cookies = await SingleSignOn.cookies.getBackendCookies(from, domain);
       for (const cookie of cookies) {
-        await SingleSignOn.cookies.setCookie(to, cookie, url.toString());
+        await SingleSignOn.cookies.setCookie(to, cookie, domain);
       }
       await SingleSignOn.cookies.flushCookies(to);
     },
     flushCookies: (session: Electron.Session): Promise<void> => {
       return session.cookies.flushStore();
     },
-    getBackendCookies: (session: Electron.Session, url: URL): Promise<Electron.Cookie[]> => {
-      const rootDomain = url.hostname
+    getBackendCookies: (session: Electron.Session, domain: string): Promise<Electron.Cookie[]> => {
+      const rootDomain = domain
         .split('.')
-        .reverse()
-        .splice(0, 2)
-        .reverse()
+        .slice(-2)
         .join('.');
-      return session.cookies.get({domain: rootDomain, secure: true});
+      return session.cookies.get({domain: rootDomain});
     },
     setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string): Promise<void> => {
       return session.cookies.set({url, ...cookie});
@@ -97,13 +98,13 @@ export class SingleSignOn {
 
       const handleRequest = (request: Electron.ProtocolRequest, response: (data?: string) => void) => {
         try {
-          const url = new URL(request.url);
+          const requestURL = new URL(request.url);
 
-          if (url.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
+          if (requestURL.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
             throw new Error('Protocol is invalid');
           }
 
-          if (url.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
+          if (requestURL.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
             throw new Error('Host is invalid');
           }
 
@@ -111,11 +112,11 @@ export class SingleSignOn {
             throw new Error('Secret has not be set or has been consumed');
           }
 
-          if (url.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
+          if (requestURL.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
             throw new Error('Secret is invalid');
           }
 
-          const type = url.searchParams.get('type');
+          const type = requestURL.searchParams.get('type');
 
           if (typeof type !== 'string') {
             throw new Error('Response is empty');
@@ -179,14 +180,17 @@ export class SingleSignOn {
   };
 
   constructor(
-    private readonly mainBrowserWindow: Electron.BrowserWindow,
-    private readonly senderEvent: Electron.Event,
-    windowOriginUrl: string,
-    private readonly windowOptions: Electron.BrowserWindowConstructorOptions,
+    mainBrowserWindow: Electron.BrowserWindow,
+    senderEvent: Electron.Event,
+    windowOriginURL: string,
+    windowOptions: Electron.BrowserWindowConstructorOptions,
   ) {
+    this.mainBrowserWindow = mainBrowserWindow;
+    this.windowOptions = windowOptions;
+    this.senderEvent = senderEvent;
     this.senderWebContents = (senderEvent as any).sender;
     this.mainSession = this.senderWebContents.session;
-    this.windowOriginUrl = new URL(windowOriginUrl);
+    this.windowOriginUrl = new URL(windowOriginURL);
   }
 
   public readonly init = async (): Promise<void> => {
@@ -304,7 +308,7 @@ export class SingleSignOn {
 
       // Set cookies from ephemeral session to the default one
       try {
-        await SingleSignOn.cookies.copy(this.session, this.mainSession, this.windowOriginUrl);
+        await SingleSignOn.cookies.copy(this.session, this.mainSession, this.windowOriginUrl.hostname);
       } catch (error) {
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
         return;
