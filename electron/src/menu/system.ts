@@ -22,7 +22,6 @@ import {Menu, MenuItemConstructorOptions, dialog, globalShortcut, ipcMain, shell
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as lifecycle from '../runtime/lifecycle';
@@ -186,22 +185,12 @@ const editTemplate: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
-      click: () => {
-        const focusedWebContents = WebViewFocus.getFocusedWebContents();
-        if (focusedWebContents) {
-          focusedWebContents.undo();
-        }
-      },
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.UNDO),
       label: locale.getText('menuUndo'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
-      click: () => {
-        const focusedWebContents = WebViewFocus.getFocusedWebContents();
-        if (focusedWebContents) {
-          focusedWebContents.redo();
-        }
-      },
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.REDO),
       label: locale.getText('menuRedo'),
     },
     separatorTemplate,
