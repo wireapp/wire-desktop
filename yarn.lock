@@ -1393,10 +1393,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.0.1.tgz#684b3e8e05e182e8cc0a1387ac026ab21f1b39f6"
-  integrity sha512-Abg+z5/YyBhDHOknKL/9HsG97gxbW5o3Md+fsGT0LcALq7p/rkUvxMPiM+1zt9i4B7DRYC88GJdfivbnCF8Jzw==
+"@wireapp/commons@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.0.2.tgz#30fae25f2601703e3fcf27f169f1ca2b34bdd1f5"
+  integrity sha512-xbvXtGqlDxZzdPw9kah7gmWE+EvKySYAbdXC51R7Bktt2AP9jQbRrMwdKOMdloxkVZtz7HHQzhdSbkBwRCpyqQ==
   dependencies:
     "@types/ansi-regex" "5.0.0"
     "@types/fs-extra" "8.0.1"
