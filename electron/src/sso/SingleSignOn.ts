@@ -152,7 +152,7 @@ export class SingleSignOn {
   public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
 
   // Ensure the requested URL is going to the backend
-  public static isBackendOrigin = (url: string) => {
+  public static isBackendOrigin = (url: string): boolean => {
     if (url === 'null') {
       return false;
     }
@@ -160,7 +160,7 @@ export class SingleSignOn {
   };
 
   // Returns an empty string if the origin is a Wire backend
-  public static getWindowTitle = (origin: string) =>
+  public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
 
   public static readonly javascriptHelper = () => {
