@@ -36,10 +36,9 @@ window.locStringsDefault = locale.LANGUAGES.en;
 
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
-const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)') as WebviewTag;
-const getWebviewById = (id: string): WebviewTag => {
-  return document.querySelector(`.Webview[data-accountid="${id}"]`) as WebviewTag;
-};
+const getSelectedWebview = (): WebviewTag | null => document.querySelector<WebviewTag>('.Webview:not(.hide)');
+const getWebviewById = (id: string): WebviewTag | null =>
+  document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event, code: string) => new AutomatedSingleSignOn().start(code));
@@ -55,6 +54,20 @@ const subscribeToMainProcessEvents = () => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       await selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.redo();
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.undo();
     }
   });
 
