@@ -23,6 +23,7 @@ import * as path from 'path';
 import {URL} from 'url';
 const minimist = require('minimist');
 
+import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
 const argv = minimist(process.argv.slice(1));
@@ -41,6 +42,7 @@ export class SingleSignOn {
   private static readonly SSO_SESSION_NAME = 'sso';
   private static readonly MAX_LENGTH_ORIGIN_DOMAIN = 255;
   private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + SingleSignOn.MAX_LENGTH_ORIGIN_DOMAIN;
+  private static readonly logger = getLogger(path.basename(__filename));
 
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
@@ -55,46 +57,24 @@ export class SingleSignOn {
   private readonly senderWebContents: Electron.WebContents;
   private readonly windowOriginUrl: URL;
 
-  private static readonly cookies = {
-    copy: async (from: Electron.Session, to: Electron.Session, url: URL) => {
-      const cookies = await SingleSignOn.cookies.getBackendCookies(from, url);
-      for (const cookie of cookies) {
-        await SingleSignOn.cookies.setCookie(to, cookie, url.toString());
-      }
-      await SingleSignOn.cookies.flushCookies(to);
-    },
-    flushCookies: (session: Electron.Session): Promise<void> => {
-      return new Promise(resolve => {
-        session.cookies.flushStore(resolve);
-      });
-    },
-    getBackendCookies: (session: Electron.Session, url: URL): Promise<Electron.Cookie[]> => {
-      return new Promise((resolve, reject) => {
-        const rootDomain = url.hostname
-          .split('.')
-          .reverse()
-          .splice(0, 2)
-          .reverse()
-          .join('.');
-        session.cookies.get({domain: rootDomain, secure: true}, (error, cookies) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(cookies);
-        });
-      });
-    },
-    setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string) => {
-      return new Promise((resolve, reject) => {
-        session.cookies.set({url, ...(<Electron.Details>cookie)}, error => {
-          if (error) {
-            return reject(error);
-          }
-          resolve();
-        });
-      });
-    },
-  };
+  private static async copyCookies(
+    fromSession: Electron.Session,
+    toSession: Electron.Session,
+    url: URL,
+  ): Promise<void> {
+    const rootDomain = url.hostname
+      .split('.')
+      .slice(-2)
+      .join('.');
+
+    const cookies: Electron.Cookie[] = (await fromSession.cookies.get({domain: rootDomain})) as any;
+
+    for (const cookie of cookies) {
+      await toSession.cookies.set({url: url.toString(), ...cookie});
+    }
+
+    await toSession.cookies.flushStore();
+  }
 
   private static readonly protocol = {
     generateSecret: (length: number): Promise<string> => {
@@ -170,10 +150,15 @@ export class SingleSignOn {
   public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
 
   // Ensure the requested URL is going to the backend
-  public static isBackendOrigin = (url: string) => SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
+  public static isBackendOrigin = (url: string): boolean => {
+    if (url === 'null') {
+      return false;
+    }
+    return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
+  };
 
   // Returns an empty string if the origin is a Wire backend
-  public static getWindowTitle = (origin: string) =>
+  public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
 
   public static readonly javascriptHelper = () => {
@@ -320,8 +305,9 @@ export class SingleSignOn {
 
       // Set cookies from ephemeral session to the default one
       try {
-        await SingleSignOn.cookies.copy(this.session, this.mainSession, this.windowOriginUrl);
+        await SingleSignOn.copyCookies(this.session, this.mainSession, this.windowOriginUrl);
       } catch (error) {
+        SingleSignOn.logger.warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
         return;
       }
