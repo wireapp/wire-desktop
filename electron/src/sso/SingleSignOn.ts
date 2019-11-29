@@ -23,6 +23,7 @@ import * as path from 'path';
 import {URL} from 'url';
 const minimist = require('minimist');
 
+import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
 const argv = minimist(process.argv.slice(1));
@@ -41,6 +42,7 @@ export class SingleSignOn {
   private static readonly SSO_SESSION_NAME = 'sso';
   private static readonly MAX_LENGTH_ORIGIN_DOMAIN = 255;
   private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + SingleSignOn.MAX_LENGTH_ORIGIN_DOMAIN;
+  private static readonly logger = getLogger(path.basename(__filename));
 
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
@@ -58,28 +60,23 @@ export class SingleSignOn {
   private readonly windowOptions: Electron.BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
 
-  private static readonly cookies = {
-    copy: async (from: Electron.Session, to: Electron.Session, domain: string) => {
-      const cookies = await SingleSignOn.cookies.getBackendCookies(from, domain);
-      for (const cookie of cookies) {
-        await SingleSignOn.cookies.setCookie(to, cookie, domain);
-      }
-      await SingleSignOn.cookies.flushCookies(to);
-    },
-    flushCookies: (session: Electron.Session): Promise<void> => {
-      return session.cookies.flushStore();
-    },
-    getBackendCookies: (session: Electron.Session, domain: string): Promise<Electron.Cookie[]> => {
-      const rootDomain = domain
-        .split('.')
-        .slice(-2)
-        .join('.');
-      return session.cookies.get({domain: rootDomain});
-    },
-    setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string): Promise<void> => {
-      return session.cookies.set({url, ...cookie});
-    },
-  };
+  private static async copyCookies(
+    fromSession: Electron.Session,
+    toSession: Electron.Session,
+    url: URL,
+  ): Promise<void> {
+    const rootDomain = url.hostname
+      .split('.')
+      .slice(-2)
+      .join('.');
+    const cookies = await fromSession.cookies.get({domain: rootDomain});
+
+    for (const cookie of cookies) {
+      await toSession.cookies.set({url: url.toString(), ...cookie});
+    }
+
+    await toSession.cookies.flushStore();
+  }
 
   private static readonly protocol = {
     generateSecret: (length: number): Promise<string> => {
@@ -155,10 +152,15 @@ export class SingleSignOn {
   public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
 
   // Ensure the requested URL is going to the backend
-  public static isBackendOrigin = (url: string) => SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
+  public static isBackendOrigin = (url: string): boolean => {
+    if (url === 'null') {
+      return false;
+    }
+    return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
+  };
 
   // Returns an empty string if the origin is a Wire backend
-  public static getWindowTitle = (origin: string) =>
+  public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
 
   public static readonly javascriptHelper = () => {
@@ -308,8 +310,9 @@ export class SingleSignOn {
 
       // Set cookies from ephemeral session to the default one
       try {
-        await SingleSignOn.cookies.copy(this.session, this.mainSession, this.windowOriginUrl.hostname);
+        await SingleSignOn.copyCookies(this.session, this.mainSession, this.windowOriginUrl);
       } catch (error) {
+        SingleSignOn.logger.warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
         return;
       }
