@@ -290,6 +290,10 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
+
+  if (argv.startup || argv.hidden) {
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
+  }
 };
 
 // App Events

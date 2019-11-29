@@ -21,9 +21,14 @@ import './Webview.css';
 
 import React, {Component} from 'react';
 
+import * as EVENT_TYPE from '../lib/eventType';
+
 export default class Webview extends Component {
   constructor(props) {
     super(props);
+    this.isHidden = false;
+
+    window.addEventListener(EVENT_TYPE.PREFERENCES.SET_HIDDEN, () => (this.isHidden = true), false);
   }
 
   componentDidMount() {
@@ -36,9 +41,10 @@ export default class Webview extends Component {
     this.webview.src = src;
 
     this.webview.addEventListener('ipc-message', this._onIpcMessage);
-
-    this.webview.addEventListener('dom-ready', event => {
-      this._focusWebview();
+    this.webview.addEventListener('dom-ready', () => {
+      if (!this.isHidden) {
+        this._focusWebview();
+      }
     });
   }
 
