@@ -18,7 +18,16 @@
  */
 
 import * as crypto from 'crypto';
-import {BrowserWindow, app, session} from 'electron';
+import {
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  Cookie,
+  Event as ElectronEvent,
+  RegisterStringProtocolRequest,
+  Session,
+  app,
+  session,
+} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 const minimist = require('minimist');
@@ -52,22 +61,18 @@ export class SingleSignOn {
 
   public static loginAuthorizationSecret: string | undefined;
 
-  private session: Electron.Session | undefined;
-  private readonly mainSession: Electron.Session;
-  private readonly senderWebContents: Electron.WebContents;
+  private session: Session | undefined;
+  private readonly mainSession: Session;
+  private readonly senderWebContents: WebContents;
   private readonly windowOriginUrl: URL;
 
-  private static async copyCookies(
-    fromSession: Electron.Session,
-    toSession: Electron.Session,
-    url: URL,
-  ): Promise<void> {
+  private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
     const rootDomain = url.hostname
       .split('.')
       .slice(-2)
       .join('.');
 
-    const cookies: Electron.Cookie[] = (await fromSession.cookies.get({domain: rootDomain})) as any;
+    const cookies: Cookie[] = (await fromSession.cookies.get({domain: rootDomain})) as any;
 
     for (const cookie of cookies) {
       await toSession.cookies.set({url: url.toString(), ...cookie});
@@ -87,11 +92,11 @@ export class SingleSignOn {
         });
       });
     },
-    register: async (session: Electron.Session, finalizeLogin: (type: string) => void): Promise<void> => {
+    register: async (session: Session, finalizeLogin: (type: string) => void): Promise<void> => {
       // Generate a new secret to authenticate the custom protocol (wire-sso)
       SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
 
-      const handleRequest = (request: Electron.RegisterStringProtocolRequest, response: (data?: string) => void) => {
+      const handleRequest = (request: RegisterStringProtocolRequest, response: (data?: string) => void) => {
         try {
           const url = new URL(request.url);
 
@@ -137,7 +142,7 @@ export class SingleSignOn {
         });
       }
     },
-    unregister: (session: Electron.Session): Promise<void> => {
+    unregister: (session: Session): Promise<void> => {
       return new Promise((resolve, reject) => {
         session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
           return error ? reject(error) : resolve();
@@ -180,10 +185,10 @@ export class SingleSignOn {
   };
 
   constructor(
-    private readonly mainBrowserWindow: Electron.BrowserWindow,
-    private readonly senderEvent: Electron.Event,
+    private readonly mainBrowserWindow: BrowserWindow,
+    private readonly senderEvent: ElectronEvent,
     windowOriginUrl: string,
-    private readonly windowOptions: Electron.BrowserWindowConstructorOptions,
+    private readonly windowOptions: BrowserWindowConstructorOptions,
   ) {
     this.senderWebContents = senderEvent.sender;
     this.mainSession = this.senderWebContents.session;
@@ -217,7 +222,7 @@ export class SingleSignOn {
     }
   };
 
-  private readonly createBrowserWindow = (): Electron.BrowserWindow => {
+  private readonly createBrowserWindow = (): BrowserWindow => {
     // Discard old preload URL
     delete (this.windowOptions as any).webPreferences.preloadURL;
 
@@ -283,7 +288,7 @@ export class SingleSignOn {
     // Note: will-navigate is broken in Electron 3
     // see https://github.com/electron/electron/issues/14751
     // using did-navigate as workaround
-    SingleSignOnLoginWindow.webContents.on('did-navigate', (event: Electron.Event, url: string) => {
+    SingleSignOnLoginWindow.webContents.on('did-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
 
       if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
