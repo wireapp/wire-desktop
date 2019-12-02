@@ -71,6 +71,20 @@ const subscribeToMainProcessEvents = () => {
     }
   });
 
+  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.redo();
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.undo();
+    }
+  });
+
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
     const webviews = document.querySelectorAll<WebviewTag>('webview');
     webviews.forEach(webview => webview.reload());
@@ -78,6 +92,10 @@ const subscribeToMainProcessEvents = () => {
 
   ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
+  });
+
+  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SET_HIDDEN, () => {
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE.PREFERENCES.SET_HIDDEN));
   });
 };
 
