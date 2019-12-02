@@ -17,7 +17,7 @@
  *
  */
 
-import {Menu, Tray, app, nativeImage} from 'electron';
+import {BrowserWindow, Menu, Tray, app, nativeImage} from 'electron';
 import * as path from 'path';
 
 import * as locale from '../locale/locale';
@@ -68,7 +68,7 @@ export class TrayHandler {
     this.buildTrayMenu();
   }
 
-  showUnreadCount(win: Electron.BrowserWindow, count?: number): void {
+  showUnreadCount(win: BrowserWindow, count?: number): void {
     this.updateIcons(win, count);
     this.flashApplicationWindow(win, count);
     this.updateBadgeCount(count);
@@ -93,7 +93,7 @@ export class TrayHandler {
     }
   }
 
-  private flashApplicationWindow(win: Electron.BrowserWindow, count?: number): void {
+  private flashApplicationWindow(win: BrowserWindow, count?: number): void {
     if (win.isFocused() || !count) {
       win.flashFrame(false);
     } else if (count > this.lastUnreadCount) {
@@ -108,7 +108,7 @@ export class TrayHandler {
     }
   }
 
-  private updateIcons(win: Electron.BrowserWindow, count?: number): void {
+  private updateIcons(win: BrowserWindow, count?: number): void {
     if (this.icons) {
       const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
 

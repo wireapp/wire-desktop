@@ -17,7 +17,7 @@
  *
  */
 
-import {Menu as ElectronMenu, clipboard, ipcRenderer, remote} from 'electron';
+import {Menu as ElectronMenu, MenuItemConstructorOptions, clipboard, ipcRenderer, remote} from 'electron';
 const Menu = remote.Menu;
 
 import {EVENT_TYPE} from '../../lib/eventType';
@@ -29,7 +29,7 @@ interface ElectronMenuWithImageAndTime extends ElectronMenu {
   timestamp?: string;
 }
 
-let textMenu: Electron.Menu;
+let textMenu: ElectronMenu;
 
 let copyContext = '';
 
@@ -40,7 +40,7 @@ const defaultMenu = Menu.buildFromTemplate([
   },
 ]);
 
-const textMenuTemplate: Electron.MenuItemConstructorOptions[] = [
+const textMenuTemplate: MenuItemConstructorOptions[] = [
   {
     label: locale.getText('menuCut'),
     role: 'cut',

@@ -18,7 +18,7 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
-import {dialog} from 'electron';
+import {BrowserWindow, Certificate, ProcRequest, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -37,7 +37,7 @@ interface DisplayCertificateErrorOptions {
 class CertificateVerifyProcManager {
   private static bypassCertificatePinning = false;
   private static isDialogLocked = false;
-  public static mainWindow: Electron.BrowserWindow;
+  public static mainWindow: BrowserWindow;
 
   private static readonly dialogUnlockTimeout = 6000;
 
@@ -69,7 +69,7 @@ class CertificateVerifyProcManager {
 
   private static async displayCertificateDetails(
     hostname: string,
-    certificate: Electron.Certificate,
+    certificate: Certificate,
     options: DisplayCertificateErrorOptions,
   ): Promise<void> {
     const goBack = async () => {
@@ -124,16 +124,13 @@ class CertificateVerifyProcManager {
     return !this.bypassCertificatePinning;
   }
 
-  public static async displayCertificateChromiumError(
-    hostname: string,
-    certificate: Electron.Certificate,
-  ): Promise<void> {
+  public static async displayCertificateChromiumError(hostname: string, certificate: Certificate): Promise<void> {
     await this.displayCertificateError(hostname, certificate, {isChromiumError: true});
   }
 
   public static async displayCertificateError(
     hostname: string,
-    certificate: Electron.Certificate,
+    certificate: Certificate,
     options?: Partial<DisplayCertificateErrorOptions>,
   ): Promise<void> {
     const {bypassDialogLock, isChromiumError, isCheckboxChecked} = {
@@ -183,14 +180,11 @@ class CertificateVerifyProcManager {
   }
 }
 
-export const attachTo = (main: Electron.BrowserWindow) => {
+export const attachTo = (main: BrowserWindow) => {
   CertificateVerifyProcManager.mainWindow = main;
 };
 
-export const setCertificateVerifyProc = async (
-  request: Electron.ProcRequest,
-  cb: (verificationResult: number) => void,
-) => {
+export const setCertificateVerifyProc = async (request: ProcRequest, cb: (verificationResult: number) => void) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
 
   // Check browser results

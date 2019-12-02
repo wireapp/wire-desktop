@@ -18,7 +18,19 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, Filter as ElectronFilter, Menu, app, ipcMain, shell} from 'electron';
+import {
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  Event as ElectronEvent,
+  Filter as ElectronFilter,
+  HeadersReceivedResponse,
+  Menu,
+  OnHeadersReceivedListenerDetails,
+  WebContents,
+  app,
+  ipcMain,
+  shell,
+} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -179,7 +191,7 @@ const initWindowStateKeeper = () => {
 const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
-  const options: Electron.BrowserWindowConstructorOptions = {
+  const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
     backgroundColor: '#f7f8fa',
     height: mainWindowState.height,
@@ -428,7 +440,7 @@ const handlePortableFlags = () => {
   }
 };
 
-const getWebViewId = (contents: Electron.WebContents): string | undefined => {
+const getWebViewId = (contents: WebContents): string | undefined => {
   try {
     const currentLocation = new URL(contents.getURL());
     const webViewId = currentLocation.searchParams.get('id');
@@ -453,11 +465,11 @@ class ElectronWrapperInit {
   // <webview> hardening
   webviewProtection(): void {
     const openLinkInNewWindow = (
-      event: Electron.Event,
+      event: ElectronEvent,
       url: string,
       frameName: string,
       disposition: string,
-      options: Electron.BrowserWindowConstructorOptions,
+      options: BrowserWindowConstructorOptions,
     ) => {
       event.preventDefault();
 
@@ -469,7 +481,7 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: Event, _url: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, _url: string) => {
       // Ensure navigation is to a whitelisted domain
       if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
@@ -479,7 +491,7 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
+    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
@@ -546,8 +558,8 @@ class ElectronWrapperInit {
             };
 
             const listener = (
-              details: Electron.OnHeadersReceivedListenerDetails,
-              callback: (response: Electron.HeadersReceivedResponse) => void,
+              details: OnHeadersReceivedListenerDetails,
+              callback: (response: HeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
                 'Access-Control-Allow-Credentials': 'true',
