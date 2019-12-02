@@ -19,6 +19,7 @@
 
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
+import * as path from 'path';
 
 import {Schemata} from '../interfaces/main';
 import {getLogger} from '../logging/getLogger';
@@ -30,7 +31,7 @@ class ConfigurationPersistence {
 
   constructor() {
     this.configFile = SchemaUpdater.updateToVersion1();
-    this.logger = getLogger('ConfigurationPersistence');
+    this.logger = getLogger(path.basename(__filename));
 
     if (typeof global._ConfigurationPersistence === 'undefined') {
       global._ConfigurationPersistence = this.readFromFile();

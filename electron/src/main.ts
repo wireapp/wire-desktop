@@ -18,7 +18,20 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
+import {
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  Event as ElectronEvent,
+  IpcMessageEvent,
+  Menu,
+  OnHeadersReceivedDetails,
+  OnHeadersReceivedResponse,
+  Options,
+  WebContents,
+  app,
+  ipcMain,
+  shell,
+} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -36,7 +49,6 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
-import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
@@ -183,7 +195,7 @@ const initWindowStateKeeper = () => {
 const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
-  const options: Electron.BrowserWindowConstructorOptions = {
+  const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
     backgroundColor: '#f7f8fa',
     height: mainWindowState.height,
@@ -195,6 +207,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
+      enableBlinkFeatures: '',
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -252,8 +265,11 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   });
 
   main.on('focus', () => {
+    systemMenu.registerGlobalShortcuts();
     main.flashFrame(false);
   });
+
+  main.on('blur', () => systemMenu.unregisterGlobalShortcuts());
 
   main.on('page-title-updated', () => tray.showUnreadCount(main));
 
@@ -269,6 +285,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       } else {
         main.hide();
       }
+      systemMenu.unregisterGlobalShortcuts();
     }
   });
 
@@ -286,6 +303,10 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
+
+  if (argv.startup || argv.hidden) {
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
+  }
 };
 
 // App Events
@@ -430,7 +451,7 @@ const handlePortableFlags = () => {
   }
 };
 
-const getWebViewId = (contents: Electron.WebContents): string | undefined => {
+const getWebViewId = (contents: WebContents): string | undefined => {
   try {
     const currentLocation = new URL(contents.getURL());
     const webViewId = currentLocation.searchParams.get('id');
@@ -455,11 +476,11 @@ class ElectronWrapperInit {
   // <webview> hardening
   webviewProtection(): void {
     const openLinkInNewWindow = (
-      event: Electron.Event,
+      event: ElectronEvent,
       url: string,
       frameName: string,
       disposition: string,
-      options: Electron.Options,
+      options: Options,
     ) => {
       event.preventDefault();
 
@@ -471,7 +492,7 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: Event, _url: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, _url: string) => {
       // Ensure navigation is to a whitelisted domain
       if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
@@ -481,9 +502,7 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
-      WebViewFocus.bindTracker(webviewEvent, contents);
-
+    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
@@ -522,6 +541,7 @@ class ElectronWrapperInit {
             webPreferences.nodeIntegration = false;
             webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
             webPreferences.webSecurity = true;
+            webPreferences.enableBlinkFeatures = '';
           });
           break;
         }
@@ -554,8 +574,8 @@ class ElectronWrapperInit {
             };
 
             const listener = (
-              details: Electron.OnHeadersReceivedDetails,
-              callback: (response: Electron.OnHeadersReceivedResponse) => void,
+              details: OnHeadersReceivedDetails,
+              callback: (response: OnHeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
                 ...details.responseHeaders,

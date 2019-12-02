@@ -18,11 +18,10 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {Menu, MenuItemConstructorOptions, dialog, ipcMain, shell} from 'electron';
+import {Menu, MenuItemConstructorOptions, dialog, globalShortcut, ipcMain, shell} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as lifecycle from '../runtime/lifecycle';
@@ -186,22 +185,12 @@ const editTemplate: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
-      click: () => {
-        const focusedWebContents = WebViewFocus.getFocusedWebContents();
-        if (focusedWebContents) {
-          focusedWebContents.undo();
-        }
-      },
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.UNDO),
       label: locale.getText('menuUndo'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
-      click: () => {
-        const focusedWebContents = WebViewFocus.getFocusedWebContents();
-        if (focusedWebContents) {
-          focusedWebContents.redo();
-        }
-      },
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.REDO),
       label: locale.getText('menuRedo'),
     },
     separatorTemplate,
@@ -418,7 +407,7 @@ export const createMenu = (isFullScreen: boolean): Menu => {
   }
 
   if (Array.isArray(windowTemplate.submenu)) {
-    const muteAccelerator = 'CmdOrCtrl+Alt+M';
+    const muteAccelerator = 'Ctrl+Alt+M';
     logger.info(`Registering mute shortcut "${muteAccelerator}" ...`);
 
     const muteShortcut: MenuItemConstructorOptions = {
@@ -429,13 +418,14 @@ export const createMenu = (isFullScreen: boolean): Menu => {
       visible: false,
     };
 
-    const switchShortcuts: MenuItemConstructorOptions[] = [...Array(config.maximumAccounts).keys()].map(index => {
-      const switchAccelerator = `CmdOrCtrl+${index + 1}`;
+    const switchShortcuts: MenuItemConstructorOptions[] = Array.from({length: config.maximumAccounts}, (_, index) => {
+      const switchAccelerator = `Ctrl+${index + 1}`;
       logger.info(`Registering account switching shortcut "${switchAccelerator}" ...`);
+
       return {
         accelerator: switchAccelerator,
         click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
-        label: `Switch to account ${index + 1}`,
+        label: `Switch to Account ${index + 1}`,
         visible: false,
       };
     });
@@ -478,5 +468,32 @@ export const toggleMenuBar = (): void => {
     if (autoHide) {
       mainBrowserWindow.setMenuBarVisibility(!isVisible);
     }
+  }
+};
+
+export const registerGlobalShortcuts = (): void => {
+  if (EnvironmentUtil.platform.IS_MAC_OS) {
+    const muteAccelerator = 'Cmd+Alt+M';
+    logger.info(`Registering global mute shortcut "${muteAccelerator}" ...`);
+
+    globalShortcut.register(muteAccelerator, () =>
+      WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
+    );
+
+    Array.from({length: config.maximumAccounts}, (_, index) => {
+      const switchAccelerator = `Cmd+${index + 1}`;
+      logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
+
+      globalShortcut.register(switchAccelerator, () => {
+        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index);
+      });
+    });
+  }
+};
+
+export const unregisterGlobalShortcuts = (): void => {
+  if (EnvironmentUtil.platform.IS_MAC_OS) {
+    logger.info('Unregistering all global shortcuts ...');
+    globalShortcut.unregisterAll();
   }
 };

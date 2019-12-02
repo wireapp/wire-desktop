@@ -18,7 +18,7 @@
  */
 
 import {ValidationUtil} from '@wireapp/commons';
-import {app, webContents} from 'electron';
+import {Session, app, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -29,7 +29,7 @@ const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
 const logger = getLogger(path.basename(__filename));
 
-const clearStorage = (session: Electron.Session): Promise<void> => {
+const clearStorage = (session: Session): Promise<void> => {
   return new Promise(resolve =>
     session.clearStorageData({}, () =>
       session.clearCache(() => {

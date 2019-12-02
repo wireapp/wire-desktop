@@ -18,7 +18,7 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
-import {dialog} from 'electron';
+import {BrowserWindow, Certificate, CertificateVerifyProcRequest, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -37,7 +37,7 @@ interface DisplayCertificateErrorOptions {
 class CertificateVerifyProcManager {
   private static bypassCertificatePinning = false;
   private static isDialogLocked = false;
-  public static mainWindow: Electron.BrowserWindow;
+  public static mainWindow: BrowserWindow;
 
   private static readonly dialogUnlockTimeout = 6000;
 
@@ -69,7 +69,7 @@ class CertificateVerifyProcManager {
 
   private static displayCertificateDetails(
     hostname: string,
-    certificate: Electron.Certificate,
+    certificate: Certificate,
     options: DisplayCertificateErrorOptions,
   ): void {
     const goBack = () => {
@@ -138,13 +138,13 @@ class CertificateVerifyProcManager {
     return !this.bypassCertificatePinning;
   }
 
-  public static displayCertificateChromiumError(hostname: string, certificate: Electron.Certificate): void {
+  public static displayCertificateChromiumError(hostname: string, certificate: Certificate): void {
     this.displayCertificateError(hostname, certificate, {isChromiumError: true});
   }
 
   public static displayCertificateError(
     hostname: string,
-    certificate: Electron.Certificate,
+    certificate: Certificate,
     options?: Partial<DisplayCertificateErrorOptions>,
   ): void {
     const {bypassDialogLock, isChromiumError, isCheckboxChecked} = {
@@ -199,12 +199,12 @@ class CertificateVerifyProcManager {
   }
 }
 
-export const attachTo = (main: Electron.BrowserWindow) => {
+export const attachTo = (main: BrowserWindow) => {
   CertificateVerifyProcManager.mainWindow = main;
 };
 
 export const setCertificateVerifyProc = (
-  request: Electron.CertificateVerifyProcRequest,
+  request: CertificateVerifyProcRequest,
   cb: (verificationResult: number) => void,
 ) => {
   const {hostname, certificate, verificationResult, errorCode} = request;

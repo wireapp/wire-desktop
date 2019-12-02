@@ -6,7 +6,7 @@ def parseJson(def text) {
 node('master') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def NODE = tool name: 'node-v12.9.0', type: 'nodejs'
+  def NODE = tool name: 'node-v12.13.0', type: 'nodejs'
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -37,7 +37,16 @@ node('master') {
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
-        sh 'yarn build:macos'
+        if (production) {
+          sh 'yarn build:macos'
+          sh 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"'
+        } else if (custom) {
+          sh 'yarn build:macos'
+        } else {
+          // internal
+          sh 'yarn build:macos:internal'
+          sh 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-x64/WireInternal.app"'
+        }
       }
     } catch(e) {
       currentBuild.result = 'FAILED'

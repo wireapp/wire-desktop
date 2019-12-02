@@ -78,7 +78,10 @@ export async function buildLinuxConfig(wireJsonPath: string, envFilePath: string
 
   const builderConfig: electronBuilder.Configuration = {
     appImage: {
-      ...platformSpecificConfig,
+      artifactName: linuxConfig.artifactName,
+      category: platformSpecificConfig.category,
+      desktop: linuxDesktopConfig,
+      publish: null,
       systemIntegration: 'doNotAsk',
     },
     asar: commonConfig.enableAsar,

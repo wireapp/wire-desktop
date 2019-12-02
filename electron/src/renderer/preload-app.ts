@@ -36,10 +36,9 @@ window.locStringsDefault = locale.LANGUAGES.en;
 
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
-const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)') as WebviewTag;
-const getWebviewById = (id: string): WebviewTag => {
-  return document.querySelector(`.Webview[data-accountid="${id}"]`) as WebviewTag;
-};
+const getSelectedWebview = (): WebviewTag | null => document.querySelector<WebviewTag>('.Webview:not(.hide)');
+const getWebviewById = (id: string): WebviewTag | null =>
+  document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event: IpcMessageEvent, code: string) =>
@@ -60,6 +59,20 @@ const subscribeToMainProcessEvents = () => {
     }
   });
 
+  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.redo();
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.undo();
+    }
+  });
+
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
     const webviews = document.querySelectorAll<WebviewTag>('webview');
     webviews.forEach(webview => webview.reload());
@@ -67,6 +80,10 @@ const subscribeToMainProcessEvents = () => {
 
   ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event: CustomEvent, accountIndex: number) => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
+  });
+
+  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SET_HIDDEN, () => {
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE.PREFERENCES.SET_HIDDEN));
   });
 };
 
