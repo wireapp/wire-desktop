@@ -22,7 +22,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  Filter as ElectronFilter,
+  Filter,
   HeadersReceivedResponse,
   Menu,
   OnHeadersReceivedListenerDetails,
@@ -553,7 +553,7 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter: ElectronFilter = {
+            const filter: Filter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
