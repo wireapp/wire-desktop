@@ -21,9 +21,8 @@ import * as crypto from 'crypto';
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
-  Cookie,
   Event as ElectronEvent,
-  RegisterStringProtocolRequest,
+  ProtocolRequest,
   Session,
   WebContents,
   app,
@@ -63,8 +62,11 @@ export class SingleSignOn {
   public static loginAuthorizationSecret: string | undefined;
 
   private session: Session | undefined;
+  private readonly mainBrowserWindow: BrowserWindow;
   private readonly mainSession: Session;
+  private readonly senderEvent: ElectronEvent;
   private readonly senderWebContents: WebContents;
+  private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
 
   private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
@@ -72,8 +74,7 @@ export class SingleSignOn {
       .split('.')
       .slice(-2)
       .join('.');
-
-    const cookies: Cookie[] = (await fromSession.cookies.get({domain: rootDomain})) as any;
+    const cookies = await fromSession.cookies.get({domain: rootDomain});
 
     for (const cookie of cookies) {
       await toSession.cookies.set({url: url.toString(), ...cookie});
@@ -97,15 +98,15 @@ export class SingleSignOn {
       // Generate a new secret to authenticate the custom protocol (wire-sso)
       SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
 
-      const handleRequest = (request: RegisterStringProtocolRequest, response: (data?: string) => void) => {
+      const handleRequest = (request: ProtocolRequest, response: (data?: string) => void) => {
         try {
-          const url = new URL(request.url);
+          const requestURL = new URL(request.url);
 
-          if (url.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
+          if (requestURL.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
             throw new Error('Protocol is invalid');
           }
 
-          if (url.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
+          if (requestURL.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
             throw new Error('Host is invalid');
           }
 
@@ -113,11 +114,11 @@ export class SingleSignOn {
             throw new Error('Secret has not be set or has been consumed');
           }
 
-          if (url.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
+          if (requestURL.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
             throw new Error('Secret is invalid');
           }
 
-          const type = url.searchParams.get('type');
+          const type = requestURL.searchParams.get('type');
 
           if (typeof type !== 'string') {
             throw new Error('Response is empty');
@@ -186,14 +187,17 @@ export class SingleSignOn {
   };
 
   constructor(
-    private readonly mainBrowserWindow: BrowserWindow,
-    private readonly senderEvent: ElectronEvent,
-    windowOriginUrl: string,
-    private readonly windowOptions: BrowserWindowConstructorOptions,
+    mainBrowserWindow: BrowserWindow,
+    senderEvent: ElectronEvent,
+    windowOriginURL: string,
+    windowOptions: BrowserWindowConstructorOptions,
   ) {
-    this.senderWebContents = senderEvent.sender;
+    this.mainBrowserWindow = mainBrowserWindow;
+    this.windowOptions = windowOptions;
+    this.senderEvent = senderEvent;
+    this.senderWebContents = (senderEvent as any).sender;
     this.mainSession = this.senderWebContents.session;
-    this.windowOriginUrl = new URL(windowOriginUrl);
+    this.windowOriginUrl = new URL(windowOriginURL);
   }
 
   public readonly init = async (): Promise<void> => {
@@ -335,13 +339,9 @@ export class SingleSignOn {
     );
   };
 
-  private readonly wipeSessionData = () => {
-    return new Promise(resolve => {
-      if (this.session) {
-        this.session.clearStorageData(undefined, () => resolve());
-      } else {
-        resolve();
-      }
-    });
+  private readonly wipeSessionData = async () => {
+    if (this.session) {
+      await this.session.clearStorageData(undefined);
+    }
   };
 }

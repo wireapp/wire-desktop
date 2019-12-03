@@ -58,7 +58,7 @@ const textMenuTemplate: MenuItemConstructorOptions[] = [
   },
   {
     label: locale.getText('menuSelectAll'),
-    role: 'selectall',
+    role: 'selectAll',
   },
 ];
 

@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, IpcMessageEvent, app, ipcMain, session} from 'electron';
+import {BrowserWindow, app, ipcMain, session} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
@@ -76,7 +76,7 @@ const showWindow = async () => {
       callback({redirectURL: promptHtmlPath});
     });
 
-    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, (event: IpcMessageEvent, labels: i18nLanguageIdentifier[]) => {
+    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, (event, labels: i18nLanguageIdentifier[]) => {
       if (proxyPromptWindow) {
         const isExpected = event.sender.id === proxyPromptWindow.webContents.id;
         if (isExpected) {

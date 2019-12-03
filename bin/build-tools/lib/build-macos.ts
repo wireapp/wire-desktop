@@ -184,10 +184,20 @@ export async function manualMacOSSign(
   if (macOSConfig.certNameApplication) {
     const filesToSign = [
       'Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libEGL.dylib',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libGLESv2.dylib',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libEGL.dylib',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libGLESv2.dylib',
       'Frameworks/Electron Framework.framework/',
       `Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,
       `Frameworks/${commonConfig.name} Helper.app/`,
+      `Frameworks/${commonConfig.name} Helper (GPU).app/Contents/MacOS/${commonConfig.name} Helper (GPU)`,
+      `Frameworks/${commonConfig.name} Helper (GPU).app/`,
+      `Frameworks/${commonConfig.name} Helper (Plugin).app/Contents/MacOS/${commonConfig.name} Helper (Plugin)`,
+      `Frameworks/${commonConfig.name} Helper (Plugin).app/`,
+      `Frameworks/${commonConfig.name} Helper (Renderer).app/Contents/MacOS/${commonConfig.name} Helper (Renderer)`,
+      `Frameworks/${commonConfig.name} Helper (Renderer).app/`,
       `Library/LoginItems/${commonConfig.name} Login Helper.app/Contents/MacOS/${commonConfig.name} Login Helper`,
       `Library/LoginItems/${commonConfig.name} Login Helper.app/`,
     ];
