@@ -63,7 +63,7 @@ node('master') {
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
-        sh 'npm install -g yarn appcenter-cli'
+        sh 'npm install -g yarn'
         sh 'yarn --ignore-scripts'
         sh "appcenter telemetry off"
       }
