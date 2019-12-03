@@ -18,7 +18,19 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
-import {BrowserWindow, Event, IpcMessageEvent, Menu, app, ipcMain, shell} from 'electron';
+import {
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  Event as ElectronEvent,
+  Filter,
+  HeadersReceivedResponse,
+  Menu,
+  OnHeadersReceivedListenerDetails,
+  WebContents,
+  app,
+  ipcMain,
+  shell,
+} from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
@@ -36,7 +48,6 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
-import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
@@ -118,7 +129,7 @@ app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
 
@@ -126,17 +137,14 @@ const bindIpcEvents = () => {
     WindowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: IpcMessageEvent, count: number) => {
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count: number) => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(
-    EVENT_TYPE.ACCOUNT.DELETE_DATA,
-    async (event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) => {
-      await deleteAccount(id, accountId, partitionId);
-      main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
-    },
-  );
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (event, id: number, accountId: string, partitionId?: string) => {
+    await deleteAccount(id, accountId, partitionId);
+    main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
+  });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
@@ -183,7 +191,7 @@ const initWindowStateKeeper = () => {
 const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
-  const options: Electron.BrowserWindowConstructorOptions = {
+  const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
     backgroundColor: '#f7f8fa',
     height: mainWindowState.height,
@@ -195,6 +203,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
+      enableBlinkFeatures: '',
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -243,7 +252,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
-    if (typeof (event.sender as any).viewInstanceId !== 'undefined') {
+    if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
       logger.log('New window was created from a webview, aborting.');
       return;
     }
@@ -289,7 +298,12 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   });
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
-  main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
+  const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
+  await main.webContents.insertCSS(wrapperCSSContent);
+
+  if (argv.startup || argv.hidden) {
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
+  }
 };
 
 // App Events
@@ -333,32 +347,24 @@ const handleAppEvents = () => {
         return callback(username, password);
       }
 
-      ipcMain.once(
-        EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
-        (event: IpcMessageEvent, promptData: {password: string; username: string}) => {
-          const {username, password} = promptData;
+      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (event, promptData: {password: string; username: string}) => {
+        const {username, password} = promptData;
 
-          logger.log('Proxy prompt was submitted');
-          const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
-          const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
-          authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
-          callback(username, password);
-        },
-      );
+        logger.log('Proxy prompt was submitted');
+        const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
+        const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
+        authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
+        callback(username, password);
+      });
 
       ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
         logger.log('Proxy prompt was canceled');
-        webContents.session.setProxy(
-          {
-            pacScript: '',
-            proxyBypassRules: '',
-            proxyRules: '',
-          },
-          () => {
-            callback('', '');
-            main.reload();
-          },
-        );
+        await webContents.session.setProxy({
+          pacScript: '',
+          proxyBypassRules: '',
+          proxyRules: '',
+        });
+        main.reload();
       });
 
       if (!triedProxy) {
@@ -434,7 +440,7 @@ const handlePortableFlags = () => {
   }
 };
 
-const getWebViewId = (contents: Electron.WebContents): string | undefined => {
+const getWebViewId = (contents: WebContents): string | undefined => {
   try {
     const currentLocation = new URL(contents.getURL());
     const webViewId = currentLocation.searchParams.get('id');
@@ -459,11 +465,11 @@ class ElectronWrapperInit {
   // <webview> hardening
   webviewProtection(): void {
     const openLinkInNewWindow = (
-      event: Electron.Event,
+      event: ElectronEvent,
       url: string,
       frameName: string,
       disposition: string,
-      options: Electron.Options,
+      options: BrowserWindowConstructorOptions,
     ) => {
       event.preventDefault();
 
@@ -475,7 +481,7 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: Event, _url: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, _url: string) => {
       // Ensure navigation is to a whitelisted domain
       if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${_url}`);
@@ -485,25 +491,18 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', async (webviewEvent: Electron.Event, contents: Electron.WebContents) => {
-      WebViewFocus.bindTracker(webviewEvent, contents);
-
+    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
       if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
 
         contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
 
-        await new Promise(resolve =>
-          contents.session.setProxy(
-            {
-              pacScript: '',
-              proxyBypassRules: '',
-              proxyRules: proxyURL,
-            },
-            () => resolve(),
-          ),
-        );
+        await contents.session.setProxy({
+          pacScript: '',
+          proxyBypassRules: '',
+          proxyRules: proxyURL,
+        });
       }
 
       switch (contents.getType()) {
@@ -519,13 +518,14 @@ class ElectronWrapperInit {
             }
 
             // Use secure defaults
-            params.autosize = false;
-            params.contextIsolation = true;
-            params.plugins = false;
+            params.autosize = 'false';
+            params.contextIsolation = 'true';
+            params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
-            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
+            webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.webSecurity = true;
+            webPreferences.enableBlinkFeatures = '';
           });
           break;
         }
@@ -553,23 +553,22 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter = {
+            const filter: Filter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
             const listener = (
-              details: Electron.OnHeadersReceivedDetails,
-              callback: (response: Electron.OnHeadersReceivedResponse) => void,
+              details: OnHeadersReceivedListenerDetails,
+              callback: (response: HeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
-                ...details.responseHeaders,
-                'Access-Control-Allow-Credentials': ['true'],
-                'Access-Control-Allow-Origin': ['http://localhost:8081'],
+                'Access-Control-Allow-Credentials': 'true',
+                'Access-Control-Allow-Origin': 'http://localhost:8081',
               };
 
               callback({
                 cancel: false,
-                responseHeaders: responseHeaders,
+                responseHeaders,
               });
             };
 

@@ -52,16 +52,11 @@ const sendLogTemplate: MenuItemConstructorOptions = {
     } catch (error) {
       logger.error(error);
 
-      const dialogResponse: number = await new Promise(resolve =>
-        dialog.showMessageBox(
-          {
-            buttons: ['Cancel', 'OK'],
-            message: 'Too many logs to send via email. Would you like to open the logs folder instead?',
-            title: 'Too many logs',
-          },
-          response => resolve(response),
-        ),
-      );
+      const {response: dialogResponse} = await dialog.showMessageBox({
+        buttons: ['Cancel', 'OK'],
+        message: 'Too many logs to send via email. Would you like to open the logs folder instead?',
+        title: 'Too many logs',
+      });
 
       if (dialogResponse === 1) {
         await openExternal(logDir);

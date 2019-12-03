@@ -17,7 +17,7 @@
  *
  */
 
-import {IpcMessageEvent, desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
+import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -92,10 +92,13 @@ const subscribeToWebappEvents = () => {
   });
 
   window.amplify.subscribe(window.z.event.WebApp.TEAM.INFO, (info: TeamAccountInfo) => {
+    const debugInfo = {
+      ...info,
+      picture: typeof info.picture === 'string' ? `${info.picture.substring(0, 100)}...` : '',
+    };
     logger.info(
-      `Received amplify event "${window.z.event.WebApp.TEAM.INFO}" (info: "${JSON.stringify(
-        info,
-      )}"), forwarding event ...`,
+      `Received amplify event "${window.z.event.WebApp.TEAM.INFO}":`,
+      `"${JSON.stringify(debugInfo)}", forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
@@ -134,7 +137,7 @@ const subscribeToMainProcessEvents = () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS}", forwarding to amplify ...`);
     window.amplify.publish(window.z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event: IpcMessageEvent, hash: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event, hash: string) => {
     logger.info(
       `Received event "${EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH}" (hash: "${hash}"), forwarding to amplify ...`,
     );
@@ -164,16 +167,6 @@ const subscribeToMainProcessEvents = () => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(window.z.event.WebApp.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
-};
-
-const exposeAddressBook = () => {
-  const getAddressBook = () => {
-    return undefined;
-  };
-
-  if (EnvironmentUtil.platform.IS_MAC_OS) {
-    Object.defineProperty(window, 'wAddressBook', {get: getAddressBook});
-  }
 };
 
 const reportWebappVersion = () =>
@@ -219,7 +212,6 @@ Object.defineProperty(window, 'wSSOCapable', {
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
-    exposeAddressBook();
     subscribeToMainProcessEvents();
     subscribeToThemeChange();
     subscribeToWebappEvents();

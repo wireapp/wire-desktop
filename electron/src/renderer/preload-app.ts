@@ -17,7 +17,7 @@
  *
  */
 
-import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+import {WebviewTag, ipcRenderer, webFrame} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -36,27 +36,52 @@ window.locStringsDefault = locale.LANGUAGES.en;
 
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
-const getSelectedWebview = (): WebviewTag => document.querySelector('.Webview:not(.hide)') as WebviewTag;
-const getWebviewById = (id: string): WebviewTag => {
-  return document.querySelector(`.Webview[data-accountid="${id}"]`) as WebviewTag;
-};
+const getSelectedWebview = (): WebviewTag | null => document.querySelector<WebviewTag>('.Webview:not(.hide)');
+const getWebviewById = (id: string): WebviewTag | null =>
+  document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event: IpcMessageEvent, code: string) =>
-    new AutomatedSingleSignOn().start(code),
-  );
+  ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event, code: string) => new AutomatedSingleSignOn().start(code));
 
-  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: IpcMessageEvent, action: string) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (event, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      selectedWebview.send(action);
+      await selectedWebview.send(action);
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event: IpcMessageEvent, hash: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, async (event, hash: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
+      await selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.redo();
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.undo();
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.redo();
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.undo();
     }
   });
 
@@ -65,8 +90,12 @@ const subscribeToMainProcessEvents = () => {
     webviews.forEach(webview => webview.reload());
   });
 
-  ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event: CustomEvent, accountIndex: number) => {
+  ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
+  });
+
+  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SET_HIDDEN, () => {
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE.PREFERENCES.SET_HIDDEN));
   });
 };
 
@@ -89,11 +118,11 @@ const setupIpcInterface = (): void => {
     });
   };
 
-  window.sendLogoutAccount = (accountId: string): void => {
+  window.sendLogoutAccount = async (accountId: string): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
-      accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
+      await accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
 };

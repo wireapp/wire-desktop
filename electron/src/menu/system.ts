@@ -22,7 +22,6 @@ import {Menu, MenuItemConstructorOptions, dialog, globalShortcut, ipcMain, shell
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as lifecycle from '../runtime/lifecycle';
@@ -186,22 +185,12 @@ const editTemplate: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
-      click: () => {
-        const focusedWebContents = WebViewFocus.getFocusedWebContents();
-        if (focusedWebContents) {
-          focusedWebContents.undo();
-        }
-      },
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.UNDO),
       label: locale.getText('menuUndo'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
-      click: () => {
-        const focusedWebContents = WebViewFocus.getFocusedWebContents();
-        if (focusedWebContents) {
-          focusedWebContents.redo();
-        }
-      },
+      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.REDO),
       label: locale.getText('menuRedo'),
     },
     separatorTemplate,
@@ -220,7 +209,7 @@ const editTemplate: MenuItemConstructorOptions = {
     separatorTemplate,
     {
       label: locale.getText('menuSelectAll'),
-      role: 'selectall',
+      role: 'selectAll',
     },
   ],
 };
@@ -304,7 +293,7 @@ const darwinTemplate: MenuItemConstructorOptions = {
     },
     {
       label: locale.getText('menuHideOthers'),
-      role: 'hideothers',
+      role: 'hideOthers',
     },
     {
       label: locale.getText('menuShowAll'),
@@ -368,24 +357,20 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: S
   }
 };
 
-const changeLocale = (language: Supportedi18nLanguage): void => {
+const changeLocale = async (language: Supportedi18nLanguage): Promise<void> => {
   locale.setLocale(language);
-  dialog.showMessageBox(
-    {
-      buttons: [
-        locale.getText('restartLater'),
-        EnvironmentUtil.platform.IS_MAC_OS ? locale.getText('menuQuit') : locale.getText('restartNow'),
-      ],
-      message: locale.getText('restartLocale'),
-      title: locale.getText('restartNeeded'),
-      type: 'info',
-    },
-    response => {
-      if (response === 1) {
-        return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
-      }
-    },
-  );
+  const {response} = await dialog.showMessageBox({
+    buttons: [
+      locale.getText('restartLater'),
+      EnvironmentUtil.platform.IS_MAC_OS ? locale.getText('menuQuit') : locale.getText('restartNow'),
+    ],
+    message: locale.getText('restartLocale'),
+    title: locale.getText('restartNeeded'),
+    type: 'info',
+  });
+  if (response === 1) {
+    return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
+  }
 };
 
 export const createMenu = (isFullScreen: boolean): Menu => {

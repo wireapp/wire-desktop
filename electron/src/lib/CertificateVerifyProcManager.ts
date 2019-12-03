@@ -18,7 +18,7 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
-import {dialog} from 'electron';
+import {BrowserWindow, Certificate, ProcRequest, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -37,7 +37,7 @@ interface DisplayCertificateErrorOptions {
 class CertificateVerifyProcManager {
   private static bypassCertificatePinning = false;
   private static isDialogLocked = false;
-  public static mainWindow: Electron.BrowserWindow;
+  public static mainWindow: BrowserWindow;
 
   private static readonly dialogUnlockTimeout = 6000;
 
@@ -67,14 +67,14 @@ class CertificateVerifyProcManager {
     WARNING_TITLE: getText('certificateVerifyProcManagerWarningTitle'),
   };
 
-  private static displayCertificateDetails(
+  private static async displayCertificateDetails(
     hostname: string,
-    certificate: Electron.Certificate,
+    certificate: Certificate,
     options: DisplayCertificateErrorOptions,
-  ): void {
-    const goBack = () => {
+  ): Promise<void> {
+    const goBack = async () => {
       // Go back to the dialog
-      this.displayCertificateError(hostname, certificate, {
+      await this.displayCertificateError(hostname, certificate, {
         ...options,
         bypassDialogLock: true,
       });
@@ -86,51 +86,37 @@ class CertificateVerifyProcManager {
 
     const isTrustDialogSupported = EnvironmentUtil.platform.IS_MAC_OS;
     if (isTrustDialogSupported) {
-      dialog.showCertificateTrustDialog(
-        this.mainWindow,
-        {
-          certificate,
-          message: textDetails,
-        },
-        goBack,
-      );
+      await dialog.showCertificateTrustDialog(this.mainWindow, {
+        certificate,
+        message: textDetails,
+      });
+      await goBack();
     } else {
       // For Linux and Windows, use a message box with the ability to save the certificate
-      dialog.showMessageBox(
-        this.mainWindow,
-        {
-          buttons: [this.LOCALE.SHOW_DETAILS_GO_BACK, this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE],
-          cancelId: this.RESPONSE.GO_BACK,
-          detail: textDetails,
-          message: this.LOCALE.SHOW_DETAILS_TITLE,
-          type: 'info',
-        },
-        (response: number) => {
-          switch (response) {
-            case this.RESPONSE.SAVE_CERTIFICATE: {
-              dialog.showSaveDialog(
-                this.mainWindow,
-                {
-                  defaultPath: `${hostname}.pem`,
-                },
-                async chosenPath => {
-                  if (chosenPath !== undefined) {
-                    await fs.writeFile(chosenPath, Buffer.from(certificate.data));
-                  }
-                  // Go back on details window
-                  this.displayCertificateDetails(hostname, certificate, options);
-                },
-              );
-              break;
-            }
-
-            case this.RESPONSE.GO_BACK: {
-              goBack();
-              break;
-            }
+      const {response} = await dialog.showMessageBox(this.mainWindow, {
+        buttons: [this.LOCALE.SHOW_DETAILS_GO_BACK, this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE],
+        cancelId: this.RESPONSE.GO_BACK,
+        detail: textDetails,
+        message: this.LOCALE.SHOW_DETAILS_TITLE,
+        type: 'info',
+      });
+      switch (response) {
+        case this.RESPONSE.SAVE_CERTIFICATE: {
+          const {filePath: chosenPath} = await dialog.showSaveDialog(this.mainWindow, {
+            defaultPath: `${hostname}.pem`,
+          });
+          if (chosenPath !== undefined) {
+            await fs.writeFile(chosenPath, Buffer.from(certificate.data));
           }
-        },
-      );
+          // Go back on details window
+          await this.displayCertificateDetails(hostname, certificate, options);
+          break;
+        }
+        case this.RESPONSE.GO_BACK: {
+          await goBack();
+          break;
+        }
+      }
     }
   }
 
@@ -138,15 +124,15 @@ class CertificateVerifyProcManager {
     return !this.bypassCertificatePinning;
   }
 
-  public static displayCertificateChromiumError(hostname: string, certificate: Electron.Certificate): void {
-    this.displayCertificateError(hostname, certificate, {isChromiumError: true});
+  public static async displayCertificateChromiumError(hostname: string, certificate: Certificate): Promise<void> {
+    await this.displayCertificateError(hostname, certificate, {isChromiumError: true});
   }
 
-  public static displayCertificateError(
+  public static async displayCertificateError(
     hostname: string,
-    certificate: Electron.Certificate,
+    certificate: Certificate,
     options?: Partial<DisplayCertificateErrorOptions>,
-  ): void {
+  ): Promise<void> {
     const {bypassDialogLock, isChromiumError, isCheckboxChecked} = {
       bypassDialogLock: false,
       isCheckboxChecked: false,
@@ -158,55 +144,47 @@ class CertificateVerifyProcManager {
     }
     this.isDialogLocked = true;
 
-    dialog.showMessageBox(
-      this.mainWindow,
-      {
-        buttons: [this.LOCALE.RETRY, this.LOCALE.SHOW_DETAILS],
-        cancelId: this.RESPONSE.RETRY,
-        checkboxChecked: isChromiumError ? undefined : isCheckboxChecked,
-        checkboxLabel: isChromiumError ? undefined : this.LOCALE.WARNING_BYPASS,
-        defaultId: this.RESPONSE.RETRY,
-        detail: isChromiumError ? this.LOCALE.WARNING_TEXT_CHROMIUM : this.LOCALE.WARNING_TEXT_PINNING,
-        message: this.LOCALE.WARNING_TITLE,
-        type: 'warning',
-      },
-      (response: number, checkboxChecked: boolean) => {
-        switch (response) {
-          case this.RESPONSE.RETRY: {
-            if (!isChromiumError) {
-              this.bypassCertificatePinning = checkboxChecked;
-              if (this.bypassCertificatePinning) {
-                logger.log('User disabled certificate pinning');
-              }
-            }
-
-            // Postpone unlocking of the dialog so the user have time to leave the app
-            setTimeout(() => (this.isDialogLocked = false), this.dialogUnlockTimeout);
-            break;
-          }
-
-          case this.RESPONSE.SHOW_DETAILS: {
-            this.displayCertificateDetails(hostname, certificate, {
-              bypassDialogLock,
-              isCheckboxChecked: checkboxChecked,
-              isChromiumError,
-            });
-            break;
+    const {checkboxChecked, response} = await dialog.showMessageBox(this.mainWindow, {
+      buttons: [this.LOCALE.RETRY, this.LOCALE.SHOW_DETAILS],
+      cancelId: this.RESPONSE.RETRY,
+      checkboxChecked: isChromiumError ? undefined : isCheckboxChecked,
+      checkboxLabel: isChromiumError ? undefined : this.LOCALE.WARNING_BYPASS,
+      defaultId: this.RESPONSE.RETRY,
+      detail: isChromiumError ? this.LOCALE.WARNING_TEXT_CHROMIUM : this.LOCALE.WARNING_TEXT_PINNING,
+      message: this.LOCALE.WARNING_TITLE,
+      type: 'warning',
+    });
+    switch (response) {
+      case this.RESPONSE.RETRY: {
+        if (!isChromiumError) {
+          this.bypassCertificatePinning = checkboxChecked;
+          if (this.bypassCertificatePinning) {
+            logger.log('User disabled certificate pinning');
           }
         }
-      },
-    );
+
+        // Postpone unlocking of the dialog so the user have time to leave the app
+        setTimeout(() => (this.isDialogLocked = false), this.dialogUnlockTimeout);
+        break;
+      }
+
+      case this.RESPONSE.SHOW_DETAILS: {
+        await this.displayCertificateDetails(hostname, certificate, {
+          bypassDialogLock,
+          isCheckboxChecked: checkboxChecked,
+          isChromiumError,
+        });
+        break;
+      }
+    }
   }
 }
 
-export const attachTo = (main: Electron.BrowserWindow) => {
+export const attachTo = (main: BrowserWindow) => {
   CertificateVerifyProcManager.mainWindow = main;
 };
 
-export const setCertificateVerifyProc = (
-  request: Electron.CertificateVerifyProcRequest,
-  cb: (verificationResult: number) => void,
-) => {
+export const setCertificateVerifyProc = async (request: ProcRequest, cb: (verificationResult: number) => void) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
 
   // Check browser results
@@ -219,7 +197,7 @@ export const setCertificateVerifyProc = (
       errorCode === CertificateVerifyProcManager.CHROMIUM_ERRORS.CERT_COMMON_NAME_INVALID ||
       errorCode === CertificateVerifyProcManager.CHROMIUM_ERRORS.CERT_AUTHORITY_INVALID;
     if (isCommonCertificateError) {
-      CertificateVerifyProcManager.displayCertificateChromiumError(hostname, certificate);
+      await CertificateVerifyProcManager.displayCertificateChromiumError(hostname, certificate);
     }
 
     return cb(-2);
@@ -233,7 +211,7 @@ export const setCertificateVerifyProc = (
     if (falsyValue || pinningResults.errorMessage) {
       logger.error(`Certificate verification failed for "${hostname}".`);
       logger.error(`Error: "${pinningResults.errorMessage}". Displaying certificate pinning error dialog.`);
-      CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
+      await CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
       return cb(-2);
     }
   }

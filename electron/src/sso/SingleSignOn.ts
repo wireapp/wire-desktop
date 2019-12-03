@@ -18,11 +18,21 @@
  */
 
 import * as crypto from 'crypto';
-import {BrowserWindow, app, session} from 'electron';
+import {
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  Event as ElectronEvent,
+  ProtocolRequest,
+  Session,
+  WebContents,
+  app,
+  session,
+} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 const minimist = require('minimist');
 
+import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
 const argv = minimist(process.argv.slice(1));
@@ -41,6 +51,7 @@ export class SingleSignOn {
   private static readonly SSO_SESSION_NAME = 'sso';
   private static readonly MAX_LENGTH_ORIGIN_DOMAIN = 255;
   private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + SingleSignOn.MAX_LENGTH_ORIGIN_DOMAIN;
+  private static readonly logger = getLogger(path.basename(__filename));
 
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
@@ -50,51 +61,27 @@ export class SingleSignOn {
 
   public static loginAuthorizationSecret: string | undefined;
 
-  private session: Electron.Session | undefined;
-  private readonly mainSession: Electron.Session;
-  private readonly senderWebContents: Electron.WebContents;
+  private session: Session | undefined;
+  private readonly mainBrowserWindow: BrowserWindow;
+  private readonly mainSession: Session;
+  private readonly senderEvent: ElectronEvent;
+  private readonly senderWebContents: WebContents;
+  private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
 
-  private static readonly cookies = {
-    copy: async (from: Electron.Session, to: Electron.Session, url: URL) => {
-      const cookies = await SingleSignOn.cookies.getBackendCookies(from, url);
-      for (const cookie of cookies) {
-        await SingleSignOn.cookies.setCookie(to, cookie, url.toString());
-      }
-      await SingleSignOn.cookies.flushCookies(to);
-    },
-    flushCookies: (session: Electron.Session): Promise<void> => {
-      return new Promise(resolve => {
-        session.cookies.flushStore(resolve);
-      });
-    },
-    getBackendCookies: (session: Electron.Session, url: URL): Promise<Electron.Cookie[]> => {
-      return new Promise((resolve, reject) => {
-        const rootDomain = url.hostname
-          .split('.')
-          .reverse()
-          .splice(0, 2)
-          .reverse()
-          .join('.');
-        session.cookies.get({domain: rootDomain, secure: true}, (error, cookies) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(cookies);
-        });
-      });
-    },
-    setCookie: (session: Electron.Session, cookie: Electron.Cookie, url: string) => {
-      return new Promise((resolve, reject) => {
-        session.cookies.set({url, ...(<Electron.Details>cookie)}, error => {
-          if (error) {
-            return reject(error);
-          }
-          resolve();
-        });
-      });
-    },
-  };
+  private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
+    const rootDomain = url.hostname
+      .split('.')
+      .slice(-2)
+      .join('.');
+    const cookies = await fromSession.cookies.get({domain: rootDomain});
+
+    for (const cookie of cookies) {
+      await toSession.cookies.set({url: url.toString(), ...cookie});
+    }
+
+    await toSession.cookies.flushStore();
+  }
 
   private static readonly protocol = {
     generateSecret: (length: number): Promise<string> => {
@@ -107,19 +94,19 @@ export class SingleSignOn {
         });
       });
     },
-    register: async (session: Electron.Session, finalizeLogin: (type: string) => void): Promise<void> => {
+    register: async (session: Session, finalizeLogin: (type: string) => void): Promise<void> => {
       // Generate a new secret to authenticate the custom protocol (wire-sso)
       SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
 
-      const handleRequest = (request: Electron.RegisterStringProtocolRequest, response: (data?: string) => void) => {
+      const handleRequest = (request: ProtocolRequest, response: (data?: string) => void) => {
         try {
-          const url = new URL(request.url);
+          const requestURL = new URL(request.url);
 
-          if (url.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
+          if (requestURL.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
             throw new Error('Protocol is invalid');
           }
 
-          if (url.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
+          if (requestURL.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
             throw new Error('Host is invalid');
           }
 
@@ -127,11 +114,11 @@ export class SingleSignOn {
             throw new Error('Secret has not be set or has been consumed');
           }
 
-          if (url.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
+          if (requestURL.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
             throw new Error('Secret is invalid');
           }
 
-          const type = url.searchParams.get('type');
+          const type = requestURL.searchParams.get('type');
 
           if (typeof type !== 'string') {
             throw new Error('Response is empty');
@@ -157,7 +144,7 @@ export class SingleSignOn {
         });
       }
     },
-    unregister: (session: Electron.Session): Promise<void> => {
+    unregister: (session: Session): Promise<void> => {
       return new Promise((resolve, reject) => {
         session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
           return error ? reject(error) : resolve();
@@ -170,10 +157,15 @@ export class SingleSignOn {
   public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
 
   // Ensure the requested URL is going to the backend
-  public static isBackendOrigin = (url: string) => SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
+  public static isBackendOrigin = (url: string): boolean => {
+    if (url === 'null') {
+      return false;
+    }
+    return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
+  };
 
   // Returns an empty string if the origin is a Wire backend
-  public static getWindowTitle = (origin: string) =>
+  public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
 
   public static readonly javascriptHelper = () => {
@@ -195,14 +187,17 @@ export class SingleSignOn {
   };
 
   constructor(
-    private readonly mainBrowserWindow: Electron.BrowserWindow,
-    private readonly senderEvent: Electron.Event,
-    windowOriginUrl: string,
-    private readonly windowOptions: Electron.BrowserWindowConstructorOptions,
+    mainBrowserWindow: BrowserWindow,
+    senderEvent: ElectronEvent,
+    windowOriginURL: string,
+    windowOptions: BrowserWindowConstructorOptions,
   ) {
-    this.senderWebContents = senderEvent.sender;
+    this.mainBrowserWindow = mainBrowserWindow;
+    this.windowOptions = windowOptions;
+    this.senderEvent = senderEvent;
+    this.senderWebContents = (senderEvent as any).sender;
     this.mainSession = this.senderWebContents.session;
-    this.windowOriginUrl = new URL(windowOriginUrl);
+    this.windowOriginUrl = new URL(windowOriginURL);
   }
 
   public readonly init = async (): Promise<void> => {
@@ -232,7 +227,7 @@ export class SingleSignOn {
     }
   };
 
-  private readonly createBrowserWindow = (): Electron.BrowserWindow => {
+  private readonly createBrowserWindow = (): BrowserWindow => {
     // Discard old preload URL
     delete (this.windowOptions as any).webPreferences.preloadURL;
 
@@ -298,7 +293,7 @@ export class SingleSignOn {
     // Note: will-navigate is broken in Electron 3
     // see https://github.com/electron/electron/issues/14751
     // using did-navigate as workaround
-    SingleSignOnLoginWindow.webContents.on('did-navigate', (event: Electron.Event, url: string) => {
+    SingleSignOnLoginWindow.webContents.on('did-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
 
       if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
@@ -320,8 +315,9 @@ export class SingleSignOn {
 
       // Set cookies from ephemeral session to the default one
       try {
-        await SingleSignOn.cookies.copy(this.session, this.mainSession, this.windowOriginUrl);
+        await SingleSignOn.copyCookies(this.session, this.mainSession, this.windowOriginUrl);
       } catch (error) {
+        SingleSignOn.logger.warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
         return;
       }
@@ -343,13 +339,9 @@ export class SingleSignOn {
     );
   };
 
-  private readonly wipeSessionData = () => {
-    return new Promise(resolve => {
-      if (this.session) {
-        this.session.clearStorageData(undefined, () => resolve());
-      } else {
-        resolve();
-      }
-    });
+  private readonly wipeSessionData = async () => {
+    if (this.session) {
+      await this.session.clearStorageData(undefined);
+    }
   };
 }
