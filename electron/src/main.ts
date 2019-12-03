@@ -24,6 +24,7 @@ import {
   Event as ElectronEvent,
   Menu,
   OnHeadersReceivedFilter,
+  OnHeadersReceivedListenerDetails,
   WebContents,
   app,
   ipcMain,
