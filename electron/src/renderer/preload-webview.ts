@@ -169,16 +169,6 @@ const subscribeToMainProcessEvents = () => {
   });
 };
 
-const exposeAddressBook = () => {
-  const getAddressBook = () => {
-    return undefined;
-  };
-
-  if (EnvironmentUtil.platform.IS_MAC_OS) {
-    Object.defineProperty(window, 'wAddressBook', {get: getAddressBook});
-  }
-};
-
 const reportWebappVersion = () =>
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
 
@@ -222,7 +212,6 @@ Object.defineProperty(window, 'wSSOCapable', {
 
 window.addEventListener('DOMContentLoaded', () => {
   checkAvailability(() => {
-    exposeAddressBook();
     subscribeToMainProcessEvents();
     subscribeToThemeChange();
     subscribeToWebappEvents();
