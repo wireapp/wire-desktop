@@ -25,6 +25,7 @@ import {
   Event as ElectronEvent,
   RegisterStringProtocolRequest,
   Session,
+  WebContents,
   app,
   session,
 } from 'electron';
