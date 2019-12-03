@@ -166,16 +166,9 @@ node('master') {
             throw e
           }
         }, failFast: true
-      } else if (projectName.contains('macOS')) {
+      } else if (projectName.contains('macOS') && !params.Release.equals('Production')) {
         try {
-          if (params.Release.equals('Production')) {
-            withCredentials([
-              string(credentialsId: 'MACOS_MAS_APPCENTER_SECRET', variable: 'MACOS_MAS_APPCENTER_SECRET')
-            ]) {
-              APPCENTER_APP_SECRET = env.MACOS_MAS_APPCENTER_SECRET
-            }
-            FILE_PATH = './wrap/dist/Wire.pkg'
-          } else if (params.Release.equals('Custom')) {
+          if (params.Release.equals('Custom')) {
             withCredentials([
               string(credentialsId: params.MACOS_CUSTOM_APPCENTER_SECRET, variable: 'MACOS_CUSTOM_APPCENTER_SECRET')
             ]) {
