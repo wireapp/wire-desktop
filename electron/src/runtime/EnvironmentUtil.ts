@@ -22,11 +22,11 @@ import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
 export enum BackendType {
+  AVS = 'AVS',
   DEVELOPMENT = 'DEVELOPMENT',
   EDGE = 'EDGE',
   INTERNAL = 'INTERNAL',
   MASTER = 'MASTER',
-  AVS = 'AVS',
   QA = 'QA',
   LOCALHOST = 'LOCALHOST',
   PRODUCTION = 'PRODUCTION',
