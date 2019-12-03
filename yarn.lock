@@ -4515,10 +4515,10 @@ get-package-info@^1.0.0:
     lodash.get "^4.0.0"
     read-pkg-up "^2.0.0"
 
-get-proxy-settings@0.1.10:
-  version "0.1.10"
-  resolved "https://registry.npmjs.org/get-proxy-settings/-/get-proxy-settings-0.1.10.tgz#8ea511c694185a60fb13952b1364b96591ba4c98"
-  integrity sha512-RWGOYh7vQND3Ou43PUjJwZaFXWikZPBaKApkE8S7+4wHy8utXjV/+BxoFwaCSfdh5+YWlh2FZp99xKhl8fw8Kw==
+get-proxy-settings@0.1.11:
+  version "0.1.11"
+  resolved "https://registry.npmjs.org/get-proxy-settings/-/get-proxy-settings-0.1.11.tgz#665f7aa9d9a5372272c655e3f1168f75b730ce49"
+  integrity sha512-fN2NA0MBKeYkMfcTtO43//RuMHl72RMzopdxjAPboFzrGvMcT/+UWZNcJ6oZ3ebyfNtyulXv/T0pOTtocZA8+g==
   dependencies:
     npm-conf "~1.1.3"
 
