@@ -22,10 +22,8 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  Filter,
-  HeadersReceivedResponse,
   Menu,
-  OnHeadersReceivedListenerDetails,
+  OnHeadersReceivedFilter,
   WebContents,
   app,
   ipcMain,
@@ -553,14 +551,11 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter: Filter = {
+            const filter: OnHeadersReceivedFilter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
-            const listener = (
-              details: OnHeadersReceivedListenerDetails,
-              callback: (response: HeadersReceivedResponse) => void,
-            ) => {
+            const listener = (details: OnHeadersReceivedListenerDetails, callback: any) => {
               const responseHeaders = {
                 'Access-Control-Allow-Credentials': 'true',
                 'Access-Control-Allow-Origin': 'http://localhost:8081',
