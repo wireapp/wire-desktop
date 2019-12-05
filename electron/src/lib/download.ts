@@ -33,7 +33,7 @@ export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
     options.defaultPath = filename;
   }
 
-  if (type && type.ext) {
+  if (type?.ext) {
     options.filters = [
       {
         extensions: [type.ext],
