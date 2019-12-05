@@ -79,7 +79,8 @@ node('master') {
       def APPCENTER_ACCOUNT_NAME = 'Account-Manager-Organization'
       def APPCENTER_APP_ID = params.APPCENTER_APP_ID
       def APPCENTER_APP_SECRET = ''
-      def FILE_PATH = ''
+      def APPCENTER_GROUP = ''
+      def APPCENTER_UPLOAD_FILE_PATH = ''
 
       withCredentials([string(credentialsId: 'APPCENTER_TOKEN', variable: 'APPCENTER_TOKEN')]) {
         sh "appcenter login --token \"${env.APPCENTER_TOKEN}\""
@@ -106,7 +107,8 @@ node('master') {
               APPCENTER_APP_SECRET = env.WIN_PROD_APPCENTER_SECRET
             }
             S3_PATH = 'win/prod'
-            FILE_PATH = './wrap/dist/Wire-Setup.exe'
+            APPCENTER_UPLOAD_FILE_PATH = './wrap/dist/Wire-Setup.exe'
+            APPCENTER_GROUP = 'All-users-of-Wire-Windows-Production'
           } else if (params.Release.equals('Custom')) {
             withCredentials([
               string(credentialsId: params.AWS_CUSTOM_ACCESS_KEY_ID, variable: 'AWS_CUSTOM_ACCESS_KEY_ID'),
@@ -119,7 +121,8 @@ node('master') {
             }
             S3_BUCKET = params.WIN_S3_BUCKET
             S3_PATH = params.WIN_S3_PATH
-            FILE_PATH = params.FILE_PATH
+            APPCENTER_UPLOAD_FILE_PATH = params.APPCENTER_UPLOAD_FILE_PATH
+            APPCENTER_GROUP = params.APPCENTER_GROUP
           } else {
             // internal
             withCredentials([
@@ -128,7 +131,8 @@ node('master') {
               APPCENTER_APP_SECRET = env.WIN_INTERNAL_APPCENTER_SECRET
             }
             S3_PATH = 'win/internal'
-            FILE_PATH = './wrap/dist/WireInternal-Setup.exe'
+            APPCENTER_UPLOAD_FILE_PATH = './wrap/dist/WireInternal-Setup.exe'
+            APPCENTER_GROUP = 'All-users-of-Wire-Windows-Internal'
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
@@ -142,8 +146,8 @@ node('master') {
                   --app \"${APPCENTER_ACCOUNT_NAME}/${APPCENTER_APP_ID}\"
                   --build-number \"${BUILD_VERSION}\"
                   --build-version \"${MAJOR_VERSION}.${MINOR_VERSION}\"
-                  --file \"${FILE_PATH}\"
-                  --group \"Collaborators\"
+                  --file \"${APPCENTER_UPLOAD_FILE_PATH}\"
+                  --group \"${APPCENTER_GROUP}\"
                   --release-notes \"Jenkins Build\""""
           } catch(e) {
             currentBuild.result = 'FAILED'
@@ -175,6 +179,7 @@ node('master') {
               APPCENTER_APP_SECRET = env.MACOS_CUSTOM_APPCENTER_SECRET
             }
             FILE_PATH = params.FILE_PATH
+            APPCENTER_GROUP = params.APPCENTER_GROUP
           } else {
             // internal
             withCredentials([
@@ -184,6 +189,7 @@ node('master') {
             }
             FILE_PATH = './wrap/dist/WireInternal.zip'
             zip "${FILE_PATH}" './wrap/build/WireInternal-mas-x64/WireInternal.app'
+            APPCENTER_GROUP = 'All-users-of-Wire-macOS-Internal'
           }
 
           sh """appcenter distribute release
@@ -191,7 +197,7 @@ node('master') {
                 --build-number \"${BUILD_VERSION}\"
                 --build-version \"${MAJOR_VERSION}.${MINOR_VERSION}\"
                 --file \"${FILE_PATH}\"
-                --group \"Collaborators\"
+                --group \"${APPCENTER_GROUP}\"
                 --release-notes \"Jenkins Build\""""
         } catch(e) {
           currentBuild.result = 'FAILED'
