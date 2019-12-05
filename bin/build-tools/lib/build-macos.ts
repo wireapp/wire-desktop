@@ -102,7 +102,7 @@ export async function buildMacOSConfig(
       };
     }
 
-    if (macOSConfig.notarizeAppleId?.notarizeApplePassword) {
+    if (macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword) {
       packagerConfig.osxNotarize = {
         appleId: macOSConfig.notarizeAppleId,
         appleIdPassword: macOSConfig.notarizeApplePassword,
