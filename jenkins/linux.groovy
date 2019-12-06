@@ -70,7 +70,7 @@ node('linux') {
     }
 
     stage('Save .deb, AppImage and repo files') {
-      archiveArtifacts 'wrap/dist/**'
+      archiveArtifacts 'wrap/dist/*.deb,wrap/dist/*.AppImage,wrap/dist/*.rpm'
     }
 
   }
