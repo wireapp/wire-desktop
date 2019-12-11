@@ -3,10 +3,6 @@
     "jasmine": true
   },
   "extends": "@wireapp/eslint-config",
-  "plugins": ["jasmine"],
-  "parserOptions": {
-    "project": ["./tsconfig.json", "./tsconfig.bin.json", "./tsconfig.mocha.json"]
-  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
@@ -17,11 +13,15 @@
       }
     }
   ],
+  "parserOptions": {
+    "project": ["./tsconfig.json", "./tsconfig.bin.json", "./tsconfig.mocha.json"]
+  },
+  "plugins": ["jasmine"],
   "rules": {
     "import/no-default-export": "off",
-    "no-undef": "off",
-    "simple-import-sort/sort": "off",
     "no-magic-numbers": "off",
-    "no-unsanitized/property": "off"
+    "no-undef": "off",
+    "no-unsanitized/property": "off",
+    "simple-import-sort/sort": "off"
   }
 }
