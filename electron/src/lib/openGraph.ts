@@ -200,7 +200,7 @@ export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResul
     metadata.image = metadata.image[0];
   }
 
-  if (typeof metadata.image === 'object' && !Array.isArray(metadata.image) && metadata.image.url) {
+  if (typeof metadata.image === 'object' && metadata.image?.url) {
     const [imageUrl] = arrayify(metadata.image.url);
 
     const uri = await fetchImageAsBase64(imageUrl);
