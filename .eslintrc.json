@@ -4,6 +4,9 @@
   },
   "extends": "@wireapp/eslint-config",
   "plugins": ["jasmine"],
+  "parserOptions": {
+    "project": ["./tsconfig.json", "./tsconfig.bin.json", "./tsconfig.mocha.json"]
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
