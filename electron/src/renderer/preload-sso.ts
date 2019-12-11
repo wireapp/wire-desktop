@@ -22,7 +22,6 @@ const {SingleSignOn} = remote.require('./sso/SingleSignOn');
 
 // Only execute the helper if the origin is the backend
 if (typeof document.location?.origin === 'string' && SingleSignOn.isBackendOrigin(document.location.origin)) {
-  // tslint:disable-next-line:no-floating-promises
   (async () => {
     // `window.opener` is not available when sandbox is activated,
     // therefore we need to fake the function on backend area and

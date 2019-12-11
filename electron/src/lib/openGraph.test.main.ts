@@ -28,7 +28,6 @@ const defaultMessageUtf8 = [72, 101, 108, 108, 111, 32, 102, 114, 111, 109, 32, 
 
 const russianMessage = 'Привет из нока!';
 const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 206, 207, 203, 193, 33];
-/* tslint:disable-next-line */
 const russianMessageUtf8 = [
   208,
   159,
