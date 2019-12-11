@@ -402,9 +402,8 @@ export const createMenu = (isFullScreen: boolean): Menu => {
     }
   }
 
-  if (Array.isArray(windowTemplate.submenu)) {
+  if (EnvironmentUtil.platform.IS_LINUX && Array.isArray(windowTemplate.submenu)) {
     const muteAccelerator = 'Ctrl+Alt+M';
-    logger.info(`Registering mute shortcut "${muteAccelerator}" ...`);
 
     const muteShortcut: MenuItemConstructorOptions = {
       accelerator: muteAccelerator,
@@ -416,7 +415,6 @@ export const createMenu = (isFullScreen: boolean): Menu => {
 
     const switchShortcuts: MenuItemConstructorOptions[] = Array.from({length: config.maximumAccounts}, (_, index) => {
       const switchAccelerator = `Ctrl+${index + 1}`;
-      logger.info(`Registering account switching shortcut "${switchAccelerator}" ...`);
 
       return {
         accelerator: switchAccelerator,
@@ -427,9 +425,7 @@ export const createMenu = (isFullScreen: boolean): Menu => {
     });
 
     windowTemplate.submenu.push(muteShortcut, ...switchShortcuts);
-  }
 
-  if (EnvironmentUtil.platform.IS_LINUX) {
     menuTemplate.unshift(linuxTemplate);
     if (Array.isArray(editTemplate.submenu)) {
       editTemplate.submenu.push(separatorTemplate, {
@@ -468,7 +464,7 @@ export const toggleMenuBar = (): void => {
 };
 
 export const registerGlobalShortcuts = (): void => {
-  if (EnvironmentUtil.platform.IS_MAC_OS) {
+  if (!EnvironmentUtil.platform.IS_LINUX) {
     const muteAccelerator = 'Cmd+Alt+M';
     logger.info(`Registering global mute shortcut "${muteAccelerator}" ...`);
 
@@ -488,7 +484,7 @@ export const registerGlobalShortcuts = (): void => {
 };
 
 export const unregisterGlobalShortcuts = (): void => {
-  if (EnvironmentUtil.platform.IS_MAC_OS) {
+  if (!EnvironmentUtil.platform.IS_LINUX) {
     logger.info('Unregistering all global shortcuts ...');
     globalShortcut.unregisterAll();
   }
