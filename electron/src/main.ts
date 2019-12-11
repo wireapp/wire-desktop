@@ -492,7 +492,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
-      if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
+      if (authenticatedProxyInfo?.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
 

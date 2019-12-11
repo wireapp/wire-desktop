@@ -55,6 +55,7 @@ branches:
   only:
     - master
     - staging
+    - dev
 
 after_success:
   - |

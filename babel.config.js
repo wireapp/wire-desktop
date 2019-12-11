@@ -1,4 +1,4 @@
-const plugins = ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-object-rest-spread'];
+const plugins = ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-optional-chaining'];
 
 const buildPresets = ({modules = false, debug = false}) => {
   return [
@@ -10,7 +10,7 @@ const buildPresets = ({modules = false, debug = false}) => {
         debug,
         modules,
         targets: {
-          browsers: ['chrome >= 66'],
+          browsers: ['chrome >= 78'],
         },
         useBuiltIns: 'usage',
       },
