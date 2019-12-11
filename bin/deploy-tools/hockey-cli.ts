@@ -52,9 +52,8 @@ function getUploadFile(platform: string, basePath: string): Promise<FindResult> 
     return find('*-Setup.exe', {cwd: basePath});
   } else if (platform.includes('macos')) {
     return find('*.pkg', {cwd: basePath});
-  } else {
-    throw new Error(`Invalid platform "${platform}"`);
   }
+  throw new Error(`Invalid platform "${platform}"`);
 }
 
 (async () => {

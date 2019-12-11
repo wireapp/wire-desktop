@@ -414,7 +414,7 @@ export const createMenu = (isFullScreen: boolean): Menu => {
       visible: false,
     };
 
-    const switchShortcuts: MenuItemConstructorOptions[] = Array.from({length: config.maximumAccounts}, (_, index) => {
+    const switchShortcuts: MenuItemConstructorOptions[] = Array.from({length: config.maximumAccounts}, (key, index) => {
       const switchAccelerator = `Ctrl+${index + 1}`;
       logger.info(`Registering account switching shortcut "${switchAccelerator}" ...`);
 
@@ -476,7 +476,7 @@ export const registerGlobalShortcuts = (): void => {
       WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
     );
 
-    Array.from({length: config.maximumAccounts}, (_, index) => {
+    Array.from({length: config.maximumAccounts}, (key, index) => {
       const switchAccelerator = `Cmd+${index + 1}`;
       logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
 

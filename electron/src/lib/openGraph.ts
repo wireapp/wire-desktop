@@ -205,8 +205,7 @@ export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResul
 
     const uri = await fetchImageAsBase64(imageUrl);
     return updateMetaDataWithImage(metadata, uri);
-  } else {
-    delete metadata.image;
-    return metadata;
   }
+  delete metadata.image;
+  return metadata;
 };

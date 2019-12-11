@@ -92,7 +92,7 @@ window.addEventListener(
       const parentElement = element.closest('.message-body') as HTMLDivElement;
       const timeElement = parentElement.getElementsByTagName('time')[0];
       if (timeElement) {
-        const imageTimestamp = timeElement.dataset['timestamp'];
+        const imageTimestamp = timeElement.dataset.timestamp;
         imageMenu.timestamp = imageTimestamp;
       }
       imageMenu.image = elementSource;

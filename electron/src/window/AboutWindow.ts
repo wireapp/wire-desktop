@@ -91,7 +91,7 @@ const showWindow = async () => {
       if (url.startsWith('https://')) {
         await shell.openExternal(url);
       } else {
-        console.log('Attempt to open URL in window prevented, url:', url);
+        console.info('Attempt to open URL in window prevented, url:', url);
       }
 
       callback({redirectURL: ABOUT_HTML});

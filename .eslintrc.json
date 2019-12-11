@@ -4,9 +4,21 @@
   },
   "extends": "@wireapp/eslint-config",
   "plugins": ["jasmine"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/member-ordering": "off",
+        "@typescript-eslint/typedef": "off",
+        "no-unused-vars": "off"
+      }
+    }
+  ],
   "rules": {
-    "handle-callback-err": 2,
-    "import/no-default-export": 0,
-    "no-undef": 0
+    "import/no-default-export": "off",
+    "no-undef": "off",
+    "simple-import-sort/sort": "off",
+    "no-magic-numbers": "off",
+    "no-unsanitized/property": "off"
   }
 }

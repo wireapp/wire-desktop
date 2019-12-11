@@ -92,7 +92,7 @@ const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 const logger = getLogger(path.basename(__filename));
 
 if (argv.version) {
-  console.log(config.version);
+  console.info(config.version);
   process.exit();
 }
 
@@ -209,7 +209,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       webviewTag: true,
     },
     width: mainWindowState.width,
+    // eslint-disable-next-line
     x: mainWindowState.x,
+    // eslint-disable-next-line
     y: mainWindowState.y,
   };
 

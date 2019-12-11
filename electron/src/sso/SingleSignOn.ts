@@ -19,21 +19,20 @@
 
 import * as crypto from 'crypto';
 import {
+  app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
   ProtocolRequest,
   Session,
-  WebContents,
-  app,
   session,
+  WebContents,
 } from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
-const minimist = require('minimist');
-
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
+const minimist = require('minimist');
 
 const argv = minimist(process.argv.slice(1));
 

@@ -75,7 +75,7 @@ export const LANGUAGES: Supportedi18nLanguageObject = {
   uk: uk_UA,
 };
 
-/* tslint:disable:object-literal-sort-keys */
+/* eslint-disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
   cs: 'Čeština',
@@ -100,7 +100,7 @@ export const SUPPORTED_LANGUAGES = {
   tr: 'Türkçe',
   uk: 'Українська',
 };
-/* tslint:enable:object-literal-sort-keys */
+/* eslint-enable */
 
 let current: Supportedi18nLanguage | undefined;
 

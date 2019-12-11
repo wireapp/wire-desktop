@@ -77,7 +77,7 @@ export async function buildWindowsInstallerConfig(
 
   commonConfig.updateUrl = windowsConfig.updateUrl;
 
-  return {windowsConfig, wInstallerOptions};
+  return {wInstallerOptions, windowsConfig};
 }
 
 export async function buildWindowsInstaller(

@@ -96,9 +96,8 @@ export class S3Deployer {
     } else if (platform.includes('macos')) {
       const setupPkg = await find('*.pkg', {cwd: basePath});
       return [setupPkg];
-    } else {
-      throw new Error(`Invalid platform "${platform}"`);
     }
+    throw new Error(`Invalid platform "${platform}"`);
   }
 
   async uploadToS3(uploadOptions: S3UploadOptions): Promise<void> {
