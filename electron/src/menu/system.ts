@@ -465,7 +465,7 @@ export const toggleMenuBar = (): void => {
 
 export const registerGlobalShortcuts = (): void => {
   if (!EnvironmentUtil.platform.IS_LINUX) {
-    const muteAccelerator = 'Cmd+Alt+M';
+    const muteAccelerator = 'CmdOrCtrl+Alt+M';
     logger.info(`Registering global mute shortcut "${muteAccelerator}" ...`);
 
     globalShortcut.register(muteAccelerator, () =>
@@ -473,7 +473,7 @@ export const registerGlobalShortcuts = (): void => {
     );
 
     Array.from({length: config.maximumAccounts}, (_, index) => {
-      const switchAccelerator = `Cmd+${index + 1}`;
+      const switchAccelerator = `CmdOrCtrl+${index + 1}`;
       logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
 
       globalShortcut.register(switchAccelerator, () => {
