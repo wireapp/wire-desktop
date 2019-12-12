@@ -32,11 +32,11 @@ describe('initTray', () => {
     const tray = new TrayHandler();
     tray.initTray(TrayMock);
 
-    assert.strictEqual(Object.keys((tray as any).icons!).length, 3);
-    assert.strictEqual((tray as any).icons!.badge.constructor.name, 'NativeImage');
-    assert.strictEqual((tray as any).icons!.tray.constructor.name, 'NativeImage');
-    assert.strictEqual((tray as any).icons!.trayWithBadge.constructor.name, 'NativeImage');
-    sinon.assert.match((tray as any).trayIcon!, sinon.match.defined);
+    assert.strictEqual(Object.keys(tray['icons']!).length, 3);
+    assert.strictEqual(tray['icons']!.badge.constructor.name, 'NativeImage');
+    assert.strictEqual(tray['icons']!.tray.constructor.name, 'NativeImage');
+    assert.strictEqual(tray['icons']!.trayWithBadge.constructor.name, 'NativeImage');
+    sinon.assert.match(tray['trayIcon']!, sinon.match.defined);
   });
 });
 
@@ -55,7 +55,7 @@ describe('showUnreadCount', () => {
       tray.showUnreadCount(appWindow, 1);
 
       assert.ok(flashFrameSpy.firstCall.calledWith(false));
-      assert.strictEqual((tray as any).lastUnreadCount, 1);
+      assert.strictEqual(tray['lastUnreadCount'], 1);
 
       flashFrameSpy.restore();
     });
@@ -99,7 +99,7 @@ describe('showUnreadCount', () => {
     it('does change the flash state if the window has already been flashed', async () => {
       const tray = new TrayHandler();
       tray.initTray(TrayMock);
-      (tray as any).lastUnreadCount = 5;
+      tray['lastUnreadCount'] = 5;
 
       const appWindow = new BrowserWindow({
         show: false,

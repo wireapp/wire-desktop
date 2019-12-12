@@ -1511,10 +1511,10 @@
     jszip "3.2.2"
     logdown "3.2.8"
 
-"@wireapp/eslint-config@1.3.0-beta.9":
-  version "1.3.0-beta.9"
-  resolved "https://registry.npmjs.org/@wireapp/eslint-config/-/eslint-config-1.3.0-beta.9.tgz#fd05a44d6a3e289507261ac946940af87c8f98ba"
-  integrity sha512-94///3L1WULqL0fIobpyiqxgCbpIxzFa/s61FxvNr9EDk447cyS61xZ8VPYUt9AXXqwL0GxstFR63l/OY5nV3Q==
+"@wireapp/eslint-config@1.3.0-beta.10":
+  version "1.3.0-beta.10"
+  resolved "https://registry.npmjs.org/@wireapp/eslint-config/-/eslint-config-1.3.0-beta.10.tgz#4f35be3548d86857fff897f3366fc033a711540c"
+  integrity sha512-dTYkHUuPSRG0Z1/Ev8lFmujEQo3Ahktm2rPX7iO0EOHHk/dKsUIVciiD3N0y4piUgK6KkEmjkZAJF0fd/Mb0Jg==
 
 "@wireapp/prettier-config@0.3.0":
   version "0.3.0"

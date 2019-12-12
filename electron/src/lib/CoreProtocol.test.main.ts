@@ -30,8 +30,8 @@ describe('dispatchDeepLink', () => {
 
   beforeEach(() => {
     protocolHandler = new CustomProtocolHandler();
-    sinon.replace((protocolHandler as any).windowManager, 'sendActionToPrimaryWindow', sendActionSpy);
-    sinon.replace((protocolHandler as any).windowManager, 'sendActionAndFocusWindow', sendActionSpy);
+    sinon.replace(protocolHandler['windowManager'], 'sendActionToPrimaryWindow', sendActionSpy);
+    sinon.replace(protocolHandler['windowManager'], 'sendActionAndFocusWindow', sendActionSpy);
   });
 
   afterEach(() => sinon.restore());
