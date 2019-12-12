@@ -28,35 +28,8 @@ const defaultMessageUtf8 = [72, 101, 108, 108, 111, 32, 102, 114, 111, 109, 32, 
 
 const russianMessage = 'Привет из нока!';
 const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 206, 207, 203, 193, 33];
-const russianMessageUtf8 = [
-  208,
-  159,
-  209,
-  128,
-  208,
-  184,
-  208,
-  178,
-  208,
-  181,
-  209,
-  130,
-  32,
-  208,
-  184,
-  208,
-  183,
-  32,
-  208,
-  189,
-  208,
-  190,
-  208,
-  186,
-  208,
-  176,
-  33,
-];
+// eslint-disable-next-line
+const russianMessageUtf8 = [208, 159, 209, 128, 208, 184, 208, 178, 208, 181, 209, 130, 32, 208, 184, 208, 183, 32, 208, 189, 208, 190, 208, 186, 208, 176, 33];
 
 const contentLimitRequest = (contentType: string, contentArray: number[]) => {
   nock(exampleUrl)
