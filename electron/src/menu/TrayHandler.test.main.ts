@@ -74,7 +74,7 @@ describe('showUnreadCount', () => {
       assert.ok(flashFrameSpy.notCalled);
       tray.showUnreadCount(appWindow, 10);
       assert.ok(flashFrameSpy.firstCall.calledWith(false));
-      assert.strictEqual((tray as any).lastUnreadCount, 10);
+      assert.strictEqual(tray['lastUnreadCount'], 10);
       flashFrameSpy.restore();
     });
 
