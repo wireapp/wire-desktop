@@ -6442,6 +6442,13 @@ logdown@3.2.8:
   dependencies:
     chalk "^2.3.0"
 
+logdown@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.npmjs.org/logdown/-/logdown-3.3.0.tgz#639dd2d3becaf0d9657ab63e812fa0e0f0b19fe7"
+  integrity sha512-CECrThg4JtaVNJ8P7zlWDaFveHTg3VIrrUXvc8L2840VVuyZcLW3dDrdURgzHLSAxoKJt/F55RbKdQ0alI+Njg==
+  dependencies:
+    chalk "^2.3.0"
+
 lolex@^4.1.0, lolex@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/lolex/-/lolex-4.2.0.tgz#ddbd7f6213ca1ea5826901ab1222b65d714b3cd7"
