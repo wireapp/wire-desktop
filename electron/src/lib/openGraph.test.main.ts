@@ -103,6 +103,6 @@ describe('openGraph', () => {
   it('saves cookies on requests', async () => {
     const cookieText = 'my-cookie';
     const result = await cookieRequest(cookieText);
-    assert.strictEqual(result.config.headers.Cookie, cookieText);
+    assert.strictEqual(result.config.headers['Cookie'], cookieText);
   });
 });
