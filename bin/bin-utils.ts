@@ -51,7 +51,7 @@ export async function restoreFiles({originalPaths, backupPaths, tempDir}: Backup
 }
 
 export const getLogger = (namespace: string, name: string) =>
-  LogFactory.getLogger(name, {namespace: `@wireapp/${namespace}`, forceEnable: true, separator: '/'});
+  LogFactory.getLogger(name, {forceEnable: true, namespace: `@wireapp/${namespace}`, separator: '/'});
 
 export function checkCommanderOptions(
   commanderInstance: typeof commander,

@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, app, ipcMain, session, shell} from 'electron';
+import {app, BrowserWindow, ipcMain, session, shell} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
@@ -91,7 +91,7 @@ const showWindow = async () => {
       if (url.startsWith('https://')) {
         await shell.openExternal(url);
       } else {
-        console.log('Attempt to open URL in window prevented, url:', url);
+        console.info('Attempt to open URL in window prevented, url:', url);
       }
 
       callback({redirectURL: ABOUT_HTML});

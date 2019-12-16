@@ -18,7 +18,7 @@
  */
 
 import {ValidationUtil} from '@wireapp/commons';
-import {Session, app, webContents} from 'electron';
+import {app, Session, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 

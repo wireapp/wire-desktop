@@ -35,7 +35,7 @@ interface CommanderData {
 }
 
 const toolName = path.basename(__filename).replace('.ts', '');
-const logger = LogFactory.getLogger(toolName, {namespace: '@wireapp/build-tools', forceEnable: true});
+const logger = LogFactory.getLogger(toolName, {forceEnable: true, namespace: '@wireapp/build-tools'});
 const appSource = path.join(__dirname, '../../');
 
 commander

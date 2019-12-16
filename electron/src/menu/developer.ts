@@ -17,7 +17,7 @@
  *
  */
 
-import {MenuItem, MenuItemConstructorOptions, app, dialog} from 'electron';
+import {app, dialog, MenuItem, MenuItemConstructorOptions} from 'electron';
 import * as openExternal from 'open';
 import * as path from 'path';
 

@@ -22,7 +22,7 @@ import fs from 'fs-extra';
 import logdown from 'logdown';
 import path from 'path';
 
-import {TWO_HUNDRED_MB_IN_BYTES, logDry} from './deploy-utils';
+import {logDry, TWO_HUNDRED_MB_IN_BYTES} from './deploy-utils';
 
 const HOCKEY_API_URL = 'https://rink.hockeyapp.net/api/2/apps';
 

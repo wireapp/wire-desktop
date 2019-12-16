@@ -17,7 +17,7 @@
  *
  */
 
-import {Options as electronWinstallerOptions, createWindowsInstaller} from 'electron-winstaller';
+import {createWindowsInstaller, Options as electronWinstallerOptions} from 'electron-winstaller';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -77,7 +77,7 @@ export async function buildWindowsInstallerConfig(
 
   commonConfig.updateUrl = windowsConfig.updateUrl;
 
-  return {windowsConfig, wInstallerOptions};
+  return {wInstallerOptions, windowsConfig};
 }
 
 export async function buildWindowsInstaller(
