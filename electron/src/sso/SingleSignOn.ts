@@ -32,6 +32,7 @@ import {
 } from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
+
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 

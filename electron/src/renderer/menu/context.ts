@@ -17,7 +17,7 @@
  *
  */
 
-import {Menu as ElectronMenu, MenuItemConstructorOptions, clipboard, ipcRenderer, remote} from 'electron';
+import {clipboard, ipcRenderer, Menu as ElectronMenu, MenuItemConstructorOptions, remote} from 'electron';
 const Menu = remote.Menu;
 
 import {EVENT_TYPE} from '../../lib/eventType';

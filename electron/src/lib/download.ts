@@ -17,7 +17,7 @@
  *
  */
 
-import {SaveDialogOptions, dialog} from 'electron';
+import {dialog, SaveDialogOptions} from 'electron';
 import * as fs from 'fs-extra';
 import imageType from 'image-type';
 import * as moment from 'moment';

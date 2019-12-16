@@ -19,11 +19,10 @@
 
 import * as Electron from 'electron';
 
+import {i18nLanguageIdentifier, Supportedi18nLanguage, Supportedi18nLanguageObject} from '../interfaces/';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-
-import {Supportedi18nLanguage, Supportedi18nLanguageObject, i18nLanguageIdentifier} from '../interfaces/';
 
 const cs_CZ = require('../../locale/cs-CZ');
 const da_DK = require('../../locale/da-DK');
