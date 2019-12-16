@@ -18,7 +18,7 @@
  */
 
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
-import {ParsedMediaType, parse as parseContentType} from 'content-type';
+import {parse as parseContentType, ParsedMediaType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
@@ -205,8 +205,7 @@ export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResul
 
     const uri = await fetchImageAsBase64(imageUrl);
     return updateMetaDataWithImage(metadata, uri);
-  } else {
-    delete metadata.image;
-    return metadata;
   }
+  delete metadata.image;
+  return metadata;
 };

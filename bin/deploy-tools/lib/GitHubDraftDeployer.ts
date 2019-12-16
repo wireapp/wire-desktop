@@ -20,7 +20,7 @@ import axios from 'axios';
 import fs from 'fs-extra';
 import logdown from 'logdown';
 
-import {TWO_HUNDRED_MB_IN_BYTES, logDry} from './deploy-utils';
+import {logDry, TWO_HUNDRED_MB_IN_BYTES} from './deploy-utils';
 
 /** @see https://developer.github.com/v3/repos/releases/#create-a-release */
 export interface GitHubAPIDraftData {
@@ -125,7 +125,7 @@ export class GitHubDraftDeployer {
     };
 
     if (this.options.dryRun) {
-      logDry('createDraft', {url: draftUrl, draftData});
+      logDry('createDraft', {draftData, url: draftUrl});
       return {id: 0};
     }
 
@@ -159,7 +159,7 @@ export class GitHubDraftDeployer {
     const url = `${uploadUrl}?name=${fileName}`;
 
     if (this.options.dryRun) {
-      logDry('uploadAsset', {url, file, headers, maxContentLength: TWO_HUNDRED_MB_IN_BYTES});
+      logDry('uploadAsset', {file, headers, maxContentLength: TWO_HUNDRED_MB_IN_BYTES, url});
       return;
     }
 

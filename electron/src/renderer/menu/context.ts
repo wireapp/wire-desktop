@@ -17,7 +17,7 @@
  *
  */
 
-import {Menu as ElectronMenu, MenuItemConstructorOptions, clipboard, ipcRenderer, remote} from 'electron';
+import {clipboard, ipcRenderer, Menu as ElectronMenu, MenuItemConstructorOptions, remote} from 'electron';
 const Menu = remote.Menu;
 
 import {EVENT_TYPE} from '../../lib/eventType';
@@ -92,7 +92,7 @@ window.addEventListener(
       const parentElement = element.closest('.message-body') as HTMLDivElement;
       const timeElement = parentElement.getElementsByTagName('time')[0];
       if (timeElement) {
-        const imageTimestamp = timeElement.dataset['timestamp'];
+        const imageTimestamp = timeElement.dataset.timestamp;
         imageMenu.timestamp = imageTimestamp;
       }
       imageMenu.image = elementSource;

@@ -20,4 +20,4 @@
 window.locStrings = window.locStrings || {};
 window.locStringsDefault = window.locStringsDefault || {};
 
-export const getText = id => locStrings[id] || locStringsDefault[id] || id;
+export const getText = id => window.locStrings[id] || window.locStringsDefault[id] || id;

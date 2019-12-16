@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, app} from 'electron';
+import {app, BrowserWindow} from 'electron';
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
