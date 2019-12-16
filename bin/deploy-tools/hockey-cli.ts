@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';
-import {FindResult, find, zip} from './lib/deploy-utils';
+import {find, FindResult, zip} from './lib/deploy-utils';
 import {HockeyDeployer} from './lib/HockeyDeployer';
 
 const toolName = path.basename(__filename).replace('.ts', '');

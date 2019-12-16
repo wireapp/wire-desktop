@@ -20,7 +20,7 @@ import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {FindResult, find, logDry} from './deploy-utils';
+import {find, FindResult, logDry} from './deploy-utils';
 
 export interface S3DeployerOptions {
   accessKeyId: string;

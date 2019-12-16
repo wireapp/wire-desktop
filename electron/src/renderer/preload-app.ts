@@ -17,7 +17,7 @@
  *
  */
 
-import {WebviewTag, ipcRenderer, webFrame} from 'electron';
+import {ipcRenderer, webFrame, WebviewTag} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';

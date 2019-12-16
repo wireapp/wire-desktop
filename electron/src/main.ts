@@ -19,17 +19,17 @@
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {
+  app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
   Filter,
   HeadersReceivedResponse,
+  ipcMain,
   Menu,
   OnHeadersReceivedListenerDetails,
-  WebContents,
-  app,
-  ipcMain,
   shell,
+  WebContents,
 } from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');

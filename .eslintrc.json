@@ -20,8 +20,6 @@
   "rules": {
     "import/no-default-export": "off",
     "no-magic-numbers": "off",
-    "no-undef": "off",
-    "no-unsanitized/property": "off",
-    "simple-import-sort/sort": "off"
+    "no-undef": "off"
   }
 }
