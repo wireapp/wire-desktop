@@ -23,9 +23,10 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
+  ipcMain,
   Menu,
+  OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
   OnHeadersReceivedFilter,
-  OnHeadersReceivedListenerDetails,
   shell,
   WebContents,
 } from 'electron';
