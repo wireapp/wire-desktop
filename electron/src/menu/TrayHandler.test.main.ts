@@ -52,10 +52,10 @@ describe('showUnreadCount', () => {
 
       await appWindow.loadURL('about:blank');
       assert.strictEqual(appWindow.isFocused(), true);
-      assert.ok(badgeCountSpy.firstCall.calledWith(1));
       assert.ok(flashFrameSpy.notCalled);
       tray.showUnreadCount(appWindow, 1);
 
+      assert.ok(badgeCountSpy.firstCall.calledWith(1));
       assert.ok(flashFrameSpy.firstCall.calledWith(false));
       assert.strictEqual(tray['lastUnreadCount'], 1);
 
