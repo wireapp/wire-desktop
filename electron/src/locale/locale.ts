@@ -46,6 +46,7 @@ const sk_SK = require('../../locale/sk-SK');
 const sl_SI = require('../../locale/sl-SI');
 const tr_TR = require('../../locale/tr-TR');
 const uk_UA = require('../../locale/uk-UA');
+const zh_CN = require('../../locale/zh-CN');
 
 const app = Electron.app || Electron.remote.app;
 
@@ -72,6 +73,7 @@ export const LANGUAGES: Supportedi18nLanguageObject = {
   sl: sl_SI,
   tr: tr_TR,
   uk: uk_UA,
+  zh: zh_CN,
 };
 
 /* eslint-disable */
@@ -98,6 +100,7 @@ export const SUPPORTED_LANGUAGES = {
   fi: 'Suomi',
   tr: 'Türkçe',
   uk: 'Українська',
+  zh: '简体中文'
 };
 /* eslint-enable */
 
