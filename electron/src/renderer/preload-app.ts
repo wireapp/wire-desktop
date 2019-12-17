@@ -17,7 +17,7 @@
  *
  */
 
-import {WebviewTag, ipcRenderer, webFrame} from 'electron';
+import {ipcRenderer, webFrame, WebviewTag} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -108,10 +108,11 @@ const setupIpcInterface = (): void => {
     return new Promise((resolve, reject) => {
       const accountWebview = getWebviewById(accountID);
       if (!accountWebview) {
+        // eslint-disable-next-line
         return reject(`Webview for account "${accountID}" does not exist`);
       }
 
-      console.log(`Processing deletion of "${accountID}"`);
+      console.info(`Processing deletion of "${accountID}"`);
       const viewInstanceId = accountWebview.getWebContents().id;
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);

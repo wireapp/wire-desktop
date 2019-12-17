@@ -20,7 +20,7 @@ import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {FindResult, find, logDry} from './deploy-utils';
+import {find, FindResult, logDry} from './deploy-utils';
 
 export interface S3DeployerOptions {
   accessKeyId: string;
@@ -96,9 +96,8 @@ export class S3Deployer {
     } else if (platform.includes('macos')) {
       const setupPkg = await find('*.pkg', {cwd: basePath});
       return [setupPkg];
-    } else {
-      throw new Error(`Invalid platform "${platform}"`);
     }
+    throw new Error(`Invalid platform "${platform}"`);
   }
 
   async uploadToS3(uploadOptions: S3UploadOptions): Promise<void> {

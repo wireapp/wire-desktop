@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, app, ipcMain, session} from 'electron';
+import {app, BrowserWindow, ipcMain, session} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 

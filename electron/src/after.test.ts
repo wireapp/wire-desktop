@@ -29,7 +29,7 @@ declare global {
 }
 
 const writeCoverageReport = (coverage: Object) => {
-  const outputFile = path.join(process.cwd(), `.nyc_output/coverage.${process['type']}.json`);
+  const outputFile = path.join(process.cwd(), `.nyc_output/coverage.${process.type}.json`);
   fs.outputJsonSync(outputFile, coverage);
 };
 

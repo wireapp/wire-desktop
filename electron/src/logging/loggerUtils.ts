@@ -25,7 +25,7 @@ import * as path from 'path';
 export const logDir = path.join(app.getPath('userData'), 'logs');
 
 export function getLogFiles(base: string = logDir, absolute: boolean = false): string[] {
-  return globby.sync('**/*.{log,old}', {cwd: base, followSymbolicLinks: false, onlyFiles: true, absolute});
+  return globby.sync('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
 }
 
 export async function gatherLogs(): Promise<string> {

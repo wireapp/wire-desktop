@@ -25,7 +25,7 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (event, labels: string[]
   for (const label in labels) {
     const labelElement = document.querySelector(`[data-string="${label}"]`);
     if (labelElement) {
-      labelElement.innerHTML = labels[label];
+      labelElement.textContent = labels[label];
     }
   }
 });

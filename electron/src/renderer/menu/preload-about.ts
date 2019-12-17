@@ -25,7 +25,7 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (event, labels: string[]) => {
   for (const label in labels) {
     const labelElement = document.querySelector(`[data-string="${label}"]`);
     if (labelElement) {
-      labelElement.innerHTML = labels[label];
+      labelElement.textContent = labels[label];
     }
   }
 });
@@ -40,22 +40,22 @@ interface Details {
 export function loadedAboutScreen(event: Event, details: Details): void {
   const nameElement = document.getElementById('name');
   if (nameElement) {
-    nameElement.innerHTML = details.productName;
+    nameElement.textContent = details.productName;
   }
 
   const versionElement = document.getElementById('version');
   if (versionElement) {
-    versionElement.innerHTML = details.electronVersion;
+    versionElement.textContent = details.electronVersion;
   }
 
   const webappVersionElement = document.getElementById('webappVersion');
   if (webappVersionElement) {
-    webappVersionElement.innerHTML = details.webappVersion;
+    webappVersionElement.textContent = details.webappVersion;
   }
 
   const copyrightElement = document.getElementById('copyright');
   if (copyrightElement) {
-    copyrightElement.innerHTML = details.copyright;
+    copyrightElement.textContent = details.copyright;
   }
 
   const logoElement = document.getElementById('logo') as HTMLImageElement;
