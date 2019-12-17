@@ -26,7 +26,8 @@ import {
   ipcMain,
   Menu,
   OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
-  OnHeadersReceivedFilter,
+  OnHeadersReceivedFilter as Filter,
+  OnHeadersReceivedResponse as HeadersReceivedResponse,
   shell,
   WebContents,
 } from 'electron';
@@ -554,11 +555,14 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter: OnHeadersReceivedFilter = {
+            const filter: Filter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
-            const listener = (details: OnHeadersReceivedListenerDetails, callback: any) => {
+            const listener = (
+              details: OnHeadersReceivedListenerDetails,
+              callback: (response: HeadersReceivedResponse) => void,
+            ) => {
               const responseHeaders = {
                 'Access-Control-Allow-Credentials': 'true',
                 'Access-Control-Allow-Origin': 'http://localhost:8081',
