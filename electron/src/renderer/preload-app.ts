@@ -113,7 +113,7 @@ const setupIpcInterface = (): void => {
       }
 
       console.info(`Processing deletion of "${accountID}"`);
-      const viewInstanceId = accountWebview.getWebContents().id;
+      const viewInstanceId = accountWebview.getWebContentsId();
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
     });
