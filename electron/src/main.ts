@@ -302,7 +302,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  await main.webContents.insertCSS(wrapperCSSContent);
+  main.webContents.insertCSS(wrapperCSSContent);
 
   if (argv.startup || argv.hidden) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);

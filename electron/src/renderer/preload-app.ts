@@ -47,42 +47,14 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (event, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      await selectedWebview.send(action);
+      selectedWebview.send(action);
     }
   });
 
   ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, async (event, hash: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      await selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
-    }
-  });
-
-  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.redo();
-    }
-  });
-
-  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.undo();
-    }
-  });
-
-  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.redo();
-    }
-  });
-
-  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.undo();
+      selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
     }
   });
 
@@ -124,7 +96,7 @@ const setupIpcInterface = (): void => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
-      await accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
+      accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
 };

@@ -340,9 +340,13 @@ export class SingleSignOn {
     );
   };
 
-  private readonly wipeSessionData = async () => {
-    if (this.session) {
-      await this.session.clearStorageData(undefined);
-    }
+  private readonly wipeSessionData = () => {
+    return new Promise(resolve => {
+      if (this.session) {
+        this.session.clearStorageData(undefined, () => resolve());
+      } else {
+        resolve();
+      }
+    });
   };
 }
