@@ -9,6 +9,8 @@ WIRE_APP_FILE="${1:-"wrap/build/Wire-mas-x64/Wire.app"}"
 FRAMEWORK_FILE="${WIRE_APP_FILE}/Contents/Frameworks/Electron Framework.framework/Electron Framework"
 PRIVATE_APPLE_APIS="CAContext\|CALayerHost\|NSAccessibilityRemoteUIElement\|NSNextStepFrame\|NSThemeFrame\|NSURLFileTypeMappings"
 
+echo "Checking for private Apple APIs ..."
+
 SEARCH_RESULT="$(otool -ov "${FRAMEWORK_FILE}" | grep -o "${PRIVATE_APPLE_APIS}" | sort -u | uniq)"
 
 if [ "${SEARCH_RESULT}" != "" ]; then
