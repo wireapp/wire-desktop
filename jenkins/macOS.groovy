@@ -7,6 +7,7 @@ node('master') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
   def NODE = tool name: 'node-v12.13.0', type: 'nodejs'
+  def privateAPIResult = ''
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -39,13 +40,20 @@ node('master') {
         sh 'yarn'
         if (production) {
           sh 'yarn build:macos'
-          sh 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"'
+
+          echo 'Checking for private Apple APIs ...'
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"', returnStdout: true
+          echo privateAPIResult
+          wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version}**\n${privateAPIResult.trim()}"
         } else if (custom) {
           sh 'yarn build:macos'
         } else {
           // internal
           sh 'yarn build:macos:internal'
-          sh 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-x64/WireInternal.app"'
+
+          echo 'Checking for private Apple APIs ...'
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/WireInternal.app"', returnStdout: true
+          echo privateAPIResult
         }
       }
     } catch(e) {
@@ -82,5 +90,5 @@ node('master') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\nDownload from [Jenkins](${BUILD_URL})"
+  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\nDownload from [Jenkins](${BUILD_URL})\n\n${privateAPIResult.trim()}"
 }
