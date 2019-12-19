@@ -23,6 +23,7 @@ import * as path from 'path';
 
 import {Supportedi18nLanguage} from '../interfaces/';
 import {EVENT_TYPE} from '../lib/eventType';
+import {WebViewFocus} from '../lib/webViewFocus';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -184,12 +185,22 @@ const editTemplate: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.UNDO),
+      click: () => {
+        const focusedWebContents = WebViewFocus.getFocusedWebContents();
+        if (focusedWebContents) {
+          focusedWebContents.undo();
+        }
+      },
       label: locale.getText('menuUndo'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.REDO),
+      click: () => {
+        const focusedWebContents = WebViewFocus.getFocusedWebContents();
+        if (focusedWebContents) {
+          focusedWebContents.redo();
+        }
+      },
       label: locale.getText('menuRedo'),
     },
     separatorTemplate,

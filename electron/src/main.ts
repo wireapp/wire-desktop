@@ -48,6 +48,7 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
+import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
@@ -494,6 +495,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
+      WebViewFocus.bindTracker(webviewEvent, contents);
       if (authenticatedProxyInfo?.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
