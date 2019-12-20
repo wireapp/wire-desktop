@@ -44,7 +44,6 @@ node('master') {
           echo 'Checking for private Apple APIs ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"', returnStdout: true
           echo privateAPIResult
-          wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version}**\n${privateAPIResult.trim()}"
         } else if (custom) {
           sh 'yarn build:macos'
         } else {
