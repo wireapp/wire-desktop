@@ -70,6 +70,20 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.PREFERENCES.SET_HIDDEN, () => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.PREFERENCES.SET_HIDDEN));
   });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.redo();
+    }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      selectedWebview.undo();
+    }
+  });
 };
 
 const setupIpcInterface = (): void => {

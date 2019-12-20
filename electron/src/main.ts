@@ -522,9 +522,9 @@ class ElectronWrapperInit {
             }
 
             // Use secure defaults
-            params.autosize = 'false';
-            params.contextIsolation = 'true';
-            params.plugins = 'false';
+            params.autosize = false;
+            params.contextIsolation = true;
+            params.plugins = false;
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
