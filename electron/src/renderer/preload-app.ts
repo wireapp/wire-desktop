@@ -71,20 +71,6 @@ const subscribeToMainProcessEvents = () => {
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.redo();
-    }
-  });
-
-  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.undo();
-    }
-  });
-
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
     const webviews = document.querySelectorAll<WebviewTag>('webview');
     webviews.forEach(webview => webview.reload());
