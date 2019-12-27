@@ -18,9 +18,11 @@ node('linux') {
     env.APP_ENV = 'internal'
   }
 
-  def text = readFile('electron/wire.json')
-  def (major, minor) = parseJson(text).version.tokenize('.')
+  def wireJson = readFile('electron/wire.json')
+  def packageJson = readFile('package.json')
+  def (major, minor) = parseJson(wireJson).version.tokenize('.')
   def version = "${major}.${minor}.${env.BUILD_NUMBER}"
+  def electronVersion = parseJson(packageJson).devDependencies.electron
   currentBuild.displayName = version
 
   def environment = docker.build('node', '-f jenkins/linux.Dockerfile .')
@@ -75,5 +77,5 @@ node('linux') {
 
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🐧 **New build of ${JOB_NAME} ${version}**\nDownload from [Jenkins](${BUILD_URL})"
+  wireSend secret: "${jenkinsbot_secret}", message: "🐧 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}"
 }
