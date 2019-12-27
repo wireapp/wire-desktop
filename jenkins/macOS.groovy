@@ -23,9 +23,11 @@ node('master') {
     sh returnStatus: true, script: 'rm -rf node_modules/ *.sig *.pkg'
   }
 
-  def text = readFile('electron/wire.json')
-  def (major, minor) = parseJson(text).version.tokenize('.')
+  def wireJson = readFile('electron/wire.json')
+  def packageJson = readFile('package.json')
+  def (major, minor) = parseJson(wireJson).version.tokenize('.')
   def version = "${major}.${minor}.${env.BUILD_NUMBER}"
+  def electronVersion = parseJson(packageJson).devDependencies.electron
   currentBuild.displayName = version
 
   stage('Build') {
@@ -89,5 +91,5 @@ node('master') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\nDownload from [Jenkins](${BUILD_URL})\n\n${privateAPIResult.trim()}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- ${privateAPIResult.trim()}"
 }
