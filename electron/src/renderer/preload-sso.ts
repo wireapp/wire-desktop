@@ -21,12 +21,8 @@ const {webFrame, remote} = require('electron');
 const {SingleSignOn} = remote.require('./sso/SingleSignOn');
 
 // Only execute the helper if the origin is the backend
-if (
-  document.location &&
-  typeof document.location.origin === 'string' &&
-  SingleSignOn.isBackendOrigin(document!.location!.origin)
-) {
-  // tslint:disable-next-line:no-floating-promises
+if (typeof document.location?.origin === 'string' && SingleSignOn.isBackendOrigin(document.location.origin)) {
+  //eslint-disable-next-line @typescript-eslint/no-floating-promises
   (async () => {
     // `window.opener` is not available when sandbox is activated,
     // therefore we need to fake the function on backend area and

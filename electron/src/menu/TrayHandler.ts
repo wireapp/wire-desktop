@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, Menu, Tray, app, nativeImage} from 'electron';
+import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron';
 import * as path from 'path';
 
 import * as locale from '../locale/locale';
@@ -103,7 +103,7 @@ export class TrayHandler {
 
   private updateBadgeCount(count?: number): void {
     if (typeof count !== 'undefined') {
-      app.badgeCount = count;
+      app.setBadgeCount(count);
       this.lastUnreadCount = count;
     }
   }

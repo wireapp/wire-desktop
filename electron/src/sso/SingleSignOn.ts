@@ -17,20 +17,21 @@
  *
  */
 
+const minimist = require('minimist');
+
 import * as crypto from 'crypto';
 import {
+  app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  ProtocolRequest,
+  RegisterStringProtocolRequest as ProtocolRequest,
   Session,
-  WebContents,
-  app,
   session,
+  WebContents,
 } from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
-const minimist = require('minimist');
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
@@ -339,9 +340,13 @@ export class SingleSignOn {
     );
   };
 
-  private readonly wipeSessionData = async () => {
-    if (this.session) {
-      await this.session.clearStorageData(undefined);
-    }
+  private readonly wipeSessionData = () => {
+    return new Promise(resolve => {
+      if (this.session) {
+        this.session.clearStorageData(undefined, () => resolve());
+      } else {
+        resolve();
+      }
+    });
   };
 }

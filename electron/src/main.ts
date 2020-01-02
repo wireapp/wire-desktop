@@ -19,17 +19,17 @@
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
 import {
+  app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  Filter,
-  HeadersReceivedResponse,
-  Menu,
-  OnHeadersReceivedListenerDetails,
-  WebContents,
-  app,
   ipcMain,
+  Menu,
+  OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
+  OnHeadersReceivedFilter as Filter,
+  OnHeadersReceivedResponse as HeadersReceivedResponse,
   shell,
+  WebContents,
 } from 'electron';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
@@ -48,6 +48,7 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
+import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
@@ -92,7 +93,7 @@ const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 const logger = getLogger(path.basename(__filename));
 
 if (argv.version) {
-  console.log(config.version);
+  console.info(config.version);
   process.exit();
 }
 
@@ -209,7 +210,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       webviewTag: true,
     },
     width: mainWindowState.width,
+    // eslint-disable-next-line
     x: mainWindowState.x,
+    // eslint-disable-next-line
     y: mainWindowState.y,
   };
 
@@ -299,7 +302,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  await main.webContents.insertCSS(wrapperCSSContent);
+  main.webContents.insertCSS(wrapperCSSContent);
 
   if (argv.startup || argv.hidden) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
@@ -492,7 +495,8 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
-      if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
+      WebViewFocus.bindTracker(webviewEvent, contents);
+      if (authenticatedProxyInfo?.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
 
@@ -518,9 +522,9 @@ class ElectronWrapperInit {
             }
 
             // Use secure defaults
-            params.autosize = 'false';
-            params.contextIsolation = 'true';
-            params.plugins = 'false';
+            params.autosize = false;
+            params.contextIsolation = true;
+            params.plugins = false;
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;

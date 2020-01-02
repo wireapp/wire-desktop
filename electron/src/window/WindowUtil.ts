@@ -47,4 +47,4 @@ const isInView = (win: BrowserWindow): boolean => {
   return upperLeftVisible || lowerRightVisible;
 };
 
-export const WindowUtil = {pointInRectangle, isInView};
+export const WindowUtil = {isInView, pointInRectangle};

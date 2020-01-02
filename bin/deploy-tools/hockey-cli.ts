@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';
-import {FindResult, find, zip} from './lib/deploy-utils';
+import {find, FindResult, zip} from './lib/deploy-utils';
 import {HockeyDeployer} from './lib/HockeyDeployer';
 
 const toolName = path.basename(__filename).replace('.ts', '');
@@ -52,9 +52,8 @@ function getUploadFile(platform: string, basePath: string): Promise<FindResult> 
     return find('*-Setup.exe', {cwd: basePath});
   } else if (platform.includes('macos')) {
     return find('*.pkg', {cwd: basePath});
-  } else {
-    throw new Error(`Invalid platform "${platform}"`);
   }
+  throw new Error(`Invalid platform "${platform}"`);
 }
 
 (async () => {
