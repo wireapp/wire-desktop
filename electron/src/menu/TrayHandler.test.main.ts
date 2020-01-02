@@ -18,7 +18,7 @@
  */
 
 import * as assert from 'assert';
-import {BrowserWindow, Tray} from 'electron';
+import {app, BrowserWindow, Tray} from 'electron';
 import * as path from 'path';
 import * as sinon from 'sinon';
 
@@ -47,6 +47,7 @@ describe('showUnreadCount', () => {
       tray.initTray(TrayMock);
 
       const appWindow = new BrowserWindow();
+      const badgeCountSpy = sinon.spy(app, 'setBadgeCount');
       const flashFrameSpy = sinon.spy(appWindow, 'flashFrame');
 
       await appWindow.loadURL('about:blank');
@@ -54,10 +55,12 @@ describe('showUnreadCount', () => {
       assert.ok(flashFrameSpy.notCalled);
       tray.showUnreadCount(appWindow, 1);
 
+      assert.ok(badgeCountSpy.firstCall.calledWith(1));
       assert.ok(flashFrameSpy.firstCall.calledWith(false));
       assert.strictEqual(tray['lastUnreadCount'], 1);
 
       flashFrameSpy.restore();
+      badgeCountSpy.restore();
     });
   });
 

@@ -23,11 +23,11 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  Filter,
-  HeadersReceivedResponse,
   ipcMain,
   Menu,
-  OnHeadersReceivedListenerDetails,
+  OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
+  OnHeadersReceivedFilter as Filter,
+  OnHeadersReceivedResponse as HeadersReceivedResponse,
   shell,
   WebContents,
 } from 'electron';
@@ -48,6 +48,7 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
+import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
@@ -301,7 +302,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  await main.webContents.insertCSS(wrapperCSSContent);
+  main.webContents.insertCSS(wrapperCSSContent);
 
   if (argv.startup || argv.hidden) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
@@ -494,6 +495,7 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
+      WebViewFocus.bindTracker(webviewEvent, contents);
       if (authenticatedProxyInfo?.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
@@ -520,9 +522,9 @@ class ElectronWrapperInit {
             }
 
             // Use secure defaults
-            params.autosize = 'false';
-            params.contextIsolation = 'true';
-            params.plugins = 'false';
+            params.autosize = false;
+            params.contextIsolation = true;
+            params.plugins = false;
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
