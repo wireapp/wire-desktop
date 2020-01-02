@@ -37,38 +37,24 @@ window.locStringsDefault = locale.LANGUAGES.en;
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
 const getSelectedWebview = (): WebviewTag | null => document.querySelector<WebviewTag>('.Webview:not(.hide)');
-const getWebviewById = (id: string): WebviewTag | null => {
-  return document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
-};
+const getWebviewById = (id: string): WebviewTag | null =>
+  document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event, code: string) => new AutomatedSingleSignOn().start(code));
 
-  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event, action: string) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (event, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      selectedWebview.send(action);
+      await selectedWebview.send(action);
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event, hash: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, async (event, hash: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
+      await selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
     }
-  });
-
-  ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
-    const webviews = document.querySelectorAll<WebviewTag>('webview');
-    webviews.forEach(webview => webview.reload());
-  });
-
-  ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
-    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
-  });
-
-  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SET_HIDDEN, () => {
-    window.dispatchEvent(new CustomEvent(EVENT_TYPE.PREFERENCES.SET_HIDDEN));
   });
 
   ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
@@ -83,6 +69,19 @@ const subscribeToMainProcessEvents = () => {
     if (selectedWebview) {
       selectedWebview.undo();
     }
+  });
+
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
+    const webviews = document.querySelectorAll<WebviewTag>('webview');
+    webviews.forEach(webview => webview.reload());
+  });
+
+  ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
+  });
+
+  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SET_HIDDEN, () => {
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE.PREFERENCES.SET_HIDDEN));
   });
 };
 
@@ -110,7 +109,7 @@ const setupIpcInterface = (): void => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
-      accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
+      await accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
 };

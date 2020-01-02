@@ -25,7 +25,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  RegisterStringProtocolRequest as ProtocolRequest,
+  ProtocolRequest,
   Session,
   session,
   WebContents,
@@ -340,13 +340,9 @@ export class SingleSignOn {
     );
   };
 
-  private readonly wipeSessionData = () => {
-    return new Promise(resolve => {
-      if (this.session) {
-        this.session.clearStorageData(undefined, () => resolve());
-      } else {
-        resolve();
-      }
-    });
+  private readonly wipeSessionData = async () => {
+    if (this.session) {
+      await this.session.clearStorageData(undefined);
+    }
   };
 }
