@@ -68,7 +68,7 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
     throw new Error(`Invalid platform "${platform}"`);
   }
 
-  const commitish = await execAsync('git rev-parse HEAD');
+  const {stdout: commitId} = await execAsync('git rev-parse HEAD');
   const changelog = '...';
   const githubToken = commander.githubToken;
 
@@ -82,7 +82,7 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
 
   const {id: draftId} = await githubDraftDeployer.createDraft({
     changelog,
-    commitOrBranch: commitish,
+    commitOrBranch: commitId,
     tagName: `${platform}/${version}`,
     title: `${version} - ${PLATFORM}`,
   });
