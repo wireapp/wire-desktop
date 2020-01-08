@@ -86,15 +86,17 @@ interface ExecResult {
   stdout: string;
 }
 
-export async function execAsync(command: string, throwOnError: false): Promise<ExecResult>;
-export async function execAsync(command: string, throwOnError?: true): Promise<string>;
-export async function execAsync(command: string, throwOnError: boolean = true): Promise<ExecResult | string> {
-  const {stderr, stdout} = await promisify(exec)(command);
-  if (throwOnError) {
-    if (!!stderr) {
-      throw new Error(stderr);
-    }
-    return stdout.trim();
+export async function execAsync(command: string): Promise<ExecResult> {
+  let stderr = '';
+  let stdout = '';
+
+  try {
+    const execResult = await promisify(exec)(command);
+    stdout = execResult.stdout.toString();
+    stderr = execResult.stderr.toString();
+  } catch (error) {
+    stderr = error.toString();
   }
+
   return {stderr: stderr.trim(), stdout: stdout.trim()};
 }
