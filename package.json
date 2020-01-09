@@ -44,7 +44,7 @@
     "@types/electron-packager": "14.0.0",
     "@types/fs-extra": "8.0.1",
     "@types/is-ci": "2.0.0",
-    "@types/jszip": "3.1.6",
+    "@types/jszip": "3.1.7",
     "@types/lodash": "4.14.149",
     "@types/minimist": "1.2.0",
     "@types/mocha": "5.2.7",
