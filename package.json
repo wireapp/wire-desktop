@@ -55,7 +55,7 @@
     "@types/uuid": "3.4.6",
     "@typescript-eslint/eslint-plugin": "2.15.0",
     "@typescript-eslint/parser": "2.15.0",
-    "@wireapp/copy-config": "1.0.2",
+    "@wireapp/copy-config": "1.0.3",
     "@wireapp/deploy-tools": "0.1.12",
     "@wireapp/eslint-config": "1.4.0",
     "@wireapp/prettier-config": "0.3.0",
