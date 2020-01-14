@@ -97,18 +97,6 @@
     levenary "^1.1.0"
     semver "^5.5.0"
 
-"@babel/helper-create-class-features-plugin@^7.7.4", "@babel/helper-create-class-features-plugin@^7.8.0":
-  version "7.8.0"
-  resolved "https://registry.npmjs.org/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.8.0.tgz#b3ddf557ed4656e0d296c3b0f3fcd381ea8de72c"
-  integrity sha512-ctCvqYBTlwEl2uF4hCxE0cd/sSw71Zfag0jKa39y4HDLh0BQ4PVBX1384Ye8GqrEZ69xgLp9fwPbv3GgIDDF2Q==
-  dependencies:
-    "@babel/helper-function-name" "^7.8.0"
-    "@babel/helper-member-expression-to-functions" "^7.8.0"
-    "@babel/helper-optimise-call-expression" "^7.8.0"
-    "@babel/helper-plugin-utils" "^7.8.0"
-    "@babel/helper-replace-supers" "^7.8.0"
-    "@babel/helper-split-export-declaration" "^7.8.0"
-
 "@babel/helper-create-class-features-plugin@^7.8.0":
   version "7.8.0"
   resolved "https://registry.npmjs.org/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.8.0.tgz#b3ddf557ed4656e0d296c3b0f3fcd381ea8de72c"
@@ -146,15 +134,6 @@
     "@babel/traverse" "^7.8.0"
     "@babel/types" "^7.8.0"
 
-"@babel/helper-function-name@^7.7.4":
-  version "7.7.4"
-  resolved "https://registry.npmjs.org/@babel/helper-function-name/-/helper-function-name-7.7.4.tgz#ab6e041e7135d436d8f0a3eca15de5b67a341a2e"
-  integrity sha512-AnkGIdiBhEuiwdoMnKm7jfPfqItZhgRaZfMg1XX3bS25INOnLPjPG1Ppnajh8eqgt5kPJnfqrRHqFqmjKDZLzQ==
-  dependencies:
-    "@babel/helper-get-function-arity" "^7.7.4"
-    "@babel/template" "^7.7.4"
-    "@babel/types" "^7.7.4"
-
 "@babel/helper-function-name@^7.8.0":
   version "7.8.0"
   resolved "https://registry.npmjs.org/@babel/helper-function-name/-/helper-function-name-7.8.0.tgz#dde5cf0d6b15c21817a67dd66fe7350348e023bf"
@@ -163,13 +142,6 @@
     "@babel/helper-get-function-arity" "^7.8.0"
     "@babel/template" "^7.8.0"
     "@babel/types" "^7.8.0"
-
-"@babel/helper-get-function-arity@^7.7.4":
-  version "7.7.4"
-  resolved "https://registry.npmjs.org/@babel/helper-get-function-arity/-/helper-get-function-arity-7.7.4.tgz#cb46348d2f8808e632f0ab048172130e636005f0"
-  integrity sha512-QTGKEdCkjgzgfJ3bAyRwF4yyT3pg+vDgan8DSivq1eS0gwi+KGKE5x8kRcbeFTb/673mkO5SN1IZfmCfA5o+EA==
-  dependencies:
-    "@babel/types" "^7.7.4"
 
 "@babel/helper-get-function-arity@^7.8.0":
   version "7.8.0"
@@ -184,13 +156,6 @@
   integrity sha512-jDl66KvuklTXUADcoXDMur1jDtAZUZZkzLIaQ54+z38ih8C0V0hC56hMaoVoyoxN60MwQmmrHctBwcLqP0c/Lw==
   dependencies:
     "@babel/types" "^7.8.0"
-
-"@babel/helper-member-expression-to-functions@^7.7.4":
-  version "7.7.4"
-  resolved "https://registry.npmjs.org/@babel/helper-member-expression-to-functions/-/helper-member-expression-to-functions-7.7.4.tgz#356438e2569df7321a8326644d4b790d2122cb74"
-  integrity sha512-9KcA1X2E3OjXl/ykfMMInBK+uVdfIVakVe7W7Lg3wfXUNyS3Q1HWLFRwZIjhqiCGbslummPDnmb7vIekS0C1vw==
-  dependencies:
-    "@babel/types" "^7.7.4"
 
 "@babel/helper-member-expression-to-functions@^7.8.0":
   version "7.8.0"
@@ -217,13 +182,6 @@
     "@babel/template" "^7.8.0"
     "@babel/types" "^7.8.0"
     lodash "^4.17.13"
-
-"@babel/helper-optimise-call-expression@^7.7.4":
-  version "7.7.4"
-  resolved "https://registry.npmjs.org/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.7.4.tgz#034af31370d2995242aa4df402c3b7794b2dcdf2"
-  integrity sha512-VB7gWZ2fDkSuqW6b1AKXkJWO5NyNI3bFL/kK79/30moK57blr6NbH8xcl2XcKCwOmJosftWunZqfO84IGq3ZZg==
-  dependencies:
-    "@babel/types" "^7.7.4"
 
 "@babel/helper-optimise-call-expression@^7.8.0":
   version "7.8.0"
@@ -255,16 +213,6 @@
     "@babel/traverse" "^7.8.0"
     "@babel/types" "^7.8.0"
 
-"@babel/helper-replace-supers@^7.7.4":
-  version "7.7.4"
-  resolved "https://registry.npmjs.org/@babel/helper-replace-supers/-/helper-replace-supers-7.7.4.tgz#3c881a6a6a7571275a72d82e6107126ec9e2cdd2"
-  integrity sha512-pP0tfgg9hsZWo5ZboYGuBn/bbYT/hdLPVSS4NMmiRJdwWhP0IznPwN9AE1JwyGsjSPLC364I0Qh5p+EPkGPNpg==
-  dependencies:
-    "@babel/helper-member-expression-to-functions" "^7.7.4"
-    "@babel/helper-optimise-call-expression" "^7.7.4"
-    "@babel/traverse" "^7.7.4"
-    "@babel/types" "^7.7.4"
-
 "@babel/helper-replace-supers@^7.8.0":
   version "7.8.0"
   resolved "https://registry.npmjs.org/@babel/helper-replace-supers/-/helper-replace-supers-7.8.0.tgz#d83cb117edb820eebe9ae6c970a8ad5eac09d19f"
@@ -282,13 +230,6 @@
   dependencies:
     "@babel/template" "^7.8.0"
     "@babel/types" "^7.8.0"
-
-"@babel/helper-split-export-declaration@^7.7.4":
-  version "7.7.4"
-  resolved "https://registry.npmjs.org/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.7.4.tgz#57292af60443c4a3622cf74040ddc28e68336fd8"
-  integrity sha512-guAg1SXFcVr04Guk9eq0S4/rWS++sbmyqosJzVs8+1fH5NI+ZcmkaSkc7dmtAFbHFva6yRJnjW3yAcGxjueDug==
-  dependencies:
-    "@babel/types" "^7.7.4"
 
 "@babel/helper-split-export-declaration@^7.8.0":
   version "7.8.0"
@@ -890,7 +831,7 @@
     globals "^11.1.0"
     lodash "^4.17.13"
 
-"@babel/types@^7.0.0", "@babel/types@^7.3.0", "@babel/types@^7.4.0", "@babel/types@^7.7.4", "@babel/types@^7.8.0":
+"@babel/types@^7.0.0", "@babel/types@^7.3.0", "@babel/types@^7.4.0", "@babel/types@^7.8.0":
   version "7.8.0"
   resolved "https://registry.npmjs.org/@babel/types/-/types-7.8.0.tgz#1a2039a028057a2c888b668d94c98e61ea906e7f"
   integrity sha512-1RF84ehyx9HH09dMMwGWl3UTWlVoCPtqqJPjGuC4JzMe1ZIVDJ2DT8mv3cPv/A7veLD6sgR7vi95lJqm+ZayIg==
@@ -3662,10 +3603,10 @@ electron-winstaller@4.0.0:
     lodash.template "^4.2.2"
     temp "^0.9.0"
 
-electron@7.1.8:
-  version "7.1.8"
-  resolved "https://registry.npmjs.org/electron/-/electron-7.1.8.tgz#7cd50fdf42c55c9de86ab126e983d23fd89d5d99"
-  integrity sha512-1cWT7toVcSTKu3HdnhDQpbTmI5QCSKtIbg+wHUkSZCdAqjPcuH+dpm+j21g38LbE2DoIzdryaN0RTZOqTPebMA==
+electron@7.1.9:
+  version "7.1.9"
+  resolved "https://registry.npmjs.org/electron/-/electron-7.1.9.tgz#5053195d2e476a3ecd881ece4edf64f0a8c32fa3"
+  integrity sha512-gkzDr08XxRaNZhwPLRXYNXDaPuiAeCrRPcClowlDVfCLKi+kRNhzekZpfYUBq8DdZCD29D3rCtgc9IHjD/xuHw==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^12.0.12"
