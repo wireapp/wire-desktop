@@ -116,8 +116,12 @@
   },
   "license": "GPL-3.0",
   "lint-staged": {
-    "*.{js,jsx,ts}": ["eslint --fix"],
-    "*.{json,md,css,yml,html}": ["prettier --write"]
+    "*.{js,jsx,ts}": [
+      "eslint --fix"
+    ],
+    "*.{json,md,css,yml,html}": [
+      "prettier --write"
+    ]
   },
   "main": "electron/dist/main.js",
   "name": "wire-desktop",
