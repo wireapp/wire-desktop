@@ -23,13 +23,14 @@ import {SettingsType} from '../settings/SettingsType';
 
 export enum BackendType {
   AVS = 'AVS',
+  CUSTOM = 'CUSTOM',
   DEVELOPMENT = 'DEVELOPMENT',
   EDGE = 'EDGE',
-  MASTER = 'MASTER',
-  QA = 'QA',
   INTERNAL = 'INTERNAL',
   LOCALHOST = 'LOCALHOST',
+  MASTER = 'MASTER',
   PRODUCTION = 'PRODUCTION',
+  QA = 'QA',
 }
 
 let currentEnvironment: BackendType;
@@ -44,16 +45,19 @@ const URL_WEBSITE = {
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 export const URL_WEBAPP: Record<BackendType, string> = {
   AVS: 'https://wire-webapp-avs.zinfra.io',
   DEVELOPMENT: 'https://wire-webapp-dev.zinfra.io',
   EDGE: 'https://wire-webapp-edge.zinfra.io',
+  MASTER: 'https://wire-webapp-master.zinfra.io',
+  QA: 'https://wire-webapp-qa.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com',
   LOCALHOST: 'http://localhost:8081',
-  MASTER: 'https://wire-webapp-master.zinfra.io',
   PRODUCTION: config.appBase,
-  QA: 'https://wire-webapp-qa.zinfra.io',
+  CUSTOM: '',
 };
+/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 export const app = {
   ENV: config.environment,
@@ -62,13 +66,11 @@ export const app = {
   UPDATE_URL_WIN: config.updateUrl,
 };
 
-export const getEnvironment = (): BackendType => {
-  return currentEnvironment ? currentEnvironment : restoreEnvironment();
-};
+export const getEnvironment = (): BackendType => currentEnvironment || restoreEnvironment();
 
 const isProdEnvironment = (): boolean => {
   const env = getEnvironment();
-  return env === BackendType.INTERNAL || env === BackendType.PRODUCTION;
+  return env === BackendType.INTERNAL || env === BackendType.PRODUCTION || env === BackendType.CUSTOM;
 };
 
 const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
@@ -103,9 +105,12 @@ const restoreEnvironment = (): BackendType => {
   return restoredEnvironment;
 };
 
-export const setEnvironment = (env?: BackendType): void => {
+export const setEnvironment = (env?: BackendType, customURL?: string): void => {
   currentEnvironment = env || restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment);
+  if (customURL) {
+    settings.save(SettingsType.CUSTOM_WEBAPP_URL, customURL);
+  }
 };
 
 export const web = {
@@ -120,9 +125,11 @@ export const web = {
 
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
-      if (currentEnvironment) {
-        return URL_WEBAPP[currentEnvironment];
+      if (currentEnvironment === BackendType.CUSTOM) {
+        const envUrl = settings.restore(SettingsType.CUSTOM_WEBAPP_URL, '');
+        return envUrl || URL_WEBAPP.PRODUCTION;
       }
+      return currentEnvironment;
     }
 
     return URL_WEBAPP.PRODUCTION;

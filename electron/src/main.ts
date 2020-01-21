@@ -137,6 +137,12 @@ const bindIpcEvents = () => {
     WindowManager.showPrimaryWindow();
   });
 
+  ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, async (_event, customURL: string) => {
+    EnvironmentUtil.setEnvironment(EnvironmentUtil.BackendType.CUSTOM, customURL);
+    settings.persistToFile();
+    await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(customURL)}`);
+  });
+
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
     tray.showUnreadCount(main, count);
   });

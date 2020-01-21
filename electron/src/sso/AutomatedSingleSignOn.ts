@@ -55,7 +55,7 @@ export class AutomatedSingleSignOn {
   public async start(ssoCode: string): Promise<void> {
     window.addEventListener(
       EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE,
-      async (event: Event) => {
+      async event => {
         if ((event as CustomEvent).detail) {
           await this.onResponseReceived(event as CustomEvent);
         }

@@ -27,6 +27,7 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 interface TeamAccountInfo {
   accentID: string;
+  customWebApp?: string;
   name: string;
   picture: string;
   teamID?: string;
@@ -91,10 +92,22 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
+  window.addEventListener(
+    'customWebAppURL', // TODO: add actual event type
+    async event => {
+      if ((event as CustomEvent).detail) {
+        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event as CustomEvent).detail);
+      }
+    },
+    {
+      once: true,
+    },
+  );
+
   window.amplify.subscribe(window.z.event.WebApp.TEAM.INFO, (info: TeamAccountInfo) => {
     const debugInfo = {
       ...info,
-      picture: typeof info.picture === 'string' ? `${info.picture.substring(0, 100)}...` : '',
+      picture: `${String(info.picture).substring(0, 100)}...`,
     };
     logger.info(
       `Received amplify event "${window.z.event.WebApp.TEAM.INFO}":`,

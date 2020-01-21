@@ -114,16 +114,19 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = () => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
-  for (const backendType of Object.values(EnvironmentUtil.BackendType)) {
+  const environments = {...EnvironmentUtil.URL_WEBAPP};
+  delete environments.CUSTOM;
+
+  for (const [backendType, backendURL] of Object.entries(environments)) {
     environmentTemplate.push({
       checked: currentEnvironment === backendType,
       click: () => {
-        EnvironmentUtil.setEnvironment(backendType);
+        EnvironmentUtil.setEnvironment(backendType as EnvironmentUtil.BackendType);
         settings.persistToFile();
         app.relaunch();
         app.quit();
       },
-      label: EnvironmentUtil.URL_WEBAPP[backendType].replace(/^https?:\/\//, ''),
+      label: backendURL.replace(/^https?:\/\//, ''),
       type: 'radio',
     });
   }
