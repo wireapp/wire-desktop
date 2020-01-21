@@ -27,7 +27,6 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 interface TeamAccountInfo {
   accentID: string;
-  customWebApp?: string;
   name: string;
   picture: string;
   teamID?: string;
