@@ -206,7 +206,7 @@ export class SingleSignOn {
     this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
 
     // Disable browser permissions (microphone, camera...)
-    this.session.setPermissionRequestHandler((webContents, permission, callback) => callback(false));
+    this.session.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
 
     // User-agent normalization
     this.session.webRequest.onBeforeSendHeaders(({requestHeaders}: any, callback) => {

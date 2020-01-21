@@ -26,7 +26,7 @@ import {loadedAboutScreen} from './preload-about';
 
 describe('loadedAboutScreen', () => {
   it('publishes labels', done => {
-    remote.ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: i18nLanguageIdentifier[]) => {
+    remote.ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (_event, labels: i18nLanguageIdentifier[]) => {
       assert.ok(labels);
       done();
     });

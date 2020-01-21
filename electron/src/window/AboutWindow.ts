@@ -48,7 +48,7 @@ const WINDOW_SIZE = {
   WIDTH: 304,
 };
 
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (event, version: string) => (webappVersion = version));
+ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => (webappVersion = version));
 
 const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
@@ -110,7 +110,7 @@ const showWindow = async () => {
     });
 
     // Close window via escape
-    aboutWindow.webContents.on('before-input-event', (event, input) => {
+    aboutWindow.webContents.on('before-input-event', (_event, input) => {
       if (input.type === 'keyDown' && input.key === 'Escape') {
         if (aboutWindow) {
           aboutWindow.close();

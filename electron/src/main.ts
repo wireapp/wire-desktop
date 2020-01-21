@@ -129,7 +129,7 @@ app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, bytes: Uint8Array, timestamp?: string) => {
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
 
@@ -137,11 +137,11 @@ const bindIpcEvents = () => {
     WindowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count: number) => {
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (event, id: number, accountId: string, partitionId?: string) => {
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
     await deleteAccount(id, accountId, partitionId);
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
@@ -244,13 +244,13 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     setTimeout(() => main.show(), 800);
   }
 
-  main.webContents.on('will-navigate', (event, url) => {
+  main.webContents.on('will-navigate', event => {
     // Prevent any kind of navigation inside the main window
     event.preventDefault();
   });
 
   // Handle the new window event in the main Browser Window
-  main.webContents.on('new-window', async (event, _url) => {
+  main.webContents.on('new-window', async (event, url) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
@@ -259,7 +259,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       return;
     }
 
-    await shell.openExternal(_url);
+    await shell.openExternal(url);
   });
 
   main.on('focus', () => {
@@ -327,7 +327,7 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
-  app.on('login', async (event, webContents, request, authInfo, callback) => {
+  app.on('login', async (event, webContents, _request, authInfo, callback) => {
     if (authInfo.isProxy) {
       event.preventDefault();
 
@@ -349,7 +349,7 @@ const handleAppEvents = () => {
         return callback(username, password);
       }
 
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (event, promptData: {password: string; username: string}) => {
+      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (_event, promptData: {password: string; username: string}) => {
         const {username, password} = promptData;
 
         logger.log('Proxy prompt was submitted');
@@ -470,7 +470,7 @@ class ElectronWrapperInit {
       event: ElectronEvent,
       url: string,
       frameName: string,
-      disposition: string,
+      _disposition: string,
       options: BrowserWindowConstructorOptions,
     ) => {
       event.preventDefault();
@@ -493,7 +493,7 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
+    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
       if (authenticatedProxyInfo?.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
@@ -536,7 +536,7 @@ class ElectronWrapperInit {
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
           if (ENABLE_LOGGING) {
-            contents.on('console-message', async (event, level, message) => {
+            contents.on('console-message', async (_event, _level, message) => {
               const webViewId = getWebViewId(contents);
               if (webViewId) {
                 const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
@@ -560,7 +560,7 @@ class ElectronWrapperInit {
             };
 
             const listener = (
-              details: OnHeadersReceivedListenerDetails,
+              _details: OnHeadersReceivedListenerDetails,
               callback: (response: HeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
@@ -577,7 +577,7 @@ class ElectronWrapperInit {
             contents.session.webRequest.onHeadersReceived(filter, listener);
           }
 
-          contents.on('before-input-event', (event, input) => {
+          contents.on('before-input-event', (_event, input) => {
             if (input.type === 'keyUp' && input.key === 'Alt') {
               ipcMain.emit(EVENT_TYPE.UI.TOGGLE_MENU);
             }
