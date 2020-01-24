@@ -25,7 +25,6 @@ import {getLogger} from '../logging/getLogger';
 import {gatherLogs, logDir} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
-import {settings} from '../settings/ConfigurationPersistence';
 import {WindowManager} from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
@@ -122,7 +121,6 @@ const createEnvironmentTemplates = () => {
       checked: currentEnvironment === backendType,
       click: () => {
         EnvironmentUtil.setEnvironment(backendType as EnvironmentUtil.BackendType);
-        settings.persistToFile();
         app.relaunch();
         app.quit();
       },

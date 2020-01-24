@@ -139,7 +139,6 @@ const bindIpcEvents = () => {
 
   ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, async (_event, {url: customURL}: {url: string}) => {
     EnvironmentUtil.setEnvironment(EnvironmentUtil.BackendType.CUSTOM, customURL);
-    settings.persistToFile();
     await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(customURL)}`);
   });
 

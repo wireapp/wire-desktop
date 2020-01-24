@@ -111,6 +111,7 @@ export const setEnvironment = (env?: BackendType, customURL?: string): void => {
   if (customURL) {
     settings.save(SettingsType.CUSTOM_WEBAPP_URL, customURL);
   }
+  settings.persistToFile();
 };
 
 export const web = {
@@ -129,7 +130,7 @@ export const web = {
         const envUrl = settings.restore(SettingsType.CUSTOM_WEBAPP_URL, '');
         return envUrl || URL_WEBAPP.PRODUCTION;
       }
-      return currentEnvironment;
+      return URL_WEBAPP[currentEnvironment];
     }
 
     return URL_WEBAPP.PRODUCTION;

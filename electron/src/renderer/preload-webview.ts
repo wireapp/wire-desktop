@@ -91,18 +91,6 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
-  window.addEventListener(
-    'NavigationEvent',
-    async event => {
-      if ((event as CustomEvent).detail) {
-        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event as CustomEvent).detail);
-      }
-    },
-    {
-      once: true,
-    },
-  );
-
   window.amplify.subscribe(window.z.event.WebApp.TEAM.INFO, (info: TeamAccountInfo) => {
     const debugInfo = {
       ...info,
@@ -114,6 +102,18 @@ const subscribeToWebappEvents = () => {
     );
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
+
+  window.addEventListener(
+    'NavigationEvent',
+    async event => {
+      if ((event as CustomEvent).detail) {
+        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event as CustomEvent).detail);
+      }
+    },
+    {
+      once: true,
+    },
+  );
 };
 
 const subscribeToMainProcessEvents = () => {
