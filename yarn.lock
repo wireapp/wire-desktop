@@ -1530,10 +1530,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.2.0.tgz#62477fdc3df00a50efe6b2a0d400872a9a199564"
-  integrity sha512-2Ot3pLSrfleJLQGyvgTmRruNq5wbSep+dvYqTPf3QBKC0nSrCBw21pkz2VjrH9wpbANmhO60U+gnnYiLl5iB5g==
+"@wireapp/commons@3.3.0":
+  version "3.3.0"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.3.0.tgz#25b1d5b468b745d0d5054acde9802077dc99f34e"
+  integrity sha512-IQiRnL7glfeqZHwn+R92s/cx5d+6U8cuX1PRYAyd9FKIj4eNo9KFDUHkOGRsaqeaPfy3qboK67GFEkGJRSKtEQ==
   dependencies:
     "@types/fs-extra" "8.0.1"
     "@types/node" "~12"
