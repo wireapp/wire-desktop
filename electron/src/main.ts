@@ -17,7 +17,7 @@
  *
  */
 
-import {LogFactory, ValidationUtil} from '@wireapp/commons';
+import {LogFactory} from '@wireapp/commons';
 import {
   app,
   BrowserWindow,
@@ -447,16 +447,6 @@ const handlePortableFlags = () => {
   }
 };
 
-const getWebViewId = (contents: WebContents): string | undefined => {
-  try {
-    const currentLocation = new URL(contents.getURL());
-    const webViewId = currentLocation.searchParams.get('id');
-    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
-  } catch (error) {
-    return undefined;
-  }
-};
-
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
@@ -542,13 +532,13 @@ class ElectronWrapperInit {
           contents.on('will-navigate', willNavigateInWebview);
           if (ENABLE_LOGGING) {
             contents.on('console-message', async (_event, _level, message) => {
-              const webViewId = getWebViewId(contents);
+              const webViewId = lifecycle.getWebViewId(contents);
               if (webViewId) {
                 const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
                 try {
                   await LogFactory.writeMessage(message, logFilePath);
                 } catch (error) {
-                  logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
                 }
               }
             });
