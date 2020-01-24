@@ -488,12 +488,12 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: ElectronEvent, _url: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, url: string) => {
       // Ensure navigation is to a whitelisted domain
-      if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
-        this.logger.log(`Navigating inside webview. URL: ${_url}`);
+      if (OriginValidator.isMatchingHost(url, BASE_URL)) {
+        this.logger.log(`Navigating inside webview. URL: ${url}`);
       } else {
-        this.logger.log(`Preventing navigation inside <webview>. URL: ${_url}`);
+        this.logger.log(`Preventing navigation inside <webview>. URL: ${url}`);
         event.preventDefault();
       }
     };
@@ -515,12 +515,12 @@ class ElectronWrapperInit {
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
-            const _url = params.src;
+            const url = params.src;
 
             // Verify the URL is being loaded
-            if (!OriginValidator.isMatchingHost(_url, BASE_URL)) {
+            if (!OriginValidator.isMatchingHost(url, BASE_URL)) {
               event.preventDefault();
-              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
+              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${url}`);
               return;
             }
 
