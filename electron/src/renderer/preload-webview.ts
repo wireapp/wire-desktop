@@ -105,9 +105,10 @@ const subscribeToWebappEvents = () => {
 
   window.addEventListener(
     'NavigationEvent',
-    async event => {
-      if ((event as CustomEvent).detail) {
-        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event as CustomEvent).detail);
+    event => {
+      const data = (event as CustomEvent).detail;
+      if (data) {
+        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, data);
       }
     },
     {
