@@ -73,7 +73,7 @@ export const quit = (): void => {
   settings.persistToFile();
   logger.info('Clear cache ...');
   session.defaultSession.clearCache().catch(error => {
-    logger.info(error);
+    logger.error(error);
   });
 
   logger.info('Exiting ...');
