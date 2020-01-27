@@ -33,7 +33,7 @@ node('master') {
   stage('Build') {
     try {
       withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
-        sh "security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWORD} /Users/jenkins/Library/Keychains/login.keychain"
+        sh "security unlock-keychain -p \"${MACOS_KEYCHAIN_PASSWORD}\" /Users/jenkins/Library/Keychains/login.keychain"
       }
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'

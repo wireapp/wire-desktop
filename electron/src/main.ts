@@ -17,18 +17,18 @@
  *
  */
 
-import {LogFactory, ValidationUtil} from '@wireapp/commons';
+import {LogFactory} from '@wireapp/commons';
 import {Server} from '@wireapp/desktop-updater';
 import {
   app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
+  Filter,
+  HeadersReceivedResponse,
   ipcMain,
   Menu,
-  OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
-  OnHeadersReceivedFilter as Filter,
-  OnHeadersReceivedResponse as HeadersReceivedResponse,
+  OnHeadersReceivedListenerDetails,
   shell,
   WebContents,
 } from 'electron';
@@ -49,7 +49,6 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
-import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
@@ -131,7 +130,7 @@ app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, bytes: Uint8Array, timestamp?: string) => {
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
 
@@ -139,11 +138,11 @@ const bindIpcEvents = () => {
     WindowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count: number) => {
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (event, id: number, accountId: string, partitionId?: string) => {
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
     await deleteAccount(id, accountId, partitionId);
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
@@ -260,13 +259,13 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     setTimeout(() => main.show(), 800);
   }
 
-  main.webContents.on('will-navigate', (event, url) => {
+  main.webContents.on('will-navigate', event => {
     // Prevent any kind of navigation inside the main window
     event.preventDefault();
   });
 
   // Handle the new window event in the main Browser Window
-  main.webContents.on('new-window', async (event, _url) => {
+  main.webContents.on('new-window', async (event, url) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
@@ -275,7 +274,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       return;
     }
 
-    await shell.openExternal(_url);
+    await shell.openExternal(url);
   });
 
   main.on('focus', () => {
@@ -317,7 +316,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  main.webContents.insertCSS(wrapperCSSContent);
+  await main.webContents.insertCSS(wrapperCSSContent);
 
   if (argv.startup || argv.hidden) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
@@ -343,7 +342,7 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
-  app.on('login', async (event, webContents, request, authInfo, callback) => {
+  app.on('login', async (event, webContents, _request, authInfo, callback) => {
     if (authInfo.isProxy) {
       event.preventDefault();
 
@@ -365,7 +364,7 @@ const handleAppEvents = () => {
         return callback(username, password);
       }
 
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (event, promptData: {password: string; username: string}) => {
+      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (_event, promptData: {password: string; username: string}) => {
         const {username, password} = promptData;
 
         logger.log('Proxy prompt was submitted');
@@ -458,16 +457,6 @@ const handlePortableFlags = () => {
   }
 };
 
-const getWebViewId = (contents: WebContents): string | undefined => {
-  try {
-    const currentLocation = new URL(contents.getURL());
-    const webViewId = currentLocation.searchParams.get('id');
-    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
-  } catch (error) {
-    return undefined;
-  }
-};
-
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
@@ -486,7 +475,7 @@ class ElectronWrapperInit {
       event: ElectronEvent,
       url: string,
       frameName: string,
-      disposition: string,
+      _disposition: string,
       options: BrowserWindowConstructorOptions,
     ) => {
       event.preventDefault();
@@ -499,18 +488,17 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: ElectronEvent, _url: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, url: string) => {
       // Ensure navigation is to a whitelisted domain
-      if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
-        this.logger.log(`Navigating inside webview. URL: ${_url}`);
+      if (OriginValidator.isMatchingHost(url, BASE_URL)) {
+        this.logger.log(`Navigating inside webview. URL: ${url}`);
       } else {
-        this.logger.log(`Preventing navigation inside <webview>. URL: ${_url}`);
+        this.logger.log(`Preventing navigation inside <webview>. URL: ${url}`);
         event.preventDefault();
       }
     };
 
-    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
-      WebViewFocus.bindTracker(webviewEvent, contents);
+    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
       if (authenticatedProxyInfo?.origin && contents.session) {
         const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
         logger.info(`Setting proxy to URL "${proxyURL}" ...`);
@@ -527,19 +515,19 @@ class ElectronWrapperInit {
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
-            const _url = params.src;
+            const url = params.src;
 
             // Verify the URL is being loaded
-            if (!OriginValidator.isMatchingHost(_url, BASE_URL)) {
+            if (!OriginValidator.isMatchingHost(url, BASE_URL)) {
               event.preventDefault();
-              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
+              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${url}`);
               return;
             }
 
             // Use secure defaults
-            params.autosize = false;
-            params.contextIsolation = true;
-            params.plugins = false;
+            params.autosize = 'false';
+            params.contextIsolation = 'true';
+            params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
@@ -553,14 +541,14 @@ class ElectronWrapperInit {
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', willNavigateInWebview);
           if (ENABLE_LOGGING) {
-            contents.on('console-message', async (event, level, message) => {
-              const webViewId = getWebViewId(contents);
+            contents.on('console-message', async (_event, _level, message) => {
+              const webViewId = lifecycle.getWebViewId(contents);
               if (webViewId) {
                 const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
                 try {
                   await LogFactory.writeMessage(message, logFilePath);
                 } catch (error) {
-                  logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
                 }
               }
             });
@@ -577,7 +565,7 @@ class ElectronWrapperInit {
             };
 
             const listener = (
-              details: OnHeadersReceivedListenerDetails,
+              _details: OnHeadersReceivedListenerDetails,
               callback: (response: HeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
@@ -594,7 +582,7 @@ class ElectronWrapperInit {
             contents.session.webRequest.onHeadersReceived(filter, listener);
           }
 
-          contents.on('before-input-event', (event, input) => {
+          contents.on('before-input-event', (_event, input) => {
             if (input.type === 'keyUp' && input.key === 'Alt') {
               ipcMain.emit(EVENT_TYPE.UI.TOGGLE_MENU);
             }

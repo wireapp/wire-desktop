@@ -140,7 +140,7 @@ const toggleMenuTemplate: MenuItemConstructorOptions = {
     const mainBrowserWindow = WindowManager.getPrimaryWindow();
 
     if (mainBrowserWindow) {
-      const showMenu = mainBrowserWindow.isMenuBarAutoHide();
+      const showMenu = mainBrowserWindow.autoHideMenuBar;
 
       mainBrowserWindow.setAutoHideMenuBar(!showMenu);
 
@@ -412,16 +412,19 @@ export const createMenu = (isFullScreen: boolean): Menu => {
       visible: false,
     };
 
-    const switchShortcuts: MenuItemConstructorOptions[] = Array.from({length: config.maximumAccounts}, (key, index) => {
-      const switchAccelerator = `Ctrl+${index + 1}`;
+    const switchShortcuts: MenuItemConstructorOptions[] = Array.from(
+      {length: config.maximumAccounts},
+      (_key, index) => {
+        const switchAccelerator = `Ctrl+${index + 1}`;
 
-      return {
-        accelerator: switchAccelerator,
-        click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
-        label: `Switch to Account ${index + 1}`,
-        visible: false,
-      };
-    });
+        return {
+          accelerator: switchAccelerator,
+          click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
+          label: `Switch to Account ${index + 1}`,
+          visible: false,
+        };
+      },
+    );
 
     windowTemplate.submenu.push(muteShortcut, ...switchShortcuts);
 
@@ -454,7 +457,7 @@ export const toggleMenuBar = (): void => {
 
   if (mainBrowserWindow) {
     const isVisible = mainBrowserWindow.isMenuBarVisible();
-    const autoHide = mainBrowserWindow.isMenuBarAutoHide();
+    const autoHide = mainBrowserWindow.autoHideMenuBar;
 
     if (autoHide) {
       mainBrowserWindow.setMenuBarVisibility(!isVisible);
@@ -471,7 +474,7 @@ export const registerGlobalShortcuts = (): void => {
       WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
     );
 
-    Array.from({length: config.maximumAccounts}, (key, index) => {
+    Array.from({length: config.maximumAccounts}, (_key, index) => {
       const switchAccelerator = `CmdOrCtrl+${index + 1}`;
       logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
 
