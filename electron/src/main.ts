@@ -310,9 +310,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
 // App Events
 const handleAppEvents = () => {
-  app.on('window-all-closed', async () => {
+  app.on('window-all-closed', () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
-      await lifecycle.quit();
+      lifecycle.quit();
     }
   });
 
