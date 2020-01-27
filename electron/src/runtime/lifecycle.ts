@@ -72,7 +72,9 @@ export const quit = (): void => {
   logger.info('Initiating app quit...');
   settings.persistToFile();
   logger.info('Clear cache...');
-  session.defaultSession.clearCache().catch(() => {});
+  session.defaultSession.clearCache().catch(error => {
+    logger.info(error);
+  });
 
   logger.info('Exiting...');
   app.exit();
