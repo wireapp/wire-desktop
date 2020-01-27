@@ -31,11 +31,13 @@ const logger = getLogger(path.basename(__filename));
 
 const clearStorage = (session: Session): Promise<void> => {
   return new Promise(resolve =>
-    session.clearStorageData({}, () =>
-      session.clearCache(() => {
-        session.flushStorageData();
-        resolve();
-      }),
+    session.protocol.uninterceptProtocol('https', () =>
+      session.clearStorageData({}, () =>
+        session.clearCache(() => {
+          session.flushStorageData();
+          resolve();
+        }),
+      ),
     ),
   );
 };
