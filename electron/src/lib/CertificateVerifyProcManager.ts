@@ -18,7 +18,7 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
-import {BrowserWindow, Certificate, dialog, ProcRequest} from 'electron';
+import {BrowserWindow, Certificate, CertificateVerifyProcRequest as ProcRequest, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
