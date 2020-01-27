@@ -18,6 +18,7 @@
  */
 
 import {LogFactory, ValidationUtil} from '@wireapp/commons';
+import {Server} from '@wireapp/desktop-updater';
 import {
   app,
   BrowserWindow,
@@ -216,7 +217,21 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     y: mainWindowState.y,
   };
 
-  main = new BrowserWindow(options);
+  try {
+    main = await new Server({
+      browserWindowOptions: options,
+      currentClientVersion: config.version,
+      currentEnvironment: EnvironmentUtil.getEnvironment(),
+      currentEnvironmentBaseUrl: BASE_URL,
+      enableSecureUpdater: config.enableSecureUpdater,
+      trustStore: config.trustStore,
+      updatesEndpoint: config.updateEndpoints[EnvironmentUtil.getEnvironment()],
+      webConfig: config.webConfig,
+    }).start();
+  } catch (error) {
+    logger.log(error);
+    return;
+  }
 
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);

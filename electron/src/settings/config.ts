@@ -17,6 +17,10 @@
  *
  */
 
+import {ServerWebConfigInterface} from '@wireapp/desktop-updater-spec';
+
+import {BackendType} from '../runtime/EnvironmentUtil';
+
 const wireJson: WireJson = require('../../wire.json');
 
 interface WireJson {
@@ -27,6 +31,7 @@ interface WireJson {
   customProtocolName: string;
   description: string;
   electronDirectory: string;
+  enableSecureUpdater: boolean;
   environment: 'internal' | 'production';
   legalUrl: string;
   licensesUrl: string;
@@ -37,7 +42,10 @@ interface WireJson {
   raygunApiKey: string;
   supportUrl: string;
   updateUrl: string;
+  updateEndpoints: Record<BackendType, string>;
+  trustStore: string[];
   version: string;
+  webConfig: ServerWebConfigInterface;
   websiteUrl: string;
 }
 

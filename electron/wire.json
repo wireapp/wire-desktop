@@ -7,6 +7,7 @@
   "customProtocolName": "wire",
   "description": "The most secure collaboration platform.",
   "distDir": "wrap/dist",
+  "enableSecureUpdater": true,
   "electronDirectory": "electron",
   "environment": "internal",
   "enableAsar": true,
@@ -18,7 +19,53 @@
   "privacyUrl": "https://wire.com/privacy/",
   "raygunApiKey": "",
   "supportUrl": "https://support.wire.com",
+  "trustStore": ["57992dfdb6cf01028bf3a22ba69095b780c9cec22a5361e526a5b69cbba71c7a"],
   "version": "3.12.0",
   "updateUrl": "https://wire-app.wire.com/win/prod/",
-  "websiteUrl": "https://wire.com"
+  "websiteUrl": "https://wire.com",
+  "updateEndpoints": {
+    "AVS": "https://sabri.s3.eu-central-1.amazonaws.com/v1",
+    "DEVELOPMENT": "https://sabri.s3.eu-central-1.amazonaws.com/v1",
+    "EDGE": "https://sabri.s3.eu-central-1.amazonaws.com/v1",
+    "INTERNAL": "https://sabri.s3.eu-central-1.amazonaws.com/v1",
+    "LOCALHOST": "https://sabri.s3.eu-central-1.amazonaws.com/v1",
+    "MASTER": "https://sabri.s3.eu-central-1.amazonaws.com/v1",
+    "PRODUCTION": "https://sabri.s3.eu-central-1.amazonaws.com/v1",
+    "QA": "https://sabri.s3.eu-central-1.amazonaws.com/v1"
+  },
+  "webConfig": {
+    "ANALYTICS_API_KEY": "",
+    "APP_NAME": "Webapp",
+    "BACKEND_REST": "https://prod-nginz-https.wire.com",
+    "BACKEND_WS": "wss://prod-nginz-ssl.wire.com",
+    "BRAND_NAME": "Wire",
+    "ENVIRONMENT": "production",
+    "FEATURE": {
+      "ALLOWED_FILE_UPLOAD_EXTENSIONS": ["*"],
+      "APPLOCK_SCHEDULED_TIMEOUT": null,
+      "APPLOCK_UNFOCUS_TIMEOUT": null,
+      "CHECK_CONSENT": true,
+      "DEFAULT_LOGIN_TEMPORARY_CLIENT": false,
+      "ENABLE_ACCOUNT_REGISTRATION": true,
+      "ENABLE_DEBUG": false,
+      "ENABLE_PHONE_LOGIN": true,
+      "ENABLE_SSO": true,
+      "PERSIST_TEMPORARY_CLIENTS": true,
+      "SHOW_LOADING_INFORMATION": false
+    },
+    "MAX_GROUP_PARTICIPANTS": 500,
+    "MAX_VIDEO_PARTICIPANTS": 4,
+    "NEW_PASSWORD_MINIMUM_LENGTH": 8,
+    "RAYGUN_API_KEY": "M42DQTY4yMriY1JQcGOQ5Q",
+    "URL": {
+      "ACCOUNT_BASE": "https://account.wire.com",
+      "MOBILE_BASE": "",
+      "PRIVACY_POLICY": "https://wire.com/security",
+      "SUPPORT_BASE": "https://support.wire.com",
+      "TEAMS_BASE": "https://teams.wire.com",
+      "TERMS_OF_USE_PERSONAL": "https://wire.com/legal/terms/personal",
+      "TERMS_OF_USE_TEAMS": "https://wire.com/legal/terms/teams",
+      "WEBSITE_BASE": "https://wire.com"
+    }
+  }
 }

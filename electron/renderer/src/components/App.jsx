@@ -19,6 +19,7 @@
 
 import './App.css';
 
+import {TranslatedUpdateBar} from '@wireapp/desktop-updater-ui';
 import React from 'react';
 import {connect} from 'react-redux';
 
@@ -81,10 +82,12 @@ class App extends React.Component {
   render() {
     return (
       <IsOnline>
-        <div className="App">
-          <Sidebar />
-          <WebviewsContainer />
-        </div>
+        <TranslatedUpdateBar>
+          <div className="App">
+            <Sidebar />
+            <WebviewsContainer />
+          </div>
+        </TranslatedUpdateBar>
       </IsOnline>
     );
   }
