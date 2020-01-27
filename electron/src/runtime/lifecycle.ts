@@ -34,7 +34,7 @@ export let isFirstInstance: boolean | undefined = undefined;
 
 export async function checkForUpdate(): Promise<void> {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
-    logger.info('Checking for Windows update ...');
+    logger.info('Checking for Windows update...');
     await Squirrel.handleSquirrelEvent(isFirstInstance);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => Squirrel.installUpdate());
@@ -69,17 +69,17 @@ export const getWebViewId = (contents: WebContents): string | undefined => {
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
 export const quit = (): void => {
-  logger.info('Initiating app quit ...');
+  logger.info('Initiating app quit...');
   settings.persistToFile();
-  logger.info('Clear cache ...');
+  logger.info('Clear cache...');
   session.defaultSession.clearCache().catch(() => {});
 
-  logger.info('Exiting ...');
+  logger.info('Exiting...');
   app.exit();
 };
 
 export const relaunch = () => {
-  logger.info('Relaunching the app ...');
+  logger.info('Relaunching the app...');
   if (EnvironmentUtil.platform.IS_MAC_OS) {
     /*
      * on MacOS, it is not possible to relaunch the app, so just fallback
