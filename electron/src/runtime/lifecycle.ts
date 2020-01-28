@@ -17,7 +17,7 @@
  *
  */
 
-import {app, ipcMain, WebContents} from 'electron';
+import {app, session, ipcMain, WebContents} from 'electron';
 import * as path from 'path';
 import {ValidationUtil} from '@wireapp/commons';
 
@@ -71,6 +71,11 @@ export const getWebViewId = (contents: WebContents): string | undefined => {
 export const quit = (): void => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
+
+  logger.info('Clear cache ...');
+  if (session.defaultSession) {
+    session.defaultSession.clearCache().catch(error => logger.error(error));
+  }
 
   logger.info('Exiting ...');
   app.exit();
