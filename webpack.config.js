@@ -39,6 +39,12 @@ module.exports = (env = {}) => ({
       ]
     : undefined,
   resolve: {
+    alias: {
+      // Note: Prevent modules that are linked locally from using their own React versions
+      // https://github.com/facebook/react/issues/14257#issuecomment-508808246
+      react: require.resolve('react'),
+      'react-dom': require.resolve('react-dom'),
+    },
     extensions: ['.js', '.jsx', '.json'],
   },
   stats: 'errors-only',
