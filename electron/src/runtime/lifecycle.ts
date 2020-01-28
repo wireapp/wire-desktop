@@ -71,10 +71,11 @@ export const getWebViewId = (contents: WebContents): string | undefined => {
 export const quit = (): void => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
+
   logger.info('Clear cache ...');
-  session.defaultSession.clearCache().catch(error => {
-    logger.error(error);
-  });
+  if (session.defaultSession) {
+    session.defaultSession.clearCache().catch(error => logger.error(error));
+  }
 
   logger.info('Exiting ...');
   app.exit();
