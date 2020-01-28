@@ -94,7 +94,7 @@ const subscribeToWebappEvents = () => {
   window.amplify.subscribe(window.z.event.WebApp.TEAM.INFO, (info: TeamAccountInfo) => {
     const debugInfo = {
       ...info,
-      picture: `${String(info.picture).substring(0, 100)}...`,
+      picture: typeof info.picture === 'string' ? `${info.picture.substring(0, 100)}...` : '',
     };
     logger.info(
       `Received amplify event "${window.z.event.WebApp.TEAM.INFO}":`,
