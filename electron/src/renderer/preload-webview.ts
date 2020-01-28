@@ -102,6 +102,19 @@ const subscribeToWebappEvents = () => {
     );
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
+
+  window.addEventListener(
+    'NavigationEvent',
+    event => {
+      const data = (event as CustomEvent).detail;
+      if (data) {
+        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, data);
+      }
+    },
+    {
+      once: true,
+    },
+  );
 };
 
 const subscribeToMainProcessEvents = () => {

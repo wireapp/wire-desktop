@@ -25,7 +25,6 @@ import {getLogger} from '../logging/getLogger';
 import {gatherLogs, logDir} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
-import {settings} from '../settings/ConfigurationPersistence';
 import {WindowManager} from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
@@ -114,16 +113,18 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = () => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
-  for (const backendType of Object.values(EnvironmentUtil.BackendType)) {
+  const environments = {...EnvironmentUtil.URL_WEBAPP};
+  delete environments.CUSTOM;
+
+  for (const [backendType, backendURL] of Object.entries(environments)) {
     environmentTemplate.push({
       checked: currentEnvironment === backendType,
       click: () => {
-        EnvironmentUtil.setEnvironment(backendType);
-        settings.persistToFile();
+        EnvironmentUtil.setEnvironment(backendType as EnvironmentUtil.BackendType);
         app.relaunch();
         app.quit();
       },
-      label: EnvironmentUtil.URL_WEBAPP[backendType].replace(/^https?:\/\//, ''),
+      label: backendURL.replace(/^https?:\/\//, ''),
       type: 'radio',
     });
   }
