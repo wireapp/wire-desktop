@@ -140,7 +140,7 @@ const toggleMenuTemplate: MenuItemConstructorOptions = {
     const mainBrowserWindow = WindowManager.getPrimaryWindow();
 
     if (mainBrowserWindow) {
-      const showMenu = mainBrowserWindow.autoHideMenuBar;
+      const showMenu = mainBrowserWindow.isMenuBarAutoHide();
 
       mainBrowserWindow.setAutoHideMenuBar(!showMenu);
 
@@ -457,7 +457,7 @@ export const toggleMenuBar = (): void => {
 
   if (mainBrowserWindow) {
     const isVisible = mainBrowserWindow.isMenuBarVisible();
-    const autoHide = mainBrowserWindow.autoHideMenuBar;
+    const autoHide = mainBrowserWindow.isMenuBarAutoHide();
 
     if (autoHide) {
       mainBrowserWindow.setMenuBarVisibility(!isVisible);
