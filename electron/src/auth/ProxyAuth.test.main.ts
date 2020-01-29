@@ -20,29 +20,25 @@
 import * as assert from 'assert';
 
 import ProxyAuth from './ProxyAuth';
-import {Protocol, ProxySetting} from 'get-proxy-settings';
+import {Protocol} from 'get-proxy-settings';
 
 describe('ProxyAuth', () => {
   it("generates a proxy URL using the operating system's proxy settings", () => {
     const systemProxySettings = {
-      credentials: {
-        password: 'secret',
-        username: 'top',
-      },
-      host: 'wireproxy.com',
-      port: '443',
+      password: 'secret',
       protocol: Protocol.Https,
-    } as ProxySetting;
+      username: 'top',
+    };
 
     const authInfo = {
       host: 'wireproxy.com',
       isProxy: true,
-      port: 443,
+      port: 8080,
       realm: '',
       scheme: 'https',
     };
 
-    const url = ProxyAuth.generateProxyURL(systemProxySettings, authInfo);
-    assert.ok(url);
+    const url = ProxyAuth.generateProxyURL(authInfo, systemProxySettings);
+    assert.ok(url.toString() === 'https://top:secret@wireproxy.com:8080/');
   });
 });
