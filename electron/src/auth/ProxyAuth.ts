@@ -6,7 +6,19 @@ function generateProxyURL(systemProxySettings: ProxySetting, authInfo: Electron.
     credentials: {username, password},
     protocol,
   } = systemProxySettings;
-  return new URL(`${protocol}//${username}:${password}@${authInfo.host}:${authInfo.port}`);
+
+  const proxySettings = new URL(`${protocol}://${authInfo.host}`);
+  if (username) {
+    proxySettings.username = username;
+  }
+  if (password) {
+    proxySettings.password = password;
+  }
+  if (authInfo.port) {
+    proxySettings.port = authInfo.port.toString();
+  }
+
+  return proxySettings;
 }
 
 const ProxyAuth = {
