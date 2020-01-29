@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2019 Wire Swiss GmbH
+ * Copyright (C) 2020 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,35 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
  */
 
 import * as assert from 'assert';
 
-import {SingleSignOn} from './SingleSignOn';
+import ProxyAuth from './ProxyAuth';
+import {Protocol, ProxySetting} from 'get-proxy-settings';
 
-describe('SingleSignOn', () => {
-  describe('generateSecret', () => {
-    it('generates a secret of a specified size', async () => {
-      const size = 24;
-      const loginAuthorizationSecret = await SingleSignOn['protocol'].generateSecret(size);
-      assert.strictEqual(loginAuthorizationSecret.length, size * 2);
-    });
+describe('ProxyAuth', () => {
+  it("generates a proxy URL using the operating system's proxy settings", () => {
+    const systemProxySettings = {
+      credentials: {
+        password: 'secret',
+        username: 'top',
+      },
+      host: 'wireproxy.com',
+      port: '443',
+      protocol: Protocol.Https,
+    } as ProxySetting;
+
+    const authInfo = {
+      host: 'wireproxy.com',
+      isProxy: true,
+      port: 443,
+      realm: '',
+      scheme: 'https',
+    };
+
+    const url = ProxyAuth.generateProxyURL(systemProxySettings, authInfo);
+    assert.ok(url);
   });
 });
