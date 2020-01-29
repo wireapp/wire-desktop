@@ -347,9 +347,12 @@ const handleAppEvents = () => {
       const systemProxy = await getProxySettings();
       const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
       if (systemProxySettings) {
-        const {credentials} = systemProxySettings;
-        authenticatedProxyInfo = ProxyAuth.generateProxyURL(systemProxySettings, authInfo);
-        return callback(credentials.username, credentials.password);
+        const {
+          credentials: {username, password},
+          protocol,
+        } = systemProxySettings;
+        authenticatedProxyInfo = ProxyAuth.generateProxyURL(authInfo, {password, protocol, username});
+        return callback(username, password);
       }
 
       if (!triedProxy) {
@@ -357,9 +360,12 @@ const handleAppEvents = () => {
           logger.log('Proxy prompt was submitted');
 
           const {username, password} = promptData;
-          const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
-          const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
-          authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}:${authInfo.port}`);
+          const [originalProxyValue]: string[] = argv['proxy-server'] || argv['proxy-server-auth'];
+          const protocol: string | undefined = /^[^:]+:\/\//.exec(originalProxyValue)?.toString();
+          authenticatedProxyInfo = ProxyAuth.generateProxyURL(authInfo, {
+            ...promptData,
+            protocol,
+          });
 
           callback(username, password);
         });
