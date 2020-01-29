@@ -344,37 +344,39 @@ const handleAppEvents = () => {
 
       const systemProxy = await getProxySettings();
       const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
-
       if (systemProxySettings) {
         const {
           credentials: {username, password},
           protocol,
         } = systemProxySettings;
-        authenticatedProxyInfo = new URL(`${protocol}//${username}:${password}@${authInfo.host}`);
+        authenticatedProxyInfo = new URL(`${protocol}//${username}:${password}@${authInfo.host}:${authInfo.port}`);
         return callback(username, password);
       }
 
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (_event, promptData: {password: string; username: string}) => {
-        const {username, password} = promptData;
-
-        logger.log('Proxy prompt was submitted');
-        const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
-        const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
-        authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
-        callback(username, password);
-      });
-
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
-        logger.log('Proxy prompt was canceled');
-        await webContents.session.setProxy({
-          pacScript: '',
-          proxyBypassRules: '',
-          proxyRules: '',
-        });
-        main.reload();
-      });
-
       if (!triedProxy) {
+        ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (_event, promptData: {password: string; username: string}) => {
+          logger.log('Proxy prompt was submitted');
+
+          const {username, password} = promptData;
+          const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
+          const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
+          authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}:${authInfo.port}`);
+
+          callback(username, password);
+        });
+
+        ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
+          logger.log('Proxy prompt was canceled');
+
+          await webContents.session.setProxy({
+            pacScript: '',
+            proxyBypassRules: '',
+            proxyRules: '',
+          });
+
+          main.reload();
+        });
+
         await ProxyPromptWindow.showWindow();
         triedProxy = true;
       }
