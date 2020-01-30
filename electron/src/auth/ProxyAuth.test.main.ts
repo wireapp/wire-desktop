@@ -39,7 +39,7 @@ describe('ProxyAuth', () => {
     };
 
     const url = ProxyAuth.generateProxyURL(authInfo, options);
-    assert.ok(url.toString() === 'https://top:secret@wireproxy.com:8080/');
+    assert.strictEqual(url.toString(), 'https://top:secret@wireproxy.com:8080/');
   });
 
   it('supports special characters like slashes in passwords', () => {
@@ -51,11 +51,49 @@ describe('ProxyAuth', () => {
       scheme: 'https',
     };
 
-    const url = ProxyAuth.generateProxyURL(authInfo, {
+    let url = ProxyAuth.generateProxyURL(authInfo, {
       password: 'sec/ret',
       protocol: Protocol.Https,
       username: 'top',
     });
-    assert.ok(url.toString() === 'https://top:secret@wireproxy.com:8080/');
+    assert.strictEqual(url.toString(), 'https://top:sec%2Fret@wireproxy.com:8080/');
+
+    url = ProxyAuth.generateProxyURL(authInfo, {
+      password: 'secret',
+      protocol: Protocol.Https,
+      username: 'user@wire',
+    });
+    assert.strictEqual(url.toString(), 'https://user%40wire:secret@wireproxy.com:8080/');
+  });
+
+  it('supports authentication without a password', () => {
+    const authInfo = {
+      host: 'wireproxy.com',
+      isProxy: true,
+      port: 8080,
+      realm: '',
+      scheme: 'https',
+    };
+
+    const url = ProxyAuth.generateProxyURL(authInfo, {
+      protocol: Protocol.Https,
+      username: 'myuser',
+    });
+    assert.strictEqual(url.toString(), 'https://myuser@wireproxy.com:8080/');
+  });
+
+  it('supports proxy URLs without authentication', () => {
+    const authInfo = {
+      host: 'wireproxy.com',
+      isProxy: true,
+      port: 8080,
+      realm: '',
+      scheme: 'https',
+    };
+
+    const url = ProxyAuth.generateProxyURL(authInfo, {
+      protocol: Protocol.Https,
+    });
+    assert.strictEqual(url.toString(), 'https://wireproxy.com:8080/');
   });
 });
