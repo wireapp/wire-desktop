@@ -24,19 +24,23 @@ import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
 
+interface AuthInfo {
+  host: string;
+  port: number;
+}
+
 interface ProxyOptions {
   username?: string;
   password?: string;
   protocol?: string;
 }
 
-function generateProxyURL(authInfo: Electron.AuthInfo, options: ProxyOptions): URL {
+function generateProxyURL(authInfo: AuthInfo, options: ProxyOptions): URL {
   let protocol = options.protocol;
   const {username, password} = options;
 
   if (!protocol) {
-    // Defaults to http proxy
-    logger.log('Defaults to HTTP proxy');
+    logger.log('Default to HTTP proxy');
     protocol = 'http';
   }
 

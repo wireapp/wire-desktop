@@ -337,6 +337,7 @@ const handleAppEvents = () => {
   app.on('login', async (event, webContents, _request, authInfo, callback) => {
     if (authInfo.isProxy) {
       event.preventDefault();
+      const {host, port} = authInfo;
 
       if (authenticatedProxyInfo) {
         const {username, password} = authenticatedProxyInfo;
@@ -351,7 +352,7 @@ const handleAppEvents = () => {
           credentials: {username, password},
           protocol,
         } = systemProxySettings;
-        authenticatedProxyInfo = ProxyAuth.generateProxyURL(authInfo, {password, protocol, username});
+        authenticatedProxyInfo = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
         return callback(username, password);
       }
 
@@ -362,10 +363,13 @@ const handleAppEvents = () => {
           const {username, password} = promptData;
           const [originalProxyValue]: string[] = argv['proxy-server'] || argv['proxy-server-auth'];
           const protocol: string | undefined = /^[^:]+:\/\//.exec(originalProxyValue)?.toString();
-          authenticatedProxyInfo = ProxyAuth.generateProxyURL(authInfo, {
-            ...promptData,
-            protocol,
-          });
+          authenticatedProxyInfo = ProxyAuth.generateProxyURL(
+            {host, port},
+            {
+              ...promptData,
+              protocol,
+            },
+          );
 
           callback(username, password);
         });

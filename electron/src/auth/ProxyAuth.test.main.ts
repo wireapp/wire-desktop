@@ -26,10 +26,7 @@ describe('ProxyAuth', () => {
   it("generates a proxy URL using the operating system's proxy settings", () => {
     const authInfo = {
       host: 'wireproxy.com',
-      isProxy: true,
       port: 8080,
-      realm: '',
-      scheme: 'https',
     };
 
     const options = {
@@ -45,10 +42,7 @@ describe('ProxyAuth', () => {
   it('supports special characters like slashes in passwords', () => {
     const authInfo = {
       host: 'wireproxy.com',
-      isProxy: true,
       port: 8080,
-      realm: '',
-      scheme: 'https',
     };
 
     let url = ProxyAuth.generateProxyURL(authInfo, {
@@ -69,10 +63,7 @@ describe('ProxyAuth', () => {
   it('supports authentication without a password', () => {
     const authInfo = {
       host: 'wireproxy.com',
-      isProxy: true,
       port: 8080,
-      realm: '',
-      scheme: 'https',
     };
 
     const url = ProxyAuth.generateProxyURL(authInfo, {
@@ -85,10 +76,7 @@ describe('ProxyAuth', () => {
   it('supports proxy URLs without authentication', () => {
     const authInfo = {
       host: 'wireproxy.com',
-      isProxy: true,
       port: 8080,
-      realm: '',
-      scheme: 'https',
     };
 
     const url = ProxyAuth.generateProxyURL(authInfo, {
