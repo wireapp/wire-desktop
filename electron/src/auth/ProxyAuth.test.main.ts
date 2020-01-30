@@ -24,12 +24,6 @@ import {Protocol} from 'get-proxy-settings';
 
 describe('ProxyAuth', () => {
   it("generates a proxy URL using the operating system's proxy settings", () => {
-    const systemProxySettings = {
-      password: 'secret',
-      protocol: Protocol.Https,
-      username: 'top',
-    };
-
     const authInfo = {
       host: 'wireproxy.com',
       isProxy: true,
@@ -38,7 +32,30 @@ describe('ProxyAuth', () => {
       scheme: 'https',
     };
 
-    const url = ProxyAuth.generateProxyURL(authInfo, systemProxySettings);
+    const options = {
+      password: 'secret',
+      protocol: Protocol.Https,
+      username: 'top',
+    };
+
+    const url = ProxyAuth.generateProxyURL(authInfo, options);
+    assert.ok(url.toString() === 'https://top:secret@wireproxy.com:8080/');
+  });
+
+  it('supports special characters like slashes in passwords', () => {
+    const authInfo = {
+      host: 'wireproxy.com',
+      isProxy: true,
+      port: 8080,
+      realm: '',
+      scheme: 'https',
+    };
+
+    const url = ProxyAuth.generateProxyURL(authInfo, {
+      password: 'sec/ret',
+      protocol: Protocol.Https,
+      username: 'top',
+    });
     assert.ok(url.toString() === 'https://top:secret@wireproxy.com:8080/');
   });
 });
