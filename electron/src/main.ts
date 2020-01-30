@@ -31,8 +31,6 @@ import {
   shell,
   WebContents,
 } from 'electron';
-import WindowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import * as logdown from 'logdown';
@@ -66,6 +64,9 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
+import ProxyAuth from './auth/ProxyAuth';
+import WindowStateKeeper = require('electron-window-state');
+import fileUrl = require('file-url');
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -110,7 +111,8 @@ if (argv['proxy-server-auth']) {
 
 const iconFileName = `logo.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const iconPath = path.join(APP_PATH, 'img', iconFileName);
-// This needs to stay global, see https://github.com/electron/electron/blob/v4.2.12/docs/faq.md#my-apps-windowtray-disappeared-after-a-few-minutes
+// This needs to stay global, see
+// https://github.com/electron/electron/blob/v4.2.12/docs/faq.md#my-apps-windowtray-disappeared-after-a-few-minutes
 let tray: TrayHandler;
 
 let isFullScreen = false;
@@ -335,6 +337,7 @@ const handleAppEvents = () => {
   app.on('login', async (event, webContents, _request, authInfo, callback) => {
     if (authInfo.isProxy) {
       event.preventDefault();
+      const {host, port} = authInfo;
 
       if (authenticatedProxyInfo) {
         const {username, password} = authenticatedProxyInfo;
@@ -344,37 +347,45 @@ const handleAppEvents = () => {
 
       const systemProxy = await getProxySettings();
       const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
-
       if (systemProxySettings) {
         const {
           credentials: {username, password},
           protocol,
         } = systemProxySettings;
-        authenticatedProxyInfo = new URL(`${protocol}//${username}:${password}@${authInfo.host}`);
+        authenticatedProxyInfo = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
         return callback(username, password);
       }
 
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (_event, promptData: {password: string; username: string}) => {
-        const {username, password} = promptData;
-
-        logger.log('Proxy prompt was submitted');
-        const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
-        const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
-        authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
-        callback(username, password);
-      });
-
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
-        logger.log('Proxy prompt was canceled');
-        await webContents.session.setProxy({
-          pacScript: '',
-          proxyBypassRules: '',
-          proxyRules: '',
-        });
-        main.reload();
-      });
-
       if (!triedProxy) {
+        ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (_event, promptData: {password: string; username: string}) => {
+          logger.log('Proxy prompt was submitted');
+
+          const {username, password} = promptData;
+          const [originalProxyValue]: string[] = argv['proxy-server'] || argv['proxy-server-auth'];
+          const protocol: string | undefined = /^[^:]+:\/\//.exec(originalProxyValue)?.toString();
+          authenticatedProxyInfo = ProxyAuth.generateProxyURL(
+            {host, port},
+            {
+              ...promptData,
+              protocol,
+            },
+          );
+
+          callback(username, password);
+        });
+
+        ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
+          logger.log('Proxy prompt was canceled');
+
+          await webContents.session.setProxy({
+            pacScript: '',
+            proxyBypassRules: '',
+            proxyRules: '',
+          });
+
+          main.reload();
+        });
+
         await ProxyPromptWindow.showWindow();
         triedProxy = true;
       }
