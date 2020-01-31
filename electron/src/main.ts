@@ -342,6 +342,7 @@ const handleAppEvents = () => {
       if (authenticatedProxyInfo) {
         const {username, password} = authenticatedProxyInfo;
         logger.info('Sending provided credentials to authenticated proxy ...');
+        await applyProxySettings(authenticatedProxyInfo, main.webContents);
         return callback(username, password);
       }
 
@@ -353,26 +354,33 @@ const handleAppEvents = () => {
           protocol,
         } = systemProxySettings;
         authenticatedProxyInfo = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
+        logger.log('Applying proxy settings on the main window...');
+        await applyProxySettings(authenticatedProxyInfo, main.webContents);
         return callback(username, password);
       }
 
       if (!triedProxy) {
-        ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (_event, promptData: {password: string; username: string}) => {
-          logger.log('Proxy prompt was submitted');
+        ipcMain.once(
+          EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+          async (_event, promptData: {password: string; username: string}) => {
+            logger.log('Proxy prompt was submitted');
 
-          const {username, password} = promptData;
-          const [originalProxyValue]: string[] = argv['proxy-server'] || argv['proxy-server-auth'];
-          const protocol: string | undefined = /^[^:]+:\/\//.exec(originalProxyValue)?.toString();
-          authenticatedProxyInfo = ProxyAuth.generateProxyURL(
-            {host, port},
-            {
-              ...promptData,
-              protocol,
-            },
-          );
+            const {username, password} = promptData;
+            const [originalProxyValue]: string[] = argv['proxy-server'] || argv['proxy-server-auth'];
+            const protocol: string | undefined = /^[^:]+:\/\//.exec(originalProxyValue)?.toString();
+            authenticatedProxyInfo = ProxyAuth.generateProxyURL(
+              {host, port},
+              {
+                ...promptData,
+                protocol,
+              },
+            );
 
-          callback(username, password);
-        });
+            logger.log('Applying proxy settings on the main window...');
+            await applyProxySettings(authenticatedProxyInfo, main.webContents);
+            callback(username, password);
+          },
+        );
 
         ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
           logger.log('Proxy prompt was canceled');
@@ -458,6 +466,17 @@ const handlePortableFlags = () => {
   }
 };
 
+const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
+  const proxyURL = authenticatedProxyDetails.origin;
+  logger.info(`Setting proxy on a window to URL "${proxyURL}"...`);
+  webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
+  await webContents.session.setProxy({
+    pacScript: '',
+    proxyBypassRules: '',
+    proxyRules: proxyURL,
+  });
+};
+
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
@@ -501,16 +520,8 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
       if (authenticatedProxyInfo?.origin && contents.session) {
-        const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
-        logger.info(`Setting proxy to URL "${proxyURL}" ...`);
-
-        contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
-
-        await contents.session.setProxy({
-          pacScript: '',
-          proxyBypassRules: '',
-          proxyRules: proxyURL,
-        });
+        this.logger.log('Applying proxy settings on a webview...');
+        await applyProxySettings(authenticatedProxyInfo, contents);
       }
 
       switch (contents.getType()) {
