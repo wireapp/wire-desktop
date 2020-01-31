@@ -10258,9 +10258,10 @@ winreg@1.2.4:
   resolved "https://registry.npmjs.org/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.36":
-  version "0.24.36"
-  resolved "https://github.com/wireapp/wire-web-config-default#e5447cf30678c599e25f17b51d6fdfdb53b926ea"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.38":
+  version "0.24.38"
+  uid a018cff4cc3eff304604d5c33c000e8d9b6c0350
+  resolved "https://github.com/wireapp/wire-web-config-default#a018cff4cc3eff304604d5c33c000e8d9b6c0350"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
