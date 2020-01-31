@@ -196,8 +196,9 @@ export const attachTo = (main: BrowserWindow) => {
 export const setCertificateVerifyProc = async (request: ProcRequest, cb: (verificationResult: number) => void) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
 
-  // For debugging purposes only! Bypass "net::ERR_CERT_UNABLE_TO_CHECK_REVOCATION"
+  // For debugging purposes only! Bypass "net::ERR_CERT_UNABLE_TO_CHECK_REVOCATION" verification result
   if (argv['bypass-revocation']) {
+    logger.info(`Debugging flag enabled: Bypassing certificate revocation.`);
     return cb(CertificateVerificationResult.SUCCESS);
   }
 
