@@ -68,7 +68,7 @@ class ConfigurationPersistence {
   }
 
   readFromFile(): Schemata {
-    this.logger.info(`Reading config file "${this.configFile}"...`);
+    this.logger.info(`Reading config file "${this.configFile}" ...`);
     try {
       return fs.readJSONSync(this.configFile) as Schemata;
     } catch (error) {

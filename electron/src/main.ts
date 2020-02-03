@@ -67,6 +67,7 @@ import {WindowUtil} from './window/WindowUtil';
 import ProxyAuth from './auth/ProxyAuth';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
+import {WindowUrl} from './window/WindowUrl';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -141,7 +142,11 @@ const bindIpcEvents = () => {
 
   ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, async (_event, {url: customURL}: {url: string}) => {
     EnvironmentUtil.setEnvironment(EnvironmentUtil.BackendType.CUSTOM, customURL);
-    await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(customURL)}`);
+
+    const localRendererUrl = main.webContents.getURL();
+    const newUrl = WindowUrl.createWebappUrl(localRendererUrl, customURL);
+
+    await main.loadURL(newUrl);
   });
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
