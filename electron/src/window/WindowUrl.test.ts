@@ -10,7 +10,7 @@ describe.only('WindowUrl', () => {
         hl: 'en',
       };
       const queryString = WindowUrl.getQueryString(params);
-      const expectedString = '?clientType=temporary&hl=en&enableLogging=@wireapp/*';
+      const expectedString = '?clientType=temporary&enableLogging=@wireapp/*&hl=en';
       assert.strictEqual(queryString, expectedString);
     });
   });
