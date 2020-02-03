@@ -59,7 +59,10 @@ class ConfigurationPersistence {
   }
 
   persistToFile(): void {
-    this.logger.info('Saving configuration to persistent storage:', global._ConfigurationPersistence);
+    this.logger.info(
+      `Saving configuration to persistent storage in "${this.configFile}":`,
+      global._ConfigurationPersistence,
+    );
     try {
       return fs.outputJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
     } catch (error) {
@@ -68,7 +71,7 @@ class ConfigurationPersistence {
   }
 
   readFromFile(): Schemata {
-    this.logger.info(`Reading config file "${this.configFile}" ...`);
+    this.logger.info(`Reading config file from "${this.configFile}" ...`);
     try {
       return fs.readJSONSync(this.configFile) as Schemata;
     } catch (error) {
