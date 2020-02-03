@@ -106,9 +106,13 @@ const subscribeToWebappEvents = () => {
   window.addEventListener(
     'NavigationEvent',
     event => {
+      const accountId = new URLSearchParams(window.location.search).get('id');
       const data = (event as CustomEvent).detail;
       if (data) {
-        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, data);
+        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, {
+          accountId,
+          customURL: data.url,
+        });
       }
     },
     {
