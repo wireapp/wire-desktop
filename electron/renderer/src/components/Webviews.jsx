@@ -36,7 +36,9 @@ export default class Webviews extends Component {
   componentWillMount() {
     remote.ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event, changeEnvironmentEvent) => {
       // TODO: Merge query params
-      this.props.updateAccountData(changeEnvironmentEvent.accountId, {webappUrl: changeEnvironmentEvent.customUrl});
+      this.props.updateAccountData(changeEnvironmentEvent.accountId, {
+        webappUrl: changeEnvironmentEvent.customUrl,
+      });
     });
   }
 
@@ -51,16 +53,17 @@ export default class Webviews extends Component {
         return true;
       }
       // If a SSO code is set on a window, use it
-      if (previousAccountState.ssoCode !== nextAccountState.ssoCode && nextAccountState.isAdding) {
+      const shouldRedirectToSSOLogin =
+        nextAccountState.isAdding && previousAccountState.ssoCode !== nextAccountState.ssoCode;
+      const shouldUseCustomWebappUrl =
+        !!nextAccountState.webappUrl && previousAccountState.webappUrl !== nextAccountState.webappUrl;
+
+      if (shouldRedirectToSSOLogin || shouldUseCustomWebappUrl) {
         document
           .querySelector(`Webview[data-accountid="${nextAccountState.id}"]`)
-          .loadURL(this._getEnvironmentUrl(nextAccountState, false));
+          .loadURL(this._getEnvironmentUrl(nextAccountState));
       }
-      if (!!nextAccountState.webappUrl && previousAccountState.webappUrl !== nextAccountState.webappUrl) {
-        document
-          .querySelector(`Webview[data-accountid="${nextAccountState.id}"]`)
-          .loadURL(this._getEnvironmentUrl(nextAccountState, false));
-      }
+
       if (previousAccountState.visible !== nextAccountState.visible) {
         return true;
       }
@@ -78,7 +81,7 @@ export default class Webviews extends Component {
     );
   };
 
-  _getEnvironmentUrl(account, forceLogin) {
+  _getEnvironmentUrl(account) {
     const currentLocation = new URL(window.location.href);
     const envParam = account.webappUrl || currentLocation.searchParams.get('env');
     const decodedEnvParam = decodeURIComponent(envParam);
@@ -87,12 +90,8 @@ export default class Webviews extends Component {
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
-    if (forceLogin || account.ssoCode) {
-      url.pathname = '/auth';
-    }
-    if (forceLogin) {
-      url.hash = '#login';
-    }
+    url.pathname = '/auth';
+
     if (account.ssoCode && account.isAdding) {
       url.hash = `#sso/${account.ssoCode}`;
     }
@@ -173,7 +172,7 @@ export default class Webviews extends Component {
               className={`Webview${account.visible ? '' : ' hide'}`}
               data-accountid={account.id}
               visible={account.visible}
-              src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
+              src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
               onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"
