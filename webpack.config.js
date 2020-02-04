@@ -21,10 +21,6 @@ module.exports = (env = {}) => ({
       },
     ],
   },
-  node: {
-    fs: 'empty',
-    path: 'empty',
-  },
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'electron/renderer/dist'),
@@ -39,7 +35,8 @@ module.exports = (env = {}) => ({
       ]
     : undefined,
   resolve: {
-    extensions: ['.js', '.jsx', '.json'],
+    extensions: ['.ts', '.js', '.jsx', '.json'],
   },
   stats: 'errors-only',
+  target: 'electron-renderer',
 });

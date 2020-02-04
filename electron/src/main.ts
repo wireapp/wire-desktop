@@ -83,6 +83,8 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 
+type ChangeEnvironmentEvent = {customURL: string; accountId: string};
+
 let authenticatedProxyInfo: URL | undefined;
 
 const customProtocolHandler = new CustomProtocolHandler();
@@ -139,22 +141,6 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
     WindowManager.showPrimaryWindow();
   });
-
-  ipcMain.on(
-    EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP,
-    async (_event, {accountId, customURL}: {customURL: string; accountId: string}) => {
-      EnvironmentUtil.setEnvironment(EnvironmentUtil.BackendType.CUSTOM, customURL);
-
-      logger.log(`Received custom webapp URL "${customURL}" for account ID "${accountId}".`);
-
-      const localRendererUrl = main.webContents.getURL();
-      const newUrl = WindowUrl.createWebappUrl(localRendererUrl, customURL);
-
-      logger.log(`Navigate to "${newUrl}" ...`);
-
-      await main.loadURL(newUrl);
-    },
-  );
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
     tray.showUnreadCount(main, count);
@@ -223,7 +209,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     webPreferences: {
       backgroundThrottling: false,
       enableBlinkFeatures: '',
-      nodeIntegration: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
       webviewTag: true,
     },

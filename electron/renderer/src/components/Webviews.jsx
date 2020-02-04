@@ -20,9 +20,10 @@
 import './Webviews.css';
 
 import React, {Component} from 'react';
+import {remote} from 'electron';
 
-import * as EVENT_TYPE from '../lib/eventType';
 import Webview from './Webview';
+import {EVENT_TYPE} from '../../../src/lib/eventType';
 
 export default class Webviews extends Component {
   constructor(props) {
@@ -30,6 +31,10 @@ export default class Webviews extends Component {
     this.state = {
       canDelete: this._getCanDeletes(props.accounts),
     };
+  }
+
+  componentWillMount() {
+    remote.ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event, changeEnvironmentEvent) => {});
   }
 
   componentWillReceiveProps(nextProps) {

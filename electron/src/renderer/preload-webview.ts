@@ -103,22 +103,16 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 
-  window.addEventListener(
-    'NavigationEvent',
-    event => {
-      const accountId = new URLSearchParams(window.location.search).get('id');
-      const data = (event as CustomEvent).detail;
-      if (data) {
-        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, {
-          accountId,
-          customURL: data.url,
-        });
-      }
-    },
-    {
-      once: true,
-    },
-  );
+  window.addEventListener('NavigationEvent', event => {
+    const accountId = new URLSearchParams(window.location.search).get('id');
+    const data = (event as CustomEvent).detail;
+    if (data) {
+      ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, {
+        accountId,
+        customURL: data.url,
+      });
+    }
+  });
 };
 
 const subscribeToMainProcessEvents = () => {
