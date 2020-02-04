@@ -12,7 +12,7 @@ module.exports = (env = {}) => ({
     rules: [
       {
         exclude: /node_modules/,
-        test: /\.jsx?$/,
+        test: /\.[tj]sx?$/,
         use: ['babel-loader'],
       },
       {
@@ -35,7 +35,7 @@ module.exports = (env = {}) => ({
       ]
     : undefined,
   resolve: {
-    extensions: ['.ts', '.js', '.jsx', '.json'],
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
   },
   stats: 'errors-only',
   target: 'electron-renderer',

@@ -1,5 +1,6 @@
 const plugins = ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-optional-chaining'];
 
+// TODO: Import presets from ".babel-register.js"
 const buildPresets = ({modules = false, debug = false}) => {
   return [
     '@babel/preset-react',
@@ -15,6 +16,7 @@ const buildPresets = ({modules = false, debug = false}) => {
         useBuiltIns: 'usage',
       },
     ],
+    '@babel/preset-typescript',
   ];
 };
 

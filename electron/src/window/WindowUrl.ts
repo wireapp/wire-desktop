@@ -16,17 +16,22 @@ export class WindowUrl {
     return encodeURIComponent(`${fullHost}${unescapedQueryParams}`);
   }
 
-  static createWebappUrl(localRendererUrl: string, customBackendUrl: string): string {
+  static createWebappUrl(
+    localRendererUrl: string,
+    customBackendUrl: string,
+    withRendererPage: boolean = false,
+  ): string {
     const localFileParams = WindowUrl.parseParams(localRendererUrl);
     const envUrlParams = WindowUrl.parseParams(localFileParams['env'] as string);
     const customBackendUrlParams = WindowUrl.parseParams(customBackendUrl);
     const mergedParams = {...envUrlParams, ...customBackendUrlParams};
-
     const newEnvUrl = WindowUrl.replaceQueryParams(customBackendUrl, mergedParams);
 
-    const cutPattern = '?env=';
-    const localFilePrefix = localRendererUrl.substring(0, localRendererUrl.indexOf(cutPattern) + cutPattern.length);
-
-    return `${localFilePrefix}${newEnvUrl}`;
+    if (withRendererPage === true) {
+      const cutPattern = '?env=';
+      const localFilePrefix = localRendererUrl.substring(0, localRendererUrl.indexOf(cutPattern) + cutPattern.length);
+      return `${localFilePrefix}${newEnvUrl}`;
+    }
+    return newEnvUrl;
   }
 }

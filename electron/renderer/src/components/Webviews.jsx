@@ -24,6 +24,7 @@ import {remote} from 'electron';
 
 import Webview from './Webview';
 import {EVENT_TYPE} from '../../../src/lib/eventType';
+import {WindowUrl} from '../../../src/window/WindowUrl';
 
 export default class Webviews extends Component {
   constructor(props) {
@@ -34,10 +35,10 @@ export default class Webviews extends Component {
   }
 
   componentWillMount() {
-    remote.ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event, changeEnvironmentEvent) => {
-      // TODO: Merge query params
-      this.props.updateAccountData(changeEnvironmentEvent.accountId, {
-        webappUrl: changeEnvironmentEvent.customUrl,
+    remote.ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event, {accountId, customUrl}) => {
+      const updatedWebapp = WindowUrl.createWebappUrl(window.location, customUrl);
+      this.props.updateAccountData(accountId, {
+        webappUrl: decodeURIComponent(updatedWebapp),
       });
     });
   }
