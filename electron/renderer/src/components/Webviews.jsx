@@ -34,7 +34,10 @@ export default class Webviews extends Component {
   }
 
   componentWillMount() {
-    remote.ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event, changeEnvironmentEvent) => {});
+    remote.ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event, changeEnvironmentEvent) => {
+      // TODO: Merge query params
+      this.props.updateAccountData(changeEnvironmentEvent.accountId, {webappUrl: changeEnvironmentEvent.customUrl});
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -42,18 +45,23 @@ export default class Webviews extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    for (const account of nextProps.accounts) {
-      const match = this.props.accounts.find(_account => account.id === _account.id);
-      if (!match) {
+    for (const nextAccountState of nextProps.accounts) {
+      const previousAccountState = this.props.accounts.find(_account => nextAccountState.id === _account.id);
+      if (!previousAccountState) {
         return true;
       }
       // If a SSO code is set on a window, use it
-      if (match.ssoCode !== account.ssoCode && account.isAdding) {
+      if (previousAccountState.ssoCode !== nextAccountState.ssoCode && nextAccountState.isAdding) {
         document
-          .querySelector(`Webview[data-accountid="${account.id}"]`)
-          .loadURL(this._getEnvironmentUrl(account, false));
+          .querySelector(`Webview[data-accountid="${nextAccountState.id}"]`)
+          .loadURL(this._getEnvironmentUrl(nextAccountState, false));
       }
-      if (match.visible !== account.visible) {
+      if (!!nextAccountState.webappUrl && previousAccountState.webappUrl !== nextAccountState.webappUrl) {
+        document
+          .querySelector(`Webview[data-accountid="${nextAccountState.id}"]`)
+          .loadURL(this._getEnvironmentUrl(nextAccountState, false));
+      }
+      if (previousAccountState.visible !== nextAccountState.visible) {
         return true;
       }
     }
@@ -72,7 +80,7 @@ export default class Webviews extends Component {
 
   _getEnvironmentUrl(account, forceLogin) {
     const currentLocation = new URL(window.location.href);
-    const envParam = currentLocation.searchParams.get('env');
+    const envParam = account.webappUrl || currentLocation.searchParams.get('env');
     const decodedEnvParam = decodeURIComponent(envParam);
     const url = new URL(decodedEnvParam);
 

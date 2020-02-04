@@ -109,7 +109,7 @@ const subscribeToWebappEvents = () => {
     if (data) {
       ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, {
         accountId,
-        customURL: data.url,
+        customUrl: data.url,
       });
     }
   });
