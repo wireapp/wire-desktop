@@ -29,7 +29,7 @@ export class WindowUrl {
 
     if (withRendererPage === true) {
       const cutPattern = '?env=';
-      const localFilePrefix = localRendererUrl.substring(0, localRendererUrl.indexOf(cutPattern) + cutPattern.length);
+      const localFilePrefix = `${localRendererUrl.split(cutPattern)[0]}${cutPattern}`;
       return `${localFilePrefix}${newEnvUrl}`;
     }
     return newEnvUrl;
