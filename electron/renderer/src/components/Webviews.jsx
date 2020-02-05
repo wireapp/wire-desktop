@@ -35,7 +35,7 @@ export default class Webviews extends Component {
   }
 
   componentWillMount() {
-    remote.ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, (event, {accountId, customUrl}) => {
+    remote.ipcMain.on(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, (event, {accountId, customUrl}) => {
       const updatedWebapp = WindowUrl.createWebappUrl(window.location, customUrl);
       this.props.updateAccountData(accountId, {
         webappUrl: decodeURIComponent(updatedWebapp),

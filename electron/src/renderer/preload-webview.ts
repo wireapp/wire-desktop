@@ -34,6 +34,10 @@ interface TeamAccountInfo {
   userID: string;
 }
 
+enum WrapperEvent {
+  NAVIGATION = 'NavigationEvent',
+}
+
 const systemPreferences = remote.systemPreferences;
 
 const logger = getLogger(path.basename(__filename));
@@ -103,11 +107,11 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 
-  window.addEventListener('NavigationEvent', event => {
+  window.addEventListener(WrapperEvent.NAVIGATION, event => {
     const accountId = new URLSearchParams(window.location.search).get('id');
     const data = (event as CustomEvent).detail;
     if (data) {
-      ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, {
+      ipcRenderer.send(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, {
         accountId,
         customUrl: data.url,
       });

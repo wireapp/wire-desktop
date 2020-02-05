@@ -1,23 +1,20 @@
 const plugins = ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-optional-chaining'];
 
-// TODO: Import presets from ".babel-register.js"
+const browserEnvPreset = [
+  '@babel/preset-env',
+  {
+    corejs: '2',
+    debug,
+    modules,
+    targets: {
+      browsers: ['chrome >= 78'],
+    },
+    useBuiltIns: 'usage',
+  },
+];
+
 const buildPresets = ({modules = false, debug = false}) => {
-  return [
-    '@babel/preset-react',
-    [
-      '@babel/preset-env',
-      {
-        corejs: '2',
-        debug,
-        modules,
-        targets: {
-          browsers: ['chrome >= 78'],
-        },
-        useBuiltIns: 'usage',
-      },
-    ],
-    '@babel/preset-typescript',
-  ];
+  return ['@babel/preset-react', '@babel/preset-typescript', browserEnvPreset];
 };
 
 module.exports = {
