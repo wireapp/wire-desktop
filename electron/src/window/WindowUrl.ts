@@ -1,3 +1,4 @@
+// TODO: Remove dependency on "querystring"
 import * as querystring from 'querystring';
 
 export class WindowUrl {

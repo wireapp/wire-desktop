@@ -108,13 +108,9 @@ const subscribeToWebappEvents = () => {
   });
 
   window.addEventListener(WrapperEvent.NAVIGATION, event => {
-    const accountId = new URLSearchParams(window.location.search).get('id');
     const data = (event as CustomEvent).detail;
     if (data) {
-      ipcRenderer.send(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, {
-        accountId,
-        customUrl: data.url,
-      });
+      ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
     }
   });
 };

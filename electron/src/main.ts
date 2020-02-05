@@ -207,7 +207,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     webPreferences: {
       backgroundThrottling: false,
       enableBlinkFeatures: '',
-      nodeIntegration: true,
+      nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
     },

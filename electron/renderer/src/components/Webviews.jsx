@@ -20,7 +20,6 @@
 import './Webviews.css';
 
 import React, {Component} from 'react';
-import {remote} from 'electron';
 
 import Webview from './Webview';
 import {EVENT_TYPE} from '../../../src/lib/eventType';
@@ -32,15 +31,6 @@ export default class Webviews extends Component {
     this.state = {
       canDelete: this._getCanDeletes(props.accounts),
     };
-  }
-
-  componentWillMount() {
-    remote.ipcMain.on(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, (event, {accountId, customUrl}) => {
-      const updatedWebapp = WindowUrl.createWebappUrl(window.location, customUrl);
-      this.props.updateAccountData(accountId, {
-        webappUrl: decodeURIComponent(updatedWebapp),
-      });
-    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -112,6 +102,16 @@ export default class Webviews extends Component {
 
   _onIpcMessage = (account, {channel, args}) => {
     switch (channel) {
+      case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
+        const [customUrl] = args;
+        const accountId = account.id;
+        const updatedWebapp = WindowUrl.createWebappUrl(window.location, customUrl);
+        this.props.updateAccountData(accountId, {
+          webappUrl: decodeURIComponent(updatedWebapp),
+        });
+        break;
+      }
+
       case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
         const [accountData] = args;
         this.props.updateAccountData(account.id, accountData);
