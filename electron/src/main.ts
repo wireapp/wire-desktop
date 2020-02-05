@@ -83,8 +83,6 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 
-type ChangeEnvironmentEvent = {customURL: string; accountId: string};
-
 let authenticatedProxyInfo: URL | undefined;
 
 const customProtocolHandler = new CustomProtocolHandler();
