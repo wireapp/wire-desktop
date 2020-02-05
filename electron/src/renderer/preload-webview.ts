@@ -34,6 +34,10 @@ interface TeamAccountInfo {
   userID: string;
 }
 
+enum WrapperEvent {
+  NAVIGATION = 'NavigationEvent',
+}
+
 const systemPreferences = remote.systemPreferences;
 
 const logger = getLogger(path.basename(__filename));
@@ -103,18 +107,12 @@ const subscribeToWebappEvents = () => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 
-  window.addEventListener(
-    'NavigationEvent',
-    event => {
-      const data = (event as CustomEvent).detail;
-      if (data) {
-        ipcRenderer.send(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, data);
-      }
-    },
-    {
-      once: true,
-    },
-  );
+  window.addEventListener(WrapperEvent.NAVIGATION, event => {
+    const data = (event as CustomEvent).detail;
+    if (data) {
+      ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
+    }
+  });
 };
 
 const subscribeToMainProcessEvents = () => {

@@ -1,21 +1,20 @@
 const plugins = ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-optional-chaining'];
 
-const buildPresets = ({modules = false, debug = false}) => {
-  return [
-    '@babel/preset-react',
-    [
-      '@babel/preset-env',
-      {
-        corejs: '2',
-        debug,
-        modules,
-        targets: {
-          browsers: ['chrome >= 78'],
-        },
-        useBuiltIns: 'usage',
+const buildPresets = ({debug = false, modules = false}) => {
+  const browserEnvPreset = [
+    '@babel/preset-env',
+    {
+      corejs: '2',
+      debug,
+      modules,
+      targets: {
+        browsers: ['chrome >= 78'],
       },
-    ],
+      useBuiltIns: 'usage',
+    },
   ];
+
+  return ['@babel/preset-react', '@babel/preset-typescript', browserEnvPreset];
 };
 
 module.exports = {

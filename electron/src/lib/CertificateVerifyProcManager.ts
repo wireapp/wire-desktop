@@ -25,9 +25,7 @@ import * as path from 'path';
 import {getText} from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import * as minimist from 'minimist';
 
-const argv = minimist(process.argv.slice(1));
 const logger = getLogger(path.basename(__filename));
 
 interface DisplayCertificateErrorOptions {
@@ -196,9 +194,7 @@ export const attachTo = (main: BrowserWindow) => {
 export const setCertificateVerifyProc = async (request: ProcRequest, cb: (verificationResult: number) => void) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
 
-  // For debugging purposes only! Bypass "net::ERR_CERT_UNABLE_TO_CHECK_REVOCATION" verification result
-  if (argv['bypass-revocation']) {
-    logger.info(`Debugging flag enabled: Bypassing certificate revocation.`);
+  if (verificationResult === 'net::ERR_CERT_UNABLE_TO_CHECK_REVOCATION') {
     return cb(CertificateVerificationResult.SUCCESS);
   }
 

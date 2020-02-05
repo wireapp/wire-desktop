@@ -65,6 +65,7 @@ import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 import ProxyAuth from './auth/ProxyAuth';
+import {WindowUrl} from './window/WindowUrl';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 
@@ -137,11 +138,6 @@ const bindIpcEvents = () => {
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
     WindowManager.showPrimaryWindow();
-  });
-
-  ipcMain.on(EVENT_TYPE.WRAPPER.CUSTOM_WEBAPP, async (_event, {url: customURL}: {url: string}) => {
-    EnvironmentUtil.setEnvironment(EnvironmentUtil.BackendType.CUSTOM, customURL);
-    await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(customURL)}`);
   });
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
@@ -527,15 +523,6 @@ class ElectronWrapperInit {
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
-            const url = params.src;
-
-            // Verify the URL is being loaded
-            if (!OriginValidator.isMatchingHost(url, BASE_URL)) {
-              event.preventDefault();
-              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${url}`);
-              return;
-            }
-
             // Use secure defaults
             params.autosize = 'false';
             params.contextIsolation = 'true';
