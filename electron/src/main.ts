@@ -563,22 +563,22 @@ class ElectronWrapperInit {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
-            const listener = (
-              _details: OnHeadersReceivedListenerDetails,
+            const listenerOnHeadersReceived = (
+              details: OnHeadersReceivedListenerDetails,
               callback: (response: HeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
-                'Access-Control-Allow-Credentials': 'true',
-                'Access-Control-Allow-Origin': 'http://localhost:8081',
+                'Access-Control-Allow-Credentials': ['true'],
+                'Access-Control-Allow-Origin': ['http://localhost:8081'],
               };
 
               callback({
                 cancel: false,
-                responseHeaders,
+                responseHeaders: {...details.responseHeaders, ...responseHeaders},
               });
             };
 
-            contents.session.webRequest.onHeadersReceived(filter, listener);
+            contents.session.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
           }
 
           contents.on('before-input-event', (_event, input) => {
