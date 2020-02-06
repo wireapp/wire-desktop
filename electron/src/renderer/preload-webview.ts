@@ -34,6 +34,10 @@ interface TeamAccountInfo {
   userID: string;
 }
 
+enum WrapperEvent {
+  NAVIGATION = 'NavigationEvent',
+}
+
 const systemPreferences = remote.systemPreferences;
 
 const logger = getLogger(path.basename(__filename));
@@ -102,6 +106,13 @@ const subscribeToWebappEvents = () => {
     );
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
+
+  window.addEventListener(WrapperEvent.NAVIGATION, event => {
+    const data = (event as CustomEvent).detail;
+    if (data) {
+      ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
+    }
+  });
 };
 
 const subscribeToMainProcessEvents = () => {
@@ -137,7 +148,7 @@ const subscribeToMainProcessEvents = () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS}", forwarding to amplify ...`);
     window.amplify.publish(window.z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event, hash: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (_event, hash: string) => {
     logger.info(
       `Received event "${EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH}" (hash: "${hash}"), forwarding to amplify ...`,
     );

@@ -17,8 +17,9 @@
  *
  */
 
-import {app, ipcMain} from 'electron';
+import {app, session, ipcMain, WebContents} from 'electron';
 import * as path from 'path';
+import {ValidationUtil} from '@wireapp/commons';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
@@ -43,7 +44,7 @@ export const checkSingleInstance = () => {
   if (process.mas) {
   } else {
     const gotSingleInstanceLock = app.requestSingleInstanceLock();
-    logger.info('Checking if we are the first instance...', gotSingleInstanceLock);
+    logger.info('Checking if we are the first instance ...', isFirstInstance);
 
     if (!EnvironmentUtil.platform.IS_WINDOWS && !gotSingleInstanceLock) {
       quit();
@@ -53,11 +54,26 @@ export const checkSingleInstance = () => {
   }
 };
 
+export const getWebViewId = (contents: WebContents): string | undefined => {
+  try {
+    const currentLocation = new URL(contents.getURL());
+    const webViewId = currentLocation.searchParams.get('id');
+    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
+  } catch (error) {
+    return undefined;
+  }
+};
+
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
 export const quit = (): void => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
+
+  logger.info('Clear cache ...');
+  if (session.defaultSession) {
+    session.defaultSession.clearCache().catch(error => logger.error(error));
+  }
 
   logger.info('Exiting ...');
   app.exit();

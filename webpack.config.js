@@ -12,7 +12,7 @@ module.exports = (env = {}) => ({
     rules: [
       {
         exclude: /node_modules/,
-        test: /\.jsx?$/,
+        test: /\.[tj]sx?$/,
         use: ['babel-loader'],
       },
       {
@@ -20,10 +20,6 @@ module.exports = (env = {}) => ({
         use: ['style-loader', 'css-loader'],
       },
     ],
-  },
-  node: {
-    fs: 'empty',
-    path: 'empty',
   },
   output: {
     filename: 'bundle.js',
@@ -39,7 +35,8 @@ module.exports = (env = {}) => ({
       ]
     : undefined,
   resolve: {
-    extensions: ['.js', '.jsx', '.json'],
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
   },
   stats: 'errors-only',
+  target: 'electron-renderer',
 });
