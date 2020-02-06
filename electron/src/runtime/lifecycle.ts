@@ -30,11 +30,10 @@ import * as EnvironmentUtil from './EnvironmentUtil';
 
 const logger = getLogger(path.basename(__filename));
 
-export let isFirstInstance: boolean | undefined = undefined;
-
 export async function checkForUpdate(): Promise<void> {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
     logger.info('Checking for Windows update ...');
+    const isFirstInstance = app.hasSingleInstanceLock();
     await Squirrel.handleSquirrelEvent(isFirstInstance);
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => Squirrel.installUpdate());
@@ -43,12 +42,11 @@ export async function checkForUpdate(): Promise<void> {
 
 export const checkSingleInstance = () => {
   if (process.mas) {
-    isFirstInstance = true;
   } else {
-    isFirstInstance = app.requestSingleInstanceLock();
-    logger.info('Checking if we are the first instance ...', isFirstInstance);
+    const gotSingleInstanceLock = app.requestSingleInstanceLock();
+    logger.info('Checking if we are the first instance ...', gotSingleInstanceLock);
 
-    if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
+    if (!EnvironmentUtil.platform.IS_WINDOWS && !gotSingleInstanceLock) {
       quit();
     } else {
       app.on('second-instance', () => WindowManager.showPrimaryWindow());
