@@ -44,7 +44,7 @@ export const checkSingleInstance = () => {
   if (process.mas) {
   } else {
     const gotSingleInstanceLock = app.requestSingleInstanceLock();
-    logger.info('Checking if we are the first instance ...', isFirstInstance);
+    logger.info('Checking if we are the first instance ...', gotSingleInstanceLock);
 
     if (!EnvironmentUtil.platform.IS_WINDOWS && !gotSingleInstanceLock) {
       quit();
