@@ -127,14 +127,18 @@ const customReplacements: Record<string, string> = {
   brandName: config.name,
 };
 
-export const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
+export const getText = (
+  stringIdentifier: i18nLanguageIdentifier,
+  paramReplacements?: Record<string, string>,
+): string => {
   const strings = getCurrent();
   let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
 
-  for (const replacement of Object.keys(customReplacements)) {
+  const replacements: Record<string, string> = {...customReplacements, ...paramReplacements};
+  for (const replacement of Object.keys(replacements)) {
     const regex = new RegExp(`{${replacement}}`, 'g');
     if (str.match(regex)) {
-      str = str.replace(regex, customReplacements[replacement]);
+      str = str.replace(regex, replacements[replacement]);
     }
   }
 

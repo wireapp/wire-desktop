@@ -110,8 +110,8 @@ const subscribeToWebappEvents = () => {
   window.addEventListener(WrapperEvent.NAVIGATION, event => {
     const data = (event as CustomEvent).detail;
     if (data) {
-      const decision = ipcRenderer.sendSync(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, data.url);
-      if (decision) {
+      const changeEnvironment = ipcRenderer.sendSync(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, data.url);
+      if (changeEnvironment) {
         ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
       }
     }
