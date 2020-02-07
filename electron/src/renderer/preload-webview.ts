@@ -110,7 +110,10 @@ const subscribeToWebappEvents = () => {
   window.addEventListener(WrapperEvent.NAVIGATION, event => {
     const data = (event as CustomEvent).detail;
     if (data) {
-      ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
+      const decision = ipcRenderer.sendSync(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, data.url);
+      if (decision) {
+        ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
+      }
     }
   });
 };
