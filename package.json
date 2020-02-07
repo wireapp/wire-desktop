@@ -172,6 +172,7 @@
     "test:bin": "mocha --require .babel-register.js \"bin/**/*.test?(.main).ts\"",
     "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\" --no-sandbox",
     "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\" --no-sandbox",
-    "test:react": "jest"
+    "test:react": "jest",
+    "translate:upload": "node ./bin/translations_upload.js"
   }
 }
