@@ -1584,10 +1584,10 @@
   resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.3.0.tgz#e8129b31021c81d90d564d9c4ff0f7f7b514e943"
   integrity sha512-BFokvX4NZlkhWq5/OoJUCS8Iels+MeRgzpd5V9QR3hj5swwCFGxJOAL7soPXkSNWo91gI1qwiTp8szB1O9aCfQ==
 
-"@wireapp/webapp-events@0.0.0":
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/@wireapp/webapp-events/-/webapp-events-0.0.0.tgz#1937048e31e60f14582e6732a2e84290fea31739"
-  integrity sha512-Oan/ARoq6CbtOHTdI2iqaWUrN1lw+OPnE4hh+08p6qbdnm3mfys0sFxL2HIZ9fhjgoKnwDE/rnMcfeDaX066+g==
+"@wireapp/webapp-events@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/@wireapp/webapp-events/-/webapp-events-0.1.0.tgz#303fa59d85aca3423e642d881ce9d32786d8416a"
+  integrity sha512-7qyER7E5mumeEC9VwVr8yb6UX6B4jpWjy7FWMnj1mASzeiBoTGVBpG2P7tmgsKxkhHvWRV/9QU+qjEkL7h948Q==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
