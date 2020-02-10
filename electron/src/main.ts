@@ -152,8 +152,11 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
-  ipcMain.on(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, (event, environmentUrl: string) => {
-    event.returnValue = changeEnvironmentPrompt(environmentUrl);
+  ipcMain.on(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, async (_event, title: string, environmentUrl: string) => {
+    main.webContents.send(
+      EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT_RESPONSE,
+      await changeEnvironmentPrompt(main, title, environmentUrl),
+    );
   });
 };
 

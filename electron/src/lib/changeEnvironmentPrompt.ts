@@ -17,22 +17,26 @@
  *
  */
 
-import {dialog, MessageBoxSyncOptions} from 'electron';
+import {dialog, MessageBoxOptions, BrowserWindow} from 'electron';
 import * as locale from '../locale/locale';
 
-export const changeEnvironmentPrompt = (url: string): boolean => {
+export const changeEnvironmentPrompt = async (
+  browserWindow: BrowserWindow,
+  title: string,
+  backendURL: string,
+): Promise<boolean> => {
   const cancelButton = locale.getText('changeEnvironmentModalCancel');
   const confirmButton = locale.getText('changeEnvironmentModalConfirm');
   const buttons = [confirmButton, cancelButton];
 
-  const options: MessageBoxSyncOptions = {
+  const options: MessageBoxOptions = {
     buttons,
     cancelId: buttons.indexOf(cancelButton),
     defaultId: buttons.indexOf(cancelButton),
-    message: locale.getText('changeEnvironmentModalText', {url}),
-    title: locale.getText('changeEnvironmentModalTitle'),
+    detail: locale.getText('changeEnvironmentModalText', {backendURL}),
+    message: locale.getText('changeEnvironmentModalTitle', {title}),
     type: 'info',
   };
-  const buttonIndex = dialog.showMessageBoxSync(options);
+  const buttonIndex = (await dialog.showMessageBox(browserWindow, options)).response;
   return buttons[buttonIndex] === confirmButton;
 };

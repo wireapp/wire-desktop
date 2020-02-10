@@ -25,6 +25,7 @@ import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
+import {BackendOptions} from '../lib/CustomBackend';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -111,6 +112,15 @@ const setupIpcInterface = (): void => {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
       accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
+  };
+
+  window.authorizeBackendSwap = (backendOptions: BackendOptions) => {
+    return new Promise(resolve => {
+      ipcRenderer.once(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT_RESPONSE, (_event, authorized: boolean) =>
+        resolve(authorized),
+      );
+      ipcRenderer.send(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, backendOptions.title, backendOptions.endpoints.backendURL);
+    });
   };
 };
 

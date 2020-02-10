@@ -23,6 +23,7 @@ import {Data as OpenGraphResult} from 'open-graph';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {i18nStrings} from './locale';
 import {Schemata} from './main';
+import {BackendOptions} from '../lib/CustomBackend';
 
 declare global {
   interface Window {
@@ -36,6 +37,7 @@ declare global {
     sendBadgeCount(count: number): void;
     sendDeleteAccount(accountId: string, sessionId?: string): Promise<void>;
     sendLogoutAccount(accountId: string): void;
+    authorizeBackendSwap(backendOptions: BackendOptions): Promise<boolean>;
     wire: any;
     z: {
       event: {

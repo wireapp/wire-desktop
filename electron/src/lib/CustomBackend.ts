@@ -31,13 +31,46 @@ import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
 
-const addCustomBackendToCSP = (originalCsp: string, backendUrl: string, directive: string = 'default-src') => {
-  const csp = parseCsp(originalCsp[0]);
-  // Note: The backend may not be the only host we want to whitelist?
-  csp[directive].push(backendUrl);
+export interface BackendOptions {
+  endpoints: {
+    backendURL: string;
+    backendWSURL: string;
+    blackListURL: string;
+    teamsURL: string;
+    accountsURL: string;
+    websiteURL: string;
+  };
+  title: string;
+}
+
+const addCustomBackendEndpointsToCSP = (originalCsp: string, backendOptions: any) => {
+  const csp = parseCsp(originalCsp);
+  const {backendURL, backendWSURL, blackListURL, teamsURL, accountsURL, websiteURL} = backendOptions.endpoints;
+  if (backendURL) {
+    csp['default-src'].push(backendURL);
+  }
+  if (backendWSURL) {
+    csp['default-src'].push(backendWSURL);
+  }
   return buildCsp({
     directives: csp,
   });
+};
+
+type ResponseHeaders = Record<string, string[]>;
+const changeHeadersFor = (
+  filterUrls: string[],
+  session: Electron.Session,
+  middleware: (responseHeaders: ResponseHeaders) => ResponseHeaders,
+) => {
+  session.webRequest.onHeadersReceived(
+    {urls: filterUrls.map(url => `${url}/*`)},
+    (details: OnHeadersReceivedListenerDetails, callback: (response: HeadersReceivedResponse) => void) =>
+      callback({
+        cancel: false,
+        responseHeaders: middleware((details as any).responseHeaders),
+      }),
+  );
 };
 
 export const injectCustomBackend = (
@@ -47,44 +80,36 @@ export const injectCustomBackend = (
   currentWebappUrl: string,
 ) => {
   const src = new URL(params.src);
-  const customBackend = src.searchParams.get('backendUrl');
-  if (customBackend) {
+  const backendOptions = src.searchParams.get('backendOptions');
+  if (backendOptions) {
+    const {backendURL, backendWSURL, blackListURL, teamsURL, accountsURL, websiteURL} = (JSON.parse(
+      backendOptions,
+    ) as BackendOptions).endpoints;
     logger.log('Using a custom backend for a webview...');
+
     // Remove backend url here to preserve privacy
-    src.searchParams.delete('backendUrl');
+    src.searchParams.delete('backendOptions');
     params.src = src.toString();
 
     // Get the session of the partition
     const currentSession =
       params.partition && params.partition !== '' ? session.fromPartition(params.partition) : session.defaultSession;
     if (currentSession) {
-      // Intercept requests
-      const filter = {urls: [`${currentWebappUrl}/*`, `${customBackend}/*`]};
-      const listenerOnHeadersReceived = (
-        details: OnHeadersReceivedListenerDetails,
-        callback: (response: HeadersReceivedResponse) => void,
-      ) => {
-        const responseHeaders = (details as any).responseHeaders;
-        const extraHeaders: Record<string, string[]> = {};
-
-        const hasCORS =
-          responseHeaders['Access-Control-Allow-Credentials'] || responseHeaders['Access-Control-Allow-Origin'];
-        if (hasCORS) {
-          extraHeaders['Access-Control-Allow-Credentials'] = ['true'];
-          extraHeaders['Access-Control-Allow-Origin'] = [currentWebappUrl];
-        }
-
-        const currentCSP = responseHeaders['Content-Security-Policy'];
+      changeHeadersFor([currentWebappUrl], currentSession, headers => {
+        const [currentCSP] = headers['Content-Security-Policy'];
         if (currentCSP) {
-          extraHeaders['Content-Security-Policy'] = [addCustomBackendToCSP(currentCSP, customBackend)];
+          headers['Content-Security-Policy'] = [addCustomBackendEndpointsToCSP(currentCSP, backendOptions)];
         }
-
-        callback({
-          cancel: false,
-          responseHeaders: {...details.responseHeaders, ...extraHeaders},
-        });
-      };
-      currentSession.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
+        return headers;
+      });
+      changeHeadersFor([backendURL, backendWSURL], currentSession, headers => {
+        const hasCORS = headers['Access-Control-Allow-Credentials'] || headers['Access-Control-Allow-Origin'];
+        if (hasCORS) {
+          headers['Access-Control-Allow-Credentials'] = ['true'];
+          headers['Access-Control-Allow-Origin'] = [currentWebappUrl];
+        }
+        return headers;
+      });
     }
   }
 };

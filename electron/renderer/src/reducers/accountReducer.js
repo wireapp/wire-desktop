@@ -21,9 +21,9 @@ import uuid from 'uuid/v4';
 
 import {ActionType} from '../actions';
 
-const createAccount = (ssoCode = undefined, backendUrl = undefined) => ({
+const createAccount = (ssoCode = undefined, backendOptions = undefined) => ({
   accentID: undefined,
-  backendUrl,
+  backendOptions,
   badgeCount: 0,
   id: uuid(),
   isAdding: true,
@@ -41,7 +41,7 @@ export default (state = [createAccount()], action) => {
   switch (action.type) {
     case ActionType.ADD_ACCOUNT: {
       const newState = state.map(account => ({...account, visible: false}));
-      newState.push(createAccount(undefined, action.backendUrl));
+      newState.push(createAccount(undefined, action.backendOptions));
       return newState;
     }
 
@@ -55,7 +55,7 @@ export default (state = [createAccount()], action) => {
         });
       } else {
         newState = state.map(account => ({...account, visible: false}));
-        newState.push(createAccount(action.ssoCode, action.backendUrl));
+        newState.push(createAccount(action.ssoCode, action.backendOptions));
       }
       return newState;
     }

@@ -24,6 +24,7 @@ import {EVENT_TYPE} from '../lib/eventType';
 import {getOpenGraphDataAsync} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import {BackendOptions} from '../lib/CustomBackend';
 
 interface TeamAccountInfo {
   accentID: string;
@@ -215,23 +216,24 @@ Object.defineProperty(window, 'wSSOCapable', {
 });
 
 // Expose custom backend logic for the webapp
-let _backendUrl: string | undefined = undefined;
-Object.defineProperty(window, 'customBackend', {
+let _backendOptions: BackendOptions | undefined = undefined;
+Object.defineProperty(window, 'backendOptions', {
   configurable: false,
   enumerable: false,
   get: () => {
     return new Promise(resolve => {
-      if (_backendUrl) {
-        return resolve(_backendUrl);
+      if (_backendOptions) {
+        return resolve(_backendOptions);
       }
-      ipcRenderer.on(EVENT_TYPE.CUSTOM_BACKEND.GET_URL_ACK, (_event, retrievedUrl: string | undefined) =>
-        resolve((_backendUrl = retrievedUrl)),
+      ipcRenderer.on(
+        EVENT_TYPE.CUSTOM_BACKEND.GET_OPTIONS_RESPONSE,
+        (_event, backendOptions: BackendOptions | undefined) => resolve((_backendOptions = backendOptions)),
       );
       ipcRenderer.sendToHost(EVENT_TYPE.CUSTOM_BACKEND.GET_URL);
     });
   },
-  set: (backendUrl: string) => {
-    ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.CREATE_WITH_CUSTOM_BACKEND, backendUrl);
+  set: (backendOptions: string) => {
+    ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.CREATE_WITH_CUSTOM_BACKEND, backendOptions);
   },
 });
 

@@ -109,8 +109,8 @@ export const abortAccountCreation = id => {
   };
 };
 
-export const addAccountWithCustomBackend = backendUrl => ({
-  backendUrl,
+export const addAccountWithCustomBackend = backendOptions => ({
+  backendOptions,
   type: ActionType.ADD_ACCOUNT,
 });
 
@@ -130,7 +130,7 @@ export const updateAccountData = (id, data) => {
   return dispatch => {
     const validatedAccountData = verifyObjectProperties(data, {
       accentID: 'Number',
-      backendUrl: 'String',
+      backendOptions: 'Object',
       name: 'String',
       picture: 'String',
       teamID: 'String',

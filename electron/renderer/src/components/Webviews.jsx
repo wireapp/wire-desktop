@@ -75,8 +75,8 @@ export default class Webviews extends Component {
     url.searchParams.set('id', account.id);
 
     // if there is a custom backend, add it in the url (will be removed after)
-    if (account.backendUrl) {
-      url.searchParams.set('backendUrl', account.backendUrl);
+    if (account.backendOptions) {
+      url.searchParams.set('backendOptions', JSON.stringify(account.backendOptions));
     }
     if (forceLogin || account.ssoCode) {
       url.pathname = '/auth';
@@ -104,19 +104,30 @@ export default class Webviews extends Component {
   _onIpcMessage = async (account, {channel, args}) => {
     switch (channel) {
       case EVENT_TYPE.ACCOUNT.CREATE_WITH_CUSTOM_BACKEND: {
-        const [customBackendUrl] = args;
-
-        // Ensure we only have an origin for the URL
-        const backendUrl = new URL(customBackendUrl).origin;
-        if (!backendUrl) {
-          throw Error('Provided URL is invalid');
+        const [backendOptions] = args;
+        if (!backendOptions) {
+          throw Error('Custom backend options not set');
         }
 
-        // Ask main process to show the prompt?
-        if (confirm(`This configuration will connect the app to a third-party server: ${backendUrl}`)) {
+        const {endpoints} = backendOptions;
+
+        // Validate URL for each parameter
+        if (!endpoints || typeof endpoints !== 'object') {
+          throw Error('Invalid or missing "endpoints" key');
+        }
+        const requiredValues = ['backendURL', 'backendWSURL', 'blackListURL', 'teamsURL', 'accountsURL', 'websiteURL'];
+        for (const requiredValue of requiredValues) {
+          if (!endpoints.hasOwnProperty(requiredValue)) {
+            throw Error(`Missing required value ${requiredValue}`);
+          }
+          endpoints[requiredValue] = new URL(endpoints[requiredValue]).toString();
+        }
+
+        const changeEnvironment = await window.authorizeBackendSwap(backendOptions);
+        if (changeEnvironment) {
           this.props.deleteAccount(account.id);
           await window.sendDeleteAccount(account.id, account.sessionID);
-          this.props.addAccountWithCustomBackend(backendUrl);
+          this.props.addAccountWithCustomBackend(backendOptions);
         }
         break;
       }
@@ -124,7 +135,7 @@ export default class Webviews extends Component {
       case EVENT_TYPE.CUSTOM_BACKEND.GET_URL: {
         document
           .querySelector(`Webview[data-accountid="${account.id}"]`)
-          .send(EVENT_TYPE.CUSTOM_BACKEND.GET_URL_ACK, account.backendUrl);
+          .send(EVENT_TYPE.CUSTOM_BACKEND.GET_OPTIONS_RESPONSE, account.backendOptions);
         break;
       }
 
@@ -181,7 +192,7 @@ export default class Webviews extends Component {
     }
     // Allow the deletion of a webview if it's the only one and
     // an account is being added and it does have a custom backend url set
-    if (this.props.accounts.length <= 1 && match.isAdding && match.backendUrl) {
+    if (this.props.accounts.length <= 1 && match.isAdding && match.backendOptions) {
       return true;
     }
     // Allow the webview to be deleted if an account is being added
@@ -205,8 +216,10 @@ export default class Webviews extends Component {
               onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"
             />
-            {account.visible && account.isAdding && !account.userID && account.backendUrl && (
-              <div className="Webviews-third-party-server">You are using a third-party server</div>
+            {account.visible && account.isAdding && !account.userID && account.backendOptions && (
+              <div className="Webviews-third-party-server">
+                You are using a third-party server from &quot;{account.backendOptions.title}&quot;
+              </div>
             )}
             {this.state.canDelete[account.id] && account.visible && (
               <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
