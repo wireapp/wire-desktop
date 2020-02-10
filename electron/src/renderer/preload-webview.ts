@@ -216,38 +216,23 @@ Object.defineProperty(window, 'wSSOCapable', {
 
 // Expose custom backend logic for the webapp
 let _backendUrl: string | undefined = undefined;
-Object.defineProperty(window, 'backendUrl', {
-  configurable: true,
+Object.defineProperty(window, 'customBackend', {
+  configurable: false,
   enumerable: false,
   get: () => {
     return new Promise(resolve => {
       if (_backendUrl) {
         return resolve(_backendUrl);
       }
-      ipcRenderer.on(EVENT_TYPE.CUSTOM_BACKEND.GET_URL_ACK, (event, retrievedUrl: string | undefined) =>
+      ipcRenderer.on(EVENT_TYPE.CUSTOM_BACKEND.GET_URL_ACK, (_event, retrievedUrl: string | undefined) =>
         resolve((_backendUrl = retrievedUrl)),
       );
       ipcRenderer.sendToHost(EVENT_TYPE.CUSTOM_BACKEND.GET_URL);
     });
   },
-  set: () => {
+  set: (backendUrl: string) => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.CREATE_WITH_CUSTOM_BACKEND, backendUrl);
   },
-  /*value: Object.freeze({
-    set url(backendUrl: string) {
-      ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.CREATE_WITH_CUSTOM_BACKEND, backendUrl);
-    },
-    get url() {
-      return new Promise(resolve => {
-        if (_backendUrl) {
-          return resolve(_backendUrl);
-        }
-        ipcRenderer.on(EVENT_TYPE.CUSTOM_BACKEND.GET_URL_ACK, (event, retrievedUrl: string | undefined) => resolve(_backendUrl = retrievedUrl));
-        ipcRenderer.sendToHost(EVENT_TYPE.CUSTOM_BACKEND.GET_URL);
-      });
-    }
-  }),*/
-  writable: true,
 });
 
 window.addEventListener('DOMContentLoaded', () => {
