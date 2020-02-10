@@ -185,7 +185,7 @@ export default class Webviews extends Component {
       return true;
     }
     // Allow the webview to be deleted if an account is being added
-    if (match.isAdding && !match.sessionID && !match.userID) {
+    if (match.isAdding && !match.userID) {
       return true;
     }
     return false;
@@ -205,6 +205,9 @@ export default class Webviews extends Component {
               onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"
             />
+            {account.visible && account.isAdding && !account.userID && account.backendUrl && (
+              <div className="Webviews-third-party-server">You are using a third-party server</div>
+            )}
             {this.state.canDelete[account.id] && account.visible && (
               <div className="Webviews-close" onClick={() => this._onWebviewClose(account)}>
                 <svg width="16" height="16" viewBox="0 0 16 16">

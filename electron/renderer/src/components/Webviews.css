@@ -33,3 +33,17 @@
   fill: #33373a;
   z-index: var(--z-index-webview-close-button);
 }
+.Webviews-third-party-server {
+  color: rgb(52, 56, 59) !important;
+  position: absolute;
+  top: 24px;
+  padding: 5px 16px;
+  background-color: rgb(247, 248, 250);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: var(--z-index-webview-third-party-server-notice);
+  pointer-events: none;
+}
