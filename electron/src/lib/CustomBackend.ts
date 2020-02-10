@@ -31,47 +31,53 @@ import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
 
+export interface BackendOptionsEndpoints {
+  backendURL: string;
+  backendWSURL: string;
+  blackListURL: string;
+  teamsURL: string;
+  accountsURL: string;
+  websiteURL: string;
+}
 export interface BackendOptions {
-  endpoints: {
-    backendURL: string;
-    backendWSURL: string;
-    blackListURL: string;
-    teamsURL: string;
-    accountsURL: string;
-    websiteURL: string;
-  };
+  endpoints: BackendOptionsEndpoints;
   title: string;
 }
 
-const addCustomBackendEndpointsToCSP = (originalCsp: string, backendOptions: any) => {
+const addCustomBackendEndpointsToCSP = (originalCsp: string, backendOptionsEndpoints: BackendOptionsEndpoints) => {
   const csp = parseCsp(originalCsp);
-  const {backendURL, backendWSURL, blackListURL, teamsURL, accountsURL, websiteURL} = backendOptions.endpoints;
+  const {backendURL, backendWSURL, blackListURL} = backendOptionsEndpoints;
   if (backendURL) {
-    csp['default-src'].push(backendURL);
+    csp['connect-src'].push(backendURL);
   }
   if (backendWSURL) {
-    csp['default-src'].push(backendWSURL);
+    csp['connect-src'].push(backendWSURL);
+  }
+  if (blackListURL) {
+    csp['connect-src'].push(blackListURL);
   }
   return buildCsp({
     directives: csp,
   });
 };
 
+const getOriginOf = (url: string): string => new URL(url).origin;
+
 type ResponseHeaders = Record<string, string[]>;
 const changeHeadersFor = (
   filterUrls: string[],
   session: Electron.Session,
-  middleware: (responseHeaders: ResponseHeaders) => ResponseHeaders,
-) => {
+  middleware: (url: string, headers: ResponseHeaders) => ResponseHeaders,
+) =>
   session.webRequest.onHeadersReceived(
     {urls: filterUrls.map(url => `${url}/*`)},
-    (details: OnHeadersReceivedListenerDetails, callback: (response: HeadersReceivedResponse) => void) =>
+    (details: OnHeadersReceivedListenerDetails, callback: (response: HeadersReceivedResponse) => void) => {
       callback({
         cancel: false,
-        responseHeaders: middleware((details as any).responseHeaders),
-      }),
+        responseHeaders: middleware(getOriginOf(details.url), (details as any).responseHeaders),
+      });
+    },
   );
-};
 
 export const injectCustomBackend = (
   _event: ElectronEvent,
@@ -82,9 +88,8 @@ export const injectCustomBackend = (
   const src = new URL(params.src);
   const backendOptions = src.searchParams.get('backendOptions');
   if (backendOptions) {
-    const {backendURL, backendWSURL, blackListURL, teamsURL, accountsURL, websiteURL} = (JSON.parse(
-      backendOptions,
-    ) as BackendOptions).endpoints;
+    const endpoints = (JSON.parse(backendOptions) as BackendOptions).endpoints;
+    const {backendURL, backendWSURL, blackListURL} = endpoints;
     logger.log('Using a custom backend for a webview...');
 
     // Remove backend url here to preserve privacy
@@ -95,19 +100,39 @@ export const injectCustomBackend = (
     const currentSession =
       params.partition && params.partition !== '' ? session.fromPartition(params.partition) : session.defaultSession;
     if (currentSession) {
-      changeHeadersFor([currentWebappUrl], currentSession, headers => {
-        const [currentCSP] = headers['Content-Security-Policy'];
-        if (currentCSP) {
-          headers['Content-Security-Policy'] = [addCustomBackendEndpointsToCSP(currentCSP, backendOptions)];
+      const origins = {
+        backendURL: getOriginOf(backendURL),
+        backendWSURL: getOriginOf(backendWSURL),
+        blackListURL: getOriginOf(blackListURL),
+        currentWebappUrl: getOriginOf(currentWebappUrl),
+      };
+      changeHeadersFor([currentWebappUrl, backendURL, backendWSURL], currentSession, (origin, headers) => {
+        switch (origin) {
+          case origins.currentWebappUrl: {
+            logger.log('Modifying CSP for the web app...');
+            const [currentCSP] =
+              headers['Content-Security-Policy'] || headers['X-Content-Security-Policy'] || headers['X-WebKit-CSP'];
+            if (currentCSP) {
+              headers['Content-Security-Policy'] = headers['X-Content-Security-Policy'] = headers['X-WebKit-CSP'] = [
+                addCustomBackendEndpointsToCSP(currentCSP, endpoints),
+              ];
+            }
+            break;
+          }
+
+          case origins.backendURL:
+          case origins.backendWSURL:
+          case origins.blackListURL: {
+            logger.log('Modifying CORS for the backend...');
+            const hasCORS = headers['Access-Control-Allow-Credentials'] || headers['Access-Control-Allow-Origin'];
+            if (hasCORS) {
+              headers['Access-Control-Allow-Credentials'] = ['true'];
+              headers['Access-Control-Allow-Origin'] = [currentWebappUrl];
+            }
+            break;
+          }
         }
-        return headers;
-      });
-      changeHeadersFor([backendURL, backendWSURL], currentSession, headers => {
-        const hasCORS = headers['Access-Control-Allow-Credentials'] || headers['Access-Control-Allow-Origin'];
-        if (hasCORS) {
-          headers['Access-Control-Allow-Credentials'] = ['true'];
-          headers['Access-Control-Allow-Origin'] = [currentWebappUrl];
-        }
+
         return headers;
       });
     }
