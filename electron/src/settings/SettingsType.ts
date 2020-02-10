@@ -19,7 +19,6 @@
 
 export enum SettingsType {
   AUTO_LAUNCH = 'shouldAutoLaunch',
-  CUSTOM_WEBAPP_URL = 'customWebAppURL',
   ENV = 'env',
   FULL_SCREEN = 'fullscreen',
   LOCALE = 'locale',

@@ -30,6 +30,9 @@ import {
   OnHeadersReceivedResponse as HeadersReceivedResponse,
   shell,
   WebContents,
+  webContents,
+  session,
+  dialog,
 } from 'electron';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
@@ -69,6 +72,8 @@ import {WindowUrl} from './window/WindowUrl';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import {changeEnvironmentPrompt} from './lib/changeEnvironmentPrompt';
+import * as parseCsp from 'content-security-policy-parser';
+import * as buildCsp from 'content-security-policy-builder';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -477,6 +482,38 @@ const applyProxySettings = async (authenticatedProxyDetails: any, webContents: E
   });
 };
 
+const allowCORSForLocalhost = (contents: WebContents) => {
+  const filter: Filter = {
+    urls: config.backendOrigins.map(value => `${value}/*`),
+  };
+
+  const listenerOnHeadersReceived = (
+    details: OnHeadersReceivedListenerDetails,
+    callback: (response: HeadersReceivedResponse) => void,
+  ) => {
+    const responseHeaders = {
+      'Access-Control-Allow-Credentials': ['true'],
+      'Access-Control-Allow-Origin': ['http://localhost:8081'],
+    };
+
+    callback({
+      cancel: false,
+      responseHeaders: {...details.responseHeaders, ...responseHeaders},
+    });
+  };
+
+  contents.session.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
+};
+
+const addCustomBackendToCSP = (originalCsp: string, backendUrl: string, directive: string = 'default-src') => {
+  const csp = parseCsp(originalCsp[0]);
+  // Note: The backend only may not be the only host we want to whitelist?
+  csp[directive].push(backendUrl);
+  return buildCsp({
+    directives: csp,
+  });
+};
+
 class ElectronWrapperInit {
   logger: logdown.Logger;
 
@@ -533,18 +570,65 @@ class ElectronWrapperInit {
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
-            webPreferences.preload = PRELOAD_RENDERER_JS;
+            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
             webPreferences.webSecurity = true;
             webPreferences.enableBlinkFeatures = '';
+
+            // Custom backend logic implementation
+            const src = new URL(params.src);
+            const customBackend = src.searchParams.get('backendUrl');
+            if (customBackend) {
+              this.logger.log('Using custom backend for a webview...');
+              // Remove backend url here to preserve privacy
+              src.searchParams.delete('backendUrl');
+              params.src = src.toString();
+
+              // Get the session of the partition
+              const currentSession =
+                params.partition && params.partition !== ''
+                  ? session.fromPartition(params.partition)
+                  : session.defaultSession;
+              if (currentSession) {
+                // Intercept requests
+                const currentWebappUrl = EnvironmentUtil.URL_WEBAPP[EnvironmentUtil.getEnvironment()];
+                const filter = {urls: [`${currentWebappUrl}/*`, `${customBackend}/*`]};
+                const listenerOnHeadersReceived = (
+                  details: OnHeadersReceivedListenerDetails,
+                  callback: (response: HeadersReceivedResponse) => void,
+                ) => {
+                  const responseHeaders = (details as any).responseHeaders;
+                  const extraHeaders: Record<string, string[]> = {};
+
+                  const hasCORS =
+                    responseHeaders['Access-Control-Allow-Credentials'] ||
+                    responseHeaders['Access-Control-Allow-Origin'];
+                  if (hasCORS) {
+                    extraHeaders['Access-Control-Allow-Credentials'] = ['true'];
+                    extraHeaders['Access-Control-Allow-Origin'] = [currentWebappUrl];
+                  }
+
+                  const currentCSP = responseHeaders['Content-Security-Policy'];
+                  if (currentCSP) {
+                    extraHeaders['Content-Security-Policy'] = [addCustomBackendToCSP(currentCSP, customBackend)];
+                  }
+
+                  callback({
+                    cancel: false,
+                    responseHeaders: {...details.responseHeaders, ...extraHeaders},
+                  });
+                };
+                currentSession.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
+              }
+            }
           });
           break;
         }
         case 'webview': {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
-          contents.on('will-navigate', (event: ElectronEvent, url: string) => {
-            willNavigateInWebview(event, url, contents.getURL());
-          });
+          contents.on('will-navigate', (event: ElectronEvent, url: string) =>
+            willNavigateInWebview(event, url, contents.getURL()),
+          );
           if (ENABLE_LOGGING) {
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
@@ -561,30 +645,11 @@ class ElectronWrapperInit {
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
-          // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
+          // Override remote Access-Control-Allow-Origin for custom backend or localhost (CORS bypass)
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter: Filter = {
-              urls: config.backendOrigins.map(value => `${value}/*`),
-            };
-
-            const listenerOnHeadersReceived = (
-              details: OnHeadersReceivedListenerDetails,
-              callback: (response: HeadersReceivedResponse) => void,
-            ) => {
-              const responseHeaders = {
-                'Access-Control-Allow-Credentials': ['true'],
-                'Access-Control-Allow-Origin': ['http://localhost:8081'],
-              };
-
-              callback({
-                cancel: false,
-                responseHeaders: {...details.responseHeaders, ...responseHeaders},
-              });
-            };
-
-            contents.session.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
+            allowCORSForLocalhost(contents);
           }
 
           contents.on('before-input-event', (_event, input) => {

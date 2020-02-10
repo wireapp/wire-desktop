@@ -5,6 +5,8 @@
     "@wireapp/commons": "3.3.2",
     "auto-launch": "5.0.5",
     "axios": "0.19.2",
+    "content-security-policy-builder": "2.1.0",
+    "content-security-policy-parser": "0.3.0",
     "content-type": "1.0.4",
     "electron-window-state": "5.0.3",
     "file-url": "3.0.0",

@@ -23,7 +23,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import {config} from '../../../dist/settings/config';
-import {initiateSSO, switchAccount, updateAccount} from '../actions';
+import {initiateSSO, switchAccount, updateAccount, deleteAccount, addAccountWithCustomBackend} from '../actions';
 import WebviewsContainer from '../containers/WebviewsContainer';
 import * as EVENT_TYPE from '../lib/eventType';
 import IsOnline from './IsOnline';
@@ -100,7 +100,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps() {
-  return {initiateSSO, switchAccount, updateAccount};
+  return {addAccountWithCustomBackend, deleteAccount, initiateSSO, switchAccount, updateAccount};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps())(App);

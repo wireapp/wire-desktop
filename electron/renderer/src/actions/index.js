@@ -19,8 +19,6 @@
 
 /* eslint-disable no-console */
 
-import uuid from 'uuid/v4';
-
 import {config} from '../../../dist/settings/config';
 import {verifyObjectProperties} from '../lib/verifyObjectProperties';
 
@@ -38,14 +36,12 @@ export const ActionType = {
   UPDATE_ACCOUNT_LIFECYCLE: 'UPDATE_ACCOUNT_LIFECYCLE',
 };
 
-export const addAccount = (withSession = true) => ({
-  sessionID: withSession ? uuid() : undefined,
+export const addAccount = () => ({
   type: ActionType.ADD_ACCOUNT,
 });
 
-export const initiateSSO = (id, ssoCode = undefined, withSession = true) => ({
+export const initiateSSO = (id, ssoCode = undefined) => ({
   id,
-  sessionID: withSession ? uuid() : undefined,
   ssoCode,
   type: ActionType.INITIATE_SSO,
 });
@@ -108,10 +104,15 @@ export const abortAccountCreation = id => {
     if (lastAccount) {
       dispatch(switchAccount(lastAccount.id));
     } else {
-      dispatch(addAccount(false));
+      dispatch(addAccount());
     }
   };
 };
+
+export const addAccountWithCustomBackend = backendUrl => ({
+  backendUrl,
+  type: ActionType.ADD_ACCOUNT,
+});
 
 export const addAccountWithSession = () => {
   return (dispatch, getState) => {
@@ -129,12 +130,12 @@ export const updateAccountData = (id, data) => {
   return dispatch => {
     const validatedAccountData = verifyObjectProperties(data, {
       accentID: 'Number',
+      backendUrl: 'String',
       name: 'String',
       picture: 'String',
       teamID: 'String',
       teamRole: 'String',
       userID: 'String',
-      webappUrl: 'String',
     });
 
     if (validatedAccountData) {

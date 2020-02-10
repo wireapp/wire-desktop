@@ -35,7 +35,7 @@ declare global {
     locStringsDefault: i18nStrings;
     sendBadgeCount(count: number): void;
     sendDeleteAccount(accountId: string, sessionId?: string): Promise<void>;
-    sendLogoutAccount(accountId: string): Promise<void>;
+    sendLogoutAccount(accountId: string): void;
     wire: any;
     z: {
       event: {

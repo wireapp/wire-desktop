@@ -36,16 +36,4 @@ export class WindowUrl {
     const unescapedQueryParams = WindowUrl.getQueryString(params);
     return encodeURIComponent(`${fullHost}${unescapedQueryParams}`);
   }
-
-  static createWebappUrl(localRendererUrl: string, customBackendUrl: string): string {
-    const localFileParams = WindowUrl.parseParams(localRendererUrl);
-    const envUrlParams = WindowUrl.parseParams(localFileParams.get('env') as string);
-    const customBackendUrlParams = WindowUrl.parseParams(customBackendUrl);
-    const mergedParams = envUrlParams;
-    customBackendUrlParams.forEach((value, key) => {
-      mergedParams.set(key, value);
-    });
-    const newEnvUrl = WindowUrl.replaceQueryParams(customBackendUrl, mergedParams);
-    return newEnvUrl;
-  }
 }

@@ -45,17 +45,4 @@ describe('WindowUrl', () => {
       assert.strictEqual(newUrl, expectedUrl);
     });
   });
-
-  describe('createWebappUrl', () => {
-    it('creates a custom environment webapp URL based on parameters from an existing renderer page', () => {
-      const rendererPage =
-        'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=https%3A%2F%2Fwire-webapp-dev.zinfra.io%3Fhl%3Den%26enableLogging%3D%40wireapp%2F*';
-      const customWebapp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
-      const updatedWebapp = WindowUrl.createWebappUrl(rendererPage, customWebapp);
-      const expectedUrl = encodeURIComponent(
-        'https://webapp.qa-demo.wire.link?hl=en&enableLogging=@wireapp/*&clienttype=permanent',
-      );
-      assert.strictEqual(updatedWebapp, expectedUrl);
-    });
-  });
 });

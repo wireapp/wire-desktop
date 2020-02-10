@@ -21,9 +21,8 @@ import './Webviews.css';
 
 import React, {Component} from 'react';
 
+import * as EVENT_TYPE from '../lib/eventType';
 import Webview from './Webview';
-import {EVENT_TYPE} from '../../../src/lib/eventType';
-import {WindowUrl} from '../../../src/window/WindowUrl';
 
 export default class Webviews extends Component {
   constructor(props) {
@@ -33,29 +32,23 @@ export default class Webviews extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({canDelete: this._getCanDeletes(nextProps.accounts)});
+  componentDidUpdate() {
+    this.setState({canDelete: this._getCanDeletes(this.props.accounts)});
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    for (const nextAccountState of nextProps.accounts) {
-      const previousAccountState = this.props.accounts.find(_account => nextAccountState.id === _account.id);
-      if (!previousAccountState) {
+    for (const account of nextProps.accounts) {
+      const match = this.props.accounts.find(_account => account.id === _account.id);
+      if (!match) {
         return true;
       }
       // If a SSO code is set on a window, use it
-      const shouldRedirectToSSOLogin =
-        nextAccountState.isAdding && previousAccountState.ssoCode !== nextAccountState.ssoCode;
-      const shouldUseCustomWebappUrl =
-        !!nextAccountState.webappUrl && previousAccountState.webappUrl !== nextAccountState.webappUrl;
-
-      if (shouldRedirectToSSOLogin || shouldUseCustomWebappUrl) {
+      if (match.ssoCode !== account.ssoCode && account.isAdding) {
         document
-          .querySelector(`Webview[data-accountid="${nextAccountState.id}"]`)
-          .loadURL(this._getEnvironmentUrl(nextAccountState));
+          .querySelector(`Webview[data-accountid="${account.id}"]`)
+          .loadURL(this._getEnvironmentUrl(account, false));
       }
-
-      if (previousAccountState.visible !== nextAccountState.visible) {
+      if (match.visible !== account.visible) {
         return true;
       }
     }
@@ -72,17 +65,25 @@ export default class Webviews extends Component {
     );
   };
 
-  _getEnvironmentUrl(account) {
+  _getEnvironmentUrl(account, forceLogin) {
     const currentLocation = new URL(window.location.href);
-    const envParam = account.webappUrl || currentLocation.searchParams.get('env');
+    const envParam = currentLocation.searchParams.get('env');
     const decodedEnvParam = decodeURIComponent(envParam);
     const url = new URL(decodedEnvParam);
 
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
-    url.pathname = '/auth';
-
+    // if there is a custom backend, add it in the url (will be removed after)
+    if (account.backendUrl) {
+      url.searchParams.set('backendUrl', account.backendUrl);
+    }
+    if (forceLogin || account.ssoCode) {
+      url.pathname = '/auth';
+    }
+    if (forceLogin) {
+      url.hash = '#login';
+    }
     if (account.ssoCode && account.isAdding) {
       url.hash = `#sso/${account.ssoCode}`;
     }
@@ -100,15 +101,30 @@ export default class Webviews extends Component {
     window.sendBadgeCount(accumulatedCount);
   };
 
-  _onIpcMessage = (account, {channel, args}) => {
+  _onIpcMessage = async (account, {channel, args}) => {
     switch (channel) {
-      case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
-        const [customUrl] = args;
-        const accountId = account.id;
-        const updatedWebapp = WindowUrl.createWebappUrl(window.location, customUrl);
-        this.props.updateAccountData(accountId, {
-          webappUrl: decodeURIComponent(updatedWebapp),
-        });
+      case EVENT_TYPE.ACCOUNT.CREATE_WITH_CUSTOM_BACKEND: {
+        const [customBackendUrl] = args;
+
+        // Ensure we only have an origin for the URL
+        const backendUrl = new URL(customBackendUrl).origin;
+        if (!backendUrl) {
+          throw Error('Provided URL is invalid');
+        }
+
+        // Ask main process to show the prompt?
+        if (confirm(`This configuration will connect the app to a third-party server: ${backendUrl}`)) {
+          this.props.deleteAccount(account.id);
+          await window.sendDeleteAccount(account.id, account.sessionID);
+          this.props.addAccountWithCustomBackend(backendUrl);
+        }
+        break;
+      }
+
+      case EVENT_TYPE.CUSTOM_BACKEND.GET_URL: {
+        document
+          .querySelector(`Webview[data-accountid="${account.id}"]`)
+          .send(EVENT_TYPE.CUSTOM_BACKEND.GET_URL_ACK, account.backendUrl);
         break;
       }
 
@@ -153,16 +169,27 @@ export default class Webviews extends Component {
     this._deleteWebview(account);
   };
 
-  _deleteWebview = account => {
-    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
-      this.props.abortAccountCreation(account.id);
-    });
+  _deleteWebview = async account => {
+    await window.sendDeleteAccount(account.id, account.sessionID);
+    this.props.abortAccountCreation(account.id);
   };
 
-  _canDeleteWebview(account) {
+  _canDeleteWebview = account => {
     const match = this.props.accounts.find(_account => account.id === _account.id);
-    return !match || (!match.userID && !!match.sessionID);
-  }
+    if (!match) {
+      return false;
+    }
+    // Allow the deletion of a webview if it's the only one and
+    // an account is being added and it does have a custom backend url set
+    if (this.props.accounts.length <= 1 && match.isAdding && match.backendUrl) {
+      return true;
+    }
+    // Allow the webview to be deleted if an account is being added
+    if (match.isAdding && !match.sessionID && !match.userID) {
+      return true;
+    }
+    return false;
+  };
 
   render() {
     return (
@@ -173,7 +200,7 @@ export default class Webviews extends Component {
               className={`Webview${account.visible ? '' : ' hide'}`}
               data-accountid={account.id}
               visible={account.visible}
-              src={this._getEnvironmentUrl(account)}
+              src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
               partition={account.sessionID}
               onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"

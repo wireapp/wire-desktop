@@ -100,16 +100,16 @@ const setupIpcInterface = (): void => {
 
       console.info(`Processing deletion of "${accountID}"`);
       const viewInstanceId = accountWebview.getWebContents().id;
-      ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
+      ipcRenderer.once(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
     });
   };
 
-  window.sendLogoutAccount = async (accountId: string): Promise<void> => {
+  window.sendLogoutAccount = (accountId: string): void => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
-      await accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
+      accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
 };

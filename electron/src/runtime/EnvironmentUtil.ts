@@ -105,12 +105,9 @@ const restoreEnvironment = (): BackendType => {
   return restoredEnvironment;
 };
 
-export const setEnvironment = (env?: BackendType, customURL?: string): void => {
+export const setEnvironment = (env?: BackendType): void => {
   currentEnvironment = env || restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment);
-  if (customURL) {
-    settings.save(SettingsType.CUSTOM_WEBAPP_URL, customURL);
-  }
   settings.persistToFile();
 };
 
@@ -126,10 +123,6 @@ export const web = {
 
     if (app.IS_DEVELOPMENT) {
       const currentEnvironment = getEnvironment();
-      if (currentEnvironment === BackendType.CUSTOM) {
-        const envUrl = settings.restore(SettingsType.CUSTOM_WEBAPP_URL, '');
-        return envUrl || URL_WEBAPP.PRODUCTION;
-      }
       return URL_WEBAPP[currentEnvironment];
     }
 

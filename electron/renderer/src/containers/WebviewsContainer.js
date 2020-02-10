@@ -21,6 +21,8 @@ import {connect} from 'react-redux';
 
 import {
   abortAccountCreation,
+  addAccountWithCustomBackend,
+  deleteAccount,
   resetIdentity,
   switchAccount,
   updateAccountBadgeCount,
@@ -31,6 +33,8 @@ import Webviews from '../components/Webviews';
 
 export default connect(state => ({accounts: state.accounts}), {
   abortAccountCreation,
+  addAccountWithCustomBackend,
+  deleteAccount,
   resetIdentity,
   switchAccount,
   updateAccountBadgeCount,

@@ -2868,6 +2868,16 @@ contains-path@^0.1.0:
   resolved "https://registry.npmjs.org/contains-path/-/contains-path-0.1.0.tgz#fe8cf184ff6670b6baef01a9d4861a5cbec4120a"
   integrity sha1-/ozxhP9mcLa67wGp1IYaXL7EEgo=
 
+content-security-policy-builder@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/content-security-policy-builder/-/content-security-policy-builder-2.1.0.tgz#0a2364d769a3d7014eec79ff7699804deb8cfcbb"
+  integrity sha512-/MtLWhJVvJNkA9dVLAp6fg9LxD2gfI6R2Fi1hPmfjYXSahJJzcfvoeDOxSyp4NvxMuwWv3WMssE9o31DoULHrQ==
+
+content-security-policy-parser@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.npmjs.org/content-security-policy-parser/-/content-security-policy-parser-0.3.0.tgz#a14d4ed54c8d098621ba46cabcd20a78be0c691e"
+  integrity sha512-ub90B4t9EfDPv3DCH7vEwGe4tVMkSm4Ow1HsmvmEQwinDfpTEDmkuJVa5WpzHDTt2bUirNRZuzL6S0msASlJhg==
+
 content-type@1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
@@ -10302,7 +10312,6 @@ winreg@1.2.4:
 
 "wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.41":
   version "0.24.41"
-  uid "00168cb227765506bc0a1cb6ff8f3d62fcb5268c"
   resolved "https://github.com/wireapp/wire-web-config-default#00168cb227765506bc0a1cb6ff8f3d62fcb5268c"
   dependencies:
     adm-zip "0.4.13"
@@ -10310,7 +10319,6 @@ winreg@1.2.4:
 
 "wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.41-0":
   version "0.24.41-0"
-  uid fb1745048bf0255a7eb3204d9d79ad53dce3ba86
   resolved "https://github.com/wireapp/wire-web-config-wire#fb1745048bf0255a7eb3204d9d79ad53dce3ba86"
   dependencies:
     adm-zip "0.4.13"
