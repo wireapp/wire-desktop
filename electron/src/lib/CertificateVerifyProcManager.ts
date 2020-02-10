@@ -193,11 +193,6 @@ export const attachTo = (main: BrowserWindow) => {
 // @see https://www.electronjs.org/docs/api/session#sessetcertificateverifyprocproc
 export const setCertificateVerifyProc = async (request: ProcRequest, cb: (verificationResult: number) => void) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
-
-  if (verificationResult === 'net::ERR_CERT_UNABLE_TO_CHECK_REVOCATION') {
-    return cb(CertificateVerificationResult.SUCCESS);
-  }
-
   // Check browser results
   if (verificationResult !== 'net::OK') {
     logger.error(
