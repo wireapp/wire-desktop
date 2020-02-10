@@ -22,6 +22,7 @@ import './Webviews.css';
 import React, {Component} from 'react';
 
 import * as EVENT_TYPE from '../lib/eventType';
+import {getText} from '../lib/locale';
 import Webview from './Webview';
 
 export default class Webviews extends Component {
@@ -218,7 +219,7 @@ export default class Webviews extends Component {
             />
             {account.visible && account.isAdding && !account.userID && account.backendOptions && (
               <div className="Webviews-third-party-server">
-                You are using a third-party server from &quot;{account.backendOptions.title}&quot;
+                {getText('thirdPartyBackendNotice')} &quot;{account.backendOptions.title}&quot;
               </div>
             )}
             {this.state.canDelete[account.id] && account.visible && (
