@@ -1584,6 +1584,11 @@
   resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.3.0.tgz#e8129b31021c81d90d564d9c4ff0f7f7b514e943"
   integrity sha512-BFokvX4NZlkhWq5/OoJUCS8Iels+MeRgzpd5V9QR3hj5swwCFGxJOAL7soPXkSNWo91gI1qwiTp8szB1O9aCfQ==
 
+"@wireapp/webapp-events@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/@wireapp/webapp-events/-/webapp-events-0.1.0.tgz#303fa59d85aca3423e642d881ce9d32786d8416a"
+  integrity sha512-7qyER7E5mumeEC9VwVr8yb6UX6B4jpWjy7FWMnj1mASzeiBoTGVBpG2P7tmgsKxkhHvWRV/9QU+qjEkL7h948Q==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.npmjs.org/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
@@ -10310,16 +10315,16 @@ winreg@1.2.4:
   resolved "https://registry.npmjs.org/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
 
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.41":
-  version "0.24.41"
-  resolved "https://github.com/wireapp/wire-web-config-default#00168cb227765506bc0a1cb6ff8f3d62fcb5268c"
+"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.24.42":
+  version "0.24.42"
+  resolved "https://github.com/wireapp/wire-web-config-default#e33dc2ea5b57c092ae9960d987b8b56a2a27ad59"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.41-0":
-  version "0.24.41-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#fb1745048bf0255a7eb3204d9d79ad53dce3ba86"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.43-0":
+  version "0.24.43-0"
+  resolved "https://github.com/wireapp/wire-web-config-wire#f12adb53123a573066ce4bc50f4c9539304eff02"
   dependencies:
     adm-zip "0.4.13"
     sort-json "2.0.0"

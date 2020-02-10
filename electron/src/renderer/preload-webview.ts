@@ -19,7 +19,7 @@
 
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
-
+import {WebAppEvents} from '@wireapp/webapp-events';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getOpenGraphDataAsync} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
@@ -33,10 +33,6 @@ interface TeamAccountInfo {
   teamID?: string;
   teamRole: string;
   userID: string;
-}
-
-enum WrapperEvent {
-  NAVIGATION = 'NavigationEvent',
 }
 
 const systemPreferences = remote.systemPreferences;
