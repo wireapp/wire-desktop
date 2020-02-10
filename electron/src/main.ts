@@ -545,9 +545,9 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, url: string) => {
       // Ensure navigation is to a whitelisted domain
-      if (OriginValidator.isMatchingHost(url, baseUrl)) {
+      if (OriginValidator.isMatchingHost(url, BASE_URL)) {
         this.logger.log(`Navigating inside webview. URL: ${url}`);
       } else {
         this.logger.log(`Preventing navigation inside <webview>. URL: ${url}`);
@@ -626,9 +626,7 @@ class ElectronWrapperInit {
         case 'webview': {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
-          contents.on('will-navigate', (event: ElectronEvent, url: string) =>
-            willNavigateInWebview(event, url, contents.getURL()),
-          );
+          contents.on('will-navigate', willNavigateInWebview);
           if (ENABLE_LOGGING) {
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
