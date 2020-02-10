@@ -34,17 +34,26 @@
   z-index: var(--z-index-webview-close-button);
 }
 .Webviews-third-party-server {
-  color: rgb(52, 56, 59) !important;
+  color: #fff !important;
+  background-color: #95989a;
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.08);
   position: absolute;
   top: 24px;
-  padding: 5px 16px;
-  background-color: rgb(247, 248, 250);
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   text-align: center;
   left: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M2.757 14.657L8 9.414l5.243 5.243 1.414-1.414L9.414 8l5.243-5.243-1.414-1.414L8 6.586 2.757 1.343 1.343 2.757 6.586 8l-5.243 5.243' fill='white' /%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% + 12px) center;
+  background-origin: content-box;
+  background-size: 8px 8px;
+  padding: 10px;
+  padding-right: 22px;
   transform: translate(-50%, 0);
   z-index: var(--z-index-webview-third-party-server-notice);
-  pointer-events: none;
+  cursor: pointer;
+  min-width: 450px;
+  user-select: none;
 }

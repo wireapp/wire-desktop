@@ -233,7 +233,7 @@ Object.defineProperty(window, 'backendOptions', {
     });
   },
   set: (backendOptions: BackendOptions) =>
-    ipcRenderer.send(EVENT_TYPE.ACCOUNT.CREATE_WITH_CUSTOM_BACKEND, backendOptions),
+    ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.CREATE_WITH_CUSTOM_BACKEND, backendOptions),
 });
 
 window.addEventListener('DOMContentLoaded', () => {

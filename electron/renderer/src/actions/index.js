@@ -25,6 +25,7 @@ import {verifyObjectProperties} from '../lib/verifyObjectProperties';
 export const ActionType = {
   ADD_ACCOUNT: 'ADD_ACCOUNT',
   DELETE_ACCOUNT: 'DELETE_ACCOUNT',
+  DISMISS_THIRD_PARTY_NOTICE: 'DISMISS_THIRD_PARTY_NOTICE',
   HIDE_CONTEXT_MENUS: 'HIDE_CONTEXT_MENUS',
   INITIATE_SSO: 'INITIATE_SSO',
   RESET_IDENTITY: 'RESET_IDENTITY',
@@ -59,6 +60,11 @@ export const resetIdentity = (id = true) => ({
 export const switchAccount = id => ({
   id,
   type: ActionType.SWITCH_ACCOUNT,
+});
+
+export const dismissThirdPartyNotice = id => ({
+  id,
+  type: ActionType.DISMISS_THIRD_PARTY_NOTICE,
 });
 
 export const updateAccount = (id, data) => ({

@@ -49,10 +49,17 @@ export default class Webviews extends Component {
           .querySelector(`Webview[data-accountid="${account.id}"]`)
           .loadURL(this._getEnvironmentUrl(account, false));
       }
+
+      // When third party notice has been dismissed
+      if (match.thirdPartyNoticeDismissed !== account.thirdPartyNoticeDismissed) {
+        return true;
+      }
+
       if (match.visible !== account.visible) {
         return true;
       }
     }
+
     return JSON.stringify(nextState.canDelete) !== JSON.stringify(this.state.canDelete);
   }
 
@@ -182,6 +189,10 @@ export default class Webviews extends Component {
     this._deleteWebview(account);
   };
 
+  _onThirdPartyNoticeDismiss = account => {
+    this.props.dismissThirdPartyNotice(account.id);
+  };
+
   _deleteWebview = async account => {
     await window.sendDeleteAccount(account.id, account.sessionID);
     this.props.abortAccountCreation(account.id);
@@ -218,8 +229,8 @@ export default class Webviews extends Component {
               onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"
             />
-            {account.visible && account.isAdding && !account.userID && account.backendOptions && (
-              <div className="Webviews-third-party-server">
+            {account.visible && !account.thirdPartyNoticeDismissed && account.backendOptions && (
+              <div className="Webviews-third-party-server" onClick={() => this._onThirdPartyNoticeDismiss(account)}>
                 {getText('thirdPartyBackendNotice')} &quot;{account.backendOptions.title}&quot;
               </div>
             )}

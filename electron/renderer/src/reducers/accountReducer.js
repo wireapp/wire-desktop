@@ -33,6 +33,7 @@ const createAccount = (ssoCode = undefined, backendOptions = undefined) => ({
   sessionID: uuid(),
   ssoCode,
   teamID: undefined,
+  thirdPartyNoticeDismissed: false,
   userID: undefined,
   visible: true,
 });
@@ -75,6 +76,12 @@ export default (state = [createAccount()], action) => {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return {...account, visible: isMatchingAccount};
+      });
+    }
+
+    case ActionType.DISMISS_THIRD_PARTY_NOTICE: {
+      return state.map(account => {
+        return {...account, thirdPartyNoticeDismissed: true};
       });
     }
 
