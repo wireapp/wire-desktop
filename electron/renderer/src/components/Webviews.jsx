@@ -121,6 +121,7 @@ export default class Webviews extends Component {
           if (!endpoints.hasOwnProperty(requiredValue)) {
             throw Error(`Missing required value ${requiredValue}`);
           }
+          // Ensure URL is valid
           endpoints[requiredValue] = new URL(endpoints[requiredValue]).toString();
         }
 
