@@ -26,7 +26,6 @@ describe('action creators', () => {
     it('should create action to add account with session', () => {
       const action = addAccount();
       expect(action.type).toEqual(ActionType.ADD_ACCOUNT);
-      expect(action.sessionID).toEqual(expect.any(String));
     });
   });
 
