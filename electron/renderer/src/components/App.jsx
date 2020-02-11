@@ -24,10 +24,10 @@ import {connect} from 'react-redux';
 
 import {config} from '../../../dist/settings/config';
 import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import WebviewsContainer from '../containers/WebviewsContainer';
 import * as EVENT_TYPE from '../lib/eventType';
 import IsOnline from './IsOnline';
 import Sidebar from './Sidebar';
+import WebviewList from './WebviewList';
 
 class App extends React.Component {
   constructor(props) {
@@ -83,7 +83,7 @@ class App extends React.Component {
       <IsOnline>
         <div className="App">
           <Sidebar />
-          <WebviewsContainer />
+          <WebviewList />
         </div>
       </IsOnline>
     );
