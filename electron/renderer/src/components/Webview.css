@@ -33,7 +33,7 @@
   z-index: var(--z-index-webview-hidden);
 }
 
-.WebviewList-close {
+.Webview-close {
   cursor: pointer;
   position: absolute;
   top: 24px;
