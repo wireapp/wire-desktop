@@ -159,11 +159,11 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
   }
 };
 
-function ogAsync(url: string): Promise<OpenGraphResult> {
+function getOpenGraphData(url: string): Promise<OpenGraphResult> {
   return new Promise((resolve, reject) => {
-    og(url, (err, meta) => {
-      if (err) {
-        reject(err);
+    og(url, (error, meta) => {
+      if (error) {
+        reject(error);
       } else {
         resolve(meta);
       }
@@ -176,8 +176,8 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const parsedUrl = parseUrl(encodeURI(url));
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
 
-  if (normalizedUrl.href.includes('twitter.com')) {
-    return ogAsync(normalizedUrl.href);
+  if (normalizedUrl.host === 'twitter.com') {
+    return getOpenGraphData(normalizedUrl.href);
   }
 
   const axiosConfig: AxiosRequestConfig = {
