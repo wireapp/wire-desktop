@@ -45,7 +45,6 @@ const Webview = ({
 }) => {
   const webviewRef = useRef();
   const [canDelete, setCanDelete] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
   const [url, setUrl] = useState('');
 
   useEffect(() => {
@@ -79,21 +78,6 @@ const Webview = ({
       }
     }
   }, [account]);
-
-  useEffect(() => {
-    if (!isHidden) {
-      focusWebview();
-    }
-  }, [isHidden]);
-
-  useEffect(() => {
-    const listener = () => focusWebview();
-    const ON_WEBVIEW_READY = 'dom-ready';
-    window.addEventListener(ON_WEBVIEW_READY, listener);
-    return () => {
-      window.removeEventListener(ON_WEBVIEW_READY, listener);
-    };
-  }, []);
 
   useEffect(() => {
     const listener = () => setIsHidden(true);
@@ -163,16 +147,8 @@ const Webview = ({
     });
   };
 
-  const focusWebview = () => {
-    if (account.visible && webviewRef.current) {
-      webviewRef.current.blur();
-      webviewRef.current.focus();
-      webviewRef.current.getWebContents().webContents.focus();
-    }
-  };
-
   return (
-    <div className="Webviews-container" key={account.id}>
+    <>
       <webview
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
@@ -192,7 +168,7 @@ const Webview = ({
           </svg>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
