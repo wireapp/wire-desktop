@@ -27,6 +27,7 @@ import {parse as parseUrl} from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
+import og = require('open-graph');
 
 const logger = getLogger(path.basename(__filename));
 
@@ -158,10 +159,26 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
   }
 };
 
+function ogAsync(href: string): Promise<OpenGraphResult> {
+  return new Promise((resolve, reject) => {
+    og(href, (err, meta) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(meta);
+      }
+    });
+  });
+}
+
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   const parsedUrl = parseUrl(encodeURI(url));
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
+
+  if (normalizedUrl.href.includes('twitter.com')) {
+    return ogAsync(normalizedUrl.href);
+  }
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
