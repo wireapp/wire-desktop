@@ -159,9 +159,9 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
   }
 };
 
-function ogAsync(href: string): Promise<OpenGraphResult> {
+function ogAsync(url: string): Promise<OpenGraphResult> {
   return new Promise((resolve, reject) => {
-    og(href, (err, meta) => {
+    og(url, (err, meta) => {
       if (err) {
         reject(err);
       } else {
