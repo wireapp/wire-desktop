@@ -81,8 +81,6 @@ export default class Webviews extends Component {
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
-    url.pathname = '/auth';
-
     if (account.ssoCode && account.isAdding) {
       url.hash = `#sso/${account.ssoCode}`;
     }
