@@ -80,6 +80,12 @@ export default (state = [createAccount()], action) => {
     case ActionType.UPDATE_ACCOUNT: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
+        // Note: If the current account has a webappUrl but the update does not
+        // we keep the current webappUrl.
+        // Without this the webappUrl would be overridden with an empty string
+        if (account.webappUrl && !action.data.webappUrl) {
+          delete action.data.webappUrl;
+        }
         return isMatchingAccount ? {...account, ...action.data, isAdding: false, ssoCode: undefined} : account;
       });
     }
