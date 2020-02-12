@@ -71,7 +71,7 @@ const Sidebar = ({
           className={getClassName(account)}
           onClick={preventFocus(event =>
             window.dispatchEvent(
-              new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: account.id}}),
+              new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accounts.indexOf(account)}}),
             ),
           )}
           onContextMenu={preventFocus(event => {

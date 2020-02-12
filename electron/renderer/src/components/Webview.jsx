@@ -80,14 +80,6 @@ const Webview = ({
   }, [account]);
 
   useEffect(() => {
-    const listener = () => setIsHidden(true);
-    window.addEventListener(EVENT_TYPE.PREFERENCES.SET_HIDDEN, listener, false);
-    return () => {
-      window.removeEventListener(EVENT_TYPE.PREFERENCES.SET_HIDDEN, listener);
-    };
-  }, []);
-
-  useEffect(() => {
     const listener = error => setWebviewError(error);
     const ON_WEBVIEW_ERROR = 'did-fail-load';
     webviewRef.current.addEventListener(ON_WEBVIEW_ERROR, listener);

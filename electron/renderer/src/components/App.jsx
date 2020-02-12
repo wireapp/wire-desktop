@@ -38,6 +38,11 @@ class App extends React.Component {
   componentDidMount() {
     window.addEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount, false);
     window.addEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO, false);
+
+    // Workaround: Switch to first webview after startup
+    setTimeout(() => {
+      this.switchAccount({detail: {accountIndex: 0}});
+    }, 1000);
   }
 
   componentWillUnmount() {
@@ -47,14 +52,18 @@ class App extends React.Component {
 
   switchAccount = event => {
     const {accountIndex} = event.detail;
-    const accountId = this.props.accountIds.find(id => id === accountIndex);
+    const accountId = this.props.accountIds[accountIndex];
     if (accountId) {
       this.props.switchAccount(accountId);
 
-      const webview = document.querySelector(`.Webview[data-accountid="${accountIndex}"]`);
+      // Note: We need to focus window first to properly set focus
+      // on the webview with shortcuts like Cmd+1/2/3
+      window.blur();
+      window.focus();
 
+      const webview = document.querySelector(`.Webview[data-accountid="${accountId}"]`);
       webview.blur();
-      setTimeout(() => webview.focus(), 10);
+      webview.focus();
     }
   };
 

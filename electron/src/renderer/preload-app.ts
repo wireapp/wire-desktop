@@ -127,11 +127,10 @@ setupIpcInterface();
 subscribeToMainProcessEvents();
 
 window.addEventListener('DOMContentLoaded', addDragRegion);
-
 window.addEventListener('focus', () => {
   const selectedWebview = getSelectedWebview();
   if (selectedWebview) {
     selectedWebview.blur();
-    setTimeout(() => selectedWebview.focus(), 10);
+    selectedWebview.focus();
   }
 });
