@@ -195,12 +195,13 @@ process.once('loaded', () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-  if (window.amplify && window.wire && window.z) {
+  if (window.amplify && window.wire && window.z?.event) {
     subscribeToMainProcessEvents();
     subscribeToThemeChange();
     subscribeToWebappEvents();
     reportWebappVersion();
-    // include context menu
-    import('./menu/context').catch(error => logger.error(error));
   }
+  // include context menu
+  console.warn('loading menu');
+  import('./menu/context').catch(error => logger.error(error));
 });
