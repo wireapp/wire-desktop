@@ -26,7 +26,7 @@ import {connect} from 'react-redux';
 
 import {updateAccountBadgeCount} from '../actions';
 
-const WebviewList = ({accounts}) => {
+const WebviewList = ({accounts, updateAccountBadgeCount}) => {
   const onUnreadCountUpdated = (accountId, unreadCount) => {
     updateAccountBadgeCount(accountId, unreadCount);
     const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
@@ -41,4 +41,4 @@ const WebviewList = ({accounts}) => {
   );
 };
 
-export default connect(state => ({accounts: state.accounts}))(WebviewList);
+export default connect(state => ({accounts: state.accounts}), {updateAccountBadgeCount})(WebviewList);

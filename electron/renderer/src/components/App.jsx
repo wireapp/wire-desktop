@@ -21,6 +21,7 @@ import './App.css';
 
 import React from 'react';
 import {connect} from 'react-redux';
+import {StyledApp} from '@wireapp/react-ui-kit';
 
 import {config} from '../../../dist/settings/config';
 import {initiateSSO, switchAccount, updateAccount} from '../actions';
@@ -46,12 +47,15 @@ class App extends React.Component {
 
   switchAccount = event => {
     const {accountIndex} = event.detail;
-    const accountId = this.props.accountIds[accountIndex];
+    const accountId = this.props.accountIds.find(id => id === accountIndex);
     if (accountId) {
       this.props.switchAccount(accountId);
-    }
 
-    event.target.focus();
+      const webview = document.querySelector(`.Webview[data-accountid="${accountIndex}"]`);
+
+      webview.blur();
+      setTimeout(() => webview.focus(), 10);
+    }
   };
 
   initiateSSO = event => {
@@ -80,12 +84,14 @@ class App extends React.Component {
 
   render() {
     return (
-      <IsOnline>
-        <div className="App">
-          <Sidebar />
-          <WebviewList />
-        </div>
-      </IsOnline>
+      <StyledApp style={{height: '100%'}}>
+        <IsOnline>
+          <div className="App">
+            <Sidebar />
+            <WebviewList />
+          </div>
+        </IsOnline>
+      </StyledApp>
     );
   }
 }

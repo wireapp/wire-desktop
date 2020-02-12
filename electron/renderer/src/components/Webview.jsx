@@ -20,6 +20,7 @@
 import './Webview.css';
 
 import React, {useEffect, useState, useRef} from 'react';
+import {ContainerSM, Text, H1, Logo} from '@wireapp/react-ui-kit';
 
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {WindowUrl} from '../../../src/window/WindowUrl';
@@ -46,6 +47,7 @@ const Webview = ({
   const webviewRef = useRef();
   const [canDelete, setCanDelete] = useState(false);
   const [url, setUrl] = useState('');
+  const [webviewError, setWebviewError] = useState(null);
 
   useEffect(() => {
     setCanDelete(!account.userID && !!account.sessionID);
@@ -59,8 +61,6 @@ const Webview = ({
       // pass account id to webview so we can access it in the preload script
       url.searchParams.set('id', account.id);
 
-      url.pathname = '/auth';
-
       if (account.ssoCode && account.isAdding) {
         url.hash = `#sso/${account.ssoCode}`;
       }
@@ -68,11 +68,11 @@ const Webview = ({
       return url.href;
     };
     const newUrl = getEnvironmentUrl();
-    if (url !== newUrl) {
+    if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {
         // can't load URL before webview is not attached to the DOM
-        webviewRef.current.loadURL(newUrl);
+        webviewRef.current.loadURL(newUrl).catch(error => console.info(`Navigating to ${newUrl} failed`, error));
       } catch (error) {
         console.info('Can not #loadURL before attaching webview to DOM', error);
       }
@@ -84,6 +84,17 @@ const Webview = ({
     window.addEventListener(EVENT_TYPE.PREFERENCES.SET_HIDDEN, listener, false);
     return () => {
       window.removeEventListener(EVENT_TYPE.PREFERENCES.SET_HIDDEN, listener);
+    };
+  }, []);
+
+  useEffect(() => {
+    const listener = error => setWebviewError(error);
+    const ON_WEBVIEW_ERROR = 'did-fail-load';
+    webviewRef.current.addEventListener(ON_WEBVIEW_ERROR, listener);
+    return () => {
+      if (webviewRef.current) {
+        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      }
     };
   }, []);
 
@@ -137,7 +148,9 @@ const Webview = ({
     const ON_IPC_MESSAGE = 'ipc-message';
     webviewRef.current.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
     return () => {
-      webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webviewRef.current) {
+        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      }
     };
   }, []);
 
@@ -149,15 +162,37 @@ const Webview = ({
 
   return (
     <>
-      <webview
-        className={`Webview${account.visible ? '' : ' hide'}`}
-        data-accountid={account.id}
-        visible={!!account.visible}
-        src={url}
-        partition={account.sessionID ? `persist:${account.sessionID}` : ''}
-        webpreferences="backgroundThrottling=false"
-        ref={webviewRef}
-      />
+      {webviewError ? (
+        <webview
+          className={`Webview${account.visible ? '' : ' hide'}`}
+          data-accountid={account.id}
+          style={{display: 'flex'}}
+        >
+          <ContainerSM centerText verticalCenter>
+            <Logo style={{marginBottom: '48px'}} />
+            <H1 center>{`This server can't be reached`}</H1>
+            <Text block center>{`We can't connect to the server at "${
+              new URL(webviewError.validatedURL).origin
+            }"`}</Text>
+            <Text block center>
+              {'Let your server administrator know about this issue.'}
+            </Text>
+            <Text block center style={{marginTop: '32px'}}>
+              {webviewError.errorDescription}
+            </Text>
+          </ContainerSM>
+        </webview>
+      ) : (
+        <webview
+          className={`Webview${account.visible ? '' : ' hide'}`}
+          data-accountid={account.id}
+          visible={!!account.visible}
+          src={url}
+          partition={account.sessionID ? `persist:${account.sessionID}` : ''}
+          webpreferences="backgroundThrottling=false"
+          ref={webviewRef}
+        />
+      )}
       {canDelete && account.visible && (
         <div className="Webview-close" onClick={() => deleteWebview(account)}>
           <svg width="16" height="16" viewBox="0 0 16 16">
