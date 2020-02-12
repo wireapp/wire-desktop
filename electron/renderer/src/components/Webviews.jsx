@@ -82,6 +82,7 @@ export default class Webviews extends Component {
     url.searchParams.set('id', account.id);
 
     if (account.ssoCode && account.isAdding) {
+      url.pathname = '/auth';
       url.hash = `#sso/${account.ssoCode}`;
     }
 
