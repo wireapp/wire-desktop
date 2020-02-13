@@ -21,6 +21,7 @@ import './Webview.css';
 
 import React, {useEffect, useState, useRef} from 'react';
 import {ContainerSM, Text, H1, Logo} from '@wireapp/react-ui-kit';
+import {SVGIcon} from '@wireapp/react-ui-kit/dist/Icon/SVGIcon';
 
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {WindowUrl} from '../../../src/window/WindowUrl';
@@ -163,7 +164,27 @@ const Webview = ({
         >
           <ContainerSM centerText verticalCenter>
             <Logo scale={1.68} style={{marginBottom: '80px'}} />
-            <H1 center>{getText('webviewErrorTitle')}</H1>
+            <div>
+              <SVGIcon realWidth="111" realHeight="101">
+                <g fill="none" fillRule="evenodd">
+                  <path
+                    fill="#BAC8D1"
+                    d="M70.331 78.133c.715-.842 1.072-2.021 1.072-3.538v-5.99h-9.49v5.99c0 1.517.387 2.696 1.16 3.538.772.842 1.996 1.263 3.672 1.263 1.677 0 2.872-.421 3.586-1.263zm-11.61 5.073c-1.574-1.862-2.361-4.521-2.361-7.978v-6.624H35V62h42v13.66c0 3.149-.83 5.66-2.493 7.531C72.846 85.064 70.273 86 66.79 86c-3.804 0-6.494-.932-8.068-2.794z"
+                  />
+                  <path
+                    fill="#BAC8D1"
+                    d="M30.884 15.142h69.72v-4.997h-69.72v4.997zm-20.64 75.713h90.36V25.288h-90.36v65.567zm2.517-80.828c1.399 0 2.533 1.123 2.533 2.508s-1.134 2.508-2.533 2.508c-1.398 0-2.532-1.123-2.532-2.508s1.134-2.508 2.532-2.508zm10.397 0c1.399 0 2.532 1.123 2.532 2.508s-1.133 2.508-2.532 2.508-2.533-1.123-2.533-2.508 1.134-2.508 2.533-2.508zM5.162 0C2.328 0 0 2.2 0 5.007v90.958C0 98.772 2.328 101 5.162 101h100.643c2.835 0 5.195-2.228 5.195-5.035V5.007C111 2.2 108.64 0 105.805 0H5.162z"
+                  />
+                  <path
+                    fill="#BAC8D1"
+                    d="M43 47.8l-6.3-6.303 6.299-6.3L38.797 31l-6.299 6.3L26.2 31 22 35.196l6.3 6.304-6.3 6.3 4.2 4.2 6.298-6.3L38.8 52zm46 0l-6.3-6.303 6.299-6.3L84.797 31l-6.299 6.3L72.2 31 68 35.196l6.3 6.304-6.3 6.3 4.2 4.2 6.298-6.3L84.8 52z"
+                  />
+                </g>
+              </SVGIcon>
+            </div>
+            <H1 center style={{marginBottom: '40px', marginTop: '40px'}}>
+              {getText('webviewErrorTitle')}
+            </H1>
             <Text block center>
               {getText('webviewErrorDescription', {url: new URL(webviewError.validatedURL).origin})}
             </Text>
