@@ -33,6 +33,7 @@ import {
   updateAccountData,
   updateAccountLifecycle,
 } from '../actions';
+import {getText} from '../lib/locale';
 
 const Webview = ({
   account,
@@ -161,13 +162,13 @@ const Webview = ({
           style={{display: 'flex'}}
         >
           <ContainerSM centerText verticalCenter>
-            <Logo style={{marginBottom: '48px'}} />
-            <H1 center>{`This server can't be reached`}</H1>
-            <Text block center>{`We can't connect to the server at "${
-              new URL(webviewError.validatedURL).origin
-            }"`}</Text>
+            <Logo scale={1.68} style={{marginBottom: '80px'}} />
+            <H1 center>{getText('webviewErrorTitle')}</H1>
             <Text block center>
-              {'Let your server administrator know about this issue.'}
+              {getText('webviewErrorDescription', {url: new URL(webviewError.validatedURL).origin})}
+            </Text>
+            <Text block center>
+              {getText('webviewErrorDescriptionSub')}
             </Text>
             <Text block center style={{marginTop: '32px'}}>
               {webviewError.errorDescription}
