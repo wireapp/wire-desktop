@@ -155,7 +155,7 @@ const Webview = ({
   return (
     <>
       {webviewError ? (
-        <webview
+        <div
           className={`Webview${account.visible ? '' : ' hide'}`}
           data-accountid={account.id}
           style={{display: 'flex'}}
@@ -173,7 +173,7 @@ const Webview = ({
               {webviewError.errorDescription}
             </Text>
           </ContainerSM>
-        </webview>
+        </div>
       ) : (
         <webview
           className={`Webview${account.visible ? '' : ' hide'}`}

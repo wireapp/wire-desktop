@@ -194,13 +194,26 @@ process.once('loaded', () => {
   global.setImmediate = _setImmediate;
 });
 
+const registerEvents = (callback: () => void) => {
+  const HALF_SECOND = 500;
+
+  const intervalId = setInterval(() => {
+    logger.info('Attemting to register events...');
+    if (window.amplify && window.wire && window.z?.event) {
+      clearInterval(intervalId);
+      return callback();
+    }
+  }, HALF_SECOND);
+};
+
 window.addEventListener('DOMContentLoaded', () => {
-  if (window.amplify && window.wire && window.z?.event) {
+  registerEvents(() => {
+    logger.info('Registering events');
     subscribeToMainProcessEvents();
     subscribeToThemeChange();
     subscribeToWebappEvents();
     reportWebappVersion();
-  }
+  });
   // include context menu
   import('./menu/context').catch(error => logger.error(error));
 });
