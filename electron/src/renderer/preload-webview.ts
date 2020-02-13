@@ -198,7 +198,7 @@ const registerEvents = (callback: () => void) => {
   const HALF_SECOND = 500;
 
   const intervalId = setInterval(() => {
-    logger.info('Attemting to register events...');
+    logger.info('Attemting to register event handlers...');
     if (window.amplify && window.wire && window.z?.event) {
       clearInterval(intervalId);
       return callback();
@@ -208,7 +208,7 @@ const registerEvents = (callback: () => void) => {
 
 window.addEventListener('DOMContentLoaded', () => {
   registerEvents(() => {
-    logger.info('Registering events');
+    logger.info('Registering event handlers');
     subscribeToMainProcessEvents();
     subscribeToThemeChange();
     subscribeToWebappEvents();
