@@ -19,7 +19,7 @@
 
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
-
+import {WebAppEvents} from '@wireapp/webapp-events';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getOpenGraphDataAsync} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
@@ -102,6 +102,16 @@ const subscribeToWebappEvents = () => {
     );
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
+
+  window.addEventListener(WebAppEvents.LIFECYCLE.CHANGE_ENVIRONMENT, event => {
+    const data = (event as CustomEvent).detail;
+    if (data) {
+      const changeEnvironment = ipcRenderer.sendSync(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, data.url);
+      if (changeEnvironment) {
+        ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
+      }
+    }
+  });
 };
 
 const subscribeToMainProcessEvents = () => {
@@ -137,7 +147,7 @@ const subscribeToMainProcessEvents = () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS}", forwarding to amplify ...`);
     window.amplify.publish(window.z.event.WebApp.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event, hash: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (_event, hash: string) => {
     logger.info(
       `Received event "${EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH}" (hash: "${hash}"), forwarding to amplify ...`,
     );

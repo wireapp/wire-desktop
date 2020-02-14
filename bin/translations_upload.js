@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2020 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +17,14 @@
  *
  */
 
-import './IsOnline.css';
+const {join, resolve} = require('path');
+const {execSync} = require('child_process');
 
-import React, {Component} from 'react';
+const root = resolve(__dirname, '..');
 
-export default class IsOnline extends Component {
-  constructor(props) {
-    super(props);
+const uploadToCrowdin = () => {
+  const crowdinYaml = join(root, 'keys', 'crowdin.yaml');
+  execSync(`crowdin upload sources --identity="${crowdinYaml}"`, {stdio: [0, 1]});
+};
 
-    this.state = {
-      isOnline: navigator.onLine,
-    };
-  }
-
-  componentDidMount() {
-    if (this.state.isOnline === false) {
-      window.addEventListener('online', () => this.setState({isOnline: true}), {once: true});
-    }
-  }
-
-  render() {
-    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
-  }
-}
+uploadToCrowdin();

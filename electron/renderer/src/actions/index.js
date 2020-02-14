@@ -134,6 +134,7 @@ export const updateAccountData = (id, data) => {
       teamID: 'String',
       teamRole: 'String',
       userID: 'String',
+      webappUrl: 'String',
     });
 
     if (validatedAccountData) {

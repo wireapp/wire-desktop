@@ -37,7 +37,7 @@ interface Details {
   webappVersion: string;
 }
 
-export function loadedAboutScreen(event: Event, details: Details): void {
+export function loadedAboutScreen(_event: Event, details: Details): void {
   const nameElement = document.getElementById('name');
   if (nameElement) {
     nameElement.textContent = details.productName;

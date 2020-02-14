@@ -21,8 +21,9 @@ import './Webviews.css';
 
 import React, {Component} from 'react';
 
-import * as EVENT_TYPE from '../lib/eventType';
 import Webview from './Webview';
+import {EVENT_TYPE} from '../../../src/lib/eventType';
+import {WindowUrl} from '../../../src/window/WindowUrl';
 
 export default class Webviews extends Component {
   constructor(props) {
@@ -37,18 +38,24 @@ export default class Webviews extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    for (const account of nextProps.accounts) {
-      const match = this.props.accounts.find(_account => account.id === _account.id);
-      if (!match) {
+    for (const nextAccountState of nextProps.accounts) {
+      const previousAccountState = this.props.accounts.find(_account => nextAccountState.id === _account.id);
+      if (!previousAccountState) {
         return true;
       }
       // If a SSO code is set on a window, use it
-      if (match.ssoCode !== account.ssoCode && account.isAdding) {
+      const shouldRedirectToSSOLogin =
+        nextAccountState.isAdding && previousAccountState.ssoCode !== nextAccountState.ssoCode;
+      const shouldUseCustomWebappUrl =
+        !!nextAccountState.webappUrl && previousAccountState.webappUrl !== nextAccountState.webappUrl;
+
+      if (shouldRedirectToSSOLogin || shouldUseCustomWebappUrl) {
         document
-          .querySelector(`Webview[data-accountid="${account.id}"]`)
-          .loadURL(this._getEnvironmentUrl(account, false));
+          .querySelector(`Webview[data-accountid="${nextAccountState.id}"]`)
+          .loadURL(this._getEnvironmentUrl(nextAccountState));
       }
-      if (match.visible !== account.visible) {
+
+      if (previousAccountState.visible !== nextAccountState.visible) {
         return true;
       }
     }
@@ -65,22 +72,17 @@ export default class Webviews extends Component {
     );
   };
 
-  _getEnvironmentUrl(account, forceLogin) {
+  _getEnvironmentUrl(account) {
     const currentLocation = new URL(window.location.href);
-    const envParam = currentLocation.searchParams.get('env');
+    const envParam = account.webappUrl || currentLocation.searchParams.get('env');
     const decodedEnvParam = decodeURIComponent(envParam);
     const url = new URL(decodedEnvParam);
 
     // pass account id to webview so we can access it in the preload script
     url.searchParams.set('id', account.id);
 
-    if (forceLogin || account.ssoCode) {
-      url.pathname = '/auth';
-    }
-    if (forceLogin) {
-      url.hash = '#login';
-    }
     if (account.ssoCode && account.isAdding) {
+      url.pathname = '/auth';
       url.hash = `#sso/${account.ssoCode}`;
     }
 
@@ -99,6 +101,16 @@ export default class Webviews extends Component {
 
   _onIpcMessage = (account, {channel, args}) => {
     switch (channel) {
+      case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
+        const [customUrl] = args;
+        const accountId = account.id;
+        const updatedWebapp = WindowUrl.createWebappUrl(window.location, customUrl);
+        this.props.updateAccountData(accountId, {
+          webappUrl: decodeURIComponent(updatedWebapp),
+        });
+        break;
+      }
+
       case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
         const [accountData] = args;
         this.props.updateAccountData(account.id, accountData);
@@ -160,7 +172,7 @@ export default class Webviews extends Component {
               className={`Webview${account.visible ? '' : ' hide'}`}
               data-accountid={account.id}
               visible={account.visible}
-              src={this._getEnvironmentUrl(account, account.isAdding && index > 0)}
+              src={this._getEnvironmentUrl(account)}
               partition={account.sessionID}
               onIpcMessage={event => this._onIpcMessage(account, event)}
               webpreferences="backgroundThrottling=false"

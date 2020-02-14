@@ -19,6 +19,7 @@
 
 const minimist = require('minimist');
 
+import {LogFactory} from '@wireapp/commons';
 import * as crypto from 'crypto';
 import {
   app,
@@ -33,10 +34,12 @@ import {
 import * as path from 'path';
 import {URL} from 'url';
 
-import {getLogger} from '../logging/getLogger';
+import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
+import {getWebViewId} from '../runtime/lifecycle';
 
 const argv = minimist(process.argv.slice(1));
+const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 
 export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
@@ -206,7 +209,7 @@ export class SingleSignOn {
     this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
 
     // Disable browser permissions (microphone, camera...)
-    this.session.setPermissionRequestHandler((webContents, permission, callback) => callback(false));
+    this.session.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
 
     // User-agent normalization
     this.session.webRequest.onBeforeSendHeaders(({requestHeaders}: any, callback) => {
@@ -304,6 +307,20 @@ export class SingleSignOn {
       SingleSignOnLoginWindow.setTitle(SingleSignOn.getWindowTitle(origin));
     });
 
+    if (ENABLE_LOGGING) {
+      SingleSignOnLoginWindow.webContents.on('console-message', async (_event, _level, message) => {
+        const webViewId = getWebViewId(SingleSignOnLoginWindow.webContents);
+        if (webViewId) {
+          const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
+          try {
+            await LogFactory.writeMessage(message, logFilePath);
+          } catch (error) {
+            console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+          }
+        }
+      });
+    }
+
     return SingleSignOnLoginWindow;
   };
 
@@ -340,13 +357,9 @@ export class SingleSignOn {
     );
   };
 
-  private readonly wipeSessionData = () => {
-    return new Promise(resolve => {
-      if (this.session) {
-        this.session.clearStorageData(undefined, () => resolve());
-      } else {
-        resolve();
-      }
-    });
+  private readonly wipeSessionData = async () => {
+    if (this.session) {
+      await this.session.clearStorageData(undefined);
+    }
   };
 }

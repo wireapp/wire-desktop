@@ -17,7 +17,7 @@
  *
  */
 
-import {LogFactory, ValidationUtil} from '@wireapp/commons';
+import {LogFactory} from '@wireapp/commons';
 import {
   app,
   BrowserWindow,
@@ -31,8 +31,6 @@ import {
   shell,
   WebContents,
 } from 'electron';
-import WindowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import * as logdown from 'logdown';
@@ -48,7 +46,6 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
-import {WebViewFocus} from './lib/webViewFocus';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
@@ -67,6 +64,11 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
+import ProxyAuth from './auth/ProxyAuth';
+import {WindowUrl} from './window/WindowUrl';
+import WindowStateKeeper = require('electron-window-state');
+import fileUrl = require('file-url');
+import {changeEnvironmentPrompt} from './lib/changeEnvironmentPrompt';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -111,7 +113,8 @@ if (argv['proxy-server-auth']) {
 
 const iconFileName = `logo.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const iconPath = path.join(APP_PATH, 'img', iconFileName);
-// This needs to stay global, see https://github.com/electron/electron/blob/v4.2.12/docs/faq.md#my-apps-windowtray-disappeared-after-a-few-minutes
+// This needs to stay global, see
+// https://github.com/electron/electron/blob/v4.2.12/docs/faq.md#my-apps-windowtray-disappeared-after-a-few-minutes
 let tray: TrayHandler;
 
 let isFullScreen = false;
@@ -130,7 +133,7 @@ app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event, bytes: Uint8Array, timestamp?: string) => {
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
 
@@ -138,17 +141,20 @@ const bindIpcEvents = () => {
     WindowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event, count: number) => {
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (event, id: number, accountId: string, partitionId?: string) => {
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
     await deleteAccount(id, accountId, partitionId);
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
+  ipcMain.on(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, (event, environmentUrl: string) => {
+    event.returnValue = changeEnvironmentPrompt(environmentUrl);
+  });
 };
 
 const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
@@ -245,13 +251,13 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     setTimeout(() => main.show(), 800);
   }
 
-  main.webContents.on('will-navigate', (event, url) => {
+  main.webContents.on('will-navigate', event => {
     // Prevent any kind of navigation inside the main window
     event.preventDefault();
   });
 
   // Handle the new window event in the main Browser Window
-  main.webContents.on('new-window', async (event, _url) => {
+  main.webContents.on('new-window', async (event, url) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
@@ -260,7 +266,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       return;
     }
 
-    await shell.openExternal(_url);
+    await shell.openExternal(url);
   });
 
   main.on('focus', () => {
@@ -302,7 +308,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  main.webContents.insertCSS(wrapperCSSContent);
+  await main.webContents.insertCSS(wrapperCSSContent);
 
   if (argv.startup || argv.hidden) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
@@ -328,49 +334,66 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
-  app.on('login', async (event, webContents, request, authInfo, callback) => {
+  app.on('login', async (event, webContents, _request, authInfo, callback) => {
     if (authInfo.isProxy) {
       event.preventDefault();
+      const {host, port} = authInfo;
 
       if (authenticatedProxyInfo) {
         const {username, password} = authenticatedProxyInfo;
         logger.info('Sending provided credentials to authenticated proxy ...');
+        await applyProxySettings(authenticatedProxyInfo, main.webContents);
         return callback(username, password);
       }
 
       const systemProxy = await getProxySettings();
       const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
-
       if (systemProxySettings) {
         const {
           credentials: {username, password},
           protocol,
         } = systemProxySettings;
-        authenticatedProxyInfo = new URL(`${protocol}//${username}:${password}@${authInfo.host}`);
+        authenticatedProxyInfo = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
+        logger.log('Applying proxy settings on the main window...');
+        await applyProxySettings(authenticatedProxyInfo, main.webContents);
         return callback(username, password);
       }
 
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, (event, promptData: {password: string; username: string}) => {
-        const {username, password} = promptData;
-
-        logger.log('Proxy prompt was submitted');
-        const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
-        const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
-        authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
-        callback(username, password);
-      });
-
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
-        logger.log('Proxy prompt was canceled');
-        await webContents.session.setProxy({
-          pacScript: '',
-          proxyBypassRules: '',
-          proxyRules: '',
-        });
-        main.reload();
-      });
-
       if (!triedProxy) {
+        ipcMain.once(
+          EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+          async (_event, promptData: {password: string; username: string}) => {
+            logger.log('Proxy prompt was submitted');
+
+            const {username, password} = promptData;
+            const [originalProxyValue]: string[] = argv['proxy-server'] || argv['proxy-server-auth'];
+            const protocol: string | undefined = /^[^:]+:\/\//.exec(originalProxyValue)?.toString();
+            authenticatedProxyInfo = ProxyAuth.generateProxyURL(
+              {host, port},
+              {
+                ...promptData,
+                protocol,
+              },
+            );
+
+            logger.log('Applying proxy settings on the main window...');
+            await applyProxySettings(authenticatedProxyInfo, main.webContents);
+            callback(username, password);
+          },
+        );
+
+        ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
+          logger.log('Proxy prompt was canceled');
+
+          await webContents.session.setProxy({
+            pacScript: '',
+            proxyBypassRules: '',
+            proxyRules: '',
+          });
+
+          main.reload();
+        });
+
         await ProxyPromptWindow.showWindow();
         triedProxy = true;
       }
@@ -443,14 +466,15 @@ const handlePortableFlags = () => {
   }
 };
 
-const getWebViewId = (contents: WebContents): string | undefined => {
-  try {
-    const currentLocation = new URL(contents.getURL());
-    const webViewId = currentLocation.searchParams.get('id');
-    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
-  } catch (error) {
-    return undefined;
-  }
+const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
+  const proxyURL = authenticatedProxyDetails.origin;
+  logger.info(`Setting proxy on a window to URL "${proxyURL}"...`);
+  webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
+  await webContents.session.setProxy({
+    pacScript: '',
+    proxyBypassRules: '',
+    proxyRules: proxyURL,
+  });
 };
 
 class ElectronWrapperInit {
@@ -471,7 +495,7 @@ class ElectronWrapperInit {
       event: ElectronEvent,
       url: string,
       frameName: string,
-      disposition: string,
+      _disposition: string,
       options: BrowserWindowConstructorOptions,
     ) => {
       event.preventDefault();
@@ -484,47 +508,29 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: ElectronEvent, _url: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string) => {
       // Ensure navigation is to a whitelisted domain
-      if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
-        this.logger.log(`Navigating inside webview. URL: ${_url}`);
+      if (OriginValidator.isMatchingHost(url, baseUrl)) {
+        this.logger.log(`Navigating inside webview. URL: ${url}`);
       } else {
-        this.logger.log(`Preventing navigation inside <webview>. URL: ${_url}`);
+        this.logger.log(`Preventing navigation inside <webview>. URL: ${url}`);
         event.preventDefault();
       }
     };
 
-    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
-      WebViewFocus.bindTracker(webviewEvent, contents);
+    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
       if (authenticatedProxyInfo?.origin && contents.session) {
-        const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
-        logger.info(`Setting proxy to URL "${proxyURL}" ...`);
-
-        contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
-
-        await contents.session.setProxy({
-          pacScript: '',
-          proxyBypassRules: '',
-          proxyRules: proxyURL,
-        });
+        this.logger.log('Applying proxy settings on a webview...');
+        await applyProxySettings(authenticatedProxyInfo, contents);
       }
 
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
-            const _url = params.src;
-
-            // Verify the URL is being loaded
-            if (!OriginValidator.isMatchingHost(_url, BASE_URL)) {
-              event.preventDefault();
-              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
-              return;
-            }
-
             // Use secure defaults
-            params.autosize = false;
-            params.contextIsolation = true;
-            params.plugins = false;
+            params.autosize = 'false';
+            params.contextIsolation = 'true';
+            params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
@@ -536,16 +542,18 @@ class ElectronWrapperInit {
         case 'webview': {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
-          contents.on('will-navigate', willNavigateInWebview);
+          contents.on('will-navigate', (event: ElectronEvent, url: string) => {
+            willNavigateInWebview(event, url, contents.getURL());
+          });
           if (ENABLE_LOGGING) {
-            contents.on('console-message', async (event, level, message) => {
-              const webViewId = getWebViewId(contents);
+            contents.on('console-message', async (_event, _level, message) => {
+              const webViewId = lifecycle.getWebViewId(contents);
               if (webViewId) {
                 const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
                 try {
                   await LogFactory.writeMessage(message, logFilePath);
                 } catch (error) {
-                  logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
                 }
               }
             });
@@ -561,25 +569,25 @@ class ElectronWrapperInit {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
-            const listener = (
+            const listenerOnHeadersReceived = (
               details: OnHeadersReceivedListenerDetails,
               callback: (response: HeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
-                'Access-Control-Allow-Credentials': 'true',
-                'Access-Control-Allow-Origin': 'http://localhost:8081',
+                'Access-Control-Allow-Credentials': ['true'],
+                'Access-Control-Allow-Origin': ['http://localhost:8081'],
               };
 
               callback({
                 cancel: false,
-                responseHeaders,
+                responseHeaders: {...details.responseHeaders, ...responseHeaders},
               });
             };
 
-            contents.session.webRequest.onHeadersReceived(filter, listener);
+            contents.session.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
           }
 
-          contents.on('before-input-event', (event, input) => {
+          contents.on('before-input-event', (_event, input) => {
             if (input.type === 'keyUp' && input.key === 'Alt') {
               ipcMain.emit(EVENT_TYPE.UI.TOGGLE_MENU);
             }
