@@ -81,7 +81,6 @@ node('master') {
           def AWS_SECRET_ACCESS_KEY = ''
           def WIN_HOCKEY_ID = ''
           def WIN_HOCKEY_TOKEN = ''
-          def S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
 
           withCredentials([
@@ -125,7 +124,7 @@ node('master') {
         }
 
         try {
-          sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+          sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${params.S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
         } catch(e) {
           currentBuild.result = 'FAILED'
           wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
@@ -203,7 +202,6 @@ node('master') {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
           def AWS_ACCESS_KEY_ID = ''
           def AWS_SECRET_ACCESS_KEY = ''
-          def S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
           def SEARCH_PATH = './wrap/dist/'
 
@@ -231,7 +229,7 @@ node('master') {
             S3_PATH = 'win/internal'
           }
 
-          sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-win-releases-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+          sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-win-releases-cli.ts --bucket \"${params.S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
         }
       } catch(e) {
         currentBuild.result = 'FAILED'
