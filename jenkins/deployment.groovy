@@ -71,7 +71,7 @@ node('master') {
     }
   }
 
-  stage('Upload to S3 and/or Hockey') {
+  stage('Upload to S3') {
     withEnv(["PATH+NODE=${NODE}/bin"]) {
       def SEARCH_PATH = './wrap/dist/'
 
@@ -93,13 +93,6 @@ node('master') {
           }
 
           if (params.Release.equals('Production')) {
-            withCredentials([
-              string(credentialsId: 'WIN_PROD_HOCKEY_ID', variable: 'WIN_PROD_HOCKEY_ID'),
-              string(credentialsId: 'WIN_PROD_HOCKEY_TOKEN', variable: 'WIN_PROD_HOCKEY_TOKEN')
-            ]) {
-              WIN_HOCKEY_ID = env.WIN_PROD_HOCKEY_ID
-              WIN_HOCKEY_TOKEN = env.WIN_PROD_HOCKEY_TOKEN
-            }
             S3_PATH = 'win/prod'
           } else if (params.Release.equals('Custom')) {
             withCredentials([
@@ -131,23 +124,13 @@ node('master') {
           throw e
         }
 
-        parallel hockey: {
-          try {
-            sh "jenkins/ts-node.sh ./bin/deploy-tools/hockey-cli.ts --hockey-id \"${WIN_HOCKEY_ID}\" --hockey-token \"${WIN_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
-          } catch(e) {
-            currentBuild.result = 'FAILED'
-            wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
-            throw e
-          }
-        }, s3: {
-          try {
-            sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
-          } catch(e) {
-            currentBuild.result = 'FAILED'
-            wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
-            throw e
-          }
-        }, failFast: true
+        try {
+          sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+        } catch(e) {
+          currentBuild.result = 'FAILED'
+          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
+          throw e
+        }
       } else if (projectName.contains('macOS')) {
         try {
           def MACOS_HOCKEY_ID = ''
