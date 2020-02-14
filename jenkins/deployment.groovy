@@ -81,7 +81,7 @@ node('master') {
           def AWS_SECRET_ACCESS_KEY = ''
           def WIN_HOCKEY_ID = ''
           def WIN_HOCKEY_TOKEN = ''
-          def S3_BUCKET = 'wire-taco'
+          env.S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
 
           withCredentials([
@@ -106,7 +106,7 @@ node('master') {
               WIN_HOCKEY_ID = env.WIN_CUSTOM_HOCKEY_ID
               WIN_HOCKEY_TOKEN = env.WIN_CUSTOM_HOCKEY_TOKEN
             }
-            S3_BUCKET = "${params.WIN_S3_BUCKET}"
+            env.S3_BUCKET = "${params.WIN_S3_BUCKET}"
             S3_PATH = "${params.WIN_S3_PATH}"
           } else {
             withCredentials([
@@ -203,7 +203,7 @@ node('master') {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
           def AWS_ACCESS_KEY_ID = ''
           def AWS_SECRET_ACCESS_KEY = ''
-          def S3_BUCKET = 'wire-taco'
+          env.S3_BUCKET = 'wire-taco'
           def S3_PATH = ''
           def SEARCH_PATH = './wrap/dist/'
 
@@ -226,7 +226,7 @@ node('master') {
               AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
             }
             S3_PATH = "${params.WIN_S3_PATH}"
-            S3_BUCKET = "${params.WIN_S3_BUCKET}"
+            env.S3_BUCKET = "${params.WIN_S3_BUCKET}"
           } else {
             S3_PATH = 'win/internal'
           }
