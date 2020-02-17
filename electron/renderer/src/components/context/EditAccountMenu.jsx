@@ -26,7 +26,7 @@ import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 
-function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) {
+const EditAccountMenu = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
   return (
     <ContextMenu>
       {isAtLeastAdmin && (
@@ -55,7 +55,7 @@ function EditAccountMenu({accountId, isAtLeastAdmin, lifecycle, sessionId, ...co
       </ContextMenuItem>
     </ContextMenu>
   );
-}
+};
 
 export default connect(
   ({contextMenuState}) => ({
