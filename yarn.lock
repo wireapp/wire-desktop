@@ -3538,16 +3538,16 @@ electron-download@^4.1.0:
     semver "^5.4.1"
     sumchecker "^2.0.2"
 
-electron-mocha@8.2.0:
-  version "8.2.0"
-  resolved "https://registry.npmjs.org/electron-mocha/-/electron-mocha-8.2.0.tgz#1eda462633c0ba433caf8ef21f100856794186ef"
-  integrity sha512-Jp+GUHBVyWZHILPaDYplnWtglCsTFrMSG9Ls5kE9kmnHzAaCQtWtyLn/5PHYfVMxwGpEPZrBV4QUDPNgcbiPTQ==
+electron-mocha@8.2.1:
+  version "8.2.1"
+  resolved "https://registry.npmjs.org/electron-mocha/-/electron-mocha-8.2.1.tgz#36324f0251688f221d7df16813f2de5ee563d5ce"
+  integrity sha512-vXXiGD9JRV7uA9wBoDHiwxK6kP+oss9DqrkSwVurpjpF1g6IV2279QthmYQFZbQ0UlKcEZWKPKpaUfUZ8PYcQQ==
   dependencies:
     ansi-colors "^4.1.1"
     electron-window "^0.8.0"
     fs-extra "^8.1.0"
     log-symbols "^3.0.0"
-    mocha "^7.0.0"
+    mocha "^7.0.1"
     which "^2.0.2"
     yargs "^15.1.0"
 
@@ -7051,7 +7051,7 @@ mkdirp@0.5.1, mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
-mocha@7.0.1, mocha@^7.0.0:
+mocha@7.0.1, mocha@^7.0.1:
   version "7.0.1"
   resolved "https://registry.npmjs.org/mocha/-/mocha-7.0.1.tgz#276186d35a4852f6249808c6dd4a1376cbf6c6ce"
   integrity sha512-9eWmWTdHLXh72rGrdZjNbG3aa1/3NRPpul1z0D979QpEnFdCG0Q5tv834N+94QEN2cysfV72YocQ3fn87s70fg==
