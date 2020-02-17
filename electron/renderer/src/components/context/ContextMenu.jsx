@@ -19,87 +19,73 @@
 
 import './ContextMenu.css';
 
-import React, {Component} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {connect} from 'react-redux';
 
 import {setAccountContextHidden} from '../../actions';
 
-class ContextMenu extends Component {
-  constructor(props) {
-    super(props);
-  }
+const ContextMenu = ({position, children, setAccountContextHidden}) => {
+  const menuRef = useRef();
 
-  componentDidMount() {
-    this._registerListeners();
-  }
-
-  componentWillUnmount() {
-    this._unregisterListeners();
-  }
-
-  _hide = () => {
-    this.props.setAccountContextHidden();
-  };
-
-  _handleKeyDown = event => {
-    const KEY_ESCAPE = 27;
-    if (event.keyCode === KEY_ESCAPE) {
-      this._hide();
-    }
-  };
-
-  _handleMouseDown = event => {
-    if (this.menu && !this.menu.contains(event.target)) {
-      this._hide();
-    }
-  };
-
-  _handleMouseWheel = event => {
-    event.preventDefault();
-  };
-
-  _registerListeners() {
-    window.addEventListener('keydown', this._handleKeyDown);
-    window.addEventListener('mousedown', this._handleMouseDown);
-    window.addEventListener('resize', this._hide);
-    window.addEventListener('wheel', this._handleMouseWheel);
-  }
-
-  _unregisterListeners() {
-    window.removeEventListener('keydown', this._handleKeyDown);
-    window.removeEventListener('mousedown', this._handleMouseDown);
-    window.removeEventListener('resize', this._hide);
-    window.removeEventListener('wheel', this._handleMouseWheel);
-  }
-
-  _handleRef = menu => {
-    if (menu) {
-      this.menu = menu;
-      const {centerX, centerY} = this.props.position;
+  useEffect(() => {
+    if (menuRef.current) {
+      const {centerX, centerY} = position;
 
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
 
-      const menuWidth = menu.offsetWidth;
-      const menuHeight = menu.offsetHeight;
+      const menuWidth = menuRef.current.offsetWidth;
+      const menuHeight = menuRef.current.offsetHeight;
 
-      menu.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
-      menu.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
+      menuRef.current.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
+      menuRef.current.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
+    }
+  }, [menuRef]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('resize', hide);
+    window.addEventListener('wheel', handleMouseWheel);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('resize', hide);
+      window.removeEventListener('wheel', handleMouseWheel);
+    };
+  }, []);
+
+  const hide = () => {
+    setAccountContextHidden();
+  };
+
+  const handleKeyDown = event => {
+    const KEY_ESCAPE = 27;
+    if (event.keyCode === KEY_ESCAPE) {
+      hide();
     }
   };
 
-  render() {
-    return (
-      <div className="ContextMenu" onClickCapture={this._hide} ref={this._handleRef}>
-        {this.props.children}
-      </div>
-    );
-  }
-}
+  const handleMouseDown = event => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      hide();
+    }
+  };
+
+  const handleMouseWheel = event => {
+    event.preventDefault();
+  };
+
+  return (
+    <div className="ContextMenu" onClickCapture={hide} ref={menuRef}>
+      {children}
+    </div>
+  );
+};
 
 export default connect(
-  state => ({
-    position: state.contextMenuState.position,
+  ({contextMenuState}) => ({
+    position: contextMenuState.position,
   }),
   {setAccountContextHidden},
 )(ContextMenu);
