@@ -75,9 +75,9 @@ const Webview = ({
       setUrl(newUrl);
       try {
         // can't load URL before webview is not attached to the DOM
-        webviewRef.current.loadURL(newUrl).catch(error => console.info(`Navigating to ${newUrl} failed`, error));
+        webviewRef.current.loadURL(newUrl).catch(error => console.error(`Navigating to ${newUrl} failed`, error));
       } catch (error) {
-        console.info('Can not #loadURL before attaching webview to DOM', error);
+        console.warn('Can not #loadURL before attaching webview to DOM', error);
       }
     }
   }, [account]);
