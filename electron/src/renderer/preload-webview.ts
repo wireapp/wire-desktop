@@ -182,24 +182,6 @@ const subscribeToMainProcessEvents = () => {
 const reportWebappVersion = () =>
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
 
-const checkAvailability = (callback: () => void) => {
-  const HALF_SECOND = 500;
-
-  const intervalId = setInterval(() => {
-    if (window.wire) {
-      clearInterval(intervalId);
-      return callback();
-    }
-
-    if (navigator.onLine) {
-      // Loading webapp failed
-      clearInterval(intervalId);
-      logger.error('Failed loading the WebApp.');
-      location.reload();
-    }
-  }, HALF_SECOND);
-};
-
 // https://github.com/electron/electron/issues/2984
 const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
@@ -212,21 +194,26 @@ process.once('loaded', () => {
   global.setImmediate = _setImmediate;
 });
 
-// Expose SSO capability to webapp before anything is rendered
-Object.defineProperty(window, 'wSSOCapable', {
-  configurable: false,
-  enumerable: false,
-  value: true,
-  writable: false,
-});
+const registerEvents = (callback: () => void) => {
+  const HALF_SECOND = 500;
+
+  const intervalId = setInterval(() => {
+    logger.info('Attemting to register event handlers...');
+    if (window.amplify && window.wire && window.z?.event) {
+      clearInterval(intervalId);
+      return callback();
+    }
+  }, HALF_SECOND);
+};
 
 window.addEventListener('DOMContentLoaded', () => {
-  checkAvailability(() => {
+  registerEvents(() => {
+    logger.info('Registering event handlers');
     subscribeToMainProcessEvents();
     subscribeToThemeChange();
     subscribeToWebappEvents();
     reportWebappVersion();
-    // include context menu
-    import('./menu/context').catch(error => logger.error(error));
   });
+  // include context menu
+  import('./menu/context').catch(logger.error);
 });

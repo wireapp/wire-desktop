@@ -22,6 +22,7 @@ import './Sidebar.css';
 import React from 'react';
 import {connect} from 'react-redux';
 
+import * as EVENT_TYPE from '../lib/eventType';
 import {config} from '../../../dist/settings/config';
 import {
   addAccountWithSession,
@@ -68,7 +69,11 @@ const Sidebar = ({
         <div
           style={{color: colorFromId(currentAccentID)}}
           className={getClassName(account)}
-          onClick={() => connected.switchAccount(account.id)}
+          onClick={preventFocus(event =>
+            window.dispatchEvent(
+              new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accounts.indexOf(account)}}),
+            ),
+          )}
           onContextMenu={preventFocus(event => {
             const isAtLeastAdmin =
               account.teamRole === 'z.team.TeamRole.ROLE.OWNER' || account.teamRole === 'z.team.TeamRole.ROLE.ADMIN';

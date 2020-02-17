@@ -21,13 +21,14 @@ import './App.css';
 
 import React from 'react';
 import {connect} from 'react-redux';
+import {StyledApp} from '@wireapp/react-ui-kit';
 
 import {config} from '../../../dist/settings/config';
 import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import WebviewsContainer from '../containers/WebviewsContainer';
 import * as EVENT_TYPE from '../lib/eventType';
 import IsOnline from './IsOnline';
 import Sidebar from './Sidebar';
+import WebviewList from './WebviewList';
 
 class App extends React.Component {
   constructor(props) {
@@ -37,6 +38,11 @@ class App extends React.Component {
   componentDidMount() {
     window.addEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount, false);
     window.addEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO, false);
+
+    // Workaround: Switch to first webview after startup
+    setTimeout(() => {
+      this.switchAccount({detail: {accountIndex: 0}});
+    }, 1000);
   }
 
   componentWillUnmount() {
@@ -49,9 +55,16 @@ class App extends React.Component {
     const accountId = this.props.accountIds[accountIndex];
     if (accountId) {
       this.props.switchAccount(accountId);
-    }
 
-    event.target.focus();
+      // Note: We need to focus window first to properly set focus
+      // on the webview with shortcuts like Cmd+1/2/3
+      window.blur();
+      window.focus();
+
+      const webview = document.querySelector(`.Webview[data-accountid="${accountId}"]`);
+      webview.blur();
+      webview.focus();
+    }
   };
 
   initiateSSO = event => {
@@ -80,12 +93,14 @@ class App extends React.Component {
 
   render() {
     return (
-      <IsOnline>
-        <div className="App">
-          <Sidebar />
-          <WebviewsContainer />
-        </div>
-      </IsOnline>
+      <StyledApp style={{height: '100%'}}>
+        <IsOnline>
+          <div className="App">
+            <Sidebar />
+            <WebviewList />
+          </div>
+        </IsOnline>
+      </StyledApp>
     );
   }
 }
