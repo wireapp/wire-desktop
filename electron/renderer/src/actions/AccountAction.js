@@ -23,13 +23,13 @@ import * as EVENT_TYPE from '../lib/eventType';
 
 export class AccountAction {
   startSSO = ssoCode => {
-    return async (dispatch, getState, {actions: {}}) => {
+    return async (dispatch, getState, {actions: {accountAction}}) => {
       try {
         const accounts = getState().accounts;
         const loggedOutWebviews = accounts.filter(account => account.userID === undefined);
 
         if (loggedOutWebviews.length > 0) {
-          dispatch(this.switchWebview(accounts.indexOf(loggedOutWebviews[0])));
+          dispatch(accountAction.switchWebview(accounts.indexOf(loggedOutWebviews[0])));
 
           const accountId = loggedOutWebviews[0].id;
           dispatch(initiateSSO(accountId, ssoCode, accounts.length == 1));
@@ -54,7 +54,7 @@ export class AccountAction {
   };
 
   switchWebview = accountIndex => {
-    return async (dispatch, getState, {actions: {}}) => {
+    return async (dispatch, getState) => {
       try {
         const account = getState().accounts[Math.max(accountIndex, 0)];
         dispatch(switchAccount(account.id));
