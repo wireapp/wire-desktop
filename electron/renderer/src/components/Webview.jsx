@@ -36,6 +36,23 @@ import {
 } from '../actions';
 import {getText} from '../lib/locale';
 
+const getEnvironmentUrl = account => {
+  const currentLocation = new URL(window.location.href);
+  const envParam = account.webappUrl || currentLocation.searchParams.get('env');
+  const decodedEnvParam = decodeURIComponent(envParam);
+  const url = new URL(decodedEnvParam);
+
+  // pass account id to webview so we can access it in the preload script
+  url.searchParams.set('id', account.id);
+
+  if (account.ssoCode && account.isAdding) {
+    url.pathname = '/auth';
+    url.hash = `#sso/${account.ssoCode}`;
+  }
+
+  return url.href;
+};
+
 const Webview = ({
   account,
   onUnreadCountUpdated,
@@ -48,38 +65,23 @@ const Webview = ({
 }) => {
   const webviewRef = useRef();
   const [canDelete, setCanDelete] = useState(false);
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState(getEnvironmentUrl(account));
   const [webviewError, setWebviewError] = useState(null);
 
   useEffect(() => {
-    setCanDelete(!account.userID && !!account.sessionID);
-
-    const getEnvironmentUrl = () => {
-      const currentLocation = new URL(window.location.href);
-      const envParam = account.webappUrl || currentLocation.searchParams.get('env');
-      const decodedEnvParam = decodeURIComponent(envParam);
-      const url = new URL(decodedEnvParam);
-
-      // pass account id to webview so we can access it in the preload script
-      url.searchParams.set('id', account.id);
-
-      if (account.ssoCode && account.isAdding) {
-        url.pathname = '/auth';
-        url.hash = `#sso/${account.ssoCode}`;
-      }
-
-      return url.href;
-    };
-    const newUrl = getEnvironmentUrl();
+    const newUrl = getEnvironmentUrl(account);
     if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {
-        // can't load URL before webview is not attached to the DOM
         webviewRef.current.loadURL(newUrl).catch(error => console.error(`Navigating to ${newUrl} failed`, error));
       } catch (error) {
         console.warn('Can not #loadURL before attaching webview to DOM', error);
       }
     }
+  }, [account]);
+
+  useEffect(() => {
+    setCanDelete(!account.userID && !!account.sessionID);
   }, [account]);
 
   useEffect(() => {
