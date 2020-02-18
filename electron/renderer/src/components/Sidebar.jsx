@@ -105,7 +105,7 @@ const Sidebar = ({
 export default connect(
   state => ({
     accounts: AccountSelector.getAccounts(state),
-    currentAccentID: AccountSelector.getSelectedAccount(state).accentID,
+    currentAccentID: AccountSelector.getSelectedAccountAccentId(state),
     hasCreatedAccount: AccountSelector.hasCreatedAccount(state),
     hasReachedLimitOfAccounts: AccountSelector.hasReachedLimitOfAccounts(state),
     isAddingAccount: AccountSelector.isAddingAccount(state),
