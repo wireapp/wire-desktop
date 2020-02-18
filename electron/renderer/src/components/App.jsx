@@ -50,7 +50,6 @@ const App = ({accounts, switchWebview}) => {
 export default connect(
   ({accounts}) => ({
     accounts,
-    // isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
   }),
   {switchWebview: actionRoot.accountAction.switchWebview},
 )(App);
