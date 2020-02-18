@@ -174,7 +174,7 @@ const fetchOpenGraphData = async (url: string): Promise<og.Data> => {
   const parsedUrl = parseUrl(encodeURI(url));
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
 
-  if (normalizedUrl.host === 'twitter.com') {
+  if (normalizedUrl.host === 'twitter.com' || normalizedUrl.host === 'github.com') {
     return getOpenGraphData(normalizedUrl.href);
   }
 
