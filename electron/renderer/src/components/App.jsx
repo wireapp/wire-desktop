@@ -25,6 +25,7 @@ import actionRoot from '../actions';
 import IsOnline from './IsOnline';
 import Sidebar from './Sidebar';
 import WebviewList from './WebviewList';
+import {AccountSelector} from '../selector/AccountSelector';
 
 const App = ({accounts, switchWebview}) => {
   useEffect(() => {
@@ -48,8 +49,8 @@ const App = ({accounts, switchWebview}) => {
 };
 
 export default connect(
-  ({accounts}) => ({
-    accounts,
+  state => ({
+    accounts: AccountSelector.getAccounts(state),
   }),
   {switchWebview: actionRoot.accountAction.switchWebview},
 )(App);

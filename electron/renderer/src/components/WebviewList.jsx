@@ -25,6 +25,7 @@ import Webview from './Webview';
 import {connect} from 'react-redux';
 
 import {updateAccountBadgeCount} from '../actions';
+import {AccountSelector} from '../selector/AccountSelector';
 
 const WebviewList = ({accounts, updateAccountBadgeCount}) => {
   const onUnreadCountUpdated = (accountId, unreadCount) => {
@@ -41,4 +42,6 @@ const WebviewList = ({accounts, updateAccountBadgeCount}) => {
   );
 };
 
-export default connect(state => ({accounts: state.accounts}), {updateAccountBadgeCount})(WebviewList);
+export default connect(state => ({accounts: AccountSelector.getAccounts(state)}), {updateAccountBadgeCount})(
+  WebviewList,
+);
