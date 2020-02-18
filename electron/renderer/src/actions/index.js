@@ -23,6 +23,7 @@ import uuid from 'uuid/v4';
 
 import {config} from '../../../dist/settings/config';
 import {verifyObjectProperties} from '../lib/verifyObjectProperties';
+import {accountAction} from './AccountAction';
 
 export const ActionType = {
   ADD_ACCOUNT: 'ADD_ACCOUNT',
@@ -159,3 +160,9 @@ export const updateAccountBadgeCount = (id, count) => {
     }
   };
 };
+
+const actionRoot = {
+  accountAction,
+};
+
+export default actionRoot;
