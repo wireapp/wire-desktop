@@ -20,12 +20,13 @@
 import {initiateSSO, switchAccount} from './';
 import {config} from '../../../dist/settings/config';
 import * as EVENT_TYPE from '../lib/eventType';
+import {AccountSelector} from '../selector/AccountSelector';
 
 export class AccountAction {
   startSSO = ssoCode => {
     return async (dispatch, getState, {actions: {accountAction}}) => {
       try {
-        const accounts = getState().accounts;
+        const accounts = AccountSelector.getAccounts(getState());
         const loggedOutWebviews = accounts.filter(account => account.userID === undefined);
 
         if (loggedOutWebviews.length > 0) {
@@ -56,7 +57,7 @@ export class AccountAction {
   switchWebview = accountIndex => {
     return async (dispatch, getState) => {
       try {
-        const account = getState().accounts[Math.max(accountIndex, 0)];
+        const account = AccountSelector.getAccounts(getState())[Math.max(accountIndex, 0)];
         dispatch(switchAccount(account.id));
 
         // Note: We need to focus window first to properly set focus

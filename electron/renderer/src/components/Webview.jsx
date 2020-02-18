@@ -35,6 +35,7 @@ import {
   updateAccountLifecycle,
 } from '../actions';
 import {getText} from '../lib/locale';
+import {AccountSelector} from '../selector/AccountSelector';
 
 const getEnvironmentUrl = account => {
   const currentLocation = new URL(window.location.href);
@@ -224,7 +225,7 @@ const Webview = ({
   );
 };
 
-export default connect(state => ({accounts: state.accounts}), {
+export default connect(state => ({accounts: AccountSelector.getAccounts(state)}), {
   abortAccountCreation,
   resetIdentity,
   switchAccount,

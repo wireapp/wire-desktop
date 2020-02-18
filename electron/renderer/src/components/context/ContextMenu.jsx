@@ -23,6 +23,7 @@ import React, {useEffect, useRef} from 'react';
 import {connect} from 'react-redux';
 
 import {setAccountContextHidden} from '../../actions';
+import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 
 const ContextMenu = ({position, children, setAccountContextHidden}) => {
   const menuRef = useRef();
@@ -84,8 +85,8 @@ const ContextMenu = ({position, children, setAccountContextHidden}) => {
 };
 
 export default connect(
-  ({contextMenuState}) => ({
-    position: contextMenuState.position,
+  state => ({
+    position: ContextMenuSelector.getPosition(state),
   }),
   {setAccountContextHidden},
 )(ContextMenu);

@@ -25,6 +25,7 @@ import * as EVENT_TYPE from '../../lib/eventType';
 import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
+import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 
 const EditAccountMenu = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
   return (
@@ -58,11 +59,11 @@ const EditAccountMenu = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...co
 };
 
 export default connect(
-  ({contextMenuState}) => ({
-    accountId: contextMenuState.accountId,
-    isAtLeastAdmin: contextMenuState.isAtLeastAdmin,
-    lifecycle: contextMenuState.lifecycle,
-    sessionId: contextMenuState.sessionId,
+  state => ({
+    accountId: ContextMenuSelector.getAccountId(state),
+    isAtLeastAdmin: ContextMenuSelector.getIsAtLeastAdmin(state),
+    lifecycle: ContextMenuSelector.getLifecycle(state),
+    sessionId: ContextMenuSelector.getSessionId(state),
   }),
   {
     abortAccountCreation,
