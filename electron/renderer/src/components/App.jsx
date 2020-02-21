@@ -17,7 +17,7 @@
  *
  */
 
-import React, {useEffect} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
 import {StyledApp} from '@wireapp/react-ui-kit';
 
@@ -28,14 +28,6 @@ import WebviewList from './WebviewList';
 import {AccountSelector} from '../selector/AccountSelector';
 
 const App = ({accounts, switchWebview}) => {
-  useEffect(() => {
-    // Note: This is switching to the last visible webview in order to set the focus and cursor in the webview
-    setTimeout(() => {
-      const selectedAccount = accounts.find(account => account.visible === true);
-      switchWebview(accounts.indexOf(selectedAccount));
-    }, 1000);
-  }, []);
-
   return (
     <StyledApp style={{height: '100%'}}>
       <IsOnline>
