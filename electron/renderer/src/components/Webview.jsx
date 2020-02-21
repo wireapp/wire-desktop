@@ -166,7 +166,7 @@ const Webview = ({
           data-accountid={account.id}
           style={{display: 'flex'}}
         >
-          <ContainerSM centerText verticalCenter>
+          <ContainerSM centerText verticalCenter data-uie-name="status-webview-error">
             <Logo scale={1.68} style={{marginBottom: '80px'}} />
             <div>
               <SVGIcon realWidth="111" realHeight="101">
