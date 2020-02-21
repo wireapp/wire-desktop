@@ -56,6 +56,7 @@ const getEnvironmentUrl = account => {
 
 const Webview = ({
   account,
+  accounts,
   onUnreadCountUpdated,
   abortAccountCreation,
   resetIdentity,
@@ -80,6 +81,21 @@ const Webview = ({
       }
     }
   }, [account]);
+
+  // https://github.com/electron/electron/issues/14474#issuecomment-425794480
+  useEffect(() => {
+    const webview = webviewRef.current;
+    const listener = () => {
+      webview.blur();
+      webview.focus();
+    };
+    if (account.visible && webview) {
+      webview.addEventListener('dom-ready', listener);
+    }
+    return () => {
+      webview.removeEventListener('dom-ready', listener);
+    };
+  }, [account, webviewRef]);
 
   useEffect(() => {
     setCanDelete(!account.userID && !!account.sessionID);
