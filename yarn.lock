@@ -1624,10 +1624,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/certificate-check@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.npmjs.org/@wireapp/certificate-check/-/certificate-check-0.1.9.tgz#e4ed9aeaed64f4c762dde2f21b20e259f04fdd99"
-  integrity sha512-rrgueQqUOo8NSUAwgakckCsHW9OGzI4qMY0Ir7vE224EBTrTKnlYpmV5uUw8gpR9pi2LQ3cp9+/zQ+UidCzMXg==
+"@wireapp/certificate-check@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.npmjs.org/@wireapp/certificate-check/-/certificate-check-0.1.10.tgz#e88cb12cf896a7b83a8a7510e3c15d17946ea04e"
+  integrity sha512-rkzVZN9ilWlByXMic3PzrUmgVenc+EzK7uJX+RsM79kl0P2Gc003sTl/VdK+8B5/d9JVgHKql9/6ksazAMD9kA==
   dependencies:
     jsrsasign "8.0.12"
 
