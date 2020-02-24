@@ -16,6 +16,7 @@ coverage
 app.asar
 node_modules
 Wire*.zip
+WireResources/*
 
 # Configuration imported from https://github.com/wireapp/wire-web-config-wire/
 .env.defaults
