@@ -223,10 +223,18 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     y: mainWindowState.y,
   };
 
-  main = await new Server(new BrowserWindow(options), {
+  main = new BrowserWindow(options);
+  
+  // Should we intercept only in
+  
+  const isLocalhostEnvironment = EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
+  
+  if(!isLocalhostEnvironment) {
+    await new Server(main, {
     documentRoot: path.join(app.getAppPath(), 'WireResources'),
     intercept: EnvironmentUtil.web.getWebappUrl(),
   }).start();
+  }
 
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);
