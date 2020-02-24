@@ -93,7 +93,9 @@ const Webview = ({
       webview.addEventListener('dom-ready', listener);
     }
     return () => {
-      webview.removeEventListener('dom-ready', listener);
+      if (webview) {
+        webview.removeEventListener('dom-ready', listener);
+      }
     };
   }, [account, webviewRef]);
 
