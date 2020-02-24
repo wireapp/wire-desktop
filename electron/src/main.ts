@@ -18,6 +18,7 @@
  */
 
 import {LogFactory} from '@wireapp/commons';
+import {Server} from '@wireapp/local-server';
 import {
   app,
   BrowserWindow,
@@ -222,7 +223,10 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     y: mainWindowState.y,
   };
 
-  main = new BrowserWindow(options);
+  main = await new Server(new BrowserWindow(options), {
+    documentRoot: path.join(app.getAppPath(), 'WireResources'),
+    intercept: EnvironmentUtil.web.getWebappUrl(),
+  }).start();
 
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);
