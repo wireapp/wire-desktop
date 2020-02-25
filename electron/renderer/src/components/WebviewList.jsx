@@ -29,9 +29,10 @@ import {AccountSelector} from '../selector/AccountSelector';
 
 const WebviewList = ({accounts, updateAccountBadgeCount}) => {
   const onUnreadCountUpdated = (accountId, unreadCount) => {
-    updateAccountBadgeCount(accountId, unreadCount);
     const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
-    window.sendBadgeCount(accumulatedCount);
+    // Note: State is not immediatly updated after dispatching action
+    updateAccountBadgeCount(accountId, unreadCount);
+    window.sendBadgeCount(accumulatedCount + unreadCount);
   };
   return (
     <ul className="WebviewList">
