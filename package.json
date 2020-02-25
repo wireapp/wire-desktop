@@ -164,7 +164,7 @@
     "postinstall": "yarn configure",
     "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css,yml,html}\"",
-    "start": "cross-env NODE_DEBUG=@wireapp* electron . --no-sandbox --inspect --devtools --enable-logging",
+    "start": "cross-env DEBUG=wire* NODE_DEBUG=@wireapp* electron . --no-sandbox --inspect --devtools --enable-logging",
     "start:dev": "yarn start --env=https://wire-webapp-dev.zinfra.io",
     "start:edge": "yarn start --env=https://wire-webapp-edge.zinfra.io",
     "start:internal": "yarn start --env=https://wire-webapp-staging.wire.com",
