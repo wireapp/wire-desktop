@@ -19,7 +19,7 @@
 
 import './WebviewList.css';
 
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import Webview from './Webview';
 import {connect} from 'react-redux';
@@ -28,16 +28,14 @@ import {updateAccountBadgeCount} from '../actions';
 import {AccountSelector} from '../selector/AccountSelector';
 
 const WebviewList = ({accounts, updateAccountBadgeCount}) => {
-  const onUnreadCountUpdated = (accountId, unreadCount) => {
+  useEffect(() => {
     const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
-    // Note: State is not immediatly updated after dispatching action
-    updateAccountBadgeCount(accountId, unreadCount);
-    window.sendBadgeCount(accumulatedCount + unreadCount);
-  };
+    window.sendBadgeCount(accumulatedCount);
+  }, [accounts]);
   return (
     <ul className="WebviewList">
       {accounts.map(account => (
-        <Webview key={account.id} account={account} onUnreadCountUpdated={onUnreadCountUpdated} />
+        <Webview key={account.id} account={account} onUnreadCountUpdated={updateAccountBadgeCount} />
       ))}
     </ul>
   );
