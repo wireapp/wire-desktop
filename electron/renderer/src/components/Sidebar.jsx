@@ -22,7 +22,7 @@ import './Sidebar.css';
 import React from 'react';
 import {connect} from 'react-redux';
 
-import {config} from '../../../dist/settings/config';
+import * as EVENT_TYPE from '../lib/eventType';
 import {
   addAccountWithSession,
   setAccountContextHidden,
@@ -34,6 +34,8 @@ import {preventFocus} from '../lib/util';
 import AccountIcon from './AccountIcon';
 import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
+import {AccountSelector} from '../selector/AccountSelector';
+import {ContextMenuSelector} from '../selector/ContextMenuSelector';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
@@ -68,7 +70,11 @@ const Sidebar = ({
         <div
           style={{color: colorFromId(currentAccentID)}}
           className={getClassName(account)}
-          onClick={() => connected.switchAccount(account.id)}
+          onClick={preventFocus(event =>
+            window.dispatchEvent(
+              new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accounts.indexOf(account)}}),
+            ),
+          )}
           onContextMenu={preventFocus(event => {
             const isAtLeastAdmin =
               account.teamRole === 'z.team.TeamRole.ROLE.OWNER' || account.teamRole === 'z.team.TeamRole.ROLE.ADMIN';
@@ -97,13 +103,13 @@ const Sidebar = ({
 );
 
 export default connect(
-  ({accounts, contextMenuState}) => ({
-    accounts,
-    currentAccentID: (accounts.find(account => account.visible) || {}).accentID,
-    hasCreatedAccount: accounts.some(account => account.userID !== undefined),
-    hasReachedLimitOfAccounts: accounts.length >= config.maximumAccounts,
-    isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
-    isEditAccountMenuVisible: contextMenuState.isEditAccountMenuVisible,
+  state => ({
+    accounts: AccountSelector.getAccounts(state),
+    currentAccentID: AccountSelector.getSelectedAccountAccentId(state),
+    hasCreatedAccount: AccountSelector.hasCreatedAccount(state),
+    hasReachedLimitOfAccounts: AccountSelector.hasReachedLimitOfAccounts(state),
+    isAddingAccount: AccountSelector.isAddingAccount(state),
+    isEditAccountMenuVisible: ContextMenuSelector.isEditAccountMenuVisible(state),
   }),
   {
     addAccountWithSession,

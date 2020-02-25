@@ -107,7 +107,7 @@ export class CustomProtocolHandler {
           await this.dispatchDeepLink(deepLink);
         }
       });
-      app.on('second-instance', async (event, argv) => {
+      app.on('second-instance', async (_event, argv) => {
         logger.info('Second instance detected, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(argv);
         if (deepLink) {

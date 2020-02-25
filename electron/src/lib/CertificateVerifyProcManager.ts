@@ -34,6 +34,12 @@ interface DisplayCertificateErrorOptions {
   isChromiumError: boolean;
 }
 
+enum CertificateVerificationResult {
+  SUCCESS = 0, // Indicates success and disables Certificate Transparency verification
+  FAILURE = -2,
+  USE_CHROMIUM_VALIDATION = -3,
+}
+
 class CertificateVerifyProcManager {
   private static bypassCertificatePinning = false;
   private static isDialogLocked = false;
@@ -189,7 +195,6 @@ export const setCertificateVerifyProc = async (
   cb: (verificationResult: number) => void,
 ) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
-
   // Check browser results
   if (verificationResult !== 'net::OK') {
     logger.error(
@@ -203,7 +208,7 @@ export const setCertificateVerifyProc = async (
       await CertificateVerifyProcManager.displayCertificateChromiumError(hostname, certificate);
     }
 
-    return cb(-2);
+    return cb(CertificateVerificationResult.FAILURE);
   }
 
   // Check certificate pinning
@@ -215,9 +220,9 @@ export const setCertificateVerifyProc = async (
       logger.error(`Certificate verification failed for "${hostname}".`);
       logger.error(`Error: "${pinningResults.errorMessage}". Displaying certificate pinning error dialog.`);
       await CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
-      return cb(-2);
+      return cb(CertificateVerificationResult.FAILURE);
     }
   }
 
-  return cb(-3);
+  return cb(CertificateVerificationResult.USE_CHROMIUM_VALIDATION);
 };

@@ -41,16 +41,16 @@ const getWebviewById = (id: string): WebviewTag | null =>
   document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event, code: string) => new AutomatedSingleSignOn().start(code));
+  ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
 
-  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (event, action: string) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (_event, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       await selectedWebview.send(action);
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, async (event, hash: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, async (_event, hash: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       await selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
@@ -127,10 +127,10 @@ setupIpcInterface();
 subscribeToMainProcessEvents();
 
 window.addEventListener('DOMContentLoaded', addDragRegion);
-
 window.addEventListener('focus', () => {
   const selectedWebview = getSelectedWebview();
   if (selectedWebview) {
+    selectedWebview.blur();
     selectedWebview.focus();
   }
 });

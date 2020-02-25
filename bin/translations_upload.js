@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2020 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,14 @@
  *
  */
 
-.IsOnline {
-  width: 100%;
-  height: 100%;
+const {join, resolve} = require('path');
+const {execSync} = require('child_process');
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+const root = resolve(__dirname, '..');
 
-  font-size: 16px;
-  font-weight: 300;
-  text-transform: uppercase;
-  color: #fff;
-}
+const uploadToCrowdin = () => {
+  const crowdinYaml = join(root, 'keys', 'crowdin.yaml');
+  execSync(`crowdin upload sources --identity="${crowdinYaml}"`, {stdio: [0, 1]});
+};
+
+uploadToCrowdin();

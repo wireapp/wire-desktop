@@ -17,26 +17,31 @@
  *
  */
 
-import './IsOnline.css';
+import React, {useEffect, useState} from 'react';
+import {Text, ContainerSM} from '@wireapp/react-ui-kit';
 
-import React, {Component} from 'react';
+const IsOnline = ({children}) => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-export default class IsOnline extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isOnline: navigator.onLine,
+  useEffect(() => {
+    const setOnline = () => setIsOnline(true);
+    window.addEventListener('online', setOnline);
+    return () => {
+      window.removeEventListener('online', setOnline);
     };
-  }
+  });
 
-  componentDidMount() {
-    if (this.state.isOnline === false) {
-      window.addEventListener('online', event => this.setState({isOnline: true}), {once: true});
-    }
-  }
+  return isOnline ? (
+    children
+  ) : (
+    <div style={{display: 'flex', height: '100%', width: '100%'}}>
+      <ContainerSM centerText verticalCenter>
+        <Text center block textTransform="uppercase">
+          {'No Internet'}
+        </Text>
+      </ContainerSM>
+    </div>
+  );
+};
 
-  render() {
-    return this.state.isOnline ? this.props.children : <div className="IsOnline">No Internet</div>;
-  }
-}
+export default IsOnline;

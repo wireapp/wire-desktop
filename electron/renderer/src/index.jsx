@@ -19,44 +19,25 @@
 
 import './Index.css';
 
-import throttle from 'lodash/throttle';
 import React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
-import {applyMiddleware, createStore} from 'redux';
-import logger from 'redux-logger';
-import thunk from 'redux-thunk';
-
-import {config} from '../../dist/settings/config';
+import * as EVENT_TYPE from './lib/eventType';
 import App from './components/App';
-import {loadState, saveState} from './lib/localStorage';
-import appStore from './reducers';
+import configureStore from './configureStore';
+import actionRoot from './actions';
 
-const HALF_SECOND = 500;
+const store = configureStore({actions: actionRoot});
 
-const persistedState = loadState();
-
-const middleware = [thunk];
-
-if (config.environment !== 'production') {
-  middleware.push(logger);
-}
-
-const store = createStore(appStore, persistedState, applyMiddleware(...middleware));
-
-store.subscribe(
-  throttle(() => {
-    saveState({
-      accounts: store.getState().accounts.map(account => {
-        // no need to store badge count
-        return {
-          ...account,
-          badgeCount: 0,
-          lifecycle: undefined,
-        };
-      }),
-    });
-  }, HALF_SECOND),
+window.addEventListener(
+  EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
+  event => store.dispatch(actionRoot.accountAction.switchWebview(event.detail.accountIndex)),
+  false,
+);
+window.addEventListener(
+  EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT,
+  event => store.dispatch(actionRoot.accountAction.startSSO(event.detail.code)),
+  false,
 );
 
 render(
