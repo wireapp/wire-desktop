@@ -18,7 +18,7 @@
  */
 
 import {LogFactory} from '@wireapp/commons';
-import {Server} from '@wireapp/local-server';
+import {Server as LocalServer} from '@wireapp/local-server';
 import {
   app,
   BrowserWindow,
@@ -224,16 +224,15 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   };
 
   main = new BrowserWindow(options);
-  
-  // Should we intercept only in
-  
-  const isLocalhostEnvironment = EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
-  
-  if(!isLocalhostEnvironment) {
-    await new Server(main, {
-    documentRoot: path.join(app.getAppPath(), 'WireResources'),
-    intercept: EnvironmentUtil.web.getWebappUrl(),
-  }).start();
+
+  // Do not intercept requests when using localhost
+  const isLocalhostEnvironment =
+    EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
+  if (!isLocalhostEnvironment) {
+    await new LocalServer({
+      documentRoot: path.join(app.getAppPath(), 'WireResources'),
+      intercept: EnvironmentUtil.web.getWebappUrl(),
+    }).attachTo(main);
   }
 
   mainWindowState.manage(main);

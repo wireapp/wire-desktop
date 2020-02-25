@@ -1707,10 +1707,10 @@
   resolved "https://registry.npmjs.org/@wireapp/eslint-config/-/eslint-config-1.4.0.tgz#2ba4c88ed7fd3ae52bb378cf862d408d692ab3f0"
   integrity sha512-dF4H3wcssqd4aiEPJxL5u2xzMyLwmbOeGJh7OtnBak80CTgOsS1f3hORokUuJ4axCzA+XVqjiPDLc8d51AEu7g==
 
-"@wireapp/local-server@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/@wireapp/local-server/-/local-server-0.1.0.tgz#c043bd19bafa0077bcf4cf09b8902da091ae4cf7"
-  integrity sha512-/pd4/6bBlaH5nHZh61slNCDJ1+kie0zx01V0Pw1Kloann9x6Kgr92zm2lAYudhqQ3FgeMuf0QOZTHPlxPH8GvQ==
+"@wireapp/local-server@0.1.2":
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/@wireapp/local-server/-/local-server-0.1.2.tgz#4a6e783ec698189865e900a21248a570054143b2"
+  integrity sha512-Hqd8g6SH3CAAhdSBJZtOVhurIDXc5vd6NotSOvPSFU+iPjLyZfcgktBYz8swkvogrTfdCIE18XRp63BE3Ys5IQ==
   dependencies:
     "@types/node" "12"
     "@wireapp/certificate-check" "0.1.10"
