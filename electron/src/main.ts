@@ -23,11 +23,11 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
+  Filter,
+  HeadersReceivedResponse,
   ipcMain,
   Menu,
-  OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
-  OnHeadersReceivedFilter as Filter,
-  OnHeadersReceivedResponse as HeadersReceivedResponse,
+  OnHeadersReceivedListenerDetails,
   shell,
   WebContents,
 } from 'electron';
@@ -65,10 +65,9 @@ import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 import ProxyAuth from './auth/ProxyAuth';
-import {WindowUrl} from './window/WindowUrl';
+import {changeEnvironmentPrompt} from './lib/changeEnvironmentPrompt';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
-import {changeEnvironmentPrompt} from './lib/changeEnvironmentPrompt';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
