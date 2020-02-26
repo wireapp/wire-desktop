@@ -18,7 +18,7 @@
  */
 
 import {LogFactory} from '@wireapp/commons';
-import {Server as LocalServer} from '@wireapp/local-server';
+import {Server as LocalServer, proxifyNetworkingLayer} from '@wireapp/local-server';
 import {
   app,
   BrowserWindow,
@@ -477,10 +477,15 @@ const handlePortableFlags = () => {
   }
 };
 
-const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
+const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: Electron.WebContents) => {
   const proxyURL = authenticatedProxyDetails.origin;
   logger.info(`Setting proxy on a window to URL "${proxyURL}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
+
+  // Set proxy for the proxifyProtocol
+  // Note: Here we convert from class URL -> string -> url.parse()
+  proxifyNetworkingLayer(authenticatedProxyDetails.toString());
+
   await webContents.session.setProxy({
     pacScript: '',
     proxyBypassRules: '',
