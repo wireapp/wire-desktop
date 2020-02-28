@@ -172,7 +172,10 @@ export class SingleSignOn {
   public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
 
-  public static readonly javascriptHelper = () => {
+  // `window.opener` is not available when sandbox is activated,
+  // therefore we need to fake the function on backend area and
+  // redirect the response to a custom protocol
+  public static readonly getWindowOpenerScript = () => {
     return `Object.defineProperty(window, 'opener', {
       configurable: true, // Needed on Chrome :(
       enumerable: false,
