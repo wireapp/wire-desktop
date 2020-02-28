@@ -20,12 +20,7 @@
 const {webFrame, remote} = require('electron');
 const {SingleSignOn} = remote.require('./sso/SingleSignOn');
 
-if (typeof document.location?.origin === 'string') {
-  //eslint-disable-next-line @typescript-eslint/no-floating-promises
-  (async () => {
-    // `window.opener` is not available when sandbox is activated,
-    // therefore we need to fake the function on backend area and
-    // redirect the response to a custom protocol
-    await webFrame.executeJavaScript(SingleSignOn.javascriptHelper());
-  })();
-}
+//eslint-disable-next-line @typescript-eslint/no-floating-promises
+(async () => {
+  await webFrame.executeJavaScript(SingleSignOn.getWindowOpenerScript());
+})();
