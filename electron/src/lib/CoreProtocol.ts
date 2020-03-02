@@ -38,7 +38,6 @@ enum ProtocolCommand {
 
 export class CustomProtocolHandler {
   public hashLocation = '';
-  private readonly windowManager = WindowManager;
 
   async dispatchDeepLink(url?: string): Promise<void> {
     logger.info(`Received deep link "${url}"`);
@@ -62,7 +61,7 @@ export class CustomProtocolHandler {
     const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
     this.hashLocation = `/${location}`;
     logger.info(`New hash location: "${this.hashLocation}"`);
-    this.windowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
   }
 
   private async handleSSOLogin(route: URL): Promise<void> {
@@ -70,7 +69,7 @@ export class CustomProtocolHandler {
       logger.info('Starting SSO flow ...');
       const code = route.pathname.trim().substr(1);
       try {
-        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+        await WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
       } catch (error) {
         logger.error(`Cannot start SSO flow: ${error.message}`, error);
       }

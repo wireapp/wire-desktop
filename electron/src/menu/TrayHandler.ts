@@ -17,7 +17,7 @@
  *
  */
 
-import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron';
+import {app, Menu, nativeImage, Tray} from 'electron';
 import * as path from 'path';
 
 import * as locale from '../locale/locale';
@@ -25,6 +25,7 @@ import {linuxDesktop, platform} from '../runtime/EnvironmentUtil';
 import {quit as lifecycleQuit} from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
+import {MainRenderer} from '../MainRenderer';
 
 export class TrayHandler {
   private icons?: {
@@ -68,9 +69,9 @@ export class TrayHandler {
     this.buildTrayMenu();
   }
 
-  showUnreadCount(win: BrowserWindow, count?: number): void {
-    this.updateIcons(win, count);
-    this.flashApplicationWindow(win, count);
+  showUnreadCount(mainRenderer: MainRenderer, count?: number): void {
+    this.updateIcons(mainRenderer, count);
+    this.flashApplicationWindow(mainRenderer, count);
     this.updateBadgeCount(count);
   }
 
@@ -93,11 +94,11 @@ export class TrayHandler {
     }
   }
 
-  private flashApplicationWindow(win: BrowserWindow, count?: number): void {
-    if (win.isFocused() || !count) {
-      win.flashFrame(false);
+  private flashApplicationWindow(mainRenderer: MainRenderer, count?: number): void {
+    if (mainRenderer.isFocused() || !count) {
+      mainRenderer.flashFrame(false);
     } else if (count > this.lastUnreadCount) {
-      win.flashFrame(true);
+      mainRenderer.flashFrame(true);
     }
   }
 
@@ -108,7 +109,7 @@ export class TrayHandler {
     }
   }
 
-  private updateIcons(win: BrowserWindow, count?: number): void {
+  private updateIcons(mainRenderer: MainRenderer, count?: number): void {
     if (this.icons) {
       const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
 
@@ -117,7 +118,7 @@ export class TrayHandler {
       }
 
       const overlayImage = count ? this.icons.badge : null;
-      win.setOverlayIcon(overlayImage, locale.getText('unreadMessages'));
+      mainRenderer.setOverlayIcon(overlayImage, locale.getText('unreadMessages'));
     }
   }
 }
