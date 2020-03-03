@@ -165,6 +165,7 @@
     "prettier": "prettier \"**/*.{json,md,css,yml,html}\"",
     "start": "cross-env NODE_DEBUG=@wireapp* electron . --no-sandbox --inspect --devtools --enable-logging",
     "start:dev": "yarn start --env=https://wire-webapp-dev.zinfra.io",
+    "start:proxy": "yarn start --env=https://wire-webapp-dev.zinfra.io --proxy-server-auth=\"http://127.0.0.1:3128\"",
     "start:edge": "yarn start --env=https://wire-webapp-edge.zinfra.io",
     "start:internal": "yarn start --env=https://wire-webapp-staging.wire.com",
     "start:localhost": "yarn start --env=http://localhost:8081",
