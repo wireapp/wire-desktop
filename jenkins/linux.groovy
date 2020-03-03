@@ -19,6 +19,8 @@ node('linux') {
   }
 
   def environment = docker.build('node', '-f jenkins/linux.Dockerfile .')
+  def version
+  def electronVersion
 
   environment.inside {
 
@@ -29,11 +31,11 @@ node('linux') {
 
     def wireJson = readFile('electron/wire.json')
     def (major, minor) = parseJson(wireJson).version.tokenize('.')
-    def version = "${major}.${minor}.${env.BUILD_NUMBER}"
+    version = "${major}.${minor}.${env.BUILD_NUMBER}"
     currentBuild.displayName = version
 
     def packageJson = readFile('package.json')
-    def electronVersion = parseJson(packageJson).devDependencies.electron
+    electronVersion = parseJson(packageJson).devDependencies.electron
 
     stage('Build') {
       try {
