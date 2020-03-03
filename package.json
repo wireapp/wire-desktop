@@ -178,5 +178,5 @@
     "test:react": "jest",
     "translate:upload": "node ./bin/translations_upload.js"
   },
-  "version": "3.13"
+  "version": "3.15"
 }
