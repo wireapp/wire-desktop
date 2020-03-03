@@ -18,13 +18,6 @@ node('linux') {
     env.APP_ENV = 'internal'
   }
 
-  def wireJson = readFile('electron/wire.json')
-  def packageJson = readFile('package.json')
-  def (major, minor) = parseJson(wireJson).version.tokenize('.')
-  def version = "${major}.${minor}.${env.BUILD_NUMBER}"
-  def electronVersion = parseJson(packageJson).devDependencies.electron
-  currentBuild.displayName = version
-
   def environment = docker.build('node', '-f jenkins/linux.Dockerfile .')
 
   environment.inside {
@@ -33,6 +26,14 @@ node('linux') {
       git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
       sh returnStatus: true, script: 'rm -rf $WORKSPACE/node_modules/ $WORKSPACE/*.sig'
     }
+
+    def wireJson = readFile('electron/wire.json')
+    def (major, minor) = parseJson(wireJson).version.tokenize('.')
+    def version = "${major}.${minor}.${env.BUILD_NUMBER}"
+    currentBuild.displayName = version
+
+    def packageJson = readFile('package.json')
+    def electronVersion = parseJson(packageJson).devDependencies.electron
 
     stage('Build') {
       try {
