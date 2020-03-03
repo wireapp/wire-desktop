@@ -500,7 +500,7 @@ class ElectronWrapperInit {
     ) => {
       event.preventDefault();
 
-      if (SingleSignOn.isSingleSignOnLoginWindow(frameName) && SingleSignOn.isBackendOrigin(url)) {
+      if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
         return new SingleSignOn(main, event, url, options).init();
       }
 

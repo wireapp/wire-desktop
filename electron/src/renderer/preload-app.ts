@@ -99,7 +99,7 @@ const setupIpcInterface = (): void => {
       }
 
       console.info(`Processing deletion of "${accountID}"`);
-      const viewInstanceId = accountWebview.getWebContents().id;
+      const viewInstanceId = accountWebview.getWebContents?.().id;
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
     });
@@ -127,10 +127,10 @@ setupIpcInterface();
 subscribeToMainProcessEvents();
 
 window.addEventListener('DOMContentLoaded', addDragRegion);
-
 window.addEventListener('focus', () => {
   const selectedWebview = getSelectedWebview();
   if (selectedWebview) {
+    selectedWebview.blur();
     selectedWebview.focus();
   }
 });

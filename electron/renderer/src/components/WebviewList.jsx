@@ -17,32 +17,30 @@
  *
  */
 
-import React from 'react';
-import {connect} from 'react-redux';
-import {StyledApp} from '@wireapp/react-ui-kit';
+import './WebviewList.css';
 
-import actionRoot from '../actions';
-import IsOnline from './IsOnline';
-import Sidebar from './Sidebar';
-import WebviewList from './WebviewList';
+import React, {useEffect} from 'react';
+
+import Webview from './Webview';
+import {connect} from 'react-redux';
+
+import {updateAccountBadgeCount} from '../actions';
 import {AccountSelector} from '../selector/AccountSelector';
 
-const App = ({accounts, switchWebview}) => {
+const WebviewList = ({accounts, updateAccountBadgeCount}) => {
+  useEffect(() => {
+    const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
+    window.sendBadgeCount(accumulatedCount);
+  }, [accounts]);
   return (
-    <StyledApp style={{height: '100%'}}>
-      <IsOnline>
-        <div style={{display: 'flex', height: '100%', width: '100%'}}>
-          <Sidebar />
-          <WebviewList />
-        </div>
-      </IsOnline>
-    </StyledApp>
+    <ul className="WebviewList">
+      {accounts.map(account => (
+        <Webview key={account.id} account={account} onUnreadCountUpdated={updateAccountBadgeCount} />
+      ))}
+    </ul>
   );
 };
 
-export default connect(
-  state => ({
-    accounts: AccountSelector.getAccounts(state),
-  }),
-  {switchWebview: actionRoot.accountAction.switchWebview},
-)(App);
+export default connect(state => ({accounts: AccountSelector.getAccounts(state)}), {updateAccountBadgeCount})(
+  WebviewList,
+);
