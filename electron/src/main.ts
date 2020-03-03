@@ -65,7 +65,6 @@ import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 import ProxyAuth from './auth/ProxyAuth';
-import {WindowUrl} from './window/WindowUrl';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 import {changeEnvironmentPrompt} from './lib/changeEnvironmentPrompt';
@@ -84,7 +83,7 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 
-let authenticatedProxyInfo: URL | undefined;
+let proxyInfoArg: URL | undefined;
 
 const customProtocolHandler = new CustomProtocolHandler();
 
@@ -101,9 +100,9 @@ if (argv.version) {
 
 if (argv['proxy-server-auth']) {
   try {
-    authenticatedProxyInfo = new URL(argv['proxy-server-auth']);
-    if (authenticatedProxyInfo.origin === 'null') {
-      authenticatedProxyInfo = undefined;
+    proxyInfoArg = new URL(argv['proxy-server-auth']);
+    if (proxyInfoArg.origin === 'null') {
+      proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
     }
   } catch (error) {
@@ -119,7 +118,6 @@ let tray: TrayHandler;
 
 let isFullScreen = false;
 let isQuitting = false;
-let triedProxy = false;
 let main: BrowserWindow;
 
 Object.entries(config).forEach(([key, value]) => {
@@ -339,13 +337,6 @@ const handleAppEvents = () => {
       event.preventDefault();
       const {host, port} = authInfo;
 
-      if (authenticatedProxyInfo) {
-        const {username, password} = authenticatedProxyInfo;
-        logger.info('Sending provided credentials to authenticated proxy ...');
-        await applyProxySettings(authenticatedProxyInfo, main.webContents);
-        return callback(username, password);
-      }
-
       const systemProxy = await getProxySettings();
       const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
       if (systemProxySettings) {
@@ -353,22 +344,28 @@ const handleAppEvents = () => {
           credentials: {username, password},
           protocol,
         } = systemProxySettings;
-        authenticatedProxyInfo = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
+        proxyInfoArg = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
         logger.log('Applying proxy settings on the main window...');
-        await applyProxySettings(authenticatedProxyInfo, main.webContents);
+        await applyProxySettings(proxyInfoArg, main.webContents);
         return callback(username, password);
       }
 
-      if (!triedProxy) {
+      if (proxyInfoArg) {
+        const hasCredentials = proxyInfoArg.username && proxyInfoArg.password;
+        if (hasCredentials) {
+          const {username, password} = proxyInfoArg;
+          logger.info('Sending provided credentials to authenticated proxy ...');
+          await applyProxySettings(proxyInfoArg, main.webContents);
+          return callback(username, password);
+        }
         ipcMain.once(
           EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
           async (_event, promptData: {password: string; username: string}) => {
             logger.log('Proxy prompt was submitted');
 
             const {username, password} = promptData;
-            const [originalProxyValue]: string[] = argv['proxy-server'] || argv['proxy-server-auth'];
-            const protocol: string | undefined = /^[^:]+:\/\//.exec(originalProxyValue)?.toString();
-            authenticatedProxyInfo = ProxyAuth.generateProxyURL(
+            const protocol: string | undefined = proxyInfoArg?.protocol?.replace(':', '');
+            proxyInfoArg = ProxyAuth.generateProxyURL(
               {host, port},
               {
                 ...promptData,
@@ -377,7 +374,7 @@ const handleAppEvents = () => {
             );
 
             logger.log('Applying proxy settings on the main window...');
-            await applyProxySettings(authenticatedProxyInfo, main.webContents);
+            await applyProxySettings(proxyInfoArg, main.webContents);
             callback(username, password);
           },
         );
@@ -395,7 +392,6 @@ const handleAppEvents = () => {
         });
 
         await ProxyPromptWindow.showWindow();
-        triedProxy = true;
       }
     }
   });
@@ -467,13 +463,13 @@ const handlePortableFlags = () => {
 };
 
 const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
-  const proxyURL = authenticatedProxyDetails.origin;
+  const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
   logger.info(`Setting proxy on a window to URL "${proxyURL}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
   await webContents.session.setProxy({
     pacScript: '',
     proxyBypassRules: '',
-    proxyRules: proxyURL,
+    proxyRules: `http=${proxyURL};https=${proxyURL}`,
   });
 };
 
@@ -519,9 +515,9 @@ class ElectronWrapperInit {
     };
 
     app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
-      if (authenticatedProxyInfo?.origin && contents.session) {
+      if (proxyInfoArg?.origin && contents.session) {
         this.logger.log('Applying proxy settings on a webview...');
-        await applyProxySettings(authenticatedProxyInfo, contents);
+        await applyProxySettings(proxyInfoArg, contents);
       }
 
       switch (contents.getType()) {
