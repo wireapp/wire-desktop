@@ -55,21 +55,19 @@ if (!commander.wrapperBuild.includes('#')) {
 
   const files = await s3Deployer.findUploadFiles(platform, searchBasePath, version);
 
-  await Promise.all(
-    files.map(file => {
-      const {fileName, filePath} = file;
-      const s3Path = `${s3BasePath}${fileName}`.replace('//', '/');
+  for (let index = 0; index < files.length; index++) {
+    const file = files[index];
+    const {fileName, filePath} = file;
+    const s3Path = `${s3BasePath}${fileName}`.replace('//', '/');
 
-      logger.log(`Uploading "${fileName}" to "${bucket}/${s3Path}" ...`);
-      return s3Deployer.uploadToS3({
-        bucket,
-        filePath,
-        s3Path,
-      });
-    }),
-  );
+    await s3Deployer.uploadToS3({
+      bucket,
+      filePath,
+      s3Path,
+    });
+  }
 
-  logger.log('Done uploading to S3.');
+  logger.log('Done uploading to AWS S3 bucket.');
 })().catch(error => {
   logger.error(error);
   process.exit(1);

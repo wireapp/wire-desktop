@@ -16,6 +16,8 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
+import {Logger} from '@wireapp/commons/dist/commonjs/LogFactory';
+import {getLogger} from '../../bin-utils';
 import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
 import path from 'path';
@@ -48,6 +50,7 @@ export interface S3CopyOptions {
 export class S3Deployer {
   private readonly options: Required<S3DeployerOptions>;
   private readonly S3Instance: S3;
+  private readonly logger: Logger;
 
   constructor(options: S3DeployerOptions) {
     this.options = {
@@ -58,6 +61,8 @@ export class S3Deployer {
       accessKeyId: options.accessKeyId,
       secretAccessKey: options.secretAccessKey,
     });
+    const toolName = path.basename(__filename).replace(/\.[jt]s$/, '');
+    this.logger = getLogger('deploy-tools', toolName);
   }
 
   async findUploadFiles(platform: string, basePath: string, version: string): Promise<FindResult[]> {
@@ -102,6 +107,7 @@ export class S3Deployer {
 
   async uploadToS3(uploadOptions: S3UploadOptions): Promise<void> {
     const {bucket, filePath, s3Path} = uploadOptions;
+    this.logger.log(`Uploading "${filePath}" to "${bucket}/${s3Path}" ...`);
 
     const lstat = await fs.lstat(filePath);
 
@@ -124,6 +130,8 @@ export class S3Deployer {
     }
 
     await this.S3Instance.upload(uploadConfig).promise();
+
+    this.logger.log(`Uploaded "${bucket}/${s3Path}".`);
   }
 
   async deleteFromS3(deleteOptions: DeleteOptions): Promise<void> {
