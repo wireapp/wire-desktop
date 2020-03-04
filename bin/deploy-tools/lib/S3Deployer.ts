@@ -82,7 +82,17 @@ export class S3Deployer {
         'debian/dists/stable/main/binary-amd64/Packages.gz',
       ].map(fileName => ({fileName, filePath: path.join(basePath, fileName)}));
 
-      return [...repositoryFiles, appImage, debImage];
+      return [
+        ...repositoryFiles,
+        {
+          fileName: appImage.fileName,
+          filePath: path.join(basePath, appImage.fileName),
+        },
+        {
+          fileName: debImage.fileName,
+          filePath: path.join(basePath, debImage.fileName),
+        },
+      ];
     } else if (platform.includes('windows')) {
       const setupExe = await find('*-Setup.exe', {cwd: basePath});
       const nupkgFile = await find('*-full.nupkg', {cwd: basePath});
