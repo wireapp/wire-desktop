@@ -30,6 +30,7 @@ export interface FindOptions {
 
 export interface FindResult {
   fileName: string;
+  /** Includes directory AND file name */
   filePath: string;
 }
 
