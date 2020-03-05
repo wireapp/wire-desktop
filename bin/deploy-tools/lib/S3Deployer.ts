@@ -119,7 +119,7 @@ export class S3Deployer {
         {
           fileName: setupExeRenamed.fileName,
           filePath: path.join(basePath, setupExe.fileName),
-        }
+        },
       ];
     } else if (platform.includes('macos')) {
       const setupPkg = await find('*.pkg', {cwd: basePath});
