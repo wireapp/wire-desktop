@@ -135,11 +135,16 @@ node('master') {
         try {
           if (params.Release.equals('Production')) {
             S3_NAME = 'linux'
-            withCredentials([
-              string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-              string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
-            ]) {
-              sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket wire-taco --s3path linux --key-id \"${env.AWS_ACCESS_KEY_ID}\" --secret-key \"${env.AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+
+            withAWS(region:'eu-west-1', credentials: 'wire-taco') {
+              echo('Upload repository files')
+              s3Upload acl: 'PublicRead', bucket: S3_BUCKET, workingDir: 'wrap/dist/', includePathPattern: 'debian/**', path: S3_NAME + '/'
+
+              echo('Upload files for download page')
+              files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
+              files.each {
+                s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it.path, path: S3_NAME + '/' + it.name
+              }
             }
           } else if (params.Release.equals('Custom')) {
             // do nothing
@@ -148,12 +153,12 @@ node('master') {
 
             withAWS(region:'eu-west-1', credentials: 'wire-taco') {
               echo('Upload repository files')
-              s3Upload acl: 'PublicRead', bucket: S3_BUCKET, workingDir: 'wrap/dist/', includePathPattern: 'debian/**', path: 'linux-internal/'
+              s3Upload acl: 'PublicRead', bucket: S3_BUCKET, workingDir: 'wrap/dist/', includePathPattern: 'debian/**', path: S3_NAME + '/'
 
               echo('Upload files for download page')
               files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
               files.each {
-                s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it.path, path: 'linux-internal/' + it.name
+                s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it.path, path: S3_NAME + '/' + it.name
               }
             }
           }
