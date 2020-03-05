@@ -153,7 +153,7 @@ node('master') {
               echo('Upload files for download page')
               files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
               files.each {
-                s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it, path: 'linux-internal/'
+                s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it.path, path: 'linux-internal/'
               }
             }
           }
