@@ -49,7 +49,7 @@ if (!commander.wrapperBuild.includes('#')) {
 (async () => {
   const [platform, version] = commander.wrapperBuild.toLowerCase().split('#');
 
-  if (platform !== 'windows') {
+  if (!platform.includes('windows')) {
     throw new Error('Copying release files on S3 is supported only for Windows');
   }
 
