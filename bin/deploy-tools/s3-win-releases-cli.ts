@@ -81,23 +81,23 @@ if (!commander.wrapperBuild.includes('#')) {
   const s3Deployer = new S3Deployer({accessKeyId, dryRun: commander.dryRun || false, secretAccessKey});
 
   logger.log(`Deleting "${staticReleaseKey}" from S3 ...`);
-  await s3Deployer.deleteFromS3({bucket, s3Path: staticReleaseKey});
+  await s3Deployer.deleteFromS3({bucket, s3Path: `${bucket}/${staticReleaseKey}`});
 
   logger.log(`Deleting "${staticExeKey}" from S3 ...`);
-  await s3Deployer.deleteFromS3({bucket, s3Path: staticExeKey});
+  await s3Deployer.deleteFromS3({bucket, s3Path: `${bucket}/${staticExeKey}`});
 
   logger.log(`Copying "${bucket}/${latestReleaseKey}" to "${staticReleaseKey}" on S3 ...`);
   await s3Deployer.copyOnS3({
     bucket,
     s3FromPath: `${bucket}/${latestReleaseKey}`,
-    s3ToPath: staticReleaseKey,
+    s3ToPath: `${bucket}/${staticReleaseKey}`,
   });
 
   logger.log(`Copying "${bucket}/${latestExeKey}" to "${staticExeKey}" on S3 ...`);
   await s3Deployer.copyOnS3({
     bucket,
     s3FromPath: `${bucket}/${latestExeKey}`,
-    s3ToPath: staticExeKey,
+    s3ToPath: `${bucket}/${staticExeKey}`,
   });
 
   logger.log('Done updating releases on S3.');
