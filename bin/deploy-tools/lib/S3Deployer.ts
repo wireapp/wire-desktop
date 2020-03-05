@@ -114,7 +114,7 @@ export class S3Deployer {
         },
         {
           fileName: releasesRenamed.fileName,
-          filePath: path.join(basePath, releasesRenamed.fileName),
+          filePath: path.join(basePath, releasesFile.fileName),
         },
         {
           fileName: setupExeRenamed.fileName,

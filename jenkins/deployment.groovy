@@ -81,42 +81,31 @@ node('master') {
         def WIN_HOCKEY_ID = ''
         def WIN_HOCKEY_TOKEN = ''
         def S3_PATH = ''
-        try {
-          withCredentials([
-            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
-          ]) {
-            AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
-            AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
-          }
+        def AWS_ACCESS_KEY_CREDENTIALS_ID = ''
+        def AWS_SECRET_CREDENTIALS_ID = ''
 
           if (params.Release.equals('Production')) {
             S3_PATH = 'win/prod'
+            AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
+            AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release.equals('Internal')) {
             S3_PATH = 'win/internal'
+            AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
+            AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release.equals('Custom')) {
-            withCredentials([
-              string(credentialsId: "${params.AWS_CUSTOM_ACCESS_KEY_ID}", variable: 'AWS_CUSTOM_ACCESS_KEY_ID'),
-              string(credentialsId: "${params.AWS_CUSTOM_SECRET_ACCESS_KEY}", variable: 'AWS_CUSTOM_SECRET_ACCESS_KEY'),
-              string(credentialsId: "${params.WIN_CUSTOM_HOCKEY_ID}", variable: 'WIN_CUSTOM_HOCKEY_ID'),
-              string(credentialsId: "${params.WIN_CUSTOM_HOCKEY_TOKEN}", variable: 'WIN_CUSTOM_HOCKEY_TOKEN')
-            ]) {
-              AWS_ACCESS_KEY_ID = env.AWS_CUSTOM_ACCESS_KEY_ID
-              AWS_SECRET_ACCESS_KEY = env.AWS_CUSTOM_SECRET_ACCESS_KEY
-              WIN_HOCKEY_ID = env.WIN_CUSTOM_HOCKEY_ID
-              WIN_HOCKEY_TOKEN = env.WIN_CUSTOM_HOCKEY_TOKEN
-            }
-            S3_BUCKET = "${params.WIN_S3_BUCKET}"
-            S3_PATH = "${params.WIN_S3_PATH}"
+            S3_BUCKET = params.WIN_S3_BUCKET
+            S3_PATH = params.WIN_S3_PATH
+            AWS_ACCESS_KEY_CREDENTIALS_ID = params.AWS_CUSTOM_ACCESS_KEY_ID
+            AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
           }
-        } catch(e) {
-          currentBuild.result = 'FAILED'
-          wireSend secret: "$jenkinsbot_secret", message: "**Setting environment variables failed for ${version}** see: ${JOB_URL}"
-          throw e
-        }
 
         try {
-          sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${params.S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+          withCredentials([
+            string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
+          ]) {
+            sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+          }
         } catch(e) {
           currentBuild.result = 'FAILED'
           wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
