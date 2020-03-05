@@ -109,39 +109,26 @@ node('master') {
         }
       } else if (projectName.contains('macOS')) {
         try {
-          def MACOS_HOCKEY_ID = ''
-          def MACOS_HOCKEY_TOKEN = ''
+          def appName
+          def distributionGroups
 
           if (params.Release.equals('Production')) {
-            withCredentials([
-              string(credentialsId: 'MACOS_MAS_HOCKEY_ID', variable: 'MACOS_MAS_HOCKEY_ID'),
-              string(credentialsId: 'MACOS_MAS_HOCKEY_TOKEN', variable: 'MACOS_MAS_HOCKEY_TOKEN')
-            ]) {
-              MACOS_HOCKEY_ID = env.MACOS_MAS_HOCKEY_ID
-              MACOS_HOCKEY_TOKEN = env.MACOS_MAS_HOCKEY_TOKEN
-            }
+            appName = 'Wire-macOS-Production'
           } else if (params.Release.equals('Custom')) {
-            withCredentials([
-              string(credentialsId: "${params.MACOS_CUSTOM_HOCKEY_ID}", variable: 'MACOS_CUSTOM_HOCKEY_ID'),
-              string(credentialsId: "${params.MACOS_CUSTOM_HOCKEY_TOKEN}", variable: 'MACOS_CUSTOM_HOCKEY_TOKEN')
-            ]) {
-              MACOS_HOCKEY_ID = env.MACOS_CUSTOM_HOCKEY_ID
-              MACOS_HOCKEY_TOKEN = env.MACOS_CUSTOM_HOCKEY_TOKEN
-            }
-          } else {
-            withCredentials([
-              string(credentialsId: 'MACOS_HOCKEY_ID', variable: 'MACOS_HOCKEY_ID'),
-              string(credentialsId: 'MACOS_HOCKEY_TOKEN', variable: 'MACOS_HOCKEY_TOKEN')
-            ]) {
-              MACOS_HOCKEY_ID = env.MACOS_HOCKEY_ID
-              MACOS_HOCKEY_TOKEN = env.MACOS_HOCKEY_TOKEN
-            }
+            appName = 'Wire by XY - macOS'
+          } else if (params.Release.equals('Internal')) {
+            appName = 'Wire-macOS-Internal'
+            distributionGroups = 'All-users-of-Wire-macOS-Internal'
           }
 
-          sh "jenkins/ts-node.sh ./bin/deploy-tools/hockey-cli.ts --hockey-id \"${MACOS_HOCKEY_ID}\" --hockey-token \"${MACOS_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+          withCredentials([usernamePassword(credentialsId: 'appCenterCredentials', passwordVariable: 'APP_CENTER_TOKEN', usernameVariable: 'APP_CENTER_OWNER_NAME')]) {
+            files = findFiles(glob: 'wrap/dist/*.zip')
+            echo("Upload " + files[0].path + " as " + appName + " to App Center...")
+            appCenter apiToken: env.APP_CENTER_TOKEN, appName: appName, distributionGroups: distributionGroups, ownerName: env.APP_CENTER_OWNER_NAME, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
+          }
         } catch(e) {
           currentBuild.result = 'FAILED'
-          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
+          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to App Center failed for ${version}** see: ${JOB_URL}"
           throw e
         }
       } else if (projectName.contains('Linux')) {
