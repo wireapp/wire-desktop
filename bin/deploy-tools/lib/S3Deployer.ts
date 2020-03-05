@@ -118,7 +118,7 @@ export class S3Deployer {
         },
         {
           fileName: setupExeRenamed.fileName,
-          filePath: path.join(basePath, setupExeRenamed.fileName),
+          filePath: path.join(basePath, setupExe.fileName),
         }
       ];
     } else if (platform.includes('macos')) {
