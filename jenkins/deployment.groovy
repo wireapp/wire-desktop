@@ -189,7 +189,7 @@ node('master') {
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release.equals('Internal')) {
             S3_PATH = 'win/internal'
-            S3_NAME = 'wire-internal-' + version
+            S3_NAME = 'wireinternal-' + version
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release.equals('Custom')) {
@@ -205,12 +205,12 @@ node('master') {
             string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
             withAWS(region:'eu-west-1', credentials: 'wire-taco') {
-              // Delete old RELEASE file and setup executable
+              echo('Delete old RELEASE file and setup executable')
               s3Delete bucket: S3_BUCKET, path: S3_PATH + '/RELEASES'
               files = findFiles(glob: 'wrap/dist/*Setup.exe')
               s3Delete bucket: S3_BUCKET, path: S3_PATH + '/' + files[0].name
 
-              // Copy new RELEASE file and setup executable to default position
+              echo('Copy new RELEASE file and setup executable to default position')
               s3Copy acl: 'PublicRead', fromBucket: S3_BUCKET, fromPath: S3_PATH + '/' + S3_NAME + '-RELEASES',toBucket: S3_BUCKET, toPath: S3_PATH + '/RELEASES'
               s3Copy acl: 'PublicRead', fromBucket: S3_BUCKET, fromPath: S3_PATH + '/' + S3_NAME + '.exe',toBucket: S3_BUCKET, toPath: S3_PATH + '/' + files[0].name
             }
