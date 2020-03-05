@@ -184,15 +184,18 @@ node('master') {
 
           if (params.Release.equals('Production')) {
             S3_PATH = 'win/prod'
+            S3_NAME = 'wire-' + version
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release.equals('Internal')) {
             S3_PATH = 'win/internal'
+            S3_NAME = 'wire-internal-' + version
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release.equals('Custom')) {
             S3_BUCKET = params.WIN_S3_BUCKET
             S3_PATH = params.WIN_S3_PATH
+            S3_NAME = 'wire-ey-' + version
             AWS_ACCESS_KEY_CREDENTIALS_ID = params.AWS_CUSTOM_ACCESS_KEY_ID
             AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
           }
@@ -201,7 +204,16 @@ node('master') {
             string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
             string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
-            sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-win-releases-cli.ts --bucket \"${params.S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+            withAWS(region:'eu-west-1', credentials: 'wire-taco') {
+              // Delete old RELEASE file and setup executable
+              s3Delete bucket: S3_BUCKET, path: S3_PATH + '/RELEASES'
+              files = findFiles(glob: 'wrap/dist/*Setup.exe')
+              s3Delete bucket: S3_BUCKET, path: S3_PATH + '/' + files[0].name
+
+              // Copy new RELEASE file and setup executable to default position
+              s3Copy acl: 'PublicRead', fromBucket: S3_BUCKET, fromPath: S3_PATH + '/' + S3_NAME + '-RELEASES',toBucket: S3_BUCKET, toPath: S3_PATH + '/RELEASES'
+              s3Copy acl: 'PublicRead', fromBucket: S3_BUCKET, fromPath: S3_PATH + '/' + S3_NAME + '.exe',toBucket: S3_BUCKET, toPath: S3_PATH + '/' + files[0].name
+            }
           }
         }
       } catch(e) {
