@@ -134,26 +134,30 @@ node('master') {
       } else if (projectName.contains('Linux')) {
         try {
           if (params.Release.equals('Production')) {
+            S3_NAME = 'linux'
             withCredentials([
               string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
               string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
             ]) {
               sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket wire-taco --s3path linux --key-id \"${env.AWS_ACCESS_KEY_ID}\" --secret-key \"${env.AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
             }
-
           } else if (params.Release.equals('Custom')) {
             // do nothing
-          } else {
-            withCredentials([
-              string(credentialsId: 'LINUX_HOCKEY_ID', variable: 'LINUX_HOCKEY_ID'),
-              string(credentialsId: 'LINUX_HOCKEY_TOKEN', variable: 'LINUX_HOCKEY_TOKEN')
-            ]) {
-              sh "jenkins/ts-node.sh ./bin/deploy-tools/hockey-cli.ts --hockey-id \"${env.LINUX_HOCKEY_ID}\" --hockey-token \"${env.LINUX_HOCKEY_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+          } else if (params.Release.equals('Internal')) {
+            S3_NAME = 'linux-internal'
+
+            echo('Upload repository files')
+            s3Upload acl: 'PublicRead', bucket: S3_BUCKET, includePathPattern: 'wrap/dist/debian/**', path: 'linux-internal/debian/'
+
+            echo('Upload files for download page')
+            files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
+            files.each {
+              s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it, path: 'linux-internal/'
             }
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
-          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to Hockey failed for ${version}** see: ${JOB_URL}"
+          wireSend secret: "$jenkinsbot_secret", message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
           throw e
         }
       }

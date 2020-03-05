@@ -52,26 +52,19 @@ node('linux') {
 
     stage('Generate repository') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-        if (production) {
-          sh 'cd wrap/dist/ && ../../bin/repo/linux-prod-repo.sh'
-        }
+        sh 'cd wrap/dist/ && ../../bin/repo/linux-prod-repo.sh'
       }
     }
 
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
-        if (production) {
-          sh "cd wrap/dist/ && ../../bin/linux-checksums.sh ${version}"
-        }
+        sh "cd wrap/dist/ && ../../bin/linux-checksums.sh ${version}"
       }
     }
 
     stage('Test packaging') {
-        if (production) {
-          sh 'dpkg-deb --info wrap/dist/debian/pool/main/*amd64.deb'
-        } else {
-          sh 'dpkg-deb --info wrap/dist/*amd64.deb'
-        }
+        sh 'dpkg-deb --info wrap/dist/debian/pool/main/*amd64.deb'
+        sh 'dpkg-deb --info wrap/dist/*amd64.deb'
     }
 
     stage('Save .deb, AppImage and repo files') {
