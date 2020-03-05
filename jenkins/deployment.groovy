@@ -146,13 +146,15 @@ node('master') {
           } else if (params.Release.equals('Internal')) {
             S3_NAME = 'linux-internal'
 
-            echo('Upload repository files')
-            s3Upload acl: 'PublicRead', bucket: S3_BUCKET, includePathPattern: 'wrap/dist/debian/**', path: 'linux-internal/debian/'
+            withAWS(region:'eu-west-1', credentials: 'wire-taco') {
+              echo('Upload repository files')
+              s3Upload acl: 'PublicRead', bucket: S3_BUCKET, includePathPattern: 'wrap/dist/debian/**', path: 'linux-internal/debian/'
 
-            echo('Upload files for download page')
-            files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
-            files.each {
-              s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it, path: 'linux-internal/'
+              echo('Upload files for download page')
+              files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
+              files.each {
+                s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it, path: 'linux-internal/'
+              }
             }
           }
         } catch(e) {
