@@ -148,12 +148,12 @@ node('master') {
 
             withAWS(region:'eu-west-1', credentials: 'wire-taco') {
               echo('Upload repository files')
-              s3Upload acl: 'PublicRead', bucket: S3_BUCKET, includePathPattern: 'debian/**', workingDir: 'wrap/dist/', path: 'linux-internal/'
+              s3Upload acl: 'PublicRead', bucket: S3_BUCKET, workingDir: 'wrap/dist/', includePathPattern: 'debian/**', path: 'linux-internal/'
 
               echo('Upload files for download page')
               files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
               files.each {
-                s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it.path, workingDir: 'wrap/dist/', path: 'linux-internal/'
+                s3Upload acl: 'PublicRead', bucket: S3_BUCKET, file: it.path, path: 'linux-internal/' + it.name
               }
             }
           }
