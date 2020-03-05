@@ -76,13 +76,12 @@ node('master') {
       def SEARCH_PATH = './wrap/dist/'
 
       if (projectName.contains('Windows')) {
+        def AWS_ACCESS_KEY_ID = ''
+        def AWS_SECRET_ACCESS_KEY = ''
+        def WIN_HOCKEY_ID = ''
+        def WIN_HOCKEY_TOKEN = ''
+        def S3_PATH = ''
         try {
-          def AWS_ACCESS_KEY_ID = ''
-          def AWS_SECRET_ACCESS_KEY = ''
-          def WIN_HOCKEY_ID = ''
-          def WIN_HOCKEY_TOKEN = ''
-          def S3_PATH = ''
-
           withCredentials([
             string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
             string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
@@ -93,6 +92,8 @@ node('master') {
 
           if (params.Release.equals('Production')) {
             S3_PATH = 'win/prod'
+          } else if (params.Release.equals('Internal')) {
+            S3_PATH = 'win/internal'
           } else if (params.Release.equals('Custom')) {
             withCredentials([
               string(credentialsId: "${params.AWS_CUSTOM_ACCESS_KEY_ID}", variable: 'AWS_CUSTOM_ACCESS_KEY_ID'),
@@ -107,15 +108,6 @@ node('master') {
             }
             S3_BUCKET = "${params.WIN_S3_BUCKET}"
             S3_PATH = "${params.WIN_S3_PATH}"
-          } else {
-            withCredentials([
-              string(credentialsId: 'WIN_HOCKEY_ID', variable: 'WIN_HOCKEY_ID'),
-              string(credentialsId: 'WIN_HOCKEY_TOKEN', variable: 'WIN_HOCKEY_TOKEN')
-            ]) {
-              WIN_HOCKEY_ID = env.WIN_HOCKEY_ID
-              WIN_HOCKEY_TOKEN = env.WIN_HOCKEY_TOKEN
-            }
-            S3_PATH = 'win/internal'
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
