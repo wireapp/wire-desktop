@@ -104,7 +104,7 @@ const Webview = ({
   }, [account]);
 
   useEffect(() => {
-    const listener = error => setWebviewError(error);
+    const listener = () => {};
     const ON_WEBVIEW_ERROR = 'did-fail-load';
     webviewRef.current.addEventListener(ON_WEBVIEW_ERROR, listener);
     return () => {
