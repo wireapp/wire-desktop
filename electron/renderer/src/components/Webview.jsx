@@ -106,6 +106,7 @@ const Webview = ({
   useEffect(() => {
     const listener = error => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
+      console.warn(`WEBVIEW fired did-fail-load for URL "${validatedURL}" and account ID "${account.id}"`);
       if (error.validatedURL.startsWith(urlOrigin)) {
         setWebviewError(error);
       }
