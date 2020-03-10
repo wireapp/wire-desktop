@@ -118,7 +118,7 @@ const Webview = ({
         webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
-  }, []);
+  }, [webviewRef, account]);
 
   useEffect(() => {
     const onIpcMessage = ({channel, args}) => {
