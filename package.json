@@ -176,6 +176,5 @@
     "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\" --no-sandbox",
     "test:react": "jest",
     "translate:upload": "node ./bin/translations_upload.js"
-  },
-  "version": "3.13"
+  }
 }
