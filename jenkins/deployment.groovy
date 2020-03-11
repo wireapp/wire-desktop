@@ -115,7 +115,7 @@ node('master') {
           if (params.Release.equals('Production')) {
             appName = 'Wire-macOS-Production'
           } else if (params.Release.equals('Custom')) {
-            appName = 'Wire by XY - macOS'
+            error('Please set appName and distributionGroups')
           } else if (params.Release.equals('Internal')) {
             appName = 'Wire-macOS-Internal'
             distributionGroups = 'All-users-of-Wire-macOS-Internal'
@@ -147,7 +147,7 @@ node('master') {
               }
             }
           } else if (params.Release.equals('Custom')) {
-            // do nothing
+            error('Please set S3_NAME')
           } else if (params.Release.equals('Internal')) {
             S3_NAME = 'linux-internal'
 
