@@ -23,13 +23,13 @@ import path from 'path';
 
 import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
-import {WindowsConfig} from './Config';
+import {WindowsInstallerConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
 interface WindowsInstallerConfigResult {
-  windowsConfig: WindowsConfig;
+  windowsInstallerConfig: WindowsInstallerConfig;
   wInstallerOptions: electronWinstallerOptions;
 }
 
@@ -42,16 +42,14 @@ export async function buildWindowsInstallerConfig(
   const envFileResolved = path.resolve(envFilePath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
-  const windowsDefaultConfig: WindowsConfig = {
+  const windowsInstallerDefaultConfig: WindowsInstallerConfig = {
     installerIconUrl: 'https://wire-app.wire.com/win/internal/wire.internal.ico',
     loadingGif: `${commonConfig.electronDirectory}/img/logo.256.png`,
-    updateUrl: 'https://wire-app.wire.com/win/internal/',
   };
 
-  const windowsConfig: WindowsConfig = {
-    ...windowsDefaultConfig,
-    installerIconUrl: process.env.WIN_URL_ICON_INSTALLER || windowsDefaultConfig.installerIconUrl,
-    updateUrl: process.env.WIN_URL_UPDATE || windowsDefaultConfig.updateUrl,
+  const windowsInstallerConfig: WindowsInstallerConfig = {
+    ...windowsInstallerDefaultConfig,
+    installerIconUrl: process.env.WIN_URL_ICON_INSTALLER || windowsInstallerDefaultConfig.installerIconUrl,
   };
 
   const wInstallerOptions: electronWinstallerOptions = {
@@ -60,8 +58,8 @@ export async function buildWindowsInstallerConfig(
     copyright: commonConfig.copyright,
     description: commonConfig.description,
     exe: `${commonConfig.name}.exe`,
-    iconUrl: windowsConfig.installerIconUrl,
-    loadingGif: windowsConfig.loadingGif,
+    iconUrl: windowsInstallerConfig.installerIconUrl,
+    loadingGif: windowsInstallerConfig.loadingGif,
     name: commonConfig.nameShort,
     noMsi: true,
     outputDirectory: commonConfig.distDir,
@@ -75,9 +73,7 @@ export async function buildWindowsInstallerConfig(
     wInstallerOptions.signWithParams = '/t http://timestamp.digicert.com /fd SHA256 /a';
   }
 
-  commonConfig.updateUrl = windowsConfig.updateUrl;
-
-  return {wInstallerOptions, windowsConfig};
+  return {wInstallerOptions, windowsInstallerConfig};
 }
 
 export async function buildWindowsInstaller(
