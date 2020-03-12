@@ -104,15 +104,17 @@ const Webview = ({
   }, [account]);
 
   useEffect(() => {
-    const listener = error => {
-      const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
-      console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
-      if (error.validatedURL.startsWith(urlOrigin)) {
-        setWebviewError(error);
-      }
-    };
-    const ON_WEBVIEW_ERROR = 'did-fail-load';
-    webviewRef.current.addEventListener(ON_WEBVIEW_ERROR, listener);
+    if (webviewRef.current) {
+      const listener = error => {
+        const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
+        console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
+        if (error.validatedURL.startsWith(urlOrigin)) {
+          setWebviewError(error);
+        }
+      };
+      const ON_WEBVIEW_ERROR = 'did-fail-load';
+      webviewRef.current.addEventListener(ON_WEBVIEW_ERROR, listener);
+    }
     return () => {
       if (webviewRef.current) {
         webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
