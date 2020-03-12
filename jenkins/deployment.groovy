@@ -124,7 +124,7 @@ node('master') {
           withCredentials([usernamePassword(credentialsId: 'appCenterCredentials', passwordVariable: 'APP_CENTER_TOKEN', usernameVariable: 'APP_CENTER_OWNER_NAME')]) {
             files = findFiles(glob: 'wrap/dist/*.zip')
             echo("Upload " + files[0].path + " as " + appName + " to App Center...")
-            appCenter apiToken: env.APP_CENTER_TOKEN, appName: appName, distributionGroups: distributionGroups, ownerName: env.APP_CENTER_OWNER_NAME, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
+            // appCenter apiToken: env.APP_CENTER_TOKEN, appName: appName, distributionGroups: distributionGroups, ownerName: env.APP_CENTER_OWNER_NAME, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
