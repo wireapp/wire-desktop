@@ -107,7 +107,20 @@ export class S3Deployer {
       const setupExeRenamed = {...setupExe, fileName: `${appShortName}-${version}.exe`};
       const releasesRenamed = {...releasesFile, fileName: `${appShortName}-${version}-RELEASES`};
 
-      return [nupkgFile, releasesRenamed, setupExeRenamed];
+      return [
+        {
+          fileName: nupkgFile.fileName,
+          filePath: path.join(basePath, nupkgFile.fileName),
+        },
+        {
+          fileName: releasesRenamed.fileName,
+          filePath: path.join(basePath, releasesFile.fileName),
+        },
+        {
+          fileName: setupExeRenamed.fileName,
+          filePath: path.join(basePath, setupExe.fileName),
+        },
+      ];
     } else if (platform.includes('macos')) {
       const setupPkg = await find('*.pkg', {cwd: basePath});
       return [setupPkg];
