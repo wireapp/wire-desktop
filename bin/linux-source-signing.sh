@@ -90,6 +90,7 @@ gpg2 --batch \
 _log "Verify signature..."
 
 gpg2 --verify \
+     --homedir "${GPG_TEMP_DIR}" \
      "${RELEASE_VERSION}.tar.gz.sig" "${RELEASE_VERSION}.tar.gz"
 
 rm "${RELEASE_VERSION}.tar.gz"
