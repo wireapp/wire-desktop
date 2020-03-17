@@ -77,6 +77,8 @@ _log "Signing source code archive with PGP key..."
 echo "${PGP_PASSPHRASE}" | \
 gpg2 --batch \
      --homedir "${GPG_TEMP_DIR}" \
+     --no-tty \
+     --passphrase-fd 0 \
      --detach-sign \
      --local-user "${PGP_SIGN_ID}" \
      --output "${RELEASE_VERSION}.tar.gz.sig" \
