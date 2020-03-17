@@ -87,6 +87,8 @@ gpg2 --batch \
      --yes \
      "${RELEASE_VERSION}.tar.gz"
 
+_log "Verify signature..."
+
 gpg2 --verify \
      "${RELEASE_VERSION}.tar.gz.sig" "${RELEASE_VERSION}.tar.gz"
 
