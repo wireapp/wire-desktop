@@ -74,7 +74,9 @@ echo "allow-loopback-pinentry" > "${HOME}/.gnupg/gpg-agent.conf"
 
 _log "Signing source code archive with PGP key..."
 
+echo "${PGP_PASSPHRASE}" | \
 gpg2 --batch \
+     --homedir "${GPG_TEMP_DIR}" \
      --detach-sign \
      --local-user "${PGP_SIGN_ID}" \
      --output "${RELEASE_VERSION}.tar.gz.sig" \
