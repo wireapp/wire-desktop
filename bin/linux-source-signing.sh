@@ -70,7 +70,7 @@ gpg2 --batch \
 _log "Updating gpg2 configuration to sign on unattended machines..."
 
 echo "allow-loopback-pinentry" > "${HOME}/.gnupg/gpg-agent.conf"
-killall gpg-agent
+#killall gpg-agent
 
 _log "Signing source code archive with PGP key..."
 
