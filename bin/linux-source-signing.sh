@@ -78,6 +78,7 @@ echo "${PGP_PASSPHRASE}" | \
 gpg2 --batch \
      --homedir "${GPG_TEMP_DIR}" \
      --no-tty \
+     --pinentry-mode loopback \
      --passphrase-fd 0 \
      --detach-sign \
      --local-user "${PGP_SIGN_ID}" \
