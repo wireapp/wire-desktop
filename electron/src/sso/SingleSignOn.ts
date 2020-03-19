@@ -66,12 +66,189 @@ export class SingleSignOn {
   public static loginAuthorizationSecret: string | undefined;
 
   private session: Session | undefined;
+  private ssoWindow: BrowserWindow | undefined;
   private readonly mainBrowserWindow: BrowserWindow;
   private readonly mainSession: Session;
   private readonly senderEvent: ElectronEvent;
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
+
+  constructor(
+    mainBrowserWindow: BrowserWindow,
+    senderEvent: ElectronEvent,
+    windowOriginURL: string,
+    windowOptions: BrowserWindowConstructorOptions,
+  ) {
+    this.mainBrowserWindow = mainBrowserWindow;
+    this.windowOptions = windowOptions;
+    this.senderEvent = senderEvent;
+    this.senderWebContents = (senderEvent as any).sender;
+    this.mainSession = this.senderWebContents.session;
+    this.windowOriginUrl = new URL(windowOriginURL);
+  }
+
+  public readonly init = async (): Promise<void> => {
+    // Create a ephemeral and isolated session
+    this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
+
+    // Disable browser permissions (microphone, camera...)
+    this.session.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
+
+    // User-agent normalization
+    this.session.webRequest.onBeforeSendHeaders(({requestHeaders}: any, callback) => {
+      requestHeaders['User-Agent'] = config.userAgent;
+      callback({cancel: false, requestHeaders});
+    });
+
+    this.ssoWindow = this.createBrowserWindow();
+
+    // Register protocol
+    // Note: we need to create the window before otherwise it does not work
+    await SingleSignOn.protocol.register(this.session, type => this.finalizeLogin(type));
+
+    // Show the window(s)
+    await this.ssoWindow.loadURL(this.windowOriginUrl.toString());
+
+    if (argv.devtools) {
+      this.ssoWindow.webContents.openDevTools({mode: 'detach'});
+    }
+  };
+
+  private readonly createBrowserWindow = (): BrowserWindow => {
+    // Discard old preload URL
+    delete (this.windowOptions as any).webPreferences.preloadURL;
+    delete (this.windowOptions as any).webPreferences.preload;
+
+    // NOTE: The openerId is used to keep a reference to the child window in the parent window.
+    // Since Electron 6.1.9 openerId + contextIsolation seems to be broken/disallowed.
+    // Instead we remove the openerId and close the window locally instead of closing it remotely from the parent window.
+    delete (this.windowOptions as any).webPreferences.openerId;
+
+    const ssoWindow = new BrowserWindow({
+      ...this.windowOptions,
+      alwaysOnTop: true,
+      backgroundColor: '#FFFFFF',
+      fullscreen: false,
+      fullscreenable: false,
+      height: this.windowOptions.height || 600,
+      maximizable: false,
+      minimizable: false,
+      modal: false,
+      movable: false,
+      parent: this.mainBrowserWindow,
+      resizable: false,
+      title: SingleSignOn.getWindowTitle(this.windowOriginUrl.origin),
+      titleBarStyle: 'default',
+      useContentSize: true,
+      webPreferences: {
+        ...this.windowOptions.webPreferences,
+        allowRunningInsecureContent: false,
+        backgroundThrottling: false,
+        contextIsolation: true,
+        devTools: true,
+        disableBlinkFeatures: '',
+        enableBlinkFeatures: '',
+        experimentalFeatures: false,
+        images: true,
+        javascript: true,
+        nativeWindowOpen: false,
+        nodeIntegration: false,
+        nodeIntegrationInWorker: false,
+        offscreen: false,
+        partition: '',
+        plugins: false,
+        preload: SingleSignOn.PRELOAD_SSO_JS,
+        sandbox: true,
+        scrollBounce: true,
+        session: this.session,
+        textAreasAreResizable: false,
+        webSecurity: true,
+        webgl: false,
+        webviewTag: false,
+      },
+      width: this.windowOptions.width || 480,
+    });
+
+    (this.senderEvent as any).newGuest = ssoWindow;
+
+    ssoWindow.once('closed', async () => {
+      if (this.session) {
+        await this.wipeSessionData();
+        await SingleSignOn.protocol.unregister(this.session);
+      }
+      this.session = undefined;
+    });
+
+    // Prevent title updates and new windows
+    ssoWindow.on('page-title-updated', event => event.preventDefault());
+    ssoWindow.webContents.on('new-window', event => event.preventDefault());
+
+    // Note: will-navigate is broken in Electron 3
+    // see https://github.com/electron/electron/issues/14751
+    // using did-navigate as workaround
+    ssoWindow.webContents.on('did-navigate', (event: ElectronEvent, url: string) => {
+      const {origin} = new URL(url);
+
+      if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
+        event.preventDefault();
+      }
+
+      ssoWindow.setTitle(SingleSignOn.getWindowTitle(origin));
+    });
+
+    if (ENABLE_LOGGING) {
+      ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
+        const webViewId = getWebViewId(ssoWindow.webContents);
+        if (webViewId) {
+          const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
+          try {
+            await LogFactory.writeMessage(message, logFilePath);
+          } catch (error) {
+            console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+          }
+        }
+      });
+    }
+
+    return ssoWindow;
+  };
+
+  // Ensure authenticity of the window from within the code
+  public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
+
+  // Ensure the requested URL is going to the backend
+  public static isBackendOrigin = (url: string): boolean => {
+    if (url === 'null') {
+      return false;
+    }
+    return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
+  };
+
+  // Returns an empty string if the origin is a Wire backend
+  public static getWindowTitle = (origin: string): string =>
+    SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
+
+  // `window.opener` is not available when sandbox is activated,
+  // therefore we need to fake the function on backend area and
+  // redirect the response to a custom protocol
+  public static readonly getWindowOpenerScript = () => {
+    return `Object.defineProperty(window, 'opener', {
+      configurable: true, // Needed on Chrome :(
+      enumerable: false,
+      value: Object.freeze({
+        postMessage: ({type}) => {
+          const params = new URLSearchParams();
+          params.set('secret', '${SingleSignOn.loginAuthorizationSecret}');
+          params.set('type', type);
+          const url = new URL('${SingleSignOn.SSO_PROTOCOL}://${SingleSignOn.SSO_PROTOCOL_HOST}/');
+          url.search = params.toString();
+          document.location.href = url.toString();
+        }
+      }),
+      writable: false,
+    });`;
+  };
 
   private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
     const rootDomain = url.hostname
@@ -157,176 +334,6 @@ export class SingleSignOn {
     },
   };
 
-  // Ensure authenticity of the window from within the code
-  public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
-
-  // Ensure the requested URL is going to the backend
-  public static isBackendOrigin = (url: string): boolean => {
-    if (url === 'null') {
-      return false;
-    }
-    return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
-  };
-
-  // Returns an empty string if the origin is a Wire backend
-  public static getWindowTitle = (origin: string): string =>
-    SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
-
-  // `window.opener` is not available when sandbox is activated,
-  // therefore we need to fake the function on backend area and
-  // redirect the response to a custom protocol
-  public static readonly getWindowOpenerScript = () => {
-    return `Object.defineProperty(window, 'opener', {
-      configurable: true, // Needed on Chrome :(
-      enumerable: false,
-      value: Object.freeze({
-        postMessage: ({type}) => {
-          const params = new URLSearchParams();
-          params.set('secret', '${SingleSignOn.loginAuthorizationSecret}');
-          params.set('type', type);
-          const url = new URL('${SingleSignOn.SSO_PROTOCOL}://${SingleSignOn.SSO_PROTOCOL_HOST}/');
-          url.search = params.toString();
-          document.location.href = url.toString();
-        }
-      }),
-      writable: false,
-    });`;
-  };
-
-  constructor(
-    mainBrowserWindow: BrowserWindow,
-    senderEvent: ElectronEvent,
-    windowOriginURL: string,
-    windowOptions: BrowserWindowConstructorOptions,
-  ) {
-    this.mainBrowserWindow = mainBrowserWindow;
-    this.windowOptions = windowOptions;
-    this.senderEvent = senderEvent;
-    this.senderWebContents = (senderEvent as any).sender;
-    this.mainSession = this.senderWebContents.session;
-    this.windowOriginUrl = new URL(windowOriginURL);
-  }
-
-  public readonly init = async (): Promise<void> => {
-    // Create a ephemeral and isolated session
-    this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
-
-    // Disable browser permissions (microphone, camera...)
-    this.session.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
-
-    // User-agent normalization
-    this.session.webRequest.onBeforeSendHeaders(({requestHeaders}: any, callback) => {
-      requestHeaders['User-Agent'] = config.userAgent;
-      callback({cancel: false, requestHeaders});
-    });
-
-    const SingleSignOnLoginWindow = this.createBrowserWindow();
-
-    // Register protocol
-    // Note: we need to create the window before otherwise it does not work
-    await SingleSignOn.protocol.register(this.session, type => this.finalizeLogin(type));
-
-    // Show the window(s)
-    await SingleSignOnLoginWindow.loadURL(this.windowOriginUrl.toString());
-
-    if (argv.devtools) {
-      SingleSignOnLoginWindow.webContents.openDevTools({mode: 'detach'});
-    }
-  };
-
-  private readonly createBrowserWindow = (): BrowserWindow => {
-    // Discard old preload URL
-    delete (this.windowOptions as any).webPreferences.preloadURL;
-
-    const SingleSignOnLoginWindow = new BrowserWindow({
-      ...this.windowOptions,
-      alwaysOnTop: true,
-      backgroundColor: '#FFFFFF',
-      fullscreen: false,
-      fullscreenable: false,
-      height: this.windowOptions.height || 600,
-      maximizable: false,
-      minimizable: false,
-      modal: false,
-      movable: false,
-      parent: this.mainBrowserWindow,
-      resizable: false,
-      title: SingleSignOn.getWindowTitle(this.windowOriginUrl.origin),
-      titleBarStyle: 'default',
-      useContentSize: true,
-      webPreferences: {
-        ...this.windowOptions.webPreferences,
-        allowRunningInsecureContent: false,
-        backgroundThrottling: false,
-        contextIsolation: true,
-        devTools: true,
-        disableBlinkFeatures: '',
-        enableBlinkFeatures: '',
-        experimentalFeatures: false,
-        images: true,
-        javascript: true,
-        nativeWindowOpen: false,
-        nodeIntegration: false,
-        nodeIntegrationInWorker: false,
-        offscreen: false,
-        partition: '',
-        plugins: false,
-        preload: SingleSignOn.PRELOAD_SSO_JS,
-        sandbox: true,
-        scrollBounce: true,
-        session: this.session,
-        textAreasAreResizable: false,
-        webSecurity: true,
-        webgl: false,
-        webviewTag: false,
-      },
-      width: this.windowOptions.width || 480,
-    });
-
-    (this.senderEvent as any).newGuest = SingleSignOnLoginWindow;
-
-    SingleSignOnLoginWindow.once('closed', async () => {
-      if (this.session) {
-        await this.wipeSessionData();
-        await SingleSignOn.protocol.unregister(this.session);
-      }
-      this.session = undefined;
-    });
-
-    // Prevent title updates and new windows
-    SingleSignOnLoginWindow.on('page-title-updated', event => event.preventDefault());
-    SingleSignOnLoginWindow.webContents.on('new-window', event => event.preventDefault());
-
-    // Note: will-navigate is broken in Electron 3
-    // see https://github.com/electron/electron/issues/14751
-    // using did-navigate as workaround
-    SingleSignOnLoginWindow.webContents.on('did-navigate', (event: ElectronEvent, url: string) => {
-      const {origin} = new URL(url);
-
-      if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
-        event.preventDefault();
-      }
-
-      SingleSignOnLoginWindow.setTitle(SingleSignOn.getWindowTitle(origin));
-    });
-
-    if (ENABLE_LOGGING) {
-      SingleSignOnLoginWindow.webContents.on('console-message', async (_event, _level, message) => {
-        const webViewId = getWebViewId(SingleSignOnLoginWindow.webContents);
-        if (webViewId) {
-          const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
-          try {
-            await LogFactory.writeMessage(message, logFilePath);
-          } catch (error) {
-            console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
-          }
-        }
-      });
-    }
-
-    return SingleSignOnLoginWindow;
-  };
-
   private readonly finalizeLogin = async (type: string): Promise<void> => {
     if (type === SingleSignOn.RESPONSE_TYPES.AUTH_SUCCESS) {
       if (!this.session) {
@@ -358,6 +365,12 @@ export class SingleSignOn {
     await this.senderWebContents.executeJavaScript(
       `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}, type: {isTrusted: true}}));`,
     );
+
+    // We remove the openerId and close the window locally instead of closing it remotely from the parent window.
+    if (this.ssoWindow) {
+      this.ssoWindow.close();
+      this.ssoWindow = undefined;
+    }
   };
 
   private readonly wipeSessionData = async () => {
