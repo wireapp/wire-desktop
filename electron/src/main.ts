@@ -83,7 +83,7 @@ const WINDOW_SIZE = {
   MIN_WIDTH: 760,
 };
 enum ARG {
-  PROXY_URL = 'proxy-url',
+  PROXY_ARG = 'proxy-server',
 }
 
 let proxyInfoArg: URL | undefined;
@@ -101,9 +101,9 @@ if (argv.version) {
   process.exit();
 }
 
-if (argv[ARG.PROXY_URL]) {
+if (argv[ARG.PROXY_ARG]) {
   try {
-    proxyInfoArg = new URL(argv[ARG.PROXY_URL]);
+    proxyInfoArg = new URL(argv[ARG.PROXY_ARG]);
     if (proxyInfoArg.origin === 'null') {
       proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
