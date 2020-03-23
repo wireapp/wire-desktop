@@ -104,6 +104,9 @@ if (argv.version) {
 if (argv[ARG.PROXY_ARG]) {
   try {
     proxyInfoArg = new URL(argv[ARG.PROXY_ARG]);
+    if (proxyInfoArg.protocol !== 'http:' && proxyInfoArg.protocol !== 'https:') {
+      throw new Error('Invalid protocol for the proxy server specified.');
+    }
     if (proxyInfoArg.origin === 'null') {
       proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
