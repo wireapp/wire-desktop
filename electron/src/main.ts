@@ -104,7 +104,12 @@ if (argv.version) {
 if (argv[ARG.PROXY_ARG]) {
   try {
     proxyInfoArg = new URL(argv[ARG.PROXY_ARG]);
-    if (proxyInfoArg.protocol !== 'http:' && proxyInfoArg.protocol !== 'https:') {
+    if (
+      proxyInfoArg.protocol !== 'http:' &&
+      proxyInfoArg.protocol !== 'https:' &&
+      proxyInfoArg.protocol !== 'socks4:' &&
+      proxyInfoArg.protocol !== 'socks5:'
+    ) {
       throw new Error('Invalid protocol for the proxy server specified.');
     }
     if (proxyInfoArg.origin === 'null') {
@@ -470,12 +475,15 @@ const handlePortableFlags = () => {
 
 const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
   const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
-  logger.info(`Setting proxy on a window to URL "${proxyURL}"...`);
+  const proxyProtocol = authenticatedProxyDetails.protocol;
+  const isSocksProxy = proxyProtocol === 'socks4' || proxyProtocol === 'socks5';
+
+  logger.info(`Setting proxy on a window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
   await webContents.session.setProxy({
     pacScript: '',
     proxyBypassRules: '',
-    proxyRules: `http=${proxyURL};https=${proxyURL}`,
+    proxyRules: isSocksProxy ? `socks=${proxyURL}` : `http=${proxyURL};https=${proxyURL}`,
   });
 };
 
