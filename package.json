@@ -72,7 +72,7 @@
     "cross-env": "7.0.0",
     "css-loader": "3.4.2",
     "dotenv": "8.2.0",
-    "electron": "6.1.7",
+    "electron": "6.1.9",
     "electron-builder": "20.44.4",
     "electron-mocha": "8.2.1",
     "electron-osx-sign": "0.4.15",
@@ -165,6 +165,7 @@
     "prettier": "prettier \"**/*.{json,md,css,yml,html}\"",
     "start": "cross-env NODE_DEBUG=@wireapp* electron . --no-sandbox --inspect --devtools --enable-logging",
     "start:dev": "yarn start --env=https://wire-webapp-dev.zinfra.io",
+    "start:proxy": "yarn start --env=https://wire-webapp-dev.zinfra.io --proxy-server=\"http://127.0.0.1:3128\"",
     "start:edge": "yarn start --env=https://wire-webapp-edge.zinfra.io",
     "start:internal": "yarn start --env=https://wire-webapp-staging.wire.com",
     "start:localhost": "yarn start --env=http://localhost:8081",
@@ -176,5 +177,6 @@
     "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\" --no-sandbox",
     "test:react": "jest",
     "translate:upload": "node ./bin/translations_upload.js"
-  }
+  },
+  "version": "3.16"
 }

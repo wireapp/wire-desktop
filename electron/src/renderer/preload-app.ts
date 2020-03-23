@@ -109,7 +109,7 @@ const setupIpcInterface = (): void => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
-      await accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
+      accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
 };
