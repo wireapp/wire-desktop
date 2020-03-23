@@ -476,7 +476,7 @@ const handlePortableFlags = () => {
 const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
   const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
   const proxyProtocol = authenticatedProxyDetails.protocol;
-  const isSocksProxy = proxyProtocol === 'socks4' || proxyProtocol === 'socks5';
+  const isSocksProxy = proxyProtocol === 'socks4:' || proxyProtocol === 'socks5:';
 
   logger.info(`Setting proxy on a window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
