@@ -116,9 +116,9 @@ node('master') {
               zip dir: 'wrap/dist/', glob: '**/*.exe', zipFile: 'WireInternal-Setup.zip'
               files = findFiles(glob: '*.zip')
               echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
-              // Disabling windows upload because of missing feature to set build_version via plugin
-              // appCenter ownerName: 'Wire', apiToken: env.APP_CENTER_TOKEN, appName: appName, distributionGroups: distributionGroups, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
-              // wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
+              // Windows upload needs to set build_version via plugin
+              appCenter ownerName: 'Wire', apiToken: env.APP_CENTER_TOKEN, appName: appName, buildVersion: "${version}", distributionGroups: distributionGroups, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
+              wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
             }
           } catch(e) {
             currentBuild.result = 'FAILED'
