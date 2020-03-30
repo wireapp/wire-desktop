@@ -10,7 +10,7 @@
     "content-type": "1.0.4",
     "electron-window-state": "5.0.3",
     "file-url": "3.0.0",
-    "fs-extra": "8.1.0",
+    "fs-extra": "9.0.0",
     "get-proxy-settings": "0.1.11",
     "globby": "11.0.0",
     "iconv-lite": "0.5.1",
