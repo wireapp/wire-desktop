@@ -896,10 +896,10 @@
     "@emotion/utils" "0.11.3"
     "@emotion/weak-memoize" "0.2.5"
 
-"@emotion/core@10.0.27":
-  version "10.0.27"
-  resolved "https://registry.npmjs.org/@emotion/core/-/core-10.0.27.tgz#7c3f78be681ab2273f3bf11ca3e2edc4a9dd1fdc"
-  integrity sha512-XbD5R36pVbohQMnKfajHv43g8EbN4NHdF6Zh9zg/C0nr0jqwOw3gYnC07Xj3yG43OYSRyrGsoQ5qPwc8ycvLZw==
+"@emotion/core@10.0.28":
+  version "10.0.28"
+  resolved "https://registry.npmjs.org/@emotion/core/-/core-10.0.28.tgz#bb65af7262a234593a9e952c041d0f1c9b9bef3d"
+  integrity sha512-pH8UueKYO5jgg0Iq+AmCLxBsvuGtvlmiDCOuv8fGNYn3cowFpLN98L8zO56U0H1PjDIyAlXymgL3Wu7u7v6hbA==
   dependencies:
     "@babel/runtime" "^7.5.5"
     "@emotion/cache" "^10.0.27"
@@ -1701,14 +1701,14 @@
   resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.3.0.tgz#e8129b31021c81d90d564d9c4ff0f7f7b514e943"
   integrity sha512-BFokvX4NZlkhWq5/OoJUCS8Iels+MeRgzpd5V9QR3hj5swwCFGxJOAL7soPXkSNWo91gI1qwiTp8szB1O9aCfQ==
 
-"@wireapp/react-ui-kit@7.26.8":
-  version "7.26.8"
-  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.26.8.tgz#b940282fbffbb825883e0982062ab499dfe98883"
-  integrity sha512-csZPp6szjsmuB3uCjg2ko0d5C7XIu2Dha+H29mSZaIZDC1c7EKmSAhS3EfcWWfziLUINTEMfpU/VipCaXWShKA==
+"@wireapp/react-ui-kit@7.26.13":
+  version "7.26.13"
+  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.26.13.tgz#1be859c34fc61459042a6d2337c59c588c1c1497"
+  integrity sha512-BhyqS+z2PO1OmvjopvrIcePMFY0yqT4wIZNoZABZ0ePqbIaSkTt4AB1aQx9mgMYNwG7hn1d8ruAce9GMZHcliA==
   dependencies:
-    "@emotion/core" "10.0.27"
+    "@emotion/core" "10.0.28"
     "@types/color" "3.0.1"
-    bazinga64 "5.6.6"
+    bazinga64 "5.6.10"
     color "3.1.2"
     emotion-normalize "10.1.0"
     emotion-theming "10.0.27"
@@ -2315,10 +2315,10 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-bazinga64@5.6.6:
-  version "5.6.6"
-  resolved "https://registry.npmjs.org/bazinga64/-/bazinga64-5.6.6.tgz#81389b43511967338e6ea490e3051dd752abf8c6"
-  integrity sha512-9sGOAefFq+oremzSythp/+mHeugyGUi4l/4mpusxCkZfW9aCzaw6DEHDzPci74k8MnmlJ+H7pxAWFOuIfvUADg==
+bazinga64@5.6.10:
+  version "5.6.10"
+  resolved "https://registry.npmjs.org/bazinga64/-/bazinga64-5.6.10.tgz#f6831f1b0cba436a5c143a1938b62bd3c3ae243a"
+  integrity sha512-mqLgI9xbikYYVmYUk1smvR3Buo7qb6BvaiBDqffF5S+O2maxTMJYxrNZLfZXqf0uS+iF7kBHwrvm/PC/i+JCuA==
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"
