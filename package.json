@@ -107,7 +107,7 @@
     "typescript": "3.8.3",
     "webpack": "4.42.1",
     "webpack-cli": "3.3.11",
-    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.24.60",
+    "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.24.62",
     "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#v0.24.63-0"
   },
   "homepage": "https://wire.com",
