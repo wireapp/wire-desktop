@@ -91,7 +91,7 @@
     "eslint-plugin-sort-keys-fix": "1.1.0",
     "form-data": "3.0.0",
     "globby": "11.0.0",
-    "husky": "4.2.3",
+    "husky": "4.2.5",
     "is-ci": "2.0.0",
     "jest": "25.3.0",
     "lint-staged": "10.1.2",
