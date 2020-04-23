@@ -67,7 +67,6 @@ import {WindowUtil} from './window/WindowUtil';
 import ProxyAuth from './auth/ProxyAuth';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
-import {changeEnvironmentPrompt} from './lib/changeEnvironmentPrompt';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -153,9 +152,6 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
-  ipcMain.on(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, (event, environmentUrl: string) => {
-    event.returnValue = changeEnvironmentPrompt(environmentUrl);
-  });
 };
 
 const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
