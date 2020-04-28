@@ -184,10 +184,20 @@ export async function manualMacOSSign(
   if (macOSConfig.certNameApplication) {
     const filesToSign = [
       'Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libEGL.dylib',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libGLESv2.dylib',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libEGL.dylib',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libGLESv2.dylib',
       'Frameworks/Electron Framework.framework/',
       `Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,
       `Frameworks/${commonConfig.name} Helper.app/`,
+      `Frameworks/${commonConfig.name} Helper (GPU).app/Contents/MacOS/${commonConfig.name} Helper (GPU)`,
+      `Frameworks/${commonConfig.name} Helper (GPU).app/`,
+      `Frameworks/${commonConfig.name} Helper (Plugin).app/Contents/MacOS/${commonConfig.name} Helper (Plugin)`,
+      `Frameworks/${commonConfig.name} Helper (Plugin).app/`,
+      `Frameworks/${commonConfig.name} Helper (Renderer).app/Contents/MacOS/${commonConfig.name} Helper (Renderer)`,
+      `Frameworks/${commonConfig.name} Helper (Renderer).app/`,
       `Library/LoginItems/${commonConfig.name} Login Helper.app/Contents/MacOS/${commonConfig.name} Login Helper`,
       `Library/LoginItems/${commonConfig.name} Login Helper.app/`,
     ];
@@ -196,7 +206,6 @@ export async function manualMacOSSign(
       const fullPath = `${appFile}/Contents/${fileName}`;
       const {stderr, stdout} = await execAsync(
         `codesign --deep -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${fullPath}'`,
-        false,
       );
       logger.log(stdout);
       logger.warn(stderr);
@@ -206,21 +215,18 @@ export async function manualMacOSSign(
       const appExecutable = `${appFile}/Contents/MacOS/${commonConfig.name}`;
       const {stderr: stderrSignExecutable, stdout: stdoutSignExecutable} = await execAsync(
         `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
-        false,
       );
       logger.log(stdoutSignExecutable);
       logger.warn(stderrSignExecutable);
 
       const {stderr: stderrSignApp, stdout: stdoutSignApp} = await execAsync(
         `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`,
-        false,
       );
       logger.log(stdoutSignApp);
       logger.warn(stderrSignApp);
 
       const {stderr: stderrPkg, stdout: stdoutPkg} = await execAsync(
         `productbuild --component '${appFile}' /Applications --sign '${macOSConfig.certNameInstaller}' '${pkgFile}'`,
-        false,
       );
       logger.log(stdoutPkg);
       logger.warn(stderrPkg);

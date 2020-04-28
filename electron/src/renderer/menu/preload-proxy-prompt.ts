@@ -17,15 +17,15 @@
  *
  */
 
-import {IpcMessageEvent, ipcRenderer} from 'electron';
+import {ipcRenderer} from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 
-ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (event: IpcMessageEvent, labels: string[]) => {
+ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (event, labels: string[]) => {
   for (const label in labels) {
     const labelElement = document.querySelector(`[data-string="${label}"]`);
     if (labelElement) {
-      labelElement.innerHTML = labels[label];
+      labelElement.textContent = labels[label];
     }
   }
 });

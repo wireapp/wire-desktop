@@ -19,11 +19,10 @@
 
 import * as Electron from 'electron';
 
+import {i18nLanguageIdentifier, Supportedi18nLanguage, Supportedi18nLanguageObject} from '../interfaces/';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
-
-import {Supportedi18nLanguage, Supportedi18nLanguageObject, i18nLanguageIdentifier} from '../interfaces/';
 
 const cs_CZ = require('../../locale/cs-CZ');
 const da_DK = require('../../locale/da-DK');
@@ -47,6 +46,7 @@ const sk_SK = require('../../locale/sk-SK');
 const sl_SI = require('../../locale/sl-SI');
 const tr_TR = require('../../locale/tr-TR');
 const uk_UA = require('../../locale/uk-UA');
+const zh_CN = require('../../locale/zh-CN');
 
 const app = Electron.app || Electron.remote.app;
 
@@ -73,9 +73,10 @@ export const LANGUAGES: Supportedi18nLanguageObject = {
   sl: sl_SI,
   tr: tr_TR,
   uk: uk_UA,
+  zh: zh_CN,
 };
 
-/* tslint:disable:object-literal-sort-keys */
+/* eslint-disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
   cs: 'Čeština',
@@ -99,8 +100,9 @@ export const SUPPORTED_LANGUAGES = {
   fi: 'Suomi',
   tr: 'Türkçe',
   uk: 'Українська',
+  zh: '简体中文',
 };
-/* tslint:enable:object-literal-sort-keys */
+/* eslint-enable */
 
 let current: Supportedi18nLanguage | undefined;
 
@@ -125,14 +127,18 @@ const customReplacements: Record<string, string> = {
   brandName: config.name,
 };
 
-export const getText = (stringIdentifier: i18nLanguageIdentifier): string => {
+export const getText = (
+  stringIdentifier: i18nLanguageIdentifier,
+  paramReplacements?: Record<string, string>,
+): string => {
   const strings = getCurrent();
   let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
 
-  for (const replacement of Object.keys(customReplacements)) {
+  const replacements: Record<string, string> = {...customReplacements, ...paramReplacements};
+  for (const replacement of Object.keys(replacements)) {
     const regex = new RegExp(`{${replacement}}`, 'g');
     if (str.match(regex)) {
-      str = str.replace(regex, customReplacements[replacement]);
+      str = str.replace(regex, replacements[replacement]);
     }
   }
 

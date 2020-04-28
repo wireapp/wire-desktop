@@ -17,7 +17,7 @@
  *
  */
 
-import {IpcMessageEvent, WebviewTag, ipcRenderer, webFrame} from 'electron';
+import {ipcRenderer, webFrame, WebviewTag} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -41,21 +41,19 @@ const getWebviewById = (id: string): WebviewTag | null =>
   document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = () => {
-  ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (event: IpcMessageEvent, code: string) =>
-    new AutomatedSingleSignOn().start(code),
-  );
+  ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
 
-  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, (event: IpcMessageEvent, action: string) => {
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (_event, action: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      selectedWebview.send(action);
+      await selectedWebview.send(action);
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (event: IpcMessageEvent, hash: string) => {
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, async (_event, hash: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
+      await selectedWebview.send(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, hash);
     }
   });
 
@@ -78,7 +76,7 @@ const subscribeToMainProcessEvents = () => {
     webviews.forEach(webview => webview.reload());
   });
 
-  ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event: CustomEvent, accountIndex: number) => {
+  ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
   });
 
@@ -96,17 +94,18 @@ const setupIpcInterface = (): void => {
     return new Promise((resolve, reject) => {
       const accountWebview = getWebviewById(accountID);
       if (!accountWebview) {
+        // eslint-disable-next-line
         return reject(`Webview for account "${accountID}" does not exist`);
       }
 
-      console.log(`Processing deletion of "${accountID}"`);
-      const viewInstanceId = accountWebview.getWebContents().id;
+      console.info(`Processing deletion of "${accountID}"`);
+      const viewInstanceId = accountWebview.getWebContents?.().id;
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
     });
   };
 
-  window.sendLogoutAccount = (accountId: string): void => {
+  window.sendLogoutAccount = async (accountId: string): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
@@ -128,10 +127,10 @@ setupIpcInterface();
 subscribeToMainProcessEvents();
 
 window.addEventListener('DOMContentLoaded', addDragRegion);
-
 window.addEventListener('focus', () => {
   const selectedWebview = getSelectedWebview();
   if (selectedWebview) {
+    selectedWebview.blur();
     selectedWebview.focus();
   }
 });

@@ -1,0 +1,7 @@
+project_identifier: wire-desktop
+base_path: .
+
+files:
+  - source: 'electron/locale/en-US.json'
+    translation: '%locale%.json'
+    update_option: 'update_as_unapproved'

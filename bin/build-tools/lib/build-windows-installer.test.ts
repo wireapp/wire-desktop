@@ -29,18 +29,14 @@ describe('build-windows-installer', () => {
   describe('buildWindowsInstallerConfig', () => {
     it('honors environment variables', async () => {
       const installerIconUrl = uuid();
-      const updateUrl = uuid();
 
       process.env.WIN_URL_ICON_INSTALLER = installerIconUrl;
-      process.env.WIN_URL_UPDATE = updateUrl;
 
-      const {windowsConfig} = await buildWindowsInstallerConfig(wireJsonPath, envFilePath);
+      const {windowsInstallerConfig} = await buildWindowsInstallerConfig(wireJsonPath, envFilePath);
 
-      assert.strictEqual(windowsConfig.installerIconUrl, installerIconUrl);
-      assert.strictEqual(windowsConfig.updateUrl, updateUrl);
+      assert.strictEqual(windowsInstallerConfig.installerIconUrl, installerIconUrl);
 
       delete process.env.WIN_URL_ICON_INSTALLER;
-      delete process.env.WIN_URL_UPDATE;
     });
   });
 });

@@ -67,7 +67,7 @@ export class CustomProtocolHandler {
 
   private async handleSSOLogin(route: URL): Promise<void> {
     if (typeof route.pathname === 'string') {
-      logger.log('Starting SSO flow ...');
+      logger.info('Starting SSO flow ...');
       const code = route.pathname.trim().substr(1);
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
@@ -86,8 +86,10 @@ export class CustomProtocolHandler {
   }
 
   public registerCoreProtocol(): void {
-    if (!app.isDefaultProtocolClient(config.customProtocolName)) {
-      logger.log(`Registering custom protocol "${config.customProtocolName}" ...`);
+    if (app.isDefaultProtocolClient(config.customProtocolName)) {
+      logger.info(`Custom protocol "${config.customProtocolName}" already registered`);
+    } else {
+      logger.info(`Registering custom protocol "${config.customProtocolName}" ...`);
       app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
@@ -98,14 +100,18 @@ export class CustomProtocolHandler {
       });
     } else {
       app.once('ready', async () => {
+        logger.info('App ready, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(process.argv);
         if (deepLink) {
+          logger.info('App ready, dispatching deep link ...');
           await this.dispatchDeepLink(deepLink);
         }
       });
-      app.on('second-instance', async (event, argv) => {
+      app.on('second-instance', async (_event, argv) => {
+        logger.info('Second instance detected, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(argv);
         if (deepLink) {
+          logger.info('Second instance detected, dispatching deep link ...');
           await this.dispatchDeepLink(deepLink);
         }
       });

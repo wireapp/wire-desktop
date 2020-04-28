@@ -20,4 +20,16 @@
 window.locStrings = window.locStrings || {};
 window.locStringsDefault = window.locStringsDefault || {};
 
-export const getText = id => locStrings[id] || locStringsDefault[id] || id;
+export const getText = (stringIdentifier, paramReplacements) => {
+  let str = window.locStrings[stringIdentifier] || window.locStringsDefault[stringIdentifier] || stringIdentifier;
+
+  const replacements = {...paramReplacements};
+  for (const replacement of Object.keys(replacements)) {
+    const regex = new RegExp(`{${replacement}}`, 'g');
+    if (str.match(regex)) {
+      str = str.replace(regex, replacements[replacement]);
+    }
+  }
+
+  return str;
+};

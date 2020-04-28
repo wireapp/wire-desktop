@@ -35,7 +35,7 @@ interface CommanderData {
 }
 
 const toolName = path.basename(__filename).replace('.ts', '');
-const logger = LogFactory.getLogger(toolName, {namespace: '@wireapp/build-tools', forceEnable: true});
+const logger = LogFactory.getLogger(toolName, {forceEnable: true, namespace: '@wireapp/build-tools'});
 const appSource = path.join(__dirname, '../../');
 
 commander
@@ -61,11 +61,12 @@ const platform = (commander.args[0] || '').toLowerCase();
   switch (platform) {
     case 'win':
     case 'windows': {
-      const {packagerConfig} = await buildWindowsConfig(wireJson, envFile);
+      const {windowsConfig, packagerConfig} = await buildWindowsConfig(wireJson, envFile);
 
+      logEntries(windowsConfig, 'windowsConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
-      return buildWindowsWrapper(packagerConfig, packageJson, wireJson, envFile);
+      return buildWindowsWrapper(packagerConfig, packageJson, windowsConfig, wireJson, envFile);
     }
 
     case 'windows-installer': {

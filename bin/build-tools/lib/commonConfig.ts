@@ -38,7 +38,7 @@ export async function getCommonConfig(envFile: string, wireJson: string): Promis
   const IS_PRODUCTION = process.env.APP_ENV !== 'internal';
 
   const getProjectVersion = async () => {
-    const {stdout: commitId} = await execAsync('git rev-parse --short HEAD', false);
+    const {stdout: commitId} = await execAsync('git rev-parse --short HEAD');
 
     const versionWithoutZero = (defaultConfig.version || '0').replace(/\.0$/, '');
     const buildNumber = `${process.env.BUILD_NUMBER || `0-${commitId || 'unknown'}`}`;

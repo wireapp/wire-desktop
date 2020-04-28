@@ -17,37 +17,34 @@
  *
  */
 
-import {SaveDialogOptions, dialog} from 'electron';
-import * as fs from 'fs';
+import {dialog, SaveDialogOptions} from 'electron';
+import * as fs from 'fs-extra';
 import imageType from 'image-type';
 import * as moment from 'moment';
 
-export const downloadImage = (bytes: Uint8Array, timestamp?: string) => {
-  return new Promise((resolve, reject) => {
-    const type = imageType(bytes);
-    const options: SaveDialogOptions = {};
+export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
+  const type = imageType(bytes);
+  const options: SaveDialogOptions = {};
 
-    const dateObj = new Date(Number(timestamp));
-    if (dateObj.getTime() && !isNaN(dateObj.getTime())) {
-      const momentObj = moment(dateObj);
-      const filename = `Wire ${momentObj.format('YYYY-MM-DD')} at ${momentObj.format('H.mm.ss')}`;
-      options.defaultPath = filename;
-    }
+  const dateObj = new Date(Number(timestamp));
+  if (dateObj.getTime() && !isNaN(dateObj.getTime())) {
+    const momentObj = moment(dateObj);
+    const filename = `Wire ${momentObj.format('YYYY-MM-DD')} at ${momentObj.format('H.mm.ss')}`;
+    options.defaultPath = filename;
+  }
 
-    if (type && type.ext) {
-      options.filters = [
-        {
-          extensions: [type.ext],
-          name: 'Images',
-        },
-      ];
-      options.defaultPath += `.${type.ext}`;
-    }
+  if (type?.ext) {
+    options.filters = [
+      {
+        extensions: [type.ext],
+        name: 'Images',
+      },
+    ];
+    options.defaultPath += `.${type.ext}`;
+  }
 
-    dialog.showSaveDialog(options, chosenPath => {
-      if (chosenPath) {
-        fs.writeFile(chosenPath, new Buffer(bytes.buffer), error => (error ? reject(error) : resolve()));
-      }
-    });
-  });
+  const {filePath: chosenPath} = await dialog.showSaveDialog(options);
+  if (chosenPath) {
+    await fs.writeFile(chosenPath, new Buffer(bytes.buffer));
+  }
 };

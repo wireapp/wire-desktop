@@ -3,10 +3,23 @@
     "jasmine": true
   },
   "extends": "@wireapp/eslint-config",
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/member-ordering": "off",
+        "@typescript-eslint/typedef": "off",
+        "no-unused-vars": "off"
+      }
+    }
+  ],
+  "parserOptions": {
+    "project": ["./tsconfig.json", "./tsconfig.bin.json", "./tsconfig.mocha.json"]
+  },
   "plugins": ["jasmine"],
   "rules": {
-    "handle-callback-err": 2,
-    "import/no-default-export": 0,
-    "no-undef": 0
+    "import/no-default-export": "off",
+    "no-magic-numbers": "off",
+    "no-undef": "off"
   }
 }

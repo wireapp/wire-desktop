@@ -19,10 +19,12 @@
 
 /* eslint-disable no-console */
 
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
 
 import {config} from '../../../dist/settings/config';
 import {verifyObjectProperties} from '../lib/verifyObjectProperties';
+import {accountAction} from './AccountAction';
+import {AccountSelector} from '../selector/AccountSelector';
 
 export const ActionType = {
   ADD_ACCOUNT: 'ADD_ACCOUNT',
@@ -100,10 +102,11 @@ export const toggleEditAccountMenuVisibility = (centerX, centerY, accountId, ses
 
 export const abortAccountCreation = id => {
   return (dispatch, getState) => {
-    dispatch(deleteAccount(id));
-
-    const accounts = getState().accounts;
+    // Note: It's not guaranteed that the dispatched action "deleteAccount" generates a new state without the deleted account
+    const accounts = AccountSelector.getAccounts(getState()).filter(account => account.id !== id);
     const lastAccount = accounts[accounts.length - 1];
+
+    dispatch(deleteAccount(id));
 
     if (lastAccount) {
       dispatch(switchAccount(lastAccount.id));
@@ -134,6 +137,7 @@ export const updateAccountData = (id, data) => {
       teamID: 'String',
       teamRole: 'String',
       userID: 'String',
+      webappUrl: 'String',
     });
 
     if (validatedAccountData) {
@@ -158,3 +162,9 @@ export const updateAccountBadgeCount = (id, count) => {
     }
   };
 };
+
+const actionRoot = {
+  accountAction,
+};
+
+export default actionRoot;

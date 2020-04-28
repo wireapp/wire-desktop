@@ -30,6 +30,7 @@ export interface FindOptions {
 
 export interface FindResult {
   fileName: string;
+  /** Includes directory AND file name */
   filePath: string;
 }
 
@@ -92,9 +93,6 @@ export function zip(originalFile: string, zipFile: string): Promise<string> {
       .on('finish', () => resolve(resolvedZip));
     const jszip = new JSZip().file(path.basename(resolvedOriginal), readStream);
 
-    jszip
-      .generateNodeStream(jszipOptions)
-      .pipe(writeStream)
-      .on('error', reject);
+    jszip.generateNodeStream(jszipOptions).pipe(writeStream).on('error', reject);
   });
 }

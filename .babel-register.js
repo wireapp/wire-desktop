@@ -1,4 +1,14 @@
 const babelRegister = require('@babel/register');
+
+const nodeEnvPreset = [
+  '@babel/preset-env',
+  {
+    targets: {
+      node: 'current',
+    },
+  },
+];
+
 babelRegister({
   cache: false,
   extensions: ['.ts'],
@@ -12,14 +22,7 @@ babelRegister({
     ],
   ],
   presets: [
-    [
-      '@babel/preset-env',
-      {
-        targets: {
-          node: 'current',
-        },
-      },
-    ],
     '@babel/preset-typescript',
+    nodeEnvPreset,
   ],
 });

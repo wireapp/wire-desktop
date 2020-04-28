@@ -18,7 +18,7 @@
  */
 
 import {ValidationUtil} from '@wireapp/commons';
-import {Session, app, webContents} from 'electron';
+import {app, Session, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -29,15 +29,10 @@ const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
 const logger = getLogger(path.basename(__filename));
 
-const clearStorage = (session: Session): Promise<void> => {
-  return new Promise(resolve =>
-    session.clearStorageData({}, () =>
-      session.clearCache(() => {
-        session.flushStorageData();
-        resolve();
-      }),
-    ),
-  );
+const clearStorage = async (session: Session): Promise<void> => {
+  await session.clearStorageData();
+  await session.clearCache();
+  session.flushStorageData();
 };
 
 export async function deleteAccount(id: number, accountId: string, partitionId?: string): Promise<void> {

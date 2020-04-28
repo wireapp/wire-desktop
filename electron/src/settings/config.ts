@@ -17,6 +17,8 @@
  *
  */
 
+const wireJson: WireJson = require('../../wire.json');
+
 interface WireJson {
   adminUrl: string;
   appBase: string;
@@ -39,13 +41,14 @@ interface WireJson {
   websiteUrl: string;
 }
 
-const wireJson: WireJson = require('../../wire.json');
+const MINUTE_IN_MILLIS = 60 * 1000;
+const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
 
 const squirrelUpdateInterval = {
-  /** 5 minutes */
-  DELAY: 5 * 60 * 1000,
-  /** 24 hours */
-  INTERVAL: 24 * 60 * 60 * 1000,
+  /** 5 minutes in milliseconds */
+  DELAY: 5 * MINUTE_IN_MILLIS,
+  /** 24 hours in milliseconds */
+  INTERVAL: 24 * HOUR_IN_MILLIS,
 };
 
 export const config = {

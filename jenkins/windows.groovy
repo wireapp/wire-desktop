@@ -22,9 +22,11 @@ node('windows') {
     bat returnStatus: true, script: 'rmdir /s /q "node_modules"'
   }
 
-  def text = readFile('electron/wire.json')
-  def (major, minor) = parseJson(text).version.tokenize('.')
+  def wireJson = readFile('electron/wire.json')
+  def packageJson = readFile('package.json')
+  def (major, minor) = parseJson(wireJson).version.tokenize('.')
   def version = "${major}.${minor}.${env.BUILD_NUMBER}"
+  def electronVersion = parseJson(packageJson).devDependencies.electron
   currentBuild.displayName = version
 
   stage('Build') {
@@ -69,6 +71,18 @@ node('windows') {
     archiveArtifacts 'wrap\\dist\\**'
   }
 
+  stage('Print hash') {
+    try {
+      if (production) {
+        bat 'certUtil -hashfile "wrap\\dist\\Wire-Setup.exe" SHA256'
+      }
+    } catch(e) {
+      currentBuild.result = 'FAILED'
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} printing hash failed**\n${BUILD_URL}"
+      throw e
+    }
+  }
+
   stage('Trigger smoke tests') {
     if (production) {
       try {
@@ -80,5 +94,5 @@ node('windows') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version}**\nDownload from [Jenkins](${BUILD_URL})"
+  wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}"
 }

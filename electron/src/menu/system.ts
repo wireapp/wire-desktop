@@ -18,20 +18,19 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {Menu, MenuItemConstructorOptions, dialog, globalShortcut, ipcMain, shell} from 'electron';
+import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell} from 'electron';
 import * as path from 'path';
 
+import {Supportedi18nLanguage} from '../interfaces/';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
+import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
-
-import {Supportedi18nLanguage} from '../interfaces/';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -209,7 +208,7 @@ const editTemplate: MenuItemConstructorOptions = {
     separatorTemplate,
     {
       label: locale.getText('menuSelectAll'),
-      role: 'selectall',
+      role: 'selectAll',
     },
   ],
 };
@@ -293,7 +292,7 @@ const darwinTemplate: MenuItemConstructorOptions = {
     },
     {
       label: locale.getText('menuHideOthers'),
-      role: 'hideothers',
+      role: 'hideOthers',
     },
     {
       label: locale.getText('menuShowAll'),
@@ -357,24 +356,20 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: S
   }
 };
 
-const changeLocale = (language: Supportedi18nLanguage): void => {
+const changeLocale = async (language: Supportedi18nLanguage): Promise<void> => {
   locale.setLocale(language);
-  dialog.showMessageBox(
-    {
-      buttons: [
-        locale.getText('restartLater'),
-        EnvironmentUtil.platform.IS_MAC_OS ? locale.getText('menuQuit') : locale.getText('restartNow'),
-      ],
-      message: locale.getText('restartLocale'),
-      title: locale.getText('restartNeeded'),
-      type: 'info',
-    },
-    response => {
-      if (response === 1) {
-        return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
-      }
-    },
-  );
+  const {response} = await dialog.showMessageBox({
+    buttons: [
+      locale.getText('restartLater'),
+      EnvironmentUtil.platform.IS_MAC_OS ? locale.getText('menuQuit') : locale.getText('restartNow'),
+    ],
+    message: locale.getText('restartLocale'),
+    title: locale.getText('restartNeeded'),
+    type: 'info',
+  });
+  if (response === 1) {
+    return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
+  }
 };
 
 export const createMenu = (isFullScreen: boolean): Menu => {
@@ -406,9 +401,8 @@ export const createMenu = (isFullScreen: boolean): Menu => {
     }
   }
 
-  if (Array.isArray(windowTemplate.submenu)) {
+  if (EnvironmentUtil.platform.IS_LINUX && Array.isArray(windowTemplate.submenu)) {
     const muteAccelerator = 'Ctrl+Alt+M';
-    logger.info(`Registering mute shortcut "${muteAccelerator}" ...`);
 
     const muteShortcut: MenuItemConstructorOptions = {
       accelerator: muteAccelerator,
@@ -418,22 +412,22 @@ export const createMenu = (isFullScreen: boolean): Menu => {
       visible: false,
     };
 
-    const switchShortcuts: MenuItemConstructorOptions[] = Array.from({length: config.maximumAccounts}, (_, index) => {
-      const switchAccelerator = `Ctrl+${index + 1}`;
-      logger.info(`Registering account switching shortcut "${switchAccelerator}" ...`);
+    const switchShortcuts: MenuItemConstructorOptions[] = Array.from(
+      {length: config.maximumAccounts},
+      (_key, index) => {
+        const switchAccelerator = `Ctrl+${index + 1}`;
 
-      return {
-        accelerator: switchAccelerator,
-        click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
-        label: `Switch to Account ${index + 1}`,
-        visible: false,
-      };
-    });
+        return {
+          accelerator: switchAccelerator,
+          click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
+          label: `Switch to Account ${index + 1}`,
+          visible: false,
+        };
+      },
+    );
 
     windowTemplate.submenu.push(muteShortcut, ...switchShortcuts);
-  }
 
-  if (EnvironmentUtil.platform.IS_LINUX) {
     menuTemplate.unshift(linuxTemplate);
     if (Array.isArray(editTemplate.submenu)) {
       editTemplate.submenu.push(separatorTemplate, {
@@ -472,16 +466,16 @@ export const toggleMenuBar = (): void => {
 };
 
 export const registerGlobalShortcuts = (): void => {
-  if (EnvironmentUtil.platform.IS_MAC_OS) {
-    const muteAccelerator = 'Cmd+Alt+M';
+  if (!EnvironmentUtil.platform.IS_LINUX) {
+    const muteAccelerator = 'CmdOrCtrl+Alt+M';
     logger.info(`Registering global mute shortcut "${muteAccelerator}" ...`);
 
     globalShortcut.register(muteAccelerator, () =>
       WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
     );
 
-    Array.from({length: config.maximumAccounts}, (_, index) => {
-      const switchAccelerator = `Cmd+${index + 1}`;
+    Array.from({length: config.maximumAccounts}, (_key, index) => {
+      const switchAccelerator = `CmdOrCtrl+${index + 1}`;
       logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
 
       globalShortcut.register(switchAccelerator, () => {
@@ -492,7 +486,7 @@ export const registerGlobalShortcuts = (): void => {
 };
 
 export const unregisterGlobalShortcuts = (): void => {
-  if (EnvironmentUtil.platform.IS_MAC_OS) {
+  if (!EnvironmentUtil.platform.IS_LINUX) {
     logger.info('Unregistering all global shortcuts ...');
     globalShortcut.unregisterAll();
   }

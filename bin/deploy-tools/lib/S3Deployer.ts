@@ -16,11 +16,13 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
+import {Logger} from '@wireapp/commons/dist/commonjs/LogFactory';
+import {getLogger} from '../../bin-utils';
 import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {FindResult, find, logDry} from './deploy-utils';
+import {find, FindResult, logDry} from './deploy-utils';
 
 export interface S3DeployerOptions {
   accessKeyId: string;
@@ -48,6 +50,7 @@ export interface S3CopyOptions {
 export class S3Deployer {
   private readonly options: Required<S3DeployerOptions>;
   private readonly S3Instance: S3;
+  private readonly logger: Logger;
 
   constructor(options: S3DeployerOptions) {
     this.options = {
@@ -58,6 +61,8 @@ export class S3Deployer {
       accessKeyId: options.accessKeyId,
       secretAccessKey: options.secretAccessKey,
     });
+    const toolName = path.basename(__filename).replace(/\.[jt]s$/, '');
+    this.logger = getLogger('deploy-tools', toolName);
   }
 
   async findUploadFiles(platform: string, basePath: string, version: string): Promise<FindResult[]> {
@@ -77,7 +82,17 @@ export class S3Deployer {
         'debian/dists/stable/main/binary-amd64/Packages.gz',
       ].map(fileName => ({fileName, filePath: path.join(basePath, fileName)}));
 
-      return [...repositoryFiles, appImage, debImage];
+      return [
+        ...repositoryFiles,
+        {
+          fileName: appImage.fileName,
+          filePath: path.join(basePath, appImage.fileName),
+        },
+        {
+          fileName: debImage.fileName,
+          filePath: path.join(basePath, debImage.fileName),
+        },
+      ];
     } else if (platform.includes('windows')) {
       const setupExe = await find('*-Setup.exe', {cwd: basePath});
       const nupkgFile = await find('*-full.nupkg', {cwd: basePath});
@@ -92,17 +107,30 @@ export class S3Deployer {
       const setupExeRenamed = {...setupExe, fileName: `${appShortName}-${version}.exe`};
       const releasesRenamed = {...releasesFile, fileName: `${appShortName}-${version}-RELEASES`};
 
-      return [nupkgFile, releasesRenamed, setupExeRenamed];
+      return [
+        {
+          fileName: nupkgFile.fileName,
+          filePath: path.join(basePath, nupkgFile.fileName),
+        },
+        {
+          fileName: releasesRenamed.fileName,
+          filePath: path.join(basePath, releasesFile.fileName),
+        },
+        {
+          fileName: setupExeRenamed.fileName,
+          filePath: path.join(basePath, setupExe.fileName),
+        },
+      ];
     } else if (platform.includes('macos')) {
       const setupPkg = await find('*.pkg', {cwd: basePath});
       return [setupPkg];
-    } else {
-      throw new Error(`Invalid platform "${platform}"`);
     }
+    throw new Error(`Invalid platform "${platform}"`);
   }
 
   async uploadToS3(uploadOptions: S3UploadOptions): Promise<void> {
     const {bucket, filePath, s3Path} = uploadOptions;
+    this.logger.log(`Uploading "${filePath}" to "${bucket}/${s3Path}" ...`);
 
     const lstat = await fs.lstat(filePath);
 
@@ -125,6 +153,8 @@ export class S3Deployer {
     }
 
     await this.S3Instance.upload(uploadConfig).promise();
+
+    this.logger.log(`Uploaded "${bucket}/${s3Path}".`);
   }
 
   async deleteFromS3(deleteOptions: DeleteOptions): Promise<void> {

@@ -17,23 +17,20 @@
  *
  */
 
-import {LogFactory, ValidationUtil} from '@wireapp/commons';
+import {LogFactory} from '@wireapp/commons';
 import {
+  app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  IpcMessageEvent,
-  Menu,
-  OnHeadersReceivedDetails,
-  OnHeadersReceivedResponse,
-  Options,
-  WebContents,
-  app,
   ipcMain,
+  Menu,
+  OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
+  OnHeadersReceivedFilter as Filter,
+  OnHeadersReceivedResponse as HeadersReceivedResponse,
   shell,
+  WebContents,
 } from 'electron';
-import WindowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import * as logdown from 'logdown';
@@ -67,6 +64,9 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
+import ProxyAuth from './auth/ProxyAuth';
+import WindowStateKeeper = require('electron-window-state');
+import fileUrl = require('file-url');
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -81,8 +81,11 @@ const WINDOW_SIZE = {
   MIN_HEIGHT: 512,
   MIN_WIDTH: 760,
 };
+enum ARG {
+  PROXY_ARG = 'proxy-server',
+}
 
-let authenticatedProxyInfo: URL | undefined;
+let proxyInfoArg: URL | undefined;
 
 const customProtocolHandler = new CustomProtocolHandler();
 
@@ -93,15 +96,15 @@ const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
 const logger = getLogger(path.basename(__filename));
 
 if (argv.version) {
-  console.log(config.version);
+  console.info(config.version);
   process.exit();
 }
 
-if (argv['proxy-server-auth']) {
+if (argv[ARG.PROXY_ARG]) {
   try {
-    authenticatedProxyInfo = new URL(argv['proxy-server-auth']);
-    if (authenticatedProxyInfo.origin === 'null') {
-      authenticatedProxyInfo = undefined;
+    proxyInfoArg = new URL(argv[ARG.PROXY_ARG]);
+    if (proxyInfoArg.origin === 'null') {
+      proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
     }
   } catch (error) {
@@ -111,12 +114,12 @@ if (argv['proxy-server-auth']) {
 
 const iconFileName = `logo.${EnvironmentUtil.platform.IS_WINDOWS ? 'ico' : 'png'}`;
 const iconPath = path.join(APP_PATH, 'img', iconFileName);
-// This needs to stay global, see https://github.com/electron/electron/blob/v4.2.12/docs/faq.md#my-apps-windowtray-disappeared-after-a-few-minutes
+// This needs to stay global, see
+// https://github.com/electron/electron/blob/v4.2.12/docs/faq.md#my-apps-windowtray-disappeared-after-a-few-minutes
 let tray: TrayHandler;
 
 let isFullScreen = false;
 let isQuitting = false;
-let triedProxy = false;
 let main: BrowserWindow;
 
 Object.entries(config).forEach(([key, value]) => {
@@ -130,7 +133,7 @@ app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
 const bindIpcEvents = () => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (event: IpcMessageEvent, bytes: Uint8Array, timestamp?: string) => {
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
 
@@ -138,17 +141,14 @@ const bindIpcEvents = () => {
     WindowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (event: IpcMessageEvent, count: number) => {
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
     tray.showUnreadCount(main, count);
   });
 
-  ipcMain.on(
-    EVENT_TYPE.ACCOUNT.DELETE_DATA,
-    async (event: IpcMessageEvent, id: number, accountId: string, partitionId?: string) => {
-      await deleteAccount(id, accountId, partitionId);
-      main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
-    },
-  );
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
+    await deleteAccount(id, accountId, partitionId);
+    main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
+  });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
   ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
@@ -213,7 +213,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       webviewTag: true,
     },
     width: mainWindowState.width,
+    // eslint-disable-next-line
     x: mainWindowState.x,
+    // eslint-disable-next-line
     y: mainWindowState.y,
   };
 
@@ -246,22 +248,22 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     setTimeout(() => main.show(), 800);
   }
 
-  main.webContents.on('will-navigate', (event, url) => {
+  main.webContents.on('will-navigate', event => {
     // Prevent any kind of navigation inside the main window
     event.preventDefault();
   });
 
   // Handle the new window event in the main Browser Window
-  main.webContents.on('new-window', async (event, _url) => {
+  main.webContents.on('new-window', async (event, url) => {
     event.preventDefault();
 
     // Ensure the link does not come from a webview
-    if (typeof (event.sender as any).viewInstanceId !== 'undefined') {
+    if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
       logger.log('New window was created from a webview, aborting.');
       return;
     }
 
-    await shell.openExternal(_url);
+    await shell.openExternal(url);
   });
 
   main.on('focus', () => {
@@ -302,7 +304,8 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   });
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
-  main.webContents.insertCSS(fs.readFileSync(WRAPPER_CSS, 'utf8'));
+  const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
+  await main.webContents.insertCSS(wrapperCSSContent);
 
   if (argv.startup || argv.hidden) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
@@ -328,59 +331,66 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
-  app.on('login', async (event, webContents, request, authInfo, callback) => {
+  app.on('login', async (event, webContents, _request, authInfo, callback) => {
     if (authInfo.isProxy) {
       event.preventDefault();
-
-      if (authenticatedProxyInfo) {
-        const {username, password} = authenticatedProxyInfo;
-        logger.info('Sending provided credentials to authenticated proxy ...');
-        return callback(username, password);
-      }
+      const {host, port} = authInfo;
 
       const systemProxy = await getProxySettings();
       const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
-
       if (systemProxySettings) {
         const {
           credentials: {username, password},
           protocol,
         } = systemProxySettings;
-        authenticatedProxyInfo = new URL(`${protocol}//${username}:${password}@${authInfo.host}`);
+        proxyInfoArg = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
+        logger.log('Applying proxy settings on the main window...');
+        await applyProxySettings(proxyInfoArg, main.webContents);
         return callback(username, password);
       }
 
-      ipcMain.once(
-        EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
-        (event: IpcMessageEvent, promptData: {password: string; username: string}) => {
-          const {username, password} = promptData;
+      if (proxyInfoArg) {
+        const hasCredentials = proxyInfoArg.username && proxyInfoArg.password;
+        if (hasCredentials) {
+          const {username, password} = proxyInfoArg;
+          logger.info('Sending provided credentials to authenticated proxy ...');
+          await applyProxySettings(proxyInfoArg, main.webContents);
+          return callback(username, password);
+        }
+        ipcMain.once(
+          EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
+          async (_event, promptData: {password: string; username: string}) => {
+            logger.log('Proxy prompt was submitted');
 
-          logger.log('Proxy prompt was submitted');
-          const [originalProxyValue] = argv['proxy-server'] || argv['proxy-server-auth'] || ['http://'];
-          const protocol = /^[^:]+:\/\//.exec(originalProxyValue);
-          authenticatedProxyInfo = new URL(`${protocol}${username}:${password}@${authInfo.host}`);
-          callback(username, password);
-        },
-      );
+            const {username, password} = promptData;
+            const protocol: string | undefined = proxyInfoArg?.protocol?.replace(':', '');
+            proxyInfoArg = ProxyAuth.generateProxyURL(
+              {host, port},
+              {
+                ...promptData,
+                protocol,
+              },
+            );
 
-      ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
-        logger.log('Proxy prompt was canceled');
-        webContents.session.setProxy(
-          {
+            logger.log('Applying proxy settings on the main window...');
+            await applyProxySettings(proxyInfoArg, main.webContents);
+            callback(username, password);
+          },
+        );
+
+        ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
+          logger.log('Proxy prompt was canceled');
+
+          await webContents.session.setProxy({
             pacScript: '',
             proxyBypassRules: '',
             proxyRules: '',
-          },
-          () => {
-            callback('', '');
-            main.reload();
-          },
-        );
-      });
+          });
 
-      if (!triedProxy) {
+          main.reload();
+        });
+
         await ProxyPromptWindow.showWindow();
-        triedProxy = true;
       }
     }
   });
@@ -451,14 +461,15 @@ const handlePortableFlags = () => {
   }
 };
 
-const getWebViewId = (contents: WebContents): string | undefined => {
-  try {
-    const currentLocation = new URL(contents.getURL());
-    const webViewId = currentLocation.searchParams.get('id');
-    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
-  } catch (error) {
-    return undefined;
-  }
+const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
+  const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
+  logger.info(`Setting proxy on a window to URL "${proxyURL}"...`);
+  webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
+  await webContents.session.setProxy({
+    pacScript: '',
+    proxyBypassRules: '',
+    proxyRules: `http=${proxyURL};https=${proxyURL}`,
+  });
 };
 
 class ElectronWrapperInit {
@@ -479,12 +490,12 @@ class ElectronWrapperInit {
       event: ElectronEvent,
       url: string,
       frameName: string,
-      disposition: string,
-      options: Options,
+      _disposition: string,
+      options: BrowserWindowConstructorOptions,
     ) => {
       event.preventDefault();
 
-      if (SingleSignOn.isSingleSignOnLoginWindow(frameName) && SingleSignOn.isBackendOrigin(url)) {
+      if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
         return new SingleSignOn(main, event, url, options).init();
       }
 
@@ -492,54 +503,32 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: ElectronEvent, _url: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string) => {
       // Ensure navigation is to a whitelisted domain
-      if (OriginValidator.isMatchingHost(_url, BASE_URL)) {
-        this.logger.log(`Navigating inside webview. URL: ${_url}`);
+      if (OriginValidator.isMatchingHost(url, baseUrl)) {
+        this.logger.log(`Navigating inside webview. URL: ${url}`);
       } else {
-        this.logger.log(`Preventing navigation inside <webview>. URL: ${_url}`);
+        this.logger.log(`Preventing navigation inside <webview>. URL: ${url}`);
         event.preventDefault();
       }
     };
 
-    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
-      if (authenticatedProxyInfo && authenticatedProxyInfo.origin && contents.session) {
-        const proxyURL = `${authenticatedProxyInfo.protocol}//${authenticatedProxyInfo.origin}`;
-        logger.info(`Setting proxy to URL "${proxyURL}" ...`);
-
-        contents.session.allowNTLMCredentialsForDomains(authenticatedProxyInfo.hostname);
-
-        await new Promise(resolve =>
-          contents.session.setProxy(
-            {
-              pacScript: '',
-              proxyBypassRules: '',
-              proxyRules: proxyURL,
-            },
-            () => resolve(),
-          ),
-        );
+    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
+      if (proxyInfoArg?.origin && contents.session) {
+        this.logger.log('Applying proxy settings on a webview...');
+        await applyProxySettings(proxyInfoArg, contents);
       }
 
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (event, webPreferences, params) => {
-            const _url = params.src;
-
-            // Verify the URL is being loaded
-            if (!OriginValidator.isMatchingHost(_url, BASE_URL)) {
-              event.preventDefault();
-              this.logger.log(`Prevented to show an unauthorized <webview>. URL: ${_url}`);
-              return;
-            }
-
             // Use secure defaults
-            params.autosize = false;
-            params.contextIsolation = true;
-            params.plugins = false;
+            params.autosize = 'false';
+            params.contextIsolation = 'true';
+            params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.nodeIntegration = false;
-            webPreferences.preloadURL = fileUrl(PRELOAD_RENDERER_JS);
+            webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.webSecurity = true;
             webPreferences.enableBlinkFeatures = '';
           });
@@ -548,16 +537,18 @@ class ElectronWrapperInit {
         case 'webview': {
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
-          contents.on('will-navigate', willNavigateInWebview);
+          contents.on('will-navigate', (event: ElectronEvent, url: string) => {
+            willNavigateInWebview(event, url, contents.getURL());
+          });
           if (ENABLE_LOGGING) {
-            contents.on('console-message', async (event, level, message) => {
-              const webViewId = getWebViewId(contents);
+            contents.on('console-message', async (_event, _level, message) => {
+              const webViewId = lifecycle.getWebViewId(contents);
               if (webViewId) {
                 const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
                 try {
                   await LogFactory.writeMessage(message, logFilePath);
                 } catch (error) {
-                  logger.log(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
                 }
               }
             });
@@ -569,30 +560,29 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter = {
+            const filter: Filter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
-            const listener = (
-              details: OnHeadersReceivedDetails,
-              callback: (response: OnHeadersReceivedResponse) => void,
+            const listenerOnHeadersReceived = (
+              details: OnHeadersReceivedListenerDetails,
+              callback: (response: HeadersReceivedResponse) => void,
             ) => {
               const responseHeaders = {
-                ...details.responseHeaders,
                 'Access-Control-Allow-Credentials': ['true'],
                 'Access-Control-Allow-Origin': ['http://localhost:8081'],
               };
 
               callback({
                 cancel: false,
-                responseHeaders: responseHeaders,
+                responseHeaders: {...details.responseHeaders, ...responseHeaders},
               });
             };
 
-            contents.session.webRequest.onHeadersReceived(filter, listener);
+            contents.session.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
           }
 
-          contents.on('before-input-event', (event, input) => {
+          contents.on('before-input-event', (_event, input) => {
             if (input.type === 'keyUp' && input.key === 'Alt') {
               ipcMain.emit(EVENT_TYPE.UI.TOGGLE_MENU);
             }

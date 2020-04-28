@@ -20,9 +20,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const ContextMenuItem = props => (
-  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={props.onClick}>
-    {props.children}
+const ContextMenuItem = ({onClick, children}) => (
+  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={onClick}>
+    {children}
   </div>
 );
 

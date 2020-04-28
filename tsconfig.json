@@ -9,14 +9,14 @@
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": false,
     "outDir": "electron/dist",
     "removeComments": true,
     "rootDir": "electron/src",
     "sourceMap": true,
     "strict": true,
-    "target": "es5"
+    "target": "es6"
   },
   "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"]
 }

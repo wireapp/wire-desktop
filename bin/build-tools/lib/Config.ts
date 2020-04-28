@@ -61,7 +61,10 @@ export interface MacOSConfig {
 }
 
 export interface WindowsConfig {
+  updateUrl: string;
+}
+
+export interface WindowsInstallerConfig {
   installerIconUrl: string;
   loadingGif: string;
-  updateUrl: string;
 }

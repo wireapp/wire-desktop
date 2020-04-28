@@ -17,90 +17,32 @@
  *
  */
 
-import './App.css';
-
 import React from 'react';
 import {connect} from 'react-redux';
+import {StyledApp} from '@wireapp/react-ui-kit';
 
-import {config} from '../../../dist/settings/config';
-import {initiateSSO, switchAccount, updateAccount} from '../actions';
-import WebviewsContainer from '../containers/WebviewsContainer';
-import * as EVENT_TYPE from '../lib/eventType';
+import actionRoot from '../actions';
 import IsOnline from './IsOnline';
 import Sidebar from './Sidebar';
+import WebviewList from './WebviewList';
+import {AccountSelector} from '../selector/AccountSelector';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount() {
-    window.addEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount, false);
-    window.addEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO, false);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, this.switchAccount);
-    window.removeEventListener(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT, this.initiateSSO);
-  }
-
-  switchAccount = event => {
-    const {accountIndex} = event.detail;
-    const accountId = this.props.accountIds[accountIndex];
-    if (accountId) {
-      this.props.switchAccount(accountId);
-    }
-
-    event.target.focus();
-  };
-
-  initiateSSO = event => {
-    const loggedOutWebviews = this.props.accounts.filter(account => account.userID === undefined);
-    const ssoCode = event.detail.code;
-
-    if (loggedOutWebviews.length > 0) {
-      const accountId = loggedOutWebviews[0].id;
-      this.props.switchAccount(accountId);
-      this.props.initiateSSO(accountId, ssoCode, this.props.accounts.length == 1);
-    } else {
-      if (this.props.accounts.length >= config.maximumAccounts) {
-        return window.dispatchEvent(
-          new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
-            detail: {
-              reachedMaximumAccounts: true,
-            },
-          }),
-        );
-      }
-      // All accounts are logged in, create a new one
-      this.props.initiateSSO(undefined, ssoCode, true);
-    }
-    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE));
-  };
-
-  render() {
-    return (
+const App = ({accounts, switchWebview}) => {
+  return (
+    <StyledApp style={{height: '100%'}}>
       <IsOnline>
-        <div className="App">
+        <div style={{display: 'flex', height: '100%', width: '100%'}}>
           <Sidebar />
-          <WebviewsContainer />
+          <WebviewList />
         </div>
       </IsOnline>
-    );
-  }
-}
+    </StyledApp>
+  );
+};
 
-function mapStateToProps(state) {
-  const {accounts} = state;
-  return {
-    accountIds: accounts.map(account => account.id),
-    accounts,
-    isAddingAccount: !!accounts.length && accounts.some(account => account.userID === undefined),
-  };
-}
-
-function mapDispatchToProps() {
-  return {initiateSSO, switchAccount, updateAccount};
-}
-
-export default connect(mapStateToProps, mapDispatchToProps())(App);
+export default connect(
+  state => ({
+    accounts: AccountSelector.getAccounts(state),
+  }),
+  {switchWebview: actionRoot.accountAction.switchWebview},
+)(App);

@@ -43,7 +43,7 @@ describe('GitHubDraftDeployer', () => {
         repoSlug: 'wireapp/wire-desktop',
       });
 
-      await gitHubDraftDeployer.uploadAsset({draftId: 0, filePath: __filename, fileName: path.basename(__filename)});
+      await gitHubDraftDeployer.uploadAsset({draftId: 0, fileName: path.basename(__filename), filePath: __filename});
     });
   });
 });

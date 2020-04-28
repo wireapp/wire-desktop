@@ -18,15 +18,14 @@
  */
 
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
-import {ParsedMediaType, parse as parseContentType} from 'content-type';
+import {parse as parseContentType, ParsedMediaType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
-import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 import * as path from 'path';
 import {parse as parseUrl} from 'url';
-
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
+import * as og from 'open-graph';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -59,7 +58,10 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   try {
     response = await axiosWithCookie<Buffer>(axiosConfig);
   } catch (error) {
-    throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
+    if (error.response?.status && error?.response?.statusText) {
+      throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
+    }
+    throw new Error(`Request failed: ${error.message}`);
   }
 
   let contentType;
@@ -158,10 +160,26 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
   }
 };
 
-const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
+function getOpenGraphData(url: string): Promise<og.Data> {
+  return new Promise((resolve, reject) => {
+    og(url, (error, meta) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(meta);
+      }
+    });
+  });
+}
+
+const fetchOpenGraphData = async (url: string): Promise<og.Data> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   const parsedUrl = parseUrl(encodeURI(url));
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
+
+  if (normalizedUrl.host === 'twitter.com' || normalizedUrl.host === 'github.com') {
+    return getOpenGraphData(normalizedUrl.href);
+  }
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
@@ -172,10 +190,10 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  return openGraphParse(body);
+  return og.parse(body);
 };
 
-const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
+const updateMetaDataWithImage = (meta: og.Data, imageData?: string): og.Data => {
   if (!meta.image) {
     meta.image = {};
   }
@@ -189,7 +207,7 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
   return meta;
 };
 
-export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
+export const getOpenGraphDataAsync = async (url: string): Promise<og.Data> => {
   const metadata = await fetchOpenGraphData(url);
 
   if (!metadata.description && !metadata.image && !metadata.type && !metadata.url) {
@@ -200,13 +218,17 @@ export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResul
     metadata.image = metadata.image[0];
   }
 
-  if (typeof metadata.image === 'object' && !Array.isArray(metadata.image) && metadata.image.url) {
+  if (typeof metadata.image === 'object' && metadata.image.url) {
     const [imageUrl] = arrayify(metadata.image.url);
 
-    const uri = await fetchImageAsBase64(imageUrl);
-    return updateMetaDataWithImage(metadata, uri);
-  } else {
-    delete metadata.image;
-    return metadata;
+    try {
+      const uri = await fetchImageAsBase64(imageUrl);
+      return updateMetaDataWithImage(metadata, uri);
+    } catch (error) {
+      logger.warn(error);
+    }
   }
+
+  delete metadata.image;
+  return metadata;
 };
