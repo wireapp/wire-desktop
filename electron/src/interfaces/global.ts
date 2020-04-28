@@ -50,8 +50,8 @@ declare global {
             LOADED: string;
             REFRESH: string;
             RESTART: string;
-            SIGNED_OUT: string;
             SIGN_OUT: string;
+            SIGNED_OUT: string;
             UNREAD_COUNT: string;
             UPDATE: string;
           };
@@ -104,10 +104,10 @@ declare global {
 
   namespace NodeJS {
     interface Global {
+      _ConfigurationPersistence: Schemata;
       desktopCapturer: DesktopCapturer;
       environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;
-      _ConfigurationPersistence: Schemata;
     }
   }
 }
