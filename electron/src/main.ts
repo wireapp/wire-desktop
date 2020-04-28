@@ -65,7 +65,6 @@ import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 import ProxyAuth from './auth/ProxyAuth';
-import {changeEnvironmentPrompt} from './lib/changeEnvironmentPrompt';
 import WindowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 
