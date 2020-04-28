@@ -18,9 +18,9 @@
  */
 
 import * as path from 'path';
-
 import {URL} from 'url';
-import {getLogger} from '../logging/getLogger';
+
+import {getLogger} from '../logging/';
 
 const logger = getLogger(path.basename(__filename));
 

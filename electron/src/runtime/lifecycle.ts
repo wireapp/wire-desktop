@@ -21,12 +21,12 @@ import {app, session, ipcMain, WebContents} from 'electron';
 import * as path from 'path';
 import {ValidationUtil} from '@wireapp/commons';
 
-import {EVENT_TYPE} from '../lib/eventType';
-import {getLogger} from '../logging/getLogger';
-import {settings} from '../settings/ConfigurationPersistence';
-import * as Squirrel from '../update/squirrel';
-import {WindowManager} from '../window/WindowManager';
-import * as EnvironmentUtil from './EnvironmentUtil';
+import {EVENT_TYPE} from '../lib/';
+import {getLogger} from '../logging/';
+import {settings} from '../settings/';
+import {handleSquirrelEvent, installUpdate} from '../update/';
+import {WindowManager} from '../window/';
+import {EnvironmentUtil} from './';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -35,9 +35,9 @@ export let isFirstInstance: boolean | undefined = undefined;
 export async function checkForUpdate(): Promise<void> {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
     logger.info('Checking for Windows update ...');
-    await Squirrel.handleSquirrelEvent(isFirstInstance);
+    await handleSquirrelEvent(isFirstInstance);
 
-    ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => Squirrel.installUpdate());
+    ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => installUpdate());
   }
 }
 

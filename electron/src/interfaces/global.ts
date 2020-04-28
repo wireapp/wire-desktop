@@ -20,9 +20,8 @@
 import {DesktopCapturer} from 'electron';
 import {Data as OpenGraphResult} from 'open-graph';
 
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import {i18nStrings} from './locale';
-import {Schemata} from './main';
+import {EnvironmentUtil} from '../runtime/';
+import {i18nStrings, Schemata} from './';
 
 declare global {
   interface Window {

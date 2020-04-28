@@ -20,7 +20,7 @@
 import {app, BrowserWindow} from 'electron';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/';
 
 const logger = getLogger(path.basename(__filename));
 

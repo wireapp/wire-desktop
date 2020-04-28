@@ -22,8 +22,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import {Schemata} from '../interfaces/';
-import {getLogger} from '../logging/getLogger';
-import {SettingsType} from './SettingsType';
+import {getLogger} from '../logging/';
+import {SettingsType} from './';
 
 const app = Electron.app || Electron.remote.app;
 

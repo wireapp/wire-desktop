@@ -20,11 +20,11 @@
 import {ipcRenderer, webFrame, WebviewTag} from 'electron';
 import * as path from 'path';
 
-import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
-import {getLogger} from '../logging/getLogger';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
+import {EVENT_TYPE} from '../lib/';
+import {locale} from '../locale/';
+import {getLogger} from '../logging/';
+import {EnvironmentUtil} from '../runtime/';
+import {AutomatedSingleSignOn} from '../sso/';
 
 const logger = getLogger(path.basename(__filename));
 

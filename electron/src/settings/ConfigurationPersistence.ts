@@ -21,9 +21,9 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as path from 'path';
 
-import {Schemata} from '../interfaces/main';
-import {getLogger} from '../logging/getLogger';
-import {SchemaUpdater} from './SchemaUpdater';
+import {Schemata} from '../interfaces/';
+import {getLogger} from '../logging/';
+import {SchemaUpdater} from './';
 
 class ConfigurationPersistence {
   private readonly configFile: string;

@@ -19,9 +19,9 @@
 
 import {dialog as mainDialog, remote} from 'electron';
 
-import {EVENT_TYPE} from '../lib/eventType';
-import {getText} from '../locale/locale';
-import {config} from '../settings/config';
+import {EVENT_TYPE} from '../lib/';
+import {locale} from '../locale/';
+import {config} from '../settings/';
 
 export interface CreateSSOAccountDetail {
   reachedMaximumAccounts?: boolean;
@@ -31,12 +31,12 @@ const dialog = mainDialog || remote.dialog;
 
 export class AutomatedSingleSignOn {
   private async showError(): Promise<void> {
-    let detail = getText('wrapperAddAccountErrorMessagePlural');
-    let message = getText('wrapperAddAccountErrorTitlePlural');
+    let detail = locale.getText('wrapperAddAccountErrorMessagePlural');
+    let message = locale.getText('wrapperAddAccountErrorTitlePlural');
 
     if (config.maximumAccounts === 1) {
-      detail = getText('wrapperAddAccountErrorMessageSingular');
-      message = getText('wrapperAddAccountErrorTitleSingular');
+      detail = locale.getText('wrapperAddAccountErrorMessageSingular');
+      message = locale.getText('wrapperAddAccountErrorTitleSingular');
     }
 
     await dialog.showMessageBox({

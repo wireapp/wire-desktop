@@ -21,10 +21,10 @@ import {app, BrowserWindow, ipcMain, session} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
-import {i18nLanguageIdentifier} from '../interfaces';
-import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
-import {config} from '../settings/config';
+import {i18nLanguageIdentifier} from '../interfaces/';
+import {EVENT_TYPE} from '../lib/';
+import {locale} from '../locale/';
+import {config} from '../settings/';
 
 const appPath = path.join(app.getAppPath(), config.electronDirectory);
 

@@ -17,9 +17,7 @@
  *
  */
 
-import {config} from '../settings/config';
-import {settings} from '../settings/ConfigurationPersistence';
-import {SettingsType} from '../settings/SettingsType';
+import {config, settings, SettingsType} from '../settings/';
 
 export enum BackendType {
   AVS = 'AVS',

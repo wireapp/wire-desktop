@@ -23,9 +23,10 @@ import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
 import * as path from 'path';
 import {parse as parseUrl} from 'url';
-import {getLogger} from '../logging/getLogger';
-import {config} from '../settings/config';
 import * as og from 'open-graph';
+
+import {getLogger} from '../logging/';
+import {config} from '../settings/';
 
 const logger = getLogger(path.basename(__filename));
 

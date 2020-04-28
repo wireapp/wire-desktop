@@ -17,7 +17,7 @@
  *
  */
 
-import {SUPPORTED_LANGUAGES as SupportedLanguages} from '../locale/locale';
+import {locale} from '../locale/';
 
 export type i18nLanguageIdentifier =
   | 'aboutReleases'
@@ -106,6 +106,6 @@ export type i18nLanguageIdentifier =
 
 export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 
-export type Supportedi18nLanguage = keyof typeof SupportedLanguages;
+export type Supportedi18nLanguage = keyof typeof locale.SUPPORTED_LANGUAGES;
 
 export type Supportedi18nLanguageObject = Record<Supportedi18nLanguage, i18nStrings>;

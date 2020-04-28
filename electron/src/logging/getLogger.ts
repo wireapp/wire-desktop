@@ -22,7 +22,7 @@ import {app, remote} from 'electron';
 import * as logdown from 'logdown';
 import * as path from 'path';
 
-import {config} from '../settings/config';
+import {config} from '../settings/';
 
 const mainProcess = remote ? remote.process : process;
 const logDir = path.join((remote ? remote.app : app).getPath('userData'), 'logs');

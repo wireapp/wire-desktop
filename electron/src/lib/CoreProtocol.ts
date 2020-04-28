@@ -21,11 +21,11 @@ import {app} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {getLogger} from '../logging/getLogger';
-import {platform} from '../runtime/EnvironmentUtil';
-import {config} from '../settings/config';
-import {WindowManager} from '../window/WindowManager';
-import {EVENT_TYPE} from './eventType';
+import {getLogger} from '../logging/';
+import {EnvironmentUtil} from '../runtime/';
+import {config} from '../settings/';
+import {WindowManager} from '../window/';
+import {EVENT_TYPE} from './';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -93,7 +93,7 @@ export class CustomProtocolHandler {
       app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
-    if (platform.IS_MAC_OS) {
+    if (EnvironmentUtil.platform.IS_MAC_OS) {
       app.on('open-url', async (event, url) => {
         event.preventDefault();
         await this.dispatchDeepLink(url);

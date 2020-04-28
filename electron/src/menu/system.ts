@@ -22,15 +22,12 @@ import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell
 import * as path from 'path';
 
 import {Supportedi18nLanguage} from '../interfaces/';
-import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
-import {getLogger} from '../logging/getLogger';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import * as lifecycle from '../runtime/lifecycle';
-import {config} from '../settings/config';
-import {settings} from '../settings/ConfigurationPersistence';
-import {SettingsType} from '../settings/SettingsType';
-import {WindowManager} from '../window/WindowManager';
+import {EVENT_TYPE} from '../lib/';
+import {locale} from '../locale/';
+import {getLogger} from '../logging/';
+import {EnvironmentUtil, lifecycle} from '../runtime/';
+import {config, settings, SettingsType} from '../settings/';
+import {WindowManager} from '../window/';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 

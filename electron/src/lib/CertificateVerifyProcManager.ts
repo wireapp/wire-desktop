@@ -22,9 +22,9 @@ import {BrowserWindow, Certificate, CertificateVerifyProcRequest as ProcRequest,
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {getText} from '../locale/locale';
-import {getLogger} from '../logging/getLogger';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import {locale} from '../locale/';
+import {getLogger} from '../logging/';
+import {EnvironmentUtil} from '../runtime/';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -60,17 +60,17 @@ class CertificateVerifyProcManager {
   };
 
   private static readonly LOCALE = {
-    RETRY: getText('certificateVerifyProcManagerRetry'),
-    SHOW_DETAILS: getText('certificateVerifyProcManagerShowDetails'),
-    SHOW_DETAILS_GO_BACK: getText('certificateVerifyProcManagerShowDetailsGoBack'),
-    SHOW_DETAILS_SAVE_CERTIFICATE: getText('certificateVerifyProcManagerShowDetailsSaveCertificate'),
-    SHOW_DETAILS_TEXT_CHROMIUM: getText('certificateVerifyProcManagerShowDetailsTextChromium'),
-    SHOW_DETAILS_TEXT_PINNING: getText('certificateVerifyProcManagerShowDetailsTextPinning'),
-    SHOW_DETAILS_TITLE: getText('certificateVerifyProcManagerShowDetailsTitle'),
-    WARNING_BYPASS: getText('certificateVerifyProcManagerWarningBypass'),
-    WARNING_TEXT_CHROMIUM: getText('certificateVerifyProcManagerWarningTextChromium'),
-    WARNING_TEXT_PINNING: getText('certificateVerifyProcManagerWarningTextPinning'),
-    WARNING_TITLE: getText('certificateVerifyProcManagerWarningTitle'),
+    RETRY: locale.getText('certificateVerifyProcManagerRetry'),
+    SHOW_DETAILS: locale.getText('certificateVerifyProcManagerShowDetails'),
+    SHOW_DETAILS_GO_BACK: locale.getText('certificateVerifyProcManagerShowDetailsGoBack'),
+    SHOW_DETAILS_SAVE_CERTIFICATE: locale.getText('certificateVerifyProcManagerShowDetailsSaveCertificate'),
+    SHOW_DETAILS_TEXT_CHROMIUM: locale.getText('certificateVerifyProcManagerShowDetailsTextChromium'),
+    SHOW_DETAILS_TEXT_PINNING: locale.getText('certificateVerifyProcManagerShowDetailsTextPinning'),
+    SHOW_DETAILS_TITLE: locale.getText('certificateVerifyProcManagerShowDetailsTitle'),
+    WARNING_BYPASS: locale.getText('certificateVerifyProcManagerWarningBypass'),
+    WARNING_TEXT_CHROMIUM: locale.getText('certificateVerifyProcManagerWarningTextChromium'),
+    WARNING_TEXT_PINNING: locale.getText('certificateVerifyProcManagerWarningTextPinning'),
+    WARNING_TITLE: locale.getText('certificateVerifyProcManagerWarningTitle'),
   };
 
   private static async displayCertificateDetails(

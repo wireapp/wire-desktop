@@ -34,9 +34,9 @@ import {
 import * as path from 'path';
 import {URL} from 'url';
 
-import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
-import {config} from '../settings/config';
-import {getWebViewId} from '../runtime/lifecycle';
+import {ENABLE_LOGGING, getLogger} from '../logging/';
+import {config} from '../settings/';
+import {lifecycle} from '../runtime/';
 
 const argv = minimist(process.argv.slice(1));
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -200,7 +200,7 @@ export class SingleSignOn {
 
     if (ENABLE_LOGGING) {
       ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
-        const webViewId = getWebViewId(ssoWindow.webContents);
+        const webViewId = lifecycle.getWebViewId(ssoWindow.webContents);
         if (webViewId) {
           const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
           try {

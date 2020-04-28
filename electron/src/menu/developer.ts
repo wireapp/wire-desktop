@@ -21,11 +21,10 @@ import {app, dialog, MenuItem, MenuItemConstructorOptions} from 'electron';
 import * as openExternal from 'open';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
-import {gatherLogs, logDir} from '../logging/loggerUtils';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import {config} from '../settings/config';
-import {WindowManager} from '../window/WindowManager';
+import {gatherLogs, getLogger, logDir} from '../logging/';
+import {EnvironmentUtil} from '../runtime/';
+import {config} from '../settings/';
+import {WindowManager} from '../window/';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
 const logger = getLogger(path.basename(__filename));

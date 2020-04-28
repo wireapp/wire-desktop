@@ -24,10 +24,9 @@ import * as fs from 'fs-extra';
 import * as moment from 'moment';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import * as lifecycle from '../runtime/lifecycle';
-import {config} from '../settings/config';
+import {getLogger} from '../logging/';
+import {EnvironmentUtil, lifecycle} from '../runtime/';
+import {config} from '../settings/';
 
 const logger = getLogger(path.basename(__filename));
 

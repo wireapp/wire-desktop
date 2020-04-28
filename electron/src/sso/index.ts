@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2020 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,5 @@
  *
  */
 
-import raygun = require('raygun');
-import {config} from '../settings/';
-
-export const Raygun = {
-  initClient(): void {
-    const raygunClient = new raygun.Client().init({apiKey: config.raygunApiKey});
-    raygunClient.onBeforeSend(payload => {
-      delete payload.details.machineName;
-      return payload;
-    });
-  },
-};
+export * from './AutomatedSingleSignOn';
+export * from './SingleSignOn';

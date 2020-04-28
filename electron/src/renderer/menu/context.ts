@@ -20,9 +20,9 @@
 import {clipboard, ipcRenderer, Menu as ElectronMenu, MenuItemConstructorOptions, remote} from 'electron';
 const Menu = remote.Menu;
 
-import {EVENT_TYPE} from '../../lib/eventType';
-import * as locale from '../../locale/locale';
-import {config} from '../../settings/config';
+import {EVENT_TYPE} from '../../lib/';
+import {locale} from '../../locale/';
+import {config} from '../../settings/';
 
 interface ElectronMenuWithImageAndTime extends ElectronMenu {
   image?: string;

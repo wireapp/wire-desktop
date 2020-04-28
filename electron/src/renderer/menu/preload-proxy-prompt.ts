@@ -19,7 +19,7 @@
 
 import {ipcRenderer} from 'electron';
 
-import {EVENT_TYPE} from '../../lib/eventType';
+import {EVENT_TYPE} from '../../lib/';
 
 ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (event, labels: string[]) => {
   for (const label in labels) {

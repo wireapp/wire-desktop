@@ -21,11 +21,11 @@ import {app, BrowserWindow, ipcMain, session, shell} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
-import {i18nLanguageIdentifier} from '../interfaces';
-import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import {config} from '../settings/config';
+import {i18nLanguageIdentifier} from '../interfaces/';
+import {EVENT_TYPE} from '../lib/';
+import {locale} from '../locale/';
+import {EnvironmentUtil} from '../runtime/';
+import {config} from '../settings/';
 
 let webappVersion: string;
 

@@ -20,10 +20,11 @@
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
-import {EVENT_TYPE} from '../lib/eventType';
-import {getOpenGraphDataAsync} from '../lib/openGraph';
-import {getLogger} from '../logging/getLogger';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+
+import {EVENT_TYPE} from '../lib/';
+import {getOpenGraphDataAsync} from '../lib/';
+import {getLogger} from '../logging/';
+import {EnvironmentUtil} from '../runtime/';
 
 interface TeamAccountInfo {
   accentID: string;

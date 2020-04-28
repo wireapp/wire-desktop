@@ -37,36 +37,25 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+import WindowStateKeeper = require('electron-window-state');
+import fileUrl = require('file-url');
 
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
-} from './lib/CertificateVerifyProcManager';
-import {CustomProtocolHandler} from './lib/CoreProtocol';
-import {downloadImage} from './lib/download';
-import {EVENT_TYPE} from './lib/eventType';
-import {deleteAccount} from './lib/LocalAccountDeletion';
-import * as locale from './locale/locale';
-import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
-import {Raygun} from './logging/initRaygun';
-import {getLogFiles} from './logging/loggerUtils';
-import {menuItem as developerMenu} from './menu/developer';
-import * as systemMenu from './menu/system';
-import {TrayHandler} from './menu/TrayHandler';
-import * as EnvironmentUtil from './runtime/EnvironmentUtil';
-import * as lifecycle from './runtime/lifecycle';
-import {OriginValidator} from './runtime/OriginValidator';
-import {config} from './settings/config';
-import {settings} from './settings/ConfigurationPersistence';
-import {SettingsType} from './settings/SettingsType';
-import {SingleSignOn} from './sso/SingleSignOn';
-import {AboutWindow} from './window/AboutWindow';
-import {ProxyPromptWindow} from './window/ProxyPromptWindow';
-import {WindowManager} from './window/WindowManager';
-import {WindowUtil} from './window/WindowUtil';
-import ProxyAuth from './auth/ProxyAuth';
-import WindowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
+  CustomProtocolHandler,
+  downloadImage,
+  EVENT_TYPE,
+  deleteAccount,
+} from './lib/';
+import {locale} from './locale/';
+import {Raygun, ENABLE_LOGGING, getLogger, getLogFiles} from './logging/';
+import {menuItem as developerMenu, systemMenu, TrayHandler} from './menu/';
+import {EnvironmentUtil, lifecycle, OriginValidator} from './runtime/';
+import {config, settings, SettingsType} from './settings/';
+import {SingleSignOn} from './sso/';
+import {AboutWindow, ProxyPromptWindow, WindowUtil, WindowManager} from './window/';
+import {ProxyAuth} from './auth/';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
