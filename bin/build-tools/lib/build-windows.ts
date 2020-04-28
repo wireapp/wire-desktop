@@ -23,11 +23,13 @@ import path from 'path';
 
 import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
+import {CommonConfig, WindowsConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
 interface WindowsConfigResult {
+  windowsConfig: WindowsConfig;
   packagerConfig: electronPackager.Options;
 }
 
@@ -35,6 +37,15 @@ export async function buildWindowsConfig(wireJsonPath: string, envFilePath: stri
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
+
+  const windowsDefaultConfig: WindowsConfig = {
+    updateUrl: 'https://wire-app.wire.com/win/prod/',
+  };
+
+  const windowsConfig: WindowsConfig = {
+    ...windowsDefaultConfig,
+    updateUrl: process.env.WIN_URL_UPDATE || windowsDefaultConfig.updateUrl,
+  };
 
   const packagerConfig: electronPackager.Options = {
     appCopyright: commonConfig.copyright,
@@ -61,12 +72,13 @@ export async function buildWindowsConfig(wireJsonPath: string, envFilePath: stri
     },
   };
 
-  return {packagerConfig};
+  return {packagerConfig, windowsConfig};
 }
 
 export async function buildWindowsWrapper(
   packagerConfig: electronPackager.Options,
   packageJsonPath: string,
+  windowsConfig: WindowsConfig,
   wireJsonPath: string,
   envFilePath: string,
 ): Promise<void> {
@@ -74,6 +86,8 @@ export async function buildWindowsWrapper(
   const packageJsonResolved = path.resolve(packageJsonPath);
   const envFileResolved = path.resolve(envFilePath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
+
+  commonConfig.updateUrl = windowsConfig.updateUrl;
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} for Windows ...`);
 

@@ -20,7 +20,7 @@
 import './Webview.css';
 
 import React, {useEffect, useState, useRef} from 'react';
-import {ContainerSM, Text, H1, Logo} from '@wireapp/react-ui-kit';
+import {ContainerSM, Text, H1, Logo, TextLink} from '@wireapp/react-ui-kit';
 import {SVGIcon} from '@wireapp/react-ui-kit/dist/Icon/SVGIcon';
 
 import {EVENT_TYPE} from '../../../src/lib/eventType';
@@ -104,7 +104,26 @@ const Webview = ({
   }, [account]);
 
   useEffect(() => {
-    const listener = error => setWebviewError(error);
+    let timeoutId;
+    if (webviewError) {
+      timeoutId = window.setTimeout(() => {
+        setWebviewError(null);
+        webviewRef.current.reload();
+      }, 5000);
+    }
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [webviewError]);
+
+  useEffect(() => {
+    const listener = error => {
+      const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
+      console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
+      if (error.validatedURL.startsWith(urlOrigin)) {
+        setWebviewError(error);
+      }
+    };
     const ON_WEBVIEW_ERROR = 'did-fail-load';
     webviewRef.current.addEventListener(ON_WEBVIEW_ERROR, listener);
     return () => {
@@ -112,7 +131,7 @@ const Webview = ({
         webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
-  }, []);
+  }, [webviewRef, account]);
 
   useEffect(() => {
     const onIpcMessage = ({channel, args}) => {
@@ -178,7 +197,16 @@ const Webview = ({
 
   return (
     <>
-      {webviewError ? (
+      <webview
+        className={`Webview${account.visible ? '' : ' hide'}`}
+        data-accountid={account.id}
+        visible={!!account.visible}
+        src={url}
+        partition={account.sessionID ? `persist:${account.sessionID}` : ''}
+        webpreferences="backgroundThrottling=false"
+        ref={webviewRef}
+      />
+      {webviewError && (
         <div
           className={`Webview${account.visible ? '' : ' hide'}`}
           data-accountid={account.id}
@@ -216,18 +244,19 @@ const Webview = ({
             <Text block center style={{marginTop: '32px'}}>
               {webviewError.errorDescription}
             </Text>
+            <TextLink
+              block
+              center
+              style={{marginTop: '32px'}}
+              onClick={() => {
+                setWebviewError(null);
+                webviewRef.current.reload();
+              }}
+            >
+              {getText('webviewErrorRetryAction')}
+            </TextLink>
           </ContainerSM>
         </div>
-      ) : (
-        <webview
-          className={`Webview${account.visible ? '' : ' hide'}`}
-          data-accountid={account.id}
-          visible={!!account.visible}
-          src={url}
-          partition={account.sessionID ? `persist:${account.sessionID}` : ''}
-          webpreferences="backgroundThrottling=false"
-          ref={webviewRef}
-        />
       )}
       {canDelete && account.visible && (
         <div className="Webview-close" onClick={() => deleteWebview(account)} data-uie-name="do-close-webview">

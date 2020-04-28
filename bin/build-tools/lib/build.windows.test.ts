@@ -20,23 +20,23 @@ import * as assert from 'assert';
 import * as path from 'path';
 import uuid from 'uuid/v4';
 
-import {buildWindowsInstallerConfig} from './build-windows-installer';
+import {buildWindowsConfig} from './build-windows';
 
 const wireJsonPath = path.join(__dirname, '../../../electron/wire.json');
 const envFilePath = path.join(__dirname, '../../../.env.defaults');
 
-describe('build-windows-installer', () => {
-  describe('buildWindowsInstallerConfig', () => {
+describe('build-windows', () => {
+  describe('buildWindowsConfig', () => {
     it('honors environment variables', async () => {
-      const installerIconUrl = uuid();
+      const updateUrl = uuid();
 
-      process.env.WIN_URL_ICON_INSTALLER = installerIconUrl;
+      process.env.WIN_URL_UPDATE = updateUrl;
 
-      const {windowsInstallerConfig} = await buildWindowsInstallerConfig(wireJsonPath, envFilePath);
+      const {windowsConfig} = await buildWindowsConfig(wireJsonPath, envFilePath);
 
-      assert.strictEqual(windowsInstallerConfig.installerIconUrl, installerIconUrl);
+      assert.strictEqual(windowsConfig.updateUrl, updateUrl);
 
-      delete process.env.WIN_URL_ICON_INSTALLER;
+      delete process.env.WIN_URL_UPDATE;
     });
   });
 });

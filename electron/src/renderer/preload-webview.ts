@@ -106,10 +106,7 @@ const subscribeToWebappEvents = () => {
   window.addEventListener(WebAppEvents.LIFECYCLE.CHANGE_ENVIRONMENT, event => {
     const data = (event as CustomEvent).detail;
     if (data) {
-      const changeEnvironment = ipcRenderer.sendSync(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, data.url);
-      if (changeEnvironment) {
-        ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
-      }
+      ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
     }
   });
 };

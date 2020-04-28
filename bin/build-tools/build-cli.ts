@@ -61,11 +61,12 @@ const platform = (commander.args[0] || '').toLowerCase();
   switch (platform) {
     case 'win':
     case 'windows': {
-      const {packagerConfig} = await buildWindowsConfig(wireJson, envFile);
+      const {windowsConfig, packagerConfig} = await buildWindowsConfig(wireJson, envFile);
 
+      logEntries(windowsConfig, 'windowsConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
-      return buildWindowsWrapper(packagerConfig, packageJson, wireJson, envFile);
+      return buildWindowsWrapper(packagerConfig, packageJson, windowsConfig, wireJson, envFile);
     }
 
     case 'windows-installer': {
