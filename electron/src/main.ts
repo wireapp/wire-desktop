@@ -162,9 +162,9 @@ const initWindowStateKeeper = () => {
   const stateKeeperOptions: {
     defaultHeight: number;
     defaultWidth: number;
-    path: string;
     fullScreen?: boolean;
     maximize?: boolean;
+    path: string;
   } = {
     defaultHeight: loadedWindowBounds.height,
     defaultWidth: loadedWindowBounds.width,

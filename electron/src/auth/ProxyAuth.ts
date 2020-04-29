@@ -30,9 +30,9 @@ interface AuthInfo {
 }
 
 interface ProxyOptions {
-  username?: string;
   password?: string;
   protocol?: string;
+  username?: string;
 }
 
 function generateProxyURL(authInfo: AuthInfo, options: ProxyOptions): URL {
