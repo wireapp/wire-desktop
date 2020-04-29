@@ -23,7 +23,7 @@ import * as path from 'path';
 
 import {Schemata} from '../interfaces/';
 import {getLogger} from '../logging/';
-import {SchemaUpdater} from './';
+import {SchemaUpdater} from './SchemaUpdater';
 
 class ConfigurationPersistence {
   private readonly configFile: string;
