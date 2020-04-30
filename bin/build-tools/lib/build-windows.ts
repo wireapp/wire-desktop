@@ -29,8 +29,8 @@ const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 
 interface WindowsConfigResult {
-  windowsConfig: WindowsConfig;
   packagerConfig: electronPackager.Options;
+  windowsConfig: WindowsConfig;
 }
 
 export async function buildWindowsConfig(wireJsonPath: string, envFilePath: string): Promise<WindowsConfigResult> {
