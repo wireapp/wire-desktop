@@ -143,7 +143,7 @@ export const updateAccountData = (id, data) => {
     const validatedAccountData = accountDataSchema.validate(data);
 
     if (!validatedAccountData.error) {
-      dispatch(updateAccount(id, validatedAccountData));
+      dispatch(updateAccount(id, validatedAccountData.value));
     } else {
       console.warn('Got invalid account data:', validatedAccountData.error);
     }
