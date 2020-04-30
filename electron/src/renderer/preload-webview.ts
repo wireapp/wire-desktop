@@ -43,7 +43,7 @@ const logger = getLogger(path.basename(__filename));
 function subscribeToThemeChange(): void {
   if (EnvironmentUtil.platform.IS_MAC_OS && window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE) {
     systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () => {
-      logger.info(`Received macOS notification "AppleInterfaceThemeChangedNotification", forwarding to amplify ...`);
+      logger.info('Received macOS notification "AppleInterfaceThemeChangedNotification", forwarding to amplify ...');
       window.amplify.publish(
         window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE,
         systemPreferences.isDarkMode(),

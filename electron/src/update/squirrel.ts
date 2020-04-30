@@ -92,7 +92,7 @@ function spawn(command: string, args: string[]): Promise<void> {
 }
 
 async function spawnUpdate(args: string[]): Promise<void> {
-  logger.info(`Running updater ...`);
+  logger.info('Running updater ...');
   const updateDotExeExists = fs.existsSync(updateDotExe);
   if (!updateDotExeExists) {
     logger.info(`Could not find updater in "${updateDotExe}".`);
@@ -106,17 +106,17 @@ async function spawnUpdate(args: string[]): Promise<void> {
 }
 
 async function createStartShortcut(): Promise<void> {
-  logger.info(`Creating shortcut in the start menu ...`);
+  logger.info('Creating shortcut in the start menu ...');
   await spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu']);
 }
 
 async function createDesktopShortcut(): Promise<void> {
-  logger.info(`Creating shortcut on the desktop ...`);
+  logger.info('Creating shortcut on the desktop ...');
   await spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop']);
 }
 
 async function removeShortcuts(): Promise<void> {
-  logger.info(`Removing all shortcuts ...`);
+  logger.info('Removing all shortcuts ...');
   await spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu']);
   if (shortcutLink) {
     await fs.remove(shortcutLink);

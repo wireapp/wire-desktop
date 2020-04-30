@@ -228,7 +228,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   let webappUrl = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
 
   if (ENABLE_LOGGING) {
-    webappUrl += `&enableLogging=@wireapp/*`;
+    webappUrl += '&enableLogging=@wireapp/*';
   }
 
   if (customProtocolHandler.hashLocation) {
@@ -499,7 +499,7 @@ class ElectronWrapperInit {
         return new SingleSignOn(main, event, url, options).init();
       }
 
-      this.logger.log(`Opening an external window from a webview.`);
+      this.logger.log('Opening an external window from a webview.');
       return shell.openExternal(url);
     };
 
