@@ -363,6 +363,7 @@ const handleAppEvents = () => {
             logger.log('Proxy prompt was submitted');
 
             const {username, password} = promptData;
+            // remove the colon from the protocol to align it with other usages of `generateProxyURL`
             const protocol = proxyInfoArg?.protocol?.replace(':', '');
             proxyInfoArg = ProxyAuth.generateProxyURL(
               {host, port},
@@ -541,11 +542,13 @@ class ElectronWrapperInit {
             willNavigateInWebview(event, url, contents.getURL());
           });
           if (ENABLE_LOGGING) {
+            const colorCodeRegex = /%c(.+?)%c/gm;
+
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
               if (webViewId) {
                 try {
-                  await LogFactory.writeMessage(message.replace(/%c(.+)%c /, '$1 '), LOG_FILE);
+                  await LogFactory.writeMessage(message.replace(colorCodeRegex, '$1'), LOG_FILE);
                 } catch (error) {
                   logger.error(`Cannot write to log file "${LOG_FILE}": ${error.message}`, error);
                 }

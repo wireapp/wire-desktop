@@ -47,7 +47,7 @@ export function generateProxyURL(authInfo: AuthInfo, options: ProxyOptions): URL
   const proxySettings = new URL(`${protocol}://${authInfo.host}`);
   if (authInfo.port) {
     proxySettings.port = authInfo.port.toString();
-    logger.log('Port set');
+    logger.log(`Port set to "${authInfo.port}".`);
   }
   logger.log(`Proxy URL: (credentials hidden) ${proxySettings.toString()}`);
 
