@@ -17,21 +17,19 @@
  *
  */
 
+import {DateUtil} from '@wireapp/commons';
 import {dialog, SaveDialogOptions} from 'electron';
 import * as fs from 'fs-extra';
 import imageType from 'image-type';
-import * as moment from 'moment';
 
 export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
   const type = imageType(bytes);
   const options: SaveDialogOptions = {};
 
-  const dateObj = new Date(Number(timestamp));
-  if (dateObj.getTime() && !isNaN(dateObj.getTime())) {
-    const momentObj = moment(dateObj);
-    const filename = `Wire ${momentObj.format('YYYY-MM-DD')} at ${momentObj.format('H.mm.ss')}`;
-    options.defaultPath = filename;
-  }
+  const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
+  const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
+  const filename = `Wire ${formattedDate} at ${formattedTime}`;
+  options.defaultPath = filename;
 
   if (type?.ext) {
     options.filters = [
