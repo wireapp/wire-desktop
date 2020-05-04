@@ -1962,6 +1962,11 @@ adm-zip@0.4.13:
   resolved "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.13.tgz#597e2f8cc3672151e1307d3e95cddbc75672314a"
   integrity sha512-fERNJX8sOXfel6qCBCMPvZLzENBEhZTzKqg6vrOW5pvoEaQuJhRU4ndTAh6lHOxn1I6jnz2NHra56ZODM751uw==
 
+adm-zip@0.4.14:
+  version "0.4.14"
+  resolved "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.14.tgz#2cf312bcc9f8875df835b0f6040bd89be0a727a9"
+  integrity sha512-/9aQCnQHF+0IiCl0qhXoK7qs//SwYE7zX8lsr/DNk1BRAHYxeLZPL4pguwK29gUEqasYQjqPtEpDRSWEkdHn9g==
+
 aggregate-error@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/aggregate-error/-/aggregate-error-3.0.1.tgz#db2fe7246e536f40d9b5442a39e117d7dd6a24e0"
@@ -10959,11 +10964,12 @@ winreg@1.2.4:
     adm-zip "0.4.13"
     sort-json "2.0.0"
 
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.66-0":
-  version "0.24.66-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#64dfa8a4733bf1f2d6c4905b5d570d54e25a32ca"
+"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.24.68-0":
+  version "0.24.68-0"
+  uid "083b99daf1ed0775e6d7cfebaad3a816da797b3e"
+  resolved "https://github.com/wireapp/wire-web-config-wire#083b99daf1ed0775e6d7cfebaad3a816da797b3e"
   dependencies:
-    adm-zip "0.4.13"
+    adm-zip "0.4.14"
     sort-json "2.0.0"
 
 word-wrap@~1.2.3:
