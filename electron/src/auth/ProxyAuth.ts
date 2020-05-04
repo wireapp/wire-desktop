@@ -35,19 +35,19 @@ interface ProxyOptions {
   username?: string;
 }
 
-function generateProxyURL(authInfo: AuthInfo, options: ProxyOptions): URL {
+export function generateProxyURL(authInfo: AuthInfo, options: ProxyOptions): URL {
   let protocol = options.protocol;
   const {username, password} = options;
 
   if (!protocol) {
-    logger.log('Default to HTTP proxy');
+    logger.log('Defaulting to HTTP proxy');
     protocol = 'http';
   }
 
   const proxySettings = new URL(`${protocol}://${authInfo.host}`);
   if (authInfo.port) {
     proxySettings.port = authInfo.port.toString();
-    logger.log('Port set');
+    logger.log(`Port set to "${authInfo.port}".`);
   }
   logger.log(`Proxy URL: (credentials hidden) ${proxySettings.toString()}`);
 
@@ -55,6 +55,7 @@ function generateProxyURL(authInfo: AuthInfo, options: ProxyOptions): URL {
     proxySettings.username = username;
     logger.log('Username set');
   }
+
   if (password) {
     proxySettings.password = password;
     logger.log('Password set');
@@ -62,9 +63,3 @@ function generateProxyURL(authInfo: AuthInfo, options: ProxyOptions): URL {
 
   return proxySettings;
 }
-
-const ProxyAuth = {
-  generateProxyURL,
-};
-
-export default ProxyAuth;
