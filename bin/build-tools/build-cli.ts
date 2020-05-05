@@ -30,8 +30,8 @@ import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-wi
 interface CommanderData {
   envFile: string;
   manualSign?: boolean;
-  wireJson: string;
   packageJson: string;
+  wireJson: string;
 }
 
 const toolName = path.basename(__filename).replace('.ts', '');

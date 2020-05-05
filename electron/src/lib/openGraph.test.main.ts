@@ -32,11 +32,9 @@ const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 206
 const russianMessageUtf8 = [208, 159, 209, 128, 208, 184, 208, 178, 208, 181, 209, 130, 32, 208, 184, 208, 183, 32, 208, 189, 208, 190, 208, 186, 208, 176, 33];
 
 const contentLimitRequest = (contentType: string, contentArray: number[]) => {
-  nock(exampleUrl)
-    .get('/')
-    .reply(200, Buffer.from(contentArray), {
-      'content-type': contentType,
-    });
+  nock(exampleUrl).get('/').reply(200, Buffer.from(contentArray), {
+    'content-type': contentType,
+  });
   return axiosWithContentLimit(
     {
       method: 'get',
@@ -47,11 +45,9 @@ const contentLimitRequest = (contentType: string, contentArray: number[]) => {
 };
 
 const cookieRequest = (cookieText: string) => {
-  nock(exampleUrl)
-    .get('/')
-    .reply(302, '', {
-      'set-cookie': cookieText,
-    });
+  nock(exampleUrl).get('/').reply(302, '', {
+    'set-cookie': cookieText,
+  });
 
   nock(exampleUrl, {reqheaders: {Cookie: cookieText}})
     .get('/')

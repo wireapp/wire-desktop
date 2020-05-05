@@ -19,7 +19,7 @@
 
 /* eslint-disable no-console */
 
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
 
 import {config} from '../../../dist/settings/config';
 import {verifyObjectProperties} from '../lib/verifyObjectProperties';
