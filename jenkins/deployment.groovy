@@ -133,7 +133,7 @@ node('master') {
 
           if (params.Release.equals('Production')) {
             appName = 'Wire-macOS-Production'
-            erro('Production build creates a Wire.pkg but we need a zip on appcenter.ms to upload')
+            echo('Production build creates a Wire.pkg but we need a zip on appcenter.ms to upload')
           } else if (params.Release.equals('Custom')) {
             error('Please set appName and distributionGroups for custom build uploads to appcenter.ms')
           } else if (params.Release.equals('Internal')) {
@@ -141,11 +141,13 @@ node('master') {
             distributionGroups = 'All-users-of-Wire-macOS-Internal, Collaborators'
           }
 
-          withCredentials([string(credentialsId: 'APPCENTER_TOKEN', variable: 'APP_CENTER_TOKEN')]) {
-            files = findFiles(glob: 'wrap/dist/*.zip')
-            echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
-            appCenter ownerName: 'Wire', apiToken: env.APP_CENTER_TOKEN, appName: appName, distributionGroups: distributionGroups, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
-            wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
+          if (!params.Release.equals('Production')) {
+            withCredentials([string(credentialsId: 'APPCENTER_TOKEN', variable: 'APP_CENTER_TOKEN')]) {
+              files = findFiles(glob: 'wrap/dist/*.zip')
+              echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
+              appCenter ownerName: 'Wire', apiToken: env.APP_CENTER_TOKEN, appName: appName, distributionGroups: distributionGroups, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
+              wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
+            }
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
