@@ -67,6 +67,7 @@ import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
+import {showErrorDialog} from './lib/showDialog';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -297,6 +298,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     try {
       main.reload();
     } catch (error) {
+      showErrorDialog(`Could not reload the window: ${error.message}`);
       logger.error('Could not reload the window:', error);
     }
   });
@@ -307,6 +309,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     try {
       main.reload();
     } catch (error) {
+      showErrorDialog(`Could not reload the window: ${error.message}`);
       logger.error('Could not reload the window:', error);
     }
   });
