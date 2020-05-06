@@ -600,7 +600,7 @@ customProtocolHandler.registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
 lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate().catch(error => logger.error(error));
+lifecycle.initSquirrelListener().catch(error => logger.error(error));
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

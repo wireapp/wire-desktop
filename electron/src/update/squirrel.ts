@@ -139,7 +139,7 @@ async function scheduleUpdate(): Promise<void> {
   setInterval(installUpdate, everyCheck);
 }
 
-export async function handleSquirrelEvent(isFirstInstance?: boolean): Promise<boolean | void> {
+export async function handleSquirrelArgs(): Promise<boolean | void> {
   const squirrelEvent = process.argv[1];
 
   switch (squirrelEvent) {
@@ -165,10 +165,6 @@ export async function handleSquirrelEvent(isFirstInstance?: boolean): Promise<bo
       lifecycle.quit();
       return true;
     }
-  }
-
-  if (!isFirstInstance) {
-    return lifecycle.quit();
   }
 
   await scheduleUpdate();
