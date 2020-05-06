@@ -402,6 +402,7 @@ const handleAppEvents = () => {
           try {
             main.reload();
           } catch (error) {
+            showErrorDialog(`Could not reload the window: ${error.message}`);
             logger.error('Could not reload the window:', error);
           }
         });
