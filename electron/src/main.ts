@@ -67,6 +67,7 @@ import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
+import {showErrorDialog} from './lib/showDialog';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -294,18 +295,28 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   main.webContents.on('crashed', event => {
     logger.error('WebContents crashed. Will reload the window.');
     logger.error(event);
-    main.reload();
+    try {
+      main.reload();
+    } catch (error) {
+      showErrorDialog(`Could not reload the window: ${error.message}`);
+      logger.error('Could not reload the window:', error);
+    }
   });
 
   app.on('gpu-process-crashed', event => {
     logger.error('GPU process crashed. Will reload the window.');
     logger.error(event);
-    main.reload();
+    try {
+      main.reload();
+    } catch (error) {
+      showErrorDialog(`Could not reload the window: ${error.message}`);
+      logger.error('Could not reload the window:', error);
+    }
   });
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  await main.webContents.insertCSS(wrapperCSSContent);
+  main.webContents.insertCSS(wrapperCSSContent);
 
   if (argv.startup || argv.hidden) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
@@ -388,7 +399,12 @@ const handleAppEvents = () => {
             proxyRules: '',
           });
 
-          main.reload();
+          try {
+            main.reload();
+          } catch (error) {
+            showErrorDialog(`Could not reload the window: ${error.message}`);
+            logger.error('Could not reload the window:', error);
+          }
         });
 
         await ProxyPromptWindow.showWindow();
