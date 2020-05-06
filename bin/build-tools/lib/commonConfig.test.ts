@@ -20,7 +20,7 @@ import * as assert from 'assert';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
 
 import {getCommonConfig} from './commonConfig';
 
