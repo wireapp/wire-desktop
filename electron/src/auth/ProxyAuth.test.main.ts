@@ -19,7 +19,7 @@
 
 import * as assert from 'assert';
 
-import ProxyAuth from './ProxyAuth';
+import * as ProxyAuth from './ProxyAuth';
 import {Protocol} from 'get-proxy-settings';
 
 describe('ProxyAuth', () => {

@@ -37,6 +37,8 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+import WindowStateKeeper = require('electron-window-state');
+import fileUrl = require('file-url');
 
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
@@ -64,9 +66,7 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
-import ProxyAuth from './auth/ProxyAuth';
-import WindowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
+import * as ProxyAuth from './auth/ProxyAuth';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -363,7 +363,8 @@ const handleAppEvents = () => {
             logger.log('Proxy prompt was submitted');
 
             const {username, password} = promptData;
-            const protocol: string | undefined = proxyInfoArg?.protocol?.replace(':', '');
+            // remove the colon from the protocol to align it with other usages of `generateProxyURL`
+            const protocol = proxyInfoArg?.protocol?.replace(':', '');
             proxyInfoArg = ProxyAuth.generateProxyURL(
               {host, port},
               {
@@ -476,7 +477,7 @@ class ElectronWrapperInit {
   logger: logdown.Logger;
 
   constructor() {
-    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: LOG_FILE});
+    this.logger = getLogger('ElectronWrapperInit');
   }
 
   async run(): Promise<void> {
@@ -541,14 +542,15 @@ class ElectronWrapperInit {
             willNavigateInWebview(event, url, contents.getURL());
           });
           if (ENABLE_LOGGING) {
+            const colorCodeRegex = /%c(.+?)%c/gm;
+
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
               if (webViewId) {
-                const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
                 try {
-                  await LogFactory.writeMessage(message, logFilePath);
+                  await LogFactory.writeMessage(message.replace(colorCodeRegex, '$1'), LOG_FILE);
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${LOG_FILE}": ${error.message}`, error);
                 }
               }
             });
