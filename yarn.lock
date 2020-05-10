@@ -4287,10 +4287,10 @@ eslint-plugin-jsdoc@24.0.1:
     semver "^6.3.0"
     spdx-expression-parse "^3.0.0"
 
-eslint-plugin-no-unsanitized@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/eslint-plugin-no-unsanitized/-/eslint-plugin-no-unsanitized-3.1.0.tgz#c86cdd13d22bb52882eeccbd8da5da092f7c6c9c"
-  integrity sha512-4gOd6Genbs1iN2rk+Duw/AZHglBvl6htbZZyDPUX7YdjWSu1D/iOGq7EtomDZ6VjzHKRo32042JciX+PPDrZgQ==
+eslint-plugin-no-unsanitized@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/eslint-plugin-no-unsanitized/-/eslint-plugin-no-unsanitized-3.1.1.tgz#59b3046e45864a786d97c0cad7b55be3f422772b"
+  integrity sha512-JP8GPvpWUDAv2UVsOpKLeup94orazjtMRDDxDcak3JEQX1iAYnzCtH7quIB4WmDU8fAbvzPKEFVkzxYzWCYLvg==
 
 eslint-plugin-prettier@3.1.3:
   version "3.1.3"
