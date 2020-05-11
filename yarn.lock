@@ -1800,10 +1800,10 @@
   dependencies:
     jsrsasign "8.0.12"
 
-"@wireapp/commons@3.5.1":
-  version "3.5.1"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.5.1.tgz#7bc1ad28950d5f5e24edbc3537e27dcc93fba282"
-  integrity sha512-NoHfDPUmawz/sOvxBNAoA0BIMstz1uBQ6e4JHrHq2BQzR3r2Rn1k/aUGMetaD0CezJuKl9pTrIc6JCOyOb5LEw==
+"@wireapp/commons@3.5.2":
+  version "3.5.2"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.5.2.tgz#9f13329e77db60cbaaf61eac6acb8eefe8ce99be"
+  integrity sha512-wZSHfLSCXLvyXL+AdH+hwSDHWIx30A/07PJwq+14SiPuO/aOwncsUg/0q5YJ7UpgIqjs7vO579kWEhsKhfXDOQ==
   dependencies:
     "@types/fs-extra" "8.1.0"
     "@types/node" "~12"
