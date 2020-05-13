@@ -110,7 +110,7 @@ export class SingleSignOn {
     // Show the window(s)
     await this.ssoWindow.loadURL(this.windowOriginUrl.toString());
 
-    if (argv.devtools) {
+    if (argv[config.ARGUMENT.DEVTOOLS]) {
       this.ssoWindow.webContents.openDevTools({mode: 'detach'});
     }
   };
