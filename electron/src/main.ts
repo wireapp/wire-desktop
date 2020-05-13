@@ -98,9 +98,9 @@ if (argv[config.ARGUMENT.VERSION]) {
   process.exit();
 }
 
-if (argv[config.ARGUMENT.PROXY_ARG]) {
+if (argv[config.ARGUMENT.PROXY_SERVER]) {
   try {
-    proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_ARG]);
+    proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_SERVER]);
     if (proxyInfoArg.origin === 'null') {
       proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
