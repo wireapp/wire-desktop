@@ -57,7 +57,7 @@ enum ARGUMENT {
   ENV = 'env',
   HIDDEN = 'hidden',
   PORTABLE = 'portable',
-  PROXY_ARG = 'proxy-server',
+  PROXY_SERVER = 'proxy-server',
   STARTUP = 'startup',
   USER_DATA_DIR = 'user_data_dir',
   VERSION = 'version',

@@ -101,7 +101,7 @@ if (argv[config.ARGUMENT.VERSION]) {
 if (argv[config.ARGUMENT.PROXY_ARG]) {
   try {
     proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_ARG]);
-    if (proxyInfoconfig.ArgUMENT.origin === 'null') {
+    if (proxyInfoArg.origin === 'null') {
       proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
     }
@@ -358,7 +358,7 @@ const handleAppEvents = () => {
       }
 
       if (proxyInfoArg) {
-        const hasCredentials = proxyInfoconfig.ArgUMENT.username && proxyInfoconfig.ArgUMENT.password;
+        const hasCredentials = proxyInfoArg.username && proxyInfoArg.password;
         if (hasCredentials) {
           const {username, password} = proxyInfoArg;
           logger.info('Sending provided credentials to authenticated proxy ...');
