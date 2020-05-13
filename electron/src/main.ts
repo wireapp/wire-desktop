@@ -82,9 +82,6 @@ const WINDOW_SIZE = {
   MIN_HEIGHT: 512,
   MIN_WIDTH: 760,
 };
-enum ARG {
-  PROXY_ARG = 'proxy-server',
-}
 
 let proxyInfoArg: URL | undefined;
 
@@ -92,19 +89,19 @@ const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
+const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
 
 const logger = getLogger(path.basename(__filename));
 
-if (argv.version) {
+if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
   process.exit();
 }
 
-if (argv[ARG.PROXY_ARG]) {
+if (argv[config.ARGUMENT.PROXY_ARG]) {
   try {
-    proxyInfoArg = new URL(argv[ARG.PROXY_ARG]);
-    if (proxyInfoArg.origin === 'null') {
+    proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_ARG]);
+    if (proxyInfoconfig.ArgUMENT.origin === 'null') {
       proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
     }
@@ -240,7 +237,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     main.webContents.openDevTools({mode: 'detach'});
   }
 
-  if (!argv.startup && !argv.hidden) {
+  if (!argv[config.ARGUMENT.STARTUP] && !argv[config.ARGUMENT.HIDDEN]) {
     if (!WindowUtil.isInView(main)) {
       main.center();
     }
@@ -318,7 +315,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
   main.webContents.insertCSS(wrapperCSSContent);
 
-  if (argv.startup || argv.hidden) {
+  if (argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
   }
 };
@@ -361,7 +358,7 @@ const handleAppEvents = () => {
       }
 
       if (proxyInfoArg) {
-        const hasCredentials = proxyInfoArg.username && proxyInfoArg.password;
+        const hasCredentials = proxyInfoconfig.ArgUMENT.username && proxyInfoconfig.ArgUMENT.password;
         if (hasCredentials) {
           const {username, password} = proxyInfoArg;
           logger.info('Sending provided credentials to authenticated proxy ...');
@@ -468,9 +465,9 @@ const addLinuxWorkarounds = () => {
 };
 
 const handlePortableFlags = () => {
-  if (argv.user_data_dir || argv.portable) {
-    const USER_PATH = argv.user_data_dir
-      ? path.resolve(argv.user_data_dir)
+  if (argv[config.ARGUMENT.USER_DATA_DIR] || argv[config.ARGUMENT.PORTABLE]) {
+    const USER_PATH = argv[config.ARGUMENT.USER_DATA_DIR]
+      ? path.resolve(argv[config.ARGUMENT.USER_DATA_DIR])
       : path.join(process.env.APPIMAGE || process.execPath, '../Data');
 
     logger.log(`Saving user data to "${USER_PATH}".`);
