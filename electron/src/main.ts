@@ -98,7 +98,7 @@ const logger = getLogger(path.basename(__filename));
 
 if (argv.version) {
   console.info(config.version);
-  process.exit();
+  app.quit();
 }
 
 if (argv[ARG.PROXY_ARG]) {

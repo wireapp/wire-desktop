@@ -66,8 +66,6 @@ export const getWebViewId = (contents: WebContents): string | undefined => {
   }
 };
 
-// Using exit instead of quit for the time being
-// see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
 export const quit = (): void => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
@@ -78,7 +76,7 @@ export const quit = (): void => {
   }
 
   logger.info('Exiting ...');
-  app.exit();
+  app.quit();
 };
 
 export const relaunch = () => {
