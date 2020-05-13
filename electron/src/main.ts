@@ -95,7 +95,7 @@ const logger = getLogger(path.basename(__filename));
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
-  process.exit();
+  app.quit();
 }
 
 logger.info(`Initializing ${config.name} v${config.version} ...`);
