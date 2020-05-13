@@ -22,7 +22,7 @@ import * as path from 'path';
 
 import * as locale from '../locale/locale';
 import {linuxDesktop, platform} from '../runtime/EnvironmentUtil';
-import {quit as lifecycleQuit} from '../runtime/lifecycle';
+import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
@@ -81,7 +81,7 @@ export class TrayHandler {
         label: locale.getText('trayOpen'),
       },
       {
-        click: () => lifecycleQuit(),
+        click: () => lifecycle.quit(),
         label: locale.getText('trayQuit'),
       },
     ]);
