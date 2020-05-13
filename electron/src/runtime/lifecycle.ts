@@ -41,7 +41,7 @@ export async function initSquirrelListener(): Promise<void> {
   }
 }
 
-export const checkSingleInstance = () => {
+export const checkSingleInstance = async () => {
   if (process.mas) {
     isFirstInstance = true;
   } else {
@@ -49,7 +49,7 @@ export const checkSingleInstance = () => {
     logger.info('Checking if we are the first instance ...', isFirstInstance);
 
     if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
-      quit();
+      await quit(false);
     } else {
       app.on('second-instance', () => WindowManager.showPrimaryWindow());
     }
@@ -68,20 +68,25 @@ export const getWebViewId = (contents: WebContents): string | undefined => {
 
 // Using exit instead of quit for the time being
 // see: https://github.com/electron/electron/issues/8862#issuecomment-294303518
-export const quit = (): void => {
+export const quit = async (clearCache = true): Promise<void> => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
 
-  logger.info('Clear cache ...');
-  if (session.defaultSession) {
-    session.defaultSession.clearCache().catch(error => logger.error(error));
+  if (clearCache) {
+    logger.info('Clearing cache ...');
+
+    try {
+      await session.defaultSession?.clearCache();
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   logger.info('Exiting ...');
   app.exit();
 };
 
-export const relaunch = () => {
+export const relaunch = async () => {
   logger.info('Relaunching the app ...');
   if (EnvironmentUtil.platform.IS_MAC_OS) {
     /*
@@ -92,6 +97,6 @@ export const relaunch = () => {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WRAPPER.RELOAD);
   } else {
     app.relaunch();
-    quit();
+    await quit();
   }
 };

@@ -314,9 +314,9 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
 // App Events
 const handleAppEvents = () => {
-  app.on('window-all-closed', () => {
+  app.on('window-all-closed', async () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
-      lifecycle.quit();
+      await lifecycle.quit();
     }
   });
 
@@ -599,8 +599,10 @@ class ElectronWrapperInit {
 customProtocolHandler.registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
-lifecycle.checkSingleInstance();
-lifecycle.initSquirrelListener().catch(error => logger.error(error));
+lifecycle
+  .checkSingleInstance()
+  .then(() => lifecycle.initSquirrelListener())
+  .catch(error => logger.error(error));
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

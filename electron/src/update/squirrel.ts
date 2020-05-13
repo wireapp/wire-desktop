@@ -139,31 +139,31 @@ async function scheduleUpdate(): Promise<void> {
   setInterval(installUpdate, everyCheck);
 }
 
-export async function handleSquirrelArgs(): Promise<boolean | void> {
+export async function handleSquirrelArgs(): Promise<void> {
   const squirrelEvent = process.argv[1];
 
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL: {
       await createStartShortcut();
       await createDesktopShortcut();
-      lifecycle.quit();
-      return true;
+      await lifecycle.quit();
+      return;
     }
 
     case SQUIRREL_EVENT.UPDATED: {
-      lifecycle.quit();
-      return true;
+      await lifecycle.quit();
+      return;
     }
 
     case SQUIRREL_EVENT.UNINSTALL: {
       await removeShortcuts();
-      lifecycle.quit();
-      return true;
+      await lifecycle.quit();
+      return;
     }
 
     case SQUIRREL_EVENT.OBSOLETE: {
-      lifecycle.quit();
-      return true;
+      await lifecycle.quit();
+      return;
     }
   }
 
