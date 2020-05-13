@@ -101,6 +101,8 @@ if (argv.version) {
   process.exit();
 }
 
+logger.info(`Initializing ${config.name} v${config.version} ...`);
+
 if (argv[ARG.PROXY_ARG]) {
   try {
     proxyInfoArg = new URL(argv[ARG.PROXY_ARG]);
@@ -559,12 +561,16 @@ class ElectronWrapperInit {
           });
           if (ENABLE_LOGGING) {
             const colorCodeRegex = /%c(.+?)%c/gm;
+            const accessTokenRegex = /access_token=[^ &]+/gm;
 
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
               if (webViewId) {
                 try {
-                  await LogFactory.writeMessage(message.replace(colorCodeRegex, '$1'), LOG_FILE);
+                  await LogFactory.writeMessage(
+                    message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
+                    LOG_FILE,
+                  );
                 } catch (error) {
                   logger.error(`Cannot write to log file "${LOG_FILE}": ${error.message}`, error);
                 }
