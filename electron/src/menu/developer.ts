@@ -17,18 +17,13 @@
  *
  */
 
-import {app, dialog, MenuItem, MenuItemConstructorOptions} from 'electron';
-import * as openExternal from 'open';
-import * as path from 'path';
+import {app, MenuItem, MenuItemConstructorOptions} from 'electron';
 
-import {getLogger} from '../logging/getLogger';
-import {gatherLogs, logDir} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
-const logger = getLogger(path.basename(__filename));
 
 const reloadTemplate: MenuItemConstructorOptions = {
   click: () => {
@@ -38,31 +33,6 @@ const reloadTemplate: MenuItemConstructorOptions = {
     }
   },
   label: 'Reload',
-};
-
-const sendLogTemplate: MenuItemConstructorOptions = {
-  click: async () => {
-    const logText = await gatherLogs();
-    const subject = encodeURIComponent('Wire Desktop Log');
-    const body = encodeURIComponent(logText);
-    const mailToLink = `mailto:support+web@wire.com?subject=${subject}&body=${body}`;
-    try {
-      await openExternal(mailToLink);
-    } catch (error) {
-      logger.error(error);
-
-      const {response: dialogResponse} = await dialog.showMessageBox({
-        buttons: ['Cancel', 'OK'],
-        message: 'Too many logs to send via email. Would you like to open the logs folder instead?',
-        title: 'Too many logs',
-      });
-
-      if (dialogResponse === 1) {
-        await openExternal(logDir);
-      }
-    }
-  },
-  label: 'Send Debug Logs',
 };
 
 const devToolsTemplate: MenuItemConstructorOptions = {
@@ -156,7 +126,6 @@ const menuTemplate: MenuItemConstructorOptions = {
   submenu: [
     devToolsTemplate,
     reloadTemplate,
-    sendLogTemplate,
     separatorTemplate,
     {
       enabled: false,

@@ -51,7 +51,7 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
-import {getLogFiles} from './logging/loggerUtils';
+import {getLogFilenames} from './logging/loggerUtils';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
@@ -444,7 +444,7 @@ const renameFileExtensions = (files: string[], oldExtension: string, newExtensio
 const renameWebViewLogFiles = (): void => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   try {
-    const logFiles = getLogFiles(LOG_DIR, true);
+    const logFiles = getLogFilenames(LOG_DIR, true);
     renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
     logger.log(`Failed to read log directory with error: ${error.message}`);
