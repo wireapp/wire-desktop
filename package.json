@@ -48,7 +48,7 @@
     "@types/fs-extra": "9.0.0",
     "@types/is-ci": "2.0.0",
     "@types/jszip": "3.4.1",
-    "@types/lodash": "4.14.150",
+    "@types/lodash": "4.14.151",
     "@types/minimist": "1.2.0",
     "@types/mocha": "7.0.2",
     "@types/node": "~14",
