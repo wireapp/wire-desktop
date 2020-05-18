@@ -103,6 +103,9 @@ logger.info(`Initializing ${config.name} v${config.version} ...`);
 if (argv[config.ARGUMENT.PROXY_SERVER]) {
   try {
     proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_SERVER]);
+    if (!/^(https?|socks[45]):$/.test(proxyInfoArg.protocol)) {
+      throw new Error('Invalid protocol for the proxy server specified.');
+    }
     if (proxyInfoArg.origin === 'null') {
       proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
@@ -479,12 +482,15 @@ const handlePortableFlags = () => {
 
 const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
   const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
-  logger.info(`Setting proxy on a window to URL "${proxyURL}"...`);
+  const proxyProtocol = authenticatedProxyDetails.protocol;
+  const isSocksProxy = proxyProtocol === 'socks4:' || proxyProtocol === 'socks5:';
+
+  logger.info(`Setting proxy on a window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
   await webContents.session.setProxy({
     pacScript: '',
     proxyBypassRules: '',
-    proxyRules: `http=${proxyURL};https=${proxyURL}`,
+    proxyRules: isSocksProxy ? `socks=${proxyURL}` : `http=${proxyURL};https=${proxyURL}`,
   });
 };
 
