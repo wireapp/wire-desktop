@@ -103,12 +103,7 @@ logger.info(`Initializing ${config.name} v${config.version} ...`);
 if (argv[config.ARGUMENT.PROXY_SERVER]) {
   try {
     proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_SERVER]);
-    if (
-      proxyInfoArg.protocol !== 'http:' &&
-      proxyInfoArg.protocol !== 'https:' &&
-      proxyInfoArg.protocol !== 'socks4:' &&
-      proxyInfoArg.protocol !== 'socks5:'
-    ) {
+    if (!/^(https?|socks[45]):$/.test(proxyInfoArg.protocol)) {
       throw new Error('Invalid protocol for the proxy server specified.');
     }
     if (proxyInfoArg.origin === 'null') {
