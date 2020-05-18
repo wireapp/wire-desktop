@@ -43,7 +43,7 @@ const logger = getLogger(path.basename(__filename));
 function subscribeToThemeChange(): void {
   if (EnvironmentUtil.platform.IS_MAC_OS && window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE) {
     systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () => {
-      logger.info(`Received macOS notification "AppleInterfaceThemeChangedNotification", forwarding to amplify ...`);
+      logger.info('Received macOS notification "AppleInterfaceThemeChangedNotification", forwarding to amplify ...');
       window.amplify.publish(
         window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE,
         systemPreferences.isDarkMode(),
@@ -106,10 +106,7 @@ const subscribeToWebappEvents = () => {
   window.addEventListener(WebAppEvents.LIFECYCLE.CHANGE_ENVIRONMENT, event => {
     const data = (event as CustomEvent).detail;
     if (data) {
-      const changeEnvironment = ipcRenderer.sendSync(EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT, data.url);
-      if (changeEnvironment) {
-        ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
-      }
+      ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
     }
   });
 };

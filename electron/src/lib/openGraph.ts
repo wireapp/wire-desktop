@@ -58,7 +58,10 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   try {
     response = await axiosWithCookie<Buffer>(axiosConfig);
   } catch (error) {
-    throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
+    if (error.response?.status && error?.response?.statusText) {
+      throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
+    }
+    throw new Error(`Request failed: ${error.message}`);
   }
 
   let contentType;
@@ -215,12 +218,17 @@ export const getOpenGraphDataAsync = async (url: string): Promise<og.Data> => {
     metadata.image = metadata.image[0];
   }
 
-  if (typeof metadata.image === 'object' && metadata.image?.url) {
+  if (typeof metadata.image === 'object' && metadata.image.url) {
     const [imageUrl] = arrayify(metadata.image.url);
 
-    const uri = await fetchImageAsBase64(imageUrl);
-    return updateMetaDataWithImage(metadata, uri);
+    try {
+      const uri = await fetchImageAsBase64(imageUrl);
+      return updateMetaDataWithImage(metadata, uri);
+    } catch (error) {
+      logger.warn(error);
+    }
   }
+
   delete metadata.image;
   return metadata;
 };

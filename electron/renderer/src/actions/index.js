@@ -19,10 +19,10 @@
 
 /* eslint-disable no-console */
 
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
+import * as Joi from '@hapi/joi';
 
 import {config} from '../../../dist/settings/config';
-import {verifyObjectProperties} from '../lib/verifyObjectProperties';
 import {accountAction} from './AccountAction';
 import {AccountSelector} from '../selector/AccountSelector';
 
@@ -129,21 +129,23 @@ export const addAccountWithSession = () => {
 };
 
 export const updateAccountData = (id, data) => {
-  return dispatch => {
-    const validatedAccountData = verifyObjectProperties(data, {
-      accentID: 'Number',
-      name: 'String',
-      picture: 'String',
-      teamID: 'String',
-      teamRole: 'String',
-      userID: 'String',
-      webappUrl: 'String',
-    });
+  const accountDataSchema = Joi.object({
+    accentID: Joi.number(),
+    name: Joi.string(),
+    picture: Joi.string(),
+    teamID: Joi.string().optional(),
+    teamRole: Joi.string(),
+    userID: Joi.string(),
+    webappUrl: Joi.string(),
+  });
 
-    if (validatedAccountData) {
-      dispatch(updateAccount(id, validatedAccountData));
+  return dispatch => {
+    const validatedAccountData = accountDataSchema.validate(data);
+
+    if (!validatedAccountData.error) {
+      dispatch(updateAccount(id, validatedAccountData.value));
     } else {
-      console.warn('Got invalid account data:', data);
+      console.warn('Got invalid account data:', validatedAccountData.error);
     }
   };
 };

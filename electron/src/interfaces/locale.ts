@@ -102,11 +102,7 @@ export type i18nLanguageIdentifier =
   | 'wrapperCreateTeam'
   | 'wrapperLogOut'
   | 'wrapperManageTeam'
-  | 'wrapperRemoveAccount'
-  | 'changeEnvironmentModalConfirm'
-  | 'changeEnvironmentModalCancel'
-  | 'changeEnvironmentModalText'
-  | 'changeEnvironmentModalTitle';
+  | 'wrapperRemoveAccount';
 
 export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 

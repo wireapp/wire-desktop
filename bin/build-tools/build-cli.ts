@@ -30,8 +30,8 @@ import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-wi
 interface CommanderData {
   envFile: string;
   manualSign?: boolean;
-  wireJson: string;
   packageJson: string;
+  wireJson: string;
 }
 
 const toolName = path.basename(__filename).replace('.ts', '');
@@ -97,7 +97,7 @@ const platform = (commander.args[0] || '').toLowerCase();
     }
 
     default: {
-      logger.error(`Invalid or no platform specified.`);
+      logger.error('Invalid or no platform specified.');
       return commander.help();
     }
   }

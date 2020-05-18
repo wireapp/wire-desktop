@@ -110,7 +110,7 @@ export class SingleSignOn {
     // Show the window(s)
     await this.ssoWindow.loadURL(this.windowOriginUrl.toString());
 
-    if (argv.devtools) {
+    if (argv[config.ARGUMENT.DEVTOOLS]) {
       this.ssoWindow.webContents.openDevTools({mode: 'detach'});
     }
   };
@@ -252,10 +252,7 @@ export class SingleSignOn {
   };
 
   private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
-    const rootDomain = url.hostname
-      .split('.')
-      .slice(-2)
-      .join('.');
+    const rootDomain = url.hostname.split('.').slice(-2).join('.');
     const cookies = await fromSession.cookies.get({domain: rootDomain});
 
     for (const cookie of cookies) {

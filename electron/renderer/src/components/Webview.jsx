@@ -200,7 +200,7 @@ const Webview = ({
       <webview
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
-        visible={!!account.visible}
+        visible={String(!!account.visible)}
         src={url}
         partition={account.sessionID ? `persist:${account.sessionID}` : ''}
         webpreferences="backgroundThrottling=false"

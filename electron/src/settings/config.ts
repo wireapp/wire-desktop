@@ -41,8 +41,8 @@ interface WireJson {
   websiteUrl: string;
 }
 
-const MINUTE_IN_MILLIS = 60 * 1000;
-const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
+export const MINUTE_IN_MILLIS = 60 * 1000;
+export const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
 
 const squirrelUpdateInterval = {
   /** 5 minutes in milliseconds */
@@ -51,8 +51,21 @@ const squirrelUpdateInterval = {
   INTERVAL: 24 * HOUR_IN_MILLIS,
 };
 
+/** Command line arguments */
+enum ARGUMENT {
+  DEVTOOLS = 'devtools',
+  ENV = 'env',
+  HIDDEN = 'hidden',
+  PORTABLE = 'portable',
+  PROXY_SERVER = 'proxy-server',
+  STARTUP = 'startup',
+  USER_DATA_DIR = 'user_data_dir',
+  VERSION = 'version',
+}
+
 export const config = {
   ...wireJson,
+  ARGUMENT,
   backendOrigins: ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'],
   logFileName: 'console.log',
   maximumAccounts: parseInt(wireJson.maximumAccounts, 10),

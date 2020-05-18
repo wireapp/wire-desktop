@@ -18,21 +18,16 @@
  */
 
 import {dialog, MessageBoxSyncOptions} from 'electron';
-import * as locale from '../locale/locale';
 
-export const changeEnvironmentPrompt = (url: string): boolean => {
-  const cancelButton = locale.getText('changeEnvironmentModalCancel');
-  const confirmButton = locale.getText('changeEnvironmentModalConfirm');
-  const buttons = [confirmButton, cancelButton];
-
+export const showDialog = (message: string, title: string, type?: string): void => {
   const options: MessageBoxSyncOptions = {
-    buttons,
-    cancelId: buttons.indexOf(cancelButton),
-    defaultId: buttons.indexOf(cancelButton),
-    message: locale.getText('changeEnvironmentModalText', {url}),
-    title: locale.getText('changeEnvironmentModalTitle'),
-    type: 'info',
+    message,
+    title,
+    type,
   };
-  const buttonIndex = dialog.showMessageBoxSync(options);
-  return buttons[buttonIndex] === confirmButton;
+  dialog.showMessageBoxSync(options);
+};
+
+export const showErrorDialog = (message: string): void => {
+  showDialog(message, 'Error', 'error');
 };

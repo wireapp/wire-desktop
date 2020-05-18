@@ -18,6 +18,7 @@
  */
 
 import autoLaunch = require('auto-launch');
+import * as openExternal from 'open';
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell} from 'electron';
 import * as path from 'path';
 
@@ -25,12 +26,15 @@ import {Supportedi18nLanguage} from '../interfaces/';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
+import {gatherLogs} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
+import {downloadLogs} from '../lib/download';
+import {zipFiles, createFile} from '../lib/zip';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -241,6 +245,16 @@ const windowTemplate: MenuItemConstructorOptions = {
   ],
 };
 
+const downloadLogsTemplate: MenuItemConstructorOptions = {
+  click: async () => {
+    const logFiles = await gatherLogs();
+    const archive = await zipFiles(logFiles);
+    const archiveFile = await createFile(archive);
+    await downloadLogs(archiveFile);
+  },
+  label: 'Download Debug Logs',
+};
+
 const helpTemplate: MenuItemConstructorOptions = {
   label: `&${locale.getText('menuHelp')}`,
   role: 'help',
@@ -265,6 +279,7 @@ const helpTemplate: MenuItemConstructorOptions = {
       click: () => shell.openExternal(EnvironmentUtil.web.getWebsiteUrl()),
       label: locale.getText('menuAppURL'),
     },
+    downloadLogsTemplate,
   ],
 };
 
