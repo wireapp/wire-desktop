@@ -30,7 +30,7 @@ const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 const logger = getLogger(path.basename(__filename));
 
 const clearStorage = async (session: Session): Promise<void> => {
-  session.clearStorageData();
+  await session.clearStorageData();
   await session.clearCache();
   session.flushStorageData();
 };
