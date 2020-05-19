@@ -26,7 +26,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  RegisterStringProtocolRequest as ProtocolRequest,
+  ProtocolRequest,
   Session,
   session,
   WebContents,

@@ -99,7 +99,7 @@ const setupIpcInterface = (): void => {
       }
 
       console.info(`Processing deletion of "${accountID}"`);
-      const viewInstanceId = accountWebview.getWebContents?.().id;
+      const viewInstanceId = accountWebview.getWebContentsId();
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
     });
@@ -109,7 +109,7 @@ const setupIpcInterface = (): void => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
-      accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
+      await accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
 };

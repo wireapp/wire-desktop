@@ -70,7 +70,7 @@
     "cross-env": "7.0.2",
     "css-loader": "3.5.3",
     "dotenv": "8.2.0",
-    "electron": "6.1.11",
+    "electron": "9.0.0",
     "electron-builder": "20.44.4",
     "electron-mocha": "8.2.2",
     "electron-osx-sign": "0.4.16",
@@ -170,12 +170,13 @@
     "start:localhost": "yarn start --env=http://localhost:8081",
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:rc": "yarn start --env=https://wire-webapp-rc.zinfra.io",
-    "test": "yarn lint && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn test:bin && yarn coverage",
+    "test": "yarn test:types && yarn lint && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn test:bin && yarn coverage",
     "test:bin": "mocha --require .babel-register.js \"bin/**/*.test?(.main).ts\"",
     "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\" --no-sandbox",
     "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\" --no-sandbox",
+    "test:types": "tsc --noEmit",
     "test:react": "jest",
     "translate:upload": "node ./bin/translations_upload.js"
   },
-  "version": "3.18.0"
+  "version": "3.19.0"
 }
