@@ -29,7 +29,7 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 interface TeamAccountInfo {
   accentID: string;
   name: string;
-  picture: string;
+  picture?: string;
   teamID?: string;
   teamRole: string;
   userID: string;

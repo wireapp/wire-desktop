@@ -86,6 +86,11 @@ export default (state = [createAccount()], action) => {
         if (account.webappUrl && !action.data.webappUrl) {
           delete action.data.webappUrl;
         }
+        // Note: If the current account has a picture but the update does not
+        // we remove the picture.
+        if (account.picture && !action.data.picture) {
+          delete account.picture;
+        }
         return isMatchingAccount ? {...account, ...action.data, isAdding: false, ssoCode: undefined} : account;
       });
     }
