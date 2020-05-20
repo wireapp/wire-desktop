@@ -34,7 +34,8 @@ export const downloadLogs = async (bytes: Uint8Array, timestamp: Date = new Date
 
   const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(timestamp);
 
-  const filename = `wire-logs-${formattedDate}-${formattedTime.replace(/:/g, '-')}.zip`;
+  const formattedTimeShort = formattedTime.replace(/:/g, '-').substr(0, 5);
+  const filename = `wire-logs-${formattedDate}-${formattedTimeShort}.zip`;
 
   return downloadFile(bytes, filename, options);
 };
