@@ -1800,12 +1800,12 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@wireapp/certificate-check@0.1.10":
-  version "0.1.10"
-  resolved "https://registry.npmjs.org/@wireapp/certificate-check/-/certificate-check-0.1.10.tgz#e88cb12cf896a7b83a8a7510e3c15d17946ea04e"
-  integrity sha512-rkzVZN9ilWlByXMic3PzrUmgVenc+EzK7uJX+RsM79kl0P2Gc003sTl/VdK+8B5/d9JVgHKql9/6ksazAMD9kA==
+"@wireapp/certificate-check@0.1.11":
+  version "0.1.11"
+  resolved "https://registry.npmjs.org/@wireapp/certificate-check/-/certificate-check-0.1.11.tgz#18d46930c7be6e7704ae2252205587767d07bd14"
+  integrity sha512-85m4Z+uoSpRCpDP0r9Hm0N7cqo+BfRK2Hx191ItRYNpNqp93GBB22HG+/U+sJB7wKzpRdS3e7EYZEtBWim/+dw==
   dependencies:
-    jsrsasign "8.0.12"
+    jsrsasign "8.0.15"
 
 "@wireapp/commons@3.5.2":
   version "3.5.2"
@@ -6674,10 +6674,10 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-jsrsasign@8.0.12:
-  version "8.0.12"
-  resolved "https://registry.npmjs.org/jsrsasign/-/jsrsasign-8.0.12.tgz#22abb9656d34a30b9530436720835e89c2e5c316"
-  integrity sha1-Iqu5ZW00owuVMENnIINeicLlwxY=
+jsrsasign@8.0.15:
+  version "8.0.15"
+  resolved "https://registry.npmjs.org/jsrsasign/-/jsrsasign-8.0.15.tgz#0d56856efa75fad84b578655249700f500388112"
+  integrity sha512-6UKHqnNs5lYROn03wf1BTw7DQx5tW616DTigjbo0JHV97D3HzIqYmPVCBSNsfEfQOrfpFqmPZJvaC3cMNOT0Yw==
 
 jsx-ast-utils@^2.2.3:
   version "2.2.3"
