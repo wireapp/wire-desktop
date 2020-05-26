@@ -549,10 +549,11 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
+            webPreferences.enableBlinkFeatures = '';
+            webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.webSecurity = true;
-            webPreferences.enableBlinkFeatures = '';
           });
           break;
         }
