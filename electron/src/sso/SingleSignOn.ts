@@ -185,10 +185,7 @@ export class SingleSignOn {
     ssoWindow.on('page-title-updated', event => event.preventDefault());
     ssoWindow.webContents.on('new-window', event => event.preventDefault());
 
-    // Note: will-navigate is broken in Electron 3
-    // see https://github.com/electron/electron/issues/14751
-    // using did-navigate as workaround
-    ssoWindow.webContents.on('did-navigate', (event: ElectronEvent, url: string) => {
+    ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
 
       if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
