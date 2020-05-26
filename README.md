@@ -47,14 +47,12 @@ yarn test
 
 ### Deployment
 
-#### General workflow
-
 | Stage | Branch | Action | Version |
 | :-- | :-- | :-- | :-- |
-| 1 (Feature development) | (varies) | commit | x.y+3.0 (e.g. 3.20.0) |
-| 2 (Nightly test automation) | [dev](https://github.com/wireapp/wire-desktop/tree/dev) | commit or squash merge from feature branch | x.y+2.0 (e.g. 3.19.0) |
-| 3 (Internal release) | [staging](https://github.com/wireapp/wire-desktop/tree/staging) | merge (don't squash) from [dev](https://github.com/wireapp/wire-desktop/tree/dev) | x.y+1.0 (e.g. 3.18.0) |
-| 5 (Production release) | [master](https://github.com/wireapp/wire-desktop/tree/master) | merge (don't squash) from [staging](https://github.com/wireapp/wire-desktop/tree/staging) | x.y.0 (e.g. 3.17.0) |
+| 1 (Feature development) | (varies) | commit | x.y+3 (e.g. 3.20) |
+| 2 (Nightly test automation) | [dev](https://github.com/wireapp/wire-desktop/tree/dev) | commit or squash merge from feature branch | x.y+2 (e.g. 3.19) |
+| 3 (Internal release) | [staging](https://github.com/wireapp/wire-desktop/tree/staging) | merge (don't squash) from [dev](https://github.com/wireapp/wire-desktop/tree/dev) | x.y+1 (e.g. 3.18) |
+| 4 (Production release) | [master](https://github.com/wireapp/wire-desktop/tree/master) | merge (don't squash) from [staging](https://github.com/wireapp/wire-desktop/tree/staging) | x.y (e.g. 3.17) |
 
 ### Tasks
 
