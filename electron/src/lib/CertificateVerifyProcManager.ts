@@ -18,7 +18,7 @@
  */
 
 import * as certificateUtils from '@wireapp/certificate-check';
-import {BrowserWindow, Certificate, CertificateVerifyProcRequest as ProcRequest, dialog} from 'electron';
+import {BrowserWindow, Certificate, CertificateVerifyProcProcRequest, dialog} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -190,8 +190,10 @@ export const attachTo = (main: BrowserWindow) => {
   CertificateVerifyProcManager.mainWindow = main;
 };
 
-// @see https://www.electronjs.org/docs/api/session#sessetcertificateverifyprocproc
-export const setCertificateVerifyProc = async (request: ProcRequest, cb: (verificationResult: number) => void) => {
+export const setCertificateVerifyProc = async (
+  request: CertificateVerifyProcProcRequest,
+  cb: (verificationResult: number) => void,
+) => {
   const {hostname, certificate, verificationResult, errorCode} = request;
   // Check browser results
   if (verificationResult !== 'net::OK') {

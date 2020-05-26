@@ -23,11 +23,11 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
+  Filter,
+  HeadersReceivedResponse,
   ipcMain,
   Menu,
-  OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
-  OnHeadersReceivedFilter as Filter,
-  OnHeadersReceivedResponse as HeadersReceivedResponse,
+  OnHeadersReceivedListenerDetails,
   shell,
   WebContents,
 } from 'electron';
@@ -318,7 +318,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  main.webContents.insertCSS(wrapperCSSContent);
+  await main.webContents.insertCSS(wrapperCSSContent);
 
   if (argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
@@ -549,10 +549,11 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
+            webPreferences.enableBlinkFeatures = '';
+            webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.webSecurity = true;
-            webPreferences.enableBlinkFeatures = '';
           });
           break;
         }
