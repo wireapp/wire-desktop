@@ -194,7 +194,7 @@ export const setCertificateVerifyProc = async (
   request: CertificateVerifyProcProcRequest,
   cb: (verificationResult: number) => void,
 ) => {
-  const {hostname, certificate, verificationResult, errorCode} = request;
+  const {hostname, validatedCertificate, verificationResult, errorCode} = request;
   // Check browser results
   if (verificationResult !== 'net::OK') {
     logger.error(
@@ -205,7 +205,7 @@ export const setCertificateVerifyProc = async (
       errorCode === CertificateVerifyProcManager.CHROMIUM_ERRORS.CERT_COMMON_NAME_INVALID ||
       errorCode === CertificateVerifyProcManager.CHROMIUM_ERRORS.CERT_AUTHORITY_INVALID;
     if (isCommonCertificateError) {
-      await CertificateVerifyProcManager.displayCertificateChromiumError(hostname, certificate);
+      await CertificateVerifyProcManager.displayCertificateChromiumError(hostname, validatedCertificate);
     }
 
     return cb(CertificateVerificationResult.FAILURE);
@@ -213,13 +213,13 @@ export const setCertificateVerifyProc = async (
 
   // Check certificate pinning
   if (certificateUtils.hostnameShouldBePinned(hostname) && CertificateVerifyProcManager.isCertificatePinningEnabled()) {
-    const pinningResults = certificateUtils.verifyPinning(hostname, certificate);
+    const pinningResults = certificateUtils.verifyPinning(hostname, validatedCertificate);
     const falsyValue = Object.values(pinningResults).some(val => val === false);
 
     if (falsyValue || pinningResults.errorMessage) {
       logger.error(`Certificate verification failed for "${hostname}".`);
       logger.error(`Error: "${pinningResults.errorMessage}". Displaying certificate pinning error dialog.`);
-      await CertificateVerifyProcManager.displayCertificateError(hostname, certificate);
+      await CertificateVerifyProcManager.displayCertificateError(hostname, validatedCertificate);
       return cb(CertificateVerificationResult.FAILURE);
     }
   }
