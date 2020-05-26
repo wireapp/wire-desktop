@@ -18,6 +18,7 @@
  */
 
 import {DesktopCapturer} from 'electron';
+import type {WebAppEvents} from '@wireapp/webapp-events';
 import {Data as OpenGraphResult} from 'open-graph';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -39,55 +40,7 @@ declare global {
     wire: any;
     z: {
       event: {
-        WebApp: {
-          CALL: {
-            STATE: {
-              TOGGLE: string;
-            };
-          };
-          LIFECYCLE: {
-            ASK_TO_CLEAR_DATA: string;
-            LOADED: string;
-            REFRESH: string;
-            RESTART: string;
-            SIGN_OUT: string;
-            SIGNED_OUT: string;
-            UNREAD_COUNT: string;
-            UPDATE: string;
-          };
-          NOTIFICATION: {
-            CLICK: string;
-          };
-          PREFERENCES: {
-            MANAGE_ACCOUNT: string;
-          };
-          PROPERTIES: {
-            UPDATE: {
-              INTERFACE: {
-                USE_DARK_MODE: string;
-              };
-            };
-          };
-          SHORTCUT: {
-            ADD_PEOPLE: string;
-            ARCHIVE: string;
-            DELETE: string;
-            NEXT: string;
-            NOTIFICATIONS: string;
-            PEOPLE: string;
-            PICTURE: string;
-            PING: string;
-            PREV: string;
-            SILENCE: string;
-            START: string;
-          };
-          TEAM: {
-            EVENT_FROM_BACKEND: string;
-            INFO: string;
-            MEMBER_LEAVE: string;
-            UPDATE_INFO: string;
-          };
-        };
+        WebApp: typeof WebAppEvents;
       };
       lifecycle: {
         UPDATE_SOURCE: {

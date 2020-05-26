@@ -132,7 +132,7 @@ export const updateAccountData = (id, data) => {
   const accountDataSchema = Joi.object({
     accentID: Joi.number(),
     name: Joi.string(),
-    picture: Joi.string(),
+    picture: Joi.string().optional(),
     teamID: Joi.string().optional(),
     teamRole: Joi.string(),
     userID: Joi.string(),
