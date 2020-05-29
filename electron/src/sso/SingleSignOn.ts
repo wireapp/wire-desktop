@@ -252,11 +252,12 @@ export class SingleSignOn {
   };
 
   private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
-    const rootDomain = url.hostname.split('.').slice(-3).join('.');
-    const cookies = await fromSession.cookies.get({domain: rootDomain});
+    const cookies = await fromSession.cookies.get({name: 'zuid'});
 
     for (const cookie of cookies) {
-      await toSession.cookies.set({url: url.toString(), ...cookie});
+      if (cookie.domain) {
+        await toSession.cookies.set({url: url.toString(), ...cookie});
+      }
     }
 
     await toSession.cookies.flushStore();
