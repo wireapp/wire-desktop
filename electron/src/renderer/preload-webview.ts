@@ -20,6 +20,7 @@
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
+
 import {EVENT_TYPE} from '../lib/eventType';
 import {getOpenGraphDataAsync} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
@@ -28,7 +29,7 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 interface TeamAccountInfo {
   accentID: string;
   name: string;
-  picture: string;
+  picture?: string;
   teamID?: string;
   teamRole: string;
   userID: string;
@@ -41,13 +42,10 @@ const logger = getLogger(path.basename(__filename));
 // Note: Until appearance-changed event is available in a future
 // version of Electron use `AppleInterfaceThemeChangedNotification` event
 function subscribeToThemeChange(): void {
-  if (EnvironmentUtil.platform.IS_MAC_OS && window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE) {
+  if (EnvironmentUtil.platform.IS_MAC_OS && WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
     systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () => {
-      logger.info(`Received macOS notification "AppleInterfaceThemeChangedNotification", forwarding to amplify ...`);
-      window.amplify.publish(
-        window.z.event.WebApp.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE,
-        systemPreferences.isDarkMode(),
-      );
+      logger.info('Received macOS notification "AppleInterfaceThemeChangedNotification", forwarding to amplify ...');
+      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode());
     });
   }
 }
@@ -56,48 +54,48 @@ webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
 const subscribeToWebappEvents = () => {
-  window.amplify.subscribe(window.z.event.WebApp.LIFECYCLE.RESTART, () => {
-    logger.info(`Received amplify event "${window.z.event.WebApp.LIFECYCLE.RESTART}", forwarding event ...`);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.RESTART, () => {
+    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.RESTART}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.WRAPPER.RELAUNCH);
   });
 
-  window.amplify.subscribe(window.z.event.WebApp.LIFECYCLE.LOADED, () => {
-    logger.info(`Received amplify event "${window.z.event.WebApp.LIFECYCLE.LOADED}", forwarding event ...`);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
+    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.LOADED}", forwarding event ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_IN);
   });
 
-  window.amplify.subscribe(window.z.event.WebApp.LIFECYCLE.SIGN_OUT, () => {
-    logger.info(`Received amplify event "${window.z.event.WebApp.LIFECYCLE.SIGN_OUT}", forwarding event ...`);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGN_OUT, () => {
+    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.SIGN_OUT}", forwarding event ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGN_OUT);
   });
 
-  window.amplify.subscribe(window.z.event.WebApp.LIFECYCLE.SIGNED_OUT, (clearData: boolean) => {
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGNED_OUT, (clearData: boolean) => {
     logger.info(
-      `Received amplify event "${window.z.event.WebApp.LIFECYCLE.SIGNED_OUT}", (clearData: "${clearData}") forwarding event ...`,
+      `Received amplify event "${WebAppEvents.LIFECYCLE.SIGNED_OUT}", (clearData: "${clearData}") forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT, clearData);
   });
 
-  window.amplify.subscribe(window.z.event.WebApp.LIFECYCLE.UNREAD_COUNT, (count: string) => {
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.UNREAD_COUNT, (count: string) => {
     logger.info(
-      `Received amplify event "${window.z.event.WebApp.LIFECYCLE.UNREAD_COUNT}" (count: "${count}"), forwarding event ...`,
+      `Received amplify event "${WebAppEvents.LIFECYCLE.UNREAD_COUNT}" (count: "${count}"), forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.UNREAD_COUNT, count);
   });
 
-  window.amplify.subscribe(window.z.event.WebApp.NOTIFICATION.CLICK, () => {
-    logger.info(`Received amplify event "${window.z.event.WebApp.NOTIFICATION.CLICK}", forwarding event ...`);
+  window.amplify.subscribe(WebAppEvents.NOTIFICATION.CLICK, () => {
+    logger.info(`Received amplify event "${WebAppEvents.NOTIFICATION.CLICK}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
-  window.amplify.subscribe(window.z.event.WebApp.TEAM.INFO, (info: TeamAccountInfo) => {
+  window.amplify.subscribe(WebAppEvents.TEAM.INFO, (info: TeamAccountInfo) => {
     const debugInfo = {
       ...info,
       picture: typeof info.picture === 'string' ? `${info.picture.substring(0, 100)}...` : '',
     };
     logger.info(
-      `Received amplify event "${window.z.event.WebApp.TEAM.INFO}":`,
+      `Received amplify event "${WebAppEvents.TEAM.INFO}":`,
       `"${JSON.stringify(debugInfo)}", forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
@@ -114,35 +112,35 @@ const subscribeToWebappEvents = () => {
 const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.ADD_PEOPLE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ADD_PEOPLE}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.ADD_PEOPLE);
+    window.amplify.publish(WebAppEvents.SHORTCUT.ADD_PEOPLE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.ARCHIVE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ARCHIVE}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.ARCHIVE);
+    window.amplify.publish(WebAppEvents.SHORTCUT.ARCHIVE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.CALL, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.CALL}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.CALL.STATE.TOGGLE, false);
+    window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, false);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.DELETE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.DELETE}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.DELETE);
+    window.amplify.publish(WebAppEvents.SHORTCUT.DELETE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_NEXT, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_NEXT}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.NEXT);
+    window.amplify.publish(WebAppEvents.SHORTCUT.NEXT);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.PEOPLE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.PEOPLE}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.PEOPLE);
+    window.amplify.publish(WebAppEvents.SHORTCUT.PEOPLE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.PING, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.PING}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.PING);
+    window.amplify.publish(WebAppEvents.SHORTCUT.PING);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.PREV);
+    window.amplify.publish(WebAppEvents.SHORTCUT.PREV);
   });
   ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (_event, hash: string) => {
     logger.info(
@@ -152,27 +150,27 @@ const subscribeToMainProcessEvents = () => {
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.TOGGLE_MUTE}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.SILENCE);
+    window.amplify.publish(WebAppEvents.SHORTCUT.SILENCE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.START}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.SHORTCUT.START);
+    window.amplify.publish(WebAppEvents.SHORTCUT.START);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.VIDEO_CALL}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.CALL.STATE.TOGGLE, true);
+    window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, true);
   });
   ipcRenderer.on(EVENT_TYPE.PREFERENCES.SHOW, () => {
     logger.info(`Received event "${EVENT_TYPE.PREFERENCES.SHOW}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.PREFERENCES.MANAGE_ACCOUNT);
+    window.amplify.publish(WebAppEvents.PREFERENCES.MANAGE_ACCOUNT);
   });
   ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
     logger.info(`Received event "${EVENT_TYPE.ACTION.SIGN_OUT}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.LIFECYCLE.ASK_TO_CLEAR_DATA);
+    window.amplify.publish(WebAppEvents.LIFECYCLE.ASK_TO_CLEAR_DATA);
   });
   ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
-    window.amplify.publish(window.z.event.WebApp.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
+    window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
 };
 

@@ -19,15 +19,15 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
+import {StringUtil} from '@wireapp/commons';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
-import * as moment from 'moment';
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
-import {config} from '../settings/config';
+import {config, MINUTE_IN_MILLIS, HOUR_IN_MILLIS} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -92,7 +92,7 @@ function spawn(command: string, args: string[]): Promise<void> {
 }
 
 async function spawnUpdate(args: string[]): Promise<void> {
-  logger.info(`Running updater ...`);
+  logger.info('Running updater ...');
   const updateDotExeExists = fs.existsSync(updateDotExe);
   if (!updateDotExeExists) {
     logger.info(`Could not find updater in "${updateDotExe}".`);
@@ -106,17 +106,17 @@ async function spawnUpdate(args: string[]): Promise<void> {
 }
 
 async function createStartShortcut(): Promise<void> {
-  logger.info(`Creating shortcut in the start menu ...`);
+  logger.info('Creating shortcut in the start menu ...');
   await spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu']);
 }
 
 async function createDesktopShortcut(): Promise<void> {
-  logger.info(`Creating shortcut on the desktop ...`);
+  logger.info('Creating shortcut on the desktop ...');
   await spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop']);
 }
 
 async function removeShortcuts(): Promise<void> {
-  logger.info(`Removing all shortcuts ...`);
+  logger.info('Removing all shortcuts ...');
   await spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu']);
   if (shortcutLink) {
     await fs.remove(shortcutLink);
@@ -129,50 +129,42 @@ export async function installUpdate(): Promise<void> {
 }
 
 async function scheduleUpdate(): Promise<void> {
-  const pluralize = (num: number, str: string) => `${num} ${str}${num === 1 ? '' : 's'}`;
-  const nextCheck = moment.duration(config.squirrelUpdateInterval.DELAY).asMinutes();
-  const everyCheck = moment.duration(config.squirrelUpdateInterval.INTERVAL).asHours();
-  logger.info(
-    `Scheduling Windows update to check in "${pluralize(nextCheck, 'minute')}" and every "${pluralize(
-      everyCheck,
-      'hour',
-    )}" ...`,
-  );
+  const nextCheck = config.squirrelUpdateInterval.DELAY;
+  const everyCheck = config.squirrelUpdateInterval.INTERVAL;
+  const readableNextCheck = StringUtil.pluralize('minute', nextCheck / MINUTE_IN_MILLIS);
+  const readableEveryCheck = StringUtil.pluralize('hour', everyCheck / HOUR_IN_MILLIS);
+  logger.info(`Scheduling Windows update to check in "${readableNextCheck}" and every "${readableEveryCheck}" ...`);
 
-  setTimeout(installUpdate, config.squirrelUpdateInterval.DELAY);
-  setInterval(installUpdate, config.squirrelUpdateInterval.INTERVAL);
+  setTimeout(installUpdate, nextCheck);
+  setInterval(installUpdate, everyCheck);
 }
 
-export async function handleSquirrelEvent(isFirstInstance?: boolean): Promise<boolean | void> {
-  const [, squirrelEvent] = process.argv;
+export async function handleSquirrelArgs(): Promise<void> {
+  const squirrelEvent = process.argv[1];
 
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL: {
       await createStartShortcut();
       await createDesktopShortcut();
-      lifecycle.quit();
-      return true;
+      await lifecycle.quit();
+      return;
     }
 
     case SQUIRREL_EVENT.UPDATED: {
-      lifecycle.quit();
-      return true;
+      await lifecycle.quit();
+      return;
     }
 
     case SQUIRREL_EVENT.UNINSTALL: {
       await removeShortcuts();
-      lifecycle.quit();
-      return true;
+      await lifecycle.quit();
+      return;
     }
 
     case SQUIRREL_EVENT.OBSOLETE: {
-      lifecycle.quit();
-      return true;
+      await lifecycle.quit();
+      return;
     }
-  }
-
-  if (!isFirstInstance) {
-    return lifecycle.quit();
   }
 
   await scheduleUpdate();

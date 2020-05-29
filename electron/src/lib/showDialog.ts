@@ -17,12 +17,17 @@
  *
  */
 
-export class ContextMenuSelector {
-  static getContextMenuState = state => state.contextMenuState;
-  static isEditAccountMenuVisible = state => ContextMenuSelector.getContextMenuState(state).isEditAccountMenuVisible;
-  static getPosition = state => ContextMenuSelector.getContextMenuState(state).position;
-  static getAccountId = state => ContextMenuSelector.getContextMenuState(state).accountId;
-  static getIsAtLeastAdmin = state => ContextMenuSelector.getContextMenuState(state).isAtLeastAdmin;
-  static getLifecycle = state => ContextMenuSelector.getContextMenuState(state).lifecycle;
-  static getSessionId = state => ContextMenuSelector.getContextMenuState(state).sessionId;
-}
+import {dialog, MessageBoxSyncOptions} from 'electron';
+
+export const showDialog = (message: string, title: string, type?: string): void => {
+  const options: MessageBoxSyncOptions = {
+    message,
+    title,
+    type,
+  };
+  dialog.showMessageBoxSync(options);
+};
+
+export const showErrorDialog = (message: string): void => {
+  showDialog(message, 'Error', 'error');
+};

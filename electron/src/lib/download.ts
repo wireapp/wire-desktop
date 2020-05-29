@@ -17,21 +17,35 @@
  *
  */
 
+import {DateUtil} from '@wireapp/commons';
 import {dialog, SaveDialogOptions} from 'electron';
 import * as fs from 'fs-extra';
 import imageType from 'image-type';
-import * as moment from 'moment';
+import * as path from 'path';
+
+import {getLogger} from '../logging/getLogger';
+
+const logger = getLogger(path.basename(__filename));
+
+export const downloadLogs = async (bytes: Uint8Array, timestamp: Date = new Date()) => {
+  const options: SaveDialogOptions = {
+    filters: [{extensions: ['zip'], name: 'Archives (*.zip)'}],
+  };
+
+  const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(timestamp);
+
+  const filename = `wire-logs-${formattedDate}-${formattedTime.replace(/:/g, '-')}.zip`;
+
+  return downloadFile(bytes, filename, options);
+};
 
 export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
   const type = imageType(bytes);
   const options: SaveDialogOptions = {};
 
-  const dateObj = new Date(Number(timestamp));
-  if (dateObj.getTime() && !isNaN(dateObj.getTime())) {
-    const momentObj = moment(dateObj);
-    const filename = `Wire ${momentObj.format('YYYY-MM-DD')} at ${momentObj.format('H.mm.ss')}`;
-    options.defaultPath = filename;
-  }
+  const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
+  const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
+  let filename = `Wire ${formattedDate} at ${formattedTime}`;
 
   if (type?.ext) {
     options.filters = [
@@ -40,11 +54,19 @@ export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
         name: 'Images',
       },
     ];
-    options.defaultPath += `.${type.ext}`;
+    filename += `.${type.ext}`;
   }
 
-  const {filePath: chosenPath} = await dialog.showSaveDialog(options);
-  if (chosenPath) {
-    await fs.writeFile(chosenPath, new Buffer(bytes.buffer));
+  return downloadFile(bytes, filename, options);
+};
+
+export const downloadFile = async (bytes: Uint8Array, filename: string, options?: SaveDialogOptions) => {
+  try {
+    const {filePath: chosenPath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
+    if (chosenPath) {
+      await fs.writeFile(chosenPath, bytes);
+    }
+  } catch (error) {
+    logger.error(error);
   }
 };

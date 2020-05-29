@@ -22,28 +22,30 @@ import * as fs from 'fs-extra';
 import * as globby from 'globby';
 import * as path from 'path';
 
+import {getLogger} from '../logging/getLogger';
+
+const logger = getLogger(path.basename(__filename));
+
 export const logDir = path.join(app.getPath('userData'), 'logs');
 
-export function getLogFiles(base: string = logDir, absolute: boolean = false): string[] {
+export function getLogFilenames(base: string = logDir, absolute: boolean = false): string[] {
   return globby.sync('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
 }
 
-export async function gatherLogs(): Promise<string> {
-  let log = '';
+export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
+  const logFiles: Record<string, Uint8Array> = {};
 
-  const relativeFilePaths = getLogFiles();
+  const relativeFilePaths = getLogFilenames();
 
   for (const relativeFilePath of relativeFilePaths) {
     const resolvedPath = path.join(logDir, relativeFilePath);
-    log += `\n\n+++++++ ${relativeFilePath} +++++++\n`;
     try {
-      const fileContent = await fs.readFile(resolvedPath, 'utf-8');
-      log += fileContent || '(no content)\n';
+      const fileContent = await fs.readFile(resolvedPath);
+      logFiles[relativeFilePath] = fileContent;
     } catch (error) {
-      log += '(fle not readable)\n';
+      logger.error(error);
     }
-    log += '++++++++++++++++++++++++++++\n';
   }
 
-  return log || 'No log files found.';
+  return logFiles;
 }

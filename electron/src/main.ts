@@ -37,6 +37,8 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
+import WindowStateKeeper = require('electron-window-state');
+import fileUrl = require('file-url');
 
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
@@ -49,7 +51,7 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
-import {getLogFiles} from './logging/loggerUtils';
+import {getLogFilenames} from './logging/loggerUtils';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
@@ -64,9 +66,8 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import {WindowUtil} from './window/WindowUtil';
-import ProxyAuth from './auth/ProxyAuth';
-import WindowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
+import * as ProxyAuth from './auth/ProxyAuth';
+import {showErrorDialog} from './lib/showDialog';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -81,9 +82,6 @@ const WINDOW_SIZE = {
   MIN_HEIGHT: 512,
   MIN_WIDTH: 760,
 };
-enum ARG {
-  PROXY_ARG = 'proxy-server',
-}
 
 let proxyInfoArg: URL | undefined;
 
@@ -91,18 +89,23 @@ const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv.env);
+const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
 
 const logger = getLogger(path.basename(__filename));
 
-if (argv.version) {
+if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
-  process.exit();
+  app.quit();
 }
 
-if (argv[ARG.PROXY_ARG]) {
+logger.info(`Initializing ${config.name} v${config.version} ...`);
+
+if (argv[config.ARGUMENT.PROXY_SERVER]) {
   try {
-    proxyInfoArg = new URL(argv[ARG.PROXY_ARG]);
+    proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_SERVER]);
+    if (!/^(https?|socks[45]):$/.test(proxyInfoArg.protocol)) {
+      throw new Error('Invalid protocol for the proxy server specified.');
+    }
     if (proxyInfoArg.origin === 'null') {
       proxyInfoArg = undefined;
       throw new Error('No protocol for the proxy server specified.');
@@ -228,7 +231,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   let webappUrl = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
 
   if (ENABLE_LOGGING) {
-    webappUrl += `&enableLogging=@wireapp/*`;
+    webappUrl += '&enableLogging=@wireapp/*';
   }
 
   if (customProtocolHandler.hashLocation) {
@@ -239,7 +242,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     main.webContents.openDevTools({mode: 'detach'});
   }
 
-  if (!argv.startup && !argv.hidden) {
+  if (!argv[config.ARGUMENT.STARTUP] && !argv[config.ARGUMENT.HIDDEN]) {
     if (!WindowUtil.isInView(main)) {
       main.center();
     }
@@ -294,29 +297,39 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   main.webContents.on('crashed', event => {
     logger.error('WebContents crashed. Will reload the window.');
     logger.error(event);
-    main.reload();
+    try {
+      main.reload();
+    } catch (error) {
+      showErrorDialog(`Could not reload the window: ${error.message}`);
+      logger.error('Could not reload the window:', error);
+    }
   });
 
   app.on('gpu-process-crashed', event => {
     logger.error('GPU process crashed. Will reload the window.');
     logger.error(event);
-    main.reload();
+    try {
+      main.reload();
+    } catch (error) {
+      showErrorDialog(`Could not reload the window: ${error.message}`);
+      logger.error('Could not reload the window:', error);
+    }
   });
 
   await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  await main.webContents.insertCSS(wrapperCSSContent);
+  main.webContents.insertCSS(wrapperCSSContent);
 
-  if (argv.startup || argv.hidden) {
+  if (argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]) {
     WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
   }
 };
 
 // App Events
 const handleAppEvents = () => {
-  app.on('window-all-closed', () => {
+  app.on('window-all-closed', async () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
-      lifecycle.quit();
+      await lifecycle.quit();
     }
   });
 
@@ -363,7 +376,8 @@ const handleAppEvents = () => {
             logger.log('Proxy prompt was submitted');
 
             const {username, password} = promptData;
-            const protocol: string | undefined = proxyInfoArg?.protocol?.replace(':', '');
+            // remove the colon from the protocol to align it with other usages of `generateProxyURL`
+            const protocol = proxyInfoArg?.protocol?.replace(':', '');
             proxyInfoArg = ProxyAuth.generateProxyURL(
               {host, port},
               {
@@ -387,7 +401,12 @@ const handleAppEvents = () => {
             proxyRules: '',
           });
 
-          main.reload();
+          try {
+            main.reload();
+          } catch (error) {
+            showErrorDialog(`Could not reload the window: ${error.message}`);
+            logger.error('Could not reload the window:', error);
+          }
         });
 
         await ProxyPromptWindow.showWindow();
@@ -428,7 +447,7 @@ const renameFileExtensions = (files: string[], oldExtension: string, newExtensio
 const renameWebViewLogFiles = (): void => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   try {
-    const logFiles = getLogFiles(LOG_DIR, true);
+    const logFiles = getLogFilenames(LOG_DIR, true);
     renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
     logger.log(`Failed to read log directory with error: ${error.message}`);
@@ -451,9 +470,9 @@ const addLinuxWorkarounds = () => {
 };
 
 const handlePortableFlags = () => {
-  if (argv.user_data_dir || argv.portable) {
-    const USER_PATH = argv.user_data_dir
-      ? path.resolve(argv.user_data_dir)
+  if (argv[config.ARGUMENT.USER_DATA_DIR] || argv[config.ARGUMENT.PORTABLE]) {
+    const USER_PATH = argv[config.ARGUMENT.USER_DATA_DIR]
+      ? path.resolve(argv[config.ARGUMENT.USER_DATA_DIR])
       : path.join(process.env.APPIMAGE || process.execPath, '../Data');
 
     logger.log(`Saving user data to "${USER_PATH}".`);
@@ -463,12 +482,15 @@ const handlePortableFlags = () => {
 
 const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
   const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
-  logger.info(`Setting proxy on a window to URL "${proxyURL}"...`);
+  const proxyProtocol = authenticatedProxyDetails.protocol;
+  const isSocksProxy = proxyProtocol === 'socks4:' || proxyProtocol === 'socks5:';
+
+  logger.info(`Setting proxy on a window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
   await webContents.session.setProxy({
     pacScript: '',
     proxyBypassRules: '',
-    proxyRules: `http=${proxyURL};https=${proxyURL}`,
+    proxyRules: isSocksProxy ? `socks=${proxyURL}` : `http=${proxyURL};https=${proxyURL}`,
   });
 };
 
@@ -476,7 +498,7 @@ class ElectronWrapperInit {
   logger: logdown.Logger;
 
   constructor() {
-    this.logger = LogFactory.getLogger('ElectronWrapperInit', {logFilePath: LOG_FILE});
+    this.logger = getLogger('ElectronWrapperInit');
   }
 
   async run(): Promise<void> {
@@ -499,7 +521,7 @@ class ElectronWrapperInit {
         return new SingleSignOn(main, event, url, options).init();
       }
 
-      this.logger.log(`Opening an external window from a webview.`);
+      this.logger.log('Opening an external window from a webview.');
       return shell.openExternal(url);
     };
 
@@ -541,14 +563,19 @@ class ElectronWrapperInit {
             willNavigateInWebview(event, url, contents.getURL());
           });
           if (ENABLE_LOGGING) {
+            const colorCodeRegex = /%c(.+?)%c/gm;
+            const accessTokenRegex = /access_token=[^ &]+/gm;
+
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
               if (webViewId) {
-                const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
                 try {
-                  await LogFactory.writeMessage(message, logFilePath);
+                  await LogFactory.writeMessage(
+                    message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
+                    LOG_FILE,
+                  );
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${LOG_FILE}": ${error.message}`, error);
                 }
               }
             });
@@ -597,8 +624,10 @@ class ElectronWrapperInit {
 customProtocolHandler.registerCoreProtocol();
 Raygun.initClient();
 handlePortableFlags();
-lifecycle.checkSingleInstance();
-lifecycle.checkForUpdate().catch(error => logger.error(error));
+lifecycle
+  .checkSingleInstance()
+  .then(() => lifecycle.initSquirrelListener())
+  .catch(error => logger.error(error));
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

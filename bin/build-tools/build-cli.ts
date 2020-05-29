@@ -97,7 +97,7 @@ const platform = (commander.args[0] || '').toLowerCase();
     }
 
     default: {
-      logger.error(`Invalid or no platform specified.`);
+      logger.error('Invalid or no platform specified.');
       return commander.help();
     }
   }

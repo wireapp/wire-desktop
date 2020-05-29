@@ -17,12 +17,27 @@
  *
  */
 
-export class ContextMenuSelector {
-  static getContextMenuState = state => state.contextMenuState;
-  static isEditAccountMenuVisible = state => ContextMenuSelector.getContextMenuState(state).isEditAccountMenuVisible;
-  static getPosition = state => ContextMenuSelector.getContextMenuState(state).position;
-  static getAccountId = state => ContextMenuSelector.getContextMenuState(state).accountId;
-  static getIsAtLeastAdmin = state => ContextMenuSelector.getContextMenuState(state).isAtLeastAdmin;
-  static getLifecycle = state => ContextMenuSelector.getContextMenuState(state).lifecycle;
-  static getSessionId = state => ContextMenuSelector.getContextMenuState(state).sessionId;
-}
+import * as JSZip from 'jszip';
+import * as path from 'path';
+
+import {getLogger} from '../logging/getLogger';
+
+const logger = getLogger(path.basename(__filename));
+
+export const zipFiles = async (files: Record<string, Uint8Array>): Promise<JSZip> => {
+  const zip = new JSZip();
+
+  try {
+    for (const filename in files) {
+      zip.file(filename, files[filename], {binary: true});
+    }
+  } catch (error) {
+    logger.error(error);
+  }
+
+  return zip;
+};
+
+export const createFile = (zip: JSZip): Promise<Uint8Array> => {
+  return zip.generateAsync({compression: 'DEFLATE', type: 'uint8array'});
+};
