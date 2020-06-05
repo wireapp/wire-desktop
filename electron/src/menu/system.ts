@@ -252,7 +252,7 @@ const downloadLogsTemplate: MenuItemConstructorOptions = {
     const archiveFile = await createFile(archive);
     await downloadLogs(archiveFile);
   },
-  label: 'Download Debug Logs',
+  label: locale.getText('menuDownloadDebugLogs'),
 };
 
 const helpTemplate: MenuItemConstructorOptions = {
