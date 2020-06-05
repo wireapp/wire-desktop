@@ -46,6 +46,7 @@ export type i18nLanguageIdentifier =
   | 'menuCopy'
   | 'menuCut'
   | 'menuDelete'
+  | 'menuDownloadDebugLogs'
   | 'menuEdit'
   | 'menuFullScreen'
   | 'menuHelp'
