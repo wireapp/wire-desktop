@@ -46,7 +46,7 @@ export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
 
   const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
   const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
-  let filename = `Wire ${formattedDate} at ${formattedTime}`;
+  let filename = `Wire ${formattedDate} at ${formattedTime}`.replace(/:/g, '-');
 
   if (type?.ext) {
     options.filters = [
