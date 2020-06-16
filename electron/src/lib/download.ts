@@ -70,7 +70,7 @@ export const downloadFile = async (bytes: Uint8Array, filename: string, options?
   }
 };
 
-export const suggestedFileName = (timestamp?: string) => {
+export const suggestFileName = (timestamp?: string) => {
   const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
   const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
   return `Wire ${formattedDate} at ${formattedTime}`.replace(/:/g, '-');
