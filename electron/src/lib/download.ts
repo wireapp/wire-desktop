@@ -44,7 +44,7 @@ export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
   const type = imageType(bytes);
   const options: SaveDialogOptions = {};
 
-  let filename = suggestedFileName(timestamp);
+  let filename = suggestFileName(timestamp);
 
   if (type?.ext) {
     options.filters = [

@@ -18,12 +18,12 @@
  */
 
 import * as assert from 'assert';
-import {suggestedFileName} from './download';
+import {suggestFileName} from './download';
 
 describe('download', () => {
   it('suggests the correct filename', async () => {
     // May 4th 2020, 13:42:00
-    const actual = suggestedFileName('1588599720000');
+    const actual = suggestFileName('1588599720000');
     const expected = `Wire 2020-05-04 at 13-42-00`;
     assert.equal(actual, expected);
   });
