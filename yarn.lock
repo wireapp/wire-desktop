@@ -8402,13 +8402,15 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-raygun@0.10.2:
-  version "0.10.2"
-  resolved "https://registry.npmjs.org/raygun/-/raygun-0.10.2.tgz#f5d9c0486a0aad4fda56ea04eca1d5500e827612"
-  integrity sha512-/jwSeLYY6wWSHspA3XnLNOfB3Xq0Bqk2Q9cnFcvB1+9y2NEQ3DLKWWu4Fh2ydCutAnUrMbEoXDZfFhDLEwXlqw==
+raygun@0.12.0:
+  version "0.12.0"
+  resolved "https://registry.npmjs.org/raygun/-/raygun-0.12.0.tgz#66131de26f1aa37fc03f3c2b4d4723d2848835a5"
+  integrity sha512-JFuUBUt8Ntbjh18Yc7tUfvNzBPWRKvOsCYuLCyjEen2BQ9RIskt9OoH7JWBG8zRmwMpsaZV/dYuwTzb4BUmUSA==
   dependencies:
+    debug "^4.1.1"
     object-to-human-string "0.0.3"
     stack-trace "0.0.6"
+    uuid "^7.0.3"
 
 rc@^1.2.7, rc@^1.2.8:
   version "1.2.8"
