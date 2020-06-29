@@ -139,11 +139,7 @@ export async function buildMacOSWrapper(
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    let buildDir = await electronPackager(packagerConfig);
-
-    if (Array.isArray(buildDir)) {
-      buildDir = buildDir[0];
-    }
+    const [buildDir] = await electronPackager(packagerConfig);
 
     logger.log(`Built app in "${buildDir}".`);
 
