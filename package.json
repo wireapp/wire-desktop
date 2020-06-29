@@ -46,7 +46,7 @@
     "@types/express": "4.17.6",
     "@types/fs-extra": "9.0.1",
     "@types/is-ci": "2.0.0",
-    "@types/lodash": "4.14.152",
+    "@types/lodash": "4.14.157",
     "@types/minimist": "1.2.0",
     "@types/mocha": "7.0.2",
     "@types/node": "~12",
