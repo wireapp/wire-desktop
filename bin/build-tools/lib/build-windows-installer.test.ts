@@ -18,9 +18,9 @@
 
 import * as assert from 'assert';
 import * as path from 'path';
-import {v4 as uuid} from 'uuid';
 
 import {buildWindowsInstallerConfig} from './build-windows-installer';
+import {generateUUID} from '../../bin-utils';
 
 const wireJsonPath = path.join(__dirname, '../../../electron/wire.json');
 const envFilePath = path.join(__dirname, '../../../.env.defaults');
@@ -28,7 +28,7 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 describe('build-windows-installer', () => {
   describe('buildWindowsInstallerConfig', () => {
     it('honors environment variables', async () => {
-      const installerIconUrl = uuid();
+      const installerIconUrl = generateUUID();
 
       process.env.WIN_URL_ICON_INSTALLER = installerIconUrl;
 

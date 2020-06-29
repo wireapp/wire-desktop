@@ -17,14 +17,14 @@
  *
  */
 
-import {v4 as uuid} from 'uuid';
+import UUID from 'uuidjs';
 
 import {ActionType} from '../actions';
 
 const createAccount = (sessionID, ssoCode = undefined) => ({
   accentID: undefined,
   badgeCount: 0,
-  id: uuid(),
+  id: UUID.genV4().toString(),
   isAdding: true,
   lifecycle: undefined,
   name: undefined,

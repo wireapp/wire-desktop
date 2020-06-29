@@ -17,7 +17,7 @@
  *
  */
 
-import {v4 as uuid} from 'uuid';
+import UUID from 'uuidjs';
 
 import {ActionType, addAccount, deleteAccount, switchAccount, updateAccount, updateAccountBadge} from '../';
 
@@ -32,7 +32,7 @@ describe('action creators', () => {
 
   describe('updateAccount', () => {
     it('should create action to update account', () => {
-      const id = uuid();
+      const id = UUID.genV4().toString();
       const data = {name: 'Foo'};
       const action = {
         data,
@@ -45,7 +45,7 @@ describe('action creators', () => {
 
   describe('switchAccount', () => {
     it('should create action to switch account', () => {
-      const id = uuid();
+      const id = UUID.genV4().toString();
       const action = {
         id,
         type: ActionType.SWITCH_ACCOUNT,
@@ -56,7 +56,7 @@ describe('action creators', () => {
 
   describe('updateAccountBadge', () => {
     it('should create action to update account badge', () => {
-      const id = uuid();
+      const id = UUID.genV4().toString();
       const count = 42;
       const action = {
         count,
@@ -69,7 +69,7 @@ describe('action creators', () => {
 
   describe('deleteAccount', () => {
     it('should create action to delete an account', () => {
-      const id = uuid();
+      const id = UUID.genV4().toString();
       const action = {
         id,
         type: ActionType.DELETE_ACCOUNT,

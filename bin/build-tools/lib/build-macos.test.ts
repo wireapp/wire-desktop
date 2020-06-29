@@ -18,9 +18,9 @@
 
 import * as assert from 'assert';
 import * as path from 'path';
-import {v4 as uuid} from 'uuid';
 
 import {buildMacOSConfig} from './build-macos';
+import {generateUUID} from '../../bin-utils';
 
 const wireJsonPath = path.join(__dirname, '../../../electron/wire.json');
 const envFilePath = path.join(__dirname, '../../../.env.defaults');
@@ -28,11 +28,11 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 describe('build-macos', () => {
   describe('buildMacOSConfig', () => {
     it('honors environment variables', async () => {
-      const bundleId = uuid();
-      const certNameApplication = uuid();
-      const certNameInstaller = uuid();
-      const notarizeAppleId = uuid();
-      const notarizeApplePassword = uuid();
+      const bundleId = generateUUID();
+      const certNameApplication = generateUUID();
+      const certNameInstaller = generateUUID();
+      const notarizeAppleId = generateUUID();
+      const notarizeApplePassword = generateUUID();
 
       process.env.MACOS_BUNDLE_ID = bundleId;
       process.env.MACOS_CERTIFICATE_NAME_APPLICATION = certNameApplication;

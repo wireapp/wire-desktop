@@ -19,7 +19,7 @@
 
 /* eslint-disable no-console */
 
-import {v4 as uuid} from 'uuid';
+import UUID from 'uuidjs';
 import * as Joi from '@hapi/joi';
 
 import {config} from '../../../dist/settings/config';
@@ -41,13 +41,13 @@ export const ActionType = {
 };
 
 export const addAccount = (withSession = true) => ({
-  sessionID: withSession ? uuid() : undefined,
+  sessionID: withSession ? UUID.genV4().toString() : undefined,
   type: ActionType.ADD_ACCOUNT,
 });
 
 export const initiateSSO = (id, ssoCode = undefined, withSession = true) => ({
   id,
-  sessionID: withSession ? uuid() : undefined,
+  sessionID: withSession ? UUID.genV4().toString() : undefined,
   ssoCode,
   type: ActionType.INITIATE_SSO,
 });

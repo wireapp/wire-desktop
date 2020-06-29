@@ -18,9 +18,9 @@
 
 import * as assert from 'assert';
 import * as path from 'path';
-import {v4 as uuid} from 'uuid';
 
 import {buildLinuxConfig} from './build-linux';
+import {generateUUID} from '../../bin-utils';
 
 const wireJsonPath = path.join(__dirname, '../../../electron/wire.json');
 const envFilePath = path.join(__dirname, '../../../.env.defaults');
@@ -28,10 +28,10 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 describe('build-linux', () => {
   describe('buildLinuxConfig', () => {
     it('honors environment variables', async () => {
-      const categories = uuid();
-      const keywords = uuid();
-      const nameShort = uuid();
-      const targets = [uuid(), uuid()];
+      const categories = generateUUID();
+      const keywords = generateUUID();
+      const nameShort = generateUUID();
+      const targets = [generateUUID(), generateUUID()];
 
       process.env.LINUX_CATEGORIES = categories;
       process.env.LINUX_KEYWORDS = keywords;
