@@ -43,7 +43,6 @@
     "@babel/register": "7.9.0",
     "@types/auto-launch": "5.0.1",
     "@types/content-type": "1.1.3",
-    "@types/electron-packager": "14.0.0",
     "@types/fs-extra": "9.0.1",
     "@types/is-ci": "2.0.0",
     "@types/lodash": "4.14.152",
