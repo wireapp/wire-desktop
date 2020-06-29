@@ -1560,11 +1560,6 @@
   resolved "https://registry.npmjs.org/@types/prettier/-/prettier-2.0.0.tgz#dc85454b953178cc6043df5208b9e949b54a3bc4"
   integrity sha512-/rM+sWiuOZ5dvuVzV37sUuklsbg+JPOP8d+nNFlo2ZtfpzPiPvh1/gc8liWOLBqe+sR+ZM7guPaIcTt6UZTo7Q==
 
-"@types/raygun@0.10.2":
-  version "0.10.2"
-  resolved "https://registry.npmjs.org/@types/raygun/-/raygun-0.10.2.tgz#798538491f1821a4e6f5c83184e798c6b92e397f"
-  integrity sha512-vdBRrp/Z4U0904H9Zr1SSFT1Ib5xZIaAm+I7/BK3lgXnaOiaCB5NJvIMWB3BZC84abuwuO8fgGRV5BNpzEbWtA==
-
 "@types/sinon@9.0.4":
   version "9.0.4"
   resolved "https://registry.npmjs.org/@types/sinon/-/sinon-9.0.4.tgz#e934f904606632287a6e7f7ab0ce3f08a0dad4b1"
