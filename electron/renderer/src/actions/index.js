@@ -47,7 +47,7 @@ export const addAccount = (withSession = true) => ({
 
 export const initiateSSO = (id, ssoCode = undefined, withSession = true) => ({
   id,
-  sessionID: withSession ? UUID.genV4().toString() : undefined,
+  sessionID: withSession ? generateUUID() : undefined,
   ssoCode,
   type: ActionType.INITIATE_SSO,
 });
