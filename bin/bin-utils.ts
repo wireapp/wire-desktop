@@ -23,6 +23,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import {promisify} from 'util';
+import UUID from 'uuidjs';
 
 interface BackupResult {
   backupPaths: string[];
@@ -49,6 +50,8 @@ export async function restoreFiles({originalPaths, backupPaths, tempDir}: Backup
   await Promise.all(backupPaths.map((tempPath, index) => fs.copy(tempPath, originalPaths[index], {overwrite: true})));
   await fs.remove(tempDir);
 }
+
+export const generateUUID = () => UUID.genV4().toString();
 
 export const getLogger = (namespace: string, name: string): Logger =>
   LogFactory.getLogger(name, {forceEnable: true, namespace: `@wireapp/${namespace}`, separator: '/'});
