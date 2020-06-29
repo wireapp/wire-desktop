@@ -17,6 +17,8 @@
  *
  */
 
+import UUID from 'uuidjs';
+
 export const noop = () => {};
 
 export const preventFocus = (fn = noop) => {
@@ -26,3 +28,5 @@ export const preventFocus = (fn = noop) => {
     fn(event);
   };
 };
+
+export const generateUUID = () => UUID.genV4().toString();
