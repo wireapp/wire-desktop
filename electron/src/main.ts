@@ -54,6 +54,7 @@ import {Raygun} from './logging/initRaygun';
 import {getLogFilenames} from './logging/loggerUtils';
 import {menuItem as developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
+import {initContextMenu} from './menu/context';
 import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import * as lifecycle from './runtime/lifecycle';
@@ -535,15 +536,17 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
-      if (proxyInfoArg?.origin && contents.session) {
+    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, webContents: WebContents) => {
+      if (proxyInfoArg?.origin && webContents.session) {
         this.logger.log('Applying proxy settings on a webview...');
-        await applyProxySettings(proxyInfoArg, contents);
+        await applyProxySettings(proxyInfoArg, webContents);
       }
 
-      switch (contents.getType()) {
+      initContextMenu(webContents);
+
+      switch (webContents.getType()) {
         case 'window': {
-          contents.on('will-attach-webview', (event, webPreferences, params) => {
+          webContents.on('will-attach-webview', (_event, webPreferences, params) => {
             // Use secure defaults
             params.autosize = 'false';
             params.contextIsolation = 'true';
@@ -553,22 +556,23 @@ class ElectronWrapperInit {
             webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
+            webPreferences.spellcheck = true;
             webPreferences.webSecurity = true;
           });
           break;
         }
         case 'webview': {
           // Open webview links outside of the app
-          contents.on('new-window', openLinkInNewWindow);
-          contents.on('will-navigate', (event: ElectronEvent, url: string) => {
-            willNavigateInWebview(event, url, contents.getURL());
+          webContents.on('new-window', openLinkInNewWindow);
+          webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
+            willNavigateInWebview(event, url, webContents.getURL());
           });
           if (ENABLE_LOGGING) {
             const colorCodeRegex = /%c(.+?)%c/gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;
 
-            contents.on('console-message', async (_event, _level, message) => {
-              const webViewId = lifecycle.getWebViewId(contents);
+            webContents.on('console-message', async (_event, _level, message) => {
+              const webViewId = lifecycle.getWebViewId(webContents);
               if (webViewId) {
                 try {
                   await LogFactory.writeMessage(
@@ -582,8 +586,8 @@ class ElectronWrapperInit {
             });
           }
 
-          contents.session.setSpellCheckerLanguages([locale.getCurrent()]);
-          contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
+          webContents.session.setSpellCheckerLanguages([locale.getCurrent()]);
+          webContents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
           const isLocalhostEnvironment =
@@ -608,10 +612,10 @@ class ElectronWrapperInit {
               });
             };
 
-            contents.session.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
+            webContents.session.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
           }
 
-          contents.on('before-input-event', (_event, input) => {
+          webContents.on('before-input-event', (_event, input) => {
             if (input.type === 'keyUp' && input.key === 'Alt') {
               systemMenu.toggleMenuBar();
             }

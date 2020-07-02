@@ -75,6 +75,7 @@ const showWindow = async () => {
         nodeIntegrationInWorker: false,
         preload: PRELOAD_JS,
         session: session.fromPartition('about-window'),
+        spellcheck: false,
         webviewTag: false,
       },
       width: WINDOW_SIZE.WIDTH,
