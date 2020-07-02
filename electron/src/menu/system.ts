@@ -144,15 +144,10 @@ const toggleMenuTemplate: MenuItemConstructorOptions = {
     const mainBrowserWindow = WindowManager.getPrimaryWindow();
 
     if (mainBrowserWindow) {
-      const showMenu = mainBrowserWindow.isMenuBarAutoHide();
-
-      mainBrowserWindow.setAutoHideMenuBar(!showMenu);
-
-      if (!showMenu) {
-        mainBrowserWindow.setMenuBarVisibility(showMenu);
-      }
-
-      settings.save(SettingsType.SHOW_MENU_BAR, showMenu);
+      const autoHide = mainBrowserWindow.isMenuBarAutoHide();
+      mainBrowserWindow.setAutoHideMenuBar(!autoHide);
+      mainBrowserWindow.setMenuBarVisibility(autoHide);
+      settings.save(SettingsType.SHOW_MENU_BAR, autoHide);
     }
   },
   label: locale.getText('menuShowHide'),
@@ -465,19 +460,6 @@ export const createMenu = (isFullScreen: boolean): Menu => {
 
   processMenu(menuTemplate, locale.getCurrent());
   return Menu.buildFromTemplate(menuTemplate);
-};
-
-export const toggleMenuBar = (): void => {
-  const mainBrowserWindow = WindowManager.getPrimaryWindow();
-
-  if (mainBrowserWindow) {
-    const isVisible = mainBrowserWindow.isMenuBarVisible();
-    const autoHide = mainBrowserWindow.isMenuBarAutoHide();
-
-    if (autoHide) {
-      mainBrowserWindow.setMenuBarVisibility(!isVisible);
-    }
-  }
 };
 
 export const registerGlobalShortcuts = (): void => {
