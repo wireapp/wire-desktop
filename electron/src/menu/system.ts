@@ -140,16 +140,7 @@ const showWireTemplate: MenuItemConstructorOptions = {
 
 const toggleMenuTemplate: MenuItemConstructorOptions = {
   checked: settings.restore(SettingsType.SHOW_MENU_BAR, true),
-  click: () => {
-    const mainBrowserWindow = WindowManager.getPrimaryWindow();
-
-    if (mainBrowserWindow) {
-      const autoHide = mainBrowserWindow.isMenuBarAutoHide();
-      mainBrowserWindow.setAutoHideMenuBar(!autoHide);
-      mainBrowserWindow.setMenuBarVisibility(autoHide);
-      settings.save(SettingsType.SHOW_MENU_BAR, autoHide);
-    }
-  },
+  click: () => toggleMenuBar(),
   label: locale.getText('menuShowHide'),
   type: 'checkbox',
 };
@@ -460,6 +451,17 @@ export const createMenu = (isFullScreen: boolean): Menu => {
 
   processMenu(menuTemplate, locale.getCurrent());
   return Menu.buildFromTemplate(menuTemplate);
+};
+
+export const toggleMenuBar = (): void => {
+  const mainBrowserWindow = WindowManager.getPrimaryWindow();
+
+  if (mainBrowserWindow) {
+    const autoHide = mainBrowserWindow.isMenuBarAutoHide();
+    mainBrowserWindow.setAutoHideMenuBar(!autoHide);
+    mainBrowserWindow.setMenuBarVisibility(autoHide);
+    settings.save(SettingsType.SHOW_MENU_BAR, autoHide);
+  }
 };
 
 export const registerGlobalShortcuts = (): void => {
