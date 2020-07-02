@@ -582,6 +582,7 @@ class ElectronWrapperInit {
             });
           }
 
+          contents.session.setSpellCheckerLanguages([locale.getCurrent()]);
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
