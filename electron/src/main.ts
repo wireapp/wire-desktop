@@ -610,6 +610,12 @@ class ElectronWrapperInit {
             contents.session.webRequest.onHeadersReceived(filter, listenerOnHeadersReceived);
           }
 
+          contents.on('before-input-event', (_event, input) => {
+            if (input.type === 'keyUp' && input.key === 'Alt') {
+              systemMenu.toggleMenuBar();
+            }
+          });
+
           break;
         }
       }
