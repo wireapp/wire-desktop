@@ -44,9 +44,7 @@ export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
   const type = imageType(bytes);
   const options: SaveDialogOptions = {};
 
-  const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
-  const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
-  let filename = `Wire ${formattedDate} at ${formattedTime}`;
+  let filename = suggestFileName(timestamp);
 
   if (type?.ext) {
     options.filters = [
@@ -70,4 +68,10 @@ export const downloadFile = async (bytes: Uint8Array, filename: string, options?
   } catch (error) {
     logger.error(error);
   }
+};
+
+export const suggestFileName = (timestamp?: string) => {
+  const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
+  const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
+  return `Wire ${formattedDate} at ${formattedTime}`.replace(/:/g, '-');
 };
