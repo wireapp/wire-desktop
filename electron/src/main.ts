@@ -154,7 +154,6 @@ const bindIpcEvents = () => {
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
-  ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
 };
 
 const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
@@ -216,13 +215,14 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       webviewTag: true,
     },
     width: mainWindowState.width,
-    // eslint-disable-next-line
+    // eslint-disable-next-line id-length
     x: mainWindowState.x,
-    // eslint-disable-next-line
+    // eslint-disable-next-line id-length
     y: mainWindowState.y,
   };
 
   main = new BrowserWindow(options);
+  main.setMenuBarVisibility(showMenuBar);
 
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);
@@ -612,9 +612,10 @@ class ElectronWrapperInit {
 
           contents.on('before-input-event', (_event, input) => {
             if (input.type === 'keyUp' && input.key === 'Alt') {
-              ipcMain.emit(EVENT_TYPE.UI.TOGGLE_MENU);
+              systemMenu.toggleMenuBar();
             }
           });
+
           break;
         }
       }
