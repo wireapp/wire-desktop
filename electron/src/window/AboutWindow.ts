@@ -26,6 +26,9 @@ import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
+import {getLogger} from '../logging/getLogger';
+
+const logger = getLogger(path.basename(__filename));
 
 let webappVersion: string;
 
@@ -91,10 +94,9 @@ const showWindow = async () => {
       if (url.startsWith('https://')) {
         await shell.openExternal(url);
       } else {
-        console.info('Attempt to open URL in window prevented, url:', url);
+        logger.info(`Attempt to open URL "${url}" in window prevented.`);
+        callback({redirectURL: ABOUT_HTML});
       }
-
-      callback({redirectURL: ABOUT_HTML});
     });
 
     // Locales

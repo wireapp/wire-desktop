@@ -18,7 +18,6 @@
  */
 
 import * as path from 'path';
-
 import {URL} from 'url';
 import {getLogger} from '../logging/getLogger';
 
