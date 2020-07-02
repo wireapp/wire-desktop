@@ -18,7 +18,6 @@
  */
 
 import autoLaunch = require('auto-launch');
-import * as openExternal from 'open';
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell} from 'electron';
 import * as path from 'path';
 
