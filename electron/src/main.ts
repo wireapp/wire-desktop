@@ -92,6 +92,7 @@ const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
 
 const logger = getLogger(path.basename(__filename));
+const currentLocale = locale.getCurrent();
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
@@ -228,7 +229,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  let webappUrl = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+  let webappUrl = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${currentLocale}`;
 
   if (ENABLE_LOGGING) {
     webappUrl += '&enableLogging=@wireapp/*';
@@ -582,7 +583,7 @@ class ElectronWrapperInit {
             });
           }
 
-          contents.session.setSpellCheckerLanguages([locale.getCurrent()]);
+          contents.session.setSpellCheckerLanguages([locale.suportedSpellCheckLanguages[currentLocale]]);
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)

@@ -76,6 +76,32 @@ export const LANGUAGES: Supportedi18nLanguageObject = {
   zh: zh_CN,
 };
 
+export const suportedSpellCheckLanguages: Record<Supportedi18nLanguage, string> = {
+  cs: 'cs-CZ',
+  da: 'da-DK',
+  de: 'de-DE',
+  el: 'el-GR',
+  en: 'en-US',
+  es: 'es-ES',
+  et: 'et-EE',
+  fi: 'fi-FI',
+  fr: 'fr-FR',
+  hr: 'hr-HR',
+  hu: 'hu-HU',
+  it: 'it-IT',
+  lt: 'lt-LT',
+  nl: 'nl-NL',
+  pl: 'pl-PL',
+  pt: 'pt-BR',
+  ro: 'ro-RO',
+  ru: 'ru-RU',
+  sk: 'sk-SK',
+  sl: 'sl-SI',
+  tr: 'tr-TR',
+  uk: 'uk-UA',
+  zh: 'zh-CN',
+};
+
 /* eslint-disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
