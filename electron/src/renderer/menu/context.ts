@@ -126,10 +126,7 @@ remote.getCurrentWebContents().on('context-menu', (_event, params) => {
   } else if (!!params.linkURL) {
     const copyContext = params.linkURL.replace(/^mailto:/, '');
     createDefaultMenu(copyContext).popup({window});
-  } else if (!!params.selectionText) {
-    const copyContext = params.selectionText;
-    createDefaultMenu(copyContext).popup({window});
-  } else if (params.editFlags.canCopy) {
+  } else if (!!params.selectionText || params.editFlags.canCopy) {
     const copyContext = params.selectionText;
     createDefaultMenu(copyContext).popup({window});
   } else if (params.editFlags.canSelectAll) {
