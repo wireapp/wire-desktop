@@ -17,75 +17,94 @@
  *
  */
 
-import {clipboard, ipcRenderer, Menu as ElectronMenu, MenuItemConstructorOptions, remote} from 'electron';
-const Menu = remote.Menu;
+import {
+  clipboard,
+  ipcRenderer,
+  Menu as ElectronMenu,
+  remote,
+  ContextMenuParams,
+  MenuItemConstructorOptions,
+  webContents,
+} from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
 import {config} from '../../settings/config';
+
+const Menu = remote.Menu;
 
 interface ElectronMenuWithImageAndTime extends ElectronMenu {
   image?: string;
   timestamp?: string;
 }
 
-let textMenu: ElectronMenu;
+const savePicture = async (url: RequestInfo, timestamp?: string): Promise<void> => {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': config.userAgent,
+    },
+  });
+  const arrayBuffer = await response.arrayBuffer();
+  ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(arrayBuffer), timestamp);
+};
 
-let copyContext = '';
+const createDefaultMenu = (copyContext: string) =>
+  Menu.buildFromTemplate([
+    {
+      click: () => clipboard.writeText(copyContext),
+      label: locale.getText('menuCopy'),
+    },
+  ]);
 
-const defaultMenu = Menu.buildFromTemplate([
-  {
-    click: () => clipboard.writeText(copyContext),
-    label: locale.getText('menuCopy'),
-  },
-]);
+const createTextMenu = (params: ContextMenuParams) => {
+  const template: MenuItemConstructorOptions[] = [
+    {
+      enabled: params.editFlags.canCut,
+      label: locale.getText('menuCut'),
+      role: 'cut',
+    },
+    {
+      enabled: params.editFlags.canCopy,
+      label: locale.getText('menuCopy'),
+      role: 'copy',
+    },
+    {
+      enabled: params.editFlags.canPaste,
+      label: locale.getText('menuPaste'),
+      role: 'paste',
+    },
+    {
+      type: 'separator',
+    },
+    {
+      enabled: params.editFlags.canSelectAll,
+      label: locale.getText('menuSelectAll'),
+      role: 'selectAll',
+    },
+  ];
 
-const textMenuTemplate: MenuItemConstructorOptions[] = [
-  {
-    label: locale.getText('menuCut'),
-    role: 'cut',
-  },
-  {
-    label: locale.getText('menuCopy'),
-    role: 'copy',
-  },
-  {
-    label: locale.getText('menuPaste'),
-    role: 'paste',
-  },
-  {
-    type: 'separator',
-  },
-  {
-    label: locale.getText('menuSelectAll'),
-    role: 'selectAll',
-  },
-];
-
-const createTextMenu = (dictionarySuggestions: string[], misspelledWord?: string) => {
-  const template = textMenuTemplate.slice();
-
-  if (dictionarySuggestions.length > 0) {
+  if (params.dictionarySuggestions.length > 0) {
     template.push({
       type: 'separator',
     });
 
-    for (const suggestion of dictionarySuggestions) {
+    for (const suggestion of params.dictionarySuggestions) {
       template.push({
         click: () => remote.getCurrentWindow().webContents.replaceMisspelling(suggestion),
         label: suggestion,
       });
     }
 
-    if (misspelledWord) {
+    if (params.misspelledWord) {
       template.push({
-        click: () => remote.getCurrentWindow().webContents.session.addWordToSpellCheckerDictionary(misspelledWord),
+        click: () =>
+          remote.getCurrentWindow().webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
         label: 'Add to dictionary',
       });
     }
   }
 
-  textMenu = Menu.buildFromTemplate(template);
+  return Menu.buildFromTemplate(template);
 };
 
 const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
@@ -96,32 +115,37 @@ const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
 ]);
 
 remote.getCurrentWebContents().on('context-menu', (_event, params) => {
-  copyContext = '';
+  const window = remote.getCurrentWindow();
 
   if (params.isEditable) {
-    createTextMenu(params.dictionarySuggestions, params.misspelledWord);
-    textMenu.popup({window: remote.getCurrentWindow()});
+    const textMenu = createTextMenu(params);
+    textMenu.popup({window});
   } else if (params.mediaType === 'image') {
     imageMenu.image = params.srcURL;
-    imageMenu.popup({window: remote.getCurrentWindow()});
+    imageMenu.popup({window});
   } else if (!!params.linkURL) {
-    copyContext = params.linkURL.replace(/^mailto:/, '');
-    defaultMenu.popup({window: remote.getCurrentWindow()});
+    const copyContext = params.linkURL.replace(/^mailto:/, '');
+    createDefaultMenu(copyContext).popup({window});
   } else if (!!params.selectionText) {
-    copyContext = params.selectionText;
-    defaultMenu.popup({window: remote.getCurrentWindow()});
+    const copyContext = params.selectionText;
+    createDefaultMenu(copyContext).popup({window});
   } else if (params.editFlags.canCopy) {
-    copyContext = params.selectionText;
-    defaultMenu.popup({window: remote.getCurrentWindow()});
+    const copyContext = params.selectionText;
+    createDefaultMenu(copyContext).popup({window});
+  } else if (params.editFlags.canSelectAll) {
+    let element: HTMLElement = document.elementFromPoint(params.x, params.y) as HTMLElement;
+
+    // Maybe we are in a code block _inside_ an element with the 'text' class?
+    // Code block can consist of many tags: CODE, PRE, SPAN, etc.
+    while (element && (element as any) !== document && !(element as HTMLElement).classList.contains('text')) {
+      element = element.parentNode as HTMLElement;
+    }
+
+    if (element) {
+      const copyContext = (params.selectionText || '').toString() || ((element as HTMLElement).innerText || '').trim();
+      if (copyContext) {
+        createDefaultMenu(copyContext).popup({window});
+      }
+    }
   }
 });
-
-const savePicture = async (url: RequestInfo, timestamp?: string) => {
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': config.userAgent,
-    },
-  });
-  const arrayBuffer = await response.arrayBuffer();
-  return ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(arrayBuffer), timestamp);
-};
