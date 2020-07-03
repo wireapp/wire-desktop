@@ -17,54 +17,94 @@
  *
  */
 
-import {clipboard, ipcRenderer, Menu as ElectronMenu, MenuItemConstructorOptions, remote} from 'electron';
-const Menu = remote.Menu;
+import {
+  clipboard,
+  ipcRenderer,
+  Menu as ElectronMenu,
+  remote,
+  ContextMenuParams,
+  MenuItemConstructorOptions,
+  webContents,
+} from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
 import {config} from '../../settings/config';
+
+const Menu = remote.Menu;
 
 interface ElectronMenuWithImageAndTime extends ElectronMenu {
   image?: string;
   timestamp?: string;
 }
 
-let textMenu: ElectronMenu;
+const savePicture = async (url: RequestInfo, timestamp?: string): Promise<void> => {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': config.userAgent,
+    },
+  });
+  const arrayBuffer = await response.arrayBuffer();
+  ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(arrayBuffer), timestamp);
+};
 
-let copyContext = '';
+const createDefaultMenu = (copyContext: string) =>
+  Menu.buildFromTemplate([
+    {
+      click: () => clipboard.writeText(copyContext),
+      label: locale.getText('menuCopy'),
+    },
+  ]);
 
-const defaultMenu = Menu.buildFromTemplate([
-  {
-    click: () => clipboard.writeText(copyContext),
-    label: locale.getText('menuCopy'),
-  },
-]);
+const createTextMenu = (params: ContextMenuParams) => {
+  const template: MenuItemConstructorOptions[] = [
+    {
+      enabled: params.editFlags.canCut,
+      label: locale.getText('menuCut'),
+      role: 'cut',
+    },
+    {
+      enabled: params.editFlags.canCopy,
+      label: locale.getText('menuCopy'),
+      role: 'copy',
+    },
+    {
+      enabled: params.editFlags.canPaste,
+      label: locale.getText('menuPaste'),
+      role: 'paste',
+    },
+    {
+      type: 'separator',
+    },
+    {
+      enabled: params.editFlags.canSelectAll,
+      label: locale.getText('menuSelectAll'),
+      role: 'selectAll',
+    },
+  ];
 
-const textMenuTemplate: MenuItemConstructorOptions[] = [
-  {
-    label: locale.getText('menuCut'),
-    role: 'cut',
-  },
-  {
-    label: locale.getText('menuCopy'),
-    role: 'copy',
-  },
-  {
-    label: locale.getText('menuPaste'),
-    role: 'paste',
-  },
-  {
-    type: 'separator',
-  },
-  {
-    label: locale.getText('menuSelectAll'),
-    role: 'selectAll',
-  },
-];
+  if (params.dictionarySuggestions.length > 0) {
+    template.push({
+      type: 'separator',
+    });
 
-const createTextMenu = () => {
-  const template = textMenuTemplate.slice();
-  textMenu = Menu.buildFromTemplate(template);
+    for (const suggestion of params.dictionarySuggestions) {
+      template.push({
+        click: () => remote.getCurrentWindow().webContents.replaceMisspelling(suggestion),
+        label: suggestion,
+      });
+    }
+
+    if (params.misspelledWord) {
+      template.push({
+        click: () =>
+          remote.getCurrentWindow().webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
+        label: 'Add to dictionary',
+      });
+    }
+  }
+
+  return Menu.buildFromTemplate(template);
 };
 
 const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
@@ -74,63 +114,35 @@ const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
   },
 ]);
 
-window.addEventListener(
-  'contextmenu',
-  event => {
-    const element = event.target as HTMLElement;
+remote.getCurrentWebContents().on('context-menu', (_event, params) => {
+  const window = remote.getCurrentWindow();
 
-    copyContext = '';
+  if (params.isEditable) {
+    const textMenu = createTextMenu(params);
+    textMenu.popup({window});
+  } else if (params.mediaType === 'image') {
+    imageMenu.image = params.srcURL;
+    imageMenu.popup({window});
+  } else if (!!params.linkURL) {
+    const copyContext = params.linkURL.replace(/^mailto:/, '');
+    createDefaultMenu(copyContext).popup({window});
+  } else if (!!params.selectionText || params.editFlags.canCopy) {
+    const copyContext = params.selectionText;
+    createDefaultMenu(copyContext).popup({window});
+  } else if (params.editFlags.canSelectAll) {
+    let element: HTMLElement = document.elementFromPoint(params.x, params.y) as HTMLElement;
 
-    if (element.nodeName === 'TEXTAREA' || element.nodeName === 'INPUT') {
-      event.preventDefault();
+    // Maybe we are in a code block _inside_ an element with the 'text' class?
+    // Code block can consist of many tags: CODE, PRE, SPAN, etc.
+    while (element && (element as any) !== document && !(element as HTMLElement).classList.contains('text')) {
+      element = element.parentNode as HTMLElement;
+    }
 
-      createTextMenu();
-      textMenu.popup({window: remote.getCurrentWindow()});
-    } else if (element.classList.contains('image-element') || element.classList.contains('detail-view-image')) {
-      event.preventDefault();
-      const elementSource = (element as HTMLImageElement).src;
-      const parentElement = element.closest('.message-body') as HTMLDivElement;
-      const timeElement = parentElement.getElementsByTagName('time')[0];
-      if (timeElement) {
-        const imageTimestamp = timeElement.dataset.timestamp;
-        imageMenu.timestamp = imageTimestamp;
-      }
-      imageMenu.image = elementSource;
-      imageMenu.popup({window: remote.getCurrentWindow()});
-    } else if (element.nodeName === 'A') {
-      event.preventDefault();
-
-      const elementHref = (element as HTMLLinkElement).href;
-      copyContext = elementHref.replace(/^mailto:/, '');
-      defaultMenu.popup({window: remote.getCurrentWindow()});
-    } else if (element.classList.contains('text')) {
-      event.preventDefault();
-
-      copyContext = (window.getSelection() || '').toString() || element.innerText.trim();
-      defaultMenu.popup({window: remote.getCurrentWindow()});
-    } else {
-      // Maybe we are in a code block _inside_ an element with the 'text' class?
-      // Code block can consist of many tags: CODE, PRE, SPAN, etc.
-      let parentNode = element.parentNode;
-      while (parentNode && parentNode !== document && !(parentNode as HTMLElement).classList.contains('text')) {
-        parentNode = parentNode.parentNode;
-      }
-      if (parentNode !== document) {
-        event.preventDefault();
-        copyContext = (window.getSelection() || '').toString() || (parentNode as HTMLElement).innerText.trim();
-        defaultMenu.popup({window: remote.getCurrentWindow()});
+    if (element) {
+      const copyContext = (params.selectionText || '').toString() || ((element as HTMLElement).innerText || '').trim();
+      if (copyContext) {
+        createDefaultMenu(copyContext).popup({window});
       }
     }
-  },
-  false,
-);
-
-const savePicture = async (url: RequestInfo, timestamp?: string) => {
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': config.userAgent,
-    },
-  });
-  const arrayBuffer = await response.arrayBuffer();
-  return ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(arrayBuffer), timestamp);
-};
+  }
+});

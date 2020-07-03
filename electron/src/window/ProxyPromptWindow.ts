@@ -58,6 +58,7 @@ const showWindow = async () => {
         nodeIntegrationInWorker: false,
         preload: preloadPath,
         session: session.fromPartition('proxy-prompt-window'),
+        spellcheck: false,
         webviewTag: false,
       },
       width: windowSize.WIDTH,

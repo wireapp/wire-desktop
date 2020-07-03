@@ -157,6 +157,7 @@ export class SingleSignOn {
         sandbox: true,
         scrollBounce: true,
         session: this.session,
+        spellcheck: false,
         textAreasAreResizable: false,
         webSecurity: true,
         webgl: false,

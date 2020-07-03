@@ -554,6 +554,7 @@ class ElectronWrapperInit {
             webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
+            webPreferences.spellcheck = true;
             webPreferences.webSecurity = true;
           });
           break;
