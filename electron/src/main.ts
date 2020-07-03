@@ -544,7 +544,7 @@ class ElectronWrapperInit {
 
       switch (contents.getType()) {
         case 'window': {
-          contents.on('will-attach-webview', (event, webPreferences, params) => {
+          contents.on('will-attach-webview', (_event, webPreferences, params) => {
             // Use secure defaults
             params.autosize = 'false';
             params.contextIsolation = 'true';
@@ -583,7 +583,17 @@ class ElectronWrapperInit {
             });
           }
 
-          contents.session.setSpellCheckerLanguages([locale.suportedSpellCheckLanguages[currentLocale]]);
+          try {
+            const availableSpellCheckerLanguages = contents.session.availableSpellCheckerLanguages;
+            const foundLanguages = locale.suportedSpellCheckLanguages[currentLocale].filter(language =>
+              availableSpellCheckerLanguages.includes(language),
+            );
+            contents.session.setSpellCheckerLanguages(foundLanguages);
+          } catch (error) {
+            logger.error(error);
+            contents.session.setSpellCheckerLanguages([]);
+          }
+
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
