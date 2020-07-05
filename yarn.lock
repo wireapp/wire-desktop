@@ -1455,7 +1455,7 @@
     "@types/qs" "*"
     "@types/range-parser" "*"
 
-"@types/express@4.17.6":
+"@types/express@4.17.6", "@types/express@^4.17.6":
   version "4.17.6"
   resolved "https://registry.npmjs.org/@types/express/-/express-4.17.6.tgz#6bce49e49570507b86ea1b07b806f04697fac45e"
   integrity sha512-n/mr9tZI83kd4azlPG5y997C/M4DNABK9yErhFM6hKdym4kkmd9j0vtsJyjFIwfRBxtrxZtAfGZCNRIBMFLK5w==
@@ -8583,11 +8583,12 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-raygun@0.12.0:
-  version "0.12.0"
-  resolved "https://registry.npmjs.org/raygun/-/raygun-0.12.0.tgz#66131de26f1aa37fc03f3c2b4d4723d2848835a5"
-  integrity sha512-JFuUBUt8Ntbjh18Yc7tUfvNzBPWRKvOsCYuLCyjEen2BQ9RIskt9OoH7JWBG8zRmwMpsaZV/dYuwTzb4BUmUSA==
+raygun@0.12.1:
+  version "0.12.1"
+  resolved "https://registry.npmjs.org/raygun/-/raygun-0.12.1.tgz#b7ab3a9ebbe615def352c0b2b5ff746a5b0f726e"
+  integrity sha512-8u6XGZubew6pxi9pyuB5LKEE9oBvdjjFu/5b35NiEkFGYJ25uE80EU95JYzOS8WgUL/0Xx8Pdf+T7bihdfyBGA==
   dependencies:
+    "@types/express" "^4.17.6"
     debug "^4.1.1"
     object-to-human-string "0.0.3"
     stack-trace "0.0.6"
