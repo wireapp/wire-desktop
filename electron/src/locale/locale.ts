@@ -19,7 +19,7 @@
 
 import * as Electron from 'electron';
 
-import {i18nLanguageIdentifier, Supportedi18nLanguage, Supportedi18nLanguageObject} from '../interfaces/';
+import {i18nLanguageIdentifier, SupportedI18nLanguage, SupportedI18nLanguageObject} from '../interfaces/';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
@@ -50,7 +50,7 @@ const zh_CN = require('../../locale/zh-CN');
 
 const app = Electron.app || Electron.remote.app;
 
-export const LANGUAGES: Supportedi18nLanguageObject = {
+export const LANGUAGES: SupportedI18nLanguageObject = {
   cs: cs_CZ,
   da: da_DK,
   de: de_DE,
@@ -76,7 +76,7 @@ export const LANGUAGES: Supportedi18nLanguageObject = {
   zh: zh_CN,
 };
 
-export const suportedSpellCheckLanguages: Record<Supportedi18nLanguage, string[]> = {
+export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[]> = {
   cs: ['cs', 'cs-CZ'],
   da: ['da', 'da-DK'],
   de: ['de', 'de-DE'],
@@ -103,6 +103,7 @@ export const suportedSpellCheckLanguages: Record<Supportedi18nLanguage, string[]
 };
 
 /* eslint-disable */
+/* cspell:disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
   cs: 'Čeština',
@@ -128,14 +129,15 @@ export const SUPPORTED_LANGUAGES = {
   uk: 'Українська',
   zh: '简体中文',
 };
+/* cspell:enable */
 /* eslint-enable */
 
-let current: Supportedi18nLanguage | undefined;
+let current: SupportedI18nLanguage | undefined;
 
-const getSupportedLanguageKeys = (): Supportedi18nLanguage[] =>
-  Object.keys(SUPPORTED_LANGUAGES) as Supportedi18nLanguage[];
+const getSupportedLanguageKeys = (): SupportedI18nLanguage[] =>
+  Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
 
-export const getCurrent = (): Supportedi18nLanguage => {
+export const getCurrent = (): SupportedI18nLanguage => {
   if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
     const defaultLocale = parseLocale(app.getLocale().substr(0, 2));
@@ -144,7 +146,7 @@ export const getCurrent = (): Supportedi18nLanguage => {
   return current;
 };
 
-const parseLocale = (locale: string): Supportedi18nLanguage => {
+const parseLocale = (locale: string): SupportedI18nLanguage => {
   const languageKeys = getSupportedLanguageKeys();
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };

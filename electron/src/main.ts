@@ -583,7 +583,7 @@ class ElectronWrapperInit {
 
           try {
             const availableSpellCheckerLanguages = contents.session.availableSpellCheckerLanguages;
-            const foundLanguages = locale.suportedSpellCheckLanguages[currentLocale].filter(language =>
+            const foundLanguages = locale.supportedSpellCheckLanguages[currentLocale].filter(language =>
               availableSpellCheckerLanguages.includes(language),
             );
             contents.session.setSpellCheckerLanguages(foundLanguages);

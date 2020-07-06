@@ -107,6 +107,6 @@ export type i18nLanguageIdentifier =
 
 export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 
-export type Supportedi18nLanguage = keyof typeof SupportedLanguages;
+export type SupportedI18nLanguage = keyof typeof SupportedLanguages;
 
-export type Supportedi18nLanguageObject = Record<Supportedi18nLanguage, i18nStrings>;
+export type SupportedI18nLanguageObject = Record<SupportedI18nLanguage, i18nStrings>;

@@ -21,7 +21,7 @@ import autoLaunch = require('auto-launch');
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell} from 'electron';
 import * as path from 'path';
 
-import {Supportedi18nLanguage} from '../interfaces/';
+import {SupportedI18nLanguage} from '../interfaces/';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
@@ -49,7 +49,7 @@ const separatorTemplate: MenuItemConstructorOptions = {
   type: 'separator',
 };
 
-const createLanguageTemplate = (languageCode: Supportedi18nLanguage): MenuItemConstructorOptions => {
+const createLanguageTemplate = (languageCode: SupportedI18nLanguage): MenuItemConstructorOptions => {
   return {
     click: () => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
@@ -59,7 +59,7 @@ const createLanguageTemplate = (languageCode: Supportedi18nLanguage): MenuItemCo
 
 const createLanguageSubmenu = (): MenuItemConstructorOptions[] => {
   return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage =>
-    createLanguageTemplate(supportedLanguage as Supportedi18nLanguage),
+    createLanguageTemplate(supportedLanguage as SupportedI18nLanguage),
   );
 };
 
@@ -344,7 +344,7 @@ const linuxTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: Supportedi18nLanguage) => {
+const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: SupportedI18nLanguage) => {
   for (const item of template) {
     if (item.submenu) {
       processMenu(item.submenu as Iterable<MenuItemConstructorOptions>, language);
@@ -356,7 +356,7 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: S
   }
 };
 
-const changeLocale = async (language: Supportedi18nLanguage): Promise<void> => {
+const changeLocale = async (language: SupportedI18nLanguage): Promise<void> => {
   locale.setLocale(language);
   const {response} = await dialog.showMessageBox({
     buttons: [

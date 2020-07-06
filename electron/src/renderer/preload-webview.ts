@@ -193,7 +193,7 @@ const registerEvents = (callback: () => void) => {
   const HALF_SECOND = 500;
 
   const intervalId = setInterval(() => {
-    logger.info('Attemting to register event handlers...');
+    logger.info('Attempting to register event handlers...');
     if (window.amplify && window.wire && window.z?.event) {
       clearInterval(intervalId);
       return callback();
