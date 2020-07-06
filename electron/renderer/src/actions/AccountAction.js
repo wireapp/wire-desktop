@@ -19,7 +19,7 @@
 
 import {initiateSSO, switchAccount} from './';
 import {config} from '../../../dist/settings/config';
-import * as EVENT_TYPE from '../lib/eventType';
+import {EVENT_TYPE} from '../../../dist/lib/eventType';
 import {AccountSelector} from '../selector/AccountSelector';
 
 export class AccountAction {

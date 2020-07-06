@@ -20,7 +20,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import * as EVENT_TYPE from '../lib/eventType';
+import {EVENT_TYPE} from '../../../dist/lib/eventType';
 import {
   addAccountWithSession,
   setAccountContextHidden,

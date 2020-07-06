@@ -21,7 +21,7 @@ import React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
 
-import * as EVENT_TYPE from './lib/eventType';
+import {EVENT_TYPE} from '../../dist/lib/eventType';
 import App from './components/App';
 import configureStore from './configureStore';
 import actionRoot from './actions';
