@@ -399,11 +399,7 @@ const handleAppEvents = () => {
         ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
           logger.log('Proxy prompt was canceled');
 
-          await webContents.session.setProxy({
-            pacScript: '',
-            proxyBypassRules: '',
-            proxyRules: '',
-          });
+          await webContents.session.setProxy({});
 
           try {
             main.reload();
@@ -484,18 +480,16 @@ const handlePortableFlags = () => {
   }
 };
 
-const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
+const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: Electron.WebContents) => {
   const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
   const proxyProtocol = authenticatedProxyDetails.protocol;
   const isSocksProxy = proxyProtocol === 'socks4:' || proxyProtocol === 'socks5:';
 
   logger.info(`Setting proxy on a window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
-  await webContents.session.setProxy({
-    pacScript: '',
-    proxyBypassRules: '',
-    proxyRules: isSocksProxy ? `socks=${proxyURL}` : `http=${proxyURL};https=${proxyURL}`,
-  });
+
+  const proxyRules = isSocksProxy ? `socks=${proxyURL}` : `http=${proxyURL};https=${proxyURL}`;
+  await webContents.session.setProxy({pacScript: '', proxyBypassRules: '', proxyRules});
 };
 
 class ElectronWrapperInit {

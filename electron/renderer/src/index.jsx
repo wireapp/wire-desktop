@@ -17,15 +17,16 @@
  *
  */
 
-import './Index.css';
-
 import React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
+
 import * as EVENT_TYPE from './lib/eventType';
 import App from './components/App';
 import configureStore from './configureStore';
 import actionRoot from './actions';
+
+import './Index.css';
 
 const store = configureStore({actions: actionRoot});
 

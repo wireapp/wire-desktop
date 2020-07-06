@@ -18,6 +18,7 @@
  */
 
 import * as assert from 'assert';
+
 import {suggestFileName} from './download';
 
 describe('download', () => {

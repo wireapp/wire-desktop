@@ -17,8 +17,6 @@
  *
  */
 
-import './Sidebar.css';
-
 import React from 'react';
 import {connect} from 'react-redux';
 
@@ -36,6 +34,8 @@ import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
 import {AccountSelector} from '../selector/AccountSelector';
 import {ContextMenuSelector} from '../selector/ContextMenuSelector';
+
+import './Sidebar.css';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();

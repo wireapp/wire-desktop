@@ -17,15 +17,13 @@
  *
  */
 
-import './Webview.css';
-
 import React, {useEffect, useState, useRef} from 'react';
 import {ContainerSM, Text, H1, Logo, TextLink} from '@wireapp/react-ui-kit';
 import {SVGIcon} from '@wireapp/react-ui-kit/dist/Icon/SVGIcon';
+import {connect} from 'react-redux';
 
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {WindowUrl} from '../../../src/window/WindowUrl';
-import {connect} from 'react-redux';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -36,6 +34,8 @@ import {
 } from '../actions';
 import {getText} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
+
+import './Webview.css';
 
 const getEnvironmentUrl = account => {
   const currentLocation = new URL(window.location.href);
@@ -56,12 +56,10 @@ const getEnvironmentUrl = account => {
 
 const Webview = ({
   account,
-  accounts,
   onUnreadCountUpdated,
   abortAccountCreation,
   resetIdentity,
   switchAccount,
-  updateAccountBadgeCount,
   updateAccountData,
   updateAccountLifecycle,
 }) => {

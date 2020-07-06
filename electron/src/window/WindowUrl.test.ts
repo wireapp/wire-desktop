@@ -18,6 +18,7 @@
  */
 
 import * as assert from 'assert';
+
 import {WindowUrl} from './WindowUrl';
 
 describe('WindowUrl', () => {

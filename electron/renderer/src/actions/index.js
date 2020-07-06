@@ -17,8 +17,6 @@
  *
  */
 
-/* eslint-disable no-console */
-
 import * as Joi from '@hapi/joi';
 
 import {config} from '../../../dist/settings/config';
