@@ -345,7 +345,7 @@ const handleAppEvents = () => {
     isQuitting = true;
   });
 
-  app.on('login', async (event, webContents, _request, authInfo, callback) => {
+  app.on('login', async (event, webContents, _responseDetails, authInfo, callback) => {
     if (authInfo.isProxy) {
       event.preventDefault();
       const {host, port} = authInfo;
@@ -359,18 +359,21 @@ const handleAppEvents = () => {
         } = systemProxySettings;
         proxyInfoArg = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
         logger.log('Applying proxy settings on the main window...');
+
         await applyProxySettings(proxyInfoArg, main.webContents);
         return callback(username, password);
       }
 
       if (proxyInfoArg) {
         const hasCredentials = proxyInfoArg.username && proxyInfoArg.password;
+
         if (hasCredentials) {
           const {username, password} = proxyInfoArg;
           logger.info('Sending provided credentials to authenticated proxy ...');
           await applyProxySettings(proxyInfoArg, main.webContents);
           return callback(username, password);
         }
+
         ipcMain.once(
           EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
           async (_event, promptData: {password: string; username: string}) => {
