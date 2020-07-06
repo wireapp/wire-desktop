@@ -52,7 +52,7 @@
     "@types/sinon": "9.0.4",
     "@typescript-eslint/eslint-plugin": "2.34.0",
     "@typescript-eslint/parser": "2.34.0",
-    "@wireapp/copy-config": "1.0.12",
+    "@wireapp/copy-config": "1.0.13",
     "@wireapp/eslint-config": "1.7.0",
     "@wireapp/prettier-config": "0.3.0",
     "aws-sdk": "2.706.0",
