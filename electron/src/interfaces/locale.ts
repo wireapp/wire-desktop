@@ -48,6 +48,7 @@ export type i18nLanguageIdentifier =
   | 'menuDelete'
   | 'menuDownloadDebugLogs'
   | 'menuEdit'
+  | 'menuEnableSpellChecking'
   | 'menuFullScreen'
   | 'menuHelp'
   | 'menuHideApp'

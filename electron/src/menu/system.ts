@@ -78,6 +78,13 @@ const signOutTemplate: MenuItemConstructorOptions = {
   label: locale.getText('menuSignOut'),
 };
 
+const spellingTemplate: MenuItemConstructorOptions = {
+  checked: settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true),
+  click: () => toggleSpellChecking(),
+  label: locale.getText('menuEnableSpellChecking'),
+  type: 'checkbox',
+};
+
 const conversationTemplate: MenuItemConstructorOptions = {
   label: `&${locale.getText('menuConversation')}`,
   submenu: [
@@ -299,6 +306,8 @@ const darwinTemplate: MenuItemConstructorOptions = {
       role: 'unhide',
     },
     separatorTemplate,
+    spellingTemplate,
+    separatorTemplate,
     signOutTemplate,
     {
       accelerator: 'Command+Q',
@@ -319,6 +328,8 @@ const win32Template: MenuItemConstructorOptions = {
     localeTemplate,
     toggleAutoLaunchTemplate,
     separatorTemplate,
+    spellingTemplate,
+    separatorTemplate,
     signOutTemplate,
     {
       accelerator: 'Alt+F4',
@@ -334,6 +345,8 @@ const linuxTemplate: MenuItemConstructorOptions = {
     toggleAutoLaunchTemplate,
     separatorTemplate,
     localeTemplate,
+    separatorTemplate,
+    spellingTemplate,
     separatorTemplate,
     signOutTemplate,
     {
@@ -356,8 +369,7 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: S
   }
 };
 
-const changeLocale = async (language: SupportedI18nLanguage): Promise<void> => {
-  locale.setLocale(language);
+const showRestartMessageBox = async () => {
   const {response} = await dialog.showMessageBox({
     buttons: [
       locale.getText('restartLater'),
@@ -368,8 +380,13 @@ const changeLocale = async (language: SupportedI18nLanguage): Promise<void> => {
     type: 'info',
   });
   if (response === 1) {
-    return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
+    await (EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch());
   }
+};
+
+const changeLocale = async (language: SupportedI18nLanguage): Promise<void> => {
+  locale.setLocale(language);
+  await showRestartMessageBox();
 };
 
 export const createMenu = (isFullScreen: boolean): Menu => {
@@ -461,6 +478,12 @@ export const toggleMenuBar = (): void => {
     mainBrowserWindow.setMenuBarVisibility(autoHide);
     settings.save(SettingsType.SHOW_MENU_BAR, autoHide);
   }
+};
+
+export const toggleSpellChecking = async (): Promise<void> => {
+  const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
+  settings.save(SettingsType.ENABLE_SPELL_CHECKING, !enableSpellChecking);
+  await showRestartMessageBox();
 };
 
 export const registerGlobalShortcuts = (): void => {
