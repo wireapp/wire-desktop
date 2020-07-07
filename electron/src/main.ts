@@ -96,7 +96,7 @@ const currentLocale = locale.getCurrent();
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
-  app.quit();
+  app.exit();
 }
 
 logger.info(`Initializing ${config.name} v${config.version} ...`);
@@ -341,7 +341,6 @@ const handleAppEvents = () => {
   });
 
   app.on('before-quit', () => {
-    settings.persistToFile();
     isQuitting = true;
   });
 
