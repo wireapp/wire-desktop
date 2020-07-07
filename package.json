@@ -69,7 +69,7 @@
     "dotenv": "8.2.0",
     "electron": "9.1.0",
     "electron-builder": "20.44.4",
-    "electron-mocha": "8.2.2",
+    "electron-mocha": "9.0.0",
     "electron-osx-sign": "0.4.17",
     "electron-packager": "15.0.0",
     "electron-winstaller": "4.0.0",
