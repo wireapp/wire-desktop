@@ -56,22 +56,18 @@ export class AccountAction {
 
   switchWebview = accountIndex => {
     return async (dispatch, getState) => {
-      try {
-        const account = AccountSelector.getAccounts(getState())[Math.max(accountIndex, 0)];
-        dispatch(switchAccount(account.id));
+      const account = AccountSelector.getAccounts(getState())[Math.max(accountIndex, 0)];
+      dispatch(switchAccount(account.id));
 
-        // Note: We need to focus window first to properly set focus
-        // on the webview with shortcuts like Cmd+1/2/3
-        window.blur();
-        window.focus();
+      // Note: We need to focus window first to properly set focus
+      // on the webview with shortcuts like Cmd+1/2/3
+      window.blur();
+      window.focus();
 
-        const webview = document.querySelector(`.Webview[data-accountid="${account.id}"]`);
-        if (webview) {
-          webview.blur();
-          webview.focus();
-        }
-      } catch (error) {
-        throw error;
+      const webview = document.querySelector(`.Webview[data-accountid="${account.id}"]`);
+      if (webview) {
+        webview.blur();
+        webview.focus();
       }
     };
   };
