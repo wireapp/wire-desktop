@@ -24,7 +24,7 @@ import {
   remote,
   ContextMenuParams,
   MenuItemConstructorOptions,
-  webContents,
+  WebContents,
 } from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
@@ -56,7 +56,7 @@ const createDefaultMenu = (copyContext: string) =>
     },
   ]);
 
-const createTextMenu = (params: ContextMenuParams) => {
+const createTextMenu = (params: ContextMenuParams, webContents: WebContents) => {
   const template: MenuItemConstructorOptions[] = [
     {
       enabled: params.editFlags.canCut,
@@ -90,15 +90,14 @@ const createTextMenu = (params: ContextMenuParams) => {
 
     for (const suggestion of params.dictionarySuggestions) {
       template.push({
-        click: () => remote.getCurrentWindow().webContents.replaceMisspelling(suggestion),
+        click: () => webContents.replaceMisspelling(suggestion),
         label: suggestion,
       });
     }
 
     if (params.misspelledWord) {
       template.push({
-        click: () =>
-          remote.getCurrentWindow().webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
+        click: () => webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
         label: 'Add to dictionary',
       });
     }
@@ -114,11 +113,13 @@ const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
   },
 ]);
 
-remote.getCurrentWebContents().on('context-menu', (_event, params) => {
+const webContents = remote.getCurrentWebContents();
+
+webContents.on('context-menu', (_event, params) => {
   const window = remote.getCurrentWindow();
 
   if (params.isEditable) {
-    const textMenu = createTextMenu(params);
+    const textMenu = createTextMenu(params, webContents);
     textMenu.popup({window});
   } else if (params.mediaType === 'image') {
     imageMenu.image = params.srcURL;
