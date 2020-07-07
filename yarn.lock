@@ -4198,10 +4198,10 @@ electron-builder@20.44.4:
     update-notifier "^3.0.0"
     yargs "^13.2.4"
 
-electron-mocha@9.0.0:
-  version "9.0.0"
-  resolved "https://registry.npmjs.org/electron-mocha/-/electron-mocha-9.0.0.tgz#5661e2f242b271e643bb1751fb8acfd726154344"
-  integrity sha512-AWCNsl2iXs4+hmDNcYlkZ8+dsjsPbWtUcwn357jkWKQy+y9wiJuNWHSZpUoRcb/d3Hf72EIsWdi6cRZ9uFYV6A==
+electron-mocha@9.0.1:
+  version "9.0.1"
+  resolved "https://registry.npmjs.org/electron-mocha/-/electron-mocha-9.0.1.tgz#bb9b1f9a02d5a063b411e8aa0c1af7cddb31421f"
+  integrity sha512-PZesjGhlK2b62EMdqwbslD50leFn+/BeSdtNbV6ChRBSJxcGxQyxSmNehlxPV1K4RsWwLRKOKFPRm3rN3L1qEg==
   dependencies:
     ansi-colors "^4.1.1"
     electron-window "^0.8.0"
