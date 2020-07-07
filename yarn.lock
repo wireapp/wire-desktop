@@ -1340,6 +1340,13 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@types/adm-zip@0.4.33":
+  version "0.4.33"
+  resolved "https://registry.npmjs.org/@types/adm-zip/-/adm-zip-0.4.33.tgz#ea5b94f771443f655613b64f920c0555867200dd"
+  integrity sha512-WM0DCWFLjXtddl0fu0+iN2ZF+qz8RF9RddG5OSy/S90AQz01Fu8lHn/3oTIZDxvG8gVcnBLAHMHOdBLbV6m6Mw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/auto-launch@5.0.1":
   version "5.0.1"
   resolved "https://registry.npmjs.org/@types/auto-launch/-/auto-launch-5.0.1.tgz#388a047edc0e754d8e8978cbd9ed4672b36be2c4"
@@ -1965,6 +1972,11 @@ adm-zip@0.4.14:
   version "0.4.14"
   resolved "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.14.tgz#2cf312bcc9f8875df835b0f6040bd89be0a727a9"
   integrity sha512-/9aQCnQHF+0IiCl0qhXoK7qs//SwYE7zX8lsr/DNk1BRAHYxeLZPL4pguwK29gUEqasYQjqPtEpDRSWEkdHn9g==
+
+adm-zip@0.4.16:
+  version "0.4.16"
+  resolved "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.16.tgz#cf4c508fdffab02c269cbc7f471a875f05570365"
+  integrity sha512-TFi4HBKSGfIKsK5YCkKaaFG2m4PEDyViZmEwof3MTIgzimHLto6muaHVpbrljdIvIrFZzEq/p4nafOeLcYegrg==
 
 aggregate-error@^3.0.0:
   version "3.0.1"
