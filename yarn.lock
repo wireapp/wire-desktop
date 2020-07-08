@@ -1968,11 +1968,6 @@ acorn@^7.1.1:
   resolved "https://registry.npmjs.org/acorn/-/acorn-7.1.1.tgz#e35668de0b402f359de515c5482a1ab9f89a69bf"
   integrity sha512-add7dgA5ppRPxCFJoAGfMDi7PIBXq1RtGo7BhbLaxwrXPOmw8gq48Y9ozT01hUKy9byMjlR20EJhu5zlkErEkg==
 
-adm-zip@0.4.14:
-  version "0.4.14"
-  resolved "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.14.tgz#2cf312bcc9f8875df835b0f6040bd89be0a727a9"
-  integrity sha512-/9aQCnQHF+0IiCl0qhXoK7qs//SwYE7zX8lsr/DNk1BRAHYxeLZPL4pguwK29gUEqasYQjqPtEpDRSWEkdHn9g==
-
 adm-zip@0.4.16:
   version "0.4.16"
   resolved "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.16.tgz#cf4c508fdffab02c269cbc7f471a875f05570365"
@@ -10891,20 +10886,6 @@ winreg@1.2.4:
   version "1.2.4"
   resolved "https://registry.npmjs.org/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
-
-"wire-web-config-internal@https://github.com/wireapp/wire-web-config-default#v0.25.2":
-  version "0.25.2"
-  resolved "https://github.com/wireapp/wire-web-config-default#b76562ac53cf5c775e53b5355539ddaaf7532dfc"
-  dependencies:
-    adm-zip "0.4.14"
-    sort-json "2.0.0"
-
-"wire-web-config-production@https://github.com/wireapp/wire-web-config-wire#v0.25.3-0":
-  version "0.25.3-0"
-  resolved "https://github.com/wireapp/wire-web-config-wire#ef6306ca27c8e9aeaa2ee27c16f134d7a1dd7256"
-  dependencies:
-    adm-zip "0.4.14"
-    sort-json "2.0.0"
 
 word-wrap@~1.2.3:
   version "1.2.3"
