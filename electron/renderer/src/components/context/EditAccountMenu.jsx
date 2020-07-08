@@ -46,9 +46,10 @@ const EditAccountMenu = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...co
         </ContextMenuItem>
       )}
       <ContextMenuItem
-        onClick={async () => {
-          await window.sendDeleteAccount(accountId, sessionId);
-          connected.abortAccountCreation(accountId);
+        onClick={() => {
+          window.sendDeleteAccount(accountId, sessionId).then(() => {
+            connected.abortAccountCreation(accountId);
+          });
         }}
       >
         {getText('wrapperRemoveAccount')}

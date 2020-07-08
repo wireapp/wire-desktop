@@ -187,9 +187,10 @@ const Webview = ({
     };
   }, []);
 
-  const deleteWebview = async account => {
-    await window.sendDeleteAccount(account.id, account.sessionID);
-    abortAccountCreation(account.id);
+  const deleteWebview = account => {
+    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
+      abortAccountCreation(account.id);
+    });
   };
 
   return (
