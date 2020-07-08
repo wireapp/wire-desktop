@@ -56,20 +56,22 @@ const createDefaultMenu = (copyContext: string) =>
     },
   ]);
 
-const createTextMenu = (params: ContextMenuParams, webContents: WebContents) => {
+const createTextMenu = (params: ContextMenuParams, webContents: WebContents): ElectronMenu => {
+  const {editFlags, dictionarySuggestions} = params;
+
   const template: MenuItemConstructorOptions[] = [
     {
-      enabled: params.editFlags.canCut,
+      enabled: editFlags.canCut,
       label: locale.getText('menuCut'),
       role: 'cut',
     },
     {
-      enabled: params.editFlags.canCopy,
+      enabled: editFlags.canCopy,
       label: locale.getText('menuCopy'),
       role: 'copy',
     },
     {
-      enabled: params.editFlags.canPaste,
+      enabled: editFlags.canPaste,
       label: locale.getText('menuPaste'),
       role: 'paste',
     },
@@ -77,28 +79,21 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents) => 
       type: 'separator',
     },
     {
-      enabled: params.editFlags.canSelectAll,
+      enabled: editFlags.canSelectAll,
       label: locale.getText('menuSelectAll'),
       role: 'selectAll',
     },
   ];
 
-  if (params.dictionarySuggestions.length > 0) {
+  if (dictionarySuggestions.length > 0) {
     template.push({
       type: 'separator',
     });
 
-    for (const suggestion of params.dictionarySuggestions) {
+    for (const suggestion of dictionarySuggestions) {
       template.push({
         click: () => webContents.replaceMisspelling(suggestion),
         label: suggestion,
-      });
-    }
-
-    if (params.misspelledWord) {
-      template.push({
-        click: () => webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
-        label: 'Add to dictionary',
       });
     }
   }
@@ -131,7 +126,7 @@ webContents.on('context-menu', (_event, params) => {
     const copyContext = params.selectionText;
     createDefaultMenu(copyContext).popup({window});
   } else if (params.editFlags.canSelectAll) {
-    let element: HTMLElement = document.elementFromPoint(params.x, params.y) as HTMLElement;
+    let element = document.elementFromPoint(params.x, params.y) as HTMLElement;
 
     // Maybe we are in a code block _inside_ an element with the 'text' class?
     // Code block can consist of many tags: CODE, PRE, SPAN, etc.

@@ -98,7 +98,7 @@ const setupIpcInterface = (): void => {
         return reject(`Webview for account "${accountID}" does not exist`);
       }
 
-      console.info(`Processing deletion of "${accountID}"`);
+      logger.info(`Processing deletion of "${accountID}"`);
       const viewInstanceId = accountWebview.getWebContentsId();
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
