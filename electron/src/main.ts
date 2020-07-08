@@ -523,7 +523,7 @@ class ElectronWrapperInit {
     };
 
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string) => {
-      // Ensure navigation is to a whitelisted domain
+      // Ensure navigation is to an allowed domain
       if (OriginValidator.isMatchingHost(url, baseUrl)) {
         this.logger.log(`Navigating inside webview. URL: ${url}`);
       } else {

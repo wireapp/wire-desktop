@@ -39,7 +39,7 @@ const iconPath = path.join(APP_PATH, 'img', iconFileName);
 
 // Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));
-const ABOUT_WINDOW_WHITELIST = [
+const ABOUT_WINDOW_ALLOWLIST = [
   ABOUT_HTML,
   fileUrl(path.join(APP_PATH, 'img/logo.256.png')),
   fileUrl(path.join(APP_PATH, 'css/about.css')),
@@ -87,7 +87,7 @@ const showWindow = async () => {
     // see https://github.com/electron/electron/issues/8841
     aboutWindow.webContents.session.webRequest.onBeforeRequest(async ({url}, callback) => {
       // Only allow those URLs to be opened within the window
-      if (ABOUT_WINDOW_WHITELIST.includes(url)) {
+      if (ABOUT_WINDOW_ALLOWLIST.includes(url)) {
         return callback({cancel: false});
       }
 
