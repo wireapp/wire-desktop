@@ -644,20 +644,20 @@ class ElectronWrapperInit {
   }
 }
 
-customProtocolHandler.registerCoreProtocol();
-Raygun.initClient();
-handlePortableFlags();
-lifecycle
-  .checkSingleInstance()
-  .then(() => lifecycle.initSquirrelListener())
-  .catch(error => logger.error(error));
+(async () => {
+  customProtocolHandler.registerCoreProtocol();
+  Raygun.initClient();
+  handlePortableFlags();
+  await lifecycle.checkSingleInstance();
+  await lifecycle.initSquirrelListener();
 
-// Stop further execution on update to prevent second tray icon
-if (lifecycle.isFirstInstance) {
-  addLinuxWorkarounds();
-  bindIpcEvents();
-  handleAppEvents();
-  renameWebViewLogFiles();
-  fs.ensureFileSync(LOG_FILE);
-  new ElectronWrapperInit().run().catch(error => logger.error(error));
-}
+  // Stop further execution on update to prevent second tray icon
+  if (lifecycle.isFirstInstance) {
+    addLinuxWorkarounds();
+    bindIpcEvents();
+    handleAppEvents();
+    renameWebViewLogFiles();
+    await fs.ensureFile(LOG_FILE);
+    await new ElectronWrapperInit().run();
+  }
+})().catch(error => logger.error(error));
