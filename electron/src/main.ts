@@ -625,7 +625,15 @@ class ElectronWrapperInit {
 
           contents.on('before-input-event', (_event, input) => {
             if (input.type === 'keyUp' && input.key === 'Alt') {
-              systemMenu.toggleMenuBar();
+              const mainBrowserWindow = WindowManager.getPrimaryWindow();
+
+              if (mainBrowserWindow) {
+                const isAutoHide = mainBrowserWindow.isMenuBarAutoHide();
+                const isVisible = mainBrowserWindow.isMenuBarVisible();
+                if (isAutoHide) {
+                  mainBrowserWindow.setMenuBarVisibility(!isVisible);
+                }
+              }
             }
           });
 
