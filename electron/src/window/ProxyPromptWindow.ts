@@ -29,7 +29,7 @@ import {config} from '../settings/config';
 const appPath = path.join(app.getAppPath(), config.electronDirectory);
 
 const promptHtmlPath = fileUrl(path.join(appPath, 'html/proxy-prompt.html'));
-const proxyPromptWindowWhitelist = [promptHtmlPath, fileUrl(path.join(appPath, 'css/proxy-prompt.css'))];
+const proxyPromptWindowAllowList = [promptHtmlPath, fileUrl(path.join(appPath, 'css/proxy-prompt.css'))];
 const preloadPath = path.join(appPath, 'dist/renderer/menu/preload-proxy-prompt.js');
 
 const windowSize = {
@@ -70,7 +70,7 @@ const showWindow = async () => {
     // see https://github.com/electron/electron/issues/8841
     proxyPromptWindow.webContents.session.webRequest.onBeforeRequest(async ({url}, callback) => {
       // Only allow those URLs to be opened within the window
-      if (proxyPromptWindowWhitelist.includes(url)) {
+      if (proxyPromptWindowAllowList.includes(url)) {
         return callback({cancel: false});
       }
 
