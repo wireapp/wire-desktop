@@ -357,26 +357,17 @@ const handleAppEvents = () => {
           protocol,
         } = systemProxySettings;
         proxyInfoArg = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
-        logger.log('Applying proxy settings on the main window...');
+        logger.log('Found system proxy settings, applying settings on the main window...');
 
         await applyProxySettings(proxyInfoArg, main.webContents);
         return callback(username, password);
       }
 
       if (proxyInfoArg) {
-        const hasCredentials = proxyInfoArg.username && proxyInfoArg.password;
-
-        if (hasCredentials) {
-          const {username, password} = proxyInfoArg;
-          logger.info('Sending provided credentials to authenticated proxy ...');
-          await applyProxySettings(proxyInfoArg, main.webContents);
-          return callback(username, password);
-        }
-
         ipcMain.once(
           EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
           async (_event, promptData: {password: string; username: string}) => {
-            logger.log('Proxy prompt was submitted');
+            logger.log('Proxy info was submitted via prompt');
 
             const {username, password} = promptData;
             // remove the colon from the protocol to align it with other usages of `generateProxyURL`
@@ -389,7 +380,7 @@ const handleAppEvents = () => {
               },
             );
 
-            logger.log('Applying proxy settings on the main window...');
+            logger.log('Proxy prompt was submitted, applying proxy settings on the main window...');
             await applyProxySettings(proxyInfoArg, main.webContents);
             callback(username, password);
           },
@@ -484,7 +475,7 @@ const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: E
   const proxyProtocol = authenticatedProxyDetails.protocol;
   const isSocksProxy = proxyProtocol === 'socks4:' || proxyProtocol === 'socks5:';
 
-  logger.info(`Setting proxy on a window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
+  logger.info(`Setting proxy on the window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
 
   const proxyRules = isSocksProxy ? `socks=${proxyURL}` : `http=${proxyURL};https=${proxyURL}`;
@@ -535,11 +526,6 @@ class ElectronWrapperInit {
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
     app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
-      if (proxyInfoArg?.origin && contents.session) {
-        this.logger.log('Applying proxy settings on a webview...');
-        await applyProxySettings(proxyInfoArg, contents);
-      }
-
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
@@ -558,6 +544,11 @@ class ElectronWrapperInit {
           break;
         }
         case 'webview': {
+          if (proxyInfoArg?.origin && contents.session) {
+            this.logger.log('Found proxy settings in arguments, applying settings on the webview...');
+            await applyProxySettings(proxyInfoArg, contents);
+          }
+
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
