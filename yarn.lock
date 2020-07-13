@@ -1562,9 +1562,9 @@
   integrity sha512-ZvO2tAcjmMi8V/5Z3JsyofMe3hasRcaw88cto5etSVMwVQfeivGAlEYmaQgceUSVYFofVjT+ioHsATjdWcFt1w==
 
 "@types/node@*", "@types/node@^12.0.12", "@types/node@~12":
-  version "12.12.47"
-  resolved "https://registry.npmjs.org/@types/node/-/node-12.12.47.tgz#5007b8866a2f9150de82335ca7e24dd1d59bdfb5"
-  integrity sha512-yzBInQFhdY8kaZmqoL2+3U5dSTMrKaYcb561VU+lDzAYvqt+2lojvBEy+hmpSNuXnPTx7m9+04CzWYOUqWME2A==
+  version "12.12.50"
+  resolved "https://registry.npmjs.org/@types/node/-/node-12.12.50.tgz#e9b2e85fafc15f2a8aa8fdd41091b983da5fd6ee"
+  integrity sha512-5ImO01Fb8YsEOYpV+aeyGYztcYcjGsBvN4D7G5r1ef2cuQOpymjWNQi5V0rKHE6PC2ru3HkoUr/Br2/8GUA84w==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -1865,10 +1865,10 @@
   dependencies:
     jsrsasign "8.0.20"
 
-"@wireapp/commons@3.5.4":
-  version "3.5.4"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.5.4.tgz#a3e399be61c61f02b7ea8373922109b4749a9e5b"
-  integrity sha512-GJjbcAQ2ZAgBgXhAkYumG7h2nYvfSSoemhro3kp64EAvo+tMf2TaXtdjWF7FmurdnqVWhMNRVJUkqYJ+/k3UEg==
+"@wireapp/commons@3.6.0":
+  version "3.6.0"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.6.0.tgz#3147352ea49502788c87192dae4a8a374df3c66d"
+  integrity sha512-RoQBLlh4cdPQ+KaSta7KgvYsuVpAavvTl1BjSnJ7uoX9+8huYApnufyp/lj+FFxBaSX7XHptaCUREvO8vo4wLA==
   dependencies:
     "@types/fs-extra" "8.1.0"
     "@types/node" "~12"
@@ -1902,14 +1902,14 @@
   resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.3.0.tgz#e8129b31021c81d90d564d9c4ff0f7f7b514e943"
   integrity sha512-BFokvX4NZlkhWq5/OoJUCS8Iels+MeRgzpd5V9QR3hj5swwCFGxJOAL7soPXkSNWo91gI1qwiTp8szB1O9aCfQ==
 
-"@wireapp/react-ui-kit@7.30.3":
-  version "7.30.3"
-  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.30.3.tgz#5a2198b184bf89bfb5b9a18afd3cb7835bd4305d"
-  integrity sha512-VJ9ELhso/xBxwEC10LmeQ9zd4nJpQWlKeFMnzWW0+w4wnOpAYQw+vqvpzytCIbjQbE2ETEiDMw0oEnyAlpauwA==
+"@wireapp/react-ui-kit@7.32.2":
+  version "7.32.2"
+  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.32.2.tgz#11fd402f833a731e325a494507d08068b5c8d1a6"
+  integrity sha512-cr1bz0VmAx3/qia5FfdYx2SXzVvIUkO92CS+yBDdfuQaqMYNxVkHDiBPqVm4ptyDhMDIKoLWTlKmxr52hiwrfA==
   dependencies:
     "@emotion/core" "10.0.28"
     "@types/color" "3.0.1"
-    bazinga64 "5.7.6"
+    bazinga64 "5.7.7"
     color "3.1.2"
     emotion-normalize "10.1.0"
     emotion-theming "10.0.27"
@@ -2366,10 +2366,10 @@ auto-launch@5.0.5:
     untildify "^3.0.2"
     winreg "1.2.4"
 
-aws-sdk@2.709.0:
-  version "2.709.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.709.0.tgz#33b0c0fe8b9420c65610545394be047ac2d93c8f"
-  integrity sha512-F3sKXsCiutj9RglVXdqb/XJ3Ko3G+pX081Nf1YjVJpLydwE2v16FGxrLqE5pqyWMDeUf5nZHnBoMuOYD8ip+Kw==
+aws-sdk@2.713.0:
+  version "2.713.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.713.0.tgz#e87404ddcba093d36afafb48f119ec66f654a83f"
+  integrity sha512-axR1eOVn134KXJc1IT+Au2TXcK6oswY+4nvGe5GfU3pXeehhe0xNeP9Bw9yF36TRBxuvu4IJ2hRHDKma05smgA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -2545,10 +2545,10 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-bazinga64@5.7.6:
-  version "5.7.6"
-  resolved "https://registry.npmjs.org/bazinga64/-/bazinga64-5.7.6.tgz#31d7ac8188c583bb26c4b3237259e5dc6e260e9b"
-  integrity sha512-HKUvoXgymXR2jgwtznRfPE1C4W5XRpL58JnPC2XlSh1iNGgW/oN1KWoOCV8XyIciyQrSYbJrHQP+LYYcqXLXZA==
+bazinga64@5.7.7:
+  version "5.7.7"
+  resolved "https://registry.npmjs.org/bazinga64/-/bazinga64-5.7.7.tgz#33718ecd3e48ca6d81112c30b7f8d87a45a639cd"
+  integrity sha512-GysbX1iiYLRomOl9CqBtCsuRGmqBwtKZeUjft5stsD/m0K/15doTswm3JLQc4ldAZMLTS3rl97ppQ8KHs07vkA==
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"
@@ -4306,10 +4306,10 @@ electron-window@^0.8.0:
   dependencies:
     is-electron-renderer "^2.0.0"
 
-electron-winstaller@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/electron-winstaller/-/electron-winstaller-4.0.0.tgz#d2717eca6665724f922acd2ac7a94d6fd55dd5d7"
-  integrity sha512-Rq5YUQ/zBiGiDW3ezVaRigF3QbohVjDtfcpZpzmhJxX/1jndc96OQJw2x1HulHmhPV7n9R4WEsMkzkHObufU9g==
+electron-winstaller@4.0.1:
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/electron-winstaller/-/electron-winstaller-4.0.1.tgz#69da2a439a6986210c3106305f921a522369207d"
+  integrity sha512-wgdABzcMFpREjFCHZKQ5g5JF5jGqa8YCAsVD5Tb3sJhdj63AtuCu/2o++nVESlZZugKDv6Hxo6Wi8c3knEkbgA==
   dependencies:
     asar "^2.0.1"
     debug "^4.1.1"
@@ -4565,14 +4565,14 @@ eslint-plugin-jasmine@4.1.1:
   resolved "https://registry.npmjs.org/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.1.1.tgz#afdf8ca6a91e85041d9e0fb650af446874bf8852"
   integrity sha512-uS7kvt7RPUB/gLDwhJ/Ax0APrmkj7In8VJWkiZLYHafz2Ix74mMRJx82YZZ3zHRa/YOuTL+ig6dW/aKwdNzUuw==
 
-eslint-plugin-jsdoc@28.6.1:
-  version "28.6.1"
-  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-28.6.1.tgz#c9e9da59d0d3cef4fb45ffb91c0acde43af4e418"
-  integrity sha512-Z3y7hcNPDuhL339D1KOf9SY8pMAxYxhaG4QLtu3KVn20k/hNF1u6WQv44wvuSCb6OfPJ4say37RUlSNqIjR+mw==
+eslint-plugin-jsdoc@29.1.3:
+  version "29.1.3"
+  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-29.1.3.tgz#288c3faf142fbf78e6abff6a838db23af8d6749f"
+  integrity sha512-HEB8jPsWBGu++LffL4K8VZ7VXz0HELI1I3Qkv/+5oSekgrAo6I0AVgl5abecLbTQQZo0OaEcmTptiIspwDOu1w==
   dependencies:
     comment-parser "^0.7.5"
     debug "^4.1.1"
-    jsdoctypeparser "^7.0.0"
+    jsdoctypeparser "^8.0.0"
     lodash "^4.17.15"
     regextras "^0.7.1"
     semver "^7.3.2"
@@ -4590,10 +4590,10 @@ eslint-plugin-prettier@3.1.4:
   dependencies:
     prettier-linter-helpers "^1.0.0"
 
-eslint-plugin-react-hooks@4.0.4:
-  version "4.0.4"
-  resolved "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.0.4.tgz#aed33b4254a41b045818cacb047b81e6df27fa58"
-  integrity sha512-equAdEIsUETLFNCmmCkiCGq6rkSK5MoJhXFPFYeUebcjKgBmWWcgVOqZyQC8Bv1BwVCnTq9tBxgJFgAJTWoJtA==
+eslint-plugin-react-hooks@4.0.7:
+  version "4.0.7"
+  resolved "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.0.7.tgz#19f9e3d07dd3a0fb9e6f0f07153707feedea8108"
+  integrity sha512-5PuW2OMHQyMLr/+MqTluYN3/NeJJ1RuvmEp5TR9Xl2gXKxvcusUZuMz8XBUtbELNaiRYWs693LQs0cljKuuHRQ==
 
 eslint-plugin-react@7.20.3:
   version "7.20.3"
@@ -5904,10 +5904,10 @@ iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-iconv-lite@0.6.1:
-  version "0.6.1"
-  resolved "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.6.1.tgz#dcff79a060333879dd83ebc3eb6a217f5f0facc5"
-  integrity sha512-Gjcihg3Bi6PI+5V7JlqWmXyVDyX5UQuwulJcbb3btuSoXIoGUy8zwJpRIOpRSzHz0IVnsT2FkceLlM8mm72d3w==
+iconv-lite@0.6.2:
+  version "0.6.2"
+  resolved "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.6.2.tgz#ce13d1875b0c3a674bd6a04b7f76b01b1b6ded01"
+  integrity sha512-2y91h5OpQlolefMPmUlivelittSWy0rP+oYVpn6A7GwVHNE8AWzoYOBNmlwks3LobaJxgHCYZAnyNo2GgpNRNQ==
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
@@ -6957,10 +6957,10 @@ jsbn@~0.1.0:
   resolved "https://registry.npmjs.org/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
 
-jsdoctypeparser@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.npmjs.org/jsdoctypeparser/-/jsdoctypeparser-7.0.0.tgz#957192fbcb8c574240092cca4635383a6ed706eb"
-  integrity sha512-6vWPn5qSy+MbgCVjXsQKVkRywhs+IxFU7Chw72DKsWoGueYp6QX8eTc55+EA0yPGYfhmglb1gfi283asXirfGQ==
+jsdoctypeparser@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.npmjs.org/jsdoctypeparser/-/jsdoctypeparser-8.0.0.tgz#a04a944539d3f86e30040c1ece6f6730f865f81a"
+  integrity sha512-eLCs6s4JqN8TjFJfgdiLHRvogLhOAJz+5RIA2FtoMe6ZDyuvghvppnlIToqAEnVbxRqLMrfnNXpW8FpmR6IMBw==
 
 jsdom@^16.2.2:
   version "16.2.2"
@@ -7395,10 +7395,10 @@ lodash.templatesettings@^4.0.0:
   dependencies:
     lodash._reinterpolate "^3.0.0"
 
-lodash@4.17.15, lodash@^4.17.10, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15:
-  version "4.17.15"
-  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+lodash@4.17.19, lodash@^4.17.10, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15:
+  version "4.17.19"
+  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
+  integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
 
 log-ok@^0.1.1:
   version "0.1.1"
