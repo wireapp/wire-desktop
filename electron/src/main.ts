@@ -229,14 +229,15 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  let webappUrl = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${currentLocale}`;
+  const webappURL = new URL(BASE_URL);
+  webappURL.searchParams.set('hl', currentLocale);
 
   if (ENABLE_LOGGING) {
-    webappUrl += '&enableLogging=@wireapp/*';
+    webappURL.searchParams.set('enableLogging', '@wireapp/*');
   }
 
   if (customProtocolHandler.hashLocation) {
-    webappUrl += `#${customProtocolHandler.hashLocation}`;
+    webappURL.hash = customProtocolHandler.hashLocation;
   }
 
   if (argv.devtools) {
@@ -317,7 +318,10 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     }
   });
 
-  await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
+  const mainURL = new URL(fileUrl(INDEX_HTML));
+  mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
+
+  await main.loadURL(mainURL.href);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
   await main.webContents.insertCSS(wrapperCSSContent);
 
