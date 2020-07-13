@@ -19,14 +19,14 @@
 
 import {BrowserWindow, screen} from 'electron';
 
-type Rectangle = {
+interface Rectangle {
   height: number;
   width: number;
   x: number;
   y: number;
-};
+}
 
-const pointInRectangle = (point: [number, number], rectangle: Rectangle) => {
+export const pointInRectangle = (point: [number, number], rectangle: Rectangle): boolean => {
   const [x, y] = point;
   const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
   const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
@@ -34,7 +34,7 @@ const pointInRectangle = (point: [number, number], rectangle: Rectangle) => {
   return xInRange && yInRange;
 };
 
-const isInView = (win: BrowserWindow): boolean => {
+export const isInView = (win: BrowserWindow): boolean => {
   const windowBounds = win.getBounds();
   const nearestWorkArea = screen.getDisplayMatching(windowBounds).workArea;
 
@@ -46,5 +46,3 @@ const isInView = (win: BrowserWindow): boolean => {
 
   return upperLeftVisible || lowerRightVisible;
 };
-
-export const WindowUtil = {isInView, pointInRectangle};

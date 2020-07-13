@@ -82,7 +82,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-const createEnvironmentTemplates = () => {
+const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
   const environments = {...EnvironmentUtil.URL_WEBAPP};
   delete environments.CUSTOM;
@@ -139,4 +139,4 @@ const menuTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-export const menuItem = new MenuItem(menuTemplate);
+export const developerMenu = new MenuItem(menuTemplate);

@@ -21,9 +21,9 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as path from 'path';
 
-import {Schemata} from '../interfaces/main';
 import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';
+import '../global';
 
 class ConfigurationPersistence {
   private readonly configFile: string;
@@ -70,10 +70,10 @@ class ConfigurationPersistence {
     }
   }
 
-  readFromFile(): Schemata {
+  readFromFile(): Record<string, any> {
     this.logger.info(`Reading config file from "${this.configFile}" ...`);
     try {
-      return fs.readJSONSync(this.configFile) as Schemata;
+      return fs.readJSONSync(this.configFile) as Record<string, any>;
     } catch (error) {
       const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:

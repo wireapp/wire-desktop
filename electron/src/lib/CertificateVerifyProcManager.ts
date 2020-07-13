@@ -35,9 +35,22 @@ interface DisplayCertificateErrorOptions {
 }
 
 enum CertificateVerificationResult {
-  SUCCESS = 0, // Indicates success and disables Certificate Transparency verification
+  /** Indicates success and disables Certificate Transparency verification */
+  SUCCESS = 0,
   FAILURE = -2,
   USE_CHROMIUM_VALIDATION = -3,
+}
+
+enum CHROMIUM_ERRORS {
+  CERT_AUTHORITY_INVALID = -202,
+  CERT_COMMON_NAME_INVALID = -200,
+}
+
+enum RESPONSE {
+  GO_BACK = 0,
+  RETRY = 0,
+  SAVE_CERTIFICATE = 1,
+  SHOW_DETAILS = 1,
 }
 
 class CertificateVerifyProcManager {
@@ -46,18 +59,6 @@ class CertificateVerifyProcManager {
   public static mainWindow: BrowserWindow;
 
   private static readonly dialogUnlockTimeout = 6000;
-
-  public static readonly CHROMIUM_ERRORS = {
-    CERT_AUTHORITY_INVALID: -202,
-    CERT_COMMON_NAME_INVALID: -200,
-  };
-
-  private static readonly RESPONSE = {
-    GO_BACK: 0,
-    RETRY: 0,
-    SAVE_CERTIFICATE: 1,
-    SHOW_DETAILS: 1,
-  };
 
   private static readonly LOCALE = {
     RETRY: getText('certificateVerifyProcManagerRetry'),
@@ -78,7 +79,7 @@ class CertificateVerifyProcManager {
     certificate: Certificate,
     options: DisplayCertificateErrorOptions,
   ): Promise<void> {
-    const goBack = async () => {
+    const goBack = async (): Promise<void> => {
       // Go back to the dialog
       await this.displayCertificateError(hostname, certificate, {
         ...options,
@@ -101,13 +102,13 @@ class CertificateVerifyProcManager {
       // For Linux and Windows, use a message box with the ability to save the certificate
       const {response} = await dialog.showMessageBox(this.mainWindow, {
         buttons: [this.LOCALE.SHOW_DETAILS_GO_BACK, this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE],
-        cancelId: this.RESPONSE.GO_BACK,
+        cancelId: RESPONSE.GO_BACK,
         detail: textDetails,
         message: this.LOCALE.SHOW_DETAILS_TITLE,
         type: 'info',
       });
       switch (response) {
-        case this.RESPONSE.SAVE_CERTIFICATE: {
+        case RESPONSE.SAVE_CERTIFICATE: {
           const {filePath: chosenPath} = await dialog.showSaveDialog(this.mainWindow, {
             defaultPath: `${hostname}.pem`,
           });
@@ -118,7 +119,7 @@ class CertificateVerifyProcManager {
           await this.displayCertificateDetails(hostname, certificate, options);
           break;
         }
-        case this.RESPONSE.GO_BACK: {
+        case RESPONSE.GO_BACK: {
           await goBack();
           break;
         }
@@ -152,16 +153,16 @@ class CertificateVerifyProcManager {
 
     const {checkboxChecked, response} = await dialog.showMessageBox(this.mainWindow, {
       buttons: [this.LOCALE.RETRY, this.LOCALE.SHOW_DETAILS],
-      cancelId: this.RESPONSE.RETRY,
+      cancelId: RESPONSE.RETRY,
       checkboxChecked: isChromiumError ? undefined : isCheckboxChecked,
       checkboxLabel: isChromiumError ? undefined : this.LOCALE.WARNING_BYPASS,
-      defaultId: this.RESPONSE.RETRY,
+      defaultId: RESPONSE.RETRY,
       detail: isChromiumError ? this.LOCALE.WARNING_TEXT_CHROMIUM : this.LOCALE.WARNING_TEXT_PINNING,
       message: this.LOCALE.WARNING_TITLE,
       type: 'warning',
     });
     switch (response) {
-      case this.RESPONSE.RETRY: {
+      case RESPONSE.RETRY: {
         if (!isChromiumError) {
           this.bypassCertificatePinning = checkboxChecked;
           if (this.bypassCertificatePinning) {
@@ -174,7 +175,7 @@ class CertificateVerifyProcManager {
         break;
       }
 
-      case this.RESPONSE.SHOW_DETAILS: {
+      case RESPONSE.SHOW_DETAILS: {
         await this.displayCertificateDetails(hostname, certificate, {
           bypassDialogLock,
           isCheckboxChecked: checkboxChecked,
@@ -186,14 +187,14 @@ class CertificateVerifyProcManager {
   }
 }
 
-export const attachTo = (main: BrowserWindow) => {
+export const attachTo = (main: BrowserWindow): void => {
   CertificateVerifyProcManager.mainWindow = main;
 };
 
 export const setCertificateVerifyProc = async (
   request: CertificateVerifyProcProcRequest,
   cb: (verificationResult: number) => void,
-) => {
+): Promise<void> => {
   const {hostname, validatedCertificate, verificationResult, errorCode} = request;
   // Check browser results
   if (verificationResult !== 'net::OK') {
@@ -202,8 +203,7 @@ export const setCertificateVerifyProc = async (
     );
 
     const isCommonCertificateError =
-      errorCode === CertificateVerifyProcManager.CHROMIUM_ERRORS.CERT_COMMON_NAME_INVALID ||
-      errorCode === CertificateVerifyProcManager.CHROMIUM_ERRORS.CERT_AUTHORITY_INVALID;
+      errorCode === CHROMIUM_ERRORS.CERT_COMMON_NAME_INVALID || errorCode === CHROMIUM_ERRORS.CERT_AUTHORITY_INVALID;
     if (isCommonCertificateError) {
       await CertificateVerifyProcManager.displayCertificateChromiumError(hostname, validatedCertificate);
     }

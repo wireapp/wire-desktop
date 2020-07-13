@@ -37,9 +37,10 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import WindowStateKeeper = require('electron-window-state');
+import windowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 
+import './global';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -52,7 +53,7 @@ import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
 import {getLogFilenames} from './logging/loggerUtils';
-import {menuItem as developerMenu} from './menu/developer';
+import {developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
@@ -65,7 +66,7 @@ import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
-import {WindowUtil} from './window/WindowUtil';
+import * as WindowUtil from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
 
@@ -137,7 +138,7 @@ Object.entries(config).forEach(([key, value]) => {
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
-const bindIpcEvents = () => {
+const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
@@ -158,14 +159,14 @@ const bindIpcEvents = () => {
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
 };
 
-const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
+const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
   // if a user still has the old config version 0 and had the window maximized last time
   if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
     main.maximize();
   }
 };
 
-const initWindowStateKeeper = () => {
+const initWindowStateKeeper = (): windowStateKeeper.State => {
   const loadedWindowBounds = settings.restore(SettingsType.WINDOW_BOUNDS, {
     height: WINDOW_SIZE.DEFAULT_HEIGHT,
     width: WINDOW_SIZE.DEFAULT_WIDTH,
@@ -174,13 +175,7 @@ const initWindowStateKeeper = () => {
   // load version 0 full screen setting
   const showInFullScreen = settings.restore(SettingsType.FULL_SCREEN, 'not-set-in-v0');
 
-  const stateKeeperOptions: {
-    defaultHeight: number;
-    defaultWidth: number;
-    fullScreen?: boolean;
-    maximize?: boolean;
-    path: string;
-  } = {
+  const stateKeeperOptions: windowStateKeeper.Options = {
     defaultHeight: loadedWindowBounds.height,
     defaultWidth: loadedWindowBounds.width,
     path: path.join(app.getPath('userData'), 'config'),
@@ -192,11 +187,11 @@ const initWindowStateKeeper = () => {
     isFullScreen = showInFullScreen as boolean;
   }
 
-  return WindowStateKeeper(stateKeeperOptions);
+  return windowStateKeeper(stateKeeperOptions);
 };
 
 // App Windows
-const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
+const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
   const options: BrowserWindowConstructorOptions = {
@@ -329,7 +324,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 };
 
 // App Events
-const handleAppEvents = () => {
+const handleAppEvents = (): void => {
   app.on('window-all-closed', async () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
       await lifecycle.quit();
@@ -446,7 +441,7 @@ const renameWebViewLogFiles = (): void => {
   }
 };
 
-const addLinuxWorkarounds = () => {
+const addLinuxWorkarounds = (): void => {
   if (EnvironmentUtil.platform.IS_LINUX) {
     // Fix indicator icon on Unity
     // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
@@ -461,7 +456,7 @@ const addLinuxWorkarounds = () => {
   }
 };
 
-const handlePortableFlags = () => {
+const handlePortableFlags = (): void => {
   if (argv[config.ARGUMENT.USER_DATA_DIR] || argv[config.ARGUMENT.PORTABLE]) {
     const USER_PATH = argv[config.ARGUMENT.USER_DATA_DIR]
       ? path.resolve(argv[config.ARGUMENT.USER_DATA_DIR])
@@ -472,7 +467,7 @@ const handlePortableFlags = () => {
   }
 };
 
-const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: Electron.WebContents) => {
+const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: Electron.WebContents): Promise<void> => {
   const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
   const proxyProtocol = authenticatedProxyDetails.protocol;
   const isSocksProxy = proxyProtocol === 'socks4:' || proxyProtocol === 'socks5:';
@@ -504,7 +499,7 @@ class ElectronWrapperInit {
       frameName: string,
       _disposition: string,
       options: BrowserWindowConstructorOptions,
-    ) => {
+    ): Promise<void> => {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
@@ -515,7 +510,7 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string) => {
+    const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
       // Ensure navigation is to an allowed domain
       if (OriginValidator.isMatchingHost(url, baseUrl)) {
         this.logger.log(`Navigating inside webview. URL: ${url}`);
@@ -601,7 +596,7 @@ class ElectronWrapperInit {
             const listenerOnHeadersReceived = (
               details: OnHeadersReceivedListenerDetails,
               callback: (response: HeadersReceivedResponse) => void,
-            ) => {
+            ): void => {
               const responseHeaders = {
                 'Access-Control-Allow-Credentials': ['true'],
                 'Access-Control-Allow-Origin': ['http://localhost:8081'],

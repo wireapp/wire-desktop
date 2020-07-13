@@ -21,7 +21,6 @@ import {app, BrowserWindow, ipcMain, session, shell} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
-import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -101,7 +100,7 @@ const showWindow = async () => {
     });
 
     // Locales
-    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: i18nLanguageIdentifier[]) => {
+    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: locale.i18nLanguageIdentifier[]) => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {

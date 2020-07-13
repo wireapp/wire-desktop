@@ -21,7 +21,6 @@ import autoLaunch = require('auto-launch');
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell} from 'electron';
 import * as path from 'path';
 
-import {SupportedI18nLanguage} from '../interfaces/';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
@@ -49,7 +48,7 @@ const separatorTemplate: MenuItemConstructorOptions = {
   type: 'separator',
 };
 
-const createLanguageTemplate = (languageCode: SupportedI18nLanguage): MenuItemConstructorOptions => {
+const createLanguageTemplate = (languageCode: locale.SupportedI18nLanguage): MenuItemConstructorOptions => {
   return {
     click: () => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
@@ -59,7 +58,7 @@ const createLanguageTemplate = (languageCode: SupportedI18nLanguage): MenuItemCo
 
 const createLanguageSubmenu = (): MenuItemConstructorOptions[] => {
   return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage =>
-    createLanguageTemplate(supportedLanguage as SupportedI18nLanguage),
+    createLanguageTemplate(supportedLanguage as locale.SupportedI18nLanguage),
   );
 };
 
@@ -357,7 +356,7 @@ const linuxTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: SupportedI18nLanguage) => {
+const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: locale.SupportedI18nLanguage): void => {
   for (const item of template) {
     if (item.submenu) {
       processMenu(item.submenu as Iterable<MenuItemConstructorOptions>, language);
@@ -384,7 +383,7 @@ const showRestartMessageBox = async () => {
   }
 };
 
-const changeLocale = async (language: SupportedI18nLanguage): Promise<void> => {
+const changeLocale = async (language: locale.SupportedI18nLanguage): Promise<void> => {
   locale.setLocale(language);
   await showRestartMessageBox();
 };

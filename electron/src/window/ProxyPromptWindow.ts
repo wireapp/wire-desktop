@@ -21,7 +21,6 @@ import {app, BrowserWindow, ipcMain, session} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
-import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {config} from '../settings/config';
@@ -77,7 +76,7 @@ const showWindow = async () => {
       callback({redirectURL: promptHtmlPath});
     });
 
-    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, (event, labels: i18nLanguageIdentifier[]) => {
+    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, (event, labels: locale.i18nLanguageIdentifier[]) => {
       if (proxyPromptWindow) {
         const isExpected = event.sender.id === proxyPromptWindow.webContents.id;
         if (isExpected) {

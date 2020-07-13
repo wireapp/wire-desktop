@@ -53,7 +53,7 @@ function subscribeToThemeChange(): void {
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
-const subscribeToWebappEvents = () => {
+const subscribeToWebappEvents = (): void => {
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.RESTART, () => {
     logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.RESTART}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.WRAPPER.RELAUNCH);
@@ -109,7 +109,7 @@ const subscribeToWebappEvents = () => {
   });
 };
 
-const subscribeToMainProcessEvents = () => {
+const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.ADD_PEOPLE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ADD_PEOPLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.ADD_PEOPLE);
@@ -189,8 +189,8 @@ process.once('loaded', () => {
   global.setImmediate = _setImmediate;
 });
 
-const registerEvents = (callback: () => void) => {
-  const HALF_SECOND = 500;
+const registerEvents = (callback: () => void): void => {
+  const HALF_SECOND_IN_MILLIS = 500;
 
   const intervalId = setInterval(() => {
     logger.info('Attempting to register event handlers...');
@@ -198,7 +198,7 @@ const registerEvents = (callback: () => void) => {
       clearInterval(intervalId);
       return callback();
     }
-  }, HALF_SECOND);
+  }, HALF_SECOND_IN_MILLIS);
 };
 
 window.addEventListener('DOMContentLoaded', () => {

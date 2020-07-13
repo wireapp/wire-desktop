@@ -22,8 +22,8 @@ import {parse as parseContentType, ParsedMediaType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
-import * as path from 'path';
 import {parse as parseUrl} from 'url';
+import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';

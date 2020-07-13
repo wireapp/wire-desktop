@@ -218,7 +218,7 @@ export class SingleSignOn {
   // `window.opener` is not available when sandbox is activated,
   // therefore we need to fake the function on backend area and
   // redirect the response to a custom protocol
-  public static readonly getWindowOpenerScript = () => {
+  public static readonly getWindowOpenerScript = (): string => {
     return `Object.defineProperty(window, 'opener', {
       configurable: true, // Needed on Chrome :(
       enumerable: false,
@@ -257,7 +257,7 @@ export class SingleSignOn {
     // Generate a new secret to authenticate the custom protocol (wire-sso)
     SingleSignOn.loginAuthorizationSecret = await SingleSignOn.generateSecret(24);
 
-    const handleRequest = (request: ProtocolRequest) => {
+    const handleRequest = (request: ProtocolRequest): void => {
       try {
         const requestURL = new URL(request.url);
 

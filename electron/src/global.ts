@@ -17,13 +17,12 @@
  *
  */
 
-import {DesktopCapturer} from 'electron';
+import type {DesktopCapturer} from 'electron';
 import type {WebAppEvents} from '@wireapp/webapp-events';
-import {Data as OpenGraphResult} from 'open-graph';
+import type {Data as OpenGraphResult} from 'open-graph';
 
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import {i18nStrings} from './locale';
-import {Schemata} from './main';
+import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
+import type {i18nStrings} from './locale/locale';
 
 declare global {
   interface Window {
@@ -57,7 +56,7 @@ declare global {
 
   namespace NodeJS {
     interface Global {
-      _ConfigurationPersistence: Schemata;
+      _ConfigurationPersistence: Record<string, any>;
       desktopCapturer: DesktopCapturer;
       environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;

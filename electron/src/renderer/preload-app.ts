@@ -40,7 +40,7 @@ const getSelectedWebview = (): WebviewTag | null => document.querySelector<Webvi
 const getWebviewById = (id: string): WebviewTag | null =>
   document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
-const subscribeToMainProcessEvents = () => {
+const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (_event, action: string) => {
@@ -86,7 +86,7 @@ const setupIpcInterface = (): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
   };
 
-  window.sendDeleteAccount = (accountID: string, sessionID?: string) => {
+  window.sendDeleteAccount = (accountID: string, sessionID?: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const accountWebview = getWebviewById(accountID);
       if (!accountWebview) {
