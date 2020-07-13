@@ -70,7 +70,7 @@ const Sidebar = ({
         <div
           style={{color: colorFromId(currentAccentID)}}
           className={getClassName(account)}
-          onClick={preventFocus(event =>
+          onClick={preventFocus(() =>
             window.dispatchEvent(
               new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accounts.indexOf(account)}}),
             ),

@@ -83,16 +83,22 @@ const Webview = ({
   // https://github.com/electron/electron/issues/14474#issuecomment-425794480
   useEffect(() => {
     const webview = webviewRef.current;
-    const listener = () => {
-      webview.blur();
-      webview.focus();
+    const currentLocation = new URL(window.location.href);
+    const focusParam = currentLocation.searchParams.get('focus');
+
+    const focusWebView = () => {
+      if (focusParam && focusParam === 'true') {
+        webview.blur();
+        webview.focus();
+      }
     };
+
     if (account.visible && webview) {
-      webview.addEventListener('dom-ready', listener);
+      webview.addEventListener('dom-ready', focusWebView);
     }
     return () => {
       if (webview) {
-        webview.removeEventListener('dom-ready', listener);
+        webview.removeEventListener('dom-ready', focusWebView);
       }
     };
   }, [account, webviewRef]);

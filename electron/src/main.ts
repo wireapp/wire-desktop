@@ -93,6 +93,7 @@ const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
 
 const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
+const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
@@ -244,7 +245,7 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     main.webContents.openDevTools({mode: 'detach'});
   }
 
-  if (!argv[config.ARGUMENT.STARTUP] && !argv[config.ARGUMENT.HIDDEN]) {
+  if (!startHidden) {
     if (!WindowUtil.isInView(main)) {
       main.center();
     }
@@ -320,14 +321,11 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
 
   const mainURL = new URL(fileUrl(INDEX_HTML));
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
+  mainURL.searchParams.set('focus', String(!startHidden));
 
   await main.loadURL(mainURL.href);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
   await main.webContents.insertCSS(wrapperCSSContent);
-
-  if (argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]) {
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
-  }
 };
 
 // App Events
