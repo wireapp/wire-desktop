@@ -27,6 +27,7 @@ import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 import {accountAction} from '../../actions/AccountAction';
+import {AccountSelector} from '../../selector/AccountSelector';
 
 const EditAccountMenu = ({accountId, accountIndex, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
   return (
