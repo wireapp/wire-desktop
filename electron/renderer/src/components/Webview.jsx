@@ -17,17 +17,15 @@
  *
  */
 
-import React, {useEffect, useState, useRef} from 'react';
-import {ContainerSM, Text, H1, Logo, TextLink} from '@wireapp/react-ui-kit';
+import React, {useEffect, useRef, useState} from 'react';
+import {ContainerSM, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 import {SVGIcon} from '@wireapp/react-ui-kit/dist/Icon/SVGIcon';
 import {connect} from 'react-redux';
-
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {WindowUrl} from '../../../src/window/WindowUrl';
 import {
   abortAccountCreation,
   resetIdentity,
-  switchAccount,
   updateAccountBadgeCount,
   updateAccountData,
   updateAccountLifecycle,
@@ -36,6 +34,7 @@ import {getText} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
 
 import './Webview.css';
+import {accountAction} from '../actions/AccountAction';
 
 const getEnvironmentUrl = account => {
   const currentLocation = new URL(window.location.href);
@@ -56,10 +55,11 @@ const getEnvironmentUrl = account => {
 
 const Webview = ({
   account,
+  accountIndex,
   onUnreadCountUpdated,
   abortAccountCreation,
   resetIdentity,
-  switchAccount,
+  switchWebview,
   updateAccountData,
   updateAccountLifecycle,
 }) => {
@@ -87,7 +87,7 @@ const Webview = ({
     const focusParam = currentLocation.searchParams.get('focus');
 
     const focusWebView = () => {
-      if (focusParam && focusParam === 'true') {
+      if (focusParam === 'true') {
         webview.blur();
         webview.focus();
       }
@@ -157,7 +157,7 @@ const Webview = ({
         }
 
         case EVENT_TYPE.ACTION.NOTIFICATION_CLICK: {
-          switchAccount(account.id);
+          switchWebview(accountIndex);
           break;
         }
 
@@ -276,10 +276,10 @@ const Webview = ({
   );
 };
 
-export default connect(state => ({accounts: AccountSelector.getAccounts(state)}), {
+export default connect((state, props) => ({accountIndex: AccountSelector.getAccountIndex(state, props.account.id)}), {
   abortAccountCreation,
   resetIdentity,
-  switchAccount,
+  switchWebview: accountAction.switchWebview,
   updateAccountBadgeCount,
   updateAccountData,
   updateAccountLifecycle,

@@ -60,11 +60,6 @@ export const resetIdentity = (id = true) => ({
   type: ActionType.RESET_IDENTITY,
 });
 
-export const switchAccount = id => ({
-  id,
-  type: ActionType.SWITCH_ACCOUNT,
-});
-
 export const updateAccount = (id, data) => ({
   data,
   id,
@@ -107,7 +102,8 @@ export const abortAccountCreation = id => {
     dispatch(deleteAccount(id));
 
     if (lastAccount) {
-      dispatch(switchAccount(lastAccount.id));
+      const accountIndex = AccountSelector.getAccountIndex(getState(), lastAccount.id);
+      dispatch(accountAction.switchWebview(accountIndex));
     } else {
       dispatch(addAccount(false));
     }

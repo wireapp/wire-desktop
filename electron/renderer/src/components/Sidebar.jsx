@@ -21,12 +21,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import {EVENT_TYPE} from '../../../dist/lib/eventType';
-import {
-  addAccountWithSession,
-  setAccountContextHidden,
-  switchAccount,
-  toggleEditAccountMenuVisibility,
-} from '../actions';
+import {addAccountWithSession, setAccountContextHidden, toggleEditAccountMenuVisibility} from '../actions';
 import {colorFromId} from '../lib/accentColor';
 import {preventFocus} from '../lib/util';
 import AccountIcon from './AccountIcon';
@@ -114,7 +109,6 @@ export default connect(
   {
     addAccountWithSession,
     setAccountContextHidden,
-    switchAccount,
     toggleEditAccountMenuVisibility,
   },
 )(Sidebar);

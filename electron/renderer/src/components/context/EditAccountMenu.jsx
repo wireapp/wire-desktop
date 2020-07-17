@@ -20,14 +20,16 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import {abortAccountCreation, switchAccount} from '../../actions';
+import {abortAccountCreation} from '../../actions';
 import {EVENT_TYPE} from '../../../../dist/lib/eventType';
 import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
+import {accountAction} from '../../actions/AccountAction';
+import {AccountSelector} from '../../selector/AccountSelector';
 
-const EditAccountMenu = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
+const EditAccountMenu = ({accountId, accountIndex, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
   return (
     <ContextMenu>
       {isAtLeastAdmin && (
@@ -38,7 +40,7 @@ const EditAccountMenu = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...co
       {lifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN && (
         <ContextMenuItem
           onClick={() => {
-            connected.switchAccount(accountId);
+            connected.switchWebview(accountIndex);
             window.sendLogoutAccount(accountId);
           }}
         >
@@ -59,14 +61,18 @@ const EditAccountMenu = ({accountId, isAtLeastAdmin, lifecycle, sessionId, ...co
 };
 
 export default connect(
-  state => ({
-    accountId: ContextMenuSelector.getAccountId(state),
-    isAtLeastAdmin: ContextMenuSelector.getIsAtLeastAdmin(state),
-    lifecycle: ContextMenuSelector.getLifecycle(state),
-    sessionId: ContextMenuSelector.getSessionId(state),
-  }),
+  state => {
+    const accountId = ContextMenuSelector.getAccountId(state);
+    return {
+      accountId,
+      accountIndex: AccountSelector.getAccountIndex(state, accountId),
+      isAtLeastAdmin: ContextMenuSelector.getIsAtLeastAdmin(state),
+      lifecycle: ContextMenuSelector.getLifecycle(state),
+      sessionId: ContextMenuSelector.getSessionId(state),
+    };
+  },
   {
     abortAccountCreation,
-    switchAccount,
+    switchWebview: accountAction.switchWebview,
   },
 )(EditAccountMenu);
