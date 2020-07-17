@@ -21,13 +21,11 @@ import React, {useEffect, useState, useRef} from 'react';
 import {ContainerSM, Text, H1, Logo, TextLink} from '@wireapp/react-ui-kit';
 import {SVGIcon} from '@wireapp/react-ui-kit/dist/Icon/SVGIcon';
 import {connect} from 'react-redux';
-
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {WindowUrl} from '../../../src/window/WindowUrl';
 import {
   abortAccountCreation,
   resetIdentity,
-  switchAccount,
   updateAccountBadgeCount,
   updateAccountData,
   updateAccountLifecycle,
@@ -36,6 +34,7 @@ import {getText} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
 
 import './Webview.css';
+import {switchAccount} from '../actions/AccountAction';
 
 const getEnvironmentUrl = account => {
   const currentLocation = new URL(window.location.href);
@@ -87,7 +86,7 @@ const Webview = ({
     const focusParam = currentLocation.searchParams.get('focus');
 
     const focusWebView = () => {
-      if (focusParam && focusParam === 'true') {
+      if (focusParam === 'true') {
         webview.blur();
         webview.focus();
       }
