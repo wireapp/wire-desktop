@@ -1902,10 +1902,10 @@
   resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.3.0.tgz#e8129b31021c81d90d564d9c4ff0f7f7b514e943"
   integrity sha512-BFokvX4NZlkhWq5/OoJUCS8Iels+MeRgzpd5V9QR3hj5swwCFGxJOAL7soPXkSNWo91gI1qwiTp8szB1O9aCfQ==
 
-"@wireapp/react-ui-kit@7.32.2":
-  version "7.32.2"
-  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.32.2.tgz#11fd402f833a731e325a494507d08068b5c8d1a6"
-  integrity sha512-cr1bz0VmAx3/qia5FfdYx2SXzVvIUkO92CS+yBDdfuQaqMYNxVkHDiBPqVm4ptyDhMDIKoLWTlKmxr52hiwrfA==
+"@wireapp/react-ui-kit@7.36.0":
+  version "7.36.0"
+  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.36.0.tgz#c594a58a34afde1a255e71c86cd4fcd608144784"
+  integrity sha512-e/58LsoYKSx0ucJEukvw0RrEwJvoPlnAnGi8cYPdSsc2ytDnB6iY8HiWw+ggJ8VGwCwAlGbVhYbGRA8K/nBeIA==
   dependencies:
     "@emotion/core" "10.0.28"
     "@types/color" "3.0.1"
