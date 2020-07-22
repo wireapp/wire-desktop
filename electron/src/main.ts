@@ -599,7 +599,7 @@ class ElectronWrapperInit {
             ): void => {
               const responseHeaders = {
                 'Access-Control-Allow-Credentials': ['true'],
-                'Access-Control-Allow-Origin': ['http://localhost:8081'],
+                'Access-Control-Allow-Origin': [EnvironmentUtil.URL_WEBAPP.LOCALHOST],
               };
 
               callback({

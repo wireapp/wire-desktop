@@ -128,6 +128,8 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
       let partialBody = '';
 
       response.data
+        .on('end', () => resolve(partialBody))
+        .on('error', error => reject(error))
         .on('data', (buffer: Buffer) => {
           let chunk = buffer.toString('utf8');
 
@@ -145,9 +147,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
             cancelSource.cancel();
             resolve(partialBody);
           }
-        })
-        .on('error', error => reject(error))
-        .on('end', () => resolve(partialBody));
+        });
     });
 
     return body;
