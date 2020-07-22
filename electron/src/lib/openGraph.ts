@@ -127,7 +127,10 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
     const body = await new Promise<string>((resolve, reject) => {
       let partialBody = '';
 
+      // Info: The 'end' event handler must be first: https://github.com/electron/electron/issues/12545#issuecomment-380478350
       response.data
+        .on('end', () => resolve(partialBody))
+        .on('error', error => reject(error))
         .on('data', (buffer: Buffer) => {
           let chunk = buffer.toString('utf8');
 
@@ -145,9 +148,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
             cancelSource.cancel();
             resolve(partialBody);
           }
-        })
-        .on('error', error => reject(error))
-        .on('end', () => resolve(partialBody));
+        });
     });
 
     return body;
