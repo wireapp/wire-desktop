@@ -39,7 +39,6 @@ export async function buildLinuxConfig(wireJsonPath: string, envFilePath: string
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const linuxDefaultConfig: LinuxConfig = {
-    /* tslint:disable:no-invalid-template-strings */
     artifactName: '${productName}-${version}_${arch}.${ext}',
     categories: 'Network;InstantMessaging;Chat;VideoConference',
     executableName: `${commonConfig.nameShort}-desktop`,
