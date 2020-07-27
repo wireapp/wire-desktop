@@ -1857,10 +1857,10 @@
   dependencies:
     jsrsasign "8.0.20"
 
-"@wireapp/commons@3.6.0":
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.6.0.tgz#3147352ea49502788c87192dae4a8a374df3c66d"
-  integrity sha512-RoQBLlh4cdPQ+KaSta7KgvYsuVpAavvTl1BjSnJ7uoX9+8huYApnufyp/lj+FFxBaSX7XHptaCUREvO8vo4wLA==
+"@wireapp/commons@3.6.2":
+  version "3.6.2"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.6.2.tgz#951ca9e61041e3027f5c36dbf028d95ba435d8e6"
+  integrity sha512-C1X0Z/ekLO0H4O+x6fS48PyCjEx5B7ye1gT+LS08g01Thpbs1vucfPRHPUernGwoabnM5kGPSLu9X/BH84c1sg==
   dependencies:
     "@types/fs-extra" "8.1.0"
     "@types/node" "~12"
