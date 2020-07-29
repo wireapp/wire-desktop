@@ -21,11 +21,13 @@ import {app, BrowserWindow, ipcMain, session, shell} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
-import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
+import {getLogger} from '../logging/getLogger';
+
+const logger = getLogger(path.basename(__filename));
 
 let webappVersion: string;
 
@@ -36,7 +38,7 @@ const iconPath = path.join(APP_PATH, 'img', iconFileName);
 
 // Local files
 const ABOUT_HTML = fileUrl(path.join(APP_PATH, 'html/about.html'));
-const ABOUT_WINDOW_WHITELIST = [
+const ABOUT_WINDOW_ALLOWLIST = [
   ABOUT_HTML,
   fileUrl(path.join(APP_PATH, 'img/logo.256.png')),
   fileUrl(path.join(APP_PATH, 'css/about.css')),
@@ -72,6 +74,7 @@ const showWindow = async () => {
         nodeIntegrationInWorker: false,
         preload: PRELOAD_JS,
         session: session.fromPartition('about-window'),
+        spellcheck: false,
         webviewTag: false,
       },
       width: WINDOW_SIZE.WIDTH,
@@ -83,7 +86,7 @@ const showWindow = async () => {
     // see https://github.com/electron/electron/issues/8841
     aboutWindow.webContents.session.webRequest.onBeforeRequest(async ({url}, callback) => {
       // Only allow those URLs to be opened within the window
-      if (ABOUT_WINDOW_WHITELIST.includes(url)) {
+      if (ABOUT_WINDOW_ALLOWLIST.includes(url)) {
         return callback({cancel: false});
       }
 
@@ -91,14 +94,13 @@ const showWindow = async () => {
       if (url.startsWith('https://')) {
         await shell.openExternal(url);
       } else {
-        console.info('Attempt to open URL in window prevented, url:', url);
+        logger.info(`Attempt to open URL "${url}" in window prevented.`);
+        callback({redirectURL: ABOUT_HTML});
       }
-
-      callback({redirectURL: ABOUT_HTML});
     });
 
     // Locales
-    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: i18nLanguageIdentifier[]) => {
+    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: locale.i18nLanguageIdentifier[]) => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {

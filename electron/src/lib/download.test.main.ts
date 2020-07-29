@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2020 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,15 @@
  *
  */
 
-export * from './global';
-export * from './locale';
-export * from './main';
+import * as assert from 'assert';
+
+import {suggestFileName} from './download';
+
+describe('download', () => {
+  it('converts colons to dashes because colons cannot be used in filenames on Windows', async () => {
+    // May 4th 2020, 13:42:00
+    const actual = suggestFileName('1588599720000');
+    const expected = `Wire 2020-05-04 at 13-42-00`;
+    assert.equal(actual, expected);
+  });
+});

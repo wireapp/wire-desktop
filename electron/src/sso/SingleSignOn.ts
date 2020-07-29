@@ -26,7 +26,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  RegisterStringProtocolRequest as ProtocolRequest,
+  ProtocolRequest,
   Session,
   session,
   WebContents,
@@ -105,7 +105,7 @@ export class SingleSignOn {
 
     // Register protocol
     // Note: we need to create the window before otherwise it does not work
-    await SingleSignOn.protocol.register(this.session, type => this.finalizeLogin(type));
+    await SingleSignOn.registerProtocol(this.session, type => this.finalizeLogin(type));
 
     // Show the window(s)
     await this.ssoWindow.loadURL(this.windowOriginUrl.toString());
@@ -115,16 +115,10 @@ export class SingleSignOn {
     }
   };
 
-  private readonly createBrowserWindow = (): BrowserWindow => {
+  private createBrowserWindow(): BrowserWindow {
     // Discard old preload URL
     delete (this.windowOptions as any).webPreferences.preloadURL;
     delete (this.windowOptions as any).webPreferences.preload;
-
-    // NOTE: The openerId is used to keep a reference to the child window in the parent window.
-    // Since Electron 6.1.8 guestInstanceId + openerId + contextIsolation in webPreferences seems to be broken/disallowed.
-    // Instead we remove the openerId and close the window locally instead of closing it remotely from the parent window.
-    // https://github.com/electron/electron/commit/eff5cee15b7d4c16f770a386aca46e04feacca06#diff-35189e17bce17cc33fb9c6cb1c6eb502R171
-    delete (this.windowOptions as any).webPreferences.openerId;
 
     const ssoWindow = new BrowserWindow({
       ...this.windowOptions,
@@ -163,6 +157,7 @@ export class SingleSignOn {
         sandbox: true,
         scrollBounce: true,
         session: this.session,
+        spellcheck: false,
         textAreasAreResizable: false,
         webSecurity: true,
         webgl: false,
@@ -176,19 +171,17 @@ export class SingleSignOn {
     ssoWindow.once('closed', async () => {
       if (this.session) {
         await this.wipeSessionData();
-        await SingleSignOn.protocol.unregister(this.session);
+        await SingleSignOn.unregisterProtocol(this.session);
       }
       this.session = undefined;
+      this.ssoWindow = undefined;
     });
 
     // Prevent title updates and new windows
     ssoWindow.on('page-title-updated', event => event.preventDefault());
     ssoWindow.webContents.on('new-window', event => event.preventDefault());
 
-    // Note: will-navigate is broken in Electron 3
-    // see https://github.com/electron/electron/issues/14751
-    // using did-navigate as workaround
-    ssoWindow.webContents.on('did-navigate', (event: ElectronEvent, url: string) => {
+    ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
 
       if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
@@ -213,18 +206,10 @@ export class SingleSignOn {
     }
 
     return ssoWindow;
-  };
+  }
 
   // Ensure authenticity of the window from within the code
   public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
-
-  // Ensure the requested URL is going to the backend
-  public static isBackendOrigin = (url: string): boolean => {
-    if (url === 'null') {
-      return false;
-    }
-    return SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(new URL(url).origin);
-  };
 
   // Returns an empty string if the origin is a Wire backend
   public static getWindowTitle = (origin: string): string =>
@@ -233,7 +218,7 @@ export class SingleSignOn {
   // `window.opener` is not available when sandbox is activated,
   // therefore we need to fake the function on backend area and
   // redirect the response to a custom protocol
-  public static readonly getWindowOpenerScript = () => {
+  public static readonly getWindowOpenerScript = (): string => {
     return `Object.defineProperty(window, 'opener', {
       configurable: true, // Needed on Chrome :(
       enumerable: false,
@@ -263,75 +248,70 @@ export class SingleSignOn {
     await toSession.cookies.flushStore();
   }
 
-  private static readonly protocol = {
-    generateSecret: (length: number): Promise<string> => {
-      return new Promise((resolve, reject) => {
-        crypto.randomBytes(length, (error, bytes) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(bytes.toString('hex'));
-        });
-      });
-    },
-    register: async (session: Session, finalizeLogin: (type: string) => void): Promise<void> => {
-      // Generate a new secret to authenticate the custom protocol (wire-sso)
-      SingleSignOn.loginAuthorizationSecret = await SingleSignOn.protocol.generateSecret(24);
+  private static generateSecret(length: number): Promise<string> {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(length, (error, bytes) => (error ? reject(error) : resolve(bytes.toString('hex'))));
+    });
+  }
 
-      const handleRequest = (request: ProtocolRequest, response: (data?: string) => void) => {
-        try {
-          const requestURL = new URL(request.url);
+  private static async registerProtocol(session: Session, finalizeLogin: (type: string) => void): Promise<void> {
+    // Generate a new secret to authenticate the custom protocol (wire-sso)
+    SingleSignOn.loginAuthorizationSecret = await SingleSignOn.generateSecret(24);
 
-          if (requestURL.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
-            throw new Error('Protocol is invalid');
-          }
+    const handleRequest = (request: ProtocolRequest): void => {
+      try {
+        const requestURL = new URL(request.url);
 
-          if (requestURL.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
-            throw new Error('Host is invalid');
-          }
-
-          if (typeof SingleSignOn.loginAuthorizationSecret !== 'string') {
-            throw new Error('Secret has not be set or has been consumed');
-          }
-
-          if (requestURL.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
-            throw new Error('Secret is invalid');
-          }
-
-          const type = requestURL.searchParams.get('type');
-
-          if (typeof type !== 'string') {
-            throw new Error('Response is empty');
-          }
-
-          if (type.length > SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT) {
-            throw new Error('Response type is too long');
-          }
-
-          finalizeLogin(type);
-          response('Please wait...');
-        } catch (error) {
-          response(`An error happened, please close the window and try again. Error: ${error.toString()}`);
+        if (requestURL.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
+          throw new Error('Protocol is invalid');
         }
-      };
 
-      const isHandled = await session.protocol.isProtocolHandled(SingleSignOn.SSO_PROTOCOL);
-      if (!isHandled) {
-        session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest, error => {
-          if (error) {
-            throw new Error(`Failed to register protocol. Error: ${error}`);
-          }
-        });
+        if (requestURL.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
+          throw new Error('Host is invalid');
+        }
+
+        if (typeof SingleSignOn.loginAuthorizationSecret !== 'string') {
+          throw new Error('Secret has not be set or has been consumed');
+        }
+
+        if (requestURL.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
+          throw new Error('Secret is invalid');
+        }
+
+        const type = requestURL.searchParams.get('type');
+
+        if (typeof type !== 'string') {
+          throw new Error('Response is empty');
+        }
+
+        if (type.length > SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT) {
+          throw new Error('Response type is too long');
+        }
+
+        finalizeLogin(type);
+      } catch (error) {
+        SingleSignOn.logger.error(error);
       }
-    },
-    unregister: (session: Session): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
-          return error ? reject(error) : resolve();
-        });
+    };
+
+    const isHandled = await session.protocol.isProtocolHandled(SingleSignOn.SSO_PROTOCOL);
+
+    if (!isHandled) {
+      session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest, error => {
+        if (error) {
+          throw new Error(`Failed to register protocol. Error: ${error}`);
+        }
       });
-    },
-  };
+    }
+  }
+
+  private static unregisterProtocol(session: Session): Promise<void> {
+    return new Promise((resolve, reject) => {
+      session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
+        return error ? reject(error) : resolve();
+      });
+    });
+  }
 
   private readonly finalizeLogin = async (type: string): Promise<void> => {
     if (type === SingleSignOn.RESPONSE_TYPES.AUTH_SUCCESS) {
@@ -353,7 +333,7 @@ export class SingleSignOn {
     await this.dispatchResponse(type);
   };
 
-  private readonly dispatchResponse = async (type: string): Promise<void> => {
+  private async dispatchResponse(type: string): Promise<void> {
     // Ensure guest window provided type is valid
     const isTypeValid = /^[A-Z_]{1,255}$/g;
     if (isTypeValid.test(type) === false) {
@@ -364,17 +344,11 @@ export class SingleSignOn {
     await this.senderWebContents.executeJavaScript(
       `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}}));`,
     );
+  }
 
-    // We remove the openerId and close the window locally instead of closing it remotely from the parent window.
-    if (this.ssoWindow) {
-      this.ssoWindow.close();
-      this.ssoWindow = undefined;
-    }
-  };
-
-  private readonly wipeSessionData = async () => {
+  private async wipeSessionData() {
     if (this.session) {
       await this.session.clearStorageData(undefined);
     }
-  };
+  }
 }

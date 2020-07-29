@@ -17,14 +17,13 @@
  *
  */
 
-import {v4 as uuid} from 'uuid';
-
+import {generateUUID} from '../lib/util';
 import {ActionType} from '../actions';
 
 const createAccount = (sessionID, ssoCode = undefined) => ({
   accentID: undefined,
   badgeCount: 0,
-  id: uuid(),
+  id: generateUUID(),
   isAdding: true,
   lifecycle: undefined,
   name: undefined,

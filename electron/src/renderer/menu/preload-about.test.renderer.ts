@@ -20,7 +20,7 @@
 import * as assert from 'assert';
 import {remote} from 'electron';
 
-import {i18nLanguageIdentifier} from '../../interfaces';
+import type {i18nLanguageIdentifier} from '../../locale/locale';
 import {EVENT_TYPE} from '../../lib/eventType';
 import {loadedAboutScreen} from './preload-about';
 

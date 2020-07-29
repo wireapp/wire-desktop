@@ -52,7 +52,7 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
   if (cancelButton && okButton && usernameInput && passwordInput && form) {
     usernameInput.focus();
 
-    const sendData = () => {
+    const sendData = (): void => {
       ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.SUBMITTED, {
         password: passwordInput.value,
         username: usernameInput.value,

@@ -17,10 +17,21 @@
  *
  */
 
-import {initiateSSO, switchAccount} from './';
+import {ActionType, initiateSSO} from './';
 import {config} from '../../../dist/settings/config';
-import * as EVENT_TYPE from '../lib/eventType';
+import {EVENT_TYPE} from '../../../dist/lib/eventType';
 import {AccountSelector} from '../selector/AccountSelector';
+
+/**
+ * Don't use this method directly, use `switchWebview` instead.
+ *
+ * @param {string} id - Account ID
+ * @returns {{id: string, type: ActionType.SWITCH_ACCOUNT}} - Account switch action
+ */
+export const switchAccount = id => ({
+  id,
+  type: ActionType.SWITCH_ACCOUNT,
+});
 
 export class AccountAction {
   startSSO = ssoCode => {
@@ -56,24 +67,21 @@ export class AccountAction {
 
   switchWebview = accountIndex => {
     return async (dispatch, getState) => {
-      try {
-        const account = AccountSelector.getAccounts(getState())[Math.max(accountIndex, 0)];
-        dispatch(switchAccount(account.id));
+      const account = AccountSelector.getAccounts(getState())[Math.max(accountIndex, 0)];
+      dispatch(switchAccount(account.id));
 
-        // Note: We need to focus window first to properly set focus
-        // on the webview with shortcuts like Cmd+1/2/3
-        window.blur();
-        window.focus();
+      // Note: We need to focus window first to properly set focus
+      // on the webview with shortcuts like Cmd+1/2/3
+      window.blur();
+      window.focus();
 
-        const webview = document.querySelector(`.Webview[data-accountid="${account.id}"]`);
-        if (webview) {
-          webview.blur();
-          webview.focus();
-        }
-      } catch (error) {
-        throw error;
+      const webview = document.querySelector(`.Webview[data-accountid="${account.id}"]`);
+      if (webview) {
+        webview.blur();
+        webview.focus();
       }
     };
   };
 }
+
 export const accountAction = new AccountAction();

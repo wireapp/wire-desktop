@@ -20,6 +20,7 @@
 export enum SettingsType {
   AUTO_LAUNCH = 'shouldAutoLaunch',
   CUSTOM_WEBAPP_URL = 'customWebAppURL',
+  ENABLE_SPELL_CHECKING = 'enableSpellChecking',
   ENV = 'env',
   FULL_SCREEN = 'fullscreen',
   LOCALE = 'locale',

@@ -1,6 +1,6 @@
 # Wire™
 
-![Wire logo](https://github.com/wireapp/wire/blob/master/assets/logo.png?raw=true)
+![Wire logo](https://github.com/wireapp/wire/blob/main/assets/logo.png?raw=true)
 
 This repository is part of the source code of Wire. You can find more information at [wire.com](https://wire.com) or by contacting opensource@wire.com.
 
@@ -44,6 +44,15 @@ yarn start
 ```shell
 yarn test
 ```
+
+### Deployment
+
+| Stage | Branch | Action | Version |
+| :-- | :-- | :-- | :-- |
+| 1 (Feature development) | (varies) | commit | x.y+3 (e.g. 3.20) |
+| 2 (Nightly test automation) | [dev](https://github.com/wireapp/wire-desktop/tree/dev) | commit or squash merge from feature branch | x.y+2 (e.g. 3.19) |
+| 3 (Internal release) | [staging](https://github.com/wireapp/wire-desktop/tree/staging) | merge (don't squash) from [dev](https://github.com/wireapp/wire-desktop/tree/dev) | x.y+1 (e.g. 3.18) |
+| 4 (Production release) | [main](https://github.com/wireapp/wire-desktop/tree/main) | merge (don't squash) from [staging](https://github.com/wireapp/wire-desktop/tree/staging) | x.y (e.g. 3.17) |
 
 ### Tasks
 

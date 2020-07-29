@@ -19,8 +19,8 @@
 
 import {DateUtil} from '@wireapp/commons';
 import {dialog, SaveDialogOptions} from 'electron';
-import * as fs from 'fs-extra';
 import imageType from 'image-type';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
@@ -34,18 +34,17 @@ export const downloadLogs = async (bytes: Uint8Array, timestamp: Date = new Date
 
   const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(timestamp);
 
-  const filename = `wire-logs-${formattedDate}-${formattedTime.replace(/:/g, '-')}.zip`;
+  const formattedTimeShort = formattedTime.replace(/:/g, '-').substr(0, 5);
+  const filename = `wire-logs-${formattedDate}-${formattedTimeShort}.zip`;
 
   return downloadFile(bytes, filename, options);
 };
 
-export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
+export const downloadImage = async (bytes: Uint8Array, timestamp?: string): Promise<void> => {
   const type = imageType(bytes);
   const options: SaveDialogOptions = {};
 
-  const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
-  const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
-  let filename = `Wire ${formattedDate} at ${formattedTime}`;
+  let filename = suggestFileName(timestamp);
 
   if (type?.ext) {
     options.filters = [
@@ -60,7 +59,7 @@ export const downloadImage = async (bytes: Uint8Array, timestamp?: string) => {
   return downloadFile(bytes, filename, options);
 };
 
-export const downloadFile = async (bytes: Uint8Array, filename: string, options?: SaveDialogOptions) => {
+export const downloadFile = async (bytes: Uint8Array, filename: string, options?: SaveDialogOptions): Promise<void> => {
   try {
     const {filePath: chosenPath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
     if (chosenPath) {
@@ -69,4 +68,10 @@ export const downloadFile = async (bytes: Uint8Array, filename: string, options?
   } catch (error) {
     logger.error(error);
   }
+};
+
+export const suggestFileName = (timestamp?: string): string => {
+  const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
+  const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
+  return `Wire ${formattedDate} at ${formattedTime}`.replace(/:/g, '-');
 };

@@ -27,7 +27,7 @@ import Sidebar from './Sidebar';
 import WebviewList from './WebviewList';
 import {AccountSelector} from '../selector/AccountSelector';
 
-const App = ({accounts, switchWebview}) => {
+const App = () => {
   return (
     <StyledApp style={{height: '100%'}}>
       <IsOnline>

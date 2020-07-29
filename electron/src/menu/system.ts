@@ -18,11 +18,9 @@
  */
 
 import autoLaunch = require('auto-launch');
-import * as openExternal from 'open';
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell} from 'electron';
 import * as path from 'path';
 
-import {Supportedi18nLanguage} from '../interfaces/';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {getLogger} from '../logging/getLogger';
@@ -50,7 +48,7 @@ const separatorTemplate: MenuItemConstructorOptions = {
   type: 'separator',
 };
 
-const createLanguageTemplate = (languageCode: Supportedi18nLanguage): MenuItemConstructorOptions => {
+const createLanguageTemplate = (languageCode: locale.SupportedI18nLanguage): MenuItemConstructorOptions => {
   return {
     click: () => changeLocale(languageCode),
     label: locale.SUPPORTED_LANGUAGES[languageCode],
@@ -60,7 +58,7 @@ const createLanguageTemplate = (languageCode: Supportedi18nLanguage): MenuItemCo
 
 const createLanguageSubmenu = (): MenuItemConstructorOptions[] => {
   return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage =>
-    createLanguageTemplate(supportedLanguage as Supportedi18nLanguage),
+    createLanguageTemplate(supportedLanguage as locale.SupportedI18nLanguage),
   );
 };
 
@@ -77,6 +75,13 @@ const aboutTemplate: MenuItemConstructorOptions = {
 const signOutTemplate: MenuItemConstructorOptions = {
   click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.ACTION.SIGN_OUT),
   label: locale.getText('menuSignOut'),
+};
+
+const spellingTemplate: MenuItemConstructorOptions = {
+  checked: settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true),
+  click: () => toggleSpellChecking(),
+  label: locale.getText('menuEnableSpellChecking'),
+  type: 'checkbox',
 };
 
 const conversationTemplate: MenuItemConstructorOptions = {
@@ -140,21 +145,7 @@ const showWireTemplate: MenuItemConstructorOptions = {
 
 const toggleMenuTemplate: MenuItemConstructorOptions = {
   checked: settings.restore(SettingsType.SHOW_MENU_BAR, true),
-  click: () => {
-    const mainBrowserWindow = WindowManager.getPrimaryWindow();
-
-    if (mainBrowserWindow) {
-      const showMenu = mainBrowserWindow.isMenuBarAutoHide();
-
-      mainBrowserWindow.setAutoHideMenuBar(!showMenu);
-
-      if (!showMenu) {
-        mainBrowserWindow.setMenuBarVisibility(showMenu);
-      }
-
-      settings.save(SettingsType.SHOW_MENU_BAR, showMenu);
-    }
-  },
+  click: () => toggleMenuBar(),
   label: locale.getText('menuShowHide'),
   type: 'checkbox',
 };
@@ -252,7 +243,7 @@ const downloadLogsTemplate: MenuItemConstructorOptions = {
     const archiveFile = await createFile(archive);
     await downloadLogs(archiveFile);
   },
-  label: 'Download Debug Logs',
+  label: locale.getText('menuDownloadDebugLogs'),
 };
 
 const helpTemplate: MenuItemConstructorOptions = {
@@ -314,6 +305,8 @@ const darwinTemplate: MenuItemConstructorOptions = {
       role: 'unhide',
     },
     separatorTemplate,
+    spellingTemplate,
+    separatorTemplate,
     signOutTemplate,
     {
       accelerator: 'Command+Q',
@@ -334,6 +327,8 @@ const win32Template: MenuItemConstructorOptions = {
     localeTemplate,
     toggleAutoLaunchTemplate,
     separatorTemplate,
+    spellingTemplate,
+    separatorTemplate,
     signOutTemplate,
     {
       accelerator: 'Alt+F4',
@@ -350,6 +345,8 @@ const linuxTemplate: MenuItemConstructorOptions = {
     separatorTemplate,
     localeTemplate,
     separatorTemplate,
+    spellingTemplate,
+    separatorTemplate,
     signOutTemplate,
     {
       accelerator: 'Ctrl+Q',
@@ -359,7 +356,7 @@ const linuxTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: Supportedi18nLanguage) => {
+const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: locale.SupportedI18nLanguage): void => {
   for (const item of template) {
     if (item.submenu) {
       processMenu(item.submenu as Iterable<MenuItemConstructorOptions>, language);
@@ -371,8 +368,7 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: S
   }
 };
 
-const changeLocale = async (language: Supportedi18nLanguage): Promise<void> => {
-  locale.setLocale(language);
+const showRestartMessageBox = async () => {
   const {response} = await dialog.showMessageBox({
     buttons: [
       locale.getText('restartLater'),
@@ -383,8 +379,13 @@ const changeLocale = async (language: Supportedi18nLanguage): Promise<void> => {
     type: 'info',
   });
   if (response === 1) {
-    return EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch();
+    await (EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch());
   }
+};
+
+const changeLocale = async (language: locale.SupportedI18nLanguage): Promise<void> => {
+  locale.setLocale(language);
+  await showRestartMessageBox();
 };
 
 export const createMenu = (isFullScreen: boolean): Menu => {
@@ -471,13 +472,17 @@ export const toggleMenuBar = (): void => {
   const mainBrowserWindow = WindowManager.getPrimaryWindow();
 
   if (mainBrowserWindow) {
-    const isVisible = mainBrowserWindow.isMenuBarVisible();
     const autoHide = mainBrowserWindow.isMenuBarAutoHide();
-
-    if (autoHide) {
-      mainBrowserWindow.setMenuBarVisibility(!isVisible);
-    }
+    mainBrowserWindow.setAutoHideMenuBar(!autoHide);
+    mainBrowserWindow.setMenuBarVisibility(autoHide);
+    settings.save(SettingsType.SHOW_MENU_BAR, autoHide);
   }
+};
+
+export const toggleSpellChecking = async (): Promise<void> => {
+  const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
+  settings.save(SettingsType.ENABLE_SPELL_CHECKING, !enableSpellChecking);
+  await showRestartMessageBox();
 };
 
 export const registerGlobalShortcuts = (): void => {

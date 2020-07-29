@@ -17,18 +17,11 @@
  *
  */
 
-import './Sidebar.css';
-
 import React from 'react';
 import {connect} from 'react-redux';
 
-import * as EVENT_TYPE from '../lib/eventType';
-import {
-  addAccountWithSession,
-  setAccountContextHidden,
-  switchAccount,
-  toggleEditAccountMenuVisibility,
-} from '../actions';
+import {EVENT_TYPE} from '../../../dist/lib/eventType';
+import {addAccountWithSession, setAccountContextHidden, toggleEditAccountMenuVisibility} from '../actions';
 import {colorFromId} from '../lib/accentColor';
 import {preventFocus} from '../lib/util';
 import AccountIcon from './AccountIcon';
@@ -36,6 +29,8 @@ import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
 import {AccountSelector} from '../selector/AccountSelector';
 import {ContextMenuSelector} from '../selector/ContextMenuSelector';
+
+import './Sidebar.css';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
@@ -70,7 +65,7 @@ const Sidebar = ({
         <div
           style={{color: colorFromId(currentAccentID)}}
           className={getClassName(account)}
-          onClick={preventFocus(event =>
+          onClick={preventFocus(() =>
             window.dispatchEvent(
               new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accounts.indexOf(account)}}),
             ),
@@ -114,7 +109,6 @@ export default connect(
   {
     addAccountWithSession,
     setAccountContextHidden,
-    switchAccount,
     toggleEditAccountMenuVisibility,
   },
 )(Sidebar);

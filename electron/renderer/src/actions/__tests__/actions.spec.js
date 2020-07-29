@@ -17,9 +17,9 @@
  *
  */
 
-import {v4 as uuid} from 'uuid';
-
-import {ActionType, addAccount, deleteAccount, switchAccount, updateAccount, updateAccountBadge} from '../';
+import {generateUUID} from '../../lib/util';
+import {ActionType, addAccount, deleteAccount, updateAccount, updateAccountBadge} from '../';
+import {switchAccount} from '../AccountAction';
 
 describe('action creators', () => {
   describe('addAccount', () => {
@@ -32,7 +32,7 @@ describe('action creators', () => {
 
   describe('updateAccount', () => {
     it('should create action to update account', () => {
-      const id = uuid();
+      const id = generateUUID();
       const data = {name: 'Foo'};
       const action = {
         data,
@@ -45,7 +45,7 @@ describe('action creators', () => {
 
   describe('switchAccount', () => {
     it('should create action to switch account', () => {
-      const id = uuid();
+      const id = generateUUID();
       const action = {
         id,
         type: ActionType.SWITCH_ACCOUNT,
@@ -56,7 +56,7 @@ describe('action creators', () => {
 
   describe('updateAccountBadge', () => {
     it('should create action to update account badge', () => {
-      const id = uuid();
+      const id = generateUUID();
       const count = 42;
       const action = {
         count,
@@ -69,7 +69,7 @@ describe('action creators', () => {
 
   describe('deleteAccount', () => {
     it('should create action to delete an account', () => {
-      const id = uuid();
+      const id = generateUUID();
       const action = {
         id,
         type: ActionType.DELETE_ACCOUNT,

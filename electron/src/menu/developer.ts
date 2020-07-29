@@ -17,9 +17,10 @@
  *
  */
 
-import {app, MenuItem, MenuItemConstructorOptions} from 'electron';
+import {MenuItem, MenuItemConstructorOptions} from 'electron';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 
@@ -81,7 +82,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-const createEnvironmentTemplates = () => {
+const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
   const environments = {...EnvironmentUtil.URL_WEBAPP};
   delete environments.CUSTOM;
@@ -89,10 +90,9 @@ const createEnvironmentTemplates = () => {
   for (const [backendType, backendURL] of Object.entries(environments)) {
     environmentTemplate.push({
       checked: currentEnvironment === backendType,
-      click: () => {
+      click: async () => {
         EnvironmentUtil.setEnvironment(backendType as EnvironmentUtil.BackendType);
-        app.relaunch();
-        app.quit();
+        await lifecycle.relaunch();
       },
       label: backendURL.replace(/^https?:\/\//, ''),
       type: 'radio',
@@ -139,4 +139,4 @@ const menuTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-export const menuItem = new MenuItem(menuTemplate);
+export const developerMenu = new MenuItem(menuTemplate);

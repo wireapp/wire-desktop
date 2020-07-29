@@ -17,15 +17,14 @@
  *
  */
 
-import './WebviewList.css';
-
 import React, {useEffect} from 'react';
-
-import Webview from './Webview';
 import {connect} from 'react-redux';
 
+import Webview from './Webview';
 import {updateAccountBadgeCount} from '../actions';
 import {AccountSelector} from '../selector/AccountSelector';
+
+import './WebviewList.css';
 
 const WebviewList = ({accounts, updateAccountBadgeCount}) => {
   useEffect(() => {

@@ -20,9 +20,10 @@
 import {applyMiddleware, createStore} from 'redux';
 import {createLogger} from 'redux-logger';
 import thunk from 'redux-thunk';
+import throttle from 'lodash/throttle';
+
 import {loadState, saveState} from './lib/localStorage';
 import reducers from './reducers';
-import throttle from 'lodash/throttle';
 
 const HALF_SECOND = 500;
 const persistedState = loadState();
