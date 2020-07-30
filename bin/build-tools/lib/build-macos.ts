@@ -186,6 +186,7 @@ export async function manualMacOSSign(
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libGLESv2.dylib',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libEGL.dylib',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libGLESv2.dylib',
+      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib',
       'Frameworks/Electron Framework.framework/',
       `Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,
       `Frameworks/${commonConfig.name} Helper.app/`,
