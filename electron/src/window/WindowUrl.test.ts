@@ -31,5 +31,11 @@ describe('WindowUrl', () => {
       const expectedUrl = 'https://webapp.qa-demo.wire.link/?clienttype=permanent&hl=en&enableLogging=%40wireapp%2F*';
       assert.strictEqual(updatedWebApp, expectedUrl);
     });
+
+    it('throws an error if the environment includes an invalid URL', () => {
+      const rendererPage = 'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=undefined';
+      const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
+      assert.throws(() => WindowUrl.createWebAppUrl(rendererPage, customWebApp));
+    });
   });
 });
