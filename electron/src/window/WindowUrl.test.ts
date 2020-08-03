@@ -22,41 +22,20 @@ import * as assert from 'assert';
 import {WindowUrl} from './WindowUrl';
 
 describe('WindowUrl', () => {
-  describe('getUrlQueryString', () => {
-    it('returns an unescaped string sequence containing the given parameters', () => {
-      const params = new URLSearchParams({
-        clientType: 'temporary',
-        enableLogging: '@wireapp/*',
-        hl: 'en',
-      });
-      const queryString = WindowUrl.getQueryString(params);
-      const expectedString = '?clientType=temporary&enableLogging=@wireapp/*&hl=en';
-      assert.strictEqual(queryString, expectedString);
-    });
-  });
-
-  describe('replaceUrlParams', () => {
-    it('replaces all query params in a given url string', () => {
-      const params = new URLSearchParams({
-        clientType: 'overwritten',
-      });
-      const url = 'https://app.wire.example.com/?clientType=temporary';
-      const newUrl = WindowUrl.replaceQueryParams(url, params);
-      const expectedUrl = encodeURIComponent('https://app.wire.example.com/?clientType=overwritten');
-      assert.strictEqual(newUrl, expectedUrl);
-    });
-  });
-
   describe('createWebappUrl', () => {
-    it('creates a custom environment webapp URL based on parameters from an existing renderer page', () => {
+    it('creates a custom environment WebApp URL based on parameters from an existing renderer page', () => {
       const rendererPage =
         'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=https%3A%2F%2Fwire-webapp-dev.zinfra.io%3Fhl%3Den%26enableLogging%3D%40wireapp%2F*';
-      const customWebapp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
-      const updatedWebapp = WindowUrl.createWebappUrl(rendererPage, customWebapp);
-      const expectedUrl = encodeURIComponent(
-        'https://webapp.qa-demo.wire.link?hl=en&enableLogging=@wireapp/*&clienttype=permanent',
-      );
-      assert.strictEqual(updatedWebapp, expectedUrl);
+      const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
+      const updatedWebApp = WindowUrl.createWebAppUrl(rendererPage, customWebApp);
+      const expectedUrl = 'https://webapp.qa-demo.wire.link/?clienttype=permanent&hl=en&enableLogging=%40wireapp%2F*';
+      assert.strictEqual(updatedWebApp, expectedUrl);
+    });
+
+    it('throws an error if the environment includes an invalid URL', () => {
+      const rendererPage = 'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=undefined';
+      const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
+      assert.throws(() => WindowUrl.createWebAppUrl(rendererPage, customWebApp));
     });
   });
 });
