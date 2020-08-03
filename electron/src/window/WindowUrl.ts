@@ -18,14 +18,17 @@
  */
 
 export class WindowUrl {
-  static createWebappUrl(localRendererUrl: string, customBackendUrl: string): string {
+  static createWebAppUrl(localRendererUrl: string, customBackendUrl: string): string {
     const localFileParams = new URL(localRendererUrl).searchParams;
     const customBackendUrlParsed = new URL(customBackendUrl);
-    const decodedEnvUrl = decodeURIComponent(localFileParams.get('env')!);
-    const envUrlParams = new URL(decodedEnvUrl).searchParams;
+    let envUrl = localFileParams.get('env')!;
+    if (/^https?%3A%2F%2F/.test(envUrl)) {
+      envUrl = decodeURIComponent(envUrl);
+    }
+    const envUrlParams = new URL(envUrl).searchParams;
     envUrlParams.forEach((value, key) => {
       customBackendUrlParsed.searchParams.set(key, value);
     });
-    return encodeURIComponent(customBackendUrlParsed.href);
+    return customBackendUrlParsed.href;
   }
 }
