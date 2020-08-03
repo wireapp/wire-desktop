@@ -21,10 +21,7 @@ export class WindowUrl {
   static createWebAppUrl(localRendererUrl: string, customBackendUrl: string): string {
     const localFileParams = new URL(localRendererUrl).searchParams;
     const customBackendUrlParsed = new URL(customBackendUrl);
-    let envUrl = localFileParams.get('env')!;
-    if (/^https?%3A%2F%2F/.test(envUrl)) {
-      envUrl = decodeURIComponent(envUrl);
-    }
+    const envUrl = decodeURIComponent(localFileParams.get('env')!);
     const envUrlParams = new URL(envUrl).searchParams;
     envUrlParams.forEach((value, key) => {
       customBackendUrlParsed.searchParams.set(key, value);
