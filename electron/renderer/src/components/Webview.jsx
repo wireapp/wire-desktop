@@ -143,9 +143,9 @@ const Webview = ({
         case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
           const [customUrl] = args;
           const accountId = account.id;
-          const updatedWebapp = WindowUrl.createWebappUrl(window.location, customUrl);
+          const updatedWebapp = WindowUrl.createWebAppUrl(window.location, customUrl);
           updateAccountData(accountId, {
-            webappUrl: decodeURIComponent(updatedWebapp),
+            webappUrl: updatedWebapp,
           });
           break;
         }
