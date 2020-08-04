@@ -41,9 +41,12 @@ export async function buildMacOSConfig(
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
+  const plistInfoResolved = path.resolve('resources/macos/Info.plist.json');
+  const plistEntries = await fs.readJson(plistInfoResolved);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
+    appleExportComplianceCode: null,
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
     certNameApplication: null,
@@ -55,6 +58,7 @@ export async function buildMacOSConfig(
 
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
+    appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     certNameApplication: process.env.MACOS_CERTIFICATE_NAME_APPLICATION || macOSDefaultConfig.certNameApplication,
     certNameInstaller: process.env.MACOS_CERTIFICATE_NAME_INSTALLER || macOSDefaultConfig.certNameInstaller,
@@ -62,6 +66,11 @@ export async function buildMacOSConfig(
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };
+
+  if (macOSConfig.appleExportComplianceCode) {
+    plistEntries['ITSAppUsesNonExemptEncryption'] = true;
+    plistEntries['ITSEncryptionExportComplianceCode'] = macOSConfig.appleExportComplianceCode;
+  }
 
   const packagerConfig: electronPackager.Options = {
     appBundleId: macOSConfig.bundleId,
@@ -72,7 +81,7 @@ export async function buildMacOSConfig(
     buildVersion: commonConfig.buildNumber,
     darwinDarkModeSupport: true,
     dir: '.',
-    extendInfo: 'resources/macos/custom.plist',
+    extendInfo: plistEntries,
     helperBundleId: `${macOSConfig.bundleId}.helper`,
     icon: 'resources/macos/logo.icns',
     ignore: /electron\/renderer\/src/,
