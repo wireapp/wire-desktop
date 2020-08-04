@@ -94,6 +94,9 @@ export async function buildMacOSConfig(
     quiet: false,
   };
 
+  // eslint-disable-next-line
+  console.log('packagerConfig', packagerConfig)
+
   if (macOSConfig.electronMirror) {
     packagerConfig.download = {
       mirrorOptions: {
