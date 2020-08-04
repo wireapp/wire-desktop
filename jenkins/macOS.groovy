@@ -32,7 +32,10 @@ node('master') {
 
   stage('Build') {
     try {
-      withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
+      withCredentials([
+        string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD'),
+        string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')
+      ]) {
         sh "security unlock-keychain -p \"${MACOS_KEYCHAIN_PASSWORD}\" /Users/jenkins/Library/Keychains/login.keychain"
       }
       withEnv(["PATH+NODE=${NODE}/bin"]) {
