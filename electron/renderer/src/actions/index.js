@@ -17,14 +17,12 @@
  *
  */
 
-/* eslint-disable no-console */
-
-import {v4 as uuid} from 'uuid';
 import * as Joi from '@hapi/joi';
 
 import {config} from '../../../dist/settings/config';
 import {accountAction} from './AccountAction';
 import {AccountSelector} from '../selector/AccountSelector';
+import {generateUUID} from '../lib/util';
 
 export const ActionType = {
   ADD_ACCOUNT: 'ADD_ACCOUNT',
@@ -41,13 +39,13 @@ export const ActionType = {
 };
 
 export const addAccount = (withSession = true) => ({
-  sessionID: withSession ? uuid() : undefined,
+  sessionID: withSession ? generateUUID() : undefined,
   type: ActionType.ADD_ACCOUNT,
 });
 
 export const initiateSSO = (id, ssoCode = undefined, withSession = true) => ({
   id,
-  sessionID: withSession ? uuid() : undefined,
+  sessionID: withSession ? generateUUID() : undefined,
   ssoCode,
   type: ActionType.INITIATE_SSO,
 });
@@ -60,11 +58,6 @@ export const deleteAccount = id => ({
 export const resetIdentity = (id = true) => ({
   id,
   type: ActionType.RESET_IDENTITY,
-});
-
-export const switchAccount = id => ({
-  id,
-  type: ActionType.SWITCH_ACCOUNT,
 });
 
 export const updateAccount = (id, data) => ({
@@ -109,7 +102,8 @@ export const abortAccountCreation = id => {
     dispatch(deleteAccount(id));
 
     if (lastAccount) {
-      dispatch(switchAccount(lastAccount.id));
+      const accountIndex = AccountSelector.getAccountIndex(getState(), lastAccount.id);
+      dispatch(accountAction.switchWebview(accountIndex));
     } else {
       dispatch(addAccount(false));
     }

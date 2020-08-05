@@ -32,6 +32,7 @@ const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 206
 const russianMessageUtf8 = [208, 159, 209, 128, 208, 184, 208, 178, 208, 181, 209, 130, 32, 208, 184, 208, 183, 32, 208, 189, 208, 190, 208, 186, 208, 176, 33];
 
 const contentLimitRequest = (contentType: string, contentArray: number[]) => {
+  const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   nock(exampleUrl).get('/').reply(200, Buffer.from(contentArray), {
     'content-type': contentType,
   });
@@ -40,7 +41,7 @@ const contentLimitRequest = (contentType: string, contentArray: number[]) => {
       method: 'get',
       url: exampleUrl,
     },
-    1e6,
+    CONTENT_SIZE_LIMIT,
   );
 };
 

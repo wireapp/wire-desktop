@@ -23,11 +23,11 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
+  Filter,
+  HeadersReceivedResponse,
   ipcMain,
   Menu,
-  OnHeadersReceivedDetails as OnHeadersReceivedListenerDetails,
-  OnHeadersReceivedFilter as Filter,
-  OnHeadersReceivedResponse as HeadersReceivedResponse,
+  OnHeadersReceivedListenerDetails,
   shell,
   WebContents,
 } from 'electron';
@@ -37,9 +37,10 @@ import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import WindowStateKeeper = require('electron-window-state');
+import windowStateKeeper = require('electron-window-state');
 import fileUrl = require('file-url');
 
+import './global';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -52,7 +53,7 @@ import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {Raygun} from './logging/initRaygun';
 import {getLogFilenames} from './logging/loggerUtils';
-import {menuItem as developerMenu} from './menu/developer';
+import {developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
@@ -65,7 +66,7 @@ import {SingleSignOn} from './sso/SingleSignOn';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
-import {WindowUtil} from './window/WindowUtil';
+import * as WindowUtil from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
 
@@ -92,10 +93,12 @@ const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
 
 const logger = getLogger(path.basename(__filename));
+const currentLocale = locale.getCurrent();
+const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
-  app.quit();
+  app.exit();
 }
 
 logger.info(`Initializing ${config.name} v${config.version} ...`);
@@ -135,7 +138,7 @@ Object.entries(config).forEach(([key, value]) => {
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // IPC events
-const bindIpcEvents = () => {
+const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
@@ -154,17 +157,16 @@ const bindIpcEvents = () => {
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
-  ipcMain.on(EVENT_TYPE.UI.TOGGLE_MENU, systemMenu.toggleMenuBar);
 };
 
-const checkConfigV0FullScreen = (mainWindowState: WindowStateKeeper.State) => {
+const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
   // if a user still has the old config version 0 and had the window maximized last time
   if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
     main.maximize();
   }
 };
 
-const initWindowStateKeeper = () => {
+const initWindowStateKeeper = (): windowStateKeeper.State => {
   const loadedWindowBounds = settings.restore(SettingsType.WINDOW_BOUNDS, {
     height: WINDOW_SIZE.DEFAULT_HEIGHT,
     width: WINDOW_SIZE.DEFAULT_WIDTH,
@@ -173,29 +175,23 @@ const initWindowStateKeeper = () => {
   // load version 0 full screen setting
   const showInFullScreen = settings.restore(SettingsType.FULL_SCREEN, 'not-set-in-v0');
 
-  const stateKeeperOptions: {
-    defaultHeight: number;
-    defaultWidth: number;
-    fullScreen?: boolean;
-    maximize?: boolean;
-    path: string;
-  } = {
+  const stateKeeperOptions: windowStateKeeper.Options = {
     defaultHeight: loadedWindowBounds.height,
     defaultWidth: loadedWindowBounds.width,
     path: path.join(app.getPath('userData'), 'config'),
   };
 
   if (showInFullScreen !== 'not-set-in-v0') {
-    stateKeeperOptions.fullScreen = showInFullScreen;
-    stateKeeperOptions.maximize = showInFullScreen;
-    isFullScreen = showInFullScreen;
+    stateKeeperOptions.fullScreen = showInFullScreen as boolean;
+    stateKeeperOptions.maximize = showInFullScreen as boolean;
+    isFullScreen = showInFullScreen as boolean;
   }
 
-  return WindowStateKeeper(stateKeeperOptions);
+  return windowStateKeeper(stateKeeperOptions);
 };
 
 // App Windows
-const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
+const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
   const options: BrowserWindowConstructorOptions = {
@@ -216,33 +212,35 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
       webviewTag: true,
     },
     width: mainWindowState.width,
-    // eslint-disable-next-line
+    // eslint-disable-next-line id-length
     x: mainWindowState.x,
-    // eslint-disable-next-line
+    // eslint-disable-next-line id-length
     y: mainWindowState.y,
   };
 
   main = new BrowserWindow(options);
+  main.setMenuBarVisibility(showMenuBar);
 
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  let webappUrl = `${BASE_URL}${BASE_URL.includes('?') ? '&' : '?'}hl=${locale.getCurrent()}`;
+  const webappURL = new URL(BASE_URL);
+  webappURL.searchParams.set('hl', currentLocale);
 
   if (ENABLE_LOGGING) {
-    webappUrl += '&enableLogging=@wireapp/*';
+    webappURL.searchParams.set('enableLogging', '@wireapp/*');
   }
 
   if (customProtocolHandler.hashLocation) {
-    webappUrl += `#${customProtocolHandler.hashLocation}`;
+    webappURL.hash = customProtocolHandler.hashLocation;
   }
 
   if (argv.devtools) {
     main.webContents.openDevTools({mode: 'detach'});
   }
 
-  if (!argv[config.ARGUMENT.STARTUP] && !argv[config.ARGUMENT.HIDDEN]) {
+  if (!startHidden) {
     if (!WindowUtil.isInView(main)) {
       main.center();
     }
@@ -316,17 +314,17 @@ const showMainWindow = async (mainWindowState: WindowStateKeeper.State) => {
     }
   });
 
-  await main.loadURL(`${fileUrl(INDEX_HTML)}?env=${encodeURIComponent(webappUrl)}`);
-  const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
-  main.webContents.insertCSS(wrapperCSSContent);
+  const mainURL = new URL(fileUrl(INDEX_HTML));
+  mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
+  mainURL.searchParams.set('focus', String(!startHidden));
 
-  if (argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]) {
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.PREFERENCES.SET_HIDDEN);
-  }
+  await main.loadURL(mainURL.href);
+  const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
+  await main.webContents.insertCSS(wrapperCSSContent);
 };
 
 // App Events
-const handleAppEvents = () => {
+const handleAppEvents = (): void => {
   app.on('window-all-closed', async () => {
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
       await lifecycle.quit();
@@ -340,11 +338,10 @@ const handleAppEvents = () => {
   });
 
   app.on('before-quit', () => {
-    settings.persistToFile();
     isQuitting = true;
   });
 
-  app.on('login', async (event, webContents, _request, authInfo, callback) => {
+  app.on('login', async (event, webContents, _responseDetails, authInfo, callback) => {
     if (authInfo.isProxy) {
       event.preventDefault();
       const {host, port} = authInfo;
@@ -357,23 +354,17 @@ const handleAppEvents = () => {
           protocol,
         } = systemProxySettings;
         proxyInfoArg = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
-        logger.log('Applying proxy settings on the main window...');
+        logger.log('Found system proxy settings, applying settings on the main window...');
+
         await applyProxySettings(proxyInfoArg, main.webContents);
         return callback(username, password);
       }
 
       if (proxyInfoArg) {
-        const hasCredentials = proxyInfoArg.username && proxyInfoArg.password;
-        if (hasCredentials) {
-          const {username, password} = proxyInfoArg;
-          logger.info('Sending provided credentials to authenticated proxy ...');
-          await applyProxySettings(proxyInfoArg, main.webContents);
-          return callback(username, password);
-        }
         ipcMain.once(
           EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
           async (_event, promptData: {password: string; username: string}) => {
-            logger.log('Proxy prompt was submitted');
+            logger.log('Proxy info was submitted via prompt');
 
             const {username, password} = promptData;
             // remove the colon from the protocol to align it with other usages of `generateProxyURL`
@@ -386,7 +377,7 @@ const handleAppEvents = () => {
               },
             );
 
-            logger.log('Applying proxy settings on the main window...');
+            logger.log('Proxy prompt was submitted, applying proxy settings on the main window...');
             await applyProxySettings(proxyInfoArg, main.webContents);
             callback(username, password);
           },
@@ -395,11 +386,7 @@ const handleAppEvents = () => {
         ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
           logger.log('Proxy prompt was canceled');
 
-          await webContents.session.setProxy({
-            pacScript: '',
-            proxyBypassRules: '',
-            proxyRules: '',
-          });
+          await webContents.session.setProxy({});
 
           try {
             main.reload();
@@ -454,7 +441,7 @@ const renameWebViewLogFiles = (): void => {
   }
 };
 
-const addLinuxWorkarounds = () => {
+const addLinuxWorkarounds = (): void => {
   if (EnvironmentUtil.platform.IS_LINUX) {
     // Fix indicator icon on Unity
     // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
@@ -469,7 +456,7 @@ const addLinuxWorkarounds = () => {
   }
 };
 
-const handlePortableFlags = () => {
+const handlePortableFlags = (): void => {
   if (argv[config.ARGUMENT.USER_DATA_DIR] || argv[config.ARGUMENT.PORTABLE]) {
     const USER_PATH = argv[config.ARGUMENT.USER_DATA_DIR]
       ? path.resolve(argv[config.ARGUMENT.USER_DATA_DIR])
@@ -480,18 +467,16 @@ const handlePortableFlags = () => {
   }
 };
 
-const applyProxySettings = async (authenticatedProxyDetails: any, webContents: Electron.WebContents) => {
+const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: Electron.WebContents): Promise<void> => {
   const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
   const proxyProtocol = authenticatedProxyDetails.protocol;
   const isSocksProxy = proxyProtocol === 'socks4:' || proxyProtocol === 'socks5:';
 
-  logger.info(`Setting proxy on a window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
+  logger.info(`Setting proxy on the window to URL "${proxyURL}" with protocol "${proxyProtocol}"...`);
   webContents.session.allowNTLMCredentialsForDomains(authenticatedProxyDetails.hostname);
-  await webContents.session.setProxy({
-    pacScript: '',
-    proxyBypassRules: '',
-    proxyRules: isSocksProxy ? `socks=${proxyURL}` : `http=${proxyURL};https=${proxyURL}`,
-  });
+
+  const proxyRules = isSocksProxy ? `socks=${proxyURL}` : `http=${proxyURL};https=${proxyURL}`;
+  await webContents.session.setProxy({pacScript: '', proxyBypassRules: '', proxyRules});
 };
 
 class ElectronWrapperInit {
@@ -514,7 +499,7 @@ class ElectronWrapperInit {
       frameName: string,
       _disposition: string,
       options: BrowserWindowConstructorOptions,
-    ) => {
+    ): Promise<void> => {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
@@ -525,8 +510,8 @@ class ElectronWrapperInit {
       return shell.openExternal(url);
     };
 
-    const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string) => {
-      // Ensure navigation is to a whitelisted domain
+    const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
+      // Ensure navigation is to an allowed domain
       if (OriginValidator.isMatchingHost(url, baseUrl)) {
         this.logger.log(`Navigating inside webview. URL: ${url}`);
       } else {
@@ -535,28 +520,32 @@ class ElectronWrapperInit {
       }
     };
 
-    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
-      if (proxyInfoArg?.origin && contents.session) {
-        this.logger.log('Applying proxy settings on a webview...');
-        await applyProxySettings(proxyInfoArg, contents);
-      }
+    const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
+    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
       switch (contents.getType()) {
         case 'window': {
-          contents.on('will-attach-webview', (event, webPreferences, params) => {
+          contents.on('will-attach-webview', (_event, webPreferences, params) => {
             // Use secure defaults
             params.autosize = 'false';
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
+            webPreferences.enableBlinkFeatures = '';
+            webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
+            webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
-            webPreferences.enableBlinkFeatures = '';
           });
           break;
         }
         case 'webview': {
+          if (proxyInfoArg?.origin && contents.session) {
+            this.logger.log('Found proxy settings in arguments, applying settings on the webview...');
+            await applyProxySettings(proxyInfoArg, contents);
+          }
+
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
@@ -581,6 +570,19 @@ class ElectronWrapperInit {
             });
           }
 
+          if (enableSpellChecking) {
+            try {
+              const availableSpellCheckerLanguages = contents.session.availableSpellCheckerLanguages;
+              const foundLanguages = locale.supportedSpellCheckLanguages[currentLocale].filter(language =>
+                availableSpellCheckerLanguages.includes(language),
+              );
+              contents.session.setSpellCheckerLanguages(foundLanguages);
+            } catch (error) {
+              logger.error(error);
+              contents.session.setSpellCheckerLanguages([]);
+            }
+          }
+
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
@@ -594,10 +596,10 @@ class ElectronWrapperInit {
             const listenerOnHeadersReceived = (
               details: OnHeadersReceivedListenerDetails,
               callback: (response: HeadersReceivedResponse) => void,
-            ) => {
+            ): void => {
               const responseHeaders = {
                 'Access-Control-Allow-Credentials': ['true'],
-                'Access-Control-Allow-Origin': ['http://localhost:8081'],
+                'Access-Control-Allow-Origin': [EnvironmentUtil.URL_WEBAPP.LOCALHOST],
               };
 
               callback({
@@ -611,9 +613,18 @@ class ElectronWrapperInit {
 
           contents.on('before-input-event', (_event, input) => {
             if (input.type === 'keyUp' && input.key === 'Alt') {
-              ipcMain.emit(EVENT_TYPE.UI.TOGGLE_MENU);
+              const mainBrowserWindow = WindowManager.getPrimaryWindow();
+
+              if (mainBrowserWindow) {
+                const isAutoHide = mainBrowserWindow.isMenuBarAutoHide();
+                const isVisible = mainBrowserWindow.isMenuBarVisible();
+                if (isAutoHide) {
+                  mainBrowserWindow.setMenuBarVisibility(!isVisible);
+                }
+              }
             }
           });
+
           break;
         }
       }

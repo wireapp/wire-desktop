@@ -18,9 +18,9 @@
  */
 
 import * as assert from 'assert';
+import {Protocol} from 'get-proxy-settings';
 
 import * as ProxyAuth from './ProxyAuth';
-import {Protocol} from 'get-proxy-settings';
 
 describe('ProxyAuth', () => {
   it("generates a proxy URL using the operating system's proxy settings", () => {

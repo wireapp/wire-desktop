@@ -20,9 +20,9 @@ import * as assert from 'assert';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import {v4 as uuid} from 'uuid';
 
 import {getCommonConfig} from './commonConfig';
+import {generateUUID} from '../../bin-utils';
 
 const wireJsonPath = path.join(__dirname, '../../../electron/wire.json');
 const envFilePath = path.join(__dirname, '../../../.env.defaults');
@@ -30,22 +30,22 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 describe('commonConfig', () => {
   describe('getCommonConfig', () => {
     it('honors environment variables', async () => {
-      const adminUrl = uuid();
-      const appBase = uuid();
-      const buildNumber = uuid();
-      const copyright = uuid();
-      const customProtocolName = uuid();
-      const description = uuid();
+      const adminUrl = generateUUID();
+      const appBase = generateUUID();
+      const buildNumber = generateUUID();
+      const copyright = generateUUID();
+      const customProtocolName = generateUUID();
+      const description = generateUUID();
       const enableAsar = false;
-      const legalUrl = uuid();
-      const licensesUrl = uuid();
-      const maximumAccounts = uuid();
-      const name = uuid();
-      const nameShort = uuid();
-      const privacyUrl = uuid();
-      const raygunApiKey = uuid();
-      const supportUrl = uuid();
-      const websiteUrl = uuid();
+      const legalUrl = generateUUID();
+      const licensesUrl = generateUUID();
+      const maximumAccounts = generateUUID();
+      const name = generateUUID();
+      const nameShort = generateUUID();
+      const privacyUrl = generateUUID();
+      const raygunApiKey = generateUUID();
+      const supportUrl = generateUUID();
+      const websiteUrl = generateUUID();
 
       process.env.URL_ADMIN = adminUrl;
       process.env.APP_BASE = appBase;
@@ -107,26 +107,26 @@ describe('commonConfig', () => {
       const tempEnvFilePath = path.join(tempDir, '.env.defaults');
 
       const wireJson = {
-        adminUrl: uuid(),
-        appBase: uuid(),
-        buildDir: uuid(),
-        buildNumber: uuid(),
-        copyright: uuid(),
-        customProtocolName: uuid(),
-        description: uuid(),
-        distDir: uuid(),
-        electronDirectory: uuid(),
+        adminUrl: generateUUID(),
+        appBase: generateUUID(),
+        buildDir: generateUUID(),
+        buildNumber: generateUUID(),
+        copyright: generateUUID(),
+        customProtocolName: generateUUID(),
+        description: generateUUID(),
+        distDir: generateUUID(),
+        electronDirectory: generateUUID(),
         enableAsar: false,
-        legalUrl: uuid(),
-        licensesUrl: uuid(),
-        maximumAccounts: uuid(),
-        name: uuid(),
-        nameShort: uuid(),
-        privacyUrl: uuid(),
-        raygunApiKey: uuid(),
-        supportUrl: uuid(),
-        updateUrl: uuid(),
-        websiteUrl: uuid(),
+        legalUrl: generateUUID(),
+        licensesUrl: generateUUID(),
+        maximumAccounts: generateUUID(),
+        name: generateUUID(),
+        nameShort: generateUUID(),
+        privacyUrl: generateUUID(),
+        raygunApiKey: generateUUID(),
+        supportUrl: generateUUID(),
+        updateUrl: generateUUID(),
+        websiteUrl: generateUUID(),
       };
 
       await fs.writeJson(tempWireJsonPath, wireJson);
@@ -170,11 +170,11 @@ describe('commonConfig', () => {
       const tempEnvFilePath = path.join(tempDir, '.env.defaults');
 
       const wireJson = {
-        adminUrl: uuid(),
+        adminUrl: generateUUID(),
       };
 
       const envFile = {
-        adminUrl: uuid(),
+        adminUrl: generateUUID(),
       };
 
       await fs.writeFile(tempEnvFilePath, '', 'utf-8');
@@ -193,7 +193,7 @@ describe('commonConfig', () => {
       assert.notStrictEqual(config.commonConfig.adminUrl, wireJson.adminUrl);
 
       // Test 3: environment variable is available, too
-      process.env.URL_ADMIN = uuid();
+      process.env.URL_ADMIN = generateUUID();
       config = await getCommonConfig(tempEnvFilePath, tempWireJsonPath);
 
       assert.strictEqual(config.commonConfig.adminUrl, process.env.URL_ADMIN);

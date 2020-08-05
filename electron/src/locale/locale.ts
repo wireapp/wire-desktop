@@ -19,10 +19,100 @@
 
 import * as Electron from 'electron';
 
-import {i18nLanguageIdentifier, Supportedi18nLanguage, Supportedi18nLanguageObject} from '../interfaces/';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
+
+export type i18nLanguageIdentifier =
+  | 'aboutReleases'
+  | 'aboutUpdate'
+  | 'aboutVersion'
+  | 'aboutWebappVersion'
+  | 'certificateVerifyProcManagerRetry'
+  | 'certificateVerifyProcManagerShowDetails'
+  | 'certificateVerifyProcManagerShowDetailsGoBack'
+  | 'certificateVerifyProcManagerShowDetailsSaveCertificate'
+  | 'certificateVerifyProcManagerShowDetailsTextChromium'
+  | 'certificateVerifyProcManagerShowDetailsTextPinning'
+  | 'certificateVerifyProcManagerShowDetailsTitle'
+  | 'certificateVerifyProcManagerWarningBypass'
+  | 'certificateVerifyProcManagerWarningTextChromium'
+  | 'certificateVerifyProcManagerWarningTextPinning'
+  | 'certificateVerifyProcManagerWarningTitle'
+  | 'menuAbout'
+  | 'menuAddPeople'
+  | 'menuAppURL'
+  | 'menuArchive'
+  | 'menuBlock'
+  | 'menuCall'
+  | 'menuClose'
+  | 'menuConversation'
+  | 'menuCopy'
+  | 'menuCut'
+  | 'menuDelete'
+  | 'menuDownloadDebugLogs'
+  | 'menuEdit'
+  | 'menuEnableSpellChecking'
+  | 'menuFullScreen'
+  | 'menuHelp'
+  | 'menuHideApp'
+  | 'menuHideOthers'
+  | 'menuLeave'
+  | 'menuLegal'
+  | 'menuLicense'
+  | 'menuLocale'
+  | 'menuMinimize'
+  | 'menuNextConversation'
+  | 'menuNoSuggestions'
+  | 'menuPaste'
+  | 'menuPeople'
+  | 'menuPing'
+  | 'menuPreferences'
+  | 'menuPreviousConversation'
+  | 'menuPrivacy'
+  | 'menuQuit'
+  | 'menuRedo'
+  | 'menuSavePictureAs'
+  | 'menuSelectAll'
+  | 'menuServices'
+  | 'menuSettings'
+  | 'menuShowAll'
+  | 'menuShowHide'
+  | 'menuSignOut'
+  | 'menuStart'
+  | 'menuStartup'
+  | 'menuSupport'
+  | 'menuUnarchive'
+  | 'menuUndo'
+  | 'menuVideoCall'
+  | 'menuView'
+  | 'menuWindow'
+  | 'proxyPromptCancel'
+  | 'proxyPromptHeadline'
+  | 'proxyPromptOk'
+  | 'proxyPromptPassword'
+  | 'proxyPromptTitle'
+  | 'proxyPromptUsername'
+  | 'restartLater'
+  | 'restartLocale'
+  | 'restartNeeded'
+  | 'restartNow'
+  | 'trayOpen'
+  | 'trayQuit'
+  | 'unreadMessages'
+  | 'wrapperAddAccount'
+  | 'wrapperAddAccountErrorMessagePlural'
+  | 'wrapperAddAccountErrorMessageSingular'
+  | 'wrapperAddAccountErrorTitlePlural'
+  | 'wrapperAddAccountErrorTitleSingular'
+  | 'wrapperCreateTeam'
+  | 'wrapperLogOut'
+  | 'wrapperManageTeam'
+  | 'wrapperRemoveAccount';
+
+export type i18nStrings = Record<i18nLanguageIdentifier, string>;
+export type SupportedI18nLanguage = keyof typeof SUPPORTED_LANGUAGES;
+export type SupportedI18nLanguageObject = Record<SupportedI18nLanguage, i18nStrings>;
 
 const cs_CZ = require('../../locale/cs-CZ');
 const da_DK = require('../../locale/da-DK');
@@ -50,7 +140,7 @@ const zh_CN = require('../../locale/zh-CN');
 
 const app = Electron.app || Electron.remote.app;
 
-export const LANGUAGES: Supportedi18nLanguageObject = {
+export const LANGUAGES: SupportedI18nLanguageObject = {
   cs: cs_CZ,
   da: da_DK,
   de: de_DE,
@@ -76,7 +166,34 @@ export const LANGUAGES: Supportedi18nLanguageObject = {
   zh: zh_CN,
 };
 
+export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[]> = {
+  cs: ['cs', 'cs-CZ'],
+  da: ['da', 'da-DK'],
+  de: ['de', 'de-DE'],
+  el: ['el', 'el-GR'],
+  en: ['en', 'en-US'],
+  es: ['es', 'es-ES'],
+  et: ['et', 'et-EE'],
+  fi: ['fi', 'fi-FI'],
+  fr: ['fr', 'fr-FR'],
+  hr: ['hr', 'hr-HR'],
+  hu: ['hu', 'hu-HU'],
+  it: ['it', 'it-IT'],
+  lt: ['lt', 'lt-LT'],
+  nl: ['nl', 'nl-NL'],
+  pl: ['pl', 'pl-PL'],
+  pt: ['pt', 'pt-BR'],
+  ro: ['ro', 'ro-RO'],
+  ru: ['ru', 'ru-RU'],
+  sk: ['sk', 'sk-SK'],
+  sl: ['sl', 'sl-SI'],
+  tr: ['tr', 'tr-TR'],
+  uk: ['uk', 'uk-UA'],
+  zh: ['zh', 'zh-CN'],
+};
+
 /* eslint-disable */
+/* cspell:disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
   cs: 'Čeština',
@@ -102,14 +219,15 @@ export const SUPPORTED_LANGUAGES = {
   uk: 'Українська',
   zh: '简体中文',
 };
+/* cspell:enable */
 /* eslint-enable */
 
-let current: Supportedi18nLanguage | undefined;
+let current: SupportedI18nLanguage | undefined;
 
-const getSupportedLanguageKeys = (): Supportedi18nLanguage[] =>
-  Object.keys(SUPPORTED_LANGUAGES) as Supportedi18nLanguage[];
+const getSupportedLanguageKeys = (): SupportedI18nLanguage[] =>
+  Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
 
-export const getCurrent = (): Supportedi18nLanguage => {
+export const getCurrent = (): SupportedI18nLanguage => {
   if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
     const defaultLocale = parseLocale(app.getLocale().substr(0, 2));
@@ -118,7 +236,7 @@ export const getCurrent = (): Supportedi18nLanguage => {
   return current;
 };
 
-const parseLocale = (locale: string): Supportedi18nLanguage => {
+const parseLocale = (locale: string): SupportedI18nLanguage => {
   const languageKeys = getSupportedLanguageKeys();
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };

@@ -40,7 +40,7 @@ const getSelectedWebview = (): WebviewTag | null => document.querySelector<Webvi
 const getWebviewById = (id: string): WebviewTag | null =>
   document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
-const subscribeToMainProcessEvents = () => {
+const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (_event, action: string) => {
@@ -79,10 +79,6 @@ const subscribeToMainProcessEvents = () => {
   ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
   });
-
-  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SET_HIDDEN, () => {
-    window.dispatchEvent(new CustomEvent(EVENT_TYPE.PREFERENCES.SET_HIDDEN));
-  });
 };
 
 const setupIpcInterface = (): void => {
@@ -90,7 +86,7 @@ const setupIpcInterface = (): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
   };
 
-  window.sendDeleteAccount = (accountID: string, sessionID?: string) => {
+  window.sendDeleteAccount = (accountID: string, sessionID?: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const accountWebview = getWebviewById(accountID);
       if (!accountWebview) {
@@ -98,8 +94,8 @@ const setupIpcInterface = (): void => {
         return reject(`Webview for account "${accountID}" does not exist`);
       }
 
-      console.info(`Processing deletion of "${accountID}"`);
-      const viewInstanceId = accountWebview.getWebContents?.().id;
+      logger.info(`Processing deletion of "${accountID}"`);
+      const viewInstanceId = accountWebview.getWebContentsId();
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
     });
@@ -109,7 +105,7 @@ const setupIpcInterface = (): void => {
     const accountWebview = getWebviewById(accountId);
     if (accountWebview) {
       logger.log(`Sending logout signal to webview for account "${accountId}".`);
-      accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
+      await accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
     }
   };
 };

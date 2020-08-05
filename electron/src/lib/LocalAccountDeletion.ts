@@ -30,7 +30,7 @@ const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 const logger = getLogger(path.basename(__filename));
 
 const clearStorage = async (session: Session): Promise<void> => {
-  session.clearStorageData();
+  await session.clearStorageData();
   await session.clearCache();
   session.flushStorageData();
 };
@@ -38,15 +38,15 @@ const clearStorage = async (session: Session): Promise<void> => {
 export async function deleteAccount(id: number, accountId: string, partitionId?: string): Promise<void> {
   // Delete session data
   try {
-    const webviewWebcontent = webContents.fromId(id);
-    if (!webviewWebcontent) {
+    const webviewWebContent = webContents.fromId(id);
+    if (!webviewWebContent) {
       throw new Error(`Unable to find webview content id "${id}"`);
     }
-    if (!webviewWebcontent.hostWebContents) {
+    if (!webviewWebContent.hostWebContents) {
       throw new Error('Only a webview can have its storage wiped');
     }
     logger.log(`Deleting session data for account "${accountId}"...`);
-    await clearStorage(webviewWebcontent.session);
+    await clearStorage(webviewWebContent.session);
     logger.log(`Deleted session data for account "${accountId}".`);
   } catch (error) {
     logger.error(`Failed to delete session data for account "${accountId}", reason: "${error.message}".`);

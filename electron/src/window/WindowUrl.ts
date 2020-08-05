@@ -18,34 +18,14 @@
  */
 
 export class WindowUrl {
-  static parseParams(url: string): URLSearchParams {
-    const urlObject = new URL(url);
-    return urlObject.searchParams;
-  }
-
-  static getQueryString(params: URLSearchParams): string {
-    const _params: string[] = [];
-    params.forEach((value, key) => {
-      _params.push(`${key}=${value}`);
+  static createWebAppUrl(localRendererUrl: string, customBackendUrl: string): string {
+    const localFileParams = new URL(localRendererUrl).searchParams;
+    const customBackendUrlParsed = new URL(customBackendUrl);
+    const envUrl = decodeURIComponent(localFileParams.get('env')!);
+    const envUrlParams = new URL(envUrl).searchParams;
+    envUrlParams.forEach((value, key) => {
+      customBackendUrlParsed.searchParams.set(key, value);
     });
-    return `?${_params.join('&')}`;
-  }
-
-  static replaceQueryParams(url: string, params: URLSearchParams): string {
-    const fullHost = url.split('?')[0];
-    const unescapedQueryParams = WindowUrl.getQueryString(params);
-    return encodeURIComponent(`${fullHost}${unescapedQueryParams}`);
-  }
-
-  static createWebappUrl(localRendererUrl: string, customBackendUrl: string): string {
-    const localFileParams = WindowUrl.parseParams(localRendererUrl);
-    const envUrlParams = WindowUrl.parseParams(localFileParams.get('env') as string);
-    const customBackendUrlParams = WindowUrl.parseParams(customBackendUrl);
-    const mergedParams = envUrlParams;
-    customBackendUrlParams.forEach((value, key) => {
-      mergedParams.set(key, value);
-    });
-    const newEnvUrl = WindowUrl.replaceQueryParams(customBackendUrl, mergedParams);
-    return newEnvUrl;
+    return customBackendUrlParsed.href;
   }
 }

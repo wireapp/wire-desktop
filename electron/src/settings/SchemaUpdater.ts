@@ -17,22 +17,21 @@
  *
  */
 
-import * as Electron from 'electron';
+import * as electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {Schemata} from '../interfaces/';
 import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
 
-const app = Electron.app || Electron.remote.app;
+const app = electron.app || electron.remote.app;
 
 const logger = getLogger(path.basename(__filename));
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
 const defaultPathV1 = path.join(app.getPath('userData'), 'config/init.json');
 
 export class SchemaUpdater {
-  static SCHEMATA: Schemata = {
+  static SCHEMATA: Record<string, any> = {
     VERSION_1: {
       configVersion: 1,
     },

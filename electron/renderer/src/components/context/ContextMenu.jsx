@@ -17,13 +17,13 @@
  *
  */
 
-import './ContextMenu.css';
-
 import React, {useEffect, useRef} from 'react';
 import {connect} from 'react-redux';
 
 import {setAccountContextHidden} from '../../actions';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
+
+import './ContextMenu.css';
 
 const ContextMenu = ({position, children, setAccountContextHidden}) => {
   const menuRef = useRef();

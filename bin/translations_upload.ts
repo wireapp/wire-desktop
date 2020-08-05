@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2020 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,4 +17,10 @@
  *
  */
 
-export type Schemata = Record<string, any>;
+const {join, resolve} = require('path');
+const {execSync} = require('child_process');
+
+const root = resolve(__dirname, '..');
+const config = join(root, 'crowdin.yaml');
+const identity = join(root, 'keys', 'crowdin.yaml');
+execSync(`crowdin upload sources --config="${config}" --identity="${identity}"`, {stdio: [0, 1]});

@@ -21,7 +21,6 @@ import {app, BrowserWindow, ipcMain, session} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
-import {i18nLanguageIdentifier} from '../interfaces';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import {config} from '../settings/config';
@@ -29,7 +28,7 @@ import {config} from '../settings/config';
 const appPath = path.join(app.getAppPath(), config.electronDirectory);
 
 const promptHtmlPath = fileUrl(path.join(appPath, 'html/proxy-prompt.html'));
-const proxyPromptWindowWhitelist = [promptHtmlPath, fileUrl(path.join(appPath, 'css/proxy-prompt.css'))];
+const proxyPromptWindowAllowList = [promptHtmlPath, fileUrl(path.join(appPath, 'css/proxy-prompt.css'))];
 const preloadPath = path.join(appPath, 'dist/renderer/menu/preload-proxy-prompt.js');
 
 const windowSize = {
@@ -58,6 +57,7 @@ const showWindow = async () => {
         nodeIntegrationInWorker: false,
         preload: preloadPath,
         session: session.fromPartition('proxy-prompt-window'),
+        spellcheck: false,
         webviewTag: false,
       },
       width: windowSize.WIDTH,
@@ -69,14 +69,14 @@ const showWindow = async () => {
     // see https://github.com/electron/electron/issues/8841
     proxyPromptWindow.webContents.session.webRequest.onBeforeRequest(async ({url}, callback) => {
       // Only allow those URLs to be opened within the window
-      if (proxyPromptWindowWhitelist.includes(url)) {
+      if (proxyPromptWindowAllowList.includes(url)) {
         return callback({cancel: false});
       }
 
       callback({redirectURL: promptHtmlPath});
     });
 
-    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, (event, labels: i18nLanguageIdentifier[]) => {
+    ipcMain.on(EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES, (event, labels: locale.i18nLanguageIdentifier[]) => {
       if (proxyPromptWindow) {
         const isExpected = event.sender.id === proxyPromptWindow.webContents.id;
         if (isExpected) {
