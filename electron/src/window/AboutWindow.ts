@@ -57,7 +57,7 @@ const showWindow = async () => {
 
   if (!aboutWindow) {
     aboutWindow = new BrowserWindow({
-      alwaysOnTop: true,
+      alwaysOnTop: false,
       backgroundColor: '#ececec',
       fullscreen: false,
       height: WINDOW_SIZE.HEIGHT,
