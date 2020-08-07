@@ -17,7 +17,7 @@
  *
  */
 
-import React, {useEffect} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
 
 import Webview from './Webview';
@@ -27,10 +27,6 @@ import {AccountSelector} from '../selector/AccountSelector';
 import './WebviewList.css';
 
 const WebviewList = ({accounts, updateAccountBadgeCount}) => {
-  useEffect(() => {
-    const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
-    window.sendBadgeCount(accumulatedCount);
-  }, [accounts]);
   return (
     <ul className="WebviewList">
       {accounts.map(account => (
