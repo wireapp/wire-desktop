@@ -18,6 +18,7 @@
  */
 
 import * as Joi from '@hapi/joi';
+import {Availability} from '@wireapp/protocol-messaging';
 
 import {config} from '../../../dist/settings/config';
 import {accountAction} from './AccountAction';
@@ -125,6 +126,7 @@ export const addAccountWithSession = () => {
 export const updateAccountData = (id, data) => {
   const accountDataSchema = Joi.object({
     accentID: Joi.number(),
+    availability: Joi.number().optional(),
     name: Joi.string(),
     picture: Joi.string().optional(),
     teamID: Joi.string().optional(),
@@ -146,7 +148,12 @@ export const updateAccountData = (id, data) => {
 
 export const updateAccountBadgeCount = (id, count) => {
   return (dispatch, getState) => {
+    const accounts = getState().accounts;
     const account = getState().accounts.find(acc => acc.id === id);
+    const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
+    const ignoreFlash = account.availability === Availability.Type.BUSY;
+
+    window.sendBadgeCount(accumulatedCount, ignoreFlash);
 
     if (account) {
       const countHasChanged = account.badgeCount !== count;

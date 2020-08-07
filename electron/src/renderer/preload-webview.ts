@@ -20,6 +20,7 @@
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
+import {Availability} from '@wireapp/protocol-messaging';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getOpenGraphDataAsync} from '../lib/openGraph';
@@ -28,6 +29,7 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 interface TeamAccountInfo {
   accentID: string;
+  availability?: Availability.Type;
   name: string;
   picture?: string;
   teamID?: string;

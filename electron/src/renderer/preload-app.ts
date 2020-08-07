@@ -82,8 +82,8 @@ const subscribeToMainProcessEvents = (): void => {
 };
 
 const setupIpcInterface = (): void => {
-  window.sendBadgeCount = (count: number): void => {
-    ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, count);
+  window.sendBadgeCount = (count: number, ignoreFlash: boolean): void => {
+    ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, {count, ignoreFlash});
   };
 
   window.sendDeleteAccount = (accountID: string, sessionID?: string): Promise<void> => {
