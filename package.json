@@ -3,7 +3,7 @@
   "dependencies": {
     "@hapi/joi": "17.1.1",
     "@wireapp/certificate-check": "0.1.12",
-    "@wireapp/commons": "3.6.3",
+    "@wireapp/commons": "3.7.0",
     "@wireapp/protocol-messaging": "1.25.4",
     "@wireapp/react-ui-kit": "7.36.2",
     "@wireapp/webapp-events": "0.5.0",
