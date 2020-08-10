@@ -30,7 +30,7 @@
     "redux": "4.0.5",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
-    "uuidjs": "4.2.5"
+    "uuidjs": "4.2.6"
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
