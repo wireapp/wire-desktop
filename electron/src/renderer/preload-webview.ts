@@ -28,7 +28,7 @@ import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 interface TeamAccountInfo {
-  accentID: string;
+  accentID: number;
   availability?: Availability.Type;
   name: string;
   picture?: string;
