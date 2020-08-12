@@ -33,7 +33,7 @@ declare global {
     isMac: boolean;
     locStrings: i18nStrings;
     locStringsDefault: i18nStrings;
-    sendBadgeCount(count: number): void;
+    sendBadgeCount(count: number, ignoreFlash: boolean): void;
     sendDeleteAccount(accountId: string, sessionId?: string): Promise<void>;
     sendLogoutAccount(accountId: string): Promise<void>;
     wire: any;

@@ -83,7 +83,7 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
   const {id: draftId} = await githubDraftDeployer.createDraft({
     changelog,
     commitOrBranch: commitId,
-    tagName: `${platform}/${version}`,
+    tagName: `${PLATFORM.toLowerCase()}/${version}`,
     title: `${version} - ${PLATFORM}`,
   });
 

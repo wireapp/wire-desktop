@@ -22,6 +22,7 @@ import {ActionType} from '../actions';
 
 const createAccount = (sessionID, ssoCode = undefined) => ({
   accentID: undefined,
+  availability: 0,
   badgeCount: 0,
   id: generateUUID(),
   isAdding: true,

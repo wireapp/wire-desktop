@@ -68,9 +68,11 @@ export class TrayHandler {
     this.buildTrayMenu();
   }
 
-  showUnreadCount(win: BrowserWindow, count?: number): void {
+  showUnreadCount(win: BrowserWindow, count?: number, ignoreFlash?: boolean): void {
     this.updateIcons(win, count);
-    this.flashApplicationWindow(win, count);
+    if (!ignoreFlash) {
+      this.flashApplicationWindow(win, count);
+    }
     this.updateBadgeCount(count);
   }
 

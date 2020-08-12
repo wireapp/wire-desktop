@@ -41,7 +41,9 @@ node('master') {
         sh 'npm install -g yarn'
         sh 'yarn'
         if (production) {
-          sh 'yarn build:macos'
+          withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
+            sh 'yarn build:macos'
+          }
 
           echo 'Checking for private Apple APIs ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"', returnStdout: true

@@ -147,8 +147,8 @@ const bindIpcEvents = (): void => {
     WindowManager.showPrimaryWindow();
   });
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
-    tray.showUnreadCount(main, count);
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, {count, ignoreFlash}: {count?: number; ignoreFlash?: boolean}) => {
+    tray.showUnreadCount(main, count, ignoreFlash);
   });
 
   ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
