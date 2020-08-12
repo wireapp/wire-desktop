@@ -133,7 +133,7 @@ export const updateAccountData = (id, data) => {
     teamRole: Joi.string(),
     userID: Joi.string(),
     webappUrl: Joi.string(),
-  });
+  }).unknown(true);
 
   return dispatch => {
     const validatedAccountData = accountDataSchema.validate(data);
