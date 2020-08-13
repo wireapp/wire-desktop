@@ -23,7 +23,6 @@ import {EVENT_TYPE} from '../../lib/eventType';
 
 ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (_event, labels: Record<string, string>) => {
   for (const [labelName, labelText] of Object.entries(labels)) {
-    alert(`${labelName}: ${labelText}`);
     if (labelName === 'aboutReleasesUrl' || labelName === 'aboutUpdatesUrl') {
       const labelElement = document.querySelector(`[data-href="${labelName}"]`);
       if (labelElement) {
