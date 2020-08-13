@@ -162,6 +162,7 @@ export class SingleSignOn {
         webSecurity: true,
         webgl: false,
         webviewTag: false,
+        worldSafeExecuteJavaScript: true,
       },
       width: this.windowOptions.width || 480,
     });

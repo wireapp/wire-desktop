@@ -537,6 +537,7 @@ class ElectronWrapperInit {
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
+            webPreferences.worldSafeExecuteJavaScript = true;
           });
           break;
         }

@@ -21,6 +21,4 @@ const {webFrame, remote} = require('electron');
 const {SingleSignOn} = remote.require('./sso/SingleSignOn');
 
 //eslint-disable-next-line @typescript-eslint/no-floating-promises
-(async () => {
-  await webFrame.executeJavaScript(SingleSignOn.getWindowOpenerScript());
-})();
+webFrame.executeJavaScript(SingleSignOn.getWindowOpenerScript());
