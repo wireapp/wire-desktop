@@ -150,7 +150,12 @@ export const updateAccountBadgeCount = (id, count) => {
   return (dispatch, getState) => {
     const accounts = getState().accounts;
     const account = getState().accounts.find(acc => acc.id === id);
-    const accumulatedCount = accounts.reduce((accumulated, account) => accumulated + account.badgeCount, 0);
+    const accumulatedCount = accounts.reduce((accumulated, account) => {
+      if (account.id === id) {
+        return accumulated + count;
+      }
+      return accumulated + account.badgeCount;
+    }, 0);
     const ignoreFlash = account.availability === Availability.Type.BUSY;
 
     window.sendBadgeCount(accumulatedCount, ignoreFlash);
