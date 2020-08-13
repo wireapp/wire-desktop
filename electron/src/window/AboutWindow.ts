@@ -94,7 +94,7 @@ const showWindow = async () => {
       if (url.startsWith('https://')) {
         await shell.openExternal(url);
       } else {
-        logger.info(`Attempt to open URL "${url}" in window prevented.`);
+        logger.info(`Attempt to open URL "${url}" in about window prevented.`);
         callback({redirectURL: ABOUT_HTML});
       }
     });
@@ -104,9 +104,11 @@ const showWindow = async () => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {
-          const resultLabels: Record<string, string> = {};
-          labels.forEach(label => (resultLabels[label] = locale.getText(label)));
-          event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
+          const localeValues: Record<string, string> = {};
+          labels.forEach(label => (localeValues[label] = locale.getText(label)));
+          localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
+          localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
+          event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
         }
       }
     });

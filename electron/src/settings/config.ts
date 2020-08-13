@@ -20,6 +20,8 @@
 const wireJson: WireJson = require('../../wire.json');
 
 interface WireJson {
+  aboutReleasesUrl: string;
+  aboutUpdatesUrl: string;
   adminUrl: string;
   appBase: string;
   buildNumber: string;
