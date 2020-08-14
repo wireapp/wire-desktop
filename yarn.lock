@@ -1726,6 +1726,11 @@
   resolved "https://registry.npmjs.org/@types/sinonjs__fake-timers/-/sinonjs__fake-timers-6.0.1.tgz#681df970358c82836b42f989188d133e218c458e"
   integrity sha512-yYezQwGWty8ziyYLdZjwxyMb0CZR49h8JALHGrxjQHWlqGgc8kLdHEgWrgL0uZ29DMvEVBDnHU2Wg36zKSIUtA==
 
+"@types/sort-json@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@types/sort-json/-/sort-json-2.0.0.tgz#f0b047ad53e1f0912c6138f86231f83f4c7e0cfa"
+  integrity sha512-UQNdeh+oDfbMUisdZ1oak17hjsSnKP/8ogXg6Pk6le/g2ypt6LcICSprLt74UEx8yb6bF/DZd2HdVwkwZq8jng==
+
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
