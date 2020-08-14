@@ -25,7 +25,6 @@ import {
   ContextMenuParams,
   MenuItemConstructorOptions,
   WebContents,
-  NativeImage,
   nativeImage,
 } from 'electron';
 
