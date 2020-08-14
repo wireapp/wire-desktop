@@ -143,7 +143,6 @@ export class SingleSignOn {
         contextIsolation: true,
         devTools: true,
         disableBlinkFeatures: '',
-        enableBlinkFeatures: '',
         experimentalFeatures: false,
         images: true,
         javascript: true,
