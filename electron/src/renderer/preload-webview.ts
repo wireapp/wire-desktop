@@ -37,17 +37,15 @@ interface TeamAccountInfo {
   userID: string;
 }
 
-const systemPreferences = remote.systemPreferences;
+const nativeTheme = remote.nativeTheme;
 
 const logger = getLogger(path.basename(__filename));
 
-// Note: Until appearance-changed event is available in a future
-// version of Electron use `AppleInterfaceThemeChangedNotification` event
 function subscribeToThemeChange(): void {
-  if (EnvironmentUtil.platform.IS_MAC_OS && WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
-    systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () => {
-      logger.info('Received macOS notification "AppleInterfaceThemeChangedNotification", forwarding to amplify ...');
-      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode());
+  if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
+    nativeTheme.on('updated', () => {
+      const shouldUseDarkMode = nativeTheme.shouldUseDarkColors;
+      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, shouldUseDarkMode);
     });
   }
 }
