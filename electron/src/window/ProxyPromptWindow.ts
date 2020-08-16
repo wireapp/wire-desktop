@@ -81,7 +81,7 @@ const showWindow = async () => {
         if (isExpected) {
           const resultLabels: Record<string, string> = {};
           labels.forEach(label => (resultLabels[label] = locale.getText(label)));
-          event.sender.send(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, resultLabels);
+          event.reply(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, resultLabels);
         }
       }
     });

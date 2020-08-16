@@ -50,7 +50,9 @@ const WINDOW_SIZE = {
   WIDTH: 304,
 };
 
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => (webappVersion = version));
+ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => {
+  webappVersion = version;
+});
 
 const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
@@ -107,7 +109,7 @@ const showWindow = async () => {
           labels.forEach(label => (localeValues[label] = locale.getText(label)));
           localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
           localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
-          event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
+          event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
         }
       }
     });
