@@ -143,9 +143,7 @@ const bindIpcEvents = (): void => {
     return downloadImage(bytes, timestamp);
   });
 
-  ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
-    WindowManager.showPrimaryWindow();
-  });
+  ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => WindowManager.showPrimaryWindow());
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, {count, ignoreFlash}: {count?: number; ignoreFlash?: boolean}) => {
     tray.showUnreadCount(main, count, ignoreFlash);
@@ -155,8 +153,8 @@ const bindIpcEvents = (): void => {
     await deleteAccount(id, accountId, partitionId);
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
-  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
-  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
+  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
+  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
