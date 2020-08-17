@@ -1979,10 +1979,10 @@
   dependencies:
     jsrsasign "8.0.20"
 
-"@wireapp/commons@3.7.0":
-  version "3.7.0"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.7.0.tgz#529de2dc55b373e0116247ef81e1078448e2964a"
-  integrity sha512-+sF8CuRpv7O7qtoFasmsfi/j8/qGP7ARRLQBotS0gcFaOBwqeToW3FTzXNMhYGmp6P5+FLffHfzKdZ7v1XRqFA==
+"@wireapp/commons@3.7.1":
+  version "3.7.1"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.7.1.tgz#1158ffda706a8d30b0f3420ce608816c58c63d1b"
+  integrity sha512-l1apgc0fuS9iVQ4V7am1io43W2+kGkVT2du7bpu/5XypMsGviccwGX0u+3QJSK6WXvyxDTFg4gqI2290jU5R9w==
   dependencies:
     "@types/fs-extra" "8.1.0"
     "@types/node" "~12"
@@ -1990,7 +1990,7 @@
     ansi-regex "5.0.0"
     fs-extra "9.0.1"
     logdown "3.3.1"
-    platform "1.3.5"
+    platform "1.3.6"
     url-search-params-polyfill "8.1.0"
 
 "@wireapp/copy-config@1.1.1":
@@ -8736,10 +8736,10 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
-platform@1.3.5:
-  version "1.3.5"
-  resolved "https://registry.npmjs.org/platform/-/platform-1.3.5.tgz#fb6958c696e07e2918d2eeda0f0bc9448d733444"
-  integrity sha512-TuvHS8AOIZNAlE77WUDiR4rySV/VMptyMfcfeoMgs4P8apaZM3JrnbzBiixKUv+XR6i+BXrQh8WAnjaSPFO65Q==
+platform@1.3.6:
+  version "1.3.6"
+  resolved "https://registry.npmjs.org/platform/-/platform-1.3.6.tgz#48b4ce983164b209c2d45a107adb31f473a6e7a7"
+  integrity sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==
 
 please-upgrade-node@^3.2.0:
   version "3.2.0"
