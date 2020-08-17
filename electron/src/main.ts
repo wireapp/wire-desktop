@@ -137,6 +137,11 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
+// This fixes sending a link preview right after logging in.
+// TODO: Use a Context Aware Plugin for link previews,
+// see https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = false;
+
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
