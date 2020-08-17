@@ -138,7 +138,7 @@ Object.entries(config).forEach(([key, value]) => {
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 // This fixes sending a link preview right after logging in.
-// TODO: Use a Context Aware Plugin for Link Previews,
+// TODO: Use a Context Aware Plugin for link previews,
 // see https://github.com/electron/electron/issues/18397
 app.allowRendererProcessReuse = false;
 
