@@ -137,6 +137,10 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
+// TODO: Use a Context Aware Plugin for Link Previews,
+// see https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = false;
+
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
