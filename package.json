@@ -6,7 +6,7 @@
     "@wireapp/commons": "3.7.1",
     "@wireapp/protocol-messaging": "1.25.4",
     "@wireapp/react-ui-kit": "7.37.0",
-    "@wireapp/webapp-events": "0.5.1",
+    "@wireapp/webapp-events": "0.5.2",
     "auto-launch": "5.0.5",
     "axios": "0.19.2",
     "content-type": "1.0.4",
