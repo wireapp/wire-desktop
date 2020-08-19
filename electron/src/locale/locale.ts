@@ -64,6 +64,7 @@ export type i18nLanguageIdentifier =
   | 'menuLicense'
   | 'menuLocale'
   | 'menuMinimize'
+  | 'menuMute'
   | 'menuNextConversation'
   | 'menuNoSuggestions'
   | 'menuPaste'
