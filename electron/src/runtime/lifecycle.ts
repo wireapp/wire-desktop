@@ -34,7 +34,7 @@ export let isFirstInstance: boolean | undefined = undefined;
 
 export async function initSquirrelListener(): Promise<void> {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
-    logger.info('Checking for Windows update ...');
+    logger.info('Initializing Squirrel ...');
     await Squirrel.handleSquirrelArgs();
 
     ipcMain.on(EVENT_TYPE.WRAPPER.UPDATE, () => Squirrel.installUpdate());
