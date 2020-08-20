@@ -76,12 +76,8 @@ export class CustomProtocolHandler {
     }
   }
 
-  private findDeepLink(argv: string[]): string | void {
-    for (const arg of argv) {
-      if (arg.startsWith(CORE_PROTOCOL_PREFIX)) {
-        return arg;
-      }
-    }
+  private findDeepLink(argv: string[]): string | undefined {
+    return argv.find(arg => arg.startsWith(CORE_PROTOCOL_PREFIX));
   }
 
   public registerCoreProtocol(): void {

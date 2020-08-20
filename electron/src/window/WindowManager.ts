@@ -69,13 +69,18 @@ export class WindowManager {
 
   static async sendActionToPrimaryWindow(action: string, ...args: any[]): Promise<void> {
     await app.whenReady();
+
     const primaryWindow = WindowManager.getPrimaryWindow();
 
     if (primaryWindow) {
-      logger.info(`Sending action "${action}" to window with ID "${primaryWindow.id}":`, {args});
-      primaryWindow.webContents.send(action, ...args);
+      if (primaryWindow.webContents.isLoading()) {
+        primaryWindow.webContents.once('did-finish-load', () => primaryWindow.webContents.send(action, ...args));
+      } else {
+        logger.info(`Sending action "${action}" to window with ID "${primaryWindow.id}":`, {args});
+        primaryWindow.webContents.send(action, ...args);
+      }
     } else {
-      logger.warn(`Got no primary window, can't send action "${action}".`);
+      logger.warn(`Got no primary window, can't focus window and send action "${action}".`);
     }
   }
 
@@ -92,6 +97,7 @@ export class WindowManager {
           primaryWindow.show();
           primaryWindow.focus();
         }
+        logger.info(`Sending action "${action}" to window with ID "${primaryWindow.id}":`, {args});
         primaryWindow.webContents.send(action, ...args);
       }
     } else {
