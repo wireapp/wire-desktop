@@ -28,6 +28,9 @@ export class WindowManager {
   private static primaryWindowId: number | undefined;
 
   static getPrimaryWindow(): BrowserWindow | void {
+    logger.info('WindowManager: primaryWindowId', WindowManager.primaryWindowId);
+    logger.info('allwindows: all windows', BrowserWindow.getAllWindows());
+    logger.info('focusedWindow: focused indow', BrowserWindow.getFocusedWindow());
     const [primaryWindow] = WindowManager.primaryWindowId
       ? [BrowserWindow.fromId(WindowManager.primaryWindowId)]
       : BrowserWindow.getAllWindows();
@@ -83,7 +86,7 @@ export class WindowManager {
         primaryWindow.webContents.send(action, ...args);
       }
     } else {
-      logger.warn(`Got no primary window, can't send action "${action}".`);
+      logger.warn(`Got no primary window, can't focus window and send action "${action}".`);
     }
   }
 }
