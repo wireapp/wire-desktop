@@ -53,15 +53,15 @@ export class CustomProtocolHandler {
       await this.handleSSOLogin(route);
     } else {
       logger.info('Triggering hash location change ...');
-      this.forwardHashLocation(route);
+      await this.forwardHashLocation(route);
     }
   }
 
-  private forwardHashLocation(route: URL): void {
+  private async forwardHashLocation(route: URL): Promise<void> {
     const location = route.href.substr(CORE_PROTOCOL_PREFIX.length);
     this.hashLocation = `/${location}`;
     logger.info(`New hash location: "${this.hashLocation}"`);
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
+    await WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, this.hashLocation);
   }
 
   private async handleSSOLogin(route: URL): Promise<void> {

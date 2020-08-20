@@ -92,7 +92,7 @@ export const relaunch = async () => {
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696
      */
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WRAPPER.RELOAD);
+    await WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WRAPPER.RELOAD);
   } else {
     app.relaunch();
     await quit();

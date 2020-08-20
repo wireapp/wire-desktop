@@ -67,7 +67,8 @@ export class WindowManager {
     }
   }
 
-  static sendActionToPrimaryWindow(action: string, ...args: any[]): void {
+  static async sendActionToPrimaryWindow(action: string, ...args: any[]): Promise<void> {
+    await app.whenReady();
     const primaryWindow = WindowManager.getPrimaryWindow();
 
     if (primaryWindow) {
