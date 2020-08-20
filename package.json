@@ -42,6 +42,7 @@
     "@babel/preset-typescript": "7.10.4",
     "@babel/register": "7.10.5",
     "@types/adm-zip": "0.4.33",
+    "@types/amplify": "1.1.24",
     "@types/auto-launch": "5.0.1",
     "@types/content-type": "1.1.3",
     "@types/fs-extra": "9.0.1",
