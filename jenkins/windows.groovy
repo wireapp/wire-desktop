@@ -13,18 +13,6 @@ node('windows') {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
-  stage('Probe signtool') {
-    try {
-      timeout(activity: true, time: 30, unit: 'SECONDS') {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /a C:\\Users\\jenkins\\Downloads\\Git-2.21.0-64-bit.exe'
-      }
-    } catch(e) {
-      currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing failed**\nPlease enter signing key on the machine! See: ${JOB_URL}"
-      throw e
-    }
-  }
-
   if (!production && !custom) {
     env.APP_ENV = 'internal'
   }
@@ -40,6 +28,18 @@ node('windows') {
   def version = "${major}.${minor}.${env.BUILD_NUMBER}"
   def electronVersion = parseJson(packageJson).devDependencies.electron
   currentBuild.displayName = version
+
+  stage('Probe signtool') {
+    try {
+      timeout(activity: true, time: 30, unit: 'SECONDS') {
+        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /a C:\\Users\\jenkins\\Downloads\\Git-2.21.0-64-bit.exe'
+      }
+    } catch(e) {
+      currentBuild.result = 'FAILED'
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing failed**\nPlease enter signing key on the machine! See: ${JOB_URL}"
+      throw e
+    }
+  }
 
   stage('Build') {
     try {
