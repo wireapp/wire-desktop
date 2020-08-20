@@ -28,9 +28,17 @@ export class WindowManager {
   private static primaryWindowId: number | undefined;
 
   static getPrimaryWindow(): BrowserWindow | void {
-    logger.info('WindowManager: primaryWindowId', WindowManager.primaryWindowId);
-    logger.info('allwindows: all windows', BrowserWindow.getAllWindows());
-    logger.info('focusedWindow: focused indow', BrowserWindow.getFocusedWindow());
+    logger.info(`WindowManager: primaryWindowId: ${WindowManager.primaryWindowId}`);
+    logger.info(
+      `WindowManager: all windows: ${BrowserWindow.getAllWindows()
+        .map(window => `#${window.id}`)
+        .join(', ')}`,
+    );
+    logger.info(
+      `WindowManager: focused window: ${
+        BrowserWindow.getFocusedWindow() ? BrowserWindow.getFocusedWindow()!.id : 'null'
+      }`,
+    );
     const [primaryWindow] = WindowManager.primaryWindowId
       ? [BrowserWindow.fromId(WindowManager.primaryWindowId)]
       : BrowserWindow.getAllWindows();
