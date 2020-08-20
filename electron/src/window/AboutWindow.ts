@@ -43,7 +43,7 @@ const ABOUT_WINDOW_ALLOWLIST = [
   fileUrl(path.join(APP_PATH, 'img/logo.256.png')),
   fileUrl(path.join(APP_PATH, 'css/about.css')),
 ];
-const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/menu/preload-about.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/menu/preload-about.js');
 
 const WINDOW_SIZE = {
   HEIGHT: 256,
