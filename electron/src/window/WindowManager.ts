@@ -23,12 +23,11 @@ import * as path from 'path';
 import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
+let primaryWindowId: number | undefined;
 
 export class WindowManager {
-  private static primaryWindowId: number | undefined;
-
   static getPrimaryWindow(): BrowserWindow | void {
-    logger.info(`WindowManager: primaryWindowId: ${WindowManager.primaryWindowId}`);
+    logger.info(`WindowManager: primaryWindowId: ${primaryWindowId}`);
     logger.info(
       `WindowManager: all windows: ${BrowserWindow.getAllWindows()
         .map(window => `#${window.id}`)
@@ -39,9 +38,7 @@ export class WindowManager {
         BrowserWindow.getFocusedWindow() ? BrowserWindow.getFocusedWindow()!.id : 'null'
       }`,
     );
-    const [primaryWindow] = WindowManager.primaryWindowId
-      ? [BrowserWindow.fromId(WindowManager.primaryWindowId)]
-      : BrowserWindow.getAllWindows();
+    const [primaryWindow] = primaryWindowId ? [BrowserWindow.fromId(primaryWindowId)] : BrowserWindow.getAllWindows();
     if (primaryWindow) {
       logger.info(`Got primaryWindow with ID "${primaryWindow.id}"`);
       return primaryWindow;
@@ -50,7 +47,7 @@ export class WindowManager {
 
   static setPrimaryWindowId(newPrimaryWindowId: number): void {
     logger.info(`Setting primary window ID to "${newPrimaryWindowId}" ...`);
-    WindowManager.primaryWindowId = newPrimaryWindowId;
+    primaryWindowId = newPrimaryWindowId;
   }
 
   static showPrimaryWindow(): void {
