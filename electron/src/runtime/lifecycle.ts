@@ -51,7 +51,10 @@ export const checkSingleInstance = async () => {
     if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
       await quit(false);
     } else {
-      app.on('second-instance', () => WindowManager.showPrimaryWindow());
+      app.on('second-instance', () => {
+        logger.info('Second instance detected, showing primary window');
+        WindowManager.showPrimaryWindow();
+      });
     }
   }
 };

@@ -131,11 +131,15 @@ export async function installUpdate(): Promise<void> {
 async function scheduleUpdate(): Promise<void> {
   const nextCheck = config.squirrelUpdateInterval.DELAY;
   const everyCheck = config.squirrelUpdateInterval.INTERVAL;
-  const readableNextCheck = `${nextCheck} ${StringUtil.pluralize('minute', nextCheck / MINUTE_IN_MILLIS)}`;
-  const readableEveryCheck = `${everyCheck} ${StringUtil.pluralize('hour', everyCheck / HOUR_IN_MILLIS)}`;
-  logger.info(
-    `Scheduling Windows update to check in "${readableNextCheck}" and every "${everyCheck} ${readableEveryCheck}" ...`,
-  );
+  const readableNextCheck = `${nextCheck / MINUTE_IN_MILLIS} ${StringUtil.pluralize(
+    'minute',
+    nextCheck / MINUTE_IN_MILLIS,
+  )}`;
+  const readableEveryCheck = `${everyCheck / HOUR_IN_MILLIS} ${StringUtil.pluralize(
+    'hour',
+    everyCheck / HOUR_IN_MILLIS,
+  )}`;
+  logger.info(`Scheduling Windows update to check in "${readableNextCheck}" and every "${readableEveryCheck}" ...`);
 
   setTimeout(installUpdate, nextCheck);
   setInterval(installUpdate, everyCheck);
