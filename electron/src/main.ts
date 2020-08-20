@@ -334,6 +334,11 @@ const handleAppEvents = (): void => {
     }
   });
 
+  app.on('second-instance', () => {
+    logger.info('Second instance detected, showing primary window');
+    WindowManager.showPrimaryWindow();
+  });
+
   app.on('activate', () => {
     if (main) {
       main.show();
