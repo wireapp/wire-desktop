@@ -36,7 +36,7 @@ node('windows') {
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing failed**\nPlease enter signing key on the machine! See: ${JOB_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing failed**\n\n⚠️ Please MANUALLY enter signing key on the machine!"
       throw e
     }
   }
