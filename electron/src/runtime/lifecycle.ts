@@ -49,7 +49,7 @@ export const checkSingleInstance = async () => {
     logger.info('Checking if we are the first instance ...', isFirstInstance);
 
     if (!isFirstInstance) {
-      await quit(false);
+      app.exit();
     }
   }
 };
