@@ -26,7 +26,7 @@ const logger = getLogger(path.basename(__filename));
 let primaryWindowId: number | undefined;
 
 export class WindowManager {
-  static getPrimaryWindow(): BrowserWindow | void {
+  static getPrimaryWindow(): BrowserWindow | undefined {
     logger.info(`WindowManager: primaryWindowId: ${primaryWindowId}`);
     logger.info(
       `WindowManager: all windows: ${BrowserWindow.getAllWindows()
@@ -38,11 +38,13 @@ export class WindowManager {
         BrowserWindow.getFocusedWindow() ? BrowserWindow.getFocusedWindow()!.id : 'null'
       }`,
     );
+    logger.info(`WindowManager: window with ID 1: ${BrowserWindow.fromId(1) ? BrowserWindow.fromId(1)!.id : 'null'}`);
     const [primaryWindow] = primaryWindowId ? [BrowserWindow.fromId(primaryWindowId)] : BrowserWindow.getAllWindows();
     if (primaryWindow) {
       logger.info(`Got primaryWindow with ID "${primaryWindow.id}"`);
       return primaryWindow;
     }
+    return undefined;
   }
 
   static setPrimaryWindowId(newPrimaryWindowId: number): void {
@@ -54,6 +56,7 @@ export class WindowManager {
     const browserWindow = WindowManager.getPrimaryWindow();
 
     if (browserWindow) {
+      logger.info(`Showing primary window with ID ${browserWindow.id}`);
       if (browserWindow.isMinimized()) {
         browserWindow.restore();
       } else if (!browserWindow.isVisible()) {
