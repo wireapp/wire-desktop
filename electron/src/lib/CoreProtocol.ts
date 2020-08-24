@@ -17,7 +17,7 @@
  *
  */
 
-import {app} from 'electron';
+import {app, ipcMain} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 
@@ -93,26 +93,50 @@ export class CustomProtocolHandler {
       app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
+    ipcMain.on(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, async (_event, url) => {
+      try {
+        await this.dispatchDeepLink(url);
+      } catch (error) {
+        logger.error(error);
+      }
+    });
+
     if (platform.IS_MAC_OS) {
       app.on('open-url', async (event, url) => {
         event.preventDefault();
-        await this.dispatchDeepLink(url);
+        try {
+          await this.dispatchDeepLink(url);
+        } catch (error) {
+          logger.error(error);
+        }
       });
     } else {
       app.once('ready', async () => {
         logger.info('App ready, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(process.argv);
         if (deepLink) {
-          logger.info('App ready, dispatching deep link ...');
-          await this.dispatchDeepLink(deepLink);
+          logger.info('Dispatching deep link ...');
+          try {
+            await this.dispatchDeepLink(deepLink);
+          } catch (error) {
+            logger.error(error);
+          }
+        } else {
+          logger.info('No deep link found in arguments.');
         }
       });
       app.on('second-instance', async (_event, argv) => {
         logger.info('Second instance detected, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(argv);
         if (deepLink) {
-          logger.info('Second instance detected, dispatching deep link ...');
-          await this.dispatchDeepLink(deepLink);
+          logger.info('Dispatching deep link ...');
+          try {
+            await this.dispatchDeepLink(deepLink);
+          } catch (error) {
+            logger.error(error);
+          }
+        } else {
+          logger.info('No deep link found in arguments.');
         }
       });
     }

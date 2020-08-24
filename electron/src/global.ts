@@ -34,6 +34,7 @@ declare global {
     sendBadgeCount(count: number, ignoreFlash: boolean): void;
     sendDeleteAccount(accountId: string, sessionId?: string): Promise<void>;
     sendLogoutAccount(accountId: string): Promise<void>;
+    submitDeepLink(url?: string): void;
     wire: any;
     z: {
       event: {
