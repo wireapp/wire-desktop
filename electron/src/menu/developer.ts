@@ -84,7 +84,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
-  const environments = {...EnvironmentUtil.URL_WEBAPP};
+  const environments: Partial<typeof EnvironmentUtil.URL_WEBAPP> = {...EnvironmentUtil.URL_WEBAPP};
   delete environments.CUSTOM;
 
   for (const [backendType, backendURL] of Object.entries(environments)) {
@@ -94,7 +94,7 @@ const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
         EnvironmentUtil.setEnvironment(backendType as EnvironmentUtil.BackendType);
         await lifecycle.relaunch();
       },
-      label: backendURL.replace(/^https?:\/\//, ''),
+      label: backendURL!.replace(/^https?:\/\//, ''),
       type: 'radio',
     });
   }
