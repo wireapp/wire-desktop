@@ -31,17 +31,13 @@ const logger = getLogger(path.basename(__filename));
 
 const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
-
-enum ProtocolCommand {
-  START_SSO_FLOW = 'start-sso',
-}
+const START_SSO_FLOW = 'start-sso';
 
 export class CustomProtocolHandler {
   public hashLocation = '';
   private readonly windowManager = WindowManager;
 
   async dispatchDeepLink(url?: string): Promise<void> {
-    logger.info(`Received deep link "${url}"`);
     if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
       logger.info('Invalid deep link, ignoring');
       return;
@@ -49,7 +45,7 @@ export class CustomProtocolHandler {
 
     const route = new URL(url);
 
-    if (route.host === ProtocolCommand.START_SSO_FLOW) {
+    if (route.host === START_SSO_FLOW) {
       logger.info('Deep link is a SSO link, triggering SSO login ...');
       await this.handleSSOLogin(route);
     } else {
@@ -78,10 +74,15 @@ export class CustomProtocolHandler {
   }
 
   private findDeepLink(argv: string[]): string | void {
-    for (const arg of argv) {
-      if (arg.startsWith(CORE_PROTOCOL_PREFIX)) {
-        return arg;
-      }
+    return argv.find(arg => arg.startsWith(CORE_PROTOCOL_PREFIX));
+  }
+
+  private async forwardDeepLink(url: string): Promise<void> {
+    logger.info('Dispatching deep link ...');
+    try {
+      await this.dispatchDeepLink(url);
+    } catch (error) {
+      logger.error(error);
     }
   }
 
@@ -93,13 +94,7 @@ export class CustomProtocolHandler {
       app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
-    ipcMain.on(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, async (_event, url: string) => {
-      try {
-        await this.dispatchDeepLink(url);
-      } catch (error) {
-        logger.error(error);
-      }
-    });
+    ipcMain.on(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, async (_event, url: string) => this.forwardDeepLink(url));
 
     if (platform.IS_MAC_OS) {
       app.on('open-url', async (event, url) => {
@@ -115,12 +110,7 @@ export class CustomProtocolHandler {
         logger.info('App ready, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(process.argv);
         if (deepLink) {
-          logger.info('Dispatching deep link ...');
-          try {
-            await this.dispatchDeepLink(deepLink);
-          } catch (error) {
-            logger.error(error);
-          }
+          await this.forwardDeepLink(deepLink);
         } else {
           logger.info('No deep link found in arguments.');
         }
@@ -129,12 +119,7 @@ export class CustomProtocolHandler {
         logger.info('Second instance detected, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(argv);
         if (deepLink) {
-          logger.info('Dispatching deep link ...');
-          try {
-            await this.dispatchDeepLink(deepLink);
-          } catch (error) {
-            logger.error(error);
-          }
+          await this.forwardDeepLink(deepLink);
         } else {
           logger.info('No deep link found in arguments.');
         }
