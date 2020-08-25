@@ -93,7 +93,7 @@ export class CustomProtocolHandler {
       app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
-    ipcMain.on(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, async (_event, url) => {
+    ipcMain.on(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, async (_event, url: string) => {
       try {
         await this.dispatchDeepLink(url);
       } catch (error) {

@@ -103,7 +103,7 @@ const setupIpcInterface = (): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, {count, ignoreFlash});
   };
 
-  window.submitDeepLink = (url?: string): void => {
+  window.submitDeepLink = (url: string): void => {
     ipcRenderer.send(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, url);
   };
 
