@@ -37,20 +37,29 @@ export class CustomProtocolHandler {
   public hashLocation = '';
   private readonly windowManager = WindowManager;
 
-  async dispatchDeepLink(url?: string): Promise<void> {
-    if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX) || url.length > CORE_PROTOCOL_MAX_LENGTH) {
-      logger.info('Invalid deep link, ignoring');
-      return;
-    }
+  private async dispatchDeepLink(url?: string): Promise<void> {
+    logger.info('Dispatching deep link ...');
+    try {
+      if (
+        typeof url === 'undefined' ||
+        !url.startsWith(CORE_PROTOCOL_PREFIX) ||
+        url.length > CORE_PROTOCOL_MAX_LENGTH
+      ) {
+        logger.info('Invalid deep link, ignoring');
+        return;
+      }
 
-    const route = new URL(url);
+      const route = new URL(url);
 
-    if (route.host === START_SSO_FLOW) {
-      logger.info('Deep link is a SSO link, triggering SSO login ...');
-      await this.handleSSOLogin(route);
-    } else {
-      logger.info('Triggering hash location change ...');
-      this.forwardHashLocation(route);
+      if (route.host === START_SSO_FLOW) {
+        logger.info('Deep link is a SSO link, triggering SSO login ...');
+        await this.handleSSOLogin(route);
+      } else {
+        logger.info('Triggering hash location change ...');
+        this.forwardHashLocation(route);
+      }
+    } catch (error) {
+      logger.error(error);
     }
   }
 
@@ -77,15 +86,6 @@ export class CustomProtocolHandler {
     return argv.find(arg => arg.startsWith(CORE_PROTOCOL_PREFIX));
   }
 
-  private async forwardDeepLink(url: string): Promise<void> {
-    logger.info('Dispatching deep link ...');
-    try {
-      await this.dispatchDeepLink(url);
-    } catch (error) {
-      logger.error(error);
-    }
-  }
-
   public registerCoreProtocol(): void {
     if (app.isDefaultProtocolClient(config.customProtocolName)) {
       logger.info(`Custom protocol "${config.customProtocolName}" already registered`);
@@ -94,23 +94,19 @@ export class CustomProtocolHandler {
       app.setAsDefaultProtocolClient(config.customProtocolName);
     }
 
-    ipcMain.on(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, async (_event, url: string) => this.forwardDeepLink(url));
+    ipcMain.on(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, async (_event, url: string) => this.dispatchDeepLink(url));
 
     if (platform.IS_MAC_OS) {
       app.on('open-url', async (event, url) => {
         event.preventDefault();
-        try {
-          await this.dispatchDeepLink(url);
-        } catch (error) {
-          logger.error(error);
-        }
+        await this.dispatchDeepLink(url);
       });
     } else {
       app.once('ready', async () => {
         logger.info('App ready, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(process.argv);
         if (deepLink) {
-          await this.forwardDeepLink(deepLink);
+          await this.dispatchDeepLink(deepLink);
         } else {
           logger.info('No deep link found in arguments.');
         }
@@ -119,7 +115,7 @@ export class CustomProtocolHandler {
         logger.info('Second instance detected, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(argv);
         if (deepLink) {
-          await this.forwardDeepLink(deepLink);
+          await this.dispatchDeepLink(deepLink);
         } else {
           logger.info('No deep link found in arguments.');
         }
