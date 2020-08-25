@@ -103,6 +103,10 @@ const setupIpcInterface = (): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, {count, ignoreFlash});
   };
 
+  window.submitDeepLink = (url: string): void => {
+    ipcRenderer.send(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, url);
+  };
+
   window.sendDeleteAccount = (accountID: string, sessionID?: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const accountWebview = getWebviewById(accountID);
