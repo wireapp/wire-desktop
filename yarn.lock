@@ -2034,10 +2034,10 @@
     logdown "3.3.1"
     rimraf "3.0.2"
 
-"@wireapp/eslint-config@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.npmjs.org/@wireapp/eslint-config/-/eslint-config-1.7.0.tgz#e7aeb0587be84d619e124ab8b1487de1dee7057b"
-  integrity sha512-5QmZh7fi79N+mr4NP+rE+jAq6ThAm4tzjvhnxNj/Hn64AkI2vUtxp7sVkH4bD5mxvUxvJHmMDYHpd8kQvRbHHQ==
+"@wireapp/eslint-config@1.7.1":
+  version "1.7.1"
+  resolved "https://registry.npmjs.org/@wireapp/eslint-config/-/eslint-config-1.7.1.tgz#89359716f62194926d96c8c7f12c3642c031a881"
+  integrity sha512-IM+ro90oQh8DIkqus9eA8Cl+T6b3wZ7x3JMuN2S3srHtuWep1qcJH9NcXcpUE2+18+M5Yid/IYLUdEGQVCTBPQ==
 
 "@wireapp/prettier-config@0.3.0":
   version "0.3.0"
