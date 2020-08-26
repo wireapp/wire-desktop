@@ -1,10 +1,18 @@
+// @ts-check
+/* eslint-disable valid-jsdoc */
+
 const plugins = ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-optional-chaining'];
 
+/**
+ * @typedef {import('@babel/core').PluginItem} PluginItem
+ * @returns {PluginItem[]}
+ */
 const buildPresets = ({debug = false, modules = false}) => {
+  /** @type {PluginItem} */
   const browserEnvPreset = [
     '@babel/preset-env',
     {
-      corejs: '2',
+      corejs: '3',
       debug,
       modules,
       targets: {
@@ -17,13 +25,16 @@ const buildPresets = ({debug = false, modules = false}) => {
   return ['@babel/preset-react', '@babel/preset-typescript', browserEnvPreset];
 };
 
-module.exports = {
+/** @type {import('@babel/core').TransformOptions} */
+const config = {
   env: {
     test: {
       plugins,
-      presets: buildPresets({modules: 'commonjs'}),
+      presets: buildPresets({modules: true}),
     },
   },
   plugins,
   presets: buildPresets({modules: false}),
 };
+
+module.exports = config;

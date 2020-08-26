@@ -14,9 +14,6 @@ updates:
       - dependency-name: '@types/node'
         versions:
           - '>= 13.x'
-      - dependency-name: core-js
-        versions:
-          - '>= 3.x'
       - dependency-name: electron
         versions:
           - '>= 10.x'
