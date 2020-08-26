@@ -1,0 +1,70 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "01:00"
+  open-pull-requests-limit: 99
+  assignees:
+  - ffflorian
+  versioning-strategy: increase
+  ignore:
+  - dependency-name: core-js
+    versions:
+    - ">= 3.a"
+    - "< 4"
+  - dependency-name: electron
+    versions:
+    - ">= 10.a"
+    - "< 11"
+  - dependency-name: electron
+    versions:
+    - "< 3"
+    - ">= 2.a"
+  - dependency-name: electron
+    versions:
+    - ">= 7.a"
+    - "< 8"
+  - dependency-name: electron
+    versions:
+    - ">= 8.a"
+    - "< 9"
+  - dependency-name: electron-builder
+    versions:
+    - ">= 21.a"
+    - "< 22"
+  - dependency-name: electron-builder
+    versions:
+    - ">= 22.a"
+    - "< 23"
+  - dependency-name: electron-winstaller
+    versions:
+    - ">= 3.a"
+    - "< 4"
+  - dependency-name: "@types/electron-winstaller"
+    versions:
+    - ">= 4.a"
+    - "< 5"
+  - dependency-name: "@types/node"
+    versions:
+    - ">= 11.a"
+    - "< 12"
+  - dependency-name: "@types/node"
+    versions:
+    - ">= 13.a"
+    - "< 14"
+  - dependency-name: "@types/node"
+    versions:
+    - "> 14.0.1"
+    - "< 15"
+  - dependency-name: "@types/node"
+    versions:
+    - ">= 14.a"
+    - "< 15"
+- package-ecosystem: npm
+  directory: "/app-config"
+  schedule:
+    interval: daily
+    time: "01:00"
+  open-pull-requests-limit: 99
