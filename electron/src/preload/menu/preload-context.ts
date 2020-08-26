@@ -49,7 +49,7 @@ const savePicture = async (url: RequestInfo, timestamp?: string): Promise<void> 
   ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(bytes), timestamp);
 };
 
-const copyPicture = async (url: RequestInfo, timestamp?: string): Promise<void> => {
+const copyPicture = async (url: RequestInfo): Promise<void> => {
   const response = await fetch(url, {
     headers: {
       'User-Agent': config.userAgent,
@@ -119,7 +119,7 @@ const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
     label: locale.getText('menuSavePictureAs'),
   },
   {
-    click: () => copyPicture(imageMenu.image || '', imageMenu.timestamp),
+    click: () => copyPicture(imageMenu.image || ''),
     label: locale.getText('menuCopyPicture'),
   },
 ]);

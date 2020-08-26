@@ -544,6 +544,12 @@ class ElectronWrapperInit {
           break;
         }
         case 'webview': {
+          if (config.environment !== 'internal') {
+            const UA = contents.session.getUserAgent();
+            const newUA = UA.replace(/Electron\/[^ ]+/, `${config.name}/${config.version}`);
+            logger.info(`Setting new UA: ${newUA}`);
+            contents.session.setUserAgent(newUA);
+          }
           if (proxyInfoArg?.origin && contents.session) {
             this.logger.log('Found proxy settings in arguments, applying settings on the webview...');
             await applyProxySettings(proxyInfoArg, contents);
