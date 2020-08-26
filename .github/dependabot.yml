@@ -11,7 +11,12 @@ updates:
       - ffflorian
     versioning-strategy: increase
     ignore:
-      - dependency-name: '@types/node'
+      - dependency-name: core-js
         versions:
-          - '>= 13.a'
-          - '< 14'
+          - '>= 3.x'
+      - dependency-name: electron
+        versions:
+          - '>= 10.x'
+      - dependency-name: electron-builder
+        versions:
+          - '>= 21.x'
