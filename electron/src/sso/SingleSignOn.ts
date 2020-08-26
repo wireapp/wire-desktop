@@ -171,7 +171,10 @@ export class SingleSignOn {
     ssoWindow.once('closed', async () => {
       if (this.session) {
         await this.wipeSessionData();
-        await SingleSignOn.unregisterProtocol(this.session);
+        const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
+        if (!unregisterSuccess) {
+          throw new Error('Failed to unregister protocol');
+        }
       }
       this.session = undefined;
       this.ssoWindow = undefined;
@@ -294,23 +297,18 @@ export class SingleSignOn {
       }
     };
 
-    const isHandled = await session.protocol.isProtocolHandled(SingleSignOn.SSO_PROTOCOL);
+    const isRegistered = session.protocol.isProtocolRegistered(SingleSignOn.SSO_PROTOCOL);
 
-    if (!isHandled) {
-      session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest, error => {
-        if (error) {
-          throw new Error(`Failed to register protocol. Error: ${error}`);
-        }
-      });
+    if (!isRegistered) {
+      const registerSuccess = session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest);
+      if (!registerSuccess) {
+        throw new Error('Failed to register protocol.');
+      }
     }
   }
 
-  private static unregisterProtocol(session: Session): Promise<void> {
-    return new Promise((resolve, reject) => {
-      session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL, error => {
-        return error ? reject(error) : resolve();
-      });
-    });
+  private static unregisterProtocol(session: Session): boolean {
+    return session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL);
   }
 
   private readonly finalizeLogin = async (type: string): Promise<void> => {
