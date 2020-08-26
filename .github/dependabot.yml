@@ -4,8 +4,11 @@ updates:
     directory: '/'
     schedule:
       interval: daily
-      time: '01:00'
+      time: '07:00'
+      timezone: 'Europe/Berlin'
     open-pull-requests-limit: 99
+    assignees:
+      - ffflorian
     versioning-strategy: increase
     ignore:
       - dependency-name: '@types/node'
