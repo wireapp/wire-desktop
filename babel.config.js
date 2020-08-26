@@ -4,6 +4,7 @@
 const plugins = ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-optional-chaining'];
 
 /**
+ * @param {{debug?: boolean, modules?: false | string}} options
  * @typedef {import('@babel/core').PluginItem} PluginItem
  * @returns {PluginItem[]}
  */
@@ -30,7 +31,7 @@ const config = {
   env: {
     test: {
       plugins,
-      presets: buildPresets({modules: true}),
+      presets: buildPresets({modules: 'commonjs'}),
     },
   },
   plugins,
