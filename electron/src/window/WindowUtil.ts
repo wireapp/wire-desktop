@@ -27,9 +27,9 @@ interface Rectangle {
 }
 
 export const pointInRectangle = (point: [number, number], rectangle: Rectangle): boolean => {
-  const [x, y] = point;
-  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
-  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
+  const [xCoordinate, yCoordinate] = point;
+  const xInRange = xCoordinate >= rectangle.x && xCoordinate <= rectangle.x + rectangle.width;
+  const yInRange = yCoordinate >= rectangle.y && yCoordinate <= rectangle.y + rectangle.height;
 
   return xInRange && yInRange;
 };
