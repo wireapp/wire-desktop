@@ -233,6 +233,22 @@ const windowTemplate: MenuItemConstructorOptions = {
         WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
       label: locale.getText('menuPreviousConversation'),
     },
+    separatorTemplate,
+    {
+      accelerator: 'CmdOrCtrl+0',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_RESET),
+      label: locale.getText('menuActualSize'),
+    },
+    {
+      accelerator: 'CmdOrCtrl+Plus',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_IN),
+      label: locale.getText('menuZoomIn'),
+    },
+    {
+      accelerator: 'CmdOrCtrl+-',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_OUT),
+      label: locale.getText('menuZoomOut'),
+    },
   ],
 };
 
@@ -390,16 +406,6 @@ const changeLocale = async (language: locale.SupportedI18nLanguage): Promise<voi
 
 export const createMenu = (isFullScreen: boolean): Menu => {
   const menuTemplate = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
-
-  if (!windowTemplate.submenu) {
-    windowTemplate.submenu = [];
-  }
-  if (!editTemplate.submenu) {
-    editTemplate.submenu = [];
-  }
-  if (!helpTemplate.submenu) {
-    helpTemplate.submenu = [];
-  }
 
   if (EnvironmentUtil.platform.IS_MAC_OS) {
     menuTemplate.unshift(darwinTemplate);

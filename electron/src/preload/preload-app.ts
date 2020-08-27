@@ -79,11 +79,32 @@ const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
   });
+
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_IN, () => {
+    logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_IN}", zooming in ...`);
+    const currentZoomFactor = webFrame.getZoomFactor();
+    webFrame.setZoomFactor(currentZoomFactor + 0.1);
+  });
+
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_OUT, () => {
+    logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_IN}", zooming out ...`);
+    const currentZoomFactor = webFrame.getZoomFactor();
+    webFrame.setZoomFactor(currentZoomFactor - 0.1);
+  });
+
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_RESET, () => {
+    logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_RESET}", resetting zoom ...`);
+    webFrame.setZoomFactor(1.0);
+  });
 };
 
 const setupIpcInterface = (): void => {
   window.sendBadgeCount = (count: number, ignoreFlash: boolean): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, {count, ignoreFlash});
+  };
+
+  window.submitDeepLink = (url: string): void => {
+    ipcRenderer.send(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, url);
   };
 
   window.sendDeleteAccount = (accountID: string, sessionID?: string): Promise<void> => {

@@ -24,7 +24,7 @@ export const Raygun = {
   initClient(): void {
     const raygunClient = new raygun.Client().init({apiKey: config.raygunApiKey});
     raygunClient.onBeforeSend(payload => {
-      delete payload.details.machineName;
+      delete (payload.details as any).machineName;
       return payload;
     });
   },

@@ -25,6 +25,7 @@ import {
   ContextMenuParams,
   MenuItemConstructorOptions,
   WebContents,
+  nativeImage,
 } from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
@@ -44,8 +45,19 @@ const savePicture = async (url: RequestInfo, timestamp?: string): Promise<void> 
       'User-Agent': config.userAgent,
     },
   });
-  const arrayBuffer = await response.arrayBuffer();
-  ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(arrayBuffer), timestamp);
+  const bytes = await response.arrayBuffer();
+  ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(bytes), timestamp);
+};
+
+const copyPicture = async (url: RequestInfo, timestamp?: string): Promise<void> => {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': config.userAgent,
+    },
+  });
+  const bytes = await response.arrayBuffer();
+  const image = nativeImage.createFromBuffer(Buffer.from(bytes));
+  clipboard.writeImage(image);
 };
 
 const createDefaultMenu = (copyContext: string) =>
@@ -105,6 +117,10 @@ const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
   {
     click: () => savePicture(imageMenu.image || '', imageMenu.timestamp),
     label: locale.getText('menuSavePictureAs'),
+  },
+  {
+    click: () => copyPicture(imageMenu.image || '', imageMenu.timestamp),
+    label: locale.getText('menuCopyPicture'),
   },
 ]);
 

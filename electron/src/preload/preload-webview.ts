@@ -172,6 +172,10 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
+    logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
+    window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
+  });
 };
 
 const reportWebappVersion = () =>
@@ -210,5 +214,5 @@ window.addEventListener('DOMContentLoaded', () => {
     reportWebappVersion();
   });
   // include context menu
-  import('./menu/context').catch(logger.error);
+  import('./menu/preload-context').catch(logger.error);
 });
