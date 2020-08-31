@@ -2495,10 +2495,10 @@ auto-launch@5.0.5:
     untildify "^3.0.2"
     winreg "1.2.4"
 
-aws-sdk@2.739.0:
-  version "2.739.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.739.0.tgz#10b0b29be18c3f0f85ca145cbed8b10793ddc7a7"
-  integrity sha512-N2XyxY12gs0GJc26O8TmdT30ovEKWsPX787CNW24g0cXTCyc/Teltq0re6yGxfaH0VmN6qONNLr3E59JtJ3neA==
+aws-sdk@2.742.0:
+  version "2.742.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.742.0.tgz#02373d324ca8201cd3fc8c1b82eff8b48b593f4c"
+  integrity sha512-zntDB0BpMn/y+B4RQvXuqY8DmJDYPkeFjZ6BbZ6vdNrsdB5TRz8p53ats4D3mLG068RB4M4AmVioFnU69nDXyQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
