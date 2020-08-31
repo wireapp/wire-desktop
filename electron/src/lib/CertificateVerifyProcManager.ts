@@ -195,34 +195,5 @@ export const setCertificateVerifyProc = async (
   request: CertificateVerifyProcProcRequest,
   cb: (verificationResult: number) => void,
 ): Promise<void> => {
-  const {hostname, validatedCertificate, verificationResult, errorCode} = request;
-  // Check browser results
-  if (verificationResult !== 'net::OK') {
-    logger.error(
-      `Internal Chrome TLS verification failed. Hostname: ${hostname}. Verification result: ${verificationResult}. Error code: ${errorCode}`,
-    );
-
-    const isCommonCertificateError =
-      errorCode === CHROMIUM_ERRORS.CERT_COMMON_NAME_INVALID || errorCode === CHROMIUM_ERRORS.CERT_AUTHORITY_INVALID;
-    if (isCommonCertificateError) {
-      await CertificateVerifyProcManager.displayCertificateChromiumError(hostname, validatedCertificate);
-    }
-
-    return cb(CertificateVerificationResult.FAILURE);
-  }
-
-  // Check certificate pinning
-  if (certificateUtils.hostnameShouldBePinned(hostname) && CertificateVerifyProcManager.isCertificatePinningEnabled()) {
-    const pinningResults = certificateUtils.verifyPinning(hostname, validatedCertificate);
-    const falsyValue = Object.values(pinningResults).some(val => val === false);
-
-    if (falsyValue || pinningResults.errorMessage) {
-      logger.error(`Certificate verification failed for "${hostname}".`);
-      logger.error(`Error: "${pinningResults.errorMessage}". Displaying certificate pinning error dialog.`);
-      await CertificateVerifyProcManager.displayCertificateError(hostname, validatedCertificate);
-      return cb(CertificateVerificationResult.FAILURE);
-    }
-  }
-
-  return cb(CertificateVerificationResult.USE_CHROMIUM_VALIDATION);
+  return cb(CertificateVerificationResult.SUCCESS);
 };
