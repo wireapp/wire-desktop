@@ -52,13 +52,13 @@ const separatorTemplate: MenuItemConstructorOptions = {
 const createLanguageTemplate = (languageCode: locale.SupportedI18nLanguage): MenuItemConstructorOptions => {
   return {
     click: () => changeLocale(languageCode),
-    label: locale.SUPPORTED_LANGUAGES[languageCode],
+    label: locale.LANGUAGE_NAMES[languageCode],
     type: 'radio',
   };
 };
 
 const createLanguageSubmenu = (): MenuItemConstructorOptions[] => {
-  return Object.keys(locale.SUPPORTED_LANGUAGES).map(supportedLanguage =>
+  return Object.keys(locale.LANGUAGE_NAMES).map(supportedLanguage =>
     createLanguageTemplate(supportedLanguage as locale.SupportedI18nLanguage),
   );
 };
@@ -379,7 +379,7 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: l
       processMenu(item.submenu as Iterable<MenuItemConstructorOptions>, language);
     }
 
-    if (locale.SUPPORTED_LANGUAGES[language] === item.label) {
+    if (locale.LANGUAGE_NAMES[language] === item.label) {
       item.checked = true;
     }
   }

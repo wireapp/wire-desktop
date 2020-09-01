@@ -31,8 +31,8 @@ const logger = getLogger(path.basename(__filename));
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
-window.locStrings = locale.LANGUAGES[locale.getCurrent()];
-window.locStringsDefault = locale.LANGUAGES.en;
+window.locStrings = locale.LANGUAGE_STRINGS[locale.getCurrent()];
+window.locStringsDefault = locale.LANGUAGE_STRINGS.en;
 
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 

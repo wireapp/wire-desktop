@@ -39,6 +39,9 @@ export type i18nLanguageIdentifier =
   | 'certificateVerifyProcManagerWarningTextChromium'
   | 'certificateVerifyProcManagerWarningTextPinning'
   | 'certificateVerifyProcManagerWarningTitle'
+  | 'changeEnvironmentModalConfirm'
+  | 'changeEnvironmentModalText'
+  | 'changeEnvironmentModalTitle'
   | 'menuAbout'
   | 'menuActualSize'
   | 'menuAddPeople'
@@ -94,6 +97,8 @@ export type i18nLanguageIdentifier =
   | 'menuWindow'
   | 'menuZoomIn'
   | 'menuZoomOut'
+  | 'promptCancel'
+  | 'promptOK'
   | 'proxyPromptCancel'
   | 'proxyPromptHeadline'
   | 'proxyPromptOk'
@@ -107,6 +112,10 @@ export type i18nLanguageIdentifier =
   | 'trayOpen'
   | 'trayQuit'
   | 'unreadMessages'
+  | 'webviewErrorDescription'
+  | 'webviewErrorDescriptionSub'
+  | 'webviewErrorRetryAction'
+  | 'webviewErrorTitle'
   | 'wrapperAddAccount'
   | 'wrapperAddAccountErrorMessagePlural'
   | 'wrapperAddAccountErrorMessageSingular'
@@ -120,6 +129,11 @@ export type i18nLanguageIdentifier =
 export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 export type SupportedI18nLanguage = keyof typeof SUPPORTED_LANGUAGES;
 export type SupportedI18nLanguageObject = Record<SupportedI18nLanguage, i18nStrings>;
+export interface SupportedI18nLanguageData {
+  code: string;
+  name: string;
+  strings: i18nStrings;
+}
 
 const cs_CZ = require('../../locale/cs-CZ');
 const da_DK = require('../../locale/da-DK');
@@ -139,6 +153,7 @@ const pl_PL = require('../../locale/pl-PL');
 const pt_BR = require('../../locale/pt-BR');
 const ro_RO = require('../../locale/ro-RO');
 const ru_RU = require('../../locale/ru-RU');
+const si_LK = require('../../locale/si-LK');
 const sk_SK = require('../../locale/sk-SK');
 const sl_SI = require('../../locale/sl-SI');
 const tr_TR = require('../../locale/tr-TR');
@@ -147,92 +162,61 @@ const zh_CN = require('../../locale/zh-CN');
 
 const app = Electron.app || Electron.remote.app;
 
-export const LANGUAGES: SupportedI18nLanguageObject = {
-  cs: cs_CZ,
-  da: da_DK,
-  de: de_DE,
-  el: el_GR,
-  en: en_US,
-  es: es_ES,
-  et: et_EE,
-  fi: fi_FI,
-  fr: fr_FR,
-  hr: hr_HR,
-  hu: hu_HU,
-  it: it_IT,
-  lt: lt_LT,
-  nl: nl_NL,
-  pl: pl_PL,
-  pt: pt_BR,
-  ro: ro_RO,
-  ru: ru_RU,
-  sk: sk_SK,
-  sl: sl_SI,
-  tr: tr_TR,
-  uk: uk_UA,
-  zh: zh_CN,
-};
-
-export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[]> = {
-  cs: ['cs', 'cs-CZ'],
-  da: ['da', 'da-DK'],
-  de: ['de', 'de-DE'],
-  el: ['el', 'el-GR'],
-  en: ['en', 'en-US'],
-  es: ['es', 'es-ES'],
-  et: ['et', 'et-EE'],
-  fi: ['fi', 'fi-FI'],
-  fr: ['fr', 'fr-FR'],
-  hr: ['hr', 'hr-HR'],
-  hu: ['hu', 'hu-HU'],
-  it: ['it', 'it-IT'],
-  lt: ['lt', 'lt-LT'],
-  nl: ['nl', 'nl-NL'],
-  pl: ['pl', 'pl-PL'],
-  pt: ['pt', 'pt-BR'],
-  ro: ['ro', 'ro-RO'],
-  ru: ['ru', 'ru-RU'],
-  sk: ['sk', 'sk-SK'],
-  sl: ['sl', 'sl-SI'],
-  tr: ['tr', 'tr-TR'],
-  uk: ['uk', 'uk-UA'],
-  zh: ['zh', 'zh-CN'],
-};
-
 /* eslint-disable */
 /* cspell:disable */
-export const SUPPORTED_LANGUAGES = {
-  en: 'English',
-  cs: 'Čeština',
-  da: 'Dansk',
-  de: 'Deutsch',
-  el: 'Ελληνικά',
-  et: 'Eesti',
-  es: 'Español',
-  fr: 'Français',
-  hr: 'Hrvatski',
-  it: 'Italiano',
-  lt: 'Lietuvos',
-  hu: 'Magyar',
-  nl: 'Nederlands',
-  pl: 'Polski',
-  pt: 'Português do Brasil',
-  ro: 'Română',
-  ru: 'Русский',
-  sk: 'Slovenčina',
-  sl: 'Slovenščina',
-  fi: 'Suomi',
-  tr: 'Türkçe',
-  uk: 'Українська',
-  zh: '简体中文',
+const SUPPORTED_LANGUAGES: Record<string, SupportedI18nLanguageData> = {
+  en: {name: 'English', code: 'en-US', strings: en_US},
+  cs: {name: 'Čeština', code: 'cs-CZ', strings: cs_CZ},
+  da: {name: 'Dansk', code: 'da-DK', strings: da_DK},
+  de: {name: 'Deutsch', code: 'de-DE', strings: de_DE},
+  el: {name: 'Ελληνικά', code: 'el-GR', strings: el_GR},
+  et: {name: 'Eesti', code: 'et-EE', strings: et_EE},
+  es: {name: 'Español', code: 'es-ES', strings: es_ES},
+  fr: {name: 'Français', code: 'fr-FR', strings: fr_FR},
+  hr: {name: 'Hrvatski', code: 'hr-HR', strings: hr_HR},
+  it: {name: 'Italiano', code: 'it-IT', strings: it_IT},
+  lt: {name: 'Lietuvos', code: 'lt-LT', strings: lt_LT},
+  hu: {name: 'Magyar', code: 'hu-HU', strings: hu_HU},
+  nl: {name: 'Nederlands', code: 'nl-NL', strings: nl_NL},
+  pl: {name: 'Polski', code: 'pl-PL', strings: pl_PL},
+  pt: {name: 'Português do Brasil', code: 'pt-BR', strings: pt_BR},
+  ro: {name: 'Română', code: 'ro-RO', strings: ro_RO},
+  ru: {name: 'Русский', code: 'ru-RU', strings: ru_RU},
+  sk: {name: 'Slovenčina', code: 'sk-SK', strings: sk_SK},
+  sl: {name: 'Slovenščina', code: 'sl-SI', strings: sl_SI},
+  fi: {name: 'Suomi', code: 'fi-FI', strings: fi_FI},
+  tr: {name: 'Türkçe', code: 'tr-TR', strings: tr_TR},
+  uk: {name: 'Українська', code: 'uk-UA', strings: uk_UA},
+  zh: {name: '简体中文', code: 'zh-CN', strings: zh_CN},
+  si: {name: 'සිංහල', code: 'si-LK', strings: si_LK},
 };
 /* cspell:enable */
 /* eslint-enable */
 
-let current: SupportedI18nLanguage | undefined;
+export const LANGUAGE_STRINGS = Object.keys(SUPPORTED_LANGUAGES).reduce<SupportedI18nLanguageObject>(
+  (result, shortCode) => {
+    result[shortCode] = SUPPORTED_LANGUAGES[shortCode].strings;
+    return result;
+  },
+  {},
+);
 
-const getSupportedLanguageKeys = (): SupportedI18nLanguage[] =>
-  Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
+export const LANGUAGE_NAMES = Object.keys(SUPPORTED_LANGUAGES).reduce<Record<SupportedI18nLanguage, string>>(
+  (result, shortCode) => {
+    result[shortCode] = SUPPORTED_LANGUAGES[shortCode].name;
+    return result;
+  },
+  {},
+);
+
+export const supportedSpellCheckLanguages = Object.keys(SUPPORTED_LANGUAGES).reduce<
+  Record<SupportedI18nLanguage, [shortCode: string, languageCode: string]>
+>((result, shortCode) => {
+  result[shortCode] = [shortCode, SUPPORTED_LANGUAGES[shortCode].code];
+  return result;
+}, {});
+
+let current: SupportedI18nLanguage | undefined;
 
 export const getCurrent = (): SupportedI18nLanguage => {
   if (!current) {
@@ -244,7 +228,7 @@ export const getCurrent = (): SupportedI18nLanguage => {
 };
 
 const parseLocale = (locale: string): SupportedI18nLanguage => {
-  const languageKeys = getSupportedLanguageKeys();
+  const languageKeys = Object.keys(SUPPORTED_LANGUAGES);
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
@@ -257,7 +241,7 @@ export const getText = (
   paramReplacements?: Record<string, string>,
 ): string => {
   const strings = getCurrent();
-  let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
+  let str = LANGUAGE_STRINGS[strings][stringIdentifier] || LANGUAGE_STRINGS.en[stringIdentifier];
 
   const replacements: Record<string, string> = {...customReplacements, ...paramReplacements};
   for (const replacement of Object.keys(replacements)) {
