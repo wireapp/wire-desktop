@@ -72,7 +72,7 @@
     "cspell": "4.1.0",
     "css-loader": "4.2.2",
     "dotenv": "8.2.0",
-    "electron": "11.0.0-beta.1",
+    "electron": "11.0.0-beta.3",
     "electron-builder": "20.44.4",
     "electron-mocha": "9.1.0",
     "electron-osx-sign": "0.4.17",
