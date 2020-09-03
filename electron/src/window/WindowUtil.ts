@@ -58,10 +58,10 @@ export const isInView = (win: BrowserWindow): boolean => {
 export const openExternal = async (url: string, httpsOnly: boolean = false): Promise<void> => {
   try {
     const urlProtocol = URL.parse(url).protocol || '';
-    const allowedProtocols = ['https:', `${config.customProtocolName}:`];
+    const allowedProtocols = ['https:'];
 
     if (!httpsOnly) {
-      allowedProtocols.push('ftp:', 'http:', 'mailto:');
+      allowedProtocols.push('ftp:', 'http:', 'mailto:', `${config.customProtocolName}:`);
     }
 
     if (!allowedProtocols.includes(urlProtocol)) {
