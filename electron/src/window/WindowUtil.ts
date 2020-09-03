@@ -23,6 +23,7 @@ import * as URL from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
+import {config} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -60,7 +61,7 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
     const allowedProtocols = ['https:'];
 
     if (!httpsOnly) {
-      allowedProtocols.push('ftp:', 'http:', 'mailto:');
+      allowedProtocols.push('ftp:', 'http:', 'mailto:', `${config.customProtocolName}:`);
     }
 
     if (!allowedProtocols.includes(urlProtocol)) {
