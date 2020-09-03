@@ -50,7 +50,6 @@ import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
-import {Raygun} from './logging/initRaygun';
 import {getLogFilenames} from './logging/loggerUtils';
 import {developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -635,7 +634,6 @@ class ElectronWrapperInit {
 }
 
 customProtocolHandler.registerCoreProtocol();
-Raygun.initClient();
 handlePortableFlags();
 lifecycle
   .checkSingleInstance()
