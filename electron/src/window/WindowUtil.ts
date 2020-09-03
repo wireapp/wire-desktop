@@ -23,6 +23,7 @@ import * as URL from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
+import {config} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -57,7 +58,7 @@ export const isInView = (win: BrowserWindow): boolean => {
 export const openExternal = async (url: string, httpsOnly: boolean = false): Promise<void> => {
   try {
     const urlProtocol = URL.parse(url).protocol || '';
-    const allowedProtocols = ['https:'];
+    const allowedProtocols = ['https:', `${config.customProtocolName}:`];
 
     if (!httpsOnly) {
       allowedProtocols.push('ftp:', 'http:', 'mailto:');
