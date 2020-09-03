@@ -20,3 +20,12 @@ updates:
       - dependency-name: electron-builder
         versions:
           - '>= 21.x'
+  - package-ecosystem: npm
+    directory: '/app-config'
+    schedule:
+      interval: weekly
+      day: sunday
+    open-pull-requests-limit: 99
+    assignees:
+      - ffflorian
+    versioning-strategy: increase
