@@ -18,6 +18,7 @@
  */
 
 import {dialog, MessageBoxSyncOptions} from 'electron';
+import * as locale from '../locale/locale';
 
 export const showDialog = (message: string, title: string, type?: string): void => {
   const options: MessageBoxSyncOptions = {
@@ -29,5 +30,15 @@ export const showDialog = (message: string, title: string, type?: string): void 
 };
 
 export const showErrorDialog = (message: string): void => {
-  showDialog(message, 'Error', 'error');
+  showDialog(message, locale.getText('promptError'), 'error');
+};
+
+export const showWarningDialog = (message: string): void => {
+  const options: MessageBoxSyncOptions = {
+    buttons: [locale.getText('promptOK')],
+    message,
+    title: locale.getText('promptWarning'),
+    type: 'warning',
+  };
+  dialog.showMessageBoxSync(options);
 };
