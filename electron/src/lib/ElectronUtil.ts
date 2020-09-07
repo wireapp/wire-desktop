@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2020 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,13 @@
  *
  */
 
-const {webFrame, remote} = require('electron');
-const {SingleSignOn} = remote.require('./sso/SingleSignOn');
+import type {WebContents} from 'electron';
 
-webFrame.executeJavaScript(SingleSignOn.getWindowOpenerScript()).catch(error => console.warn(error));
+export async function executeJavaScriptWithoutResult(snippet: string, target: WebContents) {
+  // This removes all trailing `;` and adds `;0` at the end of the snippet to
+  // ensure the resulting value of `executeJavaScript()` is not used.
+  // See https://github.com/electron/electron/issues/23722.
+
+  snippet = `${snippet.replace(/;+$/, '')};0`;
+  await target.executeJavaScript(snippet);
+}
