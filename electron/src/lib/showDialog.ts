@@ -30,14 +30,14 @@ export const showDialog = (message: string, title: string, type?: string): void 
 };
 
 export const showErrorDialog = (message: string): void => {
-  showDialog(message, 'Error', 'error');
+  showDialog(message, locale.getText('promptError'), 'error');
 };
 
 export const showWarningDialog = (message: string): void => {
   const options: MessageBoxSyncOptions = {
-    buttons: ['OK'],
+    buttons: [locale.getText('promptOK')],
     message,
-    title: 'Warning',
+    title: locale.getText('promptWarning'),
     type: 'warning',
   };
   dialog.showMessageBoxSync(options);
