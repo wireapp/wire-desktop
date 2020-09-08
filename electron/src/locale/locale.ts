@@ -112,6 +112,7 @@ export type i18nLanguageIdentifier =
   | 'trayOpen'
   | 'trayQuit'
   | 'unreadMessages'
+  | 'urlBlockedPromptText'
   | 'webviewErrorDescription'
   | 'webviewErrorDescriptionSub'
   | 'webviewErrorRetryAction'

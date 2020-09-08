@@ -87,6 +87,7 @@
   "trayOpen": "Megnyitás - ",
   "trayQuit": "Kilépés",
   "unreadMessages": "Olvasatlan üzenet",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "We can't connect to the server at \"{url}\"",
   "webviewErrorDescriptionSub": "Let your server administrator know about this issue.",
   "webviewErrorRetryAction": "Retry",

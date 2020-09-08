@@ -87,6 +87,7 @@
   "trayOpen": "Öffnen",
   "trayQuit": "Beenden",
   "unreadMessages": "Ungelesene Nachricht",
+  "urlBlockedPromptText": "Eine potenziell unsichere URL wurde gesperrt. Wenn Sie diese trotzdem öffnen möchten, kopieren Sie die URL und öffnen Sie die entsprechende Anwendung.",
   "webviewErrorDescription": "Wir können keine Verbindung zum Server auf \"{url}\" herstellen",
   "webviewErrorDescriptionSub": "Bitte informieren Sie Ihren Server-Administrator über dieses Problem.",
   "webviewErrorRetryAction": "Wiederholen",
