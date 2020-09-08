@@ -212,7 +212,7 @@ export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[
   zh: ['zh', 'zh-CN'],
 };
 
-/* eslint-disable */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 /* cspell:disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
@@ -241,12 +241,9 @@ export const SUPPORTED_LANGUAGES = {
   zh: '简体中文',
 };
 /* cspell:enable */
-/* eslint-enable */
+/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 let current: SupportedI18nLanguage | undefined;
-
-const getSupportedLanguageKeys = (): SupportedI18nLanguage[] =>
-  Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
 
 export const getCurrent = (): SupportedI18nLanguage => {
   if (!current) {
@@ -258,7 +255,7 @@ export const getCurrent = (): SupportedI18nLanguage => {
 };
 
 const parseLocale = (locale: string): SupportedI18nLanguage => {
-  const languageKeys = getSupportedLanguageKeys();
+  const languageKeys = Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
