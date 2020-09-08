@@ -271,17 +271,21 @@ export const getText = (
   paramReplacements?: Record<string, string>,
 ): string => {
   const strings = getCurrent();
-  let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
+  let translationText = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
+
+  if (!translationText) {
+    throw new Error(`Translation for "${stringIdentifier}" could not be found.`);
+  }
 
   const replacements: Record<string, string> = {...customReplacements, ...paramReplacements};
   for (const replacement of Object.keys(replacements)) {
     const regex = new RegExp(`{${replacement}}`, 'g');
-    if (str.match(regex)) {
-      str = str.replace(regex, replacements[replacement]);
+    if (translationText.match(regex)) {
+      translationText = translationText.replace(regex, replacements[replacement]);
     }
   }
 
-  return str;
+  return translationText;
 };
 
 export const setLocale = (locale: string): void => {
