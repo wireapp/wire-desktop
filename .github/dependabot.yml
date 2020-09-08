@@ -13,5 +13,19 @@ updates:
     ignore:
       - dependency-name: '@types/node'
         versions:
-          - '>= 13.a'
-          - '< 14'
+          - '>= 13.x'
+      - dependency-name: electron
+        versions:
+          - '>= 10.x'
+      - dependency-name: electron-builder
+        versions:
+          - '>= 21.x'
+  - package-ecosystem: npm
+    directory: '/app-config'
+    schedule:
+      interval: weekly
+      day: sunday
+    open-pull-requests-limit: 99
+    assignees:
+      - ffflorian
+    versioning-strategy: increase

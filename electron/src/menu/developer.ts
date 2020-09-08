@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, MenuItem, MenuItemConstructorOptions} from 'electron';
+import {WebContents, MenuItem, MenuItemConstructorOptions} from 'electron';
 import * as path from 'path';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -25,8 +25,10 @@ import * as lifecycle from '../runtime/lifecycle';
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
-const logger = getLogger(path.basename(__filename));
+import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {WindowManager} from '../window/WindowManager';
 
+const logger = getLogger(path.basename(__filename));
 const currentEnvironment = EnvironmentUtil.getEnvironment();
 
 const reloadTemplate: MenuItemConstructorOptions = {
@@ -36,14 +38,10 @@ const reloadTemplate: MenuItemConstructorOptions = {
   label: 'Reload',
 };
 
-async function openDevTools(webViewIndex: number, browserWindow?: BrowserWindow): Promise<void> {
-  try {
-    const command = `document.getElementsByTagName("webview")[${webViewIndex}].openDevTools({mode: "detach"})`;
-    await browserWindow?.webContents.executeJavaScript(command);
-  } catch (error) {
-    logger.error(error);
-  }
-}
+const openDevTools = async (webViewIndex: number, webContents: WebContents): Promise<void> => {
+  const snippet = `document.getElementsByTagName("webview")[${webViewIndex}].openDevTools({mode: "detach"})`;
+  await executeJavaScriptWithoutResult(snippet, webContents);
+};
 
 const devToolsTemplate: MenuItemConstructorOptions = {
   label: 'Toggle DevTools',
@@ -56,15 +54,30 @@ const devToolsTemplate: MenuItemConstructorOptions = {
       label: 'Sidebar',
     },
     {
-      click: (_menuItem, browserWindow) => openDevTools(0, browserWindow),
+      click: async () => {
+        const primaryWindow = WindowManager.getPrimaryWindow();
+        if (primaryWindow) {
+          await openDevTools(0, primaryWindow.webContents);
+        }
+      },
       label: 'First',
     },
     {
-      click: (_menuItem, browserWindow) => openDevTools(1, browserWindow),
+      click: async () => {
+        const primaryWindow = WindowManager.getPrimaryWindow();
+        if (primaryWindow) {
+          await openDevTools(1, primaryWindow.webContents);
+        }
+      },
       label: 'Second',
     },
     {
-      click: (_menuItem, browserWindow) => openDevTools(2, browserWindow),
+      click: async () => {
+        const primaryWindow = WindowManager.getPrimaryWindow();
+        if (primaryWindow) {
+          await openDevTools(2, primaryWindow.webContents);
+        }
+      },
       label: 'Third',
     },
   ],

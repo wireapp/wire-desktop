@@ -39,6 +39,9 @@ export type i18nLanguageIdentifier =
   | 'certificateVerifyProcManagerWarningTextChromium'
   | 'certificateVerifyProcManagerWarningTextPinning'
   | 'certificateVerifyProcManagerWarningTitle'
+  | 'changeEnvironmentModalConfirm'
+  | 'changeEnvironmentModalText'
+  | 'changeEnvironmentModalTitle'
   | 'menuAbout'
   | 'menuActualSize'
   | 'menuAddPeople'
@@ -94,9 +97,11 @@ export type i18nLanguageIdentifier =
   | 'menuWindow'
   | 'menuZoomIn'
   | 'menuZoomOut'
-  | 'proxyPromptCancel'
+  | 'promptCancel'
+  | 'promptError'
+  | 'promptOK'
+  | 'promptWarning'
   | 'proxyPromptHeadline'
-  | 'proxyPromptOk'
   | 'proxyPromptPassword'
   | 'proxyPromptTitle'
   | 'proxyPromptUsername'
@@ -107,6 +112,11 @@ export type i18nLanguageIdentifier =
   | 'trayOpen'
   | 'trayQuit'
   | 'unreadMessages'
+  | 'urlBlockedPromptText'
+  | 'webviewErrorDescription'
+  | 'webviewErrorDescriptionSub'
+  | 'webviewErrorRetryAction'
+  | 'webviewErrorTitle'
   | 'wrapperAddAccount'
   | 'wrapperAddAccountErrorMessagePlural'
   | 'wrapperAddAccountErrorMessageSingular'
@@ -139,6 +149,7 @@ const pl_PL = require('../../locale/pl-PL');
 const pt_BR = require('../../locale/pt-BR');
 const ro_RO = require('../../locale/ro-RO');
 const ru_RU = require('../../locale/ru-RU');
+const si_LK = require('../../locale/si-LK');
 const sk_SK = require('../../locale/sk-SK');
 const sl_SI = require('../../locale/sl-SI');
 const tr_TR = require('../../locale/tr-TR');
@@ -166,6 +177,7 @@ export const LANGUAGES: SupportedI18nLanguageObject = {
   pt: pt_BR,
   ro: ro_RO,
   ru: ru_RU,
+  si: si_LK,
   sk: sk_SK,
   sl: sl_SI,
   tr: tr_TR,
@@ -192,6 +204,7 @@ export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[
   pt: ['pt', 'pt-BR'],
   ro: ['ro', 'ro-RO'],
   ru: ['ru', 'ru-RU'],
+  si: ['si', 'si-LK'],
   sk: ['sk', 'sk-SK'],
   sl: ['sl', 'sl-SI'],
   tr: ['tr', 'tr-TR'],
@@ -219,6 +232,7 @@ export const SUPPORTED_LANGUAGES = {
   pt: 'Português do Brasil',
   ro: 'Română',
   ru: 'Русский',
+  si: 'සිංහල',
   sk: 'Slovenčina',
   sl: 'Slovenščina',
   fi: 'Suomi',

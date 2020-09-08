@@ -37,6 +37,7 @@ import {URL} from 'url';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 import {getWebViewId} from '../runtime/lifecycle';
+import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
 
 const argv = minimist(process.argv.slice(1));
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -49,7 +50,7 @@ export class SingleSignOn {
     'dist/preload/preload-sso.js',
   );
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
-  private static readonly SSO_PROTOCOL = 'wire-sso';
+  private static readonly SSO_PROTOCOL = `${config.customProtocolName}-sso`;
   private static readonly SSO_PROTOCOL_HOST = 'response';
   private static readonly SSO_PROTOCOL_RESPONSE_SIZE_LIMIT = 255;
   private static readonly SSO_SESSION_NAME = 'sso';
@@ -223,17 +224,18 @@ export class SingleSignOn {
       configurable: true, // Needed on Chrome :(
       enumerable: false,
       value: Object.freeze({
-        postMessage: ({type}) => {
-          const params = new URLSearchParams();
-          params.set('secret', '${SingleSignOn.loginAuthorizationSecret}');
-          params.set('type', type);
+        postMessage: message => {
           const url = new URL('${SingleSignOn.SSO_PROTOCOL}://${SingleSignOn.SSO_PROTOCOL_HOST}/');
-          url.search = params.toString();
+          url.searchParams.set('secret', '${SingleSignOn.loginAuthorizationSecret}');
+          url.searchParams.set('type', message.type);
           document.location.href = url.toString();
         }
       }),
       writable: false,
-    });`;
+    });0`;
+    // ^-- the `;0` is there on purpose to ensure the resulting value of
+    // `executeJavaScript()` is not used.
+    // See https://github.com/electron/electron/issues/23722.
   };
 
   private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
@@ -341,9 +343,8 @@ export class SingleSignOn {
     }
 
     // Fake postMessage to the webview
-    await this.senderWebContents.executeJavaScript(
-      `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}}));`,
-    );
+    const snippet = `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}}))`;
+    await executeJavaScriptWithoutResult(snippet, this.senderWebContents);
   }
 
   private async wipeSessionData() {
