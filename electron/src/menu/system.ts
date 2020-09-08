@@ -247,13 +247,11 @@ const windowTemplate: MenuItemConstructorOptions = {
       accelerator: 'CmdOrCtrl+=',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_IN),
       label: locale.getText('menuZoomIn'),
-      role: 'zoomIn',
     },
     {
       accelerator: 'CmdOrCtrl+-',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_OUT),
       label: locale.getText('menuZoomOut'),
-      role: 'zoomOut',
     },
   ],
 };
