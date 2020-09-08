@@ -241,7 +241,7 @@ const windowTemplate: MenuItemConstructorOptions = {
       label: locale.getText('menuActualSize'),
     },
     {
-      accelerator: 'CmdOrCtrl+Plus',
+      accelerator: 'CmdOrCtrl+=',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_IN),
       label: locale.getText('menuZoomIn'),
     },
