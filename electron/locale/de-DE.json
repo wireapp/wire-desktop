@@ -87,6 +87,7 @@
   "trayOpen": "Öffnen",
   "trayQuit": "Beenden",
   "unreadMessages": "Ungelesene Nachricht",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "Wir können keine Verbindung zum Server auf \"{url}\" herstellen",
   "webviewErrorDescriptionSub": "Bitte informieren Sie Ihren Server-Administrator über dieses Problem.",
   "webviewErrorRetryAction": "Wiederholen",
