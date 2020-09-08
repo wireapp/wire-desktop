@@ -83,13 +83,15 @@ const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_IN, () => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_IN}", zooming in ...`);
     const currentZoomFactor = webFrame.getZoomFactor();
-    webFrame.setZoomFactor(currentZoomFactor + 0.1);
+    const newZoomFactor = Math.min(currentZoomFactor + 0.1, 2.0);
+    webFrame.setZoomFactor(newZoomFactor);
   });
 
   ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_OUT, () => {
-    logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_IN}", zooming out ...`);
+    logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_OUT}", zooming out ...`);
     const currentZoomFactor = webFrame.getZoomFactor();
-    webFrame.setZoomFactor(currentZoomFactor - 0.1);
+    const newZoomFactor = Math.max(currentZoomFactor - 0.1, 0.5);
+    webFrame.setZoomFactor(newZoomFactor);
   });
 
   ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_RESET, () => {
@@ -111,7 +113,7 @@ const setupIpcInterface = (): void => {
     return new Promise((resolve, reject) => {
       const accountWebview = getWebviewById(accountID);
       if (!accountWebview) {
-        // eslint-disable-next-line
+        // eslint-disable-next-line prefer-promise-reject-errors
         return reject(`Webview for account "${accountID}" does not exist`);
       }
 
