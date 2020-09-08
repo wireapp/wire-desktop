@@ -241,6 +241,8 @@ const windowTemplate: MenuItemConstructorOptions = {
       label: locale.getText('menuActualSize'),
     },
     {
+      // `Ctrl+Plus` does not actually trigger `+` while `Ctrl+=` does.
+      // See https://github.com/electron/electron/issues/1507#issuecomment-118424331.
       accelerator: 'CmdOrCtrl+=',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_IN),
       label: locale.getText('menuZoomIn'),
