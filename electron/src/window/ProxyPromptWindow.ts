@@ -29,7 +29,7 @@ const appPath = path.join(app.getAppPath(), config.electronDirectory);
 
 const promptHtmlPath = fileUrl(path.join(appPath, 'html/proxy-prompt.html'));
 const proxyPromptWindowAllowList = [promptHtmlPath, fileUrl(path.join(appPath, 'css/proxy-prompt.css'))];
-const preloadPath = path.join(appPath, 'dist/renderer/menu/preload-proxy-prompt.js');
+const preloadPath = path.join(appPath, 'dist/preload/menu/preload-proxy-prompt.js');
 
 const windowSize = {
   HEIGHT: 350,
@@ -51,7 +51,6 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
-        enableBlinkFeatures: '',
         javascript: true,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
@@ -82,7 +81,7 @@ const showWindow = async () => {
         if (isExpected) {
           const resultLabels: Record<string, string> = {};
           labels.forEach(label => (resultLabels[label] = locale.getText(label)));
-          event.sender.send(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, resultLabels);
+          event.reply(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, resultLabels);
         }
       }
     });

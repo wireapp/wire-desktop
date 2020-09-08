@@ -9,7 +9,7 @@ const nodeEnvPreset = [
   },
 ];
 
-babelRegister({
+const registerOptions = {
   cache: false,
   extensions: ['.ts'],
   plugins: [
@@ -25,4 +25,6 @@ babelRegister({
     '@babel/preset-typescript',
     nodeEnvPreset,
   ],
-});
+}
+
+babelRegister(registerOptions);

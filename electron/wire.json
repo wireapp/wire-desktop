@@ -1,4 +1,6 @@
 {
+  "aboutReleasesUrl": "https://medium.com/wire-news/desktop-updates/home",
+  "aboutUpdatesUrl": "https://support.wire.com/hc/articles/115001919905",
   "adminUrl": "https://teams.wire.com",
   "appBase": "https://app.wire.com",
   "buildDir": "wrap/build",
@@ -8,17 +10,16 @@
   "description": "The most secure collaboration platform.",
   "distDir": "wrap/dist",
   "electronDirectory": "electron",
-  "environment": "internal",
   "enableAsar": true,
+  "environment": "internal",
   "legalUrl": "https://wire.com/legal/",
   "licensesUrl": "https://wire.com/legal/licenses/",
   "maximumAccounts": "3",
   "name": "WireInternal",
   "nameShort": "WireInternal",
   "privacyUrl": "https://wire.com/privacy/",
-  "raygunApiKey": "",
   "supportUrl": "https://support.wire.com",
-  "version": "3.19.0",
   "updateUrl": "https://wire-app.wire.com/win/prod/",
+  "version": "3.20.0",
   "websiteUrl": "https://wire.com"
 }

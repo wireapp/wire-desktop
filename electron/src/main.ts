@@ -28,7 +28,6 @@ import {
   ipcMain,
   Menu,
   OnHeadersReceivedListenerDetails,
-  shell,
   WebContents,
 } from 'electron';
 import * as fs from 'fs-extra';
@@ -51,7 +50,6 @@ import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
-import {Raygun} from './logging/initRaygun';
 import {getLogFilenames} from './logging/loggerUtils';
 import {developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -74,8 +72,8 @@ const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/preload-app.js');
-const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/renderer/preload-webview.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/preload-app.js');
+const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/preload/preload-webview.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
 const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,
@@ -137,15 +135,18 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
+// This fixes sending a link preview right after logging in.
+// TODO: Use a Context Aware Plugin for link previews,
+// see https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = false;
+
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
     return downloadImage(bytes, timestamp);
   });
 
-  ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
-    WindowManager.showPrimaryWindow();
-  });
+  ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => WindowManager.showPrimaryWindow());
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, {count, ignoreFlash}: {count?: number; ignoreFlash?: boolean}) => {
     tray.showUnreadCount(main, count, ignoreFlash);
@@ -155,8 +156,8 @@ const bindIpcEvents = (): void => {
     await deleteAccount(id, accountId, partitionId);
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
-  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
-  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
+  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
+  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
@@ -206,7 +207,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
-      enableBlinkFeatures: '',
+      enableRemoteModule: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -264,7 +265,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       return;
     }
 
-    await shell.openExternal(url);
+    return WindowUtil.openExternal(url);
   });
 
   main.on('focus', () => {
@@ -507,7 +508,7 @@ class ElectronWrapperInit {
       }
 
       this.logger.log('Opening an external window from a webview.');
-      return shell.openExternal(url);
+      return WindowUtil.openExternal(url);
     };
 
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
@@ -531,12 +532,12 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
-            webPreferences.enableBlinkFeatures = '';
             webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
+            webPreferences.worldSafeExecuteJavaScript = true;
           });
           break;
         }
@@ -633,7 +634,6 @@ class ElectronWrapperInit {
 }
 
 customProtocolHandler.registerCoreProtocol();
-Raygun.initClient();
 handlePortableFlags();
 lifecycle
   .checkSingleInstance()

@@ -20,22 +20,21 @@
 import type {DesktopCapturer} from 'electron';
 import type {WebAppEvents} from '@wireapp/webapp-events';
 import type {Data as OpenGraphResult} from 'open-graph';
+import type {Static as amplify} from 'amplify';
 
 import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import type {i18nStrings} from './locale/locale';
 
 declare global {
   interface Window {
-    amplify: {
-      publish(topic: string, ...args: any[]): boolean;
-      subscribe(topic: string, callback: Function, priority?: number): void;
-    };
+    amplify: amplify;
     isMac: boolean;
     locStrings: i18nStrings;
     locStringsDefault: i18nStrings;
     sendBadgeCount(count: number, ignoreFlash: boolean): void;
     sendDeleteAccount(accountId: string, sessionId?: string): Promise<void>;
     sendLogoutAccount(accountId: string): Promise<void>;
+    submitDeepLink(url: string): void;
     wire: any;
     z: {
       event: {

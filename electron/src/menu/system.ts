@@ -18,7 +18,7 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell} from 'electron';
+import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -33,6 +33,7 @@ import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
 import {downloadLogs} from '../lib/download';
 import {zipFiles, createFile} from '../lib/zip';
+import * as WindowUtil from '../window/WindowUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -233,6 +234,22 @@ const windowTemplate: MenuItemConstructorOptions = {
         WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
       label: locale.getText('menuPreviousConversation'),
     },
+    separatorTemplate,
+    {
+      accelerator: 'CmdOrCtrl+0',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_RESET),
+      label: locale.getText('menuActualSize'),
+    },
+    {
+      accelerator: 'CmdOrCtrl+Plus',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_IN),
+      label: locale.getText('menuZoomIn'),
+    },
+    {
+      accelerator: 'CmdOrCtrl+-',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_OUT),
+      label: locale.getText('menuZoomOut'),
+    },
   ],
 };
 
@@ -251,23 +268,23 @@ const helpTemplate: MenuItemConstructorOptions = {
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(config.legalUrl),
+      click: () => WindowUtil.openExternal(config.legalUrl, true),
       label: locale.getText('menuLegal'),
     },
     {
-      click: () => shell.openExternal(config.privacyUrl),
+      click: () => WindowUtil.openExternal(config.privacyUrl, true),
       label: locale.getText('menuPrivacy'),
     },
     {
-      click: () => shell.openExternal(config.licensesUrl),
+      click: () => WindowUtil.openExternal(config.licensesUrl, true),
       label: locale.getText('menuLicense'),
     },
     {
-      click: () => shell.openExternal(config.supportUrl),
+      click: () => WindowUtil.openExternal(config.supportUrl, true),
       label: locale.getText('menuSupport'),
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.web.getWebsiteUrl()),
+      click: () => WindowUtil.openExternal(EnvironmentUtil.web.getWebsiteUrl(), true),
       label: locale.getText('menuAppURL'),
     },
     downloadLogsTemplate,
@@ -390,16 +407,6 @@ const changeLocale = async (language: locale.SupportedI18nLanguage): Promise<voi
 
 export const createMenu = (isFullScreen: boolean): Menu => {
   const menuTemplate = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
-
-  if (!windowTemplate.submenu) {
-    windowTemplate.submenu = [];
-  }
-  if (!editTemplate.submenu) {
-    editTemplate.submenu = [];
-  }
-  if (!helpTemplate.submenu) {
-    helpTemplate.submenu = [];
-  }
 
   if (EnvironmentUtil.platform.IS_MAC_OS) {
     menuTemplate.unshift(darwinTemplate);

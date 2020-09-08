@@ -20,6 +20,8 @@
 const wireJson: WireJson = require('../../wire.json');
 
 interface WireJson {
+  aboutReleasesUrl: string;
+  aboutUpdatesUrl: string;
   adminUrl: string;
   appBase: string;
   buildNumber: string;
@@ -34,7 +36,6 @@ interface WireJson {
   name: string;
   nameShort: string;
   privacyUrl: string;
-  raygunApiKey: string;
   supportUrl: string;
   updateUrl: string;
   version: string;

@@ -17,7 +17,7 @@
  *
  */
 
-import {app, BrowserWindow, ipcMain, session, shell} from 'electron';
+import {app, BrowserWindow, ipcMain, session} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
@@ -26,6 +26,7 @@ import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {getLogger} from '../logging/getLogger';
+import * as WindowUtil from '../window/WindowUtil';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -43,14 +44,16 @@ const ABOUT_WINDOW_ALLOWLIST = [
   fileUrl(path.join(APP_PATH, 'img/logo.256.png')),
   fileUrl(path.join(APP_PATH, 'css/about.css')),
 ];
-const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/menu/preload-about.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/menu/preload-about.js');
 
 const WINDOW_SIZE = {
   HEIGHT: 256,
   WIDTH: 304,
 };
 
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => (webappVersion = version));
+ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => {
+  webappVersion = version;
+});
 
 const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
@@ -68,7 +71,6 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
-        enableBlinkFeatures: '',
         javascript: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
@@ -89,14 +91,19 @@ const showWindow = async () => {
       if (ABOUT_WINDOW_ALLOWLIST.includes(url)) {
         return callback({cancel: false});
       }
+    });
 
-      // Open HTTPS links in browser instead
-      if (url.startsWith('https://')) {
-        await shell.openExternal(url);
-      } else {
-        logger.info(`Attempt to open URL "${url}" in window prevented.`);
-        callback({redirectURL: ABOUT_HTML});
+    // Handle the new window event in the About Window
+    aboutWindow.webContents.on('new-window', (event, url) => {
+      event.preventDefault();
+
+      // Ensure the link does not come from a webview
+      if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
+        logger.log('New window was created from a webview, aborting.');
+        return;
       }
+
+      return WindowUtil.openExternal(url, true);
     });
 
     // Locales
@@ -104,9 +111,11 @@ const showWindow = async () => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {
-          const resultLabels: Record<string, string> = {};
-          labels.forEach(label => (resultLabels[label] = locale.getText(label)));
-          event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
+          const localeValues: Record<string, string> = {};
+          labels.forEach(label => (localeValues[label] = locale.getText(label)));
+          localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
+          localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
+          event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
         }
       }
     });

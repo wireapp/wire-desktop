@@ -17,7 +17,15 @@
  *
  */
 
-import {BrowserWindow, screen} from 'electron';
+import {BrowserWindow, screen, shell} from 'electron';
+import * as path from 'path';
+import * as URL from 'url';
+
+import {getLogger} from '../logging/getLogger';
+import {showWarningDialog} from '../lib/showDialog';
+import {config} from '../settings/config';
+
+const logger = getLogger(path.basename(__filename));
 
 interface Rectangle {
   height: number;
@@ -27,9 +35,9 @@ interface Rectangle {
 }
 
 export const pointInRectangle = (point: [number, number], rectangle: Rectangle): boolean => {
-  const [x, y] = point;
-  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
-  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
+  const [xCoordinate, yCoordinate] = point;
+  const xInRange = xCoordinate >= rectangle.x && xCoordinate <= rectangle.x + rectangle.width;
+  const yInRange = yCoordinate >= rectangle.y && yCoordinate <= rectangle.y + rectangle.height;
 
   return xInRange && yInRange;
 };
@@ -45,4 +53,25 @@ export const isInView = (win: BrowserWindow): boolean => {
   );
 
   return upperLeftVisible || lowerRightVisible;
+};
+
+export const openExternal = async (url: string, httpsOnly: boolean = false): Promise<void> => {
+  try {
+    const urlProtocol = URL.parse(url).protocol || '';
+    const allowedProtocols = ['https:'];
+
+    if (!httpsOnly) {
+      allowedProtocols.push('ftp:', 'http:', 'mailto:', `${config.customProtocolName}:`);
+    }
+
+    if (!allowedProtocols.includes(urlProtocol)) {
+      logger.warn(`Prevented opening external URL "${url}".`);
+      showWarningDialog(`Prevented opening external URL "${url}".`);
+      return;
+    }
+
+    await shell.openExternal(url);
+  } catch (error) {
+    logger.error(error);
+  }
 };

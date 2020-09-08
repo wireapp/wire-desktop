@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2020 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,13 @@
  *
  */
 
-import raygun = require('raygun');
-import {config} from '../settings/config';
+import type {WebContents} from 'electron';
 
-export const Raygun = {
-  initClient(): void {
-    const raygunClient = new raygun.Client().init({apiKey: config.raygunApiKey});
-    raygunClient.onBeforeSend(payload => {
-      delete payload.details.machineName;
-      return payload;
-    });
-  },
-};
+export async function executeJavaScriptWithoutResult(snippet: string, target: WebContents) {
+  // This removes all trailing `;` and adds `;0` at the end of the snippet to
+  // ensure the resulting value of `executeJavaScript()` is not used.
+  // See https://github.com/electron/electron/issues/23722.
+
+  snippet = `${snippet.replace(/;+$/, '')};0`;
+  await target.executeJavaScript(snippet);
+}

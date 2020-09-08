@@ -17,11 +17,12 @@
  *
  */
 
-import {MenuItem, MenuItemConstructorOptions} from 'electron';
+import {MenuItem, MenuItemConstructorOptions, WebContents} from 'electron';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
+import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
 import {WindowManager} from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
@@ -34,6 +35,11 @@ const reloadTemplate: MenuItemConstructorOptions = {
     }
   },
   label: 'Reload',
+};
+
+const openDevTools = async (webViewIndex: number, webContents: WebContents): Promise<void> => {
+  const snippet = `document.getElementsByTagName("webview")[${webViewIndex}].openDevTools({mode: "detach"})`;
+  await executeJavaScriptWithoutResult(snippet, webContents);
 };
 
 const devToolsTemplate: MenuItemConstructorOptions = {
@@ -53,8 +59,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
       click: async () => {
         const primaryWindow = WindowManager.getPrimaryWindow();
         if (primaryWindow) {
-          const command = 'document.getElementsByTagName("webview")[0].openDevTools({mode: "detach"})';
-          await primaryWindow.webContents.executeJavaScript(command);
+          await openDevTools(0, primaryWindow.webContents);
         }
       },
       label: 'First',
@@ -63,8 +68,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
       click: async () => {
         const primaryWindow = WindowManager.getPrimaryWindow();
         if (primaryWindow) {
-          const command = 'document.getElementsByTagName("webview")[1].openDevTools({mode: "detach"})';
-          await primaryWindow.webContents.executeJavaScript(command);
+          await openDevTools(1, primaryWindow.webContents);
         }
       },
       label: 'Second',
@@ -73,8 +77,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
       click: async () => {
         const primaryWindow = WindowManager.getPrimaryWindow();
         if (primaryWindow) {
-          const command = 'document.getElementsByTagName("webview")[2].openDevTools({mode: "detach"})';
-          await primaryWindow.webContents.executeJavaScript(command);
+          await openDevTools(2, primaryWindow.webContents);
         }
       },
       label: 'Third',
@@ -84,7 +87,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
-  const environments = {...EnvironmentUtil.URL_WEBAPP};
+  const environments: Partial<typeof EnvironmentUtil.URL_WEBAPP> = {...EnvironmentUtil.URL_WEBAPP};
   delete environments.CUSTOM;
 
   for (const [backendType, backendURL] of Object.entries(environments)) {
@@ -94,7 +97,7 @@ const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
         EnvironmentUtil.setEnvironment(backendType as EnvironmentUtil.BackendType);
         await lifecycle.relaunch();
       },
-      label: backendURL.replace(/^https?:\/\//, ''),
+      label: backendURL!.replace(/^https?:\/\//, ''),
       type: 'radio',
     });
   }
