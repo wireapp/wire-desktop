@@ -239,6 +239,7 @@ const windowTemplate: MenuItemConstructorOptions = {
       accelerator: 'CmdOrCtrl+0',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_RESET),
       label: locale.getText('menuActualSize'),
+      role: 'resetZoom',
     },
     {
       // `Ctrl+Plus` does not actually trigger `+` while `Ctrl+=` does.
@@ -246,11 +247,13 @@ const windowTemplate: MenuItemConstructorOptions = {
       accelerator: 'CmdOrCtrl+=',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_IN),
       label: locale.getText('menuZoomIn'),
+      role: 'zoomIn',
     },
     {
       accelerator: 'CmdOrCtrl+-',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_OUT),
       label: locale.getText('menuZoomOut'),
+      role: 'zoomOut',
     },
   ],
 };
