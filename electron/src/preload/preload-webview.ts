@@ -172,13 +172,9 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
-  ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
-    logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
-  });
 };
 
-function getOpenGraphData(url: string): Promise<OpenGraphResult> {
+function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
   return ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_OG_DATA, url);
 }
 
@@ -191,9 +187,9 @@ const _setImmediate = setImmediate;
 
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
-  global.environment = EnvironmentUtil;
   global.desktopCapturer = desktopCapturer;
-  global.openGraphAsync = getOpenGraphData;
+  global.environment = EnvironmentUtil;
+  global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
 
