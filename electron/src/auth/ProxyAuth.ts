@@ -17,6 +17,7 @@
  *
  */
 
+import {getProxySettings} from 'get-proxy-settings';
 import * as path from 'path';
 import {URL} from 'url';
 
@@ -26,7 +27,7 @@ const logger = getLogger(path.basename(__filename));
 
 interface AuthInfo {
   host: string;
-  port: number;
+  port: number | string;
 }
 
 interface ProxyOptions {
@@ -62,4 +63,20 @@ export function generateProxyURL(authInfo: AuthInfo, options: ProxyOptions): URL
   }
 
   return proxySettings;
+}
+
+export async function checkSystemProxy(): Promise<URL | void> {
+  const systemProxy = await getProxySettings();
+
+  const systemProxySettings = systemProxy && (systemProxy.https || systemProxy.http);
+  if (systemProxySettings) {
+    const {
+      credentials: {username, password},
+      host,
+      port,
+      protocol,
+    } = systemProxySettings;
+
+    return generateProxyURL({host, port}, {password, protocol, username});
+  }
 }

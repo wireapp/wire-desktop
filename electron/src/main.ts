@@ -31,7 +31,6 @@ import {
   WebContents,
 } from 'electron';
 import * as fs from 'fs-extra';
-import {getProxySettings} from 'get-proxy-settings';
 import * as logdown from 'logdown';
 import * as minimist from 'minimist';
 import * as path from 'path';
@@ -65,7 +64,7 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
-import * as ProxyAuth from './auth/ProxyAuth';
+import {checkSystemProxy, generateProxyURL} from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {quit} from './runtime/lifecycle';
@@ -341,24 +340,9 @@ const handleAppEvents = (): void => {
     isQuitting = true;
   });
 
-  app.on('login', async (event, webContents, _responseDetails, authInfo, callback) => {
+  app.on('login', async (_event, webContents, _responseDetails, authInfo, callback) => {
     if (authInfo.isProxy) {
-      event.preventDefault();
       const {host, port} = authInfo;
-
-      const systemProxy = await getProxySettings();
-      const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
-      if (systemProxySettings) {
-        const {
-          credentials: {username, password},
-          protocol,
-        } = systemProxySettings;
-        proxyInfoArg = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
-        logger.log('Found system proxy settings, applying settings on the main window...');
-
-        await applyProxySettings(proxyInfoArg, main.webContents);
-        return callback(username, password);
-      }
 
       if (proxyInfoArg) {
         ipcMain.once(
@@ -369,7 +353,7 @@ const handleAppEvents = (): void => {
             const {username, password} = promptData;
             // remove the colon from the protocol to align it with other usages of `generateProxyURL`
             const protocol = proxyInfoArg?.protocol?.replace(':', '');
-            proxyInfoArg = ProxyAuth.generateProxyURL(
+            proxyInfoArg = generateProxyURL(
               {host, port},
               {
                 ...promptData,
@@ -653,6 +637,18 @@ void (async () => {
     bindIpcEvents();
     handleAppEvents();
     await renameWebViewLogFiles();
+
+    try {
+      const systemProxyURL = await checkSystemProxy();
+
+      if (systemProxyURL) {
+        proxyInfoArg = systemProxyURL;
+        logger.log('Found system proxy settings, applying settings on the main window...');
+        await applyProxySettings(proxyInfoArg, main!.webContents);
+      }
+    } catch (error) {
+      logger.error(error);
+    }
 
     await new ElectronWrapperInit().run();
   } catch (error) {
