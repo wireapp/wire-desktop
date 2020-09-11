@@ -30,8 +30,6 @@ import * as EnvironmentUtil from './EnvironmentUtil';
 
 const logger = getLogger(path.basename(__filename));
 
-export let isFirstInstance: boolean | undefined = undefined;
-
 export async function initSquirrelListener(): Promise<void> {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
     logger.info('Checking for Windows update ...');
@@ -41,19 +39,18 @@ export async function initSquirrelListener(): Promise<void> {
   }
 }
 
-export const checkSingleInstance = async () => {
+export const checkSingleInstance = async (): Promise<boolean> => {
+  let isFirstInstance;
+
   if (process.mas) {
     isFirstInstance = true;
   } else {
     isFirstInstance = app.requestSingleInstanceLock();
-    logger.info('Checking if we are the first instance ...', isFirstInstance);
-
-    if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
-      await quit(false);
-    } else {
-      app.on('second-instance', () => WindowManager.showPrimaryWindow());
-    }
   }
+
+  logger.info('Checking if we are the first instance ...', isFirstInstance);
+
+  return isFirstInstance;
 };
 
 export const getWebViewId = (contents: WebContents): string | undefined => {
