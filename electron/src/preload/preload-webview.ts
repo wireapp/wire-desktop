@@ -20,10 +20,10 @@
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
-import {Availability} from '@wireapp/protocol-messaging';
+import type {Availability} from '@wireapp/protocol-messaging';
+import type {Data as OpenGraphResult} from 'open-graph';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getOpenGraphDataAsync} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
@@ -178,6 +178,10 @@ const subscribeToMainProcessEvents = (): void => {
   });
 };
 
+function getOpenGraphData(url: string): Promise<OpenGraphResult> {
+  return ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_OG_DATA, url);
+}
+
 const reportWebappVersion = () =>
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
 
@@ -189,7 +193,7 @@ process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
   global.environment = EnvironmentUtil;
   global.desktopCapturer = desktopCapturer;
-  global.openGraphAsync = getOpenGraphDataAsync;
+  global.openGraphAsync = getOpenGraphData;
   global.setImmediate = _setImmediate;
 });
 
