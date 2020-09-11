@@ -33,11 +33,7 @@ webFrame.setVisualZoomLevelLimits(1, 1);
 
 window.locStrings = locale.LANGUAGES[locale.getCurrent()];
 window.locStringsDefault = locale.LANGUAGES.en;
-
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
-
-// this unblocks native node modules, see https://github.com/electron/electron/issues/22119#issuecomment-687848785.
-setInterval(() => process.stdout.write(''), 2);
 
 const getSelectedWebview = (): WebviewTag | null => document.querySelector<WebviewTag>('.Webview:not(.hide)');
 const getWebviewById = (id: string): WebviewTag | null =>

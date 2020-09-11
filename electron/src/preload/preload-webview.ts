@@ -37,6 +37,10 @@ interface TeamAccountInfo {
   userID: string;
 }
 
+// this unblocks native node modules and is needed for link previews,
+// see https://github.com/electron/electron/issues/22119#issuecomment-687848785.
+setInterval(() => process.stdout.write(''), 2);
+
 const nativeTheme = remote.nativeTheme;
 
 const logger = getLogger(path.basename(__filename));
