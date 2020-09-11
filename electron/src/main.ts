@@ -644,31 +644,16 @@ void (async () => {
     } else {
       app.on('second-instance', () => WindowManager.showPrimaryWindow());
     }
-  } catch (error) {
-    logger.error(error);
-  }
 
-  try {
     await fs.ensureFile(LOG_FILE);
-  } catch (error) {
-    logger.error(error);
-  }
-
-  customProtocolHandler.registerCoreProtocol();
-  handlePortableFlags();
-
-  try {
+    customProtocolHandler.registerCoreProtocol();
+    handlePortableFlags();
     await lifecycle.initSquirrelListener();
-  } catch (error) {
-    logger.error(error);
-  }
+    addLinuxWorkarounds();
+    bindIpcEvents();
+    handleAppEvents();
+    await renameWebViewLogFiles();
 
-  addLinuxWorkarounds();
-  bindIpcEvents();
-  handleAppEvents();
-  await renameWebViewLogFiles();
-
-  try {
     await new ElectronWrapperInit().run();
   } catch (error) {
     logger.error(error);
