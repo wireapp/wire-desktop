@@ -203,7 +203,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     webPreferences: {
       backgroundThrottling: false,
       enableRemoteModule: true,
-      nodeIntegration: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
       webviewTag: true,
     },
