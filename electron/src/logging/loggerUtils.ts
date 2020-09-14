@@ -28,14 +28,14 @@ const logger = getLogger(path.basename(__filename));
 
 export const logDir = path.join(app.getPath('userData'), 'logs');
 
-export function getLogFilenames(base: string = logDir, absolute: boolean = false): string[] {
-  return globby.sync('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
+export function getLogFilenames(base: string = logDir, absolute: boolean = false): Promise<string[]> {
+  return globby('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
 }
 
 export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
   const logFiles: Record<string, Uint8Array> = {};
 
-  const relativeFilePaths = getLogFilenames();
+  const relativeFilePaths = await getLogFilenames();
 
   for (const relativeFilePath of relativeFilePaths) {
     const resolvedPath = path.join(logDir, relativeFilePath);
