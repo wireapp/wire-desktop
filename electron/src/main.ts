@@ -636,6 +636,9 @@ class ElectronWrapperInit {
 
 void (async () => {
   try {
+    customProtocolHandler.registerCoreProtocol();
+    handlePortableFlags();
+
     // Stop further execution on update to prevent second tray icon
     const isFirstInstance = await lifecycle.checkSingleInstance();
 
@@ -646,8 +649,6 @@ void (async () => {
     }
 
     await fs.ensureFile(LOG_FILE);
-    customProtocolHandler.registerCoreProtocol();
-    handlePortableFlags();
     await lifecycle.initSquirrelListener();
     addLinuxWorkarounds();
     bindIpcEvents();
