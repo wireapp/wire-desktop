@@ -87,6 +87,7 @@
   "trayOpen": "Openen",
   "trayQuit": "Sluit",
   "unreadMessages": "Ongelezen bericht",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "Het is op dit moment niet mogelijk te verbinden met de server op \"{url}\"",
   "webviewErrorDescriptionSub": "Breng de beheerder van uw server op de hoogte van dit probleem.",
   "webviewErrorRetryAction": "Retry",

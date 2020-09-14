@@ -87,6 +87,7 @@
   "trayOpen": "Вiдкрити",
   "trayQuit": "Вийти",
   "unreadMessages": "Непрочитане повідомлення",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "Ми не можемо під'єднатися до сервера \"{url}\"",
   "webviewErrorDescriptionSub": "Надайте вашому адміністраторові інформацію про цю проблему.",
   "webviewErrorRetryAction": "Повторити",

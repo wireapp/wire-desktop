@@ -237,11 +237,15 @@ const windowTemplate: MenuItemConstructorOptions = {
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+0',
+      // we are using a manual implementation for all zoom actions (and not roles)
+      // since the native behavior would be to only zoom into the webview, not the whole page.
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_RESET),
       label: locale.getText('menuActualSize'),
     },
     {
-      accelerator: 'CmdOrCtrl+Plus',
+      // `Ctrl+Plus` does not actually trigger `+` while `Ctrl+=` does.
+      // See https://github.com/electron/electron/issues/1507#issuecomment-118424331.
+      accelerator: 'CmdOrCtrl+=',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_IN),
       label: locale.getText('menuZoomIn'),
     },

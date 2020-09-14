@@ -37,9 +37,13 @@ const reloadTemplate: MenuItemConstructorOptions = {
   label: 'Reload',
 };
 
-const openDevTools = async (webViewIndex: number, webContents: WebContents): Promise<void> => {
+const openDevTools = async (webViewIndex: number): Promise<void> => {
   const snippet = `document.getElementsByTagName("webview")[${webViewIndex}].openDevTools({mode: "detach"})`;
-  await executeJavaScriptWithoutResult(snippet, webContents);
+
+  const primaryWindow = WindowManager.getPrimaryWindow();
+  if (primaryWindow) {
+    await executeJavaScriptWithoutResult(snippet, primaryWindow.webContents);
+  }
 };
 
 const devToolsTemplate: MenuItemConstructorOptions = {
@@ -56,30 +60,15 @@ const devToolsTemplate: MenuItemConstructorOptions = {
       label: 'Sidebar',
     },
     {
-      click: async () => {
-        const primaryWindow = WindowManager.getPrimaryWindow();
-        if (primaryWindow) {
-          await openDevTools(0, primaryWindow.webContents);
-        }
-      },
+      click: () => openDevTools(0),
       label: 'First',
     },
     {
-      click: async () => {
-        const primaryWindow = WindowManager.getPrimaryWindow();
-        if (primaryWindow) {
-          await openDevTools(1, primaryWindow.webContents);
-        }
-      },
+      click: () => openDevTools(1),
       label: 'Second',
     },
     {
-      click: async () => {
-        const primaryWindow = WindowManager.getPrimaryWindow();
-        if (primaryWindow) {
-          await openDevTools(2, primaryWindow.webContents);
-        }
-      },
+      click: () => openDevTools(2),
       label: 'Third',
     },
   ],
