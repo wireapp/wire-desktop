@@ -33,7 +33,7 @@ import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
 import {downloadLogs} from '../lib/download';
 import {zipFiles, createFile} from '../lib/zip';
-import * as WindowUtil from '../window/WindowUtil';
+import {ZOOM_DIRECTION, openExternal, zoomWindow} from '../window/WindowUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -239,19 +239,19 @@ const windowTemplate: MenuItemConstructorOptions = {
       accelerator: 'CmdOrCtrl+0',
       // we are using a manual implementation for all zoom actions (and not roles)
       // since the native behavior would be to only zoom into the webview, not the whole page.
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_RESET),
+      click: (_menuItem, browserWindow) => zoomWindow(ZOOM_DIRECTION.RESET, browserWindow),
       label: locale.getText('menuActualSize'),
     },
     {
       // `Ctrl+Plus` does not actually trigger `+` while `Ctrl+=` does.
       // See https://github.com/electron/electron/issues/1507#issuecomment-118424331.
       accelerator: 'CmdOrCtrl+=',
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_IN),
+      click: (_menuItem, browserWindow) => zoomWindow(ZOOM_DIRECTION.IN, browserWindow),
       label: locale.getText('menuZoomIn'),
     },
     {
       accelerator: 'CmdOrCtrl+-',
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.WRAPPER.ZOOM_OUT),
+      click: (_menuItem, browserWindow) => zoomWindow(ZOOM_DIRECTION.OUT, browserWindow),
       label: locale.getText('menuZoomOut'),
     },
   ],
@@ -272,23 +272,23 @@ const helpTemplate: MenuItemConstructorOptions = {
   role: 'help',
   submenu: [
     {
-      click: () => WindowUtil.openExternal(config.legalUrl, true),
+      click: () => openExternal(config.legalUrl, true),
       label: locale.getText('menuLegal'),
     },
     {
-      click: () => WindowUtil.openExternal(config.privacyUrl, true),
+      click: () => openExternal(config.privacyUrl, true),
       label: locale.getText('menuPrivacy'),
     },
     {
-      click: () => WindowUtil.openExternal(config.licensesUrl, true),
+      click: () => openExternal(config.licensesUrl, true),
       label: locale.getText('menuLicense'),
     },
     {
-      click: () => WindowUtil.openExternal(config.supportUrl, true),
+      click: () => openExternal(config.supportUrl, true),
       label: locale.getText('menuSupport'),
     },
     {
-      click: () => WindowUtil.openExternal(EnvironmentUtil.web.getWebsiteUrl(), true),
+      click: () => openExternal(EnvironmentUtil.web.getWebsiteUrl(), true),
       label: locale.getText('menuAppURL'),
     },
     downloadLogsTemplate,
