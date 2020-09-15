@@ -67,6 +67,7 @@ import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
+import {getOpenGraphDataAsync} from './lib/openGraph';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -135,11 +136,6 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
-// This fixes sending a link preview right after logging in.
-// TODO: Use a Context Aware Plugin for link previews,
-// see https://github.com/electron/electron/issues/18397
-app.allowRendererProcessReuse = false;
-
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
@@ -158,6 +154,8 @@ const bindIpcEvents = (): void => {
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
+
+  ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {

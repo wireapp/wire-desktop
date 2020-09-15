@@ -20,10 +20,10 @@
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
-import {Availability} from '@wireapp/protocol-messaging';
+import type {Availability} from '@wireapp/protocol-messaging';
+import type {Data as OpenGraphResult} from 'open-graph';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getOpenGraphDataAsync} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
@@ -172,11 +172,11 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
-  ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
-    logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
-  });
 };
+
+function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
+  return ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_OG_DATA, url);
+}
 
 const reportWebappVersion = () =>
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
@@ -187,9 +187,9 @@ const _setImmediate = setImmediate;
 
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
-  global.environment = EnvironmentUtil;
   global.desktopCapturer = desktopCapturer;
-  global.openGraphAsync = getOpenGraphDataAsync;
+  global.environment = EnvironmentUtil;
+  global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
 

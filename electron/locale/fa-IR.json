@@ -87,6 +87,7 @@
   "trayOpen": "باز کردن",
   "trayQuit": "خروج",
   "unreadMessages": "پیام خوانده نشده",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "عدم توانایی برای وصل شدن به سرور در آدرس \"{url}\"",
   "webviewErrorDescriptionSub": "درباره این به مدیر سرورتان گزارش دهید",
   "webviewErrorRetryAction": "تلاش دوباره",

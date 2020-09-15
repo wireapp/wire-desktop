@@ -87,6 +87,7 @@
   "trayOpen": "開く",
   "trayQuit": "終了",
   "unreadMessages": "未読メッセージ",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "サーバー\"{url}\"に接続できません。",
   "webviewErrorDescriptionSub": "サーバー管理者にこの問題について報告します。",
   "webviewErrorRetryAction": "再試行",

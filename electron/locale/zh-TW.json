@@ -87,6 +87,7 @@
   "trayOpen": "開啟",
   "trayQuit": "離開",
   "unreadMessages": "未讀訊息",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "我們無法連線到位於\"{url}\"的伺服器",
   "webviewErrorDescriptionSub": "通知系統管理員該問題",
   "webviewErrorRetryAction": "Retry",

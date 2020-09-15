@@ -87,6 +87,7 @@
   "trayOpen": "Avaa",
   "trayQuit": "Lopeta",
   "unreadMessages": "Lukematon viesti",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "Emme voi muodostaa yhteyttä palvelimeen \"{url}\"",
   "webviewErrorDescriptionSub": "Kerro tästä ongelmasta palvelimen ylläpitäjälle.",
   "webviewErrorRetryAction": "Yritä uudelleen",
