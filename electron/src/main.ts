@@ -67,7 +67,6 @@ import * as WindowUtil from './window/WindowUtil';
 import {checkSystemProxy, generateProxyURL} from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
 import {getOpenGraphDataAsync} from './lib/openGraph';
-import {quit} from './runtime/lifecycle';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -402,26 +401,24 @@ const handleAppEvents = (): void => {
   });
 };
 
-const renameFileExtensions = async (files: string[], oldExtension: string, newExtension: string): Promise<void> => {
-  await Promise.all(
-    files.map(async file => {
-      try {
-        const fileStat = await fs.stat(file);
-        if (fileStat.isFile() && file.endsWith(oldExtension)) {
-          await fs.rename(file, file.replace(oldExtension, newExtension));
-        }
-      } catch (error) {
-        logger.error(`Failed to rename log file: "${error.message}"`);
+const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string): void => {
+  for (const file of files) {
+    try {
+      const fileStat = fs.statSync(file);
+      if (fileStat.isFile() && file.endsWith(oldExtension)) {
+        fs.renameSync(file, file.replace(oldExtension, newExtension));
       }
-    }),
-  );
+    } catch (error) {
+      logger.error(`Failed to rename log file: "${error.message}"`);
+    }
+  }
 };
 
-const renameWebViewLogFiles = async (): Promise<void> => {
+const renameWebViewLogFiles = (): void => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   try {
-    const logFiles = await getLogFilenames(LOG_DIR, true);
-    await renameFileExtensions(logFiles, '.log', '.old');
+    const logFiles = getLogFilenames(LOG_DIR, true);
+    renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
     logger.log(`Failed to read log directory with error: ${error.message}`);
   }
@@ -517,7 +514,7 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
-            webPreferences.experimentalFeatures = false;
+            webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
@@ -618,40 +615,30 @@ class ElectronWrapperInit {
   }
 }
 
-void (async () => {
-  try {
-    // Stop further execution on update to prevent second tray icon
-    const isFirstInstance = await lifecycle.checkSingleInstance();
+customProtocolHandler.registerCoreProtocol();
+handlePortableFlags();
+lifecycle
+  .checkSingleInstance()
+  .then(() => lifecycle.initSquirrelListener())
+  .catch(error => logger.error(error));
 
-    if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
-      await quit(false);
-    } else {
-      app.on('second-instance', () => WindowManager.showPrimaryWindow());
-    }
-
-    await fs.ensureFile(LOG_FILE);
-    customProtocolHandler.registerCoreProtocol();
-    handlePortableFlags();
-    await lifecycle.initSquirrelListener();
-    addLinuxWorkarounds();
-    bindIpcEvents();
-    handleAppEvents();
-    await renameWebViewLogFiles();
-
-    try {
-      const systemProxyURL = await checkSystemProxy();
-
+// Stop further execution on update to prevent second tray icon
+if (lifecycle.isFirstInstance) {
+  checkSystemProxy()
+    .then(systemProxyURL => {
       if (systemProxyURL) {
         proxyInfoArg = systemProxyURL;
         logger.log('Found system proxy settings, applying settings on the main window...');
-        await applyProxySettings(proxyInfoArg, main!.webContents);
+        return applyProxySettings(proxyInfoArg, main!.webContents);
       }
-    } catch (error) {
-      logger.error(error);
-    }
+      return undefined;
+    })
+    .catch(error => logger.error(error));
 
-    await new ElectronWrapperInit().run();
-  } catch (error) {
-    logger.error(error);
-  }
-})();
+  addLinuxWorkarounds();
+  bindIpcEvents();
+  handleAppEvents();
+  renameWebViewLogFiles();
+  fs.ensureFileSync(LOG_FILE);
+  new ElectronWrapperInit().run().catch(error => logger.error(error));
+}
