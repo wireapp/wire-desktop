@@ -87,6 +87,7 @@
   "trayOpen": "විවෘත කරන්න",
   "trayQuit": "Quit",
   "unreadMessages": "නොකියවූ පණිවිඩය",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "We can't connect to the server at \"{url}\"",
   "webviewErrorDescriptionSub": "මෙම ගැටළුව පිළිබඳව ඔබේ සේවාදායක පරිපාලකට දන්වන්න.",
   "webviewErrorRetryAction": "නැවත උත්සාහ කරන්න",

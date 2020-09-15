@@ -87,6 +87,7 @@
   "trayOpen": "Aç",
   "trayQuit": "Çık",
   "unreadMessages": "Okunmamış mesaj",
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
   "webviewErrorDescription": "\"{url}\" sunucusuna bağlanılamıyor.",
   "webviewErrorDescriptionSub": "Sunucu yöneticinize bu sorunu bildirin.",
   "webviewErrorRetryAction": "Yeniden Dene",
