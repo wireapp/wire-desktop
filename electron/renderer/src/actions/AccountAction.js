@@ -18,9 +18,9 @@
  */
 
 import {ActionType, initiateSSO} from './';
-import {config} from '../../../dist/settings/config';
 import {EVENT_TYPE} from '../../../dist/lib/eventType';
 import {AccountSelector} from '../selector/AccountSelector';
+const config = require('../../../wire.json');
 
 /**
  * Don't use this method directly, use `switchWebview` instead.

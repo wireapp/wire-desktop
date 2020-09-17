@@ -25,7 +25,7 @@ import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import * as WindowUtil from '../window/WindowUtil';
 
 const logger = getLogger(path.basename(__filename));

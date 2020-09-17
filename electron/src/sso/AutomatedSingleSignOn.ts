@@ -17,26 +17,23 @@
  *
  */
 
-import {dialog as mainDialog, remote} from 'electron';
+import {dialog, ipcRenderer} from 'electron';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getText} from '../locale/locale';
-import {config} from '../settings/config';
 
 export interface CreateSSOAccountDetail {
   reachedMaximumAccounts?: boolean;
 }
 
-const dialog = mainDialog || remote.dialog;
-
 export class AutomatedSingleSignOn {
   private async showError(): Promise<void> {
-    let detail = getText('wrapperAddAccountErrorMessagePlural');
-    let message = getText('wrapperAddAccountErrorTitlePlural');
+    let detail = await ipcRenderer.invoke('LOCALE_GET_TEXT', 'wrapperAddAccountErrorMessagePlural');
+    let message = await ipcRenderer.invoke('LOCALE_GET_TEXT', 'wrapperAddAccountErrorTitlePlural');
 
-    if (config.maximumAccounts === 1) {
-      detail = getText('wrapperAddAccountErrorMessageSingular');
-      message = getText('wrapperAddAccountErrorTitleSingular');
+    const maximumAccounts = await ipcRenderer.invoke('CONFIG_GET_MAXIMUM_ACCOUNTS');
+    if (maximumAccounts === 1) {
+      detail = await ipcRenderer.invoke('LOCALE_GET_TEXT', 'wrapperAddAccountErrorMessageSingular');
+      message = await ipcRenderer.invoke('LOCALE_GET_TEXT', 'wrapperAddAccountErrorTitleSingular');
     }
 
     await dialog.showMessageBox({

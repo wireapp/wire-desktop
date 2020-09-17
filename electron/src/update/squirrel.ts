@@ -24,7 +24,7 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config, MINUTE_IN_MILLIS, HOUR_IN_MILLIS} from '../settings/config';

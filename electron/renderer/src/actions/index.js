@@ -20,10 +20,10 @@
 import * as Joi from '@hapi/joi';
 import {Availability} from '@wireapp/protocol-messaging';
 
-import {config} from '../../../dist/settings/config';
 import {accountAction} from './AccountAction';
 import {AccountSelector} from '../selector/AccountSelector';
 import {generateUUID} from '../lib/util';
+const config = require('../../../wire.json');
 
 export const ActionType = {
   ADD_ACCOUNT: 'ADD_ACCOUNT',
@@ -112,7 +112,7 @@ export const abortAccountCreation = id => {
 };
 
 export const addAccountWithSession = () => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const hasReachedAccountLimit = getState().accounts.length >= config.maximumAccounts;
 
     if (hasReachedAccountLimit) {

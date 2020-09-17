@@ -23,7 +23,7 @@ import imageType from 'image-type';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 
 const logger = getLogger(path.basename(__filename));
 

@@ -22,7 +22,7 @@ import * as path from 'path';
 import {ValidationUtil} from '@wireapp/commons';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import {settings} from '../settings/ConfigurationPersistence';
 import * as Squirrel from '../update/squirrel';
 import {WindowManager} from '../window/WindowManager';

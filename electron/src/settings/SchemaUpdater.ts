@@ -21,7 +21,7 @@ import * as electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import {SettingsType} from './SettingsType';
 
 const app = electron.app || electron.remote.app;

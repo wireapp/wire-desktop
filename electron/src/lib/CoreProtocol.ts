@@ -21,7 +21,7 @@ import {app, ipcMain} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import {platform} from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';

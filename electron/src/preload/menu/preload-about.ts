@@ -21,6 +21,13 @@ import {ipcRenderer} from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 
+interface Details {
+  copyright: string;
+  electronVersion: string;
+  productName: string;
+  webappVersion: string;
+}
+
 ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (_event, labels: Record<string, string>) => {
   for (const [labelName, labelText] of Object.entries(labels)) {
     if (labelName === 'aboutReleasesUrl' || labelName === 'aboutUpdatesUrl') {
@@ -36,13 +43,6 @@ ipcRenderer.once(EVENT_TYPE.ABOUT.LOCALE_RENDER, (_event, labels: Record<string,
     }
   }
 });
-
-interface Details {
-  copyright: string;
-  electronVersion: string;
-  productName: string;
-  webappVersion: string;
-}
 
 export function loadedAboutScreen(_event: Event, details: Details): void {
   const nameElement = document.getElementById('name');

@@ -21,7 +21,7 @@ import {BrowserWindow, screen, shell} from 'electron';
 import * as path from 'path';
 import * as URL from 'url';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import {showWarningDialog} from '../lib/showDialog';
 import * as locale from '../locale/locale';
 import {config} from '../settings/config';

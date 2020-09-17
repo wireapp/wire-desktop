@@ -18,6 +18,7 @@
  */
 
 import * as Electron from 'electron';
+import {ipcMain} from 'electron';
 
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
@@ -289,3 +290,7 @@ export const setLocale = (locale: string): void => {
   current = parseLocale(locale);
   settings.save(SettingsType.LOCALE, current);
 };
+
+ipcMain.handle('LOCALE_GET_TEXT', (_event, identifier: i18nLanguageIdentifier) => getText(identifier));
+ipcMain.handle('LOCALE_GET_LANGUAGE_STRINGS', () => LANGUAGES[getCurrent()]);
+ipcMain.handle('LOCALE_GET_ENGLISH_STRINGS', () => LANGUAGES.en);

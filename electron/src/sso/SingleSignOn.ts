@@ -34,7 +34,7 @@ import {
 import * as path from 'path';
 import {URL} from 'url';
 
-import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
+import {ENABLE_LOGGING, getLogger} from '../logging/getLoggerMain';
 import {config} from '../settings/config';
 import {getWebViewId} from '../runtime/lifecycle';
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';

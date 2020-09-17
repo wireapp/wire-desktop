@@ -22,7 +22,7 @@ import {app, Session, webContents} from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 
 const USER_DATA_DIR = app.getPath('userData');
 const LOG_DIR = path.join(USER_DATA_DIR, 'logs');

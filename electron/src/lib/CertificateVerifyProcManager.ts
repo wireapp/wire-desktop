@@ -23,7 +23,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import {getText} from '../locale/locale';
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const logger = getLogger(path.basename(__filename));

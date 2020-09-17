@@ -1,3 +1,4 @@
+import {ipcMain} from 'electron';
 /*
  * Wire
  * Copyright (C) 2018 Wire Swiss GmbH
@@ -89,6 +90,8 @@ export const platform = {
   IS_MAC_OS: process.platform === 'darwin',
   IS_WINDOWS: process.platform === 'win32',
 };
+
+ipcMain.handle('ENV_GET_IS_MAC_OS', () => platform.IS_MAC_OS);
 
 export const linuxDesktop = {
   isGnomeX11: isEnvVar('XDG_CURRENT_DESKTOP', 'gnome') && isEnvVar('XDG_SESSION_TYPE', 'x11'),

@@ -25,7 +25,7 @@ import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 import {parse as parseUrl} from 'url';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import {config} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));

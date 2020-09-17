@@ -21,7 +21,7 @@ import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import {SchemaUpdater} from './SchemaUpdater';
 import '../global';
 

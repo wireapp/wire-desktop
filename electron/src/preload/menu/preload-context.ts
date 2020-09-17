@@ -29,8 +29,6 @@ import {
 } from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
-import * as locale from '../../locale/locale';
-import {config} from '../../settings/config';
 
 const Menu = remote.Menu;
 
@@ -40,19 +38,21 @@ interface ElectronMenuWithImageAndTime extends ElectronMenu {
 }
 
 const savePicture = async (url: RequestInfo, timestamp?: string): Promise<void> => {
+  const userAgent = await ipcRenderer.invoke('CONFIG_GET_USER_AGENT');
   const response = await fetch(url, {
     headers: {
-      'User-Agent': config.userAgent,
+      'User-Agent': userAgent,
     },
   });
   const bytes = await response.arrayBuffer();
   ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(bytes), timestamp);
 };
 
-const copyPicture = async (url: RequestInfo, timestamp?: string): Promise<void> => {
+const copyPicture = async (url: RequestInfo): Promise<void> => {
+  const userAgent = await ipcRenderer.invoke('CONFIG_GET_USER_AGENT');
   const response = await fetch(url, {
     headers: {
-      'User-Agent': config.userAgent,
+      'User-Agent': userAgent,
     },
   });
   const bytes = await response.arrayBuffer();
@@ -60,31 +60,32 @@ const copyPicture = async (url: RequestInfo, timestamp?: string): Promise<void> 
   clipboard.writeImage(image);
 };
 
-const createDefaultMenu = (copyContext: string) =>
-  Menu.buildFromTemplate([
+const createDefaultMenu = async (copyContext: string): Promise<ElectronMenu> => {
+  return Menu.buildFromTemplate([
     {
       click: () => clipboard.writeText(copyContext),
-      label: locale.getText('menuCopy'),
+      label: await ipcRenderer.invoke('LOCALE_GET_TEXT', 'menuCopy'),
     },
   ]);
+};
 
-const createTextMenu = (params: ContextMenuParams, webContents: WebContents): ElectronMenu => {
+const createTextMenu = async (params: ContextMenuParams, webContents: WebContents): Promise<ElectronMenu> => {
   const {editFlags, dictionarySuggestions} = params;
 
   const template: MenuItemConstructorOptions[] = [
     {
       enabled: editFlags.canCut,
-      label: locale.getText('menuCut'),
+      label: await ipcRenderer.invoke('LOCALE_GET_TEXT', 'menuCut'),
       role: 'cut',
     },
     {
       enabled: editFlags.canCopy,
-      label: locale.getText('menuCopy'),
+      label: await ipcRenderer.invoke('LOCALE_GET_TEXT', 'menuCopy'),
       role: 'copy',
     },
     {
       enabled: editFlags.canPaste,
-      label: locale.getText('menuPaste'),
+      label: await ipcRenderer.invoke('LOCALE_GET_TEXT', 'menuPaste'),
       role: 'paste',
     },
     {
@@ -92,7 +93,7 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
     },
     {
       enabled: editFlags.canSelectAll,
-      label: locale.getText('menuSelectAll'),
+      label: await ipcRenderer.invoke('LOCALE_GET_TEXT', 'menuSelectAll'),
       role: 'selectAll',
     },
   ];
@@ -113,34 +114,38 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
   return Menu.buildFromTemplate(template);
 };
 
-const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
-  {
-    click: () => savePicture(imageMenu.image || '', imageMenu.timestamp),
-    label: locale.getText('menuSavePictureAs'),
-  },
-  {
-    click: () => copyPicture(imageMenu.image || '', imageMenu.timestamp),
-    label: locale.getText('menuCopyPicture'),
-  },
-]);
+async function buildImageMenu(image: string): Promise<ElectronMenuWithImageAndTime> {
+  return Menu.buildFromTemplate([
+    {
+      click: () => savePicture(image || ''),
+      label: await ipcRenderer.invoke('LOCALE_GET_TEXT', 'menuSavePictureAs'),
+    },
+    {
+      click: () => copyPicture(image || ''),
+      label: await ipcRenderer.invoke('LOCALE_GET_TEXT', 'menuCopyPicture'),
+    },
+  ]);
+}
 
 const webContents = remote.getCurrentWebContents();
 
-webContents.on('context-menu', (_event, params) => {
+webContents.on('context-menu', async (_event, params) => {
   const window = remote.getCurrentWindow();
 
   if (params.isEditable) {
-    const textMenu = createTextMenu(params, webContents);
+    const textMenu = await createTextMenu(params, webContents);
     textMenu.popup({window});
   } else if (params.mediaType === 'image') {
-    imageMenu.image = params.srcURL;
+    const imageMenu = await buildImageMenu(params.srcURL);
     imageMenu.popup({window});
   } else if (!!params.linkURL) {
     const copyContext = params.linkURL.replace(/^mailto:/, '');
-    createDefaultMenu(copyContext).popup({window});
+    const defaultMenu = await createDefaultMenu(copyContext);
+    defaultMenu.popup({window});
   } else if (!!params.selectionText || params.editFlags.canCopy) {
     const copyContext = params.selectionText;
-    createDefaultMenu(copyContext).popup({window});
+    const defaultMenu = await createDefaultMenu(copyContext);
+    defaultMenu.popup({window});
   } else if (params.editFlags.canSelectAll) {
     let element = document.elementFromPoint(params.x, params.y) as HTMLElement;
 
@@ -153,7 +158,8 @@ webContents.on('context-menu', (_event, params) => {
     if (element) {
       const copyContext = (params.selectionText || '').toString() || ((element as HTMLElement).innerText || '').trim();
       if (copyContext) {
-        createDefaultMenu(copyContext).popup({window});
+        const defaultMenu = await createDefaultMenu(copyContext);
+        defaultMenu.popup({window});
       }
     }
   }

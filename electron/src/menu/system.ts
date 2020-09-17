@@ -23,7 +23,7 @@ import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale/locale';
-import {getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLoggerMain';
 import {gatherLogs} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';

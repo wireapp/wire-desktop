@@ -17,6 +17,8 @@
  *
  */
 
+import {ipcMain} from 'electron';
+
 const wireJson: WireJson = require('../../wire.json');
 
 interface WireJson {
@@ -64,6 +66,9 @@ enum ARGUMENT {
   VERSION = 'version',
 }
 
+const userAgent =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
+
 export const config = {
   ...wireJson,
   ARGUMENT,
@@ -71,6 +76,8 @@ export const config = {
   logFileName: 'console.log',
   maximumAccounts: parseInt(wireJson.maximumAccounts, 10),
   squirrelUpdateInterval,
-  userAgent:
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
+  userAgent,
 };
+
+ipcMain.handle('CONFIG_GET_MAXIMUM_ACCOUNTS', () => parseInt(wireJson.maximumAccounts, 10));
+ipcMain.handle('CONFIG_GET_USER_AGENT', () => userAgent);

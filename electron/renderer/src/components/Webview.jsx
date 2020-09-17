@@ -21,6 +21,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {ContainerSM, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 import {SVGIcon} from '@wireapp/react-ui-kit/dist/Icon/SVGIcon';
 import {connect} from 'react-redux';
+
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {WindowUrl} from '../../../src/window/WindowUrl';
 import {

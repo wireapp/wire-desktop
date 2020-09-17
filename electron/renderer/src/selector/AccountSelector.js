@@ -17,7 +17,7 @@
  *
  */
 
-import {config as CONFIG} from '../../../dist/settings/config';
+const config = require('../../../wire.json');
 
 export class AccountSelector {
   static getAccounts = state => state.accounts;
@@ -28,6 +28,6 @@ export class AccountSelector {
   static isAddingAccount = state =>
     !!AccountSelector.getAccounts(state).length &&
     AccountSelector.getAccounts(state).some(account => account.userID === undefined);
-  static hasReachedLimitOfAccounts = state => AccountSelector.getAccounts(state).length >= CONFIG.maximumAccounts;
+  static hasReachedLimitOfAccounts = state => AccountSelector.getAccounts(state).length >= config.maximumAccounts;
   static hasCreatedAccount = state => AccountSelector.getAccounts(state).some(account => account.userID !== undefined);
 }

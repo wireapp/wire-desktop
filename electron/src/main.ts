@@ -49,7 +49,7 @@ import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import * as locale from './locale/locale';
-import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
+import {ENABLE_LOGGING, getLogger} from './logging/getLoggerMain';
 import {getLogFilenames} from './logging/loggerUtils';
 import {developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -485,7 +485,7 @@ class ElectronWrapperInit {
     this.logger = getLogger('ElectronWrapperInit');
   }
 
-  async run(): Promise<void> {
+  run(): void {
     this.logger.log('webviewProtection init');
     this.webviewProtection();
   }
@@ -645,5 +645,5 @@ if (lifecycle.isFirstInstance) {
   handleAppEvents();
   renameWebViewLogFiles();
   fs.ensureFileSync(LOG_FILE);
-  new ElectronWrapperInit().run().catch(error => logger.error(error));
+  new ElectronWrapperInit().run();
 }

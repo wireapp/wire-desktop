@@ -18,14 +18,12 @@
  */
 
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
-import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
 import type {Data as OpenGraphResult} from 'open-graph';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getLogger} from '../logging/getLogger';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import {getLogger} from '../logging/getLoggerRenderer';
 
 interface TeamAccountInfo {
   accentID: number;
@@ -39,7 +37,7 @@ interface TeamAccountInfo {
 
 const nativeTheme = remote.nativeTheme;
 
-const logger = getLogger(path.basename(__filename));
+const logger = getLogger('preload-webview');
 
 function subscribeToThemeChange(): void {
   if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
@@ -188,7 +186,6 @@ const _setImmediate = setImmediate;
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
   global.desktopCapturer = desktopCapturer;
-  global.environment = EnvironmentUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
