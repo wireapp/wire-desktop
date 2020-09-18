@@ -74,7 +74,8 @@ const aboutTemplate: MenuItemConstructorOptions = {
 };
 
 const signOutTemplate: MenuItemConstructorOptions = {
-  click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.ACTION.SIGN_OUT),
+  click: (_menuItem, browserWindow) =>
+    browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.ACTION.SIGN_OUT),
   label: locale.getText('menuSignOut'),
 };
 
@@ -90,44 +91,50 @@ const conversationTemplate: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+N',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.START),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.START),
       label: locale.getText('menuStart'),
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+K',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PING),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PING),
       label: locale.getText('menuPing'),
     },
     {
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.CALL),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.CALL),
       label: locale.getText('menuCall'),
     },
     {
-      click: () =>
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.VIDEO_CALL),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.VIDEO_CALL),
       label: locale.getText('menuVideoCall'),
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+I',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PEOPLE),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PEOPLE),
       label: locale.getText('menuPeople'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+K',
-      click: () =>
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.ADD_PEOPLE),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.ADD_PEOPLE),
       label: locale.getText('menuAddPeople'),
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+D',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.ARCHIVE),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.ARCHIVE),
       label: locale.getText('menuArchive'),
     },
     {
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.DELETE),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.DELETE),
       label: locale.getText('menuDelete'),
     },
   ],
@@ -180,31 +187,35 @@ const editTemplate: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.UNDO),
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.UNDO),
       label: locale.getText('menuUndo'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.EDIT.REDO),
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.REDO),
       label: locale.getText('menuRedo'),
     },
     separatorTemplate,
     {
+      accelerator: 'CmdOrCtrl+X',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.CUT),
       label: locale.getText('menuCut'),
-      role: 'cut',
     },
     {
+      accelerator: 'CmdOrCtrl+C',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.COPY),
       label: locale.getText('menuCopy'),
-      role: 'copy',
     },
     {
+      accelerator: 'CmdOrCtrl+P',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.PASTE),
       label: locale.getText('menuPaste'),
-      role: 'paste',
     },
     separatorTemplate,
     {
+      accelerator: 'CmdOrCtrl+A',
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.SELECT_ALL),
       label: locale.getText('menuSelectAll'),
-      role: 'selectAll',
     },
   ],
 };
@@ -224,14 +235,14 @@ const windowTemplate: MenuItemConstructorOptions = {
     separatorTemplate,
     {
       accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Cmd+Up' : 'Alt+Shift+Up',
-      click: () =>
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_NEXT),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_NEXT),
       label: locale.getText('menuNextConversation'),
     },
     {
       accelerator: EnvironmentUtil.platform.IS_MAC_OS ? 'Alt+Cmd+Down' : 'Alt+Shift+Down',
-      click: () =>
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
       label: locale.getText('menuPreviousConversation'),
     },
     separatorTemplate,
@@ -302,7 +313,8 @@ const darwinTemplate: MenuItemConstructorOptions = {
     separatorTemplate,
     {
       accelerator: 'Command+,',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
       label: locale.getText('menuPreferences'),
     },
     separatorTemplate,
@@ -342,7 +354,8 @@ const win32Template: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'Ctrl+,',
-      click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
       label: locale.getText('menuSettings'),
     },
     localeTemplate,
@@ -433,8 +446,8 @@ export const createMenu = (isFullScreen: boolean): Menu => {
 
     const muteShortcut: MenuItemConstructorOptions = {
       accelerator: muteAccelerator,
-      click: () =>
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
       label: 'Toggle mute',
       visible: false,
     };
@@ -446,7 +459,7 @@ export const createMenu = (isFullScreen: boolean): Menu => {
 
         return {
           accelerator: switchAccelerator,
-          click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
+          click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
           label: `Switch to Account ${index + 1}`,
           visible: false,
         };
@@ -459,7 +472,8 @@ export const createMenu = (isFullScreen: boolean): Menu => {
     if (Array.isArray(editTemplate.submenu)) {
       editTemplate.submenu.push(separatorTemplate, {
         accelerator: 'Ctrl+,',
-        click: () => WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
+        click: (_menuItem, browserWindow) =>
+          browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
         label: locale.getText('menuPreferences'),
       });
     }
