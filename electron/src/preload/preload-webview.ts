@@ -42,15 +42,15 @@ const nativeTheme = remote.nativeTheme;
 const logger = getLogger(path.basename(__filename));
 
 function subscribeToThemeChange(): void {
-  const initialDarkMode = nativeTheme.shouldUseDarkColors;
-  window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, initialDarkMode);
+  const updateTheme = (): void => {
+    if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
+      const useDarkMode = nativeTheme.shouldUseDarkColors;
+      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
+    }
+  };
 
-  if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
-    nativeTheme.on('updated', () => {
-      const shouldUseDarkMode = nativeTheme.shouldUseDarkColors;
-      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, shouldUseDarkMode);
-    });
-  }
+  updateTheme();
+  nativeTheme.on('updated', () => updateTheme());
 }
 
 webFrame.setZoomFactor(1.0);
