@@ -18,7 +18,7 @@
  */
 
 import autoLaunch = require('auto-launch');
-import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions, shell} from 'electron';
+import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -33,6 +33,7 @@ import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
 import {downloadLogs} from '../lib/download';
 import {zipFiles, createFile} from '../lib/zip';
+import * as WindowUtil from '../window/WindowUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -251,23 +252,23 @@ const helpTemplate: MenuItemConstructorOptions = {
   role: 'help',
   submenu: [
     {
-      click: () => shell.openExternal(config.legalUrl),
+      click: () => WindowUtil.openExternal(config.legalUrl, true),
       label: locale.getText('menuLegal'),
     },
     {
-      click: () => shell.openExternal(config.privacyUrl),
+      click: () => WindowUtil.openExternal(config.privacyUrl, true),
       label: locale.getText('menuPrivacy'),
     },
     {
-      click: () => shell.openExternal(config.licensesUrl),
+      click: () => WindowUtil.openExternal(config.licensesUrl, true),
       label: locale.getText('menuLicense'),
     },
     {
-      click: () => shell.openExternal(config.supportUrl),
+      click: () => WindowUtil.openExternal(config.supportUrl, true),
       label: locale.getText('menuSupport'),
     },
     {
-      click: () => shell.openExternal(EnvironmentUtil.web.getWebsiteUrl()),
+      click: () => WindowUtil.openExternal(EnvironmentUtil.web.getWebsiteUrl(), true),
       label: locale.getText('menuAppURL'),
     },
     downloadLogsTemplate,
