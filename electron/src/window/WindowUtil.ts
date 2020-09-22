@@ -24,6 +24,7 @@ import * as URL from 'url';
 import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
 import {config} from '../settings/config';
+import * as locale from '../locale/locale';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -66,7 +67,7 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
 
     if (!allowedProtocols.includes(urlProtocol)) {
       logger.warn(`Prevented opening external URL "${url}".`);
-      showWarningDialog(`Prevented opening external URL "${url}".`);
+      showWarningDialog(locale.getText('urlBlockedPromptText'));
       return;
     }
 
