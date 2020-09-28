@@ -79,7 +79,7 @@
     "electron-winstaller": "4.0.1",
     "eslint": "7.9.0",
     "eslint-config-prettier": "6.11.0",
-    "eslint-plugin-import": "2.22.0",
+    "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jasmine": "4.1.1",
     "eslint-plugin-jsdoc": "30.5.1",
     "eslint-plugin-no-unsanitized": "3.1.2",
