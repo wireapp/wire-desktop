@@ -30,7 +30,7 @@ const destinationPath = path.join(rootDir, 'electron/locale');
 const zipDir = path.join(rootDir, 'temp/i18n');
 const zipPath = path.join(zipDir, 'wire-desktop.zip');
 
-// https://crowdin.com/project/wire-webapp/settings#api
+// https://crowdin.com/project/wire-desktop/settings#api
 const getProjectAuthentication = () => {
   const crowdinYaml = path.join(rootDir, 'keys/crowdin.yaml');
   const crowdinYamlContent = fs.readFileSync(crowdinYaml, 'utf8');
