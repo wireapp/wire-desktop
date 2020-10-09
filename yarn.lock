@@ -2004,10 +2004,10 @@
   dependencies:
     jsrsasign "8.0.20"
 
-"@wireapp/commons@3.8.3":
-  version "3.8.3"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.8.3.tgz#cac0f98a13dbccd16fb576f9cf64b797b326aba7"
-  integrity sha512-w/pjYDo1vj7/Z5pMajM/6n7I4SHJN6zMDRxMCZp0jcMZlqTNqqOkjnmkAHbKAkKgI4AZeZDLPj/9w2MqmbShxg==
+"@wireapp/commons@3.8.6":
+  version "3.8.6"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.8.6.tgz#e68eb76a0b89eb968d6ec06c39daf3ab736acb8d"
+  integrity sha512-d2QNY9WY3egITgY9irVzi0fAhvDzCycd/pyE1XqXBaLchmIHEiD3/DpeFLqCxhzAFAtgmcUwOtTOEaC8pXd1Vg==
   dependencies:
     "@types/fs-extra" "8.1.0"
     "@types/node" "~12"
