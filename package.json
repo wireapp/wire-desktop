@@ -39,7 +39,7 @@
     "@babel/preset-env": "7.11.5",
     "@babel/preset-react": "7.10.4",
     "@babel/preset-typescript": "7.10.4",
-    "@babel/register": "7.11.5",
+    "@babel/register": "7.12.0",
     "@types/adm-zip": "0.4.33",
     "@types/amplify": "1.1.24",
     "@types/auto-launch": "5.0.1",
