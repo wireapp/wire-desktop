@@ -100,5 +100,5 @@
   "promptCancel": "Скасувати",
   "promptWarning": "Попередження",
   "promptError": "Помилка",
-  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application."
+  "urlBlockedPromptText": "Потенційно небезпечний URL було заблоковано. Якщо ви все ще хочете відкрити його, скопіюйте URL в буфер обміну та відкрийте відповідну програму."
 }
