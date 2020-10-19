@@ -87,6 +87,8 @@ let proxyInfoArg: URL | undefined;
 
 const customProtocolHandler = new CustomProtocolHandler();
 
+app.allowRendererProcessReuse = false;
+
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
