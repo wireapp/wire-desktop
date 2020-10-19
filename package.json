@@ -146,7 +146,7 @@
     "build:win:installer": "rimraf wrap/dist && ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts windows-installer",
     "build:win:installer:internal": "cross-env-shell APP_ENV=internal \"yarn build:win:installer -m\"",
     "build:win:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:win\"",
-    "bundle": "webpack --env.production",
+    "bundle": "webpack --env production",
     "bundle:dev": "webpack",
     "clear:coverage": "rimraf coverage",
     "clear:ts": "rimraf electron/dist",
