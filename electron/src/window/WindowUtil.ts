@@ -17,7 +17,16 @@
  *
  */
 
-import {BrowserWindow, screen} from 'electron';
+import {BrowserWindow, screen, shell} from 'electron';
+import * as path from 'path';
+import * as URL from 'url';
+
+import {getLogger} from '../logging/getLogger';
+import {showWarningDialog} from '../lib/showDialog';
+import {config} from '../settings/config';
+import * as locale from '../locale/locale';
+
+const logger = getLogger(path.basename(__filename));
 
 interface Rectangle {
   height: number;
@@ -45,4 +54,25 @@ export const isInView = (win: BrowserWindow): boolean => {
   );
 
   return upperLeftVisible || lowerRightVisible;
+};
+
+export const openExternal = async (url: string, httpsOnly: boolean = false): Promise<void> => {
+  try {
+    const urlProtocol = URL.parse(url).protocol || '';
+    const allowedProtocols = ['https:'];
+
+    if (!httpsOnly) {
+      allowedProtocols.push('ftp:', 'http:', 'mailto:', `${config.customProtocolName}:`);
+    }
+
+    if (!allowedProtocols.includes(urlProtocol)) {
+      logger.warn(`Prevented opening external URL "${url}".`);
+      showWarningDialog(locale.getText('urlBlockedPromptText'));
+      return;
+    }
+
+    await shell.openExternal(url);
+  } catch (error) {
+    logger.error(error);
+  }
 };

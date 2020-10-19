@@ -28,7 +28,6 @@ import {
   ipcMain,
   Menu,
   OnHeadersReceivedListenerDetails,
-  shell,
   WebContents,
 } from 'electron';
 import * as fs from 'fs-extra';
@@ -264,7 +263,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       return;
     }
 
-    await shell.openExternal(url);
+    await WindowUtil.openExternal(url);
   });
 
   main.on('focus', () => {
@@ -507,7 +506,7 @@ class ElectronWrapperInit {
       }
 
       this.logger.log('Opening an external window from a webview.');
-      return shell.openExternal(url);
+      return WindowUtil.openExternal(url);
     };
 
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {

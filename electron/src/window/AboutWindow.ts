@@ -17,7 +17,7 @@
  *
  */
 
-import {app, BrowserWindow, ipcMain, session, shell} from 'electron';
+import {app, BrowserWindow, ipcMain, session} from 'electron';
 import fileUrl = require('file-url');
 import * as path from 'path';
 
@@ -26,6 +26,7 @@ import * as locale from '../locale/locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {getLogger} from '../logging/getLogger';
+import * as WindowUtil from '../window/WindowUtil';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -89,14 +90,19 @@ const showWindow = async () => {
       if (ABOUT_WINDOW_ALLOWLIST.includes(url)) {
         return callback({cancel: false});
       }
+    });
 
-      // Open HTTPS links in browser instead
-      if (url.startsWith('https://')) {
-        await shell.openExternal(url);
-      } else {
-        logger.info(`Attempt to open URL "${url}" in window prevented.`);
-        callback({redirectURL: ABOUT_HTML});
+    // Handle the new window event in the About Window
+    aboutWindow.webContents.on('new-window', (event, url) => {
+      event.preventDefault();
+
+      // Ensure the link does not come from a webview
+      if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
+        logger.log('New window was created from a webview, aborting.');
+        return;
       }
+
+      return WindowUtil.openExternal(url, true);
     });
 
     // Locales
