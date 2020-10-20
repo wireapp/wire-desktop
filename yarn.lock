@@ -2157,10 +2157,10 @@
   dependencies:
     jsrsasign "8.0.20"
 
-"@wireapp/commons@3.8.7":
-  version "3.8.7"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.8.7.tgz#e4d6e8eba9115d9e209aa4d1a800f485e48fb6d9"
-  integrity sha512-l/pQJqtUwR8ADyBvHXdZpmnjTRqvSDVaHbeUETojVAO8X+uc/GCdL4hpicoLHMXkz1eMTGok8St6V4n2ntMpzg==
+"@wireapp/commons@3.8.8":
+  version "3.8.8"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.8.8.tgz#16f15360aaa2f7d55808d086244d4d72ec12eebb"
+  integrity sha512-hJ8rS7+G07KQcbd8TVpfYdE3WSMgFPD6RaVZQSGkUZ7GVIGgbJEIuhxHf8Qa+CROoQvSVRJm4fBQrU5mnDV/Hg==
   dependencies:
     "@types/fs-extra" "8.1.0"
     "@types/node" "~12"
