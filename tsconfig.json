@@ -3,6 +3,7 @@
     "alwaysStrict": true,
     "declaration": true,
     "downlevelIteration": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["dom", "esnext"],
     "module": "CommonJS",
