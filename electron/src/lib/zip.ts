@@ -17,7 +17,7 @@
  *
  */
 
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
