@@ -1740,11 +1740,6 @@
   resolved "https://registry.npmjs.org/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"
   integrity sha512-RJJrrySY7A8havqpGObOB4W92QXKJo63/jFLLgpvOtsGUqbQZ9Sbgl35KMm1DjC6j7AvmmU2bIno+3IyEaemaw==
 
-"@types/webpack-env@1.15.3":
-  version "1.15.3"
-  resolved "https://registry.npmjs.org/@types/webpack-env/-/webpack-env-1.15.3.tgz#fb602cd4c2f0b7c0fb857e922075fdf677d25d84"
-  integrity sha512-5oiXqR7kwDGZ6+gmzIO2lTC+QsriNuQXZDWNYRV3l2XRN/zmPgnC21DLSx2D05zvD8vnXW6qUg7JnXZ4I6qLVQ==
-
 "@types/yargs-parser@*":
   version "13.0.0"
   resolved "https://registry.npmjs.org/@types/yargs-parser/-/yargs-parser-13.0.0.tgz#453743c5bbf9f1bed61d959baab5b06be029b2d0"
@@ -2108,14 +2103,13 @@
   dependencies:
     protobufjs "6.8.8"
 
-"@wireapp/react-ui-kit@7.37.9":
-  version "7.37.9"
-  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.37.9.tgz#0e866e46ae8a1dff268d1556d4e736c34bfba94a"
-  integrity sha512-pfWURtmKkiK57nR9UHYsIMpKBbIVfikGh+NBiVRjK6PvlC6c59uyumU6+1N3dApPgpy354ivJAs1RaVd66hauA==
+"@wireapp/react-ui-kit@7.37.10":
+  version "7.37.10"
+  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.37.10.tgz#ae403062cf1e104263f7be4e7758f9477e4072c1"
+  integrity sha512-8TbuXW1BT42VeFoESctCEVqC2yYxZ+KVVcAufEgIdqVeppAv7LvXuDIc1k9OT/VMDHtADLJOWn0rDxFbRw3WSg==
   dependencies:
     "@emotion/core" "10.0.35"
     "@types/color" "3.0.1"
-    "@types/webpack-env" "1.15.3"
     bazinga64 "5.7.15"
     color "3.1.2"
     emotion-normalize "10.1.0"
