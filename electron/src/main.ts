@@ -556,14 +556,21 @@ class ElectronWrapperInit {
 
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
+              /*
+               * Note: WebContents with ID `1` is the main window, `2` is the
+               * sidebar and `3` is the first account.
+               */
+              const accountIndex = contents.id - 2;
+
               if (webViewId) {
+                const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
                 try {
                   await LogFactory.writeMessage(
                     message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
-                    LOG_FILE,
+                    logFilePath,
                   );
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${LOG_FILE}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
                 }
               }
             });
