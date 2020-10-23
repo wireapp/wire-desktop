@@ -1740,6 +1740,11 @@
   resolved "https://registry.npmjs.org/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"
   integrity sha512-RJJrrySY7A8havqpGObOB4W92QXKJo63/jFLLgpvOtsGUqbQZ9Sbgl35KMm1DjC6j7AvmmU2bIno+3IyEaemaw==
 
+"@types/webpack-env@1.15.3":
+  version "1.15.3"
+  resolved "https://registry.npmjs.org/@types/webpack-env/-/webpack-env-1.15.3.tgz#fb602cd4c2f0b7c0fb857e922075fdf677d25d84"
+  integrity sha512-5oiXqR7kwDGZ6+gmzIO2lTC+QsriNuQXZDWNYRV3l2XRN/zmPgnC21DLSx2D05zvD8vnXW6qUg7JnXZ4I6qLVQ==
+
 "@types/yargs-parser@*":
   version "13.0.0"
   resolved "https://registry.npmjs.org/@types/yargs-parser/-/yargs-parser-13.0.0.tgz#453743c5bbf9f1bed61d959baab5b06be029b2d0"
@@ -2103,14 +2108,15 @@
   dependencies:
     protobufjs "6.8.8"
 
-"@wireapp/react-ui-kit@7.37.7":
-  version "7.37.7"
-  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.37.7.tgz#43f2f35a2f476366c0de7a53e5946cd0ac000ddb"
-  integrity sha512-x6m3DmB/OUenQw2WybL0WFU9oSgVxcuT1INNYnDN5F8bnMFfDOMvYtiz4oAnq3POGuXnGMIKrkEY6jDNY4/1CA==
+"@wireapp/react-ui-kit@7.37.9":
+  version "7.37.9"
+  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.37.9.tgz#0e866e46ae8a1dff268d1556d4e736c34bfba94a"
+  integrity sha512-pfWURtmKkiK57nR9UHYsIMpKBbIVfikGh+NBiVRjK6PvlC6c59uyumU6+1N3dApPgpy354ivJAs1RaVd66hauA==
   dependencies:
     "@emotion/core" "10.0.35"
     "@types/color" "3.0.1"
-    bazinga64 "5.7.14"
+    "@types/webpack-env" "1.15.3"
+    bazinga64 "5.7.15"
     color "3.1.2"
     emotion-normalize "10.1.0"
     emotion-theming "10.0.27"
@@ -2695,10 +2701,10 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-bazinga64@5.7.14:
-  version "5.7.14"
-  resolved "https://registry.npmjs.org/bazinga64/-/bazinga64-5.7.14.tgz#e248c06c61f7013498c2cc59b640f954933f4b02"
-  integrity sha512-iQGCVOliPhV0WD2Ez7UQwBtqouVXHdYF6SZi7JV6X+fhCWSMcMQXl4VEX43YYnwRgkkQuEVw7WBMZPb9W8oPWw==
+bazinga64@5.7.15:
+  version "5.7.15"
+  resolved "https://registry.npmjs.org/bazinga64/-/bazinga64-5.7.15.tgz#13cd11606d2846cf658413ed16286aee3fbfe50f"
+  integrity sha512-wLMTdi5vfLPubViSLQ+1pcBAWzmLTLIvpoNkKawSlTW5ruiJELUYQ9C3U0YcG0DoGLNARD3npLchWUMP98eEQQ==
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"
