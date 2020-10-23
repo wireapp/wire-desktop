@@ -32,12 +32,12 @@ import {
 } from 'electron';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
-import * as logdown from 'logdown';
-import * as minimist from 'minimist';
+import logdown from 'logdown';
+import minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import windowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
+import windowStateKeeper from 'electron-window-state';
+import fileUrl from 'file-url';
 
 import './global';
 import {
