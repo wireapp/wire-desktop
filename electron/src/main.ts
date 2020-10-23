@@ -560,10 +560,10 @@ class ElectronWrapperInit {
                * Note: WebContents with ID `1` is the main window, `2` is the
                * sidebar and `3` is the first account.
                */
-              const localId = contents.id - 2;
+              const accountIndex = contents.id - 2;
 
               if (webViewId) {
-                const logFilePath = path.join(LOG_DIR, `${localId}_${webViewId}`, config.logFileName);
+                const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
                 try {
                   await LogFactory.writeMessage(
                     message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
