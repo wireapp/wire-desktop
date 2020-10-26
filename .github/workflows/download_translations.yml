@@ -24,7 +24,7 @@ jobs:
           upload_sources: false
           upload_translations: false
           download_translations: true
-          skip_untranslated_files: true
+          skip_untranslated_files: false
           # Download translations with pushing to branch
           push_translations: true
           commit_message: 'chore: Update translations'
