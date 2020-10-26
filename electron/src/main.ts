@@ -263,7 +263,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       return;
     }
 
-    return WindowUtil.openExternal(url);
+    await WindowUtil.openExternal(url);
   });
 
   main.on('focus', () => {
