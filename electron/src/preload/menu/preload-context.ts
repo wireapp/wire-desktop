@@ -49,7 +49,7 @@ const savePicture = async (url: RequestInfo, timestamp?: string): Promise<void> 
   ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(bytes), timestamp);
 };
 
-const copyPicture = async (url: RequestInfo, timestamp?: string): Promise<void> => {
+const copyPicture = async (url: RequestInfo): Promise<void> => {
   const response = await fetch(url, {
     headers: {
       'User-Agent': config.userAgent,
@@ -73,27 +73,27 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
 
   const template: MenuItemConstructorOptions[] = [
     {
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.CUT),
       enabled: editFlags.canCut,
       label: locale.getText('menuCut'),
-      role: 'cut',
     },
     {
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.COPY),
       enabled: editFlags.canCopy,
       label: locale.getText('menuCopy'),
-      role: 'copy',
     },
     {
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.PASTE),
       enabled: editFlags.canPaste,
       label: locale.getText('menuPaste'),
-      role: 'paste',
     },
     {
       type: 'separator',
     },
     {
+      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.SELECT_ALL),
       enabled: editFlags.canSelectAll,
       label: locale.getText('menuSelectAll'),
-      role: 'selectAll',
     },
   ];
 
@@ -115,11 +115,11 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
 
 const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
   {
-    click: () => savePicture(imageMenu.image || '', imageMenu.timestamp),
+    click: () => savePicture(imageMenu.image || ''),
     label: locale.getText('menuSavePictureAs'),
   },
   {
-    click: () => copyPicture(imageMenu.image || '', imageMenu.timestamp),
+    click: () => copyPicture(imageMenu.image || ''),
     label: locale.getText('menuCopyPicture'),
   },
 ]);

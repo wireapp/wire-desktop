@@ -57,19 +57,12 @@ const subscribeToMainProcessEvents = (): void => {
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.redo();
-    }
-  });
-
-  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.undo();
-    }
-  });
+  ipcRenderer.on(EVENT_TYPE.EDIT.COPY, () => getSelectedWebview()?.copy());
+  ipcRenderer.on(EVENT_TYPE.EDIT.CUT, () => getSelectedWebview()?.cut());
+  ipcRenderer.on(EVENT_TYPE.EDIT.PASTE, () => getSelectedWebview()?.paste());
+  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => getSelectedWebview()?.redo());
+  ipcRenderer.on(EVENT_TYPE.EDIT.SELECT_ALL, () => getSelectedWebview()?.selectAll());
+  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => getSelectedWebview()?.undo());
 
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
     const webviews = document.querySelectorAll<WebviewTag>('webview');
