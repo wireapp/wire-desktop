@@ -2103,15 +2103,15 @@
   dependencies:
     protobufjs "6.8.8"
 
-"@wireapp/react-ui-kit@7.37.11":
-  version "7.37.11"
-  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.37.11.tgz#a8f5dac1cf5a22210cdc0da858ec2079efb9ec1e"
-  integrity sha512-MKu8j4PjEMzTR1jpx9D7MPqAr5bNh/uj06UOYt8Fh/RUZca34yDbUf35qIlcC9Q3cSMjbPOjvvH+e88KPhVcog==
+"@wireapp/react-ui-kit@7.37.13":
+  version "7.37.13"
+  resolved "https://registry.npmjs.org/@wireapp/react-ui-kit/-/react-ui-kit-7.37.13.tgz#b976a14ae383e81c7e41abd011725f48e8ea644c"
+  integrity sha512-BYkXye08jUDg828aaiewhuexwH3q+Vw89bEQXR34g0aIg9LFBG5CYknpuRuFyzC6dxD6NYNmUv4gW82cxxZbfg==
   dependencies:
     "@emotion/core" "10.0.35"
     "@types/color" "3.0.1"
-    bazinga64 "5.7.16"
-    color "3.1.2"
+    bazinga64 "5.7.17"
+    color "3.1.3"
     emotion-normalize "10.1.0"
     emotion-theming "10.0.27"
     react-transition-group "4.4.1"
@@ -2692,10 +2692,10 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-bazinga64@5.7.16:
-  version "5.7.16"
-  resolved "https://registry.npmjs.org/bazinga64/-/bazinga64-5.7.16.tgz#ddbdc910d2642ed73b8bb1e82adb57069944c3a2"
-  integrity sha512-bSG5dIuFbxMVx8oxzXVe5sj0GILlG4Nhn0PaDj8DIvpBVMK09zaqeFqXTq53WKd9j4S+VoOXQ0XF/7WsLhfphA==
+bazinga64@5.7.17:
+  version "5.7.17"
+  resolved "https://registry.npmjs.org/bazinga64/-/bazinga64-5.7.17.tgz#33176e492a799467c54c8eb67b5f7052e0cad70f"
+  integrity sha512-xUZAeLT6fwttZED0Cv3Yx9n7K9Q+VgBiGVvFQ51uzDjtir60tBrFJBQr9wiqybdZ8fPvOCSr/H0NmtZshWtYGA==
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"
@@ -3166,21 +3166,21 @@ color-name@^1.0.0, color-name@~1.1.4:
   resolved "https://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
 
-color-string@^1.5.2:
-  version "1.5.3"
-  resolved "https://registry.npmjs.org/color-string/-/color-string-1.5.3.tgz#c9bbc5f01b58b5492f3d6857459cb6590ce204cc"
-  integrity sha512-dC2C5qeWoYkxki5UAXapdjqO672AM4vZuPGRQfO8b5HKuKGBbKWpITyDYN7TOFKvRW7kOgAn3746clDBMDJyQw==
+color-string@^1.5.4:
+  version "1.5.4"
+  resolved "https://registry.npmjs.org/color-string/-/color-string-1.5.4.tgz#dd51cd25cfee953d138fe4002372cc3d0e504cb6"
+  integrity sha512-57yF5yt8Xa3czSEW1jfQDE79Idk0+AkN/4KWad6tbdxUmAs3MvjxlWSWD4deYytcRfoZ9nhKyFl1kj5tBvidbw==
   dependencies:
     color-name "^1.0.0"
     simple-swizzle "^0.2.2"
 
-color@3.1.2:
-  version "3.1.2"
-  resolved "https://registry.npmjs.org/color/-/color-3.1.2.tgz#68148e7f85d41ad7649c5fa8c8106f098d229e10"
-  integrity sha512-vXTJhHebByxZn3lDvDJYw4lR5+uB3vuoHsuYA5AKuxRVn5wzzIfQKGLBmgdVRHKTJYeK5rvJcHnrd0Li49CFpg==
+color@3.1.3:
+  version "3.1.3"
+  resolved "https://registry.npmjs.org/color/-/color-3.1.3.tgz#ca67fb4e7b97d611dcde39eceed422067d91596e"
+  integrity sha512-xgXAcTHa2HeFCGLE9Xs/R82hujGtu9Jd9x4NW3T34+OMs7VoPsjwzRczKHvTAHeJwWFwX5j15+MgAppE8ztObQ==
   dependencies:
     color-convert "^1.9.1"
-    color-string "^1.5.2"
+    color-string "^1.5.4"
 
 colorette@^1.2.1:
   version "1.2.1"
