@@ -207,7 +207,7 @@ const editTemplate: MenuItemConstructorOptions = {
       label: locale.getText('menuCopy'),
     },
     {
-      accelerator: 'CmdOrCtrl+P',
+      accelerator: 'CmdOrCtrl+V',
       click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.PASTE),
       label: locale.getText('menuPaste'),
     },
