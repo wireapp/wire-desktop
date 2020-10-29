@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import axios, {AxiosError} from 'axios';
+import axios, {AxiosError, AxiosRequestConfig} from 'axios';
 import fs from 'fs-extra';
 import logdown from 'logdown';
 
@@ -164,7 +164,12 @@ export class GitHubDraftDeployer {
     }
 
     try {
-      await axios.post(url, file, {headers, maxContentLength: TWO_HUNDRED_MB_IN_BYTES});
+      const requestConfig: AxiosRequestConfig = {
+        headers,
+        maxBodyLength: TWO_HUNDRED_MB_IN_BYTES,
+        maxContentLength: TWO_HUNDRED_MB_IN_BYTES,
+      };
+      await axios.post(url, file, requestConfig);
     } catch (uploadError) {
       if ((uploadError as AxiosError).isAxiosError && uploadError.response) {
         this.logger.error('Error response from GitHub:', uploadError.response.data);
