@@ -4119,16 +4119,16 @@ electron-builder@20.44.4:
     update-notifier "^3.0.0"
     yargs "^13.2.4"
 
-electron-mocha@9.3.1:
-  version "9.3.1"
-  resolved "https://registry.npmjs.org/electron-mocha/-/electron-mocha-9.3.1.tgz#00b6d2b8f8dd5ffbfbc6d6e73a421176c3a1f9a2"
-  integrity sha512-uskvTwyTXrbgqVIllenz4S0UHeq9ztKktWqCOvr5CAwvm1xToVbpE76a1ggx/FRShlkV48Q+R+ED7YU5Zyh7ig==
+electron-mocha@9.3.2:
+  version "9.3.2"
+  resolved "https://registry.npmjs.org/electron-mocha/-/electron-mocha-9.3.2.tgz#0aee9b5c59809986289f71a4f5b5eace72b53457"
+  integrity sha512-kUhNGeYfiXgPCETf0nvcGlbOGQR2GJgeB0DEQ9ojDkh3eGu2cyPf0sN7MKbeCv3R79alA+03zBKK0OFcAjNQow==
   dependencies:
     ansi-colors "^4.1.1"
     electron-window "^0.8.0"
     fs-extra "^9.0.1"
     log-symbols "^4.0.0"
-    mocha "^8.2.0"
+    mocha "^8.2.1"
     which "^2.0.2"
     yargs "^16.1.0"
 
@@ -7388,10 +7388,10 @@ mocha@8.1.3:
     yargs-parser "13.1.2"
     yargs-unparser "1.6.1"
 
-mocha@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.npmjs.org/mocha/-/mocha-8.2.0.tgz#f8aa79110b4b5a6580c65d4dd8083c425282624e"
-  integrity sha512-lEWEMq2LMfNJMKeuEwb5UELi+OgFDollXaytR5ggQcHpzG3NP/R7rvixAvF+9/lLsTWhWG+4yD2M70GsM06nxw==
+mocha@^8.2.1:
+  version "8.2.1"
+  resolved "https://registry.npmjs.org/mocha/-/mocha-8.2.1.tgz#f2fa68817ed0e53343d989df65ccd358bc3a4b39"
+  integrity sha512-cuLBVfyFfFqbNR0uUKbDGXKGk+UDFe6aR4os78XIrMQpZl/nv7JYHcvP5MFIAb374b2zFXsdgEGwmzMtP0Xg8w==
   dependencies:
     "@ungap/promise-all-settled" "1.1.2"
     ansi-colors "4.1.1"
