@@ -55,7 +55,7 @@
     "@types/sort-json": "2.0.0",
     "@typescript-eslint/eslint-plugin": "4.0.0",
     "@typescript-eslint/parser": "3.10.1",
-    "@wireapp/copy-config": "1.1.5",
+    "@wireapp/copy-config": "1.1.7",
     "@wireapp/eslint-config": "1.8.0",
     "@wireapp/prettier-config": "0.3.0",
     "adm-zip": "0.4.16",
