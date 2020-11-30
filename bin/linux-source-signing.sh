@@ -53,7 +53,7 @@ fi
 _log "Downloading release ${RELEASE_VERSION} from GitHub ..."
 
 if _command_exist "curl"; then
-  curl -sLO "${RELEASE_DOWNLOAD}"
+  curl -fsLO "${RELEASE_DOWNLOAD}"
 else
   wget -q "${RELEASE_DOWNLOAD}"
 fi

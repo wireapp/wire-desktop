@@ -43,6 +43,7 @@ export type i18nLanguageIdentifier =
   | 'changeEnvironmentModalText'
   | 'changeEnvironmentModalTitle'
   | 'menuAbout'
+  | 'menuActualSize'
   | 'menuAddPeople'
   | 'menuAppURL'
   | 'menuArchive'
@@ -51,6 +52,7 @@ export type i18nLanguageIdentifier =
   | 'menuClose'
   | 'menuConversation'
   | 'menuCopy'
+  | 'menuCopyPicture'
   | 'menuCut'
   | 'menuDelete'
   | 'menuDownloadDebugLogs'
@@ -93,6 +95,8 @@ export type i18nLanguageIdentifier =
   | 'menuVideoCall'
   | 'menuView'
   | 'menuWindow'
+  | 'menuZoomIn'
+  | 'menuZoomOut'
   | 'promptCancel'
   | 'promptError'
   | 'promptOK'
@@ -145,6 +149,7 @@ const pl_PL = require('../../locale/pl-PL');
 const pt_BR = require('../../locale/pt-BR');
 const ro_RO = require('../../locale/ro-RO');
 const ru_RU = require('../../locale/ru-RU');
+const si_LK = require('../../locale/si-LK');
 const sk_SK = require('../../locale/sk-SK');
 const sl_SI = require('../../locale/sl-SI');
 const tr_TR = require('../../locale/tr-TR');
@@ -172,6 +177,7 @@ export const LANGUAGES: SupportedI18nLanguageObject = {
   pt: pt_BR,
   ro: ro_RO,
   ru: ru_RU,
+  si: si_LK,
   sk: sk_SK,
   sl: sl_SI,
   tr: tr_TR,
@@ -198,6 +204,7 @@ export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[
   pt: ['pt', 'pt-BR'],
   ro: ['ro', 'ro-RO'],
   ru: ['ru', 'ru-RU'],
+  si: ['si', 'si-LK'],
   sk: ['sk', 'sk-SK'],
   sl: ['sl', 'sl-SI'],
   tr: ['tr', 'tr-TR'],
@@ -205,7 +212,7 @@ export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[
   zh: ['zh', 'zh-CN'],
 };
 
-/* eslint-disable */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 /* cspell:disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
@@ -225,6 +232,7 @@ export const SUPPORTED_LANGUAGES = {
   pt: 'Português do Brasil',
   ro: 'Română',
   ru: 'Русский',
+  si: 'සිංහල',
   sk: 'Slovenčina',
   sl: 'Slovenščina',
   fi: 'Suomi',
@@ -233,12 +241,9 @@ export const SUPPORTED_LANGUAGES = {
   zh: '简体中文',
 };
 /* cspell:enable */
-/* eslint-enable */
+/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 let current: SupportedI18nLanguage | undefined;
-
-const getSupportedLanguageKeys = (): SupportedI18nLanguage[] =>
-  Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
 
 export const getCurrent = (): SupportedI18nLanguage => {
   if (!current) {
@@ -250,7 +255,7 @@ export const getCurrent = (): SupportedI18nLanguage => {
 };
 
 const parseLocale = (locale: string): SupportedI18nLanguage => {
-  const languageKeys = getSupportedLanguageKeys();
+  const languageKeys = Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
 };
 
@@ -263,17 +268,21 @@ export const getText = (
   paramReplacements?: Record<string, string>,
 ): string => {
   const strings = getCurrent();
-  let str = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
+  let translationText = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
+
+  if (!translationText) {
+    throw new Error(`Translation for "${stringIdentifier}" could not be found.`);
+  }
 
   const replacements: Record<string, string> = {...customReplacements, ...paramReplacements};
   for (const replacement of Object.keys(replacements)) {
     const regex = new RegExp(`{${replacement}}`, 'g');
-    if (str.match(regex)) {
-      str = str.replace(regex, replacements[replacement]);
+    if (translationText.match(regex)) {
+      translationText = translationText.replace(regex, replacements[replacement]);
     }
   }
 
-  return str;
+  return translationText;
 };
 
 export const setLocale = (locale: string): void => {

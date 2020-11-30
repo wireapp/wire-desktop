@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import {LogFactory, Logger} from '@wireapp/commons/dist/commonjs/LogFactory';
+import {LogFactory, Logger} from '@wireapp/commons/src/main/LogFactory';
 import {exec} from 'child_process';
 import commander from 'commander';
 import fs from 'fs-extra';

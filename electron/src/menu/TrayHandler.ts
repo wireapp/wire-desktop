@@ -68,10 +68,14 @@ export class TrayHandler {
     this.buildTrayMenu();
   }
 
-  showUnreadCount(win: BrowserWindow, count?: number): void {
-    this.updateIcons(win, count);
-    this.flashApplicationWindow(win, count);
-    this.updateBadgeCount(count);
+  showUnreadCount(win: BrowserWindow, count?: number, ignoreFlash?: boolean): void {
+    if (count !== this.lastUnreadCount) {
+      this.updateIcons(win, count);
+      if (!ignoreFlash) {
+        this.flashApplicationWindow(win, count);
+      }
+      this.updateBadgeCount(count);
+    }
   }
 
   private buildTrayMenu(): void {
@@ -86,11 +90,9 @@ export class TrayHandler {
       },
     ]);
 
-    if (this.trayIcon) {
-      this.trayIcon.on('click', () => WindowManager.showPrimaryWindow());
-      this.trayIcon.setContextMenu(contextMenu);
-      this.trayIcon.setToolTip(config.name);
-    }
+    this.trayIcon?.on('click', () => WindowManager.showPrimaryWindow());
+    this.trayIcon?.setContextMenu(contextMenu);
+    this.trayIcon?.setToolTip(config.name);
   }
 
   private flashApplicationWindow(win: BrowserWindow, count?: number): void {
@@ -112,9 +114,7 @@ export class TrayHandler {
     if (this.icons) {
       const trayImage = count ? this.icons.trayWithBadge : this.icons.tray;
 
-      if (this.trayIcon) {
-        this.trayIcon.setImage(trayImage);
-      }
+      this.trayIcon?.setImage(trayImage);
 
       const overlayImage = count ? this.icons.badge : null;
       win.setOverlayIcon(overlayImage, locale.getText('unreadMessages'));

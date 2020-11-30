@@ -1,0 +1,38 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main, staging, dev]
+  pull_request:
+    branches: [main, staging, dev]
+
+jobs:
+  build_test:
+    name: Build and Test
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.5.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Yarn cache
+        uses: c-hive/gha-yarn-cache@v1
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Use xvfb-run on Linux
+        run: sed -i 's/\(electron-mocha \)/xvfb-run \1/g' package.json
+        if: contains(matrix.os, 'ubuntu')
+      - name: Test
+        run: yarn test

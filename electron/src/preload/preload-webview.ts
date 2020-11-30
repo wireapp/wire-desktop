@@ -20,14 +20,16 @@
 import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
+import type {Availability} from '@wireapp/protocol-messaging';
+import type {Data as OpenGraphResult} from 'open-graph';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getOpenGraphDataAsync} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 interface TeamAccountInfo {
-  accentID: string;
+  accentID: number;
+  availability?: Availability.Type;
   name: string;
   picture?: string;
   teamID?: string;
@@ -35,17 +37,15 @@ interface TeamAccountInfo {
   userID: string;
 }
 
-const systemPreferences = remote.systemPreferences;
+const nativeTheme = remote.nativeTheme;
 
 const logger = getLogger(path.basename(__filename));
 
-// Note: Until appearance-changed event is available in a future
-// version of Electron use `AppleInterfaceThemeChangedNotification` event
 function subscribeToThemeChange(): void {
-  if (EnvironmentUtil.platform.IS_MAC_OS && WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
-    systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () => {
-      logger.info('Received macOS notification "AppleInterfaceThemeChangedNotification", forwarding to amplify ...');
-      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, systemPreferences.isDarkMode());
+  if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
+    nativeTheme.on('updated', () => {
+      const shouldUseDarkMode = nativeTheme.shouldUseDarkColors;
+      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, shouldUseDarkMode);
     });
   }
 }
@@ -174,6 +174,10 @@ const subscribeToMainProcessEvents = (): void => {
   });
 };
 
+function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
+  return ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_OG_DATA, url);
+}
+
 const reportWebappVersion = () =>
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
 
@@ -183,9 +187,9 @@ const _setImmediate = setImmediate;
 
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
-  global.environment = EnvironmentUtil;
   global.desktopCapturer = desktopCapturer;
-  global.openGraphAsync = getOpenGraphDataAsync;
+  global.environment = EnvironmentUtil;
+  global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
 
@@ -210,5 +214,5 @@ window.addEventListener('DOMContentLoaded', () => {
     reportWebappVersion();
   });
   // include context menu
-  import('./menu/context').catch(logger.error);
+  import('./menu/preload-context').catch(logger.error);
 });

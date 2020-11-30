@@ -23,8 +23,8 @@ import * as URL from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
-import {config} from '../settings/config';
 import * as locale from '../locale/locale';
+import {config} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -36,9 +36,9 @@ interface Rectangle {
 }
 
 export const pointInRectangle = (point: [number, number], rectangle: Rectangle): boolean => {
-  const [x, y] = point;
-  const xInRange = x >= rectangle.x && x <= rectangle.x + rectangle.width;
-  const yInRange = y >= rectangle.y && y <= rectangle.y + rectangle.height;
+  const [xCoordinate, yCoordinate] = point;
+  const xInRange = xCoordinate >= rectangle.x && xCoordinate <= rectangle.x + rectangle.width;
+  const yInRange = yCoordinate >= rectangle.y && yCoordinate <= rectangle.y + rectangle.height;
 
   return xInRange && yInRange;
 };
@@ -67,7 +67,8 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
 
     if (!allowedProtocols.includes(urlProtocol)) {
       logger.warn(`Prevented opening external URL "${url}".`);
-      showWarningDialog(locale.getText('urlBlockedPromptText'));
+      const dialogText = `${locale.getText('urlBlockedPromptText')}\n\n${url}`;
+      showWarningDialog(dialogText);
       return;
     }
 

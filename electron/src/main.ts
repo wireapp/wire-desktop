@@ -32,12 +32,12 @@ import {
 } from 'electron';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
-import * as logdown from 'logdown';
-import * as minimist from 'minimist';
+import logdown from 'logdown';
+import minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import windowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
+import windowStateKeeper from 'electron-window-state';
+import fileUrl from 'file-url';
 
 import './global';
 import {
@@ -50,7 +50,6 @@ import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
-import {Raygun} from './logging/initRaygun';
 import {getLogFilenames} from './logging/loggerUtils';
 import {developerMenu} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -68,13 +67,14 @@ import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
+import {getOpenGraphDataAsync} from './lib/openGraph';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/preload-app.js');
-const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/renderer/preload-webview.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/preload-app.js');
+const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/preload/preload-webview.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
 const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,
@@ -142,20 +142,20 @@ const bindIpcEvents = (): void => {
     return downloadImage(bytes, timestamp);
   });
 
-  ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => {
-    WindowManager.showPrimaryWindow();
-  });
+  ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => WindowManager.showPrimaryWindow());
 
-  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, count: number) => {
-    tray.showUnreadCount(main, count);
+  ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, {count, ignoreFlash}: {count?: number; ignoreFlash?: boolean}) => {
+    tray.showUnreadCount(main, count, ignoreFlash);
   });
 
   ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
     await deleteAccount(id, accountId, partitionId);
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
-  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, lifecycle.relaunch);
-  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, AboutWindow.showWindow);
+  ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
+  ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
+
+  ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
@@ -205,7 +205,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
-      enableBlinkFeatures: '',
+      enableRemoteModule: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -530,12 +530,13 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
-            webPreferences.enableBlinkFeatures = '';
             webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
+            webPreferences.enableRemoteModule = true;
+            webPreferences.worldSafeExecuteJavaScript = true;
           });
           break;
         }
@@ -556,14 +557,21 @@ class ElectronWrapperInit {
 
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
+              /*
+               * Note: WebContents with ID `1` is the main window, `2` is the
+               * sidebar and `3` is the first account.
+               */
+              const accountIndex = contents.id - 2;
+
               if (webViewId) {
+                const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
                 try {
                   await LogFactory.writeMessage(
                     message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
-                    LOG_FILE,
+                    logFilePath,
                   );
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${LOG_FILE}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
                 }
               }
             });
@@ -632,7 +640,6 @@ class ElectronWrapperInit {
 }
 
 customProtocolHandler.registerCoreProtocol();
-Raygun.initClient();
 handlePortableFlags();
 lifecycle
   .checkSingleInstance()

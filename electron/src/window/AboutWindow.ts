@@ -44,21 +44,23 @@ const ABOUT_WINDOW_ALLOWLIST = [
   fileUrl(path.join(APP_PATH, 'img/logo.256.png')),
   fileUrl(path.join(APP_PATH, 'css/about.css')),
 ];
-const PRELOAD_JS = path.join(APP_PATH, 'dist/renderer/menu/preload-about.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/menu/preload-about.js');
 
 const WINDOW_SIZE = {
   HEIGHT: 256,
   WIDTH: 304,
 };
 
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => (webappVersion = version));
+ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => {
+  webappVersion = version;
+});
 
 const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
 
   if (!aboutWindow) {
     aboutWindow = new BrowserWindow({
-      alwaysOnTop: true,
+      alwaysOnTop: false,
       backgroundColor: '#ececec',
       fullscreen: false,
       height: WINDOW_SIZE.HEIGHT,
@@ -69,7 +71,7 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
-        enableBlinkFeatures: '',
+        enableRemoteModule: true,
         javascript: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
@@ -110,9 +112,11 @@ const showWindow = async () => {
       if (aboutWindow) {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {
-          const resultLabels: Record<string, string> = {};
-          labels.forEach(label => (resultLabels[label] = locale.getText(label)));
-          event.sender.send(EVENT_TYPE.ABOUT.LOCALE_RENDER, resultLabels);
+          const localeValues: Record<string, string> = {};
+          labels.forEach(label => (localeValues[label] = locale.getText(label)));
+          localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
+          localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
+          event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
         }
       }
     });
