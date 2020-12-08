@@ -235,14 +235,10 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     webappURL.hash = customProtocolHandler.hashLocation;
   }
 
-  if (typeof argv.devtools !== 'undefined') {
-    if (typeof argv.devtools === 'number') {
-      openDevTools(argv.devtools).catch(() =>
-        logger.warn(`Could not open DevTools with index "${argv.devtools}". Does the account exist?`),
-      );
-    } else {
-      main.webContents.openDevTools({mode: 'detach'});
-    }
+  if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
+    openDevTools(argv[config.ARGUMENT.DEVTOOLS]).catch(() =>
+      logger.warn(`Could not open DevTools with index "${argv[config.ARGUMENT.DEVTOOLS]}". Does the account exist?`),
+    );
   }
 
   if (!startHidden) {
