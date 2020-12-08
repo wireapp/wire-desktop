@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import axios from 'axios';
+import axios, {AxiosError, AxiosRequestConfig} from 'axios';
 import fs from 'fs-extra';
 import logdown from 'logdown';
 
@@ -164,25 +164,39 @@ export class GitHubDraftDeployer {
     }
 
     try {
-      await axios.post(url, file, {headers, maxContentLength: TWO_HUNDRED_MB_IN_BYTES});
+      const requestConfig: AxiosRequestConfig = {
+        headers,
+        maxBodyLength: TWO_HUNDRED_MB_IN_BYTES,
+        maxContentLength: TWO_HUNDRED_MB_IN_BYTES,
+      };
+      await axios.post(url, file, requestConfig);
     } catch (uploadError) {
-      this.logger.error('Error response from GitHub:', uploadError.response.data);
-      this.logger.error(
-        `Upload failed with status code "${uploadError.response.status}": ${uploadError.response.statusText}"`,
-      );
+      if ((uploadError as AxiosError).isAxiosError && uploadError.response) {
+        this.logger.error('Error response from GitHub:', uploadError.response.data);
+        this.logger.error(
+          `Upload failed with status code "${uploadError.response.status}": ${uploadError.response.statusText}"`,
+        );
+      } else {
+        this.logger.error(uploadError);
+      }
+
       this.logger.info('Deleting draft because upload failed ...');
 
       try {
         await axios.delete(draftUrl, {headers: AuthorizationHeaders});
         this.logger.info('Draft deleted');
       } catch (deleteError) {
-        this.logger.error('Error response from GitHub:', deleteError.response.data);
-        throw new Error(
-          `Deletion failed with status code "${deleteError.response.status}: ${deleteError.response.statusText}"`,
-        );
-      } finally {
-        throw new Error('Uploading asset failed');
+        if ((deleteError as AxiosError).isAxiosError && deleteError.response) {
+          this.logger.error('Error response from GitHub:', deleteError.response);
+          throw new Error(
+            `Deletion failed with status code "${deleteError.response.status}: ${deleteError.response.statusText}"`,
+          );
+        } else {
+          throw deleteError;
+        }
       }
+
+      throw new Error('Uploading asset failed');
     }
   }
 }

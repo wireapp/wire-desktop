@@ -19,7 +19,7 @@
 
 import React, {useEffect, useRef, useState} from 'react';
 import {ContainerSM, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
-import {SVGIcon} from '@wireapp/react-ui-kit/dist/Icon/SVGIcon';
+import {SVGIcon} from '@wireapp/react-ui-kit/src/Icon/SVGIcon';
 import {connect} from 'react-redux';
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {WindowUrl} from '../../../src/window/WindowUrl';
@@ -70,6 +70,7 @@ const Webview = ({
 
   useEffect(() => {
     const newUrl = getEnvironmentUrl(account);
+    console.info(`Loading WebApp URL "${newUrl}" ...`);
     if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {

@@ -32,12 +32,12 @@ import {
 } from 'electron';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
-import * as logdown from 'logdown';
-import * as minimist from 'minimist';
+import logdown from 'logdown';
+import minimist from 'minimist';
 import * as path from 'path';
 import {URL} from 'url';
-import windowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
+import windowStateKeeper from 'electron-window-state';
+import fileUrl from 'file-url';
 
 import './global';
 import {
@@ -263,7 +263,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       return;
     }
 
-    return WindowUtil.openExternal(url);
+    await WindowUtil.openExternal(url);
   });
 
   main.on('focus', () => {
@@ -535,6 +535,7 @@ class ElectronWrapperInit {
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
+            webPreferences.enableRemoteModule = true;
             webPreferences.worldSafeExecuteJavaScript = true;
           });
           break;
@@ -556,14 +557,21 @@ class ElectronWrapperInit {
 
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
+              /*
+               * Note: WebContents with ID `1` is the main window, `2` is the
+               * sidebar and `3` is the first account.
+               */
+              const accountIndex = contents.id - 2;
+
               if (webViewId) {
+                const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
                 try {
                   await LogFactory.writeMessage(
                     message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
-                    LOG_FILE,
+                    logFilePath,
                   );
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${LOG_FILE}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
                 }
               }
             });
