@@ -1,9 +1,6 @@
 name: Download translations
 
 on:
-  push:
-    branches:
-      - dev
   schedule:
     - cron: '0 6 * * *'
 
