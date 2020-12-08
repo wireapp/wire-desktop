@@ -101,7 +101,7 @@
     "prettier": "2.2.1",
     "react": "16.14.0",
     "rimraf": "3.0.2",
-    "sinon": "9.2.0",
+    "sinon": "9.2.1",
     "sort-json": "2.0.0",
     "style-loader": "2.0.0",
     "ts-node": "9.1.1",
