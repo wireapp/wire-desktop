@@ -41,7 +41,7 @@ export const openDevTools = async (webViewIndex?: number): Promise<void> => {
   const primaryWindow = WindowManager.getPrimaryWindow();
 
   if (primaryWindow) {
-    if (typeof webViewIndex === 'number' && webViewIndex > 0) {
+    if (webViewIndex) {
       const snippet = `document.getElementsByTagName("webview")[${webViewIndex}].openDevTools({mode: "detach"})`;
       await executeJavaScriptWithoutResult(snippet, primaryWindow.webContents);
     } else {
