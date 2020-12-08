@@ -77,7 +77,7 @@ class ConfigurationPersistence {
       this.logger.info('Read config:', JSON.stringify(configContent));
       return configContent;
     } catch (error) {
-      this.logger.info('No config read');
+      this.logger.warn('No config found');
       const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:
       return SchemaUpdater.SCHEMATA[schemataKeys[schemataKeys.length - 1]];
