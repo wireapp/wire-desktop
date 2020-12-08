@@ -1656,7 +1656,7 @@
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.162.tgz#65d78c397e0d883f44afbf1f7ba9867022411470"
   integrity sha512-alvcho1kRUnnD1Gcl4J+hK0eencvzq9rmzvFPRmP5rPHx9VVsJj6bKLTATPVf9ktgv4ujzh7T+XWKp+jhuODig==
 
-"@types/long@^4.0.0":
+"@types/long@^4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@types/long/-/long-4.0.1.tgz#459c65fa1867dafe6a8f322c4c51695663cc55e9"
   integrity sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w==
@@ -1681,10 +1681,10 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-12.19.1.tgz#303f74c8a2b35644594139e948b2be470ae1186f"
   integrity sha512-/xaVmBBjOGh55WCqumLAHXU9VhjGtmyTGqJzFBXRWZzByOXI5JAJNx9xPVGEsNizrNwcec92fQMj458MWfjN1A==
 
-"@types/node@^10.1.0":
-  version "10.17.28"
-  resolved "https://registry.npmjs.org/@types/node/-/node-10.17.28.tgz#0e36d718a29355ee51cec83b42d921299200f6d9"
-  integrity sha512-dzjES1Egb4c1a89C7lKwQh8pwjYmlOAG9dW1pBgxEk57tMrLnssOfEthz8kdkNaBd7lIqQx7APm5+mZ619IiCQ==
+"@types/node@^13.7.0":
+  version "13.13.34"
+  resolved "https://registry.npmjs.org/@types/node/-/node-13.13.34.tgz#c9300a1b6560d90817fb2bba650e250116a575f9"
+  integrity sha512-g8D1HF2dMDKYSDl5+79izRwRgNPsSynmWMbj50mj7GZ0b7Lv4p8EmZjbo3h0h+6iLr6YmVz9VnF6XVZ3O6V1Ug==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -2096,12 +2096,12 @@
   resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.3.0.tgz#e8129b31021c81d90d564d9c4ff0f7f7b514e943"
   integrity sha512-BFokvX4NZlkhWq5/OoJUCS8Iels+MeRgzpd5V9QR3hj5swwCFGxJOAL7soPXkSNWo91gI1qwiTp8szB1O9aCfQ==
 
-"@wireapp/protocol-messaging@1.25.4":
-  version "1.25.4"
-  resolved "https://registry.npmjs.org/@wireapp/protocol-messaging/-/protocol-messaging-1.25.4.tgz#49a22683c19c628997f28e24f5eca909aab4e4b9"
-  integrity sha512-Z53Cw+u2rJhE/tlEAo1onYcD4FyuDEMjW2PQV9GTuGNA9iEv+rKnmha6YDI+m5NQxrlPc7Dsebqf+u04X7fB7g==
+"@wireapp/protocol-messaging@1.27.1":
+  version "1.27.1"
+  resolved "https://registry.npmjs.org/@wireapp/protocol-messaging/-/protocol-messaging-1.27.1.tgz#f2173a22c0088d5b5df75617a4ab85e4201916dc"
+  integrity sha512-/EYBIpZHONNV90tajVuuo3i+RzDKG2oVBeI9aOIVneWgHJyWvb50pjLc/nnJ9N5vCoPtyZS1fy/JLuN7miDbwA==
   dependencies:
-    protobufjs "6.8.8"
+    protobufjs "6.10.2"
 
 "@wireapp/react-ui-kit@7.37.11":
   version "7.37.11"
@@ -8249,10 +8249,10 @@ proto-list@~1.2.1:
   resolved "https://registry.npmjs.org/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
   integrity sha1-IS1b/hMYMGpCD2QCuOJv85ZHqEk=
 
-protobufjs@6.8.8:
-  version "6.8.8"
-  resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.8.tgz#c8b4f1282fd7a90e6f5b109ed11c84af82908e7c"
-  integrity sha512-AAmHtD5pXgZfi7GMpllpO3q1Xw1OYldr+dMUlAnffGTAhqkg72WdmSY71uKBF/JuyiKs8psYbtKrhi0ASCD8qw==
+protobufjs@6.10.2:
+  version "6.10.2"
+  resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-6.10.2.tgz#b9cb6bd8ec8f87514592ba3fdfd28e93f33a469b"
+  integrity sha512-27yj+04uF6ya9l+qfpH187aqEzfCF4+Uit0I9ZBQVqK09hk/SQzKa2MUqUpXaVa7LOFRg1TSSr3lVxGOk6c0SQ==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
@@ -8264,8 +8264,8 @@ protobufjs@6.8.8:
     "@protobufjs/path" "^1.1.2"
     "@protobufjs/pool" "^1.1.0"
     "@protobufjs/utf8" "^1.1.0"
-    "@types/long" "^4.0.0"
-    "@types/node" "^10.1.0"
+    "@types/long" "^4.0.1"
+    "@types/node" "^13.7.0"
     long "^4.0.0"
 
 pseudomap@^1.0.2:
