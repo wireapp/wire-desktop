@@ -37,12 +37,16 @@ const reloadTemplate: MenuItemConstructorOptions = {
   label: 'Reload',
 };
 
-const openDevTools = async (webViewIndex: number): Promise<void> => {
-  const snippet = `document.getElementsByTagName("webview")[${webViewIndex}].openDevTools({mode: "detach"})`;
-
+export const openDevTools = async (webViewIndex?: number): Promise<void> => {
   const primaryWindow = WindowManager.getPrimaryWindow();
+
   if (primaryWindow) {
-    await executeJavaScriptWithoutResult(snippet, primaryWindow.webContents);
+    if (typeof webViewIndex === 'number' && webViewIndex > 0) {
+      const snippet = `document.getElementsByTagName("webview")[${webViewIndex}].openDevTools({mode: "detach"})`;
+      await executeJavaScriptWithoutResult(snippet, primaryWindow.webContents);
+    } else {
+      primaryWindow.webContents.openDevTools({mode: 'detach'});
+    }
   }
 };
 
