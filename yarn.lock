@@ -4081,18 +4081,18 @@ electron-builder@20.44.4:
     update-notifier "^3.0.0"
     yargs "^13.2.4"
 
-electron-mocha@9.3.1:
-  version "9.3.1"
-  resolved "https://registry.npmjs.org/electron-mocha/-/electron-mocha-9.3.1.tgz#00b6d2b8f8dd5ffbfbc6d6e73a421176c3a1f9a2"
-  integrity sha512-uskvTwyTXrbgqVIllenz4S0UHeq9ztKktWqCOvr5CAwvm1xToVbpE76a1ggx/FRShlkV48Q+R+ED7YU5Zyh7ig==
+electron-mocha@10.0.0:
+  version "10.0.0"
+  resolved "https://registry.npmjs.org/electron-mocha/-/electron-mocha-10.0.0.tgz#f08513853c02db290df5c1b654016705b5fa7f38"
+  integrity sha512-eCIAPlhSi10wPcwYnZWxRAKoEGKX+UQyco3gjWcWPD6csfwCLT5CTvA1bId8Q8Gb0ss8Rj8y8kuK9eLCJtr0DQ==
   dependencies:
     ansi-colors "^4.1.1"
     electron-window "^0.8.0"
     fs-extra "^9.0.1"
     log-symbols "^4.0.0"
-    mocha "^8.2.0"
+    mocha "^8.2.1"
     which "^2.0.2"
-    yargs "^16.1.0"
+    yargs "^16.1.1"
 
 electron-notarize@^1.0.0:
   version "1.0.0"
@@ -7284,7 +7284,7 @@ mkdirp@^0.5.1:
   dependencies:
     minimist "^1.2.5"
 
-mocha@8.2.1, mocha@^8.2.0:
+mocha@8.2.1, mocha@^8.2.1:
   version "8.2.1"
   resolved "https://registry.npmjs.org/mocha/-/mocha-8.2.1.tgz#f2fa68817ed0e53343d989df65ccd358bc3a4b39"
   integrity sha512-cuLBVfyFfFqbNR0uUKbDGXKGk+UDFe6aR4os78XIrMQpZl/nv7JYHcvP5MFIAb374b2zFXsdgEGwmzMtP0Xg8w==
@@ -10216,10 +10216,10 @@ y18n@^4.0.0:
   resolved "https://registry.npmjs.org/y18n/-/y18n-4.0.0.tgz#95ef94f85ecc81d007c264e190a120f0a3c8566b"
   integrity sha512-r9S/ZyXu/Xu9q1tYlpsLIsa3EeLXXk0VwlxqTcFRfg9EhMW+17kbt9G0NrgCmhGb5vT2hyhJZLfDGx+7+5Uj/w==
 
-y18n@^5.0.2:
-  version "5.0.4"
-  resolved "https://registry.npmjs.org/y18n/-/y18n-5.0.4.tgz#0ab2db89dd5873b5ec4682d8e703e833373ea897"
-  integrity sha512-deLOfD+RvFgrpAmSZgfGdWYE+OKyHcVHaRQ7NphG/63scpRvTHHeQMAxGGvaLVGJ+HYVcCXlzcTK0ZehFf+eHQ==
+y18n@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.npmjs.org/y18n/-/y18n-5.0.5.tgz#8769ec08d03b1ea2df2500acef561743bbb9ab18"
+  integrity sha512-hsRUr4FFrvhhRH12wOdfs38Gy7k2FFzB9qgN9v3aLykRq0dRcdcpz5C9FxdS2NuhOrI/628b/KSTJ3rwHysYSg==
 
 yallist@^2.1.2:
   version "2.1.2"
@@ -10302,17 +10302,17 @@ yargs@^15.0.2, yargs@^15.4.1:
     y18n "^4.0.0"
     yargs-parser "^18.1.2"
 
-yargs@^16.1.0:
-  version "16.1.0"
-  resolved "https://registry.npmjs.org/yargs/-/yargs-16.1.0.tgz#fc333fe4791660eace5a894b39d42f851cd48f2a"
-  integrity sha512-upWFJOmDdHN0syLuESuvXDmrRcWd1QafJolHskzaw79uZa7/x53gxQKiR07W59GWY1tFhhU/Th9DrtSfpS782g==
+yargs@^16.1.1:
+  version "16.2.0"
+  resolved "https://registry.npmjs.org/yargs/-/yargs-16.2.0.tgz#1c82bf0f6b6a66eafce7ef30e376f49a12477f66"
+  integrity sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==
   dependencies:
     cliui "^7.0.2"
     escalade "^3.1.1"
     get-caller-file "^2.0.5"
     require-directory "^2.1.1"
     string-width "^4.2.0"
-    y18n "^5.0.2"
+    y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
 yauzl@2.4.1:
