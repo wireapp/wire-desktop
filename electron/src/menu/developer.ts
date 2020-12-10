@@ -37,15 +37,15 @@ const reloadTemplate: MenuItemConstructorOptions = {
   label: 'Reload',
 };
 
-export const openDevTools = async (webViewIndex?: number): Promise<void> => {
+export const openDevTools = async (webViewIndex?: number | true): Promise<void> => {
   const primaryWindow = WindowManager.getPrimaryWindow();
 
   if (primaryWindow) {
-    if (webViewIndex) {
-      const snippet = `document.getElementsByTagName("webview")[${webViewIndex}].openDevTools({mode: "detach"})`;
+    if (typeof webViewIndex === 'number' && webViewIndex > 0) {
+      const snippet = `document.getElementsByTagName("webview")[${webViewIndex - 1}].openDevTools({mode: "detach"})`;
       await executeJavaScriptWithoutResult(snippet, primaryWindow.webContents);
     } else {
-      primaryWindow.webContents.openDevTools({mode: 'detach'});
+      primaryWindow.webContents.toggleDevTools();
     }
   }
 };
@@ -55,24 +55,19 @@ const devToolsTemplate: MenuItemConstructorOptions = {
   submenu: [
     {
       accelerator: 'Alt+CmdOrCtrl+I',
-      click: () => {
-        const primaryWindow = WindowManager.getPrimaryWindow();
-        if (primaryWindow) {
-          primaryWindow.webContents.toggleDevTools();
-        }
-      },
+      click: () => openDevTools(0),
       label: 'Sidebar',
     },
     {
-      click: () => openDevTools(0),
+      click: () => openDevTools(1),
       label: 'First',
     },
     {
-      click: () => openDevTools(1),
+      click: () => openDevTools(2),
       label: 'Second',
     },
     {
-      click: () => openDevTools(2),
+      click: () => openDevTools(3),
       label: 'Third',
     },
   ],
