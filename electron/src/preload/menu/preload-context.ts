@@ -21,18 +21,16 @@ import {
   clipboard,
   ipcRenderer,
   Menu as ElectronMenu,
-  remote,
   ContextMenuParams,
   MenuItemConstructorOptions,
   WebContents,
   nativeImage,
 } from 'electron';
+const {Menu} = require('@electron/remote');
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
 import {config} from '../../settings/config';
-
-const Menu = remote.Menu;
 
 interface ElectronMenuWithImageAndTime extends ElectronMenu {
   image?: string;

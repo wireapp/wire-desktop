@@ -17,14 +17,15 @@
  *
  */
 
-import * as electron from 'electron';
+import * as Electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+const remote = require('@electron/remote');
 
 import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
 
-const app = electron.app || electron.remote.app;
+const app = Electron.app || remote.app;
 
 const logger = getLogger(path.basename(__filename));
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');

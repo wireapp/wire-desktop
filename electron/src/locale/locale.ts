@@ -18,6 +18,7 @@
  */
 
 import * as Electron from 'electron';
+const remote = require('@electron/remote');
 
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
@@ -156,7 +157,7 @@ const tr_TR = require('../../locale/tr-TR');
 const uk_UA = require('../../locale/uk-UA');
 const zh_CN = require('../../locale/zh-CN');
 
-const app = Electron.app || Electron.remote.app;
+const app = Electron.app || remote.app;
 
 export const LANGUAGES: SupportedI18nLanguageObject = {
   cs: cs_CZ,
