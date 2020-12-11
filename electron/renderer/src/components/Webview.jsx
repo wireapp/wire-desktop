@@ -70,6 +70,7 @@ const Webview = ({
 
   useEffect(() => {
     const newUrl = getEnvironmentUrl(account);
+    console.info(`Loading WebApp URL "${newUrl}" ...`);
     if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {

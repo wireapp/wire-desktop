@@ -51,7 +51,7 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLogFilenames} from './logging/loggerUtils';
-import {developerMenu} from './menu/developer';
+import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
@@ -235,8 +235,10 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     webappURL.hash = customProtocolHandler.hashLocation;
   }
 
-  if (argv.devtools) {
-    main.webContents.openDevTools({mode: 'detach'});
+  if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
+    openDevTools(argv[config.ARGUMENT.DEVTOOLS]).catch(() =>
+      logger.warn(`Could not open DevTools with index "${argv[config.ARGUMENT.DEVTOOLS]}". Does the account exist?`),
+    );
   }
 
   if (!startHidden) {
