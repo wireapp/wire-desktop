@@ -18,7 +18,7 @@
  */
 
 import * as Electron from 'electron';
-const remote = require('@electron/remote');
+const remote = require('@electron/remote/main');
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getText} from '../locale/locale';

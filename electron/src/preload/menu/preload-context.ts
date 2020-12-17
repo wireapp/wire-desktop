@@ -26,7 +26,7 @@ import {
   WebContents,
   nativeImage,
 } from 'electron';
-const {Menu} = require('@electron/remote');
+const {Menu} = require('@electron/remote/main');
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
@@ -124,7 +124,7 @@ const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
 
 const webContents = remote.getCurrentWebContents();
 
-webContents.on('context-menu', (_event, params) => {
+webContents.on('context-menu', (_event: Event, params: ContextMenuParams) => {
   const window = remote.getCurrentWindow();
 
   if (params.isEditable) {

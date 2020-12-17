@@ -1,7 +1,7 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
-    "@electron/remote": "1.0.2",
+    "@electron/remote/main": "1.0.2",
     "@hapi/joi": "17.1.1",
     "@wireapp/certificate-check": "0.1.12",
     "@wireapp/commons": "3.8.15",
@@ -50,7 +50,7 @@
     "@types/lodash": "4.14.165",
     "@types/minimist": "1.2.1",
     "@types/mocha": "8.2.0",
-    "@types/node": "~12",
+    "@types/node": "~14",
     "@types/open-graph": "0.2.1",
     "@types/sinon": "9.0.9",
     "@types/sort-json": "2.0.0",

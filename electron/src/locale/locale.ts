@@ -18,7 +18,7 @@
  */
 
 import * as Electron from 'electron';
-const remote = require('@electron/remote');
+const remote = require('@electron/remote/main');
 
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';

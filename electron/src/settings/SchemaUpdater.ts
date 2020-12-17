@@ -20,7 +20,7 @@
 import * as Electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-const remote = require('@electron/remote');
+const remote = require('@electron/remote/main');
 
 import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';

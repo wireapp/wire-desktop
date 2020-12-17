@@ -21,7 +21,7 @@ import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import * as Electron from 'electron';
 import * as logdown from 'logdown';
 import * as path from 'path';
-const remote = require('@electron/remote');
+const remote = require('@electron/remote/main');
 
 import {config} from '../settings/config';
 
