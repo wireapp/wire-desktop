@@ -3601,32 +3601,32 @@ crypto-random-string@^2.0.0:
   resolved "https://registry.npmjs.org/crypto-random-string/-/crypto-random-string-2.0.0.tgz#ef2a7a966ec11083388369baa02ebead229b30d5"
   integrity sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==
 
-cspell-glob@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.npmjs.org/cspell-glob/-/cspell-glob-5.0.4.tgz#692b98f7e3dcafc52096e38f1d0875d8b6fdc300"
-  integrity sha512-M8nmIHN263S027ni01+Kg8XuLJ9Y/UaUrEkkGtPhor1KuzjVc2kFgQe+5x/aXdW5NYBOJgiuH1wfc4/uXUkW5w==
+cspell-glob@^5.0.8:
+  version "5.0.8"
+  resolved "https://registry.npmjs.org/cspell-glob/-/cspell-glob-5.0.8.tgz#548c13212374a8dbbcd20e106972bc2bb152afa0"
+  integrity sha512-E0VEJJRx/Vuza1gEawkf1eX6yrmxw62YRnYNgmiVMOle1b4xUiQtViuxwQZtM36QsdKuh/ZrVrgz5l/947XCOQ==
   dependencies:
     micromatch "^4.0.2"
 
-cspell-io@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.npmjs.org/cspell-io/-/cspell-io-5.0.4.tgz#3ec6483224bf759a0efb89b38dde0f17e16bdfdf"
-  integrity sha512-NUoV0NiDJWeJjMaXbibBsYgCnTaM0Fj4UeNqDhdzrSjnkOQTuydTzYTjRg3nsTEKJCPWjuubiUt1D1O78ugX4A==
+cspell-io@^5.0.8:
+  version "5.0.8"
+  resolved "https://registry.npmjs.org/cspell-io/-/cspell-io-5.0.8.tgz#4be4669a231297f86e6ebb1a45d14ee659da78f7"
+  integrity sha512-ITP8hUnh72IiGzaiMJfXUhDlcDo0Es0dCa2+FLiBpJu1i2E03lxpZYupcfmvWKrviw+HCdrtCyeVVIV/txETJQ==
   dependencies:
     iconv-lite "^0.6.2"
     iterable-to-stream "^1.0.1"
 
-cspell-lib@^5.0.7:
-  version "5.0.7"
-  resolved "https://registry.npmjs.org/cspell-lib/-/cspell-lib-5.0.7.tgz#f56c3dfc5a2f220e4a56e75906f4c6d4179ab830"
-  integrity sha512-o6DxsZJtufO5jHE3VhNJ2OomusSxeUHjUO1Bx1uAoVUclwgktt9AtT5+LyDt6fDCuPv+5K5x1p4HoryAsmyiug==
+cspell-lib@^5.0.8:
+  version "5.0.8"
+  resolved "https://registry.npmjs.org/cspell-lib/-/cspell-lib-5.0.8.tgz#16fadc62ae1ed558c6dfdb8365ba5452e43d7c3b"
+  integrity sha512-Vu6SHgxJqwzjhKPgDVfqJ2G3pflS/kEAcji7qDRj0U7StLOo5X5s+wVU8tHDuNi7v5R6SXA4hoypjBZB3yF/gg==
   dependencies:
     "@cspell/cspell-bundled-dicts" "^5.0.6"
     comment-json "^4.1.0"
     configstore "^5.0.1"
-    cspell-io "^5.0.4"
-    cspell-trie-lib "^5.0.4"
-    cspell-util-bundle "^5.0.5"
+    cspell-io "^5.0.8"
+    cspell-trie-lib "^5.0.8"
+    cspell-util-bundle "^5.0.8"
     fs-extra "^9.0.1"
     gensequence "^3.1.1"
     minimatch "^3.0.4"
@@ -3634,29 +3634,29 @@ cspell-lib@^5.0.7:
     resolve-global "^1.0.0"
     vscode-uri "^2.1.2"
 
-cspell-trie-lib@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.npmjs.org/cspell-trie-lib/-/cspell-trie-lib-5.0.4.tgz#8073477d6c12fdad0d17ca9cb7b49f6652cfe16f"
-  integrity sha512-RVTrh2V4qz1lVvVYPCNXxBNy/eVwhkyO0osUJ7pJ5NmOgDDSQc2vBZhXyJ6iSir15qfzFgykmq1hvkt97lNK/A==
+cspell-trie-lib@^5.0.8:
+  version "5.0.8"
+  resolved "https://registry.npmjs.org/cspell-trie-lib/-/cspell-trie-lib-5.0.8.tgz#5f3e7a3c11e572eaebd33b8ec7ccf58b8a4dd5e9"
+  integrity sha512-nQp8s3iO8Lm31zPMYm604PFNeTH83by90Gw+0fgzZqdWBO+q8gRJ5dpGVsOs7C4dF5pzChEDZAhmVxw8gQDc/Q==
   dependencies:
     fs-extra "^9.0.1"
     gensequence "^3.1.1"
 
-cspell-util-bundle@^5.0.5:
-  version "5.0.5"
-  resolved "https://registry.npmjs.org/cspell-util-bundle/-/cspell-util-bundle-5.0.5.tgz#2cf734928acaec234175b18c508d9083c3f7fd4e"
-  integrity sha512-v2zaiZBmHm8PVTRsqZ0K7FLfXNaPK9FvA5GKmkosACSvLNL9hSTX5VEvqAjigCUvoVfCALSKuh2smFKOu/ZGAQ==
+cspell-util-bundle@^5.0.8:
+  version "5.0.8"
+  resolved "https://registry.npmjs.org/cspell-util-bundle/-/cspell-util-bundle-5.0.8.tgz#e345c299824305e4410c3bcf34145577be351c36"
+  integrity sha512-AD7IjU2ZO6P+Oar33+EtUBKkVNHEyi1U/mszyIpUrwi3cXj7n7wPZxymNJ4OsqToIrUFq+qfYDTwA/tt/quwRQ==
 
-cspell@5.0.7:
-  version "5.0.7"
-  resolved "https://registry.npmjs.org/cspell/-/cspell-5.0.7.tgz#cd2492fe1d72c790e2b12b9d31dd1409151fd08d"
-  integrity sha512-SeZeN8ldc3Z1BQ1qvZph9ZLj7YijyiLpGSl7HDxx2ops3YKvs73EvGw5fuMop5s2AwzEoUYpgi8/gIRQNd1uSA==
+cspell@5.0.8:
+  version "5.0.8"
+  resolved "https://registry.npmjs.org/cspell/-/cspell-5.0.8.tgz#355bf11ee2a417ca9963223e5c16ffc590af4abc"
+  integrity sha512-Ie3kJTrklT3DVAqcD3LG05rBtT7g4Sm1JJ+nZkwnWy7sH7NqOaYWOafi/VyG4KPE4hZosX0H24LKjTsSPp+qMA==
   dependencies:
     chalk "^4.1.0"
     commander "^6.2.1"
     comment-json "^4.1.0"
-    cspell-glob "^5.0.4"
-    cspell-lib "^5.0.7"
+    cspell-glob "^5.0.8"
+    cspell-lib "^5.0.8"
     fs-extra "^9.0.1"
     get-stdin "^8.0.0"
     glob "^7.1.6"
