@@ -2251,10 +2251,10 @@
   dependencies:
     jsrsasign "8.0.20"
 
-"@wireapp/commons@3.8.15":
-  version "3.8.15"
-  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.8.15.tgz#8377ef71812fe26402bd11b3dbd5283384df9020"
-  integrity sha512-fmVxO/IPE/rauCJas/DMdQcSFVbCKOwA0B+w4zcSmv82nHx76XJSkR7YTDAUkwKhtYtaCS/s/MUNDVE1J1tV8Q==
+"@wireapp/commons@3.8.16":
+  version "3.8.16"
+  resolved "https://registry.npmjs.org/@wireapp/commons/-/commons-3.8.16.tgz#d49ce4231d90c536e6fc496ca2a5a1a0a9c81650"
+  integrity sha512-dTmCERMAhn0t0jgPHhrfjvNM3d94GDb4qovttuMlyJT7agvUJhNXY3fJ3w+MNgv8hXYenjkpBlvgAogy+DKOSg==
   dependencies:
     "@types/fs-extra" "8.1.0"
     "@types/node" "~12"
