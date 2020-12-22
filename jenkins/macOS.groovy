@@ -6,7 +6,7 @@ def parseJson(def text) {
 node('master') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def NODE = tool name: 'node-v14.15.2', type: 'nodejs'
+  def NODE = tool name: 'node-v14.15.3', type: 'nodejs'
   def privateAPIResult = ''
 
   def jenkinsbot_secret = ''
