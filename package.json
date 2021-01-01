@@ -68,7 +68,7 @@
     "commander": "6.2.1",
     "core-js": "3.8.1",
     "cross-env": "7.0.3",
-    "cspell": "5.0.8",
+    "cspell": "5.1.2",
     "css-loader": "5.0.1",
     "dotenv": "8.2.0",
     "electron": "10.1.4",
