@@ -4141,10 +4141,10 @@ electron-winstaller@4.0.1:
     lodash.template "^4.2.2"
     temp "^0.9.0"
 
-electron@12.0.0-beta.12:
-  version "12.0.0-beta.12"
-  resolved "https://registry.npmjs.org/electron/-/electron-12.0.0-beta.12.tgz#7a9ec2e4a9c43cefdc1f6b958a697638facacdf1"
-  integrity sha512-KsLYSobAgN0F//WuJJxpNK7K2yWqVSPPG/mecGcZh72rRiz0K6oV3UX9xd/37F8l6dqbE3GmfEVAjzD7ZzPwNg==
+electron@12.0.0-beta.14:
+  version "12.0.0-beta.14"
+  resolved "https://registry.npmjs.org/electron/-/electron-12.0.0-beta.14.tgz#f8c40c7e479879c305e519380e710c0a357aa734"
+  integrity sha512-PYM+EepIEj9kLePXEb9gIxzZk5H4zM7LGg5iw60OHt+SYEECPNFJmPj3N6oHKu3W+KrCG7285Vgz2ZCp1u0kKA==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"
