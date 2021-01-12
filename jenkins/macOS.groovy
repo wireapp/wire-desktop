@@ -80,6 +80,7 @@ node('master') {
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
     }
     archiveArtifacts "wrap/dist/**"
+    sh returnStatus: true, script: 'rm -rf wrap/'
   }
 
   stage('Trigger smoke tests') {
