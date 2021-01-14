@@ -1864,9 +1864,9 @@
   integrity sha512-Y93R97Ouif9JEOWPIUyU+eyIdyRqQR0I8Ez1dzku4hDx34NWh4HbtIc3WNzwB1Y9ULvNGeu5B8h8bVL5cAk4/A==
 
 "@types/node@^12.0.12", "@types/node@~12":
-  version "12.19.12"
-  resolved "https://registry.npmjs.org/@types/node/-/node-12.19.12.tgz#04793c2afa4ce833a9972e4c476432e30f9df47b"
-  integrity sha512-UwfL2uIU9arX/+/PRcIkT08/iBadGN2z6ExOROA2Dh5mAuWTBj6iJbQX4nekiV5H8cTrEG569LeX+HRco9Cbxw==
+  version "12.19.13"
+  resolved "https://registry.npmjs.org/@types/node/-/node-12.19.13.tgz#888e2b34159fb91496589484ec169618212b51b7"
+  integrity sha512-qdixo2f0U7z6m0UJUugTJqVF94GNDkdgQhfBtMs8t5898JE7G/D2kJYw4rc1nzjIPLVAsDkY2MdABnLAP5lM1w==
 
 "@types/node@^13.7.0":
   version "13.13.34"
@@ -2236,10 +2236,10 @@
     platform "1.3.6"
     url-search-params-polyfill "8.1.0"
 
-"@wireapp/copy-config@1.1.11":
-  version "1.1.11"
-  resolved "https://registry.npmjs.org/@wireapp/copy-config/-/copy-config-1.1.11.tgz#af17144dcd4f6fa16d932c53f5157aed0e8277da"
-  integrity sha512-he+Cu8vES272zEPOF1MHZP/ZvmX6Egb0fYEs2+VKxHB90Gt3x0PMjrOTzdAo9qJvE+hVs5Kqwi4UMMGBQYJw4w==
+"@wireapp/copy-config@1.1.12":
+  version "1.1.12"
+  resolved "https://registry.npmjs.org/@wireapp/copy-config/-/copy-config-1.1.12.tgz#c33a0a5922c42f647f74ef813ca83c34b4055b36"
+  integrity sha512-eRBgFyjwOufhD8TKCwJpWEevIRDl7ILduqYpwANzStTXViGgQqbfVTpgA5rYfG9HscPAkYQLGg9jIFZs+CxAWQ==
   dependencies:
     axios "0.21.1"
     copy "0.3.2"
@@ -2653,10 +2653,10 @@ auto-launch@5.0.5:
     untildify "^3.0.2"
     winreg "1.2.4"
 
-aws-sdk@2.825.0:
-  version "2.825.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.825.0.tgz#91dad854827f6f8ada5a305dd32524e2f19cc622"
-  integrity sha512-b49nvaETm7uVRLf0FJ1CMmwCRVlLaxHtptVFuxX+2L4FR9VB0sLdgsxhtL3RVFbQlgVFNRV7fJUVK27mC++H+A==
+aws-sdk@2.827.0:
+  version "2.827.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.827.0.tgz#372e37cabf0e8351de6d8f07a8f519bfaaeeae2a"
+  integrity sha512-71PWS1dqJ65/SeNgDQWEgbJ6oKCuB+Ypq30TM3EyzbAHaxl69WjQRK71oJ2bjhdIHfGQJtOV0G9wg4zpge4Erg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -4191,10 +4191,10 @@ end-of-stream@^1.1.0:
   dependencies:
     once "^1.4.0"
 
-enhanced-resolve@^5.6.0:
-  version "5.6.0"
-  resolved "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.6.0.tgz#ad19a1665f230a6e384724a30acf3f7332b2b3f0"
-  integrity sha512-C3GGDfFZmqUa21o10YRKbZN60DPl0HyXKXxoEnQMWso9u7KMU23L7CBHfr/rVxORddY/8YQZaU2MZ1ewTS8Pcw==
+enhanced-resolve@^5.7.0:
+  version "5.7.0"
+  resolved "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.7.0.tgz#525c5d856680fbd5052de453ac83e32049958b5c"
+  integrity sha512-6njwt/NsZFUKhM6j9U8hzVyD4E4r0x7NQzhTCbcWOJ0IQjNSAoalWmb0AE51Wn+fwan5qVESWi7t2ToBxs9vrw==
   dependencies:
     graceful-fs "^4.2.4"
     tapable "^2.2.0"
@@ -4284,6 +4284,11 @@ es-abstract@^1.18.0-next.0:
     object.assign "^4.1.1"
     string.prototype.trimend "^1.0.1"
     string.prototype.trimstart "^1.0.1"
+
+es-module-lexer@^0.3.26:
+  version "0.3.26"
+  resolved "https://registry.npmjs.org/es-module-lexer/-/es-module-lexer-0.3.26.tgz#7b507044e97d5b03b01d4392c74ffeb9c177a83b"
+  integrity sha512-Va0Q/xqtrss45hWzP8CZJwzGSZJjDM5/MJRE3IXXnUCcVLElR9BRaE9F62BopysASyc4nM3uwhSW7FFB9nlWAA==
 
 es-to-primitive@^1.2.1:
   version "1.2.1"
@@ -9929,10 +9934,10 @@ webpack-sources@^2.1.1:
     source-list-map "^2.0.1"
     source-map "^0.6.1"
 
-webpack@5.13.0:
-  version "5.13.0"
-  resolved "https://registry.npmjs.org/webpack/-/webpack-5.13.0.tgz#275351b043bd212562f4390e903619d07d5a2fcf"
-  integrity sha512-NPhMEtfhSVegp1FNPkCM1MPygDm0GHwpreG10dh//0Gr0epfB0br9nlgEfxSghxJqrQ7j9XzgO91CGGLWZiHeA==
+webpack@5.14.0:
+  version "5.14.0"
+  resolved "https://registry.npmjs.org/webpack/-/webpack-5.14.0.tgz#cdfe9286d14ddc2bb348afabc1d910d166f3c47f"
+  integrity sha512-PFtfqXIKT6EG+k4L7d9whUPacN2XvxlUMc8NAQvN+sF9G8xPQqrCDGDiXbAdyGNz+/OP6ioxnUKybBBZ1kp/2A==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.45"
@@ -9942,7 +9947,8 @@ webpack@5.13.0:
     acorn "^8.0.4"
     browserslist "^4.14.5"
     chrome-trace-event "^1.0.2"
-    enhanced-resolve "^5.6.0"
+    enhanced-resolve "^5.7.0"
+    es-module-lexer "^0.3.26"
     eslint-scope "^5.1.1"
     events "^3.2.0"
     glob-to-regexp "^0.4.1"
