@@ -38,24 +38,26 @@ commander
   .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
   .parse(process.argv);
 
-checkCommanderOptions(commander, logger, ['bucket', 'keyId', 'secretKey', 'wrapperBuild']);
+const commanderOptions = commander.opts();
 
-if (!commander.wrapperBuild.includes('#')) {
-  logger.error(`Invalid wrapper build id "${commander.wrapperBuild}"`);
+checkCommanderOptions(commanderOptions, logger, ['bucket', 'keyId', 'secretKey', 'wrapperBuild']);
+
+if (!commanderOptions.wrapperBuild.includes('#')) {
+  logger.error(`Invalid wrapper build id "${commanderOptions.wrapperBuild}"`);
   commander.outputHelp();
   process.exit(1);
 }
 
 (async () => {
-  const [platform, version] = commander.wrapperBuild.toLowerCase().split('#');
+  const [platform, version] = commanderOptions.wrapperBuild.toLowerCase().split('#');
 
   if (!platform.includes('windows')) {
     throw new Error('Copying release files on S3 is supported only for Windows');
   }
 
-  const bucket = commander.bucket;
-  const searchBasePath = commander.path || path.resolve('.');
-  const s3BasePath = `${commander.s3path || ''}/`.replace('//', '/');
+  const bucket = commanderOptions.bucket;
+  const searchBasePath = commanderOptions.path || path.resolve('.');
+  const s3BasePath = `${commanderOptions.s3path || ''}/`.replace('//', '/');
 
   const nupkgFile = await find('*-full.nupkg', {cwd: searchBasePath});
   const setupExe = await find('*-Setup.exe', {cwd: searchBasePath});
@@ -76,9 +78,9 @@ if (!commander.wrapperBuild.includes('#')) {
   const latestReleaseKey = `${s3BasePath}/${appShortName}-${version}-RELEASES`;
   const latestExeKey = `${s3BasePath}/${appShortName}-${version}.exe`;
 
-  const {secretKey: secretAccessKey, keyId: accessKeyId} = commander;
+  const {secretKey: secretAccessKey, keyId: accessKeyId} = commanderOptions;
 
-  const s3Deployer = new S3Deployer({accessKeyId, dryRun: commander.dryRun || false, secretAccessKey});
+  const s3Deployer = new S3Deployer({accessKeyId, dryRun: commanderOptions.dryRun || false, secretAccessKey});
 
   logger.log(`Deleting "${staticReleaseKey}" from S3 ...`);
   await s3Deployer.deleteFromS3({bucket, s3Path: `${bucket}/${staticReleaseKey}`});

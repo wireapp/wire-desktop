@@ -37,10 +37,12 @@ commander
   .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
   .parse(process.argv);
 
-checkCommanderOptions(commander, logger, ['hockeyToken', 'hockeyId', 'wrapperBuild']);
+const commanderOptions = commander.opts();
 
-if (!commander.wrapperBuild.includes('#')) {
-  logger.error(`Invalid wrapper build id "${commander.wrapperBuild}"`);
+checkCommanderOptions(commanderOptions, logger, ['hockeyToken', 'hockeyId', 'wrapperBuild']);
+
+if (!commanderOptions.wrapperBuild.includes('#')) {
+  logger.error(`Invalid wrapper build id "${commanderOptions.wrapperBuild}"`);
   commander.outputHelp();
   process.exit(1);
 }
@@ -57,9 +59,9 @@ function getUploadFile(platform: string, basePath: string): Promise<FindResult> 
 }
 
 (async () => {
-  const {hockeyId, hockeyToken, wrapperBuild} = commander;
+  const {hockeyId, hockeyToken, wrapperBuild} = commanderOptions;
   const [platform, version] = wrapperBuild.toLowerCase().split('#');
-  const searchBasePath = commander.path || path.resolve('.');
+  const searchBasePath = commanderOptions.path || path.resolve('.');
   const [majorVersion, minorVersion] = version.split('.');
 
   const {filePath} = await getUploadFile(platform, searchBasePath);
@@ -71,7 +73,7 @@ function getUploadFile(platform: string, basePath: string): Promise<FindResult> 
   logger.log(`Creating app version "${majorVersion}.${minorVersion}" on Hockey ...`);
 
   const hockeyDeployer = new HockeyDeployer({
-    dryRun: commander.dryRun || false,
+    dryRun: commanderOptions.dryRun || false,
     hockeyAppId: hockeyId,
     hockeyToken,
     version,
