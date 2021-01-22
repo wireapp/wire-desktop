@@ -18,7 +18,7 @@
 
 import {LogFactory, Logger} from '@wireapp/commons/src/main/LogFactory';
 import {exec} from 'child_process';
-import commander from 'commander';
+import {OptionValues} from 'commander';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -57,7 +57,7 @@ export const getLogger = (namespace: string, name: string): Logger =>
   LogFactory.getLogger(name, {forceEnable: true, namespace: `@wireapp/${namespace}`, separator: '/'});
 
 export function checkCommanderOptions(
-  commanderInstance: typeof commander,
+  commanderInstance: OptionValues,
   logdownInstance: Logger,
   options: string[],
 ): void {
