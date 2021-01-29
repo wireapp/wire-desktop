@@ -15,7 +15,7 @@ updates:
       #     - '>= 15.x'
       - dependency-name: electron
         versions:
-          - '>= 10.x'
+          - '>= 11.x'
       - dependency-name: electron-builder
         versions:
           - '>= 21.x'

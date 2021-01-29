@@ -36,10 +36,12 @@ commander
   .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
   .parse(process.argv);
 
-checkCommanderOptions(commander, logger, ['githubToken', 'wrapperBuild']);
+const commanderOptions = commander.opts();
 
-if (!commander.wrapperBuild.includes('#')) {
-  logger.error(`Invalid wrapper build id "${commander.wrapperBuild}"`);
+checkCommanderOptions(commanderOptions, logger, ['githubToken', 'wrapperBuild']);
+
+if (!commanderOptions.wrapperBuild.includes('#')) {
+  logger.error(`Invalid wrapper build id "${commanderOptions.wrapperBuild}"`);
   commander.outputHelp();
   process.exit(1);
 }
@@ -52,8 +54,8 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
   let PLATFORM: string;
   const extensions = [FileExtension.ASC, FileExtension.SIG];
 
-  const [platform, version] = commander.wrapperBuild.toLowerCase().split('#');
-  const basePath = commander.path || path.resolve('.');
+  const [platform, version] = commanderOptions.wrapperBuild.toLowerCase().split('#');
+  const basePath = commanderOptions.path || path.resolve('.');
 
   if (platform.includes('linux')) {
     PLATFORM = 'Linux';
@@ -70,12 +72,12 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
 
   const {stdout: commitId} = await execAsync('git rev-parse HEAD');
   const changelog = '...';
-  const githubToken = commander.githubToken;
+  const githubToken = commanderOptions.githubToken;
 
   logger.log('Creating a draft ...');
 
   const githubDraftDeployer = new GitHubDraftDeployer({
-    dryRun: commander.dryRun || false,
+    dryRun: commanderOptions.dryRun || false,
     githubToken,
     repoSlug,
   });
