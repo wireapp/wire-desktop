@@ -980,10 +980,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@cspell/cspell-bundled-dicts@^5.2.2":
-  version "5.2.2"
-  resolved "https://registry.npmjs.org/@cspell/cspell-bundled-dicts/-/cspell-bundled-dicts-5.2.2.tgz#1d0179bf1ef14e2dd9c2aacb78e9611dffaa65f0"
-  integrity sha512-EbdWSEgpcs3OFzb5nsiVXeribV6VyFtCvo5BSc2zlmAGwhBctUBS/owAVG5Yevh1EfjzSD83UJdHzRWMGqDWmw==
+"@cspell/cspell-bundled-dicts@^5.2.4":
+  version "5.2.4"
+  resolved "https://registry.npmjs.org/@cspell/cspell-bundled-dicts/-/cspell-bundled-dicts-5.2.4.tgz#dd0e161bb2203f19a2dd9358c3eb9daaffb7a336"
+  integrity sha512-IVoTVdFIWnWmJYBwjbsYtFyH6fD8bClDZrFpUa/a84vXVopcH1ZjpwotDsHO+P3O1GCFTacT1Z2Lyh56xowmxw==
   dependencies:
     "@cspell/dict-aws" "^1.0.13"
     "@cspell/dict-bash" "^1.0.11"
@@ -1018,6 +1018,11 @@
     "@cspell/dict-scala" "^1.0.21"
     "@cspell/dict-software-terms" "^1.0.25"
     "@cspell/dict-typescript" "^1.0.16"
+
+"@cspell/cspell-types@^5.2.4":
+  version "5.2.4"
+  resolved "https://registry.npmjs.org/@cspell/cspell-types/-/cspell-types-5.2.4.tgz#361fdc6c008b82a5c0dfd6c1fd2bee2cb7255b4b"
+  integrity sha512-luv2hzoKdDrNs2LPDHuS+r9hOniZlYiJJU8og8ftGyuwjytnSaTUvtY8SzFqquKQJ4+rty6AF2RS/foQ69s/2Q==
 
 "@cspell/dict-aws@^1.0.13":
   version "1.0.13"
@@ -3586,12 +3591,13 @@ cspell-io@^5.2.0:
     iconv-lite "^0.6.2"
     iterable-to-stream "^1.0.1"
 
-cspell-lib@^5.2.3:
-  version "5.2.3"
-  resolved "https://registry.npmjs.org/cspell-lib/-/cspell-lib-5.2.3.tgz#1203ffe16d309c4d1e3a4f04e94cc0e49dbe2c6a"
-  integrity sha512-bOk5XbiWngOb6uVPmySnIuDx1x78/woVJkowsMFAGHP6y6pbn+7TC0cRnijUp1LuQ0PLkkxFg/yjMEaVu5XgtQ==
+cspell-lib@^5.2.4:
+  version "5.2.4"
+  resolved "https://registry.npmjs.org/cspell-lib/-/cspell-lib-5.2.4.tgz#8296c5045fa7c4072dcd8b8995e1ae83949c5873"
+  integrity sha512-DR0ZSNCwurHCobO5QDYyEuCCmkXRutQvfoK18wICuiUElD4WkgksuWPItRr2s5901t/QvImh349U+2UuO9qwCA==
   dependencies:
-    "@cspell/cspell-bundled-dicts" "^5.2.2"
+    "@cspell/cspell-bundled-dicts" "^5.2.4"
+    "@cspell/cspell-types" "^5.2.4"
     comment-json "^4.1.0"
     configstore "^5.0.1"
     cosmiconfig "^7.0.0"
@@ -3612,16 +3618,16 @@ cspell-trie-lib@^5.2.2:
     fs-extra "^9.1.0"
     gensequence "^3.1.1"
 
-cspell@5.2.3:
-  version "5.2.3"
-  resolved "https://registry.npmjs.org/cspell/-/cspell-5.2.3.tgz#eec067125aafe092d0ab4d49738f57e588901396"
-  integrity sha512-0oE4CJJ+y5h8nLGHrOiSCWQ4NgOqWp79Ed9RsG0scq4AcdP37wfPeFGg3T0UgM71ALsrCHUNccktDHD0tb3tZw==
+cspell@5.2.4:
+  version "5.2.4"
+  resolved "https://registry.npmjs.org/cspell/-/cspell-5.2.4.tgz#d28b6a6ff93d1824c560a2c6f5e4d9000227a12a"
+  integrity sha512-ONMoI2Yf9of662Ac8Azg+EKXWSDxZIjSWGtkg6FNQOCzD0AgO6ZJv2ti9mHuSZ9rovfaPJUocmiTJSl9TncK6g==
   dependencies:
     chalk "^4.1.0"
     commander "^7.0.0"
     comment-json "^4.1.0"
     cspell-glob "^5.2.0"
-    cspell-lib "^5.2.3"
+    cspell-lib "^5.2.4"
     fs-extra "^9.1.0"
     get-stdin "^8.0.0"
     glob "^7.1.6"
