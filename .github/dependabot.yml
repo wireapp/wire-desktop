@@ -9,10 +9,6 @@ updates:
     open-pull-requests-limit: 99
     versioning-strategy: increase
     ignore:
-      ### Enable once @types/node 15 was released
-      # - dependency-name: '@types/node'
-      #   versions:
-      #     - '>= 15.x'
       - dependency-name: electron
         versions:
           - '>= 13.x'
