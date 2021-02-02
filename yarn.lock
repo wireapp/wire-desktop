@@ -980,10 +980,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@cspell/cspell-bundled-dicts@^5.2.2":
-  version "5.2.2"
-  resolved "https://registry.npmjs.org/@cspell/cspell-bundled-dicts/-/cspell-bundled-dicts-5.2.2.tgz#1d0179bf1ef14e2dd9c2aacb78e9611dffaa65f0"
-  integrity sha512-EbdWSEgpcs3OFzb5nsiVXeribV6VyFtCvo5BSc2zlmAGwhBctUBS/owAVG5Yevh1EfjzSD83UJdHzRWMGqDWmw==
+"@cspell/cspell-bundled-dicts@^5.2.4":
+  version "5.2.4"
+  resolved "https://registry.npmjs.org/@cspell/cspell-bundled-dicts/-/cspell-bundled-dicts-5.2.4.tgz#dd0e161bb2203f19a2dd9358c3eb9daaffb7a336"
+  integrity sha512-IVoTVdFIWnWmJYBwjbsYtFyH6fD8bClDZrFpUa/a84vXVopcH1ZjpwotDsHO+P3O1GCFTacT1Z2Lyh56xowmxw==
   dependencies:
     "@cspell/dict-aws" "^1.0.13"
     "@cspell/dict-bash" "^1.0.11"
@@ -1018,6 +1018,11 @@
     "@cspell/dict-scala" "^1.0.21"
     "@cspell/dict-software-terms" "^1.0.25"
     "@cspell/dict-typescript" "^1.0.16"
+
+"@cspell/cspell-types@^5.2.4":
+  version "5.2.4"
+  resolved "https://registry.npmjs.org/@cspell/cspell-types/-/cspell-types-5.2.4.tgz#361fdc6c008b82a5c0dfd6c1fd2bee2cb7255b4b"
+  integrity sha512-luv2hzoKdDrNs2LPDHuS+r9hOniZlYiJJU8og8ftGyuwjytnSaTUvtY8SzFqquKQJ4+rty6AF2RS/foQ69s/2Q==
 
 "@cspell/dict-aws@^1.0.13":
   version "1.0.13"
@@ -2658,10 +2663,10 @@ auto-launch@5.0.5:
     untildify "^3.0.2"
     winreg "1.2.4"
 
-aws-sdk@2.829.0:
-  version "2.829.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.829.0.tgz#da70407a8bddc21b1dc1c9ba61ac3daea39b9364"
-  integrity sha512-0LV0argbcE1HhOeCeCZWUbpP4rWzwqe+0WmnR+jCJPY0w0n/ntGU/GW8obzhhhUej8pS4AkuAJNgzbwlTnxUmw==
+aws-sdk@2.833.0:
+  version "2.833.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.833.0.tgz#f295d7c3a9576d522c9662c4e5c9945e7f033bbc"
+  integrity sha512-s0xzhRhaycNBetfLWU5E5GTdWKwT/Fb8UIdMI1G7Jf/xscivpGvakVWUYwhQLn2xWpPcdQQwsVsvkG3KS4bmCA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3586,12 +3591,13 @@ cspell-io@^5.2.0:
     iconv-lite "^0.6.2"
     iterable-to-stream "^1.0.1"
 
-cspell-lib@^5.2.3:
-  version "5.2.3"
-  resolved "https://registry.npmjs.org/cspell-lib/-/cspell-lib-5.2.3.tgz#1203ffe16d309c4d1e3a4f04e94cc0e49dbe2c6a"
-  integrity sha512-bOk5XbiWngOb6uVPmySnIuDx1x78/woVJkowsMFAGHP6y6pbn+7TC0cRnijUp1LuQ0PLkkxFg/yjMEaVu5XgtQ==
+cspell-lib@^5.2.4:
+  version "5.2.4"
+  resolved "https://registry.npmjs.org/cspell-lib/-/cspell-lib-5.2.4.tgz#8296c5045fa7c4072dcd8b8995e1ae83949c5873"
+  integrity sha512-DR0ZSNCwurHCobO5QDYyEuCCmkXRutQvfoK18wICuiUElD4WkgksuWPItRr2s5901t/QvImh349U+2UuO9qwCA==
   dependencies:
-    "@cspell/cspell-bundled-dicts" "^5.2.2"
+    "@cspell/cspell-bundled-dicts" "^5.2.4"
+    "@cspell/cspell-types" "^5.2.4"
     comment-json "^4.1.0"
     configstore "^5.0.1"
     cosmiconfig "^7.0.0"
@@ -3612,16 +3618,16 @@ cspell-trie-lib@^5.2.2:
     fs-extra "^9.1.0"
     gensequence "^3.1.1"
 
-cspell@5.2.3:
-  version "5.2.3"
-  resolved "https://registry.npmjs.org/cspell/-/cspell-5.2.3.tgz#eec067125aafe092d0ab4d49738f57e588901396"
-  integrity sha512-0oE4CJJ+y5h8nLGHrOiSCWQ4NgOqWp79Ed9RsG0scq4AcdP37wfPeFGg3T0UgM71ALsrCHUNccktDHD0tb3tZw==
+cspell@5.2.4:
+  version "5.2.4"
+  resolved "https://registry.npmjs.org/cspell/-/cspell-5.2.4.tgz#d28b6a6ff93d1824c560a2c6f5e4d9000227a12a"
+  integrity sha512-ONMoI2Yf9of662Ac8Azg+EKXWSDxZIjSWGtkg6FNQOCzD0AgO6ZJv2ti9mHuSZ9rovfaPJUocmiTJSl9TncK6g==
   dependencies:
     chalk "^4.1.0"
     commander "^7.0.0"
     comment-json "^4.1.0"
     cspell-glob "^5.2.0"
-    cspell-lib "^5.2.3"
+    cspell-lib "^5.2.4"
     fs-extra "^9.1.0"
     get-stdin "^8.0.0"
     glob "^7.1.6"
@@ -4395,10 +4401,10 @@ eslint-plugin-jasmine@4.1.1:
   resolved "https://registry.npmjs.org/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.1.1.tgz#afdf8ca6a91e85041d9e0fb650af446874bf8852"
   integrity sha512-uS7kvt7RPUB/gLDwhJ/Ax0APrmkj7In8VJWkiZLYHafz2Ix74mMRJx82YZZ3zHRa/YOuTL+ig6dW/aKwdNzUuw==
 
-eslint-plugin-jsdoc@31.4.0:
-  version "31.4.0"
-  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-31.4.0.tgz#70e00f5f8f7cc695de36319d0e761e1a784ae10e"
-  integrity sha512-NX387IVQrA/ZE9F1tpeEFzZDsXb/BJS4HdT1ZH0RME3O/4DJF8GNQnjMSia8O3gFx/kjfASsdmK5LglVs+xGLA==
+eslint-plugin-jsdoc@31.6.0:
+  version "31.6.0"
+  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-31.6.0.tgz#c91f8cb4e4f8a94a27aafdc41c58eb8c35c9ce9a"
+  integrity sha512-kYhdW+BXHij9n12oHvAC27oDHKEFITz1YJP/C0NPtb+gsGJWxejh5B6dEmmj6oLYOsmNvuCVkdIcqYOyabP2QA==
   dependencies:
     comment-parser "1.1.1"
     debug "^4.3.1"
@@ -4488,10 +4494,10 @@ eslint-visitor-keys@^2.0.0:
   resolved "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-2.0.0.tgz#21fdc8fbcd9c795cc0321f0563702095751511a8"
   integrity sha512-QudtT6av5WXels9WjIM7qz1XD1cWGvX4gGXvp/zBn9nXG02D0utdU3Em2m/QjTnrsk6bBjmCygl3rmj118msQQ==
 
-eslint@7.18.0:
-  version "7.18.0"
-  resolved "https://registry.npmjs.org/eslint/-/eslint-7.18.0.tgz#7fdcd2f3715a41fe6295a16234bd69aed2c75e67"
-  integrity sha512-fbgTiE8BfUJZuBeq2Yi7J3RB3WGUQ9PNuNbmgi6jt9Iv8qrkxfy19Ds3OpL1Pm7zg3BtTVhvcUZbIRQ0wmSjAQ==
+eslint@7.19.0:
+  version "7.19.0"
+  resolved "https://registry.npmjs.org/eslint/-/eslint-7.19.0.tgz#6719621b196b5fad72e43387981314e5d0dc3f41"
+  integrity sha512-CGlMgJY56JZ9ZSYhJuhow61lMPPjUzWmChFya71Z/jilVos7mR/jPgaEfVGgMBY5DshbKdG8Ezb8FDCHcoMEMg==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     "@eslint/eslintrc" "^0.3.0"
@@ -7343,10 +7349,10 @@ nise@^4.0.4:
     just-extend "^4.0.2"
     path-to-regexp "^1.7.0"
 
-nock@13.0.6:
-  version "13.0.6"
-  resolved "https://registry.npmjs.org/nock/-/nock-13.0.6.tgz#9f90573ea6e84883b94eeac374d1c73460afed56"
-  integrity sha512-W81UZ1Tv21SWDZcA8Lu9LXYVl2gO9ADY5GadC6gFV9690h4TXz0oCkEoMckN/sPMHkDA79Ka9dXga9Mt1+j+Sg==
+nock@13.0.7:
+  version "13.0.7"
+  resolved "https://registry.npmjs.org/nock/-/nock-13.0.7.tgz#9bc718c66bd0862dfa14601a9ba678a406127910"
+  integrity sha512-WBz73VYIjdbO6BwmXODRQLtn7B5tldA9pNpWJe5QTtTEscQlY5KXU4srnGzBOK2fWakkXj69gfTnXGzmrsaRWw==
   dependencies:
     debug "^4.1.0"
     json-stringify-safe "^5.0.1"
@@ -9972,10 +9978,10 @@ webpack-sources@^2.1.1:
     source-list-map "^2.0.1"
     source-map "^0.6.1"
 
-webpack@5.18.0:
-  version "5.18.0"
-  resolved "https://registry.npmjs.org/webpack/-/webpack-5.18.0.tgz#bbcf13094aa0da0534d513f27d7ee72d74e499c6"
-  integrity sha512-RmiP/iy6ROvVe/S+u0TrvL/oOmvP+2+Bs8MWjvBwwY/j82Q51XJyDJ75m0QAGntL1Wx6B//Xc0+4VPP/hlNHmw==
+webpack@5.19.0:
+  version "5.19.0"
+  resolved "https://registry.npmjs.org/webpack/-/webpack-5.19.0.tgz#1a5fee84dd63557e68336b0774ac4a1c81aa2c73"
+  integrity sha512-egX19vAQ8fZ4cVYtA9Y941eqJtcZAK68mQq87MMv+GTXKZOc3TpKBBxdGX+HXUYlquPxiluNsJ1VHvwwklW7CQ==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.46"
