@@ -4,8 +4,7 @@ updates:
     directory: '/'
     schedule:
       interval: weekly
-      time: '07:00'
-      timezone: 'Europe/Berlin'
+      day: monday
     open-pull-requests-limit: 99
     versioning-strategy: increase
     ignore:
