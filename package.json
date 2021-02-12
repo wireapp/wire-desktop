@@ -154,7 +154,7 @@
     "lint:code": "eslint --ignore-path .gitignore --ext .js,.jsx,.ts,.tsx .",
     "lint:other": "yarn prettier --list-different",
     "lint:spelling": "cspell -c .cspell.json '*.md' 'electron/renderer/**/*.jsx' 'electron/src/**/*.ts' 'electron/html/*.html'",
-    "postinstall": "yarn configure",
+    "postinstall": "husky install && yarn configure",
     "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css,yml,html}\"",
     "start": "cross-env NODE_DEBUG=@wireapp* electron . --no-sandbox --inspect --devtools --enable-logging",
