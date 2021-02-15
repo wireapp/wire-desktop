@@ -4140,10 +4140,10 @@ electron-window@^0.8.0:
   dependencies:
     is-electron-renderer "^2.0.0"
 
-electron-winstaller@4.0.1:
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/electron-winstaller/-/electron-winstaller-4.0.1.tgz#69da2a439a6986210c3106305f921a522369207d"
-  integrity sha512-wgdABzcMFpREjFCHZKQ5g5JF5jGqa8YCAsVD5Tb3sJhdj63AtuCu/2o++nVESlZZugKDv6Hxo6Wi8c3knEkbgA==
+electron-winstaller@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/electron-winstaller/-/electron-winstaller-4.0.2.tgz#e3aa7e95db8232eeb337b28c11ad80b93dcafe6d"
+  integrity sha512-tYmzIyi+W0CXd9o/jmR0VT+vwJ+nOaE/dQz8f64IlbQ/J9d2lpwsmmOKxx6veAVKeYiJHYQHR1eYsLzznNzd5g==
   dependencies:
     asar "^2.0.1"
     debug "^4.1.1"
