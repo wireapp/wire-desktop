@@ -91,7 +91,7 @@
     "eslint-plugin-typescript-sort-keys": "1.5.0",
     "form-data": "3.0.0",
     "globby": "11.0.2",
-    "husky": "5.0.9",
+    "husky": "4.3.8",
     "is-ci": "2.0.0",
     "jest": "26.6.3",
     "lint-staged": "10.5.4",
@@ -109,6 +109,11 @@
     "webpack-cli": "4.4.0"
   },
   "homepage": "https://wire.com",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "license": "GPL-3.0",
   "lint-staged": {
     "*.{js,jsx,ts}": [
@@ -154,7 +159,7 @@
     "lint:code": "eslint --ignore-path .gitignore --ext .js,.jsx,.ts,.tsx .",
     "lint:other": "yarn prettier --list-different",
     "lint:spelling": "cspell -c .cspell.json '*.md' 'electron/renderer/**/*.jsx' 'electron/src/**/*.ts' 'electron/html/*.html'",
-    "postinstall": "husky install && yarn configure",
+    "postinstall": "yarn configure",
     "prestart": "yarn build:ts && yarn bundle:dev",
     "prettier": "prettier \"**/*.{json,md,css,yml,html}\"",
     "start": "cross-env NODE_DEBUG=@wireapp* electron . --no-sandbox --inspect --devtools --enable-logging",
