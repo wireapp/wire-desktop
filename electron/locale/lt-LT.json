@@ -89,7 +89,7 @@
   "wrapperRemoveAccount": "Šalinti paskyrą",
   "menuEnableSpellChecking": "Įjungti rašybos tikrinimą",
   "menuCopyPicture": "Kopijuoti paveikslą",
-  "menuActualSize": "Actual Size",
+  "menuActualSize": "Faktinis dydis",
   "menuZoomIn": "Didinti",
   "menuZoomOut": "Mažinti",
   "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} accounts already active",
