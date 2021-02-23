@@ -17,6 +17,9 @@ updates:
       - dependency-name: electron-builder
         versions:
           - '>= 21.x'
+      - dependency-name: husky
+        versions:
+          - '>= 5.x'
   - package-ecosystem: npm
     directory: '/app-config'
     schedule:
