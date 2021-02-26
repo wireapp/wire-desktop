@@ -17,15 +17,23 @@
  *
  */
 
+import {wrapperLocale} from './locale';
+
 export class WindowUrl {
-  static createWebAppUrl(localRendererUrl: string, customBackendUrl: string): string {
+  static createWebAppUrl(localRendererUrl, customBackendUrl) {
     const localFileParams = new URL(localRendererUrl).searchParams;
     const customBackendUrlParsed = new URL(customBackendUrl);
-    const envUrl = decodeURIComponent(localFileParams.get('env')!);
+    const envUrl = decodeURIComponent(localFileParams.get('env'));
     const envUrlParams = new URL(envUrl).searchParams;
+
+    // replace hl with current locale
     envUrlParams.forEach((value, key) => {
       customBackendUrlParsed.searchParams.set(key, value);
     });
+
+    // set the current language
+    envUrlParams.set('hl', wrapperLocale);
+
     return customBackendUrlParsed.href;
   }
 }
