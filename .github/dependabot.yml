@@ -3,9 +3,8 @@ updates:
   - package-ecosystem: npm
     directory: '/'
     schedule:
-      interval: daily
-      time: '07:00'
-      timezone: 'Europe/Berlin'
+      interval: weekly
+      day: monday
     open-pull-requests-limit: 99
     versioning-strategy: increase
     ignore:
@@ -18,6 +17,9 @@ updates:
       - dependency-name: electron-builder
         versions:
           - '>= 21.x'
+      - dependency-name: husky
+        versions:
+          - '>= 5.x'
   - package-ecosystem: npm
     directory: '/app-config'
     schedule:

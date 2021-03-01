@@ -17,9 +17,7 @@
  *
  */
 
-import * as assert from 'assert';
-
-import {WindowUrl} from './WindowUrl';
+import {WindowUrl} from '../WindowUrl';
 
 describe('WindowUrl', () => {
   describe('createWebappUrl', () => {
@@ -29,13 +27,16 @@ describe('WindowUrl', () => {
       const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
       const updatedWebApp = WindowUrl.createWebAppUrl(rendererPage, customWebApp);
       const expectedUrl = 'https://webapp.qa-demo.wire.link/?clienttype=permanent&hl=en&enableLogging=%40wireapp%2F*';
-      assert.strictEqual(updatedWebApp, expectedUrl);
+      expect(updatedWebApp).toBe(expectedUrl);
     });
 
     it('throws an error if the environment includes an invalid URL', () => {
       const rendererPage = 'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=undefined';
       const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
-      assert.throws(() => WindowUrl.createWebAppUrl(rendererPage, customWebApp));
+      try {
+        WindowUrl.createWebAppUrl(rendererPage, customWebApp);
+        fail();
+      } catch (error) {}
     });
   });
 });
