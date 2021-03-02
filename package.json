@@ -51,6 +51,7 @@
     "@types/mocha": "8.2.1",
     "@types/node": "~12",
     "@types/open-graph": "0.2.1",
+    "@types/react": "16.14.4",
     "@types/sinon": "9.0.10",
     "@types/sort-json": "2.0.0",
     "@typescript-eslint/eslint-plugin": "4.0.0",

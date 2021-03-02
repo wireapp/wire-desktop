@@ -18,7 +18,7 @@
  */
 
 import React, {useEffect, useRef, useState} from 'react';
-import {ContainerSM, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
+import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 import {SVGIcon} from '@wireapp/react-ui-kit/src/Icon/SVGIcon';
 import {connect} from 'react-redux';
 
@@ -216,6 +216,7 @@ const Webview = ({
         partition={account.sessionID ? `persist:${account.sessionID}` : ''}
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}
+        style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
       />
       {webviewError && (
         <div
