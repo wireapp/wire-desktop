@@ -37,7 +37,7 @@ const IsOnline = ({children}) => {
     <div style={{display: 'flex', height: '100%', width: '100%'}}>
       <ContainerSM centerText verticalCenter>
         <Text center block textTransform="uppercase">
-          {'No Internet'}
+          No Internet
         </Text>
       </ContainerSM>
     </div>
