@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2021 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ const IsLoading = ({webviewRef}) => {
     isLoading && (
       <div
         style={{
-          backgroundColor: 'rgb(247, 248, 250)',
+          backgroundColor: '#f7f8fa',
           display: 'flex',
           height: '100%',
           position: 'absolute',
