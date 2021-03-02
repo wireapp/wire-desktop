@@ -5256,10 +5256,10 @@ get-package-type@^0.1.0:
   resolved "https://registry.npmjs.org/get-package-type/-/get-package-type-0.1.0.tgz#8de2d803cff44df3bc6c456e6668b36c3926e11a"
   integrity sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==
 
-get-proxy-settings@0.1.12:
-  version "0.1.12"
-  resolved "https://registry.npmjs.org/get-proxy-settings/-/get-proxy-settings-0.1.12.tgz#0ac5ef2624746f8f4ef21d78f3b5f1758b4f49b7"
-  integrity sha512-CGYayUroFs+UHfspdFg++Tioo25PPtHUdARUzrDqxMJ7/zf5zx9kfvxlcyV1nM6Cx34wbalzrgwOJnWJfz0fXg==
+get-proxy-settings@0.1.13:
+  version "0.1.13"
+  resolved "https://registry.npmjs.org/get-proxy-settings/-/get-proxy-settings-0.1.13.tgz#ca4b79bc63a178c907f754a6c3e0f6a54ed1becb"
+  integrity sha512-67HvLHFnPpg6JIHq0z4TwW0iXOuX+H51FtEe9xSkEiRwrY0jYNAawtbGrUVFIEDcp4I0sRkm8pIRik8dss8OZw==
   dependencies:
     npm-conf "~1.1.3"
 

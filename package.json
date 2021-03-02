@@ -13,7 +13,7 @@
     "electron-window-state": "5.0.3",
     "file-url": "3.0.0",
     "fs-extra": "9.1.0",
-    "get-proxy-settings": "0.1.12",
+    "get-proxy-settings": "0.1.13",
     "globby": "11.0.2",
     "iconv-lite": "0.6.2",
     "image-type": "4.1.0",
