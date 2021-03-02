@@ -67,6 +67,7 @@
   "menuVideoCall": "Videopuhelu",
   "menuView": "Näytä",
   "menuWindow": "Ikkuna",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "Välityspalvelin vaatii tunnistautumisen käyttäjätunnuksella sekä salasanalla.",
   "proxyPromptPassword": "Salasana",
   "proxyPromptTitle": "Proxy tunnistus",

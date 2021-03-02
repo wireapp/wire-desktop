@@ -67,6 +67,7 @@
   "menuVideoCall": "Panggilan Video",
   "menuView": "Lihat",
   "menuWindow": "Jendela",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "The proxy requires authentication with username and password.",
   "proxyPromptPassword": "Kata sandi",
   "proxyPromptTitle": "Otentikasi Proxy",

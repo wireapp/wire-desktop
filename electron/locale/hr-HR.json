@@ -67,6 +67,7 @@
   "menuVideoCall": "Video poziv",
   "menuView": "Pregled",
   "menuWindow": "Prozor",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "The proxy requires authentication with username and password.",
   "proxyPromptPassword": "Password",
   "proxyPromptTitle": "Proxy authentication",

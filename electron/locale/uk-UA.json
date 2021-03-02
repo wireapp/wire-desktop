@@ -67,6 +67,7 @@
   "menuVideoCall": "Відеодзвінок",
   "menuView": "Вигляд",
   "menuWindow": "Вікно",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "Проксі-сервер вимагає аутентифікацію з ім'ям користувача і паролем.",
   "proxyPromptPassword": "Пароль",
   "proxyPromptTitle": "Аутентифікація на проксі-сервері",
