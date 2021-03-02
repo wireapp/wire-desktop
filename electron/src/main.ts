@@ -38,7 +38,6 @@ import * as path from 'path';
 import {URL} from 'url';
 import windowStateKeeper from 'electron-window-state';
 import fileUrl from 'file-url';
-import {COLOR} from '@wireapp/react-ui-kit';
 
 import './global';
 import {
@@ -196,7 +195,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
 
   const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
-    backgroundColor: COLOR.GRAY_LIGHTEN_88,
+    backgroundColor: '#f7f8fa',
     height: mainWindowState.height,
     icon: iconPath,
     minHeight: WINDOW_SIZE.MIN_HEIGHT,

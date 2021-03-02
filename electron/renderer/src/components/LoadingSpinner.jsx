@@ -17,8 +17,6 @@
  *
  */
 
-// @ts-check
-
 import React, {useEffect, useState} from 'react';
 import {FlexBox, Loading, COLOR, TransitionContainer, Opacity} from '@wireapp/react-ui-kit';
 
