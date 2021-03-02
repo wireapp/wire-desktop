@@ -19,6 +19,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {Text, ContainerSM} from '@wireapp/react-ui-kit';
+import {getText} from '../lib/locale';
 
 const IsOnline = ({children}) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -37,7 +38,7 @@ const IsOnline = ({children}) => {
     <div style={{display: 'flex', height: '100%', width: '100%'}}>
       <ContainerSM centerText verticalCenter>
         <Text center block textTransform="uppercase">
-          No Internet
+          {getText('noInternet')}
         </Text>
       </ContainerSM>
     </div>

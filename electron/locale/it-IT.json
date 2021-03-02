@@ -67,6 +67,7 @@
   "menuVideoCall": "Videochiama",
   "menuView": "Mostra",
   "menuWindow": "Finestre",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "Il proxy richiede l'autenticazione con nome utente e password.",
   "proxyPromptPassword": "Password",
   "proxyPromptTitle": "Autenticazione per il Proxy",
