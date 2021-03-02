@@ -20,7 +20,7 @@
 import React, {useEffect, useState} from 'react';
 import {Container, Loading} from '@wireapp/react-ui-kit';
 
-const IsLoading = ({webviewRef}) => {
+const LoadingSpinner = ({webviewRef}) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -55,4 +55,4 @@ const IsLoading = ({webviewRef}) => {
   );
 };
 
-export default IsLoading;
+export default LoadingSpinner;

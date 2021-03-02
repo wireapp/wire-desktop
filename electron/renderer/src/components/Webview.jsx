@@ -22,7 +22,7 @@ import {ContainerSM, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 import {SVGIcon} from '@wireapp/react-ui-kit/src/Icon/SVGIcon';
 import {connect} from 'react-redux';
 
-import IsLoading from './IsLoading';
+import LoadingSpinner from './LoadingSpinner';
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {WindowUrl} from '../lib/WindowUrl';
 import {
@@ -207,7 +207,7 @@ const Webview = ({
 
   return (
     <>
-      <IsLoading webviewRef={webviewRef} />
+      <LoadingSpinner webviewRef={webviewRef} />
       <webview
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
