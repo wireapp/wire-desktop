@@ -39,14 +39,14 @@ const LoadingSpinner = ({webviewRef}) => {
 
   return (
     <div
+      className="loading-spinner-wrapper"
+      data-uie-name="loading-spinner-wrapper"
       style={{
         backgroundColor: COLOR.GRAY_LIGHTEN_88,
         opacity: isLoading ? 1 : 0,
       }}
-      id="loading-spinner-wrapper"
-      data-uie-name="loading-spinner-wrapper"
     >
-      <FlexBox align="center" justify="space-around" id="loading-spinner-box">
+      <FlexBox align="center" justify="space-around" className="loading-spinner-box">
         <Loading data-uie-name="loading-spinner-element" />
       </FlexBox>
     </div>

@@ -17,7 +17,7 @@
  *
  */
 
-#loading-spinner-wrapper {
+.loading-spinner-wrapper {
   display: flex;
   height: 100vh;
   position: absolute;
@@ -28,6 +28,6 @@
   -webkit-transition: opacity 0.25s ease-in-out;
 }
 
-#loading-spinner-box {
+.loading-spinner-box {
   margin: 0 auto;
 }
