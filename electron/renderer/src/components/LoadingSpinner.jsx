@@ -44,6 +44,7 @@ const LoadingSpinner = ({webviewRef}) => {
       style={{
         backgroundColor: COLOR.GRAY_LIGHTEN_88,
         opacity: isLoading ? 1 : 0,
+        pointerEvents: isLoading ? 'all' : 'none',
       }}
     >
       <FlexBox align="center" justify="space-around" className="loading-spinner-box">
