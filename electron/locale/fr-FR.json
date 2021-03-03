@@ -67,7 +67,7 @@
   "menuVideoCall": "Appel vidéo",
   "menuView": "Affichage",
   "menuWindow": "Fenêtre",
-  "noInternet": "No Internet",
+  "noInternet": "Pas de connexion internet",
   "proxyPromptHeadline": "Le proxy a besoin d’une authentification. Veuillez fournir un nom d’utilisateur et un mot de passe.",
   "proxyPromptPassword": "Mot de passe",
   "proxyPromptTitle": "Authentification proxy",
