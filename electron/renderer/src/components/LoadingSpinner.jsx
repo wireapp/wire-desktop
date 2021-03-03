@@ -18,7 +18,9 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import {FlexBox, Loading, COLOR, TransitionContainer, Opacity} from '@wireapp/react-ui-kit';
+import {FlexBox, Loading, COLOR} from '@wireapp/react-ui-kit';
+
+import './LoadingSpinner.css';
 
 const LoadingSpinner = ({webviewRef}) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -37,37 +39,16 @@ const LoadingSpinner = ({webviewRef}) => {
 
   return (
     <div
-      style={{
-        display: 'flex',
-        height: '100%',
-        position: 'absolute',
-        width: '100%',
-        zIndex: 99,
-      }}
+      className="loading-spinner-wrapper"
       data-uie-name="loading-spinner-wrapper"
+      style={{
+        backgroundColor: COLOR.GRAY_LIGHTEN_88,
+        opacity: isLoading ? 1 : 0,
+      }}
     >
-      <TransitionContainer
-        style={{
-          height: '100%',
-          width: '100%',
-        }}
-      >
-        {isLoading && (
-          <Opacity timeout={500}>
-            <div
-              style={{
-                backgroundColor: COLOR.GRAY_LIGHTEN_88,
-                display: 'flex',
-                height: '100vh',
-              }}
-            >
-              <FlexBox align="center" justify="space-around" style={{margin: '0 auto'}}>
-                <Loading data-uie-name="loading-spinner-element" />
-              </FlexBox>
-            </div>
-          </Opacity>
-        )}
-      </TransitionContainer>
+      <FlexBox align="center" justify="space-around" className="loading-spinner-box">
+        <Loading data-uie-name="loading-spinner-element" />
+      </FlexBox>
     </div>
   );
 };
