@@ -22,7 +22,7 @@ import {FlexBox, Loading, COLOR} from '@wireapp/react-ui-kit';
 
 import './LoadingSpinner.css';
 
-const LoadingSpinner = ({webviewRef}) => {
+const LoadingSpinner = ({visible, webviewRef}) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,6 +43,7 @@ const LoadingSpinner = ({webviewRef}) => {
       data-uie-name="loading-spinner-wrapper"
       style={{
         backgroundColor: COLOR.GRAY_LIGHTEN_88,
+        display: visible ? 'flex' : 'none',
         opacity: isLoading ? 1 : 0,
         pointerEvents: isLoading ? 'all' : 'none',
       }}

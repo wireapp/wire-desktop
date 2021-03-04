@@ -207,7 +207,7 @@ const Webview = ({
 
   return (
     <>
-      <LoadingSpinner webviewRef={webviewRef} />
+      <LoadingSpinner visible={!!account.visible} webviewRef={webviewRef} />
       <webview
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}

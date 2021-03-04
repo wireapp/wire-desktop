@@ -18,13 +18,11 @@
  */
 
 .loading-spinner-wrapper {
-  display: flex;
   height: 100vh;
   position: absolute;
   width: 100%;
-  z-index: 99;
+  z-index: 2;
   transition: opacity 0.25s ease-in-out;
-  -moz-transition: opacity 0.25s ease-in-out;
   -webkit-transition: opacity 0.25s ease-in-out;
 }
 
