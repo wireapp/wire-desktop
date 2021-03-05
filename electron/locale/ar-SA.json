@@ -67,6 +67,7 @@
   "menuVideoCall": "مكالمة فيديو",
   "menuView": "عرض",
   "menuWindow": "نافذة",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "الوكيل يحتاج مصادقة. يرجى إدخال اسم المستخدم وكلمة المرور.",
   "proxyPromptPassword": "كلمة السر",
   "proxyPromptTitle": "مصادقة الوكيل (بروكسي)",

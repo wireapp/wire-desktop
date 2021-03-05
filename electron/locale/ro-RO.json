@@ -67,6 +67,7 @@
   "menuVideoCall": "Apel video",
   "menuView": "Vedere",
   "menuWindow": "Fereastră",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "The proxy requires authentication with username and password.",
   "proxyPromptPassword": "Parolă",
   "proxyPromptTitle": "Proxy Autentificare",

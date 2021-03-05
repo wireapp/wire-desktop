@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2021 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,15 @@
  *
  */
 
-import {URL} from 'url';
+.loading-spinner-wrapper {
+  height: 100vh;
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+  transition: opacity 0.25s ease-in-out;
+  -webkit-transition: opacity 0.25s ease-in-out;
+}
 
-export const OriginValidator = {
-  isMatchingHost(urlString: string, baseUrl: string): boolean {
-    return new URL(urlString).host === new URL(baseUrl).host;
-  },
-};
+.loading-spinner-box {
+  margin: 0 auto;
+}
