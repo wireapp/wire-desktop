@@ -67,6 +67,7 @@
   "menuVideoCall": "Vaizdo skambutis",
   "menuView": "Rodinys",
   "menuWindow": "Langas",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "Įgaliotasis serveris reikalauja nustatyti tapatybę naudojant naudotojo vardą ir slaptažodį.",
   "proxyPromptPassword": "Slaptažodis",
   "proxyPromptTitle": "Įgaliotojo serverio tapatybės nustatymas",

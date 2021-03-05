@@ -67,6 +67,7 @@
   "menuVideoCall": "视频通话",
   "menuView": "查看",
   "menuWindow": "窗口",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "代理服务器需要使用用户名及密码验证",
   "proxyPromptPassword": "密码",
   "proxyPromptTitle": "代理认证",

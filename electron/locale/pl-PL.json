@@ -67,6 +67,7 @@
   "menuVideoCall": "Połączenie video",
   "menuView": "Widok",
   "menuWindow": "Okno",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "Serwer proxy wymaga uwierzytelnienia. Podaj login i hasło.",
   "proxyPromptPassword": "Hasło",
   "proxyPromptTitle": "Uwierzytelnienie proxy",

@@ -67,6 +67,7 @@
   "menuVideoCall": "Videohovor",
   "menuView": "Zobrazení",
   "menuWindow": "Okno",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "The proxy requires authentication with username and password.",
   "proxyPromptPassword": "Heslo",
   "proxyPromptTitle": "Autentizace na proxy serveru",
