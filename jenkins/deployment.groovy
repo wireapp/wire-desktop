@@ -35,7 +35,7 @@ node('master') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
-  def NODE = tool name: 'node-v12.13.0', type: 'nodejs'
+  def NODE = tool name: 'node-v12.20.0', type: 'nodejs'
   def DRY_RUN = params.DRY_RUN ? "--dry-run" : ""
 
   stage('Get build artifacts') {

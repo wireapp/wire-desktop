@@ -37,21 +37,23 @@ commander
   .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
   .parse(process.argv);
 
-checkCommanderOptions(commander, logger, ['bucket', 'keyId', 'secretKey', 'wrapperBuild']);
+const commanderOptions = commander.opts();
 
-if (!commander.wrapperBuild.includes('#')) {
-  logger.error(`Invalid wrapper build id "${commander.wrapperBuild}"`);
+checkCommanderOptions(commanderOptions, logger, ['bucket', 'keyId', 'secretKey', 'wrapperBuild']);
+
+if (!commanderOptions.wrapperBuild.includes('#')) {
+  logger.error(`Invalid wrapper build id "${commanderOptions.wrapperBuild}"`);
   commander.outputHelp();
   process.exit(1);
 }
 
 (async () => {
-  const searchBasePath = commander.path || path.join(__dirname, '../../wrap');
-  const s3BasePath = `${commander.s3path || ''}/`;
-  const [platform, version] = commander.wrapperBuild.toLowerCase().split('#');
-  const {bucket, secretKey: secretAccessKey, keyId: accessKeyId} = commander;
+  const searchBasePath = commanderOptions.path || path.join(__dirname, '../../wrap');
+  const s3BasePath = `${commanderOptions.s3path || ''}/`;
+  const [platform, version] = commanderOptions.wrapperBuild.toLowerCase().split('#');
+  const {bucket, secretKey: secretAccessKey, keyId: accessKeyId} = commanderOptions;
 
-  const s3Deployer = new S3Deployer({accessKeyId, dryRun: commander.dryRun || false, secretAccessKey});
+  const s3Deployer = new S3Deployer({accessKeyId, dryRun: commanderOptions.dryRun || false, secretAccessKey});
 
   const files = await s3Deployer.findUploadFiles(platform, searchBasePath, version);
 

@@ -9,16 +9,12 @@ on:
 jobs:
   build_test:
     name: Build and Test
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.5.0
         with:
-          access_token: ${{ github.token }}
+          access_token: ${{ secrets.OTTO_THE_BOT_GH_TOKEN }}
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
@@ -33,6 +29,5 @@ jobs:
         run: yarn --frozen-lockfile
       - name: Use xvfb-run on Linux
         run: sed -i 's/\(electron-mocha \)/xvfb-run \1/g' package.json
-        if: contains(matrix.os, 'ubuntu')
       - name: Test
         run: yarn test

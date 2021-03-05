@@ -111,7 +111,7 @@ export class SingleSignOn {
     // Show the window(s)
     await this.ssoWindow.loadURL(this.windowOriginUrl.toString());
 
-    if (argv[config.ARGUMENT.DEVTOOLS]) {
+    if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
       this.ssoWindow.webContents.openDevTools({mode: 'detach'});
     }
   };

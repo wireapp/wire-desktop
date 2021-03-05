@@ -95,7 +95,7 @@
   "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} comptes déjà actifs",
   "wrapperAddAccountErrorTitleSingular": "Compte déjà actif",
   "wrapperAddAccountErrorMessagePlural": "Vous pouvez être connecté·e à {{maximumAccounts}} comptes en même temps. Déconnectez-vous de l'un d'entre eux pour en ajouter un autre.",
-  "wrapperAddAccountErrorMessageSingular": "Vous pouvez être connecté·e à un seul compte à la fois. Déconnectez-vous de celui-ci pour en ajouter un autre.",
+  "wrapperAddAccountErrorMessageSingular": "Vous ne pouvez vous connecter qu’à un seul compte à la fois. Déconnectez-vous de celui-ci pour en ajouter un autre.",
   "promptOK": "OK",
   "promptCancel": "Annuler",
   "promptWarning": "Avertissement",

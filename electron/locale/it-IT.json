@@ -100,5 +100,5 @@
   "promptCancel": "Annulla",
   "promptWarning": "Attenzione",
   "promptError": "Errore",
-  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application."
+  "urlBlockedPromptText": "Un URL potenzialmente non sicuro è stato bloccato. Se vuoi ancora aprirlo, copia l'URL e apri l'applicazione appropriata."
 }
