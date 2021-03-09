@@ -18,11 +18,13 @@
  */
 
 import React, {useEffect, useRef, useState} from 'react';
-import {ContainerSM, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
+import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 import {SVGIcon} from '@wireapp/react-ui-kit/src/Icon/SVGIcon';
 import {connect} from 'react-redux';
+
+import LoadingSpinner from './LoadingSpinner';
 import {EVENT_TYPE} from '../../../src/lib/eventType';
-import {WindowUrl} from '../../../src/window/WindowUrl';
+import {WindowUrl} from '../lib/WindowUrl';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -30,7 +32,7 @@ import {
   updateAccountData,
   updateAccountLifecycle,
 } from '../actions';
-import {getText} from '../lib/locale';
+import {getText, wrapperLocale} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
 
 import './Webview.css';
@@ -44,6 +46,9 @@ const getEnvironmentUrl = account => {
 
   // pass account id to webview so we can access it in the preload script
   url.searchParams.set('id', account.id);
+
+  // set the current language
+  url.searchParams.set('hl', wrapperLocale);
 
   if (account.ssoCode && account.isAdding) {
     url.pathname = '/auth';
@@ -202,6 +207,7 @@ const Webview = ({
 
   return (
     <>
+      <LoadingSpinner visible={!!account.visible} webviewRef={webviewRef} />
       <webview
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
@@ -210,6 +216,7 @@ const Webview = ({
         partition={account.sessionID ? `persist:${account.sessionID}` : ''}
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}
+        style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
       />
       {webviewError && (
         <div

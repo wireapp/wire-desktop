@@ -22,7 +22,7 @@ import {parse as parseContentType, ParsedMediaType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
-import {parse as parseUrl} from 'url';
+import {URL} from 'url';
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
@@ -41,8 +41,8 @@ const bufferToBase64 = (buffer: Buffer, mimeType: string): string => {
 
 const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
-  const parsedUrl = parseUrl(encodeURI(url));
-  const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
+  const parsedUrl = new URL(encodeURI(url));
+  const normalizedUrl = parsedUrl.protocol ? parsedUrl : new URL(`http://${url}`);
 
   const axiosConfig: AxiosRequestConfig = {
     headers: {
@@ -119,7 +119,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
     }
 
     if (!contentType.type.includes('text/html')) {
-      throw new Error(`Unhandled format for open graph generation ("${contentType}")`);
+      throw new Error(`Unhandled format for open graph generation (Content-Type is "${contentType}")`);
     }
 
     const charset = contentType.parameters.charset;
@@ -164,8 +164,8 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
 
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
-  const parsedUrl = parseUrl(encodeURI(url));
-  const normalizedUrl = parsedUrl.protocol ? parsedUrl : parseUrl(`http://${url}`);
+  const parsedUrl = new URL(encodeURI(url));
+  const normalizedUrl = parsedUrl.protocol ? parsedUrl : new URL(`http://${url}`);
 
   if (normalizedUrl.host?.endsWith('twitter.com')) {
     config.userAgent = 'Twitterbot/1.0';
@@ -184,9 +184,7 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
 };
 
 const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
-  if (!meta.image) {
-    meta.image = {};
-  }
+  meta.image ??= {};
 
   if (imageData && typeof meta.image === 'object' && !Array.isArray(meta.image)) {
     meta.image.data = imageData;
