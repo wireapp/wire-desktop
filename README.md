@@ -22,7 +22,7 @@ Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireap
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/)
+- [Node.js](https://nodejs.org/) >= 10
 - Git
 
 ### Clone
