@@ -75,7 +75,7 @@ export class AccountAction {
       window.blur();
       window.focus();
 
-      const webview = document.querySelector(`.Webview[data-accountid="${account.id}"]`);
+      const webview = document.querySelector(`.Webview[data-accountid='${account.id}']`);
       if (webview) {
         webview.blur();
         webview.focus();

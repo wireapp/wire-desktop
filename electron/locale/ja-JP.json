@@ -67,6 +67,7 @@
   "menuVideoCall": "ビデオ通話",
   "menuView": "ビュー",
   "menuWindow": "ウィンドウ",
+  "noInternet": "No Internet",
   "proxyPromptHeadline": "プロキシ認証のためにユーザー名とパスワードが必要です。",
   "proxyPromptPassword": "パスワード",
   "proxyPromptTitle": "プロキシ認証",

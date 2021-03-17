@@ -23,12 +23,13 @@ import type {Data as OpenGraphResult} from 'open-graph';
 import type {Static as amplify} from 'amplify';
 
 import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
-import type {i18nStrings} from './locale/locale';
+import type {i18nStrings, SupportedI18nLanguage} from './locale/locale';
 
 declare global {
   interface Window {
     amplify: amplify;
     isMac: boolean;
+    locale: SupportedI18nLanguage;
     locStrings: i18nStrings;
     locStringsDefault: i18nStrings;
     sendBadgeCount(count: number, ignoreFlash: boolean): void;

@@ -100,20 +100,14 @@ async function download(): Promise<void> {
         });
         console.info('Deleting zip file ...');
         fs.unlinkSync(zipPath);
-        resolve();
+        resolve(undefined);
       });
     });
   });
 }
 
-async function sortTranslationJson(): Promise<void> {
-  const filenames = await fs.readdir(destinationPath);
-  filenames.forEach(filename => sortJson.overwrite(path.join(destinationPath, filename)));
-}
-
 fetchUpdates()
   .then(download)
-  .then(sortTranslationJson)
   .catch(error => {
     console.error(error);
     process.exit(1);
