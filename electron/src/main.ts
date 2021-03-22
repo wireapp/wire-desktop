@@ -146,7 +146,7 @@ try {
     app.disableHardwareAcceleration();
   }
 } catch (error) {
-  logger.warn(`Can't read GPUFeatureStatus`);
+  logger.warn(`Can't read GPUFeatureStatus, disabling hardware acceleration`);
   app.disableHardwareAcceleration();
 }
 
