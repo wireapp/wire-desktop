@@ -136,12 +136,17 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
-logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
-const has2dCanvas = app.getGPUFeatureStatus()['2d_canvas']?.startsWith('enabled');
-
 // Check GPU support
-if (!has2dCanvas) {
-  logger.warn('Disabling hardware acceleration');
+try {
+  logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
+  const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
+
+  if (!has2dCanvas) {
+    logger.warn('Disabling hardware acceleration');
+    app.disableHardwareAcceleration();
+  }
+} catch (error) {
+  logger.warn(`Can't read GPUFeatureStatus`);
   app.disableHardwareAcceleration();
 }
 
