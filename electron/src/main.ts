@@ -138,11 +138,10 @@ app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 app.on('gpu-info-update', () => {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
-  const hasRasterization = app.getGPUFeatureStatus().rasterization?.startsWith('enabled');
-  const hasSkiaRenderer = (app.getGPUFeatureStatus() as any).skia_renderer?.startsWith('enabled');
+  const has2dCanvas = app.getGPUFeatureStatus()['2d_canvas']?.startsWith('enabled');
 
   // Check GPU support
-  if (!hasRasterization && !hasSkiaRenderer) {
+  if (!has2dCanvas) {
     logger.warn('Disabling hardware acceleration');
     app.disableHardwareAcceleration();
   }
