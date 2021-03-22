@@ -146,7 +146,7 @@ try {
      * Electron can't render anything and will only display a white screen. Thus
      * we disable hardware acceleration completely.
      */
-    logger.warn('Disabling hardware acceleration');
+    logger.warn('2D canvas unavailable, disabling hardware acceleration');
     app.disableHardwareAcceleration();
   }
 } catch (error) {
