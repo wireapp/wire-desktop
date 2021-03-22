@@ -136,6 +136,13 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
+logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
+
+// Check GPU support
+if (!app.getGPUFeatureStatus().rasterization?.startsWith('enabled')) {
+  app.disableHardwareAcceleration();
+}
+
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
