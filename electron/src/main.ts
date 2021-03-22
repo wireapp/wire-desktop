@@ -136,12 +136,17 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
-logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
+app.on('gpu-info-update', () => {
+  logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
+  const hasRasterization = app.getGPUFeatureStatus().rasterization?.startsWith('enabled');
+  const hasSkiaRenderer = (app.getGPUFeatureStatus() as any).skia_renderer?.startsWith('enabled');
 
-// Check GPU support
-if (!app.getGPUFeatureStatus().rasterization?.startsWith('enabled')) {
-  app.disableHardwareAcceleration();
-}
+  // Check GPU support
+  if (!hasRasterization && !hasSkiaRenderer) {
+    logger.warn('Disabling hardware acceleration');
+    app.disableHardwareAcceleration();
+  }
+});
 
 // IPC events
 const bindIpcEvents = (): void => {
