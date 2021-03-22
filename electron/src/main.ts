@@ -136,12 +136,16 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
-// Check GPU support
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
   const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
 
   if (!has2dCanvas) {
+    /*
+     * If the 2D canvas is unavailable, and we rely on hardware acceleartion,
+     * Electron can't render anything and will only display a white screen. Thus
+     * we disable hardware acceleration completely.
+     */
     logger.warn('Disabling hardware acceleration');
     app.disableHardwareAcceleration();
   }
