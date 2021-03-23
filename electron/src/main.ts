@@ -136,6 +136,24 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
+try {
+  logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
+  const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
+
+  if (!has2dCanvas) {
+    /*
+     * If the 2D canvas is unavailable, and we rely on hardware acceleartion,
+     * Electron can't render anything and will only display a white screen. Thus
+     * we disable hardware acceleration completely.
+     */
+    logger.warn('2D canvas unavailable, disabling hardware acceleration');
+    app.disableHardwareAcceleration();
+  }
+} catch (error) {
+  logger.warn(`Can't read GPUFeatureStatus, disabling hardware acceleration`);
+  app.disableHardwareAcceleration();
+}
+
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
@@ -192,6 +210,7 @@ const initWindowStateKeeper = (): windowStateKeeper.State => {
 // App Windows
 const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
+  const zoomFactor = settings.restore(SettingsType.ZOOM_FACTOR, 1.0);
 
   const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
@@ -314,6 +333,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       logger.error('Could not reload the window:', error);
     }
   });
+
+  main.webContents.setZoomFactor(zoomFactor);
 
   const mainURL = new URL(fileUrl(INDEX_HTML));
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));

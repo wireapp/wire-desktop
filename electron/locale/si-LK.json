@@ -56,7 +56,7 @@
   "menuServices": "සේවාවන්",
   "menuSettings": "සැකසුම්",
   "menuShowAll": "සියල්ල පෙන්වන්න",
-  "menuShowHide": "මෙනුව පෙන්වන්න",
+  "menuShowHide": "Show Menu",
   "menuSignOut": "නික්මෙන්න",
   "menuStart": "ආරම්භ කරන්න",
   "menuStartup": "ආරම්භයේදී {brandName} දියත් කරන්න",
@@ -101,5 +101,5 @@
   "promptCancel": "අවලංගු කරන්න",
   "promptWarning": "අවවාදයයි!",
   "promptError": "දෝෂය",
-  "urlBlockedPromptText": "අනාරක්ෂිත වෙබ් ලිපිනයක් (URL) අවහිර කර ඇත. ඔබට තවමත් එය විවෘත කිරීමට අවශ්‍ය නම්, එය පිටපත් කර සුදුසු මෘදුකාංගයක් හරහා විවෘත කරන්න."
+  "urlBlockedPromptText": "අනාරක්ෂිත ඒ.ස.නි. (URL) අවහිර කර ඇත. ඔබට තවමත් එය විවෘත කිරීමට අවශ්‍ය නම්, එය පිටපත් කර සුදුසු මෘදුකාංගයක් හරහා විවෘත කරන්න."
 }
