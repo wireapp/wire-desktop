@@ -26,4 +26,5 @@ export enum SettingsType {
   LOCALE = 'locale',
   SHOW_MENU_BAR = 'showMenu',
   WINDOW_BOUNDS = 'bounds',
+  ZOOM_FACTOR = 'zoomFactor',
 }
