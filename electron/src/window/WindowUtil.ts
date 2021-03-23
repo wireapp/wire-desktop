@@ -19,7 +19,7 @@
 
 import {BrowserWindow, screen, shell} from 'electron';
 import * as path from 'path';
-import * as URL from 'url';
+import {URL} from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
@@ -66,7 +66,7 @@ export const isInView = (win: BrowserWindow): boolean => {
 
 export const openExternal = async (url: string, httpsOnly: boolean = false): Promise<void> => {
   try {
-    const urlProtocol = URL.parse(url).protocol || '';
+    const urlProtocol = new URL(url).protocol || '';
     const allowedProtocols = ['https:'];
 
     if (!httpsOnly) {
