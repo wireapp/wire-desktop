@@ -100,7 +100,7 @@ node('master') {
             string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
             string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
-            sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+            sh 'jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"$S3_BUCKET\" --s3path \"$S3_PATH\" --key-id \"$AWS_ACCESS_KEY_ID\" --secret-key \"$AWS_SECRET_ACCESS_KEY\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\" $DRY_RUN'
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
@@ -252,7 +252,7 @@ node('master') {
           def SEARCH_PATH = './wrap/dist/'
 
           withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
-            sh "jenkins/ts-node.sh ./bin/deploy-tools/github-draft-cli.ts --github-token \"${env.GITHUB_ACCESS_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+            sh 'jenkins/ts-node.sh ./bin/deploy-tools/github-draft-cli.ts --github-token \"$GITHUB_ACCESS_TOKEN\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\" $DRY_RUN'
           }
         }
       } catch(e) {
