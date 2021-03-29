@@ -1936,14 +1936,6 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-14.14.20.tgz#f7974863edd21d1f8a494a73e8e2b3658615c340"
   integrity sha512-Y93R97Ouif9JEOWPIUyU+eyIdyRqQR0I8Ez1dzku4hDx34NWh4HbtIc3WNzwB1Y9ULvNGeu5B8h8bVL5cAk4/A==
 
-<<<<<<< HEAD
-=======
-"@types/node@^12.0.12", "@types/node@~12":
-  version "12.20.7"
-  resolved "https://registry.npmjs.org/@types/node/-/node-12.20.7.tgz#1cb61fd0c85cb87e728c43107b5fd82b69bc9ef8"
-  integrity sha512-gWL8VUkg8VRaCAUgG9WmhefMqHmMblxe2rVpMF86nZY/+ZysU+BkAp+3cz03AixWDSSz0ks5WX59yAhv/cDwFA==
-
->>>>>>> dev
 "@types/node@^13.7.0":
   version "13.13.34"
   resolved "https://registry.npmjs.org/@types/node/-/node-13.13.34.tgz#c9300a1b6560d90817fb2bba650e250116a575f9"
@@ -4309,17 +4301,10 @@ electron-winstaller@4.0.1:
     lodash.template "^4.2.2"
     temp "^0.9.0"
 
-<<<<<<< HEAD
-electron@12.0.1:
-  version "12.0.1"
-  resolved "https://registry.npmjs.org/electron/-/electron-12.0.1.tgz#11afa81dae858cc7cd79107c2f789e8a7f93a31b"
-  integrity sha512-4bTfLSTmuFkMxq3RMyjd8DxuzbxI1Bde879XDrBA4kFWbKhZ3hfXqHXQz3129eCmcLre5odcNsWq7/xzyJilMA==
-=======
-electron@10.4.2:
-  version "10.4.2"
-  resolved "https://registry.npmjs.org/electron/-/electron-10.4.2.tgz#2322a72f1e653e023250be91f3dd8d27662e3805"
-  integrity sha512-qNd/AJfIpjasf6v7xXrDR9tWy2jmcUco3zdB4iLjxW1eoWL+x+03hlPKUaroAnZZ0KKtXoR1uDK/OLP4btckFg==
->>>>>>> dev
+electron@12.0.2:
+  version "12.0.2"
+  resolved "https://registry.npmjs.org/electron/-/electron-12.0.2.tgz#d92be205f1937627bd6718aad44ac161382b4c2d"
+  integrity sha512-14luh9mGzfL4e0sncyy0+kW37IU7Y0Y1tvI97FDRSW0ZBQxi5cmAwSs5dmPmNBFBIGtzkaGaEB01j9RjZuCmow==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"
