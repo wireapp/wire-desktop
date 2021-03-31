@@ -18,7 +18,7 @@
  */
 
 const {webFrame} = require('electron');
-const remote = require('@electron/remote/main');
+const remote = require('@electron/remote');
 
 const {SingleSignOn} = remote.require('./sso/SingleSignOn');
 

@@ -21,12 +21,13 @@ import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import * as Electron from 'electron';
 import * as logdown from 'logdown';
 import * as path from 'path';
-const remote = require('@electron/remote/main');
 
 import {config} from '../settings/config';
 
-const mainProcess = process || remote.process;
-const logDir = path.join((Electron.app || remote.app).getPath('userData'), 'logs');
+const mainProcess = process || require('@electron/remote').process;
+const app = Electron.app || require('@electron/remote').app;
+
+const logDir = path.join(app.getPath('userData'), 'logs');
 const logFile = path.join(logDir, 'electron.log');
 
 const isDevelopment = config.environment !== 'production';

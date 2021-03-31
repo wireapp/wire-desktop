@@ -26,7 +26,7 @@ import {
   WebContents,
   nativeImage,
 } from 'electron';
-const {Menu} = require('@electron/remote/main');
+const {Menu} = require('@electron/remote');
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';

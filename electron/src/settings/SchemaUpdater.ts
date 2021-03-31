@@ -20,12 +20,11 @@
 import * as Electron from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-const remote = require('@electron/remote/main');
 
 import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
 
-const app = Electron.app || remote.app;
+const app = Electron.app || require('@electron/remote').app;
 
 const logger = getLogger(path.basename(__filename));
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');

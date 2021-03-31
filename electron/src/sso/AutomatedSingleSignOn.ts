@@ -18,7 +18,6 @@
  */
 
 import * as Electron from 'electron';
-const remote = require('@electron/remote/main');
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getText} from '../locale/locale';
@@ -28,7 +27,7 @@ export interface CreateSSOAccountDetail {
   reachedMaximumAccounts?: boolean;
 }
 
-const dialog = Electron.dialog || remote.dialog;
+const dialog = Electron.dialog || require('@electron/remote').dialog;
 
 export class AutomatedSingleSignOn {
   private async showError(): Promise<void> {

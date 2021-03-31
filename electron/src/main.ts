@@ -38,6 +38,8 @@ import * as path from 'path';
 import {URL} from 'url';
 import windowStateKeeper from 'electron-window-state';
 import fileUrl from 'file-url';
+const remote = require('@electron/remote/main');
+remote.initialize();
 
 import './global';
 import {
