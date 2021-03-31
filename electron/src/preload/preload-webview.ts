@@ -17,7 +17,7 @@
  *
  */
 
-import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
+import {desktopCapturer, ipcRenderer, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
@@ -37,7 +37,7 @@ interface TeamAccountInfo {
   userID: string;
 }
 
-const nativeTheme = remote.nativeTheme;
+const nativeTheme = require('@electron/remote').nativeTheme;
 
 const logger = getLogger(path.basename(__filename));
 
