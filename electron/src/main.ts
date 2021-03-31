@@ -225,7 +225,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
-      enableRemoteModule: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -559,7 +558,6 @@ class ElectronWrapperInit {
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
-            webPreferences.enableRemoteModule = true;
             webPreferences.worldSafeExecuteJavaScript = true;
           });
           break;
