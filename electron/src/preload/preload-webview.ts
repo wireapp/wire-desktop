@@ -225,10 +225,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   subscribeToThemeChange();
   subscribeToWebappEvents();
   reportWebappVersion();
-  try {
-    // include context menu
-    await import('./menu/preload-context');
-  } catch (error) {
-    logger.error(error);
-  }
+  // include context menu
+  await import('./menu/preload-context');
 });
