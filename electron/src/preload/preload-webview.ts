@@ -42,14 +42,22 @@ const nativeTheme = remote.nativeTheme;
 const logger = getLogger(path.basename(__filename));
 
 function subscribeToThemeChange(): void {
-  const updateWebAppTheme = (): void => {
+  function updateWebAppTheme(): void {
     if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
       const useDarkMode = nativeTheme.shouldUseDarkColors;
+      logger.info(`Switching dark mode ${useDarkMode ? 'on' : 'off'} ...`);
       window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     }
-  };
+  }
 
-  updateWebAppTheme();
+  function initialThemeCheck() {
+    const useDarkMode = nativeTheme.shouldUseDarkColors;
+    logger.info(`Switching initial dark mode ${useDarkMode ? 'on' : 'off'} ...`);
+    window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
+    window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
+  }
+
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   nativeTheme.on('updated', () => updateWebAppTheme());
 }
 
@@ -181,8 +189,9 @@ function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
   return ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_OG_DATA, url);
 }
 
-const reportWebappVersion = () =>
+function reportWebappVersion(): void {
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
+}
 
 // https://github.com/electron/electron/issues/2984
 const _clearImmediate = clearImmediate;
@@ -196,26 +205,26 @@ process.once('loaded', () => {
   global.setImmediate = _setImmediate;
 });
 
-const registerEvents = (callback: () => void): void => {
-  const HALF_SECOND_IN_MILLIS = 500;
-
-  const intervalId = setInterval(() => {
-    logger.info('Attempting to register event handlers...');
-    if (window.amplify && window.wire && window.z?.event) {
-      clearInterval(intervalId);
-      return callback();
-    }
-  }, HALF_SECOND_IN_MILLIS);
+const registerEvents = (): Promise<void> => {
+  return new Promise(resolve => {
+    const HALF_SECOND_IN_MILLIS = 500;
+    const intervalId = setInterval(() => {
+      logger.info('Attempting to register event handlers...');
+      if (window.amplify && window.wire && window.z?.event) {
+        clearInterval(intervalId);
+        return resolve();
+      }
+    }, HALF_SECOND_IN_MILLIS);
+  });
 };
 
-window.addEventListener('DOMContentLoaded', () => {
-  registerEvents(() => {
-    logger.info('Registering event handlers');
-    subscribeToMainProcessEvents();
-    subscribeToThemeChange();
-    subscribeToWebappEvents();
-    reportWebappVersion();
-  });
+window.addEventListener('DOMContentLoaded', async () => {
+  await registerEvents();
+  logger.info('Registering event handlers');
+  subscribeToMainProcessEvents();
+  subscribeToThemeChange();
+  subscribeToWebappEvents();
+  reportWebappVersion();
   // include context menu
-  import('./menu/preload-context').catch(logger.error);
+  await import('./menu/preload-context');
 });
