@@ -23,11 +23,11 @@ import path from 'path';
 
 import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
-import {CommonConfig, WindowsConfig} from './Config';
+import {WindowsConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
-const mainDir = path.resolve(__dirname, '../../');
+const mainDir = path.resolve(__dirname, '../../../');
 
 interface WindowsConfigResult {
   packagerConfig: electronPackager.Options;
