@@ -27,13 +27,17 @@ import {LinuxConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
+const mainDir = path.resolve(__dirname, '../../');
 
 interface LinuxConfigResult {
   builderConfig: electronBuilder.Configuration;
   linuxConfig: LinuxConfig;
 }
 
-export async function buildLinuxConfig(wireJsonPath: string, envFilePath: string): Promise<LinuxConfigResult> {
+export async function buildLinuxConfig(
+  wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
+  envFilePath: string = path.join(mainDir, '.env.defaults'),
+): Promise<LinuxConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
@@ -42,6 +46,7 @@ export async function buildLinuxConfig(wireJsonPath: string, envFilePath: string
     artifactName: '${productName}-${version}_${arch}.${ext}',
     categories: 'Network;InstantMessaging;Chat;VideoConference',
     executableName: `${commonConfig.nameShort}-desktop`,
+    genericName: 'Secure messenger',
     keywords: 'chat;encrypt;e2e;messenger;videocall',
     targets: ['AppImage', 'deb', 'rpm'],
   };
@@ -56,7 +61,7 @@ export async function buildLinuxConfig(wireJsonPath: string, envFilePath: string
 
   const linuxDesktopConfig = {
     Categories: linuxConfig.categories,
-    GenericName: commonConfig.description,
+    GenericName: linuxConfig.genericName,
     Keywords: linuxConfig.keywords,
     MimeType: `x-scheme-handler/${commonConfig.customProtocolName}`,
     Name: commonConfig.name,

@@ -46,6 +46,7 @@ export interface LinuxConfig {
   artifactName: string;
   categories: string;
   executableName: string;
+  genericName: string;
   keywords: string;
   targets: string[];
 }
