@@ -18,7 +18,7 @@
  */
 
 import {app, BrowserWindow, ipcMain, session} from 'electron';
-import fileUrl = require('file-url');
+import fileUrl from 'file-url';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
