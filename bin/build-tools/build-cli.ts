@@ -56,7 +56,7 @@ commander
 const platform = (commander.args[0] || '').toLowerCase();
 
 (async () => {
-  const {envFile, manualSign, wireJson, packageJson} = commander.opts() as CommanderData;
+  const {envFile, manualSign, wireJson, packageJson} = commander.opts();
 
   switch (platform) {
     case 'win':

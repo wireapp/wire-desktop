@@ -23,17 +23,21 @@ import path from 'path';
 
 import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
-import {CommonConfig, WindowsConfig} from './Config';
+import {WindowsConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
+const mainDir = path.resolve(__dirname, '../../../');
 
 interface WindowsConfigResult {
   packagerConfig: electronPackager.Options;
   windowsConfig: WindowsConfig;
 }
 
-export async function buildWindowsConfig(wireJsonPath: string, envFilePath: string): Promise<WindowsConfigResult> {
+export async function buildWindowsConfig(
+  wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
+  envFilePath: string = path.join(mainDir, '.env.defaults'),
+): Promise<WindowsConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);

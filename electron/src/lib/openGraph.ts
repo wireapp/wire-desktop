@@ -98,7 +98,7 @@ export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<Ax
         config.headers = {...config.headers, Cookie};
       }
     }
-    return axios.request(config);
+    return await axios.request(config);
   }
 };
 
