@@ -28,6 +28,7 @@ import {CommonConfig, MacOSConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
+const mainDir = path.resolve(__dirname, '../../../');
 
 interface MacOSConfigResult {
   macOSConfig: MacOSConfig;
@@ -35,8 +36,8 @@ interface MacOSConfigResult {
 }
 
 export async function buildMacOSConfig(
-  wireJsonPath: string,
-  envFilePath: string,
+  wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
+  envFilePath: string = path.join(mainDir, '.env.defaults'),
   signManually?: boolean,
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
