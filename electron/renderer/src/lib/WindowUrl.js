@@ -17,27 +17,23 @@
  *
  */
 
-import JSZip from 'jszip';
-import * as path from 'path';
+import {wrapperLocale} from './locale';
 
-import {getLogger} from '../logging/getLogger';
+export class WindowUrl {
+  static createWebAppUrl(localRendererUrl, customBackendUrl) {
+    const localFileParams = new URL(localRendererUrl).searchParams;
+    const customBackendUrlParsed = new URL(customBackendUrl);
+    const envUrl = decodeURIComponent(localFileParams.get('env'));
+    const envUrlParams = new URL(envUrl).searchParams;
 
-const logger = getLogger(path.basename(__filename));
+    // replace hl with current locale
+    envUrlParams.forEach((value, key) => {
+      customBackendUrlParsed.searchParams.set(key, value);
+    });
 
-export const zipFiles = async (files: Record<string, Uint8Array>): Promise<JSZip> => {
-  const zip = new JSZip();
+    // set the current language
+    envUrlParams.set('hl', wrapperLocale);
 
-  try {
-    for (const filename in files) {
-      zip.file(filename, files[filename], {binary: true});
-    }
-  } catch (error) {
-    logger.error(error);
+    return customBackendUrlParsed.href;
   }
-
-  return zip;
-};
-
-export const createFile = (zip: JSZip): Promise<Uint8Array> => {
-  return zip.generateAsync({compression: 'DEFLATE', type: 'uint8array'});
-};
+}

@@ -1,8 +1,12 @@
+// @ts-check
+/* eslint-disable valid-jsdoc */
+
 const path = require('path');
 const webpack = require('webpack');
 
+/** @type {(env: {production?: true}) => import('webpack').Configuration} */
 module.exports = (env = {}) => ({
-  devtool: env.production ? undefined : 'cheap-eval-source-map',
+  devtool: env.production ? undefined : 'eval-cheap-source-map',
   entry: path.resolve(__dirname, 'electron/renderer/src/index.jsx'),
   externals: {
     'fs-extra': '{}',

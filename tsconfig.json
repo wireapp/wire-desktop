@@ -3,10 +3,11 @@
     "alwaysStrict": true,
     "declaration": true,
     "downlevelIteration": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["dom", "esnext"],
+    "lib": ["DOM", "ESNext"],
     "module": "CommonJS",
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "noEmitOnError": true,
     "noImplicitReturns": true,
     "noUnusedLocals": false,
@@ -16,7 +17,7 @@
     "rootDir": "electron/src",
     "sourceMap": true,
     "strict": true,
-    "target": "es6"
+    "target": "ES6"
   },
   "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"]
 }

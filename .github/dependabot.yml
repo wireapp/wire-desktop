@@ -3,12 +3,9 @@ updates:
   - package-ecosystem: npm
     directory: '/'
     schedule:
-      interval: daily
-      time: '07:00'
-      timezone: 'Europe/Berlin'
+      interval: weekly
+      day: monday
     open-pull-requests-limit: 99
-    assignees:
-      - ffflorian
     versioning-strategy: increase
     ignore:
       - dependency-name: '@types/node'
@@ -16,16 +13,20 @@ updates:
           - '>= 13.x'
       - dependency-name: electron
         versions:
-          - '>= 10.x'
+          - '>= 11.x'
       - dependency-name: electron-builder
         versions:
           - '>= 21.x'
+      - dependency-name: husky
+        versions:
+          - '>= 5.x'
+      - dependency-name: electron-winstaller
+        versions:
+          - '>= 5.x'
   - package-ecosystem: npm
     directory: '/app-config'
     schedule:
       interval: weekly
       day: sunday
     open-pull-requests-limit: 99
-    assignees:
-      - ffflorian
     versioning-strategy: increase

@@ -32,12 +32,11 @@ import {
 } from 'electron';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
-import * as logdown from 'logdown';
-import * as minimist from 'minimist';
+import logdown from 'logdown';
+import minimist from 'minimist';
 import * as path from 'path';
-import {URL} from 'url';
-import windowStateKeeper = require('electron-window-state');
-import fileUrl = require('file-url');
+import {URL, pathToFileURL} from 'url';
+import windowStateKeeper from 'electron-window-state';
 
 import './global';
 import {
@@ -51,7 +50,7 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import * as locale from './locale/locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLogFilenames} from './logging/loggerUtils';
-import {developerMenu} from './menu/developer';
+import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
@@ -137,6 +136,24 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
+try {
+  logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
+  const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
+
+  if (!has2dCanvas) {
+    /*
+     * If the 2D canvas is unavailable, and we rely on hardware acceleartion,
+     * Electron can't render anything and will only display a white screen. Thus
+     * we disable hardware acceleration completely.
+     */
+    logger.warn('2D canvas unavailable, disabling hardware acceleration');
+    app.disableHardwareAcceleration();
+  }
+} catch (error) {
+  logger.warn(`Can't read GPUFeatureStatus, disabling hardware acceleration`);
+  app.disableHardwareAcceleration();
+}
+
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
@@ -193,6 +210,7 @@ const initWindowStateKeeper = (): windowStateKeeper.State => {
 // App Windows
 const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
+  const zoomFactor = settings.restore(SettingsType.ZOOM_FACTOR, 1.0);
 
   const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
@@ -236,8 +254,10 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     webappURL.hash = customProtocolHandler.hashLocation;
   }
 
-  if (argv.devtools) {
-    main.webContents.openDevTools({mode: 'detach'});
+  if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
+    openDevTools(argv[config.ARGUMENT.DEVTOOLS]).catch(() =>
+      logger.warn(`Could not open DevTools with index "${argv[config.ARGUMENT.DEVTOOLS]}". Does the account exist?`),
+    );
   }
 
   if (!startHidden) {
@@ -264,7 +284,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       return;
     }
 
-    return WindowUtil.openExternal(url);
+    await WindowUtil.openExternal(url);
   });
 
   main.on('focus', () => {
@@ -314,7 +334,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  const mainURL = new URL(fileUrl(INDEX_HTML));
+  main.webContents.setZoomFactor(zoomFactor);
+
+  const mainURL = pathToFileURL(INDEX_HTML);
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
   mainURL.searchParams.set('focus', String(!startHidden));
 
@@ -515,7 +537,7 @@ class ElectronWrapperInit {
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
       // Ensure navigation is to an allowed domain
       if (OriginValidator.isMatchingHost(url, baseUrl)) {
-        this.logger.log(`Navigating inside webview. URL: ${url}`);
+        this.logger.log(`Navigating inside <webview>. URL: ${url}`);
       } else {
         this.logger.log(`Preventing navigation inside <webview>. URL: ${url}`);
         event.preventDefault();
@@ -533,11 +555,12 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
-            webPreferences.experimentalFeatures = false;
+            webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
+            webPreferences.enableRemoteModule = true;
             webPreferences.worldSafeExecuteJavaScript = true;
           });
           break;
@@ -559,14 +582,21 @@ class ElectronWrapperInit {
 
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
+              /*
+               * Note: WebContents with ID `1` is the main window, `2` is the
+               * sidebar and `3` is the first account.
+               */
+              const accountIndex = contents.id - 2;
+
               if (webViewId) {
+                const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
                 try {
                   await LogFactory.writeMessage(
                     message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
-                    LOG_FILE,
+                    logFilePath,
                   );
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${LOG_FILE}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
                 }
               }
             });

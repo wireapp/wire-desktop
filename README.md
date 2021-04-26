@@ -22,7 +22,7 @@ Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireap
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/)
+- [Node.js](https://nodejs.org/) >= 10
 - Git
 
 ### Clone
@@ -53,6 +53,11 @@ yarn test
 | 2 (Nightly test automation) | [dev](https://github.com/wireapp/wire-desktop/tree/dev) | commit or squash merge from feature branch | x.y+2 (e.g. 3.19) |
 | 3 (Internal release) | [staging](https://github.com/wireapp/wire-desktop/tree/staging) | merge (don't squash) from [dev](https://github.com/wireapp/wire-desktop/tree/dev) | x.y+1 (e.g. 3.18) |
 | 4 (Production release) | [main](https://github.com/wireapp/wire-desktop/tree/main) | merge (don't squash) from [staging](https://github.com/wireapp/wire-desktop/tree/staging) | x.y (e.g. 3.17) |
+
+**Compare Views**
+
+1. Updates from "dev" to "staging" (changelog): https://github.com/wireapp/wire-desktop/compare/staging...dev
+1. Updates from "staging" to "main" (changelog): https://github.com/wireapp/wire-desktop/compare/main...staging
 
 ### Tasks
 

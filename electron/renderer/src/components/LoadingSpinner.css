@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2020 Wire Swiss GmbH
+ * Copyright (C) 2021 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
  *
  */
 
-export class WindowUrl {
-  static createWebAppUrl(localRendererUrl: string, customBackendUrl: string): string {
-    const localFileParams = new URL(localRendererUrl).searchParams;
-    const customBackendUrlParsed = new URL(customBackendUrl);
-    const envUrl = decodeURIComponent(localFileParams.get('env')!);
-    const envUrlParams = new URL(envUrl).searchParams;
-    envUrlParams.forEach((value, key) => {
-      customBackendUrlParsed.searchParams.set(key, value);
-    });
-    return customBackendUrlParsed.href;
-  }
+.loading-spinner-wrapper {
+  height: 100vh;
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+  transition: opacity 0.25s ease-in-out;
+  -webkit-transition: opacity 0.25s ease-in-out;
+}
+
+.loading-spinner-box {
+  margin: 0 auto;
 }

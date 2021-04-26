@@ -2,6 +2,7 @@
 /wrap
 /temp
 /.github/issue_template.md
+/resources
 coverage
 .nyc_output
 instrumented-code

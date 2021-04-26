@@ -35,8 +35,8 @@ node('master') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
-  def NODE = tool name: 'node-v12.13.0', type: 'nodejs'
-  def DRY_RUN = params.DRY_RUN ? "--dry-run" : ""
+  def NODE = tool name: 'node-v12.20.0', type: 'nodejs'
+  env.DRY_RUN = params.DRY_RUN ? "--dry-run" : ""
 
   stage('Get build artifacts') {
     try {
@@ -73,24 +73,24 @@ node('master') {
 
   stage('Upload to S3') {
     withEnv(["PATH+NODE=${NODE}/bin"]) {
-      def SEARCH_PATH = './wrap/dist/'
+      env.SEARCH_PATH = './wrap/dist/'
 
       if (projectName.contains('Windows')) {
-        def S3_PATH = ''
+        env.S3_PATH = ''
         def AWS_ACCESS_KEY_CREDENTIALS_ID = ''
         def AWS_SECRET_CREDENTIALS_ID = ''
 
           if (params.Release.equals('Production')) {
-            S3_PATH = 'win/prod'
+            env.S3_PATH = 'win/prod'
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release.equals('Internal')) {
-            S3_PATH = 'win/internal'
+            env.S3_PATH = 'win/internal'
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release.equals('Custom')) {
-            S3_BUCKET = params.WIN_S3_BUCKET
-            S3_PATH = params.WIN_S3_PATH
+            env.S3_BUCKET = params.WIN_S3_BUCKET
+            env.S3_PATH = params.WIN_S3_PATH
             AWS_ACCESS_KEY_CREDENTIALS_ID = params.AWS_CUSTOM_ACCESS_KEY_ID
             AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
           }
@@ -100,7 +100,7 @@ node('master') {
             string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
             string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
-            sh "jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"${S3_BUCKET}\" --s3path \"${S3_PATH}\" --key-id \"${AWS_ACCESS_KEY_ID}\" --secret-key \"${AWS_SECRET_ACCESS_KEY}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+            sh 'jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts --bucket \"$S3_BUCKET\" --s3path \"$S3_PATH\" --key-id \"$AWS_ACCESS_KEY_ID\" --secret-key \"$AWS_SECRET_ACCESS_KEY\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\" $DRY_RUN'
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
@@ -249,10 +249,10 @@ node('master') {
     stage('Upload build as draft to GitHub') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
-          def SEARCH_PATH = './wrap/dist/'
+          env.SEARCH_PATH = './wrap/dist/'
 
           withCredentials([string(credentialsId: 'GITHUB_ACCESS_TOKEN', variable: 'GITHUB_ACCESS_TOKEN')]) {
-            sh "jenkins/ts-node.sh ./bin/deploy-tools/github-draft-cli.ts --github-token \"${env.GITHUB_ACCESS_TOKEN}\" --wrapper-build \"${WRAPPER_BUILD}\" --path \"${SEARCH_PATH}\" ${DRY_RUN}"
+            sh 'jenkins/ts-node.sh ./bin/deploy-tools/github-draft-cli.ts --github-token \"$GITHUB_ACCESS_TOKEN\" --wrapper-build \"$WRAPPER_BUILD\" --path \"$SEARCH_PATH\" $DRY_RUN'
           }
         }
       } catch(e) {

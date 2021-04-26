@@ -28,11 +28,11 @@ import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
 
 const logger = getLogger(path.basename(__filename));
 
-webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
 window.locStrings = locale.LANGUAGES[locale.getCurrent()];
 window.locStringsDefault = locale.LANGUAGES.en;
+window.locale = locale.getCurrent();
 
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
@@ -57,19 +57,12 @@ const subscribeToMainProcessEvents = (): void => {
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.redo();
-    }
-  });
-
-  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      selectedWebview.undo();
-    }
-  });
+  ipcRenderer.on(EVENT_TYPE.EDIT.COPY, () => getSelectedWebview()?.copy());
+  ipcRenderer.on(EVENT_TYPE.EDIT.CUT, () => getSelectedWebview()?.cut());
+  ipcRenderer.on(EVENT_TYPE.EDIT.PASTE, () => getSelectedWebview()?.paste());
+  ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => getSelectedWebview()?.redo());
+  ipcRenderer.on(EVENT_TYPE.EDIT.SELECT_ALL, () => getSelectedWebview()?.selectAll());
+  ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => getSelectedWebview()?.undo());
 
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
     const webviews = document.querySelectorAll<WebviewTag>('webview');
@@ -78,25 +71,6 @@ const subscribeToMainProcessEvents = (): void => {
 
   ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
-  });
-
-  ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_IN, () => {
-    logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_IN}", zooming in ...`);
-    const currentZoomFactor = webFrame.getZoomFactor();
-    const newZoomFactor = Math.min(currentZoomFactor + 0.1, 2.0);
-    webFrame.setZoomFactor(newZoomFactor);
-  });
-
-  ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_OUT, () => {
-    logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_OUT}", zooming out ...`);
-    const currentZoomFactor = webFrame.getZoomFactor();
-    const newZoomFactor = Math.max(currentZoomFactor - 0.1, 0.5);
-    webFrame.setZoomFactor(newZoomFactor);
-  });
-
-  ipcRenderer.on(EVENT_TYPE.WRAPPER.ZOOM_RESET, () => {
-    logger.info(`Received event "${EVENT_TYPE.WRAPPER.ZOOM_RESET}", resetting zoom ...`);
-    webFrame.setZoomFactor(1.0);
   });
 };
 

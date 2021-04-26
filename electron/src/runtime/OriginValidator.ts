@@ -17,10 +17,10 @@
  *
  */
 
-import * as url from 'url';
+import {URL} from 'url';
 
 export const OriginValidator = {
   isMatchingHost(urlString: string, baseUrl: string): boolean {
-    return url.parse(urlString).host === url.parse(baseUrl).host;
+    return new URL(urlString).host === new URL(baseUrl).host;
   },
 };

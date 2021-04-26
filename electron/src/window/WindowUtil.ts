@@ -19,12 +19,14 @@
 
 import {BrowserWindow, screen, shell} from 'electron';
 import * as path from 'path';
-import * as URL from 'url';
+import {URL} from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
 import * as locale from '../locale/locale';
 import {config} from '../settings/config';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -33,6 +35,12 @@ interface Rectangle {
   width: number;
   x: number;
   y: number;
+}
+
+export enum ZOOM_DIRECTION {
+  IN = 'IN',
+  OUT = 'OUT',
+  RESET = 'RESET',
 }
 
 export const pointInRectangle = (point: [number, number], rectangle: Rectangle): boolean => {
@@ -58,7 +66,7 @@ export const isInView = (win: BrowserWindow): boolean => {
 
 export const openExternal = async (url: string, httpsOnly: boolean = false): Promise<void> => {
   try {
-    const urlProtocol = URL.parse(url).protocol || '';
+    const urlProtocol = new URL(url).protocol || '';
     const allowedProtocols = ['https:'];
 
     if (!httpsOnly) {
@@ -76,4 +84,24 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
   } catch (error) {
     logger.error(error);
   }
+};
+
+export const zoomWindow = (direction: ZOOM_DIRECTION, browserWindow?: BrowserWindow): void => {
+  let newZoomFactor = 1.0;
+
+  switch (direction) {
+    case ZOOM_DIRECTION.IN: {
+      const currentZoomFactor = browserWindow?.webContents.getZoomFactor() || 1.0;
+      newZoomFactor = Math.min(currentZoomFactor + 0.1, 2.0);
+      break;
+    }
+    case ZOOM_DIRECTION.OUT: {
+      const currentZoomFactor = browserWindow?.webContents.getZoomFactor() || 1.0;
+      newZoomFactor = Math.max(currentZoomFactor - 0.1, 0.5);
+      break;
+    }
+  }
+
+  browserWindow?.webContents.setZoomFactor(newZoomFactor);
+  settings.save(SettingsType.ZOOM_FACTOR, newZoomFactor);
 };

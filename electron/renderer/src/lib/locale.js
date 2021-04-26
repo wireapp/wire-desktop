@@ -19,6 +19,7 @@
 
 window.locStrings = window.locStrings || {};
 window.locStringsDefault = window.locStringsDefault || {};
+window.locale = window.locale || 'en';
 
 export const getText = (stringIdentifier, paramReplacements) => {
   let str = window.locStrings[stringIdentifier] || window.locStringsDefault[stringIdentifier] || stringIdentifier;
@@ -33,3 +34,5 @@ export const getText = (stringIdentifier, paramReplacements) => {
 
   return str;
 };
+
+export const wrapperLocale = window.locale;
