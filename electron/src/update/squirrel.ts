@@ -127,7 +127,7 @@ function createShortcuts(): void {
   logger.info('Created shortcuts:', {desktop: desktopResult, quickLaunch: quickLaunchResult, start: startResult});
 }
 
-export async function removeShortcuts(): Promise<void> {
+async function removeShortcuts(): Promise<void> {
   logger.info('Removing all shortcuts ...');
   await fs.remove(startShortcut);
   await fs.remove(desktopShortcut);
