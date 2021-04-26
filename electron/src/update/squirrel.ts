@@ -19,6 +19,7 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
+import {app, shell} from 'electron';
 import {StringUtil} from '@wireapp/commons';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
@@ -35,23 +36,21 @@ const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-const exeName = `${config.name}.exe`;
 const linkName = `${config.name}.lnk`;
 const windowsAppData = process.env.APPDATA;
+const startShortcut = path.join(app.getPath('appData'), `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
+const desktopShortcut = path.join(app.getPath('desktop'), `${config.name}.lnk`);
+const quickLaunchShortcut = windowsAppData
+  ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
+  : '';
 
 if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
   logger.error('No Windows AppData directory found.');
 }
 
-const shortcutLink = windowsAppData
-  ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
-  : '';
-
 enum SQUIRREL_EVENT {
-  CREATE_SHORTCUT = '--createShortcut',
   INSTALL = '--squirrel-install',
   OBSOLETE = '--squirrel-obsolete',
-  REMOVE_SHORTCUT = '--removeShortcut',
   UNINSTALL = '--squirrel-uninstall',
   UPDATE = '--update',
   UPDATED = '--squirrel-updated',
@@ -105,21 +104,35 @@ async function spawnUpdate(args: string[]): Promise<void> {
   }
 }
 
-async function createStartShortcut(): Promise<void> {
+function createShortcut(location: string): boolean {
+  return shell.writeShortcutLink(location, 'create', {
+    appUserModelId: config.appUserModelId,
+    target: process.execPath,
+  });
+}
+
+function createShortcuts(): void {
   logger.info('Creating shortcut in the start menu ...');
-  await spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=StartMenu']);
-}
+  const startResult = createShortcut(startShortcut);
 
-async function createDesktopShortcut(): Promise<void> {
   logger.info('Creating shortcut on the desktop ...');
-  await spawnUpdate([SQUIRREL_EVENT.CREATE_SHORTCUT, exeName, '-l=Desktop']);
+  const desktopResult = createShortcut(desktopShortcut);
+
+  let quickLaunchResult = false;
+  if (quickLaunchShortcut) {
+    logger.info('Creating shortcut in the quick launch menu ...');
+    quickLaunchResult = createShortcut(desktopShortcut);
+  }
+
+  logger.info('Created shortcuts:', {desktop: desktopResult, quickLaunch: quickLaunchResult, start: startResult});
 }
 
-async function removeShortcuts(): Promise<void> {
+export async function removeShortcuts(): Promise<void> {
   logger.info('Removing all shortcuts ...');
-  await spawnUpdate([SQUIRREL_EVENT.REMOVE_SHORTCUT, exeName, '-l=Desktop,Startup,StartMenu']);
-  if (shortcutLink) {
-    await fs.remove(shortcutLink);
+  await fs.remove(startShortcut);
+  await fs.remove(desktopShortcut);
+  if (quickLaunchShortcut) {
+    await fs.remove(quickLaunchShortcut);
   }
 }
 
@@ -146,8 +159,7 @@ export async function handleSquirrelArgs(): Promise<void> {
 
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL: {
-      await createStartShortcut();
-      await createDesktopShortcut();
+      createShortcuts();
       await lifecycle.quit();
       return;
     }
