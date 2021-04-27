@@ -35,9 +35,8 @@ import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';
 import * as path from 'path';
-import {URL} from 'url';
+import {URL, pathToFileURL} from 'url';
 import windowStateKeeper from 'electron-window-state';
-import fileUrl from 'file-url';
 
 import './global';
 import {
@@ -68,6 +67,7 @@ import * as WindowUtil from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
 import {getOpenGraphDataAsync} from './lib/openGraph';
+import {quit} from './runtime/lifecycle';
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -134,7 +134,7 @@ Object.entries(config).forEach(([key, value]) => {
 });
 
 // Squirrel setup
-app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
+app.setAppUserModelId(config.appUserModelId);
 
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
@@ -142,7 +142,7 @@ try {
 
   if (!has2dCanvas) {
     /*
-     * If the 2D canvas is unavailable, and we rely on hardware acceleartion,
+     * If the 2D canvas is unavailable, and we rely on hardware acceleration,
      * Electron can't render anything and will only display a white screen. Thus
      * we disable hardware acceleration completely.
      */
@@ -336,7 +336,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
 
   main.webContents.setZoomFactor(zoomFactor);
 
-  const mainURL = new URL(fileUrl(INDEX_HTML));
+  const mainURL = pathToFileURL(INDEX_HTML);
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
   mainURL.searchParams.set('focus', String(!startHidden));
 
@@ -440,24 +440,26 @@ const handleAppEvents = (): void => {
   });
 };
 
-const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string): void => {
-  for (const file of files) {
-    try {
-      const fileStat = fs.statSync(file);
-      if (fileStat.isFile() && file.endsWith(oldExtension)) {
-        fs.renameSync(file, file.replace(oldExtension, newExtension));
+const renameFileExtensions = async (files: string[], oldExtension: string, newExtension: string): Promise<void> => {
+  await Promise.all(
+    files.map(async file => {
+      try {
+        const fileStat = await fs.stat(file);
+        if (fileStat.isFile() && file.endsWith(oldExtension)) {
+          await fs.rename(file, file.replace(oldExtension, newExtension));
+        }
+      } catch (error) {
+        logger.error(`Failed to rename log file: "${error.message}"`);
       }
-    } catch (error) {
-      logger.error(`Failed to rename log file: "${error.message}"`);
-    }
-  }
+    }),
+  );
 };
 
-const renameWebViewLogFiles = (): void => {
+const renameWebViewLogFiles = async (): Promise<void> => {
   // Rename "console.log" to "console.old" (for every log directory of every account)
   try {
-    const logFiles = getLogFilenames(LOG_DIR, true);
-    renameFileExtensions(logFiles, '.log', '.old');
+    const logFiles = await getLogFilenames(LOG_DIR, true);
+    await renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
     logger.log(`Failed to read log directory with error: ${error.message}`);
   }
@@ -662,19 +664,24 @@ class ElectronWrapperInit {
   }
 }
 
-customProtocolHandler.registerCoreProtocol();
-handlePortableFlags();
-lifecycle
-  .checkSingleInstance()
-  .then(() => lifecycle.initSquirrelListener())
-  .catch(error => logger.error(error));
+(async () => {
+  // Stop further execution on update to prevent second tray icon
+  const isFirstInstance = await lifecycle.checkSingleInstance();
 
-// Stop further execution on update to prevent second tray icon
-if (lifecycle.isFirstInstance) {
+  if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
+    await quit(false);
+  } else {
+    app.on('second-instance', () => WindowManager.showPrimaryWindow());
+  }
+
+  await fs.ensureFile(LOG_FILE);
+  customProtocolHandler.registerCoreProtocol();
+  handlePortableFlags();
+  await lifecycle.initSquirrelListener();
   addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
-  renameWebViewLogFiles();
-  fs.ensureFileSync(LOG_FILE);
-  new ElectronWrapperInit().run().catch(error => logger.error(error));
-}
+  await renameWebViewLogFiles();
+
+  await new ElectronWrapperInit().run();
+})().catch(error => logger.error(error));

@@ -27,6 +27,7 @@ import {WindowsInstallerConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
+const mainDir = path.resolve(__dirname, '../../../');
 
 interface WindowsInstallerConfigResult {
   windowsInstallerConfig: WindowsInstallerConfig;
@@ -34,8 +35,8 @@ interface WindowsInstallerConfigResult {
 }
 
 export async function buildWindowsInstallerConfig(
-  wireJsonPath: string,
-  envFilePath: string,
+  wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
+  envFilePath: string = path.join(mainDir, '.env.defaults'),
   manualSign?: boolean,
 ): Promise<WindowsInstallerConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
