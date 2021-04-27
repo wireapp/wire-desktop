@@ -664,28 +664,24 @@ class ElectronWrapperInit {
   }
 }
 
-void (async () => {
-  try {
-    // Stop further execution on update to prevent second tray icon
-    const isFirstInstance = await lifecycle.checkSingleInstance();
+(async () => {
+  // Stop further execution on update to prevent second tray icon
+  const isFirstInstance = await lifecycle.checkSingleInstance();
 
-    if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
-      await quit(false);
-    } else {
-      app.on('second-instance', () => WindowManager.showPrimaryWindow());
-    }
-
-    await fs.ensureFile(LOG_FILE);
-    customProtocolHandler.registerCoreProtocol();
-    handlePortableFlags();
-    await lifecycle.initSquirrelListener();
-    addLinuxWorkarounds();
-    bindIpcEvents();
-    handleAppEvents();
-    await renameWebViewLogFiles();
-
-    await new ElectronWrapperInit().run();
-  } catch (error) {
-    logger.error(error);
+  if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
+    await quit(false);
+  } else {
+    app.on('second-instance', () => WindowManager.showPrimaryWindow());
   }
-})();
+
+  await fs.ensureFile(LOG_FILE);
+  customProtocolHandler.registerCoreProtocol();
+  handlePortableFlags();
+  await lifecycle.initSquirrelListener();
+  addLinuxWorkarounds();
+  bindIpcEvents();
+  handleAppEvents();
+  await renameWebViewLogFiles();
+
+  await new ElectronWrapperInit().run();
+})().catch(error => logger.error(error));
