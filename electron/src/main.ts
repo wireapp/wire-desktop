@@ -133,7 +133,7 @@ Object.entries(config).forEach(([key, value]) => {
 });
 
 // Squirrel setup
-app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
+app.setAppUserModelId(config.appUserModelId);
 
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
