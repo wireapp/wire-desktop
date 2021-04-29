@@ -20,9 +20,6 @@ updates:
       - dependency-name: husky
         versions:
           - '>= 5.x'
-      - dependency-name: electron-winstaller
-        versions:
-          - '>= 5.x'
   - package-ecosystem: npm
     directory: '/app-config'
     schedule:
