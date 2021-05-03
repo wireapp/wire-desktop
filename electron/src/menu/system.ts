@@ -141,13 +141,8 @@ const conversationTemplate: MenuItemConstructorOptions = {
 };
 
 const showWireTemplate: MenuItemConstructorOptions = {
-  accelerator: 'CmdOrCtrl+0',
-  click: () => {
-    const primaryWindow = WindowManager.getPrimaryWindow();
-    if (primaryWindow) {
-      primaryWindow.show();
-    }
-  },
+  accelerator: 'Alt+CmdOrCtrl+1',
+  click: () => WindowManager.getPrimaryWindow()?.show(),
   label: `&${config.name}`,
 };
 
