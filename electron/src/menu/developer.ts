@@ -28,12 +28,7 @@ import {WindowManager} from '../window/WindowManager';
 const currentEnvironment = EnvironmentUtil.getEnvironment();
 
 const reloadTemplate: MenuItemConstructorOptions = {
-  click: () => {
-    const primaryWindow = WindowManager.getPrimaryWindow();
-    if (primaryWindow) {
-      primaryWindow.reload();
-    }
-  },
+  click: () => WindowManager.getPrimaryWindow()?.reload(),
   label: 'Reload',
 };
 

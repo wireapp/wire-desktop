@@ -67,6 +67,7 @@ enum ARGUMENT {
 export const config = {
   ...wireJson,
   ARGUMENT,
+  appUserModelId: `com.squirrel.wire.${wireJson.name.toLowerCase()}`,
   backendOrigins: ['https://staging-nginz-https.zinfra.io', 'https://prod-nginz-https.wire.com'],
   logFileName: 'console.log',
   maximumAccounts: parseInt(wireJson.maximumAccounts, 10),
