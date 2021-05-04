@@ -8,10 +8,10 @@ updates:
     open-pull-requests-limit: 99
     versioning-strategy: increase
     ignore:
-      # our current Electron version uses Node.js 13
+      # our current Electron version uses Node.js 14
       - dependency-name: '@types/node'
         versions:
-          - '>= 14.x'
+          - '>= 15.x'
       # in progress, always takes some time to follow all breaking changes
       - dependency-name: electron
         versions:
