@@ -133,7 +133,7 @@ Object.entries(config).forEach(([key, value]) => {
 });
 
 // Squirrel setup
-app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
+app.setAppUserModelId(config.appUserModelId);
 
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
@@ -141,7 +141,7 @@ try {
 
   if (!has2dCanvas) {
     /*
-     * If the 2D canvas is unavailable, and we rely on hardware acceleartion,
+     * If the 2D canvas is unavailable, and we rely on hardware acceleration,
      * Electron can't render anything and will only display a white screen. Thus
      * we disable hardware acceleration completely.
      */
