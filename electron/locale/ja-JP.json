@@ -93,13 +93,13 @@
   "menuActualSize": "元のサイズ",
   "menuZoomIn": "ズームイン",
   "menuZoomOut": "ズームアウト",
-  "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} accounts already active",
-  "wrapperAddAccountErrorTitleSingular": "Account already active",
-  "wrapperAddAccountErrorMessagePlural": "You can only be logged in with {{maximumAccounts}} accounts at once. Log out from one to add another.",
-  "wrapperAddAccountErrorMessageSingular": "You can only be logged in with one account at once. Log out from this one to add another.",
+  "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} アカウントが既にアクティブです",
+  "wrapperAddAccountErrorTitleSingular": "アカウントはすでにアクティブです。",
+  "wrapperAddAccountErrorMessagePlural": "１度に{{maximumAccounts}}つのアカウントまでログインできます。新規にログインする為に、１つログアウトしてください。",
+  "wrapperAddAccountErrorMessageSingular": "１度に１つのアカウントまでログインできます。このアカウントからログアウトして別のアカウントを追加してください。",
   "promptOK": "OK",
   "promptCancel": "キャンセル",
   "promptWarning": "警告",
   "promptError": "エラー",
-  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application."
+  "urlBlockedPromptText": "安全でない可能性のあるURLがブロックされました。それでも開きたい場合は、URLをコピーして適切なアプリケーションを開きます。"
 }
