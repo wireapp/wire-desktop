@@ -18,7 +18,7 @@
  */
 
 import {app, BrowserWindow, ipcMain, session} from 'electron';
-import fileUrl = require('file-url');
+import {pathToFileURL} from 'url';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -27,8 +27,8 @@ import {config} from '../settings/config';
 
 const appPath = path.join(app.getAppPath(), config.electronDirectory);
 
-const promptHtmlPath = fileUrl(path.join(appPath, 'html/proxy-prompt.html'));
-const proxyPromptWindowAllowList = [promptHtmlPath, fileUrl(path.join(appPath, 'css/proxy-prompt.css'))];
+const promptHtmlPath = pathToFileURL(path.join(appPath, 'html/proxy-prompt.html')).href;
+const proxyPromptWindowAllowList = [promptHtmlPath, pathToFileURL(path.join(appPath, 'css/proxy-prompt.css'))];
 const preloadPath = path.join(appPath, 'dist/preload/menu/preload-proxy-prompt.js');
 
 const windowSize = {

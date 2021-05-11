@@ -27,7 +27,7 @@ const logger = getLogger(path.basename(__filename));
 export class WindowManager {
   private static primaryWindowId: number | undefined;
 
-  static getPrimaryWindow(): BrowserWindow | void {
+  static getPrimaryWindow(): BrowserWindow | undefined {
     const [primaryWindow] = WindowManager.primaryWindowId
       ? [BrowserWindow.fromId(WindowManager.primaryWindowId)]
       : BrowserWindow.getAllWindows();
@@ -35,6 +35,7 @@ export class WindowManager {
       logger.info(`Got primaryWindow with ID "${primaryWindow.id}"`);
       return primaryWindow;
     }
+    return undefined;
   }
 
   static setPrimaryWindowId(newPrimaryWindowId: number): void {

@@ -35,9 +35,8 @@ import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';
 import * as path from 'path';
-import {URL} from 'url';
+import {URL, pathToFileURL} from 'url';
 import windowStateKeeper from 'electron-window-state';
-import fileUrl from 'file-url';
 
 import './global';
 import {
@@ -134,7 +133,7 @@ Object.entries(config).forEach(([key, value]) => {
 });
 
 // Squirrel setup
-app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
+app.setAppUserModelId(config.appUserModelId);
 
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
@@ -142,7 +141,7 @@ try {
 
   if (!has2dCanvas) {
     /*
-     * If the 2D canvas is unavailable, and we rely on hardware acceleartion,
+     * If the 2D canvas is unavailable, and we rely on hardware acceleration,
      * Electron can't render anything and will only display a white screen. Thus
      * we disable hardware acceleration completely.
      */
@@ -336,7 +335,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
 
   main.webContents.setZoomFactor(zoomFactor);
 
-  const mainURL = new URL(fileUrl(INDEX_HTML));
+  const mainURL = pathToFileURL(INDEX_HTML);
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
   mainURL.searchParams.set('focus', String(!startHidden));
 
