@@ -410,6 +410,7 @@ const handleAppEvents = (): void => {
         ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
           logger.log('Proxy prompt was canceled');
 
+          // TODO: check if we should use `mode: 'auto_detect'` here
           await webContents.session.setProxy({});
 
           try {
