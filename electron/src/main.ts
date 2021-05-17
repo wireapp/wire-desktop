@@ -226,6 +226,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
+      contextIsolation: false,
+      enableRemoteModule: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -556,6 +558,8 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
+            webPreferences.contextIsolation = false;
+            webPreferences.enableRemoteModule = true;
             webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;

@@ -26,7 +26,7 @@ import {
   WebContents,
   nativeImage,
 } from 'electron';
-const {Menu} = require('@electron/remote');
+const remote = require('@electron/remote');
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
@@ -59,7 +59,7 @@ const copyPicture = async (url: RequestInfo): Promise<void> => {
 };
 
 const createDefaultMenu = (copyContext: string) =>
-  Menu.buildFromTemplate([
+  remote.Menu.buildFromTemplate([
     {
       click: () => clipboard.writeText(copyContext),
       label: locale.getText('menuCopy'),
@@ -108,10 +108,10 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
     }
   }
 
-  return Menu.buildFromTemplate(template);
+  return remote.Menu.buildFromTemplate(template);
 };
 
-const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
+const imageMenu: ElectronMenuWithImageAndTime = remote.Menu.buildFromTemplate([
   {
     click: () => savePicture(imageMenu.image || ''),
     label: locale.getText('menuSavePictureAs'),
