@@ -276,6 +276,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   });
 
   // Handle the new window event in the main Browser Window
+  // TODO: Replace with `webContents.setWindowOpenHandler()`
   main.webContents.on('new-window', async (event, url) => {
     event.preventDefault();
 

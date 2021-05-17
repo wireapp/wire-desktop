@@ -94,6 +94,7 @@ const showWindow = async () => {
     });
 
     // Handle the new window event in the About Window
+    // TODO: Replace with `webContents.setWindowOpenHandler()`
     aboutWindow.webContents.on('new-window', (event, url) => {
       event.preventDefault();
 
