@@ -156,7 +156,7 @@ const tr_TR = require('../../locale/tr-TR');
 const uk_UA = require('../../locale/uk-UA');
 const zh_CN = require('../../locale/zh-CN');
 
-const app = Electron.app || Electron.remote.app;
+const app = Electron.app || require('@electron/remote').app;
 
 export const LANGUAGES: SupportedI18nLanguageObject = {
   cs: cs_CZ,
