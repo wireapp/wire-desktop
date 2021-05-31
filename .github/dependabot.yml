@@ -18,16 +18,16 @@ updates:
           - '>= 14.x'
       - dependency-name: electron-builder
         versions:
-          - '>= 21.x'
+          - '> 20.x'
       # multiple setup problems and 4.x works fine
       - dependency-name: husky
         versions:
-          - '>= 5.x'
+          - '> 4.x'
       # when building, we receive this error with winstaller 5.0:
       # Error: no such file or directory, copyfile 'vendor/7z-ia32.exe' -> 'vendor/7z.exe'
       - dependency-name: electron-winstaller
         versions:
-          - '>= 5.x'
+          - '> 4.x'
   - package-ecosystem: npm
     directory: '/app-config'
     schedule:

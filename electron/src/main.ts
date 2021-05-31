@@ -225,6 +225,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
+      contextIsolation: false,
+      enableRemoteModule: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -275,6 +277,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   });
 
   // Handle the new window event in the main Browser Window
+  // TODO: Replace with `webContents.setWindowOpenHandler()`
   main.webContents.on('new-window', async (event, url) => {
     event.preventDefault();
 
@@ -408,6 +411,7 @@ const handleAppEvents = (): void => {
         ipcMain.once(EVENT_TYPE.PROXY_PROMPT.CANCELED, async () => {
           logger.log('Proxy prompt was canceled');
 
+          // TODO: check if we should use `mode: 'auto_detect'` here
           await webContents.session.setProxy({});
 
           try {
@@ -553,6 +557,8 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
+            webPreferences.contextIsolation = false;
+            webPreferences.enableRemoteModule = true;
             webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;

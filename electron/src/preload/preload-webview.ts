@@ -22,6 +22,7 @@ import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
 import type {Data as OpenGraphResult} from 'open-graph';
+const {nativeTheme} = require('@electron/remote');
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
@@ -36,8 +37,6 @@ interface TeamAccountInfo {
   teamRole: string;
   userID: string;
 }
-
-const nativeTheme = require('@electron/remote').nativeTheme;
 
 const logger = getLogger(path.basename(__filename));
 
