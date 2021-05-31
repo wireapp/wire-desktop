@@ -69,7 +69,7 @@
     "core-js": "3.12.1",
     "cross-env": "7.0.3",
     "cspell": "5.4.1",
-    "css-loader": "5.2.5",
+    "css-loader": "5.2.6",
     "dotenv": "9.0.2",
     "electron": "12.0.7",
     "electron-builder": "20.44.4",
