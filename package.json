@@ -81,7 +81,7 @@
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.23.4",
     "eslint-plugin-jasmine": "4.1.2",
-    "eslint-plugin-jsdoc": "34.6.3",
+    "eslint-plugin-jsdoc": "35.1.0",
     "eslint-plugin-no-unsanitized": "3.1.5",
     "eslint-plugin-prettier": "3.4.0",
     "eslint-plugin-react": "7.24.0",

@@ -1421,14 +1421,14 @@
   resolved "https://registry.npmjs.org/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
-"@es-joy/jsdoccomment@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/@es-joy/jsdoccomment/-/jsdoccomment-0.6.0.tgz#8926a8184df0968860f8c69b3bfc52efa6aeaa30"
-  integrity sha512-zT1EtysKMITJ7vE4RvOJqitxk/Str6It8hq+fykxkwLuTyzgak+TnVuVSIyovT/qrEz3i46ypCSXgNtIDYwNOg==
+"@es-joy/jsdoccomment@^0.8.0-alpha.2":
+  version "0.8.0-alpha.2"
+  resolved "https://registry.npmjs.org/@es-joy/jsdoccomment/-/jsdoccomment-0.8.0-alpha.2.tgz#78585147d8e6231270374dae528fe5b7b5587b5a"
+  integrity sha512-fjRY13Bh8sxDZkzO27U2R9L6xFqkh5fAbHuMGvGLXLfrTes8nTTMyOi6wIPt+CG0XPAxEUge8cDjhG+0aag6ew==
   dependencies:
     comment-parser "^1.1.5"
     esquery "^1.4.0"
-    jsdoctypeparser "^9.0.0"
+    jsdoc-type-pratt-parser "1.0.0-alpha.23"
 
 "@eslint/eslintrc@^0.4.1":
   version "0.4.1"
@@ -4702,18 +4702,18 @@ eslint-plugin-jasmine@4.1.2:
   resolved "https://registry.npmjs.org/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.1.2.tgz#50cc20d603b02b37727f8d174d4b83b9b8ef25a5"
   integrity sha512-Jr52EBi6Ql5WVDvRCKBID9kRD6/CaObvCWmgHpqobczX2Mzt8/QMu9vpgx6q/O5jyQ9CIGrKaEbPuEfHRf8guw==
 
-eslint-plugin-jsdoc@34.6.3:
-  version "34.6.3"
-  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-34.6.3.tgz#5a4770ae33fa429785936d6a3b61576d088b8c39"
-  integrity sha512-ixty4/Zl7cZ0fcvqQAWKuTzQ5hnWIirZOuJrzLtWV0RwF4E70/WG5vLXyppxDFbLCiwmYXjSkiqBfcKfm4VA3Q==
+eslint-plugin-jsdoc@35.1.0:
+  version "35.1.0"
+  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-35.1.0.tgz#7a28bd53b2dfec2ab0e6eb8ee59dfabf40449f04"
+  integrity sha512-XfLaI9kzXW1mihqmeTWH+fn5Zw+sbX48Jcmwp9dftwqegj6yT/3FNnuIxmM5VyLX3AdoBNDc8p4fje7/ZxVQyg==
   dependencies:
-    "@es-joy/jsdoccomment" "^0.6.0"
+    "@es-joy/jsdoccomment" "^0.8.0-alpha.2"
     comment-parser "1.1.5"
     debug "^4.3.1"
     esquery "^1.4.0"
-    jsdoctypeparser "^9.0.0"
+    jsdoc-type-pratt-parser "^1.0.0"
     lodash "^4.17.21"
-    regextras "^0.7.1"
+    regextras "^0.8.0"
     semver "^7.3.5"
     spdx-expression-parse "^3.0.1"
 
@@ -7003,10 +7003,15 @@ jsbn@~0.1.0:
   resolved "https://registry.npmjs.org/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
 
-jsdoctypeparser@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.npmjs.org/jsdoctypeparser/-/jsdoctypeparser-9.0.0.tgz#8c97e2fb69315eb274b0f01377eaa5c940bd7b26"
-  integrity sha512-jrTA2jJIL6/DAEILBEh2/w9QxCuwmvNXIry39Ay/HVfhE3o2yVV0U44blYkqdHA/OKloJEqvJy0xU+GSdE2SIw==
+jsdoc-type-pratt-parser@1.0.0-alpha.23:
+  version "1.0.0-alpha.23"
+  resolved "https://registry.npmjs.org/jsdoc-type-pratt-parser/-/jsdoc-type-pratt-parser-1.0.0-alpha.23.tgz#01c232d92b99b7e7ef52235ab8c9115137426639"
+  integrity sha512-COtimMd97eo5W0h6R9ISFj9ufg/9EiAzVAeQpKBJ1xJs/x8znWE155HGBDR2rwOuZsCes1gBXGmFVfvRZxGrhg==
+
+jsdoc-type-pratt-parser@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/jsdoc-type-pratt-parser/-/jsdoc-type-pratt-parser-1.0.1.tgz#7926c40b17f41a95c8cd2dad52169b2209eb198b"
+  integrity sha512-+bq+6jEywRhrF06tCvjV0ew0XdFsaWTcmfpLE+42KbU6imm0TwoJrWclDVoo/8iGf0bO4SibYJLsduMWRD18kA==
 
 jsdom@^16.4.0:
   version "16.4.0"
@@ -8952,10 +8957,10 @@ regexpu-core@^4.7.1:
     unicode-match-property-ecmascript "^1.0.4"
     unicode-match-property-value-ecmascript "^1.2.0"
 
-regextras@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.npmjs.org/regextras/-/regextras-0.7.1.tgz#be95719d5f43f9ef0b9fa07ad89b7c606995a3b2"
-  integrity sha512-9YXf6xtW+qzQ+hcMQXx95MOvfqXFgsKDZodX3qZB0x2n5Z94ioetIITsBtvJbiOyxa/6s9AtyweBLCdPmPko/w==
+regextras@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.npmjs.org/regextras/-/regextras-0.8.0.tgz#ec0f99853d4912839321172f608b544814b02217"
+  integrity sha512-k519uI04Z3SaY0fLX843MRXnDeG2+vHOFsyhiPZvNLe7r8rD2YNRjq4BQLZZ0oAr2NrtvZlICsXysGNFPGa3CQ==
 
 registry-auth-token@^4.0.0:
   version "4.0.0"
