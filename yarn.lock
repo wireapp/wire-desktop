@@ -2039,19 +2039,6 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-13.13.34.tgz#c9300a1b6560d90817fb2bba650e250116a575f9"
   integrity sha512-g8D1HF2dMDKYSDl5+79izRwRgNPsSynmWMbj50mj7GZ0b7Lv4p8EmZjbo3h0h+6iLr6YmVz9VnF6XVZ3O6V1Ug==
 
-<<<<<<< HEAD
-"@types/node@^14.6.2":
-  version "14.14.12"
-  resolved "https://registry.npmjs.org/@types/node/-/node-14.14.12.tgz#0b1d86f8c40141091285dea02e4940df73bba43f"
-  integrity sha512-ASH8OPHMNlkdjrEdmoILmzFfsJICvhBsFfAum4aKZ/9U4B6M6tTmTPh+f3ttWdD74CEGV5XvXWkbyfSdXaTd7g==
-
-"@types/normalize-package-data@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
-  integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
-
-=======
->>>>>>> dev
 "@types/open-graph@0.2.1":
   version "0.2.1"
   resolved "https://registry.npmjs.org/@types/open-graph/-/open-graph-0.2.1.tgz#8df5b19fd989dcfaf585c8424b1045917e365cd1"
@@ -4272,17 +4259,10 @@ electron-winstaller@4.0.1:
     lodash.template "^4.2.2"
     temp "^0.9.0"
 
-<<<<<<< HEAD
-electron@13.0.0-beta.26:
-  version "13.0.0-beta.26"
-  resolved "https://registry.npmjs.org/electron/-/electron-13.0.0-beta.26.tgz#737f02e693fc4a3bb4936b6e221cfc5fd0d97a29"
-  integrity sha512-glDAQjSzV26JvmB9pbdd1dLkjqUvBv9X0B8FrRvIK0BAhEmMzzZ3gKD6VPsxg2omDYMI35oThQ+92D4RxRcb+g==
-=======
-electron@12.0.7:
-  version "12.0.7"
-  resolved "https://registry.npmjs.org/electron/-/electron-12.0.7.tgz#e0fca2c8be34cb7da48c4d15cfb1d2ad666d2718"
-  integrity sha512-722TZNKDuLpEmj96AzTYFKHaJEH98xgOBH0aldStaPXI1xDFfb9SJQQuirvwFlkwG5OqQdz6Ne3OwwJ7Dbs5nQ==
->>>>>>> dev
+electron@13.0.1:
+  version "13.0.1"
+  resolved "https://registry.npmjs.org/electron/-/electron-13.0.1.tgz#7dd3666f0f966ab83a1f9868d84add2e6205d43a"
+  integrity sha512-ds1cf0m46nStil0jbM2r9W/p+Kprdq22+2MikIUqEu69eGl1c86IinQVrpmJ9bR4RshDSF4j3uD32a0bsHDMnQ==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"
