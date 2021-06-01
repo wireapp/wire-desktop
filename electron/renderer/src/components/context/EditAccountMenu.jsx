@@ -49,6 +49,7 @@ const EditAccountMenu = ({accountId, accountIndex, isAtLeastAdmin, lifecycle, se
       )}
       <ContextMenuItem
         onClick={() => {
+          // TODO: Use IPC interface
           window.sendDeleteAccount(accountId, sessionId).then(() => {
             connected.abortAccountCreation(accountId);
           });

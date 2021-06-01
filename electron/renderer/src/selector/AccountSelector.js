@@ -17,7 +17,7 @@
  *
  */
 
-import {config as CONFIG} from '../../../dist/settings/config';
+import {Config} from '../Config';
 
 export class AccountSelector {
   static getAccounts = state => state.accounts;
@@ -28,6 +28,7 @@ export class AccountSelector {
   static isAddingAccount = state =>
     !!AccountSelector.getAccounts(state).length &&
     AccountSelector.getAccounts(state).some(account => account.userID === undefined);
-  static hasReachedLimitOfAccounts = state => AccountSelector.getAccounts(state).length >= CONFIG.maximumAccounts;
+  static hasReachedLimitOfAccounts = state =>
+    AccountSelector.getAccounts(state).length >= Config.getConfig().MAXIMUM_ACCOUNTS;
   static hasCreatedAccount = state => AccountSelector.getAccounts(state).some(account => account.userID !== undefined);
 }

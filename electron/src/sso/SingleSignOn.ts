@@ -26,6 +26,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
+  ipcMain,
   ProtocolRequest,
   Session,
   session,
@@ -38,6 +39,7 @@ import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 import {getWebViewId} from '../runtime/lifecycle';
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {EVENT_TYPE} from '../lib/eventType';
 
 const argv = minimist(process.argv.slice(1));
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -114,6 +116,16 @@ export class SingleSignOn {
     if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
       this.ssoWindow.webContents.openDevTools({mode: 'detach'});
     }
+
+    ipcMain.handle(EVENT_TYPE.IPC.SSO_DATA, () => {
+      return {
+        SSO_PROTOCOL: SingleSignOn.SSO_PROTOCOL,
+        SSO_PROTOCOL_HOST: SingleSignOn.SSO_PROTOCOL_HOST,
+        loginAuthorizationSecret: SingleSignOn.loginAuthorizationSecret,
+      };
+    });
+
+    this.mainBrowserWindow.webContents.send(EVENT_TYPE.SSO.WINDOW_LOADED);
   };
 
   private createBrowserWindow(): BrowserWindow {
@@ -218,28 +230,6 @@ export class SingleSignOn {
   // Returns an empty string if the origin is a Wire backend
   public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
-
-  // `window.opener` is not available when sandbox is activated,
-  // therefore we need to fake the function on backend area and
-  // redirect the response to a custom protocol
-  public static readonly getWindowOpenerScript = (): string => {
-    return `Object.defineProperty(window, 'opener', {
-      configurable: true, // Needed on Chrome :(
-      enumerable: false,
-      value: Object.freeze({
-        postMessage: message => {
-          const url = new URL('${SingleSignOn.SSO_PROTOCOL}://${SingleSignOn.SSO_PROTOCOL_HOST}/');
-          url.searchParams.set('secret', '${SingleSignOn.loginAuthorizationSecret}');
-          url.searchParams.set('type', message.type);
-          document.location.href = url.toString();
-        }
-      }),
-      writable: false,
-    });0`;
-    // ^-- the `;0` is there on purpose to ensure the resulting value of
-    // `executeJavaScript()` is not used.
-    // See https://github.com/electron/electron/issues/23722.
-  };
 
   private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
     const cookies = await fromSession.cookies.get({name: 'zuid'});

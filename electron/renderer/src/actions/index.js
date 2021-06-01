@@ -20,10 +20,10 @@
 import * as Joi from '@hapi/joi';
 import {Availability} from '@wireapp/protocol-messaging';
 
-import {config} from '../../../dist/settings/config';
 import {accountAction} from './AccountAction';
 import {AccountSelector} from '../selector/AccountSelector';
 import {generateUUID} from '../lib/util';
+import {Config} from '../Config';
 
 export const ActionType = {
   ADD_ACCOUNT: 'ADD_ACCOUNT',
@@ -113,7 +113,7 @@ export const abortAccountCreation = id => {
 
 export const addAccountWithSession = () => {
   return (dispatch, getState) => {
-    const hasReachedAccountLimit = getState().accounts.length >= config.maximumAccounts;
+    const hasReachedAccountLimit = getState().accounts.length >= Config.getConfig().MAXIMUM_ACCOUNTS;
 
     if (hasReachedAccountLimit) {
       console.warn('Reached number of maximum accounts');
@@ -155,6 +155,7 @@ export const updateAccountBadgeCount = (id, count) => {
     }, 0);
     const ignoreFlash = account.availability === Availability.Type.BUSY;
 
+    // TODO: Use IPC interface
     window.sendBadgeCount(accumulatedCount, ignoreFlash);
 
     if (account) {

@@ -27,6 +27,7 @@ import {
   HeadersReceivedResponse,
   ipcMain,
   Menu,
+  nativeTheme,
   OnHeadersReceivedListenerDetails,
   WebContents,
 } from 'electron';
@@ -37,9 +38,6 @@ import minimist from 'minimist';
 import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
 import windowStateKeeper from 'electron-window-state';
-
-const remote = require('@electron/remote/main');
-remote.initialize();
 
 import './global';
 import {
@@ -55,6 +53,7 @@ import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLogFilenames} from './logging/loggerUtils';
 import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
+import {openContextMenu} from './menu/context';
 import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import * as lifecycle from './runtime/lifecycle';
@@ -176,6 +175,8 @@ const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
+  ipcMain.handle(EVENT_TYPE.IPC.SHOULD_USE_DARK_COLORS, _event => nativeTheme.shouldUseDarkColors);
+  nativeTheme.on('updated', () => main.webContents.send(EVENT_TYPE.UI.NATIVE_THEME_UPDATED));
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
@@ -228,7 +229,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       backgroundThrottling: false,
       contextIsolation: false,
       enableRemoteModule: true,
-      nodeIntegration: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
       webviewTag: true,
     },
@@ -580,6 +581,7 @@ class ElectronWrapperInit {
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });
+          contents.on('context-menu', (event, params) => openContextMenu(event, params, contents));
           if (ENABLE_LOGGING) {
             const colorCodeRegex = /%c(.+?)%c/gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;

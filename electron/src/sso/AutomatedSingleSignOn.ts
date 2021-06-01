@@ -17,33 +17,37 @@
  *
  */
 
-import * as Electron from 'electron';
+import {ipcRenderer} from 'electron';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getText} from '../locale/locale';
-import {config} from '../settings/config';
+import type {i18nLanguageIdentifier} from '../locale/locale';
+import type {config} from '../settings/config';
+
+const locale = {
+  getText(stringIdentifier: i18nLanguageIdentifier, paramReplacements?: Record<string, string>): Promise<string> {
+    return ipcRenderer.invoke(EVENT_TYPE.IPC.LOCALE, 'getText', stringIdentifier, paramReplacements);
+  },
+};
+
+const getConfig = (): Promise<typeof config> => {
+  return ipcRenderer.invoke(EVENT_TYPE.IPC.CONFIG, 'getConfig');
+};
 
 export interface CreateSSOAccountDetail {
   reachedMaximumAccounts?: boolean;
 }
 
-const dialog = Electron.dialog || require('@electron/remote').dialog;
-
 export class AutomatedSingleSignOn {
   private async showError(): Promise<void> {
-    let detail = getText('wrapperAddAccountErrorMessagePlural');
-    let message = getText('wrapperAddAccountErrorTitlePlural');
+    let message = await locale.getText('wrapperAddAccountErrorMessagePlural');
+    let title = await locale.getText('wrapperAddAccountErrorTitlePlural');
 
-    if (config.maximumAccounts === 1) {
-      detail = getText('wrapperAddAccountErrorMessageSingular');
-      message = getText('wrapperAddAccountErrorTitleSingular');
+    if ((await getConfig()).maximumAccounts === 1) {
+      message = await locale.getText('wrapperAddAccountErrorMessageSingular');
+      title = await locale.getText('wrapperAddAccountErrorTitleSingular');
     }
 
-    await dialog.showMessageBox({
-      detail,
-      message,
-      type: 'warning',
-    });
+    await ipcRenderer.invoke(EVENT_TYPE.IPC.SHOW_DIALOG, message, title, 'warning');
   }
 
   public async start(ssoCode: string): Promise<void> {

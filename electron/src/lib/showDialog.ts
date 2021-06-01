@@ -17,11 +17,13 @@
  *
  */
 
-import {dialog, MessageBoxSyncOptions} from 'electron';
+import {dialog, MessageBoxSyncOptions, ipcMain} from 'electron';
 import * as locale from '../locale/locale';
+import {EVENT_TYPE} from './eventType';
 
-export const showDialog = (message: string, title: string, type?: string): void => {
+export const showDialog = (message: string, title: string, type?: string, detail?: string): void => {
   const options: MessageBoxSyncOptions = {
+    detail,
     message,
     title,
     type,
@@ -42,3 +44,7 @@ export const showWarningDialog = (message: string): void => {
   };
   dialog.showMessageBoxSync(options);
 };
+
+ipcMain.handle(EVENT_TYPE.IPC.SHOW_DIALOG, (_event, message: string, title: string, type?: string, detail?: string) => {
+  showDialog(message, title, type, detail);
+});

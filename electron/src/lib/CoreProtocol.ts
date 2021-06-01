@@ -24,6 +24,7 @@ import {URL} from 'url';
 import {getLogger} from '../logging/getLogger';
 import {platform} from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
+import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 
@@ -75,7 +76,7 @@ export class CustomProtocolHandler {
       logger.info('Starting SSO flow ...');
       const code = route.pathname.trim().substr(1);
       try {
-        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
+        await new AutomatedSingleSignOn().start(code);
       } catch (error) {
         logger.error(`Cannot start SSO flow: ${error.message}`, error);
       }

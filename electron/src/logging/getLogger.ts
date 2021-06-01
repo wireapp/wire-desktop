@@ -18,20 +18,18 @@
  */
 
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
-import * as Electron from 'electron';
+import {app, ipcMain} from 'electron';
 import * as logdown from 'logdown';
 import * as path from 'path';
 
+import {EVENT_TYPE} from '../lib/eventType';
 import {config} from '../settings/config';
-
-const mainProcess = process || require('@electron/remote').process;
-const app = Electron.app || require('@electron/remote').app;
 
 const logDir = path.join(app.getPath('userData'), 'logs');
 const logFile = path.join(logDir, 'electron.log');
 
 const isDevelopment = config.environment !== 'production';
-const forceLogging = mainProcess.argv.includes('--enable-logging');
+const forceLogging = process.argv.includes('--enable-logging');
 
 export const LOGGER_NAMESPACE = '@wireapp/desktop';
 export const ENABLE_LOGGING = isDevelopment || forceLogging;
@@ -49,3 +47,7 @@ export function getLogger(name: string): logdown.Logger {
 
   return LogFactory.getLogger(name, options);
 }
+
+ipcMain.handle(EVENT_TYPE.IPC.LOG, (_event, type: 'error' | 'info' | 'log' | 'warn', name: string, logs: string[]) => {
+  getLogger(name)[type](logs);
+});

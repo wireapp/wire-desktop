@@ -17,142 +17,20 @@
  *
  */
 
-import {
-  clipboard,
-  ipcRenderer,
-  Menu as ElectronMenu,
-  ContextMenuParams,
-  MenuItemConstructorOptions,
-  WebContents,
-  nativeImage,
-} from 'electron';
-const remote = require('@electron/remote');
-
+import {ipcRenderer} from 'electron';
 import {EVENT_TYPE} from '../../lib/eventType';
-import * as locale from '../../locale/locale';
-import {config} from '../../settings/config';
 
-interface ElectronMenuWithImageAndTime extends ElectronMenu {
-  image?: string;
-  timestamp?: string;
-}
+// eslint-disable-next-line id-length
+ipcRenderer.on(EVENT_TYPE.IPC.CONTEXT_INNER_TEXT, (_event, {x, y}: {x: number; y: number}) => {
+  let element = document.elementFromPoint(x, y) as HTMLElement;
 
-const savePicture = async (url: RequestInfo, timestamp?: string): Promise<void> => {
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': config.userAgent,
-    },
-  });
-  const bytes = await response.arrayBuffer();
-  ipcRenderer.send(EVENT_TYPE.ACTION.SAVE_PICTURE, new Uint8Array(bytes), timestamp);
-};
-
-const copyPicture = async (url: RequestInfo): Promise<void> => {
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': config.userAgent,
-    },
-  });
-  const bytes = await response.arrayBuffer();
-  const image = nativeImage.createFromBuffer(Buffer.from(bytes));
-  clipboard.writeImage(image);
-};
-
-const createDefaultMenu = (copyContext: string) =>
-  remote.Menu.buildFromTemplate([
-    {
-      click: () => clipboard.writeText(copyContext),
-      label: locale.getText('menuCopy'),
-    },
-  ]);
-
-const createTextMenu = (params: ContextMenuParams, webContents: WebContents): ElectronMenu => {
-  const {editFlags, dictionarySuggestions} = params;
-
-  const template: MenuItemConstructorOptions[] = [
-    {
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.CUT),
-      enabled: editFlags.canCut,
-      label: locale.getText('menuCut'),
-    },
-    {
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.COPY),
-      enabled: editFlags.canCopy,
-      label: locale.getText('menuCopy'),
-    },
-    {
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.PASTE),
-      enabled: editFlags.canPaste,
-      label: locale.getText('menuPaste'),
-    },
-    {
-      type: 'separator',
-    },
-    {
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.SELECT_ALL),
-      enabled: editFlags.canSelectAll,
-      label: locale.getText('menuSelectAll'),
-    },
-  ];
-
-  if (dictionarySuggestions.length > 0) {
-    template.push({
-      type: 'separator',
-    });
-
-    for (const suggestion of dictionarySuggestions) {
-      template.push({
-        click: () => webContents.replaceMisspelling(suggestion),
-        label: suggestion,
-      });
-    }
+  // Maybe we are in a code block _inside_ an element with the 'text' class?
+  // Code block can consist of many tags: CODE, PRE, SPAN, etc.
+  while (element && (element as any) !== document && !(element as HTMLElement).classList.contains('text')) {
+    element = element.parentNode as HTMLElement;
   }
 
-  return remote.Menu.buildFromTemplate(template);
-};
+  const innerText = ((element as HTMLElement).innerText || '').trim();
 
-const imageMenu: ElectronMenuWithImageAndTime = remote.Menu.buildFromTemplate([
-  {
-    click: () => savePicture(imageMenu.image || ''),
-    label: locale.getText('menuSavePictureAs'),
-  },
-  {
-    click: () => copyPicture(imageMenu.image || ''),
-    label: locale.getText('menuCopyPicture'),
-  },
-]);
-
-const webContents = remote.getCurrentWebContents();
-
-webContents.on('context-menu', (_event: Event, params: ContextMenuParams) => {
-  const window = remote.getCurrentWindow();
-
-  if (params.isEditable) {
-    const textMenu = createTextMenu(params, webContents);
-    textMenu.popup({window});
-  } else if (params.mediaType === 'image') {
-    imageMenu.image = params.srcURL;
-    imageMenu.popup({window});
-  } else if (!!params.linkURL) {
-    const copyContext = params.linkURL.replace(/^mailto:/, '');
-    createDefaultMenu(copyContext).popup({window});
-  } else if (!!params.selectionText || params.editFlags.canCopy) {
-    const copyContext = params.selectionText;
-    createDefaultMenu(copyContext).popup({window});
-  } else if (params.editFlags.canSelectAll) {
-    let element = document.elementFromPoint(params.x, params.y) as HTMLElement;
-
-    // Maybe we are in a code block _inside_ an element with the 'text' class?
-    // Code block can consist of many tags: CODE, PRE, SPAN, etc.
-    while (element && (element as any) !== document && !(element as HTMLElement).classList.contains('text')) {
-      element = element.parentNode as HTMLElement;
-    }
-
-    if (element) {
-      const copyContext = (params.selectionText || '').toString() || ((element as HTMLElement).innerText || '').trim();
-      if (copyContext) {
-        createDefaultMenu(copyContext).popup({window});
-      }
-    }
-  }
+  ipcRenderer.emit(EVENT_TYPE.IPC.CONTEXT_INNER_TEXT_RESPONSE, {hasElement: !!element, innerText});
 });

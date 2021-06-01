@@ -22,11 +22,8 @@ import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
 import type {Data as OpenGraphResult} from 'open-graph';
-const {nativeTheme} = require('@electron/remote');
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getLogger} from '../logging/getLogger';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 interface TeamAccountInfo {
   accentID: number;
@@ -38,73 +35,78 @@ interface TeamAccountInfo {
   userID: string;
 }
 
-const logger = getLogger(path.basename(__filename));
+const logger = {
+  error: (...logs: string[]) => ipcRenderer.invoke(EVENT_TYPE.IPC.LOG, 'error', path.basename(__filename), logs),
+  info: (...logs: string[]) => ipcRenderer.invoke(EVENT_TYPE.IPC.LOG, 'info', path.basename(__filename), logs),
+};
 
-function subscribeToThemeChange(): void {
-  function updateWebAppTheme(): void {
+const getShouldUseDarkColors = (): Promise<boolean> => ipcRenderer.invoke(EVENT_TYPE.IPC.SHOULD_USE_DARK_COLORS);
+
+async function subscribeToThemeChange(): Promise<void> {
+  async function updateWebAppTheme(): Promise<void> {
     if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
-      const useDarkMode = nativeTheme.shouldUseDarkColors;
-      logger.info(`Switching dark mode ${useDarkMode ? 'on' : 'off'} ...`);
+      const useDarkMode = await getShouldUseDarkColors();
+      await logger.info(`Switching dark mode ${useDarkMode ? 'on' : 'off'} ...`);
       window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     }
   }
 
-  function initialThemeCheck() {
-    const useDarkMode = nativeTheme.shouldUseDarkColors;
-    logger.info(`Switching initial dark mode ${useDarkMode ? 'on' : 'off'} ...`);
+  async function initialThemeCheck(): Promise<void> {
+    const useDarkMode = await getShouldUseDarkColors();
+    await logger.info(`Switching initial dark mode ${useDarkMode ? 'on' : 'off'} ...`);
     window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
-  nativeTheme.on('updated', () => updateWebAppTheme());
+  ipcRenderer.on(EVENT_TYPE.UI.NATIVE_THEME_UPDATED, () => updateWebAppTheme());
 }
 
 webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
 const subscribeToWebappEvents = (): void => {
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.RESTART, () => {
-    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.RESTART}", forwarding event ...`);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.RESTART, async () => {
+    await logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.RESTART}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.WRAPPER.RELAUNCH);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
-    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.LOADED}", forwarding event ...`);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, async () => {
+    await logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.LOADED}", forwarding event ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_IN);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGN_OUT, () => {
-    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.SIGN_OUT}", forwarding event ...`);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGN_OUT, async () => {
+    await logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.SIGN_OUT}", forwarding event ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGN_OUT);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGNED_OUT, (clearData: boolean) => {
-    logger.info(
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGNED_OUT, async (clearData: boolean) => {
+    await logger.info(
       `Received amplify event "${WebAppEvents.LIFECYCLE.SIGNED_OUT}", (clearData: "${clearData}") forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT, clearData);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.UNREAD_COUNT, (count: string) => {
-    logger.info(
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.UNREAD_COUNT, async (count: string) => {
+    await logger.info(
       `Received amplify event "${WebAppEvents.LIFECYCLE.UNREAD_COUNT}" (count: "${count}"), forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.UNREAD_COUNT, count);
   });
 
-  window.amplify.subscribe(WebAppEvents.NOTIFICATION.CLICK, () => {
-    logger.info(`Received amplify event "${WebAppEvents.NOTIFICATION.CLICK}", forwarding event ...`);
+  window.amplify.subscribe(WebAppEvents.NOTIFICATION.CLICK, async () => {
+    await logger.info(`Received amplify event "${WebAppEvents.NOTIFICATION.CLICK}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
-  window.amplify.subscribe(WebAppEvents.TEAM.INFO, (info: TeamAccountInfo) => {
+  window.amplify.subscribe(WebAppEvents.TEAM.INFO, async (info: TeamAccountInfo) => {
     const debugInfo = {
       ...info,
       picture: typeof info.picture === 'string' ? `${info.picture.substring(0, 100)}...` : '',
     };
-    logger.info(
+    await logger.info(
       `Received amplify event "${WebAppEvents.TEAM.INFO}":`,
       `"${JSON.stringify(debugInfo)}", forwarding event ...`,
     );
@@ -120,66 +122,66 @@ const subscribeToWebappEvents = (): void => {
 };
 
 const subscribeToMainProcessEvents = (): void => {
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.ADD_PEOPLE, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ADD_PEOPLE}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.ADD_PEOPLE, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ADD_PEOPLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.ADD_PEOPLE);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.ARCHIVE, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ARCHIVE}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.ARCHIVE, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ARCHIVE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.ARCHIVE);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.CALL, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.CALL}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.CALL, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.CALL}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, false);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.DELETE, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.DELETE}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.DELETE, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.DELETE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.DELETE);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_NEXT, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_NEXT}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_NEXT, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_NEXT}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.NEXT);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.PEOPLE, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.PEOPLE}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.PEOPLE, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.PEOPLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.PEOPLE);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.PING, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.PING}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.PING, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.PING}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.PING);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.PREV);
   });
-  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (_event, hash: string) => {
-    logger.info(
+  ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, async (_event, hash: string) => {
+    await logger.info(
       `Received event "${EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH}" (hash: "${hash}"), forwarding to amplify ...`,
     );
     window.location.hash = hash;
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.TOGGLE_MUTE}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.TOGGLE_MUTE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.SILENCE);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.START}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.START}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.START);
   });
-  ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, () => {
-    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.VIDEO_CALL}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.CONVERSATION.VIDEO_CALL}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, true);
   });
-  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SHOW, () => {
-    logger.info(`Received event "${EVENT_TYPE.PREFERENCES.SHOW}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.PREFERENCES.SHOW, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.PREFERENCES.SHOW}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.PREFERENCES.MANAGE_ACCOUNT);
   });
-  ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
-    logger.info(`Received event "${EVENT_TYPE.ACTION.SIGN_OUT}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.ACTION.SIGN_OUT}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.ASK_TO_CLEAR_DATA);
   });
-  ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
-    logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
+  ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, async () => {
+    await logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
 };
@@ -199,7 +201,6 @@ const _setImmediate = setImmediate;
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
   global.desktopCapturer = desktopCapturer;
-  global.environment = EnvironmentUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
@@ -207,8 +208,9 @@ process.once('loaded', () => {
 const registerEvents = (): Promise<void> => {
   return new Promise(resolve => {
     const HALF_SECOND_IN_MILLIS = 500;
-    const intervalId = setInterval(() => {
-      logger.info('Attempting to register event handlers...');
+
+    const intervalId = setInterval(async () => {
+      await logger.info('Attempting to register event handlers...');
       if (window.amplify && window.wire && window.z?.event) {
         clearInterval(intervalId);
         return resolve();
@@ -219,9 +221,9 @@ const registerEvents = (): Promise<void> => {
 
 window.addEventListener('DOMContentLoaded', async () => {
   await registerEvents();
-  logger.info('Registering event handlers');
+  await logger.info('Registering event handlers');
   subscribeToMainProcessEvents();
-  subscribeToThemeChange();
+  await subscribeToThemeChange();
   subscribeToWebappEvents();
   reportWebappVersion();
   // include context menu
