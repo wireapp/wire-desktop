@@ -18,7 +18,6 @@
  */
 
 import {webFrame, ipcRenderer} from 'electron';
-import {EVENT_TYPE} from '../lib/eventType';
 
 interface SSOData {
   loginAuthorizationSecret: string;
@@ -26,9 +25,9 @@ interface SSOData {
   SSO_PROTOCOL_HOST: string;
 }
 
-ipcRenderer.on(EVENT_TYPE.SSO.WINDOW_LOADED, () => {
+ipcRenderer.on('EVENT_TYPE.SSO.WINDOW_LOADED', () => {
   return ipcRenderer.invoke(
-    EVENT_TYPE.IPC.SSO_DATA,
+    'EVENT_TYPE.IPC.SSO_DATA',
     ({SSO_PROTOCOL, SSO_PROTOCOL_HOST, loginAuthorizationSecret}: SSOData) => {
       // `window.opener` is not available when sandbox is activated,
       // therefore we need to fake the function on backend area and

@@ -167,7 +167,7 @@ export class SingleSignOn {
         partition: '',
         plugins: false,
         preload: SingleSignOn.PRELOAD_SSO_JS,
-        sandbox: false,
+        sandbox: true,
         scrollBounce: true,
         session: this.session,
         spellcheck: false,
