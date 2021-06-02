@@ -113,10 +113,7 @@ void (async () => {
       await logger.info(`Processing deletion of "${accountID}"`);
       const viewInstanceId = accountWebview.getWebContentsId();
 
-      return new Promise(resolve => {
-        ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
-        ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
-      });
+      await ipcRenderer.invoke(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
     };
 
     window.sendLogoutAccount = async (accountId: string): Promise<void> => {

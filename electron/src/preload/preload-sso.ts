@@ -17,7 +17,7 @@
  *
  */
 
-import {webFrame, ipcRenderer} from 'electron';
+import {ipcRenderer} from 'electron';
 
 interface SSOData {
   loginAuthorizationSecret: string;
@@ -25,32 +25,25 @@ interface SSOData {
   SSO_PROTOCOL_HOST: string;
 }
 
-ipcRenderer.on('EVENT_TYPE.SSO.WINDOW_LOADED', () => {
-  return ipcRenderer.invoke(
-    'EVENT_TYPE.IPC.SSO_DATA',
-    ({SSO_PROTOCOL, SSO_PROTOCOL_HOST, loginAuthorizationSecret}: SSOData) => {
-      // `window.opener` is not available when sandbox is activated,
-      // therefore we need to fake the function on backend area and
-      // redirect the response to a custom protocol
+ipcRenderer
+  .invoke('EVENT_TYPE.SSO.WINDOW_DATA')
+  .then(({SSO_PROTOCOL, SSO_PROTOCOL_HOST, loginAuthorizationSecret}: SSOData) => {
+    // `window.opener` is not available when sandbox is activated,
+    // therefore we need to fake the function on backend area and
+    // redirect the response to a custom protocol
 
-      const windowOpenerScript = `Object.defineProperty(window, 'opener', {
+    Object.defineProperty(window, 'opener', {
       configurable: true, // Needed on Chrome :(
       enumerable: false,
       value: Object.freeze({
-        postMessage: message => {
-          const url = new URL('${SSO_PROTOCOL}://${SSO_PROTOCOL_HOST}/');
-          url.searchParams.set('secret', '${loginAuthorizationSecret}');
+        postMessage: (message: any) => {
+          const url = new URL(`${SSO_PROTOCOL}://${SSO_PROTOCOL_HOST}/`);
+          url.searchParams.set('secret', loginAuthorizationSecret);
           url.searchParams.set('type', message.type);
           document.location.href = url.toString();
-        }
+        },
       }),
       writable: false,
-    });0`;
-      // ^-- the `;0` is there on purpose to ensure the resulting value of
-      // `executeJavaScript()` is not used.
-      // See https://github.com/electron/electron/issues/23722.
-
-      webFrame.executeJavaScript(windowOpenerScript).catch(error => console.warn(error));
-    },
-  );
-});
+    });
+  })
+  .catch(error => console.error(error));

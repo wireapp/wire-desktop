@@ -167,9 +167,8 @@ const bindIpcEvents = (): void => {
     tray.showUnreadCount(main, count, ignoreFlash);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
-    await deleteAccount(id, accountId, partitionId);
-    main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
+  ipcMain.handle(EVENT_TYPE.ACCOUNT.DELETE_DATA, (_event, id: number, accountId: string, partitionId?: string) => {
+    return deleteAccount(id, accountId, partitionId);
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
@@ -228,7 +227,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     webPreferences: {
       backgroundThrottling: false,
       contextIsolation: false,
-      enableRemoteModule: true,
+      enableRemoteModule: false,
       nodeIntegration: true,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -317,7 +316,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  main.webContents.on('crashed', event => {
+  main.webContents.on('render-process-gone', event => {
     logger.error('WebContents crashed. Will reload the window.');
     logger.error(event);
     try {
@@ -328,7 +327,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  app.on('gpu-process-crashed', event => {
+  app.on('render-process-gone', event => {
     logger.error('GPU process crashed. Will reload the window.');
     logger.error(event);
     try {

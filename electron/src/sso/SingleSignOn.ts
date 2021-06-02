@@ -117,15 +117,11 @@ export class SingleSignOn {
       this.ssoWindow.webContents.openDevTools({mode: 'detach'});
     }
 
-    ipcMain.handle(EVENT_TYPE.IPC.SSO_DATA, () => {
-      return {
-        SSO_PROTOCOL: SingleSignOn.SSO_PROTOCOL,
-        SSO_PROTOCOL_HOST: SingleSignOn.SSO_PROTOCOL_HOST,
-        loginAuthorizationSecret: SingleSignOn.loginAuthorizationSecret,
-      };
-    });
-
-    this.mainBrowserWindow.webContents.send(EVENT_TYPE.SSO.WINDOW_LOADED);
+    ipcMain.handle(EVENT_TYPE.SSO.WINDOW_DATA, () => ({
+      SSO_PROTOCOL: SingleSignOn.SSO_PROTOCOL,
+      SSO_PROTOCOL_HOST: SingleSignOn.SSO_PROTOCOL_HOST,
+      loginAuthorizationSecret: SingleSignOn.loginAuthorizationSecret,
+    }));
   };
 
   private createBrowserWindow(): BrowserWindow {
@@ -160,7 +156,6 @@ export class SingleSignOn {
         experimentalFeatures: false,
         images: true,
         javascript: true,
-        nativeWindowOpen: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         offscreen: false,
