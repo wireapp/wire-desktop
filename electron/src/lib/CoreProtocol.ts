@@ -32,7 +32,7 @@ const logger = getLogger(path.basename(__filename));
 const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 const START_SSO_FLOW = 'start-sso';
-const JOIN_CONVERSATION_FLOW = 'join-conversation';
+const JOIN_CONVERSATION_FLOW = 'conversation-join';
 
 export class CustomProtocolHandler {
   public hashLocation = '';
@@ -46,6 +46,7 @@ export class CustomProtocolHandler {
         !url.startsWith(CORE_PROTOCOL_PREFIX) ||
         url.length > CORE_PROTOCOL_MAX_LENGTH
       ) {
+        // handle error
         logger.info('Invalid deep link, ignoring');
         return;
       }
@@ -93,7 +94,7 @@ export class CustomProtocolHandler {
       const code = route.searchParams.get('code');
       const key = route.searchParams.get('key');
       try {
-        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.JOIN_CONVERSATION, {code, key});
+        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
       } catch (error) {
         logger.error(`Cannot join conversation: ${error.message}`, error);
       }

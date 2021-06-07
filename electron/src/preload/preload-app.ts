@@ -42,7 +42,7 @@ const getWebviewById = (id: string): WebviewTag | null =>
 
 const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
-  ipcRenderer.on(EVENT_TYPE.ACCOUNT.JOIN_CONVERSATION, async (_event, {code, key}: {code: string; key: string}) => {
+  ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, async (_event, {code, key}: {code: string; key: string}) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       await selectedWebview.send(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
