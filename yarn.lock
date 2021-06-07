@@ -4533,16 +4533,16 @@ eslint-plugin-jasmine@4.1.2:
   resolved "https://registry.npmjs.org/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.1.2.tgz#50cc20d603b02b37727f8d174d4b83b9b8ef25a5"
   integrity sha512-Jr52EBi6Ql5WVDvRCKBID9kRD6/CaObvCWmgHpqobczX2Mzt8/QMu9vpgx6q/O5jyQ9CIGrKaEbPuEfHRf8guw==
 
-eslint-plugin-jsdoc@35.1.0:
-  version "35.1.0"
-  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-35.1.0.tgz#7a28bd53b2dfec2ab0e6eb8ee59dfabf40449f04"
-  integrity sha512-XfLaI9kzXW1mihqmeTWH+fn5Zw+sbX48Jcmwp9dftwqegj6yT/3FNnuIxmM5VyLX3AdoBNDc8p4fje7/ZxVQyg==
+eslint-plugin-jsdoc@35.1.3:
+  version "35.1.3"
+  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-35.1.3.tgz#ee9f8566eeb87a0e96fc52ec55897a2cb93ceea5"
+  integrity sha512-9AVpCssb7+cfEx3GJtnhJ8yLOVsHDKGMgngcfvwFBxdcOVPFhLENReL5aX1R2gNiG3psqIWFVBpSPnPQTrMZUA==
   dependencies:
     "@es-joy/jsdoccomment" "^0.8.0-alpha.2"
     comment-parser "1.1.5"
     debug "^4.3.1"
     esquery "^1.4.0"
-    jsdoc-type-pratt-parser "^1.0.0"
+    jsdoc-type-pratt-parser "^1.0.4"
     lodash "^4.17.21"
     regextras "^0.8.0"
     semver "^7.3.5"
@@ -6661,10 +6661,10 @@ jsdoc-type-pratt-parser@1.0.0-alpha.23:
   resolved "https://registry.npmjs.org/jsdoc-type-pratt-parser/-/jsdoc-type-pratt-parser-1.0.0-alpha.23.tgz#01c232d92b99b7e7ef52235ab8c9115137426639"
   integrity sha512-COtimMd97eo5W0h6R9ISFj9ufg/9EiAzVAeQpKBJ1xJs/x8znWE155HGBDR2rwOuZsCes1gBXGmFVfvRZxGrhg==
 
-jsdoc-type-pratt-parser@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/jsdoc-type-pratt-parser/-/jsdoc-type-pratt-parser-1.0.1.tgz#7926c40b17f41a95c8cd2dad52169b2209eb198b"
-  integrity sha512-+bq+6jEywRhrF06tCvjV0ew0XdFsaWTcmfpLE+42KbU6imm0TwoJrWclDVoo/8iGf0bO4SibYJLsduMWRD18kA==
+jsdoc-type-pratt-parser@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/jsdoc-type-pratt-parser/-/jsdoc-type-pratt-parser-1.0.4.tgz#5750d2d32ffb001866537d3baaedea7cf84c7036"
+  integrity sha512-jzmW9gokeq9+bHPDR1nCeidMyFUikdZlbOhKzh9+/nJqB75XhpNKec1/UuxW5c4+O+Pi31Gc/dCboyfSm/pSpQ==
 
 jsdom@^16.6.0:
   version "16.6.0"
