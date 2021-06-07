@@ -182,6 +182,10 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
+  ipcRenderer.on(EVENT_TYPE.ACCOUNT.JOIN_CONVERSATION, (_event, {code, key}) => {
+    logger.info(`Received event "${EVENT_TYPE.ACCOUNT.JOIN_CONVERSATION}", forwarding to window ...`);
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {detail: {code, key}}));
+  });
 };
 
 function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
