@@ -154,7 +154,7 @@ export class SingleSignOn {
         partition: '',
         plugins: false,
         preload: SingleSignOn.PRELOAD_SSO_JS,
-        sandbox: false,
+        sandbox: true,
         scrollBounce: true,
         session: this.session,
         spellcheck: false,
@@ -183,7 +183,7 @@ export class SingleSignOn {
 
     // Prevent title updates and new windows
     ssoWindow.on('page-title-updated', event => event.preventDefault());
-    ssoWindow.webContents.setWindowOpenHandler(() => ({action: 'deny'}));
+    ssoWindow.webContents.on('new-window', event => event.preventDefault());
 
     ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
