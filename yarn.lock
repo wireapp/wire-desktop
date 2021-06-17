@@ -2469,10 +2469,10 @@
     emotion-theming "10.0.27"
     react-transition-group "4.4.1"
 
-"@wireapp/webapp-events@0.10.4":
-  version "0.10.4"
-  resolved "https://registry.npmjs.org/@wireapp/webapp-events/-/webapp-events-0.10.4.tgz#f0416774558f5fa37df977719b2db2c1344a2942"
-  integrity sha512-yNeir84X6MDg+2Ysou2FntB5MOS1z1S4XBKtL73u4bxWWc/XgxLuz+vPT2Ju5qm84St71K+ChLGrgPyXbQKLsg==
+"@wireapp/webapp-events@0.11.0":
+  version "0.11.0"
+  resolved "https://registry.npmjs.org/@wireapp/webapp-events/-/webapp-events-0.11.0.tgz#c95dd482d194b4cef68c096a7aa440581d2ae189"
+  integrity sha512-CcEb4B1JRvr0Pqm7AWk4FzQKXZbISOffGchXkEDNcBj+nsixLkRQAfNqecDzvZogYRSfI4TvCC/gEFhybt6LWA==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"

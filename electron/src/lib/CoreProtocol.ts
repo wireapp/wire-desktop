@@ -57,7 +57,7 @@ export class CustomProtocolHandler {
         logger.info('Deep link is a SSO link, triggering SSO login ...');
         await this.handleSSOLogin(route);
       } else if (route.host === JOIN_CONVERSATION_FLOW) {
-        logger.info('Deep link is a conversation join link, triggering SSO login ...');
+        logger.info('Deep link is a conversation join link, triggering conversation join ...');
         await this.handleJoinConversation(route);
       } else {
         // handle invalid deep link
