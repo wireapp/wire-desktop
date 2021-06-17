@@ -38,7 +38,7 @@ import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
 import windowStateKeeper from 'electron-window-state';
 
-const remote = require('@electron/remote/main');
+import * as remote from '@electron/remote/main';
 remote.initialize();
 
 import './global';
