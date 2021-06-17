@@ -59,7 +59,7 @@ export class CustomProtocolHandler {
         logger.info('Deep link is a SSO link, triggering SSO login ...');
         await this.handleSSOLogin(route);
       } else if (route.host === JOIN_CONVERSATION_FLOW) {
-        logger.info('Deep link is a conversation join link, triggering conversation join ...');
+        logger.info('Deep link is a conversation join link, triggering join ...');
         await this.handleJoinConversation(route);
       } else {
         // handle invalid deep link
@@ -95,6 +95,7 @@ export class CustomProtocolHandler {
       logger.info('Joining conversation ...');
       const code = route.searchParams.get('code');
       const key = route.searchParams.get('key');
+
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
       } catch (error) {
