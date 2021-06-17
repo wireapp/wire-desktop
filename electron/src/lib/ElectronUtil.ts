@@ -27,3 +27,7 @@ export async function executeJavaScriptWithoutResult(snippet: string, target: We
   snippet = `${snippet.replace(/;+$/, '')};0`;
   await target.executeJavaScript(snippet);
 }
+
+export function shortenText(text: string, maxLength: number): string {
+  return text.length > maxLength ? `${text.substr(0, maxLength - 4)} ...` : text;
+}

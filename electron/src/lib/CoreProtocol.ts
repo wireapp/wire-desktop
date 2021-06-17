@@ -27,6 +27,7 @@ import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
 import {showErrorDialog} from '../lib/showDialog';
+import {shortenText} from './ElectronUtil';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -47,7 +48,7 @@ export class CustomProtocolHandler {
         !url.startsWith(CORE_PROTOCOL_PREFIX) ||
         url.length > CORE_PROTOCOL_MAX_LENGTH
       ) {
-        showErrorDialog(`Invalid deep link "${url}."`);
+        showErrorDialog(`Invalid deep link "${shortenText(url || '', CORE_PROTOCOL_MAX_LENGTH)}."`);
         logger.info('Invalid deep link, ignoring');
         return;
       }
