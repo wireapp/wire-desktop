@@ -17,7 +17,7 @@ updates:
       # in progress, always takes some time to follow all breaking changes
       - dependency-name: electron
         versions:
-          - '> 12.x'
+          - '> 11.x'
       - dependency-name: electron-builder
         versions:
           - '> 20.x'
