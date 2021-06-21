@@ -182,7 +182,11 @@ const subscribeToMainProcessEvents = (): void => {
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
   ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, (_event, {code, key}: {code: string; key: string}) => {
-    logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to window ...`);
+    logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
+    ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
+  });
+  ipcRenderer.on(WebAppEvents.CONVERSATION.JOIN, (_event, {code, key}: {code: string; key: string}) => {
+    logger.info(`Received event "${WebAppEvents.CONVERSATION.JOIN}", forwarding to window ...`);
     window.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: {code, key}}));
   });
 };

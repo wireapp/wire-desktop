@@ -30,4 +30,9 @@ export class AccountSelector {
     AccountSelector.getAccounts(state).some(account => account.userID === undefined);
   static hasReachedLimitOfAccounts = state => AccountSelector.getAccounts(state).length >= CONFIG.maximumAccounts;
   static hasCreatedAccount = state => AccountSelector.getAccounts(state).some(account => account.userID !== undefined);
+  static getAccountById = (state, accountId) =>
+    AccountSelector.getAccounts(state).find(account => account.id === accountId);
+  static getAccountLifecycle = (state, accountId) => AccountSelector.getAccountById(state, accountId)?.lifecycle;
+  static getConversationJoinData = (state, accountId) =>
+    AccountSelector.getAccountById(state, accountId)?.conversationJoinData;
 }

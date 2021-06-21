@@ -31,6 +31,7 @@ export const ActionType = {
   HIDE_CONTEXT_MENUS: 'HIDE_CONTEXT_MENUS',
   INITIATE_SSO: 'INITIATE_SSO',
   RESET_IDENTITY: 'RESET_IDENTITY',
+  SET_CONVERSATION_JOIN_DATA: 'SET_CONVERSATION_JOIN_DATA',
   SWITCH_ACCOUNT: 'SWITCH_ACCOUNT',
   TOGGLE_ADD_ACCOUNT_VISIBILITY: 'TOGGLE_ADD_ACCOUNT_VISIBILITY',
   TOGGLE_EDIT_ACCOUNT_VISIBILITY: 'TOGGLE_EDIT_ACCOUNT_VISIBILITY',
@@ -67,10 +68,18 @@ export const updateAccount = (id, data) => ({
   type: ActionType.UPDATE_ACCOUNT,
 });
 
-export const updateAccountLifecycle = (id, channel) => ({
-  data: channel,
+export const updateAccountLifecycle = (id, channel) => {
+  return {
+    data: channel,
+    id,
+    type: ActionType.UPDATE_ACCOUNT_LIFECYCLE,
+  };
+};
+
+export const setConversationJoinData = (id, data) => ({
+  data,
   id,
-  type: ActionType.UPDATE_ACCOUNT_LIFECYCLE,
+  type: ActionType.SET_CONVERSATION_JOIN_DATA,
 });
 
 export const updateAccountBadge = (id, count) => ({
