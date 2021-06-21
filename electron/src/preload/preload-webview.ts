@@ -17,7 +17,7 @@
  *
  */
 
-import {desktopCapturer, ipcRenderer, webFrame} from 'electron';
+import {desktopCapturer, ipcRenderer, webFrame, remote} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
