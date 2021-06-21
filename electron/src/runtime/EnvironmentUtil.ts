@@ -17,6 +17,8 @@
  *
  */
 
+import {ipcMain} from 'electron';
+import {EVENT_TYPE} from '../lib/eventType';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
@@ -140,3 +142,11 @@ export const web = {
     return `${baseUrl}${path || ''}`;
   },
 };
+
+ipcMain.handle(EVENT_TYPE.IPC.ENVIRONMENTUTIL, (_event, type: 'getPlatform') => {
+  switch (type) {
+    case 'getPlatform': {
+      return platform;
+    }
+  }
+});

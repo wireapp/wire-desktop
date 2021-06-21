@@ -200,6 +200,7 @@ const Webview = ({
   }, []);
 
   const deleteWebview = account => {
+    // TODO: Use IPC interface
     window.sendDeleteAccount(account.id, account.sessionID).then(() => {
       abortAccountCreation(account.id);
     });

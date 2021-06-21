@@ -52,9 +52,4 @@ describe('dispatchDeepLink', () => {
       sendActionSpy.calledWith(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, '/user/266d36c0-ae62-48b5-91b5-b10ed42f1a0f'),
     );
   });
-
-  it('forwards SSO logins', async () => {
-    await protocolHandler['dispatchDeepLink']('wire://start-sso/wire-13266298-4ac8-44b5-8281-dfb9e95fab5c');
-    assert.ok(sendActionSpy.calledWith(EVENT_TYPE.ACCOUNT.SSO_LOGIN, 'wire-13266298-4ac8-44b5-8281-dfb9e95fab5c'));
-  });
 });

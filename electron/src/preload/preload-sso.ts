@@ -17,7 +17,33 @@
  *
  */
 
-const {webFrame, remote} = require('electron');
-const {SingleSignOn} = remote.require('./sso/SingleSignOn');
+import {ipcRenderer} from 'electron';
 
-webFrame.executeJavaScript(SingleSignOn.getWindowOpenerScript()).catch((error: Error) => console.warn(error));
+interface SSOData {
+  loginAuthorizationSecret: string;
+  SSO_PROTOCOL: string;
+  SSO_PROTOCOL_HOST: string;
+}
+
+ipcRenderer
+  .invoke('EVENT_TYPE.SSO.WINDOW_DATA')
+  .then(({SSO_PROTOCOL, SSO_PROTOCOL_HOST, loginAuthorizationSecret}: SSOData) => {
+    // `window.opener` is not available when sandbox is activated,
+    // therefore we need to fake the function on backend area and
+    // redirect the response to a custom protocol
+
+    Object.defineProperty(window, 'opener', {
+      configurable: true, // Needed on Chrome :(
+      enumerable: false,
+      value: Object.freeze({
+        postMessage: (message: any) => {
+          const url = new URL(`${SSO_PROTOCOL}://${SSO_PROTOCOL_HOST}/`);
+          url.searchParams.set('secret', loginAuthorizationSecret);
+          url.searchParams.set('type', message.type);
+          document.location.href = url.toString();
+        },
+      }),
+      writable: false,
+    });
+  })
+  .catch(error => console.error(error));

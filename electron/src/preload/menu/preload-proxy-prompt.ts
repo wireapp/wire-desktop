@@ -18,10 +18,9 @@
  */
 
 import {ipcRenderer} from 'electron';
-
 import {EVENT_TYPE} from '../../lib/eventType';
 
-ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (event, labels: string[]) => {
+ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (_event, labels: string[]) => {
   for (const label in labels) {
     const labelElement = document.querySelector(`[data-string="${label}"]`);
     if (labelElement) {

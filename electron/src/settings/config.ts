@@ -17,6 +17,9 @@
  *
  */
 
+import {ipcMain} from 'electron';
+import {EVENT_TYPE} from '../lib/eventType';
+
 const wireJson: WireJson = require('../../wire.json');
 
 interface WireJson {
@@ -75,3 +78,14 @@ export const config = {
   userAgent:
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
 };
+
+ipcMain.handle(EVENT_TYPE.IPC.CONFIG, (_event, type: string) => {
+  switch (type) {
+    case 'getConfig': {
+      return config;
+    }
+    default: {
+      return '';
+    }
+  }
+});

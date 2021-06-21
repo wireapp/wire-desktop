@@ -18,15 +18,15 @@
  */
 
 import {ActionType, initiateSSO} from './';
-import {config} from '../../../dist/settings/config';
+import {Config} from '../Config';
 import {EVENT_TYPE} from '../../../dist/lib/eventType';
 import {AccountSelector} from '../selector/AccountSelector';
 
 /**
  * Don't use this method directly, use `switchWebview` instead.
  *
- * @param {string} id - Account ID
- * @returns {{id: string, type: ActionType.SWITCH_ACCOUNT}} - Account switch action
+ * @param {string} id Account ID
+ * @returns {{id: string, type: ActionType.SWITCH_ACCOUNT}} Account switch action
  */
 export const switchAccount = id => ({
   id,
@@ -35,7 +35,7 @@ export const switchAccount = id => ({
 
 export class AccountAction {
   startSSO = ssoCode => {
-    return async (dispatch, getState, {actions: {accountAction}}) => {
+    return (dispatch, getState, {actions: {accountAction}}) => {
       try {
         const accounts = AccountSelector.getAccounts(getState());
         const loggedOutWebviews = accounts.filter(account => account.userID === undefined);
@@ -46,7 +46,7 @@ export class AccountAction {
           const accountId = loggedOutWebviews[0].id;
           dispatch(initiateSSO(accountId, ssoCode, accounts.length == 1));
         } else {
-          if (accounts.length >= config.maximumAccounts) {
+          if (accounts.length >= Config.getConfig().MAXIMUM_ACCOUNTS) {
             return window.dispatchEvent(
               new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
                 detail: {

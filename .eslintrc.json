@@ -20,6 +20,7 @@
   "rules": {
     "import/no-default-export": "off",
     "no-magic-numbers": "off",
+    "no-return-await": "off",
     "no-undef": "off"
   }
 }

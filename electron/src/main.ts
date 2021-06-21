@@ -27,6 +27,7 @@ import {
   HeadersReceivedResponse,
   ipcMain,
   Menu,
+  nativeTheme,
   OnHeadersReceivedListenerDetails,
   WebContents,
 } from 'electron';
@@ -52,6 +53,7 @@ import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLogFilenames} from './logging/loggerUtils';
 import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
+import {openContextMenu} from './menu/context';
 import {TrayHandler} from './menu/TrayHandler';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import * as lifecycle from './runtime/lifecycle';
@@ -165,14 +167,15 @@ const bindIpcEvents = (): void => {
     tray.showUnreadCount(main, count, ignoreFlash);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
-    await deleteAccount(id, accountId, partitionId);
-    main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
+  ipcMain.handle(EVENT_TYPE.ACCOUNT.DELETE_DATA, (_event, id: number, accountId: string, partitionId?: string) => {
+    return deleteAccount(id, accountId, partitionId);
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
+  ipcMain.handle(EVENT_TYPE.IPC.SHOULD_USE_DARK_COLORS, _event => nativeTheme.shouldUseDarkColors);
+  nativeTheme.on('updated', () => main.webContents.send(EVENT_TYPE.UI.NATIVE_THEME_UPDATED));
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
@@ -224,8 +227,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     webPreferences: {
       backgroundThrottling: false,
       contextIsolation: false,
-      enableRemoteModule: true,
-      nodeIntegration: false,
+      enableRemoteModule: false,
+      nodeIntegration: true,
       preload: PRELOAD_JS,
       webviewTag: true,
     },
@@ -313,7 +316,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  main.webContents.on('crashed', event => {
+  main.webContents.on('render-process-gone', event => {
     logger.error('WebContents crashed. Will reload the window.');
     logger.error(event);
     try {
@@ -324,7 +327,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  app.on('gpu-process-crashed', event => {
+  app.on('render-process-gone', event => {
     logger.error('GPU process crashed. Will reload the window.');
     logger.error(event);
     try {
@@ -577,6 +580,7 @@ class ElectronWrapperInit {
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });
+          contents.on('context-menu', (event, params) => openContextMenu(event, params, contents));
           if (ENABLE_LOGGING) {
             const colorCodeRegex = /%c(.+?)%c/gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;

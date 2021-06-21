@@ -22,7 +22,6 @@ import type {WebAppEvents} from '@wireapp/webapp-events';
 import type {Data as OpenGraphResult} from 'open-graph';
 import type {Static as amplify} from 'amplify';
 
-import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import type {i18nStrings, SupportedI18nLanguage} from './locale/locale';
 
 declare global {
@@ -58,7 +57,6 @@ declare global {
     interface Global {
       _ConfigurationPersistence: Record<string, any>;
       desktopCapturer: DesktopCapturer;
-      environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;
     }
   }
