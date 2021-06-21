@@ -17,12 +17,11 @@
  *
  */
 
-import {desktopCapturer, ipcRenderer, webFrame} from 'electron';
+import {desktopCapturer, ipcRenderer, webFrame, remote} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
 import type {Data as OpenGraphResult} from 'open-graph';
-import {nativeTheme} from '@electron/remote';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
@@ -43,21 +42,21 @@ const logger = getLogger(path.basename(__filename));
 function subscribeToThemeChange(): void {
   function updateWebAppTheme(): void {
     if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
-      const useDarkMode = nativeTheme.shouldUseDarkColors;
+      const useDarkMode = remote.nativeTheme.shouldUseDarkColors;
       logger.info(`Switching dark mode ${useDarkMode ? 'on' : 'off'} ...`);
       window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     }
   }
 
   function initialThemeCheck() {
-    const useDarkMode = nativeTheme.shouldUseDarkColors;
+    const useDarkMode = remote.nativeTheme.shouldUseDarkColors;
     logger.info(`Switching initial dark mode ${useDarkMode ? 'on' : 'off'} ...`);
     window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
-  nativeTheme.on('updated', () => updateWebAppTheme());
+  remote.nativeTheme.on('updated', () => updateWebAppTheme());
 }
 
 webFrame.setZoomFactor(1.0);
