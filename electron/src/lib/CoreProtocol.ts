@@ -27,12 +27,15 @@ import {config} from '../settings/config';
 import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
 import {WindowManager} from '../window/WindowManager';
 import {EVENT_TYPE} from './eventType';
+import {showErrorDialog} from '../lib/showDialog';
+import {shortenText} from './ElectronUtil';
 
 const logger = getLogger(path.basename(__filename));
 
 const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 const START_SSO_FLOW = 'start-sso';
+const JOIN_CONVERSATION_FLOW = 'conversation-join';
 
 export class CustomProtocolHandler {
   public hashLocation = '';
@@ -46,6 +49,7 @@ export class CustomProtocolHandler {
         !url.startsWith(CORE_PROTOCOL_PREFIX) ||
         url.length > CORE_PROTOCOL_MAX_LENGTH
       ) {
+        showErrorDialog(`Invalid deep link "${shortenText(url || '', CORE_PROTOCOL_MAX_LENGTH)}."`);
         logger.info('Invalid deep link, ignoring');
         return;
       }
@@ -55,7 +59,11 @@ export class CustomProtocolHandler {
       if (route.host === START_SSO_FLOW) {
         logger.info('Deep link is a SSO link, triggering SSO login ...');
         await this.handleSSOLogin(route);
+      } else if (route.host === JOIN_CONVERSATION_FLOW) {
+        logger.info('Deep link is a conversation join link, triggering join ...');
+        await this.handleJoinConversation(route);
       } else {
+        // handle invalid deep link
         logger.info('Triggering hash location change ...');
         this.forwardHashLocation(route);
       }
@@ -79,6 +87,20 @@ export class CustomProtocolHandler {
         await new AutomatedSingleSignOn().start(code);
       } catch (error) {
         logger.error(`Cannot start SSO flow: ${error.message}`, error);
+      }
+    }
+  }
+
+  private async handleJoinConversation(route: URL): Promise<void> {
+    if (typeof route.pathname === 'string') {
+      logger.info('Joining conversation ...');
+      const code = route.searchParams.get('code');
+      const key = route.searchParams.get('key');
+
+      try {
+        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
+      } catch (error) {
+        logger.error(`Cannot join conversation: ${error.message}`, error);
       }
     }
   }
