@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: weekly
       day: monday
+      time: '05:00'
+      timezone: 'Europe/Berlin'
     open-pull-requests-limit: 99
     versioning-strategy: increase
     ignore:
@@ -15,7 +17,7 @@ updates:
       # in progress, always takes some time to follow all breaking changes
       - dependency-name: electron
         versions:
-          - '>= 14.x'
+          - '> 13.x'
       - dependency-name: electron-builder
         versions:
           - '> 20.x'

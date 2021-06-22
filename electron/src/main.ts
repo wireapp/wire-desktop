@@ -38,8 +38,6 @@ import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
 import windowStateKeeper from 'electron-window-state';
 
-require('@electron/remote/main').initialize();
-
 import './global';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,

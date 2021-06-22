@@ -25,8 +25,8 @@ import {
   MenuItemConstructorOptions,
   WebContents,
   nativeImage,
+  remote,
 } from 'electron';
-const remote = require('@electron/remote');
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
