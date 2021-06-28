@@ -21,18 +21,16 @@ import {
   clipboard,
   ipcRenderer,
   Menu as ElectronMenu,
-  remote,
   ContextMenuParams,
   MenuItemConstructorOptions,
   WebContents,
   nativeImage,
+  remote,
 } from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale/locale';
 import {config} from '../../settings/config';
-
-const Menu = remote.Menu;
 
 interface ElectronMenuWithImageAndTime extends ElectronMenu {
   image?: string;
@@ -61,7 +59,7 @@ const copyPicture = async (url: RequestInfo): Promise<void> => {
 };
 
 const createDefaultMenu = (copyContext: string) =>
-  Menu.buildFromTemplate([
+  remote.Menu.buildFromTemplate([
     {
       click: () => clipboard.writeText(copyContext),
       label: locale.getText('menuCopy'),
@@ -110,10 +108,10 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
     }
   }
 
-  return Menu.buildFromTemplate(template);
+  return remote.Menu.buildFromTemplate(template);
 };
 
-const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
+const imageMenu: ElectronMenuWithImageAndTime = remote.Menu.buildFromTemplate([
   {
     click: () => savePicture(imageMenu.image || ''),
     label: locale.getText('menuSavePictureAs'),
@@ -126,7 +124,7 @@ const imageMenu: ElectronMenuWithImageAndTime = Menu.buildFromTemplate([
 
 const webContents = remote.getCurrentWebContents();
 
-webContents.on('context-menu', (_event, params) => {
+webContents.on('context-menu', (_event: Event, params: ContextMenuParams) => {
   const window = remote.getCurrentWindow();
 
   if (params.isEditable) {

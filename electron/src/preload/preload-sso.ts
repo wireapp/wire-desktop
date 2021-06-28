@@ -20,4 +20,4 @@
 const {webFrame, remote} = require('electron');
 const {SingleSignOn} = remote.require('./sso/SingleSignOn');
 
-webFrame.executeJavaScript(SingleSignOn.getWindowOpenerScript()).catch(error => console.warn(error));
+webFrame.executeJavaScript(SingleSignOn.getWindowOpenerScript()).catch((error: Error) => console.warn(error));

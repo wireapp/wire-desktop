@@ -109,6 +109,13 @@ export default (state = [createAccount()], action) => {
       });
     }
 
+    case ActionType.SET_CONVERSATION_JOIN_DATA: {
+      return state.map(account => {
+        const isMatchingAccount = account.id === action.id;
+        return isMatchingAccount ? {...account, conversationJoinData: action.data} : account;
+      });
+    }
+
     default: {
       return state;
     }

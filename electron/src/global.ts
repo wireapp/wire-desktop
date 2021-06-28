@@ -33,6 +33,7 @@ declare global {
     locStrings: i18nStrings;
     locStringsDefault: i18nStrings;
     sendBadgeCount(count: number, ignoreFlash: boolean): void;
+    sendConversationJoinToHost(accountId: string, code: string, key: string): void;
     sendDeleteAccount(accountId: string, sessionId?: string): Promise<void>;
     sendLogoutAccount(accountId: string): Promise<void>;
     submitDeepLink(url: string): void;

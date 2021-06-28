@@ -18,6 +18,7 @@
  */
 
 import {ipcRenderer, webFrame, WebviewTag} from 'electron';
+import {WebAppEvents} from '@wireapp/webapp-events';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
@@ -42,6 +43,12 @@ const getWebviewById = (id: string): WebviewTag | null =>
 
 const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
+  ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, async (_event, {code, key}: {code: string; key: string}) => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      await selectedWebview.send(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
+    }
+  });
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (_event, action: string) => {
     const selectedWebview = getSelectedWebview();
@@ -83,27 +90,31 @@ const setupIpcInterface = (): void => {
     ipcRenderer.send(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, url);
   };
 
-  window.sendDeleteAccount = (accountID: string, sessionID?: string): Promise<void> => {
+  window.sendDeleteAccount = (accountId: string, sessionID?: string): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const accountWebview = getWebviewById(accountID);
+      const accountWebview = getWebviewById(accountId);
       if (!accountWebview) {
         // eslint-disable-next-line prefer-promise-reject-errors
-        return reject(`Webview for account "${accountID}" does not exist`);
+        return reject(`Webview for account "${accountId}" does not exist`);
       }
 
-      logger.info(`Processing deletion of "${accountID}"`);
+      logger.info(`Processing deletion of "${accountId}"`);
       const viewInstanceId = accountWebview.getWebContentsId();
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
-      ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountID, sessionID);
+      ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountId, sessionID);
     });
   };
 
   window.sendLogoutAccount = async (accountId: string): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
-    if (accountWebview) {
-      logger.log(`Sending logout signal to webview for account "${accountId}".`);
-      await accountWebview.send(EVENT_TYPE.ACTION.SIGN_OUT);
-    }
+    logger.log(`Sending logout signal to webview for account "${accountId}".`);
+    await accountWebview?.send(EVENT_TYPE.ACTION.SIGN_OUT);
+  };
+
+  window.sendConversationJoinToHost = async (accountId: string, code: string, key: string): Promise<void> => {
+    const accountWebview = getWebviewById(accountId);
+    logger.log(`Sending conversation join data to webview for account "${accountId}".`);
+    await accountWebview?.send(WebAppEvents.CONVERSATION.JOIN, {code, key});
   };
 };
 

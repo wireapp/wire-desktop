@@ -17,7 +17,7 @@
  *
  */
 
-import {desktopCapturer, ipcRenderer, remote, webFrame} from 'electron';
+import {desktopCapturer, ipcRenderer, webFrame, remote} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
@@ -37,28 +37,26 @@ interface TeamAccountInfo {
   userID: string;
 }
 
-const nativeTheme = remote.nativeTheme;
-
 const logger = getLogger(path.basename(__filename));
 
 function subscribeToThemeChange(): void {
   function updateWebAppTheme(): void {
     if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
-      const useDarkMode = nativeTheme.shouldUseDarkColors;
+      const useDarkMode = remote.nativeTheme.shouldUseDarkColors;
       logger.info(`Switching dark mode ${useDarkMode ? 'on' : 'off'} ...`);
       window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     }
   }
 
   function initialThemeCheck() {
-    const useDarkMode = nativeTheme.shouldUseDarkColors;
+    const useDarkMode = remote.nativeTheme.shouldUseDarkColors;
     logger.info(`Switching initial dark mode ${useDarkMode ? 'on' : 'off'} ...`);
     window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
-  nativeTheme.on('updated', () => updateWebAppTheme());
+  remote.nativeTheme.on('updated', () => updateWebAppTheme());
 }
 
 webFrame.setZoomFactor(1.0);
@@ -182,6 +180,14 @@ const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
+  });
+  ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, (_event, {code, key}: {code: string; key: string}) => {
+    logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
+    ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
+  });
+  ipcRenderer.on(WebAppEvents.CONVERSATION.JOIN, (_event, {code, key}: {code: string; key: string}) => {
+    logger.info(`Received event "${WebAppEvents.CONVERSATION.JOIN}", forwarding to window ...`);
+    window.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: {code, key}}));
   });
 };
 
