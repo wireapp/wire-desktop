@@ -28,13 +28,13 @@ import {WindowUrl} from '../lib/WindowUrl';
 import {
   abortAccountCreation,
   resetIdentity,
+  setConversationJoinData,
   updateAccountBadgeCount,
   updateAccountData,
   updateAccountLifecycle,
 } from '../actions';
 import {getText, wrapperLocale} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
-
 import './Webview.css';
 import {accountAction} from '../actions/AccountAction';
 
@@ -59,11 +59,14 @@ const getEnvironmentUrl = account => {
 };
 
 const Webview = ({
+  abortAccountCreation,
   account,
   accountIndex,
+  accountLifecycle,
+  conversationJoinData,
   onUnreadCountUpdated,
-  abortAccountCreation,
   resetIdentity,
+  setConversationJoinData,
   switchWebview,
   updateAccountData,
   updateAccountLifecycle,
@@ -145,10 +148,11 @@ const Webview = ({
 
   useEffect(() => {
     const onIpcMessage = ({channel, args}) => {
+      const accountId = account.id;
+
       switch (channel) {
         case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
           const [customUrl] = args;
-          const accountId = account.id;
           const updatedWebapp = WindowUrl.createWebAppUrl(window.location, customUrl);
           updateAccountData(accountId, {
             webappUrl: updatedWebapp,
@@ -167,9 +171,17 @@ const Webview = ({
           break;
         }
 
-        case EVENT_TYPE.LIFECYCLE.SIGNED_IN:
+        case EVENT_TYPE.LIFECYCLE.SIGNED_IN: {
+          if (conversationJoinData) {
+            window.sendConversationJoinToHost(accountId, conversationJoinData.code, conversationJoinData.key);
+            setConversationJoinData(accountId, undefined);
+          }
+          updateAccountLifecycle(accountId, channel);
+          break;
+        }
+
         case EVENT_TYPE.LIFECYCLE.SIGN_OUT: {
-          updateAccountLifecycle(account.id, channel);
+          updateAccountLifecycle(accountId, channel);
           break;
         }
 
@@ -178,14 +190,25 @@ const Webview = ({
           if (clearData) {
             deleteWebview(account);
           } else {
-            resetIdentity(account.id);
+            resetIdentity(accountId);
+          }
+          break;
+        }
+
+        case EVENT_TYPE.ACTION.JOIN_CONVERSATION: {
+          const [data] = args;
+          if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
+            window.sendConversationJoinToHost(accountId, data.code, data.key);
+            setConversationJoinData(accountId, undefined);
+          } else {
+            setConversationJoinData(accountId, data);
           }
           break;
         }
 
         case EVENT_TYPE.LIFECYCLE.UNREAD_COUNT: {
           const [badgeCount] = args;
-          onUnreadCountUpdated(account.id, badgeCount);
+          onUnreadCountUpdated(accountId, badgeCount);
           break;
         }
       }
@@ -197,7 +220,7 @@ const Webview = ({
         webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
-  }, []);
+  }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = account => {
     window.sendDeleteAccount(account.id, account.sessionID).then(() => {
@@ -284,11 +307,19 @@ const Webview = ({
   );
 };
 
-export default connect((state, props) => ({accountIndex: AccountSelector.getAccountIndex(state, props.account.id)}), {
-  abortAccountCreation,
-  resetIdentity,
-  switchWebview: accountAction.switchWebview,
-  updateAccountBadgeCount,
-  updateAccountData,
-  updateAccountLifecycle,
-})(Webview);
+export default connect(
+  (state, props) => ({
+    accountIndex: AccountSelector.getAccountIndex(state, props.account.id),
+    accountLifecycle: AccountSelector.getAccountLifecycle(state, props.account.id),
+    conversationJoinData: AccountSelector.getConversationJoinData(state, props.account.id),
+  }),
+  {
+    abortAccountCreation,
+    resetIdentity,
+    setConversationJoinData,
+    switchWebview: accountAction.switchWebview,
+    updateAccountBadgeCount,
+    updateAccountData,
+    updateAccountLifecycle,
+  },
+)(Webview);

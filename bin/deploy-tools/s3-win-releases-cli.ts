@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import commander from 'commander';
+import {program as commander} from 'commander';
 import path from 'path';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';

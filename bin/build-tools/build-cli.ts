@@ -18,7 +18,7 @@
  */
 
 import {LogFactory} from '@wireapp/commons';
-import commander from 'commander';
+import {program as commander} from 'commander';
 import path from 'path';
 
 import {logEntries} from '../bin-utils';
