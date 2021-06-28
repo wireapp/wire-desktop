@@ -13,7 +13,7 @@ updates:
       # our current Electron version uses Node.js 14
       - dependency-name: '@types/node'
         versions:
-          - '>= 15.x'
+          - '> 14.x'
       # in progress, always takes some time to follow all breaking changes
       - dependency-name: electron
         versions:

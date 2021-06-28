@@ -616,6 +616,9 @@ class ElectronWrapperInit {
             }
           }
 
+          // Disable TLS < v1.2
+          contents.session.setSSLConfig({minVersion: 'tls1.2'});
+
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           // Override remote Access-Control-Allow-Origin for localhost (CORS bypass)
