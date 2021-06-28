@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import commander from 'commander';
+import {program as commander} from 'commander';
 import fs from 'fs-extra';
 import path from 'path';
 
