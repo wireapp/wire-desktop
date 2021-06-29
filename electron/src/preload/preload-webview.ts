@@ -189,6 +189,9 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${WebAppEvents.CONVERSATION.JOIN}", forwarding to window ...`);
     window.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: {code, key}}));
   });
+  ipcRenderer.on('resize_me', () => {
+    window.dispatchEvent(new Event('resize'));
+  });
 };
 
 function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
