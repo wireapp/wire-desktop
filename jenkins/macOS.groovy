@@ -41,13 +41,21 @@ node('master') {
         sh 'npm install -g yarn'
         sh 'yarn'
         if (production) {
-          withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
+          withCredentials([
+            string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE'),
+            string(credentialsId: 'MACOS_NOTARIZE_EMAIL', variable: 'MACOS_NOTARIZE_APPLE_ID'),
+            string(credentialsId: 'MACOS_NOTARIZE_PASSWORD', variable: 'MACOS_NOTARIZE_APPLE_PASSWORD')
+          ]) {
             sh 'yarn build:macos'
           }
 
           echo 'Checking for private Apple APIs ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"', returnStdout: true
           echo privateAPIResult
+
+          echo 'Checking notarization ...'
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/Wire.pkg"', returnStdout: true
+          echo notarizationResult
         } else if (custom) {
           sh 'yarn build:macos'
         } else {
@@ -94,5 +102,5 @@ node('master') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n\n${privateAPIResult.trim()}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n\n${privateAPIResult.trim()}\n\n${notarizationResult.trim()}"
 }

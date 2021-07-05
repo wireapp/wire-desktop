@@ -113,8 +113,7 @@ export async function buildMacOSConfig(
     }
 
     if (macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword) {
-      // once https://github.com/electron/electron-packager/issues/1162 is fixed, any can be removed
-      (packagerConfig as any).osxNotarize = {
+      packagerConfig.osxNotarize = {
         appleId: macOSConfig.notarizeAppleId,
         appleIdPassword: macOSConfig.notarizeApplePassword,
       };
