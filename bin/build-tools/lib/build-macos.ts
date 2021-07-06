@@ -110,7 +110,7 @@ export async function buildMacOSConfig(
       packagerConfig.osxSign = {
         entitlements: 'resources/macos/entitlements/parent.plist',
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
-        identity: macOSConfig.certNameApplication,
+        identity: macOSConfig.certNameNotarization || macOSConfig.certNameApplication,
       };
     }
 
