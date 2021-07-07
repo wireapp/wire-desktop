@@ -127,8 +127,8 @@ export async function buildMacOSConfig(
       packagerConfig.osxSign = {
         entitlements: 'resources/macos/entitlements/parent.plist',
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
-        identity: macOSConfig.certNameApplication,
-        'provisioning-profile': macOSConfig.appleProvisioningProfilePath,
+        identity: macOSConfig.certNameApplication as string,
+        'provisioning-profile': macOSConfig.appleProvisioningProfilePath as string,
       };
     }
 
