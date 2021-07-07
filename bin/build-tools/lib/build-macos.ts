@@ -201,23 +201,14 @@ export async function buildMacOSWrapper(
         if (signManually) {
           logger.error(`Can't notarize manually.`);
         } else {
-          const dmgOptions = {
-            appPath: buildDir,
-            contents: [
-              // eslint-disable-next-line id-length
-              {path: '/Applications', type: 'link', x: 448, y: 344},
-              // eslint-disable-next-line id-length
-              {path: appFile, type: 'file', x: 192, y: 344},
-            ],
+          await buildDmg({
+            appPath: path.resolve(buildDir),
             debug: logger.state.isEnabled,
-            icon: 'resources/macos/logo.icns',
+            icon: path.resolve('resources/macos/logo.icns'),
             name: commonConfig.name,
-            out: commonConfig.distDir,
+            out: path.resolve(commonConfig.distDir),
             title: commonConfig.name,
-          };
-          await new Promise((resolve, reject) =>
-            buildDmg(dmgOptions, (err: Error | undefined) => (err ? reject(err) : resolve)),
-          );
+          });
         }
 
         logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
