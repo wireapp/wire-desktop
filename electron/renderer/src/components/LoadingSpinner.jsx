@@ -22,8 +22,11 @@ import {FlexBox, Loading, COLOR} from '@wireapp/react-ui-kit';
 
 import './LoadingSpinner.css';
 
+const TRANSITION_GRACE_PERIOD_MS = 500;
+
 const LoadingSpinner = ({visible, webviewRef}) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
     const webview = webviewRef.current;
@@ -37,13 +40,30 @@ const LoadingSpinner = ({visible, webviewRef}) => {
     }
   });
 
+  useEffect(() => {
+    if (!isLoading) {
+      let timeout = setTimeout(() => {
+        timeout = null;
+        setIsFinished(true);
+      }, TRANSITION_GRACE_PERIOD_MS);
+
+      return () => {
+        if (timeout !== null) {
+          clearTimeout(timeout);
+        }
+      };
+    }
+  }, [isLoading]);
+
+  if (!visible || isFinished) {
+    return null;
+  }
   return (
     <div
       className="loading-spinner-wrapper"
       data-uie-name="loading-spinner-wrapper"
       style={{
         backgroundColor: COLOR.GRAY_LIGHTEN_88,
-        display: visible ? 'flex' : 'none',
         opacity: isLoading ? 1 : 0,
         pointerEvents: isLoading ? 'all' : 'none',
       }}
