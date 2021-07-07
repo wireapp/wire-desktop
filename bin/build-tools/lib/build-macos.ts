@@ -195,7 +195,7 @@ export async function buildMacOSWrapper(
           ...packagerConfig,
           osxSign: {
             ...(packagerConfig.osxSign as electronPackager.OsxSignOptions),
-            identity: macOSConfig.certNameNotarization,
+            identity: macOSConfig.certNameNotarization as string,
           },
           platform: 'darwin',
         });
