@@ -125,6 +125,7 @@ export async function buildMacOSConfig(
         entitlements: 'resources/macos/entitlements/parent.plist',
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
         identity: macOSConfig.certNameApplication,
+        'pre-embed-provisioning-profile': false,
       };
     }
 
@@ -194,6 +195,7 @@ export async function buildMacOSWrapper(
           ...packagerConfig,
           osxSign: {
             ...(packagerConfig.osxSign as electronPackager.OsxSignOptions),
+            hardenedRuntime: true,
             identity: macOSConfig.certNameNotarization as string,
           },
           platform: 'darwin',
