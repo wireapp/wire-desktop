@@ -44,7 +44,8 @@ node('master') {
           withCredentials([
             string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE'),
             string(credentialsId: 'MACOS_NOTARIZE_EMAIL', variable: 'MACOS_NOTARIZE_APPLE_ID'),
-            string(credentialsId: 'MACOS_NOTARIZE_PASSWORD', variable: 'MACOS_NOTARIZE_APPLE_PASSWORD')
+            string(credentialsId: 'MACOS_NOTARIZE_PASSWORD', variable: 'MACOS_NOTARIZE_APPLE_PASSWORD'),
+            file(credentialsId: 'MACOS_APP_STORE_PROVISIONING_PROFILE', variable: 'MACOS_APP_STORE_PROVISIONING_PROFILE'),
           ]) {
             sh 'yarn build:macos'
           }
