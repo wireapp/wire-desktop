@@ -32,7 +32,6 @@ const logger = getLogger('build-tools', libraryName);
 const mainDir = path.resolve(__dirname, '../../../');
 
 interface MacOSConfigResult {
-  dmgConfig?: electronPackager.Options;
   macOSConfig: MacOSConfig;
   packagerConfig: electronPackager.Options;
 }
@@ -202,13 +201,14 @@ export async function buildMacOSWrapper(
 
         logger.log(`Built app for outside distribution in "${buildDir}".`);
 
+        const appFile = path.join(buildDir, `${commonConfig.name}.app`);
         await fs.ensureDir(commonConfig.distDir);
 
         if (signManually) {
           logger.error(`Can't notarize manually.`);
         } else {
           await buildDmg({
-            appPath: path.resolve(buildDir),
+            appPath: appFile,
             debug: logger.state.isEnabled,
             icon: path.resolve('resources/macos/logo.icns'),
             name: commonConfig.name,
