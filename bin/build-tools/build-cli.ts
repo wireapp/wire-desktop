@@ -56,7 +56,7 @@ commander
 const platform = (commander.args[0] || '').toLowerCase();
 
 (async () => {
-  const {envFile, manualSign, wireJson, packageJson} = commander.opts();
+  const {envFile, manualSign, wireJson, packageJson} = commander.opts() as CommanderData;
 
   switch (platform) {
     case 'win':
@@ -79,12 +79,12 @@ const platform = (commander.args[0] || '').toLowerCase();
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign);
+      const {dmgConfig, macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
-      return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
+      return buildMacOSWrapper(envFile, macOSConfig, packageJson, packagerConfig, wireJson, manualSign);
     }
 
     case 'linux': {

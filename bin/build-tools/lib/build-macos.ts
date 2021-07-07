@@ -17,7 +17,7 @@
  *
  */
 
-import {flatAsync as buildPkg} from 'electron-osx-sign';
+import {flatAsync as buildInstaller} from 'electron-osx-sign';
 import electronPackager from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
@@ -31,6 +31,7 @@ const logger = getLogger('build-tools', libraryName);
 const mainDir = path.resolve(__dirname, '../../../');
 
 interface MacOSConfigResult {
+  dmgConfig?: electronPackager.Options;
   macOSConfig: MacOSConfig;
   packagerConfig: electronPackager.Options;
 }
@@ -105,6 +106,9 @@ export async function buildMacOSConfig(
     };
   }
 
+  const shouldNotarize =
+    macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword && macOSConfig.certNameNotarization;
+
   if (!signManually) {
     if (macOSConfig.certNameApplication) {
       packagerConfig.osxSign = {
@@ -114,10 +118,10 @@ export async function buildMacOSConfig(
       };
     }
 
-    if (macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword) {
+    if (shouldNotarize) {
       packagerConfig.osxNotarize = {
-        appleId: macOSConfig.notarizeAppleId,
-        appleIdPassword: macOSConfig.notarizeApplePassword,
+        appleId: macOSConfig.notarizeAppleId as string,
+        appleIdPassword: macOSConfig.notarizeApplePassword as string,
       };
     }
   }
@@ -126,11 +130,11 @@ export async function buildMacOSConfig(
 }
 
 export async function buildMacOSWrapper(
-  packagerConfig: electronPackager.Options,
+  envFilePath: string,
   macOSConfig: MacOSConfig,
   packageJsonPath: string,
+  packagerConfig: electronPackager.Options,
   wireJsonPath: string,
-  envFilePath: string,
   signManually?: boolean,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
@@ -151,9 +155,11 @@ export async function buildMacOSWrapper(
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    const [buildDir] = await electronPackager(packagerConfig);
+    const pkgConfig = {...packagerConfig};
+    delete pkgConfig.osxNotarize;
+    const [buildDir] = await electronPackager(pkgConfig);
 
-    logger.log(`Built app in "${buildDir}".`);
+    logger.log(`Built app for the App Store in "${buildDir}".`);
 
     if (macOSConfig.certNameInstaller) {
       const appFile = path.join(buildDir, `${commonConfig.name}.app`);
@@ -163,7 +169,7 @@ export async function buildMacOSWrapper(
       if (signManually) {
         await manualMacOSSign(appFile, pkgFile, commonConfig, macOSConfig);
       } else {
-        await buildPkg({
+        await buildInstaller({
           app: appFile,
           identity: macOSConfig.certNameInstaller,
           pkg: pkgFile,
@@ -171,7 +177,28 @@ export async function buildMacOSWrapper(
         });
       }
 
-      logger.log(`Built installer in "${commonConfig.distDir}".`);
+      logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
+
+      if (packagerConfig.osxNotarize) {
+        const [buildDir] = await electronPackager({...packagerConfig, platform: 'darwin'});
+
+        logger.log(`Built app for outside distribution in "${buildDir}".`);
+
+        const appFile = path.join(buildDir, `${commonConfig.name}.app`);
+        await fs.ensureDir(commonConfig.distDir);
+
+        if (signManually) {
+          logger.error(`Can't notarize manually.`);
+        } else {
+          await buildInstaller({
+            app: appFile,
+            identity: macOSConfig.certNameNotarization as string,
+            platform: 'darwin',
+          });
+        }
+
+        logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
+      }
     }
   } catch (error) {
     logger.error(error);
