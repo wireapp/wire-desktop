@@ -125,7 +125,7 @@ export async function buildMacOSConfig(
       packagerConfig.osxSign = {
         entitlements: 'resources/macos/entitlements/parent.plist',
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
-        identity: macOSConfig.certNameNotarization || macOSConfig.certNameApplication,
+        identity: macOSConfig.certNameApplication,
       };
     }
 
@@ -141,11 +141,11 @@ export async function buildMacOSConfig(
 }
 
 export async function buildMacOSWrapper(
-  envFilePath: string,
+  packagerConfig: electronPackager.Options,
   macOSConfig: MacOSConfig,
   packageJsonPath: string,
-  packagerConfig: electronPackager.Options,
   wireJsonPath: string,
+  envFilePath: string,
   signManually?: boolean,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
@@ -191,11 +191,17 @@ export async function buildMacOSWrapper(
       logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
 
       if (packagerConfig.osxNotarize) {
-        const [buildDir] = await electronPackager({...packagerConfig, platform: 'darwin'});
+        const [buildDir] = await electronPackager({
+          ...packagerConfig,
+          osxSign: {
+            ...(packagerConfig.osxSign as electronPackager.OsxSignOptions),
+            identity: macOSConfig.certNameNotarization,
+          },
+          platform: 'darwin',
+        });
 
         logger.log(`Built app for outside distribution in "${buildDir}".`);
 
-        const appFile = path.join(buildDir, `${commonConfig.name}.app`);
         await fs.ensureDir(commonConfig.distDir);
 
         if (signManually) {

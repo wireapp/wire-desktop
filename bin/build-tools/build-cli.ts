@@ -84,7 +84,7 @@ const platform = (commander.args[0] || '').toLowerCase();
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
-      return buildMacOSWrapper(envFile, macOSConfig, packageJson, packagerConfig, wireJson, manualSign);
+      return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
     }
 
     case 'linux': {
