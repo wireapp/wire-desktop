@@ -41,6 +41,7 @@ node('master') {
         sh 'npm install -g yarn'
         sh 'yarn'
         sh 'yarn build:prepare'
+      }
     } catch(e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
