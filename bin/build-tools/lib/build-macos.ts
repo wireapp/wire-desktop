@@ -127,6 +127,7 @@ export async function buildMacOSConfig(
     }
 
     if (shouldNotarize) {
+      packagerConfig.platform = 'darwin';
       (packagerConfig.osxSign as OsxSignOptions).hardenedRuntime = true;
       (packagerConfig.osxSign as OsxSignOptions).identity = macOSConfig.certNameNotarization as string;
       packagerConfig.osxNotarize = {
