@@ -59,7 +59,6 @@ export async function buildMacOSConfig(
 
   const macOSDefaultConfig: MacOSConfig = {
     appleExportComplianceCode: null,
-    appleProvisioningProfilePath: null,
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
     certNameApplication: null,
@@ -73,8 +72,6 @@ export async function buildMacOSConfig(
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
-    appleProvisioningProfilePath:
-      process.env.MACOS_APP_STORE_PROVISIONING_PROFILE || macOSDefaultConfig.appleProvisioningProfilePath,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     certNameApplication: process.env.MACOS_CERTIFICATE_NAME_APPLICATION || macOSDefaultConfig.certNameApplication,
     certNameInstaller: process.env.MACOS_CERTIFICATE_NAME_INSTALLER || macOSDefaultConfig.certNameInstaller,
@@ -128,9 +125,10 @@ export async function buildMacOSConfig(
         entitlements: 'resources/macos/entitlements/parent.plist',
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
         identity: macOSConfig.certNameApplication as string,
-        'provisioning-profile': macOSConfig.appleProvisioningProfilePath as string,
+        'pre-embed-provisioning-profile': false,
         timestamp: 'none',
       } as any;
+      // TODO: `any` can be removed, once https://github.com/electron/electron-osx-sign/pull/246 is merged
     }
 
     if (shouldNotarize) {

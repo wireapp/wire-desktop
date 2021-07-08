@@ -11,8 +11,9 @@ SPCTL_RESULT="$(spctl -a -vvv -t install "${WIRE_APP_FILE}" 2>&1)"
 
 if [[ "${SPCTL_RESULT}" =~ .*"accepted".* ]]; then
   echo -e "👍 The build was correctly notarized:"
-else
+  echo "${SPCTL_RESULT}"
+elif [[ "${SPCTL_RESULT}" =~ .*"rejected".* ]]; then
   echo -e "⚠️ **Warning**: The build was not correctly notarized:"
-fi
-
-echo "${SPCTL_RESULT}"
+  echo "${SPCTL_RESULT}"
+else
+  echo -e "ℹ️ No notarized build was created."
