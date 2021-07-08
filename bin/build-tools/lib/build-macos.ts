@@ -124,9 +124,7 @@ export async function buildMacOSConfig(
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
         identity: macOSConfig.certNameApplication as string,
         'pre-embed-provisioning-profile': false,
-        timestamp: 'none',
-      } as any;
-      // TODO: `any` can be removed, once https://github.com/electron/electron-osx-sign/pull/246 is merged
+      };
     }
 
     if (shouldNotarize) {
