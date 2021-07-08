@@ -18,7 +18,7 @@
  */
 
 import {flatAsync as buildPkg} from 'electron-osx-sign';
-import electronPackager from 'electron-packager';
+import electronPackager, {OsxSignOptions} from 'electron-packager';
 const buildDmg = require('electron-installer-dmg');
 import fs from 'fs-extra';
 import path from 'path';
@@ -123,11 +123,12 @@ export async function buildMacOSConfig(
         entitlements: 'resources/macos/entitlements/parent.plist',
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
         identity: macOSConfig.certNameApplication as string,
-        'pre-embed-provisioning-profile': false,
       };
     }
 
     if (shouldNotarize) {
+      (packagerConfig.osxSign as OsxSignOptions).hardenedRuntime = true;
+      (packagerConfig.osxSign as OsxSignOptions).identity = macOSConfig.certNameNotarization as string;
       packagerConfig.osxNotarize = {
         appleId: macOSConfig.notarizeAppleId as string,
         appleIdPassword: macOSConfig.notarizeApplePassword as string,
@@ -165,12 +166,12 @@ export async function buildMacOSWrapper(
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    if (macOSConfig.certNameInstaller) {
-      const [buildDir] = await electronPackager(packagerConfig);
+    if (!shouldNotarize) {
+      if (macOSConfig.certNameInstaller) {
+        const [buildDir] = await electronPackager(packagerConfig);
 
-      logger.log(`Built app for the App Store in "${buildDir}".`);
+        logger.log(`Built app for the App Store in "${buildDir}".`);
 
-      if (!shouldNotarize) {
         const appFile = path.join(buildDir, `${commonConfig.name}.app`);
         await fs.ensureDir(commonConfig.distDir);
         const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
