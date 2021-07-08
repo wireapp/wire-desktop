@@ -90,10 +90,6 @@ node('master') {
             sh 'yarn build:macos:notarized'
           }
 
-          sh returnStatus: true, script: 'ls -la wrap/build'
-          sh returnStatus: true, script: 'ls -la wrap/build/Wire-darwin-x64'
-          sh returnStatus: true, script: 'ls -la wrap/dist'
-
           echo 'Checking notarization ...'
           notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/build/Wire-darwin-x64/Wire.app"', returnStdout: true
           echo notarizationResult
