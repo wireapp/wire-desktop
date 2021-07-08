@@ -30,7 +30,7 @@ node('master') {
   def electronVersion = parseJson(packageJson).devDependencies.electron
   currentBuild.displayName = version
 
-  stage('Build') {
+  stage('Prepare build') {
     try {
       withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
         sh 'security unlock-keychain -p \"$MACOS_KEYCHAIN_PASSWORD\" /Users/jenkins/Library/Keychains/login.keychain'
@@ -40,16 +40,28 @@ node('master') {
         sh 'npm -v'
         sh 'npm install -g yarn'
         sh 'yarn'
+        sh 'yarn build:prepare'
+      }
+    } catch(e) {
+      currentBuild.result = 'FAILED'
+      wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
+      throw e
+    }
+  }
+
+  stage('Build for AppStore') {
+    try {
+      withEnv(["PATH+NODE=${NODE}/bin"]) {
         if (production) {
           withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
-            sh 'yarn build:macos'
+            sh 'yarn build:macos:appstore'
           }
 
           echo 'Checking for private Apple APIs ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"', returnStdout: true
           echo privateAPIResult
         } else if (custom) {
-          sh 'yarn build:macos'
+          sh 'yarn build:macos:appstore'
         } else {
           // internal
           sh 'yarn build:macos:internal'
@@ -57,6 +69,35 @@ node('master') {
           echo 'Checking for private Apple APIs ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/WireInternal.app"', returnStdout: true
           echo privateAPIResult
+        }
+      }
+    } catch(e) {
+      currentBuild.result = 'FAILED'
+      wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
+      throw e
+    }
+  }
+
+  stage('Build for outside distribution') {
+    try {
+      withEnv(["PATH+NODE=${NODE}/bin"]) {
+        if (production) {
+          withCredentials([
+            string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE'),
+            string(credentialsId: 'MACOS_NOTARIZE_EMAIL', variable: 'MACOS_NOTARIZE_APPLE_ID'),
+            string(credentialsId: 'MACOS_NOTARIZE_PASSWORD', variable: 'MACOS_NOTARIZE_APPLE_PASSWORD'),
+          ]) {
+            sh 'yarn build:macos:notarized'
+          }
+
+          echo 'Checking notarization ...'
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/build/Wire-darwin-x64/Wire.app"', returnStdout: true
+          echo notarizationResult
+        } else if (custom) {
+          sh 'yarn build:macos:notarized'
+        } else {
+          // internal
+          // TODO
         }
       }
     } catch(e) {
@@ -94,5 +135,5 @@ node('master') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n\n${privateAPIResult.trim()}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n\n${privateAPIResult.trim()}\n\n${notarizationResult.trim()}"
 }

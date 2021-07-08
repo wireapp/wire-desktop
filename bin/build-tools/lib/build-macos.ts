@@ -18,7 +18,8 @@
  */
 
 import {flatAsync as buildPkg} from 'electron-osx-sign';
-import electronPackager from 'electron-packager';
+import electronPackager, {OsxSignOptions} from 'electron-packager';
+const buildDmg = require('electron-installer-dmg');
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -35,15 +36,26 @@ interface MacOSConfigResult {
   packagerConfig: electronPackager.Options;
 }
 
+interface PlistEntries {
+  ElectronTeamID: string;
+  ITSAppUsesNonExemptEncryption?: boolean;
+  ITSEncryptionExportComplianceCode?: string;
+  NSCameraUsageDescription: string;
+  NSContactsUsageDescription: string;
+  NSMicrophoneUsageDescription: string;
+  NSPrincipalClass: string;
+}
+
 export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   signManually?: boolean,
+  shouldNotarize?: boolean,
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
   const plistInfoResolved = path.resolve('resources/macos/Info.plist.json');
-  const plistEntries = await fs.readJson(plistInfoResolved);
+  const plistEntries: PlistEntries = await fs.readJson(plistInfoResolved);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
@@ -52,6 +64,7 @@ export async function buildMacOSConfig(
     category: 'public.app-category.social-networking',
     certNameApplication: null,
     certNameInstaller: null,
+    certNameNotarization: null,
     electronMirror: null,
     notarizeAppleId: null,
     notarizeApplePassword: null,
@@ -63,14 +76,15 @@ export async function buildMacOSConfig(
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     certNameApplication: process.env.MACOS_CERTIFICATE_NAME_APPLICATION || macOSDefaultConfig.certNameApplication,
     certNameInstaller: process.env.MACOS_CERTIFICATE_NAME_INSTALLER || macOSDefaultConfig.certNameInstaller,
+    certNameNotarization: process.env.MACOS_CERTIFICATE_NAME_NOTARIZATION || macOSDefaultConfig.certNameNotarization,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };
 
   if (macOSConfig.appleExportComplianceCode) {
-    plistEntries['ITSAppUsesNonExemptEncryption'] = true;
-    plistEntries['ITSEncryptionExportComplianceCode'] = macOSConfig.appleExportComplianceCode;
+    plistEntries.ITSAppUsesNonExemptEncryption = true;
+    plistEntries.ITSEncryptionExportComplianceCode = macOSConfig.appleExportComplianceCode;
   }
 
   const packagerConfig: electronPackager.Options = {
@@ -89,7 +103,7 @@ export async function buildMacOSConfig(
     name: commonConfig.name,
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas',
+    platform: shouldNotarize ? 'darwin' : 'mas',
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
@@ -103,20 +117,20 @@ export async function buildMacOSConfig(
     };
   }
 
-  if (!signManually) {
+  if (!signManually || shouldNotarize) {
     if (macOSConfig.certNameApplication) {
       packagerConfig.osxSign = {
         entitlements: 'resources/macos/entitlements/parent.plist',
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
-        identity: macOSConfig.certNameApplication,
+        hardenedRuntime: !!shouldNotarize,
+        identity: (shouldNotarize ? macOSConfig.certNameNotarization : macOSConfig.certNameApplication) as string,
       };
     }
 
-    if (macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword) {
-      // once https://github.com/electron/electron-packager/issues/1162 is fixed, any can be removed
-      (packagerConfig as any).osxNotarize = {
-        appleId: macOSConfig.notarizeAppleId,
-        appleIdPassword: macOSConfig.notarizeApplePassword,
+    if (shouldNotarize) {
+      packagerConfig.osxNotarize = {
+        appleId: macOSConfig.notarizeAppleId as string,
+        appleIdPassword: macOSConfig.notarizeApplePassword as string,
       };
     }
   }
@@ -131,6 +145,7 @@ export async function buildMacOSWrapper(
   wireJsonPath: string,
   envFilePath: string,
   signManually?: boolean,
+  shouldNotarize?: boolean,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
@@ -150,27 +165,51 @@ export async function buildMacOSWrapper(
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    const [buildDir] = await electronPackager(packagerConfig);
+    if (!shouldNotarize) {
+      const [buildDir] = await electronPackager(packagerConfig);
 
-    logger.log(`Built app in "${buildDir}".`);
+      logger.log(`Built app for the App Store in "${buildDir}".`);
 
-    if (macOSConfig.certNameInstaller) {
+      if (macOSConfig.certNameInstaller) {
+        const appFile = path.join(buildDir, `${commonConfig.name}.app`);
+        await fs.ensureDir(commonConfig.distDir);
+        const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
+
+        if (signManually) {
+          await manualMacOSSign(appFile, pkgFile, commonConfig, macOSConfig);
+        } else {
+          await buildPkg({
+            app: appFile,
+            identity: macOSConfig.certNameInstaller,
+            pkg: pkgFile,
+            platform: 'mas',
+          });
+        }
+
+        logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
+      }
+    } else {
+      const [buildDir] = await electronPackager(packagerConfig);
+
+      logger.log(`Built app for outside distribution in "${buildDir}".`);
+
       const appFile = path.join(buildDir, `${commonConfig.name}.app`);
       await fs.ensureDir(commonConfig.distDir);
-      const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
 
       if (signManually) {
-        await manualMacOSSign(appFile, pkgFile, commonConfig, macOSConfig);
+        logger.error(`Can't notarize manually.`);
       } else {
-        await buildPkg({
-          app: appFile,
-          identity: macOSConfig.certNameInstaller,
-          pkg: pkgFile,
-          platform: 'mas',
+        await buildDmg({
+          appPath: appFile,
+          debug: logger.state.isEnabled,
+          icon: path.resolve('resources/macos/logo.icns'),
+          name: commonConfig.name,
+          out: path.resolve(commonConfig.distDir),
+          title: commonConfig.name,
         });
       }
 
-      logger.log(`Built installer in "${commonConfig.distDir}".`);
+      logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
     }
   } catch (error) {
     logger.error(error);

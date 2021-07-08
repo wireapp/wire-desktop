@@ -12,10 +12,10 @@ PRIVATE_APPLE_APIS="CAContext\|CALayerHost\|NSAccessibilityRemoteUIElement\|NSNe
 SEARCH_RESULT="$(otool -ov "${FRAMEWORK_FILE}" | grep -o "${PRIVATE_APPLE_APIS}" | sort -u | uniq | sed 's/^/- /g')"
 
 if [ "${SEARCH_RESULT}" != "" ]; then
-  echo -e "**Warning**: The following private Apple APIs were found in \"$(basename "${FRAMEWORK_FILE}")\":"
+  echo -e "⚠️ **Warning**: The following private Apple APIs were found in \"$(basename "${FRAMEWORK_FILE}")\":"
   echo "${SEARCH_RESULT}"
   echo
   echo -e "This build will most likely not get accepted by Apple."
 else
-  echo "No private Apple APIs found."
+  echo "👍 No private Apple APIs found."
 fi
