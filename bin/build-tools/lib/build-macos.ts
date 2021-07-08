@@ -103,7 +103,7 @@ export async function buildMacOSConfig(
     name: commonConfig.name,
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas',
+    platform: shouldNotarize ? 'darwin' : 'mas',
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
@@ -122,14 +122,12 @@ export async function buildMacOSConfig(
       packagerConfig.osxSign = {
         entitlements: 'resources/macos/entitlements/parent.plist',
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
-        identity: macOSConfig.certNameApplication as string,
+        hardenedRuntime: !!shouldNotarize,
+        identity: (shouldNotarize ? macOSConfig.certNameNotarization : macOSConfig.certNameApplication) as string,
       };
     }
 
     if (shouldNotarize) {
-      packagerConfig.platform = 'darwin';
-      (packagerConfig.osxSign as OsxSignOptions).hardenedRuntime = true;
-      (packagerConfig.osxSign as OsxSignOptions).identity = macOSConfig.certNameNotarization as string;
       packagerConfig.osxNotarize = {
         appleId: macOSConfig.notarizeAppleId as string,
         appleIdPassword: macOSConfig.notarizeApplePassword as string,
@@ -168,11 +166,11 @@ export async function buildMacOSWrapper(
 
   try {
     if (!shouldNotarize) {
+      const [buildDir] = await electronPackager(packagerConfig);
+
+      logger.log(`Built app for the App Store in "${buildDir}".`);
+
       if (macOSConfig.certNameInstaller) {
-        const [buildDir] = await electronPackager(packagerConfig);
-
-        logger.log(`Built app for the App Store in "${buildDir}".`);
-
         const appFile = path.join(buildDir, `${commonConfig.name}.app`);
         await fs.ensureDir(commonConfig.distDir);
         const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
@@ -189,29 +187,29 @@ export async function buildMacOSWrapper(
         }
 
         logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
-      } else {
-        const [buildDir] = await electronPackager(packagerConfig);
-
-        logger.log(`Built app for outside distribution in "${buildDir}".`);
-
-        const appFile = path.join(buildDir, `${commonConfig.name}.app`);
-        await fs.ensureDir(commonConfig.distDir);
-
-        if (signManually) {
-          logger.error(`Can't notarize manually.`);
-        } else {
-          await buildDmg({
-            appPath: appFile,
-            debug: logger.state.isEnabled,
-            icon: path.resolve('resources/macos/logo.icns'),
-            name: commonConfig.name,
-            out: path.resolve(commonConfig.distDir),
-            title: commonConfig.name,
-          });
-        }
-
-        logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
       }
+    } else {
+      const [buildDir] = await electronPackager(packagerConfig);
+
+      logger.log(`Built app for outside distribution in "${buildDir}".`);
+
+      const appFile = path.join(buildDir, `${commonConfig.name}.app`);
+      await fs.ensureDir(commonConfig.distDir);
+
+      if (signManually) {
+        logger.error(`Can't notarize manually.`);
+      } else {
+        await buildDmg({
+          appPath: appFile,
+          debug: logger.state.isEnabled,
+          icon: path.resolve('resources/macos/logo.icns'),
+          name: commonConfig.name,
+          out: path.resolve(commonConfig.distDir),
+          title: commonConfig.name,
+        });
+      }
+
+      logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
     }
   } catch (error) {
     logger.error(error);
