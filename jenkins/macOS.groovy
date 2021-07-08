@@ -90,6 +90,10 @@ node('master') {
             sh 'yarn build:macos:notarized'
           }
 
+          sh returnStatus: true, script: 'ls -la wrap/build'
+          sh returnStatus: true, script: 'ls -la wrap/build/Wire-darwin-x64'
+          sh returnStatus: true, script: 'ls -la wrap/dist'
+
           echo 'Checking for private Apple APIs ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-darwin-x64/Wire.app"', returnStdout: true
           echo privateAPIResult
