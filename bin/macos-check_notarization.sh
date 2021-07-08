@@ -17,3 +17,4 @@ elif [[ "${SPCTL_RESULT}" =~ .*"rejected".* ]]; then
   echo "${SPCTL_RESULT}"
 else
   echo -e "ℹ️ No notarized build was created."
+fi
