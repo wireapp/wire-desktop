@@ -129,7 +129,8 @@ export async function buildMacOSConfig(
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
         identity: macOSConfig.certNameApplication as string,
         'provisioning-profile': macOSConfig.appleProvisioningProfilePath as string,
-      };
+        timestamp: 'none',
+      } as any;
     }
 
     if (shouldNotarize) {
