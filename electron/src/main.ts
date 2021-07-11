@@ -64,7 +64,7 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
-import * as ProxyAuth from './auth/ProxyAuth';
+import {checkSystemProxy, generateProxyURL} from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 
@@ -364,24 +364,9 @@ const handleAppEvents = (): void => {
     isQuitting = true;
   });
 
-  app.on('login', async (event, webContents, _responseDetails, authInfo, callback) => {
+  app.on('login', async (_event, webContents, _responseDetails, authInfo, callback) => {
     if (authInfo.isProxy) {
-      event.preventDefault();
       const {host, port} = authInfo;
-
-      const systemProxy = await getProxySettings();
-      const systemProxySettings = systemProxy && (systemProxy.http || systemProxy.https);
-      if (systemProxySettings) {
-        const {
-          credentials: {username, password},
-          protocol,
-        } = systemProxySettings;
-        proxyInfoArg = ProxyAuth.generateProxyURL({host, port}, {password, protocol, username});
-        logger.log('Found system proxy settings, applying settings on the main window...');
-
-        await applyProxySettings(proxyInfoArg, main.webContents);
-        return callback(username, password);
-      }
 
       if (proxyInfoArg) {
         ipcMain.once(
@@ -392,7 +377,7 @@ const handleAppEvents = (): void => {
             const {username, password} = promptData;
             // remove the colon from the protocol to align it with other usages of `generateProxyURL`
             const protocol = proxyInfoArg?.protocol?.replace(':', '');
-            proxyInfoArg = ProxyAuth.generateProxyURL(
+            proxyInfoArg = generateProxyURL(
               {host, port},
               {
                 ...promptData,
@@ -674,6 +659,17 @@ lifecycle
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
+  checkSystemProxy()
+    .then(systemProxyURL => {
+      if (systemProxyURL) {
+        proxyInfoArg = systemProxyURL;
+        logger.log('Found system proxy settings, applying settings on the main window...');
+        return applyProxySettings(proxyInfoArg, main!.webContents);
+      }
+      return undefined;
+    })
+    .catch(error => logger.error(error));
+
   addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
