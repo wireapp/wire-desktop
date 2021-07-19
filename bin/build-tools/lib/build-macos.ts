@@ -124,7 +124,9 @@ export async function buildMacOSConfig(
         'entitlements-inherit': 'resources/macos/entitlements/child.plist',
         hardenedRuntime: !!shouldNotarize,
         identity: (shouldNotarize ? macOSConfig.certNameNotarization : macOSConfig.certNameApplication) as string,
-      };
+        'pre-embed-provisioning-profile': false,
+        timestamp: 'none',
+      } as any;
     }
 
     if (shouldNotarize) {
@@ -165,9 +167,9 @@ export async function buildMacOSWrapper(
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    if (!shouldNotarize) {
-      const [buildDir] = await electronPackager(packagerConfig);
+    const [buildDir] = await electronPackager(packagerConfig);
 
+    if (!shouldNotarize) {
       logger.log(`Built app for the App Store in "${buildDir}".`);
 
       if (macOSConfig.certNameInstaller) {
@@ -189,8 +191,6 @@ export async function buildMacOSWrapper(
         logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
       }
     } else {
-      const [buildDir] = await electronPackager(packagerConfig);
-
       logger.log(`Built app for outside distribution in "${buildDir}".`);
 
       const appFile = path.join(buildDir, `${commonConfig.name}.app`);
