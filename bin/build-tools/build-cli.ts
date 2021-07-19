@@ -24,6 +24,10 @@ import path from 'path';
 import {logEntries} from '../bin-utils';
 import {buildLinuxConfig, buildLinuxWrapper} from './lib/build-linux';
 import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
+import {
+  buildMacOSConfig as buildMacOSConfigBuilder,
+  buildMacOSWrapper as buildMacOSWrapperBuilder,
+} from './lib/build-macos-builder';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
 
@@ -87,6 +91,24 @@ const platform = (commander.args[0] || '').toLowerCase();
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
       return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign, notarized);
+    }
+
+    case 'mac2':
+    case 'macos2': {
+      const {macOSConfig, builderConfig} = await buildMacOSConfigBuilder(wireJson, envFile, manualSign, notarized);
+
+      logEntries(macOSConfig, 'macOSConfig', toolName);
+      logEntries(builderConfig, 'builderConfig', toolName);
+
+      return buildMacOSWrapperBuilder(
+        builderConfig,
+        macOSConfig,
+        packageJson,
+        wireJson,
+        envFile,
+        manualSign,
+        notarized,
+      );
     }
 
     case 'linux': {
