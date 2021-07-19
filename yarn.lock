@@ -1742,10 +1742,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/amplify@1.1.24":
-  version "1.1.24"
-  resolved "https://registry.npmjs.org/@types/amplify/-/amplify-1.1.24.tgz#c2fa510a23912d019813cca0b7e62ef4fa2e74a6"
-  integrity sha512-U+v9uO1xWMdP9KkWTsK94iLRoChdfEpADVul9FTVnA4g3ReMxAg9EGlLHjtYf6BIA6fGo4LYz7guoDMKXJqhpg==
+"@types/amplify@1.1.25":
+  version "1.1.25"
+  resolved "https://registry.npmjs.org/@types/amplify/-/amplify-1.1.25.tgz#37a127bf1100ba406f1bb1d33896a435bbaf86e0"
+  integrity sha512-pq61/Es3C/r8Nh5PopRYD7ZU1HJcpcrqyrPY5ULb30WsgfYjd2sBIumtJtaq8hj+cnFw/vyRGaMQyXE3rfSoLg==
   dependencies:
     "@types/jquery" "*"
 
