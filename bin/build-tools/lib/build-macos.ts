@@ -17,7 +17,7 @@
  *
  */
 
-import {notarize, validateAuthorizationArgs} from 'electron-notarize';
+import {notarize, NotarizeCredentials, NotarizeOptions, validateAuthorizationArgs} from 'electron-notarize';
 import {flatAsync as buildPkg} from 'electron-osx-sign';
 import electronPackager from 'electron-packager';
 const buildDmg = require('electron-installer-dmg');
@@ -179,14 +179,14 @@ export async function buildMacOSWrapper(
           await manualMacOSSign(
             appFile,
             commonConfig,
-            macOSConfig.certNameApplication,
-            macOSConfig.certNameInstaller,
+            macOSConfig.certNameApplication as string,
+            macOSConfig.certNameInstaller as string,
             pkgFile,
           );
         } else {
           await buildPkg({
             app: appFile,
-            identity: macOSConfig.certNameInstaller,
+            identity: macOSConfig.certNameInstaller as string,
             pkg: pkgFile,
             platform: 'mas',
           });
@@ -201,7 +201,7 @@ export async function buildMacOSWrapper(
       await fs.ensureDir(commonConfig.distDir);
 
       if (signManually) {
-        await manualMacOSSign(appFile, commonConfig, macOSConfig.certNameNotarization);
+        await manualMacOSSign(appFile, commonConfig, macOSConfig.certNameNotarization as string);
         await manualNotarize(appFile, macOSConfig);
       }
 
@@ -224,13 +224,16 @@ export async function buildMacOSWrapper(
 }
 
 export async function manualNotarize(appFile: string, macOSConfig: MacOSConfig): Promise<void> {
-  const notarizeOptions = {
+  const notarizeCredentials: NotarizeCredentials = {
+    appleId: macOSConfig.notarizeAppleId as string,
+    appleIdPassword: macOSConfig.notarizeApplePassword as string,
+  };
+  const notarizeOptions: NotarizeOptions = {
     appBundleId: macOSConfig.bundleId,
     appPath: appFile,
-    appleId: macOSConfig.notarizeAppleId,
-    appleIdPassword: macOSConfig.notarizeApplePassword,
+    ...notarizeCredentials,
   };
-  validateAuthorizationArgs(notarizeOptions);
+  validateAuthorizationArgs(notarizeCredentials);
   await notarize(notarizeOptions);
 }
 
