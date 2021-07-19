@@ -1986,10 +1986,10 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-13.13.34.tgz#c9300a1b6560d90817fb2bba650e250116a575f9"
   integrity sha512-g8D1HF2dMDKYSDl5+79izRwRgNPsSynmWMbj50mj7GZ0b7Lv4p8EmZjbo3h0h+6iLr6YmVz9VnF6XVZ3O6V1Ug==
 
-"@types/open-graph@0.2.1":
-  version "0.2.1"
-  resolved "https://registry.npmjs.org/@types/open-graph/-/open-graph-0.2.1.tgz#8df5b19fd989dcfaf585c8424b1045917e365cd1"
-  integrity sha512-aeYCgwuHb1/EzgLTAHD9P1yOo/FzsExcKkyctp2GMNoVJ70ktnHmuWXIBUCeDprnvgD3/AqhVQTaDqtum7G4yg==
+"@types/open-graph@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/@types/open-graph/-/open-graph-0.2.2.tgz#132ccd29b55d0e0ef0e2cf7432970f4baa66d81c"
+  integrity sha512-VVqbL0mpeb7lLW++SaJy4rGI/DlDI9r3MOngV+5vLlcmJD/g4yloueayur/VltG8SawhT8nrhMS3u43jtnCt1w==
   dependencies:
     "@types/cheerio" "*"
 
