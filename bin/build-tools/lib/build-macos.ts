@@ -96,6 +96,7 @@ export async function buildMacOSConfig(
     buildVersion: commonConfig.buildNumber,
     darwinDarkModeSupport: true,
     dir: '.',
+    executableName: 'Wire',
     extendInfo: plistEntries,
     helperBundleId: `${macOSConfig.bundleId}.helper`,
     icon: 'resources/macos/logo.icns',
@@ -125,8 +126,7 @@ export async function buildMacOSConfig(
         hardenedRuntime: !!shouldNotarize,
         identity: (shouldNotarize ? macOSConfig.certNameNotarization : macOSConfig.certNameApplication) as string,
         'pre-embed-provisioning-profile': false,
-        timestamp: 'none',
-      } as any;
+      };
     }
 
     if (shouldNotarize) {
