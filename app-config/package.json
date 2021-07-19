@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "wire-web-config-internal": "https://github.com/wireapp/wire-web-config-default#v0.28.20",
-    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#4d745dd2f1f8bf771c24db29c77dc26f3b12fa64"
+    "wire-web-config-production": "https://github.com/wireapp/wire-web-config-wire#feat/notarization"
   }
 }
