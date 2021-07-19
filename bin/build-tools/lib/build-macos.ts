@@ -122,7 +122,9 @@ export async function buildMacOSConfig(
   if (!signManually) {
     packagerConfig.osxSign = {
       entitlements: 'resources/macos/entitlements/parent.plist',
-      'entitlements-inherit': 'resources/macos/entitlements/child.plist',
+      'entitlements-inherit': shouldNotarize
+        ? 'resources/macos/entitlements/parent.plist'
+        : 'resources/macos/entitlements/child.plist',
       hardenedRuntime: !!shouldNotarize,
       identity: (shouldNotarize ? macOSConfig.certNameNotarization : macOSConfig.certNameApplication) as string,
     };
