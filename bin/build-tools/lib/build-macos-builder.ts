@@ -114,7 +114,6 @@ export async function buildMacOSConfig(
       entitlementsInherit: path.resolve('resources/macos/entitlements/parent.plist'),
       extendInfo: plistEntries,
       forceCodeSigning: true,
-      gatekeeperAssess: true,
       hardenedRuntime: true,
       helperBundleId: `${macOSConfig.bundleId}.helper`,
       icon: path.resolve('resources/macos/logo.icns'),
