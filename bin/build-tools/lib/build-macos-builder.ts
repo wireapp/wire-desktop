@@ -90,7 +90,7 @@ export async function buildMacOSConfig(
         logger.info('Notarizing app ...', context.targets[0]);
         const appName = context.packager.appInfo.productFilename;
         const appFile = path.join(context.appOutDir, `${appName}.app`);
-        await manualNotarize(appFile, macOSConfig);
+        // await manualNotarize(appFile, macOSConfig);
       }
     },
     appId: macOSConfig.bundleId,
