@@ -87,7 +87,7 @@ export async function buildMacOSConfig(
   const builderConfig: electronBuilder.Configuration = {
     afterPack: async (context: electronBuilder.AfterPackContext) => {
       if (context.targets[0].name === 'dmg') {
-        logger.info('Notarizing app ...');
+        logger.info('Notarizing app ...', context.targets[0]);
         const appName = context.packager.appInfo.productFilename;
         const appFile = path.join(context.appOutDir, `${appName}.app`);
         // await manualNotarize(appFile, macOSConfig);

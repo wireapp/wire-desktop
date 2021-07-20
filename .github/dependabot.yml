@@ -18,9 +18,6 @@ updates:
       - dependency-name: electron
         versions:
           - '> 11.x'
-      - dependency-name: electron-builder
-        versions:
-          - '> 20.x'
       # multiple setup problems and 4.x works fine
       - dependency-name: husky
         versions:
