@@ -19,13 +19,12 @@
 
 import {notarize, NotarizeCredentials, NotarizeOptions, validateAuthorizationArgs} from 'electron-notarize';
 import * as electronBuilder from 'electron-builder';
-const buildDmg = require('electron-installer-dmg');
 import fs from 'fs-extra';
 import path from 'path';
 
-import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
+import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
-import {CommonConfig, MacOSConfig} from './Config';
+import {MacOSConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
@@ -49,7 +48,6 @@ interface PlistEntries {
 export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
-  enableNotarization?: boolean,
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -92,7 +90,7 @@ export async function buildMacOSConfig(
         logger.info('Notarizing app ...');
         const appName = context.packager.appInfo.productFilename;
         const appFile = path.join(context.appOutDir, `${appName}.app`);
-        await manualNotarize(appFile, macOSConfig);
+        // await manualNotarize(appFile, macOSConfig);
       }
     },
     appId: macOSConfig.bundleId,
@@ -102,7 +100,7 @@ export async function buildMacOSConfig(
       output: commonConfig.distDir,
     },
     dmg: {
-      icon: 'resources/macos/logo.icns',
+      icon: path.resolve('resources/macos/logo.icns'),
       title: commonConfig.name,
     },
     extraMetadata: {
@@ -113,18 +111,18 @@ export async function buildMacOSConfig(
       asar: commonConfig.enableAsar,
       category: 'public.app-category.social-networking',
       darkModeSupport: true,
-      entitlements: 'resources/macos/entitlements/parent.plist',
-      entitlementsInherit: 'resources/macos/entitlements/parent.plist',
+      entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
+      entitlementsInherit: path.resolve('resources/macos/entitlements/parent.plist'),
       extendInfo: plistEntries,
       forceCodeSigning: true,
       hardenedRuntime: true,
       helperBundleId: `${macOSConfig.bundleId}.helper`,
-      icon: 'resources/macos/logo.icns',
+      icon: path.resolve('resources/macos/logo.icns'),
       identity: macOSConfig.certNameNotarization,
       target: ['dmg', 'mas'],
     },
     mas: {
-      entitlementsInherit: 'resources/macos/entitlements/child.plist',
+      entitlementsInherit: path.resolve('resources/macos/entitlements/child.plist'),
       identity: macOSConfig.certNameInstaller as string,
     },
     productName: commonConfig.name,
@@ -143,11 +141,9 @@ export async function buildMacOSConfig(
 
 export async function buildMacOSWrapper(
   builderConfig: electronBuilder.Configuration,
-  macOSConfig: MacOSConfig,
   packageJsonPath: string,
   wireJsonPath: string,
   envFilePath: string,
-  enableNotarization?: boolean,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
@@ -170,21 +166,10 @@ export async function buildMacOSWrapper(
     const builtPackages = await electronBuilder.build({config: builderConfig});
     console.info({builtPackages});
 
-    if (!enableNotarization) {
-      logger.log(`Built app for the App Store in "${commonConfig.buildDir}".`);
-
-      if (macOSConfig.certNameInstaller) {
-        await fs.ensureDir(commonConfig.distDir);
-
-        logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
-      }
-    } else {
-      logger.log(`Built app for outside distribution in "${commonConfig.buildDir}".`);
-
-      await fs.ensureDir(commonConfig.distDir);
-
-      logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
-    }
+    logger.log(`Built app for the App Store in "${commonConfig.buildDir}".`);
+    logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
+    logger.log(`Built app for outside distribution in "${commonConfig.buildDir}".`);
+    logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
   } catch (error) {
     logger.error(error);
   }
