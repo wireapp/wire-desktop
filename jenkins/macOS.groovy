@@ -66,7 +66,7 @@ node('master') {
           echo privateAPIResult
 
           echo 'Checking notarization ...'
-          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/build/Wire-darwin-x64/Wire.app"', returnStdout: true
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
           echo notarizationResult
         } else if (custom) {
           sh 'yarn build:macos'
