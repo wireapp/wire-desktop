@@ -99,8 +99,6 @@ export async function buildMacOSConfig(
     buildVersion: commonConfig.version,
     copyright: commonConfig.copyright,
     directories: {
-      app: '.',
-      buildResources: 'resources',
       output: commonConfig.distDir,
     },
     dmg: {
