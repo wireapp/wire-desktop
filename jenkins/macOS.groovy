@@ -64,6 +64,10 @@ node('master') {
           echo 'Checking for private Apple APIs ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mas/Wire.app"', returnStdout: true
           echo privateAPIResult
+
+          echo 'Checking notarization ...'
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/build/Wire-darwin-x64/Wire.app"', returnStdout: true
+          echo notarizationResult
         } else if (custom) {
           sh 'yarn build:macos'
         } else {
@@ -95,7 +99,7 @@ node('master') {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
     }
-    archiveArtifacts "wrap/dist/**"
+    archiveArtifacts "wrap/dist/*.dmg,wrap/dist/mas/*.asc,wrap/dist/mas/*.pkg"
     sh returnStatus: true, script: 'rm -rf wrap/'
   }
 
