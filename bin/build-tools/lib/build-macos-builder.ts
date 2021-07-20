@@ -93,6 +93,7 @@ export async function buildMacOSConfig(
       }
     },
     appId: macOSConfig.bundleId,
+    artifactName: '${productName}.${ext}',
     buildVersion: commonConfig.version,
     copyright: commonConfig.copyright,
     directories: {
