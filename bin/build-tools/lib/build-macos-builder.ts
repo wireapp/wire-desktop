@@ -87,7 +87,6 @@ export async function buildMacOSConfig(
   const builderConfig: electronBuilder.Configuration = {
     afterSign: async (context: electronBuilder.AfterPackContext) => {
       if (context.targets[0].name === 'dmg') {
-        logger.info('Notarizing app ...', context.targets[0]);
         const appName = context.packager.appInfo.productFilename;
         const appFile = path.join(context.appOutDir, `${appName}.app`);
         await manualNotarize(appFile, macOSConfig);
@@ -162,12 +161,13 @@ export async function buildMacOSWrapper(
 
   try {
     const builtPackages = await electronBuilder.build({config: builderConfig});
-    console.info({builtPackages});
-
-    logger.log(`Built app for the App Store in "${commonConfig.buildDir}".`);
-    logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
-    logger.log(`Built app for outside distribution in "${commonConfig.buildDir}".`);
-    logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
+    for (const packagePath of builtPackages) {
+      if (packagePath.endsWith('.pkg')) {
+        logger.log(`Built App Store installer in "${path.relative('.', path.dirname(packagePath))}".`);
+      } else if (packagePath.endsWith('.dmg')) {
+        logger.log(`Built app for outside distribution in "${path.relative('.', path.dirname(packagePath))}".`);
+      }
+    }
   } catch (error) {
     logger.error(error);
   }
