@@ -106,7 +106,6 @@ export async function buildMacOSConfig(
     extraMetadata: {
       homepage: commonConfig.websiteUrl,
     },
-    files: [],
     mac: {
       asar: commonConfig.enableAsar,
       category: 'public.app-category.social-networking',
