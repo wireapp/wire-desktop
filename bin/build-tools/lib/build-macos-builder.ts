@@ -94,6 +94,7 @@ export async function buildMacOSConfig(
     },
     appId: macOSConfig.bundleId,
     artifactName: '${productName}.${ext}',
+    asarUnpack: '**/*.node',
     buildVersion: commonConfig.version,
     copyright: commonConfig.copyright,
     directories: {
