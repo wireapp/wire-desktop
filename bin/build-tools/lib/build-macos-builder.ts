@@ -53,8 +53,8 @@ export async function buildMacOSConfig(
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const plistInfoResolved = path.resolve('resources/macos/Info.plist.json');
-  const plistEntries: PlistEntries = await fs.readJson(plistInfoResolved);
+  const plistInfoPath = path.resolve('resources/macos/Info.plist.json');
+  const plistEntries: PlistEntries = await fs.readJson(plistInfoPath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
@@ -89,6 +89,7 @@ export async function buildMacOSConfig(
   const builderConfig: electronBuilder.Configuration = {
     afterPack: async (context: electronBuilder.AfterPackContext) => {
       if (context.targets[0].name === 'dmg') {
+        logger.info('Notarizing app ...');
         const appName = context.packager.appInfo.productFilename;
         const appFile = path.join(context.appOutDir, `${appName}.app`);
         await manualNotarize(appFile, macOSConfig);
@@ -103,7 +104,7 @@ export async function buildMacOSConfig(
       output: commonConfig.distDir,
     },
     dmg: {
-      icon: path.resolve('resources/macos/logo.icns'),
+      icon: 'resources/macos/logo.icns',
       title: commonConfig.name,
     },
     extraMetadata: {
@@ -121,10 +122,11 @@ export async function buildMacOSConfig(
       hardenedRuntime: true,
       helperBundleId: `${macOSConfig.bundleId}.helper`,
       icon: 'resources/macos/logo.icns',
-      identity: macOSConfig.certNameApplication,
+      identity: macOSConfig.certNameNotarization,
       target: ['dmg', 'mas'],
     },
     mas: {
+      entitlementsInherit: 'resources/macos/entitlements/child.plist',
       identity: macOSConfig.certNameInstaller as string,
     },
     productName: commonConfig.name,
@@ -182,9 +184,6 @@ export async function buildMacOSWrapper(
       logger.log(`Built app for outside distribution in "${commonConfig.buildDir}".`);
 
       await fs.ensureDir(commonConfig.distDir);
-
-      // await buildDmg({
-      // });
 
       logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
     }
