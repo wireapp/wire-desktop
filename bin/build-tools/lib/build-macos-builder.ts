@@ -49,8 +49,7 @@ interface PlistEntries {
 export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
-  signManually?: boolean,
-  shouldNotarize?: boolean,
+  enableNotarization?: boolean,
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -88,32 +87,50 @@ export async function buildMacOSConfig(
   }
 
   const builderConfig: electronBuilder.Configuration = {
+    afterPack: async (context: electronBuilder.AfterPackContext) => {
+      console.info('afterPack', JSON.stringify(context.targets));
+      console.info('afterPack', JSON.stringify(context.packager));
+      const appName = context.packager.appInfo.productFilename;
+      const appFile = path.join(context.appOutDir, `${appName}.app`);
+      await manualNotarize(appFile, macOSConfig);
+    },
+    appId: macOSConfig.bundleId,
     buildVersion: commonConfig.version,
     copyright: commonConfig.copyright,
     directories: {
       app: '.',
+      buildResources: 'resources',
       output: commonConfig.distDir,
     },
+    dmg: {
+      icon: path.resolve('resources/macos/logo.icns'),
+      title: commonConfig.name,
+    },
+    extraMetadata: {
+      homepage: commonConfig.websiteUrl,
+    },
+    files: [],
     mac: {
-      appId: macOSConfig.bundleId,
       asar: commonConfig.enableAsar,
-      bundleVersion: commonConfig.version,
       category: 'public.app-category.social-networking',
       darkModeSupport: true,
       entitlements: 'resources/macos/entitlements/parent.plist',
-      entitlementsInherit: shouldNotarize
-        ? 'resources/macos/entitlements/parent.plist'
-        : 'resources/macos/entitlements/child.plist',
+      entitlementsInherit: 'resources/macos/entitlements/parent.plist',
       extendInfo: plistEntries,
       forceCodeSigning: true,
-      hardenedRuntime: !!shouldNotarize,
+      hardenedRuntime: true,
       helperBundleId: `${macOSConfig.bundleId}.helper`,
       icon: 'resources/macos/logo.icns',
-      identity: (shouldNotarize ? macOSConfig.certNameNotarization : macOSConfig.certNameApplication) as string,
-      target: shouldNotarize ? 'dmg' : 'mas',
+      identity: macOSConfig.certNameApplication,
+      target: ['dmg', 'mas'],
+    },
+    mas: {
+      identity: macOSConfig.certNameInstaller as string,
     },
     productName: commonConfig.name,
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
+    publish: null,
+    removePackageScripts: true,
     ...(macOSConfig.electronMirror && {
       electronDownload: {
         mirror: macOSConfig.electronMirror,
@@ -130,8 +147,7 @@ export async function buildMacOSWrapper(
   packageJsonPath: string,
   wireJsonPath: string,
   envFilePath: string,
-  signManually?: boolean,
-  shouldNotarize?: boolean,
+  enableNotarization?: boolean,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
@@ -152,8 +168,9 @@ export async function buildMacOSWrapper(
 
   try {
     const builtPackages = await electronBuilder.build({config: builderConfig});
+    console.info({builtPackages});
 
-    if (!shouldNotarize) {
+    if (!enableNotarization) {
       logger.log(`Built app for the App Store in "${commonConfig.buildDir}".`);
 
       if (macOSConfig.certNameInstaller) {
@@ -164,19 +181,10 @@ export async function buildMacOSWrapper(
     } else {
       logger.log(`Built app for outside distribution in "${commonConfig.buildDir}".`);
 
-      const appFile = path.join(commonConfig.buildDir, `${commonConfig.name}.app`);
       await fs.ensureDir(commonConfig.distDir);
 
-      await manualNotarize(appFile, macOSConfig);
-
-      await buildDmg({
-        appPath: appFile,
-        debug: logger.state.isEnabled,
-        icon: path.resolve('resources/macos/logo.icns'),
-        name: commonConfig.name,
-        out: path.resolve(commonConfig.distDir),
-        title: commonConfig.name,
-      });
+      // await buildDmg({
+      // });
 
       logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
     }

@@ -95,20 +95,12 @@ const platform = (commander.args[0] || '').toLowerCase();
 
     case 'mac2':
     case 'macos2': {
-      const {macOSConfig, builderConfig} = await buildMacOSConfigBuilder(wireJson, envFile, manualSign, notarized);
+      const {macOSConfig, builderConfig} = await buildMacOSConfigBuilder(wireJson, envFile, notarized);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(builderConfig, 'builderConfig', toolName);
 
-      return buildMacOSWrapperBuilder(
-        builderConfig,
-        macOSConfig,
-        packageJson,
-        wireJson,
-        envFile,
-        manualSign,
-        notarized,
-      );
+      return buildMacOSWrapperBuilder(builderConfig, macOSConfig, packageJson, wireJson, envFile, notarized);
     }
 
     case 'linux': {

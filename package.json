@@ -137,7 +137,7 @@
     "build:linux": "yarn build:prepare && ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts linux",
     "build:linux:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:linux\"",
     "build:macos": "yarn build:prepare && yarn build:macos:appstore",
-    "build:macos:appstore": "ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts macos2 -m",
+    "build:macos:appstore": "ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts macos2",
     "build:macos:notarized": "ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts macos -n",
     "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos\"",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
