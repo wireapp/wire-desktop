@@ -49,36 +49,7 @@ node('master') {
     }
   }
 
-  stage('Build for AppStore') {
-    try {
-      withEnv(["PATH+NODE=${NODE}/bin"]) {
-        if (production) {
-          withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
-            sh 'yarn build:macos:appstore'
-          }
-
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"', returnStdout: true
-          echo privateAPIResult
-        } else if (custom) {
-          sh 'yarn build:macos:appstore'
-        } else {
-          // internal
-          sh 'yarn build:macos:internal'
-
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/WireInternal.app"', returnStdout: true
-          echo privateAPIResult
-        }
-      }
-    } catch(e) {
-      currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
-      throw e
-    }
-  }
-
-  stage('Build for outside distribution') {
+  stage('Build') {
     try {
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         if (production) {
@@ -87,17 +58,21 @@ node('master') {
             string(credentialsId: 'MACOS_NOTARIZE_EMAIL', variable: 'MACOS_NOTARIZE_APPLE_ID'),
             string(credentialsId: 'MACOS_NOTARIZE_PASSWORD', variable: 'MACOS_NOTARIZE_APPLE_PASSWORD'),
           ]) {
-            sh 'yarn build:macos:notarized'
+            sh 'yarn build:macos'
           }
 
-          echo 'Checking notarization ...'
-          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/build/Wire-darwin-x64/Wire.app"', returnStdout: true
-          echo notarizationResult
+          echo 'Checking for private Apple APIs ...'
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mas/Wire.app"', returnStdout: true
+          echo privateAPIResult
         } else if (custom) {
-          sh 'yarn build:macos:notarized'
+          sh 'yarn build:macos'
         } else {
           // internal
-          // TODO
+          sh 'yarn build:macos:internal'
+
+          echo 'Checking for private Apple APIs ...'
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/WireInternal.app"', returnStdout: true
+          echo privateAPIResult
         }
       }
     } catch(e) {
