@@ -88,11 +88,11 @@ export async function buildMacOSConfig(
 
   const builderConfig: electronBuilder.Configuration = {
     afterPack: async (context: electronBuilder.AfterPackContext) => {
-      console.info('afterPack', JSON.stringify(context.targets));
-      console.info('afterPack', JSON.stringify(context.packager));
-      const appName = context.packager.appInfo.productFilename;
-      const appFile = path.join(context.appOutDir, `${appName}.app`);
-      await manualNotarize(appFile, macOSConfig);
+      if (context.targets[0].name === 'dmg') {
+        const appName = context.packager.appInfo.productFilename;
+        const appFile = path.join(context.appOutDir, `${appName}.app`);
+        await manualNotarize(appFile, macOSConfig);
+      }
     },
     appId: macOSConfig.bundleId,
     buildVersion: commonConfig.version,
