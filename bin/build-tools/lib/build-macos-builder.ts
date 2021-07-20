@@ -85,7 +85,7 @@ export async function buildMacOSConfig(
   }
 
   const builderConfig: electronBuilder.Configuration = {
-    afterPack: async (context: electronBuilder.AfterPackContext) => {
+    afterSign: async (context: electronBuilder.AfterPackContext) => {
       if (context.targets[0].name === 'dmg') {
         logger.info('Notarizing app ...', context.targets[0]);
         const appName = context.packager.appInfo.productFilename;
@@ -114,7 +114,6 @@ export async function buildMacOSConfig(
       entitlementsInherit: path.resolve('resources/macos/entitlements/parent.plist'),
       extendInfo: plistEntries,
       forceCodeSigning: true,
-      hardenedRuntime: true,
       helperBundleId: `${macOSConfig.bundleId}.helper`,
       icon: path.resolve('resources/macos/logo.icns'),
       identity: macOSConfig.certNameNotarization,
