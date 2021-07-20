@@ -119,7 +119,7 @@ export async function buildMacOSConfig(
       helperBundleId: `${macOSConfig.bundleId}.helper`,
       icon: path.resolve('resources/macos/logo.icns'),
       identity: macOSConfig.certNameNotarization,
-      strictVerify: true,
+      strictVerify: 'all',
       target: ['dmg', 'mas'],
     },
     mas: {
