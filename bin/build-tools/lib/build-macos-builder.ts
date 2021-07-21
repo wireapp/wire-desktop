@@ -111,12 +111,11 @@ export async function buildMacOSConfig(
       extendInfo: plistEntries,
       forceCodeSigning: true,
       gatekeeperAssess: false,
-      hardenedRuntime: true,
+      hardenedRuntime: false,
       icon: path.resolve('resources/macos/logo.icns'),
       identity: macOSConfig.certName,
       strictVerify: 'all',
       target: macOSConfig.enableNotarization ? ['dmg', 'mas'] : 'mas',
-      timestamp: 'none',
     },
     mas: {
       entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
