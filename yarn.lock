@@ -2689,7 +2689,7 @@ app-builder-lib@22.11.8:
 
 "app-builder-lib@https://github.com/ffflorian/electron-builder#app-builder-lib":
   version "22.11.9"
-  resolved "https://github.com/ffflorian/electron-builder#f762a19544fbb5c4ee0990c632213e48f8bf1fe8"
+  resolved "https://github.com/ffflorian/electron-builder#4bca7aa4811de59262cd15afe791f96052ee093c"
   dependencies:
     "7zip-bin" "~5.1.1"
     "@develar/schema-utils" "~2.6.5"
@@ -4288,7 +4288,7 @@ ejs@^3.1.6:
 
 "electron-builder@https://github.com/ffflorian/electron-builder#electron-builder":
   version "22.11.9"
-  resolved "https://github.com/ffflorian/electron-builder#14dd00ce1de413c874f72c38f1e76e891d5314f2"
+  resolved "https://github.com/ffflorian/electron-builder#caf6e6d11720b7aa4e7e2659cf662ce61832aab7"
   dependencies:
     "@types/yargs" "^17.0.1"
     app-builder-lib "https://github.com/ffflorian/electron-builder#app-builder-lib"
