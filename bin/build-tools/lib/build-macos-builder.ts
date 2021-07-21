@@ -56,25 +56,18 @@ export async function buildMacOSConfig(
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
-    appleExportComplianceCode: null,
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
-    certNameApplication: null,
-    certNameInstaller: null,
-    certNameNotarization: null,
-    electronMirror: null,
-    notarizeAppleId: null,
-    notarizeApplePassword: null,
+    enableNotarization: true,
   };
 
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
-    certNameApplication: process.env.MACOS_CERTIFICATE_NAME_APPLICATION || macOSDefaultConfig.certNameApplication,
-    certNameInstaller: process.env.MACOS_CERTIFICATE_NAME_INSTALLER || macOSDefaultConfig.certNameInstaller,
-    certNameNotarization: process.env.MACOS_CERTIFICATE_NAME_NOTARIZATION || macOSDefaultConfig.certNameNotarization,
+    certName: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certName,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
+    enableNotarization: process.env.MACOS_ENABLE_NOTARIZATION === 'true' || macOSDefaultConfig.enableNotarization,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };
@@ -117,15 +110,14 @@ export async function buildMacOSConfig(
       gatekeeperAssess: false,
       hardenedRuntime: true,
       icon: path.resolve('resources/macos/logo.icns'),
-      identity: macOSConfig.certNameNotarization,
+      identity: macOSConfig.certName,
       strictVerify: 'all',
-      target: ['dmg', 'mas'],
+      target: macOSConfig.enableNotarization ? ['dmg', 'mas'] : 'mas',
     },
     mas: {
       entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
       entitlementsInherit: path.resolve('resources/macos/entitlements/child.plist'),
       hardenedRuntime: false,
-      identity: macOSConfig.certNameInstaller as string,
     },
     productName: commonConfig.name,
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],

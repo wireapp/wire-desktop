@@ -52,15 +52,14 @@ export interface LinuxConfig {
 }
 
 export interface MacOSConfig {
-  appleExportComplianceCode: string | null;
+  appleExportComplianceCode?: string;
   bundleId: string;
   category: string;
-  certNameApplication: string | null;
-  certNameInstaller: string | null;
-  certNameNotarization: string | null;
-  electronMirror: string | null;
-  notarizeAppleId: string | null;
-  notarizeApplePassword: string | null;
+  certName?: string;
+  electronMirror?: string;
+  enableNotarization: boolean;
+  notarizeAppleId?: string;
+  notarizeApplePassword?: string;
 }
 
 export interface WindowsConfig {
