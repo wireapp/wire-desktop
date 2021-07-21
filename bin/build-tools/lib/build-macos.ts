@@ -60,7 +60,6 @@ export async function buildMacOSConfig(
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
-    appleExportComplianceCode: null,
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
     certName: 'Wire Swiss GmbH (EDF3JCE8BC)',
