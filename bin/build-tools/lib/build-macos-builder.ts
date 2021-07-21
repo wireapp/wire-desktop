@@ -116,7 +116,8 @@ export async function buildMacOSConfig(
       identity: macOSConfig.certName,
       strictVerify: 'all',
       target: macOSConfig.enableNotarization ? ['dmg', 'mas'] : 'mas',
-    },
+      timestamp: 'none',
+    } as any,
     mas: {
       entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
       entitlementsInherit: path.resolve('resources/macos/entitlements/child.plist'),
