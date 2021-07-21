@@ -22,4 +22,3 @@ Wire*.zip
 electron/img/
 !electron/img/taskbar.overlay.png
 resources
-!resources/macos/entitlements/child.plist
