@@ -55,7 +55,7 @@ export interface MacOSConfig {
   appleExportComplianceCode?: string;
   bundleId: string;
   category: string;
-  certName?: string;
+  certName: string;
   electronMirror?: string;
   enableNotarization: boolean;
   notarizeAppleId?: string;

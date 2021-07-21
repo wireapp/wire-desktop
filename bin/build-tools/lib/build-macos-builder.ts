@@ -58,6 +58,7 @@ export async function buildMacOSConfig(
   const macOSDefaultConfig: MacOSConfig = {
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
+    certName: 'Wire Swiss GmbH (EDF3JCE8BC)',
     enableNotarization: true,
   };
 
@@ -67,7 +68,9 @@ export async function buildMacOSConfig(
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     certName: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certName,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
-    enableNotarization: process.env.MACOS_ENABLE_NOTARIZATION === 'true' || macOSDefaultConfig.enableNotarization,
+    enableNotarization: process.env.MACOS_ENABLE_NOTARIZATION
+      ? process.env.MACOS_ENABLE_NOTARIZATION === 'true'
+      : macOSDefaultConfig.enableNotarization,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };

@@ -63,21 +63,14 @@ export async function buildMacOSConfig(
     appleExportComplianceCode: null,
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
-    certNameApplication: null,
-    certNameInstaller: null,
-    certNameNotarization: null,
-    electronMirror: null,
-    notarizeAppleId: null,
-    notarizeApplePassword: null,
+    certName: 'Wire Swiss GmbH (EDF3JCE8BC)',
+    enableNotarization: false,
   };
 
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
-    certNameApplication: process.env.MACOS_CERTIFICATE_NAME_APPLICATION || macOSDefaultConfig.certNameApplication,
-    certNameInstaller: process.env.MACOS_CERTIFICATE_NAME_INSTALLER || macOSDefaultConfig.certNameInstaller,
-    certNameNotarization: process.env.MACOS_CERTIFICATE_NAME_NOTARIZATION || macOSDefaultConfig.certNameNotarization,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
