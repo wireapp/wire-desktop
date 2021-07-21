@@ -111,7 +111,7 @@ export async function buildMacOSConfig(
       extendInfo: plistEntries,
       forceCodeSigning: true,
       gatekeeperAssess: false,
-      hardenedRuntime: false,
+      hardenedRuntime: true,
       icon: path.resolve('resources/macos/logo.icns'),
       identity: macOSConfig.certName,
       strictVerify: 'all',
