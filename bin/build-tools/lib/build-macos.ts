@@ -120,7 +120,7 @@ export async function buildMacOSConfig(
         : 'resources/macos/entitlements/child.plist',
       'gatekeeper-assess': true,
       hardenedRuntime: !!shouldNotarize,
-      identity: (shouldNotarize ? macOSConfig.certNameNotarization : macOSConfig.certNameApplication) as string,
+      identity: macOSConfig.certName,
       'identity-validation': true,
     };
 
@@ -167,7 +167,7 @@ export async function buildMacOSWrapper(
     if (!shouldNotarize) {
       logger.log(`Built app for the App Store in "${buildDir}".`);
 
-      if (macOSConfig.certNameInstaller) {
+      if (macOSConfig.certName) {
         const appFile = path.join(buildDir, `${commonConfig.name}.app`);
         await fs.ensureDir(commonConfig.distDir);
         const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
@@ -176,14 +176,14 @@ export async function buildMacOSWrapper(
           await manualMacOSSign(
             appFile,
             commonConfig,
-            macOSConfig.certNameApplication as string,
-            macOSConfig.certNameInstaller as string,
+            macOSConfig.certName as string,
+            macOSConfig.certName as string,
             pkgFile,
           );
         } else {
           await buildPkg({
             app: appFile,
-            identity: macOSConfig.certNameInstaller as string,
+            identity: macOSConfig.certName as string,
             pkg: pkgFile,
             platform: 'mas',
           });
@@ -198,7 +198,7 @@ export async function buildMacOSWrapper(
       await fs.ensureDir(commonConfig.distDir);
 
       if (signManually) {
-        await manualMacOSSign(appFile, commonConfig, macOSConfig.certNameNotarization as string);
+        await manualMacOSSign(appFile, commonConfig, macOSConfig.certName as string);
         await manualNotarize(appFile, macOSConfig);
       }
 
