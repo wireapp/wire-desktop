@@ -118,7 +118,7 @@ export async function buildMacOSConfig(
       target: macOSConfig.enableNotarization ? ['dmg', 'mas'] : 'mas',
     },
     mas: {
-      // entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
+      entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
       // entitlementsInherit: path.resolve('resources/macos/entitlements/child.plist'),
       hardenedRuntime: false,
     },
