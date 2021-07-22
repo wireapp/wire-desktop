@@ -119,7 +119,7 @@ export async function buildMacOSConfig(
     },
     mas: {
       // entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
-      entitlementsInherit: path.resolve('resources/macos/entitlements/child.plist'),
+      // entitlementsInherit: path.resolve('resources/macos/entitlements/child.plist'),
       hardenedRuntime: false,
     },
     productName: commonConfig.name,
