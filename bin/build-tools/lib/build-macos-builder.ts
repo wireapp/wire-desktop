@@ -164,6 +164,7 @@ export async function buildMacOSWrapper(
     for (const packagePath of builtPackages) {
       if (packagePath.endsWith('.pkg')) {
         logger.log(`Built App Store installer in "${path.relative('.', path.dirname(packagePath))}".`);
+        await fs.move(packagePath, path.join(commonConfig.distDir, `${commonConfig.name}.pkg`));
       } else if (packagePath.endsWith('.dmg')) {
         logger.log(`Built app for outside distribution in "${path.relative('.', path.dirname(packagePath))}".`);
       }
