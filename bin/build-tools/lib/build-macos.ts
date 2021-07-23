@@ -104,14 +104,7 @@ export async function buildMacOSConfig(
       console.info('afterAllArtifactBuild', context.artifactPaths);
       for (const artifactPath of context.artifactPaths) {
         if (artifactPath.endsWith('.pkg')) {
-          // await signAsync({
-          //   app: artifactPath,
-          //   entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
-          //   identity: '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)',
-          //   platform: 'mas',
-          // });
-
-          // manually sign the .pkg file
+          // manually re-build the .pkg file
           const appFile = artifactPath.replace(/\.pkg$/, '.app');
           const {stderr, stdout} = await execAsync(
             `productbuild --component '${appFile}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${artifactPath}'`,
@@ -126,27 +119,26 @@ export async function buildMacOSConfig(
       }
       return [];
     },
-    afterPack: async (context: electronBuilder.AfterPackContext) => {
-      // if (context.targets[0].name === 'mas') {
-      //   const appName = context.packager.appInfo.productFilename;
-      //   const appFile = path.join(context.appOutDir, `${appName}.app`);
-      //   const pkgFile = path.join(context.appOutDir, `${appName}.pkg`);
-      //   const {stderr, stdout} = await execAsync(
-      //     `productbuild --component '${appFile}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${pkgFile}'`,
-      //   );
-      //   if (stderr) {
-      //     console.error(stderr);
-      //   }
-      //   if (stdout) {
-      //     console.info(stdout);
-      //   }
-      // }
-    },
     afterSign: async (context: electronBuilder.AfterPackContext) => {
       if (context.targets[0].name === 'dmg') {
+        // manually notarize the .app file
         const appName = context.packager.appInfo.productFilename;
         const appFile = path.join(context.appOutDir, `${appName}.app`);
         await manualNotarize(appFile, macOSConfig);
+        // } else if (context.targets[0].name === 'mas') {
+        //   // manually sign the .pkg file
+        //   const appName = context.packager.appInfo.productFilename;
+        //   const appFile = path.join(context.appOutDir, `${appName}.app`);
+        //   const pkgFile = path.join(context.appOutDir, `${appName}.pkg`);
+        //   const {stderr, stdout} = await execAsync(
+        //     `productbuild --component '${appFile}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${pkgFile}'`,
+        //   );
+        //   if (stderr) {
+        //     console.error(stderr);
+        //   }
+        //   if (stdout) {
+        //     console.info(stdout);
+        //   }
       }
     },
     appId: macOSConfig.bundleId,

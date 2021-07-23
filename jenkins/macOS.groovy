@@ -7,6 +7,7 @@ node('master') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
   def NODE = tool name: 'node-v14.15.3', type: 'nodejs'
+  def GIT_COMMIT = ''
   def privateAPIResult = ''
   def notarizationResult = ''
   def commitMessage = ''
@@ -24,6 +25,7 @@ node('master') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     sh returnStatus: true, script: 'rm -rf node_modules/ *.sig *.pkg'
     commitMessage = sh script: 'git log -1 --pretty=%B', returnStdout: true
+    GIT_COMMIT = sh script: 'git rev-parse HEAD', returnStdout: true
   }
 
   def wireJson = readFile('electron/wire.json')
