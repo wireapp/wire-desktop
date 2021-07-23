@@ -105,13 +105,7 @@ node('master') {
   }
 
   stage('Archive build artifacts') {
-    if (!production && !custom) {
-      // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/dist/WireInternal.app\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
-      archiveArtifacts "wrap/dist/*.zip"
-    } else {
-      archiveArtifacts "wrap/dist/*.dmg,wrap/dist/*.asc,wrap/dist/*.pkg"
-    }
+    archiveArtifacts "wrap/dist/*.dmg,wrap/dist/*.asc,wrap/dist/*.pkg"
     sh returnStatus: true, script: 'rm -rf wrap/'
   }
 
