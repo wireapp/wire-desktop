@@ -79,7 +79,13 @@ node('master') {
           targets = 'DMG, MAS'
         } else {
           // internal
-          sh 'yarn build:macos:internal'
+          withCredentials([
+            string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE'),
+            string(credentialsId: 'MACOS_NOTARIZE_EMAIL', variable: 'MACOS_NOTARIZE_APPLE_ID'),
+            string(credentialsId: 'MACOS_NOTARIZE_PASSWORD', variable: 'MACOS_NOTARIZE_APPLE_PASSWORD'),
+          ]) {
+            sh 'yarn build:macos:internal'
+          }
           targets = 'DMG'
 
           if (params.MACOS_ENABLE_NOTARIZATION) {
