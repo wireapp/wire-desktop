@@ -9,6 +9,7 @@ node('master') {
   def NODE = tool name: 'node-v14.15.3', type: 'nodejs'
   def privateAPIResult = ''
   def notarizationResult = ''
+  def commitMessage = ''
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -22,6 +23,7 @@ node('master') {
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
     sh returnStatus: true, script: 'rm -rf node_modules/ *.sig *.pkg'
+    commitMessage = sh script: 'git log -1 --pretty=%B', returnStdout: true
   }
 
   def wireJson = readFile('electron/wire.json')
@@ -125,5 +127,5 @@ node('master') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n\n${privateAPIResult.trim()}\n\n${notarizationResult.trim()}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n\n- Commit: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n\n${privateAPIResult.trim()}\n\n${notarizationResult.trim()}"
 }

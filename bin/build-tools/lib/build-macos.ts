@@ -138,6 +138,7 @@ export async function buildMacOSConfig(
     mas: {
       entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
       hardenedRuntime: false,
+      identity: macOSConfig.certName,
     },
     productName: commonConfig.name,
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
