@@ -67,7 +67,7 @@ export async function buildMacOSConfig(
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
-    buildInternal: process.env.APP_ENV === 'internal' || macOSDefaultConfig.buildInternal,
+    buildInternal: process.env.APP_ENV ? process.env.APP_ENV === 'internal' : macOSDefaultConfig.buildInternal,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     certName: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certName,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
