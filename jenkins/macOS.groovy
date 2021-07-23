@@ -8,6 +8,7 @@ node('master') {
   def custom = params.CUSTOM
   def NODE = tool name: 'node-v14.15.3', type: 'nodejs'
   def privateAPIResult = ''
+  def notarizationResult = ''
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -88,11 +89,9 @@ node('master') {
           }
           targets = 'DMG'
 
-          if (params.MACOS_ENABLE_NOTARIZATION) {
-            echo 'Checking notarization in DMG build ...'
-            notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/WireInternal.app"', returnStdout: true
-            echo notarizationResult
-          }
+          echo 'Checking notarization in DMG build ...'
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/WireInternal.app"', returnStdout: true
+          echo notarizationResult
         }
       }
     } catch(e) {
