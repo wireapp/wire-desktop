@@ -57,6 +57,7 @@ export async function buildMacOSConfig(
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
+    ascProvider: 'EDF3JCE8BC',
     buildInternal: false,
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
@@ -67,6 +68,7 @@ export async function buildMacOSConfig(
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
+    ascProvider: process.env.MACOS_NOTARIZATION_ASC_PROVIDER || macOSDefaultConfig.ascProvider,
     buildInternal: process.env.APP_ENV ? process.env.APP_ENV === 'internal' : macOSDefaultConfig.buildInternal,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     certName: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certName,
@@ -199,6 +201,7 @@ export async function manualNotarize(appFile: string, macOSConfig: MacOSConfig):
   const notarizeOptions: NotarizeOptions = {
     appBundleId: macOSConfig.bundleId,
     appPath: appFile,
+    ascProvider: macOSConfig.ascProvider,
     ...notarizeCredentials,
   };
   validateAuthorizationArgs(notarizeCredentials);
