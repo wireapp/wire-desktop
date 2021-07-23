@@ -28,6 +28,7 @@ node('master') {
   def (major, minor) = parseJson(wireJson).version.tokenize('.')
   def version = "${major}.${minor}.${env.BUILD_NUMBER}"
   def electronVersion = parseJson(packageJson).devDependencies.electron
+  def targets = ''
   currentBuild.displayName = version
 
   stage('Prepare build') {
@@ -69,12 +70,17 @@ node('master') {
             echo 'Checking notarization in DMG build ...'
             notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
             echo notarizationResult
+            targets = 'DMG, MAS'
+          } else {
+            targets = 'MAS'
           }
         } else if (custom) {
           sh 'yarn build:macos'
+          targets = 'DMG, MAS'
         } else {
           // internal
           sh 'yarn build:macos:internal'
+          targets = 'DMG'
 
           if (params.MACOS_ENABLE_NOTARIZATION) {
             echo 'Checking notarization in DMG build ...'
@@ -102,8 +108,10 @@ node('master') {
     if (!production && !custom) {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/dist/WireInternal.app\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
+      archiveArtifacts "wrap/dist/*.zip"
+    } else {
+      archiveArtifacts "wrap/dist/*.dmg,wrap/dist/*.asc,wrap/dist/*.pkg"
     }
-    archiveArtifacts "wrap/dist/*.dmg,wrap/dist/*.asc,wrap/dist/*.pkg,wrap/dist/*.zip"
     sh returnStatus: true, script: 'rm -rf wrap/'
   }
 
