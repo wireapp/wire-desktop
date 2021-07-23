@@ -62,11 +62,7 @@ node('master') {
           }
 
           echo 'Checking for private Apple APIs in MAS build ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mas/Wire.app" "MAS"', returnStdout: true
-          echo privateAPIResult
-
-          echo 'Checking for private Apple APIs in DMG build ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mac/Wire.app" "DMG"', returnStdout: true
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mas/Wire.app"', returnStdout: true
           echo privateAPIResult
 
           if (params.MACOS_ENABLE_NOTARIZATION) {
@@ -79,10 +75,6 @@ node('master') {
         } else {
           // internal
           sh 'yarn build:macos:internal'
-
-          echo 'Checking for private Apple APIs in DMG build ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mac/WireInternal.app" "DMG"', returnStdout: true
-          echo privateAPIResult
 
           if (params.MACOS_ENABLE_NOTARIZATION) {
             echo 'Checking notarization in DMG build ...'

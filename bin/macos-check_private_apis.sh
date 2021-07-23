@@ -6,7 +6,6 @@ if ! command -v otool > /dev/null; then
 fi
 
 WIRE_APP_FILE="${1}"
-BUILD_TYPE="${2}"
 FRAMEWORK_FILE="${WIRE_APP_FILE}/Contents/Frameworks/Electron Framework.framework/Electron Framework"
 PRIVATE_APPLE_APIS="CAContext\|CALayerHost\|NSAccessibilityRemoteUIElement\|NSNextStepFrame\|NSThemeFrame\|NSURLFileTypeMappings"
 
@@ -18,5 +17,5 @@ if [ "${SEARCH_RESULT}" != "" ]; then
   echo
   echo -e "This build will most likely not get accepted by Apple."
 else
-  echo "👍 No private Apple APIs found in ${BUILD_TYPE} build."
+  echo "👍 No private Apple APIs found in MAS build."
 fi
