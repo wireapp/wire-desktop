@@ -127,5 +127,5 @@ node('master') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n- Commit: [${commitMessage}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n\n${privateAPIResult.trim()}\n\n${notarizationResult.trim()}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n- Commit: [${commitMessage.trim()}](https://github.com/wireapp/wire-desktop/commits/${GIT_COMMIT})\n- Targets: ${targets}\n\n${privateAPIResult.trim()}\n\n${notarizationResult.trim()}"
 }
