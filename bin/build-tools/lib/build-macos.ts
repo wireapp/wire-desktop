@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2019 Wire Swiss GmbH
+ * Copyright (C) 2021 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,23 +18,21 @@
  */
 
 import {notarize, NotarizeCredentials, NotarizeOptions, validateAuthorizationArgs} from 'electron-notarize';
-import {flatAsync as buildPkg} from 'electron-osx-sign';
-import electronPackager from 'electron-packager';
-const buildDmg = require('electron-installer-dmg');
+import * as electronBuilder from 'electron-builder';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
+import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
-import {CommonConfig, MacOSConfig} from './Config';
+import {MacOSConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 const mainDir = path.resolve(__dirname, '../../../');
 
 interface MacOSConfigResult {
+  builderConfig: electronBuilder.Configuration;
   macOSConfig: MacOSConfig;
-  packagerConfig: electronPackager.Options;
 }
 
 interface PlistEntries {
@@ -50,27 +48,29 @@ interface PlistEntries {
 export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
-  signManually?: boolean,
-  shouldNotarize?: boolean,
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const plistInfoResolved = path.resolve('resources/macos/Info.plist.json');
-  const plistEntries: PlistEntries = await fs.readJson(plistInfoResolved);
+  const plistInfoPath = path.resolve('resources/macos/Info.plist.json');
+  const plistEntries: PlistEntries = await fs.readJson(plistInfoPath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
     certName: 'Wire Swiss GmbH (EDF3JCE8BC)',
-    enableNotarization: false,
+    enableNotarization: true,
   };
 
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
+    certName: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certName,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
+    enableNotarization: process.env.MACOS_ENABLE_NOTARIZATION
+      ? process.env.MACOS_ENABLE_NOTARIZATION === 'true'
+      : macOSDefaultConfig.enableNotarization,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };
@@ -80,68 +80,65 @@ export async function buildMacOSConfig(
     plistEntries.ITSEncryptionExportComplianceCode = macOSConfig.appleExportComplianceCode;
   }
 
-  const packagerConfig: electronPackager.Options = {
-    appBundleId: macOSConfig.bundleId,
-    appCategoryType: 'public.app-category.social-networking',
-    appCopyright: commonConfig.copyright,
-    appVersion: commonConfig.version,
-    asar: commonConfig.enableAsar,
-    buildVersion: commonConfig.buildNumber,
-    darwinDarkModeSupport: true,
-    dir: '.',
-    executableName: 'Wire',
-    extendInfo: plistEntries,
-    helperBundleId: `${macOSConfig.bundleId}.helper`,
-    icon: 'resources/macos/logo.icns',
-    ignore: /electron\/renderer\/src/,
-    name: commonConfig.name,
-    out: commonConfig.buildDir,
-    overwrite: true,
-    platform: shouldNotarize ? 'darwin' : 'mas',
+  const builderConfig: electronBuilder.Configuration = {
+    afterSign: async (context: electronBuilder.AfterPackContext) => {
+      if (context.targets[0].name === 'dmg') {
+        const appName = context.packager.appInfo.productFilename;
+        const appFile = path.join(context.appOutDir, `${appName}.app`);
+        await manualNotarize(appFile, macOSConfig);
+      }
+    },
+    appId: macOSConfig.bundleId,
+    artifactName: '${productName}.${ext}',
+    buildVersion: commonConfig.version,
+    copyright: commonConfig.copyright,
+    directories: {
+      output: commonConfig.distDir,
+    },
+    dmg: {
+      icon: path.resolve('resources/macos/logo.icns'),
+      title: commonConfig.name,
+    },
+    extraMetadata: {
+      homepage: commonConfig.websiteUrl,
+    },
+    mac: {
+      asar: commonConfig.enableAsar,
+      category: 'public.app-category.social-networking',
+      darkModeSupport: true,
+      entitlements: path.resolve('resources/macos/entitlements/parent-notarization.plist'),
+      extendInfo: plistEntries,
+      forceCodeSigning: true,
+      gatekeeperAssess: false,
+      hardenedRuntime: true,
+      icon: path.resolve('resources/macos/logo.icns'),
+      identity: macOSConfig.certName,
+      strictVerify: 'all',
+      target: macOSConfig.enableNotarization ? ['dmg', 'mas'] : 'mas',
+    },
+    mas: {
+      entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
+      hardenedRuntime: false,
+    },
+    productName: commonConfig.name,
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
-    prune: true,
-    quiet: false,
-  };
-
-  if (macOSConfig.electronMirror) {
-    packagerConfig.download = {
-      mirrorOptions: {
+    publish: null,
+    removePackageScripts: true,
+    ...(macOSConfig.electronMirror && {
+      electronDownload: {
         mirror: macOSConfig.electronMirror,
       },
-    };
-  }
+    }),
+  };
 
-  if (!signManually) {
-    packagerConfig.osxSign = {
-      entitlements: 'resources/macos/entitlements/parent.plist',
-      'entitlements-inherit': shouldNotarize
-        ? 'resources/macos/entitlements/parent.plist'
-        : 'resources/macos/entitlements/child.plist',
-      'gatekeeper-assess': true,
-      hardenedRuntime: !!shouldNotarize,
-      identity: macOSConfig.certName,
-      'identity-validation': true,
-    };
-
-    if (shouldNotarize) {
-      packagerConfig.osxNotarize = {
-        appleId: macOSConfig.notarizeAppleId as string,
-        appleIdPassword: macOSConfig.notarizeApplePassword as string,
-      };
-    }
-  }
-
-  return {macOSConfig, packagerConfig};
+  return {builderConfig, macOSConfig};
 }
 
 export async function buildMacOSWrapper(
-  packagerConfig: electronPackager.Options,
-  macOSConfig: MacOSConfig,
+  builderConfig: electronBuilder.Configuration,
   packageJsonPath: string,
   wireJsonPath: string,
   envFilePath: string,
-  signManually?: boolean,
-  shouldNotarize?: boolean,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
@@ -161,56 +158,14 @@ export async function buildMacOSWrapper(
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    const [buildDir] = await electronPackager(packagerConfig);
-
-    if (!shouldNotarize) {
-      logger.log(`Built app for the App Store in "${buildDir}".`);
-
-      if (macOSConfig.certName) {
-        const appFile = path.join(buildDir, `${commonConfig.name}.app`);
-        await fs.ensureDir(commonConfig.distDir);
-        const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
-
-        if (signManually) {
-          await manualMacOSSign(
-            appFile,
-            commonConfig,
-            macOSConfig.certName as string,
-            macOSConfig.certName as string,
-            pkgFile,
-          );
-        } else {
-          await buildPkg({
-            app: appFile,
-            identity: macOSConfig.certName as string,
-            pkg: pkgFile,
-            platform: 'mas',
-          });
-        }
-
-        logger.log(`Built App Store installer in "${commonConfig.distDir}".`);
+    const builtPackages = await electronBuilder.build({config: builderConfig});
+    for (const packagePath of builtPackages) {
+      if (packagePath.endsWith('.pkg')) {
+        logger.log(`Built App Store installer in "${path.relative('.', path.dirname(packagePath))}".`);
+        await fs.move(packagePath, path.join(commonConfig.distDir, `${commonConfig.name}.pkg`));
+      } else if (packagePath.endsWith('.dmg')) {
+        logger.log(`Built app for outside distribution in "${path.relative('.', path.dirname(packagePath))}".`);
       }
-    } else {
-      logger.log(`Built app for outside distribution in "${buildDir}".`);
-
-      const appFile = path.join(buildDir, `${commonConfig.name}.app`);
-      await fs.ensureDir(commonConfig.distDir);
-
-      if (signManually) {
-        await manualMacOSSign(appFile, commonConfig, macOSConfig.certName as string);
-        await manualNotarize(appFile, macOSConfig);
-      }
-
-      await buildDmg({
-        appPath: appFile,
-        debug: logger.state.isEnabled,
-        icon: path.resolve('resources/macos/logo.icns'),
-        name: commonConfig.name,
-        out: path.resolve(commonConfig.distDir),
-        title: commonConfig.name,
-      });
-
-      logger.log(`Built outside distribution archive in "${commonConfig.distDir}".`);
     }
   } catch (error) {
     logger.error(error);
@@ -231,66 +186,4 @@ export async function manualNotarize(appFile: string, macOSConfig: MacOSConfig):
   };
   validateAuthorizationArgs(notarizeCredentials);
   await notarize(notarizeOptions);
-}
-
-export async function manualMacOSSign(
-  appFile: string,
-  commonConfig: CommonConfig,
-  certNameApplication: string,
-  certNameInstaller?: string,
-  pkgFile?: string,
-): Promise<void> {
-  const inheritEntitlements = 'resources/macos/entitlements/child.plist';
-  const mainEntitlements = 'resources/macos/entitlements/parent.plist';
-
-  const filesToSign = [
-    'Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
-    'Frameworks/Electron Framework.framework/Versions/A/Libraries/libEGL.dylib',
-    'Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
-    'Frameworks/Electron Framework.framework/Versions/A/Libraries/libGLESv2.dylib',
-    'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libEGL.dylib',
-    'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libGLESv2.dylib',
-    'Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib',
-    'Frameworks/Electron Framework.framework/',
-    `Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,
-    `Frameworks/${commonConfig.name} Helper.app/`,
-    `Frameworks/${commonConfig.name} Helper (GPU).app/Contents/MacOS/${commonConfig.name} Helper (GPU)`,
-    `Frameworks/${commonConfig.name} Helper (GPU).app/`,
-    `Frameworks/${commonConfig.name} Helper (Plugin).app/Contents/MacOS/${commonConfig.name} Helper (Plugin)`,
-    `Frameworks/${commonConfig.name} Helper (Plugin).app/`,
-    `Frameworks/${commonConfig.name} Helper (Renderer).app/Contents/MacOS/${commonConfig.name} Helper (Renderer)`,
-    `Frameworks/${commonConfig.name} Helper (Renderer).app/`,
-    `Library/LoginItems/${commonConfig.name} Login Helper.app/Contents/MacOS/${commonConfig.name} Login Helper`,
-    `Library/LoginItems/${commonConfig.name} Login Helper.app/`,
-  ];
-
-  for (const fileName of filesToSign) {
-    const fullPath = `${appFile}/Contents/${fileName}`;
-    const {stderr, stdout} = await execAsync(
-      `codesign --deep -fs '${certNameApplication}' --entitlements '${inheritEntitlements}' '${fullPath}'`,
-    );
-    logger.log(stdout);
-    logger.warn(stderr);
-  }
-
-  const appExecutable = `${appFile}/Contents/MacOS/${commonConfig.name}`;
-  const {stderr: stderrSignExecutable, stdout: stdoutSignExecutable} = await execAsync(
-    `codesign -fs '${certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
-  );
-  logger.log(stdoutSignExecutable);
-  logger.warn(stderrSignExecutable);
-
-  const {stderr: stderrSignApp, stdout: stdoutSignApp} = await execAsync(
-    `codesign -fs '${certNameApplication}' --entitlements '${mainEntitlements}' '${appFile}'`,
-  );
-  logger.log(stdoutSignApp);
-  logger.warn(stderrSignApp);
-
-  if (certNameInstaller) {
-    const {stderr: stderrPkg, stdout: stdoutPkg} = await execAsync(
-      `productbuild --component '${appFile}' /Applications --sign '${certNameInstaller}' '${pkgFile}'`,
-    );
-    logger.log(stdoutPkg);
-    logger.warn(stderrPkg);
-  }
 }

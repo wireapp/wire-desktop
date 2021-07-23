@@ -24,10 +24,6 @@ import path from 'path';
 import {logEntries} from '../bin-utils';
 import {buildLinuxConfig, buildLinuxWrapper} from './lib/build-linux';
 import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
-import {
-  buildMacOSConfig as buildMacOSConfigBuilder,
-  buildMacOSWrapper as buildMacOSWrapperBuilder,
-} from './lib/build-macos-builder';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
 
@@ -85,22 +81,12 @@ const platform = (commander.args[0] || '').toLowerCase();
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign, notarized);
-
-      logEntries(macOSConfig, 'macOSConfig', toolName);
-      logEntries(packagerConfig, 'packagerConfig', toolName);
-
-      return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign, notarized);
-    }
-
-    case 'mac2':
-    case 'macos2': {
-      const {macOSConfig, builderConfig} = await buildMacOSConfigBuilder(wireJson, envFile);
+      const {macOSConfig, builderConfig} = await buildMacOSConfig(wireJson, envFile);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(builderConfig, 'builderConfig', toolName);
 
-      return buildMacOSWrapperBuilder(builderConfig, packageJson, wireJson, envFile);
+      return buildMacOSWrapper(builderConfig, packageJson, wireJson, envFile);
     }
 
     case 'linux': {
