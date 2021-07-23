@@ -61,11 +61,15 @@ node('master') {
             sh 'yarn build:macos'
           }
 
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mas/Wire.app"', returnStdout: true
+          echo 'Checking for private Apple APIs in MAS build ...'
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mas/Wire.app" "MAS"', returnStdout: true
           echo privateAPIResult
 
-          echo 'Checking notarization ...'
+          echo 'Checking for private Apple APIs in DMG build ...'
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mac/Wire.app" "DMG"', returnStdout: true
+          echo privateAPIResult
+
+          echo 'Checking notarization in DMG build ...'
           notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
           echo notarizationResult
         } else if (custom) {
@@ -74,9 +78,13 @@ node('master') {
           // internal
           sh 'yarn build:macos:internal'
 
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/WireInternal.app"', returnStdout: true
+          echo 'Checking for private Apple APIs in DMG build ...'
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/WireInternal.app" "DMG"', returnStdout: true
           echo privateAPIResult
+
+          echo 'Checking notarization in DMG build ...'
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
+          echo notarizationResult
         }
       }
     } catch(e) {
@@ -97,9 +105,9 @@ node('master') {
   stage('Archive build artifacts') {
     if (!production && !custom) {
       // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
+      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/dist/WireInternal.app\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
     }
-    archiveArtifacts "wrap/dist/*.dmg,wrap/dist/*.asc,wrap/dist/*.pkg"
+    archiveArtifacts "wrap/dist/*.dmg,wrap/dist/*.asc,wrap/dist/*.pkg,wrap/dist/*.zip"
     sh returnStatus: true, script: 'rm -rf wrap/'
   }
 

@@ -5,7 +5,7 @@ if ! command -v spctl > /dev/null; then
   exit
 fi
 
-WIRE_APP_FILE="${1:-"wrap/dist/mac/Wire.app"}"
+WIRE_APP_FILE="${1}"
 
 SPCTL_RESULT="$(spctl -a -vvv -t install "${WIRE_APP_FILE}" 2>&1)"
 
