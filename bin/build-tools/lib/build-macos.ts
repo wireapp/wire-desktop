@@ -102,24 +102,45 @@ export async function buildMacOSConfig(
   const builderConfig: electronBuilder.Configuration = {
     afterAllArtifactBuild: async (context: electronBuilder.BuildResult) => {
       console.info('afterAllArtifactBuild', context.artifactPaths);
-      // for (const artifactPath of context.artifactPaths) {
-      //   if (artifactPath.endsWith('.pkg')) {
-      //     await signAsync({
-      //       app: artifactPath,
-      //       entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
-      //       identity: '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)',
-      //       platform: 'mas',
-      //     });
+      for (const artifactPath of context.artifactPaths) {
+        if (artifactPath.endsWith('.pkg')) {
+          // await signAsync({
+          //   app: artifactPath,
+          //   entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
+          //   identity: '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)',
+          //   platform: 'mas',
+          // });
 
-      //     const {stderr: stderrPkg, stdout: stdoutPkg} = await execAsync(
-      //       `productbuild --component '${artifactPath}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${pkgFile}'`,
-      //     );
-      //   }
-      // }
+          // manually sign the .pkg file
+          const appFile = artifactPath.replace(/\.pkg$/, '.app');
+          const {stderr, stdout} = await execAsync(
+            `productbuild --component '${appFile}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${artifactPath}'`,
+          );
+          if (stderr) {
+            console.error(stderr);
+          }
+          if (stdout) {
+            console.info(stdout);
+          }
+        }
+      }
       return [];
     },
     afterPack: async (context: electronBuilder.AfterPackContext) => {
-      console.info('afterPack', context.targets);
+      // if (context.targets[0].name === 'mas') {
+      //   const appName = context.packager.appInfo.productFilename;
+      //   const appFile = path.join(context.appOutDir, `${appName}.app`);
+      //   const pkgFile = path.join(context.appOutDir, `${appName}.pkg`);
+      //   const {stderr, stdout} = await execAsync(
+      //     `productbuild --component '${appFile}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${pkgFile}'`,
+      //   );
+      //   if (stderr) {
+      //     console.error(stderr);
+      //   }
+      //   if (stdout) {
+      //     console.info(stdout);
+      //   }
+      // }
     },
     afterSign: async (context: electronBuilder.AfterPackContext) => {
       if (context.targets[0].name === 'dmg') {
@@ -159,7 +180,7 @@ export async function buildMacOSConfig(
     mas: {
       entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
       hardenedRuntime: false,
-      identity: macOSConfig.certName,
+      identity: null,
     },
     productName: commonConfig.name,
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
