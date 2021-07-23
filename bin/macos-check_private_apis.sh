@@ -15,7 +15,7 @@ if [ "${SEARCH_RESULT}" != "" ]; then
   echo -e "⚠️ **Warning**: The following private Apple APIs were found in \"$(basename "${FRAMEWORK_FILE}")\":"
   echo "${SEARCH_RESULT}"
   echo
-  echo -e "This build will most likely not get accepted by Apple."
+  echo -e "This MAS build will most likely not get accepted by Apple."
 else
   echo "👍 No private Apple APIs found in MAS build."
 fi
