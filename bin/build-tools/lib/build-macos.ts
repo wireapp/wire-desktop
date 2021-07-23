@@ -21,11 +21,11 @@ import {notarize, NotarizeCredentials, NotarizeOptions, validateAuthorizationArg
 import * as electronBuilder from 'electron-builder';
 import fs from 'fs-extra';
 import path from 'path';
+import {signAsync} from 'electron-osx-sign';
 
-import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
+import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {MacOSConfig} from './Config';
-import {MacOsTargetName} from 'electron-builder';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
@@ -85,8 +85,8 @@ export async function buildMacOSConfig(
     plistEntries.ITSEncryptionExportComplianceCode = macOSConfig.appleExportComplianceCode;
   }
 
-  function buildTargets(): MacOsTargetName[] {
-    const targets: MacOsTargetName[] = [];
+  function buildTargets(): electronBuilder.MacOsTargetName[] {
+    const targets: electronBuilder.MacOsTargetName[] = [];
 
     if (macOSConfig.buildInternal || macOSConfig.enableNotarization) {
       targets.push('dmg');
@@ -100,6 +100,27 @@ export async function buildMacOSConfig(
   }
 
   const builderConfig: electronBuilder.Configuration = {
+    afterAllArtifactBuild: async (context: electronBuilder.BuildResult) => {
+      console.info('afterAllArtifactBuild', context.artifactPaths);
+      // for (const artifactPath of context.artifactPaths) {
+      //   if (artifactPath.endsWith('.pkg')) {
+      //     await signAsync({
+      //       app: artifactPath,
+      //       entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
+      //       identity: '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)',
+      //       platform: 'mas',
+      //     });
+
+      //     const {stderr: stderrPkg, stdout: stdoutPkg} = await execAsync(
+      //       `productbuild --component '${artifactPath}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${pkgFile}'`,
+      //     );
+      //   }
+      // }
+      return [];
+    },
+    afterPack: async (context: electronBuilder.AfterPackContext) => {
+      console.info('afterPack', context.targets);
+    },
     afterSign: async (context: electronBuilder.AfterPackContext) => {
       if (context.targets[0].name === 'dmg') {
         const appName = context.packager.appInfo.productFilename;
