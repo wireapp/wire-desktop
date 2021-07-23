@@ -53,6 +53,7 @@ export interface LinuxConfig {
 
 export interface MacOSConfig {
   appleExportComplianceCode?: string;
+  buildInternal: boolean;
   bundleId: string;
   category: string;
   certName: string;

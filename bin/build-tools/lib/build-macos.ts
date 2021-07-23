@@ -25,6 +25,7 @@ import path from 'path';
 import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {MacOSConfig} from './Config';
+import {MacOsTargetName} from 'electron-builder';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
@@ -56,6 +57,7 @@ export async function buildMacOSConfig(
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
+    buildInternal: false,
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
     certName: 'Wire Swiss GmbH (EDF3JCE8BC)',
@@ -65,6 +67,7 @@ export async function buildMacOSConfig(
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
+    buildInternal: process.env.APP_ENV === 'internal' || macOSDefaultConfig.buildInternal,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     certName: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certName,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
@@ -78,6 +81,20 @@ export async function buildMacOSConfig(
   if (macOSConfig.appleExportComplianceCode) {
     plistEntries.ITSAppUsesNonExemptEncryption = true;
     plistEntries.ITSEncryptionExportComplianceCode = macOSConfig.appleExportComplianceCode;
+  }
+
+  function buildTargets(): MacOsTargetName[] {
+    const targets: MacOsTargetName[] = [];
+
+    if (macOSConfig.buildInternal || macOSConfig.enableNotarization) {
+      targets.push('dmg');
+    }
+
+    if (!macOSConfig.buildInternal) {
+      targets.push('mas');
+    }
+
+    return targets;
   }
 
   const builderConfig: electronBuilder.Configuration = {
@@ -114,7 +131,7 @@ export async function buildMacOSConfig(
       icon: path.resolve('resources/macos/logo.icns'),
       identity: macOSConfig.certName,
       strictVerify: 'all',
-      target: macOSConfig.enableNotarization ? ['dmg', 'mas'] : 'mas',
+      target: buildTargets(),
     },
     mas: {
       entitlements: path.resolve('resources/macos/entitlements/parent.plist'),

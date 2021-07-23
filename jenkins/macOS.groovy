@@ -69,9 +69,11 @@ node('master') {
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mac/Wire.app" "DMG"', returnStdout: true
           echo privateAPIResult
 
-          echo 'Checking notarization in DMG build ...'
-          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
-          echo notarizationResult
+          if (params.MACOS_ENABLE_NOTARIZATION) {
+            echo 'Checking notarization in DMG build ...'
+            notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
+            echo notarizationResult
+          }
         } else if (custom) {
           sh 'yarn build:macos'
         } else {
@@ -82,9 +84,11 @@ node('master') {
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mac/WireInternal.app" "DMG"', returnStdout: true
           echo privateAPIResult
 
-          echo 'Checking notarization in DMG build ...'
-          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/WireInternal.app"', returnStdout: true
-          echo notarizationResult
+          if (params.MACOS_ENABLE_NOTARIZATION) {
+            echo 'Checking notarization in DMG build ...'
+            notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/WireInternal.app"', returnStdout: true
+            echo notarizationResult
+          }
         }
       }
     } catch(e) {
