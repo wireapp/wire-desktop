@@ -33,7 +33,7 @@ node('master') {
   def (major, minor) = parseJson(wireJson).version.tokenize('.')
   def version = "${major}.${minor}.${env.BUILD_NUMBER}"
   def electronVersion = parseJson(packageJson).devDependencies.electron
-  def targets = ''
+  def targets = []
   currentBuild.displayName = version
 
   stage('Prepare build') {
@@ -55,33 +55,45 @@ node('master') {
     }
   }
 
-  stage('Build') {
+  stage('Build for App Store') {
     try {
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         if (production) {
-          withCredentials([
-            string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE'),
-            string(credentialsId: 'MACOS_NOTARIZE_EMAIL', variable: 'MACOS_NOTARIZE_APPLE_ID'),
-            string(credentialsId: 'MACOS_NOTARIZE_PASSWORD', variable: 'MACOS_NOTARIZE_APPLE_PASSWORD'),
-          ]) {
-            sh 'yarn build:macos'
+          withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
+            sh 'yarn build:macos:mas'
           }
 
           echo 'Checking for private Apple APIs in MAS build ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/dist/mas/Wire.app"', returnStdout: true
           echo privateAPIResult
-
-          if (params.MACOS_ENABLE_NOTARIZATION) {
-            echo 'Checking notarization in DMG build ...'
-            notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
-            echo notarizationResult
-            targets = 'DMG, MAS'
-          } else {
-            targets = 'MAS'
-          }
+          targets.add('MAS')
         } else if (custom) {
           sh 'yarn build:macos'
           targets = 'DMG, MAS'
+        }
+      }
+    } catch(e) {
+      currentBuild.result = 'FAILED'
+      wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
+      throw e
+    }
+  }
+
+  stage('Build for outside distribution') {
+    try {
+      withEnv(["PATH+NODE=${NODE}/bin"]) {
+        if (production || custom) {
+          withCredentials([
+            string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE'),
+            string(credentialsId: 'MACOS_NOTARIZE_EMAIL', variable: 'MACOS_NOTARIZE_APPLE_ID'),
+            string(credentialsId: 'MACOS_NOTARIZE_PASSWORD', variable: 'MACOS_NOTARIZE_APPLE_PASSWORD'),
+          ]) {
+            sh 'yarn build:macos:dmg -n'
+          }
+
+          echo 'Checking notarization in DMG build ...'
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
+          echo notarizationResult
         } else {
           // internal
           withCredentials([
@@ -91,12 +103,13 @@ node('master') {
           ]) {
             sh 'yarn build:macos:internal'
           }
-          targets = 'DMG'
 
           echo 'Checking notarization in DMG build ...'
           notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/WireInternal.app"', returnStdout: true
           echo notarizationResult
         }
+
+        targets.add('DMG')
       }
     } catch(e) {
       currentBuild.result = 'FAILED'
@@ -129,5 +142,5 @@ node('master') {
     }
   }
 
-  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n- Commit: [${commitMessage.trim()}](https://github.com/wireapp/wire-desktop/commits/${GIT_COMMIT})\n- Targets: ${targets}\n\n${privateAPIResult.trim()}\n\n${notarizationResult.trim()}"
+  wireSend secret: "${jenkinsbot_secret}", message: "🍏 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})\n- Commit: [${commitMessage.trim()}](https://github.com/wireapp/wire-desktop/commits/${GIT_COMMIT})\n- Targets: ${targets.join(',')}\n\n${privateAPIResult.trim()}\n\n${notarizationResult.trim()}"
 }

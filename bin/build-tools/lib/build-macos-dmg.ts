@@ -49,6 +49,7 @@ interface PlistEntries {
 export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
+  enableNotarization?: boolean,
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -61,8 +62,7 @@ export async function buildMacOSConfig(
     buildInternal: false,
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
-    certName: 'Wire Swiss GmbH (EDF3JCE8BC)',
-    enableNotarization: true,
+    certNameNotarization: 'Wire Swiss GmbH (EDF3JCE8BC)',
   };
 
   const macOSConfig: MacOSConfig = {
@@ -71,11 +71,9 @@ export async function buildMacOSConfig(
     ascProvider: process.env.MACOS_NOTARIZATION_ASC_PROVIDER || macOSDefaultConfig.ascProvider,
     buildInternal: process.env.APP_ENV ? process.env.APP_ENV === 'internal' : macOSDefaultConfig.buildInternal,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
-    certName: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certName,
+    certNameNotarization: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certNameNotarization,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
-    enableNotarization: process.env.MACOS_ENABLE_NOTARIZATION
-      ? process.env.MACOS_ENABLE_NOTARIZATION === 'true'
-      : macOSDefaultConfig.enableNotarization,
+    enableNotarization,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };
@@ -85,60 +83,13 @@ export async function buildMacOSConfig(
     plistEntries.ITSEncryptionExportComplianceCode = macOSConfig.appleExportComplianceCode;
   }
 
-  function buildTargets(): electronBuilder.MacOsTargetName[] {
-    const targets: electronBuilder.MacOsTargetName[] = [];
-
-    if (macOSConfig.buildInternal || macOSConfig.enableNotarization) {
-      targets.push('dmg');
-    }
-
-    if (!macOSConfig.buildInternal) {
-      targets.push('mas');
-    }
-
-    return targets;
-  }
-
   const builderConfig: electronBuilder.Configuration = {
-    afterAllArtifactBuild: async (context: electronBuilder.BuildResult) => {
-      console.info('afterAllArtifactBuild', context.artifactPaths);
-      for (const artifactPath of context.artifactPaths) {
-        if (artifactPath.endsWith('.pkg')) {
-          // manually re-build the .pkg file
-          const appFile = artifactPath.replace(/\.pkg$/, '.app');
-          const {stderr, stdout} = await execAsync(
-            `productbuild --component '${appFile}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${artifactPath}'`,
-          );
-          if (stderr) {
-            console.error(stderr);
-          }
-          if (stdout) {
-            console.info(stdout);
-          }
-        }
-      }
-      return [];
-    },
     afterSign: async (context: electronBuilder.AfterPackContext) => {
-      if (context.targets[0].name === 'dmg') {
+      if (context.targets[0].name === 'dmg' && macOSConfig.enableNotarization) {
         // manually notarize the .app file
         const appName = context.packager.appInfo.productFilename;
         const appFile = path.join(context.appOutDir, `${appName}.app`);
         await manualNotarize(appFile, macOSConfig);
-        // } else if (context.targets[0].name === 'mas') {
-        //   // manually sign the .pkg file
-        //   const appName = context.packager.appInfo.productFilename;
-        //   const appFile = path.join(context.appOutDir, `${appName}.app`);
-        //   const pkgFile = path.join(context.appOutDir, `${appName}.pkg`);
-        //   const {stderr, stdout} = await execAsync(
-        //     `productbuild --component '${appFile}' /Applications --sign '3rd Party Mac Developer Installer: Wire Swiss GmbH (EDF3JCE8BC)' '${pkgFile}'`,
-        //   );
-        //   if (stderr) {
-        //     console.error(stderr);
-        //   }
-        //   if (stdout) {
-        //     console.info(stdout);
-        //   }
       }
     },
     appId: macOSConfig.bundleId,
@@ -165,14 +116,9 @@ export async function buildMacOSConfig(
       gatekeeperAssess: false,
       hardenedRuntime: true,
       icon: path.resolve('resources/macos/logo.icns'),
-      identity: macOSConfig.certName,
+      identity: macOSConfig.certNameNotarization,
       strictVerify: 'all',
-      target: buildTargets(),
-    },
-    mas: {
-      entitlements: path.resolve('resources/macos/entitlements/parent.plist'),
-      hardenedRuntime: false,
-      identity: null,
+      target: 'dmg',
     },
     productName: commonConfig.name,
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
@@ -214,10 +160,7 @@ export async function buildMacOSWrapper(
   try {
     const builtPackages = await electronBuilder.build({config: builderConfig});
     for (const packagePath of builtPackages) {
-      if (packagePath.endsWith('.pkg')) {
-        logger.log(`Built App Store installer in "${path.relative('.', path.dirname(packagePath))}".`);
-        await fs.move(packagePath, path.join(commonConfig.distDir, `${commonConfig.name}.pkg`));
-      } else if (packagePath.endsWith('.dmg')) {
+      if (packagePath.endsWith('.dmg')) {
         logger.log(`Built app for outside distribution in "${path.relative('.', path.dirname(packagePath))}".`);
       }
     }

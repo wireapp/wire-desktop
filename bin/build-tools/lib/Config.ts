@@ -54,12 +54,14 @@ export interface LinuxConfig {
 export interface MacOSConfig {
   appleExportComplianceCode?: string;
   ascProvider?: string;
-  buildInternal: boolean;
+  buildInternal?: boolean;
   bundleId: string;
   category: string;
-  certName: string;
+  certNameApplication?: string;
+  certNameInstaller?: string;
+  certNameNotarization?: string;
   electronMirror?: string;
-  enableNotarization: boolean;
+  enableNotarization?: boolean;
   notarizeAppleId?: string;
   notarizeApplePassword?: string;
 }

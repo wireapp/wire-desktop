@@ -23,11 +23,19 @@ import path from 'path';
 
 import {logEntries} from '../bin-utils';
 import {buildLinuxConfig, buildLinuxWrapper} from './lib/build-linux';
-import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
+import {
+  buildMacOSConfig as buildMacOSConfigMas,
+  buildMacOSWrapper as buildMacOSWrapperMas,
+} from './lib/build-macos-mas';
+import {
+  buildMacOSConfig as buildMacOSConfigDmg,
+  buildMacOSWrapper as buildMacOSWrapperDmg,
+} from './lib/build-macos-dmg';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
 
 interface CommanderData {
+  dmg?: boolean;
   envFile: string;
   manualSign?: boolean;
   notarized?: boolean;
@@ -44,12 +52,13 @@ commander
   .description(
     'Build the Wire wrapper for your platform.\n\nValid values for platform are: "windows", "windows-installer", "macos", "linux".',
   )
+  .option('-d, --dmg', 'Create a DMG build (macOS only)')
   .option('-e, --env-file <path>', 'Specify the env file path', path.join(appSource, '.env.defaults'))
   .option(
     '-m, --manual-sign',
     `Manually sign and package the app (i.e. don't use electron-packager, macOS and Windows only)`,
   )
-  .option('-n, --notarized', 'Create a notarized build (macOS only)')
+  .option('-n, --notarized', 'Create a notarized build (macOS only, implies DMG build)')
   .option('-p, --package-json <path>', 'Specify the package.json path', path.join(appSource, 'package.json'))
   .option('-w, --wire-json <path>', 'Specify the wire.json path', path.join(appSource, 'electron/wire.json'))
   .arguments('<platform>')
@@ -58,7 +67,7 @@ commander
 const platform = (commander.args[0] || '').toLowerCase();
 
 (async () => {
-  const {envFile, manualSign, notarized, wireJson, packageJson} = commander.opts() as CommanderData;
+  const {dmg, envFile, manualSign, notarized, wireJson, packageJson} = commander.opts() as CommanderData;
 
   switch (platform) {
     case 'win':
@@ -81,12 +90,20 @@ const platform = (commander.args[0] || '').toLowerCase();
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, builderConfig} = await buildMacOSConfig(wireJson, envFile);
+      if (notarized || dmg) {
+        const {macOSConfig, builderConfig} = await buildMacOSConfigDmg(wireJson, envFile, notarized);
+
+        logEntries(macOSConfig, 'macOSConfig', toolName);
+        logEntries(builderConfig, 'builderConfig', toolName);
+
+        return buildMacOSWrapperDmg(builderConfig, packageJson, wireJson, envFile);
+      }
+      const {macOSConfig, packagerConfig} = await buildMacOSConfigMas(wireJson, envFile, manualSign);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
-      logEntries(builderConfig, 'builderConfig', toolName);
+      logEntries(packagerConfig, 'packagerConfig', toolName);
 
-      return buildMacOSWrapper(builderConfig, packageJson, wireJson, envFile);
+      return buildMacOSWrapperMas(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
     }
 
     case 'linux': {
