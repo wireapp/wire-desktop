@@ -81,7 +81,7 @@ const platform = (commander.args[0] || '').toLowerCase();
     }
 
     case 'windows-installer': {
-      const {wInstallerOptions} = await buildWindowsInstallerConfig(wireJson, envFile, manualSign);
+      const {wInstallerOptions} = await buildWindowsInstallerConfig(wireJson, envFile, !!manualSign);
 
       logEntries(wInstallerOptions, 'wInstallerOptions', toolName);
 
@@ -91,19 +91,19 @@ const platform = (commander.args[0] || '').toLowerCase();
     case 'mac':
     case 'macos': {
       if (notarized || dmg) {
-        const {macOSConfig, builderConfig} = await buildMacOSConfigDmg(wireJson, envFile, notarized);
+        const {macOSConfig, builderConfig} = await buildMacOSConfigDmg(wireJson, envFile, !!notarized);
 
         logEntries(macOSConfig, 'macOSConfig', toolName);
         logEntries(builderConfig, 'builderConfig', toolName);
 
         return buildMacOSWrapperDmg(builderConfig, packageJson, wireJson, envFile);
       }
-      const {macOSConfig, packagerConfig} = await buildMacOSConfigMas(wireJson, envFile, manualSign);
+      const {macOSConfig, packagerConfig} = await buildMacOSConfigMas(wireJson, envFile, !!manualSign);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
-      return buildMacOSWrapperMas(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
+      return buildMacOSWrapperMas(packagerConfig, macOSConfig, packageJson, wireJson, envFile, !!manualSign);
     }
 
     case 'linux': {
