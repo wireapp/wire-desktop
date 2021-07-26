@@ -139,7 +139,7 @@
     "build:macos": "yarn build:macos:mas && yarn build:macos:dmg",
     "build:macos:mas": "ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts macos",
     "build:macos:dmg": "ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts macos -d",
-    "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos:dmg\"",
+    "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos:dmg -n\"",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
     "build:ts": "yarn clear:ts && tsc",
     "build:ts:bin": "tsc -P tsconfig.bin.json --noEmit",
