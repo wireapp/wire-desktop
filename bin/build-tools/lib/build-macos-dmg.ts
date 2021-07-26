@@ -109,7 +109,7 @@ export async function buildMacOSConfig(
       asar: commonConfig.enableAsar,
       category: 'public.app-category.social-networking',
       darkModeSupport: true,
-      entitlements: path.resolve('resources/macos/entitlements/parent-notarization.plist'),
+      // entitlements: path.resolve('resources/macos/entitlements/parent-notarization.plist'),
       extendInfo: plistEntries,
       forceCodeSigning: true,
       gatekeeperAssess: false,
