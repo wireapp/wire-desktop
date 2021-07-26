@@ -56,7 +56,7 @@ if ! ls *.pkg > /dev/null 2>&1; then
 fi
 
 _log "Creating checksums..."
-shasum -a 256 *.pkg > sha256sum.txt
+shasum -a 256 *.pkg *.dmg > sha256sum.txt
 
 _log "Preparing gpg configuration..."
 mkdir -p "${GPG_TEMP_KEYS_DIR}"

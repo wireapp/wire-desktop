@@ -21,9 +21,8 @@ import {notarize, NotarizeCredentials, NotarizeOptions, validateAuthorizationArg
 import * as electronBuilder from 'electron-builder';
 import fs from 'fs-extra';
 import path from 'path';
-import {signAsync} from 'electron-osx-sign';
 
-import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
+import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig} from './commonConfig';
 import {MacOSConfig} from './Config';
 
