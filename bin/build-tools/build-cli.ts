@@ -96,7 +96,7 @@ const platform = (commander.args[0] || '').toLowerCase();
         logEntries(macOSConfig, 'macOSConfig', toolName);
         logEntries(packagerConfig, 'packagerConfig', toolName);
 
-        return buildMacOSWrapperDmg(packagerConfig, macOSConfig, packageJson, wireJson, envFile);
+        return buildMacOSWrapperDmg(packagerConfig, macOSConfig, packageJson, wireJson, envFile, !!notarized);
       }
       const {macOSConfig, packagerConfig} = await buildMacOSConfigMas(wireJson, envFile, !!manualSign);
 
