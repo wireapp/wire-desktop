@@ -19,7 +19,7 @@
 import * as assert from 'assert';
 import * as path from 'path';
 
-import {buildMacOSConfig} from './build-macos';
+import {buildMacOSConfig} from './build-macos-mas';
 import {generateUUID} from '../../bin-utils';
 
 const wireJsonPath = path.join(__dirname, '../../../electron/wire.json');
@@ -29,24 +29,28 @@ describe('build-macos', () => {
   describe('buildMacOSConfig', () => {
     it('honors environment variables', async () => {
       const bundleId = generateUUID();
-      const certName = generateUUID();
+      const certNameApplication = generateUUID();
+      const certNameInstaller = generateUUID();
       const notarizeAppleId = generateUUID();
       const notarizeApplePassword = generateUUID();
 
       process.env.MACOS_BUNDLE_ID = bundleId;
-      process.env.MACOS_CERTIFICATE_NAME = certName;
+      process.env.MACOS_CERTIFICATE_NAME_APPLICATION = certNameApplication;
+      process.env.MACOS_CERTIFICATE_NAME_INSTALLER = certNameInstaller;
       process.env.MACOS_NOTARIZE_APPLE_ID = notarizeAppleId;
       process.env.MACOS_NOTARIZE_APPLE_PASSWORD = notarizeApplePassword;
 
       const {macOSConfig} = await buildMacOSConfig(wireJsonPath, envFilePath);
 
       assert.strictEqual(macOSConfig.bundleId, bundleId);
-      assert.strictEqual(macOSConfig.certName, certName);
+      assert.strictEqual(macOSConfig.certNameApplication, certNameApplication);
+      assert.strictEqual(macOSConfig.certNameInstaller, certNameInstaller);
       assert.strictEqual(macOSConfig.notarizeAppleId, notarizeAppleId);
       assert.strictEqual(macOSConfig.notarizeApplePassword, notarizeApplePassword);
 
       delete process.env.MACOS_BUNDLE_ID;
-      delete process.env.MACOS_CERTIFICATE_NAME;
+      delete process.env.MACOS_CERTIFICATE_NAME_APPLICATION;
+      delete process.env.MACOS_CERTIFICATE_NAME_INSTALLER;
       delete process.env.MACOS_NOTARIZE_APPLE_ID;
       delete process.env.MACOS_NOTARIZE_APPLE_PASSWORD;
     });

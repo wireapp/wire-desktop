@@ -71,7 +71,7 @@ export async function buildMacOSConfig(
     ascProvider: process.env.MACOS_NOTARIZATION_ASC_PROVIDER || macOSDefaultConfig.ascProvider,
     buildInternal: process.env.APP_ENV ? process.env.APP_ENV === 'internal' : macOSDefaultConfig.buildInternal,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
-    certNameNotarization: process.env.MACOS_CERTIFICATE_NAME || macOSDefaultConfig.certNameNotarization,
+    certNameNotarization: process.env.MACOS_CERTIFICATE_NAME_NOTARIZATION || macOSDefaultConfig.certNameNotarization,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
     enableNotarization,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,

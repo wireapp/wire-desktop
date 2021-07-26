@@ -58,8 +58,6 @@ export async function buildMacOSConfig(
     certNameApplication: process.env.MACOS_CERTIFICATE_NAME_APPLICATION || macOSDefaultConfig.certNameApplication,
     certNameInstaller: process.env.MACOS_CERTIFICATE_NAME_INSTALLER || macOSDefaultConfig.certNameInstaller,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
-    notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
-    notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };
 
   if (macOSConfig.appleExportComplianceCode) {
@@ -100,17 +98,9 @@ export async function buildMacOSConfig(
   if (!signManually) {
     if (macOSConfig.certNameApplication) {
       packagerConfig.osxSign = {
-        entitlements: 'resources/macos/entitlements/parent.plist',
-        'entitlements-inherit': 'resources/macos/entitlements/child.plist',
+        entitlements: 'resources/macos/entitlements/parent-mas.plist',
+        'entitlements-inherit': 'resources/macos/entitlements/child-mas.plist',
         identity: macOSConfig.certNameApplication,
-      };
-    }
-
-    if (macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword) {
-      // once https://github.com/electron/electron-packager/issues/1162 is fixed, any can be removed
-      (packagerConfig as any).osxNotarize = {
-        appleId: macOSConfig.notarizeAppleId,
-        appleIdPassword: macOSConfig.notarizeApplePassword,
       };
     }
   }
@@ -179,8 +169,8 @@ export async function manualMacOSSign(
   commonConfig: CommonConfig,
   macOSConfig: MacOSConfig,
 ): Promise<void> {
-  const inheritEntitlements = 'resources/macos/entitlements/child.plist';
-  const mainEntitlements = 'resources/macos/entitlements/parent.plist';
+  const inheritEntitlements = 'resources/macos/entitlements/child-mas.plist';
+  const mainEntitlements = 'resources/macos/entitlements/parent-mas.plist';
 
   if (macOSConfig.certNameApplication) {
     const filesToSign = [
