@@ -30,7 +30,7 @@ import {
 import {
   buildMacOSConfig as buildMacOSConfigDmg,
   buildMacOSWrapper as buildMacOSWrapperDmg,
-} from './lib/build-macos-dmg';
+} from './lib/build-macos-dmg2';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
 
@@ -91,12 +91,12 @@ const platform = (commander.args[0] || '').toLowerCase();
     case 'mac':
     case 'macos': {
       if (notarized || dmg) {
-        const {macOSConfig, builderConfig} = await buildMacOSConfigDmg(wireJson, envFile, !!notarized);
+        const {macOSConfig, packagerConfig} = await buildMacOSConfigDmg(wireJson, envFile, !!notarized);
 
         logEntries(macOSConfig, 'macOSConfig', toolName);
-        logEntries(builderConfig, 'builderConfig', toolName);
+        logEntries(packagerConfig, 'packagerConfig', toolName);
 
-        return buildMacOSWrapperDmg(builderConfig, packageJson, wireJson, envFile);
+        return buildMacOSWrapperDmg(packagerConfig, macOSConfig, packageJson, wireJson, envFile);
       }
       const {macOSConfig, packagerConfig} = await buildMacOSConfigMas(wireJson, envFile, !!manualSign);
 
