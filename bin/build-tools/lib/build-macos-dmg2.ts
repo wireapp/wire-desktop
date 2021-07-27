@@ -188,7 +188,7 @@ export async function manualMacOSSign(
   for (const fileName of filesToSign) {
     const fullPath = `${appFile}/Contents/${fileName}`;
     const {stderr, stdout} = await execAsync(
-      `codesign --deep -fs '${macOSConfig.certNameNotarization}' --timestamp --entitlements '${inheritEntitlements}' '${fullPath}'`,
+      `codesign --deep -fs '${macOSConfig.certNameNotarization}' --options runtime --timestamp --entitlements '${inheritEntitlements}' '${fullPath}'`,
     );
     logger.log(stdout);
     logger.warn(stderr);
@@ -197,13 +197,13 @@ export async function manualMacOSSign(
   if (macOSConfig.certNameInstaller) {
     const appExecutable = `${appFile}/Contents/MacOS/${commonConfig.name}`;
     const {stderr: stderrSignExecutable, stdout: stdoutSignExecutable} = await execAsync(
-      `codesign -fs '${macOSConfig.certNameNotarization}' --timestamp --entitlements '${inheritEntitlements}' '${appExecutable}'`,
+      `codesign -fs '${macOSConfig.certNameNotarization}' --options runtime --timestamp --entitlements '${inheritEntitlements}' '${appExecutable}'`,
     );
     logger.log(stdoutSignExecutable);
     logger.warn(stderrSignExecutable);
 
     const {stderr: stderrSignApp, stdout: stdoutSignApp} = await execAsync(
-      `codesign -fs '${macOSConfig.certNameNotarization}' --timestamp --entitlements '${mainEntitlements}' '${appFile}'`,
+      `codesign -fs '${macOSConfig.certNameNotarization}' --options runtime --timestamp --entitlements '${mainEntitlements}' '${appFile}'`,
     );
     logger.log(stdoutSignApp);
     logger.warn(stderrSignApp);
