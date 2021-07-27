@@ -132,12 +132,15 @@ export async function buildMacOSWrapper(
       const appFile = path.join(buildDir, `${commonConfig.name}.app`);
       await fs.ensureDir(commonConfig.distDir);
 
+      logger.info('Signing app ...');
       await manualMacOSSign(appFile, commonConfig, macOSConfig);
 
       if (enableNotarization) {
+        logger.info('Notarizing app ...');
         await manualNotarize(appFile, macOSConfig);
       }
 
+      logger.info('Creating DMG ...');
       await createDMG({
         appPath: appFile,
         output: path.join(commonConfig.distDir, `${commonConfig.name}.dmg`),
