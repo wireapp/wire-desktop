@@ -92,7 +92,7 @@ node('master') {
           }
 
           echo 'Checking notarization in DMG build ...'
-          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/Wire.app"', returnStdout: true
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/Wire.app"', returnStdout: true
           echo notarizationResult
         } else {
           // internal
@@ -105,7 +105,7 @@ node('master') {
           }
 
           echo 'Checking notarization in DMG build ...'
-          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/mac/WireInternal.app"', returnStdout: true
+          notarizationResult = sh script: 'bin/macos-check_notarization.sh "wrap/dist/WireInternal.app"', returnStdout: true
           echo notarizationResult
         }
 
