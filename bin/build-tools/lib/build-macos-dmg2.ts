@@ -150,6 +150,7 @@ export async function buildMacOSWrapper(
     logger.info('Creating DMG ...');
     await createDMG({
       appPath: appFile,
+      name: commonConfig.name,
       output: path.join(commonConfig.distDir, `${commonConfig.name}.dmg`),
       title: commonConfig.name,
     });
