@@ -83,6 +83,18 @@ export async function buildMacOSConfig(
     icon: 'resources/macos/logo.icns',
     ignore: /electron\/renderer\/src/,
     name: commonConfig.name,
+    osxNotarize: {
+      appleId: macOSConfig.notarizeAppleId,
+      appleIdPassword: macOSConfig.notarizeApplePassword,
+      ascProvider: macOSConfig.ascProvider,
+    },
+    osxSign: {
+      entitlements: 'resources/macos/entitlements/parent-notarization.plist',
+      'entitlements-inherit': 'resources/macos/entitlements/parent-notarization.plist',
+      hardenedRuntime: true,
+      identity: macOSConfig.certNameNotarization,
+      type: 'distribution',
+    },
     out: commonConfig.buildDir,
     overwrite: true,
     platform: 'darwin',
@@ -134,14 +146,6 @@ export async function buildMacOSWrapper(
 
     const appFile = path.join(buildDir, `${commonConfig.name}.app`);
     await fs.ensureDir(commonConfig.distDir);
-
-    logger.info('Signing app ...');
-    await manualMacOSSign(appFile, commonConfig, macOSConfig);
-
-    if (enableNotarization) {
-      logger.info('Notarizing app ...');
-      await manualNotarize(appFile, macOSConfig);
-    }
 
     logger.info('Creating DMG ...');
     await createDMG({
