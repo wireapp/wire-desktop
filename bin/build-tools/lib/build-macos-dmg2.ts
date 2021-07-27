@@ -58,6 +58,8 @@ export async function buildMacOSConfig(
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
+    notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
+    notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
   };
 
   if (macOSConfig.appleExportComplianceCode) {
@@ -179,8 +181,6 @@ export async function manualMacOSSign(
     `Frameworks/${commonConfig.name} Helper (Plugin).app/`,
     `Frameworks/${commonConfig.name} Helper (Renderer).app/Contents/MacOS/${commonConfig.name} Helper (Renderer)`,
     `Frameworks/${commonConfig.name} Helper (Renderer).app/`,
-    `Library/LoginItems/${commonConfig.name} Login Helper.app/Contents/MacOS/${commonConfig.name} Login Helper`,
-    `Library/LoginItems/${commonConfig.name} Login Helper.app/`,
   ];
 
   for (const fileName of filesToSign) {
