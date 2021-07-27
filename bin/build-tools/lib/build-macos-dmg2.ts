@@ -84,9 +84,9 @@ export async function buildMacOSConfig(
     ignore: /electron\/renderer\/src/,
     name: commonConfig.name,
     osxNotarize: {
-      appleId: macOSConfig.notarizeAppleId,
-      appleIdPassword: macOSConfig.notarizeApplePassword,
-      ascProvider: macOSConfig.ascProvider,
+      appleId: macOSConfig.notarizeAppleId!,
+      appleIdPassword: macOSConfig.notarizeApplePassword!,
+      ascProvider: macOSConfig.ascProvider!,
     },
     osxSign: {
       entitlements: 'resources/macos/entitlements/parent-notarization.plist',
