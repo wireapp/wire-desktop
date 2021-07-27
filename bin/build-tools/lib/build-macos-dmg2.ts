@@ -48,6 +48,7 @@ export async function buildMacOSConfig(
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
+    ascProvider: 'EDF3JCE8BC',
     bundleId: 'com.wearezeta.zclient.mac',
     category: 'public.app-category.social-networking',
     certNameNotarization: 'Developer ID Application: Wire Swiss GmbH (EDF3JCE8BC)',
@@ -56,6 +57,7 @@ export async function buildMacOSConfig(
   const macOSConfig: MacOSConfig = {
     ...macOSDefaultConfig,
     appleExportComplianceCode: process.env.APPLE_EXPORT_COMPLIANCE_CODE || macOSDefaultConfig.appleExportComplianceCode,
+    ascProvider: process.env.MACOS_NOTARIZATION_ASC_PROVIDER || macOSDefaultConfig.ascProvider,
     bundleId: process.env.MACOS_BUNDLE_ID || macOSDefaultConfig.bundleId,
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
