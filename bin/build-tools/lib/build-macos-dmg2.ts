@@ -128,27 +128,25 @@ export async function buildMacOSWrapper(
 
     logger.log(`Built app in "${buildDir}".`);
 
-    if (macOSConfig.certNameInstaller) {
-      const appFile = path.join(buildDir, `${commonConfig.name}.app`);
-      await fs.ensureDir(commonConfig.distDir);
+    const appFile = path.join(buildDir, `${commonConfig.name}.app`);
+    await fs.ensureDir(commonConfig.distDir);
 
-      logger.info('Signing app ...');
-      await manualMacOSSign(appFile, commonConfig, macOSConfig);
+    logger.info('Signing app ...');
+    await manualMacOSSign(appFile, commonConfig, macOSConfig);
 
-      if (enableNotarization) {
-        logger.info('Notarizing app ...');
-        await manualNotarize(appFile, macOSConfig);
-      }
-
-      logger.info('Creating DMG ...');
-      await createDMG({
-        appPath: appFile,
-        output: path.join(commonConfig.distDir, `${commonConfig.name}.dmg`),
-        title: commonConfig.name,
-      });
-
-      logger.log(`Built installer in "${commonConfig.distDir}".`);
+    if (enableNotarization) {
+      logger.info('Notarizing app ...');
+      await manualNotarize(appFile, macOSConfig);
     }
+
+    logger.info('Creating DMG ...');
+    await createDMG({
+      appPath: appFile,
+      output: path.join(commonConfig.distDir, `${commonConfig.name}.dmg`),
+      title: commonConfig.name,
+    });
+
+    logger.log(`Built app for outside distribution in "${commonConfig.distDir}".`);
   } catch (error) {
     logger.error(error);
   }
