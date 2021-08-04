@@ -19,7 +19,7 @@
 
 import {app} from 'electron';
 import * as fs from 'fs-extra';
-import * as globby from 'globby';
+import {globbySync as globby} from 'globby';
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
@@ -29,7 +29,7 @@ const logger = getLogger(path.basename(__filename));
 export const logDir = path.join(app.getPath('userData'), 'logs');
 
 export function getLogFilenames(base: string = logDir, absolute: boolean = false): string[] {
-  return globby.sync('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
+  return globby('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
 }
 
 export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
