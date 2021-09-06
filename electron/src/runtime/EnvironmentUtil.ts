@@ -124,16 +124,11 @@ export const web = {
       return env;
     }
 
-    if (app.IS_DEVELOPMENT) {
-      const currentEnvironment = getEnvironment();
-      if (currentEnvironment === BackendType.CUSTOM) {
-        const envUrl = settings.restore(SettingsType.CUSTOM_WEBAPP_URL, '');
-        return envUrl || URL_WEBAPP.PRODUCTION;
-      }
-      return URL_WEBAPP[currentEnvironment];
+    const currentEnvironment = getEnvironment();
+    if (currentEnvironment === BackendType.CUSTOM) {
+      return settings.restore(SettingsType.CUSTOM_WEBAPP_URL, URL_WEBAPP.PRODUCTION);
     }
-
-    return URL_WEBAPP.PRODUCTION;
+    return URL_WEBAPP[currentEnvironment];
   },
   getWebsiteUrl: (path?: string): string => {
     const baseUrl = isProdEnvironment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;

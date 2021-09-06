@@ -17,13 +17,15 @@
  *
  */
 
-import {MenuItem, MenuItemConstructorOptions, WebContents} from 'electron';
+import {MenuItem, MenuItemConstructorOptions} from 'electron';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
 import {WindowManager} from '../window/WindowManager';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();
 
@@ -71,7 +73,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
   const environments: Partial<typeof EnvironmentUtil.URL_WEBAPP> = {...EnvironmentUtil.URL_WEBAPP};
-  delete environments.CUSTOM;
+  environments[EnvironmentUtil.BackendType.CUSTOM] = settings.restore(SettingsType.CUSTOM_WEBAPP_URL, 'Custom');
 
   for (const [backendType, backendURL] of Object.entries(environments)) {
     environmentTemplate.push({
