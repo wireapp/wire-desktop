@@ -185,8 +185,8 @@ export async function manualMacOSSign(
   commonConfig: CommonConfig,
   macOSConfig: MacOSConfig,
 ): Promise<void> {
-  const inheritEntitlements = 'resources/macos/entitlements/child.plist';
-  const mainEntitlements = 'resources/macos/entitlements/parent.plist';
+  const inheritEntitlements = 'resources/macos/entitlements/child-mas.plist';
+  const mainEntitlements = 'resources/macos/entitlements/parent-mas.plist';
 
   if (macOSConfig.certNameApplication) {
     const filesToSign = [
