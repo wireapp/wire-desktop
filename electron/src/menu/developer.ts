@@ -70,7 +70,11 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
-  const environments = EnvironmentUtil.URL_WEBAPP;
+  const environments: Partial<typeof EnvironmentUtil.URL_WEBAPP> = {...EnvironmentUtil.URL_WEBAPP};
+  // remove the custom environment entry if it points to production (because this is the fallback)
+  if (environments.CUSTOM === config.appBase) {
+    delete environments.CUSTOM;
+  }
 
   for (const [backendType, backendURL] of Object.entries(environments)) {
     environmentTemplate.push({

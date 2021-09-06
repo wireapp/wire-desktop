@@ -55,7 +55,7 @@ export const URL_WEBAPP: Record<BackendType, string> = {
   INTERNAL: 'https://wire-webapp-staging.wire.com',
   LOCALHOST: 'https://localhost:8081',
   PRODUCTION: config.appBase,
-  CUSTOM: settings.restore(SettingsType.CUSTOM_WEBAPP_URL, 'Custom'),
+  CUSTOM: settings.restore(SettingsType.CUSTOM_WEBAPP_URL, config.appBase),
 };
 /* eslint-enable sort-keys-fix/sort-keys-fix */
 
@@ -125,13 +125,10 @@ export const web = {
     }
 
     const currentEnvironment = getEnvironment();
-    if (currentEnvironment === BackendType.CUSTOM) {
-      return settings.restore(SettingsType.CUSTOM_WEBAPP_URL, URL_WEBAPP.PRODUCTION);
-    }
     return URL_WEBAPP[currentEnvironment];
   },
-  getWebsiteUrl: (path?: string): string => {
+  getWebsiteUrl: (path: string = ''): string => {
     const baseUrl = isProdEnvironment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
-    return `${baseUrl}${path || ''}`;
+    return `${baseUrl}${path}`;
   },
 };
