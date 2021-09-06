@@ -55,7 +55,7 @@ export const URL_WEBAPP: Record<BackendType, string> = {
   INTERNAL: 'https://wire-webapp-staging.wire.com',
   LOCALHOST: 'https://localhost:8081',
   PRODUCTION: config.appBase,
-  CUSTOM: '',
+  CUSTOM: settings.restore(SettingsType.CUSTOM_WEBAPP_URL, 'Custom'),
 };
 /* eslint-enable sort-keys-fix/sort-keys-fix */
 
