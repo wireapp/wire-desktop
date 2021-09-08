@@ -20,7 +20,7 @@
     "lodash": "4.17.21",
     "logdown": "3.3.1",
     "minimist": "1.2.5",
-    "open-graph": "0.2.4",
+    "open-graph": "0.2.6",
     "prop-types": "15.7.2",
     "react": "16.14.0",
     "react-dom": "16.14.0",
