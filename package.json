@@ -2,7 +2,7 @@
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
     "@hapi/joi": "17.1.1",
-    "@wireapp/certificate-check": "0.4.4",
+    "@wireapp/certificate-check": "0.4.7",
     "@wireapp/commons": "4.2.10",
     "@wireapp/protocol-messaging": "1.35.0",
     "@wireapp/react-ui-kit": "7.44.2",
