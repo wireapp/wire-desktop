@@ -1344,12 +1344,12 @@
   resolved "https://registry.npmjs.org/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
-"@es-joy/jsdoccomment@0.10.7":
-  version "0.10.7"
-  resolved "https://registry.npmjs.org/@es-joy/jsdoccomment/-/jsdoccomment-0.10.7.tgz#bdb5dfcaa5cff8b5435f0c9f2777b533075a9c52"
-  integrity sha512-aNKZEoMESDzOBjKxCWrFuG50mcpMeKVBnBNko4+IZZ5t9zXYs8GT1KB0ZaOq1YUsKumDRc6YII/TQm309MJ0KQ==
+"@es-joy/jsdoccomment@0.10.8":
+  version "0.10.8"
+  resolved "https://registry.npmjs.org/@es-joy/jsdoccomment/-/jsdoccomment-0.10.8.tgz#b3152887e25246410ed4ea569a55926ec13b2b05"
+  integrity sha512-3P1JiGL4xaR9PoTKUHa2N/LKwa2/eUdRqGwijMWWgBqbFEqJUVpmaOi2TcjcemrsRMgFLBzQCK4ToPhrSVDiFQ==
   dependencies:
-    comment-parser "1.2.3"
+    comment-parser "1.2.4"
     esquery "^1.4.0"
     jsdoc-type-pratt-parser "1.1.1"
 
@@ -3527,10 +3527,10 @@ comment-json@^4.1.0:
     has-own-prop "^2.0.0"
     repeat-string "^1.6.1"
 
-comment-parser@1.2.3:
-  version "1.2.3"
-  resolved "https://registry.npmjs.org/comment-parser/-/comment-parser-1.2.3.tgz#303a7eb99c9b2632efd594e183ccbd32042caf69"
-  integrity sha512-vnqDwBSXSsdAkGS5NjwMIPelE47q+UkEgWKHvCDNhVIIaQSUFY6sNnEYGzdoPGMdpV+7KR3ZkRd7oyWIjtuvJg==
+comment-parser@1.2.4:
+  version "1.2.4"
+  resolved "https://registry.npmjs.org/comment-parser/-/comment-parser-1.2.4.tgz#489f3ee55dfd184a6e4bffb31baba284453cb760"
+  integrity sha512-pm0b+qv+CkWNriSTMsfnjChF9kH0kxz55y44Wo5le9qLxMj5xDQAaEd9ZN1ovSuk9CsrncWaFwgpOMg7ClJwkw==
 
 commondir@^1.0.1:
   version "1.0.1"
@@ -4557,13 +4557,13 @@ eslint-plugin-jasmine@4.1.2:
   resolved "https://registry.npmjs.org/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.1.2.tgz#50cc20d603b02b37727f8d174d4b83b9b8ef25a5"
   integrity sha512-Jr52EBi6Ql5WVDvRCKBID9kRD6/CaObvCWmgHpqobczX2Mzt8/QMu9vpgx6q/O5jyQ9CIGrKaEbPuEfHRf8guw==
 
-eslint-plugin-jsdoc@36.0.6:
-  version "36.0.6"
-  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-36.0.6.tgz#b42af59fe92b57f86e789a7dff661b0cb4d41e61"
-  integrity sha512-vOm27rI2SMfi1bOAYmzzGkanMCD/boquKwvN5ECi8EF9ASsXJwlnCzYtiOYpsDpbC2+6JXEHAmWMkqYNA3BWRw==
+eslint-plugin-jsdoc@36.1.0:
+  version "36.1.0"
+  resolved "https://registry.npmjs.org/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-36.1.0.tgz#8dfe5f27edfb6aa3812e6d86ccaea849ddc86b03"
+  integrity sha512-Qpied2AJCQcScxfzTObLKRiP5QgLXjMU/ITjBagEV5p2Q/HpumD1EQtazdRYdjDSwPmXhwOl2yquwOGQ4HOJNw==
   dependencies:
-    "@es-joy/jsdoccomment" "0.10.7"
-    comment-parser "1.2.3"
+    "@es-joy/jsdoccomment" "0.10.8"
+    comment-parser "1.2.4"
     debug "^4.3.2"
     esquery "^1.4.0"
     jsdoc-type-pratt-parser "^1.1.1"
