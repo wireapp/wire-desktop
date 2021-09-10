@@ -9,7 +9,9 @@
       "rules": {
         "@typescript-eslint/member-ordering": "off",
         "@typescript-eslint/typedef": "off",
-        "no-unused-vars": "off"
+        "header/header": "off",
+        "no-unused-vars": "off",
+        "unused-imports/no-unused-imports": "off"
       }
     }
   ],
