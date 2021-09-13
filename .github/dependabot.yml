@@ -18,6 +18,10 @@ updates:
       - dependency-name: electron
         versions:
           - '> 11.x'
+      # globby 12.x is pure ESM which is not supported by our config right now.
+      - dependency-name: globby
+        versions:
+          - '> 11.x'
       - dependency-name: electron-builder
         versions:
           - '> 20.x'
