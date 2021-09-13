@@ -203,7 +203,7 @@ export class SingleSignOn {
           try {
             await LogFactory.writeMessage(message, logFilePath);
           } catch (error) {
-            console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+            console.error(`Cannot write to log file "${logFilePath}": ${(error as Error).message}`, error);
           }
         }
       });

@@ -45,7 +45,7 @@ export class SchemaUpdater {
         fs.moveSync(configFileV0, configFileV1, {overwrite: true});
         Object.assign(config, fs.readJSONSync(configFileV1));
       } catch (error) {
-        logger.log(`Could not upgrade "${configFileV0}" to "${configFileV1}": ${error.message}`, error);
+        logger.log(`Could not upgrade "${configFileV0}" to "${configFileV1}": ${(error as Error).message}`, error);
       }
 
       const getSetting = (setting: string) => (config.hasOwnProperty(setting) ? config[setting] : undefined);
@@ -63,7 +63,7 @@ export class SchemaUpdater {
       try {
         fs.writeJsonSync(configFileV1, config, {spaces: 2});
       } catch (error) {
-        logger.log(`Failed to write config to "${configFileV1}": ${error.message}`, error);
+        logger.log(`Failed to write config to "${configFileV1}": ${(error as Error).message}`, error);
       }
     }
 
