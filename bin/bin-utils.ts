@@ -98,7 +98,7 @@ export async function execAsync(command: string): Promise<ExecResult> {
     stdout = execResult.stdout.toString();
     stderr = execResult.stderr.toString();
   } catch (error) {
-    stderr = error.toString();
+    stderr = (error as Error).toString();
   }
 
   return {stderr: stderr.trim(), stdout: stdout.trim()};

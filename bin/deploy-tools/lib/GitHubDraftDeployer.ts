@@ -133,9 +133,10 @@ export class GitHubDraftDeployer {
       const draftResponse = await axios.post<GitHubAPIDraftData>(draftUrl, draftData, {headers: AuthorizationHeaders});
       return draftResponse.data;
     } catch (error) {
-      this.logger.error('Error response from GitHub:', error.response.data);
+      const errorResponse = (error as AxiosError).response;
+      this.logger.error('Error response from GitHub:', errorResponse.data);
       throw new Error(
-        `Draft creation failed with status code "${error.response.status}": "${error.response.statusText}"`,
+        `Draft creation failed with status code "${errorResponse.status}": "${errorResponse.statusText}"`,
       );
     }
   }
@@ -170,8 +171,9 @@ export class GitHubDraftDeployer {
         maxContentLength: TWO_HUNDRED_MB_IN_BYTES,
       };
       await axios.post(url, file, requestConfig);
-    } catch (uploadError) {
-      if ((uploadError as AxiosError).isAxiosError && uploadError.response) {
+    } catch (error) {
+      const uploadError = error as AxiosError;
+      if (uploadError.isAxiosError && uploadError.response) {
         this.logger.error('Error response from GitHub:', uploadError.response.data);
         this.logger.error(
           `Upload failed with status code "${uploadError.response.status}": ${uploadError.response.statusText}"`,
@@ -185,8 +187,9 @@ export class GitHubDraftDeployer {
       try {
         await axios.delete(draftUrl, {headers: AuthorizationHeaders});
         this.logger.info('Draft deleted');
-      } catch (deleteError) {
-        if ((deleteError as AxiosError).isAxiosError && deleteError.response) {
+      } catch (error) {
+        const deleteError = error as AxiosError;
+        if (deleteError.isAxiosError && deleteError.response) {
           this.logger.error('Error response from GitHub:', deleteError.response);
           throw new Error(
             `Deletion failed with status code "${deleteError.response.status}: ${deleteError.response.statusText}"`,
