@@ -85,7 +85,7 @@ export class CustomProtocolHandler {
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
       } catch (error) {
-        logger.error(`Cannot start SSO flow: ${error.message}`, error);
+        logger.error(`Cannot start SSO flow: ${(error as Error).message}`, error);
       }
     }
   }
@@ -99,7 +99,7 @@ export class CustomProtocolHandler {
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
       } catch (error) {
-        logger.error(`Cannot join conversation: ${error.message}`, error);
+        logger.error(`Cannot join conversation: ${(error as Error).message}`, error);
       }
     }
   }
