@@ -23,13 +23,27 @@ Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireap
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 10
+- yarn via `npm install --global yarn`
 - Git
 
 ### Clone
 
+#### macOS & Linux
+
 ```shell
 git clone https://github.com/wireapp/wire-desktop.git
 cd wire-desktop
+yarn
+```
+
+#### Windows
+
+In an admin PowerShell run
+
+```shell
+git clone https://github.com/wireapp/wire-desktop.git
+cd wire-desktop
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
 yarn
 ```
 
