@@ -45,7 +45,7 @@ yarn start
 yarn test
 ```
 
-### Deployment
+### Development Workflow
 
 | Stage | Action | Target Branch | Target Version |
 | :-- | :-- | :-- | :-- |
