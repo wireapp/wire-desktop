@@ -577,6 +577,14 @@ class ElectronWrapperInit {
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });
+          contents.on('did-navigate-in-page', () => {
+            setTimeout(() => {
+              if (isNaN(contents.getZoomFactor())) {
+                contents.setZoomFactor(1);
+                ipcMain.emit('resize_me');
+              }
+            }, 0);
+          });
           if (ENABLE_LOGGING) {
             const colorCodeRegex = /%c(.+?)%c/gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;
