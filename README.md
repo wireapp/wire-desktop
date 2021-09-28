@@ -75,24 +75,11 @@ The preceding steps are implemented with the following scripts (using Windows as
 3. `build:win:installer:internal` (for internal versions) or `build:win:installer` (for production versions, includes step 4)
 4. `build:win:installer`
 
-All artifacts (executables & installers) will be written to the "wrap" directory from the root of this repository.
+All artifacts (executables & installers) will be written to the "wrap" directory from the root of this repository. There are tasks for specific platforms (e.g. `yarn build:macos` or `yarn build:win`).
 
-### Tasks
+#### Linux targets
 
-```shell
-# Build for macOS
-yarn build:macos
-
-# Build for Windows
-yarn build:win
-
-# Build for Linux
-yarn build:linux
-```
-
-### Other Linux targets
-
-If you would like to build for another Linux target, run the following command:
+If you would like to build for a custom Linux target, run the following command:
 
 ```shell
 export LINUX_TARGET=<target>
@@ -107,6 +94,10 @@ Furthermore, you can disable [asar packaging](https://electronjs.org/docs/tutori
 export ENABLE_ASAR="false"
 yarn build:linux
 ```
+
+### Releases
+
+To release a desktop version it needs a build and a deployment. There are Jenkins jobs to create builds (e.g. [Windows Build Pipeline](https://10.10.124.17/view/Windows/)) and a job to do [Deployments](https://10.10.124.17/view/Deploy/job/Deploy_Wrapper/) (can trigger internal and/or production rollouts). These Jenkins jobs can only be accessed from Wire's VPN. You also have to log-in with your "Jenkins User ID" in order to start the build and/or deployment pipeline. You will find more information [here](https://wearezeta.atlassian.net/wiki/spaces/WEB/pages/106628739/).
 
 ### Troubleshooting
 
