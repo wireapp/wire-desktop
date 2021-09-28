@@ -17,7 +17,7 @@
  *
  */
 
-import {MenuItem, MenuItemConstructorOptions, WebContents} from 'electron';
+import {MenuItem, MenuItemConstructorOptions} from 'electron';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
@@ -71,7 +71,10 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
   const environments: Partial<typeof EnvironmentUtil.URL_WEBAPP> = {...EnvironmentUtil.URL_WEBAPP};
-  delete environments.CUSTOM;
+  // remove the custom environment entry if it points to production (because this is the fallback)
+  if (environments.CUSTOM === config.appBase) {
+    delete environments.CUSTOM;
+  }
 
   for (const [backendType, backendURL] of Object.entries(environments)) {
     environmentTemplate.push({

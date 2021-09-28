@@ -17,7 +17,7 @@
  *
  */
 
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {parse as parseContentType, ParsedMediaType} from 'content-type';
 import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
@@ -58,7 +58,8 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
 
   try {
     response = await axiosWithCookie<Buffer>(axiosConfig);
-  } catch (error) {
+  } catch (err) {
+    const error = err as AxiosError;
     if (error.response?.status && error?.response?.statusText) {
       throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
     }
@@ -70,7 +71,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   try {
     contentType = parseContentType(response.headers['content-type']);
   } catch (error) {
-    throw new Error(`Could not parse content type: "${error.message}"`);
+    throw new Error(`Could not parse content type: "${(error as Error).message}"`);
   }
 
   const isImageContentType = contentType.type.match(/.*image\/.*/);
@@ -87,7 +88,7 @@ export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<Ax
     const response = await axios.request<T>({...config, maxRedirects: 0, withCredentials: true});
     return response;
   } catch (error) {
-    const response = error.response;
+    const response = (error as AxiosError).response;
     if (!response) {
       throw error;
     }
@@ -115,7 +116,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
     try {
       contentType = parseContentType(response.headers['content-type']);
     } catch (error) {
-      throw new Error(`Could not parse content type: "${error.message}"`);
+      throw new Error(`Could not parse content type: "${(error as Error).message}"`);
     }
 
     if (!contentType.type.includes('text/html')) {
@@ -138,7 +139,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
             try {
               chunk = iconvDecode(buffer, charset);
             } catch (error) {
-              logger.error(`Could not decode content: "${error.message}."`);
+              logger.error(`Could not decode content: "${(error as Error).message}."`);
             }
           }
 
@@ -152,7 +153,9 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
     });
 
     return body;
-  } catch (error) {
+  } catch (err) {
+    const error = err as AxiosError;
+
     if (axios.isCancel(error)) {
       return '';
     }

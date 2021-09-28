@@ -38,8 +38,11 @@ const updateDotExe = path.join(rootFolder, 'Update.exe');
 
 const linkName = `${config.name}.lnk`;
 const windowsAppData = process.env.APPDATA;
+// @see https://www.zdnet.com/article/windows-10-tip-add-custom-shortcuts-to-the-start-menu/
 const startShortcut = path.join(app.getPath('appData'), `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
+// @see https://www.howtogeek.com/436615/how-to-create-desktop-shortcuts-on-windows-10-the-easy-way/
 const desktopShortcut = path.join(app.getPath('desktop'), `${config.name}.lnk`);
+// @see https://www.lifewire.com/add-quick-launch-toolbar-in-windows-10-5115231
 const quickLaunchShortcut = windowsAppData
   ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
   : '';
@@ -132,9 +135,15 @@ function createShortcuts(): void {
 
 async function removeShortcuts(): Promise<void> {
   logger.info('Removing all shortcuts ...');
+
+  logger.info(`Removing start menu shortcut "${startShortcut}" ...`);
   await fs.remove(startShortcut);
+
+  logger.info(`Removing desktop shortcut "${desktopShortcut}" ...`);
   await fs.remove(desktopShortcut);
+
   if (quickLaunchShortcut) {
+    logger.info(`Removing quick launch menu shortcut "${quickLaunchShortcut}" ...`);
     await fs.remove(quickLaunchShortcut);
   }
 }

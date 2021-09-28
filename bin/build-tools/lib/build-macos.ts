@@ -106,8 +106,8 @@ export async function buildMacOSConfig(
   if (!signManually) {
     if (macOSConfig.certNameApplication) {
       packagerConfig.osxSign = {
-        entitlements: 'resources/macos/entitlements/parent.plist',
-        'entitlements-inherit': 'resources/macos/entitlements/child.plist',
+        entitlements: 'resources/macos/entitlements/parent-mas.plist',
+        'entitlements-inherit': 'resources/macos/entitlements/child-mas.plist',
         identity: macOSConfig.certNameApplication,
       };
     }
@@ -185,8 +185,8 @@ export async function manualMacOSSign(
   commonConfig: CommonConfig,
   macOSConfig: MacOSConfig,
 ): Promise<void> {
-  const inheritEntitlements = 'resources/macos/entitlements/child.plist';
-  const mainEntitlements = 'resources/macos/entitlements/parent.plist';
+  const inheritEntitlements = 'resources/macos/entitlements/child-mas.plist';
+  const mainEntitlements = 'resources/macos/entitlements/parent-mas.plist';
 
   if (macOSConfig.certNameApplication) {
     const filesToSign = [

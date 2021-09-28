@@ -112,7 +112,7 @@ if (argv[config.ARGUMENT.PROXY_SERVER]) {
       throw new Error('No protocol for the proxy server specified.');
     }
   } catch (error) {
-    logger.error(`Could not parse authenticated proxy URL: "${error.message}"`);
+    logger.error(`Could not parse authenticated proxy URL: "${(error as Error).message}"`);
   }
 }
 
@@ -319,7 +319,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     try {
       main.reload();
     } catch (error) {
-      showErrorDialog(`Could not reload the window: ${error.message}`);
+      showErrorDialog(`Could not reload the window: ${(error as Error).message}`);
       logger.error('Could not reload the window:', error);
     }
   });
@@ -330,7 +330,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     try {
       main.reload();
     } catch (error) {
-      showErrorDialog(`Could not reload the window: ${error.message}`);
+      showErrorDialog(`Could not reload the window: ${(error as Error).message}`);
       logger.error('Could not reload the window:', error);
     }
   });
@@ -415,7 +415,7 @@ const handleAppEvents = (): void => {
           try {
             main.reload();
           } catch (error) {
-            showErrorDialog(`Could not reload the window: ${error.message}`);
+            showErrorDialog(`Could not reload the window: ${(error as Error).message}`);
             logger.error('Could not reload the window:', error);
           }
         });
@@ -450,7 +450,7 @@ const renameFileExtensions = (files: string[], oldExtension: string, newExtensio
         fs.renameSync(file, file.replace(oldExtension, newExtension));
       }
     } catch (error) {
-      logger.error(`Failed to rename log file: "${error.message}"`);
+      logger.error(`Failed to rename log file: "${(error as Error).message}"`);
     }
   }
 };
@@ -461,7 +461,7 @@ const renameWebViewLogFiles = (): void => {
     const logFiles = getLogFilenames(LOG_DIR, true);
     renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
-    logger.log(`Failed to read log directory with error: ${error.message}`);
+    logger.log(`Failed to read log directory with error: ${(error as Error).message}`);
   }
 };
 
@@ -605,7 +605,7 @@ class ElectronWrapperInit {
                     logFilePath,
                   );
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${(error as Error).message}`, error);
                 }
               }
             });

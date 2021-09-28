@@ -18,7 +18,7 @@ No license is granted to the Wire trademark and its associated logos, all of whi
 
 ## Wire Desktop
 
-Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp). Based on [Electron](https://electronjs.org).
+Cross-platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp). Based on [Electron](https://electronjs.org).
 
 ### Prerequisites
 
@@ -45,36 +45,41 @@ yarn start
 yarn test
 ```
 
-### Deployment
+### Development Workflow
 
-| Stage | Branch | Action | Version |
+| Stage | Action | Target Branch | Target Version |
 | :-- | :-- | :-- | :-- |
-| 1 (Feature development) | (varies) | commit | x.y+3 (e.g. 3.20) |
-| 2 (Nightly test automation) | [dev](https://github.com/wireapp/wire-desktop/tree/dev) | commit or squash merge from feature branch | x.y+2 (e.g. 3.19) |
-| 3 (Internal release) | [staging](https://github.com/wireapp/wire-desktop/tree/staging) | merge (don't squash) from [dev](https://github.com/wireapp/wire-desktop/tree/dev) | x.y+1 (e.g. 3.18) |
-| 4 (Production release) | [main](https://github.com/wireapp/wire-desktop/tree/main) | merge (don't squash) from [staging](https://github.com/wireapp/wire-desktop/tree/staging) | x.y (e.g. 3.17) |
+| 1 (Feature development) | commit | your-feature-branch | x.y+3 (e.g. 3.20) |
+| 2 (Nightly test automation) | commit or squash merge from feature branch | [dev](https://github.com/wireapp/wire-desktop/tree/dev) | x.y+2 (e.g. 3.19) |
+| 3 (Internal release) | merge (don't squash) from [dev](https://github.com/wireapp/wire-desktop/tree/dev) | [staging](https://github.com/wireapp/wire-desktop/tree/staging) | x.y+1 (e.g. 3.18) |
+| 4 (Production release) | merge (don't squash) from [staging](https://github.com/wireapp/wire-desktop/tree/staging) | [main](https://github.com/wireapp/wire-desktop/tree/main) | x.y (e.g. 3.17) |
 
 **Compare Views**
 
 1. Updates from "dev" to "staging" (changelog): https://github.com/wireapp/wire-desktop/compare/staging...dev
 1. Updates from "staging" to "main" (changelog): https://github.com/wireapp/wire-desktop/compare/main...staging
 
-### Tasks
+### Creating executables & installers
 
-```shell
-# Build for macOS
-yarn build:macos
+Several steps are required to create an installable and fully executable Wire desktop app:
 
-# Build for Windows
-yarn build:win
+1. Code (TypeScript, JavaScript, CSS) has to be compiled
+2. Compiled code and resources (taskbar icons, app images, etc.) have to be bundled
+3. An installer for the bundle has to be created
+4. The installer has to be signed (only for production releases)
 
-# Build for Linux
-yarn build:linux
-```
+The preceding steps are implemented with the following scripts (using Windows as a showcase):
 
-### Other Linux targets
+1. `yarn build:prepare`
+2. `yarn build:win`
+3. `build:win:installer:internal` (for internal versions) or `build:win:installer` (for production versions, includes step 4)
+4. `build:win:installer`
 
-If you would like to build for another Linux target, run the following command:
+All artifacts (executables & installers) will be written to the "wrap" directory from the root of this repository. There are tasks for specific platforms (e.g. `yarn build:macos` or `yarn build:win`).
+
+#### Linux targets
+
+If you would like to build for a custom Linux target, run the following command:
 
 ```shell
 export LINUX_TARGET=<target>
@@ -89,6 +94,10 @@ Furthermore, you can disable [asar packaging](https://electronjs.org/docs/tutori
 export ENABLE_ASAR="false"
 yarn build:linux
 ```
+
+### Releases
+
+To release a desktop version it needs a build and a deployment. There are Jenkins jobs to create builds (e.g. [Windows Build Pipeline](https://10.10.124.17/view/Windows/)) and a job to do [Deployments](https://10.10.124.17/view/Deploy/job/Deploy_Wrapper/) (can trigger internal and/or production rollouts). These Jenkins jobs can only be accessed from Wire's VPN. You also have to log-in with your "Jenkins User ID" in order to start the build and/or deployment pipeline. You will find more information [here](https://wearezeta.atlassian.net/wiki/spaces/WEB/pages/106628739/).
 
 ### Troubleshooting
 
