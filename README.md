@@ -18,7 +18,7 @@ No license is granted to the Wire trademark and its associated logos, all of whi
 
 ## Wire Desktop
 
-Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp). Based on [Electron](https://electronjs.org).
+Cross-platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp). Based on [Electron](https://electronjs.org).
 
 ### Prerequisites
 
@@ -58,6 +58,24 @@ yarn test
 
 1. Updates from "dev" to "staging" (changelog): https://github.com/wireapp/wire-desktop/compare/staging...dev
 1. Updates from "staging" to "main" (changelog): https://github.com/wireapp/wire-desktop/compare/main...staging
+
+### Creating executables & installers
+
+Several steps are required to create an installable and fully executable Wire desktop app:
+
+1. Code (TypeScript, JavaScript, CSS) has to be compiled
+2. Compiled code and resources (taskbar icons, app images, etc.) have to be bundled
+3. An installer for the bundle has to be created
+4. The installer has to be signed (only for production releases)
+
+The preceding steps are implemented with the following scripts (using Windows as a showcase):
+
+1. `yarn build:prepare`
+2. `yarn build:win`
+3. `build:win:installer:internal` (for internal versions) or `build:win:installer` (for production versions, includes step 4)
+4. `build:win:installer`
+
+All artifacts (executables & installers) will be written to the "wrap" directory from the root of this repository.
 
 ### Tasks
 
