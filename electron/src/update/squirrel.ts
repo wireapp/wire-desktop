@@ -171,7 +171,7 @@ async function scheduleUpdate(): Promise<void> {
 export async function handleSquirrelArgs(): Promise<void> {
   const squirrelArgument = process.argv[1];
 
-  logger.info(`Command-line flag provided by Squirrel: ${squirrelArgument}`);
+  logger.info(`Command-line flag provided by Squirrel: ${process.argv[0]} ${squirrelArgument}`);
 
   switch (squirrelArgument) {
     case SQUIRREL_ARGUMENT.INSTALL: {
