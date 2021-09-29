@@ -176,34 +176,32 @@ export async function handleSquirrelArgs(): Promise<void> {
 
   switch (squirrelArgument) {
     case SQUIRREL_ARGUMENT.INSTALL: {
+      logger.info(`Install called: ${process.argv[0]} ${squirrelArgument}`);
       createShortcuts();
       await lifecycle.quit();
       return;
     }
 
     case SQUIRREL_ARGUMENT.UPDATED: {
+      logger.info(`Updated called: ${process.argv[0]} ${squirrelArgument}`);
       await lifecycle.quit();
       return;
     }
 
     case SQUIRREL_ARGUMENT.UNINSTALL: {
+      logger.info(`Uninstall called: ${process.argv[0]} ${squirrelArgument}`);
       await removeShortcuts();
       await lifecycle.quit();
       return;
     }
 
     case SQUIRREL_ARGUMENT.OBSOLETE: {
-      await lifecycle.quit();
-      return;
-    }
-
-    case SQUIRREL_ARGUMENT.FIRST_RUN: {
+      logger.info(`Obsolete called: ${process.argv[0]} ${squirrelArgument}`);
       await lifecycle.quit();
       return;
     }
 
     default: {
-      await scheduleUpdate();
       return
     }
   }
