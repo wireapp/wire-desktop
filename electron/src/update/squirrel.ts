@@ -52,6 +52,7 @@ if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
 }
 
 enum SQUIRREL_ARGUMENT {
+  FIRST_RUN = '--squirrel-firstrun',
   INSTALL = '--squirrel-install',
   OBSOLETE = '--squirrel-obsolete',
   UNINSTALL = '--squirrel-uninstall',
@@ -195,7 +196,15 @@ export async function handleSquirrelArgs(): Promise<void> {
       await lifecycle.quit();
       return;
     }
-  }
 
-  await scheduleUpdate();
+    case SQUIRREL_ARGUMENT.FIRST_RUN: {
+      await lifecycle.quit();
+      return;
+    }
+
+    default: {
+      await scheduleUpdate();
+      return
+    }
+  }
 }
