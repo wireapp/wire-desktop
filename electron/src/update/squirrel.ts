@@ -127,7 +127,7 @@ function createShortcuts(): void {
   let quickLaunchResult = false;
   if (quickLaunchShortcut) {
     logger.info('Creating shortcut in the quick launch menu ...');
-    quickLaunchResult = createShortcut(desktopShortcut);
+    quickLaunchResult = createShortcut(quickLaunchShortcut);
   }
 
   logger.info('Created shortcuts:', {desktop: desktopResult, quickLaunch: quickLaunchResult, start: startResult});
