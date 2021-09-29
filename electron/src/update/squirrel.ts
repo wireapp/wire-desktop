@@ -51,12 +51,17 @@ if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
   logger.error('No Windows AppData directory found.');
 }
 
+// @see https://github.com/Squirrel/Squirrel.Windows/blob/2.0.1/docs/using/custom-squirrel-events-non-cs.md#application-startup-commands
 enum SQUIRREL_ARGUMENT {
+  FIRSTRUN = '--squirrel-firstrun',
   INSTALL = '--squirrel-install',
   OBSOLETE = '--squirrel-obsolete',
   UNINSTALL = '--squirrel-uninstall',
-  UPDATE = '--update',
   UPDATED = '--squirrel-updated',
+}
+
+enum CUSTOM_ARGUMENT {
+  UPDATE = '--update',
 }
 
 function spawn(command: string, args: string[]): Promise<void> {
@@ -150,7 +155,7 @@ async function removeShortcuts(): Promise<void> {
 
 export async function installUpdate(): Promise<void> {
   logger.info(`Checking for Windows updates at "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
-  await spawnUpdate([SQUIRREL_ARGUMENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
+  await spawnUpdate([CUSTOM_ARGUMENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
 }
 
 async function scheduleUpdate(): Promise<void> {
