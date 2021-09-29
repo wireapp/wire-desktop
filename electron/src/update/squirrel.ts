@@ -51,7 +51,7 @@ if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
   logger.error('No Windows AppData directory found.');
 }
 
-enum SQUIRREL_EVENT {
+enum SQUIRREL_ARGUMENT {
   INSTALL = '--squirrel-install',
   OBSOLETE = '--squirrel-obsolete',
   UNINSTALL = '--squirrel-uninstall',
@@ -150,7 +150,7 @@ async function removeShortcuts(): Promise<void> {
 
 export async function installUpdate(): Promise<void> {
   logger.info(`Checking for Windows updates at "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
-  await spawnUpdate([SQUIRREL_EVENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
+  await spawnUpdate([SQUIRREL_ARGUMENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
 }
 
 async function scheduleUpdate(): Promise<void> {
@@ -166,28 +166,32 @@ async function scheduleUpdate(): Promise<void> {
   setInterval(installUpdate, squirrelInterval);
 }
 
+// Squirrel spawns our app with a special command-line flag to indicate the installation lifecycle.
+// @see https://github.com/electron/windows-installer/tree/v4.0.1#handling-squirrel-events
 export async function handleSquirrelArgs(): Promise<void> {
-  const squirrelEvent = process.argv[1];
+  const squirrelArgument = process.argv[1];
 
-  switch (squirrelEvent) {
-    case SQUIRREL_EVENT.INSTALL: {
+  logger.info(`Command-line flag provided by Squirrel: ${squirrelArgument}`);
+
+  switch (squirrelArgument) {
+    case SQUIRREL_ARGUMENT.INSTALL: {
       createShortcuts();
       await lifecycle.quit();
       return;
     }
 
-    case SQUIRREL_EVENT.UPDATED: {
+    case SQUIRREL_ARGUMENT.UPDATED: {
       await lifecycle.quit();
       return;
     }
 
-    case SQUIRREL_EVENT.UNINSTALL: {
+    case SQUIRREL_ARGUMENT.UNINSTALL: {
       await removeShortcuts();
       await lifecycle.quit();
       return;
     }
 
-    case SQUIRREL_EVENT.OBSOLETE: {
+    case SQUIRREL_ARGUMENT.OBSOLETE: {
       await lifecycle.quit();
       return;
     }
