@@ -21,11 +21,14 @@
  * Settings that can be set in Wire's "init.json" file to configure our desktop app.
  *
  * Our configuration file can be found here:
- * - Windows: %APPDATA%\Wire\config\init.json
+ * - Windows (Production Version): %APPDATA%\Wire\config\init.json
+ * - Window (Internal Version): %APPDATA%\WireInternal\config\init.json
  */
 export enum SettingsType {
   /** Start Wire on OS startup? */
   AUTO_LAUNCH = 'shouldAutoLaunch',
+  /** Schema version of the config file (should not be changed manually) */
+  CONFIG_VERSION = 'configVersion',
   /** Custom web app URL to use in on-premise deployments. The "env" setting must be set to "CUSTOM" to use this. */
   CUSTOM_WEBAPP_URL = 'customWebAppURL',
   /** Enable spell checker in desktop app? */
