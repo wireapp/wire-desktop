@@ -33,7 +33,7 @@ export enum SettingsType {
   CUSTOM_WEBAPP_URL = 'customWebAppURL',
   /** Enable spell checker in desktop app? */
   ENABLE_SPELL_CHECKING = 'enableSpellChecking',
-  /** Which cloud environment ("PRODUCTION", "INTERNAL", "AVS", ...) to use when loading the webapp? */
+  /** Which cloud environment ("CUSTOM", "PRODUCTION", "INTERNAL", "AVS", ...) to use when loading the webapp? */
   ENV = 'env',
   /** Start Wire desktop app in fullscreen? */
   FULL_SCREEN = 'fullscreen',
