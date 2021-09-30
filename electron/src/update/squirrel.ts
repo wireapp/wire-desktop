@@ -144,6 +144,8 @@ async function scheduleUpdate(): Promise<void> {
 export async function handleSquirrelArgs(): Promise<void> {
   const squirrelEvent = process.argv[1];
 
+  logger.log(`CLI Invocation: ${process.argv[0]} ${process.argv[1]}`);
+
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL: {
       await createStartShortcut();
@@ -165,9 +167,7 @@ export async function handleSquirrelArgs(): Promise<void> {
 
     case SQUIRREL_EVENT.OBSOLETE: {
       await lifecycle.quit();
-      return;
     }
   }
-
-  await scheduleUpdate();
+  // await scheduleUpdate();
 }
