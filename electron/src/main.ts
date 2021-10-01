@@ -138,7 +138,10 @@ Object.entries(config).forEach(([key, value]) => {
 });
 
 // Squirrel setup
-app.setAppUserModelId(config.appUserModelId);
+logger.log(`SQUIRREL MODELID config.name: com.squirrel.wire.${config.name.toLowerCase()}`);
+logger.log(`SQUIRREL MODELID config.appUserModelId: ${config.appUserModelId}`);
+
+app.setAppUserModelId(`com.squirrel.wire.${config.name.toLowerCase()}`);
 
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
