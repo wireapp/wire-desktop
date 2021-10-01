@@ -89,7 +89,7 @@
     "eslint-plugin-simple-import-sort": "7.0.0",
     "eslint-plugin-sort-keys-fix": "1.1.2",
     "eslint-plugin-typescript-sort-keys": "1.8.0",
-    "eslint-plugin-unused-imports": "1.1.4",
+    "eslint-plugin-unused-imports": "1.1.5",
     "form-data": "4.0.0",
     "globby": "11.0.4",
     "husky": "4.3.8",
