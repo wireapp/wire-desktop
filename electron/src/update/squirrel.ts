@@ -160,8 +160,12 @@ async function scheduleUpdate(): Promise<void> {
 export async function handleSquirrelArgs(): Promise<void> {
   const squirrelEvent = process.argv[1];
 
+  logger.log(`SQUIRREL EVENT ARGV0 Original: ${process.argv0}`);
+  logger.log(`SQUIRREL EVENT: ${process.argv[0]} ${process.argv[1]}`);
+
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL: {
+      logger.log(`SQUIRREL EVENT: ${process.argv[1]} - Creating Shortcuts}`);
       createShortcuts();
       await lifecycle.quit();
       return;
