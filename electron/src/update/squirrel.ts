@@ -108,22 +108,35 @@ function createShortcut(location: string): boolean {
   // As documented in https://github.com/electron/windows-installer/issues/296,
   // Squirrel has problems with notification clicks on Windows 10.
   // The easiest workaround is to create shortcuts on our own.
+
+  const pathComponents = path.parse(process.execPath);
+  const cwd = pathComponents.dir;
+
+  // From: C:\Users\Tommaso\AppData\Local\wireinternal\app-3.25.0\WireInternal.exe
+  // to: C:\Users\Tommaso\AppData\Local\wireinternal\WireInternal.exe
+  const targetDir = cwd.split(path.sep).slice(0, -1).join(path.sep);
+  const targetExecutable = path.join(targetDir, pathComponents.base);
+
+  logger.log(`Creating shortcut to: ${targetExecutable}`);
+
   return shell.writeShortcutLink(location, 'create', {
     appUserModelId: config.appUserModelId,
-    target: process.execPath,
+    cwd: cwd,
+    description: 'The most secure collaboration platform',
+    target: targetExecutable,
   });
 }
 
 function createShortcuts(): void {
-  logger.info('Creating shortcut in the start menu ...');
+  logger.info(`Creating shortcut in the start menu ... at: ${startShortcut}`);
   const startResult = createShortcut(startShortcut);
 
-  logger.info('Creating shortcut on the desktop ...');
+  logger.info(`Creating shortcut on the desktop ... at: ${desktopShortcut}`);
   const desktopResult = createShortcut(desktopShortcut);
 
   let quickLaunchResult = false;
   if (quickLaunchShortcut) {
-    logger.info('Creating shortcut in the quick launch menu ...');
+    logger.info(`Creating shortcut in the quick launch menu ... at: ${quickLaunchShortcut}`);
     quickLaunchResult = createShortcut(quickLaunchShortcut);
   }
 
