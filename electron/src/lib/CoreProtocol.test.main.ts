@@ -57,4 +57,9 @@ describe('dispatchDeepLink', () => {
     await protocolHandler['dispatchDeepLink']('wire://start-sso/wire-13266298-4ac8-44b5-8281-dfb9e95fab5c');
     assert.ok(sendActionSpy.calledWith(EVENT_TYPE.ACCOUNT.SSO_LOGIN, 'wire-13266298-4ac8-44b5-8281-dfb9e95fab5c'));
   });
+
+  it('forwards start login events', async () => {
+    await protocolHandler['dispatchDeepLink']('wire://start-login');
+    assert.ok(sendActionSpy.calledWith(EVENT_TYPE.ACTION.START_LOGIN));
+  });
 });

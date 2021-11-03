@@ -25,9 +25,10 @@ export class AccountSelector {
   static getAccountIndex = (state, accountId) =>
     AccountSelector.getAccounts(state).findIndex(account => account.id === accountId);
   static getSelectedAccountAccentId = state => AccountSelector.getSelectedAccount(state)?.accentID;
-  static isAddingAccount = state =>
+  static isAddingAccount = state => !!AccountSelector.getUnboundAccount(state);
+  static getUnboundAccount = state =>
     !!AccountSelector.getAccounts(state).length &&
-    AccountSelector.getAccounts(state).some(account => account.userID === undefined);
+    AccountSelector.getAccounts(state).find(account => account.userID === undefined);
   static hasReachedLimitOfAccounts = state => AccountSelector.getAccounts(state).length >= CONFIG.maximumAccounts;
   static hasCreatedAccount = state => AccountSelector.getAccounts(state).some(account => account.userID !== undefined);
   static getAccountById = (state, accountId) =>

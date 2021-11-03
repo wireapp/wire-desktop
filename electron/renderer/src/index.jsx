@@ -25,6 +25,7 @@ import {EVENT_TYPE} from '../../dist/lib/eventType';
 import App from './components/App';
 import configureStore from './configureStore';
 import actionRoot from './actions';
+import {addAccountWithSession} from './actions/index';
 
 import './Index.css';
 
@@ -40,6 +41,7 @@ window.addEventListener(
   event => store.dispatch(actionRoot.accountAction.startSSO(event.detail.code)),
   false,
 );
+window.addEventListener(EVENT_TYPE.ACTION.START_LOGIN, event => store.dispatch(addAccountWithSession()), false);
 
 render(
   <Provider store={store}>
