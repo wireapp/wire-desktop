@@ -79,6 +79,10 @@ const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (event, accountIndex: number) => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
   });
+
+  ipcRenderer.on(EVENT_TYPE.ACTION.START_LOGIN, event => {
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.START_LOGIN));
+  });
 };
 
 const setupIpcInterface = (): void => {
