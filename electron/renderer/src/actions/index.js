@@ -20,7 +20,6 @@
 import * as Joi from '@hapi/joi';
 import {Availability} from '@wireapp/protocol-messaging';
 
-import {config} from '../../../dist/settings/config';
 import {accountAction} from './AccountAction';
 import {AccountSelector} from '../selector/AccountSelector';
 import {generateUUID} from '../lib/util';
@@ -122,7 +121,14 @@ export const abortAccountCreation = id => {
 
 export const addAccountWithSession = () => {
   return (dispatch, getState) => {
-    const hasReachedAccountLimit = getState().accounts.length >= config.maximumAccounts;
+    const hasReachedAccountLimit = AccountSelector.hasReachedLimitOfAccounts(getState());
+    const unboundAccount = AccountSelector.getUnboundAccount(getState());
+
+    if (!!unboundAccount) {
+      const unboundAccountIndex = AccountSelector.getAccountIndex(getState(), unboundAccount.id);
+      dispatch(accountAction.switchWebview(unboundAccountIndex));
+      return;
+    }
 
     if (hasReachedAccountLimit) {
       console.warn('Reached number of maximum accounts');

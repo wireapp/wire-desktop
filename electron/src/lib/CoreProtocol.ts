@@ -35,6 +35,7 @@ const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 const START_SSO_FLOW = 'start-sso';
 const JOIN_CONVERSATION_FLOW = 'conversation-join';
+const START_LOGIN_FLOW = 'start-login';
 
 export class CustomProtocolHandler {
   public hashLocation = '';
@@ -61,6 +62,9 @@ export class CustomProtocolHandler {
       } else if (route.host === JOIN_CONVERSATION_FLOW) {
         logger.info('Deep link is a conversation join link, triggering join ...');
         await this.handleJoinConversation(route);
+      } else if (route.host === START_LOGIN_FLOW) {
+        logger.info('Deep link is a start login link, triggering new account ...');
+        await this.handleStartLogin(route);
       } else {
         // handle invalid deep link
         logger.info('Triggering hash location change ...');
@@ -100,6 +104,18 @@ export class CustomProtocolHandler {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
       } catch (error) {
         logger.error(`Cannot join conversation: ${(error as Error).message}`, error);
+      }
+    }
+  }
+
+  private async handleStartLogin(route: URL): Promise<void> {
+    if (typeof route.pathname === 'string') {
+      logger.info('Starting login flow ...');
+
+      try {
+        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.START_LOGIN);
+      } catch (error) {
+        logger.error(`Cannot start login flow: ${(error as Error).message}`, error);
       }
     }
   }
