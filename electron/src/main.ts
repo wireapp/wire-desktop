@@ -89,6 +89,7 @@ const customProtocolHandler = new CustomProtocolHandler();
 // Config
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
+const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
 const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
@@ -101,9 +102,13 @@ if (argv[config.ARGUMENT.VERSION]) {
 
 logger.info(`Initializing ${config.name} v${config.version} ...`);
 
-if (argv[config.ARGUMENT.PROXY_SERVER]) {
+if (argv[config.ARGUMENT.PROXY_SERVER] || fileBasedProxyConfig) {
   try {
-    proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_SERVER]);
+    proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_SERVER] || fileBasedProxyConfig);
+    if (!argv[config.ARGUMENT.PROXY_SERVER] && fileBasedProxyConfig) {
+      logger.info(`Using proxy server URL from "init.json": ${fileBasedProxyConfig}`);
+      app.commandLine.appendSwitch('proxy-server', fileBasedProxyConfig);
+    }
     if (!/^(https?|socks[45]):$/.test(proxyInfoArg.protocol)) {
       throw new Error('Invalid protocol for the proxy server specified.');
     }

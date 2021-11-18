@@ -20,9 +20,16 @@
 /**
  * Settings that can be set in Wire's "init.json" file to configure our desktop app.
  *
- * Our configuration file can be found here:
- * - Windows (Production Version): %APPDATA%\Wire\config\init.json
- * - Window (Internal Version): %APPDATA%\WireInternal\config\init.json
+ * Configuration file can be found here:
+ *
+ * Windows
+ * Production: %APPDATA%\Wire\config\init.json
+ * Internal: %APPDATA%\WireInternal\config\init.json
+ *
+ * Mac
+ * Internal: ~/Library/Application\ Support/WireInternal/config/init.json
+ * Production: ~/Library/Containers/com.wearezeta.zclient.mac/Data/Library/Application\ Support/Wire/config/init.json
+ *
  */
 export enum SettingsType {
   /** Start Wire on OS startup? */
@@ -39,6 +46,12 @@ export enum SettingsType {
   FULL_SCREEN = 'fullscreen',
   /** Which language (ISO 639-1) should be used to load our web app (de, en, fr, etc.)? */
   LOCALE = 'locale',
+  /** Defines the proxy server url (e.g. http://127.0.0.1:3128)
+   *
+   * https://github.com/wireapp/wire-desktop/wiki/Start-Parameters#use-authenticated-proxy-server
+   * https://www.electronjs.org/docs/api/command-line-switches#--proxy-serveraddressport
+   */
+  PROXY_SERVER_URL = 'proxyServerURL',
   /** Show menu bar for desktop application? */
   SHOW_MENU_BAR = 'showMenu',
   /** At which part of the screen shall the app be initially rendered? */
