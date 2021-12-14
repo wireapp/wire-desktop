@@ -214,7 +214,6 @@ const initWindowStateKeeper = (): windowStateKeeper.State => {
 // App Windows
 const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
-  const zoomFactor = settings.restore(SettingsType.ZOOM_FACTOR, 1.0);
 
   const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
@@ -340,7 +339,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  main.webContents.setZoomFactor(zoomFactor);
+  main.webContents.setZoomFactor(1);
 
   const mainURL = pathToFileURL(INDEX_HTML);
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));

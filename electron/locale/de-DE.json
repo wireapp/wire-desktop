@@ -90,9 +90,7 @@
   "wrapperRemoveAccount": "Konto entfernen",
   "menuEnableSpellChecking": "Rechtschreibprüfung aktivieren",
   "menuCopyPicture": "Bild kopieren",
-  "menuActualSize": "Originalgröße",
-  "menuZoomIn": "Vergrößern",
-  "menuZoomOut": "Verkleinern",
+
   "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} Konten bereits aktiv",
   "wrapperAddAccountErrorTitleSingular": "Konto bereits aktiv",
   "wrapperAddAccountErrorMessagePlural": "Sie können nur mit {{maximumAccounts}} Konten gleichzeitig angemeldet sein. Melden Sie sich von einem Konto ab, um ein weiteres hinzuzufügen.",
