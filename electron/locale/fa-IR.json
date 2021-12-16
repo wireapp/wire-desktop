@@ -90,10 +90,8 @@
   "wrapperRemoveAccount": "حذف حساب کاربری",
   "menuEnableSpellChecking": "فعال کردن غلط گیر املایی",
   "menuCopyPicture": "کپی تصویر",
-  "menuActualSize": "اندازه واقعی",
-  "menuZoomIn": "بزرگنمايي",
-  "menuZoomOut": "کوچکنمایی",
-  "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} accounts already active",
+
+ "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} accounts already active",
   "wrapperAddAccountErrorTitleSingular": "Account already active",
   "wrapperAddAccountErrorMessagePlural": "You can only be logged in with {{maximumAccounts}} accounts at once. Log out from one to add another.",
   "wrapperAddAccountErrorMessageSingular": "You can only be logged in with one account at once. Log out from this one to add another.",

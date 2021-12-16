@@ -90,9 +90,7 @@
   "wrapperRemoveAccount": "Poista tili",
   "menuEnableSpellChecking": "Käytä oikolukua",
   "menuCopyPicture": "Copy Picture",
-  "menuActualSize": "Alkuperäinen koko",
-  "menuZoomIn": "Lähennä",
-  "menuZoomOut": "Loitonna",
+
   "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} tiliä jo käytössä",
   "wrapperAddAccountErrorTitleSingular": "Tili on jo aktiivinen",
   "wrapperAddAccountErrorMessagePlural": "Voit kirjautua sisään vain {{maximumAccounts}} tililtä kerralla. Kirjaudu ulos tästä lisätäksesi toisen.",

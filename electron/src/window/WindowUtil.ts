@@ -37,12 +37,6 @@ interface Rectangle {
   y: number;
 }
 
-export enum ZOOM_DIRECTION {
-  IN = 'IN',
-  OUT = 'OUT',
-  RESET = 'RESET',
-}
-
 export const pointInRectangle = (point: [number, number], rectangle: Rectangle): boolean => {
   const [xCoordinate, yCoordinate] = point;
   const xInRange = xCoordinate >= rectangle.x && xCoordinate <= rectangle.x + rectangle.width;
@@ -84,24 +78,4 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
   } catch (error) {
     logger.error(error);
   }
-};
-
-export const zoomWindow = (direction: ZOOM_DIRECTION, browserWindow?: BrowserWindow): void => {
-  let newZoomFactor = 1.0;
-
-  switch (direction) {
-    case ZOOM_DIRECTION.IN: {
-      const currentZoomFactor = browserWindow?.webContents.getZoomFactor() || 1.0;
-      newZoomFactor = Math.min(currentZoomFactor + 0.1, 2.0);
-      break;
-    }
-    case ZOOM_DIRECTION.OUT: {
-      const currentZoomFactor = browserWindow?.webContents.getZoomFactor() || 1.0;
-      newZoomFactor = Math.max(currentZoomFactor - 0.1, 0.5);
-      break;
-    }
-  }
-
-  browserWindow?.webContents.setZoomFactor(newZoomFactor);
-  settings.save(SettingsType.ZOOM_FACTOR, newZoomFactor);
 };

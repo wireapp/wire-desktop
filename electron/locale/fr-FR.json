@@ -90,9 +90,7 @@
   "wrapperRemoveAccount": "Supprimer le compte ",
   "menuEnableSpellChecking": "Activer le correcteur orthographique",
   "menuCopyPicture": "Copier l'image",
-  "menuActualSize": "Taille réelle",
-  "menuZoomIn": "Agrandir",
-  "menuZoomOut": "Diminuer",
+
   "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} comptes déjà actifs",
   "wrapperAddAccountErrorTitleSingular": "Compte déjà actif",
   "wrapperAddAccountErrorMessagePlural": "Vous pouvez être connecté·e à {{maximumAccounts}} comptes en même temps. Déconnectez-vous de l'un d'entre eux pour en ajouter un autre.",

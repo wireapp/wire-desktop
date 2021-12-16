@@ -90,9 +90,7 @@
   "wrapperRemoveAccount": "Fiók eltávolítása",
   "menuEnableSpellChecking": "Enable Spell Checking",
   "menuCopyPicture": "Kép másolása",
-  "menuActualSize": "Tényleges méret",
-  "menuZoomIn": "Zoom In",
-  "menuZoomOut": "Zoom Out",
+
   "wrapperAddAccountErrorTitlePlural": "{{maximumAccounts}} accounts already active",
   "wrapperAddAccountErrorTitleSingular": "Account already active",
   "wrapperAddAccountErrorMessagePlural": "You can only be logged in with {{maximumAccounts}} accounts at once. Log out from one to add another.",
