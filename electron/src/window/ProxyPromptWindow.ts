@@ -22,7 +22,7 @@ import {pathToFileURL} from 'url';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import {config} from '../settings/config';
 
 const appPath = path.join(app.getAppPath(), config.electronDirectory);

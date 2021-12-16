@@ -20,7 +20,7 @@
 import * as Electron from 'electron';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import {getText} from '../locale/locale';
+import {getText} from '../locale';
 import {config} from '../settings/config';
 
 export interface CreateSSOAccountDetail {
