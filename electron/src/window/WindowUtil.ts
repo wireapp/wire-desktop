@@ -23,7 +23,7 @@ import {URL} from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';

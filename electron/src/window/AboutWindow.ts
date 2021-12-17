@@ -22,7 +22,7 @@ import {pathToFileURL} from 'url';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {getLogger} from '../logging/getLogger';

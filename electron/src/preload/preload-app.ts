@@ -22,7 +22,7 @@ import {WebAppEvents} from '@wireapp/webapp-events';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';

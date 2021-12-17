@@ -26,7 +26,7 @@ import AdmZip from 'adm-zip';
 import sortJson from 'sort-json';
 
 const rootDir = path.resolve(__dirname, '..');
-const destinationPath = path.join(rootDir, 'electron/locale');
+const destinationPath = path.join(rootDir, 'electron/src/locale');
 const zipDir = path.join(rootDir, 'temp/i18n');
 const zipPath = path.join(zipDir, 'wire-desktop.zip');
 

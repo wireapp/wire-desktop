@@ -47,7 +47,7 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
-import * as locale from './locale/locale';
+import * as locale from './locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLogFilenames} from './logging/loggerUtils';
 import {developerMenu, openDevTools} from './menu/developer';
