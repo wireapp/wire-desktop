@@ -35,6 +35,7 @@ const logger = getLogger(path.basename(__filename));
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
+const appExe = path.join(rootFolder, `${config.name}.exe`);
 
 const linkName = `${config.name}.lnk`;
 const windowsAppData = process.env.APPDATA;
@@ -109,21 +110,13 @@ function createShortcut(location: string): boolean {
   // Squirrel has problems with notification clicks on Windows 10.
   // The easiest workaround is to create shortcuts on our own.
 
-  const pathComponents = path.parse(process.execPath);
-  const cwd = pathComponents.dir;
-
-  // From: C:\Users\Tommaso\AppData\Local\wireinternal\app-3.25.0\WireInternal.exe
-  // to: C:\Users\Tommaso\AppData\Local\wireinternal\WireInternal.exe
-  const targetDir = cwd.split(path.sep).slice(0, -1).join(path.sep);
-  const targetExecutable = path.join(targetDir, pathComponents.base);
-
-  logger.log(`Creating shortcut to: ${targetExecutable}`);
+  logger.log(`Creating shortcut to: ${appExe}`);
 
   return shell.writeShortcutLink(location, 'create', {
     appUserModelId: config.appUserModelId,
-    cwd: cwd,
+    cwd: rootFolder,
     description: 'The most secure collaboration platform',
-    target: targetExecutable,
+    target: appExe,
   });
 }
 
