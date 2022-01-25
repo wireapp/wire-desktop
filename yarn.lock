@@ -1943,15 +1943,15 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-14.14.20.tgz#f7974863edd21d1f8a494a73e8e2b3658615c340"
   integrity sha512-Y93R97Ouif9JEOWPIUyU+eyIdyRqQR0I8Ez1dzku4hDx34NWh4HbtIc3WNzwB1Y9ULvNGeu5B8h8bVL5cAk4/A==
 
-"@types/node@^12.0.12":
-  version "12.20.15"
-  resolved "https://registry.npmjs.org/@types/node/-/node-12.20.15.tgz#10ee6a6a3f971966fddfa3f6e89ef7a73ec622df"
-  integrity sha512-F6S4Chv4JicJmyrwlDkxUdGNSplsQdGwp1A0AJloEVDirWdZOAiRHhovDlsFkKUrquUXhz1imJhXHsf59auyAg==
-
 "@types/node@^13.7.0":
   version "13.13.34"
   resolved "https://registry.npmjs.org/@types/node/-/node-13.13.34.tgz#c9300a1b6560d90817fb2bba650e250116a575f9"
   integrity sha512-g8D1HF2dMDKYSDl5+79izRwRgNPsSynmWMbj50mj7GZ0b7Lv4p8EmZjbo3h0h+6iLr6YmVz9VnF6XVZ3O6V1Ug==
+
+"@types/node@^14.6.2":
+  version "14.18.9"
+  resolved "https://registry.npmjs.org/@types/node/-/node-14.18.9.tgz#0e5944eefe2b287391279a19b407aa98bd14436d"
+  integrity sha512-j11XSuRuAlft6vLDEX4RvhqC0KxNxx6QIyMXNb0vHHSNPXTPeiy3algESWmOOIzEtiEL0qiowPU3ewW9hHVa7Q==
 
 "@types/open-graph@0.2.1":
   version "0.2.1"
@@ -4185,13 +4185,13 @@ electron-winstaller@4.0.1:
     lodash.template "^4.2.2"
     temp "^0.9.0"
 
-electron@11.5.0:
-  version "11.5.0"
-  resolved "https://registry.npmjs.org/electron/-/electron-11.5.0.tgz#f1650543b9d8f2047d3807755bdb120153ed210f"
-  integrity sha512-WjNDd6lGpxyiNjE3LhnFCAk/D9GIj1rU3GSDealVShhkkkPR3Vh4q8ErXGDl1OAO/faomVa10KoFPUN/pLbNxg==
+electron@13.6.7:
+  version "13.6.7"
+  resolved "https://registry.npmjs.org/electron/-/electron-13.6.7.tgz#7e28c54c67ef867426216bd8334bf79bc9ef7d2a"
+  integrity sha512-gzCru/TpyCZ3yRjR/TVKph6Q/rmFZnLszxoeESaiijHjobB0xxr2oTHQLGVhpali2ddrM+4Pz6+MyZwS6Us+xA==
   dependencies:
     "@electron/get" "^1.0.1"
-    "@types/node" "^12.0.12"
+    "@types/node" "^14.6.2"
     extract-zip "^1.0.3"
 
 emittery@^0.8.1:

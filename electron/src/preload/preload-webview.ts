@@ -85,6 +85,16 @@ const subscribeToWebappEvents = (): void => {
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT, clearData);
   });
 
+  window.amplify.subscribe('BARDIA_CLOSE_SSO', () => {
+    logger.info(`Received amplify event BARDIA_CLOSE_SSO event`);
+    ipcRenderer.send('BARDIA_CLOSE_SSO');
+  });
+
+  window.amplify.subscribe('BARDIA_FOCUS_SSO', () => {
+    logger.info(`Received amplify event BARDIA_FOCUS_SSO event`);
+    ipcRenderer.send('BARDIA_FOCUS_SSO');
+  });
+
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.UNREAD_COUNT, (count: string) => {
     logger.info(
       `Received amplify event "${WebAppEvents.LIFECYCLE.UNREAD_COUNT}" (count: "${count}"), forwarding event ...`,
