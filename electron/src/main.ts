@@ -536,6 +536,12 @@ class ElectronWrapperInit {
     }
   };
 
+  sendSSOWindowCloseEvent = () => {
+    if (this.ssoWindow) {
+      main.webContents.send('BARDIA_SSO_WINDOW_CLOSED');
+    }
+  };
+
   // <webview> hardening
   webviewProtection(): void {
     const openLinkInNewWindow = (
@@ -553,6 +559,7 @@ class ElectronWrapperInit {
           singleSignOn
             .then(sso => {
               this.ssoWindow = sso;
+              this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
             })
             .catch(error => console.info(error));
         });

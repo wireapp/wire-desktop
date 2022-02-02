@@ -57,6 +57,13 @@ const subscribeToMainProcessEvents = (): void => {
     }
   });
 
+  ipcRenderer.on('BARDIA_SSO_WINDOW_CLOSED', async () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      await selectedWebview.send('BARDIA_SSO_WINDOW_CLOSED');
+    }
+  });
+
   ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, async (_event, hash: string) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {

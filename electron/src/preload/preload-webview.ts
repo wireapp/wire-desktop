@@ -191,6 +191,10 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
+  ipcRenderer.on('BARDIA_SSO_WINDOW_CLOSED', () => {
+    logger.info(`Received event "BARDIA_SSO_WINDOW_CLOSED", forwarding to window ...`);
+    window.amplify.publish('BARDIA_SSO_WINDOW_CLOSED');
+  });
   ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, (_event, {code, key}: {code: string; key: string}) => {
     logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});

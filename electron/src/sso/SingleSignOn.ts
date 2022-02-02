@@ -74,6 +74,7 @@ export class SingleSignOn {
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
+  public onClose = () => {};
 
   constructor(
     mainBrowserWindow: BrowserWindow,
@@ -178,6 +179,7 @@ export class SingleSignOn {
           throw new Error('Failed to unregister protocol');
         }
       }
+      this.onClose();
       this.session = undefined;
       this.ssoWindow = undefined;
     });
