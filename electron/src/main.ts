@@ -30,6 +30,7 @@ import {
   OnHeadersReceivedListenerDetails,
   WebContents,
 } from 'electron';
+import {WebAppEvents} from '@wireapp/webapp-events';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
@@ -514,8 +515,8 @@ class ElectronWrapperInit {
   constructor() {
     this.logger = getLogger('ElectronWrapperInit');
     this.ssoWindow = null;
-    ipcMain.on('BARDIA_CLOSE_SSO', this.closeSSOWindow);
-    ipcMain.on('BARDIA_FOCUS_SSO', this.focusSSOWindow);
+    ipcMain.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE, this.closeSSOWindow);
+    ipcMain.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS, this.focusSSOWindow);
   }
 
   async run(): Promise<void> {
@@ -538,7 +539,7 @@ class ElectronWrapperInit {
 
   sendSSOWindowCloseEvent = () => {
     if (this.ssoWindow) {
-      main.webContents.send('BARDIA_SSO_WINDOW_CLOSED');
+      main.webContents.send(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
     }
   };
 
