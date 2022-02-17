@@ -30,6 +30,7 @@ import {
   OnHeadersReceivedListenerDetails,
   WebContents,
 } from 'electron';
+import {WebAppEvents} from '@wireapp/webapp-events';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
@@ -117,7 +118,7 @@ if (argv[config.ARGUMENT.PROXY_SERVER] || fileBasedProxyConfig) {
       throw new Error('No protocol for the proxy server specified.');
     }
   } catch (error) {
-    logger.error(`Could not parse authenticated proxy URL: "${error.message}"`);
+    logger.error(`Could not parse authenticated proxy URL: "${(error as any).message}"`);
   }
 }
 
@@ -323,7 +324,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     try {
       main.reload();
     } catch (error) {
-      showErrorDialog(`Could not reload the window: ${error.message}`);
+      showErrorDialog(`Could not reload the window: ${(error as any).message}`);
       logger.error('Could not reload the window:', error);
     }
   });
@@ -334,7 +335,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     try {
       main.reload();
     } catch (error) {
-      showErrorDialog(`Could not reload the window: ${error.message}`);
+      showErrorDialog(`Could not reload the window: ${(error as any).message}`);
       logger.error('Could not reload the window:', error);
     }
   });
@@ -419,7 +420,7 @@ const handleAppEvents = (): void => {
           try {
             main.reload();
           } catch (error) {
-            showErrorDialog(`Could not reload the window: ${error.message}`);
+            showErrorDialog(`Could not reload the window: ${(error as any).message}`);
             logger.error('Could not reload the window:', error);
           }
         });
@@ -454,7 +455,7 @@ const renameFileExtensions = (files: string[], oldExtension: string, newExtensio
         fs.renameSync(file, file.replace(oldExtension, newExtension));
       }
     } catch (error) {
-      logger.error(`Failed to rename log file: "${error.message}"`);
+      logger.error(`Failed to rename log file: "${(error as any).message}"`);
     }
   }
 };
@@ -465,7 +466,7 @@ const renameWebViewLogFiles = (): void => {
     const logFiles = getLogFilenames(LOG_DIR, true);
     renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
-    logger.log(`Failed to read log directory with error: ${error.message}`);
+    logger.log(`Failed to read log directory with error: ${(error as any).message}`);
   }
 };
 
@@ -509,15 +510,38 @@ const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: E
 
 class ElectronWrapperInit {
   logger: logdown.Logger;
+  ssoWindow: SingleSignOn | null;
 
   constructor() {
     this.logger = getLogger('ElectronWrapperInit');
+    this.ssoWindow = null;
+    ipcMain.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE, this.closeSSOWindow);
+    ipcMain.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS, this.focusSSOWindow);
   }
 
   async run(): Promise<void> {
     this.logger.log('webviewProtection init');
     this.webviewProtection();
   }
+
+  closeSSOWindow = () => {
+    if (this.ssoWindow) {
+      this.ssoWindow?.close();
+      this.ssoWindow = null;
+    }
+  };
+
+  focusSSOWindow = () => {
+    if (this.ssoWindow) {
+      this.ssoWindow.focus();
+    }
+  };
+
+  sendSSOWindowCloseEvent = () => {
+    if (this.ssoWindow) {
+      main.webContents.send(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
+    }
+  };
 
   // <webview> hardening
   webviewProtection(): void {
@@ -531,7 +555,15 @@ class ElectronWrapperInit {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
-        return new SingleSignOn(main, event, url, options).init();
+        const singleSignOn = new SingleSignOn(main, event, url, options).init();
+        return new Promise(() => {
+          singleSignOn
+            .then(sso => {
+              this.ssoWindow = sso;
+              this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
+            })
+            .catch(error => console.info(error));
+        });
       }
 
       this.logger.log('Opening an external window from a webview.');
@@ -601,7 +633,7 @@ class ElectronWrapperInit {
                     logFilePath,
                   );
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${(error as any).message}`, error);
                 }
               }
             });
