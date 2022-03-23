@@ -32,13 +32,14 @@ import {config, MINUTE_IN_MILLIS, HOUR_IN_MILLIS} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
 
-const appFolder = path.resolve(process.execPath, '..');
+const appFolder = app.getAppPath();
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
+const mainExePath = path.join(rootFolder, `${config.name}.exe`);
 
 const linkName = `${config.name}.lnk`;
-const windowsAppData = process.env.APPDATA;
-const startShortcut = path.join(app.getPath('appData'), `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
+const windowsAppData = app.getPath('appData');
+const startShortcut = path.join(windowsAppData, `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
 const desktopShortcut = path.join(app.getPath('desktop'), `${config.name}.lnk`);
 const quickLaunchShortcut = windowsAppData
   ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
@@ -110,7 +111,7 @@ function createShortcut(location: string): boolean {
   // The easiest workaround is to create shortcuts on our own.
   return shell.writeShortcutLink(location, 'create', {
     appUserModelId: config.appUserModelId,
-    target: process.execPath,
+    target: mainExePath,
   });
 }
 
