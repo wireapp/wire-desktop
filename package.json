@@ -19,7 +19,7 @@
     "jszip": "3.6.0",
     "lodash": "4.17.21",
     "logdown": "3.3.1",
-    "minimist": "1.2.5",
+    "minimist": "1.2.6",
     "open-graph": "0.2.4",
     "prop-types": "15.7.2",
     "react": "16.14.0",
