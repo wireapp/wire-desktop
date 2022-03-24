@@ -39,6 +39,7 @@ export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   signManually?: boolean,
+  arm64?: boolean,
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -78,6 +79,7 @@ export async function buildMacOSConfig(
     appCategoryType: 'public.app-category.social-networking',
     appCopyright: commonConfig.copyright,
     appVersion: commonConfig.version,
+    arch: arm64 ? 'arm64' : 'x64',
     asar: commonConfig.enableAsar,
     buildVersion: commonConfig.buildNumber,
     darwinDarkModeSupport: true,

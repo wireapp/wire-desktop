@@ -48,6 +48,7 @@ commander
     '-m, --manual-sign',
     `Manually sign and package the app (i.e. don't use electron-packager, macOS and Windows only)`,
   )
+  .option('--arm64', 'Manually sign and package the app (macOS only)')
   .option('-p, --package-json <path>', 'Specify the package.json path', path.join(appSource, 'package.json'))
   .option('-w, --wire-json <path>', 'Specify the wire.json path', path.join(appSource, 'electron/wire.json'))
   .arguments('<platform>')
@@ -56,7 +57,7 @@ commander
 const platform = (commander.args[0] || '').toLowerCase();
 
 (async () => {
-  const {envFile, manualSign, wireJson, packageJson} = commander.opts();
+  const {envFile, manualSign, wireJson, packageJson, arm64} = commander.opts();
 
   switch (platform) {
     case 'win':
@@ -79,7 +80,7 @@ const platform = (commander.args[0] || '').toLowerCase();
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign);
+      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign, arm64);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
