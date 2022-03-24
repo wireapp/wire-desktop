@@ -17,6 +17,7 @@
  *
  */
 
+import type {ArchOption} from 'electron-packager';
 import {createWindowsInstaller, Options as electronWinstallerOptions} from 'electron-winstaller';
 import fs from 'fs-extra';
 import path from 'path';
@@ -38,6 +39,7 @@ export async function buildWindowsInstallerConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   manualSign?: boolean,
+  architecture: ArchOption = 'ia32',
 ): Promise<WindowsInstallerConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -54,7 +56,7 @@ export async function buildWindowsInstallerConfig(
   };
 
   const wInstallerOptions: electronWinstallerOptions = {
-    appDirectory: `${commonConfig.buildDir}/${commonConfig.name}-win32-ia32`,
+    appDirectory: `${commonConfig.buildDir}/${commonConfig.name}-win32-${architecture}`,
     authors: commonConfig.name,
     copyright: commonConfig.copyright,
     description: commonConfig.description,
