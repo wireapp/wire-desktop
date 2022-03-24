@@ -48,6 +48,7 @@ commander
     '-m, --manual-sign',
     `Manually sign and package the app (i.e. don't use electron-packager, macOS and Windows only)`,
   )
+  .option('-a, --architecture <arch>', 'Specify build architecture (e.g. x64, arm64, ...)')
   .option('-p, --package-json <path>', 'Specify the package.json path', path.join(appSource, 'package.json'))
   .option('-w, --wire-json <path>', 'Specify the wire.json path', path.join(appSource, 'electron/wire.json'))
   .arguments('<platform>')
@@ -56,12 +57,12 @@ commander
 const platform = (commander.args[0] || '').toLowerCase();
 
 (async () => {
-  const {envFile, manualSign, wireJson, packageJson} = commander.opts();
+  const {architecture, envFile, manualSign, wireJson, packageJson} = commander.opts();
 
   switch (platform) {
     case 'win':
     case 'windows': {
-      const {windowsConfig, packagerConfig} = await buildWindowsConfig(wireJson, envFile);
+      const {windowsConfig, packagerConfig} = await buildWindowsConfig(wireJson, envFile, architecture);
 
       logEntries(windowsConfig, 'windowsConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
@@ -70,7 +71,7 @@ const platform = (commander.args[0] || '').toLowerCase();
     }
 
     case 'windows-installer': {
-      const {wInstallerOptions} = await buildWindowsInstallerConfig(wireJson, envFile, manualSign);
+      const {wInstallerOptions} = await buildWindowsInstallerConfig(wireJson, envFile, manualSign, architecture);
 
       logEntries(wInstallerOptions, 'wInstallerOptions', toolName);
 
@@ -79,7 +80,7 @@ const platform = (commander.args[0] || '').toLowerCase();
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign);
+      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign, architecture);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
@@ -93,7 +94,7 @@ const platform = (commander.args[0] || '').toLowerCase();
       logEntries(linuxConfig, 'linuxConfig', toolName);
       logEntries(builderConfig, 'builderConfig', toolName);
 
-      return buildLinuxWrapper(builderConfig, linuxConfig, packageJson, wireJson, envFile);
+      return buildLinuxWrapper(builderConfig, linuxConfig, packageJson, wireJson, envFile, architecture);
     }
 
     default: {
