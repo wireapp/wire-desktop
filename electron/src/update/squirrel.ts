@@ -35,7 +35,6 @@ const logger = getLogger(path.basename(__filename));
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
-const mainExePath = path.join(rootFolder, `${config.name}.exe`);
 
 const linkName = `${config.name}.lnk`;
 const windowsAppData = process.env.APPDATA;
@@ -113,7 +112,7 @@ function createShortcut(location: string): boolean {
 
   return shell.writeShortcutLink(location, shortcutExists ? 'replace' : 'create', {
     appUserModelId: config.appUserModelId,
-    target: mainExePath,
+    target: process.execPath,
   });
 }
 
