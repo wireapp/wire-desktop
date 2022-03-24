@@ -38,8 +38,8 @@ const updateDotExe = path.join(rootFolder, 'Update.exe');
 const mainExePath = path.join(rootFolder, `${config.name}.exe`);
 
 const linkName = `${config.name}.lnk`;
-const windowsAppData = app.getPath('appData');
-const startShortcut = path.join(windowsAppData, `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
+const windowsAppData = process.env.APPDATA;
+const startShortcut = path.join(app.getPath('appData'), `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
 const desktopShortcut = path.join(app.getPath('desktop'), `${config.name}.lnk`);
 const quickLaunchShortcut = windowsAppData
   ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
