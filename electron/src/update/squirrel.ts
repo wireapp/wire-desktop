@@ -32,7 +32,7 @@ import {config, MINUTE_IN_MILLIS, HOUR_IN_MILLIS} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
 
-const appFolder = app.getAppPath();
+const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
 const mainExePath = path.join(rootFolder, `${config.name}.exe`);
