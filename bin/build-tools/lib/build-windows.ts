@@ -17,7 +17,7 @@
  *
  */
 
-import electronPackager from 'electron-packager';
+import electronPackager, {ArchOption} from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -37,6 +37,7 @@ interface WindowsConfigResult {
 export async function buildWindowsConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
+  architecture: ArchOption = 'ia32',
 ): Promise<WindowsConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -54,7 +55,7 @@ export async function buildWindowsConfig(
   const packagerConfig: electronPackager.Options = {
     appCopyright: commonConfig.copyright,
     appVersion: commonConfig.version,
-    arch: 'ia32',
+    arch: architecture,
     asar: commonConfig.enableAsar,
     buildVersion: commonConfig.buildNumber,
     dir: '.',

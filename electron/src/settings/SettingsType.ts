@@ -54,6 +54,4 @@ export enum SettingsType {
   SHOW_MENU_BAR = 'showMenu',
   /** At which part of the screen shall the app be initially rendered? */
   WINDOW_BOUNDS = 'bounds',
-  /** Factor for "Zoom In" our "Zoom Out" (makes our UI easier to read). */
-  ZOOM_FACTOR = 'zoomFactor',
 }

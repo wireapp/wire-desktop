@@ -29,7 +29,7 @@ import {
 } from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
-import * as locale from '../../locale/locale';
+import * as locale from '../../locale';
 import {config} from '../../settings/config';
 
 interface ElectronMenuWithImageAndTime extends ElectronMenu {

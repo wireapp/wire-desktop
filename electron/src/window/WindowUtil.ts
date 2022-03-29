@@ -23,7 +23,7 @@ import {URL} from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
@@ -35,12 +35,6 @@ interface Rectangle {
   width: number;
   x: number;
   y: number;
-}
-
-export enum ZOOM_DIRECTION {
-  IN = 'IN',
-  OUT = 'OUT',
-  RESET = 'RESET',
 }
 
 export const pointInRectangle = (point: [number, number], rectangle: Rectangle): boolean => {
@@ -84,24 +78,4 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
   } catch (error) {
     logger.error(error);
   }
-};
-
-export const zoomWindow = (direction: ZOOM_DIRECTION, browserWindow?: BrowserWindow): void => {
-  let newZoomFactor = 1.0;
-
-  switch (direction) {
-    case ZOOM_DIRECTION.IN: {
-      const currentZoomFactor = browserWindow?.webContents.getZoomFactor() || 1.0;
-      newZoomFactor = Math.min(currentZoomFactor + 0.1, 2.0);
-      break;
-    }
-    case ZOOM_DIRECTION.OUT: {
-      const currentZoomFactor = browserWindow?.webContents.getZoomFactor() || 1.0;
-      newZoomFactor = Math.max(currentZoomFactor - 0.1, 0.5);
-      break;
-    }
-  }
-
-  browserWindow?.webContents.setZoomFactor(newZoomFactor);
-  settings.save(SettingsType.ZOOM_FACTOR, newZoomFactor);
 };

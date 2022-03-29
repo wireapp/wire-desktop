@@ -74,6 +74,7 @@ export class SingleSignOn {
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
+  public onClose = () => {};
 
   constructor(
     mainBrowserWindow: BrowserWindow,
@@ -89,7 +90,7 @@ export class SingleSignOn {
     this.windowOriginUrl = new URL(windowOriginURL);
   }
 
-  public readonly init = async (): Promise<void> => {
+  public readonly init = async (): Promise<SingleSignOn> => {
     // Create a ephemeral and isolated session
     this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
 
@@ -114,6 +115,7 @@ export class SingleSignOn {
     if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
       this.ssoWindow.webContents.openDevTools({mode: 'detach'});
     }
+    return this;
   };
 
   private createBrowserWindow(): BrowserWindow {
@@ -177,6 +179,7 @@ export class SingleSignOn {
           throw new Error('Failed to unregister protocol');
         }
       }
+      this.onClose();
       this.session = undefined;
       this.ssoWindow = undefined;
     });
@@ -211,6 +214,27 @@ export class SingleSignOn {
 
     return ssoWindow;
   }
+
+  close = () => {
+    (async () => {
+      if (this.session) {
+        await this.wipeSessionData();
+        const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
+        if (!unregisterSuccess) {
+          throw new Error('Failed to unregister protocol');
+        }
+      }
+      this.ssoWindow?.close();
+      this.session = undefined;
+      this.ssoWindow = undefined;
+    })()
+      .then(console.info)
+      .catch(console.info);
+  };
+
+  focus = () => {
+    this.ssoWindow?.focus();
+  };
 
   // Ensure authenticity of the window from within the code
   public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;

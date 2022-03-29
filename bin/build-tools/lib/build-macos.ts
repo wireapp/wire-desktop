@@ -18,7 +18,7 @@
  */
 
 import {flatAsync as buildPkg} from 'electron-osx-sign';
-import electronPackager from 'electron-packager';
+import electronPackager, {ArchOption} from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -39,6 +39,7 @@ export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   signManually?: boolean,
+  architecture: ArchOption = 'x64',
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -78,6 +79,7 @@ export async function buildMacOSConfig(
     appCategoryType: 'public.app-category.social-networking',
     appCopyright: commonConfig.copyright,
     appVersion: commonConfig.version,
+    arch: architecture,
     asar: commonConfig.enableAsar,
     buildVersion: commonConfig.buildNumber,
     darwinDarkModeSupport: true,

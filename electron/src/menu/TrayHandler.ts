@@ -20,7 +20,7 @@
 import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron';
 import * as path from 'path';
 
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import {linuxDesktop, platform} from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';

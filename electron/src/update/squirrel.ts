@@ -108,7 +108,9 @@ function createShortcut(location: string): boolean {
   // As documented in https://github.com/electron/windows-installer/issues/296,
   // Squirrel has problems with notification clicks on Windows 10.
   // The easiest workaround is to create shortcuts on our own.
-  return shell.writeShortcutLink(location, 'create', {
+  const shortcutExists = fs.existsSync(location);
+
+  return shell.writeShortcutLink(location, shortcutExists ? 'replace' : 'create', {
     appUserModelId: config.appUserModelId,
     target: process.execPath,
   });
@@ -168,6 +170,7 @@ export async function handleSquirrelArgs(): Promise<void> {
     }
 
     case SQUIRREL_EVENT.UPDATED: {
+      createShortcuts();
       await lifecycle.quit();
       return;
     }

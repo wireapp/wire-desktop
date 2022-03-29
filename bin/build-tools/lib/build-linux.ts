@@ -126,16 +126,14 @@ export async function buildLinuxWrapper(
   packageJsonPath: string,
   wireJsonPath: string,
   envFilePath: string,
+  architecture: electronBuilder.Arch = electronBuilder.Arch.x64,
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
   const envFileResolved = path.resolve(envFilePath);
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
-  const targets = electronBuilder.Platform.LINUX.createTarget(
-    linuxConfig.targets,
-    electronBuilder.archFromString('x64'),
-  );
+  const targets = electronBuilder.Platform.LINUX.createTarget(linuxConfig.targets, architecture);
 
   logger.info(
     `Building ${commonConfig.name} ${commonConfig.version} for Linux (target${

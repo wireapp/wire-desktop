@@ -22,7 +22,7 @@ import {WebAppEvents} from '@wireapp/webapp-events';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
@@ -54,6 +54,13 @@ const subscribeToMainProcessEvents = (): void => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
       await selectedWebview.send(action);
+    }
+  });
+
+  ipcRenderer.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED, async () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      await selectedWebview.send(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
     }
   });
 
