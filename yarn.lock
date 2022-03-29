@@ -2016,10 +2016,10 @@
   resolved "https://registry.npmjs.org/@types/sizzle/-/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
   integrity sha512-7EJYyKTL7tFR8+gDbB6Wwz/arpGa0Mywk1TJbNzKzHtzbwVmY4HR9WqS5VV7dsBUKQmPNr192jHr/VpBluj/hg==
 
-"@types/sort-json@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@types/sort-json/-/sort-json-2.0.0.tgz#f0b047ad53e1f0912c6138f86231f83f4c7e0cfa"
-  integrity sha512-UQNdeh+oDfbMUisdZ1oak17hjsSnKP/8ogXg6Pk6le/g2ypt6LcICSprLt74UEx8yb6bF/DZd2HdVwkwZq8jng==
+"@types/sort-json@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@types/sort-json/-/sort-json-2.0.1.tgz#7bdec314c4d807a0f9913c6ab241f3f47c35fa81"
+  integrity sha512-HAeJLCXpLg9aMSCJVQcMR3yU0y2PwJUtWv7vogaz0mEhuK1bhvDX/DeDxl4spPUYpnK7PM7hmX2bU5lsghOJNQ==
 
 "@types/stack-utils@^2.0.0":
   version "2.0.0"
