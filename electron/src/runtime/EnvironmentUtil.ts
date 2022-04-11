@@ -97,9 +97,9 @@ export const linuxDesktop = {
 };
 
 const restoreEnvironment = (): BackendType => {
-  let restoredEnvironment = settings.restore(SettingsType.ENV, BackendType.INTERNAL);
+  let restoredEnvironment = settings.restore(SettingsType.ENV, BackendType.PRODUCTION);
   if (!Object.values(BackendType).includes(restoredEnvironment)) {
-    restoredEnvironment = BackendType.INTERNAL;
+    restoredEnvironment = BackendType.PRODUCTION;
     setEnvironment(restoredEnvironment);
   }
   return restoredEnvironment;
