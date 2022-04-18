@@ -99,7 +99,7 @@
     "nyc": "15.1.0",
     "prettier": "2.3.2",
     "rimraf": "3.0.2",
-    "sinon": "11.1.1",
+    "sinon": "13.0.2",
     "sort-json": "2.0.0",
     "style-loader": "3.0.0",
     "ts-node": "10.0.0",
