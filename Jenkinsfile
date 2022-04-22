@@ -8,15 +8,10 @@ pipeline {
     stages {
         stage('TEST') {
             steps {
-                
+                sh 'echo HEllow'       
             }
         }
     }
    
-    post { 
-        always {
-          sh 'docker-compose down --remove-orphans'
-        }
-    }
 }
 
