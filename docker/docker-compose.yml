@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  b_agent:
+    build:
+      context: "./build_agent"
+      dockerfile: "Dockerfile"
+    working_dir: /app
+    volumes:
+      - ./.docker:/app
+    
+  t_agent:
+    build:
+      context: "./test_agent"
+      dockerfile: "Dockerfile"
+    working_dir: /app
+    volumes:
+      - ./.docker:/app
+      - ./test_agent:/test
