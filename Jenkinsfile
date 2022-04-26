@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('TEST') {
             steps {
-                sh 'exit 1'       
+                sh 'docker-compose up t_agent'       
             }
             post {
                 failure {  
