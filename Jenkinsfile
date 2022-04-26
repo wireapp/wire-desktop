@@ -13,7 +13,7 @@ pipeline {
             post {
                 failure {  
                     sh 'docker-compose down -v --remove-orphans; docker image rm wireapp_t_agent;'
-                     mail bcc: '', body: 'ERROR' from: 'blyszcz@student.agh.edu.pl', subject: 'ERROR TEST', to: 'bartosz.blyszcz@gmail.com';  
+                     mail bcc: '', body: 'ERROR', from: 'blyszcz@student.agh.edu.pl', subject: 'ERROR TEST', to: 'bartosz.blyszcz@gmail.com';  
                  }
              }
         }
