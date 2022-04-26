@@ -8,7 +8,13 @@ pipeline {
     stages {
         stage('TEST') {
             steps {
-                sh 'echo Hello World'       
+                sh 'docker-compose up t_agent'       
+            }
+        }
+
+        stage('END') {
+            steps {
+                sh 'docker-compose down -v --remove-orphans'
             }
         }
     }
