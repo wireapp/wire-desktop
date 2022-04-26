@@ -19,11 +19,10 @@ pipeline {
                  }
              }
         }
-        stage('END') {
-            steps {
-                sh 'docker-compose down -v --remove-orphans || true; docker image rm wireapp_t_agent || true;'
-            }
-        }
+        post {
+            always {  
+                sh 'docker-compose down -v --remove-orphans || true; docker image rm wireapp_t_agent || true; docker image rm wireapp_b_agent || true'
+             }
     }
    
 }
