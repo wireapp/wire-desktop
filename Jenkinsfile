@@ -12,10 +12,10 @@ pipeline {
             }
             post {
                 failure {  
-                    mail bcc: '', body: 'ERROR', from: 'blyszcz@student.agh.edu.pl', subject: 'ERROR TEST', to: 'bartosz.blyszcz@gmail.com'  
+                    mail bcc: '', body: 'ERROR', from: 'blyszcz@student.agh.edu.pl', subject: '[TEST]ERROR', to: 'bartosz.blyszcz@gmail.com'  
                  }
                 success {
-                    mail bcc: '', body: 'ERROR', from: 'blyszcz@student.agh.edu.pl', subject: 'ERROR TEST', to: 'bartosz.blyszcz@gmail.com'  
+                    mail bcc: '', body: 'SUCCESS', from: 'blyszcz@student.agh.edu.pl', subject: '[TEST]SUCCESS', to: 'bartosz.blyszcz@gmail.com'  
                  }
              }
         }
