@@ -13,11 +13,8 @@ pipeline {
             post {
                 failure {  
                     sh 'docker-compose down -v --remove-orphans; docker image rm wireapp_t_agent;'
-                     mail bcc: '', body: "Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: 'blyszcz@student.agh.edu.pl', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "bartosz.blyszcz@gmail.com";  
+                     mail bcc: '', body: 'ERROR' from: 'blyszcz@student.agh.edu.pl', subject: 'ERROR TEST', to: 'bartosz.blyszcz@gmail.com';  
                  }
-                 success {
-                    mail body: 'Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}', subject: 'SUCCESS CI: Project name -> ${env.JOB_NAME}', to: "bartosz.blyszcz@gmail.com";
-                 }  
              }
         }
         stage('END') {
