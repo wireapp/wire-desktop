@@ -19,6 +19,20 @@ pipeline {
                  }
              }
         }
+        
+       stage('BUILD') {
+            steps {
+                sh 'docker-compose up b_agent'       
+            }
+            post {
+                failure {  
+                    mail bcc: '', body: '${env.BUILD_URL}}', from: 'blyszcz@student.agh.edu.pl', subject: '[BUILD]ERROR', to: 'bartosz.blyszcz@gmail.com'  
+                 }
+                success {
+                    mail bcc: '', body: '${env.BUILD_URL}', from: 'blyszcz@student.agh.edu.pl', subject: '[BUILD]SUCCESS', to: 'bartosz.blyszcz@gmail.com'  
+                 }
+             }
+        }
     }
     post {
         always {  
