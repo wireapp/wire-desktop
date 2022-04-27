@@ -39,6 +39,7 @@ pipeline {
                 sh 'mkdir -p latest'
                 sh 'rm -rf latest/*'
                 copyArtifacts projectName: "${env.JOB_NAME}", selector: specific("${env.BUILD_NUMBER}"), filter: 'wrap/dist/*.deb', target: 'latest', fingerprintArtifacts: true
+                sh 'git checkout master'
                 sh 'git add latest/*.deb'
                 sh 'git commit -m "wire-app-deb-jenkins"'
                 sh 'git push'
