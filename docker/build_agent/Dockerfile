@@ -1,6 +1,5 @@
 FROM node:lts
 
-COPY check.sh check.sh
 WORKDIR /app
 
 CMD apt-get update; apt-get upgrade -y; apt-get install -y rpm; \
