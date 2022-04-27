@@ -33,6 +33,21 @@ pipeline {
                  }
              }
         }
+        stage('DEPLOY') {
+            steps {
+                sh 'mkdir -p latest'
+                sh 'rm -rf latest/.'
+                copyArtifact filter: 'wrap/dist/*.deb', target: 'latest', fingerprintArtifacts: true, selector: upstream(), projectName: 'wireapp'
+            }
+            post {
+                    failure {  
+                        mail bcc: '', body: "${env.BUILD_URL}", from: 'blyszcz@student.agh.edu.pl', subject: "ERROR ${env.BUILD_TAG}: DEPLOY", to: 'bartosz.blyszcz@gmail.com'  
+                     }
+                    success {
+                        mail bcc: '', body: "${env.BUILD_URL}", from: 'blyszcz@student.agh.edu.pl', subject: "SUCCESS ${env.BUILD_TAG}: DEPLOY", to: 'bartosz.blyszcz@gmail.com'  
+                     }
+                 }
+        }
     }
     post {
         always {  
