@@ -37,7 +37,7 @@ pipeline {
             steps {
                 sh 'mkdir -p latest'
                 sh 'rm -rf latest/*'
-                copyArtifacts projectName: wireapp, selector: upstream(), filter: '*.deb', target: 'latest', fingerprintArtifacts: true
+                copyArtifacts projectName: 'wireapp', selector: upstream(), filter: '*.deb', target: 'latest', fingerprintArtifacts: true
                 sh 'git add latest/wire.deb'
                 sh 'git commit -m "wire-app-deb-jenkins"'
                 sg 'git push'
