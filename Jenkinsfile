@@ -40,7 +40,7 @@ pipeline {
                 copyArtifacts projectName: "${env.JOB_NAME}", selector: specific("${env.BUILD_NUMBER}"), filter: 'wrap/dist/*.deb', target: 'latest', fingerprintArtifacts: true
                 sh 'git stash push .'
                 sh 'git checkout master'
-                sh 'git pull --rebase'
+                sh 'git pull'
                 sh 'git stash pop'
                 sh 'git add latest/*.deb'
                 sh 'git commit -m "wire-app-deb-jenkins"'
