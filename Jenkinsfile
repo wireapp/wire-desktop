@@ -38,7 +38,7 @@ pipeline {
         stage('DEPLOY') {
             steps {
                 sh 'mkdir -p latest'
-                sh "rm -rf latest; mkdir latest/${env.BUILD_NUMBER}"
+                sh "rm -rf latest; mkdir -p latest/${env.BUILD_NUMBER}"
                 copyArtifacts projectName: "${env.JOB_NAME}", selector: specific("${env.BUILD_NUMBER}"), filter: 'wrap/dist/*.deb', target: 'latest', fingerprintArtifacts: true
                 sh "tar cvf wireapp.tar latest/${env.BUILD_NUMBER}/wrap/dist/*.deb; rm -rf latest || true;"
                 sh 'git stash push .'
