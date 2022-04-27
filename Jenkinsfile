@@ -38,14 +38,14 @@ pipeline {
         stage('DEPLOY') {
             steps {
                 sh 'mkdir -p latest'
-                sh 'rm -rf latest; mkdir latest'
+                sh "rm -rf latest; mkdir latest/${env.BUILD_NUMBER}"
                 copyArtifacts projectName: "${env.JOB_NAME}", selector: specific("${env.BUILD_NUMBER}"), filter: 'wrap/dist/*.deb', target: 'latest', fingerprintArtifacts: true
-                sh 'tar cvf wireapp.tar latest/wrap/dist/*.deb; rm latest/wrap/dist/*.deb || true;'
+                sh "tar cvf wireapp.tar latest/${env.BUILD_NUMBER}/wrap/dist/*.deb; rm -rf latest || true;"
                 sh 'git stash push .'
                 sh 'git checkout master'
                 sh 'git pull'
                 sh 'git stash pop'
-                sh 'git add latest/*.deb'
+                sh 'git add wireapp.tar'
                 sh 'git commit -m "wire-app-deb-jenkins"'
                 sh 'GIT_CURL_VERBOSE=1 git push'
             }
