@@ -8,7 +8,8 @@ pipeline {
     stages {
         stage('BUILD') {
             steps {
-                sh 'docker-compose up b_agent'       
+                sh 'docker-compose up b_agent'   
+                sh 'git config user.email "jenkins@wireapp.com"; git config user.name "jenkins_wireapp"'    
             }
             post {
                 failure {  
