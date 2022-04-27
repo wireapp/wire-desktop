@@ -36,7 +36,7 @@ pipeline {
         stage('DEPLOY') {
             steps {
                 sh 'mkdir -p latest'
-                sh 'rm -rf latest/.'
+                sh 'rm -rf latest/*'
                 copyArtifact filter: 'wrap/dist/*.deb', target: 'latest', fingerprintArtifacts: true, selector: upstream(), projectName: 'wireapp'
             }
             post {
