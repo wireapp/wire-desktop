@@ -9,6 +9,8 @@ pipeline {
         stage('BUILD') {
             steps {
                 sh 'docker-compose up b_agent'
+                sh 'git config http.version HTTP/1.1'
+                sh 'git config http.postBuffer 157286400'
             }
             post {
                 failure {  
