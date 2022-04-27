@@ -12,10 +12,10 @@ pipeline {
             }
             post {
                 failure {  
-                    mail bcc: '', body: "${env.BUILD_URL} <br> ${env.BUILD_LOG}", from: 'blyszcz@student.agh.edu.pl', subject: '[BUILD]ERROR', to: 'bartosz.blyszcz@gmail.com'  
+                    mail bcc: '', body: "${env.BUILD_URL}", from: 'blyszcz@student.agh.edu.pl', subject: "[BUILD-${env.BUILD_TAG}]ERROR", to: 'bartosz.blyszcz@gmail.com'  
                  }
                 success {
-                    mail bcc: '', body: "${env.BUILD_URL} <br> ${env.BUILD_LOG}", from: 'blyszcz@student.agh.edu.pl', subject: '[BUILD]SUCCESS', to: 'bartosz.blyszcz@gmail.com'  
+                    mail bcc: '', body: "${env.BUILD_URL}", from: 'blyszcz@student.agh.edu.pl', subject: "[BUILD-${env.BUILD_TAG}]SUCCESS", to: 'bartosz.blyszcz@gmail.com'  
                  }
              }
         }
@@ -25,10 +25,10 @@ pipeline {
             }
             post {
                 failure {  
-                    mail bcc: '', body: "${env.BUILD_URL} <br> ${env.BUILD_LOG}", from: 'blyszcz@student.agh.edu.pl', subject: '[TEST]ERROR', to: 'bartosz.blyszcz@gmail.com'  
+                    mail bcc: '', body: "${env.BUILD_URL}", from: 'blyszcz@student.agh.edu.pl', subject: "[TEST-${env.BUILD_TAG}]ERROR", to: 'bartosz.blyszcz@gmail.com'  
                  }
                 success {
-                    mail bcc: '', body: "${env.BUILD_URL} <br> ${env.BUILD_LOG}", from: 'blyszcz+jeknins@student.agh.edu.pl', subject: '[TEST]SUCCESS', to: 'bartosz.blyszcz@gmail.com'  
+                    mail bcc: '', body: "${env.BUILD_URL}", from: 'blyszcz@student.agh.edu.pl', subject: "[TEST-${env.BUILD_TAG}]SUCCESS", to: 'bartosz.blyszcz@gmail.com'  
                  }
              }
         }
