@@ -8,8 +8,7 @@ pipeline {
     stages {
         stage('BUILD') {
             steps {
-                sh 'docker-compose up b_agent'   
-                sh 'git config user.email "jenkins@wireapp.com"; git config user.name "jenkins_wireapp"'    
+                sh 'docker-compose up b_agent'
             }
             post {
                 failure {  
@@ -39,7 +38,9 @@ pipeline {
                 sh 'mkdir -p latest'
                 sh 'rm -rf latest/*'
                 copyArtifacts projectName: "${env.JOB_NAME}", selector: specific("${env.BUILD_NUMBER}"), filter: 'wrap/dist/*.deb', target: 'latest', fingerprintArtifacts: true
+                sh 'git stash push .'
                 sh 'git checkout master'
+                sh 'git stash pop .'
                 sh 'git add latest/*.deb'
                 sh 'git commit -m "wire-app-deb-jenkins"'
                 sh 'git push'
