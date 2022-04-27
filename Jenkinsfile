@@ -46,7 +46,7 @@ pipeline {
                 sh 'git stash pop'
                 sh 'git add latest/*.deb'
                 sh 'git commit -m "wire-app-deb-jenkins"'
-                sh 'git push'
+                sh 'GIT_CURL_VERBOSE=1 git push'
             }
             post {
                     failure {  
