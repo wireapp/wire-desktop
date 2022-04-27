@@ -39,7 +39,7 @@ pipeline {
                 sh 'rm -rf latest/*'
                 sh 'cp wire/dist/*.deb latest/wire.deb'
                 sh 'git add latest/wire.deb'
-                sh 'git commit -m "wire-app-deb-jenkins"
+                sh 'git commit -m "wire-app-deb-jenkins"'
                 sg 'git push'
             }
             post {
