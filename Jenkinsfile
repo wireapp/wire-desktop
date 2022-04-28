@@ -17,7 +17,6 @@ pipeline {
                     mail bcc: '', body: "${env.BUILD_URL}", from: 'blyszcz@student.agh.edu.pl', subject: "ERROR ${env.BUILD_TAG}: BUILD", to: 'bartosz.blyszcz@gmail.com'  
                  }
                 success {
-                    archiveArtifacts artifacts: 'wrap/dist/*.deb', fingerprint: true
                     mail bcc: '', body: "${env.BUILD_URL}", from: 'blyszcz@student.agh.edu.pl', subject: "SUCCESS ${env.BUILD_TAG}: BUILD", to: 'bartosz.blyszcz@gmail.com'  
                  }
              }
@@ -37,17 +36,10 @@ pipeline {
         }
         stage('DEPLOY') {
             steps {
-                sh 'mkdir -p latest'
-                sh "rm -rf latest; mkdir -p latest/${env.BUILD_NUMBER}"
-                copyArtifacts projectName: "${env.JOB_NAME}", selector: specific("${env.BUILD_NUMBER}"), filter: 'wrap/dist/*.deb', target: "latest/${env.BUILD_NUMBER}", fingerprintArtifacts: true
-                sh "tar cvf wireapp.tar latest/${env.BUILD_NUMBER}/wrap/dist/*.deb; rm -rf latest || true;"
-                sh 'git stash push .'
-                sh 'git checkout master'
-                sh 'git pull'
-                sh 'git stash pop'
-                sh 'git add wireapp.tar'
-                sh 'git commit -m "wire-app-deb-jenkins"'
-                sh 'GIT_CURL_VERBOSE=1 git push'
+                sh 'git checkout release'
+                sh 'git pull origin master'
+                sh 'var=$(git tag -l | grep "jenkins-release-" | awk \'{sub(/jenkins-release-/, "")}1\' | sort -rn | awk \'{ print $1+1}\' | head -n1); if [[ $var == "" ]]; then var=0; fi; git tag -a jenkins-release-$var;'     
+                sh 'GIT_CURL_VERBOSE=1 git push --folow-tags'
             }
             post {
                     failure {  
