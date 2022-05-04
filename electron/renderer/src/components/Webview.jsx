@@ -78,7 +78,7 @@ const Webview = ({
 
   useEffect(() => {
     const newUrl = getEnvironmentUrl(account);
-    console.info(`Loading WebApp URL "${newUrl}" ...`);
+    console.info(`Loading WebApp URL blaalhah"${newUrl}" ...`);
     if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {
@@ -150,6 +150,7 @@ const Webview = ({
     const onIpcMessage = ({channel, args}) => {
       const accountId = account.id;
 
+      console.log('channel', channel);
       switch (channel) {
         case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
           const [customUrl] = args;

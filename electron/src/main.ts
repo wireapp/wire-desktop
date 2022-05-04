@@ -553,7 +553,7 @@ class ElectronWrapperInit {
       options: BrowserWindowConstructorOptions,
     ): Promise<void> => {
       event.preventDefault();
-
+      console.log(url);
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
         const singleSignOn = new SingleSignOn(main, event, url, options).init();
         return new Promise(() => {
