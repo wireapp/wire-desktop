@@ -97,7 +97,6 @@ const conversationTemplate: MenuItemConstructorOptions = {
     },
     separatorTemplate,
     {
-      accelerator: 'CmdOrCtrl+K',
       click: (_menuItem, browserWindow) =>
         browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PING),
       label: locale.getText('menuPing'),
