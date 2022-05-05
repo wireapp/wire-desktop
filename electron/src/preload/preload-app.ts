@@ -46,10 +46,10 @@ const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, async (_event, {code, key}: {code: string; key: string}) => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {
-      setTimeout(async () => {
-        console.log('testing');
-        await selectedWebview.send(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
-      }, 5000);
+      // setTimeout(async () => {
+      console.log(code, key, 'preload app subscribe');
+      await selectedWebview.send(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
+      // }, 5000);
     }
   });
 

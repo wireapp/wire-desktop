@@ -95,6 +95,7 @@ const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.P
 const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
+console.log(argv, 'args in main');
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
@@ -256,6 +257,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   }
 
   if (customProtocolHandler.hashLocation) {
+    console.log(customProtocolHandler);
     webappURL.hash = customProtocolHandler.hashLocation;
   }
 
@@ -553,7 +555,7 @@ class ElectronWrapperInit {
       options: BrowserWindowConstructorOptions,
     ): Promise<void> => {
       event.preventDefault();
-      console.log(url);
+
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
         const singleSignOn = new SingleSignOn(main, event, url, options).init();
         return new Promise(() => {

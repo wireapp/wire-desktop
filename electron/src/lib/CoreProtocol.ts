@@ -61,6 +61,7 @@ export class CustomProtocolHandler {
         await this.handleSSOLogin(route);
       } else if (route.host === JOIN_CONVERSATION_FLOW) {
         logger.info('Deep link is a conversation join link, triggering join ...');
+        console.log('route handler host = conversation_join');
         await this.handleJoinConversation(route);
       } else if (route.host === START_LOGIN_FLOW) {
         logger.info('Deep link is a start login link, triggering new account ...');
@@ -99,7 +100,7 @@ export class CustomProtocolHandler {
       logger.info('Joining conversation ...');
       const code = route.searchParams.get('code');
       const key = route.searchParams.get('key');
-
+      console.log('hello i am in the core protocol, generating an event');
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
       } catch (error) {
@@ -137,11 +138,13 @@ export class CustomProtocolHandler {
     if (platform.IS_MAC_OS) {
       app.on('open-url', async (event, url) => {
         event.preventDefault();
+        console.log('starging up with deeplink on Open');
         await this.dispatchDeepLink(url);
       });
     } else {
       app.once('ready', async () => {
         logger.info('App ready, looking for deep link in arguments ...');
+        console.log('starting up with deeplink on once ready');
         const deepLink = this.findDeepLink(process.argv);
         if (deepLink) {
           await this.dispatchDeepLink(deepLink);
