@@ -232,6 +232,7 @@ const Webview = ({
     <>
       <LoadingSpinner visible={!!account.visible} webviewRef={webviewRef} />
       <webview
+        allowpopups="true"
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
         visible={String(!!account.visible)}

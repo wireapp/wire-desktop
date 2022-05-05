@@ -25,12 +25,13 @@ import {
   MenuItemConstructorOptions,
   WebContents,
   nativeImage,
-  remote,
 } from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale';
 import {config} from '../../settings/config';
+
+const remote = require('@electron/remote');
 
 interface ElectronMenuWithImageAndTime extends ElectronMenu {
   image?: string;

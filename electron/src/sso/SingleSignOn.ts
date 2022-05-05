@@ -149,7 +149,6 @@ export class SingleSignOn {
         experimentalFeatures: false,
         images: true,
         javascript: true,
-        nativeWindowOpen: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         offscreen: false,
@@ -164,7 +163,6 @@ export class SingleSignOn {
         webSecurity: true,
         webgl: false,
         webviewTag: false,
-        worldSafeExecuteJavaScript: true,
       },
       width: this.windowOptions.width || 480,
     });

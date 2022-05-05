@@ -17,7 +17,7 @@
  *
  */
 
-import {desktopCapturer, ipcRenderer, webFrame, remote} from 'electron';
+import {desktopCapturer, ipcRenderer, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
@@ -26,6 +26,7 @@ import type {Data as OpenGraphResult} from 'open-graph';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+const remote = require('@electron/remote');
 
 interface TeamAccountInfo {
   accentID: number;

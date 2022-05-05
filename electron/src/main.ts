@@ -23,13 +23,15 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  Filter,
+  WebRequestFilter,
   HeadersReceivedResponse,
   ipcMain,
   Menu,
   OnHeadersReceivedListenerDetails,
   WebContents,
 } from 'electron';
+import * as remoteMain from '@electron/remote/main';
+
 import {WebAppEvents} from '@wireapp/webapp-events';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
@@ -68,6 +70,8 @@ import * as WindowUtil from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
 import {getOpenGraphDataAsync} from './lib/openGraph';
+
+remoteMain.initialize();
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -229,7 +233,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     webPreferences: {
       backgroundThrottling: false,
       contextIsolation: false,
-      enableRemoteModule: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -242,6 +245,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   };
 
   main = new BrowserWindow(options);
+
+  remoteMain.enable(main.webContents);
+
   main.setMenuBarVisibility(showMenuBar);
 
   mainWindowState.manage(main);
@@ -583,6 +589,10 @@ class ElectronWrapperInit {
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
     app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
+      remoteMain.enable(contents);
+      // main.webContents.on('did-attach-webview', (event, webContents) => {
+      //   webContents.on('new-window', openLinkInNewWindow);
+      // });
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
@@ -592,13 +602,11 @@ class ElectronWrapperInit {
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.contextIsolation = false;
-            webPreferences.enableRemoteModule = true;
             webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
-            webPreferences.worldSafeExecuteJavaScript = true;
           });
           break;
         }
@@ -607,7 +615,6 @@ class ElectronWrapperInit {
             this.logger.log('Found proxy settings in arguments, applying settings on the webview...');
             await applyProxySettings(proxyInfoArg, contents);
           }
-
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
@@ -658,7 +665,7 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter: Filter = {
+            const filter: WebRequestFilter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 
