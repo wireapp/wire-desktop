@@ -196,7 +196,6 @@ const subscribeToMainProcessEvents = (): void => {
     window.amplify.publish(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
   });
   ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, (_event, {code, key}: {code: string; key: string}) => {
-    console.log('ello i am in the pre-webview, sending an event');
     logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
   });

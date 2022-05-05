@@ -78,7 +78,7 @@ const Webview = ({
 
   useEffect(() => {
     const newUrl = getEnvironmentUrl(account);
-    console.info(`Loading WebApp URL blaalhah"${newUrl}" ...`);
+    console.info(`Loading WebApp URL "${newUrl}" ...`);
     if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {
@@ -150,7 +150,6 @@ const Webview = ({
     const onIpcMessage = ({channel, args}) => {
       const accountId = account.id;
 
-      console.log('channel', channel);
       switch (channel) {
         case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
           const [customUrl] = args;
@@ -216,6 +215,7 @@ const Webview = ({
     };
     const ON_IPC_MESSAGE = 'ipc-message';
     webviewRef.current.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+
     return () => {
       if (webviewRef.current) {
         webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);

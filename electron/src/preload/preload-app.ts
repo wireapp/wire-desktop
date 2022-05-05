@@ -43,15 +43,6 @@ const getWebviewById = (id: string): WebviewTag | null =>
 
 const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
-  ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, async (_event, {code, key}: {code: string; key: string}) => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      // setTimeout(async () => {
-      console.log(code, key, 'preload app subscribe');
-      await selectedWebview.send(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
-      // }, 5000);
-    }
-  });
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (_event, action: string) => {
     const selectedWebview = getSelectedWebview();
@@ -92,6 +83,15 @@ const subscribeToMainProcessEvents = (): void => {
 
   ipcRenderer.on(EVENT_TYPE.ACTION.START_LOGIN, event => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.START_LOGIN));
+  });
+
+  ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, async (_event, {code, key}: {code: string; key: string}) => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      // setTimeout(async () => {
+      await selectedWebview.send(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
+      // }, 10);
+    }
   });
 };
 
