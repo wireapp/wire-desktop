@@ -590,9 +590,6 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
       remoteMain.enable(contents);
-      // main.webContents.on('did-attach-webview', (event, webContents) => {
-      //   webContents.on('new-window', openLinkInNewWindow);
-      // });
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
