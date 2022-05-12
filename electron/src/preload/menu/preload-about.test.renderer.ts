@@ -34,7 +34,7 @@ describe('loadedAboutScreen', () => {
       webappVersion: '2019.04.10.0901',
     });
 
-    assert.ok(sendSpy.secondCall.calledWithExactly(EVENT_TYPE.ABOUT.LOCALE_VALUES, []));
+    assert.ok(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []));
     done();
   });
 });
