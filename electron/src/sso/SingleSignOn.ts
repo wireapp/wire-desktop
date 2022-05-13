@@ -29,6 +29,7 @@ import {
   ProtocolRequest,
   Session,
   session,
+  ipcMain,
   WebContents,
 } from 'electron';
 import * as path from 'path';
@@ -91,6 +92,9 @@ export class SingleSignOn {
   }
 
   public readonly init = async (): Promise<SingleSignOn> => {
+    ipcMain.on('get-sso-window-opener-script', event => {
+      event.returnValue = SingleSignOn.getWindowOpenerScript();
+    });
     // Create a ephemeral and isolated session
     this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
 

@@ -17,8 +17,13 @@
  *
  */
 
-const {webFrame} = require('electron');
-const remote = require('@electron/remote');
-const {SingleSignOn} = remote.require('./sso/SingleSignOn');
+/**
+ * We can not use commonjs require in this module because SSO tab is loaded in a sandbox environment.
+ * More info: https://www.electronjs.org/docs/latest/tutorial/sandbox#preload-scripts
+ * Therefore we have to use sync ipc messages to get window opener script from SingleSignOn instance.
+ */
+import {webFrame, ipcRenderer} from 'electron';
 
-webFrame.executeJavaScript(SingleSignOn.getWindowOpenerScript()).catch((error: Error) => console.warn(error));
+webFrame
+  .executeJavaScript(ipcRenderer.sendSync('get-sso-window-opener-script'))
+  .catch((error: Error) => console.warn(error));
