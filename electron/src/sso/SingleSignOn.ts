@@ -45,11 +45,6 @@ const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 
 export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
-  private static readonly PRELOAD_SSO_JS = path.join(
-    app.getAppPath(),
-    config.electronDirectory,
-    'dist/preload/preload-sso.js',
-  );
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = `${config.customProtocolName}-sso`;
   private static readonly SSO_PROTOCOL_HOST = 'response';
@@ -158,7 +153,6 @@ export class SingleSignOn {
         offscreen: false,
         partition: '',
         plugins: false,
-        preload: SingleSignOn.PRELOAD_SSO_JS,
         sandbox: true,
         scrollBounce: true,
         session: this.session,
