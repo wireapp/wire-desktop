@@ -29,6 +29,7 @@ import {
   Menu,
   OnHeadersReceivedListenerDetails,
   WebContents,
+  desktopCapturer,
 } from 'electron';
 import * as remoteMain from '@electron/remote/main';
 
@@ -243,6 +244,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     // eslint-disable-next-line id-length
     y: mainWindowState.y,
   };
+
+  ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
 
   main = new BrowserWindow(options);
 
