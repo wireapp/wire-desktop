@@ -58,7 +58,9 @@ declare global {
   namespace NodeJS {
     interface Global {
       _ConfigurationPersistence: Record<string, any>;
-      desktopCapturer: DesktopCapturer;
+      desktopCapturer: {
+        getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
+      };
       environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;
     }

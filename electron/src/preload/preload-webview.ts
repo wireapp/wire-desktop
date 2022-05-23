@@ -17,7 +17,7 @@
  *
  */
 
-import {desktopCapturer, ipcRenderer, webFrame, remote} from 'electron';
+import {ipcRenderer, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
@@ -26,6 +26,7 @@ import type {Data as OpenGraphResult} from 'open-graph';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+const remote = require('@electron/remote');
 
 interface TeamAccountInfo {
   accentID: number;
@@ -219,7 +220,13 @@ const _setImmediate = setImmediate;
 
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
-  global.desktopCapturer = desktopCapturer;
+  /**
+   * @todo: This can be improved by polyfilling getDisplayMedia function
+   * Example: https://github.com/electron/electron/issues/16513#issuecomment-602070250
+   */
+  global.desktopCapturer = {
+    getDesktopSources: opts => ipcRenderer.invoke('DESKTOP_CAPTURER_GET_SOURCES', opts),
+  };
   global.environment = EnvironmentUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;

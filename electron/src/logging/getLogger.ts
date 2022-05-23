@@ -24,8 +24,8 @@ import * as path from 'path';
 
 import {config} from '../settings/config';
 
-const mainProcess = process || Electron.remote.process;
-const app = Electron.app || Electron.remote.app;
+const mainProcess = process || require('@electron/remote').process;
+const app = Electron.app || require('@electron/remote').app;
 
 const logDir = path.join(app.getPath('userData'), 'logs');
 const logFile = path.join(logDir, 'electron.log');

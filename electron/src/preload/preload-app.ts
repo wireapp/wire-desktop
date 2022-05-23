@@ -17,7 +17,7 @@
  *
  */
 
-import {ipcRenderer, webFrame, WebviewTag} from 'electron';
+import {ipcRenderer, webFrame} from 'electron';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import * as path from 'path';
 
@@ -37,9 +37,10 @@ window.locale = locale.getCurrent();
 
 window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
-const getSelectedWebview = (): WebviewTag | null => document.querySelector<WebviewTag>('.Webview:not(.hide)');
-const getWebviewById = (id: string): WebviewTag | null =>
-  document.querySelector<WebviewTag>(`.Webview[data-accountid="${id}"]`);
+const getSelectedWebview = (): Electron.WebviewTag | null =>
+  document.querySelector<Electron.WebviewTag>('.Webview:not(.hide)');
+const getWebviewById = (id: string): Electron.WebviewTag | null =>
+  document.querySelector<Electron.WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
 const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
@@ -79,7 +80,7 @@ const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => getSelectedWebview()?.undo());
 
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
-    const webviews = document.querySelectorAll<WebviewTag>('webview');
+    const webviews = document.querySelectorAll<Electron.WebviewTag>('webview');
     webviews.forEach(webview => webview.reload());
   });
 
