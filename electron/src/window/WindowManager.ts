@@ -26,6 +26,7 @@ const logger = getLogger(path.basename(__filename));
 
 export class WindowManager {
   private static primaryWindowId: number | undefined;
+  public static actionsQueue: {action: string; args: any[]}[] = [];
 
   static getPrimaryWindow(): BrowserWindow | undefined {
     const [primaryWindow] = WindowManager.primaryWindowId
@@ -68,6 +69,14 @@ export class WindowManager {
     }
   }
 
+  static flushActionsQueue() {
+    const actions = WindowManager.actionsQueue;
+    if (actions) {
+      actions.forEach(({action, args}) => this.sendActionToPrimaryWindow(action, ...args));
+      WindowManager.actionsQueue = [];
+    }
+  }
+
   static async sendActionAndFocusWindow(action: string, ...args: any[]): Promise<void> {
     await app.whenReady();
 
@@ -75,7 +84,10 @@ export class WindowManager {
 
     if (primaryWindow) {
       if (primaryWindow.webContents.isLoading()) {
-        primaryWindow.webContents.once('did-finish-load', () => primaryWindow.webContents.send(action, ...args));
+        primaryWindow.webContents.once('did-finish-load', () => {
+          WindowManager.actionsQueue = [...WindowManager.actionsQueue, {action, args}];
+          primaryWindow.webContents.send(action, ...args);
+        });
       } else {
         if (!primaryWindow.isVisible()) {
           primaryWindow.show();

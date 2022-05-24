@@ -171,6 +171,9 @@ const bindIpcEvents = (): void => {
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => WindowManager.showPrimaryWindow());
+  ipcMain.on(EVENT_TYPE.WEBAPP.APP_LOADED, _event => {
+    WindowManager.flushActionsQueue();
+  });
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, {count, ignoreFlash}: {count?: number; ignoreFlash?: boolean}) => {
     tray.showUnreadCount(main, count, ignoreFlash);
