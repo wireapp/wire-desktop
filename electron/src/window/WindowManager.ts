@@ -84,8 +84,8 @@ export class WindowManager {
 
     if (primaryWindow) {
       if (primaryWindow.webContents.isLoading()) {
-// If the webapp is not yet loaded we queue the action we want to send. It will be flushed later on by the flushActionsQueue` method
-WindowManager.actionsQueue.push({action, args});
+        // If the webapp is not yet loaded we queue the action we want to send. It will be flushed later on by the flushActionsQueue` method
+        WindowManager.actionsQueue.push({action, args});
       } else {
         if (!primaryWindow.isVisible()) {
           primaryWindow.show();
