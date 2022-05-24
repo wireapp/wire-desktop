@@ -147,14 +147,16 @@ export class CustomProtocolHandler {
         logger.info('No deep link found in arguments.');
       }
     });
-    app.on('second-instance', async (_event, argv) => {
-      logger.info('Second instance detected, looking for deep link in arguments ...');
-      const deepLink = this.findDeepLink(argv);
-      if (deepLink) {
-        await this.dispatchDeepLink(deepLink);
-      } else {
-        logger.info('No deep link found in arguments.');
-      }
-    });
+    if (!platform.IS_MAC_OS) {
+      app.on('second-instance', async (_event, argv) => {
+        logger.info('Second instance detected, looking for deep link in arguments ...');
+        const deepLink = this.findDeepLink(argv);
+        if (deepLink) {
+          await this.dispatchDeepLink(deepLink);
+        } else {
+          logger.info('No deep link found in arguments.');
+        }
+      });
+    }
   }
 }
