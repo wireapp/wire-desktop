@@ -114,7 +114,7 @@ node('master') {
           def appName = 'Wire-Windows-Internal'
           def distributionGroups = 'All-users-of-Wire-Windows-Internal, Collaborators'
           try {
-            withCredentials([string(credentialsId: 'APPCENTER_TOKEN', variable: 'APP_CENTER_TOKEN')]) {
+            withCredentials([string(credentialsId: 'APPCENTER_TOKEN_WINDOWS', variable: 'APP_CENTER_TOKEN')]) {
               zip dir: 'wrap/dist/', glob: '**/*.exe', zipFile: 'WireInternal-Setup.zip'
               files = findFiles(glob: '*.zip')
               echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
@@ -147,7 +147,7 @@ node('master') {
           }
 
           if (!params.Release.equals('Production')) {
-            withCredentials([string(credentialsId: 'APPCENTER_TOKEN', variable: 'APP_CENTER_TOKEN')]) {
+            withCredentials([string(credentialsId: 'APPCENTER_TOKEN_MACOS', variable: 'APP_CENTER_TOKEN')]) {
               files = findFiles(glob: 'wrap/dist/*.pkg')
               echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
               // pkg uploads require build version and build number to be set
