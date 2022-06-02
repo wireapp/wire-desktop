@@ -153,7 +153,7 @@ node('master') {
               // pkg uploads require build version and build number to be set
               withEnv(["PATH+NODE=${NODE}/bin"]) {
                 sh 'npm install -g appcenter-cli'
-                sh 'appcenter distribute release --token=$APP_CENTER_TOKEN -a "Wire/' + appName + '" -f ' + files[0].path + ' -b ' + version + ' -n ' + buildNumber + ' -r "Uploaded by Jenkins deploy job" -g "' + distributionGroups + '"'
+                sh 'appcenter distribute release --token=$APP_CENTER_TOKEN -a "Wire/' + appName + '" -f ' + files[0].path + ' -b ' + version + ' -n ' + buildNumber + ' -r "Uploaded by Jenkins deploy job" -g "' + distributionGroups + '" --debug'
               }
               wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
             }
