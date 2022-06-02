@@ -143,7 +143,7 @@ node('master') {
 
           if (!params.Release.equals('Production')) {
             withCredentials([string(credentialsId: 'APPCENTER_TOKEN', variable: 'APP_CENTER_TOKEN')]) {
-              files = findFiles(glob: 'wrap/dist/*.zip')
+              files = findFiles(glob: 'wrap/dist/*.pkg')
               echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
               appCenter ownerName: 'Wire', apiToken: env.APP_CENTER_TOKEN, appName: appName, distributionGroups: distributionGroups, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
               wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
