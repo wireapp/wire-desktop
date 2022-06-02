@@ -64,7 +64,6 @@ node('master') {
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
-        sh 'npm install -q appcenter-cli'
         sh 'npm install -g yarn'
         sh 'yarn --ignore-scripts'
       }
@@ -119,8 +118,11 @@ node('master') {
               zip dir: 'wrap/dist/', glob: '**/*.exe', zipFile: 'WireInternal-Setup.zip'
               files = findFiles(glob: '*.zip')
               echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
-              // Windows upload needs to set build_version via plugin
-              appCenter ownerName: 'Wire', apiToken: env.APP_CENTER_TOKEN, appName: appName, buildVersion: "${version}", distributionGroups: distributionGroups, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
+              // Windows uploads require build version to be set
+              withEnv(["PATH+NODE=${NODE}/bin"]) {
+                sh 'npm install -q appcenter-cli'
+                sh 'appcenter distribute release --token=$APP_CENTER_TOKEN -a "Wire/' + appName + '" -f ' + files[0].path + ' -b ' + version + ' -r "Uploaded by Jenkins deploy job" -g "' + distributionGroups + '"'
+              }
               wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
             }
           } catch(e) {
@@ -148,7 +150,9 @@ node('master') {
             withCredentials([string(credentialsId: 'APPCENTER_TOKEN', variable: 'APP_CENTER_TOKEN')]) {
               files = findFiles(glob: 'wrap/dist/*.pkg')
               echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
+              // pkg uploads require build version and build number to be set
               withEnv(["PATH+NODE=${NODE}/bin"]) {
+                sh 'npm install -q appcenter-cli'
                 sh 'appcenter distribute release --token=$APP_CENTER_TOKEN -a "Wire/' + appName + '" -f ' + files[0].path + ' -b ' + version + ' -n ' + buildNumber + ' -r "Uploaded by Jenkins deploy job" -g "' + distributionGroups + '"'
               }
               wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
