@@ -64,6 +64,7 @@ node('master') {
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
         sh 'npm -v'
+        sh 'npm install -q appcenter-cli'
         sh 'npm install -g yarn'
         sh 'yarn --ignore-scripts'
       }
@@ -147,7 +148,9 @@ node('master') {
             withCredentials([string(credentialsId: 'APPCENTER_TOKEN', variable: 'APP_CENTER_TOKEN')]) {
               files = findFiles(glob: 'wrap/dist/*.pkg')
               echo("Upload " + files[0].path + " as " + appName + " to appcenter.ms...")
-              appCenter ownerName: 'Wire', apiToken: env.APP_CENTER_TOKEN, appName: appName, buildVersion: "${version}", distributionGroups: distributionGroups, pathToApp: files[0].path, releaseNotes: 'Uploaded by Jenkins deploy job'
+              withEnv(["PATH+NODE=${NODE}/bin"]) {
+                sh 'appcenter distribute release --token=$APP_CENTER_TOKEN -a "Wire/' + appName + '" -f ' + files[0].path + ' -b ' + version + ' -n ' + buildNumber + ' -r "Uploaded by Jenkins deploy job" -g "' + distributionGroups + '"'
+              }
               wireSend secret: "$jenkinsbot_secret", message: "**Uploaded ${files[0].path} as ${appName} ${version} to appcenter.ms**"
             }
           }
