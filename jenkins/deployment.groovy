@@ -22,7 +22,7 @@ Internal
 Production
 Custom (needs special env variables)
 */
-node('master') {
+node('built-in') {
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: 'JENKINSBOT_WRAPPER_CHAT', variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
