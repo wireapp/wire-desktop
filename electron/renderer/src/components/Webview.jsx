@@ -17,14 +17,14 @@
  *
  */
 
-import React, {useEffect, useRef, useState} from 'react';
-import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
-import {SVGIcon} from '@wireapp/react-ui-kit/src/Icon/SVGIcon';
-import {connect} from 'react-redux';
+import React, { useEffect, useRef, useState } from 'react';
+import { ContainerSM, COLOR, H1, Logo, Text, TextLink } from '@wireapp/react-ui-kit';
+import { SVGIcon } from '@wireapp/react-ui-kit/src/Icon/SVGIcon';
+import { connect } from 'react-redux';
 
 import LoadingSpinner from './LoadingSpinner';
-import {EVENT_TYPE} from '../../../src/lib/eventType';
-import {WindowUrl} from '../lib/WindowUrl';
+import { EVENT_TYPE } from '../../../src/lib/eventType';
+import { WindowUrl } from '../lib/WindowUrl';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -33,10 +33,10 @@ import {
   updateAccountData,
   updateAccountLifecycle,
 } from '../actions';
-import {getText, wrapperLocale} from '../lib/locale';
-import {AccountSelector} from '../selector/AccountSelector';
+import { getText, wrapperLocale } from '../lib/locale';
+import { AccountSelector } from '../selector/AccountSelector';
 import './Webview.css';
-import {accountAction} from '../actions/AccountAction';
+import { accountAction } from '../actions/AccountAction';
 
 const getEnvironmentUrl = account => {
   const currentLocation = new URL(window.location.href);
@@ -107,6 +107,7 @@ const Webview = ({
     }
     return () => {
       if (webview) {
+        webview.insertCSS('.conversations-footer { height: 48px !important;}.conversation-input-bar { min-height: 48px !important;}.controls-left { height: 48px !important;}.conversation-input-bar-text,.shadow-input { margin: 12px 0 !important;}.messages { max-width: 100% !important;}#background,.background { background-color: #000 !important;}.background-image { display: none !important;}.conversation-list-cell { height: 48px !important;}.conversation-input-bar-text,.shadow-input { max-width: 100% !important;}')
         webview.removeEventListener('dom-ready', focusWebView);
       }
     };
@@ -147,7 +148,7 @@ const Webview = ({
   }, [webviewRef, account]);
 
   useEffect(() => {
-    const onIpcMessage = ({channel, args}) => {
+    const onIpcMessage = ({ channel, args }) => {
       const accountId = account.id;
 
       switch (channel) {
@@ -240,16 +241,16 @@ const Webview = ({
         partition={account.sessionID ? `persist:${account.sessionID}` : ''}
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}
-        style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
+        style={{ backgroundColor: COLOR.GRAY_LIGHTEN_88 }}
       />
       {webviewError && (
         <div
           className={`Webview${account.visible ? '' : ' hide'}`}
           data-accountid={account.id}
-          style={{display: 'flex'}}
+          style={{ display: 'flex' }}
         >
           <ContainerSM centerText verticalCenter data-uie-name="status-webview-error">
-            <Logo scale={1.68} style={{marginBottom: '80px'}} />
+            <Logo scale={1.68} style={{ marginBottom: '80px' }} />
             <div>
               <SVGIcon realWidth="111" realHeight="101">
                 <g fill="none" fillRule="evenodd">
@@ -268,22 +269,22 @@ const Webview = ({
                 </g>
               </SVGIcon>
             </div>
-            <H1 center style={{marginBottom: '40px', marginTop: '40px'}}>
+            <H1 center style={{ marginBottom: '40px', marginTop: '40px' }}>
               {getText('webviewErrorTitle')}
             </H1>
             <Text block center>
-              {getText('webviewErrorDescription', {url: new URL(webviewError.validatedURL).origin})}
+              {getText('webviewErrorDescription', { url: new URL(webviewError.validatedURL).origin })}
             </Text>
             <Text block center>
               {getText('webviewErrorDescriptionSub')}
             </Text>
-            <Text block center style={{marginTop: '32px'}}>
+            <Text block center style={{ marginTop: '32px' }}>
               {webviewError.errorDescription}
             </Text>
             <TextLink
               block
               center
-              style={{marginTop: '32px'}}
+              style={{ marginTop: '32px' }}
               onClick={() => {
                 setWebviewError(null);
                 webviewRef.current.reload();
