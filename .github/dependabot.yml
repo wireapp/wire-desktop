@@ -9,14 +9,12 @@ updates:
     open-pull-requests-limit: 99
     versioning-strategy: increase
     ignore:
-      # our current Electron version uses Node.js 14
-      - dependency-name: '@types/node'
-        versions:
-          - '> 14.x'
-      # in progress, always takes some time to follow all breaking changes
+      # don't perform major updates for electron automatically
       - dependency-name: electron
-        versions:
-          - '> 18.x'
+        update-types: ['version-update:semver-major']
+      # don't perform major updates for the used node version as it is defined by the used electron version
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
       - dependency-name: electron-builder
         versions:
           - '> 20.x'
