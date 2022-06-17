@@ -3,7 +3,7 @@ def parseJson(def text) {
   new groovy.json.JsonSlurperClassic().parseText(text)
 }
 
-node('master') {
+node('built-in') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
   def NODE = tool name: 'node-v14.15.3', type: 'nodejs'
