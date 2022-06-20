@@ -31,6 +31,7 @@ const remote = require('@electron/remote');
 interface TeamAccountInfo {
   accentID: number;
   availability?: Availability.Type;
+  darkMode: boolean;
   name: string;
   picture?: string;
   teamID?: string;
@@ -127,6 +128,11 @@ const subscribeToWebappEvents = (): void => {
       ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
     }
   });
+
+  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: "dark" | "default") => {
+    ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, theme);
+  });
+  
 };
 
 const subscribeToMainProcessEvents = (): void => {

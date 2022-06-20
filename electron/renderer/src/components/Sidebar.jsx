@@ -48,6 +48,7 @@ const getClassName = account => {
 const Sidebar = ({
   accounts,
   currentAccentID,
+  isDarkMode,
   hasCreatedAccount,
   hasReachedLimitOfAccounts,
   isAddingAccount,
@@ -56,7 +57,7 @@ const Sidebar = ({
 }) => (
   <div
     className="Sidebar"
-    style={hasCreatedAccount ? {} : {display: 'none'}}
+    style={hasCreatedAccount ? {backgroundColor: isDarkMode? "#000" : "#DCE0E3" } : {display: 'none'}}
     onMouseDown={preventFocus()}
     onClick={connected.setAccountContextHidden}
   >
@@ -101,6 +102,7 @@ export default connect(
   state => ({
     accounts: AccountSelector.getAccounts(state),
     currentAccentID: AccountSelector.getSelectedAccountAccentId(state),
+    isDarkMode: AccountSelector.getSelectedAccountDarkMode(state),
     hasCreatedAccount: AccountSelector.hasCreatedAccount(state),
     hasReachedLimitOfAccounts: AccountSelector.hasReachedLimitOfAccounts(state),
     isAddingAccount: AccountSelector.isAddingAccount(state),

@@ -17,43 +17,43 @@
  *
  */
 
-export const STRONG_BLUE = {
-  color: '#2391d3',
+export const BLUE = {
+  color: '#0667c8',
   id: 1,
-  name: 'StrongBlue',
+  name: 'Blue',
 };
 
-export const STRONG_LIME_GREEN = {
-  color: '#00c800',
+export const GREEN = {
+  color: '#1d7833',
   id: 2,
-  name: 'StrongLimeGreen',
+  name: 'Green',
 };
 
-export const VIVID_RED = {
-  color: '#fb0807',
+export const RED = {
+  color: '#c20013',
   id: 4,
-  name: 'VividRed',
+  name: 'Red',
 };
 
-export const BRIGHT_ORANGE = {
-  color: '#ff8900',
+export const AMBER = {
+  color: '#a25915',
   id: 5,
-  name: 'BrightOrange',
+  name: 'Orange',
 };
 
-export const SOFT_PINK = {
-  color: '#fe5ebd',
+export const TURQUOISE = {
+  color: '#01718e',
   id: 6,
-  name: 'SoftPink',
+  name: 'Turquoise',
 };
 
-export const VIOLET = {
-  color: '#9c00fe',
+export const PURPLE = {
+  color: '#8944ab',
   id: 7,
-  name: 'Violet',
+  name: 'Purple',
 };
 
-export const ACCENT_COLORS = [STRONG_BLUE, STRONG_LIME_GREEN, VIVID_RED, BRIGHT_ORANGE, SOFT_PINK, VIOLET];
+export const ACCENT_COLORS = [BLUE, GREEN, RED, AMBER, TURQUOISE, PURPLE];
 
 export const colorFromId = id => {
   const accentColor = ACCENT_COLORS.find(color => color.id === id);
