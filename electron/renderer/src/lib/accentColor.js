@@ -17,38 +17,40 @@
  *
  */
 
+import {COLOR_V2} from '@wireapp/react-ui-kit';
+
 export const BLUE = {
-  color: '#0667c8',
+  color: COLOR_V2.BLUE,
   id: 1,
   name: 'Blue',
 };
 
 export const GREEN = {
-  color: '#1d7833',
+  color: COLOR_V2.GREEN,
   id: 2,
   name: 'Green',
 };
 
 export const RED = {
-  color: '#c20013',
+  color: COLOR_V2.RED,
   id: 4,
   name: 'Red',
 };
 
 export const AMBER = {
-  color: '#a25915',
+  color: COLOR_V2.AMBER,
   id: 5,
   name: 'Orange',
 };
 
 export const TURQUOISE = {
-  color: '#01718e',
+  color: COLOR_V2.TURQUOISE ? COLOR_V2.TURQUOISE : COLOR_V2.PETROL,
   id: 6,
   name: 'Turquoise',
 };
 
 export const PURPLE = {
-  color: '#8944ab',
+  color: COLOR_V2.PURPLE,
   id: 7,
   name: 'Purple',
 };
