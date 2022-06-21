@@ -20,7 +20,7 @@
 import {COLOR_V2} from '@wireapp/react-ui-kit';
 
 export const BLUE = {
-  color: COLOR_V2.BLUE,
+  color: '#0667c8',
   id: 1,
   name: 'Blue',
 };
@@ -44,7 +44,7 @@ export const AMBER = {
 };
 
 export const TURQUOISE = {
-  color: COLOR_V2.TURQUOISE ? COLOR_V2.TURQUOISE : COLOR_V2.PETROL,
+  color: COLOR_V2.TURQUOISE ? COLOR_V2.TURQUOISE : '#5de6ff',
   id: 6,
   name: 'Turquoise',
 };
