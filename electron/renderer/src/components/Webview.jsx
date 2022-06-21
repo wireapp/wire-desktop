@@ -32,6 +32,7 @@ import {
   updateAccountBadgeCount,
   updateAccountData,
   updateAccountLifecycle,
+  updateAccountDarkMode,
 } from '../actions';
 import {getText, wrapperLocale} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
@@ -70,6 +71,7 @@ const Webview = ({
   switchWebview,
   updateAccountData,
   updateAccountLifecycle,
+  updateAccountDarkMode,
 }) => {
   const webviewRef = useRef();
   const [canDelete, setCanDelete] = useState(false);
@@ -211,6 +213,13 @@ const Webview = ({
           onUnreadCountUpdated(accountId, badgeCount);
           break;
         }
+
+        case EVENT_TYPE.UI.THEME_UPDATE: {
+          const [theme] = args;
+          const darkMode = theme === "dark";
+          updateAccountDarkMode(account.id, darkMode);
+          break;
+        }
       }
     };
     const ON_IPC_MESSAGE = 'ipc-message';
@@ -322,5 +331,6 @@ export default connect(
     updateAccountBadgeCount,
     updateAccountData,
     updateAccountLifecycle,
+    updateAccountDarkMode,
   },
 )(Webview);

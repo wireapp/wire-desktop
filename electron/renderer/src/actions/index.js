@@ -36,6 +36,7 @@ export const ActionType = {
   TOGGLE_EDIT_ACCOUNT_VISIBILITY: 'TOGGLE_EDIT_ACCOUNT_VISIBILITY',
   UPDATE_ACCOUNT: 'UPDATE_ACCOUNT',
   UPDATE_ACCOUNT_BADGE: 'UPDATE_ACCOUNT_BADGE',
+  UPDATE_ACCOUNT_DARK_MODE: 'UPDATE_ACCOUNT_DARK_MODE',
   UPDATE_ACCOUNT_LIFECYCLE: 'UPDATE_ACCOUNT_LIFECYCLE',
 };
 
@@ -85,6 +86,12 @@ export const updateAccountBadge = (id, count) => ({
   count,
   id,
   type: ActionType.UPDATE_ACCOUNT_BADGE,
+});
+
+export const updateAccountDarkMode = (id, darkMode) => ({
+  darkMode,
+  id,
+  type: ActionType.UPDATE_ACCOUNT_DARK_MODE,
 });
 
 export const setAccountContextHidden = () => ({
@@ -142,6 +149,7 @@ export const updateAccountData = (id, data) => {
   const accountDataSchema = Joi.object({
     accentID: Joi.number(),
     availability: Joi.number().optional(),
+    darkMode: Joi.boolean().optional(),
     name: Joi.string(),
     picture: Joi.string().optional(),
     teamID: Joi.string().optional(),
