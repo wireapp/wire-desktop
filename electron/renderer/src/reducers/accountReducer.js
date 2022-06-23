@@ -24,6 +24,7 @@ const createAccount = (sessionID, ssoCode = undefined) => ({
   accentID: undefined,
   availability: 0,
   badgeCount: 0,
+  darkMode: true,
   id: generateUUID(),
   isAdding: true,
   lifecycle: undefined,
@@ -99,6 +100,13 @@ export default (state = [createAccount()], action) => {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, badgeCount: action.count} : account;
+      });
+    }
+
+    case ActionType.UPDATE_ACCOUNT_DARK_MODE: {
+      return state.map(account => {
+        const isMatchingAccount = account.id === action.id;
+        return isMatchingAccount ? {...account, darkMode: action.darkMode} : account;
       });
     }
 

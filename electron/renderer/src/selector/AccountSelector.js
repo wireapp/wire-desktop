@@ -25,6 +25,7 @@ export class AccountSelector {
   static getAccountIndex = (state, accountId) =>
     AccountSelector.getAccounts(state).findIndex(account => account.id === accountId);
   static getSelectedAccountAccentId = state => AccountSelector.getSelectedAccount(state)?.accentID;
+  static getSelectedAccountDarkMode = state => AccountSelector.getSelectedAccount(state)?.darkMode;
   static isAddingAccount = state => !!AccountSelector.getUnboundAccount(state);
   static getUnboundAccount = state =>
     !!AccountSelector.getAccounts(state).length &&
