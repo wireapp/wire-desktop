@@ -129,10 +129,9 @@ const subscribeToWebappEvents = (): void => {
     }
   });
 
-  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: "dark" | "default") => {
+  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: 'dark' | 'default') => {
     ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, theme);
   });
-  
 };
 
 const subscribeToMainProcessEvents = (): void => {
@@ -232,6 +231,18 @@ process.once('loaded', () => {
    */
   global.desktopCapturer = {
     getDesktopSources: opts => ipcRenderer.invoke('DESKTOP_CAPTURER_GET_SOURCES', opts),
+  };
+  global.secretsCrypto = {
+    decrypt: async (encrypted: Uint8Array): Promise<Uint8Array> => {
+      const encoder = new TextEncoder();
+      const plainText = await ipcRenderer.invoke('safeStorage.decrypt', encrypted);
+      return encoder.encode(plainText);
+    },
+    encrypt: (value: Uint8Array): Promise<Uint8Array> => {
+      const decoder = new TextDecoder();
+      const strValue = decoder.decode(value);
+      return ipcRenderer.invoke('safeStorage.encrypt', strValue);
+    },
   };
   global.environment = EnvironmentUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
