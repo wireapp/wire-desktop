@@ -147,7 +147,7 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(config.appUserModelId);
 
-// do not show windows firewall prompt
+// do not use mdns for local ip obfuscation to prevent windows firewall prompt
 app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
 
 try {
