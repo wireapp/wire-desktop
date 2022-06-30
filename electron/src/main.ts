@@ -232,7 +232,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     title: config.name,
     titleBarStyle: 'hiddenInset',
     webPreferences: {
-      WebRtcHideLocalIpsWithMdns: false,
       backgroundThrottling: false,
       contextIsolation: false,
       nodeIntegration: false,
@@ -351,6 +350,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   });
 
   main.webContents.setZoomFactor(1);
+
+  // do not show windows firewall prompt
+  main.webContents.setWebRTCIPHandlingPolicy('disable_non_proxied_udp');
 
   const mainURL = pathToFileURL(INDEX_HTML);
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
