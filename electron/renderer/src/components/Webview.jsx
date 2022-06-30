@@ -216,7 +216,7 @@ const Webview = ({
 
         case EVENT_TYPE.UI.THEME_UPDATE: {
           const [theme] = args;
-          const darkMode = theme === "dark";
+          const darkMode = theme === 'dark';
           updateAccountDarkMode(account.id, darkMode);
           break;
         }
@@ -329,8 +329,8 @@ export default connect(
     setConversationJoinData,
     switchWebview: accountAction.switchWebview,
     updateAccountBadgeCount,
+    updateAccountDarkMode,
     updateAccountData,
     updateAccountLifecycle,
-    updateAccountDarkMode,
   },
 )(Webview);
