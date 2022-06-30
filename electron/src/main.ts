@@ -30,6 +30,7 @@ import {
   OnHeadersReceivedListenerDetails,
   WebContents,
   desktopCapturer,
+  safeStorage,
 } from 'electron';
 import * as remoteMain from '@electron/remote/main';
 
@@ -245,7 +246,11 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     y: mainWindowState.y,
   };
 
-  ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
+  ipcMain.handle(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, (event, opts) => desktopCapturer.getSources(opts));
+  ipcMain.handle(EVENT_TYPE.ACTION.ENCRYPT, (event, plaintext: string) => safeStorage.encryptString(plaintext));
+  ipcMain.handle(EVENT_TYPE.ACTION.DECRYPT, (event, encrypted: Uint8Array) =>
+    safeStorage.decryptString(Buffer.from(encrypted)),
+  );
 
   main = new BrowserWindow(options);
 
