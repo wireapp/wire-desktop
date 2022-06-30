@@ -147,6 +147,9 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(config.appUserModelId);
 
+// do not use mdns for local ip obfuscation to prevent windows firewall prompt
+app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
+
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
   const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
