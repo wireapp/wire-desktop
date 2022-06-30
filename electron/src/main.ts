@@ -146,6 +146,9 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(config.appUserModelId);
 
+// do not show windows firewall prompt
+app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
+
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
   const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
@@ -350,9 +353,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   });
 
   main.webContents.setZoomFactor(1);
-
-  // do not show windows firewall prompt
-  main.webContents.setWebRTCIPHandlingPolicy('disable_non_proxied_udp');
 
   const mainURL = pathToFileURL(INDEX_HTML);
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
