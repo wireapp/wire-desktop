@@ -31,6 +31,7 @@ const remote = require('@electron/remote');
 interface TeamAccountInfo {
   accentID: number;
   availability?: Availability.Type;
+  darkMode: boolean;
   name: string;
   picture?: string;
   teamID?: string;
@@ -126,6 +127,10 @@ const subscribeToWebappEvents = (): void => {
     if (data) {
       ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
     }
+  });
+
+  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: 'dark' | 'default') => {
+    ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, theme);
   });
 };
 
@@ -225,7 +230,19 @@ process.once('loaded', () => {
    * Example: https://github.com/electron/electron/issues/16513#issuecomment-602070250
    */
   global.desktopCapturer = {
-    getDesktopSources: opts => ipcRenderer.invoke('DESKTOP_CAPTURER_GET_SOURCES', opts),
+    getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
+  };
+  global.secretsCrypto = {
+    decrypt: async (encrypted: Uint8Array): Promise<Uint8Array> => {
+      const encoder = new TextEncoder();
+      const plainText = await ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
+      return encoder.encode(plainText);
+    },
+    encrypt: (value: Uint8Array): Promise<Uint8Array> => {
+      const decoder = new TextDecoder();
+      const strValue = decoder.decode(value);
+      return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, strValue);
+    },
   };
   global.environment = EnvironmentUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;

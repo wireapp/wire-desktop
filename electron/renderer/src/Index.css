@@ -21,7 +21,10 @@
   --graphite-dark: #323639;
   --graphite: #8d989f;
 
-  --sidebar-color: #1e2022;
+  --text-color: #000;
+  --border-color: #00000040;
+
+  --sidebar-color: #dce0e3;
 
   --z-index-webview-close-button: 100;
   --z-index-webview: 1;
@@ -43,6 +46,12 @@
   --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
+.theme-dark {
+  --sidebar-color: #000;
+  --text-color: #fff;
+  --border-color: #ffffff40;
+}
+
 body {
   margin: 0;
   height: 100vh;
@@ -50,7 +59,7 @@ body {
   background-image: linear-gradient(0, #2391d3, #68b3e0);
   background-repeat: no-repeat;
   font-family: BlinkMacSystemFont, -apple-system, Helvetica Neue, Arial, sans-serif;
-  color: var(--graphite-dark);
+  color: var(--text-color);
 }
 
 #root {

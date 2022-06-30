@@ -64,8 +64,8 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.16);
-  fill: #fff;
+  border: 2px solid var(--border-color);
+  fill: var(--text-color);
   display: flex;
   justify-content: center;
   align-items: center;

@@ -6,7 +6,7 @@
     "@wireapp/certificate-check": "0.4.2",
     "@wireapp/commons": "4.2.7",
     "@wireapp/protocol-messaging": "1.35.0",
-    "@wireapp/react-ui-kit": "7.44.2",
+    "@wireapp/react-ui-kit": "8.6.0",
     "@wireapp/webapp-events": "0.12.0",
     "auto-launch": "5.0.5",
     "axios": "0.21.1",
@@ -105,7 +105,7 @@
     "style-loader": "3.0.0",
     "ts-node": "10.0.0",
     "typescript": "4.3.4",
-    "webpack": "5.40.0",
+    "webpack": "5.73.0",
     "webpack-cli": "4.7.2"
   },
   "homepage": "https://wire.com",

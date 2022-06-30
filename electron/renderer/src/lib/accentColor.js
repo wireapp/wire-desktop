@@ -17,43 +17,45 @@
  *
  */
 
-export const STRONG_BLUE = {
-  color: '#2391d3',
+import {COLOR_V2} from '@wireapp/react-ui-kit';
+
+export const BLUE = {
+  color: '#0667c8',
   id: 1,
-  name: 'StrongBlue',
+  name: 'Blue',
 };
 
-export const STRONG_LIME_GREEN = {
-  color: '#00c800',
+export const GREEN = {
+  color: COLOR_V2.GREEN,
   id: 2,
-  name: 'StrongLimeGreen',
+  name: 'Green',
 };
 
-export const VIVID_RED = {
-  color: '#fb0807',
+export const RED = {
+  color: COLOR_V2.RED,
   id: 4,
-  name: 'VividRed',
+  name: 'Red',
 };
 
-export const BRIGHT_ORANGE = {
-  color: '#ff8900',
+export const AMBER = {
+  color: COLOR_V2.AMBER,
   id: 5,
-  name: 'BrightOrange',
+  name: 'Orange',
 };
 
-export const SOFT_PINK = {
-  color: '#fe5ebd',
+export const TURQUOISE = {
+  color: COLOR_V2.TURQUOISE ? COLOR_V2.TURQUOISE : '#5de6ff',
   id: 6,
-  name: 'SoftPink',
+  name: 'Turquoise',
 };
 
-export const VIOLET = {
-  color: '#9c00fe',
+export const PURPLE = {
+  color: COLOR_V2.PURPLE,
   id: 7,
-  name: 'Violet',
+  name: 'Purple',
 };
 
-export const ACCENT_COLORS = [STRONG_BLUE, STRONG_LIME_GREEN, VIVID_RED, BRIGHT_ORANGE, SOFT_PINK, VIOLET];
+export const ACCENT_COLORS = [BLUE, GREEN, RED, AMBER, TURQUOISE, PURPLE];
 
 export const colorFromId = id => {
   const accentColor = ACCENT_COLORS.find(color => color.id === id);
