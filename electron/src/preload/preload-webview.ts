@@ -230,18 +230,18 @@ process.once('loaded', () => {
    * Example: https://github.com/electron/electron/issues/16513#issuecomment-602070250
    */
   global.desktopCapturer = {
-    getDesktopSources: opts => ipcRenderer.invoke('DESKTOP_CAPTURER_GET_SOURCES', opts),
+    getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
   };
   global.secretsCrypto = {
     decrypt: async (encrypted: Uint8Array): Promise<Uint8Array> => {
       const encoder = new TextEncoder();
-      const plainText = await ipcRenderer.invoke('safeStorage.decrypt', encrypted);
+      const plainText = await ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
       return encoder.encode(plainText);
     },
     encrypt: (value: Uint8Array): Promise<Uint8Array> => {
       const decoder = new TextDecoder();
       const strValue = decoder.decode(value);
-      return ipcRenderer.invoke('safeStorage.encrypt', strValue);
+      return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, strValue);
     },
   };
   global.environment = EnvironmentUtil;

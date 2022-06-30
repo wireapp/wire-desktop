@@ -246,9 +246,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     y: mainWindowState.y,
   };
 
-  ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
-  ipcMain.handle('safeStorage.encrypt', (event, plaintext: string) => safeStorage.encryptString(plaintext));
-  ipcMain.handle('safeStorage.decrypt', (event, encrypted: Uint8Array) =>
+  ipcMain.handle(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, (event, opts) => desktopCapturer.getSources(opts));
+  ipcMain.handle(EVENT_TYPE.ACTION.ENCRYPT, (event, plaintext: string) => safeStorage.encryptString(plaintext));
+  ipcMain.handle(EVENT_TYPE.ACTION.DECRYPT, (event, encrypted: Uint8Array) =>
     safeStorage.decryptString(Buffer.from(encrypted)),
   );
 
