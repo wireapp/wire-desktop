@@ -232,6 +232,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     title: config.name,
     titleBarStyle: 'hiddenInset',
     webPreferences: {
+      WebRtcHideLocalIpsWithMdns: false,
       backgroundThrottling: false,
       contextIsolation: false,
       nodeIntegration: false,
