@@ -56,8 +56,8 @@ const Sidebar = ({
   ...connected
 }) => (
   <div
-    className="Sidebar"
-    style={hasCreatedAccount ? {backgroundColor: isDarkMode? "#000" : "#DCE0E3" } : {display: 'none'}}
+    className={`${isDarkMode ? 'Sidebar theme-dark' : 'Sidebar theme-light'}`}
+    style={!hasCreatedAccount ? {display: 'none'} : {}}
     onMouseDown={preventFocus()}
     onClick={connected.setAccountContextHidden}
   >
@@ -102,10 +102,10 @@ export default connect(
   state => ({
     accounts: AccountSelector.getAccounts(state),
     currentAccentID: AccountSelector.getSelectedAccountAccentId(state),
-    isDarkMode: AccountSelector.getSelectedAccountDarkMode(state),
     hasCreatedAccount: AccountSelector.hasCreatedAccount(state),
     hasReachedLimitOfAccounts: AccountSelector.hasReachedLimitOfAccounts(state),
     isAddingAccount: AccountSelector.isAddingAccount(state),
+    isDarkMode: AccountSelector.getSelectedAccountDarkMode(state),
     isEditAccountMenuVisible: ContextMenuSelector.isEditAccountMenuVisible(state),
   }),
   {
