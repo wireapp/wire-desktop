@@ -24,7 +24,7 @@ import * as path from 'path';
 import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
 
-const app = Electron.app || Electron.remote.app;
+const app = Electron.app || require('@electron/remote').app;
 
 const logger = getLogger(path.basename(__filename));
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
