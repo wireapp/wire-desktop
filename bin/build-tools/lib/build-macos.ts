@@ -224,7 +224,7 @@ export async function manualMacOSSign(
     if (macOSConfig.certNameInstaller) {
       const appExecutable = `${appFile}/Contents/MacOS/${commonConfig.name}`;
       const {stderr: stderrSignExecutable, stdout: stdoutSignExecutable} = await execAsync(
-        `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${inheritEntitlements}' '${appExecutable}'`,
+        `codesign -fs '${macOSConfig.certNameApplication}' --entitlements '${mainEntitlements}' '${appExecutable}'`,
       );
       logger.log(stdoutSignExecutable);
       logger.warn(stderrSignExecutable);
