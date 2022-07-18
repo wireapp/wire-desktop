@@ -57,7 +57,10 @@ function subscribeToThemeChange(): void {
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
+    ipcRenderer.send(EVENT_TYPE.WEBAPP.APP_LOADED);
+    initialThemeCheck();
+  });
   remote.nativeTheme.on('updated', () => updateWebAppTheme());
 }
 
