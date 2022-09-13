@@ -97,7 +97,7 @@ export async function execAsync(command: string): Promise<ExecResult> {
     const execResult = await promisify(exec)(command);
     stdout = execResult.stdout.toString();
     stderr = execResult.stderr.toString();
-  } catch (error) {
+  } catch (error: any) {
     stderr = error.toString();
   }
 
