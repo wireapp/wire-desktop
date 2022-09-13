@@ -200,7 +200,7 @@ export class SingleSignOn {
           const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
           try {
             await LogFactory.writeMessage(message, logFilePath);
-          } catch (error) {
+          } catch (error: any) {
             console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
           }
         }

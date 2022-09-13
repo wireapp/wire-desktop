@@ -70,7 +70,7 @@ export class CustomProtocolHandler {
         logger.info('Triggering hash location change ...');
         this.forwardHashLocation(route);
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error(error);
     }
   }
@@ -88,7 +88,7 @@ export class CustomProtocolHandler {
       const code = route.pathname.trim().substr(1);
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Cannot start SSO flow: ${error.message}`, error);
       }
     }
@@ -102,7 +102,7 @@ export class CustomProtocolHandler {
 
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Cannot join conversation: ${error.message}`, error);
       }
     }
@@ -114,7 +114,7 @@ export class CustomProtocolHandler {
 
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.START_LOGIN);
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Cannot start login flow: ${(error as Error).message}`, error);
       }
     }
