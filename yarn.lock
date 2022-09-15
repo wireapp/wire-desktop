@@ -2769,10 +2769,10 @@
     emotion-normalize "11.0.1"
     react-transition-group "4.4.2"
 
-"@wireapp/webapp-events@0.12.0":
-  version "0.12.0"
-  resolved "https://registry.npmjs.org/@wireapp/webapp-events/-/webapp-events-0.12.0.tgz#ba821bc9f77af67600a19b4102458d7d1c671060"
-  integrity sha512-cw1VmJpRPCl3AfaTZDvdBW+5y7kTa+xZFbRzA/FN3oFFq1iDzRdIVj9q1NWwTihym8gC2YUubcRAAMaOS6vZDw==
+"@wireapp/webapp-events@0.13.2":
+  version "0.13.2"
+  resolved "https://registry.npmjs.org/@wireapp/webapp-events/-/webapp-events-0.13.2.tgz#4274c1b30fd933e4b1ed981b8e1797e245c0b87c"
+  integrity sha512-TLOu6ZKid63dSLUFzO8/CKdC2xajmyR6q3ZJ5oQ9eVuV/4TZ/JtK6s+Kmor3vVmKafIGiIXR00uK5bR80npghQ==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
