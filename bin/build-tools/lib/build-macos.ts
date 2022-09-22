@@ -23,7 +23,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
-import {getCommonConfig} from './commonConfig';
+import {flipElectronFuses, getCommonConfig} from './commonConfig';
 import {CommonConfig, MacOSConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
@@ -159,8 +159,10 @@ export async function buildMacOSWrapper(
 
     logger.log(`Built app in "${buildDir}".`);
 
+    const appFile = path.join(buildDir, `${commonConfig.name}.app`);
+    await flipElectronFuses(appFile);
+
     if (macOSConfig.certNameInstaller) {
-      const appFile = path.join(buildDir, `${commonConfig.name}.app`);
       await fs.ensureDir(commonConfig.distDir);
       const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
 

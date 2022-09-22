@@ -1355,6 +1355,15 @@
   resolved "https://registry.npmjs.org/@discoveryjs/json-ext/-/json-ext-0.5.2.tgz#8f03a22a04de437254e8ce8cc84ba39689288752"
   integrity sha512-HyYEUDeIj5rRQU2Hk5HTB2uHsbRQpF70nvMhVzi+VJR0X+xNEhjPui4/kBf3VeH/wqD28PT4sVOm8qqLjBrSZg==
 
+"@electron/fuses@1.6.1":
+  version "1.6.1"
+  resolved "https://registry.npmjs.org/@electron/fuses/-/fuses-1.6.1.tgz#c639e018202a59e3cd8911fa943e22c63dd3e6fc"
+  integrity sha512-J7kRMlc0vP03uzUuhHNEqffqZMZ6FRe0YGMOJO4kJObmYkOg38mMTvbbktEj+oteH5nfyhbQUkHIYnMSh7T/CQ==
+  dependencies:
+    chalk "^4.1.1"
+    fs-extra "^9.0.1"
+    minimist "^1.2.5"
+
 "@electron/get@^1.14.1":
   version "1.14.1"
   resolved "https://registry.npmjs.org/@electron/get/-/get-1.14.1.tgz#16ba75f02dffb74c23965e72d617adc721d27f40"
