@@ -31,6 +31,7 @@ import {
   WebContents,
   desktopCapturer,
   safeStorage,
+  HandlerDetails,
 } from 'electron';
 import * as remoteMain from '@electron/remote/main';
 
@@ -298,17 +299,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   });
 
   // Handle the new window event in the main Browser Window
-  // TODO: Replace with `webContents.setWindowOpenHandler()`
-  main.webContents.on('new-window', async (event, url) => {
-    event.preventDefault();
-
-    // Ensure the link does not come from a webview
-    if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
-      logger.log('New window was created from a webview, aborting.');
-      return;
-    }
-
-    await WindowUtil.openExternal(url);
+  main.webContents.setWindowOpenHandler(details => {
+    return {action: 'deny'};
   });
 
   main.on('focus', () => {
@@ -563,13 +555,24 @@ class ElectronWrapperInit {
 
   // <webview> hardening
   webviewProtection(): void {
+    const openLinkInNewWindowHandler = (
+      details: HandlerDetails,
+    ): {action: 'deny'} | {action: 'allow'; overrideBrowserWindowOptions?: BrowserWindowConstructorOptions} => {
+      if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
+        return {action: 'allow'};
+      }
+
+      this.logger.log('Opening an external window from a webview.');
+      void WindowUtil.openExternal(details.url);
+      return {action: 'deny'};
+    };
     const openLinkInNewWindow = (
       event: ElectronEvent,
       url: string,
       frameName: string,
       _disposition: string,
       options: BrowserWindowConstructorOptions,
-    ): Promise<void> => {
+    ): Promise<void> | void => {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
@@ -583,9 +586,6 @@ class ElectronWrapperInit {
             .catch(error => console.info(error));
         });
       }
-
-      this.logger.log('Opening an external window from a webview.');
-      return WindowUtil.openExternal(url);
     };
 
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
@@ -626,6 +626,7 @@ class ElectronWrapperInit {
           }
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
+          contents.setWindowOpenHandler(openLinkInNewWindowHandler);
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });
