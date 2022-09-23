@@ -38,6 +38,7 @@ import {getText, wrapperLocale} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
 import './Webview.css';
 import {accountAction} from '../actions/AccountAction';
+/* eslint-disable react/no-unknown-property */
 
 const getEnvironmentUrl = account => {
   const currentLocation = new URL(window.location.href);
@@ -243,17 +244,13 @@ const Webview = ({
     <>
       <LoadingSpinner visible={!!account.visible} webviewRef={webviewRef} />
       <webview
-        /* eslint-disable-next-line react/no-unknown-property */
         allowpopups="true"
-        /* eslint-disable-next-line react/no-unknown-property */
-        visible={String(!!account.visible)}
-        /* eslint-disable-next-line react/no-unknown-property */
-        partition={account.sessionID ? `persist:${account.sessionID}` : ''}
-        /* eslint-disable-next-line react/no-unknown-property */
-        webpreferences="backgroundThrottling=false"
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
+        visible={String(!!account.visible)}
         src={url}
+        partition={account.sessionID ? `persist:${account.sessionID}` : ''}
+        webpreferences="backgroundThrottling=false"
         ref={webviewRef}
         style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
       />
