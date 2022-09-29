@@ -179,7 +179,9 @@ export class SingleSignOn {
 
     // Prevent title updates and new windows
     ssoWindow.on('page-title-updated', event => event.preventDefault());
-    ssoWindow.webContents.on('new-window', event => event.preventDefault());
+    ssoWindow.webContents.setWindowOpenHandler(details => {
+      return {action: 'deny'};
+    });
 
     ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
@@ -198,7 +200,7 @@ export class SingleSignOn {
           const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
           try {
             await LogFactory.writeMessage(message, logFilePath);
-          } catch (error) {
+          } catch (error: any) {
             console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
           }
         }
