@@ -10831,10 +10831,10 @@ uuid@^3.3.2, uuid@^3.3.3:
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-uuidjs@4.2.8:
-  version "4.2.8"
-  resolved "https://registry.npmjs.org/uuidjs/-/uuidjs-4.2.8.tgz#cd42ba57b13c3369f3c3800b4786635da8916e0b"
-  integrity sha512-ric9GPq5dSYq50Cu9PemXiKlRztZLzsdB0NrGTbE8cLSM9PxzObmM/Fghq7g/sfuz3dVF1cwQ1AMt6FeXMaGJw==
+uuidjs@4.2.12:
+  version "4.2.12"
+  resolved "https://registry.npmjs.org/uuidjs/-/uuidjs-4.2.12.tgz#3d50cb03adcc76f9591ad035b9dbd9d982e6ebbe"
+  integrity sha512-FMlqZYG+N9NsMY12YninICIQjZRUbs4ug857ErPPgNeOThauhGELZv5d5da1Nzp65WMzv0gDM4xahsuvlT/ODw==
 
 v8-compile-cache-lib@^3.0.1:
   version "3.0.1"
