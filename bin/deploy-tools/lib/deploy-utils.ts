@@ -17,7 +17,7 @@
  */
 
 import fs from 'fs-extra';
-import globby from 'globby';
+import {globby} from 'globby';
 import isCi from 'is-ci';
 import JSZip from 'jszip';
 import logdown from 'logdown';
