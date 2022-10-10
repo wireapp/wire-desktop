@@ -33,6 +33,7 @@ Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireap
 sudo apt install git npm nodejs
 npm install --global yarn
 ```
+
 ### Clone
 
 ```shell
@@ -108,7 +109,6 @@ All Wire translations are crowdsourced via [Crowdin](https://crowdin.com/project
 
 ### Install wire-desktop under Linux
 
-You can of course use the webapp in your browser, but if you prefer to
-install wire-desktop, continue reading here:
+You can of course use the webapp in your browser, but if you prefer to install wire-desktop, continue reading here:
 
 https://github.com/wireapp/wire-desktop/wiki/How-to-install-Wire-for-Desktop-on-Linux

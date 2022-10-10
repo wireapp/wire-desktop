@@ -39,7 +39,7 @@ export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   signManually?: boolean,
-  architecture: ArchOption = 'x64',
+  architecture: ArchOption = 'universal',
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -89,6 +89,9 @@ export async function buildMacOSConfig(
     icon: 'resources/macos/logo.icns',
     ignore: /electron\/renderer\/src/,
     name: commonConfig.name,
+    osxUniversal: {
+      mergeASARs: true,
+    },
     out: commonConfig.buildDir,
     overwrite: true,
     platform: 'mas',
