@@ -41,7 +41,7 @@ export const downloadLogs = async (bytes: Uint8Array, timestamp: Date = new Date
 };
 
 export const downloadImage = async (bytes: Uint8Array, timestamp?: string): Promise<void> => {
-  const type = imageType(bytes);
+  const type = await imageType(bytes);
   const options: SaveDialogOptions = {};
 
   let filename = suggestFileName(timestamp);
