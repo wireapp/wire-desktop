@@ -3,10 +3,10 @@ def parseJson(def text) {
   new groovy.json.JsonSlurperClassic().parseText(text)
 }
 
-node('master') {
+node('built-in') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def NODE = tool name: 'node-v14.15.3', type: 'nodejs'
+  def NODE = tool name: 'node-v16.17.1', type: 'nodejs'
   def privateAPIResult = ''
 
   def jenkinsbot_secret = ''
@@ -46,7 +46,7 @@ node('master') {
           }
 
           echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/Wire.app"', returnStdout: true
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-universal/Wire.app"', returnStdout: true
           echo privateAPIResult
         } else if (custom) {
           sh 'yarn build:macos'
@@ -55,7 +55,7 @@ node('master') {
           sh 'yarn build:macos:internal'
 
           echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-x64/WireInternal.app"', returnStdout: true
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-universal/WireInternal.app"', returnStdout: true
           echo privateAPIResult
         }
       }
@@ -77,7 +77,7 @@ node('master') {
   stage('Archive build artifacts') {
     if (!production && !custom) {
       // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-x64/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
+      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-universal/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
     }
     archiveArtifacts "wrap/dist/**"
     sh returnStatus: true, script: 'rm -rf wrap/'

@@ -32,11 +32,13 @@ import {
   updateAccountBadgeCount,
   updateAccountData,
   updateAccountLifecycle,
+  updateAccountDarkMode,
 } from '../actions';
 import {getText, wrapperLocale} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
 import './Webview.css';
 import {accountAction} from '../actions/AccountAction';
+/* eslint-disable react/no-unknown-property */
 
 const getEnvironmentUrl = account => {
   const currentLocation = new URL(window.location.href);
@@ -70,6 +72,7 @@ const Webview = ({
   switchWebview,
   updateAccountData,
   updateAccountLifecycle,
+  updateAccountDarkMode,
 }) => {
   const webviewRef = useRef();
   const [canDelete, setCanDelete] = useState(false);
@@ -211,6 +214,15 @@ const Webview = ({
           onUnreadCountUpdated(accountId, badgeCount);
           break;
         }
+
+        case EVENT_TYPE.UI.THEME_UPDATE: {
+          const [theme] = args;
+          const darkMode = theme === 'dark';
+          if (darkMode !== account.darkMode) {
+            updateAccountDarkMode(account.id, darkMode);
+          }
+          break;
+        }
       }
     };
     const ON_IPC_MESSAGE = 'ipc-message';
@@ -232,6 +244,7 @@ const Webview = ({
     <>
       <LoadingSpinner visible={!!account.visible} webviewRef={webviewRef} />
       <webview
+        allowpopups="true"
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
         visible={String(!!account.visible)}
@@ -319,6 +332,7 @@ export default connect(
     setConversationJoinData,
     switchWebview: accountAction.switchWebview,
     updateAccountBadgeCount,
+    updateAccountDarkMode,
     updateAccountData,
     updateAccountLifecycle,
   },

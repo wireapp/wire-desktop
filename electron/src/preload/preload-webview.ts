@@ -17,7 +17,7 @@
  *
  */
 
-import {desktopCapturer, ipcRenderer, webFrame, remote} from 'electron';
+import {ipcRenderer, webFrame} from 'electron';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
@@ -26,16 +26,20 @@ import type {Data as OpenGraphResult} from 'open-graph';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+const remote = require('@electron/remote');
 
 interface TeamAccountInfo {
   accentID: number;
   availability?: Availability.Type;
+  darkMode: boolean;
   name: string;
   picture?: string;
   teamID?: string;
   teamRole: string;
   userID: string;
 }
+
+type Theme = 'dark' | 'default';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -55,7 +59,10 @@ function subscribeToThemeChange(): void {
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
+    ipcRenderer.send(EVENT_TYPE.WEBAPP.APP_LOADED);
+    initialThemeCheck();
+  });
   remote.nativeTheme.on('updated', () => updateWebAppTheme());
 }
 
@@ -83,6 +90,16 @@ const subscribeToWebappEvents = (): void => {
       `Received amplify event "${WebAppEvents.LIFECYCLE.SIGNED_OUT}", (clearData: "${clearData}") forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT, clearData);
+  });
+
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE, () => {
+    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE}" event`);
+    ipcRenderer.send(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE);
+  });
+
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS, () => {
+    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS}" event`);
+    ipcRenderer.send(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS);
   });
 
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.UNREAD_COUNT, (count: string) => {
@@ -115,6 +132,14 @@ const subscribeToWebappEvents = (): void => {
     if (data) {
       ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
     }
+  });
+
+  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: Theme) => {
+    ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, theme);
+  });
+
+  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATED, (properties: {settings: {interface: {theme: Theme}}}) => {
+    ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, properties.settings.interface.theme);
   });
 };
 
@@ -181,6 +206,10 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
+  ipcRenderer.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED, () => {
+    logger.info(`Received event "${WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED}", forwarding to window ...`);
+    window.amplify.publish(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
+  });
   ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, (_event, {code, key}: {code: string; key: string}) => {
     logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
@@ -205,7 +234,25 @@ const _setImmediate = setImmediate;
 
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
-  global.desktopCapturer = desktopCapturer;
+  /**
+   * @todo: This can be improved by polyfilling getDisplayMedia function
+   * Example: https://github.com/electron/electron/issues/16513#issuecomment-602070250
+   */
+  global.desktopCapturer = {
+    getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
+  };
+  global.secretsCrypto = {
+    decrypt: async (encrypted: Uint8Array): Promise<Uint8Array> => {
+      const encoder = new TextEncoder();
+      const plainText = await ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
+      return encoder.encode(plainText);
+    },
+    encrypt: (value: Uint8Array): Promise<Uint8Array> => {
+      const decoder = new TextDecoder();
+      const strValue = decoder.decode(value);
+      return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, strValue);
+    },
+  };
   global.environment = EnvironmentUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;

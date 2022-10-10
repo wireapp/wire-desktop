@@ -29,6 +29,7 @@ import {
   ProtocolRequest,
   Session,
   session,
+  ipcMain,
   WebContents,
 } from 'electron';
 import * as path from 'path';
@@ -44,11 +45,6 @@ const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 
 export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
-  private static readonly PRELOAD_SSO_JS = path.join(
-    app.getAppPath(),
-    config.electronDirectory,
-    'dist/preload/preload-sso.js',
-  );
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
   private static readonly SSO_PROTOCOL = `${config.customProtocolName}-sso`;
   private static readonly SSO_PROTOCOL_HOST = 'response';
@@ -74,6 +70,7 @@ export class SingleSignOn {
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
+  public onClose = () => {};
 
   constructor(
     mainBrowserWindow: BrowserWindow,
@@ -89,7 +86,7 @@ export class SingleSignOn {
     this.windowOriginUrl = new URL(windowOriginURL);
   }
 
-  public readonly init = async (): Promise<void> => {
+  public readonly init = async (): Promise<SingleSignOn> => {
     // Create a ephemeral and isolated session
     this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
 
@@ -114,6 +111,7 @@ export class SingleSignOn {
     if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
       this.ssoWindow.webContents.openDevTools({mode: 'detach'});
     }
+    return this;
   };
 
   private createBrowserWindow(): BrowserWindow {
@@ -147,13 +145,11 @@ export class SingleSignOn {
         experimentalFeatures: false,
         images: true,
         javascript: true,
-        nativeWindowOpen: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         offscreen: false,
         partition: '',
         plugins: false,
-        preload: SingleSignOn.PRELOAD_SSO_JS,
         sandbox: true,
         scrollBounce: true,
         session: this.session,
@@ -162,7 +158,6 @@ export class SingleSignOn {
         webSecurity: true,
         webgl: false,
         webviewTag: false,
-        worldSafeExecuteJavaScript: true,
       },
       width: this.windowOptions.width || 480,
     });
@@ -177,13 +172,16 @@ export class SingleSignOn {
           throw new Error('Failed to unregister protocol');
         }
       }
+      this.onClose();
       this.session = undefined;
       this.ssoWindow = undefined;
     });
 
     // Prevent title updates and new windows
     ssoWindow.on('page-title-updated', event => event.preventDefault());
-    ssoWindow.webContents.on('new-window', event => event.preventDefault());
+    ssoWindow.webContents.setWindowOpenHandler(details => {
+      return {action: 'deny'};
+    });
 
     ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
@@ -202,7 +200,7 @@ export class SingleSignOn {
           const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
           try {
             await LogFactory.writeMessage(message, logFilePath);
-          } catch (error) {
+          } catch (error: any) {
             console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
           }
         }
@@ -212,34 +210,33 @@ export class SingleSignOn {
     return ssoWindow;
   }
 
+  close = () => {
+    (async () => {
+      if (this.session) {
+        await this.wipeSessionData();
+        const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
+        if (!unregisterSuccess) {
+          throw new Error('Failed to unregister protocol');
+        }
+      }
+      this.ssoWindow?.close();
+      this.session = undefined;
+      this.ssoWindow = undefined;
+    })()
+      .then(console.info)
+      .catch(console.info);
+  };
+
+  focus = () => {
+    this.ssoWindow?.focus();
+  };
+
   // Ensure authenticity of the window from within the code
   public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
 
   // Returns an empty string if the origin is a Wire backend
   public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
-
-  // `window.opener` is not available when sandbox is activated,
-  // therefore we need to fake the function on backend area and
-  // redirect the response to a custom protocol
-  public static readonly getWindowOpenerScript = (): string => {
-    return `Object.defineProperty(window, 'opener', {
-      configurable: true, // Needed on Chrome :(
-      enumerable: false,
-      value: Object.freeze({
-        postMessage: message => {
-          const url = new URL('${SingleSignOn.SSO_PROTOCOL}://${SingleSignOn.SSO_PROTOCOL_HOST}/');
-          url.searchParams.set('secret', '${SingleSignOn.loginAuthorizationSecret}');
-          url.searchParams.set('type', message.type);
-          document.location.href = url.toString();
-        }
-      }),
-      writable: false,
-    });0`;
-    // ^-- the `;0` is there on purpose to ensure the resulting value of
-    // `executeJavaScript()` is not used.
-    // See https://github.com/electron/electron/issues/23722.
-  };
 
   private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
     const cookies = await fromSession.cookies.get({name: 'zuid'});

@@ -22,7 +22,7 @@ import {pathToFileURL} from 'url';
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {getLogger} from '../logging/getLogger';
@@ -94,17 +94,9 @@ const showWindow = async () => {
     });
 
     // Handle the new window event in the About Window
-    // TODO: Replace with `webContents.setWindowOpenHandler()`
-    aboutWindow.webContents.on('new-window', (event, url) => {
-      event.preventDefault();
-
-      // Ensure the link does not come from a webview
-      if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
-        logger.log('New window was created from a webview, aborting.');
-        return;
-      }
-
-      return WindowUtil.openExternal(url, true);
+    aboutWindow.webContents.setWindowOpenHandler(details => {
+      void WindowUtil.openExternal(details.url, true);
+      return {action: 'deny'};
     });
 
     // Locales

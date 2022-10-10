@@ -23,7 +23,7 @@ import type {Data as OpenGraphResult} from 'open-graph';
 import type {Static as amplify} from 'amplify';
 
 import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
-import type {i18nStrings, SupportedI18nLanguage} from './locale/locale';
+import type {i18nStrings, SupportedI18nLanguage} from './locale';
 
 declare global {
   interface Window {
@@ -58,9 +58,15 @@ declare global {
   namespace NodeJS {
     interface Global {
       _ConfigurationPersistence: Record<string, any>;
-      desktopCapturer: DesktopCapturer;
+      desktopCapturer: {
+        getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
+      };
       environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;
+      secretsCrypto?: {
+        decrypt: (value: Uint8Array) => Promise<Uint8Array>;
+        encrypt: (encrypted: Uint8Array) => Promise<Uint8Array>;
+      };
     }
   }
 }

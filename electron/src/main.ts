@@ -23,13 +23,19 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  Filter,
+  WebRequestFilter,
   HeadersReceivedResponse,
   ipcMain,
   Menu,
   OnHeadersReceivedListenerDetails,
   WebContents,
+  desktopCapturer,
+  safeStorage,
+  HandlerDetails,
 } from 'electron';
+import * as remoteMain from '@electron/remote/main';
+
+import {WebAppEvents} from '@wireapp/webapp-events';
 import * as fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
@@ -47,7 +53,7 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
-import * as locale from './locale/locale';
+import * as locale from './locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLogFilenames} from './logging/loggerUtils';
 import {developerMenu, openDevTools} from './menu/developer';
@@ -67,6 +73,8 @@ import * as WindowUtil from './window/WindowUtil';
 import * as ProxyAuth from './auth/ProxyAuth';
 import {showErrorDialog} from './lib/showDialog';
 import {getOpenGraphDataAsync} from './lib/openGraph';
+
+remoteMain.initialize();
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -117,7 +125,7 @@ if (argv[config.ARGUMENT.PROXY_SERVER] || fileBasedProxyConfig) {
       throw new Error('No protocol for the proxy server specified.');
     }
   } catch (error) {
-    logger.error(`Could not parse authenticated proxy URL: "${error.message}"`);
+    logger.error(`Could not parse authenticated proxy URL: "${(error as any).message}"`);
   }
 }
 
@@ -139,6 +147,9 @@ Object.entries(config).forEach(([key, value]) => {
 
 // Squirrel setup
 app.setAppUserModelId(config.appUserModelId);
+
+// do not use mdns for local ip obfuscation to prevent windows firewall prompt
+app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
 
 try {
   logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
@@ -165,6 +176,7 @@ const bindIpcEvents = (): void => {
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => WindowManager.showPrimaryWindow());
+  ipcMain.on(EVENT_TYPE.WEBAPP.APP_LOADED, () => WindowManager.flushActionsQueue());
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, {count, ignoreFlash}: {count?: number; ignoreFlash?: boolean}) => {
     tray.showUnreadCount(main, count, ignoreFlash);
@@ -214,7 +226,6 @@ const initWindowStateKeeper = (): windowStateKeeper.State => {
 // App Windows
 const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
-  const zoomFactor = settings.restore(SettingsType.ZOOM_FACTOR, 1.0);
 
   const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
@@ -229,7 +240,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     webPreferences: {
       backgroundThrottling: false,
       contextIsolation: false,
-      enableRemoteModule: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       webviewTag: true,
@@ -241,7 +251,16 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     y: mainWindowState.y,
   };
 
+  ipcMain.handle(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, (event, opts) => desktopCapturer.getSources(opts));
+  ipcMain.handle(EVENT_TYPE.ACTION.ENCRYPT, (event, plaintext: string) => safeStorage.encryptString(plaintext));
+  ipcMain.handle(EVENT_TYPE.ACTION.DECRYPT, (event, encrypted: Uint8Array) =>
+    safeStorage.decryptString(Buffer.from(encrypted)),
+  );
+
   main = new BrowserWindow(options);
+
+  remoteMain.enable(main.webContents);
+
   main.setMenuBarVisibility(showMenuBar);
 
   mainWindowState.manage(main);
@@ -280,17 +299,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   });
 
   // Handle the new window event in the main Browser Window
-  // TODO: Replace with `webContents.setWindowOpenHandler()`
-  main.webContents.on('new-window', async (event, url) => {
-    event.preventDefault();
-
-    // Ensure the link does not come from a webview
-    if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
-      logger.log('New window was created from a webview, aborting.');
-      return;
-    }
-
-    await WindowUtil.openExternal(url);
+  main.webContents.setWindowOpenHandler(details => {
+    return {action: 'deny'};
   });
 
   main.on('focus', () => {
@@ -324,7 +334,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     try {
       main.reload();
     } catch (error) {
-      showErrorDialog(`Could not reload the window: ${error.message}`);
+      showErrorDialog(`Could not reload the window: ${(error as any).message}`);
       logger.error('Could not reload the window:', error);
     }
   });
@@ -335,12 +345,12 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     try {
       main.reload();
     } catch (error) {
-      showErrorDialog(`Could not reload the window: ${error.message}`);
+      showErrorDialog(`Could not reload the window: ${(error as any).message}`);
       logger.error('Could not reload the window:', error);
     }
   });
 
-  main.webContents.setZoomFactor(zoomFactor);
+  main.webContents.setZoomFactor(1);
 
   const mainURL = pathToFileURL(INDEX_HTML);
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
@@ -420,7 +430,7 @@ const handleAppEvents = (): void => {
           try {
             main.reload();
           } catch (error) {
-            showErrorDialog(`Could not reload the window: ${error.message}`);
+            showErrorDialog(`Could not reload the window: ${(error as any).message}`);
             logger.error('Could not reload the window:', error);
           }
         });
@@ -455,7 +465,7 @@ const renameFileExtensions = (files: string[], oldExtension: string, newExtensio
         fs.renameSync(file, file.replace(oldExtension, newExtension));
       }
     } catch (error) {
-      logger.error(`Failed to rename log file: "${error.message}"`);
+      logger.error(`Failed to rename log file: "${(error as any).message}"`);
     }
   }
 };
@@ -466,7 +476,7 @@ const renameWebViewLogFiles = (): void => {
     const logFiles = getLogFilenames(LOG_DIR, true);
     renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
-    logger.log(`Failed to read log directory with error: ${error.message}`);
+    logger.log(`Failed to read log directory with error: ${(error as any).message}`);
   }
 };
 
@@ -510,9 +520,13 @@ const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: E
 
 class ElectronWrapperInit {
   logger: logdown.Logger;
+  ssoWindow: SingleSignOn | null;
 
   constructor() {
     this.logger = getLogger('ElectronWrapperInit');
+    this.ssoWindow = null;
+    ipcMain.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE, this.closeSSOWindow);
+    ipcMain.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS, this.focusSSOWindow);
   }
 
   async run(): Promise<void> {
@@ -520,23 +534,58 @@ class ElectronWrapperInit {
     this.webviewProtection();
   }
 
+  closeSSOWindow = () => {
+    if (this.ssoWindow) {
+      this.ssoWindow?.close();
+      this.ssoWindow = null;
+    }
+  };
+
+  focusSSOWindow = () => {
+    if (this.ssoWindow) {
+      this.ssoWindow.focus();
+    }
+  };
+
+  sendSSOWindowCloseEvent = () => {
+    if (this.ssoWindow) {
+      main.webContents.send(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
+    }
+  };
+
   // <webview> hardening
   webviewProtection(): void {
+    const openLinkInNewWindowHandler = (
+      details: HandlerDetails,
+    ): {action: 'deny'} | {action: 'allow'; overrideBrowserWindowOptions?: BrowserWindowConstructorOptions} => {
+      if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
+        return {action: 'allow'};
+      }
+
+      this.logger.log('Opening an external window from a webview.');
+      void WindowUtil.openExternal(details.url);
+      return {action: 'deny'};
+    };
     const openLinkInNewWindow = (
       event: ElectronEvent,
       url: string,
       frameName: string,
       _disposition: string,
       options: BrowserWindowConstructorOptions,
-    ): Promise<void> => {
+    ): Promise<void> | void => {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
-        return new SingleSignOn(main, event, url, options).init();
+        const singleSignOn = new SingleSignOn(main, event, url, options).init();
+        return new Promise(() => {
+          singleSignOn
+            .then(sso => {
+              this.ssoWindow = sso;
+              this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
+            })
+            .catch(error => console.info(error));
+        });
       }
-
-      this.logger.log('Opening an external window from a webview.');
-      return WindowUtil.openExternal(url);
     };
 
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
@@ -552,6 +601,7 @@ class ElectronWrapperInit {
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
     app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
+      remoteMain.enable(contents);
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
@@ -561,13 +611,11 @@ class ElectronWrapperInit {
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.contextIsolation = false;
-            webPreferences.enableRemoteModule = true;
             webPreferences.experimentalFeatures = true;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
-            webPreferences.worldSafeExecuteJavaScript = true;
           });
           break;
         }
@@ -576,9 +624,9 @@ class ElectronWrapperInit {
             this.logger.log('Found proxy settings in arguments, applying settings on the webview...');
             await applyProxySettings(proxyInfoArg, contents);
           }
-
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
+          contents.setWindowOpenHandler(openLinkInNewWindowHandler);
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });
@@ -602,7 +650,7 @@ class ElectronWrapperInit {
                     logFilePath,
                   );
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+                  logger.error(`Cannot write to log file "${logFilePath}": ${(error as any).message}`, error);
                 }
               }
             });
@@ -627,7 +675,7 @@ class ElectronWrapperInit {
           const isLocalhostEnvironment =
             EnvironmentUtil.getEnvironment() == EnvironmentUtil.BackendType.LOCALHOST.toUpperCase();
           if (isLocalhostEnvironment) {
-            const filter: Filter = {
+            const filter: WebRequestFilter = {
               urls: config.backendOrigins.map(value => `${value}/*`),
             };
 

@@ -22,7 +22,7 @@ import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 
 import * as path from 'path';
 
 import {EVENT_TYPE} from '../lib/eventType';
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
 import {gatherLogs} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -33,7 +33,7 @@ import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
 import {downloadLogs} from '../lib/download';
 import {zipFiles, createFile} from '../lib/zip';
-import {ZOOM_DIRECTION, openExternal, zoomWindow} from '../window/WindowUtil';
+import {openExternal} from '../window/WindowUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;
 
@@ -97,7 +97,6 @@ const conversationTemplate: MenuItemConstructorOptions = {
     },
     separatorTemplate,
     {
-      accelerator: 'CmdOrCtrl+K',
       click: (_menuItem, browserWindow) =>
         browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.PING),
       label: locale.getText('menuPing'),
@@ -240,26 +239,6 @@ const windowTemplate: MenuItemConstructorOptions = {
         browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS),
       label: locale.getText('menuPreviousConversation'),
     },
-    separatorTemplate,
-    {
-      accelerator: 'CmdOrCtrl+0',
-      // we are using a manual implementation for all zoom actions (and not roles)
-      // since the native behavior would be to only zoom into the webview, not the whole page.
-      click: (_menuItem, browserWindow) => zoomWindow(ZOOM_DIRECTION.RESET, browserWindow),
-      label: locale.getText('menuActualSize'),
-    },
-    {
-      // `Ctrl+Plus` does not actually trigger `+` while `Ctrl+=` does.
-      // See https://github.com/electron/electron/issues/1507#issuecomment-118424331.
-      accelerator: 'CmdOrCtrl+=',
-      click: (_menuItem, browserWindow) => zoomWindow(ZOOM_DIRECTION.IN, browserWindow),
-      label: locale.getText('menuZoomIn'),
-    },
-    {
-      accelerator: 'CmdOrCtrl+-',
-      click: (_menuItem, browserWindow) => zoomWindow(ZOOM_DIRECTION.OUT, browserWindow),
-      label: locale.getText('menuZoomOut'),
-    },
   ],
 };
 
@@ -281,14 +260,16 @@ const helpTemplate: MenuItemConstructorOptions = {
       click: () => openExternal(config.legalUrl, true),
       label: locale.getText('menuLegal'),
     },
-    {
-      click: () => openExternal(config.privacyUrl, true),
-      label: locale.getText('menuPrivacy'),
-    },
-    {
-      click: () => openExternal(config.licensesUrl, true),
-      label: locale.getText('menuLicense'),
-    },
+    // TODO: removing these temporarily until such a time as the website is fixed.
+    // See https://wearezeta.atlassian.net/browse/SQCORE-1271 for more information.
+    // {
+    //   click: () => openExternal(config.privacyUrl, true),
+    //   label: locale.getText('menuPrivacy'),
+    // },
+    // {
+    //   click: () => openExternal(config.licensesUrl, true),
+    //   label: locale.getText('menuLicense'),
+    // },
     {
       click: () => openExternal(config.supportUrl, true),
       label: locale.getText('menuSupport'),

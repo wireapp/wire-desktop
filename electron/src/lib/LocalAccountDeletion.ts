@@ -48,7 +48,7 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     logger.log(`Deleting session data for account "${accountId}"...`);
     await clearStorage(webviewWebContent.session);
     logger.log(`Deleted session data for account "${accountId}".`);
-  } catch (error) {
+  } catch (error: any) {
     logger.error(`Failed to delete session data for account "${accountId}", reason: "${error.message}".`);
   }
 
@@ -64,7 +64,7 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
       const partitionDir = path.join(USER_DATA_DIR, 'Partitions', partitionId);
       await fs.remove(partitionDir);
       logger.log(`Deleted partition "${partitionId}" for account "${accountId}".`);
-    } catch (error) {
+    } catch (error: any) {
       logger.log(`Unable to delete partition "${partitionId}" for account "${accountId}", reason: "${error.message}".`);
     }
   }
@@ -77,7 +77,7 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     const sessionFolder = path.join(LOG_DIR, accountId);
     await fs.remove(sessionFolder);
     logger.log(`Deleted logs folder for account "${accountId}".`);
-  } catch (error) {
+  } catch (error: any) {
     logger.error(`Failed to delete logs folder for account "${accountId}", reason: "${error.message}".`);
   }
 }

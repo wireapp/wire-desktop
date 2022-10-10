@@ -22,7 +22,7 @@ import {BrowserWindow, Certificate, Request as CertificateVerifyRequest, dialog}
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {getText} from '../locale/locale';
+import {getText} from '../locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 

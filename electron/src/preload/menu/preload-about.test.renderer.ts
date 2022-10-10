@@ -18,18 +18,14 @@
  */
 
 import * as assert from 'assert';
-import {remote} from 'electron';
-
-import type {i18nLanguageIdentifier} from '../../locale/locale';
+import {ipcRenderer} from 'electron';
+import * as sinon from 'sinon';
 import {EVENT_TYPE} from '../../lib/eventType';
 import {loadedAboutScreen} from './preload-about';
 
 describe('loadedAboutScreen', () => {
   it('publishes labels', done => {
-    remote.ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (_event, labels: i18nLanguageIdentifier[]) => {
-      assert.ok(labels);
-      done();
-    });
+    const sendSpy = sinon.spy(ipcRenderer, 'send');
 
     loadedAboutScreen(new Event('test'), {
       copyright: '&copy; Wire Swiss GmbH',
@@ -37,5 +33,8 @@ describe('loadedAboutScreen', () => {
       productName: 'Wire',
       webappVersion: '2019.04.10.0901',
     });
+
+    assert.ok(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []));
+    done();
   });
 });

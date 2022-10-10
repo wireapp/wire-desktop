@@ -17,10 +17,10 @@
  *
  */
 
-import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron';
+import {app, BrowserWindow, Menu, NativeImage, nativeImage, Tray} from 'electron';
 import * as path from 'path';
 
-import * as locale from '../locale/locale';
+import * as locale from '../locale';
 import {linuxDesktop, platform} from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
@@ -28,9 +28,9 @@ import {WindowManager} from '../window/WindowManager';
 
 export class TrayHandler {
   private icons?: {
-    badge: nativeImage;
-    tray: nativeImage;
-    trayWithBadge: nativeImage;
+    badge: NativeImage;
+    tray: NativeImage;
+    trayWithBadge: NativeImage;
   };
   private lastUnreadCount: number;
   private trayIcon?: Tray;

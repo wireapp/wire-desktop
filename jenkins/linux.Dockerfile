@@ -1,4 +1,4 @@
-FROM node:14.15.3-stretch
+FROM node:16.17.1-bullseye
 
 ENV USE_HARD_LINKS false
 

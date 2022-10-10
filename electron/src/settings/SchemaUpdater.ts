@@ -24,7 +24,7 @@ import * as path from 'path';
 import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
 
-const app = Electron.app || Electron.remote.app;
+const app = Electron.app || require('@electron/remote').app;
 
 const logger = getLogger(path.basename(__filename));
 const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
@@ -44,7 +44,7 @@ export class SchemaUpdater {
       try {
         fs.moveSync(configFileV0, configFileV1, {overwrite: true});
         Object.assign(config, fs.readJSONSync(configFileV1));
-      } catch (error) {
+      } catch (error: any) {
         logger.log(`Could not upgrade "${configFileV0}" to "${configFileV1}": ${error.message}`, error);
       }
 
@@ -62,7 +62,7 @@ export class SchemaUpdater {
 
       try {
         fs.writeJsonSync(configFileV1, config, {spaces: 2});
-      } catch (error) {
+      } catch (error: any) {
         logger.log(`Failed to write config to "${configFileV1}": ${error.message}`, error);
       }
     }
