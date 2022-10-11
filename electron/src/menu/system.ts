@@ -260,14 +260,16 @@ const helpTemplate: MenuItemConstructorOptions = {
       click: () => openExternal(config.legalUrl, true),
       label: locale.getText('menuLegal'),
     },
-    {
-      click: () => openExternal(config.privacyUrl, true),
-      label: locale.getText('menuPrivacy'),
-    },
-    {
-      click: () => openExternal(config.licensesUrl, true),
-      label: locale.getText('menuLicense'),
-    },
+    // TODO: removing these temporarily until such a time as the website is fixed.
+    // See https://wearezeta.atlassian.net/browse/SQCORE-1271 for more information.
+    // {
+    //   click: () => openExternal(config.privacyUrl, true),
+    //   label: locale.getText('menuPrivacy'),
+    // },
+    // {
+    //   click: () => openExternal(config.licensesUrl, true),
+    //   label: locale.getText('menuLicense'),
+    // },
     {
       click: () => openExternal(config.supportUrl, true),
       label: locale.getText('menuSupport'),
