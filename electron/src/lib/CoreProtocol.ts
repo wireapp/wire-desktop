@@ -70,7 +70,7 @@ export class CustomProtocolHandler {
         logger.info('Triggering hash location change ...');
         this.forwardHashLocation(route);
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error(error);
     }
   }
@@ -88,7 +88,7 @@ export class CustomProtocolHandler {
       const code = route.pathname.trim().substr(1);
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACCOUNT.SSO_LOGIN, code);
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Cannot start SSO flow: ${error.message}`, error);
       }
     }
@@ -102,7 +102,7 @@ export class CustomProtocolHandler {
 
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Cannot join conversation: ${error.message}`, error);
       }
     }
@@ -114,7 +114,7 @@ export class CustomProtocolHandler {
 
       try {
         await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.START_LOGIN);
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Cannot start login flow: ${(error as Error).message}`, error);
       }
     }
@@ -134,21 +134,20 @@ export class CustomProtocolHandler {
 
     ipcMain.on(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, async (_event, url: string) => this.dispatchDeepLink(url));
 
-    if (platform.IS_MAC_OS) {
-      app.on('open-url', async (event, url) => {
-        event.preventDefault();
-        await this.dispatchDeepLink(url);
-      });
-    } else {
-      app.once('ready', async () => {
-        logger.info('App ready, looking for deep link in arguments ...');
-        const deepLink = this.findDeepLink(process.argv);
-        if (deepLink) {
-          await this.dispatchDeepLink(deepLink);
-        } else {
-          logger.info('No deep link found in arguments.');
-        }
-      });
+    app.on('open-url', async (event, url) => {
+      event.preventDefault();
+      await this.dispatchDeepLink(url);
+    });
+    app.once('ready', async () => {
+      logger.info('App ready, looking for deep link in arguments ...');
+      const deepLink = this.findDeepLink(process.argv);
+      if (deepLink) {
+        await this.dispatchDeepLink(deepLink);
+      } else {
+        logger.info('No deep link found in arguments.');
+      }
+    });
+    if (!platform.IS_MAC_OS) {
       app.on('second-instance', async (_event, argv) => {
         logger.info('Second instance detected, looking for deep link in arguments ...');
         const deepLink = this.findDeepLink(argv);

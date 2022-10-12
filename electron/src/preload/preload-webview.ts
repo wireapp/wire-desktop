@@ -39,6 +39,8 @@ interface TeamAccountInfo {
   userID: string;
 }
 
+type Theme = 'dark' | 'default';
+
 const logger = getLogger(path.basename(__filename));
 
 function subscribeToThemeChange(): void {
@@ -57,7 +59,10 @@ function subscribeToThemeChange(): void {
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
+    ipcRenderer.send(EVENT_TYPE.WEBAPP.APP_LOADED);
+    initialThemeCheck();
+  });
   remote.nativeTheme.on('updated', () => updateWebAppTheme());
 }
 
@@ -129,8 +134,12 @@ const subscribeToWebappEvents = (): void => {
     }
   });
 
-  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: 'dark' | 'default') => {
+  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: Theme) => {
     ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, theme);
+  });
+
+  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATED, (properties: {settings: {interface: {theme: Theme}}}) => {
+    ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, properties.settings.interface.theme);
   });
 };
 
