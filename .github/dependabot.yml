@@ -19,6 +19,13 @@ updates:
       - dependency-name: husky
         versions:
           - '> 4.x'
+      # these are both being updated to esm modules after these versions and electron doesn't currently natively support it
+      - dependency-name: image-type
+        versions:
+          - '> 4.x'
+      - dependency-name: globby
+        versions:
+          - '> 11.x'
       # when building, we receive this error with winstaller 5.0:
       # Error: no such file or directory, copyfile 'vendor/7z-ia32.exe' -> 'vendor/7z.exe'
       - dependency-name: electron-winstaller
