@@ -15,9 +15,6 @@ updates:
       # don't perform major updates for the used node version as it is defined by the used electron version
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
-      - dependency-name: electron-builder
-        versions:
-          - '> 20.x'
       # multiple setup problems and 4.x works fine
       - dependency-name: husky
         versions:
