@@ -19,8 +19,8 @@ if [ -L '/usr/local/bin/wire' ] || [ -L '/usr/local/bin/<%= executable %>' ]; th
 fi
 
 # Link to the binary
-ln -sf '/opt/${productFilename}/${executable}' '/usr/bin/${executable}'
+ln -sf '/opt/${productName}/${executable}' '/usr/bin/${executable}'
 
 # Prepare Chrome sandbox
-chown root '/opt/${productFilename}/chrome-sandbox'
-chmod 4755 '/opt/${productFilename}/chrome-sandbox'
+chown root '/opt/${productName}/chrome-sandbox'
+chmod 4755 '/opt/${productName}/chrome-sandbox'
