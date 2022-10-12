@@ -86,7 +86,6 @@ export async function buildLinuxConfig(
       category: platformSpecificConfig.category,
       desktop: linuxDesktopConfig,
       publish: null,
-      systemIntegration: 'doNotAsk',
     },
     asar: commonConfig.enableAsar,
     buildVersion: commonConfig.version,
@@ -104,7 +103,6 @@ export async function buildLinuxConfig(
     linux: {
       artifactName: linuxConfig.artifactName,
       category: platformSpecificConfig.category,
-      depends: debDepends,
       executableName: linuxConfig.executableName,
       target: linuxConfig.targets,
     },
