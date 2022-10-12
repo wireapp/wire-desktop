@@ -38,6 +38,7 @@ import {getText, wrapperLocale} from '../lib/locale';
 import {AccountSelector} from '../selector/AccountSelector';
 import './Webview.css';
 import {accountAction} from '../actions/AccountAction';
+/* eslint-disable react/no-unknown-property */
 
 const getEnvironmentUrl = account => {
   const currentLocation = new URL(window.location.href);
@@ -256,7 +257,9 @@ const Webview = ({
         case EVENT_TYPE.UI.THEME_UPDATE: {
           const [theme] = args;
           const darkMode = theme === 'dark';
-          updateAccountDarkMode(account.id, darkMode);
+          if (darkMode !== account.darkMode) {
+            updateAccountDarkMode(account.id, darkMode);
+          }
           break;
         }
       }

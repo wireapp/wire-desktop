@@ -58,7 +58,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
 
   try {
     response = await axiosWithCookie<Buffer>(axiosConfig);
-  } catch (error) {
+  } catch (error: any) {
     if (error.response?.status && error?.response?.statusText) {
       throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
     }
@@ -69,7 +69,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
 
   try {
     contentType = parseContentType(response.headers['content-type']);
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Could not parse content type: "${error.message}"`);
   }
 
@@ -86,7 +86,7 @@ export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<Ax
   try {
     const response = await axios.request<T>({...config, maxRedirects: 0, withCredentials: true});
     return response;
-  } catch (error) {
+  } catch (error: any) {
     const response = error.response;
     if (!response) {
       throw error;
@@ -114,7 +114,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
 
     try {
       contentType = parseContentType(response.headers['content-type']);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Could not parse content type: "${error.message}"`);
     }
 
@@ -137,7 +137,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
           if (charset) {
             try {
               chunk = iconvDecode(buffer, charset);
-            } catch (error) {
+            } catch (error: any) {
               logger.error(`Could not decode content: "${error.message}."`);
             }
           }
@@ -152,7 +152,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
     });
 
     return body;
-  } catch (error) {
+  } catch (error: any) {
     if (axios.isCancel(error)) {
       return '';
     }
@@ -212,7 +212,7 @@ export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResul
     try {
       const uri = await fetchImageAsBase64(imageUrl);
       return updateMetaDataWithImage(metadata, uri);
-    } catch (error) {
+    } catch (error: any) {
       logger.warn(error);
     }
   }
