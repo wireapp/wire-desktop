@@ -2766,10 +2766,10 @@
   resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.4.6.tgz#fc9ee13be1c2581dd11f452b9d0570276443d46d"
   integrity sha512-gXT2J48yfwLQGpuK1ScwBFvD4l4ItGfkA03XL3duu3jdvMm9sd6U/HMaQKWnMzuFu5sjR5vS7/U/mCUE2WqISQ==
 
-"@wireapp/protocol-messaging@1.38.0":
-  version "1.38.0"
-  resolved "https://registry.npmjs.org/@wireapp/protocol-messaging/-/protocol-messaging-1.38.0.tgz#7753a4464db42090eb066c7c0ccae62c7ead82f2"
-  integrity sha512-WMwDPIbpDvAjmVc/kiYdEc3+2M32wWYqDcq+t4MkwIns7kKWltViapW3ZuEnuf2RsJgq93vVslYk4QXWAMdf0g==
+"@wireapp/protocol-messaging@1.39.0":
+  version "1.39.0"
+  resolved "https://registry.npmjs.org/@wireapp/protocol-messaging/-/protocol-messaging-1.39.0.tgz#fd7bde3c7ce2fa2fbf6eab22204bf7a1dd94db8f"
+  integrity sha512-YnujFidZco3tlFLqmYfK7ZQzE+9QIoMOCDJrTzCCSqFYQnn9BeyQp8868TnVPTX5tRyL4IHx47bqQ/FJBBOQAA==
   dependencies:
     protobufjs "6.11.3"
 
