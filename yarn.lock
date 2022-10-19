@@ -2761,10 +2761,10 @@
   resolved "https://registry.npmjs.org/@wireapp/eslint-config/-/eslint-config-1.9.0.tgz#67f6f293a32dd3cb5f0228cae08c0ca4a8f5f125"
   integrity sha512-xmV/Wyd9KKJVMXtG4MbJ1uz00lv2vikfADZHhpLQgn6fqS8mcQ5bpkssZxVp7LaaHVqxXJoxAvO5NSmoDa2rUg==
 
-"@wireapp/prettier-config@0.4.6":
-  version "0.4.6"
-  resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.4.6.tgz#fc9ee13be1c2581dd11f452b9d0570276443d46d"
-  integrity sha512-gXT2J48yfwLQGpuK1ScwBFvD4l4ItGfkA03XL3duu3jdvMm9sd6U/HMaQKWnMzuFu5sjR5vS7/U/mCUE2WqISQ==
+"@wireapp/prettier-config@0.4.7":
+  version "0.4.7"
+  resolved "https://registry.npmjs.org/@wireapp/prettier-config/-/prettier-config-0.4.7.tgz#1f869528f4be7fcd71456d1d3652c97ae9833002"
+  integrity sha512-96GD9Z7EyF94cX9GTJNoA9Me/9wI8yA4CsNMjgO0Ic8CJgFWudDEkT7VkcLW9D0KqIrcW8p1SJYCCiwHNq1Hew==
 
 "@wireapp/protocol-messaging@1.38.0":
   version "1.38.0"
