@@ -2726,10 +2726,10 @@
   resolved "https://registry.npmjs.org/@webpack-cli/serve/-/serve-1.7.0.tgz#e1993689ac42d2b16e9194376cfb6753f6254db1"
   integrity sha512-oxnCNGj88fL+xzV+dacXs44HcDwf1ovs3AuEzvP7mqXw7fQntqIhQ1BRmynh4qEKQSSSRSWVyXRjmTbZIX9V2Q==
 
-"@wireapp/certificate-check@0.5.6":
-  version "0.5.6"
-  resolved "https://registry.npmjs.org/@wireapp/certificate-check/-/certificate-check-0.5.6.tgz#a93b3a3bb31d14df4c35ea8cbf1cbbad3fe9f056"
-  integrity sha512-1l2WFQQC7MMaz8F4yZAOdRFGyMKsS3KsYc/jqRrMRgGAqmeXjOaDS9vHO2apYx6cJEeAW4I8XfrapHforOWs/g==
+"@wireapp/certificate-check@0.5.7":
+  version "0.5.7"
+  resolved "https://registry.npmjs.org/@wireapp/certificate-check/-/certificate-check-0.5.7.tgz#6e2b727a854f3763db5e442df646f0cd3511486e"
+  integrity sha512-6YiU+8Wu+EVZxleOj0nKYgCROLKUGdrc7qKqI7iOytjTxB96gek+TsYlesr9UTBr6RTrDlcELGFtV9ZDEdwbBQ==
   dependencies:
     jsrsasign "10.5.25"
 
