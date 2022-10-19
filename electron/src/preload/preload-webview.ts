@@ -242,7 +242,7 @@ process.once('loaded', () => {
   global.desktopCapturer = {
     getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
   };
-  global.secretsCrypto = {
+  global.systemCrypto = {
     decrypt: async (encrypted: Uint8Array): Promise<Uint8Array> => {
       const plainText = await ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
       return Decoder.fromBase64(plainText).asBytes;
