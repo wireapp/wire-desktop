@@ -71,10 +71,12 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
+        contextIsolation: false,
         javascript: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         preload: PRELOAD_JS,
+        sandbox: false,
         session: session.fromPartition('about-window'),
         spellcheck: false,
         webviewTag: false,
