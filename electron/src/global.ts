@@ -63,7 +63,7 @@ declare global {
       };
       environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;
-      secretsCrypto?: {
+      systemCrypto?: {
         decrypt: (value: Uint8Array) => Promise<Uint8Array>;
         encrypt: (encrypted: Uint8Array) => Promise<Uint8Array>;
       };

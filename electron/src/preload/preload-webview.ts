@@ -18,6 +18,7 @@
  */
 
 import {ipcRenderer, webFrame} from 'electron';
+import {Encoder, Decoder} from 'bazinga64';
 import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 import type {Availability} from '@wireapp/protocol-messaging';
@@ -241,15 +242,13 @@ process.once('loaded', () => {
   global.desktopCapturer = {
     getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
   };
-  global.secretsCrypto = {
+  global.systemCrypto = {
     decrypt: async (encrypted: Uint8Array): Promise<Uint8Array> => {
-      const encoder = new TextEncoder();
       const plainText = await ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
-      return encoder.encode(plainText);
+      return Decoder.fromBase64(plainText).asBytes;
     },
     encrypt: (value: Uint8Array): Promise<Uint8Array> => {
-      const decoder = new TextDecoder();
-      const strValue = decoder.decode(value);
+      const strValue = Encoder.toBase64(value).asString;
       return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, strValue);
     },
   };
