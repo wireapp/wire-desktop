@@ -87,7 +87,7 @@ const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,
   DEFAULT_WIDTH: 1024,
   MIN_HEIGHT: 512,
-  MIN_WIDTH: 760,
+  MIN_WIDTH: 398,
 };
 
 let proxyInfoArg: URL | undefined;
