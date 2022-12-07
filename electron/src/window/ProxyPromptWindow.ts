@@ -51,10 +51,12 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
+        contextIsolation: false,
         javascript: true,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         preload: preloadPath,
+        sandbox: false,
         session: session.fromPartition('proxy-prompt-window'),
         spellcheck: false,
         webviewTag: false,
