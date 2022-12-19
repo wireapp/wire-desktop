@@ -23,7 +23,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
-import {getCommonConfig} from './commonConfig';
+import {flipElectronFuses, getCommonConfig} from './commonConfig';
 import {CommonConfig, MacOSConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
@@ -39,7 +39,7 @@ export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   signManually?: boolean,
-  architecture: ArchOption = 'x64',
+  architecture: ArchOption = 'universal',
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
@@ -89,6 +89,9 @@ export async function buildMacOSConfig(
     icon: 'resources/macos/logo.icns',
     ignore: /electron\/renderer\/src/,
     name: commonConfig.name,
+    osxUniversal: {
+      mergeASARs: true,
+    },
     out: commonConfig.buildDir,
     overwrite: true,
     platform: 'mas',
@@ -156,8 +159,10 @@ export async function buildMacOSWrapper(
 
     logger.log(`Built app in "${buildDir}".`);
 
+    const appFile = path.join(buildDir, `${commonConfig.name}.app`);
+    await flipElectronFuses(appFile);
+
     if (macOSConfig.certNameInstaller) {
-      const appFile = path.join(buildDir, `${commonConfig.name}.app`);
       await fs.ensureDir(commonConfig.distDir);
       const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
 

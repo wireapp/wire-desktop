@@ -1,5 +1,5 @@
 {
-  "aboutReleasesUrl": "https://medium.com/wire-news/desktop-updates/home",
+  "aboutReleasesUrl": "https://github.com/wireapp/wire-desktop/releases",
   "aboutUpdatesUrl": "https://support.wire.com/hc/articles/115001919905",
   "adminUrl": "https://teams.wire.com",
   "appBase": "https://app.wire.com",
@@ -20,6 +20,6 @@
   "privacyUrl": "https://wire.com/privacy/",
   "supportUrl": "https://support.wire.com",
   "updateUrl": "https://wire-app.wire.com/win/prod/",
-  "version": "3.28.0",
+  "version": "3.30.0",
   "websiteUrl": "https://wire.com"
 }

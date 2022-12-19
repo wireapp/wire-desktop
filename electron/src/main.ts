@@ -31,6 +31,7 @@ import {
   WebContents,
   desktopCapturer,
   safeStorage,
+  HandlerDetails,
 } from 'electron';
 import * as remoteMain from '@electron/remote/main';
 
@@ -86,7 +87,7 @@ const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,
   DEFAULT_WIDTH: 1024,
   MIN_HEIGHT: 512,
-  MIN_WIDTH: 760,
+  MIN_WIDTH: 398,
 };
 
 let proxyInfoArg: URL | undefined;
@@ -175,6 +176,7 @@ const bindIpcEvents = (): void => {
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => WindowManager.showPrimaryWindow());
+  ipcMain.on(EVENT_TYPE.WEBAPP.APP_LOADED, () => WindowManager.flushActionsQueue());
 
   ipcMain.on(EVENT_TYPE.UI.BADGE_COUNT, (_event, {count, ignoreFlash}: {count?: number; ignoreFlash?: boolean}) => {
     tray.showUnreadCount(main, count, ignoreFlash);
@@ -240,6 +242,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       contextIsolation: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
+      sandbox: false,
       webviewTag: true,
     },
     width: mainWindowState.width,
@@ -297,17 +300,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   });
 
   // Handle the new window event in the main Browser Window
-  // TODO: Replace with `webContents.setWindowOpenHandler()`
-  main.webContents.on('new-window', async (event, url) => {
-    event.preventDefault();
-
-    // Ensure the link does not come from a webview
-    if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
-      logger.log('New window was created from a webview, aborting.');
-      return;
-    }
-
-    await WindowUtil.openExternal(url);
+  main.webContents.setWindowOpenHandler(details => {
+    return {action: 'deny'};
   });
 
   main.on('focus', () => {
@@ -562,13 +556,24 @@ class ElectronWrapperInit {
 
   // <webview> hardening
   webviewProtection(): void {
+    const openLinkInNewWindowHandler = (
+      details: HandlerDetails,
+    ): {action: 'deny'} | {action: 'allow'; overrideBrowserWindowOptions?: BrowserWindowConstructorOptions} => {
+      if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
+        return {action: 'allow'};
+      }
+
+      this.logger.log('Opening an external window from a webview.');
+      void WindowUtil.openExternal(details.url);
+      return {action: 'deny'};
+    };
     const openLinkInNewWindow = (
       event: ElectronEvent,
       url: string,
       frameName: string,
       _disposition: string,
       options: BrowserWindowConstructorOptions,
-    ): Promise<void> => {
+    ): Promise<void> | void => {
       event.preventDefault();
 
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
@@ -582,9 +587,6 @@ class ElectronWrapperInit {
             .catch(error => console.info(error));
         });
       }
-
-      this.logger.log('Opening an external window from a webview.');
-      return WindowUtil.openExternal(url);
     };
 
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
@@ -615,6 +617,7 @@ class ElectronWrapperInit {
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
+            webPreferences.sandbox = false;
           });
           break;
         }
@@ -625,6 +628,7 @@ class ElectronWrapperInit {
           }
           // Open webview links outside of the app
           contents.on('new-window', openLinkInNewWindow);
+          contents.setWindowOpenHandler(openLinkInNewWindowHandler);
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });

@@ -71,10 +71,12 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
+        contextIsolation: false,
         javascript: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         preload: PRELOAD_JS,
+        sandbox: false,
         session: session.fromPartition('about-window'),
         spellcheck: false,
         webviewTag: false,
@@ -94,17 +96,9 @@ const showWindow = async () => {
     });
 
     // Handle the new window event in the About Window
-    // TODO: Replace with `webContents.setWindowOpenHandler()`
-    aboutWindow.webContents.on('new-window', (event, url) => {
-      event.preventDefault();
-
-      // Ensure the link does not come from a webview
-      if (typeof (event as any).sender.viewInstanceId !== 'undefined') {
-        logger.log('New window was created from a webview, aborting.');
-        return;
-      }
-
-      return WindowUtil.openExternal(url, true);
+    aboutWindow.webContents.setWindowOpenHandler(details => {
+      void WindowUtil.openExternal(details.url, true);
+      return {action: 'deny'};
     });
 
     // Locales

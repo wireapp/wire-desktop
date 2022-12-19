@@ -22,7 +22,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
-import {getCommonConfig} from './commonConfig';
+import {getCommonConfig, flipElectronFuses} from './commonConfig';
 import {LinuxConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
@@ -81,12 +81,12 @@ export async function buildLinuxConfig(
   const debDepends = ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'];
 
   const builderConfig: electronBuilder.Configuration = {
+    afterPack: afterPackLinux,
     appImage: {
       artifactName: linuxConfig.artifactName,
       category: platformSpecificConfig.category,
       desktop: linuxDesktopConfig,
       publish: null,
-      systemIntegration: 'doNotAsk',
     },
     asar: commonConfig.enableAsar,
     buildVersion: commonConfig.version,
@@ -104,7 +104,6 @@ export async function buildLinuxConfig(
     linux: {
       artifactName: linuxConfig.artifactName,
       category: platformSpecificConfig.category,
-      depends: debDepends,
       executableName: linuxConfig.executableName,
       target: linuxConfig.targets,
     },
@@ -118,6 +117,10 @@ export async function buildLinuxConfig(
   };
 
   return {builderConfig, linuxConfig};
+}
+
+async function afterPackLinux(context: electronBuilder.AfterPackContext) {
+  await flipElectronFuses(path.join(context.appOutDir, context.packager.platformSpecificBuildOptions.executableName));
 }
 
 export async function buildLinuxWrapper(

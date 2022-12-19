@@ -78,7 +78,7 @@ const ContextMenu = ({position, children, setAccountContextHidden}) => {
   };
 
   return (
-    <div className="ContextMenu" onClickCapture={hide} ref={menuRef}>
+    <div className="ContextMenu" ref={menuRef}>
       {children}
     </div>
   );
