@@ -340,15 +340,10 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  app.on('gpu-process-crashed', event => {
-    logger.error('GPU process crashed. Will reload the window.');
+  app.on('child-process-gone', (event, details) => {
+    logger.error('child process gone');
     logger.error(event);
-    try {
-      main.reload();
-    } catch (error) {
-      showErrorDialog(`Could not reload the window: ${(error as any).message}`);
-      logger.error('Could not reload the window:', error);
-    }
+    logger.error(details);
   });
 
   main.webContents.setZoomFactor(1);
