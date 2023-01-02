@@ -33,7 +33,7 @@
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
-    "@babel/core": "7.19.3",
+    "@babel/core": "7.20.7",
     "@babel/helper-string-parser": "7.19.4",
     "@babel/plugin-proposal-class-properties": "7.18.6",
     "@babel/plugin-proposal-optional-chaining": "7.18.9",
