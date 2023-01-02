@@ -12,7 +12,7 @@
     "axios": "0.21.1",
     "content-type": "1.0.4",
     "electron-window-state": "5.0.3",
-    "fs-extra": "10.1.0",
+    "fs-extra": "11.1.0",
     "get-proxy-settings": "0.1.13",
     "globby": "11.0.4",
     "iconv-lite": "0.6.3",
