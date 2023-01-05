@@ -253,6 +253,7 @@ const Webview = ({
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}
         style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
+        tabIndex={-1}
       />
       {webviewError && (
         <div

@@ -23,7 +23,7 @@ import {connect} from 'react-redux';
 import {EVENT_TYPE} from '../../../dist/lib/eventType';
 import {addAccountWithSession, setAccountContextHidden, toggleEditAccountMenuVisibility} from '../actions';
 import {colorFromId} from '../lib/accentColor';
-import {preventFocus} from '../lib/util';
+import {preventFocus, isEnterKey} from '../lib/keyboardUtil';
 import AccountIcon from './AccountIcon';
 import AddAccountTrigger from './context/AddAccountTrigger';
 import EditAccountMenu from './context/EditAccountMenu';
@@ -45,6 +45,10 @@ const getClassName = account => {
   return `Sidebar-icon${showIconBadge}${showIconCursor}`;
 };
 
+const handleSwitchAccount = accountIndex => {
+  window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accountIndex}}));
+};
+
 const Sidebar = ({
   accounts,
   currentAccentID,
@@ -61,35 +65,40 @@ const Sidebar = ({
     onMouseDown={preventFocus()}
     onClick={connected.setAccountContextHidden}
   >
-    {accounts.map(account => (
-      <div className="Sidebar-cell" key={account.id}>
-        <div
-          style={{color: colorFromId(currentAccentID)}}
-          className={getClassName(account)}
-          onClick={preventFocus(() =>
-            window.dispatchEvent(
-              new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accounts.indexOf(account)}}),
-            ),
-          )}
-          onContextMenu={preventFocus(event => {
-            const isAtLeastAdmin =
-              account.teamRole === 'z.team.TeamRole.ROLE.OWNER' || account.teamRole === 'z.team.TeamRole.ROLE.ADMIN';
-            const {centerX, centerY} = centerOfEventTarget(event);
-            connected.toggleEditAccountMenuVisibility(
-              centerX,
-              centerY,
-              account.id,
-              account.sessionID,
-              account.lifecycle,
-              isAtLeastAdmin,
-            );
-          })}
-          onMouseDown={preventFocus()}
-        >
-          <AccountIcon account={account} />
+    {accounts.map(account => {
+      const accountIndex = accounts.indexOf(account);
+      return (
+        <div className="Sidebar-cell" key={account.id}>
+          <div
+            style={{color: colorFromId(currentAccentID)}}
+            className={getClassName(account)}
+            tabIndex={0}
+            onClick={preventFocus(() => handleSwitchAccount(accountIndex))}
+            onKeyDown={event => {
+              if (isEnterKey(event)) {
+                handleSwitchAccount(accountIndex);
+              }
+            }}
+            onContextMenu={preventFocus(event => {
+              const isAtLeastAdmin =
+                account.teamRole === 'z.team.TeamRole.ROLE.OWNER' || account.teamRole === 'z.team.TeamRole.ROLE.ADMIN';
+              const {centerX, centerY} = centerOfEventTarget(event);
+              connected.toggleEditAccountMenuVisibility(
+                centerX,
+                centerY,
+                account.id,
+                account.sessionID,
+                account.lifecycle,
+                isAtLeastAdmin,
+              );
+            })}
+            onMouseDown={preventFocus()}
+          >
+            <AccountIcon account={account} />
+          </div>
         </div>
-      </div>
-    ))}
+      );
+    })}
     {!isAddingAccount && !hasReachedLimitOfAccounts && (
       <AddAccountTrigger id="account" onClick={connected.addAccountWithSession} />
     )}
