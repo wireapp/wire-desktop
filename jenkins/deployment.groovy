@@ -65,7 +65,7 @@ node('built-in') {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm install -g yarn'
-        sh 'yarn --ignore-scripts'
+        sh 'yarn'
       }
     } catch (e) {
       wireSend secret: "$jenkinsbot_secret", message: "**Could not get build artifacts of ${version} from ${projectName}** see: ${JOB_URL}"
