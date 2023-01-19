@@ -36,13 +36,7 @@ const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
 
-const linkName = `${config.name}.lnk`;
 const windowsAppData = process.env.APPDATA;
-const startShortcut = path.join(app.getPath('appData'), `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
-const desktopShortcut = path.join(app.getPath('desktop'), `${config.name}.lnk`);
-const quickLaunchShortcut = windowsAppData
-  ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
-  : '';
 
 if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
   logger.error('No Windows AppData directory found.');
@@ -52,7 +46,6 @@ enum SQUIRREL_EVENT {
   INSTALL = '--squirrel-install',
   OBSOLETE = '--squirrel-obsolete',
   UNINSTALL = '--squirrel-uninstall',
-  UPDATE = '--update',
   UPDATED = '--squirrel-updated',
 }
 
@@ -91,7 +84,7 @@ function spawn(command: string, args: string[]): Promise<void> {
 }
 
 async function spawnUpdate(args: string[]): Promise<void> {
-  logger.info('Running updater ...');
+  logger.info(`Running updater with args ${JSON.stringify(args)} ...`);
   const updateDotExeExists = fs.existsSync(updateDotExe);
   if (!updateDotExeExists) {
     logger.info(`Could not find updater in "${updateDotExe}".`);
@@ -104,49 +97,17 @@ async function spawnUpdate(args: string[]): Promise<void> {
   }
 }
 
-function createShortcut(location: string, execPath: string): boolean {
-  // As documented in https://github.com/electron/windows-installer/issues/296,
-  // Squirrel has problems with notification clicks on Windows 10.
-  // The easiest workaround is to create shortcuts on our own.
-  ///const shortcutExists = fs.existsSync(location);
-
-  return shell.writeShortcutLink(location, 'replace', {
-    appUserModelId: config.appUserModelId,
-    target: execPath,
-  });
+function createShortcuts(): Promise<void> {
+  return spawnUpdate(['--createShortcut', `${config.name}.exe`]);
 }
 
-function createShortcuts(): void {
-  childProcess.spawnSync(updateDotExe, ['--createShortcut', `${config.name}.exe`]);
-  const linkPath = fs.readlinkSync(startShortcut);
-
-  logger.info('Creating shortcut in the start menu ...');
-  const startResult = createShortcut(startShortcut, linkPath);
-
-  logger.info('Creating shortcut on the desktop ...');
-  const desktopResult = createShortcut(desktopShortcut, linkPath);
-
-  let quickLaunchResult = false;
-  if (quickLaunchShortcut) {
-    logger.info('Creating shortcut in the quick launch menu ...');
-    quickLaunchResult = createShortcut(quickLaunchShortcut, linkPath);
-  }
-
-  logger.info('Created shortcuts:', {desktop: desktopResult, quickLaunch: quickLaunchResult, start: startResult});
-}
-
-async function removeShortcuts(): Promise<void> {
-  logger.info('Removing all shortcuts ...');
-  await fs.remove(startShortcut);
-  await fs.remove(desktopShortcut);
-  if (quickLaunchShortcut) {
-    await fs.remove(quickLaunchShortcut);
-  }
+function removeShortcuts(): Promise<void> {
+  return spawnUpdate(['--removeShortcut', `${config.name}.exe`]);
 }
 
 export async function installUpdate(): Promise<void> {
   logger.info(`Checking for Windows updates at "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
-  await spawnUpdate([SQUIRREL_EVENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
+  await spawnUpdate(['--update', EnvironmentUtil.app.UPDATE_URL_WIN]);
 }
 
 async function scheduleUpdate(): Promise<void> {
@@ -168,7 +129,7 @@ export async function handleSquirrelArgs(): Promise<void> {
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL:
     case SQUIRREL_EVENT.UPDATED: {
-      createShortcuts();
+      await createShortcuts();
       await lifecycle.quit();
       return;
     }
