@@ -29,6 +29,7 @@ import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config, MINUTE_IN_MILLIS, HOUR_IN_MILLIS} from '../settings/config';
+import {createShortcuts, removeShortcuts} from './shortcuts';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -49,7 +50,16 @@ enum SQUIRREL_EVENT {
   UPDATED = '--squirrel-updated',
 }
 
-const shortcuts = ['StartMenu', 'Desktop', 'Startup'] as const;
+const linkName = `${config.name}.lnk`;
+const shortcutsMap = {
+  desktop: path.join(app.getPath('desktop'), linkName),
+  quickLaunch: process.env.APPDATA
+    ? path.resolve(process.env.APPDATA, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
+    : undefined,
+  start: path.join(app.getPath('appData'), 'Microsoft/Windows/Start Menu/Programs', linkName),
+};
+
+const shortcuts = Object.values(shortcutsMap).filter((path): path is string => !!path);
 
 function spawn(command: string, args: string[]): Promise<void> {
   const commandFile = path.basename(command);
@@ -99,29 +109,15 @@ async function spawnUpdate(args: string[]): Promise<void> {
   }
 }
 
-async function removeOldShortcuts(): Promise<void> {
-  const linkName = `${config.name}.lnk`;
-  const windowsAppData = process.env.APPDATA;
-  const startShortcut = path.join(app.getPath('appData'), `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
-  const desktopShortcut = path.join(app.getPath('desktop'), `${config.name}.lnk`);
-  const quickLaunchShortcut = windowsAppData
-    ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
-    : '';
-  await fs.remove(startShortcut);
-  await fs.remove(desktopShortcut);
-  if (quickLaunchShortcut) {
-    await fs.remove(quickLaunchShortcut);
-  }
-}
-
-async function createShortcuts(): Promise<void> {
-  // On version 3.30, we were manually creating shortcuts. To make sure none of those shortcuts are left behind, we remove them all before creating the new ones.
-  await removeOldShortcuts();
-  return spawnUpdate([`--createShortcut=${config.name}.exe`, `-l=${shortcuts.join(',')}`]);
-}
-
-function removeShortcuts(): Promise<void> {
-  return spawnUpdate([`--removeShortcut=${config.name}.exe`, `-l=${shortcuts.join(',')}`]);
+async function getExecPath(): Promise<string> {
+  /*
+   * That's a hack to get the executable path.
+   * Since squirrel do not have a way to get the executable path directly, the hack consist of creating a shortcut on the desktop
+   * And then read the content of the shortcut to get the executable path.
+   */
+  await spawnUpdate([`--createShortcut=${config.name}.exe`, `-l=Desktop`]);
+  const execPath = await fs.readlink(shortcutsMap.desktop);
+  return execPath;
 }
 
 export async function installUpdate(): Promise<void> {
@@ -148,13 +144,14 @@ export async function handleSquirrelArgs(): Promise<void> {
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL:
     case SQUIRREL_EVENT.UPDATED: {
-      await createShortcuts();
+      const execPath = await getExecPath();
+      await createShortcuts(shortcuts, execPath, config.appUserModelId);
       await lifecycle.quit();
       return;
     }
 
     case SQUIRREL_EVENT.UNINSTALL: {
-      await removeShortcuts();
+      await removeShortcuts(shortcuts);
       await lifecycle.quit();
       return;
     }
