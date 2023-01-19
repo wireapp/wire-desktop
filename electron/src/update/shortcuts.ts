@@ -17,21 +17,34 @@
  *
  */
 
-import {shell} from 'electron';
+import {app, shell} from 'electron';
 import fs from 'fs-extra';
+import path from 'path';
+import {config} from '../settings/config';
 
-export function createShortcuts(locations: string[], execPath: string, appUserModelId: string) {
+const linkName = `${config.name}.lnk`;
+const shortcutsMap = {
+  desktop: path.join(app.getPath('desktop'), linkName),
+  quickLaunch: process.env.APPDATA
+    ? path.resolve(process.env.APPDATA, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
+    : undefined,
+  start: path.join(app.getPath('appData'), 'Microsoft/Windows/Start Menu/Programs', linkName),
+};
+
+const shortcuts = Object.values(shortcutsMap).filter((path): path is string => !!path);
+
+export function createShortcuts(exePath: string) {
   // As documented in https://github.com/electron/windows-installer/issues/296,
   // Squirrel has problems with notification clicks on Windows 10.
   // The easiest workaround is to create shortcuts on our own.
-  locations.forEach(location => {
+  shortcuts.forEach(location => {
     shell.writeShortcutLink(location, {
-      appUserModelId: appUserModelId,
-      target: execPath,
+      appUserModelId: config.appUserModelId,
+      target: exePath,
     });
   });
 }
 
-export async function removeShortcuts(shortcutPaths: string[]) {
-  return Promise.all(shortcutPaths.map(shortcutPath => fs.remove(shortcutPath)));
+export async function removeShortcuts() {
+  return Promise.all(shortcuts.map(shortcut => fs.remove(shortcut)));
 }

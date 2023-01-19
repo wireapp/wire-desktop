@@ -19,7 +19,6 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
-import {app} from 'electron';
 import {StringUtil} from '@wireapp/commons';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
@@ -51,17 +50,6 @@ enum SQUIRREL_EVENT {
   UNINSTALL = '--squirrel-uninstall',
   UPDATED = '--squirrel-updated',
 }
-
-const linkName = `${config.name}.lnk`;
-const shortcutsMap = {
-  desktop: path.join(app.getPath('desktop'), linkName),
-  quickLaunch: process.env.APPDATA
-    ? path.resolve(process.env.APPDATA, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
-    : undefined,
-  start: path.join(app.getPath('appData'), 'Microsoft/Windows/Start Menu/Programs', linkName),
-};
-
-const shortcuts = Object.values(shortcutsMap).filter((path): path is string => !!path);
 
 function spawn(command: string, args: string[]): Promise<void> {
   const commandFile = path.basename(command);
@@ -135,14 +123,14 @@ export async function handleSquirrelArgs(): Promise<void> {
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL:
     case SQUIRREL_EVENT.UPDATED: {
-      logger.info(`Creating shortcuts for exe ${exePath} (${JSON.stringify(shortcuts)})...`);
-      await createShortcuts(shortcuts, exePath, config.appUserModelId);
+      logger.info(`Creating shortcuts for exe ${exePath}...`);
+      await createShortcuts(exePath);
       await lifecycle.quit();
       return;
     }
 
     case SQUIRREL_EVENT.UNINSTALL: {
-      await removeShortcuts(shortcuts);
+      await removeShortcuts();
       await lifecycle.quit();
       return;
     }
