@@ -104,29 +104,32 @@ async function spawnUpdate(args: string[]): Promise<void> {
   }
 }
 
-function createShortcut(location: string): boolean {
+function createShortcut(location: string, execPath: string): boolean {
   // As documented in https://github.com/electron/windows-installer/issues/296,
   // Squirrel has problems with notification clicks on Windows 10.
   // The easiest workaround is to create shortcuts on our own.
-  const shortcutExists = fs.existsSync(location);
+  ///const shortcutExists = fs.existsSync(location);
 
-  return shell.writeShortcutLink(location, shortcutExists ? 'replace' : 'create', {
+  return shell.writeShortcutLink(location, 'replace', {
     appUserModelId: config.appUserModelId,
-    target: process.execPath,
+    target: execPath,
   });
 }
 
 function createShortcuts(): void {
+  childProcess.spawnSync(updateDotExe, ['--createShortcut', `${config.name}.exe`]);
+  const linkPath = fs.readlinkSync(startShortcut);
+
   logger.info('Creating shortcut in the start menu ...');
-  const startResult = createShortcut(startShortcut);
+  const startResult = createShortcut(startShortcut, linkPath);
 
   logger.info('Creating shortcut on the desktop ...');
-  const desktopResult = createShortcut(desktopShortcut);
+  const desktopResult = createShortcut(desktopShortcut, linkPath);
 
   let quickLaunchResult = false;
   if (quickLaunchShortcut) {
     logger.info('Creating shortcut in the quick launch menu ...');
-    quickLaunchResult = createShortcut(quickLaunchShortcut);
+    quickLaunchResult = createShortcut(quickLaunchShortcut, linkPath);
   }
 
   logger.info('Created shortcuts:', {desktop: desktopResult, quickLaunch: quickLaunchResult, start: startResult});
@@ -163,12 +166,7 @@ export async function handleSquirrelArgs(): Promise<void> {
   const squirrelEvent = process.argv[1];
 
   switch (squirrelEvent) {
-    case SQUIRREL_EVENT.INSTALL: {
-      createShortcuts();
-      await lifecycle.quit();
-      return;
-    }
-
+    case SQUIRREL_EVENT.INSTALL:
     case SQUIRREL_EVENT.UPDATED: {
       createShortcuts();
       await lifecycle.quit();
