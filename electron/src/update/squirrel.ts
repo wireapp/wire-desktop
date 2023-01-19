@@ -49,6 +49,8 @@ enum SQUIRREL_EVENT {
   UPDATED = '--squirrel-updated',
 }
 
+const shortcuts = ['StartMenu', 'Desktop', 'Startup'] as const;
+
 function spawn(command: string, args: string[]): Promise<void> {
   const commandFile = path.basename(command);
 
@@ -98,11 +100,11 @@ async function spawnUpdate(args: string[]): Promise<void> {
 }
 
 function createShortcuts(): Promise<void> {
-  return spawnUpdate([`--createShortcut=${config.name}.exe`, '-l=StartMenu,Desktop,Startup']);
+  return spawnUpdate([`--createShortcut=${config.name}.exe`, `-l=${shortcuts.join(',')}`]);
 }
 
 function removeShortcuts(): Promise<void> {
-  return spawnUpdate([`--removeShortcut=${config.name}.exe`, '-l=StartMenu,Desktop,Startup']);
+  return spawnUpdate([`--removeShortcut=${config.name}.exe`, `-l=${shortcuts.join(',')}`]);
 }
 
 export async function installUpdate(): Promise<void> {
