@@ -98,11 +98,11 @@ async function spawnUpdate(args: string[]): Promise<void> {
 }
 
 function createShortcuts(): Promise<void> {
-  return spawnUpdate(['--createShortcut', `${config.name}.exe`]);
+  return spawnUpdate([`--createShortcut=${config.name}.exe`, '-l=StartMenu,Desktop,Startup']);
 }
 
 function removeShortcuts(): Promise<void> {
-  return spawnUpdate(['--removeShortcut', `${config.name}.exe`]);
+  return spawnUpdate([`--removeShortcut=${config.name}.exe`, '-l=StartMenu,Desktop,Startup']);
 }
 
 export async function installUpdate(): Promise<void> {
