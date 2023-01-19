@@ -19,7 +19,7 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
-import {app, shell} from 'electron';
+import {app} from 'electron';
 import {StringUtil} from '@wireapp/commons';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
@@ -99,7 +99,24 @@ async function spawnUpdate(args: string[]): Promise<void> {
   }
 }
 
-function createShortcuts(): Promise<void> {
+async function removeOldShortcuts(): Promise<void> {
+  const linkName = `${config.name}.lnk`;
+  const windowsAppData = process.env.APPDATA;
+  const startShortcut = path.join(app.getPath('appData'), `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
+  const desktopShortcut = path.join(app.getPath('desktop'), `${config.name}.lnk`);
+  const quickLaunchShortcut = windowsAppData
+    ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
+    : '';
+  await fs.remove(startShortcut);
+  await fs.remove(desktopShortcut);
+  if (quickLaunchShortcut) {
+    await fs.remove(quickLaunchShortcut);
+  }
+}
+
+async function createShortcuts(): Promise<void> {
+  // On version 3.30, we were manually creating shortcuts. To make sure none of those shortcuts are left behind, we remove them all before creating the new ones.
+  await removeOldShortcuts();
   return spawnUpdate([`--createShortcut=${config.name}.exe`, `-l=${shortcuts.join(',')}`]);
 }
 
