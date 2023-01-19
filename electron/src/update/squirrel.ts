@@ -36,6 +36,8 @@ const logger = getLogger(path.basename(__filename));
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
+const exeName = path.basename(process.execPath);
+const exePath = path.join(rootFolder, exeName);
 
 const windowsAppData = process.env.APPDATA;
 
@@ -109,17 +111,6 @@ async function spawnUpdate(args: string[]): Promise<void> {
   }
 }
 
-async function getExecPath(): Promise<string> {
-  /*
-   * That's a hack to get the executable path.
-   * Since squirrel do not have a way to get the executable path directly, the hack consist of creating a shortcut on the desktop
-   * And then read the content of the shortcut to get the executable path.
-   */
-  await spawnUpdate([`--createShortcut=${config.name}.exe`, `-l=Desktop`]);
-  const execPath = await fs.readlink(shortcutsMap.desktop);
-  return execPath;
-}
-
 export async function installUpdate(): Promise<void> {
   logger.info(`Checking for Windows updates at "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
   await spawnUpdate(['--update', EnvironmentUtil.app.UPDATE_URL_WIN]);
@@ -144,8 +135,8 @@ export async function handleSquirrelArgs(): Promise<void> {
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL:
     case SQUIRREL_EVENT.UPDATED: {
-      const execPath = await getExecPath();
-      await createShortcuts(shortcuts, execPath, config.appUserModelId);
+      logger.info(`Creating shortcuts for exe ${exePath} (${JSON.stringify(shortcuts)})...`);
+      await createShortcuts(shortcuts, exePath, config.appUserModelId);
       await lifecycle.quit();
       return;
     }
