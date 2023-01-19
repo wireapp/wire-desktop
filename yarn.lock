@@ -6880,12 +6880,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-simple-import-sort@npm:8.0.0":
-  version: 8.0.0
-  resolution: "eslint-plugin-simple-import-sort@npm:8.0.0"
+"eslint-plugin-simple-import-sort@npm:9.0.0":
+  version: 9.0.0
+  resolution: "eslint-plugin-simple-import-sort@npm:9.0.0"
   peerDependencies:
     eslint: ">=5.0.0"
-  checksum: d2a92a7d148803ee9ad4f081892a8d03820198c36a0f4f16a97d9f686a714edc9c9a9e51cc79cb0ba1afff76a1fde6a5eae50e9e3754928068227c92a2db5d6b
+  checksum: 09dac706f11e625c4994a4452d799a3fc8ad928fd9a1a3891943a1b54cccf2d30a95066a81a13e8f40204441f8d140bd2a735db4870ef42799f6aed94398c88a
   languageName: node
   linkType: hard
 
@@ -14626,7 +14626,7 @@ __metadata:
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.6.0
-    eslint-plugin-simple-import-sort: 8.0.0
+    eslint-plugin-simple-import-sort: 9.0.0
     eslint-plugin-sort-keys-fix: 1.1.1
     eslint-plugin-typescript-sort-keys: 2.1.0
     form-data: 4.0.0
