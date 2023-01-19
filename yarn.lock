@@ -12638,6 +12638,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rimraf@npm:4.1.1":
+  version: 4.1.1
+  resolution: "rimraf@npm:4.1.1"
+  bin:
+    rimraf: dist/cjs/src/bin.js
+  checksum: f52d46f59c1a532b3d0f73cb5228ff8f7df4ee87b9df95cf655788ea186c935b5c6ab4c45b66f8de5ed1e3690f58ff83f9a5b0ba1ae2e76a9bf36415f37732f7
+  languageName: node
+  linkType: hard
+
 "rimraf@npm:^2.6.3, rimraf@npm:~2.6.2":
   version: 2.6.3
   resolution: "rimraf@npm:2.6.3"
@@ -14656,7 +14665,7 @@ __metadata:
     redux: 4.2.0
     redux-logger: 3.0.6
     redux-thunk: 2.4.1
-    rimraf: 3.0.2
+    rimraf: 4.1.1
     sinon: 14.0.1
     sort-json: 2.0.1
     style-loader: 3.3.1
