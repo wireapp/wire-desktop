@@ -2094,14 +2094,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@es-joy/jsdoccomment@npm:~0.31.0":
-  version: 0.31.0
-  resolution: "@es-joy/jsdoccomment@npm:0.31.0"
+"@es-joy/jsdoccomment@npm:~0.36.1":
+  version: 0.36.1
+  resolution: "@es-joy/jsdoccomment@npm:0.36.1"
   dependencies:
     comment-parser: 1.3.1
     esquery: ^1.4.0
     jsdoc-type-pratt-parser: ~3.1.0
-  checksum: 1691ff501559f45593e5f080d2c08dea4fadba5f48e526b9ff2943c050fbb40408f5e83968542e5b6bf47219c7573796d00bfe80dacfd1ba8187904cc475cefb
+  checksum: 28e697779230dc6a95b1f233a8c2a72b64fbea686e407106e5d4292083421a997452731c414de26c10bee86e8e0397c5fb84d6ecfd4b472a29735e1af103ddb6
   languageName: node
   linkType: hard
 
@@ -6806,20 +6806,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:39.3.6":
-  version: 39.3.6
-  resolution: "eslint-plugin-jsdoc@npm:39.3.6"
+"eslint-plugin-jsdoc@npm:39.6.7":
+  version: 39.6.7
+  resolution: "eslint-plugin-jsdoc@npm:39.6.7"
   dependencies:
-    "@es-joy/jsdoccomment": ~0.31.0
+    "@es-joy/jsdoccomment": ~0.36.1
     comment-parser: 1.3.1
     debug: ^4.3.4
     escape-string-regexp: ^4.0.0
     esquery: ^1.4.0
-    semver: ^7.3.7
+    semver: ^7.3.8
     spdx-expression-parse: ^3.0.1
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
-  checksum: 0825a5eba6cdcb250e45cd5ad488bd234da346f324a11160ad4b8c9fb3c76d8e1457d462fa91c24f11bdff5ef0013375d65c366b648202254c4bcc79eed89060
+  checksum: 52b3afc9a2e08ade07aa194df79ff626419e55d068898cffdb6ac1a36f979d2eef1f760b618bb5c2a779a23a2ed8f7c2648f43cf930b564de8924a07be24abc1
   languageName: node
   linkType: hard
 
@@ -12795,7 +12795,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.1.3, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.5, semver@npm:^7.3.7":
+"semver@npm:^7.1.3, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8":
   version: 7.3.8
   resolution: "semver@npm:7.3.8"
   dependencies:
@@ -14621,7 +14621,7 @@ __metadata:
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-jasmine: 4.1.3
-    eslint-plugin-jsdoc: 39.3.6
+    eslint-plugin-jsdoc: 39.6.7
     eslint-plugin-no-unsanitized: 4.0.1
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-react: 7.31.10
