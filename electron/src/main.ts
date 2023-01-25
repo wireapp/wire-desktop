@@ -622,7 +622,7 @@ class ElectronWrapperInit {
             await applyProxySettings(proxyInfoArg, contents);
           }
           // Open webview links outside of the app
-          contents.on('new-window', openLinkInNewWindow);
+          contents.setWindowOpenHandler(openLinkInNewWindow);
           contents.setWindowOpenHandler(openLinkInNewWindowHandler);
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());

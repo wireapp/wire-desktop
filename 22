@@ -1,0 +1,3 @@
+[31m[1mUsage Error[22m[39m: Couldn't find a script named "upgrade".
+
+[1m$ [22myarn run [--inspect] [--inspect-brk] [-T,--top-level] [-B,--binaries-only] <scriptName> ...
