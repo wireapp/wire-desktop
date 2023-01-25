@@ -516,7 +516,7 @@ const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: E
 
 class ElectronWrapperInit {
   logger: logdown.Logger;
-  ssoWindow: SingleSignOn | null;
+  ssoWindow: BrowserWindow | SingleSignOn | null;
 
   constructor() {
     this.logger = getLogger('ElectronWrapperInit');
@@ -555,13 +555,73 @@ class ElectronWrapperInit {
       details: HandlerDetails,
     ): {action: 'deny'} | {action: 'allow'; overrideBrowserWindowOptions?: BrowserWindowConstructorOptions} => {
       if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
-        return {action: 'allow'};
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: {
+            alwaysOnTop: true,
+            backgroundColor: '#FFFFFF',
+            fullscreen: false,
+            fullscreenable: false,
+            height: 600,
+            maximizable: false,
+            minimizable: false,
+            modal: false,
+            movable: false,
+            parent: main,
+            resizable: false,
+            title: SingleSignOn.getWindowTitle(details.url),
+            titleBarStyle: 'default',
+            useContentSize: true,
+            webPreferences: {
+              allowRunningInsecureContent: false,
+              backgroundThrottling: false,
+              contextIsolation: true,
+              devTools: true,
+              disableBlinkFeatures: '',
+              experimentalFeatures: false,
+              images: true,
+              javascript: true,
+              nodeIntegration: false,
+              nodeIntegrationInWorker: false,
+              offscreen: false,
+              partition: '',
+              plugins: false,
+              sandbox: true,
+              scrollBounce: true,
+              spellcheck: false,
+              textAreasAreResizable: false,
+              webSecurity: true,
+              webgl: false,
+              webviewTag: false,
+            },
+            width: 480,
+          },
+        };
       }
 
       this.logger.log('Opening an external window from a webview.');
       void WindowUtil.openExternal(details.url);
       return {action: 'deny'};
     };
+    // const openLinkInNewWindow = (
+    //   win: BrowserWindow,
+    //   url: string,
+    //   frameName: string,
+    //   _disposition: string,
+    //   options: BrowserWindowConstructorOptions,
+    // ): Promise<void> | void => {
+    //   if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
+    //     const singleSignOn = new SingleSignOn(win, url, options).init();
+    //     return new Promise(() => {
+    //       singleSignOn
+    //         .then(sso => {
+    //           this.ssoWindow = sso;
+    //           this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
+    //         })
+    //         .catch(error => console.info(error));
+    //     });
+    //   }
+    // };
 
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
       // Ensure navigation is to an allowed domain
@@ -601,8 +661,11 @@ class ElectronWrapperInit {
             await applyProxySettings(proxyInfoArg, contents);
           }
           // Open webview links outside of the app
-
           contents.setWindowOpenHandler(openLinkInNewWindowHandler);
+          contents.on('did-create-window', win => {
+            this.ssoWindow = win;
+            this.ssoWindow.on('closed', () => this.sendSSOWindowCloseEvent);
+          });
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });

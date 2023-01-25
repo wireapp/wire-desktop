@@ -74,6 +74,7 @@ export class SingleSignOn {
 
   constructor(
     mainBrowserWindow: BrowserWindow,
+    ssoWindow: BrowserWindow,
     senderEvent: ElectronEvent,
     windowOriginURL: string,
     windowOptions: BrowserWindowConstructorOptions,
