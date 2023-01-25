@@ -562,27 +562,6 @@ class ElectronWrapperInit {
       void WindowUtil.openExternal(details.url);
       return {action: 'deny'};
     };
-    const openLinkInNewWindow = (
-      event: ElectronEvent,
-      url: string,
-      frameName: string,
-      _disposition: string,
-      options: BrowserWindowConstructorOptions,
-    ): Promise<void> | void => {
-      event.preventDefault();
-
-      if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
-        const singleSignOn = new SingleSignOn(main, event, url, options).init();
-        return new Promise(() => {
-          singleSignOn
-            .then(sso => {
-              this.ssoWindow = sso;
-              this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
-            })
-            .catch(error => console.info(error));
-        });
-      }
-    };
 
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
       // Ensure navigation is to an allowed domain
@@ -622,7 +601,7 @@ class ElectronWrapperInit {
             await applyProxySettings(proxyInfoArg, contents);
           }
           // Open webview links outside of the app
-          contents.setWindowOpenHandler(openLinkInNewWindow);
+
           contents.setWindowOpenHandler(openLinkInNewWindowHandler);
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
