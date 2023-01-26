@@ -64,25 +64,23 @@ export class SingleSignOn {
 
   private session: Session | undefined;
   private ssoWindow: BrowserWindow | undefined;
-  private readonly mainBrowserWindow: BrowserWindow;
+  // private readonly mainBrowserWindow: BrowserWindow;
   private readonly mainSession: Session;
-  private readonly senderEvent: ElectronEvent;
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
   public onClose = () => {};
 
   constructor(
-    mainBrowserWindow: BrowserWindow,
     ssoWindow: BrowserWindow,
-    senderEvent: ElectronEvent,
+    mainWindow: BrowserWindow,
     windowOriginURL: string,
     windowOptions: BrowserWindowConstructorOptions,
   ) {
-    this.mainBrowserWindow = mainBrowserWindow;
     this.windowOptions = windowOptions;
-    this.senderEvent = senderEvent;
-    this.senderWebContents = (senderEvent as any).sender;
+    this.ssoWindow = ssoWindow;
+    this.session = ssoWindow.webContents.session;
+    this.senderWebContents = mainWindow.webContents;
     this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginURL);
   }
@@ -107,65 +105,20 @@ export class SingleSignOn {
     await SingleSignOn.registerProtocol(this.session, type => this.finalizeLogin(type));
 
     // Show the window(s)
-    await this.ssoWindow.loadURL(this.windowOriginUrl.toString());
+    await this.ssoWindow?.loadURL(this.windowOriginUrl.toString());
 
     if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
-      this.ssoWindow.webContents.openDevTools({mode: 'detach'});
+      this.ssoWindow?.webContents.openDevTools({mode: 'detach'});
     }
     return this;
   };
 
-  private createBrowserWindow(): BrowserWindow {
+  private createBrowserWindow(): BrowserWindow | undefined {
     // Discard old preload URL
     delete (this.windowOptions as any).webPreferences.preloadURL;
     delete (this.windowOptions as any).webPreferences.preload;
 
-    const ssoWindow = new BrowserWindow({
-      ...this.windowOptions,
-      alwaysOnTop: true,
-      backgroundColor: '#FFFFFF',
-      fullscreen: false,
-      fullscreenable: false,
-      height: this.windowOptions.height || 600,
-      maximizable: false,
-      minimizable: false,
-      modal: false,
-      movable: false,
-      parent: this.mainBrowserWindow,
-      resizable: false,
-      title: SingleSignOn.getWindowTitle(this.windowOriginUrl.origin),
-      titleBarStyle: 'default',
-      useContentSize: true,
-      webPreferences: {
-        ...this.windowOptions.webPreferences,
-        allowRunningInsecureContent: false,
-        backgroundThrottling: false,
-        contextIsolation: true,
-        devTools: true,
-        disableBlinkFeatures: '',
-        experimentalFeatures: false,
-        images: true,
-        javascript: true,
-        nodeIntegration: false,
-        nodeIntegrationInWorker: false,
-        offscreen: false,
-        partition: '',
-        plugins: false,
-        sandbox: true,
-        scrollBounce: true,
-        session: this.session,
-        spellcheck: false,
-        textAreasAreResizable: false,
-        webSecurity: true,
-        webgl: false,
-        webviewTag: false,
-      },
-      width: this.windowOptions.width || 480,
-    });
-
-    (this.senderEvent as any).newGuest = ssoWindow;
-
-    ssoWindow.once('closed', async () => {
+    this.ssoWindow?.once('closed', async () => {
       if (this.session) {
         await this.wipeSessionData();
         const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
@@ -179,24 +132,24 @@ export class SingleSignOn {
     });
 
     // Prevent title updates and new windows
-    ssoWindow.on('page-title-updated', event => event.preventDefault());
-    ssoWindow.webContents.setWindowOpenHandler(details => {
+    this.ssoWindow?.on('page-title-updated', event => event.preventDefault());
+    this.ssoWindow?.webContents.setWindowOpenHandler(details => {
       return {action: 'deny'};
     });
 
-    ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
+    this.ssoWindow?.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
 
       if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
         event.preventDefault();
       }
 
-      ssoWindow.setTitle(SingleSignOn.getWindowTitle(origin));
+      this.ssoWindow?.setTitle(SingleSignOn.getWindowTitle(origin));
     });
 
     if (ENABLE_LOGGING) {
-      ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
-        const webViewId = getWebViewId(ssoWindow.webContents);
+      this.ssoWindow?.webContents.on('console-message', async (_event, _level, message) => {
+        const webViewId = getWebViewId(this.ssoWindow?.webContents);
         if (webViewId) {
           const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
           try {
@@ -208,7 +161,7 @@ export class SingleSignOn {
       });
     }
 
-    return ssoWindow;
+    return this.ssoWindow;
   }
 
   close = () => {
