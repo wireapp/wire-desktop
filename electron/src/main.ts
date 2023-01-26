@@ -607,11 +607,12 @@ class ElectronWrapperInit {
     const openLinkInNewWindow = (
       win: BrowserWindow,
       url: string,
+      event: ElectronEvent,
       frameName: string,
       options: BrowserWindowConstructorOptions,
     ): Promise<void> | void => {
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
-        const singleSignOn = new SingleSignOn(win, main, url, options).init();
+        const singleSignOn = new SingleSignOn(win, event, url, options).init();
         return new Promise(() => {
           singleSignOn
             .then(sso => {
@@ -635,7 +636,7 @@ class ElectronWrapperInit {
 
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
-    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
+    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
       remoteMain.enable(contents);
       switch (contents.getType()) {
         case 'window': {
@@ -663,7 +664,7 @@ class ElectronWrapperInit {
           // Open webview links outside of the app
           contents.setWindowOpenHandler(openLinkInNewWindowHandler);
           contents.on('did-create-window', async (win, {url, frameName, options}) => {
-            await openLinkInNewWindow(win, url, frameName, options);
+            await openLinkInNewWindow(win, url, webviewEvent, frameName, options);
           });
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());

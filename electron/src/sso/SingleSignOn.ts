@@ -66,6 +66,7 @@ export class SingleSignOn {
   private ssoWindow: BrowserWindow | undefined;
   // private readonly mainBrowserWindow: BrowserWindow;
   private readonly mainSession: Session;
+  private readonly senderEvent: ElectronEvent;
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
@@ -73,14 +74,15 @@ export class SingleSignOn {
 
   constructor(
     ssoWindow: BrowserWindow,
-    mainWindow: BrowserWindow,
+    senderEvent: ElectronEvent,
     windowOriginURL: string,
     windowOptions: BrowserWindowConstructorOptions,
   ) {
     this.windowOptions = windowOptions;
     this.ssoWindow = ssoWindow;
     this.session = ssoWindow.webContents.session;
-    this.senderWebContents = mainWindow.webContents;
+    this.senderEvent = senderEvent;
+    this.senderWebContents = (senderEvent as any).sender;
     this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginURL);
   }
@@ -117,6 +119,8 @@ export class SingleSignOn {
     // Discard old preload URL
     delete (this.windowOptions as any).webPreferences.preloadURL;
     delete (this.windowOptions as any).webPreferences.preload;
+
+    (this.senderEvent as any).newGuest = this.ssoWindow;
 
     this.ssoWindow?.once('closed', async () => {
       if (this.session) {
