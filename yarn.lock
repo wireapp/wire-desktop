@@ -2316,6 +2316,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jest/environment@npm:^29.4.1":
+  version: 29.4.1
+  resolution: "@jest/environment@npm:29.4.1"
+  dependencies:
+    "@jest/fake-timers": ^29.4.1
+    "@jest/types": ^29.4.1
+    "@types/node": "*"
+    jest-mock: ^29.4.1
+  checksum: f6fed37d2e4aede2930f0a030432b72efeed6d3ea2eee165c1e64afd9fb3af8cf827e306c800cdb3f7bbd106bc5b2405cdec98b91a85695e3f62b1e228cb8d09
+  languageName: node
+  linkType: hard
+
 "@jest/expect-utils@npm:^29.1.2":
   version: 29.1.2
   resolution: "@jest/expect-utils@npm:29.1.2"
@@ -2346,6 +2358,20 @@ __metadata:
     jest-mock: ^29.1.2
     jest-util: ^29.1.2
   checksum: a5331ffdaaabeaded69b41f46ec85f8768fbfa5d3953be24111b2849a93626c851c6ebbb64ae718ab9ebea86c21083702985caeb2812f51941b111a9ead377e1
+  languageName: node
+  linkType: hard
+
+"@jest/fake-timers@npm:^29.4.1":
+  version: 29.4.1
+  resolution: "@jest/fake-timers@npm:29.4.1"
+  dependencies:
+    "@jest/types": ^29.4.1
+    "@sinonjs/fake-timers": ^10.0.2
+    "@types/node": "*"
+    jest-message-util: ^29.4.1
+    jest-mock: ^29.4.1
+    jest-util: ^29.4.1
+  checksum: 6e1f404054cae54291c1aba7e6b16d7895e2f14b2a1814a0133f9859d6bf49b8e91ce5b3ee15517013bcc6061b63e7a9aeebabd32a68f27a1a15a6dfb15644d1
   languageName: node
   linkType: hard
 
@@ -2405,6 +2431,15 @@ __metadata:
   dependencies:
     "@sinclair/typebox": ^0.24.1
   checksum: 41355c78f09eb1097e57a3c5d0ca11c9099e235e01ea5fa4e3953562a79a6a9296c1d300f1ba50ca75236048829e056b00685cd2f1ff8285e56fd2ce01249acb
+  languageName: node
+  linkType: hard
+
+"@jest/schemas@npm:^29.4.0":
+  version: 29.4.0
+  resolution: "@jest/schemas@npm:29.4.0"
+  dependencies:
+    "@sinclair/typebox": ^0.25.16
+  checksum: 005c90b7b641af029133fa390c0c8a75b63edf651da6253d7c472a8f15ddd18aa139edcd4236e57f974006e39c67217925768115484dbd7bfed2eba224de8b7d
   languageName: node
   linkType: hard
 
@@ -2477,6 +2512,20 @@ __metadata:
     "@types/yargs": ^17.0.8
     chalk: ^4.0.0
   checksum: 697fc72c37814606715fd1dcbdcb84129d8b292dc6d6d5fa9b8f2b7e8ffd297757b508913be049a4acfbe9f80b982d96e4aa9aa60c40bbc643274ca1867194f8
+  languageName: node
+  linkType: hard
+
+"@jest/types@npm:^29.4.1":
+  version: 29.4.1
+  resolution: "@jest/types@npm:29.4.1"
+  dependencies:
+    "@jest/schemas": ^29.4.0
+    "@types/istanbul-lib-coverage": ^2.0.0
+    "@types/istanbul-reports": ^3.0.0
+    "@types/node": "*"
+    "@types/yargs": ^17.0.8
+    chalk: ^4.0.0
+  checksum: 0aa0b6a210b3474289e5dcaa8e7abb2238dba8d0baf2eb5a3f080fb95e9a39e71e8abc96811d4ef7011f5d993755bb54515e9d827d7ebc2a2d4d9579d84f5a04
   languageName: node
   linkType: hard
 
@@ -2700,6 +2749,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sinclair/typebox@npm:^0.25.16":
+  version: 0.25.21
+  resolution: "@sinclair/typebox@npm:0.25.21"
+  checksum: 763af1163fe4eabee9b914d4e4548a39fbba3287d2b3b1ff043c1da3c5a321e99d50a3ca94eb182988131e00b006a6f019799cde8da2f61e2f118b30b0276a00
+  languageName: node
+  linkType: hard
+
 "@sindresorhus/is@npm:^0.14.0":
   version: 0.14.0
   resolution: "@sindresorhus/is@npm:0.14.0"
@@ -2723,12 +2779,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sinonjs/commons@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@sinonjs/commons@npm:2.0.0"
+  dependencies:
+    type-detect: 4.0.8
+  checksum: 5023ba17edf2b85ed58262313b8e9b59e23c6860681a9af0200f239fe939e2b79736d04a260e8270ddd57196851dde3ba754d7230be5c5234e777ae2ca8af137
+  languageName: node
+  linkType: hard
+
 "@sinonjs/fake-timers@npm:>=5, @sinonjs/fake-timers@npm:^9.1.2":
   version: 9.1.2
   resolution: "@sinonjs/fake-timers@npm:9.1.2"
   dependencies:
     "@sinonjs/commons": ^1.7.0
   checksum: 7d3aef54e17c1073101cb64d953157c19d62a40e261a30923fa1ee337b049c5f29cc47b1f0c477880f42b5659848ba9ab897607ac8ea4acd5c30ddcfac57fca6
+  languageName: node
+  linkType: hard
+
+"@sinonjs/fake-timers@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "@sinonjs/fake-timers@npm:10.0.2"
+  dependencies:
+    "@sinonjs/commons": ^2.0.0
+  checksum: c62aa98e7cefda8dedc101ce227abc888dc46b8ff9706c5f0a8dfd9c3ada97d0a5611384738d9ba0b26b59f99c2ba24efece8e779bb08329e9e87358fa309824
   languageName: node
   linkType: hard
 
@@ -9585,19 +9659,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-jsdom@npm:29.1.2":
-  version: 29.1.2
-  resolution: "jest-environment-jsdom@npm:29.1.2"
+"jest-environment-jsdom@npm:29.4.1":
+  version: 29.4.1
+  resolution: "jest-environment-jsdom@npm:29.4.1"
   dependencies:
-    "@jest/environment": ^29.1.2
-    "@jest/fake-timers": ^29.1.2
-    "@jest/types": ^29.1.2
+    "@jest/environment": ^29.4.1
+    "@jest/fake-timers": ^29.4.1
+    "@jest/types": ^29.4.1
     "@types/jsdom": ^20.0.0
     "@types/node": "*"
-    jest-mock: ^29.1.2
-    jest-util: ^29.1.2
+    jest-mock: ^29.4.1
+    jest-util: ^29.4.1
     jsdom: ^20.0.0
-  checksum: 75737ab504fe6a2ed4e4973724deca46176b80380e4e5b040c8e318af56e31d5ab9679e4a2dd1a1e2a27ca6009312f9a12309c9433d645e3ec09354f52b0e287
+  peerDependencies:
+    canvas: ^2.5.0
+  peerDependenciesMeta:
+    canvas:
+      optional: true
+  checksum: ad0d3e2926f847ed711f11a622b3c4990bcdb3b150e013a1bc7789e5da6efb4c4554d2208e42d543cfb4732d971478330f75549f927002566f6d50963a17e133
   languageName: node
   linkType: hard
 
@@ -9684,6 +9763,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-message-util@npm:^29.4.1":
+  version: 29.4.1
+  resolution: "jest-message-util@npm:29.4.1"
+  dependencies:
+    "@babel/code-frame": ^7.12.13
+    "@jest/types": ^29.4.1
+    "@types/stack-utils": ^2.0.0
+    chalk: ^4.0.0
+    graceful-fs: ^4.2.9
+    micromatch: ^4.0.4
+    pretty-format: ^29.4.1
+    slash: ^3.0.0
+    stack-utils: ^2.0.3
+  checksum: 7d49823401b6d42f0d2d63dd9c0f11d2f64783416f82a68634190abee46e600e25bb0b380c746726acc56e854687bb03a76e26e617fcdda78e8c6316423b694f
+  languageName: node
+  linkType: hard
+
 "jest-mock@npm:^29.1.2":
   version: 29.1.2
   resolution: "jest-mock@npm:29.1.2"
@@ -9692,6 +9788,17 @@ __metadata:
     "@types/node": "*"
     jest-util: ^29.1.2
   checksum: 145817b10c79e8d1801dba8ae5c6e305f17f2497ed1eb9b54336fa7b448ffcafb2cc97b57cef650cc5b3f7d77a063d586b3d446bcd907161e2ca7e5d68184e8f
+  languageName: node
+  linkType: hard
+
+"jest-mock@npm:^29.4.1":
+  version: 29.4.1
+  resolution: "jest-mock@npm:29.4.1"
+  dependencies:
+    "@jest/types": ^29.4.1
+    "@types/node": "*"
+    jest-util: ^29.4.1
+  checksum: 7f595a71886a64eda21b9fc2660e86a02f0efe6685496c675e6be921d5609fe9ac5fe97e8c7d1cae811974967439e8daa12c1779e731bdd777c47326f173e4a2
   languageName: node
   linkType: hard
 
@@ -9843,6 +9950,20 @@ __metadata:
     graceful-fs: ^4.2.9
     picomatch: ^2.2.3
   checksum: 6c55464e2028032692c4801b339bc1f7418826072d75981b8f29ded6ccba8cb8e1f164eb3d12d859cb63c24a8e9be90204f0d3c4d33e530375f1e5935755b5a9
+  languageName: node
+  linkType: hard
+
+"jest-util@npm:^29.4.1":
+  version: 29.4.1
+  resolution: "jest-util@npm:29.4.1"
+  dependencies:
+    "@jest/types": ^29.4.1
+    "@types/node": "*"
+    chalk: ^4.0.0
+    ci-info: ^3.2.0
+    graceful-fs: ^4.2.9
+    picomatch: ^2.2.3
+  checksum: 10a0e6c448ace1386f728ee3b7669f67878bb0c2e668a902d11140cc3f75c89a18f4142a37a24ccb587ede20dad86d497b3e8df4f26848a9be50a44779d92bc9
   languageName: node
   linkType: hard
 
@@ -12143,6 +12264,17 @@ __metadata:
     ansi-styles: ^5.0.0
     react-is: ^18.0.0
   checksum: b2c6e77666716e55094f29dcbd92e431a1b8cc0a06cd41ec1a3c8a10e5e56bb1f2d7b5942f1d8f6a0f69912712f3edb4c41713926d60cbb89f2a41355d49e7a4
+  languageName: node
+  linkType: hard
+
+"pretty-format@npm:^29.4.1":
+  version: 29.4.1
+  resolution: "pretty-format@npm:29.4.1"
+  dependencies:
+    "@jest/schemas": ^29.4.0
+    ansi-styles: ^5.0.0
+    react-is: ^18.0.0
+  checksum: bcc8e86bcf8e7f5106c96e2ea7905912bd17ae2aac76e4e0745d2a50df4b340638ed95090ee455a1c0f78189efa05077bd655ca08bf66292e83ebd7035fc46fd
   languageName: node
   linkType: hard
 
@@ -14931,7 +15063,7 @@ __metadata:
     image-type: 4.1.0
     is-ci: 3.0.1
     jest: 29.1.2
-    jest-environment-jsdom: 29.1.2
+    jest-environment-jsdom: 29.4.1
     jszip: 3.10.1
     lint-staged: 13.0.3
     lodash: 4.17.21
