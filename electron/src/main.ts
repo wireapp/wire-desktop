@@ -516,7 +516,7 @@ const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: E
 
 class ElectronWrapperInit {
   logger: logdown.Logger;
-  ssoWindow: BrowserWindow | SingleSignOn | null;
+  ssoWindow: SingleSignOn | null;
 
   constructor() {
     this.logger = getLogger('ElectronWrapperInit');

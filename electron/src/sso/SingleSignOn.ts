@@ -64,7 +64,6 @@ export class SingleSignOn {
 
   private session: Session | undefined;
   private ssoWindow: BrowserWindow | undefined;
-  // private readonly mainBrowserWindow: BrowserWindow;
   private readonly mainSession: Session;
   private readonly senderEvent: ElectronEvent;
   private readonly senderWebContents: WebContents;
