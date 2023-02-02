@@ -99,7 +99,7 @@ export class SingleSignOn {
       callback({cancel: false, requestHeaders});
     });
 
-    this.ssoWindow = this.createBrowserWindow();
+    this.setupBrowserWindow();
 
     // Register protocol
     // Note: we need to create the window before otherwise it does not work
@@ -114,14 +114,18 @@ export class SingleSignOn {
     return this;
   };
 
-  private createBrowserWindow(): BrowserWindow | undefined {
-    // Discard old preload URL
-    delete (this.windowOptions as any).webPreferences.preloadURL;
-    delete (this.windowOptions as any).webPreferences.preload;
+  private setupBrowserWindow(): void {
+    if (!this.ssoWindow) {
+      throw new Error('ssoWindow is not defined');
+    }
 
-    (this.senderEvent as any).newGuest = this.ssoWindow;
+    const ssoWindow = this.ssoWindow;
+    if (this.windowOptions.webPreferences) {
+      // Discard old preload URL
+      delete this.windowOptions.webPreferences.preload;
+    }
 
-    this.ssoWindow?.once('closed', async () => {
+    ssoWindow.once('closed', async () => {
       if (this.session) {
         await this.wipeSessionData();
         const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
@@ -135,24 +139,24 @@ export class SingleSignOn {
     });
 
     // Prevent title updates and new windows
-    this.ssoWindow?.on('page-title-updated', event => event.preventDefault());
-    this.ssoWindow?.webContents.setWindowOpenHandler(details => {
+    ssoWindow.on('page-title-updated', event => event.preventDefault());
+    ssoWindow.webContents.setWindowOpenHandler(details => {
       return {action: 'deny'};
     });
 
-    this.ssoWindow?.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
+    ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
       const {origin} = new URL(url);
 
       if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
         event.preventDefault();
       }
 
-      this.ssoWindow?.setTitle(SingleSignOn.getWindowTitle(origin));
+      ssoWindow.setTitle(SingleSignOn.getWindowTitle(origin));
     });
 
     if (ENABLE_LOGGING) {
-      this.ssoWindow?.webContents.on('console-message', async (_event, _level, message) => {
-        const webViewId = getWebViewId(this.ssoWindow?.webContents);
+      ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
+        const webViewId = getWebViewId(ssoWindow.webContents);
         if (webViewId) {
           const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
           try {
@@ -163,8 +167,6 @@ export class SingleSignOn {
         }
       });
     }
-
-    return this.ssoWindow;
   }
 
   close = () => {
