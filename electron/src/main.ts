@@ -576,7 +576,7 @@ class ElectronWrapperInit {
               allowRunningInsecureContent: false,
               backgroundThrottling: false,
               contextIsolation: true,
-              devTools: true,
+              devTools: false,
               disableBlinkFeatures: '',
               experimentalFeatures: false,
               images: true,
@@ -586,6 +586,7 @@ class ElectronWrapperInit {
               offscreen: false,
               partition: '',
               plugins: false,
+              preload: '',
               sandbox: true,
               scrollBounce: true,
               spellcheck: false,
@@ -638,6 +639,10 @@ class ElectronWrapperInit {
 
     app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
       remoteMain.enable(contents);
+      // disable new Windows by default on everything
+      contents.setWindowOpenHandler(() => {
+        return {action: 'deny'};
+      });
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
