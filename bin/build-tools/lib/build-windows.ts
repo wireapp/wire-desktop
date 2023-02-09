@@ -62,9 +62,10 @@ export async function buildWindowsConfig(
     icon: `${commonConfig.electronDirectory}/img/logo.ico`,
     ignore: [
       new RegExp(`${commonConfig.electronDirectory}/renderer/src`),
-      new RegExp(`${commonConfig.electronDirectory}/.yarn/`),
-      new RegExp(`${commonConfig.electronDirectory}/electron/src`),
-      new RegExp(`${commonConfig.electronDirectory}/bin/`),
+      new RegExp(`${commonConfig.electronDirectory}/src`),
+      new RegExp(`\.yarn`),
+      new RegExp(`bin`),
+      new RegExp(`jenkins`),
     ],
     name: commonConfig.name,
     out: commonConfig.buildDir,
