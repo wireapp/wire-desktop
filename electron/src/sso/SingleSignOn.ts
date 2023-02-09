@@ -178,7 +178,7 @@ export class SingleSignOn {
         await this.wipeSessionData();
         const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
         if (!unregisterSuccess) {
-          throw new Error('Failed to unregister protocol');
+          console.error('Failed to unregister protocol');
         }
       }
       this.ssoWindow?.close();
