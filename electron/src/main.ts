@@ -566,7 +566,7 @@ class ElectronWrapperInit {
             maximizable: false,
             minimizable: false,
             modal: false,
-            movable: false,
+            movable: true,
             parent: main,
             resizable: false,
             title: SingleSignOn.getWindowTitle(details.url),
