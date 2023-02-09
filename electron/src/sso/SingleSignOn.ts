@@ -29,10 +29,11 @@ import {
   ProtocolRequest,
   Session,
   session,
-  ipcMain,
   WebContents,
+  HandlerDetails,
 } from 'electron';
 import * as path from 'path';
+import * as WindowUtil from '../window/WindowUtil';
 import {URL} from 'url';
 
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
@@ -64,8 +65,6 @@ export class SingleSignOn {
 
   private session: Session | undefined;
   private ssoWindow: BrowserWindow | undefined;
-  private readonly mainSession: Session;
-  private readonly senderEvent: ElectronEvent;
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
@@ -79,10 +78,7 @@ export class SingleSignOn {
   ) {
     this.windowOptions = windowOptions;
     this.ssoWindow = ssoWindow;
-    this.session = ssoWindow.webContents.session;
-    this.senderEvent = senderEvent;
     this.senderWebContents = (senderEvent as any).sender;
-    this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginURL);
   }
 
@@ -138,9 +134,11 @@ export class SingleSignOn {
       this.ssoWindow = undefined;
     });
 
-    // Prevent title updates and new windows
+    // Prevent title updates
     ssoWindow.on('page-title-updated', event => event.preventDefault());
-    ssoWindow.webContents.setWindowOpenHandler(details => {
+    // Prevent new windows (open external pages in OS browser)
+    ssoWindow.webContents.setWindowOpenHandler((details: HandlerDetails): {action: 'deny'} => {
+      void WindowUtil.openExternal(details.url, true);
       return {action: 'deny'};
     });
 
@@ -175,7 +173,7 @@ export class SingleSignOn {
         await this.wipeSessionData();
         const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
         if (!unregisterSuccess) {
-          throw new Error('Failed to unregister protocol');
+          console.error('Failed to unregister protocol');
         }
       }
       this.ssoWindow?.close();
@@ -278,7 +276,7 @@ export class SingleSignOn {
 
       // Set cookies from ephemeral session to the default one
       try {
-        await SingleSignOn.copyCookies(this.session, this.mainSession, this.windowOriginUrl);
+        await SingleSignOn.copyCookies(this.session, this.senderWebContents.session, this.windowOriginUrl);
       } catch (error) {
         SingleSignOn.logger.warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
@@ -302,8 +300,6 @@ export class SingleSignOn {
   }
 
   private async wipeSessionData() {
-    if (this.session) {
-      await this.session.clearStorageData(undefined);
-    }
+    await this.session?.clearStorageData(undefined);
   }
 }
