@@ -33,6 +33,7 @@ import {
   WebContents,
 } from 'electron';
 import * as path from 'path';
+import * as WindowUtil from '../window/WindowUtil';
 import {URL} from 'url';
 
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
@@ -138,9 +139,11 @@ export class SingleSignOn {
       this.ssoWindow = undefined;
     });
 
-    // Prevent title updates and new windows
+    // Prevent title updates
     ssoWindow.on('page-title-updated', event => event.preventDefault());
-    ssoWindow.webContents.setWindowOpenHandler(details => {
+    // Prevent new windows (open external pages in OS browser)
+    ssoWindow.webContents.setWindowOpenHandler((details: HandlerDetails): {action: 'deny'} => {
+      void WindowUtil.openExternal(details.url, true);
       return {action: 'deny'};
     });
 
