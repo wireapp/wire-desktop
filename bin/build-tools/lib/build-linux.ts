@@ -101,6 +101,7 @@ export async function buildLinuxConfig(
     extraMetadata: {
       homepage: commonConfig.websiteUrl,
     },
+    files: ['!**/.yarn', '!**/renderer/src', '!**/electron/src', '!**/bin/'],
     linux: {
       artifactName: linuxConfig.artifactName,
       category: platformSpecificConfig.category,

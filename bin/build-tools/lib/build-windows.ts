@@ -63,6 +63,8 @@ export async function buildWindowsConfig(
     ignore: [
       new RegExp(`${commonConfig.electronDirectory}/renderer/src`),
       new RegExp(`${commonConfig.electronDirectory}/.yarn/`),
+      new RegExp(`${commonConfig.electronDirectory}/electron/src`),
+      new RegExp(`${commonConfig.electronDirectory}/bin/`),
     ],
     name: commonConfig.name,
     out: commonConfig.buildDir,
