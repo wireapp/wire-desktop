@@ -29,8 +29,8 @@ import {
   ProtocolRequest,
   Session,
   session,
-  ipcMain,
   WebContents,
+  HandlerDetails,
 } from 'electron';
 import * as path from 'path';
 import * as WindowUtil from '../window/WindowUtil';
@@ -65,8 +65,6 @@ export class SingleSignOn {
 
   private session: Session | undefined;
   private ssoWindow: BrowserWindow | undefined;
-  private readonly mainSession: Session;
-  private readonly senderEvent: ElectronEvent;
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
@@ -80,10 +78,7 @@ export class SingleSignOn {
   ) {
     this.windowOptions = windowOptions;
     this.ssoWindow = ssoWindow;
-    this.session = ssoWindow.webContents.session;
-    this.senderEvent = senderEvent;
     this.senderWebContents = (senderEvent as any).sender;
-    this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginURL);
   }
 
@@ -281,7 +276,7 @@ export class SingleSignOn {
 
       // Set cookies from ephemeral session to the default one
       try {
-        await SingleSignOn.copyCookies(this.session, this.mainSession, this.windowOriginUrl);
+        await SingleSignOn.copyCookies(this.session, this.senderWebContents.session, this.windowOriginUrl);
       } catch (error) {
         SingleSignOn.logger.warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
@@ -305,8 +300,6 @@ export class SingleSignOn {
   }
 
   private async wipeSessionData() {
-    if (this.session) {
-      await this.session.clearStorageData(undefined);
-    }
+    await this.session?.clearStorageData(undefined);
   }
 }
