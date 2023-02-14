@@ -87,7 +87,7 @@ export async function buildMacOSConfig(
     extendInfo: plistEntries,
     helperBundleId: `${macOSConfig.bundleId}.helper`,
     icon: 'resources/macos/logo.icns',
-    ignore: /electron\/renderer\/src/,
+    ignore: [/\/electron\/renderer\/src$/, /\/\.yarn$/, /\$electron\/src$/, /\/bin$/, /\/jenkins$/],
     name: commonConfig.name,
     osxUniversal: {
       mergeASARs: true,
