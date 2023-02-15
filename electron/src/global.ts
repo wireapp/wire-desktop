@@ -64,8 +64,8 @@ declare global {
       environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;
       systemCrypto?: {
-        decrypt: (value: Uint8Array) => Promise<string>;
-        encrypt: (encrypted: string) => Promise<Uint8Array>;
+        decrypt: (payload: Uint8Array) => Promise<string>;
+        encrypt: (value: string) => Promise<Uint8Array>;
         /**
          * version:
          *   - undefined: the encrypt/decrypt methods would take and return Uint8Array (and try to parse them as base64)
