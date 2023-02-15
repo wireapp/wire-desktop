@@ -243,14 +243,13 @@ process.once('loaded', () => {
     getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
   };
   global.systemCrypto = {
-    decrypt: async (encrypted: Uint8Array): Promise<Uint8Array> => {
-      const plainText = await ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
-      return Decoder.fromBase64(plainText).asBytes;
+    decrypt: async (encrypted: Uint8Array): Promise<string> => {
+      return ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
     },
-    encrypt: (value: Uint8Array): Promise<Uint8Array> => {
-      const strValue = Encoder.toBase64(value).asString;
-      return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, strValue);
+    encrypt: (value: string): Promise<Uint8Array> => {
+      return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, value);
     },
+    version: 1,
   };
   global.environment = EnvironmentUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
