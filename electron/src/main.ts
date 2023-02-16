@@ -555,24 +555,65 @@ class ElectronWrapperInit {
       details: HandlerDetails,
     ): {action: 'deny'} | {action: 'allow'; overrideBrowserWindowOptions?: BrowserWindowConstructorOptions} => {
       if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
-        return {action: 'allow'};
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: {
+            alwaysOnTop: true,
+            backgroundColor: '#FFFFFF',
+            fullscreen: false,
+            fullscreenable: false,
+            height: 600,
+            maximizable: false,
+            minimizable: false,
+            modal: false,
+            movable: true,
+            parent: main,
+            resizable: false,
+            title: SingleSignOn.getWindowTitle(details.url),
+            titleBarStyle: 'default',
+            useContentSize: true,
+            webPreferences: {
+              allowRunningInsecureContent: false,
+              backgroundThrottling: false,
+              contextIsolation: true,
+              devTools: false,
+              disableBlinkFeatures: '',
+              experimentalFeatures: false,
+              images: true,
+              javascript: true,
+              nodeIntegration: false,
+              nodeIntegrationInWorker: false,
+              offscreen: false,
+              partition: '',
+              plugins: false,
+              preload: '',
+              sandbox: true,
+              scrollBounce: true,
+              spellcheck: false,
+              textAreasAreResizable: false,
+              webSecurity: true,
+              webgl: false,
+              webviewTag: false,
+            },
+            width: 480,
+          },
+        };
       }
 
       this.logger.log('Opening an external window from a webview.');
       void WindowUtil.openExternal(details.url);
       return {action: 'deny'};
     };
+
     const openLinkInNewWindow = (
-      event: ElectronEvent,
+      win: BrowserWindow,
       url: string,
+      event: ElectronEvent,
       frameName: string,
-      _disposition: string,
       options: BrowserWindowConstructorOptions,
     ): Promise<void> | void => {
-      event.preventDefault();
-
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
-        const singleSignOn = new SingleSignOn(main, event, url, options).init();
+        const singleSignOn = new SingleSignOn(win, event, url, options).init();
         return new Promise(() => {
           singleSignOn
             .then(sso => {
@@ -596,8 +637,12 @@ class ElectronWrapperInit {
 
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
-    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
+    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
       remoteMain.enable(contents);
+      // disable new Windows by default on everything
+      contents.setWindowOpenHandler(() => {
+        return {action: 'deny'};
+      });
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
@@ -622,8 +667,10 @@ class ElectronWrapperInit {
             await applyProxySettings(proxyInfoArg, contents);
           }
           // Open webview links outside of the app
-          contents.on('new-window', openLinkInNewWindow);
           contents.setWindowOpenHandler(openLinkInNewWindowHandler);
+          contents.on('did-create-window', async (win, {url, frameName, options}) => {
+            await openLinkInNewWindow(win, url, webviewEvent, frameName, options);
+          });
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });
