@@ -56,10 +56,7 @@ export const checkSingleInstance = async () => {
   }
 };
 
-export const getWebViewId = (contents?: WebContents): string | undefined => {
-  if (!contents) {
-    return undefined;
-  }
+export const getWebViewId = (contents: WebContents): string | undefined => {
   try {
     const currentLocation = new URL(contents.getURL());
     const webViewId = currentLocation.searchParams.get('id');
