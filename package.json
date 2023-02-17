@@ -48,7 +48,7 @@
     "@types/content-type": "1.1.5",
     "@types/fs-extra": "9.0.11",
     "@types/is-ci": "3.0.0",
-    "@types/lodash": "4.14.186",
+    "@types/lodash": "4.14.191",
     "@types/minimist": "1.2.2",
     "@types/mocha": "10.0.0",
     "@types/node": "~14",

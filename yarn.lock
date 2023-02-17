@@ -3072,10 +3072,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:4.14.186":
-  version: 4.14.186
-  resolution: "@types/lodash@npm:4.14.186"
-  checksum: ee0c1368a8100bb6efb88335107473a41928fc307ff1ef4ff1278868ccddba9c04c68c36d1ffe3a0392ef4a956e1955f7de3203ec09df4f1655dd1b88485c549
+"@types/lodash@npm:4.14.191":
+  version: 4.14.191
+  resolution: "@types/lodash@npm:4.14.191"
+  checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
   languageName: node
   linkType: hard
 
@@ -14689,7 +14689,7 @@ __metadata:
     "@types/content-type": 1.1.5
     "@types/fs-extra": 9.0.11
     "@types/is-ci": 3.0.0
-    "@types/lodash": 4.14.186
+    "@types/lodash": 4.14.191
     "@types/minimist": 1.2.2
     "@types/mocha": 10.0.0
     "@types/node": ~14
