@@ -63,7 +63,7 @@ export async function buildWindowsConfig(
     ignore: [
       new RegExp(`${commonConfig.electronDirectory}/renderer/src$`),
       new RegExp(`${commonConfig.electronDirectory}/src$`),
-      new RegExp(`/\.yarn$`),
+      new RegExp(`/\\.yarn$`),
       new RegExp(`/bin$`),
       new RegExp(`/jenkins$`),
     ],
