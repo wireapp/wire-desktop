@@ -279,3 +279,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // include context menu
   await import('./menu/preload-context');
 });
+
+// overwrite window.close() to prevent webapp from closing itself
+// see SQSERVICES-1882 and SQSERVICES-1919
+window.close = () => {};
