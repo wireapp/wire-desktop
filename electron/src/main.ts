@@ -713,6 +713,9 @@ class ElectronWrapperInit {
             }
           }
 
+          // Disable TLS < v1.2
+          contents.session.setSSLConfig({minVersion: 'tls1.2'});
+
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
           contents.on('before-input-event', (_event, input) => {
