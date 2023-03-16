@@ -6430,16 +6430,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:22.3.0":
-  version: 22.3.0
-  resolution: "electron@npm:22.3.0"
+"electron@npm:22.3.3":
+  version: 22.3.3
+  resolution: "electron@npm:22.3.3"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^16.11.26
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 544b65cf3b2d075dc21e8a10675dc494f85ad3bea5189e635d422d679c3bd0abdd2d8558b3238941d0a37ce6a859163d322bc90ab1da859ebd8f341ab6c14103
+  checksum: a32b92f32f39bc8f4bee9f514724e970b2f8701fd3202bf237cb7619dde409471e3205a6f970a1c2f5896fec0ed05bb8241d2d90de4f4b34f15cb1919333b7d9
   languageName: node
   linkType: hard
 
@@ -14723,7 +14723,7 @@ __metadata:
     cspell: 6.19.2
     css-loader: 6.7.1
     dotenv: 16.0.3
-    electron: 22.3.0
+    electron: 22.3.3
     electron-builder: 23.6.0
     electron-mocha: 11.0.2
     electron-osx-sign: 0.6.0
