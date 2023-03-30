@@ -5,7 +5,7 @@
     "@hapi/joi": "17.1.1",
     "@wireapp/certificate-check": "0.5.6",
     "@wireapp/commons": "4.4.6",
-    "@wireapp/protocol-messaging": "1.38.0",
+    "@wireapp/protocol-messaging": "1.44.0",
     "@wireapp/react-ui-kit": "8.6.0",
     "@wireapp/webapp-events": "0.14.6",
     "auto-launch": "5.0.5",
