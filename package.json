@@ -68,7 +68,7 @@
     "babel-jest": "29.1.2",
     "babel-loader": "8.2.5",
     "babel-plugin-istanbul": "6.1.1",
-    "commander": "9.4.1",
+    "commander": "10.0.0",
     "core-js": "3.27.2",
     "cross-env": "7.0.3",
     "cspell": "6.19.2",
