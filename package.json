@@ -78,7 +78,7 @@
     "electron-builder": "23.6.0",
     "electron-mocha": "11.0.2",
     "electron-osx-sign": "0.6.0",
-    "electron-packager": "16.0.0",
+    "electron-packager": "17.1.1",
     "electron-winstaller": "4.0.1",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.5.0",
