@@ -3753,23 +3753,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/eslint-config@npm:1.9.0":
-  version: 1.9.0
-  resolution: "@wireapp/eslint-config@npm:1.9.0"
+"@wireapp/eslint-config@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@wireapp/eslint-config@npm:2.1.1"
   peerDependencies:
-    "@typescript-eslint/eslint-plugin": ">=3"
-    "@typescript-eslint/parser": ">=3"
-    eslint: ">=7"
-    eslint-config-prettier: ">=6"
-    eslint-plugin-jsdoc: ">=25"
-    eslint-plugin-no-unsanitized: ">=3"
-    eslint-plugin-prettier: ">=3"
-    eslint-plugin-react: ">=7"
-    eslint-plugin-react-hooks: ">=2"
-    eslint-plugin-sort-keys-fix: ">=1"
-    eslint-plugin-typescript-sort-keys: ">=1"
-    prettier: ">=2"
-  checksum: 883d5ba8e460477db6c59e1adda6d07d0063bd0ef1874822699719e4f6f64c8b39ca448c22ad09566f5ec11b0d905ed8cbeeeea6fd757d4f1a83468c2550436a
+    "@types/eslint": ^8
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": ^5
+    "@typescript-eslint/parser": ^5
+    eslint: ^8
+    eslint-config-prettier: ^8
+    eslint-import-resolver-alias: ^1
+    eslint-import-resolver-typescript: ^3
+    eslint-plugin-better-styled-components: ^1
+    eslint-plugin-header: ^3
+    eslint-plugin-import: ^2
+    eslint-plugin-jest: ^27
+    eslint-plugin-jest-dom: ^4
+    eslint-plugin-jsdoc: ^39
+    eslint-plugin-jsx-a11y: ^6
+    eslint-plugin-no-unsanitized: ^4
+    eslint-plugin-prettier: ^4
+    eslint-plugin-react: ^7
+    eslint-plugin-react-hooks: ^4
+    eslint-plugin-simple-import-sort: ^8
+    eslint-plugin-testing-library: ^5
+    eslint-plugin-unused-imports: ^2
+    prettier: ^2
+    typescript: ^4
+  checksum: 4884395e3a46ae6e188eff22a85928695c819ba47d0304d26dd450fdd8281b0095582da3631a8e5a8bc2aa36a9d24a00d4a1cf85401f0fd08748daf9c3818a97
   languageName: node
   linkType: hard
 
@@ -14702,7 +14714,7 @@ __metadata:
     "@wireapp/certificate-check": 0.5.6
     "@wireapp/commons": 4.4.6
     "@wireapp/copy-config": 1.3.6
-    "@wireapp/eslint-config": 1.9.0
+    "@wireapp/eslint-config": 2.1.1
     "@wireapp/prettier-config": 0.4.6
     "@wireapp/protocol-messaging": 1.38.0
     "@wireapp/react-ui-kit": 8.6.0
