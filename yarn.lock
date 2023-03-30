@@ -5478,10 +5478,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.27.2":
-  version: 3.27.2
-  resolution: "core-js@npm:3.27.2"
-  checksum: 718debd426f55a6b97cf9b757c936be258afd6d4f7052f89d0f96c982d7013e9000b0b006df42831a0cf32adad298e34d6a19052dce9ae1c7ab87162c0c665e0
+"core-js@npm:3.29.1":
+  version: 3.29.1
+  resolution: "core-js@npm:3.29.1"
+  checksum: b38446dbfcfd3887b3d4922990da487e2c95044cb4c5717aaf95e786a4c6b218f05c056c7ed6c699169b9794a49fec890e402659d54661fc56965a0eb717e7bd
   languageName: node
   linkType: hard
 
@@ -14718,7 +14718,7 @@ __metadata:
     babel-plugin-istanbul: 6.1.1
     commander: 9.4.1
     content-type: 1.0.4
-    core-js: 3.27.2
+    core-js: 3.29.1
     cross-env: 7.0.3
     cspell: 6.19.2
     css-loader: 6.7.1
