@@ -652,7 +652,7 @@ class ElectronWrapperInit {
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
             webPreferences.contextIsolation = false;
-            webPreferences.experimentalFeatures = true;
+            webPreferences.experimentalFeatures = false;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
@@ -712,6 +712,9 @@ class ElectronWrapperInit {
               contents.session.setSpellCheckerLanguages([]);
             }
           }
+
+          // Disable TLS < v1.2
+          contents.session.setSSLConfig({minVersion: 'tls1.2'});
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
