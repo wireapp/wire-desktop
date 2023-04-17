@@ -18,14 +18,16 @@
  */
 
 import {useEffect, useRef, useState} from 'react';
-import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
+
 import {SVGIcon} from '@wireapp/react-ui-kit/lib/Icon/SVGIcon';
+import Electron from 'electron';
 import {connect} from 'react-redux';
 
-import {LoadingSpinner} from '../LoadingSpinner';
-import {EVENT_TYPE} from '../../../../src/lib/eventType';
+import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 
-import {WindowUrl} from '../../lib/WindowUrl';
+import './Webview.css';
+
+import {EVENT_TYPE} from '../../../../src/lib/eventType';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -35,13 +37,14 @@ import {
   updateAccountLifecycle,
   updateAccountDarkMode,
 } from '../../actions';
-import {getText, wrapperLocale} from '../../lib/locale';
-import {AccountSelector} from '../../selector/AccountSelector';
 import {accountAction} from '../../actions/AccountAction';
+import {getText, wrapperLocale} from '../../lib/locale';
+import {WindowUrl} from '../../lib/WindowUrl';
+import {AccountSelector} from '../../selector/AccountSelector';
 import {Account} from '../../types/account';
+import {LoadingSpinner} from '../LoadingSpinner';
 
-import './Webview.css';
-
+// @ts-ignore
 import WebviewTag = Electron.WebviewTag;
 import DidFailLoadEvent = Electron.DidFailLoadEvent;
 /* eslint-disable react/no-unknown-property */
@@ -106,7 +109,9 @@ const Webview = ({
     if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {
-        webviewRef.current.loadURL(newUrl).catch(error => console.error(`Navigating to ${newUrl} failed`, error));
+        webviewRef.current
+          .loadURL(newUrl)
+          .catch((error: any) => console.error(`Navigating to ${newUrl} failed`, error));
       } catch (error) {
         console.warn('Can not #loadURL before attaching webview to DOM', error);
       }
@@ -334,6 +339,7 @@ const Webview = ({
       )}
 
       {canDelete && account.visible && (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
         <div className="Webview-close" onClick={() => deleteWebview(account)} data-uie-name="do-close-webview">
           <svg width="16" height="16" viewBox="0 0 16 16">
             <path

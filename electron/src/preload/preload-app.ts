@@ -18,8 +18,10 @@
  */
 
 import {ipcRenderer, webFrame} from 'electron';
-import {WebAppEvents} from '@wireapp/webapp-events';
+
 import * as path from 'path';
+
+import {WebAppEvents} from '@wireapp/webapp-events';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale';

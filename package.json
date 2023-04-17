@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
     "@electron/remote": "2.0.8",

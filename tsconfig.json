@@ -15,7 +15,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["esnext", "dom", "dom.iterable"],
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
@@ -28,7 +28,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2017",
+    "target": "es6",
     "typeRoots": ["src/types", "node_modules/@types"],
     "jsx": "react-jsx"
   },
