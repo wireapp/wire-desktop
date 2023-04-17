@@ -20,7 +20,6 @@
 import {useEffect, useRef, useState} from 'react';
 
 import {SVGIcon} from '@wireapp/react-ui-kit/lib/Icon/SVGIcon';
-import Electron from 'electron';
 import {connect} from 'react-redux';
 
 import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
@@ -44,10 +43,8 @@ import {AccountSelector} from '../../selector/AccountSelector';
 import {Account} from '../../types/account';
 import {LoadingSpinner} from '../LoadingSpinner';
 
-// @ts-ignore
-import WebviewTag = Electron.WebviewTag;
-import DidFailLoadEvent = Electron.DidFailLoadEvent;
-/* eslint-disable react/no-unknown-property */
+type WebviewTag = ReturnType<Document['createElement']>;
+type DidFailLoadEvent = Electron.DidFailLoadEvent;
 
 const getEnvironmentUrl = (account: Account) => {
   const currentLocation = new URL(window.location.href);
@@ -273,13 +270,17 @@ const Webview = ({
       <LoadingSpinner visible={!!account.visible} webviewRef={webviewRef} />
 
       <webview
+        // eslint-disable-next-line react/no-unknown-property
         allowpopups
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
         // @ts-ignore
+        // eslint-disable-next-line react/no-unknown-property
         visible={String(!!account.visible)}
         src={url}
+        // eslint-disable-next-line react/no-unknown-property
         partition={account.sessionID ? `persist:${account.sessionID}` : ''}
+        // eslint-disable-next-line react/no-unknown-property
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}
         style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
