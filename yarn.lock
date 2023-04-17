@@ -3185,7 +3185,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:18.15.11, @types/node@npm:>=13.7.0":
   version: 18.15.11
   resolution: "@types/node@npm:18.15.11"
   checksum: 977b4ad04708897ff0eb049ecf82246d210939c82461922d20f7d2dcfd81bbc661582ba3af28869210f7e8b1934529dcd46bff7d448551400f9d48b9d3bddec3
@@ -3196,13 +3196,6 @@ __metadata:
   version: 16.18.23
   resolution: "@types/node@npm:16.18.23"
   checksum: 00e51db28fc7a182747f37215b3f25400b1c7a8525e09fa14e55be5798891a118ebf636a49d3197335a3580fcb8222fd4ecc20c2ccff69f1c0d233fc5697465d
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:~14":
-  version: 14.18.42
-  resolution: "@types/node@npm:14.18.42"
-  checksum: 1c92f04a482ab54a21342b3911fc6f0093f04d3314197bc0e2f20012e9efc929c44e2ea41990b9b3cde420d7859c9ed716733f3e65c0cd6c2910a55799465f6b
   languageName: node
   linkType: hard
 
@@ -14633,7 +14626,7 @@ __metadata:
     "@types/lodash": 4.14.186
     "@types/minimist": 1.2.2
     "@types/mocha": 10.0.0
-    "@types/node": ~14
+    "@types/node": 18.15.11
     "@types/open-graph": 0.2.1
     "@types/platform": 1.3.4
     "@types/react-dom": ^18.0.11

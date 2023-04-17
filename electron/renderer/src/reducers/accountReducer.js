@@ -17,8 +17,8 @@
  *
  */
 
-import {generateUUID} from '../lib/util';
-import {ActionType} from '../actions';
+import {ActionType} from '../actions/index.js';
+import {generateUUID} from '../lib/util.js';
 
 const createAccount = (sessionID, ssoCode = undefined) => ({
   accentID: undefined,

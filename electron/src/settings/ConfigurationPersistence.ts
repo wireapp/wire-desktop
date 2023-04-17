@@ -19,11 +19,13 @@
 
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
+
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';
+
 import '../global';
+import {getLogger} from '../logging/getLogger';
 
 class ConfigurationPersistence {
   private readonly configFile: string;
@@ -33,7 +35,9 @@ class ConfigurationPersistence {
     this.configFile = SchemaUpdater.updateToVersion1();
     this.logger = getLogger(path.basename(__filename));
 
+    // @ts-ignore
     if (typeof global._ConfigurationPersistence === 'undefined') {
+      // @ts-ignore
       global._ConfigurationPersistence = this.readFromFile();
     }
 
@@ -42,18 +46,21 @@ class ConfigurationPersistence {
 
   delete(name: string): true {
     this.logger.info(`Deleting "${name}"`);
+    // @ts-ignore
     delete global._ConfigurationPersistence[name];
     return true;
   }
 
   save<T>(name: string, value: T): true {
     this.logger.info(`Saving "${name}" with value:`, value);
+    // @ts-ignore
     global._ConfigurationPersistence[name] = value;
     return true;
   }
 
   restore<T>(name: string, defaultValue?: T): T {
     this.logger.info(`Restoring "${name}"`);
+    // @ts-ignore
     const value = global._ConfigurationPersistence[name];
     return typeof value !== 'undefined' ? value : defaultValue;
   }
@@ -61,9 +68,11 @@ class ConfigurationPersistence {
   persistToFile(): void {
     this.logger.info(
       `Saving configuration to persistent storage in "${this.configFile}":`,
+      // @ts-ignore
       global._ConfigurationPersistence,
     );
     try {
+      // @ts-ignore
       return fs.outputJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
     } catch (error) {
       this.logger.error('An error occurred while persisting the configuration', error);

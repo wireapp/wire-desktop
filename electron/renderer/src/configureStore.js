@@ -17,13 +17,13 @@
  *
  */
 
+import throttle from 'lodash/throttle.js';
 import {applyMiddleware, createStore} from 'redux';
 import {createLogger} from 'redux-logger';
 import thunk from 'redux-thunk';
-import throttle from 'lodash/throttle';
 
-import {loadState, saveState} from './lib/localStorage';
-import reducers from './reducers';
+import {loadState, saveState} from './lib/localStorage.js';
+import reducers from './reducers/index.js';
 
 const HALF_SECOND = 500;
 const persistedState = loadState();

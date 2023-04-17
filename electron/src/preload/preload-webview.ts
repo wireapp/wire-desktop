@@ -241,9 +241,12 @@ process.once('loaded', () => {
    * @todo: This can be improved by polyfilling getDisplayMedia function
    * Example: https://github.com/electron/electron/issues/16513#issuecomment-602070250
    */
+  // @ts-ignore
   global.desktopCapturer = {
+    // @ts-ignore
     getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
   };
+  // @ts-ignore
   global.systemCrypto = {
     decrypt: async (encrypted: Uint8Array): Promise<string> => {
       return ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
@@ -253,7 +256,9 @@ process.once('loaded', () => {
     },
     version: 1,
   };
+  // @ts-ignore
   global.environment = EnvironmentUtil;
+  // @ts-ignore
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
