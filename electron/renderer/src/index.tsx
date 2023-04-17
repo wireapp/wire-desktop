@@ -17,14 +17,13 @@
  *
  */
 
-import React from 'react';
 import {Provider} from 'react-redux';
 import {createRoot} from 'react-dom/client';
-import {EVENT_TYPE} from '../../dist/lib/eventType';
-import App from './components/App';
+import {EVENT_TYPE} from '../../src/lib/eventType';
+import App from './components/App/App';
 import configureStore from './configureStore';
 import actionRoot from './actions';
-import {addAccountWithSession} from './actions/index';
+import {addAccountWithSession} from './actions';
 
 import './Index.css';
 
@@ -32,17 +31,24 @@ const store = configureStore({actions: actionRoot});
 
 window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
+  // @ts-ignore
   event => store.dispatch(actionRoot.accountAction.switchWebview(event.detail.accountIndex)),
   false,
 );
 window.addEventListener(
   EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT,
+  // @ts-ignore
   event => store.dispatch(actionRoot.accountAction.startSSO(event.detail.code)),
   false,
 );
 window.addEventListener(EVENT_TYPE.ACTION.START_LOGIN, event => store.dispatch(addAccountWithSession()), false);
 
 const container = document.getElementById('root');
+
+if (!container) {
+  throw new Error('container not found.');
+}
+
 const root = createRoot(container);
 
 root.render(

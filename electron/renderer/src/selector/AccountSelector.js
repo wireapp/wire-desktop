@@ -17,7 +17,7 @@
  *
  */
 
-import {config as CONFIG} from '../../../dist/settings/config';
+import {config as CONFIG} from '../../../src/settings/config';
 
 export class AccountSelector {
   static getAccounts = state => state.accounts;

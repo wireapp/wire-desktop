@@ -17,10 +17,18 @@
  *
  */
 
-/** @type {import('@jest/types').Config.InitialOptions} */
-const jestConfig = {
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  testEnvironment: 'jsdom',
+export type Account = {
+  accentID: number;
+  badgeCount: number;
+  id: string;
+  isAdding: boolean;
+  lifecycle: string;
+  name: string;
+  picture?: string;
+  sessionID: string;
+  ssoCode: string;
+  teamID: number;
+  teamRole: string;
+  visible: boolean;
+  webappUrl?: string;
 };
-
-module.exports = jestConfig;

@@ -17,11 +17,10 @@
  *
  */
 
-import React from 'react';
 import {connect} from 'react-redux';
 
 import {abortAccountCreation} from '../../actions';
-import {EVENT_TYPE} from '../../../../dist/lib/eventType';
+import {EVENT_TYPE} from '../../../../src/lib/eventType';
 import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
@@ -29,7 +28,24 @@ import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 import {accountAction} from '../../actions/AccountAction';
 import {AccountSelector} from '../../selector/AccountSelector';
 
-const EditAccountMenu = ({accountId, accountIndex, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
+interface EditAccountMenuProps {
+  abortAccountCreation: (accountId: string) => void;
+  accountId: any;
+  accountIndex: any;
+  isAtLeastAdmin: any;
+  lifecycle: any;
+  sessionId: any;
+  switchWebview: (accountIndex: number) => void;
+}
+
+const EditAccountMenu = ({
+  accountId,
+  accountIndex,
+  isAtLeastAdmin,
+  lifecycle,
+  sessionId,
+  ...connected
+}: EditAccountMenuProps) => {
   return (
     <ContextMenu>
       {/* This appears to have been broken for some time. Removing it for the time being until a proper fix can be applied
@@ -43,17 +59,17 @@ const EditAccountMenu = ({accountId, accountIndex, isAtLeastAdmin, lifecycle, se
       )} */}
       {lifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN && (
         <ContextMenuItem
-          onClick={() => {
+          onClick={async () => {
             connected.switchWebview(accountIndex);
-            window.sendLogoutAccount(accountId);
+            await window.sendLogoutAccount(accountId);
           }}
         >
           {getText('wrapperLogOut')}
         </ContextMenuItem>
       )}
       <ContextMenuItem
-        onClick={() => {
-          window.sendDeleteAccount(accountId, sessionId).then(() => {
+        onClick={async () => {
+          await window.sendDeleteAccount(accountId, sessionId).then(() => {
             connected.abortAccountCreation(accountId);
           });
         }}

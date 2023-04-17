@@ -20,6 +20,14 @@
   "rules": {
     "import/no-default-export": "off",
     "no-magic-numbers": "off",
-    "no-undef": "off"
+    "no-undef": "off",
+    "valid-jsdoc": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }

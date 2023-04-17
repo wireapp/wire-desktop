@@ -17,11 +17,14 @@
  *
  */
 
-import autoLaunch = require('auto-launch');
+import autoLaunch from 'auto-launch';
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
+
 import * as path from 'path';
 
+import {downloadLogs} from '../lib/download';
 import {EVENT_TYPE} from '../lib/eventType';
+import {zipFiles, createFile} from '../lib/zip';
 import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
 import {gatherLogs} from '../logging/loggerUtils';
@@ -31,8 +34,6 @@ import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
-import {downloadLogs} from '../lib/download';
-import {zipFiles, createFile} from '../lib/zip';
 import {openExternal} from '../window/WindowUtil';
 
 const launchCmd = process.env.APPIMAGE || process.execPath;

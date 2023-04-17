@@ -18,15 +18,14 @@
  */
 
 import {BrowserWindow, screen, shell} from 'electron';
+
 import * as path from 'path';
 import {URL} from 'url';
 
-import {getLogger} from '../logging/getLogger';
 import {showWarningDialog} from '../lib/showDialog';
 import * as locale from '../locale';
+import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
-import {settings} from '../settings/ConfigurationPersistence';
-import {SettingsType} from '../settings/SettingsType';
 
 const logger = getLogger(path.basename(__filename));
 

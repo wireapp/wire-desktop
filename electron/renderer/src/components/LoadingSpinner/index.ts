@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2023 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,4 @@
  *
  */
 
-import PropTypes from 'prop-types';
-import React from 'react';
-
-const ContextMenuItem = ({onClick, children}) => (
-  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={onClick}>
-    {children}
-  </div>
-);
-
-ContextMenuItem.propTypes = {
-  onClick: PropTypes.func,
-};
-
-export default ContextMenuItem;
+export * from './LoadingSpinner';

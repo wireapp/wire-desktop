@@ -17,10 +17,4 @@
  *
  */
 
-/** @type {import('@jest/types').Config.InitialOptions} */
-const jestConfig = {
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  testEnvironment: 'jsdom',
-};
-
-module.exports = jestConfig;
+export * from './AccountIcon';
