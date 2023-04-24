@@ -17,10 +17,12 @@
  *
  */
 
-import {ValidationUtil} from '@wireapp/commons';
 import {app, Session, webContents} from 'electron';
 import * as fs from 'fs-extra';
+
 import * as path from 'path';
+
+import {ValidationUtil} from '@wireapp/commons';
 
 import {getLogger} from '../logging/getLogger';
 

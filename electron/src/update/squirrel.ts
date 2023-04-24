@@ -19,16 +19,19 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
-import {StringUtil} from '@wireapp/commons';
-import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
+
+import * as childProcess from 'child_process';
 import * as path from 'path';
+
+import {StringUtil} from '@wireapp/commons';
+
+import {createShortcuts, removeShortcuts} from './shortcuts';
 
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config, MINUTE_IN_MILLIS, HOUR_IN_MILLIS} from '../settings/config';
-import {createShortcuts, removeShortcuts} from './shortcuts';
 
 const logger = getLogger(path.basename(__filename));
 

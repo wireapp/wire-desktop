@@ -17,8 +17,8 @@
  *
  */
 
-import {generateUUID} from '../../lib/util';
 import {ActionType, addAccount, deleteAccount, updateAccount, updateAccountBadge} from '../';
+import {generateUUID} from '../../lib/util';
 import {switchAccount} from '../AccountAction';
 
 describe('action creators', () => {

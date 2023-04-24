@@ -31,4 +31,7 @@ export type Account = {
   teamRole: string;
   visible: boolean;
   webappUrl?: string;
+  userID: string;
+  darkMode: boolean;
+  accountIndex: number;
 };

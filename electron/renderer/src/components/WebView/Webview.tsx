@@ -67,18 +67,23 @@ const getEnvironmentUrl = (account: Account) => {
 };
 
 interface WebviewProps {
-  abortAccountCreation: any;
-  account: any;
-  accountIndex: any;
-  accountLifecycle: any;
-  conversationJoinData: any;
-  onUnreadCountUpdated: any;
-  resetIdentity: any;
-  setConversationJoinData: any;
-  switchWebview: any;
-  updateAccountDarkMode: any;
-  updateAccountData: any;
-  updateAccountLifecycle: any;
+  abortAccountCreation: (accountId: string) => void;
+  account: Account;
+  accountIndex: number;
+  accountLifecycle: string;
+  conversationJoinData?: {
+    code: string;
+    key: string;
+  };
+  onUnreadCountUpdated: (accountId: string, badgeCount: number) => void;
+  resetIdentity: (accountId: string) => void;
+  // TODO: Update data type after migration redux to TS
+  setConversationJoinData: (accountId: string, data: any) => void;
+  switchWebview: (accountIndex: number) => void;
+  updateAccountDarkMode: (accountId: string, darkMode: boolean) => void;
+  // TODO: Update data type after migration redux to TS
+  updateAccountData: (accountId: string, data: any) => void;
+  updateAccountLifecycle: (accountId: string, channel: string) => void;
 }
 
 const Webview = ({
@@ -354,8 +359,21 @@ const Webview = ({
   );
 };
 
+type Props = {
+  account: Account;
+};
+
+type MapStateToProps = {
+  accountIndex: number;
+  accountLifecycle: string;
+  conversationJoinData: {
+    code: string;
+    key: string;
+  };
+};
+
 export default connect(
-  (state, props: {account: Account}) => ({
+  (state, props: Props): MapStateToProps => ({
     accountIndex: AccountSelector.getAccountIndex(state, props.account.id),
     accountLifecycle: AccountSelector.getAccountLifecycle(state, props.account.id),
     conversationJoinData: AccountSelector.getConversationJoinData(state, props.account.id),

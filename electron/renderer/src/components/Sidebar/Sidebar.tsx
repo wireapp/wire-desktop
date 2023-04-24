@@ -18,21 +18,22 @@
  */
 
 import React from 'react';
+
 import {connect} from 'react-redux';
+
+import './Sidebar.css';
 
 import {EVENT_TYPE} from '../../../../src/lib/eventType';
 import {addAccountWithSession, setAccountContextHidden, toggleEditAccountMenuVisibility} from '../../actions';
 import {colorFromId} from '../../lib/accentColor';
 import {isEnterKey} from '../../lib/keyboardUtil';
 import {preventFocus} from '../../lib/util';
+import {AccountSelector} from '../../selector/AccountSelector';
+import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
+import {Account} from '../../types/account';
 import {AccountIcon} from '../AccountIcon';
 import AddAccountTrigger from '../context/AddAccountTrigger';
 import EditAccountMenu from '../context/EditAccountMenu';
-import {AccountSelector} from '../../selector/AccountSelector';
-import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
-
-import {Account} from '../../types/account';
-import './Sidebar.css';
 
 const centerOfEventTarget = (event: React.MouseEvent<Element, MouseEvent>) => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();
@@ -54,13 +55,21 @@ const handleSwitchAccount = (accountIndex: number) => {
 interface SidebarProps {
   accounts: Account[];
   currentAccentID: number;
-  hasCreatedAccount: any;
-  hasReachedLimitOfAccounts: any;
-  isAddingAccount: any;
-  isDarkMode: any;
-  isEditAccountMenuVisible: any;
-  setAccountContextHidden: any;
-  toggleEditAccountMenuVisibility: any;
+  hasCreatedAccount: boolean;
+  hasReachedLimitOfAccounts: boolean;
+  isAddingAccount: boolean;
+  isDarkMode: boolean;
+  isEditAccountMenuVisible: boolean;
+  setAccountContextHidden: () => void;
+  toggleEditAccountMenuVisibility: (
+    centerX: number,
+    centerY: number,
+    accountId: string,
+    sessionID: string,
+    lifecycle: string,
+    isAtLeastAdmin: boolean,
+  ) => void;
+  addAccountWithSession: () => void;
 }
 
 const Sidebar = ({
@@ -74,9 +83,12 @@ const Sidebar = ({
   ...connected
 }: SidebarProps) => (
   <div
+    role="button"
+    tabIndex={0}
     className={`${isDarkMode ? 'Sidebar theme-dark' : 'Sidebar theme-light'}`}
     style={!hasCreatedAccount ? {display: 'none'} : {}}
     onMouseDown={preventFocus()}
+    onKeyDown={connected.setAccountContextHidden}
     onClick={connected.setAccountContextHidden}
   >
     {accounts.map(account => {
@@ -84,6 +96,7 @@ const Sidebar = ({
       return (
         <div className="Sidebar-cell" key={account.id}>
           <div
+            role="button"
             style={{color: colorFromId(currentAccentID)}}
             className={getClassName(account)}
             tabIndex={0}
@@ -109,7 +122,6 @@ const Sidebar = ({
             })}
             onMouseDown={preventFocus()}
           >
-            {/*// @ts-ignore*/}
             <AccountIcon account={account} />
           </div>
         </div>
@@ -117,7 +129,6 @@ const Sidebar = ({
     })}
 
     {!isAddingAccount && !hasReachedLimitOfAccounts && (
-      // @ts-ignore
       <AddAccountTrigger id="account" onClick={connected.addAccountWithSession} />
     )}
 

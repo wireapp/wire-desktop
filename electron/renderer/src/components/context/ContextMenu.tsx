@@ -17,7 +17,7 @@
  *
  */
 
-import {useEffect, useRef} from 'react';
+import {ReactNode, useEffect, useRef} from 'react';
 
 import {connect} from 'react-redux';
 
@@ -26,10 +26,15 @@ import './ContextMenu.css';
 import {setAccountContextHidden} from '../../actions';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 
+type Position = {
+  centerX: number;
+  centerY: number;
+};
+
 interface ContextMenuProps {
-  position: any;
-  children: any;
-  setAccountContextHidden: any;
+  position: Position;
+  children: ReactNode;
+  setAccountContextHidden: () => void;
 }
 
 const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuProps) => {

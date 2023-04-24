@@ -17,10 +17,11 @@
  *
  */
 
-import * as assert from 'assert';
 import {BrowserWindow, Tray} from 'electron';
-import * as path from 'path';
 import * as sinon from 'sinon';
+
+import * as assert from 'assert';
+import * as path from 'path';
 
 import {TrayHandler} from './TrayHandler';
 

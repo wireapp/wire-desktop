@@ -18,16 +18,19 @@
  */
 
 import {useEffect, useState, MutableRefObject} from 'react';
+
 import {FlexBox, Loading, COLOR} from '@wireapp/react-ui-kit';
 
 import './LoadingSpinner.css';
+
+type WebviewTag = ReturnType<Document['createElement']>;
 
 const TRANSITION_GRACE_PERIOD_MS = 500;
 
 interface LoadingSpinnerProps {
   visible: boolean;
-  // TODO: Fix this any type
-  webviewRef: MutableRefObject<any>;
+  // webviewRef: WebviewTag | null;
+  webviewRef: MutableRefObject<WebviewTag | null>;
 }
 
 export const LoadingSpinner = ({visible, webviewRef}: LoadingSpinnerProps) => {

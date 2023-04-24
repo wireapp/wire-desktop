@@ -19,22 +19,23 @@
 
 import {connect} from 'react-redux';
 
-import {abortAccountCreation} from '../../actions';
-import {EVENT_TYPE} from '../../../../src/lib/eventType';
-import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
-import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
+
+import {EVENT_TYPE} from '../../../../src/lib/eventType';
+import {abortAccountCreation} from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
+import {getText} from '../../lib/locale';
 import {AccountSelector} from '../../selector/AccountSelector';
+import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 
 interface EditAccountMenuProps {
   abortAccountCreation: (accountId: string) => void;
-  accountId: any;
-  accountIndex: any;
-  isAtLeastAdmin: any;
-  lifecycle: any;
-  sessionId: any;
+  accountId: string;
+  accountIndex: number;
+  isAtLeastAdmin: boolean;
+  lifecycle: string;
+  sessionId?: string;
   switchWebview: (accountIndex: number) => void;
 }
 

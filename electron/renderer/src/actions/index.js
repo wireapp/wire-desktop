@@ -21,10 +21,10 @@ import * as Joi from '@hapi/joi';
 
 import {Availability} from '@wireapp/protocol-messaging';
 
-import {accountAction} from './AccountAction.js';
+import {accountAction} from './AccountAction';
 
-import {generateUUID} from '../lib/util.js';
-import {AccountSelector} from '../selector/AccountSelector.js';
+import {generateUUID} from '../lib/util';
+import {AccountSelector} from '../selector/AccountSelector';
 
 export const ActionType = {
   ADD_ACCOUNT: 'ADD_ACCOUNT',
@@ -59,7 +59,7 @@ export const deleteAccount = id => ({
   type: ActionType.DELETE_ACCOUNT,
 });
 
-export const resetIdentity = (id = true) => ({
+export const resetIdentity = id => ({
   id,
   type: ActionType.RESET_IDENTITY,
 });

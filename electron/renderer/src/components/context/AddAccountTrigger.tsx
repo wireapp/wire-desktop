@@ -19,13 +19,16 @@
 
 import {isEnterKey} from '../../lib/keyboardUtil';
 
-interface AddAccountTrigger {
+interface AddAccountTriggerProps {
+  id: string;
   forceVisible?: boolean;
   onClick: () => void;
 }
 
-const AddAccountTrigger = ({forceVisible, onClick}: AddAccountTrigger) => (
+const AddAccountTrigger = ({id, forceVisible, onClick}: AddAccountTriggerProps) => (
   <div
+    id={id}
+    role="button"
     className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
     onClick={onClick}
     onKeyDown={event => {

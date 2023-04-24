@@ -19,12 +19,12 @@
 
 import {connect} from 'react-redux';
 
-import Webview from '../WebView/Webview';
+import './WebviewList.css';
+
 import {updateAccountBadgeCount} from '../../actions';
 import {AccountSelector} from '../../selector/AccountSelector';
-
-import './WebviewList.css';
 import {Account} from '../../types/account';
+import Webview from '../WebView/Webview';
 
 interface WebviewListProps {
   accounts: Account[];

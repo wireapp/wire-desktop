@@ -17,8 +17,9 @@
  *
  */
 
-import * as assert from 'assert';
 import nock from 'nock';
+
+import * as assert from 'assert';
 
 import {axiosWithContentLimit, axiosWithCookie} from './openGraph';
 

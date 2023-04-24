@@ -18,7 +18,9 @@
  */
 
 import {useEffect, useState, ReactElement} from 'react';
+
 import {Text, ContainerSM} from '@wireapp/react-ui-kit';
+
 import {getText} from '../../lib/locale';
 
 interface IsOnlineProps {

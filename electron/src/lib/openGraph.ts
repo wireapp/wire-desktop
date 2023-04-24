@@ -19,11 +19,12 @@
 
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {parse as parseContentType, ParsedMediaType} from 'content-type';
-import {IncomingMessage} from 'http';
 import {decode as iconvDecode} from 'iconv-lite';
 import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
-import {URL} from 'url';
+
+import {IncomingMessage} from 'http';
 import * as path from 'path';
+import {URL} from 'url';
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';

@@ -25,7 +25,14 @@ interface ContextMenuItem {
 }
 
 const ContextMenuItem = ({onClick, children}: ContextMenuItem) => (
-  <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={onClick}>
+  <div
+    role="button"
+    tabIndex={0}
+    data-uie-name="item-context-menu"
+    className="ContextMenu-item"
+    onClick={onClick}
+    onKeyDown={onClick}
+  >
     {children}
   </div>
 );

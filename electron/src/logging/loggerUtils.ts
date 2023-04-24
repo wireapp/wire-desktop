@@ -20,6 +20,7 @@
 import {app} from 'electron';
 import * as fs from 'fs-extra';
 import * as globby from 'globby';
+
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';

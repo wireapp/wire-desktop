@@ -19,7 +19,9 @@
 
 import {app, shell} from 'electron';
 import fs from 'fs-extra';
+
 import path from 'path';
+
 import {config} from '../settings/config';
 
 const linkName = `${config.name}.lnk`;
