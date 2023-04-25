@@ -43,7 +43,7 @@ import {AccountSelector} from '../../selector/AccountSelector';
 import {Account} from '../../types/account';
 import {LoadingSpinner} from '../LoadingSpinner';
 
-type WebviewTag = ReturnType<Document['createElement']>;
+type WebviewTag = Electron.WebviewTag;
 type DidFailLoadEvent = Electron.DidFailLoadEvent;
 
 const getEnvironmentUrl = (account: Account) => {
@@ -274,21 +274,20 @@ const Webview = ({
       <LoadingSpinner visible={!!account.visible} webviewRef={webviewRef} />
 
       <webview
-        // eslint-disable-next-line react/no-unknown-property
+        /* Eslint disabled because we're missing webview types */
+        /* eslint-disable react/no-unknown-property */
         allowpopups
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
-        // @ts-ignore
-        // eslint-disable-next-line react/no-unknown-property
+        // @ts-ignore Type doesn't exist there, keep it to not broke functionality
         visible={String(!!account.visible)}
         src={url}
-        // eslint-disable-next-line react/no-unknown-property
         partition={account.sessionID ? `persist:${account.sessionID}` : ''}
-        // eslint-disable-next-line react/no-unknown-property
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}
         style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
         tabIndex={-1}
+        /* eslint-enable react/no-unknown-property */
       />
 
       {webviewError && (

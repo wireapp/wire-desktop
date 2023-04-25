@@ -42,9 +42,7 @@ export declare global {
      */
     version: number;
   };
-
   var environment: typeof EnvironmentUtil;
-
   var openGraphAsync: (url: string) => Promise<OpenGraphResult>;
 
   interface Window {

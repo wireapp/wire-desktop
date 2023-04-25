@@ -3275,6 +3275,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react@npm:^18.0.11":
+  version: 18.0.38
+  resolution: "@types/react@npm:18.0.38"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 34481c79f4f7ea2aefbaa45281319dc183200230d932d968463eba1643bd3635073d0a17c5c613150a69e36ca18b811ecffafea6384fa3dff3b5203866339d69
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -14629,6 +14640,7 @@ __metadata:
     "@types/node": 18.15.11
     "@types/open-graph": 0.2.1
     "@types/platform": 1.3.4
+    "@types/react": ^18.0.11
     "@types/react-dom": ^18.0.11
     "@types/sinon": 10.0.13
     "@types/sort-json": 2.0.1

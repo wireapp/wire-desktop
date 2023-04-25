@@ -23,7 +23,7 @@ import {FlexBox, Loading, COLOR} from '@wireapp/react-ui-kit';
 
 import './LoadingSpinner.css';
 
-type WebviewTag = ReturnType<Document['createElement']>;
+type WebviewTag = Electron.WebviewTag;
 
 const TRANSITION_GRACE_PERIOD_MS = 500;
 
