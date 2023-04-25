@@ -62,7 +62,7 @@
     "@wireapp/eslint-config": "1.9.0",
     "@wireapp/prettier-config": "0.4.6",
     "adm-zip": "0.5.9",
-    "aws-sdk": "2.1299.0",
+    "aws-sdk": "2.1364.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
     "babel-jest": "29.1.2",
