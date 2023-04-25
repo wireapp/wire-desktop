@@ -106,7 +106,6 @@ const Sidebar = ({
                 handleSwitchAccount(accountIndex);
               }
             }}
-            // @ts-ignore
             onContextMenu={preventFocus((event: React.MouseEvent<Element, MouseEvent>) => {
               const isAtLeastAdmin =
                 account.teamRole === 'z.team.TeamRole.ROLE.OWNER' || account.teamRole === 'z.team.TeamRole.ROLE.ADMIN';

@@ -29,16 +29,21 @@ import {EVENT_TYPE} from '../../src/lib/eventType';
 
 const store = configureStore({actions: actionRoot});
 
+interface EventDetail extends Event {
+  detail: {
+    accountIndex: number;
+    code: string;
+  };
+}
+
 window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
-  // @ts-ignore
-  event => store.dispatch(actionRoot.accountAction.switchWebview(event.detail.accountIndex)),
+  event => store.dispatch(actionRoot.accountAction.switchWebview((event as EventDetail).detail.accountIndex)),
   false,
 );
 window.addEventListener(
   EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT,
-  // @ts-ignore
-  event => store.dispatch(actionRoot.accountAction.startSSO(event.detail.code)),
+  event => store.dispatch(actionRoot.accountAction.startSSO((event as EventDetail).detail.code)),
   false,
 );
 window.addEventListener(EVENT_TYPE.ACTION.START_LOGIN, event => store.dispatch(addAccountWithSession()), false);

@@ -22,10 +22,31 @@ import type {Data as OpenGraphResult} from 'open-graph';
 
 import type {WebAppEvents} from '@wireapp/webapp-events';
 
-import type {i18nStrings, SupportedI18nLanguage} from './locale';
-import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
+import type {i18nStrings, SupportedI18nLanguage} from '../locale';
+import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
-declare global {
+/* eslint-disable no-var */
+
+export declare global {
+  var _ConfigurationPersistence: Record<string, any>;
+  var desktopCapturer: {
+    getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
+  };
+  var systemCrypto: {
+    decrypt: (payload: Uint8Array) => Promise<string>;
+    encrypt: (value: string) => Promise<Uint8Array>;
+    /**
+     * version:
+     *   - undefined: the encrypt/decrypt methods would take and return Uint8Array (and try to parse them as base64)
+     *   - 1: the encrypt/decrypt methods would take and return string (no assumption on the format (base64, hex, etc.)))
+     */
+    version: number;
+  };
+
+  var environment: typeof EnvironmentUtil;
+
+  var openGraphAsync: (url: string) => Promise<OpenGraphResult>;
+
   interface Window {
     amplify: amplify;
     isMac: boolean;
@@ -56,7 +77,7 @@ declare global {
   }
 
   namespace NodeJS {
-    interface Global {
+    interface global {
       _ConfigurationPersistence: Record<string, any>;
       desktopCapturer: {
         getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;

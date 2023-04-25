@@ -152,7 +152,6 @@ const Webview = ({
     if (webviewError) {
       timeoutId = window.setTimeout(() => {
         setWebviewError(null);
-        // @ts-ignore
         webviewRef.current?.reload();
       }, 5000);
     }
@@ -291,6 +290,7 @@ const Webview = ({
         style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
         tabIndex={-1}
       />
+
       {webviewError && (
         <div
           className={`Webview${account.visible ? '' : ' hide'}`}

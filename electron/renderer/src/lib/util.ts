@@ -17,12 +17,14 @@
  *
  */
 
+import React from 'react';
+
 import UUID from 'uuidjs';
 
 export const noop = () => {};
 
-export const preventFocus = (fn = noop) => {
-  return event => {
+export const preventFocus = (fn: (event: React.MouseEvent<Element, MouseEvent>) => void = noop) => {
+  return (event: React.MouseEvent<Element, MouseEvent>) => {
     event.stopPropagation();
     event.preventDefault();
     fn(event);

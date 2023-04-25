@@ -29,7 +29,6 @@ const TRANSITION_GRACE_PERIOD_MS = 500;
 
 interface LoadingSpinnerProps {
   visible: boolean;
-  // webviewRef: WebviewTag | null;
   webviewRef: MutableRefObject<WebviewTag | null>;
 }
 
