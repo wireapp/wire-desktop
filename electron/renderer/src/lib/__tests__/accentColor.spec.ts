@@ -17,29 +17,14 @@
  *
  */
 
-// eslint-disable-next-line jest/no-mocks-import
-import {LocalStorageMock} from '../__mocks__/localStorage';
-import {loadState, saveState} from '../localStorage';
+import {colorFromId} from '../accentColor';
 
-describe('localStorage', () => {
-  beforeEach(() => {
-    global.localStorage = new LocalStorageMock();
+describe('colorFromId', () => {
+  it('should return correct color', () => {
+    expect(colorFromId(2)).toEqual('#1d7833');
   });
 
-  afterEach(() => {
-    delete global.localStorage;
-  });
-
-  it('should return saved state', () => {
-    const state = {
-      bar: true,
-      foo: 'string',
-      num: 1,
-      test: null,
-    };
-
-    saveState(state);
-
-    expect(loadState()).toEqual(state);
+  it('should return undefined if id does not exist', () => {
+    expect(colorFromId(42)).not.toBeDefined();
   });
 });

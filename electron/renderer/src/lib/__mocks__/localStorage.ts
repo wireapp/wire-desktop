@@ -17,23 +17,28 @@
  *
  */
 
-import {wrapperLocale} from './locale.js';
+export class LocalStorageMock {
+  store: {[key: string]: string} = {};
 
-export class WindowUrl {
-  static createWebAppUrl(localRendererUrl, customBackendUrl) {
-    const localFileParams = new URL(localRendererUrl).searchParams;
-    const customBackendUrlParsed = new URL(customBackendUrl);
-    const envUrl = decodeURIComponent(localFileParams.get('env'));
-    const envUrlParams = new URL(envUrl).searchParams;
+  constructor() {
+    this.store = {};
+  }
 
-    // replace hl with current locale
-    envUrlParams.forEach((value, key) => {
-      customBackendUrlParsed.searchParams.set(key, value);
-    });
+  clear() {
+    this.store = {};
+  }
 
-    // set the current language
-    envUrlParams.set('hl', wrapperLocale);
+  getItem(key: string) {
+    return this.store[key] || null;
+  }
 
-    return customBackendUrlParsed.href;
+  setItem(key: string, value: string) {
+    this.store[key] = value;
+  }
+
+  removeItem(key: string) {
+    delete this.store[key];
   }
 }
+
+Object.defineProperty(window, 'localStorage', {value: new LocalStorageMock()});

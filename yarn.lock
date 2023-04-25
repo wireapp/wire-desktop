@@ -3100,6 +3100,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jest@npm:^29.5.1":
+  version: 29.5.1
+  resolution: "@types/jest@npm:29.5.1"
+  dependencies:
+    expect: ^29.0.0
+    pretty-format: ^29.0.0
+  checksum: 0a22491dec86333c0e92b897be2c809c922a7b2b0aa5604ac369810d6b2360908b4a3f2c6892e8a237a54fa1f10ecefe0e823ec5fcb7915195af4dfe88d2197e
+  languageName: node
+  linkType: hard
+
 "@types/jquery@npm:*":
   version: 3.5.16
   resolution: "@types/jquery@npm:3.5.16"
@@ -7366,7 +7376,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expect@npm:^29.5.0":
+"expect@npm:^29.0.0, expect@npm:^29.5.0":
   version: 29.5.0
   resolution: "expect@npm:29.5.0"
   dependencies:
@@ -11999,7 +12009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^29.5.0":
+"pretty-format@npm:^29.0.0, pretty-format@npm:^29.5.0":
   version: 29.5.0
   resolution: "pretty-format@npm:29.5.0"
   dependencies:
@@ -14634,6 +14644,7 @@ __metadata:
     "@types/content-type": 1.1.5
     "@types/fs-extra": 9.0.11
     "@types/is-ci": 3.0.0
+    "@types/jest": ^29.5.1
     "@types/lodash": 4.14.186
     "@types/minimist": 1.2.2
     "@types/mocha": 10.0.0

@@ -17,16 +17,27 @@
  *
  */
 
-/* eslint-disable no-magic-numbers */
+const STATE_NAME = 'state';
 
-import {colorFromId} from '../accentColor';
+export const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem(STATE_NAME);
+    return !!serializedState ? JSON.parse(serializedState) : undefined;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('ERROR: Failed to load state ', error.message);
+    }
+    return undefined;
+  }
+};
 
-describe('colorFromId', () => {
-  it('should return correct color', () => {
-    expect(colorFromId(2)).toEqual('#1d7833');
-  });
-
-  it('should return undefined if id does not exist', () => {
-    expect(colorFromId(42)).not.toBeDefined();
-  });
-});
+export const saveState = (state: Record<string, any>) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem(STATE_NAME, serializedState);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('ERROR: Failed to save state ', error.message);
+    }
+  }
+};

@@ -17,13 +17,15 @@
  *
  */
 
+import React from 'react';
+
 export const KEY = {
   ENTER: 'Enter',
 };
 
-export const isKey = (keyboardEvent, expectedKey = '') => {
-  const eventKey = keyboardEvent?.key?.toLowerCase() || '';
+export const isKey = (keyboardEvent: KeyboardEvent | React.KeyboardEvent, expectedKey = '') => {
+  const eventKey = keyboardEvent.key.toLowerCase();
   return eventKey === expectedKey.toLowerCase();
 };
 
-export const isEnterKey = keyboardEvent => isKey(keyboardEvent, KEY.ENTER);
+export const isEnterKey = (keyboardEvent: KeyboardEvent | React.KeyboardEvent) => isKey(keyboardEvent, KEY.ENTER);
