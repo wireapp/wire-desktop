@@ -20,8 +20,7 @@
   "rules": {
     "import/no-default-export": "off",
     "no-magic-numbers": "off",
-    "no-undef": "off",
-    "valid-jsdoc": "off"
+    "no-undef": "off"
   },
   "settings": {
     "import/resolver": {
