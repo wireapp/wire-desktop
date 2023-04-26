@@ -43,7 +43,7 @@ class ConfigurationPersistence {
 
   delete(name: string): true {
     this.logger.info(`Deleting "${name}"`);
-    delete globalThis._ConfigurationPersistence[name];
+    delete global._ConfigurationPersistence[name];
     return true;
   }
 
