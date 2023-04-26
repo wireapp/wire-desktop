@@ -20,7 +20,7 @@
 import {wrapperLocale} from './locale';
 
 export class WindowUrl {
-  static createWebAppUrl(localRendererUrl: string, customBackendUrl: string) {
+  static createWebAppUrl(localRendererUrl: URL | string, customBackendUrl: string) {
     const localFileParams = new URL(localRendererUrl).searchParams;
     const customBackendUrlParsed = new URL(customBackendUrl);
     const envUrl = decodeURIComponent(localFileParams.get('env')!);

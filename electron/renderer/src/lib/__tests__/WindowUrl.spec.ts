@@ -33,8 +33,10 @@ describe('WindowUrl', () => {
     it('throws an error if the environment includes an invalid URL', () => {
       const rendererPage = 'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=undefined';
       const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
+
       try {
-        WindowUrl.createWebAppUrl(rendererPage, customWebApp);
+        const url = WindowUrl.createWebAppUrl(rendererPage, customWebApp);
+        expect(url).toBe('Invalid URL: undefined');
       } catch (error) {}
     });
   });
