@@ -48,7 +48,7 @@ export const configureStore = (thunkArguments = {}) => {
   return store;
 };
 
-const createMiddleware = (thunkArguments: object = {}) => {
+const createMiddleware = (thunkArguments = {}) => {
   const middlewares = [];
   middlewares.push(thunk.withExtraArgument(thunkArguments));
   if (process.env.NODE_ENV !== 'production') {
