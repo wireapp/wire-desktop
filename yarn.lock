@@ -3274,10 +3274,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:10.0.0":
-  version: 10.0.0
-  resolution: "@types/mocha@npm:10.0.0"
-  checksum: 69e3896a63ec93374e22afd03fdea4c2f31d609d6ea111c8403508ede90da9dc0140c7bb2edff8404114d9d980308e104e4236324bf6afac1410b2cfe35f98c6
+"@types/mocha@npm:10.0.1":
+  version: 10.0.1
+  resolution: "@types/mocha@npm:10.0.1"
+  checksum: 224ea9fce7b1734ccdb9aa99a622d902a538ce1847bca7fd22c5fb38adcf3ed536f50f48f587085db988a4bb3c2eb68f4b98e1cd6a38bc5547bd3bbbedc54495
   languageName: node
   linkType: hard
 
@@ -11355,11 +11355,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.0.0":
-  version: 10.0.0
-  resolution: "mocha@npm:10.0.0"
+"mocha@npm:10.2.0":
+  version: 10.2.0
+  resolution: "mocha@npm:10.2.0"
   dependencies:
-    "@ungap/promise-all-settled": 1.1.2
     ansi-colors: 4.1.1
     browser-stdout: 1.3.1
     chokidar: 3.5.3
@@ -11384,7 +11383,7 @@ __metadata:
   bin:
     _mocha: bin/_mocha
     mocha: bin/mocha.js
-  checksum: ba49ddcf8015a467e744b06c396aab361b1281302e38e7c1269af25ba51ff9ab681a9c36e9046bb7491e751cd7d5ce85e276a00ce7e204f96b2c418e4595edfe
+  checksum: 406c45eab122ffd6ea2003c2f108b2bc35ba036225eee78e0c784b6fa2c7f34e2b13f1dbacef55a4fdf523255d76e4f22d1b5aacda2394bd11666febec17c719
   languageName: node
   linkType: hard
 
@@ -15219,7 +15218,7 @@ __metadata:
     "@types/is-ci": 3.0.0
     "@types/lodash": 4.14.186
     "@types/minimist": 1.2.2
-    "@types/mocha": 10.0.0
+    "@types/mocha": 10.0.1
     "@types/node": ~14
     "@types/open-graph": 0.2.1
     "@types/platform": 1.3.4
@@ -15285,7 +15284,7 @@ __metadata:
     lodash: 4.17.21
     logdown: 3.3.1
     minimist: 1.2.8
-    mocha: 10.0.0
+    mocha: 10.2.0
     nock: 13.3.0
     nyc: 15.1.0
     open-graph: 0.2.6
