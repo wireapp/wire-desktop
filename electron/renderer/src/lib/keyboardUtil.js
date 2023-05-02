@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2023 Wire Swiss GmbH
+ * Copyright (C) 2022 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,13 @@
  *
  */
 
-/** @type {import('@jest/types').Config.InitialOptions} */
-const jestConfig = {
-  moduleFileExtensions: ['js', 'jsx'],
-  testEnvironment: 'jsdom',
+export const KEY = {
+  ENTER: 'Enter',
 };
 
-module.exports = jestConfig;
+export const isKey = (keyboardEvent, expectedKey = '') => {
+  const eventKey = keyboardEvent?.key?.toLowerCase() || '';
+  return eventKey === expectedKey.toLowerCase();
+};
+
+export const isEnterKey = keyboardEvent => isKey(keyboardEvent, KEY.ENTER);

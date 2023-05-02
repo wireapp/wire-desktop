@@ -17,10 +17,10 @@
  *
  */
 
+import throttle from 'lodash/throttle';
 import {applyMiddleware, createStore} from 'redux';
 import {createLogger} from 'redux-logger';
 import thunk from 'redux-thunk';
-import throttle from 'lodash/throttle';
 
 import {loadState, saveState} from './lib/localStorage';
 import reducers from './reducers';

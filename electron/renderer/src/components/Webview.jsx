@@ -18,13 +18,16 @@
  */
 
 import React, {useEffect, useRef, useState} from 'react';
-import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
+
 import {SVGIcon} from '@wireapp/react-ui-kit/src/Icon/SVGIcon';
 import {connect} from 'react-redux';
 
+import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
+
 import LoadingSpinner from './LoadingSpinner';
+import './Webview.css';
+
 import {EVENT_TYPE} from '../../../src/lib/eventType';
-import {WindowUrl} from '../lib/WindowUrl';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -34,10 +37,10 @@ import {
   updateAccountLifecycle,
   updateAccountDarkMode,
 } from '../actions';
-import {getText, wrapperLocale} from '../lib/locale';
-import {AccountSelector} from '../selector/AccountSelector';
-import './Webview.css';
 import {accountAction} from '../actions/AccountAction';
+import {getText, wrapperLocale} from '../lib/locale';
+import {WindowUrl} from '../lib/WindowUrl';
+import {AccountSelector} from '../selector/AccountSelector';
 /* eslint-disable react/no-unknown-property */
 
 const getEnvironmentUrl = account => {
@@ -253,6 +256,7 @@ const Webview = ({
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}
         style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
+        tabIndex={-1}
       />
       {webviewError && (
         <div

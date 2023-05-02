@@ -17,13 +17,13 @@
  *
  */
 
-import type {DesktopCapturer} from 'electron';
-import type {WebAppEvents} from '@wireapp/webapp-events';
-import type {Data as OpenGraphResult} from 'open-graph';
 import type {Static as amplify} from 'amplify';
+import type {Data as OpenGraphResult} from 'open-graph';
 
-import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
+import type {WebAppEvents} from '@wireapp/webapp-events';
+
 import type {i18nStrings, SupportedI18nLanguage} from './locale';
+import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
 
 declare global {
   interface Window {
@@ -64,8 +64,14 @@ declare global {
       environment: typeof EnvironmentUtil;
       openGraphAsync(url: string): Promise<OpenGraphResult>;
       systemCrypto?: {
-        decrypt: (value: Uint8Array) => Promise<Uint8Array>;
-        encrypt: (encrypted: Uint8Array) => Promise<Uint8Array>;
+        decrypt: (payload: Uint8Array) => Promise<string>;
+        encrypt: (value: string) => Promise<Uint8Array>;
+        /**
+         * version:
+         *   - undefined: the encrypt/decrypt methods would take and return Uint8Array (and try to parse them as base64)
+         *   - 1: the encrypt/decrypt methods would take and return string (no assumption on the format (base64, hex, etc.)))
+         */
+        version: number;
       };
     }
   }

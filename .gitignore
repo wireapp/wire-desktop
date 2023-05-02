@@ -24,3 +24,12 @@ electron/img/
 resources
 !resources/macos/entitlements/child.plist
 !resources/macos/entitlements/parent.plist
+
+# yarn 2 - not using zero-installs
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

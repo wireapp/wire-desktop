@@ -19,11 +19,13 @@
 
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
+
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
 import {SchemaUpdater} from './SchemaUpdater';
+
 import '../global';
+import {getLogger} from '../logging/getLogger';
 
 class ConfigurationPersistence {
   private readonly configFile: string;

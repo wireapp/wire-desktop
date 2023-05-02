@@ -19,10 +19,12 @@
 
 import * as Electron from 'electron';
 import * as fs from 'fs-extra';
+
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
+
+import {getLogger} from '../logging/getLogger';
 
 const app = Electron.app || require('@electron/remote').app;
 
@@ -40,7 +42,7 @@ export class SchemaUpdater {
   static updateToVersion1(configFileV0 = defaultPathV0, configFileV1 = defaultPathV1): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
-    if (fs.existsSync(configFileV0)) {
+    if (fs.pathExistsSync(configFileV0)) {
       try {
         fs.moveSync(configFileV0, configFileV1, {overwrite: true});
         Object.assign(config, fs.readJSONSync(configFileV1));

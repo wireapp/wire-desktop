@@ -18,6 +18,7 @@
  */
 
 import React, {useEffect, useRef} from 'react';
+
 import {connect} from 'react-redux';
 
 import {setAccountContextHidden} from '../../actions';

@@ -17,10 +17,6 @@
  *
  */
 
-const minimist = require('minimist');
-
-import {LogFactory} from '@wireapp/commons';
-import * as crypto from 'crypto';
 import {
   app,
   BrowserWindow,
@@ -29,16 +25,23 @@ import {
   ProtocolRequest,
   Session,
   session,
-  ipcMain,
   WebContents,
+  HandlerDetails,
 } from 'electron';
+
+import * as crypto from 'crypto';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
-import {config} from '../settings/config';
-import {getWebViewId} from '../runtime/lifecycle';
+import {LogFactory} from '@wireapp/commons';
+
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
+import {getWebViewId} from '../runtime/lifecycle';
+import {config} from '../settings/config';
+import * as WindowUtil from '../window/WindowUtil';
+
+const minimist = require('minimist');
 
 const argv = minimist(process.argv.slice(1));
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
@@ -64,25 +67,20 @@ export class SingleSignOn {
 
   private session: Session | undefined;
   private ssoWindow: BrowserWindow | undefined;
-  private readonly mainBrowserWindow: BrowserWindow;
-  private readonly mainSession: Session;
-  private readonly senderEvent: ElectronEvent;
   private readonly senderWebContents: WebContents;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
   public onClose = () => {};
 
   constructor(
-    mainBrowserWindow: BrowserWindow,
+    ssoWindow: BrowserWindow,
     senderEvent: ElectronEvent,
     windowOriginURL: string,
     windowOptions: BrowserWindowConstructorOptions,
   ) {
-    this.mainBrowserWindow = mainBrowserWindow;
     this.windowOptions = windowOptions;
-    this.senderEvent = senderEvent;
+    this.ssoWindow = ssoWindow;
     this.senderWebContents = (senderEvent as any).sender;
-    this.mainSession = this.senderWebContents.session;
     this.windowOriginUrl = new URL(windowOriginURL);
   }
 
@@ -99,70 +97,31 @@ export class SingleSignOn {
       callback({cancel: false, requestHeaders});
     });
 
-    this.ssoWindow = this.createBrowserWindow();
+    this.setupBrowserWindow();
 
     // Register protocol
     // Note: we need to create the window before otherwise it does not work
     await SingleSignOn.registerProtocol(this.session, type => this.finalizeLogin(type));
 
     // Show the window(s)
-    await this.ssoWindow.loadURL(this.windowOriginUrl.toString());
+    await this.ssoWindow?.loadURL(this.windowOriginUrl.toString());
 
     if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
-      this.ssoWindow.webContents.openDevTools({mode: 'detach'});
+      this.ssoWindow?.webContents.openDevTools({mode: 'detach'});
     }
     return this;
   };
 
-  private createBrowserWindow(): BrowserWindow {
-    // Discard old preload URL
-    delete (this.windowOptions as any).webPreferences.preloadURL;
-    delete (this.windowOptions as any).webPreferences.preload;
+  private setupBrowserWindow(): void {
+    if (!this.ssoWindow) {
+      throw new Error('ssoWindow is not defined');
+    }
 
-    const ssoWindow = new BrowserWindow({
-      ...this.windowOptions,
-      alwaysOnTop: true,
-      backgroundColor: '#FFFFFF',
-      fullscreen: false,
-      fullscreenable: false,
-      height: this.windowOptions.height || 600,
-      maximizable: false,
-      minimizable: false,
-      modal: false,
-      movable: false,
-      parent: this.mainBrowserWindow,
-      resizable: false,
-      title: SingleSignOn.getWindowTitle(this.windowOriginUrl.origin),
-      titleBarStyle: 'default',
-      useContentSize: true,
-      webPreferences: {
-        ...this.windowOptions.webPreferences,
-        allowRunningInsecureContent: false,
-        backgroundThrottling: false,
-        contextIsolation: true,
-        devTools: true,
-        disableBlinkFeatures: '',
-        experimentalFeatures: false,
-        images: true,
-        javascript: true,
-        nodeIntegration: false,
-        nodeIntegrationInWorker: false,
-        offscreen: false,
-        partition: '',
-        plugins: false,
-        sandbox: true,
-        scrollBounce: true,
-        session: this.session,
-        spellcheck: false,
-        textAreasAreResizable: false,
-        webSecurity: true,
-        webgl: false,
-        webviewTag: false,
-      },
-      width: this.windowOptions.width || 480,
-    });
-
-    (this.senderEvent as any).newGuest = ssoWindow;
+    const ssoWindow = this.ssoWindow;
+    if (this.windowOptions.webPreferences) {
+      // Discard old preload URL
+      delete this.windowOptions.webPreferences.preload;
+    }
 
     ssoWindow.once('closed', async () => {
       if (this.session) {
@@ -177,9 +136,11 @@ export class SingleSignOn {
       this.ssoWindow = undefined;
     });
 
-    // Prevent title updates and new windows
+    // Prevent title updates
     ssoWindow.on('page-title-updated', event => event.preventDefault());
-    ssoWindow.webContents.setWindowOpenHandler(details => {
+    // Prevent new windows (open external pages in OS browser)
+    ssoWindow.webContents.setWindowOpenHandler((details: HandlerDetails): {action: 'deny'} => {
+      void WindowUtil.openExternal(details.url, true);
       return {action: 'deny'};
     });
 
@@ -206,8 +167,6 @@ export class SingleSignOn {
         }
       });
     }
-
-    return ssoWindow;
   }
 
   close = () => {
@@ -216,7 +175,7 @@ export class SingleSignOn {
         await this.wipeSessionData();
         const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
         if (!unregisterSuccess) {
-          throw new Error('Failed to unregister protocol');
+          console.error('Failed to unregister protocol');
         }
       }
       this.ssoWindow?.close();
@@ -319,7 +278,7 @@ export class SingleSignOn {
 
       // Set cookies from ephemeral session to the default one
       try {
-        await SingleSignOn.copyCookies(this.session, this.mainSession, this.windowOriginUrl);
+        await SingleSignOn.copyCookies(this.session, this.senderWebContents.session, this.windowOriginUrl);
       } catch (error) {
         SingleSignOn.logger.warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
@@ -343,8 +302,6 @@ export class SingleSignOn {
   }
 
   private async wipeSessionData() {
-    if (this.session) {
-      await this.session.clearStorageData(undefined);
-    }
+    await this.session?.clearStorageData(undefined);
   }
 }

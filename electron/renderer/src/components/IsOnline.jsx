@@ -18,7 +18,9 @@
  */
 
 import React, {useEffect, useState} from 'react';
+
 import {Text, ContainerSM} from '@wireapp/react-ui-kit';
+
 import {getText} from '../lib/locale';
 
 const IsOnline = ({children}) => {

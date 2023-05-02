@@ -17,10 +17,12 @@
  *
  */
 
-import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import * as Electron from 'electron';
 import * as logdown from 'logdown';
+
 import * as path from 'path';
+
+import {LogFactory, LoggerOptions} from '@wireapp/commons';
 
 import {config} from '../settings/config';
 
