@@ -40,6 +40,7 @@ import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
 import {getWebViewId} from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
+import * as WindowUtil from '../window/WindowUtil';
 
 const minimist = require('minimist');
 

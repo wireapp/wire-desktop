@@ -18,7 +18,7 @@
  */
 
 import * as Electron from 'electron';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
 import * as path from 'path';
 
@@ -42,7 +42,7 @@ export class SchemaUpdater {
   static updateToVersion1(configFileV0 = defaultPathV0, configFileV1 = defaultPathV1): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
-    if (fs.pathExistsSync(configFileV0)) {
+    if (fs.existsSync(configFileV0)) {
       try {
         fs.moveSync(configFileV0, configFileV1, {overwrite: true});
         Object.assign(config, fs.readJSONSync(configFileV1));

@@ -19,7 +19,7 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
 import * as childProcess from 'child_process';
 import * as path from 'path';
@@ -90,7 +90,7 @@ function spawn(command: string, args: string[]): Promise<void> {
 
 async function spawnUpdate(args: string[]): Promise<void> {
   logger.info(`Running updater with args ${JSON.stringify(args)} ...`);
-  const updateDotExeExists = fs.pathExistsSync(updateDotExe);
+  const updateDotExeExists = fs.existsSync(updateDotExe);
   if (!updateDotExeExists) {
     logger.info(`Could not find updater in "${updateDotExe}".`);
   }
