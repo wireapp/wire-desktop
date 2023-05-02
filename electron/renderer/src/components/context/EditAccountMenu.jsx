@@ -32,11 +32,15 @@ import {AccountSelector} from '../../selector/AccountSelector';
 const EditAccountMenu = ({accountId, accountIndex, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
   return (
     <ContextMenu>
-      {isAtLeastAdmin && (
-        <ContextMenuItem onClick={() => window.open('https://teams.wire.com/login/')}>
+      {/* This appears to have been broken for some time. Removing it for the time being until a proper fix can be applied
+      https://wearezeta.atlassian.net/browse/FS-1124
+       {isAtLeastAdmin && (
+        <ContextMenuItem onClick={() => {
+          window.open('https://teams.wire.com/login/');
+        }}>
           {getText('wrapperManageTeam')}
         </ContextMenuItem>
-      )}
+      )} */}
       {lifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN && (
         <ContextMenuItem
           onClick={() => {

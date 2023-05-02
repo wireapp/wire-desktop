@@ -22,7 +22,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
-import {getCommonConfig} from './commonConfig';
+import {flipElectronFuses, getCommonConfig} from './commonConfig';
 import {WindowsConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
@@ -109,6 +109,8 @@ export async function buildWindowsWrapper(
   try {
     const [buildDir] = await electronPackager(packagerConfig);
     logger.log(`Built package in "${buildDir}".`);
+
+    await flipElectronFuses(path.join(buildDir, `${packagerConfig.name}.exe`));
   } catch (error) {
     logger.error(error);
   }

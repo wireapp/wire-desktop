@@ -18,9 +18,8 @@
  */
 
 import React from 'react';
-import {render} from 'react-dom';
 import {Provider} from 'react-redux';
-
+import {createRoot} from 'react-dom/client';
 import {EVENT_TYPE} from '../../dist/lib/eventType';
 import App from './components/App';
 import configureStore from './configureStore';
@@ -43,9 +42,11 @@ window.addEventListener(
 );
 window.addEventListener(EVENT_TYPE.ACTION.START_LOGIN, event => store.dispatch(addAccountWithSession()), false);
 
-render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <Provider store={store}>
     <App />
   </Provider>,
-  document.getElementById('root'),
 );

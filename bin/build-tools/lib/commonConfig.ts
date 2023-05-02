@@ -17,12 +17,16 @@
  *
  */
 
+import {flipFuses, FuseV1Options, FuseVersion} from '@electron/fuses';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {execAsync} from '../../bin-utils';
+import {execAsync, getLogger} from '../../bin-utils';
 import {CommonConfig} from './Config';
+
+const libraryName = path.basename(__filename).replace('.ts', '');
+const logger = getLogger('build-tools', libraryName);
 
 interface Result {
   commonConfig: CommonConfig;
@@ -73,4 +77,54 @@ export async function getCommonConfig(envFile: string, wireJson: string): Promis
   };
 
   return {commonConfig, defaultConfig};
+}
+
+export async function flipElectronFuses(pathToElectron: string) {
+  logger.log(`Flipping fuses in "${pathToElectron}".`);
+  await flipFuses(pathToElectron, {
+    // see also https://www.electronjs.org/docs/latest/tutorial/fuses
+    version: FuseVersion.V1,
+    // Electron-Default: Enabled
+    //
+    // The runAsNode fuse toggles whether the ELECTRON_RUN_AS_NODE environment variable is respected or not.
+    // Please note that if this fuse is disabled then process.fork in the main process will not function as
+    // expected as it depends on this environment variable to function.
+    [FuseV1Options.RunAsNode]: false,
+    // Electron-Default: Disabled
+    //
+    // The cookieEncryption fuse toggles whether the cookie store on disk is encrypted using OS level cryptography keys.
+    // By default the sqlite database that Chromium uses to store cookies stores the values in plaintext.
+    // If you wish to ensure your apps cookies are encrypted in the same way Chrome does then you should enable this fuse.
+    // Please note it is a one-way transition, if you enable this fuse existing unencrypted cookies will be encrypted-on-write
+    // but if you then disable the fuse again your cookie store will effectively be corrupt and useless.
+    // Most apps can safely enable this fuse.
+    [FuseV1Options.EnableCookieEncryption]: true,
+    // Electron-Default: Enabled
+    //
+    // The nodeOptions fuse toggles whether the NODE_OPTIONS environment variable is respected or not.
+    // This environment variable can be used to pass all kinds of custom options to the Node.js runtime and isn't typically
+    // used by apps in production.
+    // Most apps can safely disable this fuse.
+    [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+    // Electron-Default: Enabled
+    //
+    // The nodeCliInspect fuse toggles whether the --inspect, --inspect-brk, etc. flags are respected or not.
+    // When disabled it also ensures that SIGUSR1 signal does not initialize the main process inspector.
+    // Most apps can safely disable this fuse.
+    [FuseV1Options.EnableNodeCliInspectArguments]: false,
+    // Electron-Default: Disabled
+    // The embeddedAsarIntegrityValidation fuse toggles an experimental feature on macOS that validates the
+    // content of the app.asar file when it is loaded. This feature is designed to have a minimal performance
+    // impact but may marginally slow down file reads from inside the app.asar archive.
+    //
+    // For more information on how to use asar integrity validation please read the Asar Integrity documentation.
+    [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: false,
+    // ElectronDefault: Disabled
+    //
+    //The onlyLoadAppFromAsar fuse changes the search system that Electron uses to locate your app code.
+    // By default Electron will search in the following order app.asar -> app -> default_app.asar.
+    // When this fuse is enabled the search order becomes a single entry app.asar thus ensuring that when combined
+    // with the embeddedAsarIntegrityValidation fuse it is impossible to load non-validated code.
+    [FuseV1Options.OnlyLoadAppFromAsar]: true,
+  });
 }

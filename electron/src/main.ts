@@ -87,7 +87,7 @@ const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,
   DEFAULT_WIDTH: 1024,
   MIN_HEIGHT: 512,
-  MIN_WIDTH: 760,
+  MIN_WIDTH: 398,
 };
 
 let proxyInfoArg: URL | undefined;
@@ -242,6 +242,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       contextIsolation: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
+      sandbox: false,
       webviewTag: true,
     },
     width: mainWindowState.width,
@@ -616,6 +617,7 @@ class ElectronWrapperInit {
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
+            webPreferences.sandbox = false;
           });
           break;
         }
