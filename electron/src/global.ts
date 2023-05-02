@@ -17,13 +17,13 @@
  *
  */
 
-import type {DesktopCapturer} from 'electron';
-import type {WebAppEvents} from '@wireapp/webapp-events';
-import type {Data as OpenGraphResult} from 'open-graph';
 import type {Static as amplify} from 'amplify';
+import type {Data as OpenGraphResult} from 'open-graph';
 
-import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
+import type {WebAppEvents} from '@wireapp/webapp-events';
+
 import type {i18nStrings, SupportedI18nLanguage} from './locale';
+import type * as EnvironmentUtil from './runtime/EnvironmentUtil';
 
 declare global {
   interface Window {

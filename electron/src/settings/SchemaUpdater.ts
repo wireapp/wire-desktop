@@ -18,11 +18,13 @@
  */
 
 import * as Electron from 'electron';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
+
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
+
+import {getLogger} from '../logging/getLogger';
 
 const app = Electron.app || require('@electron/remote').app;
 

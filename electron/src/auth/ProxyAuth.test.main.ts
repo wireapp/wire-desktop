@@ -17,8 +17,9 @@
  *
  */
 
-import * as assert from 'assert';
 import {Protocol} from 'get-proxy-settings';
+
+import * as assert from 'assert';
 
 import * as ProxyAuth from './ProxyAuth';
 

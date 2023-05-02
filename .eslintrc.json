@@ -3,6 +3,7 @@
     "jasmine": true
   },
   "extends": "@wireapp/eslint-config",
+  "ignorePatterns": ["**/*.js", "**/*.jsx"], // Ignore JS files until we migrate to TS
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],

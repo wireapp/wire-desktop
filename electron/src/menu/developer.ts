@@ -19,10 +19,10 @@
 
 import {MenuItem, MenuItemConstructorOptions} from 'electron';
 
+import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
-import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
 import {WindowManager} from '../window/WindowManager';
 
 const currentEnvironment = EnvironmentUtil.getEnvironment();

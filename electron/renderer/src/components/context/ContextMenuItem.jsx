@@ -17,8 +17,9 @@
  *
  */
 
-import PropTypes from 'prop-types';
 import React from 'react';
+
+import PropTypes from 'prop-types';
 
 const ContextMenuItem = ({onClick, children}) => (
   <div data-uie-name="item-context-menu" className="ContextMenu-item" onClick={onClick}>

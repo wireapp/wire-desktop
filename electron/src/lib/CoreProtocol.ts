@@ -18,16 +18,18 @@
  */
 
 import {app, ipcMain} from 'electron';
+
 import * as path from 'path';
 import {URL} from 'url';
 
+import {shortenText} from './ElectronUtil';
+import {EVENT_TYPE} from './eventType';
+
+import {showErrorDialog} from '../lib/showDialog';
 import {getLogger} from '../logging/getLogger';
 import {platform} from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
-import {EVENT_TYPE} from './eventType';
-import {showErrorDialog} from '../lib/showDialog';
-import {shortenText} from './ElectronUtil';
 
 const logger = getLogger(path.basename(__filename));
 

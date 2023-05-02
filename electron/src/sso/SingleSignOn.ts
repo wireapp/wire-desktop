@@ -17,10 +17,6 @@
  *
  */
 
-const minimist = require('minimist');
-
-import {LogFactory} from '@wireapp/commons';
-import * as crypto from 'crypto';
 import {
   app,
   BrowserWindow,
@@ -32,14 +28,20 @@ import {
   WebContents,
   HandlerDetails,
 } from 'electron';
+
+import * as crypto from 'crypto';
 import * as path from 'path';
-import * as WindowUtil from '../window/WindowUtil';
 import {URL} from 'url';
 
-import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
-import {config} from '../settings/config';
-import {getWebViewId} from '../runtime/lifecycle';
+import {LogFactory} from '@wireapp/commons';
+
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
+import {getWebViewId} from '../runtime/lifecycle';
+import {config} from '../settings/config';
+import * as WindowUtil from '../window/WindowUtil';
+
+const minimist = require('minimist');
 
 const argv = minimist(process.argv.slice(1));
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');

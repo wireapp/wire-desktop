@@ -18,8 +18,9 @@
  */
 
 import {app, BrowserWindow, ipcMain, session} from 'electron';
-import {pathToFileURL} from 'url';
+
 import * as path from 'path';
+import {pathToFileURL} from 'url';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale';

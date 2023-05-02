@@ -45,7 +45,6 @@ const URL_WEBSITE = {
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 export const URL_WEBAPP: Record<BackendType, string> = {
   AVS: 'https://wire-webapp-avs.zinfra.io',
   DEVELOPMENT: 'https://wire-webapp-dev.zinfra.io',
@@ -57,7 +56,6 @@ export const URL_WEBAPP: Record<BackendType, string> = {
   PRODUCTION: config.appBase,
   CUSTOM: settings.restore(SettingsType.CUSTOM_WEBAPP_URL, config.appBase),
 };
-/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 export const app = {
   ENV: config.environment,

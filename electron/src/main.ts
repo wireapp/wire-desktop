@@ -17,33 +17,32 @@
  *
  */
 
-import {LogFactory} from '@wireapp/commons';
+import * as remoteMain from '@electron/remote/main';
 import {
   app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
-  WebRequestFilter,
-  HeadersReceivedResponse,
   ipcMain,
   Menu,
-  OnHeadersReceivedListenerDetails,
   WebContents,
   desktopCapturer,
   safeStorage,
   HandlerDetails,
 } from 'electron';
-import * as remoteMain from '@electron/remote/main';
-
-import {WebAppEvents} from '@wireapp/webapp-events';
-import * as fs from 'fs-extra';
+import windowStateKeeper from 'electron-window-state';
+import fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';
+
 import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
-import windowStateKeeper from 'electron-window-state';
 
+import {LogFactory} from '@wireapp/commons';
+import {WebAppEvents} from '@wireapp/webapp-events';
+
+import * as ProxyAuth from './auth/ProxyAuth';
 import './global';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
@@ -53,6 +52,8 @@ import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {deleteAccount} from './lib/LocalAccountDeletion';
+import {getOpenGraphDataAsync} from './lib/openGraph';
+import {showErrorDialog} from './lib/showDialog';
 import * as locale from './locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLogFilenames} from './logging/loggerUtils';
@@ -70,9 +71,6 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
-import * as ProxyAuth from './auth/ProxyAuth';
-import {showErrorDialog} from './lib/showDialog';
-import {getOpenGraphDataAsync} from './lib/openGraph';
 
 remoteMain.initialize();
 

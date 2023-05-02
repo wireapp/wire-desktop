@@ -18,20 +18,21 @@
  */
 
 import React from 'react';
+
 import {connect} from 'react-redux';
+
+import AccountIcon from './AccountIcon';
+import AddAccountTrigger from './context/AddAccountTrigger';
+import EditAccountMenu from './context/EditAccountMenu';
+import './Sidebar.css';
 
 import {EVENT_TYPE} from '../../../dist/lib/eventType';
 import {addAccountWithSession, setAccountContextHidden, toggleEditAccountMenuVisibility} from '../actions';
 import {colorFromId} from '../lib/accentColor';
 import {isEnterKey} from '../lib/keyboardUtil';
 import {preventFocus} from '../lib/util';
-import AccountIcon from './AccountIcon';
-import AddAccountTrigger from './context/AddAccountTrigger';
-import EditAccountMenu from './context/EditAccountMenu';
 import {AccountSelector} from '../selector/AccountSelector';
 import {ContextMenuSelector} from '../selector/ContextMenuSelector';
-
-import './Sidebar.css';
 
 const centerOfEventTarget = event => {
   const clientRectangle = event.currentTarget.getBoundingClientRect();

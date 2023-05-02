@@ -18,6 +18,7 @@
  */
 
 import {app, BrowserWindow, Menu, NativeImage, nativeImage, Tray} from 'electron';
+
 import * as path from 'path';
 
 import * as locale from '../locale';

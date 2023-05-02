@@ -18,16 +18,18 @@
  */
 
 import React from 'react';
+
 import {connect} from 'react-redux';
 
-import {abortAccountCreation} from '../../actions';
-import {EVENT_TYPE} from '../../../../dist/lib/eventType';
-import {getText} from '../../lib/locale';
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
-import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
+
+import {EVENT_TYPE} from '../../../../dist/lib/eventType';
+import {abortAccountCreation} from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
+import {getText} from '../../lib/locale';
 import {AccountSelector} from '../../selector/AccountSelector';
+import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 
 const EditAccountMenu = ({accountId, accountIndex, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
   return (
