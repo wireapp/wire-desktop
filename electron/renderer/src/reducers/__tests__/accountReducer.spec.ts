@@ -25,6 +25,7 @@ import accountReducer, {createAccount} from '../accountReducer';
 
 describe('accounts reducer', () => {
   it('should return the initial state with one account', () => {
+    // @ts-ignore
     expect(accountReducer(undefined, {}).length).toEqual(1);
   });
 

@@ -82,10 +82,11 @@ interface WebviewProps {
   setConversationJoinData: (accountId: string, data: any) => void;
   switchWebview: (accountIndex: number) => void;
   updateAccountDarkMode: (accountId: string, darkMode: boolean) => void;
-  // TODO: Update data type after migration redux to TS
-  updateAccountData: (accountId: string, data: any) => void;
+  updateAccountData: (accountId: string, data: Partial<Account>) => void;
   updateAccountLifecycle: (accountId: string, channel: string) => void;
 }
+
+const ON_IPC_MESSAGE = 'ipc-message';
 
 const Webview = ({
   abortAccountCreation,
@@ -234,6 +235,7 @@ const Webview = ({
             window.sendConversationJoinToHost(accountId, data.code, data.key);
             setConversationJoinData(accountId, undefined);
           } else {
+            console.log('[Webview.tsx] przemvs data', data);
             setConversationJoinData(accountId, data);
           }
           break;
@@ -255,7 +257,6 @@ const Webview = ({
         }
       }
     };
-    const ON_IPC_MESSAGE = 'ipc-message';
     webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
     return () => {
       if (webviewRef.current) {

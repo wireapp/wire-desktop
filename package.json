@@ -143,7 +143,7 @@
   "name": "wire-desktop",
   "prettier": "@wireapp/prettier-config",
   "private": true,
-  "productName": "WireDevelopment",
+  "productName": "Wire",
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
@@ -199,6 +199,6 @@
     "translate:upload": "ts-node -P tsconfig.bin.json ./bin/translations_upload.ts",
     "translate:download": "ts-node -P tsconfig.bin.json ./bin/translations_download.ts"
   },
-  "version": "3.30.0",
+  "version": "3.30.0-ac376c85",
   "packageManager": "yarn@3.3.1"
 }

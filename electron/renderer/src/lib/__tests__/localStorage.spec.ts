@@ -17,6 +17,8 @@
  *
  */
 
+import {createAccount} from '../../reducers/accountReducer';
+import {initialState as initialContextMenuState} from '../../reducers/contextMenuReducer';
 import {loadState, saveState} from '../localStorage';
 
 describe('localStorage', () => {
@@ -26,10 +28,8 @@ describe('localStorage', () => {
 
   it('should return saved state', () => {
     const state = {
-      bar: true,
-      foo: 'string',
-      num: 1,
-      test: null,
+      accounts: [createAccount()],
+      contextMenuState: initialContextMenuState,
     };
 
     saveState(state);

@@ -54,9 +54,9 @@ export interface AddAccount extends AppAction {
 
 export interface InitiateSSO extends AppAction {
   readonly type: ACCOUNT_ACTION.INITIATE_SSO;
+  readonly ssoCode: string;
   readonly id?: string;
   readonly sessionID?: string;
-  readonly ssoCode: string;
 }
 
 export interface DeleteAccount extends AppAction {
@@ -95,8 +95,7 @@ export interface UpdateAccountDarkMode extends AppAction {
 export interface UpdateAccountLifeCycle extends AppAction {
   readonly type: ACCOUNT_ACTION.UPDATE_ACCOUNT_LIFECYCLE;
   readonly id: string;
-  // TODO: Update this type
-  readonly data: any;
+  readonly channel: string;
 }
 
 export interface SetConversationJoinData extends AppAction {
@@ -193,7 +192,7 @@ export default (state = [createAccount()], action: AccountActions): Account[] =>
     case ACCOUNT_ACTION.UPDATE_ACCOUNT_LIFECYCLE: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
-        return isMatchingAccount ? {...account, lifecycle: action.data} : account;
+        return isMatchingAccount ? {...account, lifecycle: action.channel} : account;
       });
     }
 

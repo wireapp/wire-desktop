@@ -85,10 +85,9 @@ export const updateAccount = (id: string, data: Partial<Account>): UpdateAccount
   type: ACCOUNT_ACTION.UPDATE_ACCOUNT,
 });
 
-// TODO: Update this type
-export const updateAccountLifecycle = (id: string, channel: any): UpdateAccountLifeCycle => {
+export const updateAccountLifecycle = (id: string, channel: string): UpdateAccountLifeCycle => {
   return {
-    data: channel,
+    channel,
     id,
     type: ACCOUNT_ACTION.UPDATE_ACCOUNT_LIFECYCLE,
   };
@@ -132,7 +131,7 @@ export const abortAccountCreation = (id: string) => {
 
     if (lastAccount) {
       const accountIndex = AccountSelector.getAccountIndex(getState(), lastAccount.id);
-      dispatch(accountAction.switchWebview(accountIndex));
+      accountAction.switchWebview(accountIndex);
     } else {
       dispatch(addAccount(false));
     }
@@ -146,7 +145,7 @@ export const addAccountWithSession = () => {
 
     if (!!unboundAccount) {
       const unboundAccountIndex = AccountSelector.getAccountIndex(getState(), unboundAccount.id);
-      dispatch(accountAction.switchWebview(unboundAccountIndex));
+      accountAction.switchWebview(unboundAccountIndex);
       return;
     }
 
@@ -158,7 +157,7 @@ export const addAccountWithSession = () => {
   };
 };
 
-export const updateAccountData = (id: string, data) => {
+export const updateAccountData = (id: string, data: Partial<Account>) => {
   const accountDataSchema = Joi.object({
     accentID: Joi.number(),
     availability: Joi.number().optional(),

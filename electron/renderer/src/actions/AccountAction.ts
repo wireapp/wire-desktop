@@ -33,7 +33,7 @@ type WebviewTag = Electron.WebviewTag;
  * @param {string} id - Account ID
  * @returns {{id: string, type: ACCOUNT_ACTION.SWITCH_ACCOUNT}} - Account switch action
  */
-export const startSSO = (id: string): SwitchAccount => ({
+export const switchAccount = (id: string): SwitchAccount => ({
   id,
   type: ACCOUNT_ACTION.SWITCH_ACCOUNT,
 });
@@ -49,13 +49,13 @@ export class AccountAction {
       dispatch: AppDispatch,
       getState: () => State,
       {actions: {accountAction}}: {actions: {accountAction: AccountActionTypes}},
-    ): Promise<any> => {
+    ) => {
       try {
         const accounts = AccountSelector.getAccounts(getState());
         const loggedOutWebviews = accounts.filter(account => account.userID === undefined);
 
         if (loggedOutWebviews.length > 0) {
-          dispatch(accountAction.switchWebview(accounts.indexOf(loggedOutWebviews[0])));
+          await accountAction.switchWebview(accounts.indexOf(loggedOutWebviews[0]));
 
           const accountId = loggedOutWebviews[0].id;
           dispatch(initiateSSO(accountId, ssoCode, accounts.length == 1));

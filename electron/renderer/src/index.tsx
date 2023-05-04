@@ -52,14 +52,21 @@ export type AppDispatch = typeof store.dispatch;
 
 window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
-  event => store.dispatch(actionRoot.accountAction.switchWebview((event as EventDetail).detail.accountIndex)),
+  event => {
+    console.log('[index.tsx] przemvs event', event);
+    // @ts-ignore
+    store.dispatch(actionRoot.accountAction.switchWebview((event as EventDetail).detail.accountIndex));
+  },
   false,
 );
 window.addEventListener(
   EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT,
+  // @ts-ignore
   event => store.dispatch(actionRoot.accountAction.startSSO((event as EventDetail).detail.code)),
   false,
 );
+
+// @ts-ignore
 window.addEventListener(EVENT_TYPE.ACTION.START_LOGIN, event => store.dispatch(addAccountWithSession()), false);
 
 const container = document.getElementById('root');

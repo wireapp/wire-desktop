@@ -19,8 +19,8 @@
 
 import {combineReducers} from 'redux';
 
-import accountReducer from './accountReducer.js';
-import contextMenuReducer from './contextMenuReducer.js';
+import accountReducer from './accountReducer';
+import contextMenuReducer from './contextMenuReducer';
 
 export default combineReducers({
   accounts: accountReducer,
