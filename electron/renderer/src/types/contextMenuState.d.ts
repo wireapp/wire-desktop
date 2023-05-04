@@ -17,26 +17,14 @@
  *
  */
 
-export type Account = {
-  availability?: number;
-  accentID?: number;
-  badgeCount: number;
-  conversationJoinData?: {
-    code: string;
-    key: string;
+export type ContextMenuState = {
+  isEditAccountMenuVisible?: boolean;
+  position: {
+    centerX: number;
+    centerY: number;
   };
-  id: string;
-  isAdding: boolean;
+  accountId: string;
+  isAtLeastAdmin: boolean;
   lifecycle?: string;
-  name?: string;
-  picture?: string;
   sessionID?: string;
-  ssoCode?: string;
-  teamID?: string;
-  teamRole: string;
-  visible: boolean;
-  webappUrl?: string;
-  userID?: string;
-  darkMode: boolean;
-  accountIndex: number;
 };

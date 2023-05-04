@@ -17,24 +17,50 @@
  *
  */
 
-import {ActionType} from '../actions/index.js';
+import {ACCOUNT_ACTION} from '../actions';
+import {AppAction} from '../index';
+import {ContextMenuState} from '../types/contextMenuState';
 
-const DEFAULT_STATE = {
+export interface HideContextMenus extends AppAction {
+  readonly type: ACCOUNT_ACTION.HIDE_CONTEXT_MENUS;
+}
+
+export interface ToggleAddAccountVisibility extends AppAction {
+  readonly type: ACCOUNT_ACTION.TOGGLE_ADD_ACCOUNT_VISIBILITY;
+  readonly payload: {
+    position: {
+      centerX: number;
+      centerY: number;
+    };
+  };
+}
+
+export interface ToggleEditAccountVisibility extends AppAction {
+  readonly type: ACCOUNT_ACTION.TOGGLE_EDIT_ACCOUNT_VISIBILITY;
+  readonly payload: ContextMenuState;
+}
+
+export type ContextMenuActions = HideContextMenus | ToggleAddAccountVisibility | ToggleEditAccountVisibility;
+
+export const initialState: ContextMenuState = {
   accountId: '',
   isAtLeastAdmin: false,
   isEditAccountMenuVisible: false,
-  lifecycle: false,
-  position: {centerX: 0, centerY: 0},
-  sessionId: '',
+  lifecycle: undefined,
+  position: {
+    centerX: 0,
+    centerY: 0,
+  },
+  sessionID: '',
 };
 
-export default (state = DEFAULT_STATE, action) => {
+export default (state = initialState, action: ContextMenuActions): ContextMenuState => {
   switch (action.type) {
-    case ActionType.HIDE_CONTEXT_MENUS: {
-      return {...DEFAULT_STATE};
+    case ACCOUNT_ACTION.HIDE_CONTEXT_MENUS: {
+      return {...initialState};
     }
 
-    case ActionType.TOGGLE_ADD_ACCOUNT_VISIBILITY: {
+    case ACCOUNT_ACTION.TOGGLE_ADD_ACCOUNT_VISIBILITY: {
       return {
         ...state,
         isEditAccountMenuVisible: false,
@@ -42,7 +68,7 @@ export default (state = DEFAULT_STATE, action) => {
       };
     }
 
-    case ActionType.TOGGLE_EDIT_ACCOUNT_VISIBILITY: {
+    case ACCOUNT_ACTION.TOGGLE_EDIT_ACCOUNT_VISIBILITY: {
       return {
         ...state,
         accountId: action.payload.accountId,
@@ -50,7 +76,7 @@ export default (state = DEFAULT_STATE, action) => {
         isEditAccountMenuVisible: !state.isEditAccountMenuVisible,
         lifecycle: action.payload.lifecycle,
         position: action.payload.position,
-        sessionId: action.payload.sessionId,
+        sessionID: action.payload.sessionID,
       };
     }
 

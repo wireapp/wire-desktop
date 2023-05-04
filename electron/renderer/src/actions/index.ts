@@ -21,98 +21,110 @@ import * as Joi from '@hapi/joi';
 
 import {Availability} from '@wireapp/protocol-messaging';
 
-import {accountAction} from './AccountAction';
+import {AccountAction, accountAction} from './AccountAction';
 
+import {AppDispatch, State} from '../index';
 import {generateUUID} from '../lib/util';
+import {
+  AddAccount,
+  DeleteAccount,
+  InitiateSSO,
+  ResetIdentity,
+  SetConversationJoinData,
+  UpdateAccount,
+  UpdateAccountBadge,
+  UpdateAccountDarkMode,
+  UpdateAccountLifeCycle,
+} from '../reducers/accountReducer';
+import {HideContextMenus, ToggleEditAccountVisibility} from '../reducers/contextMenuReducer';
 import {AccountSelector} from '../selector/AccountSelector';
+import {Account} from '../types/account';
+import {ContextMenuState} from '../types/contextMenuState';
 
-export const ActionType = {
-  ADD_ACCOUNT: 'ADD_ACCOUNT',
-  DELETE_ACCOUNT: 'DELETE_ACCOUNT',
-  HIDE_CONTEXT_MENUS: 'HIDE_CONTEXT_MENUS',
-  INITIATE_SSO: 'INITIATE_SSO',
-  RESET_IDENTITY: 'RESET_IDENTITY',
-  SET_CONVERSATION_JOIN_DATA: 'SET_CONVERSATION_JOIN_DATA',
-  SWITCH_ACCOUNT: 'SWITCH_ACCOUNT',
-  TOGGLE_ADD_ACCOUNT_VISIBILITY: 'TOGGLE_ADD_ACCOUNT_VISIBILITY',
-  TOGGLE_EDIT_ACCOUNT_VISIBILITY: 'TOGGLE_EDIT_ACCOUNT_VISIBILITY',
-  UPDATE_ACCOUNT: 'UPDATE_ACCOUNT',
-  UPDATE_ACCOUNT_BADGE: 'UPDATE_ACCOUNT_BADGE',
-  UPDATE_ACCOUNT_DARK_MODE: 'UPDATE_ACCOUNT_DARK_MODE',
-  UPDATE_ACCOUNT_LIFECYCLE: 'UPDATE_ACCOUNT_LIFECYCLE',
-};
+export enum ACCOUNT_ACTION {
+  ADD_ACCOUNT = 'ADD_ACCOUNT',
+  DELETE_ACCOUNT = 'DELETE_ACCOUNT',
+  HIDE_CONTEXT_MENUS = 'HIDE_CONTEXT_MENUS',
+  INITIATE_SSO = 'INITIATE_SSO',
+  RESET_IDENTITY = 'RESET_IDENTITY',
+  SET_CONVERSATION_JOIN_DATA = 'SET_CONVERSATION_JOIN_DATA',
+  SWITCH_ACCOUNT = 'SWITCH_ACCOUNT',
+  TOGGLE_ADD_ACCOUNT_VISIBILITY = 'TOGGLE_ADD_ACCOUNT_VISIBILITY',
+  TOGGLE_EDIT_ACCOUNT_VISIBILITY = 'TOGGLE_EDIT_ACCOUNT_VISIBILITY',
+  UPDATE_ACCOUNT = 'UPDATE_ACCOUNT',
+  UPDATE_ACCOUNT_BADGE = 'UPDATE_ACCOUNT_BADGE',
+  UPDATE_ACCOUNT_DARK_MODE = 'UPDATE_ACCOUNT_DARK_MODE',
+  UPDATE_ACCOUNT_LIFECYCLE = 'UPDATE_ACCOUNT_LIFECYCLE',
+  SWITCH_WEBVIEW = 'SWITCH_WEBVIEW',
+}
 
-export const addAccount = (withSession = true) => ({
+export const addAccount = (withSession = true): AddAccount => ({
   sessionID: withSession ? generateUUID() : undefined,
-  type: ActionType.ADD_ACCOUNT,
+  type: ACCOUNT_ACTION.ADD_ACCOUNT,
 });
 
-export const initiateSSO = (id, ssoCode = undefined, withSession = true) => ({
+export const initiateSSO = (id: string | undefined, ssoCode: string, withSession = true): InitiateSSO => ({
   id,
   sessionID: withSession ? generateUUID() : undefined,
   ssoCode,
-  type: ActionType.INITIATE_SSO,
+  type: ACCOUNT_ACTION.INITIATE_SSO,
 });
 
-export const deleteAccount = id => ({
+export const deleteAccount = (id: string): DeleteAccount => ({
   id,
-  type: ActionType.DELETE_ACCOUNT,
+  type: ACCOUNT_ACTION.DELETE_ACCOUNT,
 });
 
-export const resetIdentity = id => ({
+export const resetIdentity = (id: string): ResetIdentity => ({
   id,
-  type: ActionType.RESET_IDENTITY,
+  type: ACCOUNT_ACTION.RESET_IDENTITY,
 });
 
-export const updateAccount = (id, data) => ({
+export const updateAccount = (id: string, data: Partial<Account>): UpdateAccount => ({
   data,
   id,
-  type: ActionType.UPDATE_ACCOUNT,
+  type: ACCOUNT_ACTION.UPDATE_ACCOUNT,
 });
 
-export const updateAccountLifecycle = (id, channel) => {
+// TODO: Update this type
+export const updateAccountLifecycle = (id: string, channel: any): UpdateAccountLifeCycle => {
   return {
     data: channel,
     id,
-    type: ActionType.UPDATE_ACCOUNT_LIFECYCLE,
+    type: ACCOUNT_ACTION.UPDATE_ACCOUNT_LIFECYCLE,
   };
 };
 
-export const setConversationJoinData = (id, data) => ({
+// TODO: Update this type
+export const setConversationJoinData = (id: string, data: any): SetConversationJoinData => ({
   data,
   id,
-  type: ActionType.SET_CONVERSATION_JOIN_DATA,
+  type: ACCOUNT_ACTION.SET_CONVERSATION_JOIN_DATA,
 });
 
-export const updateAccountBadge = (id, count) => ({
+export const updateAccountBadge = (id: string, count: number): UpdateAccountBadge => ({
   count,
   id,
-  type: ActionType.UPDATE_ACCOUNT_BADGE,
+  type: ACCOUNT_ACTION.UPDATE_ACCOUNT_BADGE,
 });
 
-export const updateAccountDarkMode = (id, darkMode) => ({
+export const updateAccountDarkMode = (id: string, darkMode: boolean): UpdateAccountDarkMode => ({
   darkMode,
   id,
-  type: ActionType.UPDATE_ACCOUNT_DARK_MODE,
+  type: ACCOUNT_ACTION.UPDATE_ACCOUNT_DARK_MODE,
 });
 
-export const setAccountContextHidden = () => ({
-  type: ActionType.HIDE_CONTEXT_MENUS,
+export const setAccountContextHidden = (): HideContextMenus => ({
+  type: ACCOUNT_ACTION.HIDE_CONTEXT_MENUS,
 });
 
-export const toggleEditAccountMenuVisibility = (centerX, centerY, accountId, sessionId, lifecycle, isAtLeastAdmin) => ({
-  payload: {
-    accountId,
-    isAtLeastAdmin,
-    lifecycle,
-    position: {centerX, centerY},
-    sessionId,
-  },
-  type: ActionType.TOGGLE_EDIT_ACCOUNT_VISIBILITY,
+export const toggleEditAccountMenuVisibility = (payload: ContextMenuState): ToggleEditAccountVisibility => ({
+  payload,
+  type: ACCOUNT_ACTION.TOGGLE_EDIT_ACCOUNT_VISIBILITY,
 });
 
-export const abortAccountCreation = id => {
-  return (dispatch, getState) => {
+export const abortAccountCreation = (id: string) => {
+  return (dispatch: AppDispatch, getState: () => State) => {
     // Note: It's not guaranteed that the dispatched action "deleteAccount" generates a new state without the deleted account
     const accounts = AccountSelector.getAccounts(getState()).filter(account => account.id !== id);
     const lastAccount = accounts[accounts.length - 1];
@@ -129,7 +141,7 @@ export const abortAccountCreation = id => {
 };
 
 export const addAccountWithSession = () => {
-  return (dispatch, getState) => {
+  return (dispatch: AppDispatch, getState: () => State) => {
     const hasReachedAccountLimit = AccountSelector.hasReachedLimitOfAccounts(getState());
     const unboundAccount = AccountSelector.getUnboundAccount(getState());
 
@@ -147,7 +159,7 @@ export const addAccountWithSession = () => {
   };
 };
 
-export const updateAccountData = (id, data) => {
+export const updateAccountData = (id: string, data) => {
   const accountDataSchema = Joi.object({
     accentID: Joi.number(),
     availability: Joi.number().optional(),
@@ -160,7 +172,7 @@ export const updateAccountData = (id, data) => {
     webappUrl: Joi.string(),
   }).unknown(true);
 
-  return dispatch => {
+  return (dispatch: AppDispatch) => {
     const validatedAccountData = accountDataSchema.validate(data);
 
     if (!validatedAccountData.error) {
@@ -171,14 +183,14 @@ export const updateAccountData = (id, data) => {
   };
 };
 
-export const updateAccountBadgeCount = (id, count) => {
-  return (dispatch, getState) => {
+export const updateAccountBadgeCount = (id: string, count: number) => {
+  return (dispatch: AppDispatch, getState: () => State) => {
     const accounts = getState().accounts;
     const account = getState().accounts.find(acc => acc.id === id);
     const accumulatedCount = accounts.reduce((accumulated, account) => {
       return accumulated + (account.id === id ? count : account.badgeCount);
     }, 0);
-    const ignoreFlash = account.availability === Availability.Type.BUSY;
+    const ignoreFlash = account?.availability === Availability.Type.BUSY;
 
     window.sendBadgeCount(accumulatedCount, ignoreFlash);
 
@@ -193,7 +205,11 @@ export const updateAccountBadgeCount = (id, count) => {
   };
 };
 
-const actionRoot = {
+export interface ActionRoot {
+  accountAction: AccountAction;
+}
+
+const actionRoot: ActionRoot = {
   accountAction,
 };
 

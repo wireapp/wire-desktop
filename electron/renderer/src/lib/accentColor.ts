@@ -57,7 +57,7 @@ export const PURPLE = {
 
 export const ACCENT_COLORS = [BLUE, GREEN, RED, AMBER, TURQUOISE, PURPLE];
 
-export const colorFromId = (id: number) => {
+export const colorFromId = (id?: number) => {
   const accentColor = ACCENT_COLORS.find(color => color.id === id);
   return accentColor && accentColor.color;
 };

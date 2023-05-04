@@ -17,10 +17,18 @@
  *
  */
 
-import {ActionType} from '../actions/index';
+import {ACCOUNT_ACTION} from '../actions/index';
+import {AppAction} from '../index';
 import {generateUUID} from '../lib/util';
+import {Account} from '../types/account';
 
-const createAccount = (sessionID, ssoCode = undefined) => ({
+type CreateAccountProps = {
+  sessionID?: string;
+  ssoCode?: string;
+  visible?: boolean;
+};
+
+export const createAccount = ({sessionID, ssoCode, visible = true}: CreateAccountProps = {}): Account => ({
   accentID: undefined,
   availability: 0,
   badgeCount: 0,
@@ -30,55 +38,127 @@ const createAccount = (sessionID, ssoCode = undefined) => ({
   lifecycle: undefined,
   name: undefined,
   picture: undefined,
+  teamRole: '',
+  accountIndex: 0,
   sessionID,
   ssoCode,
   teamID: undefined,
   userID: undefined,
-  visible: true,
+  visible,
 });
 
-export default (state = [createAccount()], action) => {
+export interface AddAccount extends AppAction {
+  readonly type: ACCOUNT_ACTION.ADD_ACCOUNT;
+  readonly sessionID?: string;
+}
+
+export interface InitiateSSO extends AppAction {
+  readonly type: ACCOUNT_ACTION.INITIATE_SSO;
+  readonly id?: string;
+  readonly sessionID?: string;
+  readonly ssoCode: string;
+}
+
+export interface DeleteAccount extends AppAction {
+  readonly type: ACCOUNT_ACTION.DELETE_ACCOUNT;
+  readonly id: string;
+}
+
+export interface ResetIdentity extends AppAction {
+  readonly type: ACCOUNT_ACTION.RESET_IDENTITY;
+  readonly id: string;
+}
+
+export interface SwitchAccount extends AppAction {
+  readonly type: ACCOUNT_ACTION.SWITCH_ACCOUNT;
+  readonly id: string;
+}
+
+export interface UpdateAccount extends AppAction {
+  readonly type: ACCOUNT_ACTION.UPDATE_ACCOUNT;
+  readonly id: string;
+  readonly data: Partial<Account>;
+}
+
+export interface UpdateAccountBadge extends AppAction {
+  readonly type: ACCOUNT_ACTION.UPDATE_ACCOUNT_BADGE;
+  readonly id: string;
+  readonly count: number;
+}
+
+export interface UpdateAccountDarkMode extends AppAction {
+  readonly type: ACCOUNT_ACTION.UPDATE_ACCOUNT_DARK_MODE;
+  readonly id: string;
+  readonly darkMode: boolean;
+}
+
+export interface UpdateAccountLifeCycle extends AppAction {
+  readonly type: ACCOUNT_ACTION.UPDATE_ACCOUNT_LIFECYCLE;
+  readonly id: string;
+  // TODO: Update this type
+  readonly data: any;
+}
+
+export interface SetConversationJoinData extends AppAction {
+  readonly type: ACCOUNT_ACTION.SET_CONVERSATION_JOIN_DATA;
+  readonly id: string;
+  // TODO: Update this type
+  readonly data: any;
+}
+
+export type AccountActions =
+  | AddAccount
+  | InitiateSSO
+  | DeleteAccount
+  | ResetIdentity
+  | SwitchAccount
+  | UpdateAccount
+  | UpdateAccountBadge
+  | UpdateAccountDarkMode
+  | UpdateAccountLifeCycle
+  | SetConversationJoinData;
+
+export default (state = [createAccount()], action: AccountActions): Account[] => {
   switch (action.type) {
-    case ActionType.ADD_ACCOUNT: {
+    case ACCOUNT_ACTION.ADD_ACCOUNT: {
       const newState = state.map(account => ({...account, visible: false}));
-      newState.push(createAccount(action.sessionID));
-      return newState;
+      const newAccount = createAccount({sessionID: action.sessionID});
+      return [...newState, newAccount];
     }
 
-    case ActionType.INITIATE_SSO: {
-      let newState;
+    case ACCOUNT_ACTION.INITIATE_SSO: {
       if (action.id) {
         // If an account is given, set the sso code
-        newState = state.map(account => {
+        return state.map(account => {
           const isMatchingAccount = account.id === action.id;
           return isMatchingAccount ? {...account, isAdding: true, ssoCode: action.ssoCode} : account;
         });
-      } else {
-        newState = state.map(account => ({...account, visible: false}));
-        newState.push(createAccount(action.sessionID, action.ssoCode));
       }
-      return newState;
+
+      const newState = state.map(account => ({...account, visible: false}));
+      const newAccount = createAccount({sessionID: action.sessionID, ssoCode: action.ssoCode});
+      return [...newState, newAccount];
     }
 
-    case ActionType.DELETE_ACCOUNT: {
+    case ACCOUNT_ACTION.DELETE_ACCOUNT: {
       return state.filter(account => account.id !== action.id);
     }
 
-    case ActionType.RESET_IDENTITY: {
+    case ACCOUNT_ACTION.RESET_IDENTITY: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, teamID: undefined, userID: undefined} : account;
       });
     }
 
-    case ActionType.SWITCH_ACCOUNT: {
+    case ACCOUNT_ACTION.SWITCH_ACCOUNT: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return {...account, visible: isMatchingAccount};
       });
     }
 
-    case ActionType.UPDATE_ACCOUNT: {
+    case ACCOUNT_ACTION.UPDATE_ACCOUNT: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         // Note: If the current account has a webappUrl but the update does not
@@ -96,28 +176,28 @@ export default (state = [createAccount()], action) => {
       });
     }
 
-    case ActionType.UPDATE_ACCOUNT_BADGE: {
+    case ACCOUNT_ACTION.UPDATE_ACCOUNT_BADGE: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, badgeCount: action.count} : account;
       });
     }
 
-    case ActionType.UPDATE_ACCOUNT_DARK_MODE: {
+    case ACCOUNT_ACTION.UPDATE_ACCOUNT_DARK_MODE: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, darkMode: action.darkMode} : account;
       });
     }
 
-    case ActionType.UPDATE_ACCOUNT_LIFECYCLE: {
+    case ACCOUNT_ACTION.UPDATE_ACCOUNT_LIFECYCLE: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, lifecycle: action.data} : account;
       });
     }
 
-    case ActionType.SET_CONVERSATION_JOIN_DATA: {
+    case ACCOUNT_ACTION.SET_CONVERSATION_JOIN_DATA: {
       return state.map(account => {
         const isMatchingAccount = account.id === action.id;
         return isMatchingAccount ? {...account, conversationJoinData: action.data} : account;

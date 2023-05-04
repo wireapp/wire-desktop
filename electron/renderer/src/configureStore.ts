@@ -28,7 +28,7 @@ import reducers from './reducers';
 const HALF_SECOND = 500;
 const persistedState = loadState();
 
-export const configureStore = (thunkArguments = {}) => {
+export const configureStore = (thunkArguments: Object) => {
   const store = createStore(reducers, persistedState, createMiddleware(thunkArguments));
 
   store.subscribe(
@@ -42,13 +42,14 @@ export const configureStore = (thunkArguments = {}) => {
             lifecycle: undefined,
           };
         }),
+        contextMenuState: store.getState().contextMenuState,
       });
     }, HALF_SECOND),
   );
   return store;
 };
 
-const createMiddleware = (thunkArguments = {}) => {
+const createMiddleware = (thunkArguments: Object = {}) => {
   const middlewares = [];
   middlewares.push(thunk.withExtraArgument(thunkArguments));
   if (process.env.NODE_ENV !== 'production') {

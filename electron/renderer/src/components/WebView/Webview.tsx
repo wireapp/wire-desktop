@@ -37,6 +37,7 @@ import {
   updateAccountDarkMode,
 } from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
+import {State} from '../../index';
 import {getText, wrapperLocale} from '../../lib/locale';
 import {WindowUrl} from '../../lib/WindowUrl';
 import {AccountSelector} from '../../selector/AccountSelector';
@@ -70,7 +71,7 @@ interface WebviewProps {
   abortAccountCreation: (accountId: string) => void;
   account: Account;
   accountIndex: number;
-  accountLifecycle: string;
+  accountLifecycle?: string;
   conversationJoinData?: {
     code: string;
     key: string;
@@ -362,17 +363,8 @@ type Props = {
   account: Account;
 };
 
-type MapStateToProps = {
-  accountIndex: number;
-  accountLifecycle: string;
-  conversationJoinData: {
-    code: string;
-    key: string;
-  };
-};
-
 export default connect(
-  (state, props: Props): MapStateToProps => ({
+  (state: State, props: Props) => ({
     accountIndex: AccountSelector.getAccountIndex(state, props.account.id),
     accountLifecycle: AccountSelector.getAccountLifecycle(state, props.account.id),
     conversationJoinData: AccountSelector.getConversationJoinData(state, props.account.id),

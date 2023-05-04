@@ -20,7 +20,7 @@
 import {ReactElement} from 'react';
 
 interface ContextMenuItem {
-  children: ReactElement;
+  children: ReactElement | string;
   onClick: () => void;
 }
 

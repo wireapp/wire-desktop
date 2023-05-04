@@ -19,15 +19,25 @@
 
 import {createRoot} from 'react-dom/client';
 import {Provider} from 'react-redux';
+import {Action} from 'redux';
 
 import actionRoot, {addAccountWithSession} from './actions';
 import App from './components/App/App';
 import {configureStore} from './configureStore';
 import './Index.css';
+import {Account} from './types/account';
+import {ContextMenuState} from './types/contextMenuState';
 
 import {EVENT_TYPE} from '../../src/lib/eventType';
 
-const store = configureStore({actions: actionRoot});
+export type State = {
+  accounts: Account[];
+  contextMenuState: ContextMenuState;
+};
+
+export interface AppAction extends Action {
+  type: string;
+}
 
 interface EventDetail extends Event {
   detail: {
@@ -35,6 +45,10 @@ interface EventDetail extends Event {
     code: string;
   };
 }
+
+const store = configureStore({actions: actionRoot});
+
+export type AppDispatch = typeof store.dispatch;
 
 window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
