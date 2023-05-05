@@ -17,7 +17,7 @@
  *
  */
 
-import nock from 'nock';
+import nock, {cleanAll} from 'nock';
 
 import * as assert from 'assert';
 
@@ -65,7 +65,7 @@ const cookieRequest = (cookieText: string) => {
 };
 
 describe('openGraph', () => {
-  afterEach(() => nock.cleanAll());
+  afterEach(() => cleanAll());
 
   it('decodes a text encoded with UTF-8', async () => {
     const result = await contentLimitRequest('text/html; charset=utf-8', defaultMessageUtf8);
