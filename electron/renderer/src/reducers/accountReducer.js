@@ -17,7 +17,7 @@
  *
  */
 
-import {ActionType} from '../actions/index';
+import {ActionType} from '../actions';
 import {generateUUID} from '../lib/util';
 
 const createAccount = (sessionID, ssoCode = undefined) => ({

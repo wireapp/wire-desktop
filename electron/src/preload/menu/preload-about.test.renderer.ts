@@ -18,7 +18,7 @@
  */
 
 import {ipcRenderer} from 'electron';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 
 import * as assert from 'assert';
 

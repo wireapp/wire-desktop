@@ -21,7 +21,7 @@ import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {config} from '../../../src/settings/config';
 import {AccountSelector} from '../selector/AccountSelector';
 
-import {ActionType, initiateSSO} from './index.js';
+import {ActionType, initiateSSO} from './';
 
 /**
  * Don't use this method directly, use `switchWebview` instead.
