@@ -191,7 +191,7 @@
     "start:localzinfra": "yarn start --env=https://local.zinfra.io:8081",
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:rc": "yarn start --env=https://wire-webapp-rc.zinfra.io",
-    "test": "yarn test:types && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn test:bin && yarn coverage",
+    "test": "yarn test:types && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn test:bin",
     "test:bin": "mocha --require .babel-register.js \"bin/**/*.test?(.main).ts\"",
     "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\" --no-sandbox",
     "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\" --no-sandbox --window-config electron/test/mocha-window-config.json",

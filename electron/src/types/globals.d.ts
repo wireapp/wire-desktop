@@ -25,9 +25,8 @@ import type {WebAppEvents} from '@wireapp/webapp-events';
 import type {i18nStrings, SupportedI18nLanguage} from '../locale';
 import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
-/* eslint-disable no-var */
-
 export declare global {
+  /* eslint-disable no-var */
   var _ConfigurationPersistence: Record<string, any>;
   var desktopCapturer: {
     getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
@@ -44,6 +43,7 @@ export declare global {
   };
   var environment: typeof EnvironmentUtil;
   var openGraphAsync: (url: string) => Promise<OpenGraphResult>;
+  /* eslint-enable no-var */
 
   interface Window {
     amplify: amplify;
@@ -75,7 +75,7 @@ export declare global {
   }
 
   namespace NodeJS {
-    interface global {
+    interface Global {
       _ConfigurationPersistence: Record<string, any>;
       desktopCapturer: {
         getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
