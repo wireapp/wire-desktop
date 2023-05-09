@@ -17,10 +17,11 @@
  *
  */
 
-import './AccountIcon.css';
+import React from 'react';
 
 import PropTypes from 'prop-types';
-import React from 'react';
+
+import './AccountIcon.css';
 
 import {colorFromId} from '../lib/accentColor';
 
@@ -49,7 +50,11 @@ const AccountIcon = ({account, ...props}) => {
         />
       )}
       <div className="AccountIcon-inner">
-        {account.picture ? <img src={account.picture} /> : <div>{account.name && [...account.name][0]}</div>}
+        {account.picture ? (
+          <img src={account.picture} alt="Account Icon" />
+        ) : (
+          <div>{account.name && [...account.name][0]}</div>
+        )}
       </div>
     </div>
   );

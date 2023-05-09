@@ -17,11 +17,13 @@
  *
  */
 
-import {DateUtil} from '@wireapp/commons';
 import {dialog, SaveDialogOptions} from 'electron';
-import imageType from 'image-type';
 import * as fs from 'fs-extra';
+import imageType from 'image-type';
+
 import * as path from 'path';
+
+import {DateUtil} from '@wireapp/commons';
 
 import {getLogger} from '../logging/getLogger';
 

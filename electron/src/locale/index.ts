@@ -19,10 +19,6 @@
 
 import * as Electron from 'electron';
 
-import {config} from '../settings/config';
-import {settings} from '../settings/ConfigurationPersistence';
-import {SettingsType} from '../settings/SettingsType';
-
 import cs from './cs-CZ.json';
 import da from './da-DK.json';
 import de from './de-DE.json';
@@ -47,6 +43,10 @@ import sl from './sl-SI.json';
 import tr from './tr-TR.json';
 import uk from './uk-UA.json';
 import zh from './zh-CN.json';
+
+import {config} from '../settings/config';
+import {settings} from '../settings/ConfigurationPersistence';
+import {SettingsType} from '../settings/SettingsType';
 
 export type i18nLanguageIdentifier = keyof typeof en;
 export type i18nStrings = Record<i18nLanguageIdentifier, string>;
@@ -109,7 +109,6 @@ export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[
   zh: ['zh', 'zh-CN'],
 };
 
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 /* cspell:disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
@@ -138,7 +137,6 @@ export const SUPPORTED_LANGUAGES = {
   zh: '简体中文',
 };
 /* cspell:enable */
-/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 let current: SupportedI18nLanguage | undefined;
 

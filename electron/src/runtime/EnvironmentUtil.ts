@@ -27,7 +27,7 @@ export enum BackendType {
   DEVELOPMENT = 'DEVELOPMENT',
   EDGE = 'EDGE',
   INTERNAL = 'INTERNAL',
-  LOCALHOST = 'LOCALHOST',
+  LOCALZINFRA = 'LOCALZINFRA',
   MASTER = 'MASTER',
   PRODUCTION = 'PRODUCTION',
   QA = 'QA',
@@ -45,7 +45,6 @@ const URL_WEBSITE = {
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 export const URL_WEBAPP: Record<BackendType, string> = {
   AVS: 'https://wire-webapp-avs.zinfra.io',
   DEVELOPMENT: 'https://wire-webapp-dev.zinfra.io',
@@ -53,11 +52,10 @@ export const URL_WEBAPP: Record<BackendType, string> = {
   MASTER: 'https://wire-webapp-master.zinfra.io',
   QA: 'https://wire-webapp-qa.zinfra.io',
   INTERNAL: 'https://wire-webapp-staging.wire.com',
-  LOCALHOST: 'https://localhost:8081',
+  LOCALZINFRA: 'https://local.zinfra.io:8081',
   PRODUCTION: config.appBase,
   CUSTOM: settings.restore(SettingsType.CUSTOM_WEBAPP_URL, config.appBase),
 };
-/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 export const app = {
   ENV: config.environment,

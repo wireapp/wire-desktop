@@ -18,15 +18,18 @@
  */
 
 import {app, session, ipcMain, WebContents} from 'electron';
+
 import * as path from 'path';
+
 import {ValidationUtil} from '@wireapp/commons';
+
+import * as EnvironmentUtil from './EnvironmentUtil';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import {settings} from '../settings/ConfigurationPersistence';
 import * as Squirrel from '../update/squirrel';
 import {WindowManager} from '../window/WindowManager';
-import * as EnvironmentUtil from './EnvironmentUtil';
 
 const logger = getLogger(path.basename(__filename));
 
@@ -56,7 +59,10 @@ export const checkSingleInstance = async () => {
   }
 };
 
-export const getWebViewId = (contents: WebContents): string | undefined => {
+export const getWebViewId = (contents?: WebContents): string | undefined => {
+  if (!contents) {
+    return undefined;
+  }
   try {
     const currentLocation = new URL(contents.getURL());
     const webViewId = currentLocation.searchParams.get('id');

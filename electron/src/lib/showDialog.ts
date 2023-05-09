@@ -18,6 +18,7 @@
  */
 
 import {dialog, MessageBoxSyncOptions} from 'electron';
+
 import * as locale from '../locale';
 
 export const showDialog = (message: string, title: string, type?: string): void => {

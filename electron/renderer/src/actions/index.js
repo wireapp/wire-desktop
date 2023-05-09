@@ -18,11 +18,13 @@
  */
 
 import * as Joi from '@hapi/joi';
+
 import {Availability} from '@wireapp/protocol-messaging';
 
 import {accountAction} from './AccountAction';
-import {AccountSelector} from '../selector/AccountSelector';
+
 import {generateUUID} from '../lib/util';
+import {AccountSelector} from '../selector/AccountSelector';
 
 export const ActionType = {
   ADD_ACCOUNT: 'ADD_ACCOUNT',

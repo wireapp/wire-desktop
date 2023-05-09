@@ -18,13 +18,16 @@
  */
 
 import React from 'react';
+
 import {connect} from 'react-redux';
+
 import {StyledApp} from '@wireapp/react-ui-kit';
 
-import actionRoot from '../actions';
 import IsOnline from './IsOnline';
 import Sidebar from './Sidebar';
 import WebviewList from './WebviewList';
+
+import actionRoot from '../actions';
 import {AccountSelector} from '../selector/AccountSelector';
 
 const App = () => {

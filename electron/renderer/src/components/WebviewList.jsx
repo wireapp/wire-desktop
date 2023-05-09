@@ -18,9 +18,11 @@
  */
 
 import React from 'react';
+
 import {connect} from 'react-redux';
 
 import Webview from './Webview';
+
 import {updateAccountBadgeCount} from '../actions';
 import {AccountSelector} from '../selector/AccountSelector';
 

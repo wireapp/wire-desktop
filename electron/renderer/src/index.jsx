@@ -18,14 +18,15 @@
  */
 
 import React from 'react';
-import {Provider} from 'react-redux';
+
 import {createRoot} from 'react-dom/client';
+import {Provider} from 'react-redux';
+
 import {EVENT_TYPE} from '../../dist/lib/eventType';
+
+import actionRoot, {addAccountWithSession} from './actions';
 import App from './components/App';
 import configureStore from './configureStore';
-import actionRoot from './actions';
-import {addAccountWithSession} from './actions/index';
-
 import './Index.css';
 
 const store = configureStore({actions: actionRoot});

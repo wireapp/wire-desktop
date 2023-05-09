@@ -18,6 +18,7 @@
  */
 
 import React, {useEffect, useState} from 'react';
+
 import {FlexBox, Loading, COLOR} from '@wireapp/react-ui-kit';
 
 import './LoadingSpinner.css';

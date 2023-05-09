@@ -17,11 +17,14 @@
  *
  */
 
-import * as assert from 'assert';
 import {ipcRenderer} from 'electron';
-import * as sinon from 'sinon';
-import {EVENT_TYPE} from '../../lib/eventType';
+import sinon from 'sinon';
+
+import * as assert from 'assert';
+
 import {loadedAboutScreen} from './preload-about';
+
+import {EVENT_TYPE} from '../../lib/eventType';
 
 describe('loadedAboutScreen', () => {
   it('publishes labels', done => {

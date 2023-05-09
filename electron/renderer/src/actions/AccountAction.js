@@ -17,10 +17,11 @@
  *
  */
 
-import {ActionType, initiateSSO} from './';
-import {config} from '../../../dist/settings/config';
 import {EVENT_TYPE} from '../../../dist/lib/eventType';
+import {config} from '../../../dist/settings/config';
 import {AccountSelector} from '../selector/AccountSelector';
+
+import {ActionType, initiateSSO} from './';
 
 /**
  * Don't use this method directly, use `switchWebview` instead.
