@@ -87,6 +87,7 @@ interface WebviewProps {
 }
 
 const ON_IPC_MESSAGE = 'ipc-message';
+const ON_WEBVIEW_ERROR = 'did-fail-load';
 
 const Webview = ({
   abortAccountCreation,
@@ -120,6 +121,7 @@ const Webview = ({
         console.warn('Can not #loadURL before attaching webview to DOM', error);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   // https://github.com/electron/electron/issues/14474#issuecomment-425794480
@@ -163,6 +165,8 @@ const Webview = ({
   }, [webviewError]);
 
   useEffect(() => {
+    const webview = webviewRef.current;
+
     const listener = (error: DidFailLoadEvent) => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
       console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
@@ -170,11 +174,11 @@ const Webview = ({
         setWebviewError(error);
       }
     };
-    const ON_WEBVIEW_ERROR = 'did-fail-load';
-    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
+    webview?.addEventListener(ON_WEBVIEW_ERROR, listener);
+
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (webview) {
+        webview.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
   }, [webviewRef, account]);
@@ -235,7 +239,6 @@ const Webview = ({
             window.sendConversationJoinToHost(accountId, data.code, data.key);
             setConversationJoinData(accountId, undefined);
           } else {
-            console.log('[Webview.tsx] przemvs data', data);
             setConversationJoinData(accountId, data);
           }
           break;
@@ -257,12 +260,16 @@ const Webview = ({
         }
       }
     };
-    webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+
+    const webview = webviewRef.current;
+    webview?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current?.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webview) {
+        webview?.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = async (account: Account) => {

@@ -18,7 +18,7 @@
  */
 
 import {dialog, shell} from 'electron';
-import * as sinon from 'sinon';
+import {stub, SinonStub} from 'sinon';
 
 import * as assert from 'assert';
 
@@ -26,12 +26,12 @@ import * as WindowUtil from './WindowUtil';
 
 describe('WindowUtil', () => {
   describe('openExternal', () => {
-    let dialogStub: sinon.SinonStub;
-    let shellStub: sinon.SinonStub;
+    let dialogStub: SinonStub;
+    let shellStub: SinonStub;
 
     beforeEach(() => {
-      shellStub = sinon.stub(shell, 'openExternal').returns(Promise.resolve());
-      dialogStub = sinon.stub(dialog, 'showMessageBoxSync').returns(0);
+      shellStub = stub(shell, 'openExternal').returns(Promise.resolve());
+      dialogStub = stub(dialog, 'showMessageBoxSync').returns(0);
     });
 
     afterEach(() => {

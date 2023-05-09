@@ -54,6 +54,7 @@ const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuP
       menuRef.current.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
       menuRef.current.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuRef]);
 
   useEffect(() => {
@@ -61,12 +62,14 @@ const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuP
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('resize', hide);
     window.addEventListener('wheel', handleMouseWheel);
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('resize', hide);
       window.removeEventListener('wheel', handleMouseWheel);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const hide = () => {

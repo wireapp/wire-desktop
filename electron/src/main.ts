@@ -31,7 +31,7 @@ import {
   HandlerDetails,
 } from 'electron';
 import windowStateKeeper from 'electron-window-state';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';

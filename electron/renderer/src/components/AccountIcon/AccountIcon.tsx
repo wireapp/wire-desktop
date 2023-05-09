@@ -53,7 +53,7 @@ export const AccountIcon = ({account, ...props}: AccountIconProps) => {
 
       <div className="AccountIcon-inner">
         {account.picture ? (
-          <img src={account.picture} alt={account.name} />
+          <img src={account.picture} alt="Account Icon" />
         ) : (
           <div>{account.name && [...account.name][0]}</div>
         )}
