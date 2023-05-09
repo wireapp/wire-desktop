@@ -38,7 +38,7 @@ import {
 } from '../reducers/accountReducer';
 import {HideContextMenus, ToggleEditAccountVisibility} from '../reducers/contextMenuReducer';
 import {AccountSelector} from '../selector/AccountSelector';
-import {Account} from '../types/account';
+import {Account, ConversationJoinData} from '../types/account';
 import {ContextMenuState} from '../types/contextMenuState';
 
 export enum ACCOUNT_ACTION {
@@ -93,8 +93,7 @@ export const updateAccountLifecycle = (id: string, channel: string): UpdateAccou
   };
 };
 
-// TODO: Update this type
-export const setConversationJoinData = (id: string, data: any): SetConversationJoinData => ({
+export const setConversationJoinData = (id: string, data?: ConversationJoinData): SetConversationJoinData => ({
   data,
   id,
   type: ACCOUNT_ACTION.SET_CONVERSATION_JOIN_DATA,

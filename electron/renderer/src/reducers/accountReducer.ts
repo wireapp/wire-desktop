@@ -20,7 +20,7 @@
 import {ACCOUNT_ACTION} from '../actions/index';
 import {AppAction} from '../index';
 import {generateUUID} from '../lib/util';
-import {Account} from '../types/account';
+import {Account, ConversationJoinData} from '../types/account';
 
 type CreateAccountProps = {
   sessionID?: string;
@@ -101,8 +101,7 @@ export interface UpdateAccountLifeCycle extends AppAction {
 export interface SetConversationJoinData extends AppAction {
   readonly type: ACCOUNT_ACTION.SET_CONVERSATION_JOIN_DATA;
   readonly id: string;
-  // TODO: Update this type
-  readonly data: any;
+  readonly data?: ConversationJoinData;
 }
 
 export type AccountActions =

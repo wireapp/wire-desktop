@@ -41,7 +41,8 @@ import {State} from '../../index';
 import {getText, wrapperLocale} from '../../lib/locale';
 import {WindowUrl} from '../../lib/WindowUrl';
 import {AccountSelector} from '../../selector/AccountSelector';
-import {Account} from '../../types/account';
+import {Account, ConversationJoinData} from '../../types/account';
+import {isAccount, isBoolean, isConversationJoinData, isNumber, isString} from '../../types/guards';
 import {LoadingSpinner} from '../LoadingSpinner';
 
 type WebviewTag = Electron.WebviewTag;
@@ -53,7 +54,7 @@ const getEnvironmentUrl = (account: Account) => {
   const decodedEnvParam = decodeURIComponent(envParam!);
   const url = new URL(decodedEnvParam);
 
-  // pass account id to webview so we can access it in the preload script
+  // pass account id to webview, so we can access it in the preload script
   url.searchParams.set('id', account.id);
 
   // set the current language
@@ -72,14 +73,10 @@ interface WebviewProps {
   account: Account;
   accountIndex: number;
   accountLifecycle?: string;
-  conversationJoinData?: {
-    code: string;
-    key: string;
-  };
+  conversationJoinData?: ConversationJoinData;
   onUnreadCountUpdated: (accountId: string, badgeCount: number) => void;
   resetIdentity: (accountId: string) => void;
-  // TODO: Update data type after migration redux to TS
-  setConversationJoinData: (accountId: string, data: any) => void;
+  setConversationJoinData: (accountId: string, data?: ConversationJoinData) => void;
   switchWebview: (accountIndex: number) => void;
   updateAccountDarkMode: (accountId: string, darkMode: boolean) => void;
   updateAccountData: (accountId: string, data: Partial<Account>) => void;
@@ -184,23 +181,27 @@ const Webview = ({
   }, [webviewRef, account]);
 
   useEffect(() => {
-    // TODO: Fix any type
-    const onIpcMessage = async ({channel, args}: {args: any; channel: string}) => {
+    const onIpcMessage = async ({channel, args}: {args: unknown[]; channel: string}) => {
       const accountId = account.id;
 
       switch (channel) {
         case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
           const [customUrl] = args;
-          const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
-          updateAccountData(accountId, {
-            webappUrl: updatedWebapp,
-          });
+
+          if (isString(customUrl)) {
+            const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
+            updateAccountData(accountId, {
+              webappUrl: updatedWebapp,
+            });
+          }
           break;
         }
 
         case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
           const [accountData] = args;
-          updateAccountData(account.id, accountData);
+          if (isAccount(accountData)) {
+            updateAccountData(account.id, accountData);
+          }
           break;
         }
 
@@ -225,36 +226,47 @@ const Webview = ({
 
         case EVENT_TYPE.LIFECYCLE.SIGNED_OUT: {
           const [clearData] = args;
-          if (clearData) {
-            await deleteWebview(account);
-          } else {
-            resetIdentity(accountId);
+
+          if (isBoolean(clearData)) {
+            if (clearData) {
+              await deleteWebview(account);
+            } else {
+              resetIdentity(accountId);
+            }
           }
           break;
         }
 
         case EVENT_TYPE.ACTION.JOIN_CONVERSATION: {
           const [data] = args;
-          if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-            window.sendConversationJoinToHost(accountId, data.code, data.key);
-            setConversationJoinData(accountId, undefined);
-          } else {
-            setConversationJoinData(accountId, data);
+
+          if (isConversationJoinData(data)) {
+            if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
+              window.sendConversationJoinToHost(accountId, data.code, data.key);
+              setConversationJoinData(accountId, undefined);
+            } else {
+              setConversationJoinData(accountId, data);
+            }
           }
           break;
         }
 
         case EVENT_TYPE.LIFECYCLE.UNREAD_COUNT: {
           const [badgeCount] = args;
-          onUnreadCountUpdated(accountId, badgeCount);
+          if (isNumber(badgeCount)) {
+            onUnreadCountUpdated(accountId, badgeCount);
+          }
           break;
         }
 
         case EVENT_TYPE.UI.THEME_UPDATE: {
           const [theme] = args;
-          const darkMode = theme === 'dark';
-          if (darkMode !== account.darkMode) {
-            updateAccountDarkMode(account.id, darkMode);
+
+          if (isString(theme)) {
+            const darkMode = theme === 'dark';
+            if (darkMode !== account.darkMode) {
+              updateAccountDarkMode(account.id, darkMode);
+            }
           }
           break;
         }

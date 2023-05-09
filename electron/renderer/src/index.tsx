@@ -53,7 +53,6 @@ export type AppDispatch = typeof store.dispatch;
 window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
   event => {
-    console.log('[index.tsx] przemvs event', event);
     // @ts-ignore
     store.dispatch(actionRoot.accountAction.switchWebview((event as EventDetail).detail.accountIndex));
   },

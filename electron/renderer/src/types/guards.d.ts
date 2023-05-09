@@ -17,28 +17,15 @@
  *
  */
 
-export type ConversationJoinData = {
-  code: string;
-  key: string;
-};
+import {Account, ConversationJoinData} from './account';
 
-export type Account = {
-  availability?: number;
-  accentID?: number;
-  badgeCount: number;
-  conversationJoinData?: ConversationJoinData;
-  id: string;
-  isAdding: boolean;
-  lifecycle?: string;
-  name?: string;
-  picture?: string;
-  sessionID?: string;
-  ssoCode?: string;
-  teamID?: string;
-  teamRole: string;
-  visible: boolean;
-  webappUrl?: string;
-  userID?: string;
-  darkMode: boolean;
-  accountIndex: number;
-};
+export const isString = (value: any): value is string => typeof value === 'string';
+
+export const isNumber = (value: any): value is number => typeof value === 'number';
+
+export const isBoolean = (value: any): value is boolean => typeof value === 'boolean';
+
+export const isAccount = (value: any): value is Account => value.hasOwnProperty('userID');
+
+export const isConversationJoinData = (value: any): value is ConversationJoinData =>
+  value.hasOwnProperty('code') && value.hasOwnProperty('key');
