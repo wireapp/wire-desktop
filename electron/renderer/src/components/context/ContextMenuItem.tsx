@@ -20,7 +20,7 @@
 import {HTMLAttributes, ReactElement} from 'react';
 
 interface ContextMenuItem extends HTMLAttributes<HTMLDivElement> {
-  children: ReactElement;
+  children: ReactElement | string;
   onClick: () => void;
 }
 
