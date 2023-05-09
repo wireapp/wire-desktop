@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2019 Wire Swiss GmbH
+ * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,27 +17,18 @@
  *
  */
 
-import {ipcRenderer} from 'electron';
-import {spy} from 'sinon';
+import React from 'react';
 
-import * as assert from 'assert';
+import UUID from 'uuidjs';
 
-import {loadedAboutScreen} from './preload-about';
+export const noop = () => {};
 
-import {EVENT_TYPE} from '../../lib/eventType';
+export const preventFocus = (fn: (event: React.MouseEvent<Element, MouseEvent>) => void = noop) => {
+  return (event: React.MouseEvent<Element, MouseEvent>) => {
+    event.stopPropagation();
+    event.preventDefault();
+    fn(event);
+  };
+};
 
-describe('loadedAboutScreen', () => {
-  it('publishes labels', done => {
-    const sendSpy = spy(ipcRenderer, 'send');
-
-    loadedAboutScreen(new Event('test'), {
-      copyright: '&copy; Wire Swiss GmbH',
-      electronVersion: 'Development',
-      productName: 'Wire',
-      webappVersion: '2019.04.10.0901',
-    });
-
-    assert.ok(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []));
-    done();
-  });
-});
+export const generateUUID = () => UUID.genV4().toString();

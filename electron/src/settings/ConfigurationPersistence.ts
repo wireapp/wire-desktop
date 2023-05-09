@@ -24,7 +24,6 @@ import * as path from 'path';
 
 import {SchemaUpdater} from './SchemaUpdater';
 
-import '../global';
 import {getLogger} from '../logging/getLogger';
 
 class ConfigurationPersistence {

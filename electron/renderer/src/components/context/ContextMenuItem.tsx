@@ -17,28 +17,24 @@
  *
  */
 
-import React from 'react';
+import {HTMLAttributes, ReactElement} from 'react';
 
-import {isEnterKey} from '../../../src/lib/keyboardUtil';
+interface ContextMenuItem extends HTMLAttributes<HTMLDivElement> {
+  children: ReactElement;
+  onClick: () => void;
+}
 
-const AddAccountTrigger = ({forceVisible, onClick}) => (
+const ContextMenuItem = ({onClick, children}: ContextMenuItem) => (
   <div
-    className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
-    onClick={onClick}
-    onKeyDown={event => {
-      if (isEnterKey(event)) {
-        onClick();
-      }
-    }}
-    data-uie-name="do-open-plus-menu"
+    role="button"
     tabIndex={0}
+    data-uie-name="item-context-menu"
+    className="ContextMenu-item"
+    onClick={onClick}
+    onKeyDown={onClick}
   >
-    <div className="Sidebar-account-add">
-      <svg width="12" height="12" viewBox="0 0 12 12">
-        <path d="M0 5.25v1.5h5.25V12h1.5V6.75H12v-1.5H6.75V0h-1.5v5.25" fillRule="evenodd" />
-      </svg>
-    </div>
+    {children}
   </div>
 );
 
-export default AddAccountTrigger;
+export default ContextMenuItem;

@@ -17,17 +17,28 @@
  *
  */
 
-import React, {useEffect, useRef} from 'react';
+import {ReactNode, useEffect, useRef} from 'react';
 
 import {connect} from 'react-redux';
+
+import './ContextMenu.css';
 
 import {setAccountContextHidden} from '../../actions';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 
-import './ContextMenu.css';
+type Position = {
+  centerX: number;
+  centerY: number;
+};
 
-const ContextMenu = ({position, children, setAccountContextHidden}) => {
-  const menuRef = useRef();
+interface ContextMenuProps {
+  position: Position;
+  children: ReactNode;
+  setAccountContextHidden: () => void;
+}
+
+const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuProps) => {
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (menuRef.current) {
@@ -42,6 +53,7 @@ const ContextMenu = ({position, children, setAccountContextHidden}) => {
       menuRef.current.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
       menuRef.current.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuRef]);
 
   useEffect(() => {
@@ -49,32 +61,34 @@ const ContextMenu = ({position, children, setAccountContextHidden}) => {
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('resize', hide);
     window.addEventListener('wheel', handleMouseWheel);
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('resize', hide);
       window.removeEventListener('wheel', handleMouseWheel);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const hide = () => {
     setAccountContextHidden();
   };
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event: KeyboardEvent) => {
     const KEY_ESCAPE = 27;
     if (event.keyCode === KEY_ESCAPE) {
       hide();
     }
   };
 
-  const handleMouseDown = event => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
+  const handleMouseDown = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
       hide();
     }
   };
 
-  const handleMouseWheel = event => {
+  const handleMouseWheel = (event: MouseEvent) => {
     event.preventDefault();
   };
 

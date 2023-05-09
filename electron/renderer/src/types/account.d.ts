@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2023 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,21 @@
  *
  */
 
-import UUID from 'uuidjs';
-
-export const noop = () => {};
-
-export const preventFocus = (fn = noop) => {
-  return event => {
-    event.stopPropagation();
-    event.preventDefault();
-    fn(event);
-  };
+export type Account = {
+  accentID: number;
+  badgeCount: number;
+  id: string;
+  isAdding: boolean;
+  lifecycle: string;
+  name: string;
+  picture?: string;
+  sessionID: string;
+  ssoCode: string;
+  teamID: number;
+  teamRole: string;
+  visible: boolean;
+  webappUrl?: string;
+  userID: string;
+  darkMode: boolean;
+  accountIndex: number;
 };
-
-export const generateUUID = () => UUID.genV4().toString();

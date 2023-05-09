@@ -1,25 +1,38 @@
 {
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
-    "declaration": true,
+    "declaration": false,
     "downlevelIteration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["DOM", "ESNext"],
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "module": "commonjs",
+    "moduleResolution": "node",
     "noEmitOnError": true,
+    "noImplicitAny": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noUnusedLocals": true,
     "outDir": "electron/dist",
     "removeComments": true,
     "resolveJsonModule": true,
-    "rootDir": "electron/src",
+    "rootDirs": ["electron/src"],
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ES6"
+    "target": "es6",
+    "typeRoots": ["electron/src/types", "node_modules/@types"],
+    "jsx": "react-jsx"
   },
-  "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"]
+  "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
+  "include": ["jest.config.ts", "electron/**/*.ts", "electron/**/*.tsx"],
+  "files": ["electron/src/types/globals.d.ts"]
 }

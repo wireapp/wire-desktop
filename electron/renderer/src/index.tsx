@@ -17,33 +17,43 @@
  *
  */
 
-import React from 'react';
-
 import {createRoot} from 'react-dom/client';
 import {Provider} from 'react-redux';
 
-import {EVENT_TYPE} from '../../dist/lib/eventType';
-
 import actionRoot, {addAccountWithSession} from './actions';
-import App from './components/App';
-import configureStore from './configureStore';
+import App from './components/App/App';
+import {configureStore} from './configureStore';
 import './Index.css';
+
+import {EVENT_TYPE} from '../../src/lib/eventType';
 
 const store = configureStore({actions: actionRoot});
 
+interface EventDetail extends Event {
+  detail: {
+    accountIndex: number;
+    code: string;
+  };
+}
+
 window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
-  event => store.dispatch(actionRoot.accountAction.switchWebview(event.detail.accountIndex)),
+  event => store.dispatch(actionRoot.accountAction.switchWebview((event as EventDetail).detail.accountIndex)),
   false,
 );
 window.addEventListener(
   EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT,
-  event => store.dispatch(actionRoot.accountAction.startSSO(event.detail.code)),
+  event => store.dispatch(actionRoot.accountAction.startSSO((event as EventDetail).detail.code)),
   false,
 );
 window.addEventListener(EVENT_TYPE.ACTION.START_LOGIN, event => store.dispatch(addAccountWithSession()), false);
 
 const container = document.getElementById('root');
+
+if (!container) {
+  throw new Error('container not found.');
+}
+
 const root = createRoot(container);
 
 root.render(

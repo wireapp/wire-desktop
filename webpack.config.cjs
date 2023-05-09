@@ -21,10 +21,13 @@ const webpack = require('webpack');
 
 const path = require('path');
 
-/** @type {(env: {production?: true}) => import('webpack').Configuration} */
+/**
+ * @type {(env: {production?: true}) => import('webpack').Configuration}
+ * */
+
 module.exports = (env = {}) => ({
   devtool: env.production ? undefined : 'eval-cheap-source-map',
-  entry: path.resolve(__dirname, 'electron/renderer/src/index.jsx'),
+  entry: path.resolve(__dirname, 'electron/renderer/src/index.tsx'),
   externals: {
     'fs-extra': '{}',
   },

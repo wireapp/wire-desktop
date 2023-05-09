@@ -17,30 +17,7 @@
  *
  */
 
-const wireJson: WireJson = require('../../wire.json');
-
-interface WireJson {
-  aboutReleasesUrl: string;
-  aboutUpdatesUrl: string;
-  adminUrl: string;
-  appBase: string;
-  buildNumber: string;
-  copyright: string;
-  customProtocolName: string;
-  description: string;
-  electronDirectory: string;
-  environment: 'internal' | 'production';
-  legalUrl: string;
-  licensesUrl: string;
-  maximumAccounts: string;
-  name: string;
-  nameShort: string;
-  privacyUrl: string;
-  supportUrl: string;
-  updateUrl: string;
-  version: string;
-  websiteUrl: string;
-}
+import wireJson from '../../wire.json';
 
 export const MINUTE_IN_MILLIS = 60 * 1000;
 export const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
