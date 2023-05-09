@@ -17,9 +17,9 @@
  *
  */
 
-import {ReactElement} from 'react';
+import {HTMLAttributes, ReactElement} from 'react';
 
-interface ContextMenuItem {
+interface ContextMenuItem extends HTMLAttributes<HTMLDivElement> {
   children: ReactElement;
   onClick: () => void;
 }
