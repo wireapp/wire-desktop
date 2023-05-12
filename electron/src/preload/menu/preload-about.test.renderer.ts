@@ -18,7 +18,7 @@
  */
 
 import {ipcRenderer} from 'electron';
-import {spy} from 'sinon';
+import sinon from 'sinon';
 
 import * as assert from 'assert';
 
@@ -28,7 +28,7 @@ import {EVENT_TYPE} from '../../lib/eventType';
 
 describe('loadedAboutScreen', () => {
   it('publishes labels', done => {
-    const sendSpy = spy(ipcRenderer, 'send');
+    const sendSpy = sinon.spy(ipcRenderer, 'send');
 
     loadedAboutScreen(new Event('test'), {
       copyright: '&copy; Wire Swiss GmbH',

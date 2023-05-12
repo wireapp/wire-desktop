@@ -17,7 +17,7 @@
  *
  */
 
-import {wrapperLocale} from './locale.js';
+import {wrapperLocale} from './locale';
 
 export class WindowUrl {
   static createWebAppUrl(localRendererUrl, customBackendUrl) {

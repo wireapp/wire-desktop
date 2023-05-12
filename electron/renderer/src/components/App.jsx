@@ -17,30 +17,35 @@
  *
  */
 
+import React from 'react';
+
 import {connect} from 'react-redux';
 
-import './WebviewList.css';
+import {StyledApp} from '@wireapp/react-ui-kit';
 
-import {updateAccountBadgeCount} from '../../actions';
-import {AccountSelector} from '../../selector/AccountSelector';
-import {Account} from '../../types/account';
-import Webview from '../WebView/Webview';
+import IsOnline from './IsOnline';
+import Sidebar from './Sidebar';
+import WebviewList from './WebviewList';
 
-interface WebviewListProps {
-  accounts: Account[];
-  updateAccountBadgeCount: (id: string, count: number) => void;
-}
+import actionRoot from '../actions';
+import {AccountSelector} from '../selector/AccountSelector';
 
-const WebviewList = ({accounts, updateAccountBadgeCount}: WebviewListProps) => {
+const App = () => {
   return (
-    <ul className="WebviewList">
-      {accounts.map(account => (
-        <Webview key={account.id} account={account} onUnreadCountUpdated={updateAccountBadgeCount} />
-      ))}
-    </ul>
+    <StyledApp style={{height: '100%'}}>
+      <IsOnline>
+        <div style={{display: 'flex', height: '100%', width: '100%'}}>
+          <Sidebar />
+          <WebviewList />
+        </div>
+      </IsOnline>
+    </StyledApp>
   );
 };
 
-export default connect(state => ({accounts: AccountSelector.getAccounts(state)}), {updateAccountBadgeCount})(
-  WebviewList,
-);
+export default connect(
+  state => ({
+    accounts: AccountSelector.getAccounts(state),
+  }),
+  {switchWebview: actionRoot.accountAction.switchWebview},
+)(App);

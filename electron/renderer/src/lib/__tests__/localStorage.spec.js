@@ -17,7 +17,6 @@
  *
  */
 
-// eslint-disable-next-line jest/no-mocks-import
 import {LocalStorageMock} from '../__mocks__/localStorage';
 import {loadState, saveState} from '../localStorage';
 

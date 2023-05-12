@@ -17,22 +17,15 @@
  *
  */
 
-import {useEffect, useState, MutableRefObject} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {FlexBox, Loading, COLOR} from '@wireapp/react-ui-kit';
 
 import './LoadingSpinner.css';
 
-type WebviewTag = Electron.WebviewTag;
-
 const TRANSITION_GRACE_PERIOD_MS = 500;
 
-interface LoadingSpinnerProps {
-  visible: boolean;
-  webviewRef: MutableRefObject<WebviewTag | null>;
-}
-
-export const LoadingSpinner = ({visible, webviewRef}: LoadingSpinnerProps) => {
+const LoadingSpinner = ({visible, webviewRef}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
 
@@ -46,13 +39,11 @@ export const LoadingSpinner = ({visible, webviewRef}: LoadingSpinnerProps) => {
         webview.removeEventListener('did-finish-load', setLoading);
       };
     }
-
-    return () => undefined;
   });
 
   useEffect(() => {
     if (!isLoading) {
-      let timeout: NodeJS.Timeout | null = setTimeout(() => {
+      let timeout = setTimeout(() => {
         timeout = null;
         setIsFinished(true);
       }, TRANSITION_GRACE_PERIOD_MS);
@@ -63,8 +54,6 @@ export const LoadingSpinner = ({visible, webviewRef}: LoadingSpinnerProps) => {
         }
       };
     }
-
-    return () => undefined;
   }, [isLoading]);
 
   if (!visible || isFinished) {
@@ -86,3 +75,5 @@ export const LoadingSpinner = ({visible, webviewRef}: LoadingSpinnerProps) => {
     </div>
   );
 };
+
+export default LoadingSpinner;

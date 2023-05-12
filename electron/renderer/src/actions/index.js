@@ -59,7 +59,7 @@ export const deleteAccount = id => ({
   type: ActionType.DELETE_ACCOUNT,
 });
 
-export const resetIdentity = id => ({
+export const resetIdentity = (id = true) => ({
   id,
   type: ActionType.RESET_IDENTITY,
 });

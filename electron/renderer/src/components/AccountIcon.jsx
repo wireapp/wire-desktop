@@ -17,16 +17,15 @@
  *
  */
 
+import React from 'react';
+
+import PropTypes from 'prop-types';
+
 import './AccountIcon.css';
 
-import {colorFromId} from '../../lib/accentColor';
-import {Account} from '../../types/account';
+import {colorFromId} from '../lib/accentColor';
 
-interface AccountIconProps {
-  account: Account;
-}
-
-export const AccountIcon = ({account, ...props}: AccountIconProps) => {
+const AccountIcon = ({account, ...props}) => {
   const accountType = () => {
     if (!account.name) {
       return 'new';
@@ -50,7 +49,6 @@ export const AccountIcon = ({account, ...props}: AccountIconProps) => {
           style={{borderColor: colorFromId(account.accentID)}}
         />
       )}
-
       <div className="AccountIcon-inner">
         {account.picture ? (
           <img src={account.picture} alt="Account Icon" />
@@ -61,3 +59,9 @@ export const AccountIcon = ({account, ...props}: AccountIconProps) => {
     </div>
   );
 };
+
+AccountIcon.propTypes = {
+  account: PropTypes.object.isRequired,
+};
+
+export default AccountIcon;
