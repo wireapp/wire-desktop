@@ -35,7 +35,7 @@ describe('WindowUrl', () => {
       const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
       try {
         WindowUrl.createWebAppUrl(rendererPage, customWebApp);
-        done.fail();
+        fail();
       } catch (error) {}
     });
   });

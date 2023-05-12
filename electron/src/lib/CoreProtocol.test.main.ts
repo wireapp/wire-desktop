@@ -17,7 +17,7 @@
  *
  */
 
-import {spy, replace, restore} from 'sinon';
+import sinon from 'sinon';
 
 import * as assert from 'assert';
 
@@ -27,15 +27,15 @@ import {EVENT_TYPE} from './eventType';
 let protocolHandler: CustomProtocolHandler;
 
 describe('dispatchDeepLink', () => {
-  const sendActionSpy = spy();
+  const sendActionSpy = sinon.spy();
 
   beforeEach(() => {
     protocolHandler = new CustomProtocolHandler();
-    replace(protocolHandler['windowManager'], 'sendActionToPrimaryWindow', sendActionSpy);
-    replace(protocolHandler['windowManager'], 'sendActionAndFocusWindow', sendActionSpy);
+    sinon.replace(protocolHandler['windowManager'], 'sendActionToPrimaryWindow', sendActionSpy);
+    sinon.replace(protocolHandler['windowManager'], 'sendActionAndFocusWindow', sendActionSpy);
   });
 
-  afterEach(() => restore());
+  afterEach(() => sinon.restore());
 
   it('forwards conversation deep links to the WebApp', async () => {
     await protocolHandler['dispatchDeepLink']('wire://conversation/8cdb44a0-418b-4188-9a53-7c477a7848dd');

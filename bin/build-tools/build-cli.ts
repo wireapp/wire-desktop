@@ -27,6 +27,13 @@ import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
 
+interface CommanderData {
+  envFile: string;
+  manualSign?: boolean;
+  packageJson: string;
+  wireJson: string;
+}
+
 const toolName = path.basename(__filename).replace('.ts', '');
 const logger = LogFactory.getLogger(toolName, {forceEnable: true, namespace: '@wireapp/build-tools'});
 const appSource = path.join(__dirname, '../../');

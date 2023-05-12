@@ -39,7 +39,7 @@ const buildPresets = ({debug = false, modules = false}) => {
     },
   ];
 
-  return [['@babel/preset-react', {runtime: 'automatic'}], '@babel/preset-typescript', browserEnvPreset];
+  return ['@babel/preset-react', '@babel/preset-typescript', browserEnvPreset];
 };
 
 /** @type {import('@babel/core').TransformOptions} */

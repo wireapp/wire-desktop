@@ -17,36 +17,21 @@
  *
  */
 
+import React from 'react';
+
 import {connect} from 'react-redux';
 
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 
-import {EVENT_TYPE} from '../../../../src/lib/eventType';
+import {EVENT_TYPE} from '../../../../dist/lib/eventType';
 import {abortAccountCreation} from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
 import {getText} from '../../lib/locale';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 
-interface EditAccountMenuProps {
-  abortAccountCreation: (accountId: string) => void;
-  accountId: string;
-  accountIndex: number;
-  isAtLeastAdmin: boolean;
-  lifecycle: string;
-  sessionId?: string;
-  switchWebview: (accountIndex: number) => void;
-}
-
-const EditAccountMenu = ({
-  accountId,
-  accountIndex,
-  isAtLeastAdmin,
-  lifecycle,
-  sessionId,
-  ...connected
-}: EditAccountMenuProps) => {
+const EditAccountMenu = ({accountId, accountIndex, isAtLeastAdmin, lifecycle, sessionId, ...connected}) => {
   return (
     <ContextMenu>
       {/* This appears to have been broken for some time. Removing it for the time being until a proper fix can be applied
@@ -60,17 +45,17 @@ const EditAccountMenu = ({
       )} */}
       {lifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN && (
         <ContextMenuItem
-          onClick={async () => {
+          onClick={() => {
             connected.switchWebview(accountIndex);
-            await window.sendLogoutAccount(accountId);
+            window.sendLogoutAccount(accountId);
           }}
         >
           {getText('wrapperLogOut')}
         </ContextMenuItem>
       )}
       <ContextMenuItem
-        onClick={async () => {
-          await window.sendDeleteAccount(accountId, sessionId).then(() => {
+        onClick={() => {
+          window.sendDeleteAccount(accountId, sessionId).then(() => {
             connected.abortAccountCreation(accountId);
           });
         }}

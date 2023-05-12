@@ -17,17 +17,13 @@
  *
  */
 
-import {useEffect, useState, ReactElement} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {Text, ContainerSM} from '@wireapp/react-ui-kit';
 
-import {getText} from '../../lib/locale';
+import {getText} from '../lib/locale';
 
-interface IsOnlineProps {
-  children: ReactElement;
-}
-
-export const IsOnline = ({children}: IsOnlineProps) => {
+const IsOnline = ({children}) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
@@ -50,3 +46,5 @@ export const IsOnline = ({children}: IsOnlineProps) => {
     </div>
   );
 };
+
+export default IsOnline;

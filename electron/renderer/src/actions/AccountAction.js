@@ -17,8 +17,8 @@
  *
  */
 
-import {EVENT_TYPE} from '../../../src/lib/eventType';
-import {config} from '../../../src/settings/config';
+import {EVENT_TYPE} from '../../../dist/lib/eventType';
+import {config} from '../../../dist/settings/config';
 import {AccountSelector} from '../selector/AccountSelector';
 
 import {ActionType, initiateSSO} from './';

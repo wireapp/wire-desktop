@@ -17,7 +17,7 @@
  *
  */
 
-import {ActionType} from '../actions/index.js';
+import {ActionType} from '../actions';
 
 const DEFAULT_STATE = {
   accountId: '',
