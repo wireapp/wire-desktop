@@ -139,7 +139,7 @@
       "prettier --write"
     ]
   },
-  "main": "electron/dist/electron/src/main.js",
+  "main": "electron/dist/src/main.js",
   "name": "wire-desktop",
   "prettier": "@wireapp/prettier-config",
   "private": true,
