@@ -28,6 +28,6 @@
     "jsx": "react-jsx"
   },
   "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
-  "include": ["electron/**/*", "electron/wire.json"]
-  //  "files": ["electron/src/types/globals.d.ts"]
+  "include": ["electron/**/*", "electron/wire.json"],
+  "files": ["electron/src/types/globals.d.ts"]
 }
