@@ -27,6 +27,7 @@ import {loadedAboutScreen} from './preload-about';
 import {EVENT_TYPE} from '../../lib/eventType';
 
 describe('loadedAboutScreen', () => {
+  // eslint-disable-next-line jest/no-done-callback
   it('publishes labels', done => {
     const sendSpy = spy(ipcRenderer, 'send');
 
