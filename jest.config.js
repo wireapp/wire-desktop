@@ -17,10 +17,11 @@
  *
  */
 
-import type {Config} from 'jest';
+// import type {Config} from 'jest';
 
 /** @type {import('@jest/types').Config.InitialOptions} */
-const jestConfig: Config = {
+// const jestConfig: Config = {
+const jestConfig = {
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['<rootDir>/electron/dist'],

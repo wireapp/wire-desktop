@@ -59,7 +59,7 @@
     "@types/react": "^18.0.11",
     "@types/react-dom": "^18.0.11",
     "@types/redux-logger": "^3.0.9",
-    "@types/sinon": "10.0.13",
+    "@types/sinon": "10.0.14",
     "@types/sort-json": "2.0.1",
     "@typescript-eslint/eslint-plugin": "5.59.2",
     "@typescript-eslint/parser": "5.59.2",
@@ -140,7 +140,7 @@
       "prettier --write"
     ]
   },
-  "main": "electron/dist/electron/src/main.js",
+  "main": "electron/dist/src/main.js",
   "name": "wire-desktop",
   "prettier": "@wireapp/prettier-config",
   "private": true,
@@ -200,6 +200,6 @@
     "translate:upload": "ts-node -P tsconfig.bin.json ./bin/translations_upload.ts",
     "translate:download": "ts-node -P tsconfig.bin.json ./bin/translations_download.ts"
   },
-  "version": "3.30.0",
+  "version": "3.31.0",
   "packageManager": "yarn@3.3.1"
 }
