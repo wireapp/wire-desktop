@@ -143,7 +143,7 @@
   "name": "wire-desktop",
   "prettier": "@wireapp/prettier-config",
   "private": true,
-  "productName": "Wire",
+  "productName": "WireDevelopment",
   "repository": {
     "type": "git",
     "url": "https://github.com/wireapp/wire-desktop.git"
