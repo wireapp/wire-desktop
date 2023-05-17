@@ -18,8 +18,9 @@
  */
 
 import {dialog, shell} from 'electron';
+import sinon from 'sinon';
+
 import * as assert from 'assert';
-import * as sinon from 'sinon';
 
 import * as WindowUtil from './WindowUtil';
 

@@ -18,15 +18,17 @@
  */
 
 import {ipcRenderer, webFrame} from 'electron';
-import {Encoder, Decoder} from 'bazinga64';
-import * as path from 'path';
-import {WebAppEvents} from '@wireapp/webapp-events';
-import type {Availability} from '@wireapp/protocol-messaging';
 import type {Data as OpenGraphResult} from 'open-graph';
+
+import * as path from 'path';
+
+import type {Availability} from '@wireapp/protocol-messaging';
+import {WebAppEvents} from '@wireapp/webapp-events';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+
 const remote = require('@electron/remote');
 
 interface TeamAccountInfo {
@@ -243,14 +245,13 @@ process.once('loaded', () => {
     getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
   };
   global.systemCrypto = {
-    decrypt: async (encrypted: Uint8Array): Promise<Uint8Array> => {
-      const plainText = await ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
-      return Decoder.fromBase64(plainText).asBytes;
+    decrypt: async (encrypted: Uint8Array): Promise<string> => {
+      return ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
     },
-    encrypt: (value: Uint8Array): Promise<Uint8Array> => {
-      const strValue = Encoder.toBase64(value).asString;
-      return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, strValue);
+    encrypt: (value: string): Promise<Uint8Array> => {
+      return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, value);
     },
+    version: 1,
   };
   global.environment = EnvironmentUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
@@ -280,3 +281,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // include context menu
   await import('./menu/preload-context');
 });
+
+// overwrite window.close() to prevent webapp from closing itself
+// see SQSERVICES-1882 and SQSERVICES-1919
+window.close = () => {};

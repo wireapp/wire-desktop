@@ -19,11 +19,19 @@
 
 import React from 'react';
 
+import {isEnterKey} from '../../../src/lib/keyboardUtil';
+
 const AddAccountTrigger = ({forceVisible, onClick}) => (
   <div
     className={`Sidebar-cell${forceVisible ? '' : ' ContextMenuTrigger'}`}
     onClick={onClick}
+    onKeyDown={event => {
+      if (isEnterKey(event)) {
+        onClick();
+      }
+    }}
     data-uie-name="do-open-plus-menu"
+    tabIndex={0}
   >
     <div className="Sidebar-account-add">
       <svg width="12" height="12" viewBox="0 0 12 12">

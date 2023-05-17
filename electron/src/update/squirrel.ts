@@ -19,11 +19,14 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
-import {app, shell} from 'electron';
-import {StringUtil} from '@wireapp/commons';
+import fs from 'fs-extra';
+
 import * as childProcess from 'child_process';
-import * as fs from 'fs-extra';
 import * as path from 'path';
+
+import {StringUtil} from '@wireapp/commons';
+
+import {createShortcuts, removeShortcuts} from './shortcuts';
 
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -35,14 +38,10 @@ const logger = getLogger(path.basename(__filename));
 const appFolder = path.resolve(process.execPath, '..');
 const rootFolder = path.resolve(appFolder, '..');
 const updateDotExe = path.join(rootFolder, 'Update.exe');
+const exeName = path.basename(process.execPath);
+const exePath = path.join(rootFolder, exeName);
 
-const linkName = `${config.name}.lnk`;
 const windowsAppData = process.env.APPDATA;
-const startShortcut = path.join(app.getPath('appData'), `Microsoft/Windows/Start Menu/Programs/${config.name}.lnk`);
-const desktopShortcut = path.join(app.getPath('desktop'), `${config.name}.lnk`);
-const quickLaunchShortcut = windowsAppData
-  ? path.resolve(windowsAppData, 'Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar', linkName)
-  : '';
 
 if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
   logger.error('No Windows AppData directory found.');
@@ -52,7 +51,6 @@ enum SQUIRREL_EVENT {
   INSTALL = '--squirrel-install',
   OBSOLETE = '--squirrel-obsolete',
   UNINSTALL = '--squirrel-uninstall',
-  UPDATE = '--update',
   UPDATED = '--squirrel-updated',
 }
 
@@ -91,7 +89,7 @@ function spawn(command: string, args: string[]): Promise<void> {
 }
 
 async function spawnUpdate(args: string[]): Promise<void> {
-  logger.info('Running updater ...');
+  logger.info(`Running updater with args ${JSON.stringify(args)} ...`);
   const updateDotExeExists = fs.existsSync(updateDotExe);
   if (!updateDotExeExists) {
     logger.info(`Could not find updater in "${updateDotExe}".`);
@@ -104,46 +102,9 @@ async function spawnUpdate(args: string[]): Promise<void> {
   }
 }
 
-function createShortcut(location: string): boolean {
-  // As documented in https://github.com/electron/windows-installer/issues/296,
-  // Squirrel has problems with notification clicks on Windows 10.
-  // The easiest workaround is to create shortcuts on our own.
-  const shortcutExists = fs.existsSync(location);
-
-  return shell.writeShortcutLink(location, shortcutExists ? 'replace' : 'create', {
-    appUserModelId: config.appUserModelId,
-    target: process.execPath,
-  });
-}
-
-function createShortcuts(): void {
-  logger.info('Creating shortcut in the start menu ...');
-  const startResult = createShortcut(startShortcut);
-
-  logger.info('Creating shortcut on the desktop ...');
-  const desktopResult = createShortcut(desktopShortcut);
-
-  let quickLaunchResult = false;
-  if (quickLaunchShortcut) {
-    logger.info('Creating shortcut in the quick launch menu ...');
-    quickLaunchResult = createShortcut(quickLaunchShortcut);
-  }
-
-  logger.info('Created shortcuts:', {desktop: desktopResult, quickLaunch: quickLaunchResult, start: startResult});
-}
-
-async function removeShortcuts(): Promise<void> {
-  logger.info('Removing all shortcuts ...');
-  await fs.remove(startShortcut);
-  await fs.remove(desktopShortcut);
-  if (quickLaunchShortcut) {
-    await fs.remove(quickLaunchShortcut);
-  }
-}
-
 export async function installUpdate(): Promise<void> {
   logger.info(`Checking for Windows updates at "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
-  await spawnUpdate([SQUIRREL_EVENT.UPDATE, EnvironmentUtil.app.UPDATE_URL_WIN]);
+  await spawnUpdate(['--update', EnvironmentUtil.app.UPDATE_URL_WIN]);
 }
 
 async function scheduleUpdate(): Promise<void> {
@@ -163,14 +124,10 @@ export async function handleSquirrelArgs(): Promise<void> {
   const squirrelEvent = process.argv[1];
 
   switch (squirrelEvent) {
-    case SQUIRREL_EVENT.INSTALL: {
-      createShortcuts();
-      await lifecycle.quit();
-      return;
-    }
-
+    case SQUIRREL_EVENT.INSTALL:
     case SQUIRREL_EVENT.UPDATED: {
-      createShortcuts();
+      logger.info(`Creating shortcuts for exe ${exePath}...`);
+      await createShortcuts(exePath);
       await lifecycle.quit();
       return;
     }

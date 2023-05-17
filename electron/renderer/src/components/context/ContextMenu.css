@@ -45,6 +45,10 @@
   transition-duration: var(--animation-timing-slow);
 }
 
+.ContextMenuTrigger:focus-visible {
+  opacity: 1;
+}
+
 .ContextMenu-item:hover,
 .ContextMenu-item.selected {
   background-color: rgba(0, 0, 0, 0.16);

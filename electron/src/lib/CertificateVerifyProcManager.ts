@@ -17,10 +17,12 @@
  *
  */
 
-import * as certificateUtils from '@wireapp/certificate-check';
 import {BrowserWindow, Certificate, Request as CertificateVerifyRequest, dialog} from 'electron';
 import * as fs from 'fs-extra';
+
 import * as path from 'path';
+
+import * as certificateUtils from '@wireapp/certificate-check';
 
 import {getText} from '../locale';
 import {getLogger} from '../logging/getLogger';

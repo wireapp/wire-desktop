@@ -18,17 +18,15 @@
  */
 
 import {app, BrowserWindow, ipcMain, session} from 'electron';
-import {pathToFileURL} from 'url';
+
 import * as path from 'path';
+import {pathToFileURL} from 'url';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
-import {getLogger} from '../logging/getLogger';
 import * as WindowUtil from '../window/WindowUtil';
-
-const logger = getLogger(path.basename(__filename));
 
 let webappVersion: string;
 

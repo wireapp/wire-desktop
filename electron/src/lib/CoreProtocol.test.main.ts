@@ -17,8 +17,9 @@
  *
  */
 
+import sinon from 'sinon';
+
 import * as assert from 'assert';
-import * as sinon from 'sinon';
 
 import {CustomProtocolHandler} from './CoreProtocol';
 import {EVENT_TYPE} from './eventType';

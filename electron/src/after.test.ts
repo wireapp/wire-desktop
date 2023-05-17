@@ -18,6 +18,7 @@
  */
 
 import * as fs from 'fs-extra';
+
 import * as path from 'path';
 
 declare global {
