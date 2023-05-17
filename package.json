@@ -58,7 +58,7 @@
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.11",
     "@types/react-dom": "^18.0.11",
-    "@types/sinon": "10.0.13",
+    "@types/sinon": "10.0.14",
     "@types/sort-json": "2.0.1",
     "@typescript-eslint/eslint-plugin": "5.59.2",
     "@typescript-eslint/parser": "5.59.2",
@@ -78,7 +78,7 @@
     "cspell": "6.31.1",
     "css-loader": "6.7.1",
     "dotenv": "16.0.3",
-    "electron": "22.3.7",
+    "electron": "22.3.8",
     "electron-builder": "23.6.0",
     "electron-mocha": "12.0.0",
     "electron-osx-sign": "0.6.0",
@@ -199,6 +199,6 @@
     "translate:upload": "ts-node -P tsconfig.bin.json ./bin/translations_upload.ts",
     "translate:download": "ts-node -P tsconfig.bin.json ./bin/translations_download.ts"
   },
-  "version": "3.30.0-115ca56b.0-f44d6e50",
+  "version": "3.31.0",
   "packageManager": "yarn@3.3.1"
 }
