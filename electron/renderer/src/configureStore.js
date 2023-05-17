@@ -67,5 +67,3 @@ const createMiddleware = thunkArguments => {
   }
   return applyMiddleware(...middlewares);
 };
-
-export default configureStore;

@@ -17,14 +17,4 @@
  *
  */
 
-// import type {Config} from 'jest';
-
-/** @type {import('@jest/types').Config.InitialOptions} */
-// const jestConfig: Config = {
-const jestConfig = {
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['<rootDir>/electron/dist'],
-};
-
-module.exports = jestConfig;
+export * from './IsOnline';

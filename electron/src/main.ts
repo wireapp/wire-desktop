@@ -43,7 +43,6 @@ import {LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
-import './global';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -78,8 +77,8 @@ const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
 const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'electron.log');
-const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/preload-app.js');
-const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/preload/preload-webview.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/src/preload/preload-app.js');
+const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/src/preload/preload-webview.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
 const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,

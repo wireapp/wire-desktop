@@ -17,7 +17,7 @@
  *
  */
 
-import autoLaunch = require('auto-launch');
+import autoLaunch from 'auto-launch';
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
 
 import * as path from 'path';

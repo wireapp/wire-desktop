@@ -18,7 +18,7 @@
  */
 
 import {ipcRenderer} from 'electron';
-import sinon from 'sinon';
+import {spy} from 'sinon';
 
 import * as assert from 'assert';
 
@@ -27,8 +27,9 @@ import {loadedAboutScreen} from './preload-about';
 import {EVENT_TYPE} from '../../lib/eventType';
 
 describe('loadedAboutScreen', () => {
+  // eslint-disable-next-line jest/no-done-callback
   it('publishes labels', done => {
-    const sendSpy = sinon.spy(ipcRenderer, 'send');
+    const sendSpy = spy(ipcRenderer, 'send');
 
     loadedAboutScreen(new Event('test'), {
       copyright: '&copy; Wire Swiss GmbH',

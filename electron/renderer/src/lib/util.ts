@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2023 Wire Swiss GmbH
+ * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,18 @@
  *
  */
 
-// import type {Config} from 'jest';
+import React from 'react';
 
-/** @type {import('@jest/types').Config.InitialOptions} */
-// const jestConfig: Config = {
-const jestConfig = {
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['<rootDir>/electron/dist'],
+import UUID from 'uuidjs';
+
+export const noop = () => {};
+
+export const preventFocus = (fn: (event: React.MouseEvent<Element, MouseEvent>) => void = noop) => {
+  return (event: React.MouseEvent<Element, MouseEvent>) => {
+    event.stopPropagation();
+    event.preventDefault();
+    fn(event);
+  };
 };
 
-module.exports = jestConfig;
+export const generateUUID = () => UUID.genV4().toString();

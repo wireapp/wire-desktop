@@ -21,6 +21,19 @@
   "rules": {
     "import/no-default-export": "off",
     "no-magic-numbers": "off",
-    "no-undef": "off"
+    "no-undef": "off",
+    "jest/expect-expect": [
+      "error",
+      {
+        "assertFunctionNames": ["expect", "fc.assert", "assert"]
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }

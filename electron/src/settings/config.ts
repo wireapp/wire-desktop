@@ -17,8 +17,6 @@
  *
  */
 
-const wireJson: WireJson = require('../../wire.json');
-
 interface WireJson {
   aboutReleasesUrl: string;
   aboutUpdatesUrl: string;
@@ -41,6 +39,8 @@ interface WireJson {
   version: string;
   websiteUrl: string;
 }
+
+const wireJson: WireJson = require('../../wire.json');
 
 export const MINUTE_IN_MILLIS = 60 * 1000;
 export const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
