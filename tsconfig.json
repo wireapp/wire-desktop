@@ -25,7 +25,6 @@
     "strict": true,
     "target": "es6",
     "typeRoots": ["electron/src/types", "node_modules/@types"],
-    "types": ["node", "jest"],
     "jsx": "react-jsx"
   },
   "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
