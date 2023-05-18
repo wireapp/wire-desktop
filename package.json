@@ -115,7 +115,7 @@
     "nock": "13.3.1",
     "nyc": "15.1.0",
     "prettier": "2.8.8",
-    "rimraf": "5.0.0",
+    "rimraf": "5.0.1",
     "sinon": "15.0.4",
     "sort-json": "2.0.1",
     "style-loader": "3.3.2",
