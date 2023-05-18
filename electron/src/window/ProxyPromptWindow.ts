@@ -30,7 +30,7 @@ const appPath = path.join(app.getAppPath(), config.electronDirectory);
 
 const promptHtmlPath = pathToFileURL(path.join(appPath, 'html/proxy-prompt.html')).href;
 const proxyPromptWindowAllowList = [promptHtmlPath, pathToFileURL(path.join(appPath, 'css/proxy-prompt.css'))];
-const preloadPath = path.join(appPath, 'dist/electron/src/preload/menu/preload-proxy-prompt.js');
+const preloadPath = path.join(appPath, 'dist/src/preload/menu/preload-proxy-prompt.js');
 
 const windowSize = {
   HEIGHT: 350,

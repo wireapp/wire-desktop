@@ -42,7 +42,7 @@ const ABOUT_WINDOW_ALLOWLIST = [
   pathToFileURL(path.join(APP_PATH, 'img/logo.256.png')).href,
   pathToFileURL(path.join(APP_PATH, 'css/about.css')).href,
 ];
-const PRELOAD_JS = path.join(APP_PATH, 'dist/electron/src/preload/menu/preload-about.js');
+const PRELOAD_JS = path.join(APP_PATH, 'dist/src/preload/menu/preload-about.js');
 
 const WINDOW_SIZE = {
   HEIGHT: 256,

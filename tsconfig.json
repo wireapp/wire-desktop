@@ -1,14 +1,9 @@
 {
-  "ts-node": {
-    "compilerOptions": {
-      "module": "commonjs"
-    }
-  },
   "compilerOptions": {
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
-    "declaration": false,
+    "declaration": true,
     "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -24,16 +19,15 @@
     "outDir": "electron/dist",
     "removeComments": true,
     "resolveJsonModule": true,
-    "rootDirs": ["electron/src"],
+    "rootDir": "electron",
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "target": "es6",
     "typeRoots": ["electron/src/types", "node_modules/@types"],
-    "types": ["node", "jest"],
     "jsx": "react-jsx"
   },
   "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
-  "include": ["jest.config.ts", "electron/**/*.ts", "electron/**/*.tsx"],
+  "include": ["electron/**/*", "electron/wire.json"],
   "files": ["electron/src/types/globals.d.ts"]
 }

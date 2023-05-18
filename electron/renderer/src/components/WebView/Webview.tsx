@@ -297,7 +297,8 @@ const Webview = ({
       <webview
         /* Eslint disabled because we're missing webview types */
         /* eslint-disable react/no-unknown-property */
-        allowpopups
+        // @ts-ignore allowpopups need string boolean value
+        allowpopups="true"
         className={`Webview${account.visible ? '' : ' hide'}`}
         data-accountid={account.id}
         // @ts-ignore Type doesn't exist there, keep it to not broke functionality
