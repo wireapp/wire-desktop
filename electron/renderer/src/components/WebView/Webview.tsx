@@ -42,11 +42,21 @@ import {getText, wrapperLocale} from '../../lib/locale';
 import {WindowUrl} from '../../lib/WindowUrl';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {Account, ConversationJoinData} from '../../types/account';
-import {isAccount, isBoolean, isConversationJoinData, isNumber, isString} from '../../types/guards';
 import {LoadingSpinner} from '../LoadingSpinner';
 
 type WebviewTag = Electron.WebviewTag;
 type DidFailLoadEvent = Electron.DidFailLoadEvent;
+
+export const isString = (value: any): value is string => typeof value === 'string';
+
+export const isNumber = (value: any): value is number => typeof value === 'number';
+
+export const isBoolean = (value: any): value is boolean => typeof value === 'boolean';
+
+export const isAccount = (value: any): value is Account => value.hasOwnProperty('userID');
+
+export const isConversationJoinData = (value: any): value is ConversationJoinData =>
+  value.hasOwnProperty('code') && value.hasOwnProperty('key');
 
 const getEnvironmentUrl = (account: Account) => {
   const currentLocation = new URL(window.location.href);
