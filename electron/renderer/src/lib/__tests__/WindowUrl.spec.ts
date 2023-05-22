@@ -35,8 +35,9 @@ describe('WindowUrl', () => {
       const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
 
       try {
-        const url = WindowUrl.createWebAppUrl(rendererPage, customWebApp);
-        expect(url).toBe('Invalid URL: undefined');
+        expect(() => {
+          WindowUrl.createWebAppUrl(rendererPage, customWebApp);
+        }).toThrow('Invalid URL');
       } catch (error) {}
     });
   });
