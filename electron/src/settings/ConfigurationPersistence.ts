@@ -25,6 +25,7 @@ import * as path from 'path';
 import {SchemaUpdater} from './SchemaUpdater';
 
 import {getLogger} from '../logging/getLogger';
+import '../types/globals';
 
 class ConfigurationPersistence {
   private readonly configFile: string;
