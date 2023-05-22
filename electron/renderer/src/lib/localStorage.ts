@@ -17,29 +17,27 @@
  *
  */
 
-// eslint-disable-next-line jest/no-mocks-import
-import {LocalStorageMock} from '../__mocks__/localStorage';
-import {loadState, saveState} from '../localStorage';
+const STATE_NAME = 'state';
 
-describe('localStorage', () => {
-  beforeEach(() => {
-    global.localStorage = new LocalStorageMock();
-  });
+export const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem(STATE_NAME);
+    return !!serializedState ? JSON.parse(serializedState) : undefined;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('ERROR: Failed to load state ', error.message);
+    }
+    return undefined;
+  }
+};
 
-  afterEach(() => {
-    delete global.localStorage;
-  });
-
-  it('should return saved state', () => {
-    const state = {
-      bar: true,
-      foo: 'string',
-      num: 1,
-      test: null,
-    };
-
-    saveState(state);
-
-    expect(loadState()).toEqual(state);
-  });
-});
+export const saveState = (state: Record<string, any>) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem(STATE_NAME, serializedState);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('ERROR: Failed to save state ', error.message);
+    }
+  }
+};

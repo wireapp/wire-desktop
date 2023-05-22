@@ -189,7 +189,7 @@ const Webview = ({
       switch (channel) {
         case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
           const [customUrl] = args;
-          const updatedWebapp = WindowUrl.createWebAppUrl(window.location, customUrl);
+          const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
           updateAccountData(accountId, {
             webappUrl: updatedWebapp,
           });

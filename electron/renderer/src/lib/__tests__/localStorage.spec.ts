@@ -17,23 +17,23 @@
  *
  */
 
-const STATE_NAME = 'state';
+import {loadState, saveState} from '../localStorage';
 
-export const loadState = () => {
-  try {
-    const serializedState = localStorage.getItem(STATE_NAME);
-    return !!serializedState ? JSON.parse(serializedState) : undefined;
-  } catch (error) {
-    console.error('ERROR: Failed to load state ', error.message);
-    return undefined;
-  }
-};
+describe('localStorage', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
 
-export const saveState = state => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem(STATE_NAME, serializedState);
-  } catch (error) {
-    console.error('ERROR: Failed to save state ', error.message);
-  }
-};
+  it('should return saved state', () => {
+    const state = {
+      bar: true,
+      foo: 'string',
+      num: 1,
+      test: null,
+    };
+
+    saveState(state);
+
+    expect(loadState()).toEqual(state);
+  });
+});

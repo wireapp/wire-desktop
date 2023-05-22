@@ -17,15 +17,12 @@
  *
  */
 
-/* eslint-disable no-magic-numbers */
-
 import {colorFromId} from '../accentColor';
 
 describe('colorFromId', () => {
   it('should return correct color', () => {
     expect(colorFromId(2)).toEqual('#1d7833');
   });
-
   it('should return undefined if id does not exist', () => {
     expect(colorFromId(42)).not.toBeDefined();
   });

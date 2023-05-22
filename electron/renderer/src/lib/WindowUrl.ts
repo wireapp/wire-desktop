@@ -17,24 +17,23 @@
  *
  */
 
-export class LocalStorageMock {
-  constructor() {
-    this.store = {};
-  }
+import {wrapperLocale} from './locale';
 
-  clear() {
-    this.store = {};
-  }
+export class WindowUrl {
+  static createWebAppUrl(localRendererUrl: URL | string, customBackendUrl: string) {
+    const localFileParams = new URL(localRendererUrl).searchParams;
+    const customBackendUrlParsed = new URL(customBackendUrl);
+    const envUrl = decodeURIComponent(localFileParams.get('env')!);
+    const envUrlParams = new URL(envUrl).searchParams;
 
-  getItem(key) {
-    return this.store[key] || null;
-  }
+    // replace hl with current locale
+    envUrlParams.forEach((value, key) => {
+      customBackendUrlParsed.searchParams.set(key, value);
+    });
 
-  setItem(key, value) {
-    this.store[key] = value;
-  }
+    // set the current language
+    envUrlParams.set('hl', wrapperLocale);
 
-  removeItem(key) {
-    delete this.store[key];
+    return customBackendUrlParsed.href;
   }
 }

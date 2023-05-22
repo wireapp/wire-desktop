@@ -17,11 +17,13 @@
  *
  */
 
+import {i18nLanguageIdentifier} from '../../../src/locale';
+
 window.locStrings = window.locStrings || {};
 window.locStringsDefault = window.locStringsDefault || {};
 window.locale = window.locale || 'en';
 
-export const getText = (stringIdentifier, paramReplacements) => {
+export const getText = (stringIdentifier: i18nLanguageIdentifier, paramReplacements?: Record<string, string>) => {
   let str = window.locStrings[stringIdentifier] || window.locStringsDefault[stringIdentifier] || stringIdentifier;
 
   const replacements = {...paramReplacements};

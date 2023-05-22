@@ -3308,6 +3308,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/redux-logger@npm:^3.0.9":
+  version: 3.0.9
+  resolution: "@types/redux-logger@npm:3.0.9"
+  dependencies:
+    redux: ^4.0.0
+  checksum: c41fdc09198fae2d62ff7d6bd029ccae1fed655e6a7abd40614a8db5d6e01adbe565881b2c8d398789804a48259e3399af3939f994a532c11904ba2021799275
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -12502,7 +12511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:4.2.1":
+"redux@npm:4.2.1, redux@npm:^4.0.0":
   version: 4.2.1
   resolution: "redux@npm:4.2.1"
   dependencies:
@@ -14814,6 +14823,7 @@ __metadata:
     "@types/prettier": ^2.7.2
     "@types/react": ^18.0.11
     "@types/react-dom": ^18.0.11
+    "@types/redux-logger": ^3.0.9
     "@types/sinon": 10.0.14
     "@types/sort-json": 2.0.1
     "@typescript-eslint/eslint-plugin": 5.59.2
