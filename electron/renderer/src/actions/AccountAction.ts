@@ -84,6 +84,10 @@ export class AccountAction {
   switchWebview = (accountIndex: number) => {
     return async (dispatch: AppDispatch, getState: () => State) => {
       const account = AccountSelector.getAccounts(getState())[Math.max(accountIndex, 0)];
+      if (!account.id) {
+        return;
+      }
+
       dispatch(switchAccount(account.id));
 
       // Note: We need to focus window first to properly set focus
