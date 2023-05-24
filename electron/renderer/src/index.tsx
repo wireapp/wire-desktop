@@ -53,6 +53,8 @@ export type AppDispatch = typeof store.dispatch;
 window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
   event => {
+    // eslint-disable-next-line no-console
+    console.log('[index.tsx] przemvs [SWITCH_ACCOUNT] event', event);
     // @ts-ignore
     store.dispatch(actionRoot.accountAction.switchWebview((event as EventDetail).detail.accountIndex));
   },
@@ -60,21 +62,39 @@ window.addEventListener(
 );
 window.addEventListener(
   EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT,
-  // @ts-ignore
-  event => store.dispatch(actionRoot.accountAction.startSSO((event as EventDetail).detail.code)),
+  event => {
+    // eslint-disable-next-line no-console
+    console.log('[index.tsx] przemvs [CREATE_SSO_ACCOUNT] event', event);
+    // @ts-ignore
+    store.dispatch(actionRoot.accountAction.startSSO((event as EventDetail).detail.code));
+  },
   false,
 );
 
-// @ts-ignore
-window.addEventListener(EVENT_TYPE.ACTION.START_LOGIN, event => store.dispatch(addAccountWithSession()), false);
+window.addEventListener(
+  EVENT_TYPE.ACTION.START_LOGIN,
+  event => {
+    // eslint-disable-next-line no-console
+    console.log('[index.tsx] przemvs [START_LOGIN] event', event);
+    // @ts-ignore
+    store.dispatch(addAccountWithSession());
+  },
+  false,
+);
 
 const container = document.getElementById('root');
+
+// eslint-disable-next-line no-console
+console.log('[index.tsx] przemvs container', container);
 
 if (!container) {
   throw new Error('container not found.');
 }
 
 const root = createRoot(container);
+
+// eslint-disable-next-line no-console
+console.log('[index.tsx] przemvs root', root);
 
 root.render(
   <Provider store={store}>
