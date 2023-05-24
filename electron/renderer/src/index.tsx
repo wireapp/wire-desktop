@@ -84,9 +84,6 @@ window.addEventListener(
 
 const container = document.getElementById('root');
 
-// eslint-disable-next-line no-console
-console.log('[index.tsx] przemvs container', container);
-
 if (!container) {
   throw new Error('container not found.');
 }
@@ -94,7 +91,7 @@ if (!container) {
 const root = createRoot(container);
 
 // eslint-disable-next-line no-console
-console.log('[index.tsx] przemvs root', root);
+console.log('[index.tsx] przemvs store', store);
 
 root.render(
   <Provider store={store}>

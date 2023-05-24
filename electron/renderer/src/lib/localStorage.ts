@@ -18,24 +18,18 @@
  */
 
 import {State} from '../index';
-import {initialState as initialContextMenuState} from '../reducers/contextMenuReducer';
 
 const STATE_NAME = 'state';
 
-const initialState: State = {
-  accounts: [],
-  contextMenuState: initialContextMenuState,
-};
-
-export const loadState = (): State => {
+export const loadState = (): State | undefined => {
   try {
     const serializedState = localStorage.getItem(STATE_NAME);
-    return !!serializedState ? (JSON.parse(serializedState) as State) : initialState;
+    return !!serializedState ? (JSON.parse(serializedState) as State) : undefined;
   } catch (error) {
     if (error instanceof Error) {
       console.error('ERROR: Failed to load state ', error.message);
     }
-    return initialState;
+    return undefined;
   }
 };
 
