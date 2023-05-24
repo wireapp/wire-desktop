@@ -172,7 +172,6 @@ const Webview = ({
   }, [webviewError]);
 
   useEffect(() => {
-
     const listener = (error: DidFailLoadEvent) => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
       console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
