@@ -23,17 +23,23 @@ import {generateUUID} from '../lib/util';
 import {Account, ConversationJoinData} from '../types/account';
 
 type CreateAccountProps = {
+  id?: string;
   sessionID?: string;
   ssoCode?: string;
   visible?: boolean;
 };
 
-export const createAccount = ({sessionID, ssoCode, visible = true}: CreateAccountProps = {}): Account => ({
+export const createAccount = ({
+  id = generateUUID(),
+  sessionID,
+  ssoCode,
+  visible = true,
+}: CreateAccountProps = {}): Account => ({
   accentID: undefined,
   availability: 0,
   badgeCount: 0,
   darkMode: true,
-  id: generateUUID(),
+  id,
   isAdding: true,
   lifecycle: undefined,
   name: undefined,

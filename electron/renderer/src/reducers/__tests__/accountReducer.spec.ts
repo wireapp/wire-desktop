@@ -30,7 +30,7 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with a new account', () => {
-    const initialState = [createAccount()];
+    const initialState = [createAccount({id: '046da4f1-39be-4b8b-823b-e71f12811454'})];
     const newState = accountReducer(initialState, addAccount());
     const [firstAccount, secondAccount] = newState;
 
@@ -41,7 +41,7 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with a new account without a session', () => {
-    const initialState = [createAccount()];
+    const initialState = [createAccount({id: '046da4f1-39be-4b8b-823b-e71f12811454'})];
     const newState = accountReducer(initialState, addAccount(false));
     const [firstAccount, secondAccount] = newState;
 
@@ -52,7 +52,10 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with only the specified account visible', () => {
-    const initialState = [createAccount(), createAccount({visible: false})];
+    const initialState = [
+      createAccount({id: '046da4f1-39be-4b8b-823b-e71f12811454'}),
+      createAccount({id: 'd01eb964-bf56-4668-8883-dc248b58b1ca', visible: false}),
+    ];
     const [firstAccount, secondAccount] = accountReducer(initialState, switchAccount(initialState[1].id));
 
     expect(firstAccount.visible).toBeFalsy();
@@ -60,7 +63,10 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with an updated account', () => {
-    const initialState = [createAccount(), createAccount({visible: false})];
+    const initialState = [
+      createAccount({id: '046da4f1-39be-4b8b-823b-e71f12811454'}),
+      createAccount({id: 'd01eb964-bf56-4668-8883-dc248b58b1ca', visible: false}),
+    ];
     const accountData = {userID: 'f4b9a5d0-3e36-4e6f-a404-ba22d23e3730'};
     const [firstAccount, secondAccount] = accountReducer(initialState, updateAccount(initialState[0].id, accountData));
 
@@ -69,7 +75,10 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state with an updated badge count', () => {
-    const initialState = [createAccount(), createAccount({visible: false})];
+    const initialState = [
+      createAccount({id: '046da4f1-39be-4b8b-823b-e71f12811454'}),
+      createAccount({id: 'd01eb964-bf56-4668-8883-dc248b58b1ca', visible: false}),
+    ];
     const [firstAccount, secondAccount] = accountReducer(initialState, updateAccountBadge(initialState[1].id, 12));
 
     expect(firstAccount.badgeCount).toEqual(0);
@@ -77,7 +86,10 @@ describe('accounts reducer', () => {
   });
 
   it('should return a state without the deleted account', () => {
-    const initialState = [createAccount(), createAccount({visible: false})];
+    const initialState = [
+      createAccount({id: '046da4f1-39be-4b8b-823b-e71f12811454'}),
+      createAccount({id: 'd01eb964-bf56-4668-8883-dc248b58b1ca', visible: false}),
+    ];
     const newState = accountReducer(initialState, deleteAccount(initialState[0].id));
     const [firstAccount] = newState;
 
