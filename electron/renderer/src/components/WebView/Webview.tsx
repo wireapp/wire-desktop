@@ -172,7 +172,6 @@ const Webview = ({
   }, [webviewError]);
 
   useEffect(() => {
-    const webview = webviewRef.current;
 
     const listener = (error: DidFailLoadEvent) => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
@@ -181,11 +180,11 @@ const Webview = ({
         setWebviewError(error);
       }
     };
-    webview?.addEventListener(ON_WEBVIEW_ERROR, listener);
+    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
 
     return () => {
-      if (webview) {
-        webview.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (webviewRef.current) {
+        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
   }, [webviewRef, account]);
@@ -239,7 +238,7 @@ const Webview = ({
 
           if (isBoolean(clearData)) {
             if (clearData) {
-              await deleteWebview(account);
+              deleteWebview(account);
             } else {
               resetIdentity(accountId);
             }
@@ -283,19 +282,18 @@ const Webview = ({
       }
     };
 
-    const webview = webviewRef.current;
-    webview?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+    webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
 
     return () => {
-      if (webview) {
-        webview?.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webviewRef.current) {
+        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, accountLifecycle, conversationJoinData]);
 
-  const deleteWebview = async (account: Account) => {
-    await window.sendDeleteAccount(account.id, account.sessionID).then(() => {
+  const deleteWebview = (account: Account) => {
+    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
       abortAccountCreation(account.id);
     });
   };
