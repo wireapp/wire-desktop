@@ -55,7 +55,8 @@ export class AccountAction {
         const loggedOutWebviews = accounts.filter(account => account.userID === undefined);
 
         if (loggedOutWebviews.length > 0) {
-          await accountAction.switchWebview(accounts.indexOf(loggedOutWebviews[0]));
+          // @ts-ignore
+          dispatch(accountAction.switchWebview(accounts.indexOf(loggedOutWebviews[0])));
 
           const accountId = loggedOutWebviews[0].id;
           dispatch(initiateSSO(accountId, ssoCode, accounts.length == 1));
