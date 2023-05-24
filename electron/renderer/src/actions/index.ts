@@ -130,7 +130,8 @@ export const abortAccountCreation = (id: string) => {
 
     if (lastAccount) {
       const accountIndex = AccountSelector.getAccountIndex(getState(), lastAccount.id);
-      accountAction.switchWebview(accountIndex);
+      // @ts-ignore
+      dispatch(accountAction.switchWebview(accountIndex));
     } else {
       dispatch(addAccount(false));
     }
@@ -144,7 +145,8 @@ export const addAccountWithSession = () => {
 
     if (!!unboundAccount) {
       const unboundAccountIndex = AccountSelector.getAccountIndex(getState(), unboundAccount.id);
-      accountAction.switchWebview(unboundAccountIndex);
+      // @ts-ignore
+      dispatch(accountAction.switchWebview(unboundAccountIndex));
       return;
     }
 
