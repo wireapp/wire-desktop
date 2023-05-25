@@ -62,9 +62,9 @@ const EditAccountMenu = ({
 
       {lifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN && (
         <ContextMenuItem
-          onClick={async () => {
+          onClick={() => {
             connected.switchWebview(accountIndex);
-            await window.sendLogoutAccount(accountId);
+            window.sendLogoutAccount(accountId);
           }}
         >
           {getText('wrapperLogOut')}
@@ -72,8 +72,8 @@ const EditAccountMenu = ({
       )}
 
       <ContextMenuItem
-        onClick={async () => {
-          await window.sendDeleteAccount(accountId, sessionID).then(() => {
+        onClick={() => {
+          window.sendDeleteAccount(accountId, sessionID).then(() => {
             connected.abortAccountCreation(accountId);
           });
         }}

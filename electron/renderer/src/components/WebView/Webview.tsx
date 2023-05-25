@@ -189,7 +189,7 @@ const Webview = ({
   }, [webviewRef, account]);
 
   useEffect(() => {
-    const onIpcMessage = async ({channel, args}: {args: unknown[]; channel: string}) => {
+    const onIpcMessage = ({channel, args}: {args: unknown[]; channel: string}) => {
       const accountId = account.id;
 
       switch (channel) {
