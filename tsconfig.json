@@ -19,7 +19,8 @@
     "outDir": "electron/dist",
     "removeComments": true,
     "resolveJsonModule": true,
-    "rootDir": "electron",
+    //    "rootDir": "electron",
+    "rootDirs": ["electron/src", "electron/renderer"],
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
@@ -27,7 +28,7 @@
     "typeRoots": ["electron/src/types", "node_modules/@types"],
     "jsx": "react-jsx"
   },
-  "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
+  "exclude": ["electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
   "include": ["electron/**/*", "electron/wire.json"],
   "files": ["electron/src/types/globals.d.ts"]
 }
