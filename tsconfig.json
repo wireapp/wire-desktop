@@ -12,6 +12,7 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "isolatedModules": true,
     "noEmitOnError": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -19,8 +20,10 @@
     "outDir": "electron/dist",
     "removeComments": true,
     "resolveJsonModule": true,
-    //    "rootDir": "electron",
-    "rootDirs": ["electron/src", "electron/renderer"],
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["electron/src/*", "electron/renderer/*"]
+    },
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
@@ -29,6 +32,6 @@
     "jsx": "react-jsx"
   },
   "exclude": ["electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
-  "include": ["electron/**/*", "electron/wire.json"],
+  "include": ["electron/src/**/*", "electron/renderer/**/*", "electron/wire.json"],
   "files": ["electron/src/types/globals.d.ts"]
 }
