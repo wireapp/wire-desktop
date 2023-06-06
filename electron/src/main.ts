@@ -92,7 +92,6 @@ let proxyInfoArg: URL | undefined;
 const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
-settings.persistToFile();
 const argv = minimist(process.argv.slice(1));
 const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
