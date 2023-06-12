@@ -86,9 +86,6 @@ export class AccountAction {
     return async (dispatch: AppDispatch, getState: () => State) => {
       const account = AccountSelector.getAccounts(getState())[Math.max(accountIndex, 0)];
 
-      // eslint-disable-next-line no-console
-      console.log('[AccountAction.ts] przemvs account', account);
-
       if (!account.id) {
         return;
       }

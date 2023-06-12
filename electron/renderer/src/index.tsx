@@ -53,8 +53,6 @@ export type AppDispatch = typeof store.dispatch;
 window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
   event => {
-    // eslint-disable-next-line no-console
-    console.log('[index.tsx] przemvs [SWITCH_ACCOUNT] event', event);
     // @ts-ignore
     store.dispatch(actionRoot.accountAction.switchWebview((event as EventDetail).detail.accountIndex));
   },
@@ -63,8 +61,6 @@ window.addEventListener(
 window.addEventListener(
   EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT,
   event => {
-    // eslint-disable-next-line no-console
-    console.log('[index.tsx] przemvs [CREATE_SSO_ACCOUNT] event', event);
     // @ts-ignore
     store.dispatch(actionRoot.accountAction.startSSO((event as EventDetail).detail.code));
   },
@@ -74,8 +70,6 @@ window.addEventListener(
 window.addEventListener(
   EVENT_TYPE.ACTION.START_LOGIN,
   event => {
-    // eslint-disable-next-line no-console
-    console.log('[index.tsx] przemvs [START_LOGIN] event', event);
     // @ts-ignore
     store.dispatch(addAccountWithSession());
   },
@@ -89,9 +83,6 @@ if (!container) {
 }
 
 const root = createRoot(container);
-
-// eslint-disable-next-line no-console
-console.log('[index.tsx] przemvs store', store);
 
 root.render(
   <Provider store={store}>

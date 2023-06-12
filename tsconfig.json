@@ -17,6 +17,7 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
+    "rootDir": "electron/src",
     "outDir": "electron/dist",
     "removeComments": true,
     "resolveJsonModule": true,
@@ -32,6 +33,6 @@
     "jsx": "react-jsx"
   },
   "exclude": ["electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
-  "include": ["electron/src/**/*", "electron/renderer/**/*", "electron/wire.json"],
+  "include": ["electron/src/**/*"],
   "files": ["electron/src/types/globals.d.ts"]
 }

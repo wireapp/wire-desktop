@@ -33,9 +33,6 @@ interface WebviewListProps {
 }
 
 const WebviewList = ({accounts, updateAccountBadgeCount}: WebviewListProps) => {
-  // eslint-disable-next-line no-console
-  console.log('[WebviewList.tsx] przemvs accounts', accounts);
-
   return (
     <ul className="WebviewList">
       {accounts.map(account => (
