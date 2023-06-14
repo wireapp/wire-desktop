@@ -3828,14 +3828,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/react-ui-kit@npm:9.5.0":
-  version: 9.5.0
-  resolution: "@wireapp/react-ui-kit@npm:9.5.0"
+"@wireapp/react-ui-kit@npm:9.7.4":
+  version: 9.7.4
+  resolution: "@wireapp/react-ui-kit@npm:9.7.4"
   dependencies:
     "@types/color": 3.0.3
     color: 4.2.3
     emotion-normalize: 11.0.1
-    react-select: 5.7.2
+    react-select: 5.7.3
     react-transition-group: 4.4.5
   peerDependencies:
     "@emotion/react": 11.10.4
@@ -3845,7 +3845,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 2275c50692b8cb388ea557102fab478e30d113248cb92f2744a104bc99cc897478779411189c0fb5be4238b6da806af329191b782d531939533d244eeee097de
+  checksum: e1bac7786bb03a26497f77d8b310708a2b93bd02ac0fb0db290819f4a818b22907945bc0b20c60959af86b03a993c7d3fe3fc6c423dcbb36b16aed0ef525a66e
   languageName: node
   linkType: hard
 
@@ -12371,9 +12371,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select@npm:5.7.2":
-  version: 5.7.2
-  resolution: "react-select@npm:5.7.2"
+"react-select@npm:5.7.3":
+  version: 5.7.3
+  resolution: "react-select@npm:5.7.3"
   dependencies:
     "@babel/runtime": ^7.12.0
     "@emotion/cache": ^11.4.0
@@ -12387,7 +12387,7 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 1cb03c308be98b0bb89361dd842b92010ebd6769e388c380f2303ccfb14768b2085d0b94478dcd67841991272570fd27f75ea3035a230378fe14215d857e8ff7
+  checksum: 9ffa75afb395e7077076521c529611494164ace0c6b1ceb249406991ac668947cfd0424812c15c2a45c792bb2794b22f2df93c4c2f2515962b7dfc7c91b029ec
   languageName: node
   linkType: hard
 
@@ -14834,7 +14834,7 @@ __metadata:
     "@wireapp/eslint-config": 2.1.2
     "@wireapp/prettier-config": 0.4.6
     "@wireapp/protocol-messaging": 1.44.0
-    "@wireapp/react-ui-kit": 9.5.0
+    "@wireapp/react-ui-kit": 9.7.4
     "@wireapp/webapp-events": 0.16.0
     adm-zip: 0.5.10
     auto-launch: 5.0.5
