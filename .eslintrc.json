@@ -15,7 +15,7 @@
     }
   ],
   "parserOptions": {
-    "project": ["./tsconfig.json"]
+    "project": ["./tsconfig.json", "./tsconfig.mocha.json", "./tsconfig.bin.json"]
   },
   "plugins": ["jasmine"],
   "rules": {
