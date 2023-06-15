@@ -28,6 +28,7 @@ import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
+import '../types/globals';
 
 const logger = getLogger(path.basename(__filename));
 

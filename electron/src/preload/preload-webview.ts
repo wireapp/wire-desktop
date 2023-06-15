@@ -28,6 +28,7 @@ import {WebAppEvents} from '@wireapp/webapp-events';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import '../types/globals';
 
 const remote = require('@electron/remote');
 
