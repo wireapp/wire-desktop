@@ -17,15 +17,9 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    //    "rootDir": ".",
-    //    "rootDirs": ["electron/src", "electron/renderer"],
     "outDir": "electron/dist",
     "removeComments": true,
     "resolveJsonModule": true,
-    //    "baseUrl": ".",
-    //    "paths": {
-    //      "src/*": ["electron/src/*", "electron/renderer/*"]
-    //    },
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
@@ -33,7 +27,7 @@
     "typeRoots": ["electron/src/types", "node_modules/@types"],
     "jsx": "react-jsx"
   },
-  "exclude": ["electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
+  "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
   "include": ["electron/**/*"],
   "files": ["electron/src/types/globals.d.ts"]
 }
