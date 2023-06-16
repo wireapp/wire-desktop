@@ -17,23 +17,12 @@
  *
  */
 
-import {createAccount} from '../../reducers/accountReducer';
-import {initialState as initialContextMenuState} from '../../reducers/contextMenuReducer';
-import {loadState, saveState} from '../localStorage';
+import {combineReducers} from 'redux';
 
-describe('localStorage', () => {
-  afterEach(() => {
-    localStorage.clear();
-  });
+import accountReducer from './accountReducer';
+import contextMenuReducer from './contextMenuReducer';
 
-  it('should return saved state', () => {
-    const state = {
-      accounts: [createAccount()],
-      contextMenuState: initialContextMenuState,
-    };
-
-    saveState(state);
-
-    expect(loadState()).toEqual(state);
-  });
+export default combineReducers({
+  accounts: accountReducer,
+  contextMenuState: contextMenuReducer,
 });

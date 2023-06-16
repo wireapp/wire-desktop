@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2023 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,23 +17,14 @@
  *
  */
 
-import {createAccount} from '../../reducers/accountReducer';
-import {initialState as initialContextMenuState} from '../../reducers/contextMenuReducer';
-import {loadState, saveState} from '../localStorage';
-
-describe('localStorage', () => {
-  afterEach(() => {
-    localStorage.clear();
-  });
-
-  it('should return saved state', () => {
-    const state = {
-      accounts: [createAccount()],
-      contextMenuState: initialContextMenuState,
-    };
-
-    saveState(state);
-
-    expect(loadState()).toEqual(state);
-  });
-});
+export type ContextMenuState = {
+  isEditAccountMenuVisible?: boolean;
+  position: {
+    centerX: number;
+    centerY: number;
+  };
+  accountId: string;
+  isAtLeastAdmin: boolean;
+  lifecycle?: string;
+  sessionID?: string;
+};

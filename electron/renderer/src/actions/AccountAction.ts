@@ -19,42 +19,58 @@
 
 import {EVENT_TYPE} from '../../../src/lib/eventType';
 import {config} from '../../../src/settings/config';
+import {AppDispatch, State} from '../index';
+import {SwitchAccount} from '../reducers/accountReducer';
 import {AccountSelector} from '../selector/AccountSelector';
 
-import {ActionType, initiateSSO} from './';
+import {ACCOUNT_ACTION, initiateSSO} from './index';
+
+type WebviewTag = Electron.WebviewTag;
 
 /**
  * Don't use this method directly, use `switchWebview` instead.
  *
  * @param {string} id - Account ID
- * @returns {{id: string, type: ActionType.SWITCH_ACCOUNT}} - Account switch action
+ * @returns {{id: string, type: ACCOUNT_ACTION.SWITCH_ACCOUNT}} - Account switch action
  */
-export const switchAccount = id => ({
+export const switchAccount = (id: string): SwitchAccount => ({
   id,
-  type: ActionType.SWITCH_ACCOUNT,
+  type: ACCOUNT_ACTION.SWITCH_ACCOUNT,
 });
 
+export type AccountActionTypes = {
+  startSSO: (ssoCode: string) => void;
+  switchWebview: (accountIndex: number) => Promise<void>;
+};
+
 export class AccountAction {
-  startSSO = ssoCode => {
-    return async (dispatch, getState, {actions: {accountAction}}) => {
+  startSSO = (ssoCode: string) => {
+    return async (
+      dispatch: AppDispatch,
+      getState: () => State,
+      {actions: {accountAction}}: {actions: {accountAction: AccountActionTypes}},
+    ) => {
       try {
         const accounts = AccountSelector.getAccounts(getState());
         const loggedOutWebviews = accounts.filter(account => account.userID === undefined);
 
         if (loggedOutWebviews.length > 0) {
+          // @ts-ignore
           dispatch(accountAction.switchWebview(accounts.indexOf(loggedOutWebviews[0])));
 
           const accountId = loggedOutWebviews[0].id;
           dispatch(initiateSSO(accountId, ssoCode, accounts.length == 1));
         } else {
           if (accounts.length >= config.maximumAccounts) {
-            return window.dispatchEvent(
+            window.dispatchEvent(
               new CustomEvent(EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE, {
                 detail: {
                   reachedMaximumAccounts: true,
                 },
               }),
             );
+
+            return;
           }
           // All accounts are logged in, create a new one
           dispatch(initiateSSO(undefined, ssoCode, true));
@@ -66,9 +82,14 @@ export class AccountAction {
     };
   };
 
-  switchWebview = accountIndex => {
-    return async (dispatch, getState) => {
+  switchWebview = (accountIndex: number) => {
+    return async (dispatch: AppDispatch, getState: () => State) => {
       const account = AccountSelector.getAccounts(getState())[Math.max(accountIndex, 0)];
+
+      if (!account.id) {
+        return;
+      }
+
       dispatch(switchAccount(account.id));
 
       // Note: We need to focus window first to properly set focus
@@ -76,7 +97,7 @@ export class AccountAction {
       window.blur();
       window.focus();
 
-      const webview = document.querySelector(`.Webview[data-accountid='${account.id}']`);
+      const webview = document.querySelector(`.Webview[data-accountid='${account.id}']`) as WebviewTag;
       if (webview) {
         webview.blur();
         webview.focus();

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": "electron/src",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
@@ -20,6 +21,10 @@
     "outDir": "electron/dist",
     "removeComments": true,
     "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["electron/src/*", "electron/renderer/*"]
+    },
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
@@ -28,6 +33,6 @@
     "jsx": "react-jsx"
   },
   "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
-  "include": ["electron/**/*"],
+  "include": ["electron/src/**/*"],
   "files": ["electron/src/types/globals.d.ts"]
 }

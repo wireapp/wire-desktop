@@ -17,12 +17,14 @@
  *
  */
 
+import {State} from '../index';
+
 const STATE_NAME = 'state';
 
-export const loadState = () => {
+export const loadState = (): State | undefined => {
   try {
     const serializedState = localStorage.getItem(STATE_NAME);
-    return !!serializedState ? JSON.parse(serializedState) : undefined;
+    return !!serializedState ? (JSON.parse(serializedState) as State) : undefined;
   } catch (error) {
     if (error instanceof Error) {
       console.error('ERROR: Failed to load state ', error.message);
@@ -31,7 +33,7 @@ export const loadState = () => {
   }
 };
 
-export const saveState = (state: Record<string, any>) => {
+export const saveState = (state: State) => {
   try {
     const serializedState = JSON.stringify(state);
     localStorage.setItem(STATE_NAME, serializedState);

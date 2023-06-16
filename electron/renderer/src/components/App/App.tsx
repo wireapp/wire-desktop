@@ -22,6 +22,7 @@ import {connect} from 'react-redux';
 import {StyledApp, THEME_ID} from '@wireapp/react-ui-kit';
 
 import actionRoot from '../../actions';
+import {State} from '../../index';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {IsOnline} from '../IsOnline';
 import Sidebar from '../Sidebar/Sidebar';
@@ -41,7 +42,7 @@ const App = () => {
 };
 
 export default connect(
-  state => ({
+  (state: State) => ({
     accounts: AccountSelector.getAccounts(state),
   }),
   {switchWebview: actionRoot.accountAction.switchWebview},

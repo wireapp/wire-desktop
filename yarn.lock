@@ -3037,6 +3037,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/hapi__joi@npm:^17.1.9":
+  version: 17.1.9
+  resolution: "@types/hapi__joi@npm:17.1.9"
+  checksum: 982e80e5cb667df7b41fcf8c8180d63e809217e1d1f02e2954d5c924b05570b4ec1d4ab474b0b1fbac1fc058a9d5d391a3ba9239bf8feaf03c9066f38bc21cce
+  languageName: node
+  linkType: hard
+
 "@types/hoist-non-react-statics@npm:^3.3.1":
   version: 3.3.1
   resolution: "@types/hoist-non-react-statics@npm:3.3.1"
@@ -14812,6 +14819,7 @@ __metadata:
     "@types/content-type": 1.1.5
     "@types/eslint": ^8.37.0
     "@types/fs-extra": 9.0.11
+    "@types/hapi__joi": ^17.1.9
     "@types/is-ci": 3.0.0
     "@types/jest": ^29.5.1
     "@types/lodash": 4.14.194

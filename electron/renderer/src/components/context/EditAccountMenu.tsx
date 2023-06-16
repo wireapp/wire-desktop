@@ -25,6 +25,7 @@ import ContextMenuItem from './ContextMenuItem';
 import {EVENT_TYPE} from '../../../../src/lib/eventType';
 import {abortAccountCreation} from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
+import {State} from '../../index';
 import {getText} from '../../lib/locale';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
@@ -34,8 +35,8 @@ interface EditAccountMenuProps {
   accountId: string;
   accountIndex: number;
   isAtLeastAdmin: boolean;
-  lifecycle: string;
-  sessionId?: string;
+  lifecycle?: string;
+  sessionID?: string;
   switchWebview: (accountIndex: number) => void;
 }
 
@@ -44,7 +45,7 @@ const EditAccountMenu = ({
   accountIndex,
   isAtLeastAdmin,
   lifecycle,
-  sessionId,
+  sessionID,
   ...connected
 }: EditAccountMenuProps) => {
   return (
@@ -58,19 +59,21 @@ const EditAccountMenu = ({
           {getText('wrapperManageTeam')}
         </ContextMenuItem>
       )} */}
+
       {lifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN && (
         <ContextMenuItem
-          onClick={async () => {
+          onClick={() => {
             connected.switchWebview(accountIndex);
-            await window.sendLogoutAccount(accountId);
+            window.sendLogoutAccount(accountId);
           }}
         >
           {getText('wrapperLogOut')}
         </ContextMenuItem>
       )}
+
       <ContextMenuItem
-        onClick={async () => {
-          await window.sendDeleteAccount(accountId, sessionId).then(() => {
+        onClick={() => {
+          window.sendDeleteAccount(accountId, sessionID).then(() => {
             connected.abortAccountCreation(accountId);
           });
         }}
@@ -82,14 +85,14 @@ const EditAccountMenu = ({
 };
 
 export default connect(
-  state => {
+  (state: State) => {
     const accountId = ContextMenuSelector.getAccountId(state);
     return {
       accountId,
       accountIndex: AccountSelector.getAccountIndex(state, accountId),
       isAtLeastAdmin: ContextMenuSelector.getIsAtLeastAdmin(state),
       lifecycle: ContextMenuSelector.getLifecycle(state),
-      sessionId: ContextMenuSelector.getSessionId(state),
+      sessionID: ContextMenuSelector.getSessionId(state),
     };
   },
   {

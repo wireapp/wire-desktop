@@ -24,6 +24,7 @@ import {connect} from 'react-redux';
 import './ContextMenu.css';
 
 import {setAccountContextHidden} from '../../actions';
+import {State} from '../../index';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 
 type Position = {
@@ -100,7 +101,7 @@ const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuP
 };
 
 export default connect(
-  state => ({
+  (state: State) => ({
     position: ContextMenuSelector.getPosition(state),
   }),
   {setAccountContextHidden},

@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2018 Wire Swiss GmbH
+ * Copyright (C) 2023 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,15 @@
  *
  */
 
-import {combineReducers} from 'redux';
+import {Account, ConversationJoinData} from './account';
 
-import accountReducer from './accountReducer.js';
-import contextMenuReducer from './contextMenuReducer.js';
+export const isString = (value: any): value is string => typeof value === 'string';
 
-export default combineReducers({
-  accounts: accountReducer,
-  contextMenuState: contextMenuReducer,
-});
+export const isNumber = (value: any): value is number => typeof value === 'number';
+
+export const isBoolean = (value: any): value is boolean => typeof value === 'boolean';
+
+export const isAccount = (value: any): value is Account => value.hasOwnProperty('userID');
+
+export const isConversationJoinData = (value: any): value is ConversationJoinData =>
+  value.hasOwnProperty('code') && value.hasOwnProperty('key');

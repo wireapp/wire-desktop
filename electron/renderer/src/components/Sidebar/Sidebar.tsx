@@ -25,12 +25,14 @@ import './Sidebar.css';
 
 import {EVENT_TYPE} from '../../../../src/lib/eventType';
 import {addAccountWithSession, setAccountContextHidden, toggleEditAccountMenuVisibility} from '../../actions';
+import {State} from '../../index';
 import {colorFromId} from '../../lib/accentColor';
 import {isEnterKey} from '../../lib/keyboardUtil';
 import {preventFocus} from '../../lib/util';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
 import {Account} from '../../types/account';
+import {ContextMenuState} from '../../types/contextMenuState';
 import {AccountIcon} from '../AccountIcon';
 import AddAccountTrigger from '../context/AddAccountTrigger';
 import EditAccountMenu from '../context/EditAccountMenu';
@@ -54,32 +56,27 @@ const handleSwitchAccount = (accountIndex: number) => {
 
 interface SidebarProps {
   accounts: Account[];
-  currentAccentID: number;
+  currentAccentID?: number;
   hasCreatedAccount: boolean;
   hasReachedLimitOfAccounts: boolean;
   isAddingAccount: boolean;
-  isDarkMode: boolean;
-  isEditAccountMenuVisible: boolean;
+  isDarkMode?: boolean;
+  isEditAccountMenuVisible?: boolean;
   setAccountContextHidden: () => void;
-  toggleEditAccountMenuVisibility: (
-    centerX: number,
-    centerY: number,
-    accountId: string,
-    sessionID: string,
-    lifecycle: string,
-    isAtLeastAdmin: boolean,
-  ) => void;
+  toggleEditAccountMenuVisibility: (contextMenuState: ContextMenuState) => void;
   addAccountWithSession: () => void;
 }
 
+const DEFAULT_ACCENT_ID = 1;
+
 const Sidebar = ({
   accounts,
-  currentAccentID,
-  isDarkMode,
+  currentAccentID = DEFAULT_ACCENT_ID,
+  isDarkMode = false,
   hasCreatedAccount,
   hasReachedLimitOfAccounts,
   isAddingAccount,
-  isEditAccountMenuVisible,
+  isEditAccountMenuVisible = false,
   ...connected
 }: SidebarProps) => (
   <div
@@ -110,14 +107,17 @@ const Sidebar = ({
               const isAtLeastAdmin =
                 account.teamRole === 'z.team.TeamRole.ROLE.OWNER' || account.teamRole === 'z.team.TeamRole.ROLE.ADMIN';
               const {centerX, centerY} = centerOfEventTarget(event);
-              connected.toggleEditAccountMenuVisibility(
-                centerX,
-                centerY,
-                account.id,
-                account.sessionID,
-                account.lifecycle,
+
+              connected.toggleEditAccountMenuVisibility({
+                position: {
+                  centerY,
+                  centerX,
+                },
                 isAtLeastAdmin,
-              );
+                accountId: account.id,
+                sessionID: account.sessionID,
+                lifecycle: account.lifecycle,
+              });
             })}
             onMouseDown={preventFocus()}
           >
@@ -136,7 +136,7 @@ const Sidebar = ({
 );
 
 export default connect(
-  state => ({
+  (state: State) => ({
     accounts: AccountSelector.getAccounts(state),
     currentAccentID: AccountSelector.getSelectedAccountAccentId(state),
     hasCreatedAccount: AccountSelector.hasCreatedAccount(state),

@@ -22,6 +22,7 @@ import {connect} from 'react-redux';
 import './WebviewList.css';
 
 import {updateAccountBadgeCount} from '../../actions';
+import {State} from '../../index';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {Account} from '../../types/account';
 import Webview from '../WebView/Webview';
@@ -41,6 +42,6 @@ const WebviewList = ({accounts, updateAccountBadgeCount}: WebviewListProps) => {
   );
 };
 
-export default connect(state => ({accounts: AccountSelector.getAccounts(state)}), {updateAccountBadgeCount})(
+export default connect((state: State) => ({accounts: AccountSelector.getAccounts(state)}), {updateAccountBadgeCount})(
   WebviewList,
 );

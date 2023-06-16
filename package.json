@@ -47,6 +47,7 @@
     "@types/content-type": "1.1.5",
     "@types/eslint": "^8.37.0",
     "@types/fs-extra": "9.0.11",
+    "@types/hapi__joi": "^17.1.9",
     "@types/is-ci": "3.0.0",
     "@types/jest": "^29.5.1",
     "@types/lodash": "4.14.194",
@@ -140,7 +141,7 @@
       "prettier --write"
     ]
   },
-  "main": "electron/dist/src/main.js",
+  "main": "electron/dist/main.js",
   "name": "wire-desktop",
   "prettier": "@wireapp/prettier-config",
   "private": true,
@@ -159,7 +160,7 @@
     "build:macos:internal:x64": "yarn build:macos:internal -a x64",
     "build:macos:internal:arm64": "yarn build:macos:internal -a arm64",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
-    "build:ts": "yarn clear:ts && tsc",
+    "build:ts": "yarn clear:ts && tsc -P tsconfig.build.json",
     "build:ts:bin": "tsc -P tsconfig.bin.json --noEmit",
     "build:ts:tests": "tsc -P tsconfig.mocha.json --noEmit",
     "build:win": "yarn build:prepare && ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts windows",

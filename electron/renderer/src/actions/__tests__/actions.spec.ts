@@ -17,7 +17,7 @@
  *
  */
 
-import {ActionType, addAccount, deleteAccount, updateAccount, updateAccountBadge} from '../';
+import {ACCOUNT_ACTION, addAccount, deleteAccount, updateAccount, updateAccountBadge} from '../';
 import {generateUUID} from '../../lib/util';
 import {switchAccount} from '../AccountAction';
 
@@ -25,7 +25,7 @@ describe('action creators', () => {
   describe('addAccount', () => {
     it('should create action to add account with session', () => {
       const action = addAccount();
-      expect(action.type).toEqual(ActionType.ADD_ACCOUNT);
+      expect(action.type).toEqual(ACCOUNT_ACTION.ADD_ACCOUNT);
       expect(action.sessionID).toEqual(expect.any(String));
     });
   });
@@ -37,7 +37,7 @@ describe('action creators', () => {
       const action = {
         data,
         id,
-        type: ActionType.UPDATE_ACCOUNT,
+        type: ACCOUNT_ACTION.UPDATE_ACCOUNT,
       };
       expect(updateAccount(id, data)).toEqual(action);
     });
@@ -48,7 +48,7 @@ describe('action creators', () => {
       const id = generateUUID();
       const action = {
         id,
-        type: ActionType.SWITCH_ACCOUNT,
+        type: ACCOUNT_ACTION.SWITCH_ACCOUNT,
       };
       expect(switchAccount(id)).toEqual(action);
     });
@@ -61,7 +61,7 @@ describe('action creators', () => {
       const action = {
         count,
         id,
-        type: ActionType.UPDATE_ACCOUNT_BADGE,
+        type: ACCOUNT_ACTION.UPDATE_ACCOUNT_BADGE,
       };
       expect(updateAccountBadge(id, count)).toEqual(action);
     });
@@ -72,7 +72,7 @@ describe('action creators', () => {
       const id = generateUUID();
       const action = {
         id,
-        type: ActionType.DELETE_ACCOUNT,
+        type: ACCOUNT_ACTION.DELETE_ACCOUNT,
       };
       expect(deleteAccount(id)).toEqual(action);
     });

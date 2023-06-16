@@ -17,21 +17,28 @@
  *
  */
 
+export type ConversationJoinData = {
+  code: string;
+  key: string;
+};
+
 export type Account = {
-  accentID: number;
+  availability?: number;
+  accentID?: number;
   badgeCount: number;
+  conversationJoinData?: ConversationJoinData;
   id: string;
   isAdding: boolean;
-  lifecycle: string;
-  name: string;
+  lifecycle?: string;
+  name?: string;
   picture?: string;
-  sessionID: string;
-  ssoCode: string;
-  teamID: number;
+  sessionID?: string;
+  ssoCode?: string;
+  teamID?: string;
   teamRole: string;
   visible: boolean;
   webappUrl?: string;
-  userID: string;
+  userID?: string;
   darkMode: boolean;
   accountIndex: number;
 };

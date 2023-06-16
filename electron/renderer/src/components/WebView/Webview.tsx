@@ -37,10 +37,12 @@ import {
   updateAccountDarkMode,
 } from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
+import {State} from '../../index';
 import {getText, wrapperLocale} from '../../lib/locale';
 import {WindowUrl} from '../../lib/WindowUrl';
 import {AccountSelector} from '../../selector/AccountSelector';
-import {Account} from '../../types/account';
+import {Account, ConversationJoinData} from '../../types/account';
+import {isAccount, isBoolean, isConversationJoinData, isNumber, isString} from '../../types/guards';
 import {LoadingSpinner} from '../LoadingSpinner';
 
 type WebviewTag = Electron.WebviewTag;
@@ -52,7 +54,7 @@ const getEnvironmentUrl = (account: Account) => {
   const decodedEnvParam = decodeURIComponent(envParam!);
   const url = new URL(decodedEnvParam);
 
-  // pass account id to webview so we can access it in the preload script
+  // pass account id to webview, so we can access it in the preload script
   url.searchParams.set('id', account.id);
 
   // set the current language
@@ -70,21 +72,19 @@ interface WebviewProps {
   abortAccountCreation: (accountId: string) => void;
   account: Account;
   accountIndex: number;
-  accountLifecycle: string;
-  conversationJoinData?: {
-    code: string;
-    key: string;
-  };
+  accountLifecycle?: string;
+  conversationJoinData?: ConversationJoinData;
   onUnreadCountUpdated: (accountId: string, badgeCount: number) => void;
   resetIdentity: (accountId: string) => void;
-  // TODO: Update data type after migration redux to TS
-  setConversationJoinData: (accountId: string, data: any) => void;
+  setConversationJoinData: (accountId: string, data?: ConversationJoinData) => void;
   switchWebview: (accountIndex: number) => void;
   updateAccountDarkMode: (accountId: string, darkMode: boolean) => void;
-  // TODO: Update data type after migration redux to TS
-  updateAccountData: (accountId: string, data: any) => void;
+  updateAccountData: (accountId: string, data: Partial<Account>) => void;
   updateAccountLifecycle: (accountId: string, channel: string) => void;
 }
+
+const ON_IPC_MESSAGE = 'ipc-message';
+const ON_WEBVIEW_ERROR = 'did-fail-load';
 
 const Webview = ({
   abortAccountCreation,
@@ -162,8 +162,6 @@ const Webview = ({
   }, [webviewError]);
 
   useEffect(() => {
-    const webview = webviewRef.current;
-
     const listener = (error: DidFailLoadEvent) => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
       console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
@@ -171,34 +169,37 @@ const Webview = ({
         setWebviewError(error);
       }
     };
-    const ON_WEBVIEW_ERROR = 'did-fail-load';
-    webview?.addEventListener(ON_WEBVIEW_ERROR, listener);
+    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
 
     return () => {
-      if (webview) {
-        webview.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (webviewRef.current) {
+        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
   }, [webviewRef, account]);
 
   useEffect(() => {
-    // TODO: Fix any type
-    const onIpcMessage = async ({channel, args}: {args: any; channel: string}) => {
+    const onIpcMessage = ({channel, args}: {args: unknown[]; channel: string}) => {
       const accountId = account.id;
 
       switch (channel) {
         case EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW: {
           const [customUrl] = args;
-          const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
-          updateAccountData(accountId, {
-            webappUrl: updatedWebapp,
-          });
+
+          if (isString(customUrl)) {
+            const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
+            updateAccountData(accountId, {
+              webappUrl: updatedWebapp,
+            });
+          }
           break;
         }
 
         case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
           const [accountData] = args;
-          updateAccountData(account.id, accountData);
+          if (isAccount(accountData)) {
+            updateAccountData(account.id, accountData);
+          }
           break;
         }
 
@@ -223,56 +224,65 @@ const Webview = ({
 
         case EVENT_TYPE.LIFECYCLE.SIGNED_OUT: {
           const [clearData] = args;
-          if (clearData) {
-            await deleteWebview(account);
-          } else {
-            resetIdentity(accountId);
+
+          if (isBoolean(clearData)) {
+            if (clearData) {
+              deleteWebview(account);
+            } else {
+              resetIdentity(accountId);
+            }
           }
           break;
         }
 
         case EVENT_TYPE.ACTION.JOIN_CONVERSATION: {
           const [data] = args;
-          if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-            window.sendConversationJoinToHost(accountId, data.code, data.key);
-            setConversationJoinData(accountId, undefined);
-          } else {
-            setConversationJoinData(accountId, data);
+
+          if (isConversationJoinData(data)) {
+            if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
+              window.sendConversationJoinToHost(accountId, data.code, data.key);
+              setConversationJoinData(accountId, undefined);
+            } else {
+              setConversationJoinData(accountId, data);
+            }
           }
           break;
         }
 
         case EVENT_TYPE.LIFECYCLE.UNREAD_COUNT: {
           const [badgeCount] = args;
-          onUnreadCountUpdated(accountId, badgeCount);
+          if (isNumber(badgeCount)) {
+            onUnreadCountUpdated(accountId, badgeCount);
+          }
           break;
         }
 
         case EVENT_TYPE.UI.THEME_UPDATE: {
           const [theme] = args;
-          const darkMode = theme === 'dark';
-          if (darkMode !== account.darkMode) {
-            updateAccountDarkMode(account.id, darkMode);
+
+          if (isString(theme)) {
+            const darkMode = theme === 'dark';
+            if (darkMode !== account.darkMode) {
+              updateAccountDarkMode(account.id, darkMode);
+            }
           }
           break;
         }
       }
     };
 
-    const webview = webviewRef.current;
-    const ON_IPC_MESSAGE = 'ipc-message';
-    webview?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+    webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
 
     return () => {
-      if (webview) {
-        webview?.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webviewRef.current) {
+        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, accountLifecycle, conversationJoinData]);
 
-  const deleteWebview = async (account: Account) => {
-    await window.sendDeleteAccount(account.id, account.sessionID).then(() => {
+  const deleteWebview = (account: Account) => {
+    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
       abortAccountCreation(account.id);
     });
   };
@@ -371,17 +381,8 @@ type Props = {
   account: Account;
 };
 
-type MapStateToProps = {
-  accountIndex: number;
-  accountLifecycle: string;
-  conversationJoinData: {
-    code: string;
-    key: string;
-  };
-};
-
 export default connect(
-  (state, props: Props): MapStateToProps => ({
+  (state: State, props: Props) => ({
     accountIndex: AccountSelector.getAccountIndex(state, props.account.id),
     accountLifecycle: AccountSelector.getAccountLifecycle(state, props.account.id),
     conversationJoinData: AccountSelector.getConversationJoinData(state, props.account.id),
