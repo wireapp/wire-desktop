@@ -3275,12 +3275,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.0.11":
-  version: 18.2.3
-  resolution: "@types/react-dom@npm:18.2.3"
+"@types/react-dom@npm:^18.2.6":
+  version: 18.2.6
+  resolution: "@types/react-dom@npm:18.2.6"
   dependencies:
     "@types/react": "*"
-  checksum: 33520610ee36765dbee62bd7d4a448598f0dec6d3ba94a05ff066e239ae536d739cb3bc2cd5269884f57293a3983ce614182844c4489b6e3350015eb5a08dcc7
+  checksum: b56e42efab121a3a8013d2eb8c1688e6028a25ea6d33c4362d2846f0af3760b164b4d7c34846614024cfb8956cca70dd1743487f152e32ff89a00fe6fbd2be54
   languageName: node
   linkType: hard
 
@@ -14830,7 +14830,7 @@ __metadata:
     "@types/platform": 1.3.4
     "@types/prettier": ^2.7.2
     "@types/react": ^18.0.11
-    "@types/react-dom": ^18.0.11
+    "@types/react-dom": ^18.2.6
     "@types/redux-logger": ^3.0.9
     "@types/sinon": 10.0.14
     "@types/sort-json": 2.0.1
