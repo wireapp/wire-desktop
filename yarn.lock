@@ -2409,6 +2409,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jest/schemas@npm:^29.6.0":
+  version: 29.6.0
+  resolution: "@jest/schemas@npm:29.6.0"
+  dependencies:
+    "@sinclair/typebox": ^0.27.8
+  checksum: c00511c69cf89138a7d974404d3a5060af375b5a52b9c87215d91873129b382ca11c1ff25bd6d605951404bb381ddce5f8091004a61e76457da35db1f5c51365
+  languageName: node
+  linkType: hard
+
 "@jest/source-map@npm:^29.4.3":
   version: 29.4.3
   resolution: "@jest/source-map@npm:29.4.3"
@@ -2467,6 +2476,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jest/transform@npm:^29.6.0":
+  version: 29.6.0
+  resolution: "@jest/transform@npm:29.6.0"
+  dependencies:
+    "@babel/core": ^7.11.6
+    "@jest/types": ^29.6.0
+    "@jridgewell/trace-mapping": ^0.3.18
+    babel-plugin-istanbul: ^6.1.1
+    chalk: ^4.0.0
+    convert-source-map: ^2.0.0
+    fast-json-stable-stringify: ^2.1.0
+    graceful-fs: ^4.2.9
+    jest-haste-map: ^29.6.0
+    jest-regex-util: ^29.4.3
+    jest-util: ^29.6.0
+    micromatch: ^4.0.4
+    pirates: ^4.0.4
+    slash: ^3.0.0
+    write-file-atomic: ^4.0.2
+  checksum: 7b92d367a2960614adf5ef5ab1c7d5902d9ef2a5a3ba5bde3b29db9e5ea8f74296e3efe78d10c69ef56c33cab0e94f0d369b59c0e12d73b3c2048097fd3e1716
+  languageName: node
+  linkType: hard
+
 "@jest/types@npm:^29.5.0":
   version: 29.5.0
   resolution: "@jest/types@npm:29.5.0"
@@ -2478,6 +2510,20 @@ __metadata:
     "@types/yargs": ^17.0.8
     chalk: ^4.0.0
   checksum: 1811f94b19cf8a9460a289c4f056796cfc373480e0492692a6125a553cd1a63824bd846d7bb78820b7b6f758f6dd3c2d4558293bb676d541b2fa59c70fdf9d39
+  languageName: node
+  linkType: hard
+
+"@jest/types@npm:^29.6.0":
+  version: 29.6.0
+  resolution: "@jest/types@npm:29.6.0"
+  dependencies:
+    "@jest/schemas": ^29.6.0
+    "@types/istanbul-lib-coverage": ^2.0.0
+    "@types/istanbul-reports": ^3.0.0
+    "@types/node": "*"
+    "@types/yargs": ^17.0.8
+    chalk: ^4.0.0
+  checksum: cb793a8c04194c29059c5f3a89416e9e1f3643236d4d545fe99fa43a230be4c521e9e1d46ca97837a731545599c9afe2c5a99ff37ee4edf197be0d8d85433b05
   languageName: node
   linkType: hard
 
@@ -2547,7 +2593,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/trace-mapping@npm:^0.3.12, @jridgewell/trace-mapping@npm:^0.3.15, @jridgewell/trace-mapping@npm:^0.3.17, @jridgewell/trace-mapping@npm:^0.3.9":
+"@jridgewell/trace-mapping@npm:^0.3.12, @jridgewell/trace-mapping@npm:^0.3.15, @jridgewell/trace-mapping@npm:^0.3.17, @jridgewell/trace-mapping@npm:^0.3.18, @jridgewell/trace-mapping@npm:^0.3.9":
   version: 0.3.18
   resolution: "@jridgewell/trace-mapping@npm:0.3.18"
   dependencies:
@@ -2723,6 +2769,13 @@ __metadata:
   version: 0.25.24
   resolution: "@sinclair/typebox@npm:0.25.24"
   checksum: 10219c58f40b8414c50b483b0550445e9710d4fe7b2c4dccb9b66533dd90ba8e024acc776026cebe81e87f06fa24b07fdd7bc30dd277eb9cc386ec50151a3026
+  languageName: node
+  linkType: hard
+
+"@sinclair/typebox@npm:^0.27.8":
+  version: 0.27.8
+  resolution: "@sinclair/typebox@npm:0.27.8"
+  checksum: 00bd7362a3439021aa1ea51b0e0d0a0e8ca1351a3d54c606b115fdcc49b51b16db6e5f43b4fe7a28c38688523e22a94d49dd31168868b655f0d4d50f032d07a1
   languageName: node
   linkType: hard
 
@@ -4548,7 +4601,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-jest@npm:29.5.0, babel-jest@npm:^29.5.0":
+"babel-jest@npm:29.6.0":
+  version: 29.6.0
+  resolution: "babel-jest@npm:29.6.0"
+  dependencies:
+    "@jest/transform": ^29.6.0
+    "@types/babel__core": ^7.1.14
+    babel-plugin-istanbul: ^6.1.1
+    babel-preset-jest: ^29.5.0
+    chalk: ^4.0.0
+    graceful-fs: ^4.2.9
+    slash: ^3.0.0
+  peerDependencies:
+    "@babel/core": ^7.8.0
+  checksum: c1ba9cf4f692390a5046f0de4b60325aff7a345f9e9f8c947beb3042acfce8c247d3343b80e652802a0f060856c95a3186ba74b66d50032b0e0d645d578b551b
+  languageName: node
+  linkType: hard
+
+"babel-jest@npm:^29.5.0":
   version: 29.5.0
   resolution: "babel-jest@npm:29.5.0"
   dependencies:
@@ -9628,6 +9698,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-haste-map@npm:^29.6.0":
+  version: 29.6.0
+  resolution: "jest-haste-map@npm:29.6.0"
+  dependencies:
+    "@jest/types": ^29.6.0
+    "@types/graceful-fs": ^4.1.3
+    "@types/node": "*"
+    anymatch: ^3.0.3
+    fb-watchman: ^2.0.0
+    fsevents: ^2.3.2
+    graceful-fs: ^4.2.9
+    jest-regex-util: ^29.4.3
+    jest-util: ^29.6.0
+    jest-worker: ^29.6.0
+    micromatch: ^4.0.4
+    walker: ^1.0.8
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  checksum: 0475570a12de0845d2be596e5e17591ff93521859d1e4acd906037718e20c87c3ed26c7ec2d8cd26a3faa3e98d8e48cece083737c0f3b4349b3179871bcab15b
+  languageName: node
+  linkType: hard
+
 "jest-leak-detector@npm:^29.5.0":
   version: 29.5.0
   resolution: "jest-leak-detector@npm:29.5.0"
@@ -9828,6 +9921,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-util@npm:^29.6.0":
+  version: 29.6.0
+  resolution: "jest-util@npm:29.6.0"
+  dependencies:
+    "@jest/types": ^29.6.0
+    "@types/node": "*"
+    chalk: ^4.0.0
+    ci-info: ^3.2.0
+    graceful-fs: ^4.2.9
+    picomatch: ^2.2.3
+  checksum: 35b95cdfddc20c0249821bcee35e4e4355981339c618049f9be79aace712c05096b385d3abd2cfb66a7995ec37b7e56acf6421ee0c42236e4add6379fcb0ebeb
+  languageName: node
+  linkType: hard
+
 "jest-validate@npm:^29.5.0":
   version: 29.5.0
   resolution: "jest-validate@npm:29.5.0"
@@ -9878,6 +9985,18 @@ __metadata:
     merge-stream: ^2.0.0
     supports-color: ^8.0.0
   checksum: 1151a1ae3602b1ea7c42a8f1efe2b5a7bf927039deaa0827bf978880169899b705744e288f80a63603fb3fc2985e0071234986af7dc2c21c7a64333d8777c7c9
+  languageName: node
+  linkType: hard
+
+"jest-worker@npm:^29.6.0":
+  version: 29.6.0
+  resolution: "jest-worker@npm:29.6.0"
+  dependencies:
+    "@types/node": "*"
+    jest-util: ^29.6.0
+    merge-stream: ^2.0.0
+    supports-color: ^8.0.0
+  checksum: 505f1572b329504670b5ee1325cb23f35cc25b3f17f8244dec50e77bf45e50612c80c68d4263ac5722cb68e8cf41ec187e967b76d8060daf44beb5afc95e3e27
   languageName: node
   linkType: hard
 
@@ -14850,7 +14969,7 @@ __metadata:
     axios: 0.21.2
     babel-core: 7.0.0-bridge.0
     babel-eslint: 10.1.0
-    babel-jest: 29.5.0
+    babel-jest: 29.6.0
     babel-loader: 9.1.2
     babel-plugin-istanbul: 6.1.1
     commander: 10.0.1
