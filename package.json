@@ -87,7 +87,7 @@
     "electron-packager": "16.0.0",
     "electron-winstaller": "4.0.1",
     "eslint": "8.39.0",
-    "eslint-config-prettier": "8.8.0",
+    "eslint-config-prettier": "8.9.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-better-styled-components": "1.1.2",
