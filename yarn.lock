@@ -6405,18 +6405,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-mocha@npm:12.0.0":
-  version: 12.0.0
-  resolution: "electron-mocha@npm:12.0.0"
+"electron-mocha@npm:12.0.1":
+  version: 12.0.1
+  resolution: "electron-mocha@npm:12.0.1"
   dependencies:
     ansi-colors: ^4.1.1
     electron-window: ^0.8.0
     mocha: ^10.2.0
     which: ^3.0.0
-    yargs: ^17.7.1
+    yargs: ^17.7.2
   bin:
     electron-mocha: bin/electron-mocha
-  checksum: b9ec9891e59d11f5ff56d928762a2d68d1579053aabd3560b0b4149675af06778d5ab2d90cc43f7b1dc17f924ed5c03e6b3e51185e696071d601cce08323b024
+  checksum: 444fbdd1888b1aefc8fb2fd5c2fbeb002ade239caa52e4ab6d73d913427629ebde0cf63828b6c4e948805e0c80006f1e1d59e48d0769115fa532965b5a37dc9e
   languageName: node
   linkType: hard
 
@@ -14862,7 +14862,7 @@ __metadata:
     dotenv: 16.0.3
     electron: 22.3.14
     electron-builder: 23.6.0
-    electron-mocha: 12.0.0
+    electron-mocha: 12.0.1
     electron-osx-sign: 0.6.0
     electron-packager: 16.0.0
     electron-window-state: 5.0.3
@@ -15195,7 +15195,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.3.1, yargs@npm:^17.5.1, yargs@npm:^17.7.1":
+"yargs@npm:^17.3.1, yargs@npm:^17.5.1, yargs@npm:^17.7.2":
   version: 17.7.2
   resolution: "yargs@npm:17.7.2"
   dependencies:
