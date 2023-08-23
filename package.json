@@ -47,7 +47,7 @@
     "@types/content-type": "1.1.5",
     "@types/eslint": "^8.37.0",
     "@types/fs-extra": "9.0.11",
-    "@types/hapi__joi": "^17.1.9",
+    "@types/hapi__joi": "^17.1.10",
     "@types/is-ci": "3.0.0",
     "@types/jest": "^29.5.1",
     "@types/lodash": "4.14.194",
