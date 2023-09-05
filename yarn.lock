@@ -2957,10 +2957,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/content-type@npm:1.1.5":
-  version: 1.1.5
-  resolution: "@types/content-type@npm:1.1.5"
-  checksum: 77d0a88003c18c4d75f8344c678545aa1f1a4c163420c38bf669ba05eb9e0a243ecd022b2c83fbd01def608c275743000c0bf37e9ac95e16f2c3af16ec70534b
+"@types/content-type@npm:1.1.6":
+  version: 1.1.6
+  resolution: "@types/content-type@npm:1.1.6"
+  checksum: e39f4e4da9b567c2c5b8c9ca5796d7eadf699bc07dc779980dcda71c97ff3f25e0da1bcb026f5b92fef4e5ca3cb13ebd40e81484880a7004b6fdb727c9d9298f
   languageName: node
   linkType: hard
 
@@ -14816,7 +14816,7 @@ __metadata:
     "@types/adm-zip": 0.4.34
     "@types/amplify": 1.1.25
     "@types/auto-launch": 5.0.1
-    "@types/content-type": 1.1.5
+    "@types/content-type": 1.1.6
     "@types/eslint": ^8.37.0
     "@types/fs-extra": 9.0.11
     "@types/hapi__joi": ^17.1.9
