@@ -1345,9 +1345,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/register@npm:7.21.0":
-  version: 7.21.0
-  resolution: "@babel/register@npm:7.21.0"
+"@babel/register@npm:7.22.15":
+  version: 7.22.15
+  resolution: "@babel/register@npm:7.22.15"
   dependencies:
     clone-deep: ^4.0.1
     find-cache-dir: ^2.0.0
@@ -1356,7 +1356,7 @@ __metadata:
     source-map-support: ^0.5.16
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 9745cc7520b4c5e64cc54f4851c3b78af82e1f8cffc9041f5cc0b9aef62d86a9a8617327fc975b5e0e39cb5cc0aba7ae02429884390ee93e0de29152fa849b4f
+  checksum: 5497be6773608cd2d874210edd14499fce464ddbea170219da55955afe4c9173adb591164193458fd639e43b7d1314088a6186f4abf241476c59b3f0da6afd6f
   languageName: node
   linkType: hard
 
@@ -14809,7 +14809,7 @@ __metadata:
     "@babel/preset-env": 7.21.5
     "@babel/preset-react": 7.18.6
     "@babel/preset-typescript": 7.21.5
-    "@babel/register": 7.21.0
+    "@babel/register": 7.22.15
     "@electron/fuses": 1.6.1
     "@electron/remote": 2.0.8
     "@hapi/joi": 17.1.1
