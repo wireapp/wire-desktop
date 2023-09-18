@@ -3750,10 +3750,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.26":
-  version: 16.18.25
-  resolution: "@types/node@npm:16.18.25"
-  checksum: 181760ad6b54fcc498dfeb249e98bbf0be51d7c35e92e760e1a82004fa42b86e8c33a8f8dd7743b5ef872bda0753d9e6a5b8e3f0aed63e9eb79b4e65760c1fbe
+"@types/node@npm:^18.11.18":
+  version: 18.17.15
+  resolution: "@types/node@npm:18.17.15"
+  checksum: eed11d4398ccdb999a4c65658ee75de621a4ad57aece48ed2fb8803b1e2711fadf58d8aefbdb0a447d69cf3cba602ca32fe0fc92077575950a796e1dc13baa0f
   languageName: node
   linkType: hard
 
@@ -7246,16 +7246,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:22.3.26":
-  version: 22.3.26
-  resolution: "electron@npm:22.3.26"
+"electron@npm:25.8.1":
+  version: 25.8.1
+  resolution: "electron@npm:25.8.1"
   dependencies:
     "@electron/get": ^2.0.0
-    "@types/node": ^16.11.26
+    "@types/node": ^18.11.18
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: b28a30c84b90b9a4f280c5e090066f4d7b0a2a31eb01ffbb32ce9bd50c6da51edd84f9c251f33b1c1e2ed0f02c221ebab15cdb2cf6c3c8011fce7163009e5f1a
+  checksum: 3305f0d3e3d68d8921533b4fd42003812778bd90d1884b2baa859b3a7d900354298e63298fbfbfcac9267223e0d0d3de584137aec52b764081f3c68bf4b09efc
   languageName: node
   linkType: hard
 
@@ -16004,7 +16004,7 @@ __metadata:
     cspell: 6.31.1
     css-loader: 6.8.1
     dotenv: 16.3.1
-    electron: 22.3.26
+    electron: 25.8.1
     electron-builder: 23.6.0
     electron-mocha: 12.1.0
     electron-osx-sign: 0.6.0

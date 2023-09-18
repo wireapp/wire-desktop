@@ -17,7 +17,7 @@
  *
  */
 
-import {ipcRenderer} from 'electron';
+import {IpcRendererEvent, ipcRenderer} from 'electron';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 
@@ -44,7 +44,7 @@ interface Details {
   webappVersion: string;
 }
 
-export function loadedAboutScreen(_event: Event, details: Details): void {
+export function loadedAboutScreen(_event: IpcRendererEvent, details: Details): void {
   const nameElement = document.getElementById('name');
   if (nameElement) {
     nameElement.textContent = details.productName;
