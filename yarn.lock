@@ -3072,12 +3072,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/adm-zip@npm:0.4.34":
-  version: 0.4.34
-  resolution: "@types/adm-zip@npm:0.4.34"
+"@types/adm-zip@npm:0.5.1":
+  version: 0.5.1
+  resolution: "@types/adm-zip@npm:0.5.1"
   dependencies:
     "@types/node": "*"
-  checksum: dc9dfda261c7fa898185c6d73e89c4a2f6db1faa0d47cd14ce8fadf882078a7b8de8d953dac2bba321bcdde2059da67daacfdfb878ca459d317f32de36b0be6d
+  checksum: 874eaa30f89e50d744c77fd345112a12316135f2a3e259f6958fb7687d149551f96a7df82803aed243dcfb94b17d6a3bb37883e03533ee58295d1ee018c74f86
   languageName: node
   linkType: hard
 
@@ -15092,7 +15092,7 @@ __metadata:
     "@electron/fuses": 1.6.1
     "@electron/remote": 2.0.8
     "@hapi/joi": 17.1.1
-    "@types/adm-zip": 0.4.34
+    "@types/adm-zip": 0.5.1
     "@types/amplify": 1.1.25
     "@types/auto-launch": 5.0.1
     "@types/content-type": 1.1.6
