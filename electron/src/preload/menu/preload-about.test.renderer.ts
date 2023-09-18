@@ -31,7 +31,7 @@ describe('loadedAboutScreen', () => {
   it('publishes labels', done => {
     const sendSpy = spy(ipcRenderer, 'send');
 
-    loadedAboutScreen(new Event('test'), {
+    loadedAboutScreen(null, {
       copyright: '&copy; Wire Swiss GmbH',
       electronVersion: 'Development',
       productName: 'Wire',
