@@ -3389,10 +3389,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:4.14.194":
-  version: 4.14.194
-  resolution: "@types/lodash@npm:4.14.194"
-  checksum: 113f34831c461469d91feca2dde737f88487732898b4d25e9eb23b087bb193985f864d1e1e0f3b777edc5022e460443588b6000a3b2348c966f72d17eedc35ea
+"@types/lodash@npm:4.14.198":
+  version: 4.14.198
+  resolution: "@types/lodash@npm:4.14.198"
+  checksum: b290e4480707151bcec738bca40527915defe52a0d8e26c83685c674163a265e1a88cb2ee56b0fb587a89819d0cd5df86ada836aec3e9c2e4bf516e7d348d524
   languageName: node
   linkType: hard
 
@@ -15101,7 +15101,7 @@ __metadata:
     "@types/hapi__joi": ^17.1.9
     "@types/is-ci": 3.0.0
     "@types/jest": ^29.5.1
-    "@types/lodash": 4.14.194
+    "@types/lodash": 4.14.198
     "@types/minimist": 1.2.2
     "@types/mocha": 10.0.1
     "@types/node": 18.15.11
