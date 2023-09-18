@@ -3529,10 +3529,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hapi__joi@npm:^17.1.9":
-  version: 17.1.9
-  resolution: "@types/hapi__joi@npm:17.1.9"
-  checksum: 982e80e5cb667df7b41fcf8c8180d63e809217e1d1f02e2954d5c924b05570b4ec1d4ab474b0b1fbac1fc058a9d5d391a3ba9239bf8feaf03c9066f38bc21cce
+"@types/hapi__joi@npm:^17.1.11":
+  version: 17.1.11
+  resolution: "@types/hapi__joi@npm:17.1.11"
+  checksum: 0b5ec1ec211157e2ccdb07709712d60c73391ddbb507fe82f9782b5810c5e24d2fa91fd6bca3f0b634151301c78d263b3e6da372636648ec51a12bb57cd3b981
   languageName: node
   linkType: hard
 
@@ -15847,7 +15847,7 @@ __metadata:
     "@types/content-type": 1.1.6
     "@types/eslint": ^8.37.0
     "@types/fs-extra": 9.0.11
-    "@types/hapi__joi": ^17.1.9
+    "@types/hapi__joi": ^17.1.11
     "@types/is-ci": 3.0.0
     "@types/jest": ^29.5.1
     "@types/lodash": 4.14.198
