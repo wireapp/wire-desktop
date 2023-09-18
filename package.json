@@ -44,7 +44,7 @@
     "@types/adm-zip": "0.4.34",
     "@types/amplify": "1.1.25",
     "@types/auto-launch": "5.0.1",
-    "@types/content-type": "1.1.5",
+    "@types/content-type": "1.1.6",
     "@types/eslint": "^8.37.0",
     "@types/fs-extra": "9.0.11",
     "@types/hapi__joi": "^17.1.9",
