@@ -3910,7 +3910,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-jsx@npm:^5.3.2":
+"acorn-jsx@npm:^5.2.0, acorn-jsx@npm:^5.3.2":
   version: 5.3.2
   resolution: "acorn-jsx@npm:5.3.2"
   peerDependencies:
@@ -3923,6 +3923,15 @@ __metadata:
   version: 8.2.0
   resolution: "acorn-walk@npm:8.2.0"
   checksum: 1715e76c01dd7b2d4ca472f9c58968516a4899378a63ad5b6c2d668bba8da21a71976c14ec5f5b75f887b6317c4ae0b897ab141c831d741dc76024d8745f1ad1
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^7.1.1":
+  version: 7.4.1
+  resolution: "acorn@npm:7.4.1"
+  bin:
+    acorn: bin/acorn
+  checksum: 1860f23c2107c910c6177b7b7be71be350db9e1080d814493fae143ae37605189504152d1ba8743ba3178d0b37269ce1ffc42b101547fdc1827078f82671e407
   languageName: node
   linkType: hard
 
@@ -7102,12 +7111,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-sort-keys-fix@npm:1.1.1":
-  version: 1.1.1
-  resolution: "eslint-plugin-sort-keys-fix@npm:1.1.1"
+"eslint-plugin-sort-keys-fix@npm:1.1.2":
+  version: 1.1.2
+  resolution: "eslint-plugin-sort-keys-fix@npm:1.1.2"
   dependencies:
+    espree: ^6.1.2
+    esutils: ^2.0.2
+    natural-compare: ^1.4.0
     requireindex: ~1.2.0
-  checksum: 40547bf18f7faa73b8fa28c16d2d3de6d912f6e9c2f5cb2b21ab7907ebcaea13d71b60bd18a8c6817c164b62a161f88db50af82d4d11def43d68820676739201
+  checksum: d089e4ec4f8cea4ec239132f85c807ce71e500370e3ef778d684697da5011b413e625d6f5b9bf3b5b1cf7c4eafffc39d386bffca271b7c3e7983409fb0d7d2c6
   languageName: node
   linkType: hard
 
@@ -7179,7 +7191,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-visitor-keys@npm:^1.0.0":
+"eslint-visitor-keys@npm:^1.0.0, eslint-visitor-keys@npm:^1.1.0":
   version: 1.3.0
   resolution: "eslint-visitor-keys@npm:1.3.0"
   checksum: 37a19b712f42f4c9027e8ba98c2b06031c17e0c0a4c696cd429bd9ee04eb43889c446f2cd545e1ff51bef9593fcec94ecd2c2ef89129fcbbf3adadbef520376a
@@ -7240,6 +7252,17 @@ __metadata:
   bin:
     eslint: bin/eslint.js
   checksum: d7a074ff326e7ea482500dc0427a7d4b0260460f0f812d19b46b1cca681806b67309f23da9d17cd3de8eb74dd3c14cb549c4d58b05b140564d14cc1a391122a0
+  languageName: node
+  linkType: hard
+
+"espree@npm:^6.1.2":
+  version: 6.2.1
+  resolution: "espree@npm:6.2.1"
+  dependencies:
+    acorn: ^7.1.1
+    acorn-jsx: ^5.2.0
+    eslint-visitor-keys: ^1.1.0
+  checksum: 99c508950b5b9f53d008d781d2abb7a4ef3496ea699306fb6eb737c7e513aa594644314364c50ec27abb220124c6851fff64a6b62c358479534369904849360b
   languageName: node
   linkType: hard
 
@@ -14884,7 +14907,7 @@ __metadata:
     eslint-plugin-react: 7.32.2
     eslint-plugin-react-hooks: 4.6.0
     eslint-plugin-simple-import-sort: 8.0.0
-    eslint-plugin-sort-keys-fix: 1.1.1
+    eslint-plugin-sort-keys-fix: 1.1.2
     eslint-plugin-testing-library: 5.10.3
     eslint-plugin-typescript-sort-keys: 2.3.0
     eslint-plugin-unused-imports: 2.0.0
