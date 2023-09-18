@@ -11886,15 +11886,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nock@npm:13.3.1":
-  version: 13.3.1
-  resolution: "nock@npm:13.3.1"
+"nock@npm:13.3.3":
+  version: 13.3.3
+  resolution: "nock@npm:13.3.3"
   dependencies:
     debug: ^4.1.0
     json-stringify-safe: ^5.0.1
     lodash: ^4.17.21
     propagate: ^2.0.0
-  checksum: 0f2a73e8432f6b5650656c53eef99f9e5bbde3df538dc2f07057edc4438cfc61a394c9d06dd82e60f6e86d42433f20f3c04364a1f088beee7bf03a24e3f0fdd0
+  checksum: e3e4f0fb777ac63d74f89bbb7aebe8e815b891b64ac71983d91686f725fdab856fe189cf2fe23d4add9f5dd5da53f3568106a61116a771ce0f4ed0f5ad7b035b
   languageName: node
   linkType: hard
 
@@ -15756,7 +15756,7 @@ __metadata:
     logdown: 3.3.1
     minimist: 1.2.8
     mocha: 10.2.0
-    nock: 13.3.1
+    nock: 13.3.3
     nyc: 15.1.0
     open-graph: 0.2.6
     prettier: 2.8.8
