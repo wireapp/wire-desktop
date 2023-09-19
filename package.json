@@ -105,7 +105,7 @@
     "eslint-plugin-simple-import-sort": "8.0.0",
     "eslint-plugin-sort-keys-fix": "1.1.2",
     "eslint-plugin-testing-library": "5.10.3",
-    "eslint-plugin-typescript-sort-keys": "2.3.0",
+    "eslint-plugin-typescript-sort-keys": "3.0.0",
     "eslint-plugin-unused-imports": "2.0.0",
     "form-data": "4.0.0",
     "husky": "4.3.8",
