@@ -18,6 +18,7 @@
  */
 
 import {ipcRenderer, webFrame} from 'electron';
+import {truncate} from 'lodash';
 
 import * as path from 'path';
 
@@ -105,14 +106,16 @@ const setupIpcInterface = (): void => {
   };
 
   window.sendDeleteAccount = (accountId: string, sessionID?: string): Promise<void> => {
+    const truncatedId = truncate(accountId, {length: 5});
+
     return new Promise((resolve, reject) => {
       const accountWebview = getWebviewById(accountId);
       if (!accountWebview) {
         // eslint-disable-next-line prefer-promise-reject-errors
-        return reject(`Webview for account "${accountId}" does not exist`);
+        return reject(`Webview for account "${truncatedId}" does not exist`);
       }
 
-      logger.info(`Processing deletion of "${accountId}"`);
+      logger.info(`Processing deletion of "${truncatedId}"`);
       const viewInstanceId = accountWebview.getWebContentsId();
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountId, sessionID);
@@ -121,13 +124,13 @@ const setupIpcInterface = (): void => {
 
   window.sendLogoutAccount = async (accountId: string): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
-    logger.log(`Sending logout signal to webview for account "${accountId}".`);
+    logger.log(`Sending logout signal to webview for account "${truncate(accountId, {length: 5})}".`);
     await accountWebview?.send(EVENT_TYPE.ACTION.SIGN_OUT);
   };
 
   window.sendConversationJoinToHost = async (accountId: string, code: string, key: string): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
-    logger.log(`Sending conversation join data to webview for account "${accountId}".`);
+    logger.log(`Sending conversation join data to webview for account "${truncate(accountId, {length: 5})}".`);
     await accountWebview?.send(WebAppEvents.CONVERSATION.JOIN, {code, key});
   };
 };

@@ -19,13 +19,13 @@
 
 import {app, Session, webContents} from 'electron';
 import * as fs from 'fs-extra';
+import {truncate} from 'lodash';
 
 import * as path from 'path';
 
 import {ValidationUtil} from '@wireapp/commons';
 
 import {getLogger} from '../logging/getLogger';
-import {getLogFilenames} from '../logging/loggerUtils';
 
 const USER_DATA_DIR = app.getPath('userData');
 const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
@@ -39,6 +39,8 @@ const clearStorage = async (session: Session): Promise<void> => {
 };
 
 export async function deleteAccount(id: number, accountId: string, partitionId?: string): Promise<void> {
+  const truncatedId = truncate(accountId, {length: 5});
+
   // Delete session data
   try {
     const webviewWebContent = webContents.fromId(id);
@@ -48,11 +50,11 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     if (!webviewWebContent.hostWebContents) {
       throw new Error('Only a webview can have its storage wiped');
     }
-    logger.log(`Deleting session data for account "${accountId}"...`);
+    logger.log(`Deleting session data for account "${truncatedId}"...`);
     await clearStorage(webviewWebContent.session);
-    logger.log(`Deleted session data for account "${accountId}".`);
+    logger.log(`Deleted session data for account "${truncatedId}".`);
   } catch (error: any) {
-    logger.error(`Failed to delete session data for account "${accountId}", reason: "${error.message}".`);
+    logger.error(`Failed to delete session data for account "${truncatedId}", reason: "${error.message}".`);
   }
 
   // Delete the webview partition
@@ -66,9 +68,11 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
       }
       const partitionDir = path.join(USER_DATA_DIR, 'Partitions', partitionId);
       await fs.remove(partitionDir);
-      logger.log(`Deleted partition "${partitionId}" for account "${accountId}".`);
+      logger.log(`Deleted partition "${partitionId}" for account "${truncatedId}".`);
     } catch (error: any) {
-      logger.log(`Unable to delete partition "${partitionId}" for account "${accountId}", reason: "${error.message}".`);
+      logger.log(
+        `Unable to delete partition "${partitionId}" for account "${truncatedId}", reason: "${error.message}".`,
+      );
     }
   }
 
@@ -78,14 +82,10 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
       throw new Error('Account is not an UUID');
     }
     const sessionFolder = path.join(LOG_DIR, accountId);
-    const relativeFilePaths = getLogFilenames();
     await fs.remove(sessionFolder);
-    relativeFilePaths.forEach(async log => {
-      const logPath = path.join(LOG_DIR, log);
-      await fs.remove(logPath);
-    });
-    logger.log(`Deleted logs folder for current account.`);
+
+    logger.log(`Deleted logs folder for account "${truncatedId}".`);
   } catch (error: any) {
-    logger.error(`Failed to delete logs folder for account "${accountId}", reason: "${error.message}".`);
+    logger.error(`Failed to delete logs folder for account "${truncatedId}", reason: "${error.message}".`);
   }
 }
