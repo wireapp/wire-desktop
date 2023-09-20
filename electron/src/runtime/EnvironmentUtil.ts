@@ -22,7 +22,6 @@ import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
 export enum BackendType {
-  AVS = 'AVS',
   CUSTOM = 'CUSTOM',
   DEVELOPMENT = 'DEVELOPMENT',
   EDGE = 'EDGE',
@@ -46,7 +45,6 @@ const URL_WEBSITE = {
 };
 
 export const URL_WEBAPP: Record<BackendType, string> = {
-  AVS: 'https://wire-webapp-avs.zinfra.io',
   DEVELOPMENT: 'https://wire-webapp-dev.zinfra.io',
   EDGE: 'https://wire-webapp-edge.zinfra.io',
   MASTER: 'https://wire-webapp-master.zinfra.io',
