@@ -37,7 +37,7 @@ node('built-in') {
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
   echo('version: ' + version)
   def buildNumber = version.tokenize('.')[2]
-  def NODE = tool name: 'node-v16.17.1', type: 'nodejs'
+  def NODE = tool name: 'node-v18.18.0', type: 'nodejs'
   env.DRY_RUN = params.DRY_RUN ? "--dry-run" : ""
 
   stage('Get build artifacts') {
