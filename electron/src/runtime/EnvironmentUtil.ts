@@ -40,7 +40,7 @@ interface AvailableEnvironment {
   isActive: boolean;
 }
 
-let currentEnvironment: ServerType;
+let currentEnvironment = settings.restore<ServerType | undefined>(SettingsType.ENV);
 
 const URL_WEBSITE = {
   PRODUCTION: config.websiteUrl,
@@ -59,8 +59,6 @@ export const app = {
   IS_PRODUCTION: config.environment === 'production',
   UPDATE_URL_WIN: config.updateUrl,
 };
-
-export const getEnvironment = (): ServerType => currentEnvironment || restoreEnvironment();
 
 const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
   let envVarContent = process.env[envVar] || '';
@@ -85,23 +83,22 @@ export const linuxDesktop = {
   isUbuntuUnity: isEnvVar('XDG_CURRENT_DESKTOP', 'Unity'),
 };
 
-const restoreEnvironment = (): ServerType => {
-  let restoredEnvironment = settings.restore(SettingsType.ENV, ServerType.PRODUCTION);
-  if (!Object.values(ServerType).includes(restoredEnvironment)) {
-    restoredEnvironment = ServerType.PRODUCTION;
-    setEnvironment(restoredEnvironment);
-  }
-  return restoredEnvironment;
-};
-
 export const setEnvironment = (env: ServerType): void => {
-  currentEnvironment = env || restoreEnvironment();
-  settings.save(SettingsType.ENV, currentEnvironment);
+  currentEnvironment = env;
+  settings.save(SettingsType.ENV, env);
   settings.persistToFile();
 };
 
+/**
+ * will return the url of the webapp.
+ * If there is a custom url set, it will return that one.
+ * else it will return the url of the current environment.
+ * If no environment is set, it will use the default value set in the config
+ * @returns {string} the url of the webapp
+ */
 function getWebappUrl() {
-  return customWebappUrl ?? webappEnvironments[getEnvironment()]?.url;
+  const envUrl = currentEnvironment && webappEnvironments[currentEnvironment]?.url;
+  return customWebappUrl ?? envUrl ?? config.appBase;
 }
 
 export function getAvailebleEnvironments(): AvailableEnvironment[] {
