@@ -73,9 +73,12 @@ const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   for (const env of environments) {
     environmentTemplate.push({
       checked: env.isActive,
+      enabled: !!env.server,
       click: async () => {
-        setEnvironment(env.server);
-        await lifecycle.relaunch();
+        if (env.server) {
+          setEnvironment(env.server);
+          await lifecycle.relaunch();
+        }
       },
       label: env.name,
       type: 'radio',

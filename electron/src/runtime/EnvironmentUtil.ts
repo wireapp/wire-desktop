@@ -42,11 +42,6 @@ interface AvailableEnvironment {
 
 let currentEnvironment: ServerType;
 
-const URL_ADMIN = {
-  PRODUCTION: config.adminUrl,
-  STAGING: 'https://wire-admin-staging.zinfra.io',
-};
-
 const URL_WEBSITE = {
   PRODUCTION: config.websiteUrl,
   STAGING: 'https://wire-website-staging.zinfra.io',
@@ -99,7 +94,7 @@ const restoreEnvironment = (): ServerType => {
   return restoredEnvironment;
 };
 
-export const setEnvironment = (env?: ServerType): void => {
+export const setEnvironment = (env: ServerType): void => {
   currentEnvironment = env || restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment);
   settings.persistToFile();
@@ -113,7 +108,6 @@ export function getAvailebleEnvironments(): AvailableEnvironment[] {
   const customEnv = customWebappUrl
     ? {
         name: customWebappUrl.replace(/^https?:\/\//, ''),
-        server: ServerType.PRODUCTION,
         url: customWebappUrl,
         isActive: true,
       }
@@ -132,10 +126,6 @@ export function getAvailebleEnvironments(): AvailableEnvironment[] {
 }
 
 export const web = {
-  getAdminUrl: (path: string = ''): string => {
-    const baseUrl = isProdEnvironment ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
-    return `${baseUrl}${path}`;
-  },
   getWebappUrl,
   getWebsiteUrl: (path: string = ''): string => {
     const baseUrl = isProdEnvironment ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
