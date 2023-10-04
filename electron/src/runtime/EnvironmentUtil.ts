@@ -101,6 +101,11 @@ function getWebappUrl() {
   return customWebappUrl ?? envUrl ?? config.appBase;
 }
 
+/**
+ * Gives all the environments that are available to the app.
+ * It will add the custom url (set by the --env option) if set
+ * @returns {AvailableEnvironment[]} all the environment the app can run against
+ */
 export function getAvailebleEnvironments(): AvailableEnvironment[] {
   const customEnv = customWebappUrl
     ? {
