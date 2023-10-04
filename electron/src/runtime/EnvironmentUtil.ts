@@ -48,9 +48,9 @@ const URL_WEBSITE = {
 };
 
 const webappEnvironments = {
-  [ServerType.PRODUCTION]: {name: 'production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
-  [ServerType.BETA]: {name: 'beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
-  [ServerType.EDGE]: {name: 'edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.zinfra.io'},
+  [ServerType.PRODUCTION]: {name: 'Production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
+  [ServerType.BETA]: {name: 'Beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
+  [ServerType.EDGE]: {name: 'Edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.zinfra.io'},
 } as const;
 
 export const app = {
