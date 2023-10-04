@@ -17,22 +17,30 @@
  *
  */
 
+import minimist from 'minimist';
+
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
-export enum BackendType {
-  CUSTOM = 'CUSTOM',
-  DEVELOPMENT = 'DEVELOPMENT',
-  EDGE = 'EDGE',
-  INTERNAL = 'INTERNAL',
-  LOCALZINFRA = 'LOCALZINFRA',
-  MASTER = 'MASTER',
+const argv = minimist(process.argv.slice(1));
+const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV];
+const isProdEnvironment = !!customWebappUrl;
+
+export enum ServerType {
   PRODUCTION = 'PRODUCTION',
-  QA = 'QA',
+  EDGE = 'EDGE',
+  STAGING = 'STAGING',
 }
 
-let currentEnvironment: BackendType;
+interface AvailableEnvironment {
+  name: string;
+  server?: ServerType;
+  url: string;
+  isActive: boolean;
+}
+
+let currentEnvironment: ServerType;
 
 const URL_ADMIN = {
   PRODUCTION: config.adminUrl,
@@ -44,16 +52,11 @@ const URL_WEBSITE = {
   STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
-export const URL_WEBAPP: Record<BackendType, string> = {
-  DEVELOPMENT: 'https://wire-webapp-dev.zinfra.io',
-  EDGE: 'https://wire-webapp-edge.zinfra.io',
-  MASTER: 'https://wire-webapp-master.zinfra.io',
-  QA: 'https://wire-webapp-qa.zinfra.io',
-  INTERNAL: 'https://wire-webapp-staging.wire.com',
-  LOCALZINFRA: 'https://local.zinfra.io:8081',
-  PRODUCTION: config.appBase,
-  CUSTOM: settings.restore(SettingsType.CUSTOM_WEBAPP_URL, config.appBase),
-};
+const webappEnvironments = {
+  [ServerType.PRODUCTION]: {name: 'production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
+  [ServerType.STAGING]: {name: 'beta', server: ServerType.STAGING, url: 'https://wire-webapp-staging.wire.com'},
+  [ServerType.EDGE]: {name: 'edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.zinfra.io'},
+} as const;
 
 export const app = {
   ENV: config.environment,
@@ -62,12 +65,7 @@ export const app = {
   UPDATE_URL_WIN: config.updateUrl,
 };
 
-export const getEnvironment = (): BackendType => currentEnvironment || restoreEnvironment();
-
-const isProdEnvironment = (): boolean => {
-  const env = getEnvironment();
-  return env === BackendType.INTERNAL || env === BackendType.PRODUCTION || env === BackendType.CUSTOM;
-};
+export const getEnvironment = (): ServerType => currentEnvironment || restoreEnvironment();
 
 const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
   let envVarContent = process.env[envVar] || '';
@@ -92,39 +90,55 @@ export const linuxDesktop = {
   isUbuntuUnity: isEnvVar('XDG_CURRENT_DESKTOP', 'Unity'),
 };
 
-const restoreEnvironment = (): BackendType => {
-  let restoredEnvironment = settings.restore(SettingsType.ENV, BackendType.PRODUCTION);
-  if (!Object.values(BackendType).includes(restoredEnvironment)) {
-    restoredEnvironment = BackendType.PRODUCTION;
+const restoreEnvironment = (): ServerType => {
+  let restoredEnvironment = settings.restore(SettingsType.ENV, ServerType.PRODUCTION);
+  if (!Object.values(ServerType).includes(restoredEnvironment)) {
+    restoredEnvironment = ServerType.PRODUCTION;
     setEnvironment(restoredEnvironment);
   }
   return restoredEnvironment;
 };
 
-export const setEnvironment = (env?: BackendType, customURL?: string): void => {
+export const setEnvironment = (env?: ServerType): void => {
   currentEnvironment = env || restoreEnvironment();
   settings.save(SettingsType.ENV, currentEnvironment);
-  if (customURL) {
-    settings.save(SettingsType.CUSTOM_WEBAPP_URL, customURL);
-  }
   settings.persistToFile();
 };
 
+function getWebappUrl() {
+  return customWebappUrl ?? webappEnvironments[getEnvironment()]?.url;
+}
+
+export function getAvailebleEnvironments(): AvailableEnvironment[] {
+  const customEnv = customWebappUrl
+    ? {
+        name: customWebappUrl.replace(/^https?:\/\//, ''),
+        server: ServerType.PRODUCTION,
+        url: customWebappUrl,
+        isActive: true,
+      }
+    : null;
+
+  const baseEnvs = Object.values(webappEnvironments).map(({name, server, url}) => {
+    return {
+      name,
+      server,
+      url,
+      isActive: url === getWebappUrl(),
+    };
+  });
+  // If the app has been started with an --env flag, add this environment to the list
+  return customEnv ? [customEnv, ...baseEnvs] : baseEnvs;
+}
+
 export const web = {
   getAdminUrl: (path: string = ''): string => {
-    const baseUrl = isProdEnvironment() ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
+    const baseUrl = isProdEnvironment ? URL_ADMIN.PRODUCTION : URL_ADMIN.STAGING;
     return `${baseUrl}${path}`;
   },
-  getWebappUrl: (env?: string): string => {
-    if (env) {
-      return env;
-    }
-
-    const currentEnvironment = getEnvironment();
-    return URL_WEBAPP[currentEnvironment];
-  },
+  getWebappUrl,
   getWebsiteUrl: (path: string = ''): string => {
-    const baseUrl = isProdEnvironment() ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
+    const baseUrl = isProdEnvironment ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
     return `${baseUrl}${path}`;
   },
 };
