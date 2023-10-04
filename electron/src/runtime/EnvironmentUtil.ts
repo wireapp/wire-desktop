@@ -30,7 +30,7 @@ const isProdEnvironment = !!customWebappUrl;
 export enum ServerType {
   PRODUCTION = 'PRODUCTION',
   EDGE = 'EDGE',
-  STAGING = 'STAGING',
+  BETA = 'INTERNAL',
 }
 
 interface AvailableEnvironment {
@@ -49,7 +49,7 @@ const URL_WEBSITE = {
 
 const webappEnvironments = {
   [ServerType.PRODUCTION]: {name: 'production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
-  [ServerType.STAGING]: {name: 'beta', server: ServerType.STAGING, url: 'https://wire-webapp-staging.wire.com'},
+  [ServerType.BETA]: {name: 'beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
   [ServerType.EDGE]: {name: 'edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.zinfra.io'},
 } as const;
 
