@@ -43,7 +43,7 @@ node('windows') {
 
   stage('Build') {
     try {
-      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=ia32']) {
+      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
         bat 'node -v'
         bat 'npm -v'
         bat 'npm install -g yarn'
@@ -59,7 +59,7 @@ node('windows') {
 
   stage('Build installer') {
     try {
-      withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=ia32']) {
+      withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=x64']) {
         bat 'yarn build:win:installer'
       }
     } catch(e) {
