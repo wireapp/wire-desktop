@@ -93,7 +93,7 @@ const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
+const BASE_URL = EnvironmentUtil.web.getWebappUrl();
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
 const logger = getLogger(path.basename(__filename));
