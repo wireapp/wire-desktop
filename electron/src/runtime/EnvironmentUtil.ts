@@ -50,7 +50,7 @@ const URL_WEBSITE = {
 const webappEnvironments = {
   [ServerType.PRODUCTION]: {name: 'Production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
   [ServerType.BETA]: {name: 'Beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
-  [ServerType.EDGE]: {name: 'Edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.zinfra.io'},
+  [ServerType.EDGE]: {name: 'Edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.wire.com'},
 } as const;
 
 export const app = {
