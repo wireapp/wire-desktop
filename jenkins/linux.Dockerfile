@@ -1,4 +1,4 @@
-FROM node:16.17.1-bullseye
+FROM node:18.18-alpine
 
 ENV USE_HARD_LINKS false
 
