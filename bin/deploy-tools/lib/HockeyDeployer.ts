@@ -126,9 +126,8 @@ export class HockeyDeployer {
       return response.data;
     } catch (error) {
       this.logger.error(error);
-      throw new Error(
-        `Hockey version creation failed with status code "${error.response.status}": "${error.response.statusText}"`,
-      );
+      const {status, statusText} = (error as AxiosError).response || {};
+      throw new Error(`Hockey version creation failed with status code "${status}": "${statusText}"`);
     }
   }
 
