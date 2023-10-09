@@ -2990,10 +2990,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/auto-launch@npm:5.0.1":
-  version: 5.0.1
-  resolution: "@types/auto-launch@npm:5.0.1"
-  checksum: 78c00e43dd0897e4fc9f986e063517a8964052c250a11cb7f384aef081f86d33e528507e0a00f2cdd1d4f134b230b3e024a8e89bd3d999ccaf318ca4fad3864b
+"@types/auto-launch@npm:5.0.3":
+  version: 5.0.3
+  resolution: "@types/auto-launch@npm:5.0.3"
+  checksum: ae401b2af941c752a56bd6e1e3cfd04b652b81cf1723fef30218cec69e0493571709f22209bbae6be19acf3763b37c67c3a2c0270d29be778f2cef2c6fe5ebc3
   languageName: node
   linkType: hard
 
@@ -4712,16 +4712,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auto-launch@npm:5.0.5":
-  version: 5.0.5
-  resolution: "auto-launch@npm:5.0.5"
+"auto-launch@npm:5.0.6":
+  version: 5.0.6
+  resolution: "auto-launch@npm:5.0.6"
   dependencies:
     applescript: ^1.0.0
     mkdirp: ^0.5.1
     path-is-absolute: ^1.0.0
     untildify: ^3.0.2
     winreg: 1.2.4
-  checksum: 20de07f3d1f862c35ab1d527cafe43effd77ab0b094854e999333359be8dc3c4adb462dabd79d92118b6ef58a50411b147bdcddfd73a5ad3c64c7fa4ef8c1acc
+  checksum: 4da4b6033b5556091f57f4a271cd6484c5f46f48da2949644f4f5462b07b6f3739d77b9ffcdd96c8c2b1f3c51ae17743ad555ff2bddfb684760c74a621f11896
   languageName: node
   linkType: hard
 
@@ -15192,7 +15192,7 @@ __metadata:
     "@hapi/joi": 17.1.1
     "@types/adm-zip": 0.5.2
     "@types/amplify": 1.1.26
-    "@types/auto-launch": 5.0.1
+    "@types/auto-launch": 5.0.3
     "@types/content-type": 1.1.6
     "@types/eslint": ^8.44.3
     "@types/fs-extra": 9.0.11
@@ -15222,7 +15222,7 @@ __metadata:
     "@wireapp/react-ui-kit": 9.9.9
     "@wireapp/webapp-events": 0.18.3
     adm-zip: 0.5.10
-    auto-launch: 5.0.5
+    auto-launch: 5.0.6
     aws-sdk: 2.1472.0
     axios: 0.21.2
     babel-core: 7.0.0-bridge.0
