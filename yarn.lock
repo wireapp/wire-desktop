@@ -3498,7 +3498,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sinon@npm:^10.0.19":
+"@types/sinon@npm:10.0.19":
   version: 10.0.19
   resolution: "@types/sinon@npm:10.0.19"
   dependencies:
@@ -13531,7 +13531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon@npm:^16.1.0":
+"sinon@npm:16.1.0":
   version: 16.1.0
   resolution: "sinon@npm:16.1.0"
   dependencies:
@@ -15209,7 +15209,7 @@ __metadata:
     "@types/react": ^18.2.25
     "@types/react-dom": ^18.2.11
     "@types/redux-logger": ^3.0.10
-    "@types/sinon": ^10.0.19
+    "@types/sinon": 10.0.19
     "@types/sort-json": 2.0.1
     "@typescript-eslint/eslint-plugin": 6.7.4
     "@typescript-eslint/parser": 6.7.4
@@ -15289,7 +15289,7 @@ __metadata:
     redux-logger: 3.0.6
     redux-thunk: 2.4.2
     rimraf: 5.0.5
-    sinon: ^16.1.0
+    sinon: 16.1.0
     sort-json: 2.0.1
     style-loader: 3.3.3
     ts-node: 10.9.1
