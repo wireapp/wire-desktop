@@ -59,7 +59,7 @@
     "@types/prettier": "^2.7.3",
     "@types/react": "^18.2.25",
     "@types/react-dom": "^18.2.11",
-    "@types/redux-logger": "^3.0.9",
+    "@types/redux-logger": "^3.0.10",
     "@types/sinon": "10.0.19",
     "@types/sort-json": "2.0.1",
     "@typescript-eslint/eslint-plugin": "5.59.2",
