@@ -5143,23 +5143,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer-alloc-unsafe@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "buffer-alloc-unsafe@npm:1.1.0"
-  checksum: c5e18bf51f67754ec843c9af3d4c005051aac5008a3992938dda1344e5cfec77c4b02b4ca303644d1e9a6e281765155ce6356d85c6f5ccc5cd21afc868def396
-  languageName: node
-  linkType: hard
-
-"buffer-alloc@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "buffer-alloc@npm:1.2.0"
-  dependencies:
-    buffer-alloc-unsafe: ^1.1.0
-    buffer-fill: ^1.0.0
-  checksum: 560cd27f3cbe73c614867da373407d4506309c62fe18de45a1ce191f3785ec6ca2488d802ff82065798542422980ca25f903db078c57822218182c37c3576df5
-  languageName: node
-  linkType: hard
-
 "buffer-crc32@npm:~0.2.3":
   version: 0.2.13
   resolution: "buffer-crc32@npm:0.2.13"
@@ -5171,13 +5154,6 @@ __metadata:
   version: 1.0.1
   resolution: "buffer-equal@npm:1.0.1"
   checksum: 6ead0f976726c4e2fb6f2e82419983f4a99cbf2cca1f1e107e16c23c4d91d9046c732dd29b63fc6ac194354f74fa107e8e94946ef2527812d83cde1d5a006309
-  languageName: node
-  linkType: hard
-
-"buffer-fill@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "buffer-fill@npm:1.0.0"
-  checksum: c29b4723ddeab01e74b5d3b982a0c6828f2ded49cef049ddca3dac661c874ecdbcecb5dd8380cf0f4adbeb8cff90a7de724126750a1f1e5ebd4eb6c59a1315b1
   languageName: node
   linkType: hard
 
@@ -6082,7 +6058,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^2.2.0, debug@npm:^2.6.8":
+"debug@npm:^2.2.0":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
   dependencies:
@@ -6593,23 +6569,6 @@ __metadata:
   bin:
     electron-mocha: bin/electron-mocha
   checksum: 034274f8937790a1dae4f3be9bddec77bb2deba0e40d26590d86fc7302c8fb319709708a2d314efe2681acd30dbde03872d90f4737fca9a4b5fdf569d8e5fe2a
-  languageName: node
-  linkType: hard
-
-"electron-osx-sign@npm:0.6.0":
-  version: 0.6.0
-  resolution: "electron-osx-sign@npm:0.6.0"
-  dependencies:
-    bluebird: ^3.5.0
-    compare-version: ^0.1.2
-    debug: ^2.6.8
-    isbinaryfile: ^3.0.2
-    minimist: ^1.2.0
-    plist: ^3.0.1
-  bin:
-    electron-osx-flat: bin/electron-osx-flat.js
-    electron-osx-sign: bin/electron-osx-sign.js
-  checksum: b688f9efb013670b4226cff7c38101e7b1384ea44e1ab203259995f1eefc019c63aa18e936217a76d33b5a5a452b987ab3d86a56a961294582ce42acbb950de6
   languageName: node
   linkType: hard
 
@@ -9673,15 +9632,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isbinaryfile@npm:^3.0.2":
-  version: 3.0.3
-  resolution: "isbinaryfile@npm:3.0.3"
-  dependencies:
-    buffer-alloc: ^1.2.0
-  checksum: 9a555786857c66fe36024d15a54e0ca371c02275622b007356d6afca2b3bca179cb0bd97e1adf5d3922b3325c0fe22813645c7f7eafb4c4bdab1da9d635133c2
-  languageName: node
-  linkType: hard
-
 "isbinaryfile@npm:^4.0.8":
   version: 4.0.10
   resolution: "isbinaryfile@npm:4.0.10"
@@ -12440,7 +12390,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"plist@npm:^3.0.0, plist@npm:^3.0.1, plist@npm:^3.0.4":
+"plist@npm:^3.0.0, plist@npm:^3.0.4":
   version: 3.0.6
   resolution: "plist@npm:3.0.6"
   dependencies:
@@ -15482,6 +15432,7 @@ __metadata:
     "@babel/preset-typescript": 7.23.0
     "@babel/register": 7.22.15
     "@electron/fuses": 1.6.2
+    "@electron/osx-sign": 1.0.5
     "@electron/remote": 2.0.12
     "@hapi/joi": 17.1.1
     "@types/adm-zip": 0.5.2
@@ -15533,7 +15484,6 @@ __metadata:
     electron: 26.3.0
     electron-builder: 24.6.4
     electron-mocha: 12.1.0
-    electron-osx-sign: 0.6.0
     electron-packager: 17.1.2
     electron-window-state: 5.0.3
     electron-winstaller: 4.0.1

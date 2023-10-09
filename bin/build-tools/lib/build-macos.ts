@@ -17,7 +17,7 @@
  *
  */
 
-import {flatAsync as buildPkg} from 'electron-osx-sign';
+import {flatAsync as buildPkg} from '@electron/osx-sign';
 import electronPackager, {ArchOption} from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
