@@ -135,19 +135,9 @@ const setupIpcInterface = (): void => {
   };
 };
 
-const addDragRegion = (): void => {
-  if (EnvironmentUtil.platform.IS_MAC_OS) {
-    // add title bar ghost to prevent interactions with the content while dragging
-    const titleBar = document.createElement('div');
-    titleBar.className = 'drag-region';
-    document.body.appendChild(titleBar);
-  }
-};
-
 setupIpcInterface();
 subscribeToMainProcessEvents();
 
-window.addEventListener('DOMContentLoaded', addDragRegion);
 window.addEventListener('focus', () => {
   const selectedWebview = getSelectedWebview();
   if (selectedWebview) {

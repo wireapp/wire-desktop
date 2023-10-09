@@ -250,7 +250,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     minWidth: WINDOW_SIZE.MIN_WIDTH,
     show: false,
     title: config.name,
-    titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
       contextIsolation: false,
