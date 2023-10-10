@@ -79,7 +79,7 @@ node('built-in') {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-universal/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
     }
-    archiveArtifacts "wrap/dist/**"
+    archiveArtifacts "package.json,wrap/dist/**"
     sh returnStatus: true, script: 'rm -rf wrap/'
   }
 
