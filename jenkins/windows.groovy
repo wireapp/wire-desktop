@@ -80,7 +80,7 @@ node('windows') {
   }
 
   stage('Archive build artifacts') {
-    archiveArtifacts 'wrap\\dist\\**'
+    archiveArtifacts 'package.json,wrap\\dist\\**'
   }
 
   stage('Print hash') {
