@@ -3005,10 +3005,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/auto-launch@npm:5.0.3":
-  version: 5.0.3
-  resolution: "@types/auto-launch@npm:5.0.3"
-  checksum: ae401b2af941c752a56bd6e1e3cfd04b652b81cf1723fef30218cec69e0493571709f22209bbae6be19acf3763b37c67c3a2c0270d29be778f2cef2c6fe5ebc3
+"@types/auto-launch@npm:5.0.4":
+  version: 5.0.4
+  resolution: "@types/auto-launch@npm:5.0.4"
+  checksum: 5ced0562f1bab7f5e3f8bf15490df5359e6bbebce7eb40f1f55e09645712919aa882bd006754c66e5bfdc4ca05deaaee67b95af348ac922d7345fba0eb4a8fb5
   languageName: node
   linkType: hard
 
@@ -15600,7 +15600,7 @@ __metadata:
     "@hapi/joi": 17.1.1
     "@types/adm-zip": 0.5.2
     "@types/amplify": 1.1.26
-    "@types/auto-launch": 5.0.3
+    "@types/auto-launch": 5.0.4
     "@types/content-type": 1.1.6
     "@types/eslint": ^8.44.4
     "@types/fs-extra": 9.0.11
