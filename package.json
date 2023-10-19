@@ -49,7 +49,7 @@
     "@types/eslint": "^8.44.6",
     "@types/fs-extra": "9.0.11",
     "@types/hapi__joi": "^17.1.12",
-    "@types/is-ci": "3.0.2",
+    "@types/is-ci": "3.0.3",
     "@types/jest": "^29.5.6",
     "@types/lodash": "4.14.200",
     "@types/minimist": "1.2.4",
