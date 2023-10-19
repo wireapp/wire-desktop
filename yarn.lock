@@ -3223,12 +3223,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/is-ci@npm:3.0.2":
-  version: 3.0.2
-  resolution: "@types/is-ci@npm:3.0.2"
+"@types/is-ci@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@types/is-ci@npm:3.0.3"
   dependencies:
     ci-info: ^3.1.0
-  checksum: 38ff40670403ecb90bdfc072aa17d0d8e7461f95613ffe5080b641fed218b93001c53fd8d0283b207d2c6353f08bafda514eaeb9f947759312160a01b95cc597
+  checksum: 9fe0fcfdd75c29c25b1f18acd5061bab41a27514284eded840ab5e48df4cfdfec58792573e800a6bddc558fc784f6b4f323016f7e45947a84b12dedb618d0de6
   languageName: node
   linkType: hard
 
@@ -15605,7 +15605,7 @@ __metadata:
     "@types/eslint": ^8.44.6
     "@types/fs-extra": 9.0.11
     "@types/hapi__joi": ^17.1.12
-    "@types/is-ci": 3.0.2
+    "@types/is-ci": 3.0.3
     "@types/jest": ^29.5.6
     "@types/lodash": 4.14.200
     "@types/minimist": 1.2.4
