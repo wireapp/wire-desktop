@@ -3555,10 +3555,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sort-json@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@types/sort-json@npm:2.0.1"
-  checksum: f71cf655b0173de7cfa6bacd28d3bec7daf1c769ed20cb7cf8908ca34b780c61917c1548d2f1885a9e181a78f4de635d5e0da0996c629afb9db857554e9d445a
+"@types/sort-json@npm:2.0.2":
+  version: 2.0.2
+  resolution: "@types/sort-json@npm:2.0.2"
+  checksum: 3b2d625564671c8bdd772dba35c7a4d104cca1808c368c0e7dbc3198065b2b36b0a17586799459f44b0e2c95847e942d2a1cfee7b413160e76215a36099fd8f2
   languageName: node
   linkType: hard
 
@@ -15618,7 +15618,7 @@ __metadata:
     "@types/react-dom": ^18.2.13
     "@types/redux-logger": ^3.0.11
     "@types/sinon": 10.0.19
-    "@types/sort-json": 2.0.1
+    "@types/sort-json": 2.0.2
     "@typescript-eslint/eslint-plugin": 6.8.0
     "@typescript-eslint/parser": 6.8.0
     "@wireapp/certificate-check": 0.7.5
