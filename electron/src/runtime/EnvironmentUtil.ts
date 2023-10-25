@@ -24,7 +24,8 @@ import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
 const argv = minimist(process.argv.slice(1));
-const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV];
+const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
+const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV] || webappUrlSetting;
 const isProdEnvironment = !!customWebappUrl;
 
 export enum ServerType {
