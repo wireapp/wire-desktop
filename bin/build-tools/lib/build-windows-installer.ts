@@ -64,7 +64,7 @@ export async function buildWindowsInstallerConfig(
     iconUrl: windowsInstallerConfig.installerIconUrl,
     loadingGif: windowsInstallerConfig.loadingGif,
     name: commonConfig.nameShort,
-    noMsi: true,
+    noMsi: false,
     outputDirectory: commonConfig.distDir,
     setupExe: `${commonConfig.name}-Setup.exe`,
     setupIcon: `${commonConfig.electronDirectory}/img/logo.ico`,
