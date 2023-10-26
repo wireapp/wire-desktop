@@ -58,7 +58,7 @@
     "@types/open-graph": "0.2.4",
     "@types/platform": "1.3.5",
     "@types/prettier": "^2.7.3",
-    "@types/react": "^18.2.31",
+    "@types/react": "^18.2.32",
     "@types/react-dom": "^18.2.14",
     "@types/redux-logger": "^3.0.11",
     "@types/sinon": "10.0.19",
