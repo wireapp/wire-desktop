@@ -3040,12 +3040,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/amplify@npm:1.1.27":
-  version: 1.1.27
-  resolution: "@types/amplify@npm:1.1.27"
+"@types/amplify@npm:1.1.28":
+  version: 1.1.28
+  resolution: "@types/amplify@npm:1.1.28"
   dependencies:
     "@types/jquery": "*"
-  checksum: a93316dcf287f40ebe4f3836c825997bf0aebf1dc016653c7fc5b62edb3a0f007ba904e3c4249af4d408774dab408210d240697e33e8b8886a0344a1aa784e32
+  checksum: 62770d1c9a8efe05fafb6c1077570b905b3f11bc5e0a0231365bdf3d7e149f232101eb3ad6b470991563de2269170c6ead033ee227955aad2f5459b45531c4a7
   languageName: node
   linkType: hard
 
@@ -16081,7 +16081,7 @@ __metadata:
     "@electron/remote": 2.0.12
     "@hapi/joi": 17.1.1
     "@types/adm-zip": 0.5.4
-    "@types/amplify": 1.1.27
+    "@types/amplify": 1.1.28
     "@types/auto-launch": 5.0.5
     "@types/content-type": 1.1.8
     "@types/eslint": ^8.44.6
