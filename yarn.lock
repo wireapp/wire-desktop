@@ -3031,12 +3031,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/adm-zip@npm:0.5.3":
-  version: 0.5.3
-  resolution: "@types/adm-zip@npm:0.5.3"
+"@types/adm-zip@npm:0.5.4":
+  version: 0.5.4
+  resolution: "@types/adm-zip@npm:0.5.4"
   dependencies:
     "@types/node": "*"
-  checksum: 995e21441cc6fe180f12ebf4e722bc6dbde0f9c765e57353018a0969a27cf15542c3f5451bfa1a82b958d5ed5e371fb3cbe55f934076dae22d8bf6a259a536bf
+  checksum: f045165b98ca8de031ed51c1314cf7ed771a59313044b9f4172ed57b5c5f5a97129fac08e26c1b5389d90f27223acfa14637c37387d5d74b58849fdb4e1a73bb
   languageName: node
   linkType: hard
 
@@ -16035,7 +16035,7 @@ __metadata:
     "@electron/osx-sign": 1.0.5
     "@electron/remote": 2.0.12
     "@hapi/joi": 17.1.1
-    "@types/adm-zip": 0.5.3
+    "@types/adm-zip": 0.5.4
     "@types/amplify": 1.1.27
     "@types/auto-launch": 5.0.4
     "@types/content-type": 1.1.7

@@ -42,7 +42,7 @@
     "@babel/register": "7.22.15",
     "@electron/fuses": "1.6.2",
     "@electron/osx-sign": "1.0.5",
-    "@types/adm-zip": "0.5.3",
+    "@types/adm-zip": "0.5.4",
     "@types/amplify": "1.1.27",
     "@types/auto-launch": "5.0.4",
     "@types/content-type": "1.1.7",
