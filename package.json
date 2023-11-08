@@ -1,7 +1,7 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
-    "@electron/remote": "2.0.12",
+    "@electron/remote": "2.1.0",
     "@hapi/joi": "17.1.1",
     "@wireapp/certificate-check": "0.7.6",
     "@wireapp/commons": "5.2.2",
