@@ -3546,12 +3546,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/redux-logger@npm:^3.0.11":
-  version: 3.0.11
-  resolution: "@types/redux-logger@npm:3.0.11"
+"@types/redux-logger@npm:^3.0.12":
+  version: 3.0.12
+  resolution: "@types/redux-logger@npm:3.0.12"
   dependencies:
     redux: ^4.0.0
-  checksum: ed0adb681f801f1436dd7b2d73df6ac11c336890085d635c149f3eefd7410583c1f16535ef6f2585bec390c83e63605552febc6ca0523d7d266518fd60a958ff
+  checksum: fbe1ab82e81686c46758cd133c0af42cf848072d4c2335011dadee106054f96c1688a68f1431600eb392d936366fa338d3f532403e8b694940474ce5269b68df
   languageName: node
   linkType: hard
 
@@ -16053,7 +16053,7 @@ __metadata:
     "@types/prettier": ^2.7.3
     "@types/react": ^18.2.37
     "@types/react-dom": ^18.2.14
-    "@types/redux-logger": ^3.0.11
+    "@types/redux-logger": ^3.0.12
     "@types/sinon": 10.0.19
     "@types/sort-json": 2.0.2
     "@typescript-eslint/eslint-plugin": 6.10.0
