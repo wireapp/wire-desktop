@@ -17,7 +17,7 @@
  *
  */
 
-import {flatAsync as buildPkg} from 'electron-osx-sign';
+import {flatAsync as buildPkg} from '@electron/osx-sign';
 import electronPackager, {ArchOption} from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
@@ -111,15 +111,15 @@ export async function buildMacOSConfig(
   if (!signManually) {
     if (macOSConfig.certNameApplication) {
       packagerConfig.osxSign = {
-        entitlements: 'resources/macos/entitlements/parent.plist',
-        'entitlements-inherit': 'resources/macos/entitlements/child.plist',
+        optionsForFile: () => ({
+          entitlements: 'resources/macos/entitlements/parent.plist',
+        }),
         identity: macOSConfig.certNameApplication,
       };
     }
 
     if (macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword) {
-      // once https://github.com/electron/electron-packager/issues/1162 is fixed, any can be removed
-      (packagerConfig as any).osxNotarize = {
+      packagerConfig.osxNotarize = {
         appleId: macOSConfig.notarizeAppleId,
         appleIdPassword: macOSConfig.notarizeApplePassword,
       };

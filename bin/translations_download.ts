@@ -23,7 +23,6 @@ import https from 'https';
 import * as path from 'path';
 import fs from 'fs-extra';
 import AdmZip from 'adm-zip';
-import sortJson from 'sort-json';
 
 const rootDir = path.resolve(__dirname, '..');
 const destinationPath = path.join(rootDir, 'electron/src/locale');

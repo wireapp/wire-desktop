@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import {Logger} from '@wireapp/commons/src/main/LogFactory';
+import {Logger} from '@wireapp/commons';
 import {getLogger} from '../../bin-utils';
 import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';

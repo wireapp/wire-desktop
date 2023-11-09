@@ -93,7 +93,6 @@ const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = EnvironmentUtil.web.getWebappUrl();
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
 const logger = getLogger(path.basename(__filename));
@@ -220,6 +219,24 @@ const initWindowStateKeeper = (): windowStateKeeper.State => {
   return windowStateKeeper(stateKeeperOptions);
 };
 
+function getMainWindowUrl() {
+  const baseUrl = EnvironmentUtil.web.getWebappUrl();
+  const webappURL = new URL(baseUrl);
+  webappURL.searchParams.set('hl', currentLocale);
+
+  if (ENABLE_LOGGING) {
+    webappURL.searchParams.set('enableLogging', '@wireapp/*');
+  }
+
+  if (customProtocolHandler.hashLocation) {
+    webappURL.hash = customProtocolHandler.hashLocation;
+  }
+  const mainURL = pathToFileURL(INDEX_HTML);
+  mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
+  mainURL.searchParams.set('focus', String(!startHidden));
+  return mainURL;
+}
+
 // App Windows
 const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
@@ -233,7 +250,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     minWidth: WINDOW_SIZE.MIN_WIDTH,
     show: false,
     title: config.name,
-    titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
       contextIsolation: false,
@@ -264,17 +280,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
-
-  const webappURL = new URL(BASE_URL);
-  webappURL.searchParams.set('hl', currentLocale);
-
-  if (ENABLE_LOGGING) {
-    webappURL.searchParams.set('enableLogging', '@wireapp/*');
-  }
-
-  if (customProtocolHandler.hashLocation) {
-    webappURL.hash = customProtocolHandler.hashLocation;
-  }
 
   if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
     openDevTools(argv[config.ARGUMENT.DEVTOOLS]).catch(() =>
@@ -345,10 +350,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
 
   main.webContents.setZoomFactor(1);
 
-  const mainURL = pathToFileURL(INDEX_HTML);
-  mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
-  mainURL.searchParams.set('focus', String(!startHidden));
-
+  const mainURL = getMainWindowUrl();
   await main.loadURL(mainURL.href);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
   await main.webContents.insertCSS(wrapperCSSContent);
@@ -742,6 +744,12 @@ lifecycle
   .checkSingleInstance()
   .then(() => lifecycle.initSquirrelListener())
   .catch(error => logger.error(error));
+
+// Reloads the entire view when a `relaunch` is triggered (MacOS only, as other platform will quit and restart the app)
+lifecycle.addRelaunchListeners(async () => {
+  const mainURL = getMainWindowUrl();
+  await main.loadURL(mainURL.href);
+});
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
