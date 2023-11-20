@@ -331,9 +331,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  app.on('render-process-gone', (event, _, details) => {
+  app.on('render-process-gone', async (event, _, details) => {
     logger.error('WebContents crashed. Will reload the window.');
-    logger.error(details);
+    logger.error(JSON.stringify(details));
     try {
       main.reload();
     } catch (error) {
@@ -675,6 +675,7 @@ class ElectronWrapperInit {
           });
           if (ENABLE_LOGGING) {
             const colorCodeRegex = /%c(.+?)%c/gm;
+            const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;
 
             contents.on('console-message', async (_event, _level, message) => {
@@ -689,7 +690,7 @@ class ElectronWrapperInit {
                 const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
                 try {
                   await LogFactory.writeMessage(
-                    message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
+                    message.replace(colorCodeRegex, '$1').replace(stylingRegex, '').replace(accessTokenRegex, ''),
                     logFilePath,
                   );
                 } catch (error) {
