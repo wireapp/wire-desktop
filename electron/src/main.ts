@@ -331,9 +331,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  main.webContents.on('crashed', event => {
+  app.on('render-process-gone', (event, _, details) => {
     logger.error('WebContents crashed. Will reload the window.');
-    logger.error(event);
+    logger.error(details);
     try {
       main.reload();
     } catch (error) {
