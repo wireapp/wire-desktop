@@ -3747,21 +3747,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:6.13.0":
-  version: 6.13.0
-  resolution: "@typescript-eslint/parser@npm:6.13.0"
+"@typescript-eslint/parser@npm:6.13.1":
+  version: 6.13.1
+  resolution: "@typescript-eslint/parser@npm:6.13.1"
   dependencies:
-    "@typescript-eslint/scope-manager": 6.13.0
-    "@typescript-eslint/types": 6.13.0
-    "@typescript-eslint/typescript-estree": 6.13.0
-    "@typescript-eslint/visitor-keys": 6.13.0
+    "@typescript-eslint/scope-manager": 6.13.1
+    "@typescript-eslint/types": 6.13.1
+    "@typescript-eslint/typescript-estree": 6.13.1
+    "@typescript-eslint/visitor-keys": 6.13.1
     debug: ^4.3.4
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: e6fc677a93b0805dbce5635d44863a4264e0afbbc351b080458e5f5628704583673b5d9539837f340d4dcef74a78ef160596e3a6a095da7c4a7e7cb2f2601717
+  checksum: 58b7fef6f2d02c8f4737f9908a8d335a20bee20dba648233a69f28e7b39237791d2b9fbb818e628dcc053ddf16507b161ace7f1139e093d72365f1270c426de3
   languageName: node
   linkType: hard
 
@@ -3800,6 +3800,16 @@ __metadata:
     "@typescript-eslint/types": 6.13.0
     "@typescript-eslint/visitor-keys": 6.13.0
   checksum: b0b4b1c26cb3a8cfd2ddd4ac1fb7c71f5755babde6905658434042ee4039c8fdbae3cb197909a50e7e692e00db85a3b30659188dcb2f02d3065588945d929f90
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/scope-manager@npm:6.13.1":
+  version: 6.13.1
+  resolution: "@typescript-eslint/scope-manager@npm:6.13.1"
+  dependencies:
+    "@typescript-eslint/types": 6.13.1
+    "@typescript-eslint/visitor-keys": 6.13.1
+  checksum: 109a213f82719e10f8c6a0168f2e105dc1369c7e0c075c1f30af137030fc866a3a585a77ff78a9a3538afc213061c8aedbb4462a91f26cbd90eefbab8b89ea10
   languageName: node
   linkType: hard
 
@@ -3861,6 +3871,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/types@npm:6.13.1":
+  version: 6.13.1
+  resolution: "@typescript-eslint/types@npm:6.13.1"
+  checksum: bb1d52f1646bab9acd3ec874567ffbaaaf7fe4a5f79845bdacbfea46d15698e58d45797da05b08c23f9496a17229b7f2c1363d000fd89ce4e79874fd57ba1d4a
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/types@npm:6.7.4":
   version: 6.7.4
   resolution: "@typescript-eslint/types@npm:6.7.4"
@@ -3901,6 +3918,24 @@ __metadata:
     typescript:
       optional: true
   checksum: f1fc5d2f6c1e6c063e8bad037aab32a6c635b9e474d3863207e040f7b0b2ff1a1437dd5af043a8b6e4de3305d5fadf41e1688ff1772ee97ed3e597edba2843fb
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/typescript-estree@npm:6.13.1":
+  version: 6.13.1
+  resolution: "@typescript-eslint/typescript-estree@npm:6.13.1"
+  dependencies:
+    "@typescript-eslint/types": 6.13.1
+    "@typescript-eslint/visitor-keys": 6.13.1
+    debug: ^4.3.4
+    globby: ^11.1.0
+    is-glob: ^4.0.3
+    semver: ^7.5.4
+    ts-api-utils: ^1.0.1
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 09aa0f5cbd60e84df4f58f3d479be352549600b24dbefe75c686ea89252526c52c1c06ce1ae56c0405dd7337002e741c2ba02b71fb1caa3b94a740a70fcc8699
   languageName: node
   linkType: hard
 
@@ -3991,6 +4026,16 @@ __metadata:
     "@typescript-eslint/types": 6.13.0
     eslint-visitor-keys: ^3.4.1
   checksum: 3e7eefefa9ef0c19b56df0f66e0c51d9c3d4aae64bd68906a5225aa2a735a3803ca7a7ca638ebce0b010fa22f39f11caa46dfdec31d98675562b85a7e8465841
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/visitor-keys@npm:6.13.1":
+  version: 6.13.1
+  resolution: "@typescript-eslint/visitor-keys@npm:6.13.1"
+  dependencies:
+    "@typescript-eslint/types": 6.13.1
+    eslint-visitor-keys: ^3.4.1
+  checksum: d15d362203a2fe995ea62a59d5b44c15c8fb1fb30ff59dd1542a980f75b3b62035303dfb781d83709921613f6ac8cc5bf57b70f6e20d820aec8b7911f07152e9
   languageName: node
   linkType: hard
 
@@ -16122,7 +16167,7 @@ __metadata:
     "@types/sinon": 17.0.2
     "@types/sort-json": 2.0.3
     "@typescript-eslint/eslint-plugin": 6.13.0
-    "@typescript-eslint/parser": 6.13.0
+    "@typescript-eslint/parser": 6.13.1
     "@wireapp/certificate-check": 0.7.7
     "@wireapp/commons": 5.2.3
     "@wireapp/copy-config": 1.3.6
