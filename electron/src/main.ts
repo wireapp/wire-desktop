@@ -20,6 +20,7 @@
 import * as remoteMain from '@electron/remote/main';
 import {
   app,
+  dialog,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
@@ -30,6 +31,7 @@ import {
   safeStorage,
   HandlerDetails,
 } from 'electron';
+import electronDl from 'electron-dl';
 import windowStateKeeper from 'electron-window-state';
 import fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
@@ -80,6 +82,8 @@ const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/preload-app.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/preload/preload-webview.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
+const ICON = path.join(APP_PATH, 'img/download-dialog/logo@2x.png');
+
 const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,
   DEFAULT_WIDTH: 1024,
@@ -98,6 +102,25 @@ const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.P
 const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
+const customDownloadPath =
+  settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL) ?? argv[config.ARGUMENT.DLPATH];
+logger.error('customDownloadPath', customDownloadPath);
+
+if (customDownloadPath) {
+  electronDl({
+    directory: customDownloadPath,
+    saveAs: false,
+    onCompleted: () => {
+      dialog.showMessageBox({
+        type: 'none',
+        icon: ICON,
+        title: 'Download completed',
+        message: `The file was downloaded. You’ll find the file in the following folder on your computer: \n ${customDownloadPath}`,
+        buttons: ['OK'],
+      });
+    },
+  });
+}
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
