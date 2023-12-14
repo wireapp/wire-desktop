@@ -7742,9 +7742,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:46.9.0":
-  version: 46.9.0
-  resolution: "eslint-plugin-jsdoc@npm:46.9.0"
+"eslint-plugin-jsdoc@npm:46.9.1":
+  version: 46.9.1
+  resolution: "eslint-plugin-jsdoc@npm:46.9.1"
   dependencies:
     "@es-joy/jsdoccomment": ~0.41.0
     are-docs-informative: ^0.0.2
@@ -7754,10 +7754,10 @@ __metadata:
     esquery: ^1.5.0
     is-builtin-module: ^3.2.1
     semver: ^7.5.4
-    spdx-expression-parse: ^3.0.1
+    spdx-expression-parse: ^4.0.0
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
-  checksum: b7c1c8eaa1c61d8bb5b6b541f891a6033cc434893bb6c62c91c8fd2add4bd477f10e559c04ba92ae05def06d551a905b301d7de00a0e92df7663701cb7952861
+  checksum: c1307398f9cf79ad1479b7f2c08ffc150d2b4f9747880f6a0de2f34dc1b04ec34d01acbd69d0ed1a4d1e435dba6683bd1446b3ff89a2074e9c739e15d22c228f
   languageName: node
   linkType: hard
 
@@ -14668,6 +14668,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"spdx-expression-parse@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "spdx-expression-parse@npm:4.0.0"
+  dependencies:
+    spdx-exceptions: ^2.1.0
+    spdx-license-ids: ^3.0.0
+  checksum: 936be681fbf5edeec3a79c023136479f70d6edb3fd3875089ac86cd324c6c8c81add47399edead296d1d0af17ae5ce88c7f88885eb150b62c2ff6e535841ca6a
+  languageName: node
+  linkType: hard
+
 "spdx-license-ids@npm:^3.0.0":
   version: 3.0.13
   resolution: "spdx-license-ids@npm:3.0.13"
@@ -16330,7 +16340,7 @@ __metadata:
     eslint-plugin-jasmine: 4.1.3
     eslint-plugin-jest: 27.6.0
     eslint-plugin-jest-dom: 5.1.0
-    eslint-plugin-jsdoc: 46.9.0
+    eslint-plugin-jsdoc: 46.9.1
     eslint-plugin-jsx-a11y: 6.8.0
     eslint-plugin-no-unsanitized: 4.0.2
     eslint-plugin-prettier: 4.2.1
