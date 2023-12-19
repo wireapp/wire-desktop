@@ -30,7 +30,7 @@ node('built-in') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf *.pkg *.zip ./wrap/dist/'
+    sh returnStatus: true, script: 'rm -rf *.pkg *.zip ./wrap/dist/ ./node_modules/'
   }
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
