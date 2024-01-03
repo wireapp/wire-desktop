@@ -3287,13 +3287,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:^8.56.0":
-  version: 8.56.0
-  resolution: "@types/eslint@npm:8.56.0"
+"@types/eslint@npm:^8.56.1":
+  version: 8.56.1
+  resolution: "@types/eslint@npm:8.56.1"
   dependencies:
     "@types/estree": "*"
     "@types/json-schema": "*"
-  checksum: 8eca14c1ca8a4dbbcbf6bed67775db9dd2f9947802d6da39fa0c4c297a1e5465e898332232bb51980586a9a45b1b21bc13fd79fcc81adcd4c86062372e9bab6d
+  checksum: 1a4c7334c2f0cfead7b9d25c574c7b3d0b44242958703caa868ed38990a96b5d96477e6fceb7be54fbadd6fb61c97b778b9df58531ced3ec4b022d3e54254dc3
   languageName: node
   linkType: hard
 
@@ -16274,7 +16274,7 @@ __metadata:
     "@types/amplify": 1.1.28
     "@types/auto-launch": 5.0.5
     "@types/content-type": 1.1.8
-    "@types/eslint": ^8.56.0
+    "@types/eslint": ^8.56.1
     "@types/fs-extra": 9.0.11
     "@types/hapi__joi": ^17.1.14
     "@types/is-ci": 3.0.4
