@@ -56,7 +56,7 @@ enum RESPONSE {
 }
 
 class CertificateVerifyProcManager {
-  private static bypassCertificatePinning = false;
+  private static bypassCertificatePinning = true;
   private static isDialogLocked = false;
   public static mainWindow: BrowserWindow;
 
@@ -210,7 +210,8 @@ export const setCertificateVerifyProc = async (
       await CertificateVerifyProcManager.displayCertificateChromiumError(hostname, validatedCertificate);
     }
 
-    return cb(CertificateVerificationResult.FAILURE);
+    // return cb(CertificateVerificationResult.FAILURE);
+    return cb(CertificateVerificationResult.USE_CHROMIUM_VALIDATION);
   }
 
   // Check certificate pinning
@@ -222,7 +223,8 @@ export const setCertificateVerifyProc = async (
       logger.error(`Certificate verification failed for "${hostname}".`);
       logger.error(`Error: "${pinningResults.errorMessage}". Displaying certificate pinning error dialog.`);
       await CertificateVerifyProcManager.displayCertificateError(hostname, validatedCertificate);
-      return cb(CertificateVerificationResult.FAILURE);
+      // return cb(CertificateVerificationResult.FAILURE);
+      return cb(CertificateVerificationResult.USE_CHROMIUM_VALIDATION);
     }
   }
 

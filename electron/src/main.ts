@@ -331,6 +331,14 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
+  // SSL/TSL: this is the self signed certificate support
+  app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+    // On certificate error we disable default behaviour (stop loading the page)
+    // and we then say "it is all fine - true" to the callback
+    event.preventDefault();
+    callback(true);
+  });
+
   app.on('render-process-gone', async (event, _, details) => {
     logger.error('WebContents crashed. Will reload the window.');
     logger.error(JSON.stringify(details));
