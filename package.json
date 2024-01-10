@@ -78,7 +78,7 @@
     "commander": "11.1.0",
     "core-js": "3.35.0",
     "cross-env": "7.0.3",
-    "css-loader": "6.8.1",
+    "css-loader": "6.9.0",
     "dotenv": "16.3.1",
     "electron": "27.2.1",
     "electron-builder": "24.9.1",
