@@ -61,7 +61,7 @@
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
     "@types/redux-logger": "^3.0.12",
-    "@types/sinon": "17.0.2",
+    "@types/sinon": "17.0.3",
     "@types/sort-json": "2.0.3",
     "@typescript-eslint/eslint-plugin": "6.18.1",
     "@typescript-eslint/parser": "6.18.1",
