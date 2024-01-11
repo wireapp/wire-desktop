@@ -102,24 +102,29 @@ const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.P
 const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
-const customDownloadPath =
-  settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL) ?? argv[config.ARGUMENT.DLPATH];
+const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
 logger.error('customDownloadPath', customDownloadPath);
 
-if (customDownloadPath) {
+const customDownloadHandler = (path?: string) => {
   electronDl({
-    directory: customDownloadPath,
+    directory: path ?? app.getPath('downloads'),
     saveAs: false,
     onCompleted: () => {
       dialog.showMessageBox({
         type: 'none',
         icon: ICON,
         title: 'Download completed',
-        message: `The file was downloaded. You’ll find the file in the following folder on your computer: \n ${customDownloadPath}`,
+        message: `The file was downloaded. You’ll find the file in the following folder on your computer: \n ${
+          path ?? app.getPath('downloads')
+        }`,
         buttons: ['OK'],
       });
     },
   });
+};
+
+if (customDownloadPath) {
+  customDownloadHandler(customDownloadPath);
 }
 
 if (argv[config.ARGUMENT.VERSION]) {
@@ -209,6 +214,15 @@ const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
+
+  ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
+    if (downloadPath) {
+      fs.ensureDirSync(downloadPath);
+    }
+    //save the downloadPath locally
+    settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
+    settings.persistToFile();
+  });
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
