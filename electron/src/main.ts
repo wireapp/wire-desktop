@@ -103,28 +103,23 @@ const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
-logger.error('customDownloadPath', customDownloadPath);
 
-const customDownloadHandler = (path?: string) => {
+if (customDownloadPath) {
   electronDl({
-    directory: path ?? app.getPath('downloads'),
+    directory: customDownloadPath,
     saveAs: false,
     onCompleted: () => {
       dialog.showMessageBox({
         type: 'none',
         icon: ICON,
-        title: 'Download completed',
-        message: `The file was downloaded. You’ll find the file in the following folder on your computer: \n ${
-          path ?? app.getPath('downloads')
-        }`,
-        buttons: ['OK'],
+        title: locale.getText('enforcedDownloadComplete'),
+        message: locale.getText('enforcedDownloadMessage', {
+          path: customDownloadPath ?? app.getPath('downloads'),
+        }),
+        buttons: [locale.getText('enforcedDownloadButton')],
       });
     },
   });
-};
-
-if (customDownloadPath) {
-  customDownloadHandler(customDownloadPath);
 }
 
 if (argv[config.ARGUMENT.VERSION]) {
