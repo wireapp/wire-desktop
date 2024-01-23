@@ -103,15 +103,6 @@ export const quit = async (clearCache = true): Promise<void> => {
 
 export const relaunch = async () => {
   logger.info('Relaunching the app ...');
-  if (EnvironmentUtil.platform.IS_MAC_OS) {
-    /*
-     * on MacOS, it is not possible to relaunch the app, so just fallback
-     * to reloading all the webviews
-     * see: https://github.com/electron/electron/issues/13696
-     */
-    relaunchListeners.forEach(listener => listener());
-  } else {
-    app.relaunch();
-    await quit();
-  }
+  app.relaunch();
+  await quit();
 };
