@@ -32,6 +32,7 @@ export enum ServerType {
   PRODUCTION = 'PRODUCTION',
   EDGE = 'EDGE',
   BETA = 'INTERNAL',
+  DEV = 'DEV',
 }
 
 interface AvailableEnvironment {
@@ -52,6 +53,7 @@ const webappEnvironments = {
   [ServerType.PRODUCTION]: {name: 'Production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
   [ServerType.BETA]: {name: 'Beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
   [ServerType.EDGE]: {name: 'Edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.wire.com'},
+  [ServerType.DEV]: {name: 'Dev', server: ServerType.DEV, url: 'https://wire-webapp-dev.zinfra.io'},
 } as const;
 
 export const app = {
