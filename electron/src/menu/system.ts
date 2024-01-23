@@ -387,7 +387,7 @@ const showRestartMessageBox = async () => {
     type: 'info',
   });
   if (response === 1) {
-    await lifecycle.relaunch();
+    await (EnvironmentUtil.platform.IS_MAC_OS ? lifecycle.quit() : lifecycle.relaunch());
   }
 };
 
