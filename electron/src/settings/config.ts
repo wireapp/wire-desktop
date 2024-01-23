@@ -62,6 +62,7 @@ enum ARGUMENT {
   STARTUP = 'startup',
   USER_DATA_DIR = 'user_data_dir',
   VERSION = 'version',
+  DLPATH = 'dlpath',
 }
 
 export const config = {

@@ -381,10 +381,7 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: l
 
 const showRestartMessageBox = async () => {
   const {response} = await dialog.showMessageBox({
-    buttons: [
-      locale.getText('restartLater'),
-      EnvironmentUtil.platform.IS_MAC_OS ? locale.getText('menuQuit') : locale.getText('restartNow'),
-    ],
+    buttons: [locale.getText('restartLater'), locale.getText('restartNow')],
     message: locale.getText('restartLocale'),
     title: locale.getText('restartNeeded'),
     type: 'info',
