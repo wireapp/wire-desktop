@@ -211,12 +211,12 @@ const bindIpcEvents = (): void => {
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
 
   ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
-    if (downloadPath) {
-      fs.ensureDirSync(downloadPath);
+    if (downloadPath && EnvironmentUtil.platform.IS_WINDOWS) {
+      fs.ensureDirSync(`${app.getPath('home')}\\${downloadPath}`);
+      //save the downloadPath locally
+      settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
+      settings.persistToFile();
     }
-    //save the downloadPath locally
-    settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
-    settings.persistToFile();
   });
 };
 
