@@ -106,7 +106,7 @@ const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOW
 
 if (customDownloadPath) {
   electronDl({
-    directory: customDownloadPath,
+    directory: `${app.getPath('home')}\\${customDownloadPath}`,
     saveAs: false,
     onCompleted: () => {
       dialog.showMessageBox({
@@ -114,7 +114,7 @@ if (customDownloadPath) {
         icon: ICON,
         title: locale.getText('enforcedDownloadComplete'),
         message: locale.getText('enforcedDownloadMessage', {
-          path: customDownloadPath ?? app.getPath('downloads'),
+          path: `${app.getPath('home')}\\${customDownloadPath}` ?? app.getPath('downloads'),
         }),
         buttons: [locale.getText('enforcedDownloadButton')],
       });
