@@ -103,10 +103,11 @@ const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
+const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
 
 if (customDownloadPath) {
   electronDl({
-    directory: `${app.getPath('home')}\\${customDownloadPath}`,
+    directory: appHomePath(customDownloadPath),
     saveAs: false,
     onCompleted: () => {
       dialog.showMessageBox({
@@ -114,7 +115,7 @@ if (customDownloadPath) {
         icon: ICON,
         title: locale.getText('enforcedDownloadComplete'),
         message: locale.getText('enforcedDownloadMessage', {
-          path: `${app.getPath('home')}\\${customDownloadPath}` ?? app.getPath('downloads'),
+          path: appHomePath(customDownloadPath) ?? app.getPath('downloads'),
         }),
         buttons: [locale.getText('enforcedDownloadButton')],
       });
@@ -212,7 +213,7 @@ const bindIpcEvents = (): void => {
 
   ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
     if (downloadPath && EnvironmentUtil.platform.IS_WINDOWS) {
-      fs.ensureDirSync(`${app.getPath('home')}\\${downloadPath}`);
+      fs.ensureDirSync(appHomePath(downloadPath));
       //save the downloadPath locally
       settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
       settings.persistToFile();
