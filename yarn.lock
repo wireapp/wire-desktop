@@ -2103,12 +2103,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/remote@npm:2.1.1":
-  version: 2.1.1
-  resolution: "@electron/remote@npm:2.1.1"
+"@electron/remote@npm:2.1.2":
+  version: 2.1.2
+  resolution: "@electron/remote@npm:2.1.2"
   peerDependencies:
     electron: ">= 13.0.0"
-  checksum: 816796f9371b398d1ce6ef30cc7499553a9c85c46807fcf1367dd3e907e485a24c0c1a9dfd9b28dbaec830969fafd592dedcff7c20b7179d74a933cde7494c64
+  checksum: 24d49aa494b12f1f791b322850f4e29ac69ec57b318d01f1b9e216807886ba1c3dcf9dc1508a18b8daf3ea3c58f8131e1dcf863ba246cfe3554c8ec872a50d10
   languageName: node
   linkType: hard
 
@@ -16337,7 +16337,7 @@ __metadata:
     "@babel/register": 7.23.7
     "@electron/fuses": 1.7.0
     "@electron/osx-sign": 1.0.5
-    "@electron/remote": 2.1.1
+    "@electron/remote": 2.1.2
     "@hapi/joi": 17.1.1
     "@types/adm-zip": 0.5.5
     "@types/amplify": 1.1.28
