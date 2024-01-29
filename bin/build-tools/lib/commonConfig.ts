@@ -53,6 +53,8 @@ export async function getCommonConfig(envFile: string, wireJson: string): Promis
 
   const commonConfig: CommonConfig = {
     ...defaultConfig,
+    aboutReleasesUrl: process.env.URL_ABOUT_RELEASES || defaultConfig.aboutReleasesUrl,
+    aboutUpdatesUrl: process.env.URL_ABOUT_UPDATES || defaultConfig.aboutUpdatesUrl,
     adminUrl: process.env.URL_ADMIN || defaultConfig.adminUrl,
     appBase: process.env.APP_BASE || defaultConfig.appBase,
     buildDir: defaultConfig.buildDir || 'wrap/build',
