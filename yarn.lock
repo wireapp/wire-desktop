@@ -3331,12 +3331,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:9.0.11":
-  version: 9.0.11
-  resolution: "@types/fs-extra@npm:9.0.11"
+"@types/fs-extra@npm:11.0.4":
+  version: 11.0.4
+  resolution: "@types/fs-extra@npm:11.0.4"
   dependencies:
+    "@types/jsonfile": "*"
     "@types/node": "*"
-  checksum: 54619e50583a45d63e1d061dc5ca09b53424dd8ec01edfc282b6d5733d4fc40bcf3e66a2704a13ed4d3bf36f261b6fa27c180fd2f86114f6bc30c3eb245f453e
+  checksum: 242cb84157631f057f76495c8220707541882c00a00195b603d937fb55e471afecebcb089bab50233ed3a59c69fd68bf65c1f69dd7fafe2347e139cc15b9b0e5
   languageName: node
   linkType: hard
 
@@ -3474,6 +3475,15 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
+  languageName: node
+  linkType: hard
+
+"@types/jsonfile@npm:*":
+  version: 6.1.4
+  resolution: "@types/jsonfile@npm:6.1.4"
+  dependencies:
+    "@types/node": "*"
+  checksum: 309fda20eb5f1cf68f2df28931afdf189c5e7e6bec64ac783ce737bb98908d57f6f58757ad5da9be37b815645a6f914e2d4f3ac66c574b8fe1ba6616284d0e97
   languageName: node
   linkType: hard
 
@@ -8801,6 +8811,17 @@ __metadata:
     jsonfile: ^6.0.1
     universalify: ^2.0.0
   checksum: 5ca476103fa1f5ff4a9b3c4f331548f8a3c1881edaae323a4415d3153b5dc11dc6a981c8d1dd93eec8367ceee27b53f8bd27eecbbf66ffcdd04927510c171e7f
+  languageName: node
+  linkType: hard
+
+"fs-extra@npm:11.2.0":
+  version: 11.2.0
+  resolution: "fs-extra@npm:11.2.0"
+  dependencies:
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^2.0.0
+  checksum: b12e42fa40ba47104202f57b8480dd098aa931c2724565e5e70779ab87605665594e76ee5fb00545f772ab9ace167fe06d2ab009c416dc8c842c5ae6df7aa7e8
   languageName: node
   linkType: hard
 
@@ -16392,7 +16413,7 @@ __metadata:
     "@types/auto-launch": 5.0.5
     "@types/content-type": 1.1.8
     "@types/eslint": ^8.56.2
-    "@types/fs-extra": 9.0.11
+    "@types/fs-extra": 11.0.4
     "@types/hapi__joi": ^17.1.14
     "@types/is-ci": 3.0.4
     "@types/jest": ^29.5.11
@@ -16460,7 +16481,7 @@ __metadata:
     eslint-plugin-testing-library: 6.2.0
     eslint-plugin-unused-imports: 3.0.0
     form-data: 4.0.0
-    fs-extra: 10.1.0
+    fs-extra: 11.2.0
     get-proxy-settings: 0.1.13
     globby: 11.1
     husky: 4.3.8
