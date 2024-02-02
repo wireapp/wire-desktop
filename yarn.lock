@@ -3611,14 +3611,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.7.3":
-  version: 2.7.3
-  resolution: "@types/prettier@npm:2.7.3"
-  checksum: 705384209cea6d1433ff6c187c80dcc0b95d99d5c5ce21a46a9a58060c527973506822e428789d842761e0280d25e3359300f017fbe77b9755bc772ab3dc2f83
-  languageName: node
-  linkType: hard
-
-"@types/prettier@npm:^3":
+"@types/prettier@npm:^3, @types/prettier@npm:^3.0.0":
   version: 3.0.0
   resolution: "@types/prettier@npm:3.0.0"
   dependencies:
@@ -13338,12 +13331,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.8.8":
-  version: 2.8.8
-  resolution: "prettier@npm:2.8.8"
+"prettier@npm:3.2.4":
+  version: 3.2.4
+  resolution: "prettier@npm:3.2.4"
   bin:
-    prettier: bin-prettier.js
-  checksum: b49e409431bf129dd89238d64299ba80717b57ff5a6d1c1a8b1a28b590d998a34e083fa13573bc732bb8d2305becb4c9a4407f8486c81fa7d55100eb08263cf8
+    prettier: bin/prettier.cjs
+  checksum: 6ec9385a836e0b9bac549e585101c086d1521c31d7b882d5c8bb7d7646da0693da5f31f4fff6dc080710e5e2d34c85e6fb2f8766876b3645c8be2f33b9c3d1a3
   languageName: node
   linkType: hard
 
@@ -16429,7 +16422,7 @@ __metadata:
     "@types/node": 18.19.14
     "@types/open-graph": 0.2.5
     "@types/platform": 1.3.6
-    "@types/prettier": ^2.7.3
+    "@types/prettier": ^3.0.0
     "@types/react": ^18.2.51
     "@types/react-dom": ^18.2.18
     "@types/redux-logger": ^3.0.12
@@ -16505,7 +16498,7 @@ __metadata:
     nock: 13.5.1
     nyc: 15.1.0
     open-graph: 0.2.6
-    prettier: 2.8.8
+    prettier: 3.2.4
     react: 18.2.0
     react-dom: 18.2.0
     react-redux: 8.1.3
