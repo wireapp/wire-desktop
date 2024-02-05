@@ -6976,14 +6976,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-dl@npm:^3.5.1":
-  version: 3.5.1
-  resolution: "electron-dl@npm:3.5.1"
+"electron-dl@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "electron-dl@npm:3.5.2"
   dependencies:
     ext-name: ^5.0.0
     pupa: ^2.0.1
     unused-filename: ^2.1.0
-  checksum: 3d176b2005bfafce5ce5e1f4a8c445dbe5efac4db41153296d59e026cacc8a5c538ed9c40c856a781dac2b1aef6a5c6e59a76aa316138ed1e07a082e0b36d449
+  checksum: 7714599f74f6036bf36f19a20a56dbc407d3e05518b4a38f5c9ce23a251f4d7442bf47dec4fa9cabb02509b4fe4c58752702b85deded016d213303bb16d230a2
   languageName: node
   linkType: hard
 
@@ -16462,7 +16462,7 @@ __metadata:
     dotenv: 16.4.1
     electron: 27.3.1
     electron-builder: 24.9.1
-    electron-dl: ^3.5.1
+    electron-dl: ^3.5.2
     electron-mocha: 12.2.0
     electron-packager: 17.1.2
     electron-window-state: 5.0.3
