@@ -2292,6 +2292,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@es-joy/jsdoccomment@npm:~0.42.0":
+  version: 0.42.0
+  resolution: "@es-joy/jsdoccomment@npm:0.42.0"
+  dependencies:
+    comment-parser: 1.4.1
+    esquery: ^1.5.0
+    jsdoc-type-pratt-parser: ~4.0.0
+  checksum: ea0b56ca8d7470cac4694669807e4b4bbf25389c220af483ea14455c31d4a9e0f6ef0b08f45b92eb8c401bb3d6f662b4b14da51f222b85d78b2b757372072652
+  languageName: node
+  linkType: hard
+
 "@eslint-community/eslint-utils@npm:^4.2.0, @eslint-community/eslint-utils@npm:^4.4.0":
   version: 4.4.0
   resolution: "@eslint-community/eslint-utils@npm:4.4.0"
@@ -7778,22 +7789,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:48.0.5":
-  version: 48.0.5
-  resolution: "eslint-plugin-jsdoc@npm:48.0.5"
+"eslint-plugin-jsdoc@npm:48.0.6":
+  version: 48.0.6
+  resolution: "eslint-plugin-jsdoc@npm:48.0.6"
   dependencies:
-    "@es-joy/jsdoccomment": ~0.41.0
+    "@es-joy/jsdoccomment": ~0.42.0
     are-docs-informative: ^0.0.2
     comment-parser: 1.4.1
     debug: ^4.3.4
     escape-string-regexp: ^4.0.0
     esquery: ^1.5.0
     is-builtin-module: ^3.2.1
-    semver: ^7.5.4
+    semver: ^7.6.0
     spdx-expression-parse: ^4.0.0
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0 || ^9.0.0
-  checksum: 90a265acf17205b5722eea96c9f5a3bc184febc7fa334a6b3cb234924a6ae13f79e791ef2865cf65999e80b8f1d169c6582076d5d721edcf091101164cf005e6
+  checksum: 79a63ee27522ec04f1453a98b70a27ee5cfbd6451e0cd94a3f1702b30ee6b5d6ef9d05beb5a6e17a3cfe4428426957749ff0af0745626a31fe0fbfb520bd1691
   languageName: node
   linkType: hard
 
@@ -14439,6 +14450,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:^7.6.0":
+  version: 7.6.0
+  resolution: "semver@npm:7.6.0"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 7427f05b70786c696640edc29fdd4bc33b2acf3bbe1740b955029044f80575fc664e1a512e4113c3af21e767154a94b4aa214bf6cd6e42a1f6dba5914e0b208c
+  languageName: node
+  linkType: hard
+
 "serialize-error@npm:^7.0.1":
   version: 7.0.1
   resolution: "serialize-error@npm:7.0.1"
@@ -16477,7 +16499,7 @@ __metadata:
     eslint-plugin-jasmine: 4.1.3
     eslint-plugin-jest: 27.6.3
     eslint-plugin-jest-dom: 5.1.0
-    eslint-plugin-jsdoc: 48.0.5
+    eslint-plugin-jsdoc: 48.0.6
     eslint-plugin-jsx-a11y: 6.8.0
     eslint-plugin-no-unsanitized: 4.0.2
     eslint-plugin-prettier: 4.2.1
