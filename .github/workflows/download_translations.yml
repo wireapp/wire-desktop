@@ -36,6 +36,6 @@ jobs:
           create_pull_request: true
           pull_request_title: 'chore: Update translations'
           token: ${{secrets.WEBTEAM_CROWDIN_TOKEN}}
-          source: '/electron/locale/en-US.json'
-          translation: '/electron/locale/%locale%.json'
+          source: '/electron/src/locale/en-US.json'
+          translation: '/electron/src/locale/%locale%.json'
           base_path: '.'
