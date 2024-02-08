@@ -624,13 +624,14 @@ class ElectronWrapperInit {
       }
     };
 
+    // Keeping this Function for future use
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
       // Ensure navigation is to an allowed domain
       if (OriginValidator.isMatchingHost(url, baseUrl)) {
         this.logger.log(`Navigating inside <webview>. URL: ${url}`);
       } else {
-        this.logger.log(`Preventing navigation inside <webview>. URL: ${url}`);
-        event.preventDefault();
+        // ToDo: Add a back button to the webview to navigate back to the main app
+        this.logger.log(`Navigating outside <webview>. URL: ${url}`);
       }
     };
 
