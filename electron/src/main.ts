@@ -20,6 +20,7 @@
 import * as remoteMain from '@electron/remote/main';
 import {
   app,
+  dialog,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
@@ -30,6 +31,7 @@ import {
   safeStorage,
   HandlerDetails,
 } from 'electron';
+import electronDl from 'electron-dl';
 import windowStateKeeper from 'electron-window-state';
 import fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
@@ -80,6 +82,8 @@ const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/preload-app.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/preload/preload-webview.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
+const ICON = path.join(APP_PATH, 'img/download-dialog/logo@2x.png');
+
 const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,
   DEFAULT_WIDTH: 1024,
@@ -98,6 +102,26 @@ const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.P
 const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
+const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
+const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
+
+if (customDownloadPath) {
+  electronDl({
+    directory: appHomePath(customDownloadPath),
+    saveAs: false,
+    onCompleted: () => {
+      dialog.showMessageBox({
+        type: 'none',
+        icon: ICON,
+        title: locale.getText('enforcedDownloadComplete'),
+        message: locale.getText('enforcedDownloadMessage', {
+          path: appHomePath(customDownloadPath) ?? app.getPath('downloads'),
+        }),
+        buttons: [locale.getText('enforcedDownloadButton')],
+      });
+    },
+  });
+}
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
@@ -186,6 +210,15 @@ const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
+
+  ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
+    if (downloadPath && EnvironmentUtil.platform.IS_WINDOWS) {
+      fs.ensureDirSync(appHomePath(downloadPath));
+      //save the downloadPath locally
+      settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
+      settings.persistToFile();
+    }
+  });
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
@@ -331,9 +364,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  main.webContents.on('crashed', event => {
+  app.on('render-process-gone', async (event, _, details) => {
     logger.error('WebContents crashed. Will reload the window.');
-    logger.error(event);
+    logger.error(JSON.stringify(details));
     try {
       main.reload();
     } catch (error) {
@@ -676,6 +709,7 @@ class ElectronWrapperInit {
           });
           if (ENABLE_LOGGING) {
             const colorCodeRegex = /%c(.+?)%c/gm;
+            const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;
 
             contents.on('console-message', async (_event, _level, message) => {
@@ -690,7 +724,7 @@ class ElectronWrapperInit {
                 const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
                 try {
                   await LogFactory.writeMessage(
-                    message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
+                    message.replace(colorCodeRegex, '$1').replace(stylingRegex, '').replace(accessTokenRegex, ''),
                     logFilePath,
                   );
                 } catch (error) {
