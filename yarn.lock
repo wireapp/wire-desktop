@@ -7110,16 +7110,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:27.3.1":
-  version: 27.3.1
-  resolution: "electron@npm:27.3.1"
+"electron@npm:27.3.2":
+  version: 27.3.2
+  resolution: "electron@npm:27.3.2"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^18.11.18
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 27d526e03d07b64535386d81ad79b3a8e6d9bea1b7c08256ada997b291d5ddb037d36c1c01a7d4802e08b8e76f0247d161483fda05e833ff2a9f33b3d45b9924
+  checksum: 18193effc659a07891f9a2b3fc3f977ddd2fc8ddb5ef46e1fdf16831220982851f829c2a11d62e1e66359b1c6a84239132010fddc9d045f66bb4720746dfbbb7
   languageName: node
   linkType: hard
 
@@ -16482,7 +16482,7 @@ __metadata:
     cross-env: 7.0.3
     css-loader: 6.10.0
     dotenv: 16.4.1
-    electron: 27.3.1
+    electron: 27.3.2
     electron-builder: 24.9.1
     electron-dl: ^3.5.2
     electron-mocha: 12.2.0
