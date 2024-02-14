@@ -7988,7 +7988,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-unused-imports@npm:3.0.0, eslint-plugin-unused-imports@npm:^3":
+"eslint-plugin-unused-imports@npm:3.1.0":
+  version: 3.1.0
+  resolution: "eslint-plugin-unused-imports@npm:3.1.0"
+  dependencies:
+    eslint-rule-composer: ^0.3.0
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": 6 - 7
+    eslint: 8
+  peerDependenciesMeta:
+    "@typescript-eslint/eslint-plugin":
+      optional: true
+  checksum: c41da339ea8faf40b8b4081f0d52a4c75d24f121c5b95b19b777d12abfbc23505e4aab2422918b2517dd239a749a38912fb3405b42a9aa6b50c32cf5f3d6ecf0
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-unused-imports@npm:^3":
   version: 3.0.0
   resolution: "eslint-plugin-unused-imports@npm:3.0.0"
   dependencies:
@@ -16538,7 +16553,7 @@ __metadata:
     eslint-plugin-react-hooks: 4.6.0
     eslint-plugin-simple-import-sort: 10.0.0
     eslint-plugin-testing-library: 6.2.0
-    eslint-plugin-unused-imports: 3.0.0
+    eslint-plugin-unused-imports: 3.1.0
     form-data: 4.0.0
     fs-extra: 11.2.0
     get-proxy-settings: 0.1.13
