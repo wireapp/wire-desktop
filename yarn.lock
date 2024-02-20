@@ -4729,11 +4729,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app-builder-lib@npm:24.9.1":
-  version: 24.9.1
-  resolution: "app-builder-lib@npm:24.9.1"
+"app-builder-lib@npm:24.12.0":
+  version: 24.12.0
+  resolution: "app-builder-lib@npm:24.12.0"
   dependencies:
-    7zip-bin: ~5.2.0
     "@develar/schema-utils": ~2.6.5
     "@electron/notarize": 2.1.0
     "@electron/osx-sign": 1.0.5
@@ -4742,12 +4741,12 @@ __metadata:
     "@types/fs-extra": 9.0.13
     async-exit-hook: ^2.0.1
     bluebird-lst: ^1.0.9
-    builder-util: 24.8.1
+    builder-util: 24.9.4
     builder-util-runtime: 9.2.3
     chromium-pickle-js: ^0.2.0
     debug: ^4.3.4
     ejs: ^3.1.8
-    electron-publish: 24.8.1
+    electron-publish: 24.9.4
     form-data: ^4.0.0
     fs-extra: ^10.1.0
     hosted-git-info: ^4.1.0
@@ -4761,7 +4760,7 @@ __metadata:
     semver: ^7.3.8
     tar: ^6.1.12
     temp-file: ^3.4.0
-  checksum: 3d215f0b977f799b5a9c8b60ed7ab7664bbb8fbe3995d91faf54ac0dfb4e71ce987e089343afcf7304f2b75642450e1356f8079eba751102934787323c190a3c
+  checksum: 625484ef8be21a92cdd9a6317a33546f0769921a1fc0bb72cdaf4d440da303f2aa4ae1362f2657c788736f50326e556124c37403b8e5d63a947772bf359f4e51
   languageName: node
   linkType: hard
 
@@ -5592,9 +5591,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builder-util@npm:24.8.1":
-  version: 24.8.1
-  resolution: "builder-util@npm:24.8.1"
+"builder-util@npm:24.9.4":
+  version: 24.9.4
+  resolution: "builder-util@npm:24.9.4"
   dependencies:
     7zip-bin: ~5.2.0
     "@types/debug": ^4.1.6
@@ -5612,7 +5611,7 @@ __metadata:
     source-map-support: ^0.5.19
     stat-mode: ^1.0.0
     temp-file: ^3.4.0
-  checksum: 20555ebd25bf94fc1136dedb9cdb11b8996ac1884a34f44f9c5e6fc1d7f34ae769ab021645d0db9f6c386844b5f9cd8f3947bb65e9a3505771f37580bce2faaf
+  checksum: 33a7df457a319b3130f159ecb37790ce80bdb9992cdf6315e51bd70453d0224a105ee5cbfd7464bff86b3d15917f1febf943f62cc5536c2f19358d7b66a335d5
   languageName: node
   linkType: hard
 
@@ -6780,12 +6779,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dmg-builder@npm:24.9.1":
-  version: 24.9.1
-  resolution: "dmg-builder@npm:24.9.1"
+"dmg-builder@npm:24.12.0":
+  version: 24.12.0
+  resolution: "dmg-builder@npm:24.12.0"
   dependencies:
-    app-builder-lib: 24.9.1
-    builder-util: 24.8.1
+    app-builder-lib: 24.12.0
+    builder-util: 24.9.4
     builder-util-runtime: 9.2.3
     dmg-license: ^1.0.11
     fs-extra: ^10.1.0
@@ -6794,7 +6793,7 @@ __metadata:
   dependenciesMeta:
     dmg-license:
       optional: true
-  checksum: 5cb5287ba2776a87c2a77f0e4a7cda81b663a6163bd6968ce0e91257ee107089ca56485d320758fcd591b060c62d89adcb4d8e922b1ccdfa713e054614bb354f
+  checksum: 98f851a116d558320eeec6ca94009720f628d2694926e4cf128689a63ba9b6fa87264b81f7afa511f0571198db0aea672fec840a2828447054d73906d20d2caf
   languageName: node
   linkType: hard
 
@@ -6965,15 +6964,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder@npm:24.9.1":
-  version: 24.9.1
-  resolution: "electron-builder@npm:24.9.1"
+"electron-builder@npm:24.12.0":
+  version: 24.12.0
+  resolution: "electron-builder@npm:24.12.0"
   dependencies:
-    app-builder-lib: 24.9.1
-    builder-util: 24.8.1
+    app-builder-lib: 24.12.0
+    builder-util: 24.9.4
     builder-util-runtime: 9.2.3
     chalk: ^4.1.2
-    dmg-builder: 24.9.1
+    dmg-builder: 24.12.0
     fs-extra: ^10.1.0
     is-ci: ^3.0.0
     lazy-val: ^1.0.5
@@ -6983,7 +6982,7 @@ __metadata:
   bin:
     electron-builder: cli.js
     install-app-deps: install-app-deps.js
-  checksum: c8542822744fada7739e9d0ef8dba27c3006b2200b782a4af97538e72f70fdfbac2e1e816c57baf88e430ef76417d3dc484b4090b3caa8fb5dec6f3d7a348dc0
+  checksum: 362d70095492674842b5039239435d0fce64f89350b9acf61b8e1ae4b3e83b8996d65629991674f35063a32dd028a3babb99afae925084a0b6ca34da87d464d4
   languageName: node
   linkType: hard
 
@@ -7042,18 +7041,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-publish@npm:24.8.1":
-  version: 24.8.1
-  resolution: "electron-publish@npm:24.8.1"
+"electron-publish@npm:24.9.4":
+  version: 24.9.4
+  resolution: "electron-publish@npm:24.9.4"
   dependencies:
     "@types/fs-extra": ^9.0.11
-    builder-util: 24.8.1
+    builder-util: 24.9.4
     builder-util-runtime: 9.2.3
     chalk: ^4.1.2
     fs-extra: ^10.1.0
     lazy-val: ^1.0.5
     mime: ^2.5.2
-  checksum: 848cabcb9f8f973235d24a4efb1cb6dd24d90fa017846876e8c808174f7344b8218c1acb3361752ad35bdb858586456e0cb9e1b1d97213a791704dd9d7cd6c43
+  checksum: c16cf7d1f00abce0c5021f22dcafcc83da5c8bb3d2b054f1527c84a0e416c770c519d23f8a4806084ea5ecd418adb5d16b61933c9133a252311612ad54b1eaaa
   languageName: node
   linkType: hard
 
@@ -16538,7 +16537,7 @@ __metadata:
     css-loader: 6.10.0
     dotenv: 16.4.4
     electron: 27.3.2
-    electron-builder: 24.9.1
+    electron-builder: 24.12.0
     electron-dl: ^3.5.2
     electron-mocha: 12.2.0
     electron-packager: 17.1.2
