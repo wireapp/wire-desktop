@@ -29,6 +29,12 @@ jobs:
       - name: build
         run: yarn build:linux
 
+      - name: upload-artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-build
+          path: wrap/dist
+
   build-windows:
     runs-on: windows-latest
 
