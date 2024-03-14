@@ -4533,10 +4533,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:0.5.10":
-  version: 0.5.10
-  resolution: "adm-zip@npm:0.5.10"
-  checksum: 07ed91cf6423bf5dca4ee63977bc7635e91b8d21829c00829d48dce4c6932e1b19e6cfcbe44f1931c956e68795ae97183fc775913883fa48ce88a1ac11fb2034
+"adm-zip@npm:0.5.11":
+  version: 0.5.11
+  resolution: "adm-zip@npm:0.5.11"
+  checksum: 8f25f5c5abf33bf7661ce8c5a7b2b2cf6936666cb54877ae751fc945949ec453767016cd457639e53ab022df8adcd0f01d85de1d3d6ecfd9f3e9391868497e51
   languageName: node
   linkType: hard
 
@@ -17055,7 +17055,7 @@ __metadata:
     "@wireapp/protocol-messaging": 1.46.0
     "@wireapp/react-ui-kit": 9.16.2
     "@wireapp/webapp-events": 0.20.1
-    adm-zip: 0.5.10
+    adm-zip: 0.5.11
     auto-launch: 5.0.6
     aws-sdk: 2.1577.0
     axios: 0.21.2
