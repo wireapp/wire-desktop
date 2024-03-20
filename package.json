@@ -39,7 +39,7 @@
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
     "@babel/preset-env": "7.24.1",
     "@babel/preset-react": "7.23.3",
-    "@babel/preset-typescript": "7.23.3",
+    "@babel/preset-typescript": "7.24.1",
     "@babel/register": "7.23.7",
     "@electron/fuses": "1.7.0",
     "@electron/osx-sign": "1.0.5",
