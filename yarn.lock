@@ -58,7 +58,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/code-frame@npm:^7.24.1":
+"@babel/code-frame@npm:^7.24.1, @babel/code-frame@npm:^7.24.2":
   version: 7.24.2
   resolution: "@babel/code-frame@npm:7.24.2"
   dependencies:
@@ -96,12 +96,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.24.1":
-  version: 7.24.1
-  resolution: "@babel/core@npm:7.24.1"
+"@babel/core@npm:7.24.3":
+  version: 7.24.3
+  resolution: "@babel/core@npm:7.24.3"
   dependencies:
     "@ampproject/remapping": ^2.2.0
-    "@babel/code-frame": ^7.24.1
+    "@babel/code-frame": ^7.24.2
     "@babel/generator": ^7.24.1
     "@babel/helper-compilation-targets": ^7.23.6
     "@babel/helper-module-transforms": ^7.23.3
@@ -115,7 +115,7 @@ __metadata:
     gensync: ^1.0.0-beta.2
     json5: ^2.2.3
     semver: ^6.3.1
-  checksum: 6e77c9e5b774bfc36fed88a0529a8e5bc62bfc95d44dbdf380244fab866ea564889a60fffc4c16b576f7acd110ef3d1d645ab837d3ae0ca24c9653ddd7b7d1e3
+  checksum: 1a33460794f4122cf255b656f4d6586913f41078a1afdf1bcf0365ddbd99c1ddb68f904062f9079445ab26b507c36bc297055192bc26e5c8e6e3def42195f9ab
   languageName: node
   linkType: hard
 
@@ -17112,7 +17112,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "wire-desktop@workspace:."
   dependencies:
-    "@babel/core": 7.24.1
+    "@babel/core": 7.24.3
     "@babel/helper-string-parser": 7.24.1
     "@babel/plugin-proposal-class-properties": 7.18.6
     "@babel/plugin-proposal-optional-chaining": 7.21.0
