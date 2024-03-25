@@ -1,4 +1,4 @@
-name: Build and Test
+name: Test
 
 on:
   push:
@@ -6,28 +6,29 @@ on:
   pull_request:
     branches: [main, staging, dev]
 
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_test:
-    name: Build and Test
+    name: test
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.12.1
-        with:
-          access_token: ${{github.token}}
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-      - name: Set up Node.js
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14.x
-      - name: Yarn cache
-        uses: c-hive/gha-yarn-cache@v2.1.0
+          node-version: 16.x
+          cache: 'yarn'
+
       - name: Install dependencies
         run: yarn --immutable
+
       - name: Use xvfb-run on Linux
         run: sed -i 's/\(electron-mocha \)/xvfb-run \1/g' package.json
-      - name: Test
+
+      - name: test
         run: yarn test
