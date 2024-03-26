@@ -41,7 +41,7 @@
     "@babel/preset-react": "7.24.1",
     "@babel/preset-typescript": "7.24.1",
     "@babel/register": "7.23.7",
-    "@electron/fuses": "1.7.0",
+    "@electron/fuses": "1.8.0",
     "@electron/osx-sign": "1.1.0",
     "@types/adm-zip": "0.5.5",
     "@types/amplify": "1.1.28",
