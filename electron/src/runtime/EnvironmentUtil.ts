@@ -42,10 +42,6 @@ interface AvailableEnvironment {
 
 let currentEnvironment = settings.restore<ServerType | undefined>(SettingsType.ENV);
 
-const URL_WEBSITE = {
-  PRODUCTION: config.websiteUrl,
-};
-
 const webappEnvironments = {
   [ServerType.PRODUCTION]: {name: 'Production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
   [ServerType.BETA]: {name: 'Beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
@@ -129,7 +125,7 @@ export function getAvailebleEnvironments(): AvailableEnvironment[] {
 export const web = {
   getWebappUrl,
   getWebsiteUrl: (path: string = ''): string => {
-    const baseUrl = URL_WEBSITE.PRODUCTION;
+    const baseUrl = config.websiteUrl;
     return `${baseUrl}${path}`;
   },
 };
