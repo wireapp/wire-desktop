@@ -26,7 +26,6 @@ import {SettingsType} from '../settings/SettingsType';
 const argv = minimist(process.argv.slice(1));
 const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
 const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV] || webappUrlSetting;
-const isProdEnvironment = !!customWebappUrl;
 
 export enum ServerType {
   PRODUCTION = 'PRODUCTION',
@@ -45,7 +44,6 @@ let currentEnvironment = settings.restore<ServerType | undefined>(SettingsType.E
 
 const URL_WEBSITE = {
   PRODUCTION: config.websiteUrl,
-  STAGING: 'https://wire-website-staging.zinfra.io',
 };
 
 const webappEnvironments = {
@@ -131,7 +129,7 @@ export function getAvailebleEnvironments(): AvailableEnvironment[] {
 export const web = {
   getWebappUrl,
   getWebsiteUrl: (path: string = ''): string => {
-    const baseUrl = isProdEnvironment ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
+    const baseUrl = URL_WEBSITE.PRODUCTION;
     return `${baseUrl}${path}`;
   },
 };
