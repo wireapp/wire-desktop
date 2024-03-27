@@ -23,16 +23,26 @@ import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
-const argv = minimist(process.argv.slice(1));
-const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
-const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV] || webappUrlSetting;
-const isProdEnvironment = !!customWebappUrl;
-
 export enum ServerType {
   PRODUCTION = 'PRODUCTION',
   EDGE = 'EDGE',
   BETA = 'INTERNAL',
 }
+
+const webappEnvironments = {
+  [ServerType.PRODUCTION]: {name: 'Production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
+  [ServerType.BETA]: {name: 'Beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
+  [ServerType.EDGE]: {name: 'Edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.wire.com'},
+} as const;
+
+const argv = minimist(process.argv.slice(1));
+const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
+const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV] || webappUrlSetting;
+let currentEnvironment = settings.restore<ServerType | undefined>(SettingsType.ENV);
+const isProdEnvironment =
+  !!customWebappUrl ||
+  customWebappUrl === webappEnvironments[ServerType.PRODUCTION].url ||
+  currentEnvironment === ServerType.PRODUCTION;
 
 interface AvailableEnvironment {
   name: string;
@@ -41,18 +51,10 @@ interface AvailableEnvironment {
   isActive: boolean;
 }
 
-let currentEnvironment = settings.restore<ServerType | undefined>(SettingsType.ENV);
-
 const URL_WEBSITE = {
   PRODUCTION: config.websiteUrl,
-  STAGING: 'https://wire-website-staging.zinfra.io',
+  STAGING: 'https://wire.com',
 };
-
-const webappEnvironments = {
-  [ServerType.PRODUCTION]: {name: 'Production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
-  [ServerType.BETA]: {name: 'Beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
-  [ServerType.EDGE]: {name: 'Edge', server: ServerType.EDGE, url: 'https://wire-webapp-edge.wire.com'},
-} as const;
 
 export const app = {
   ENV: config.environment,

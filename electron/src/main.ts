@@ -103,7 +103,7 @@ const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
-const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
+const appHomePath = (path: string) => `${app.getPath('home')}/${path}`;
 
 if (customDownloadPath) {
   electronDl({
@@ -212,14 +212,14 @@ const bindIpcEvents = (): void => {
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
 
   ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
-    if (EnvironmentUtil.platform.IS_WINDOWS) {
-      if (downloadPath) {
-        fs.ensureDirSync(appHomePath(downloadPath));
-      }
-      //save the downloadPath locally
-      settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
-      settings.persistToFile();
+    // if (EnvironmentUtil.platform.IS_WINDOWS) {
+    if (downloadPath) {
+      fs.ensureDirSync(appHomePath(downloadPath));
     }
+    //save the downloadPath locally
+    settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
+    settings.persistToFile();
+    // }
   });
 };
 
