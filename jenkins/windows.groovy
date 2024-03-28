@@ -8,6 +8,14 @@ node('windows') {
   def custom = params.CUSTOM
   def NODE = tool name: 'node-v16.17.1', type: 'nodejs'
 
+  environment {
+    SM_API_KEY = credentials('SM_API_KEY')
+    SM_HOST = credentials('SM_HOST')
+    SM_CLIENT_CERT_PASSWORD = credentials('SM_CLIENT_CERT_PASSWORD')
+    SM_CLIENT_CERT_FILE = credentials('SM_CLIENT_CERT_FILE')
+    SM_KEYPAIR_ALIAS = credentials('SM_KEYPAIR_ALIAS')
+  }
+
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
@@ -29,12 +37,18 @@ node('windows') {
   def electronVersion = parseJson(packageJson).devDependencies.electron
   currentBuild.displayName = version
 
+  stage('Set Up Software Trust Manager') {
+    steps {
+      SoftwareTrustManagerSetup()
+    }
+  }
+
   stage('Probe signtool') {
     try {
       timeout(activity: true, time: 30, unit: 'SECONDS') {
         bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /a C:\\Users\\jenkins\\Downloads\\Git-2.21.0-64-bit.exe'
       }
-    } catch(e) {
+    } catch (e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing failed**\n\n⚠️ Please **manually** enter the signing key on the machine or use the unlock dongle job!"
       throw e
@@ -50,7 +64,7 @@ node('windows') {
         bat 'yarn'
         bat 'yarn build:win'
       }
-    } catch(e) {
+    } catch (e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
       throw e
@@ -59,10 +73,10 @@ node('windows') {
 
   stage('Build installer') {
     try {
-      withEnv(["PATH+NODE=${NODE}",'npm_config_target_arch=x64']) {
+      withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
         bat 'yarn build:win:installer'
       }
-    } catch(e) {
+    } catch (e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} building installer failed**\n${BUILD_URL}"
       throw e
@@ -71,8 +85,11 @@ node('windows') {
 
   stage('Sign installer') {
     try {
-      bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
-    } catch(e) {
+      steps {
+        bat "for %%f in (\"wrap\\dist\\*-Setup.exe\") do \"smctl sign --keypair-alias ${SM_KEYPAIR_ALIAS} --input %%f -v\""
+      }
+      // bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
+    } catch (e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
       throw e
@@ -88,7 +105,7 @@ node('windows') {
       if (production) {
         bat 'certUtil -hashfile "wrap\\dist\\Wire-Setup.exe" SHA256'
       }
-    } catch(e) {
+    } catch (e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} printing hash failed**\n${BUILD_URL}"
       throw e
@@ -99,7 +116,7 @@ node('windows') {
     if (production) {
       try {
         build job: 'Wrapper_Windows_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-master.zinfra.io/')], wait: false
-      } catch(e) {
+      } catch (e) {
         wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} Unable to trigger smoke tests for ${version}**\n${BUILD_URL}"
         print e
       }
