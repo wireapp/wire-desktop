@@ -38,19 +38,12 @@ node('windows') {
   currentBuild.displayName = version
 
   stage('Set Up Software Trust Manager') {
-    steps {
+    try {
       SoftwareTrustManagerSetup()
     }
-  }
-
-  stage('Probe signtool') {
-    try {
-      timeout(activity: true, time: 30, unit: 'SECONDS') {
-        bat '"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /a C:\\Users\\jenkins\\Downloads\\Git-2.21.0-64-bit.exe'
-      }
-    } catch (e) {
+    catch (e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing failed**\n\n⚠️ Please **manually** enter the signing key on the machine or use the unlock dongle job!"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} setting up Software Trust Manager failed**\n${BUILD_URL}"
       throw e
     }
   }
@@ -88,7 +81,6 @@ node('windows') {
       steps {
         bat "for %%f in (\"wrap\\dist\\*-Setup.exe\") do \"smctl sign --keypair-alias ${SM_KEYPAIR_ALIAS} --input %%f -v\""
       }
-      // bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\signtool.exe" sign /t http://timestamp.digicert.com /fd SHA256 /a "%%f"'
     } catch (e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
