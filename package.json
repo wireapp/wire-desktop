@@ -47,7 +47,7 @@
     "@types/amplify": "1.1.28",
     "@types/auto-launch": "5.0.5",
     "@types/content-type": "1.1.8",
-    "@types/eslint": "^8.56.6",
+    "@types/eslint": "^8.56.7",
     "@types/fs-extra": "11.0.4",
     "@types/hapi__joi": "^17.1.14",
     "@types/is-ci": "3.0.4",
