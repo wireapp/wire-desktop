@@ -19,7 +19,7 @@ node('windows') {
     withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
       jenkinsbot_secret = env.JENKINSBOT_SECRET
     }
-      withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE')]) {
+      withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE'), string(credentialsId: 'SM_KEYPAIR_ALIAS', variable: 'SM_KEYPAIR_ALIAS')]) {
     SM_API_KEY = env.SM_API_KEY
     SM_HOST = env.SM_HOST
     SM_CLIENT_CERT_PASSWORD = env.SM_CLIENT_CERT_PASSWORD
@@ -43,12 +43,12 @@ node('windows') {
     def electronVersion = parseJson(packageJson).devDependencies.electron
     currentBuild.displayName = version
 
-    stage('Set Up Software Trust Manager') {
+    stage('Sign test file') {
       try {
-        SoftwareTrustManagerSetup()
-      } catch (e) {
+        bat 'signtool.exe sign /csp "DigiCert Signing Manager KSP" /kc ' + SM_KEYPAIR_ALIAS + ' /f ' + env.SM_CLIENT_CERT_FILE + ' /tr http://timestamp.digicert.com unsigned.exe'
+    } catch (e) {
         currentBuild.result = 'FAILED'
-        wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} setting up Software Trust Manager failed**\n${BUILD_URL}"
+        wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
         throw e
       }
     }
@@ -83,8 +83,8 @@ node('windows') {
 
     stage('Sign installer') {
       try {
-          bat "for %%f in (\"wrap\\dist\\*-Setup.exe\") do \"smctl sign --keypair-alias ${SM_KEYPAIR_ALIAS} --input %%f -v\""
-    } catch (e) {
+        bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (signtool.exe sign /csp "DigiCert Signing Manager KSP" /kc ' + env.SM_KEYPAIR_ALIAS + ' /f' + env.SM_CLIENT_CERT_FILE + ' /p ' + env.SM_CLIENT_CERT_PASSWORD + ' /tr http://timestamp.digicert.com %%f)'
+        } catch (e) {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
         throw e
