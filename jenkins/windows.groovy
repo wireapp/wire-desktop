@@ -2,26 +2,30 @@
 def parseJson(def text) {
   new groovy.json.JsonSlurperClassic().parseText(text)
 }
-def setupSoftwareTrustManager() {
-  SoftwareTrustManagerSetup()
-}
-node('windows') {
-  environment {
-    SM_API_KEY = credentials('SM_API_KEY')
-    SM_HOST = credentials('SM_HOST')
-    SM_CLIENT_CERT_PASSWORD = credentials('SM_CLIENT_CERT_PASSWORD')
-    SM_CLIENT_CERT_FILE = credentials('SM_CLIENT_CERT_FILE')
-    SM_KEYPAIR_ALIAS = credentials('SM_KEYPAIR_ALIAS')
-  }
 
+node('windows') {
     def production = params.PRODUCTION
     def custom = params.CUSTOM
     def NODE = tool name: 'node-v16.17.1', type: 'nodejs'
 
+    def SM_API_KEY = ''
+    def SM_HOST = ''
+    def SM_CLIENT_CERT_PASSWORD = ''
+    def SM_CLIENT_CERT_FILE = ''
+    def SM_KEYPAIR_ALIAS = ''
+
     def jenkinsbot_secret = ''
+
     withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
       jenkinsbot_secret = env.JENKINSBOT_SECRET
     }
+      withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE')]) {
+    SM_API_KEY = env.SM_API_KEY
+    SM_HOST = env.SM_HOST
+    SM_CLIENT_CERT_PASSWORD = env.SM_CLIENT_CERT_PASSWORD
+    SM_CLIENT_CERT_FILE = env.SM_CLIENT_CERT_FILE
+    SM_KEYPAIR_ALIAS = env.SM_KEYPAIR_ALIAS
+      }
 
     if (!production && !custom) {
       env.APP_ENV = 'internal'
@@ -41,7 +45,7 @@ node('windows') {
 
     stage('Set Up Software Trust Manager') {
       try {
-        setupSoftwareTrustManager()
+        SoftwareTrustManagerSetup()
       } catch (e) {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} setting up Software Trust Manager failed**\n${BUILD_URL}"
