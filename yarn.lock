@@ -4519,10 +4519,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/webapp-events@npm:0.20.1":
-  version: 0.20.1
-  resolution: "@wireapp/webapp-events@npm:0.20.1"
-  checksum: 8aa3dd428c25790a6c47346ee11031bd91cd81ec8403db17923dabf2fb5f3c500d70a35c4d5e8e9faab494ad8be9e7df07c6e82b3cdcfaaa5447913cb980fccc
+"@wireapp/webapp-events@npm:0.21.0":
+  version: 0.21.0
+  resolution: "@wireapp/webapp-events@npm:0.21.0"
+  checksum: 3eeccfd8ca0ccb11b0a5b3fb0c705fb7bf0f1807ba584ee55289ab164e70fad8400e9511d46d5bb1ba2f11f0f908fe02051fecf88e4de2113636fb3a72c0a47e
   languageName: node
   linkType: hard
 
@@ -17188,7 +17188,7 @@ __metadata:
     "@wireapp/prettier-config": 0.6.4
     "@wireapp/protocol-messaging": 1.46.0
     "@wireapp/react-ui-kit": 9.17.0
-    "@wireapp/webapp-events": 0.20.1
+    "@wireapp/webapp-events": 0.21.0
     adm-zip: 0.5.12
     auto-launch: 5.0.6
     aws-sdk: 2.1591.0
