@@ -8,24 +8,11 @@ node('windows') {
     def custom = params.CUSTOM
     def NODE = tool name: 'node-v16.17.1', type: 'nodejs'
 
-    def SM_API_KEY = ''
-    def SM_HOST = ''
-    def SM_CLIENT_CERT_PASSWORD = ''
-    def SM_CLIENT_CERT_FILE = ''
-    def SM_KEYPAIR_ALIAS = ''
-
     def jenkinsbot_secret = ''
 
     withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
       jenkinsbot_secret = env.JENKINSBOT_SECRET
     }
-      withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE'), string(credentialsId: 'SM_KEYPAIR_ALIAS', variable: 'SM_KEYPAIR_ALIAS')]) {
-    SM_API_KEY = env.SM_API_KEY
-    SM_HOST = env.SM_HOST
-    SM_CLIENT_CERT_PASSWORD = env.SM_CLIENT_CERT_PASSWORD
-    SM_CLIENT_CERT_FILE = env.SM_CLIENT_CERT_FILE
-    SM_KEYPAIR_ALIAS = env.SM_KEYPAIR_ALIAS
-      }
 
     if (!production && !custom) {
       env.APP_ENV = 'internal'
@@ -44,12 +31,14 @@ node('windows') {
     currentBuild.displayName = version
 
     stage('Sign test file') {
-      try {
-        bat 'signtool.exe sign /csp "DigiCert Signing Manager KSP" /kc ' + SM_KEYPAIR_ALIAS + ' /f ' + env.SM_CLIENT_CERT_FILE + ' /tr http://timestamp.digicert.com unsigned.exe'
-    } catch (e) {
-        currentBuild.result = 'FAILED'
-        wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
-        throw e
+      withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE'), string(credentialsId: 'SM_KEYPAIR_ALIAS', variable: 'SM_KEYPAIR_ALIAS')]) {
+        try {
+          bat 'smctl sign --keypair-alias %SM_KEYPAIR_ALIAS% --config-file %SM_CLIENT_CERT_FILE% --input C:\\Users\\jenkins\\Downloads\\Git-2.21.0-64-bit.exe -v'
+        } catch (e) {
+          currentBuild.result = 'FAILED'
+          wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
+          throw e
+        }
       }
     }
 
@@ -82,12 +71,14 @@ node('windows') {
     }
 
     stage('Sign installer') {
-      try {
-        bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (signtool.exe sign /csp "DigiCert Signing Manager KSP" /kc ' + env.SM_KEYPAIR_ALIAS + ' /f' + env.SM_CLIENT_CERT_FILE + ' /p ' + env.SM_CLIENT_CERT_PASSWORD + ' /tr http://timestamp.digicert.com %%f)'
-        } catch (e) {
-        currentBuild.result = 'FAILED'
-        wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
-        throw e
+      withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE'), string(credentialsId: 'SM_KEYPAIR_ALIAS', variable: 'SM_KEYPAIR_ALIAS')]) {
+        try {
+          bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (smctl sign --keypair-alias %SM_KEYPAIR_ALIAS% --config-file %SM_CLIENT_CERT_FILE% --input %%f -v)'
+          } catch (e) {
+          currentBuild.result = 'FAILED'
+          wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
+          throw e
+        }
       }
     }
 
