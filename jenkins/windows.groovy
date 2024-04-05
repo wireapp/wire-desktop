@@ -90,7 +90,7 @@ node('windows') {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} verifying installer failed**\n${BUILD_URL}"
       }
-
+    }
       stage('Archive build artifacts') {
         archiveArtifacts 'package.json,wrap\\dist\\**'
       }
@@ -120,4 +120,4 @@ node('windows') {
 
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})"
     }
-}
+
