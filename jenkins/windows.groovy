@@ -84,7 +84,7 @@ node('windows') {
 
     stage('verify') {
       try {
-        bat 'for %%f in (\"wrap\\dist\\*-Setup.exe\") do (signtool.exe sign verify /v /pa %%f)'
+        bat 'for %%f in (\"wrap\\dist\\*-Setup.exe\") do (signtool.exe verify /v /pa %%f)'
       }
       catch (e) {
         currentBuild.result = 'FAILED'
