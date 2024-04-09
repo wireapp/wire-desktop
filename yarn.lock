@@ -6618,9 +6618,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:6.11.0":
-  version: 6.11.0
-  resolution: "css-loader@npm:6.11.0"
+"css-loader@npm:7.1.0":
+  version: 7.1.0
+  resolution: "css-loader@npm:7.1.0"
   dependencies:
     icss-utils: ^5.1.0
     postcss: ^8.4.33
@@ -6632,13 +6632,13 @@ __metadata:
     semver: ^7.5.4
   peerDependencies:
     "@rspack/core": 0.x || 1.x
-    webpack: ^5.0.0
+    webpack: ^5.27.0
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
     webpack:
       optional: true
-  checksum: 5c8d35975a7121334905394e88e28f05df72f037dbed2fb8fec4be5f0b313ae73a13894ba791867d4a4190c35896da84a7fd0c54fb426db55d85ba5e714edbe3
+  checksum: 247b07ca3f1369ec41e3c79cc59c6d97f0a473d767bf9ee563a2ee7ab404ff7f65ed4a2a3a108721250bc4055df82be6a88225f42adb360714533e37ea032da0
   languageName: node
   linkType: hard
 
@@ -17255,7 +17255,7 @@ __metadata:
     content-type: 1.0.5
     core-js: 3.36.1
     cross-env: 7.0.3
-    css-loader: 6.11.0
+    css-loader: 7.1.0
     dotenv: 16.4.5
     electron: 29.2.0
     electron-builder: 24.13.3
