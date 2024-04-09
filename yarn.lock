@@ -7345,18 +7345,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-mocha@npm:12.2.1":
-  version: 12.2.1
-  resolution: "electron-mocha@npm:12.2.1"
+"electron-mocha@npm:12.3.0":
+  version: 12.3.0
+  resolution: "electron-mocha@npm:12.3.0"
   dependencies:
     ansi-colors: ^4.1.1
     electron-window: ^0.8.0
-    mocha: ^10.2.0
+    mocha: ^10.4.0
     which: ^4.0.0
     yargs: ^17.7.2
   bin:
     electron-mocha: bin/electron-mocha
-  checksum: 1cc068b50de8604956e58c17541369aaffdcac97b7fa3b10a79eea7bcf62dccf1d61a7b3bed096eca25e8037faea9cca1274371a41e60d0a3e3fef4144d17bd9
+  checksum: 3aef5ffa16de2b93eda64f39f5d6f123634f8bc2b3ca0b90c709fed216db9e681f85df97d16bdd3f414b026c061802fca157a6c28e6150aa1638ab64cf4dac32
   languageName: node
   linkType: hard
 
@@ -9691,20 +9691,6 @@ __metadata:
   version: 0.4.1
   resolution: "glob-to-regexp@npm:0.4.1"
   checksum: e795f4e8f06d2a15e86f76e4d92751cf8bbfcf0157cea5c2f0f35678a8195a750b34096b1256e436f0cebc1883b5ff0888c47348443e69546a5a87f9e1eb1167
-  languageName: node
-  linkType: hard
-
-"glob@npm:7.2.0":
-  version: 7.2.0
-  resolution: "glob@npm:7.2.0"
-  dependencies:
-    fs.realpath: ^1.0.0
-    inflight: ^1.0.4
-    inherits: 2
-    minimatch: ^3.0.4
-    once: ^1.3.0
-    path-is-absolute: ^1.0.0
-  checksum: 78a8ea942331f08ed2e055cb5b9e40fe6f46f579d7fd3d694f3412fe5db23223d29b7fee1575440202e9a7ff9a72ab106a39fee39934c7bedafe5e5f8ae20134
   languageName: node
   linkType: hard
 
@@ -12896,7 +12882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.4.0":
+"mocha@npm:10.4.0, mocha@npm:^10.4.0":
   version: 10.4.0
   resolution: "mocha@npm:10.4.0"
   dependencies:
@@ -12927,38 +12913,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:^10.2.0":
-  version: 10.2.0
-  resolution: "mocha@npm:10.2.0"
-  dependencies:
-    ansi-colors: 4.1.1
-    browser-stdout: 1.3.1
-    chokidar: 3.5.3
-    debug: 4.3.4
-    diff: 5.0.0
-    escape-string-regexp: 4.0.0
-    find-up: 5.0.0
-    glob: 7.2.0
-    he: 1.2.0
-    js-yaml: 4.1.0
-    log-symbols: 4.1.0
-    minimatch: 5.0.1
-    ms: 2.1.3
-    nanoid: 3.3.3
-    serialize-javascript: 6.0.0
-    strip-json-comments: 3.1.1
-    supports-color: 8.1.1
-    workerpool: 6.2.1
-    yargs: 16.2.0
-    yargs-parser: 20.2.4
-    yargs-unparser: 2.0.0
-  bin:
-    _mocha: bin/_mocha
-    mocha: bin/mocha.js
-  checksum: 406c45eab122ffd6ea2003c2f108b2bc35ba036225eee78e0c784b6fa2c7f34e2b13f1dbacef55a4fdf523255d76e4f22d1b5aacda2394bd11666febec17c719
-  languageName: node
-  linkType: hard
-
 "modify-filename@npm:^1.1.0":
   version: 1.1.0
   resolution: "modify-filename@npm:1.1.0"
@@ -12984,15 +12938,6 @@ __metadata:
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: aa92de608021b242401676e35cfa5aa42dd70cbdc082b916da7fb925c542173e36bce97ea3e804923fe92c0ad991434e4a38327e15a1b5b5f945d66df615ae6d
-  languageName: node
-  linkType: hard
-
-"nanoid@npm:3.3.3":
-  version: 3.3.3
-  resolution: "nanoid@npm:3.3.3"
-  bin:
-    nanoid: bin/nanoid.cjs
-  checksum: ada019402a07464a694553c61d2dca8a4353645a7d92f2830f0d487fedff403678a0bee5323a46522752b2eab95a0bc3da98b6cccaa7c0c55cd9975130e6d6f0
   languageName: node
   linkType: hard
 
@@ -17352,7 +17297,7 @@ __metadata:
     electron: 29.2.0
     electron-builder: 24.13.3
     electron-dl: ^3.5.2
-    electron-mocha: 12.2.1
+    electron-mocha: 12.3.0
     electron-packager: 17.1.2
     electron-window-state: 5.0.3
     electron-winstaller: 4.0.1
