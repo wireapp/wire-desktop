@@ -41,3 +41,16 @@ updates:
       day: sunday
     open-pull-requests-limit: 99
     versioning-strategy: increase
+
+  # Github actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    open-pull-requests-limit: 99
+    schedule:
+      interval: 'daily'
+  # Docker
+  - package-ecosystem: 'docker'
+    directory: '/'
+    open-pull-requests-limit: 99
+    schedule:
+      interval: 'daily'
