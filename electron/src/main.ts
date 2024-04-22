@@ -45,6 +45,7 @@ import {LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
+import {isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -581,46 +582,26 @@ class ElectronWrapperInit {
       if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
         return {
           action: 'allow',
-          overrideBrowserWindowOptions: {
-            alwaysOnTop: true,
-            backgroundColor: '#FFFFFF',
-            fullscreen: false,
-            fullscreenable: false,
-            height: 600,
-            maximizable: false,
-            minimizable: false,
-            modal: false,
-            movable: true,
-            parent: main,
-            resizable: false,
+          overrideBrowserWindowOptions: WindowUtil.getNewWindowOptions({
             title: SingleSignOn.getWindowTitle(details.url),
-            titleBarStyle: 'default',
-            useContentSize: true,
-            webPreferences: {
-              allowRunningInsecureContent: false,
-              backgroundThrottling: false,
-              contextIsolation: true,
-              devTools: false,
-              disableBlinkFeatures: '',
-              experimentalFeatures: false,
-              images: true,
-              javascript: true,
-              nodeIntegration: false,
-              nodeIntegrationInWorker: false,
-              offscreen: false,
-              partition: '',
-              plugins: false,
-              preload: '',
-              sandbox: true,
-              scrollBounce: true,
-              spellcheck: false,
-              textAreasAreResizable: false,
-              webSecurity: true,
-              webgl: false,
-              webviewTag: false,
-            },
+            parent: main,
             width: 480,
-          },
+            height: 600,
+          }),
+        };
+      }
+
+      if (isPictureInPictureCallWindow(details.frameName)) {
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: WindowUtil.getNewWindowOptions({
+            title: 'Calling UI',
+            width: 290,
+            height: 290,
+            resizable: true,
+            fullscreenable: true,
+            maximizable: true,
+          }),
         };
       }
 
