@@ -45,7 +45,7 @@ import {LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
-import {isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
+import {getPictureInPictureCallWindowOptions, isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -582,26 +582,14 @@ class ElectronWrapperInit {
       if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
         return {
           action: 'allow',
-          overrideBrowserWindowOptions: WindowUtil.getNewWindowOptions({
-            title: SingleSignOn.getWindowTitle(details.url),
-            parent: main,
-            width: 480,
-            height: 600,
-          }),
+          overrideBrowserWindowOptions: SingleSignOn.getSingleSignOnLoginWindowOptions(main, details.url),
         };
       }
 
       if (isPictureInPictureCallWindow(details.frameName)) {
         return {
           action: 'allow',
-          overrideBrowserWindowOptions: WindowUtil.getNewWindowOptions({
-            title: 'Calling UI',
-            width: 290,
-            height: 290,
-            resizable: true,
-            fullscreenable: true,
-            maximizable: true,
-          }),
+          overrideBrowserWindowOptions: getPictureInPictureCallWindowOptions(),
         };
       }
 

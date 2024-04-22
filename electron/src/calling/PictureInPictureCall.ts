@@ -17,8 +17,21 @@
  *
  */
 
+import {getNewWindowOptions} from '../window/WindowUtil';
+
 const PICTURE_IN_PICTURE_CALL_FRAME_NAME = 'WIRE_PICTURE_IN_PICTURE_CALL';
 
 export const isPictureInPictureCallWindow = (frameName: string): boolean => {
   return frameName === PICTURE_IN_PICTURE_CALL_FRAME_NAME;
+};
+
+export const getPictureInPictureCallWindowOptions = (): Electron.BrowserWindowConstructorOptions => {
+  return getNewWindowOptions({
+    title: 'Calling UI',
+    width: 290,
+    height: 290,
+    resizable: true,
+    fullscreenable: true,
+    maximizable: true,
+  });
 };
