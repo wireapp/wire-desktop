@@ -11998,18 +11998,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jszip@npm:3.10.1":
-  version: 3.10.1
-  resolution: "jszip@npm:3.10.1"
-  dependencies:
-    lie: ~3.3.0
-    pako: ~1.0.2
-    readable-stream: ~2.3.6
-    setimmediate: ^1.0.5
-  checksum: abc77bfbe33e691d4d1ac9c74c8851b5761fba6a6986630864f98d876f3fcc2d36817dfc183779f32c00157b5d53a016796677298272a714ae096dfe6b1c8b60
-  languageName: node
-  linkType: hard
-
 "jszip@npm:3.7.0":
   version: 3.7.0
   resolution: "jszip@npm:3.7.0"
@@ -15276,13 +15264,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"setimmediate@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "setimmediate@npm:1.0.5"
-  checksum: c9a6f2c5b51a2dabdc0247db9c46460152ffc62ee139f3157440bd48e7c59425093f42719ac1d7931f054f153e2d26cf37dfeb8da17a794a58198a2705e527fd
-  languageName: node
-  linkType: hard
-
 "shallow-clone@npm:^3.0.0":
   version: 3.0.1
   resolution: "shallow-clone@npm:3.0.1"
@@ -17356,7 +17337,6 @@ __metadata:
     is-ci: 3.0.1
     jest: 29.7.0
     jest-environment-jsdom: 29.7.0
-    jszip: 3.10.1
     lint-staged: 15.2.2
     lodash: 4.17.21
     logdown: 3.3.1
