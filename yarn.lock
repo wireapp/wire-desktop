@@ -8417,12 +8417,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:4.6.1":
-  version: 4.6.1
-  resolution: "eslint-plugin-react-hooks@npm:4.6.1"
+"eslint-plugin-react-hooks@npm:4.6.2":
+  version: 4.6.2
+  resolution: "eslint-plugin-react-hooks@npm:4.6.2"
   peerDependencies:
     eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
-  checksum: 77f3a53f6dd09968062f79e5f873b6a8b22346860bf5874acb08f36f6dff754f061c99e486f83b4946b89127d423f5498b1326f1f95997264e2b9817afce6272
+  checksum: 395c433610f59577cfcf3f2e42bcb130436c8a0b3777ac64f441d88c5275f4fcfc89094cedab270f2822daf29af1079151a7a6579a8e9ea8cee66540ba0384c4
   languageName: node
   linkType: hard
 
@@ -17351,7 +17351,7 @@ __metadata:
     eslint-plugin-no-unsanitized: 4.0.2
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-react: 7.34.1
-    eslint-plugin-react-hooks: 4.6.1
+    eslint-plugin-react-hooks: 4.6.2
     eslint-plugin-simple-import-sort: 12.1.0
     eslint-plugin-testing-library: 6.2.2
     eslint-plugin-unused-imports: 3.1.0
