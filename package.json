@@ -3,7 +3,7 @@
   "dependencies": {
     "@electron/remote": "2.1.2",
     "@hapi/joi": "17.1.1",
-    "@wireapp/certificate-check": "0.7.11",
+    "@wireapp/certificate-check": "0.7.12",
     "@wireapp/commons": "5.2.7",
     "@wireapp/protocol-messaging": "1.46.0",
     "@wireapp/react-ui-kit": "9.17.4",
