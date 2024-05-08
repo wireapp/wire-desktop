@@ -118,7 +118,7 @@
     "rimraf": "5.0.5",
     "sinon": "17.0.2",
     "sort-json": "2.0.1",
-    "style-loader": "3.3.4",
+    "style-loader": "4.0.0",
     "ts-node": "10.9.2",
     "typescript": "5.4.5",
     "webpack": "5.91.0",
