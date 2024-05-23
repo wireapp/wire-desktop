@@ -128,10 +128,15 @@ const setupIpcInterface = (): void => {
     await accountWebview?.send(EVENT_TYPE.ACTION.SIGN_OUT);
   };
 
-  window.sendConversationJoinToHost = async (accountId: string, code: string, key: string): Promise<void> => {
+  window.sendConversationJoinToHost = async (
+    accountId: string,
+    code: string,
+    key: string,
+    domain?: string,
+  ): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
     logger.log(`Sending conversation join data to webview for account "${truncate(accountId, {length: 5})}".`);
-    await accountWebview?.send(WebAppEvents.CONVERSATION.JOIN, {code, key});
+    await accountWebview?.send(WebAppEvents.CONVERSATION.JOIN, {code, key, domain});
   };
 };
 
