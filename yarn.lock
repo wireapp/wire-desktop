@@ -2327,9 +2327,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@es-joy/jsdoccomment@npm:~0.43.0":
-  version: 0.43.0
-  resolution: "@es-joy/jsdoccomment@npm:0.43.0"
+"@es-joy/jsdoccomment@npm:~0.43.1":
+  version: 0.43.1
+  resolution: "@es-joy/jsdoccomment@npm:0.43.1"
   dependencies:
     "@types/eslint": ^8.56.5
     "@types/estree": ^1.0.5
@@ -2337,7 +2337,7 @@ __metadata:
     comment-parser: 1.4.1
     esquery: ^1.5.0
     jsdoc-type-pratt-parser: ~4.0.0
-  checksum: d8c84faafa85f90a3828cd5affb85a1c7f143afa6c9ad4f9b7314bb7ca50a0a989656d3acce2611634fa5218554f32109b717e264675efc252c1617f74477a25
+  checksum: f42b8a72ef95763f31dd008d9283e8a0726989433f0125e1f54a015c239ee84bcbd8f8b959a0ef240f2424970604dcd8d1139eb1e09a0638b1f3bdc43b5cd3af
   languageName: node
   linkType: hard
 
@@ -8335,21 +8335,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:48.2.6":
-  version: 48.2.6
-  resolution: "eslint-plugin-jsdoc@npm:48.2.6"
+"eslint-plugin-jsdoc@npm:48.2.7":
+  version: 48.2.7
+  resolution: "eslint-plugin-jsdoc@npm:48.2.7"
   dependencies:
-    "@es-joy/jsdoccomment": ~0.43.0
+    "@es-joy/jsdoccomment": ~0.43.1
     are-docs-informative: ^0.0.2
     comment-parser: 1.4.1
     debug: ^4.3.4
     escape-string-regexp: ^4.0.0
     esquery: ^1.5.0
-    semver: ^7.6.1
+    semver: ^7.6.2
     spdx-expression-parse: ^4.0.0
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0 || ^9.0.0
-  checksum: 79f08bfaa0150c4c800df5ae661a0076068d5a236c8c886d0ab10897dc1be3125d6adaf43471949fd1c1ad088d344075ba3faac6a3132453689cf9736fa839ca
+  checksum: 8ac3b0ef2ea3ef478b2da7b29fe4775152df8b4a0581e1cf576412cba49d2983af90ce993ea113207945b10b0902e1f729937216586f2f2c92126a01fba74dc7
   languageName: node
   linkType: hard
 
@@ -15312,7 +15312,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.6.1":
+"semver@npm:^7.6.2":
   version: 7.6.2
   resolution: "semver@npm:7.6.2"
   bin:
@@ -17525,7 +17525,7 @@ __metadata:
     eslint-plugin-jasmine: 4.1.3
     eslint-plugin-jest: 28.5.0
     eslint-plugin-jest-dom: 5.4.0
-    eslint-plugin-jsdoc: 48.2.6
+    eslint-plugin-jsdoc: 48.2.7
     eslint-plugin-jsx-a11y: 6.8.0
     eslint-plugin-no-unsanitized: 4.0.2
     eslint-plugin-prettier: 4.2.1
