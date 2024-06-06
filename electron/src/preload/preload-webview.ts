@@ -260,6 +260,7 @@ process.once('loaded', () => {
     version: 1,
   };
   global.environment = EnvironmentUtil;
+  global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION};
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
