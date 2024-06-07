@@ -18,7 +18,7 @@
  */
 
 import autoLaunch from 'auto-launch';
-import {dialog, globalShortcut, Menu, MenuItemConstructorOptions} from 'electron';
+import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
 
 import * as path from 'path';
 
@@ -70,8 +70,7 @@ const localeTemplate: MenuItemConstructorOptions = {
 };
 
 const aboutTemplate: MenuItemConstructorOptions = {
-  click: (_menuItem, browserWindow) =>
-    browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.ABOUT.SHOW),
+  click: () => ipcMain.emit(EVENT_TYPE.ABOUT.SHOW),
   label: locale.getText('menuAbout'),
 };
 
