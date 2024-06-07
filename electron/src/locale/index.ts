@@ -55,7 +55,8 @@ export type SupportedI18nLanguageObject = Record<SupportedI18nLanguage, i18nStri
 
 const app = Electron.app || require('@electron/remote').app;
 
-export const LANGUAGES: SupportedI18nLanguageObject = {
+//FIXME:
+export const LANGUAGES: any = {
   cs,
   da,
   de,

@@ -236,6 +236,9 @@ function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
 function reportWebappVersion(): void {
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
 }
+function reportWebappAVSVersion(): void {
+  ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, window.z.util.Environment.avsVersion());
+}
 
 // https://github.com/electron/electron/issues/2984
 const _clearImmediate = clearImmediate;
@@ -285,6 +288,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   subscribeToThemeChange();
   subscribeToWebappEvents();
   reportWebappVersion();
+  reportWebappAVSVersion();
   // include context menu
   await import('./menu/preload-context');
 });
