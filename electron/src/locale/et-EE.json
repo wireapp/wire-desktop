@@ -3,6 +3,7 @@
   "aboutUpdate": "Kuidas {brandName}'i uuendused töötavad",
   "aboutVersion": "Versioon",
   "aboutWebappVersion": "{brandName} veebiversioon",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Retry",
   "certificateVerifyProcManagerShowDetails": "Show details",
   "certificateVerifyProcManagerShowDetailsGoBack": "Go back",

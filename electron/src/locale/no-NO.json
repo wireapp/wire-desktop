@@ -3,6 +3,7 @@
   "aboutUpdate": "Hvordan {brandName} oppdateringer arbeid",
   "aboutVersion": "Versjon",
   "aboutWebappVersion": "{brandName} for webversjon",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Prøv på nytt",
   "certificateVerifyProcManagerShowDetails": "Vis detaljer",
   "certificateVerifyProcManagerShowDetailsGoBack": "Gå tilbake",
