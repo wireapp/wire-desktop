@@ -3,6 +3,7 @@
   "aboutUpdate": "Cum funcționează actualizările {brandName}",
   "aboutVersion": "Versiune",
   "aboutWebappVersion": "{brandName} pentru Web",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Reîncearcă",
   "certificateVerifyProcManagerShowDetails": "Afișează detalii",
   "certificateVerifyProcManagerShowDetailsGoBack": "Go back",

@@ -3,6 +3,7 @@
   "aboutUpdate": "Como atualizações do {brandName} funcionam",
   "aboutVersion": "Versão",
   "aboutWebappVersion": "Versão {brandName} para Web",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Tentar Novamente",
   "certificateVerifyProcManagerShowDetails": "Mostrar detalhes",
   "certificateVerifyProcManagerShowDetailsGoBack": "Retroceder",

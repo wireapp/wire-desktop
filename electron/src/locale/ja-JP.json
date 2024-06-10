@@ -3,6 +3,7 @@
   "aboutUpdate": "{brandName} 更新のしくみ",
   "aboutVersion": "バージョン",
   "aboutWebappVersion": "{brandName} のWebバージョン",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "リトライ",
   "certificateVerifyProcManagerShowDetails": "詳細を表示",
   "certificateVerifyProcManagerShowDetailsGoBack": "戻る",

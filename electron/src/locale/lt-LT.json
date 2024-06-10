@@ -3,6 +3,7 @@
   "aboutUpdate": "Kaip veikia {brandName} atnaujinimai",
   "aboutVersion": "Versija",
   "aboutWebappVersion": "{brandName} versija, skirta saitynui",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Bandyti dar kartą",
   "certificateVerifyProcManagerShowDetails": "Rodyti išsamiau",
   "certificateVerifyProcManagerShowDetailsGoBack": "Grįžti",

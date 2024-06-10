@@ -43,6 +43,9 @@ export declare global {
   };
   var environment: typeof EnvironmentUtil;
   var openGraphAsync: (url: string) => Promise<OpenGraphResult>;
+  var desktopAppConfig: {
+    version: string;
+  };
   /* eslint-enable no-var */
 
   interface Window {
@@ -69,6 +72,7 @@ export declare global {
       util: {
         Environment: {
           version(showWrapperVersion: boolean): string;
+          avsVersion(): string;
         };
       };
     };

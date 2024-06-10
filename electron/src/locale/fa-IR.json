@@ -3,6 +3,7 @@
   "aboutUpdate": "به‌روزرسانی‌های {brandName} چگونه کار می‌کند",
   "aboutVersion": "نسخه",
   "aboutWebappVersion": "نسخه وب {brandName}",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "تلاش دوباره",
   "certificateVerifyProcManagerShowDetails": "نمایش جزئیات",
   "certificateVerifyProcManagerShowDetailsGoBack": "بازگشت",

@@ -3,6 +3,7 @@
   "aboutUpdate": "Hogyan frissül a {brandName}",
   "aboutVersion": "Verzió:",
   "aboutWebappVersion": "{brandName} Webes verzió",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Újra",
   "certificateVerifyProcManagerShowDetails": "Részletek mutatása",
   "certificateVerifyProcManagerShowDetailsGoBack": "Vissza",

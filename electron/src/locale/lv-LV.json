@@ -3,6 +3,7 @@
   "aboutUpdate": "Kā {brandName} atjauninājumi darbojas",
   "aboutVersion": "Versija",
   "aboutWebappVersion": "{brandName} Internetam versija",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Retry",
   "certificateVerifyProcManagerShowDetails": "Show details",
   "certificateVerifyProcManagerShowDetailsGoBack": "Go back",

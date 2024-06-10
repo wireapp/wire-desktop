@@ -3,6 +3,7 @@
   "aboutUpdate": "Kako {brandName} ažuriranja rade",
   "aboutVersion": "Verzija",
   "aboutWebappVersion": "{brandName} za Web",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Retry",
   "certificateVerifyProcManagerShowDetails": "Show details",
   "certificateVerifyProcManagerShowDetailsGoBack": "Go back",
