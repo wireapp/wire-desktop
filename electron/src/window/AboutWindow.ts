@@ -29,7 +29,7 @@ import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
 
 let webappVersion: string;
-let webappAVSVersion: string;
+let webappAVSVersion: string | undefined;
 
 // Paths
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
