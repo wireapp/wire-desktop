@@ -3,6 +3,7 @@
   "aboutUpdate": "Како функционишу {brandName} ажурирања",
   "aboutVersion": "Верзија",
   "aboutWebappVersion": "{brandName} верзија за веб",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Покушај поново",
   "certificateVerifyProcManagerShowDetails": "Прикажи детаље",
   "certificateVerifyProcManagerShowDetailsGoBack": "Назад",

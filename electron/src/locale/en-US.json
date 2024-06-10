@@ -1,8 +1,9 @@
 {
   "aboutReleases": "Releases",
   "aboutUpdate": "How {brandName} Updates Work",
-  "aboutVersion": "Version",
-  "aboutWebappVersion": "{brandName} for Web Version",
+  "aboutVersion": "Desktop version",
+  "aboutWebappVersion": "{brandName} for web version",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Retry",
   "certificateVerifyProcManagerShowDetails": "Show details",
   "certificateVerifyProcManagerShowDetailsGoBack": "Go back",

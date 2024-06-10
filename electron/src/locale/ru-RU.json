@@ -3,6 +3,7 @@
   "aboutUpdate": "Как работают обновления {brandName}",
   "aboutVersion": "Версия",
   "aboutWebappVersion": "Версия {brandName} для веб",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Повторить",
   "certificateVerifyProcManagerShowDetails": "Подробнее",
   "certificateVerifyProcManagerShowDetailsGoBack": "Вернуться",

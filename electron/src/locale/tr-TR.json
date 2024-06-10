@@ -3,6 +3,7 @@
   "aboutUpdate": "{brandName} Güncellemeleri Nasıl Çalışır",
   "aboutVersion": "Sürüm",
   "aboutWebappVersion": "Web için {brandName} Sürümü",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Yeniden Dene",
   "certificateVerifyProcManagerShowDetails": "Ayrıntıları göster",
   "certificateVerifyProcManagerShowDetailsGoBack": "Geri dön",

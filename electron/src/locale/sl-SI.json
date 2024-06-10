@@ -3,6 +3,7 @@
   "aboutUpdate": "Kako delujejo {brandName} posodobitve",
   "aboutVersion": "Različica",
   "aboutWebappVersion": "Različica {brandName} za splet",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Retry",
   "certificateVerifyProcManagerShowDetails": "Show details",
   "certificateVerifyProcManagerShowDetailsGoBack": "Go back",

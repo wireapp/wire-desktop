@@ -50,6 +50,7 @@ const webappEnvironments = {
 
 export const app = {
   ENV: config.environment,
+  DESKTOP_VERSION: config.version,
   IS_DEVELOPMENT: config.environment !== 'production',
   IS_PRODUCTION: config.environment === 'production',
   UPDATE_URL_WIN: config.updateUrl,
