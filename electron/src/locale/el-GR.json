@@ -3,6 +3,7 @@
   "aboutUpdate": "Πως λειτουργούν οι ενημερώσεις στο {brandName}",
   "aboutVersion": "Έκδοση",
   "aboutWebappVersion": "Έκδοση του {brandName} για Web",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Retry",
   "certificateVerifyProcManagerShowDetails": "Show details",
   "certificateVerifyProcManagerShowDetailsGoBack": "Go back",

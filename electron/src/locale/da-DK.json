@@ -3,6 +3,7 @@
   "aboutUpdate": "Hvordan fungere {brandName}'s opdateringer",
   "aboutVersion": "Version",
   "aboutWebappVersion": "{brandName}s's Web-Versionen",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Forsøg igen",
   "certificateVerifyProcManagerShowDetails": "Show details",
   "certificateVerifyProcManagerShowDetailsGoBack": "Go back",

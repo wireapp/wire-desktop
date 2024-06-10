@@ -3,6 +3,7 @@
   "aboutUpdate": "Miten {brandName}n päivitykset toimivat",
   "aboutVersion": "Versio",
   "aboutWebappVersion": "{brandName}n verkkoversio",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "Yritä uudelleen",
   "certificateVerifyProcManagerShowDetails": "Näytä lisätiedot",
   "certificateVerifyProcManagerShowDetailsGoBack": "Siirry edelliseen",

@@ -3,6 +3,7 @@
   "aboutUpdate": "了解更多有关{brandName}更新的资讯",
   "aboutVersion": "版本",
   "aboutWebappVersion": "{brandName}网页版",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "重试",
   "certificateVerifyProcManagerShowDetails": "显示详细信息",
   "certificateVerifyProcManagerShowDetailsGoBack": "返回",
