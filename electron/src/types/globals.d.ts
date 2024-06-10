@@ -72,7 +72,7 @@ export declare global {
       util: {
         Environment: {
           version(showWrapperVersion: boolean): string;
-          avsVersion(): string;
+          avsVersion?: () => string;
         };
       };
     };
