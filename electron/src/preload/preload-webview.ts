@@ -237,7 +237,10 @@ function reportWebappVersion(): void {
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
 }
 function reportWebappAVSVersion(): void {
-  ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, window.z.util.Environment.avsVersion());
+  const avsVersion = window.z.util.Environment.avsVersion?.();
+  if (avsVersion) {
+    ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, avsVersion);
+  }
 }
 
 // https://github.com/electron/electron/issues/2984
