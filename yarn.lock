@@ -13110,16 +13110,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nise@npm:^5.1.9":
-  version: 5.1.9
-  resolution: "nise@npm:5.1.9"
+"nise@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "nise@npm:6.0.0"
   dependencies:
     "@sinonjs/commons": ^3.0.0
     "@sinonjs/fake-timers": ^11.2.2
     "@sinonjs/text-encoding": ^0.7.2
     just-extend: ^6.2.0
     path-to-regexp: ^6.2.1
-  checksum: ab9fd6eabc98170f18aef6c9567983145c1dc62c7aef46eda0fea754083316c1f0f9b2c32e9b4bfdd25122276d670293596ed672b54dd1ffa8eb58b56a30ea95
+  checksum: 86d6ebe5baf239b73e97cd4125b03bf5f5d934fabbbf044b801dfc709d786908f68b00eac9ebd08662c20eab39a53ac4f09084885d241e994eb3f502e3b8b618
   languageName: node
   linkType: hard
 
@@ -15549,17 +15549,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon@npm:17.0.2":
-  version: 17.0.2
-  resolution: "sinon@npm:17.0.2"
+"sinon@npm:18.0.0":
+  version: 18.0.0
+  resolution: "sinon@npm:18.0.0"
   dependencies:
     "@sinonjs/commons": ^3.0.1
     "@sinonjs/fake-timers": ^11.2.2
     "@sinonjs/samsam": ^8.0.0
     diff: ^5.2.0
-    nise: ^5.1.9
+    nise: ^6.0.0
     supports-color: ^7
-  checksum: e44d8f3edf112544474d721f0ce2e7e88b24d099d48a004c20ec5868e795448b90a0c88f27605bc011acbb9e159fccc0635632c9d47d97f9e981532983233b51
+  checksum: 5d7bc61c6c3d89cd8ba5a03b2f782703ae9637aa592ace3da041c0ce18aa36d4752a46276d822f9e982c0c886322935099d87508850051a2668241650e77b9c3
   languageName: node
   linkType: hard
 
@@ -17615,7 +17615,7 @@ __metadata:
     redux-logger: 3.0.6
     redux-thunk: 2.4.2
     rimraf: 5.0.7
-    sinon: 17.0.2
+    sinon: 18.0.0
     sort-json: 2.0.1
     style-loader: 4.0.0
     ts-node: 10.9.2
