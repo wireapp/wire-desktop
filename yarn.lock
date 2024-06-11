@@ -3924,6 +3924,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/eslint-plugin@npm:7.12.0":
+  version: 7.12.0
+  resolution: "@typescript-eslint/eslint-plugin@npm:7.12.0"
+  dependencies:
+    "@eslint-community/regexpp": ^4.10.0
+    "@typescript-eslint/scope-manager": 7.12.0
+    "@typescript-eslint/type-utils": 7.12.0
+    "@typescript-eslint/utils": 7.12.0
+    "@typescript-eslint/visitor-keys": 7.12.0
+    graphemer: ^1.4.0
+    ignore: ^5.3.1
+    natural-compare: ^1.4.0
+    ts-api-utils: ^1.3.0
+  peerDependencies:
+    "@typescript-eslint/parser": ^7.0.0
+    eslint: ^8.56.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 71a67090f1f5e9acbc62711fd4d5e5850ac19d430c7afd6f9447d1208d61005890eb019bdf8f9b9717634be5f24deea91edd4174708878fb5792397de0b6b071
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/eslint-plugin@npm:7.13.0":
   version: 7.13.0
   resolution: "@typescript-eslint/eslint-plugin@npm:7.13.0"
@@ -3947,29 +3970,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:7.9.0":
-  version: 7.9.0
-  resolution: "@typescript-eslint/eslint-plugin@npm:7.9.0"
-  dependencies:
-    "@eslint-community/regexpp": ^4.10.0
-    "@typescript-eslint/scope-manager": 7.9.0
-    "@typescript-eslint/type-utils": 7.9.0
-    "@typescript-eslint/utils": 7.9.0
-    "@typescript-eslint/visitor-keys": 7.9.0
-    graphemer: ^1.4.0
-    ignore: ^5.3.1
-    natural-compare: ^1.4.0
-    ts-api-utils: ^1.3.0
-  peerDependencies:
-    "@typescript-eslint/parser": ^7.0.0
-    eslint: ^8.56.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 0437d3d7a9adbd519e614a90633cd35fad4c9433d6b8902fd0f989907a3e0f05afc3a50ca35a8a02764e7333b92f5378088f657882f28c14a4d7e2433fea2766
-  languageName: node
-  linkType: hard
-
 "@typescript-eslint/parser@npm:7.12.0":
   version: 7.12.0
   resolution: "@typescript-eslint/parser@npm:7.12.0"
@@ -3985,24 +3985,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 8c7e6f464a1075047c3a96d69d3b610f5a26d169e31ff57144e6f1dab5ed1364d95d9a914dd407715205292c579283bcb88107627736f6e6e4b7ef102abec149
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/parser@npm:7.9.0":
-  version: 7.9.0
-  resolution: "@typescript-eslint/parser@npm:7.9.0"
-  dependencies:
-    "@typescript-eslint/scope-manager": 7.9.0
-    "@typescript-eslint/types": 7.9.0
-    "@typescript-eslint/typescript-estree": 7.9.0
-    "@typescript-eslint/visitor-keys": 7.9.0
-    debug: ^4.3.4
-  peerDependencies:
-    eslint: ^8.56.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: df80976afba65cf09583874a4330e7e275ff7b599863124ae911fa52f1f097948cc04bcea711da44688ee6beb2713f1c377604224a965869e527ad7e3f30ca72
   languageName: node
   linkType: hard
 
@@ -4056,6 +4038,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/type-utils@npm:7.12.0":
+  version: 7.12.0
+  resolution: "@typescript-eslint/type-utils@npm:7.12.0"
+  dependencies:
+    "@typescript-eslint/typescript-estree": 7.12.0
+    "@typescript-eslint/utils": 7.12.0
+    debug: ^4.3.4
+    ts-api-utils: ^1.3.0
+  peerDependencies:
+    eslint: ^8.56.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 26c3fe756b271aff94f6fc69c2ac69de471e5b0a4197bea575e4bebffce590f9fdd55f038e4e9c8ead87156386f9133c2c1324e4e5db2a4ebeb3c5014541a30e
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/type-utils@npm:7.13.0":
   version: 7.13.0
   resolution: "@typescript-eslint/type-utils@npm:7.13.0"
@@ -4070,23 +4069,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 5f325fc325b166853444354e254c0d7fbb15dde2a61bbf63313cc58cb7a0546023241848671f216c268f1b87dce9c1e40b89dccae1846f2662e2cf2c99a83aef
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/type-utils@npm:7.9.0":
-  version: 7.9.0
-  resolution: "@typescript-eslint/type-utils@npm:7.9.0"
-  dependencies:
-    "@typescript-eslint/typescript-estree": 7.9.0
-    "@typescript-eslint/utils": 7.9.0
-    debug: ^4.3.4
-    ts-api-utils: ^1.3.0
-  peerDependencies:
-    eslint: ^8.56.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 0e87d4d7ee38cf2f1fb899b6a466d9c6637a917bd7534dab9f58a709a5dbe72d98486187e900d553f2f9140799217d290402f4fdaf141253f56078019034ab3a
   languageName: node
   linkType: hard
 
@@ -4226,6 +4208,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/utils@npm:7.12.0":
+  version: 7.12.0
+  resolution: "@typescript-eslint/utils@npm:7.12.0"
+  dependencies:
+    "@eslint-community/eslint-utils": ^4.4.0
+    "@typescript-eslint/scope-manager": 7.12.0
+    "@typescript-eslint/types": 7.12.0
+    "@typescript-eslint/typescript-estree": 7.12.0
+  peerDependencies:
+    eslint: ^8.56.0
+  checksum: f9b5afe9e70ff908f348de54d130b2157df8af0f9815cf7df0830bd85df249d3b34da8b03ad3bea84ed0c2ea1743caeae68355fbcca9a7da8df30bc76bc1506c
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/utils@npm:7.13.0":
   version: 7.13.0
   resolution: "@typescript-eslint/utils@npm:7.13.0"
@@ -4237,20 +4233,6 @@ __metadata:
   peerDependencies:
     eslint: ^8.56.0
   checksum: d57c60767949e3ea9d9b33de69a18396fea0e5d2eeb13ef8bbdcfe9c8fae62bf5af25f571b1b7c480362ddb9ccd8f811df4330af595b32a46bf0b8b8ce9b598e
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/utils@npm:7.9.0, @typescript-eslint/utils@npm:^6.0.0 || ^7.0.0":
-  version: 7.9.0
-  resolution: "@typescript-eslint/utils@npm:7.9.0"
-  dependencies:
-    "@eslint-community/eslint-utils": ^4.4.0
-    "@typescript-eslint/scope-manager": 7.9.0
-    "@typescript-eslint/types": 7.9.0
-    "@typescript-eslint/typescript-estree": 7.9.0
-  peerDependencies:
-    eslint: ^8.56.0
-  checksum: bec0bb97ec430247534e0eb60f0ba86f739968351d73fda57a1e7b70417057f3eec438d3f1014336fcb35e2c18de1eb444a0cb59de78de0921d10d5066907356
   languageName: node
   linkType: hard
 
@@ -4286,6 +4268,20 @@ __metadata:
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
   checksum: b129b3a4aebec8468259f4589985cb59ea808afbfdb9c54f02fad11e17d185e2bf72bb332f7c36ec3c09b31f18fc41368678b076323e6e019d06f74ee93f7bf2
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/utils@npm:^6.0.0 || ^7.0.0":
+  version: 7.9.0
+  resolution: "@typescript-eslint/utils@npm:7.9.0"
+  dependencies:
+    "@eslint-community/eslint-utils": ^4.4.0
+    "@typescript-eslint/scope-manager": 7.9.0
+    "@typescript-eslint/types": 7.9.0
+    "@typescript-eslint/typescript-estree": 7.9.0
+  peerDependencies:
+    eslint: ^8.56.0
+  checksum: bec0bb97ec430247534e0eb60f0ba86f739968351d73fda57a1e7b70417057f3eec438d3f1014336fcb35e2c18de1eb444a0cb59de78de0921d10d5066907356
   languageName: node
   linkType: hard
 
@@ -4568,14 +4564,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/eslint-config@npm:3.0.9":
-  version: 3.0.9
-  resolution: "@wireapp/eslint-config@npm:3.0.9"
+"@wireapp/eslint-config@npm:3.0.11":
+  version: 3.0.11
+  resolution: "@wireapp/eslint-config@npm:3.0.11"
   dependencies:
     "@types/eslint": ^8
     "@types/prettier": ^3
-    "@typescript-eslint/eslint-plugin": 7.9.0
-    "@typescript-eslint/parser": 7.9.0
+    "@typescript-eslint/eslint-plugin": 7.12.0
+    "@typescript-eslint/parser": 7.12.0
     eslint: ^8
     eslint-config-prettier: ^9
     eslint-import-resolver-alias: ^1.1.2
@@ -4599,7 +4595,7 @@ __metadata:
   peerDependencies:
     eslint: ^8
     prettier: ^3
-  checksum: c7ed9c3c6a9c593494689e3ac640f82b1ab26c4deb075f0dbae22fdbf7aa8ec3c217ebc144c48d02ae49f99269da4b380e52c1278a96686838f05ada406fe56f
+  checksum: 4802bf0dbf5b660d8d572d0078b8877c9cef3a200f3850cb3899db27a9f44b7b2526ea0e7581221ef17119a92cf7a9f09d5801a8f121e3adcb231e725771948b
   languageName: node
   linkType: hard
 
@@ -17524,7 +17520,7 @@ __metadata:
     "@wireapp/certificate-check": 0.7.13
     "@wireapp/commons": 5.2.8
     "@wireapp/copy-config": 2.2.2
-    "@wireapp/eslint-config": 3.0.9
+    "@wireapp/eslint-config": 3.0.11
     "@wireapp/prettier-config": 0.6.4
     "@wireapp/protocol-messaging": 1.48.0
     "@wireapp/react-ui-kit": 9.17.7
