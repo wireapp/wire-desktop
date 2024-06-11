@@ -199,6 +199,10 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.START}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.START);
   });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SEARCH, () => {
+    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SEARCH}", forwarding to amplify ...`);
+    window.amplify.publish(WebAppEvents.SHORTCUT.SEARCH);
+  });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.VIDEO_CALL}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, true);
