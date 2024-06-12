@@ -101,9 +101,10 @@ export class CustomProtocolHandler {
       logger.info('Joining conversation ...');
       const code = route.searchParams.get('code');
       const key = route.searchParams.get('key');
+      const domain = route.searchParams.get('domain');
 
       try {
-        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
+        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key, domain});
       } catch (error: any) {
         logger.error(`Cannot join conversation: ${error.message}`, error);
       }
