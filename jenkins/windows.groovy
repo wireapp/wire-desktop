@@ -30,18 +30,6 @@ node('windows') {
     def electronVersion = parseJson(packageJson).devDependencies.electron
     currentBuild.displayName = version
 
-    stage('Sign test file') {
-      withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE'), string(credentialsId: 'SM_KEYPAIR_ALIAS', variable: 'SM_KEYPAIR_ALIAS')]) {
-        try {
-          bat 'smctl sign --keypair-alias %SM_KEYPAIR_ALIAS% --config-file %SM_CLIENT_CERT_FILE% --input C:\\Users\\jenkins\\Downloads\\Git-2.21.0-64-bit.exe -v'
-        } catch (e) {
-          currentBuild.result = 'FAILED'
-          wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
-          throw e
-        }
-      }
-    }
-
     stage('Build') {
       try {
         withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
@@ -119,5 +107,4 @@ node('windows') {
       }
 
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})"
-    }
-
+}
