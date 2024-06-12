@@ -3,6 +3,7 @@
   "aboutUpdate": "{brandName}的更新機制如何運作",
   "aboutVersion": "版本",
   "aboutWebappVersion": "網頁版{brandName}",
+  "aboutWebappAVSVersion": "AVS version",
   "certificateVerifyProcManagerRetry": "重試",
   "certificateVerifyProcManagerShowDetails": "顯示細節",
   "certificateVerifyProcManagerShowDetailsGoBack": "返回",

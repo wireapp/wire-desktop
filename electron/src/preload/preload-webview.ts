@@ -199,6 +199,10 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.START}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.START);
   });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SEARCH, () => {
+    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SEARCH}", forwarding to amplify ...`);
+    window.amplify.publish(WebAppEvents.SHORTCUT.SEARCH);
+  });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.VIDEO_CALL}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, true);
@@ -236,6 +240,12 @@ function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
 function reportWebappVersion(): void {
   ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
 }
+function reportWebappAVSVersion(): void {
+  const avsVersion = window.z.util.Environment.avsVersion?.();
+  if (avsVersion) {
+    ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, avsVersion);
+  }
+}
 
 // https://github.com/electron/electron/issues/2984
 const _clearImmediate = clearImmediate;
@@ -260,6 +270,7 @@ process.once('loaded', () => {
     version: 1,
   };
   global.environment = EnvironmentUtil;
+  global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION};
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
@@ -284,6 +295,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   subscribeToThemeChange();
   subscribeToWebappEvents();
   reportWebappVersion();
+  reportWebappAVSVersion();
   // include context menu
   await import('./menu/preload-context');
 });
