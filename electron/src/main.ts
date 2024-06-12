@@ -171,24 +171,25 @@ app.setAppUserModelId(config.appUserModelId);
 // do not use mdns for local ip obfuscation to prevent windows firewall prompt
 app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
 
-try {
-  logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
-  const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
+app.on('gpu-info-update', () => {
+  try {
+    logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
+    const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
 
-  if (!has2dCanvas) {
-    /*
-     * If the 2D canvas is unavailable, and we rely on hardware acceleration,
-     * Electron can't render anything and will only display a white screen. Thus
-     * we disable hardware acceleration completely.
-     */
-    logger.warn('2D canvas unavailable, disabling hardware acceleration');
+    if (!has2dCanvas) {
+      /*
+       * If the 2D canvas is unavailable, and we rely on hardware acceleration,
+       * Electron can't render anything and will only display a white screen. Thus
+       * we disable hardware acceleration completely.
+       */
+      logger.warn('2D canvas unavailable, disabling hardware acceleration');
+      app.disableHardwareAcceleration();
+    }
+  } catch (error) {
+    logger.warn(`Can't read GPUFeatureStatus, disabling hardware acceleration`);
     app.disableHardwareAcceleration();
   }
-} catch (error) {
-  logger.warn(`Can't read GPUFeatureStatus, disabling hardware acceleration`);
-  app.disableHardwareAcceleration();
-}
-
+});
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
