@@ -7455,18 +7455,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-mocha@npm:12.3.0":
-  version: 12.3.0
-  resolution: "electron-mocha@npm:12.3.0"
+"electron-mocha@npm:12.3.1":
+  version: 12.3.1
+  resolution: "electron-mocha@npm:12.3.1"
   dependencies:
     ansi-colors: ^4.1.1
     electron-window: ^0.8.0
-    mocha: ^10.4.0
+    mocha: =10.4.0
     which: ^4.0.0
     yargs: ^17.7.2
   bin:
     electron-mocha: bin/electron-mocha
-  checksum: 3aef5ffa16de2b93eda64f39f5d6f123634f8bc2b3ca0b90c709fed216db9e681f85df97d16bdd3f414b026c061802fca157a6c28e6150aa1638ab64cf4dac32
+  checksum: 4e0276184df9445c6024fd467d22e20f6949865b50d09fcca44469287188831bf15f281acb1cc3aea6042ddf0c6bc690551e52a7e78bc64b4ec7ab2de0e7c2d2
   languageName: node
   linkType: hard
 
@@ -13080,7 +13080,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:^10.4.0":
+"mocha@npm:=10.4.0":
   version: 10.4.0
   resolution: "mocha@npm:10.4.0"
   dependencies:
@@ -17650,7 +17650,7 @@ __metadata:
     electron: 29.4.3
     electron-builder: 24.13.3
     electron-dl: ^3.5.2
-    electron-mocha: 12.3.0
+    electron-mocha: 12.3.1
     electron-packager: 17.1.2
     electron-window-state: 5.0.3
     electron-winstaller: 4.0.1
