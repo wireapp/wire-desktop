@@ -27,9 +27,8 @@ export const isPictureInPictureCallWindow = (frameName: string): boolean => {
 
 export const getPictureInPictureCallWindowOptions = (): Electron.BrowserWindowConstructorOptions => {
   return getNewWindowOptions({
-    title: 'Calling UI',
-    width: 290,
-    height: 290,
+    width: 1026,
+    height: 829,
     resizable: true,
     fullscreenable: true,
     maximizable: true,
