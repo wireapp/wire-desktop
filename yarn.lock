@@ -15078,6 +15078,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rimraf@npm:5.0.8":
+  version: 5.0.8
+  resolution: "rimraf@npm:5.0.8"
+  dependencies:
+    glob: ^10.3.7
+  bin:
+    rimraf: dist/esm/bin.mjs
+  checksum: 6d67ee92a3e2fef24e36c0763ebb5250d27f31f056a8a1e02d66e76578c16bdea00924438d73ec78270bca7c93b9da50cc2da6d9fcc24fbaef427870feac1ec0
+  languageName: node
+  linkType: hard
+
 "rimraf@npm:^2.6.3":
   version: 2.7.1
   resolution: "rimraf@npm:2.7.1"
@@ -17674,7 +17685,7 @@ __metadata:
     redux: 4.2.1
     redux-logger: 3.0.6
     redux-thunk: 2.4.2
-    rimraf: 5.0.7
+    rimraf: 5.0.8
     sinon: 17.0.2
     sort-json: 2.0.1
     style-loader: 4.0.0
