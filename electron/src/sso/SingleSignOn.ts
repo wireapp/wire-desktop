@@ -193,6 +193,17 @@ export class SingleSignOn {
   // Ensure authenticity of the window from within the code
   public static isSingleSignOnLoginWindow = (frameName: string) => SingleSignOn.SINGLE_SIGN_ON_FRAME_NAME === frameName;
 
+  public static getSingleSignOnLoginWindowOptions = (
+    parent: BrowserWindow,
+    origin: string,
+  ): Electron.BrowserWindowConstructorOptions =>
+    WindowUtil.getNewWindowOptions({
+      title: SingleSignOn.getWindowTitle(origin),
+      parent,
+      width: 480,
+      height: 600,
+    });
+
   // Returns an empty string if the origin is a Wire backend
   public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;

@@ -45,6 +45,7 @@ import {LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
+import {getPictureInPictureCallWindowOptions, isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -581,46 +582,14 @@ class ElectronWrapperInit {
       if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
         return {
           action: 'allow',
-          overrideBrowserWindowOptions: {
-            alwaysOnTop: true,
-            backgroundColor: '#FFFFFF',
-            fullscreen: false,
-            fullscreenable: false,
-            height: 600,
-            maximizable: false,
-            minimizable: false,
-            modal: false,
-            movable: true,
-            parent: main,
-            resizable: false,
-            title: SingleSignOn.getWindowTitle(details.url),
-            titleBarStyle: 'default',
-            useContentSize: true,
-            webPreferences: {
-              allowRunningInsecureContent: false,
-              backgroundThrottling: false,
-              contextIsolation: true,
-              devTools: false,
-              disableBlinkFeatures: '',
-              experimentalFeatures: false,
-              images: true,
-              javascript: true,
-              nodeIntegration: false,
-              nodeIntegrationInWorker: false,
-              offscreen: false,
-              partition: '',
-              plugins: false,
-              preload: '',
-              sandbox: true,
-              scrollBounce: true,
-              spellcheck: false,
-              textAreasAreResizable: false,
-              webSecurity: true,
-              webgl: false,
-              webviewTag: false,
-            },
-            width: 480,
-          },
+          overrideBrowserWindowOptions: SingleSignOn.getSingleSignOnLoginWindowOptions(main, details.url),
+        };
+      }
+
+      if (isPictureInPictureCallWindow(details.frameName)) {
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: getPictureInPictureCallWindowOptions(),
         };
       }
 
