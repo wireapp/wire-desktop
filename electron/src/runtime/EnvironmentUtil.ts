@@ -26,10 +26,13 @@ import {SettingsType} from '../settings/SettingsType';
 const argv = minimist(process.argv.slice(1));
 
 // As of customer request, we are not using the custom webapp url setting but rather the hardcoded value.
-// const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
-const webappUrlSetting = 'https://webapp.wire.schwarz';
+const SCHWARZ_CUSTOM_WEBAPP_URL = 'https://webapp.wire.schwarz';
+const webappUrlSetting =
+  settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL) || SCHWARZ_CUSTOM_WEBAPP_URL;
 
-const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV] || webappUrlSetting;
+const customWebappUrl: string = argv[config.ARGUMENT.ENV] || webappUrlSetting;
+settings.save(SettingsType.CUSTOM_WEBAPP_URL, customWebappUrl);
+settings.persistToFile();
 
 export enum ServerType {
   PRODUCTION = 'PRODUCTION',
