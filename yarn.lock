@@ -8575,9 +8575,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:48.7.0":
-  version: 48.7.0
-  resolution: "eslint-plugin-jsdoc@npm:48.7.0"
+"eslint-plugin-jsdoc@npm:48.8.3":
+  version: 48.8.3
+  resolution: "eslint-plugin-jsdoc@npm:48.8.3"
   dependencies:
     "@es-joy/jsdoccomment": ~0.46.0
     are-docs-informative: ^0.0.2
@@ -8586,12 +8586,12 @@ __metadata:
     escape-string-regexp: ^4.0.0
     esquery: ^1.6.0
     parse-imports: ^2.1.1
-    semver: ^7.6.2
+    semver: ^7.6.3
     spdx-expression-parse: ^4.0.0
-    synckit: ^0.9.0
+    synckit: ^0.9.1
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0 || ^9.0.0
-  checksum: e51a7985a50c9cc023af0e297b59d9d85af1d7ce707ae382684de8121a9c1c9448de369127306a5ee4d0faf8eaa3e16f09cc5c3f52ddcfaae87922902b370e58
+  checksum: 2f70c3be4cb032553b35e706055b01bb3bbd7c996aa168e7aee64ab3604ad9c55d475b199e9e5b642c138b84056571b80668c44418ce93a8a3e6fb67baf975ef
   languageName: node
   linkType: hard
 
@@ -15655,12 +15655,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.6.2":
-  version: 7.6.2
-  resolution: "semver@npm:7.6.2"
+"semver@npm:^7.6.3":
+  version: 7.6.3
+  resolution: "semver@npm:7.6.3"
   bin:
     semver: bin/semver.js
-  checksum: 40f6a95101e8d854357a644da1b8dd9d93ce786d5c6a77227bc69dbb17bea83d0d1d1d7c4cd5920a6df909f48e8bd8a5909869535007f90278289f2451d0292d
+  checksum: 4110ec5d015c9438f322257b1c51fe30276e5f766a3f64c09edd1d7ea7118ecbc3f379f3b69032bacf13116dc7abc4ad8ce0d7e2bd642e26b0d271b56b61a7d8
   languageName: node
   linkType: hard
 
@@ -16535,13 +16535,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"synckit@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "synckit@npm:0.9.0"
+"synckit@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "synckit@npm:0.9.1"
   dependencies:
     "@pkgr/core": ^0.1.0
     tslib: ^2.6.2
-  checksum: c38bc3df0306c3242ddc5628d766ef0b4ca85a8a861b0a26b03483f09eca31a7fbdbcefb1b9fdee9e49db7739df25ce728cb2c6aef02ddc58bf46ee71924a36b
+  checksum: 4042941a4d939675f1d7b01124b8405b6ac616f3e3f396d00e46c67f38d0d5b7f9a1de05bc7ceea4ce80d967b450cfa2460e5f6aca81f7cea8f1a28be9392985
   languageName: node
   linkType: hard
 
@@ -17935,7 +17935,7 @@ __metadata:
     eslint-plugin-jasmine: 4.2.0
     eslint-plugin-jest: 28.6.0
     eslint-plugin-jest-dom: 5.4.0
-    eslint-plugin-jsdoc: 48.7.0
+    eslint-plugin-jsdoc: 48.8.3
     eslint-plugin-jsx-a11y: 6.9.0
     eslint-plugin-no-unsanitized: 4.0.2
     eslint-plugin-prettier: 4.2.1
