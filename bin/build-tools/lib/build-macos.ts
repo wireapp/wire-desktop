@@ -94,7 +94,7 @@ export async function buildMacOSConfig(
     },
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas',
+    platform: 'darwin',
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
@@ -112,6 +112,7 @@ export async function buildMacOSConfig(
     if (macOSConfig.certNameApplication) {
       packagerConfig.osxSign = {
         optionsForFile: () => ({
+          preAutoEntitlements: true,
           entitlements: 'resources/macos/entitlements/parent.plist',
         }),
         identity: macOSConfig.certNameApplication,
@@ -173,7 +174,7 @@ export async function buildMacOSWrapper(
           app: appFile,
           identity: macOSConfig.certNameInstaller,
           pkg: pkgFile,
-          platform: 'mas',
+          platform: 'darwin',
         });
       }
 

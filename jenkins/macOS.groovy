@@ -46,7 +46,7 @@ node('built-in') {
           }
 
           echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-universal/Wire.app"', returnStdout: true
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-darwin-universal/Wire.app"', returnStdout: true
           echo privateAPIResult
         } else if (custom) {
           sh 'yarn build:macos'
@@ -55,7 +55,7 @@ node('built-in') {
           sh 'yarn build:macos:internal'
 
           echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-universal/WireInternal.app"', returnStdout: true
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-darwin-universal/WireInternal.app"', returnStdout: true
           echo privateAPIResult
         }
       }
@@ -77,7 +77,7 @@ node('built-in') {
   stage('Archive build artifacts') {
     if (!production && !custom) {
       // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-universal/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
+      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-darwin-universal/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
     }
     archiveArtifacts "package.json,wrap/dist/**"
     sh returnStatus: true, script: 'rm -rf wrap/'

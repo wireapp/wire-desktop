@@ -5,7 +5,7 @@ if ! command -v otool > /dev/null; then
   exit
 fi
 
-WIRE_APP_FILE="${1:-"wrap/build/Wire-mas-universal/Wire.app"}"
+WIRE_APP_FILE="${1:-"wrap/build/Wire-darwin-universal/Wire.app"}"
 FRAMEWORK_FILE="${WIRE_APP_FILE}/Contents/Frameworks/Electron Framework.framework/Electron Framework"
 PRIVATE_APPLE_APIS="CAContext\|CALayerHost\|NSAccessibilityRemoteUIElement\|NSNextStepFrame\|NSThemeFrame\|NSURLFileTypeMappings"
 
