@@ -117,6 +117,7 @@ export async function buildMacOSConfig(
         preAutoEntitlements: true,
         optionsForFile: () => ({
           entitlements: 'resources/macos/entitlements/parent.plist',
+          hardenedRuntime: true,
         }),
         identity: macOSConfig.certNameApplication,
       };
