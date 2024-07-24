@@ -59,7 +59,7 @@ node('built-in') {
           echo privateAPIResult
         }
       }
-    } catch(e) {
+    } catch (e) {
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
       throw e
@@ -79,7 +79,7 @@ node('built-in') {
       // Internal
       sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-darwin-universal/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
     }
-    archiveArtifacts "package.json,wrap/dist/**"
+    archiveArtifacts 'package.json,wrap/dist/**'
     sh returnStatus: true, script: 'rm -rf wrap/'
   }
 
@@ -87,7 +87,7 @@ node('built-in') {
     if (production) {
       try {
         build job: 'Wrapper_macOS_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_macOS_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-master.zinfra.io/')], wait: false
-      } catch(e) {
+      } catch (e) {
         wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} Unable to trigger smoke tests for ${version}**\n${BUILD_URL}"
         print e
       }

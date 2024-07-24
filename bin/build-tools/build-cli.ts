@@ -73,12 +73,12 @@ const platform = (commander.args[0] || '').toLowerCase();
 
     case 'mac':
     case 'macos': {
-      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign, architecture);
+      const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, false, architecture);
 
       logEntries(macOSConfig, 'macOSConfig', toolName);
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
-      return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
+      return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, false);
     }
 
     case 'linux': {
