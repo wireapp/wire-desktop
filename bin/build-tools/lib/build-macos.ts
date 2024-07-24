@@ -38,7 +38,7 @@ interface MacOSConfigResult {
 export async function buildMacOSConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
-  signManually?: boolean,
+  signManually: boolean,
   architecture: ArchOption = 'universal',
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
@@ -56,6 +56,7 @@ export async function buildMacOSConfig(
     electronMirror: null,
     notarizeAppleId: null,
     notarizeApplePassword: null,
+    notarizeTeamId: '',
   };
 
   const macOSConfig: MacOSConfig = {
@@ -67,6 +68,7 @@ export async function buildMacOSConfig(
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
+    notarizeTeamId: process.env.MACOS_NOTARIZE_ASC_PROVIDER || macOSDefaultConfig.notarizeTeamId,
   };
 
   if (macOSConfig.appleExportComplianceCode) {
@@ -123,6 +125,8 @@ export async function buildMacOSConfig(
     if (macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword) {
       logger.info('Notarizing macOS app ...');
       packagerConfig.osxNotarize = {
+        tool: 'notarytool',
+        teamId: macOSConfig.notarizeTeamId,
         appleId: macOSConfig.notarizeAppleId,
         appleIdPassword: macOSConfig.notarizeApplePassword,
       };
