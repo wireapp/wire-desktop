@@ -110,9 +110,10 @@ export async function buildMacOSConfig(
 
   if (!signManually) {
     if (macOSConfig.certNameApplication) {
+      logger.info('Signing macOS app ...');
       packagerConfig.osxSign = {
+        preAutoEntitlements: true,
         optionsForFile: () => ({
-          preAutoEntitlements: true,
           entitlements: 'resources/macos/entitlements/parent.plist',
         }),
         identity: macOSConfig.certNameApplication,
@@ -120,6 +121,7 @@ export async function buildMacOSConfig(
     }
 
     if (macOSConfig.notarizeAppleId && macOSConfig.notarizeApplePassword) {
+      logger.info('Notarizing macOS app ...');
       packagerConfig.osxNotarize = {
         appleId: macOSConfig.notarizeAppleId,
         appleIdPassword: macOSConfig.notarizeApplePassword,
@@ -164,12 +166,15 @@ export async function buildMacOSWrapper(
     await flipElectronFuses(appFile);
 
     if (macOSConfig.certNameInstaller) {
+      logger.info('Building macOS installer ...');
       await fs.ensureDir(commonConfig.distDir);
       const pkgFile = path.join(commonConfig.distDir, `${commonConfig.name}.pkg`);
 
       if (signManually) {
+        logger.info('Signing macOS installer manually...');
         await manualMacOSSign(appFile, pkgFile, commonConfig, macOSConfig);
       } else {
+        logger.info('Signing macOS installer automatically...');
         await buildPkg({
           app: appFile,
           identity: macOSConfig.certNameInstaller,
