@@ -56,7 +56,6 @@ export async function buildMacOSConfig(
     electronMirror: null,
     notarizeAppleId: null,
     notarizeApplePassword: null,
-    notarizeTeamId: '',
   };
 
   const macOSConfig: MacOSConfig = {
@@ -68,7 +67,6 @@ export async function buildMacOSConfig(
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
-    notarizeTeamId: process.env.MACOS_NOTARIZATION_ASC_PROVIDER || macOSDefaultConfig.notarizeTeamId,
   };
 
   if (macOSConfig.appleExportComplianceCode) {
@@ -127,9 +125,7 @@ export async function buildMacOSConfig(
       logger.info('Notarizing macOS app ...');
       packagerConfig.osxNotarize = {
         tool: 'notarytool',
-        teamId: macOSConfig.notarizeTeamId,
-        appleId: macOSConfig.notarizeAppleId,
-        appleIdPassword: macOSConfig.notarizeApplePassword,
+        keychainProfile: 'tims-login'
       };
     }
   }

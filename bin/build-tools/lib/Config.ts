@@ -62,7 +62,6 @@ export interface MacOSConfig {
   electronMirror: string | null;
   notarizeAppleId: string | null;
   notarizeApplePassword: string | null;
-  notarizeTeamId: string;
 }
 
 export interface WindowsConfig {
