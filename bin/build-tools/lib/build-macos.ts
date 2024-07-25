@@ -125,7 +125,7 @@ export async function buildMacOSConfig(
       logger.info('Notarizing macOS app ...');
       packagerConfig.osxNotarize = {
         tool: 'notarytool',
-        keychainProfile: 'tims-login'
+        keychainProfile: 'tims-login',
       };
     }
   }
