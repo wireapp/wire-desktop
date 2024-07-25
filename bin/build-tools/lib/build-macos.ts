@@ -112,7 +112,7 @@ export async function buildMacOSConfig(
     if (macOSConfig.certNameApplication) {
       logger.info('Signing macOS app ...');
       packagerConfig.osxSign = {
-        preAutoEntitlements: true,
+        preAutoEntitlements: false,
         optionsForFile: () => ({
           entitlements: 'resources/macos/entitlements/parent.plist',
           hardenedRuntime: true,
