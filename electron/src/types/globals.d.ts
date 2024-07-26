@@ -45,6 +45,7 @@ export declare global {
   var openGraphAsync: (url: string) => Promise<OpenGraphResult>;
   var desktopAppConfig: {
     version: string;
+    supportsCallingPopoutWindow?: boolean;
   };
   /* eslint-enable no-var */
 
