@@ -86,10 +86,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/compat-data@npm:^7.25.0":
-  version: 7.25.0
-  resolution: "@babel/compat-data@npm:7.25.0"
-  checksum: 2ddcf8517f15eb03a712707b5d4fb146e4db44f8ebd821c29ca19f2808ee2f013c7b2c1d5d686b255ffbfa417368d61ee563ccd5d3639ed4293ce308a5d5d481
+"@babel/compat-data@npm:^7.25.2":
+  version: 7.25.2
+  resolution: "@babel/compat-data@npm:7.25.2"
+  checksum: b61bc9da7cfe249f19d08da00f4f0c20550cd9ad5bffcde787c2bf61a8a6fa5b66d92bbd89031f3a6e5495a799a2a2499f2947b6cc7964be41979377473ab132
   languageName: node
   linkType: hard
 
@@ -290,6 +290,19 @@ __metadata:
     lru-cache: ^5.1.1
     semver: ^6.3.1
   checksum: 40c9e87212fffccca387504b259a629615d7df10fc9080c113da6c51095d3e8b622a1409d9ed09faf2191628449ea28d582179c5148e2e993a3140234076b8da
+  languageName: node
+  linkType: hard
+
+"@babel/helper-compilation-targets@npm:^7.25.2":
+  version: 7.25.2
+  resolution: "@babel/helper-compilation-targets@npm:7.25.2"
+  dependencies:
+    "@babel/compat-data": ^7.25.2
+    "@babel/helper-validator-option": ^7.24.8
+    browserslist: ^4.23.1
+    lru-cache: ^5.1.1
+    semver: ^6.3.1
+  checksum: aed33c5496cb9db4b5e2d44e26bf8bc474074cc7f7bb5ebe1d4a20fdeb362cb3ba9e1596ca18c7484bcd6e5c3a155ab975e420d520c0ae60df81f9de04d0fd16
   languageName: node
   linkType: hard
 
@@ -1528,7 +1541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-function-name@npm:^7.25.0":
+"@babel/plugin-transform-function-name@npm:^7.25.1":
   version: 7.25.1
   resolution: "@babel/plugin-transform-function-name@npm:7.25.1"
   dependencies:
@@ -1553,14 +1566,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-literals@npm:^7.24.7":
-  version: 7.24.7
-  resolution: "@babel/plugin-transform-literals@npm:7.24.7"
+"@babel/plugin-transform-literals@npm:^7.25.2":
+  version: 7.25.2
+  resolution: "@babel/plugin-transform-literals@npm:7.25.2"
   dependencies:
-    "@babel/helper-plugin-utils": ^7.24.7
+    "@babel/helper-plugin-utils": ^7.24.8
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 3c075cc093a3dd9e294b8b7d6656e65f889e7ca2179ca27978dcd65b4dc4885ebbfb327408d7d8f483c55547deed00ba840956196f3ac8a3c3d2308a330a8c23
+  checksum: 70c9bb40e377a306bd8f500899fb72127e527517914466e95dc6bb53fa7a0f51479db244a54a771b5780fc1eab488fedd706669bf11097b81a23c81ab7423eb1
   languageName: node
   linkType: hard
 
@@ -1999,12 +2012,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:7.25.0":
-  version: 7.25.0
-  resolution: "@babel/preset-env@npm:7.25.0"
+"@babel/preset-env@npm:7.25.2":
+  version: 7.25.2
+  resolution: "@babel/preset-env@npm:7.25.2"
   dependencies:
-    "@babel/compat-data": ^7.25.0
-    "@babel/helper-compilation-targets": ^7.24.8
+    "@babel/compat-data": ^7.25.2
+    "@babel/helper-compilation-targets": ^7.25.2
     "@babel/helper-plugin-utils": ^7.24.8
     "@babel/helper-validator-option": ^7.24.8
     "@babel/plugin-bugfix-firefox-class-in-computed-class-key": ^7.25.0
@@ -2048,9 +2061,9 @@ __metadata:
     "@babel/plugin-transform-exponentiation-operator": ^7.24.7
     "@babel/plugin-transform-export-namespace-from": ^7.24.7
     "@babel/plugin-transform-for-of": ^7.24.7
-    "@babel/plugin-transform-function-name": ^7.25.0
+    "@babel/plugin-transform-function-name": ^7.25.1
     "@babel/plugin-transform-json-strings": ^7.24.7
-    "@babel/plugin-transform-literals": ^7.24.7
+    "@babel/plugin-transform-literals": ^7.25.2
     "@babel/plugin-transform-logical-assignment-operators": ^7.24.7
     "@babel/plugin-transform-member-expression-literals": ^7.24.7
     "@babel/plugin-transform-modules-amd": ^7.24.7
@@ -2088,7 +2101,7 @@ __metadata:
     semver: ^6.3.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 10161771c6dd408e440ea634338eeb0bc9f3619c45513b04ccafb9d6a5ad12a6e01fc16506cbb3ea9e8be2123690be65524f6112662cf38c3fbdcda988f47585
+  checksum: ef056a50bbf984e9e9cb1a841df705b742629c20aa4df3757a3e855bd64430b5f414f7e0e9f124ba5ce7118976215648973c886c96c30b281d8d2c3c05f44878
   languageName: node
   linkType: hard
 
@@ -18058,7 +18071,7 @@ __metadata:
     "@babel/helper-string-parser": 7.24.8
     "@babel/plugin-proposal-class-properties": 7.18.6
     "@babel/plugin-proposal-optional-chaining": 7.21.0
-    "@babel/preset-env": 7.25.0
+    "@babel/preset-env": 7.25.2
     "@babel/preset-react": 7.24.7
     "@babel/preset-typescript": 7.24.7
     "@babel/register": 7.24.6
