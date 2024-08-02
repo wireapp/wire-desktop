@@ -4815,12 +4815,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/certificate-check@npm:0.7.14":
-  version: 0.7.14
-  resolution: "@wireapp/certificate-check@npm:0.7.14"
+"@wireapp/certificate-check@npm:0.7.15":
+  version: 0.7.15
+  resolution: "@wireapp/certificate-check@npm:0.7.15"
   dependencies:
     jsrsasign: 11.1.0
-  checksum: 273a26a40e80521ba73fb4041347c79639c069f83d8ec1c106de9611d9070812fdb56ec67a7d6ba7fddf75b755430146035f50822f643de285826918a777d37a
+  checksum: d0895b956de3453a58877fd62517a6bd1efec77518837f81c8cd0bcf058b25dcd9f50cfed37c15d2f4d27e3ddb894ba6c08f7b14691138852f1e05c7edb0c220
   languageName: node
   linkType: hard
 
@@ -17984,7 +17984,7 @@ __metadata:
     "@types/uuid": 9.0.8
     "@typescript-eslint/eslint-plugin": 7.17.0
     "@typescript-eslint/parser": 7.18.0
-    "@wireapp/certificate-check": 0.7.14
+    "@wireapp/certificate-check": 0.7.15
     "@wireapp/commons": 5.2.10
     "@wireapp/copy-config": 2.2.3
     "@wireapp/eslint-config": 3.0.17
