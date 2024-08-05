@@ -169,6 +169,7 @@
     "build:win:ia32": "yarn build:win -a ia32",
     "build:win:installer:internal:ia32": "cross-env-shell APP_ENV=internal \"yarn build:win:installer:ia32 -m\"",
     "build:win:installer:ia32": "rimraf wrap/dist && yarn build:win -a ia32 && ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts windows-installer -a ia32",
+    "build:msi": "yarn build:prepare && ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts msi",
     "bundle": "webpack --env production",
     "bundle:dev": "webpack",
     "clear:coverage": "rimraf coverage",

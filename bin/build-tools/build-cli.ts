@@ -26,6 +26,7 @@ import {buildLinuxConfig, buildLinuxWrapper} from './lib/build-linux';
 import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
+import {buildMSIWrapper, buildMSIConfig} from './lib/build-msi';
 
 const toolName = path.basename(__filename).replace('.ts', '');
 const logger = LogFactory.getLogger(toolName, {forceEnable: true, namespace: '@wireapp/build-tools'});
@@ -88,6 +89,15 @@ const platform = (commander.args[0] || '').toLowerCase();
       logEntries(builderConfig, 'builderConfig', toolName);
 
       return buildLinuxWrapper(builderConfig, linuxConfig, packageJson, wireJson, envFile, architecture);
+    }
+
+    case 'msi': {
+      const {MSIConfig, builderConfig} = await buildMSIConfig();
+
+      logEntries(MSIConfig, 'MSIConfig', toolName);
+      logEntries(builderConfig, 'builderConfig', toolName);
+
+      return buildMSIWrapper(builderConfig, MSIConfig, packageJson, wireJson, envFile, architecture);
     }
 
     default: {
