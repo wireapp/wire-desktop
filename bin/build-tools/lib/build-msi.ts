@@ -86,7 +86,8 @@ export async function buildMSIWrapper(
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
   try {
-    const builtPackages = await electronBuilder.build({config: builderConfig, target});
+    const targets = electronBuilder.Platform.WINDOWS.createTarget(MSIConfig.target, architecture);
+    const builtPackages = await electronBuilder.build({config: builderConfig, targets});
     builtPackages.forEach(builtPackage => logger.log(`Built package "${builtPackage}".`));
   } catch (error) {
     logger.error(error);
