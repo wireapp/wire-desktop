@@ -72,3 +72,11 @@ export interface WindowsInstallerConfig {
   installerIconUrl: string;
   loadingGif: string;
 }
+
+export interface MSIConfig {
+  target: string;
+  additionalWixArgs: Array<String> | undefined;
+  oneClick: boolean;
+  perMachine: boolean;
+  runAfterFinish: boolean;
+}
