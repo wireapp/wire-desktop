@@ -70,7 +70,7 @@
     "@wireapp/copy-config": "2.2.3",
     "@wireapp/eslint-config": "3.0.17",
     "@wireapp/prettier-config": "0.6.4",
-    "adm-zip": "0.5.14",
+    "adm-zip": "0.5.15",
     "aws-sdk": "2.1668.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
