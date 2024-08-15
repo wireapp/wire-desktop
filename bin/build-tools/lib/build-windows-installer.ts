@@ -39,7 +39,7 @@ export async function buildWindowsInstallerConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   manualSign?: boolean,
-  architecture: ArchOption = 'ia32',
+  architecture: ArchOption = 'x64',
 ): Promise<WindowsInstallerConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);

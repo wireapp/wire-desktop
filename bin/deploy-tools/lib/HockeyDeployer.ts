@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import logdown from 'logdown';
@@ -126,9 +126,8 @@ export class HockeyDeployer {
       return response.data;
     } catch (error) {
       this.logger.error(error);
-      throw new Error(
-        `Hockey version creation failed with status code "${error.response.status}": "${error.response.statusText}"`,
-      );
+      const {status, statusText} = (error as AxiosError).response || {};
+      throw new Error(`Hockey version creation failed with status code "${status}": "${statusText}"`);
     }
   }
 
@@ -166,9 +165,8 @@ export class HockeyDeployer {
       await axios.put<void>(hockeyUrl, formData, {headers, maxContentLength: TWO_HUNDRED_MB_IN_BYTES});
     } catch (error) {
       this.logger.error(error);
-      throw new Error(
-        `Hockey version upload failed with status code "${error.response.status}": "${error.response.statusText}"`,
-      );
+      const {status, statusText} = (error as AxiosError).response || {};
+      throw new Error(`Hockey version upload failed with status code "${status}": "${statusText}"`);
     }
   }
 }

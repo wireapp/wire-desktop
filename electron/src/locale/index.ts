@@ -109,7 +109,6 @@ export const supportedSpellCheckLanguages: Record<SupportedI18nLanguage, string[
   zh: ['zh', 'zh-CN'],
 };
 
-/* cspell:disable */
 export const SUPPORTED_LANGUAGES = {
   en: 'English',
   cs: 'Čeština',
@@ -136,7 +135,6 @@ export const SUPPORTED_LANGUAGES = {
   uk: 'Українська',
   zh: '简体中文',
 };
-/* cspell:enable */
 
 let current: SupportedI18nLanguage | undefined;
 

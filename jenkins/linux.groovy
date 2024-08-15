@@ -68,7 +68,7 @@ node('linux') {
     }
 
     stage('Save .deb, AppImage and repo files') {
-      archiveArtifacts 'wrap/dist/*.deb,wrap/dist/*.AppImage,wrap/dist/*.rpm,wrap/dist/*.asc,wrap/dist/debian/**'
+      archiveArtifacts 'package.json,wrap/dist/*.deb,wrap/dist/*.AppImage,wrap/dist/*.rpm,wrap/dist/*.asc,wrap/dist/debian/**'
     }
 
   }

@@ -37,7 +37,7 @@ interface WindowsConfigResult {
 export async function buildWindowsConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
-  architecture: ArchOption = 'ia32',
+  architecture: ArchOption = 'x64',
 ): Promise<WindowsConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);

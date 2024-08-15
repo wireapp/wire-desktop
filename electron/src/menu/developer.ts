@@ -20,12 +20,10 @@
 import {MenuItem, MenuItemConstructorOptions} from 'electron';
 
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import {getAvailebleEnvironments, setEnvironment} from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
-
-const currentEnvironment = EnvironmentUtil.getEnvironment();
 
 const reloadTemplate: MenuItemConstructorOptions = {
   click: () => WindowManager.getPrimaryWindow()?.reload(),
@@ -70,20 +68,19 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
-  const environments: Partial<typeof EnvironmentUtil.URL_WEBAPP> = {...EnvironmentUtil.URL_WEBAPP};
-  // remove the custom environment entry if it points to production (because this is the fallback)
-  if (environments.CUSTOM === config.appBase) {
-    delete environments.CUSTOM;
-  }
+  const environments = getAvailebleEnvironments();
 
-  for (const [backendType, backendURL] of Object.entries(environments)) {
+  for (const env of environments) {
     environmentTemplate.push({
-      checked: currentEnvironment === backendType,
+      checked: env.isActive,
+      enabled: !!env.server,
       click: async () => {
-        EnvironmentUtil.setEnvironment(backendType as EnvironmentUtil.BackendType);
-        await lifecycle.relaunch();
+        if (env.server) {
+          setEnvironment(env.server);
+          await lifecycle.relaunch();
+        }
       },
-      label: backendURL!.replace(/^https?:\/\//, ''),
+      label: env.name,
       type: 'radio',
     });
   }

@@ -35,6 +35,8 @@ const logger = getLogger(path.basename(__filename));
 
 export let isFirstInstance: boolean | undefined = undefined;
 
+const relaunchListeners: (() => void)[] = [];
+
 export async function initSquirrelListener(): Promise<void> {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
     logger.info('Checking for Windows update ...');
@@ -52,7 +54,7 @@ export const checkSingleInstance = async () => {
     logger.info('Checking if we are the first instance ...', isFirstInstance);
 
     if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
-      await quit(false);
+      await quit();
     } else {
       app.on('second-instance', () => WindowManager.showPrimaryWindow());
     }
@@ -72,7 +74,16 @@ export const getWebViewId = (contents?: WebContents): string | undefined => {
   }
 };
 
-export const quit = async (clearCache = true): Promise<void> => {
+/**
+ * will register a function that will be called in case of a relaunch in MacOS (see https://github.com/electron/electron/issues/13696)
+ * @param {Function} listener the listener to register
+ * @returns {void}
+ */
+export const addRelaunchListeners = (listener: () => void) => {
+  relaunchListeners.push(listener);
+};
+
+export const quit = async (clearCache = false): Promise<void> => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
 
@@ -98,7 +109,7 @@ export const relaunch = async () => {
      * to reloading all the webviews
      * see: https://github.com/electron/electron/issues/13696
      */
-    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.WRAPPER.RELOAD);
+    relaunchListeners.forEach(listener => listener());
   } else {
     app.relaunch();
     await quit();

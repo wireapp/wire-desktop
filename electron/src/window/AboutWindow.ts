@@ -29,6 +29,7 @@ import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
 
 let webappVersion: string;
+let webappAVSVersion: string | undefined;
 
 // Paths
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
@@ -51,6 +52,10 @@ const WINDOW_SIZE = {
 
 ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => {
   webappVersion = version;
+});
+
+ipcMain.once(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, (_event, version: string) => {
+  webappAVSVersion = version;
 });
 
 const showWindow = async () => {
@@ -132,6 +137,7 @@ const showWindow = async () => {
         electronVersion: config.version,
         productName: config.name,
         webappVersion,
+        webappAVSVersion,
       });
     }
   }

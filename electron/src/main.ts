@@ -20,6 +20,7 @@
 import * as remoteMain from '@electron/remote/main';
 import {
   app,
+  dialog,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
@@ -30,6 +31,7 @@ import {
   safeStorage,
   HandlerDetails,
 } from 'electron';
+import electronDl from 'electron-dl';
 import windowStateKeeper from 'electron-window-state';
 import fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
@@ -43,6 +45,7 @@ import {LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
+import {getPictureInPictureCallWindowOptions, isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -80,6 +83,8 @@ const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/preload-app.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/preload/preload-webview.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
+const ICON = path.join(APP_PATH, 'img/download-dialog/logo@2x.png');
+
 const WINDOW_SIZE = {
   DEFAULT_HEIGHT: 768,
   DEFAULT_WIDTH: 1024,
@@ -93,12 +98,31 @@ const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
-const BASE_URL = EnvironmentUtil.web.getWebappUrl(argv[config.ARGUMENT.ENV]);
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
 const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
+const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
+const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
+
+if (customDownloadPath) {
+  electronDl({
+    directory: appHomePath(customDownloadPath),
+    saveAs: false,
+    onCompleted: () => {
+      dialog.showMessageBox({
+        type: 'none',
+        icon: ICON,
+        title: locale.getText('enforcedDownloadComplete'),
+        message: locale.getText('enforcedDownloadMessage', {
+          path: appHomePath(customDownloadPath) ?? app.getPath('downloads'),
+        }),
+        buttons: [locale.getText('enforcedDownloadButton')],
+      });
+    },
+  });
+}
 
 if (argv[config.ARGUMENT.VERSION]) {
   console.info(config.version);
@@ -148,23 +172,13 @@ app.setAppUserModelId(config.appUserModelId);
 // do not use mdns for local ip obfuscation to prevent windows firewall prompt
 app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
 
-try {
-  logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
-  const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
-
-  if (!has2dCanvas) {
-    /*
-     * If the 2D canvas is unavailable, and we rely on hardware acceleration,
-     * Electron can't render anything and will only display a white screen. Thus
-     * we disable hardware acceleration completely.
-     */
-    logger.warn('2D canvas unavailable, disabling hardware acceleration');
+app.getGPUInfo('basic').then((info: any) => {
+  const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
+  if (gpuDevices.length > 0) {
+    logger.info('No GPU device found, disabling hardware acceleration');
     app.disableHardwareAcceleration();
   }
-} catch (error) {
-  logger.warn(`Can't read GPUFeatureStatus, disabling hardware acceleration`);
-  app.disableHardwareAcceleration();
-}
+});
 
 // IPC events
 const bindIpcEvents = (): void => {
@@ -187,6 +201,17 @@ const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
+
+  ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
+    if (EnvironmentUtil.platform.IS_WINDOWS) {
+      if (downloadPath) {
+        fs.ensureDirSync(appHomePath(downloadPath));
+      }
+      //save the downloadPath locally
+      settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
+      settings.persistToFile();
+    }
+  });
 };
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
@@ -220,6 +245,24 @@ const initWindowStateKeeper = (): windowStateKeeper.State => {
   return windowStateKeeper(stateKeeperOptions);
 };
 
+function getMainWindowUrl() {
+  const baseUrl = EnvironmentUtil.web.getWebappUrl();
+  const webappURL = new URL(baseUrl);
+  webappURL.searchParams.set('hl', currentLocale);
+
+  if (ENABLE_LOGGING) {
+    webappURL.searchParams.set('enableLogging', '@wireapp/*');
+  }
+
+  if (customProtocolHandler.hashLocation) {
+    webappURL.hash = customProtocolHandler.hashLocation;
+  }
+  const mainURL = pathToFileURL(INDEX_HTML);
+  mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
+  mainURL.searchParams.set('focus', String(!startHidden));
+  return mainURL;
+}
+
 // App Windows
 const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
   const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
@@ -233,7 +276,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     minWidth: WINDOW_SIZE.MIN_WIDTH,
     show: false,
     title: config.name,
-    titleBarStyle: 'hiddenInset',
     webPreferences: {
       backgroundThrottling: false,
       contextIsolation: false,
@@ -264,17 +306,6 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   mainWindowState.manage(main);
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
-
-  const webappURL = new URL(BASE_URL);
-  webappURL.searchParams.set('hl', currentLocale);
-
-  if (ENABLE_LOGGING) {
-    webappURL.searchParams.set('enableLogging', '@wireapp/*');
-  }
-
-  if (customProtocolHandler.hashLocation) {
-    webappURL.hash = customProtocolHandler.hashLocation;
-  }
 
   if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
     openDevTools(argv[config.ARGUMENT.DEVTOOLS]).catch(() =>
@@ -326,9 +357,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  main.webContents.on('crashed', event => {
+  app.on('render-process-gone', async (event, _, details) => {
     logger.error('WebContents crashed. Will reload the window.');
-    logger.error(event);
+    logger.error(JSON.stringify(details));
     try {
       main.reload();
     } catch (error) {
@@ -345,10 +376,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
 
   main.webContents.setZoomFactor(1);
 
-  const mainURL = pathToFileURL(INDEX_HTML);
-  mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
-  mainURL.searchParams.set('focus', String(!startHidden));
-
+  const mainURL = getMainWindowUrl();
   await main.loadURL(mainURL.href);
   const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
   await main.webContents.insertCSS(wrapperCSSContent);
@@ -554,46 +582,14 @@ class ElectronWrapperInit {
       if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
         return {
           action: 'allow',
-          overrideBrowserWindowOptions: {
-            alwaysOnTop: true,
-            backgroundColor: '#FFFFFF',
-            fullscreen: false,
-            fullscreenable: false,
-            height: 600,
-            maximizable: false,
-            minimizable: false,
-            modal: false,
-            movable: true,
-            parent: main,
-            resizable: false,
-            title: SingleSignOn.getWindowTitle(details.url),
-            titleBarStyle: 'default',
-            useContentSize: true,
-            webPreferences: {
-              allowRunningInsecureContent: false,
-              backgroundThrottling: false,
-              contextIsolation: true,
-              devTools: false,
-              disableBlinkFeatures: '',
-              experimentalFeatures: false,
-              images: true,
-              javascript: true,
-              nodeIntegration: false,
-              nodeIntegrationInWorker: false,
-              offscreen: false,
-              partition: '',
-              plugins: false,
-              preload: '',
-              sandbox: true,
-              scrollBounce: true,
-              spellcheck: false,
-              textAreasAreResizable: false,
-              webSecurity: true,
-              webgl: false,
-              webviewTag: false,
-            },
-            width: 480,
-          },
+          overrideBrowserWindowOptions: SingleSignOn.getSingleSignOnLoginWindowOptions(main, details.url),
+        };
+      }
+
+      if (isPictureInPictureCallWindow(details.frameName)) {
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: getPictureInPictureCallWindowOptions(),
         };
       }
 
@@ -622,13 +618,14 @@ class ElectronWrapperInit {
       }
     };
 
+    // Keeping this Function for future use
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
       // Ensure navigation is to an allowed domain
       if (OriginValidator.isMatchingHost(url, baseUrl)) {
         this.logger.log(`Navigating inside <webview>. URL: ${url}`);
       } else {
-        this.logger.log(`Preventing navigation inside <webview>. URL: ${url}`);
-        event.preventDefault();
+        // ToDo: Add a back button to the webview to navigate back to the main app
+        this.logger.log(`Navigating outside <webview>. URL: ${url}`);
       }
     };
 
@@ -673,6 +670,7 @@ class ElectronWrapperInit {
           });
           if (ENABLE_LOGGING) {
             const colorCodeRegex = /%c(.+?)%c/gm;
+            const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;
 
             contents.on('console-message', async (_event, _level, message) => {
@@ -687,7 +685,7 @@ class ElectronWrapperInit {
                 const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
                 try {
                   await LogFactory.writeMessage(
-                    message.replace(colorCodeRegex, '$1').replace(accessTokenRegex, ''),
+                    message.replace(colorCodeRegex, '$1').replace(stylingRegex, '').replace(accessTokenRegex, ''),
                     logFilePath,
                   );
                 } catch (error) {
@@ -742,6 +740,12 @@ lifecycle
   .checkSingleInstance()
   .then(() => lifecycle.initSquirrelListener())
   .catch(error => logger.error(error));
+
+// Reloads the entire view when a `relaunch` is triggered (MacOS only, as other platform will quit and restart the app)
+lifecycle.addRelaunchListeners(async () => {
+  const mainURL = getMainWindowUrl();
+  await main.loadURL(mainURL.href);
+});
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {

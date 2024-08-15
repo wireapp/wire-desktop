@@ -42,9 +42,10 @@ interface Details {
   electronVersion: string;
   productName: string;
   webappVersion: string;
+  webappAVSVersion?: string;
 }
 
-export function loadedAboutScreen(_event: Event, details: Details): void {
+export function loadedAboutScreen(_event: unknown, details: Details): void {
   const nameElement = document.getElementById('name');
   if (nameElement) {
     nameElement.textContent = details.productName;
@@ -58,6 +59,13 @@ export function loadedAboutScreen(_event: Event, details: Details): void {
   const webappVersionElement = document.getElementById('webappVersion');
   if (webappVersionElement) {
     webappVersionElement.textContent = details.webappVersion;
+  }
+
+  if (details.webappAVSVersion) {
+    const webappAVSVersionElement = document.getElementById('webappAVSVersion');
+    if (webappAVSVersionElement) {
+      webappAVSVersionElement.textContent = details.webappAVSVersion;
+    }
   }
 
   const copyrightElement = document.getElementById('copyright');

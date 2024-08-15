@@ -17,8 +17,8 @@
  *
  */
 
-const {join, resolve} = require('path');
-const {execSync} = require('child_process');
+import {join, resolve} from 'path';
+import {execSync} from 'child_process';
 
 const rootDir = resolve(__dirname, '..');
 const config = join(rootDir, 'crowdin.yaml');

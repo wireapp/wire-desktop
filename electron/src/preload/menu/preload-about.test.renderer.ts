@@ -31,11 +31,12 @@ describe('loadedAboutScreen', () => {
   it('publishes labels', done => {
     const sendSpy = spy(ipcRenderer, 'send');
 
-    loadedAboutScreen(new Event('test'), {
+    loadedAboutScreen(null, {
       copyright: '&copy; Wire Swiss GmbH',
       electronVersion: 'Development',
       productName: 'Wire',
       webappVersion: '2019.04.10.0901',
+      webappAVSVersion: '9.0.test',
     });
 
     assert.ok(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []));

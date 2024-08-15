@@ -16,14 +16,14 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import {LogFactory, Logger} from '@wireapp/commons/src/main/LogFactory';
+import {LogFactory, Logger} from '@wireapp/commons';
 import {exec} from 'child_process';
 import {OptionValues} from 'commander';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import {promisify} from 'util';
-import UUID from 'uuidjs';
+import {v4 as uuidv4} from 'uuid';
 
 interface BackupResult {
   backupPaths: string[];
@@ -51,7 +51,7 @@ export async function restoreFiles({originalPaths, backupPaths, tempDir}: Backup
   await fs.remove(tempDir);
 }
 
-export const generateUUID = () => UUID.genV4().toString();
+export const generateUUID = () => uuidv4();
 
 export const getLogger = (namespace: string, name: string): Logger =>
   LogFactory.getLogger(name, {forceEnable: true, namespace: `@wireapp/${namespace}`, separator: '/'});

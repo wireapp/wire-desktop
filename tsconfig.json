@@ -27,7 +27,7 @@
     "typeRoots": ["electron/src/types", "node_modules/@types"],
     "jsx": "react-jsx"
   },
-  "exclude": ["bin", "electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
-  "include": ["electron/**/*"],
+  "exclude": ["electron/dist", "electron/**/*.test*.ts", "node_modules", "wrap"],
+  "include": ["electron/**/*", "bin"],
   "files": ["electron/src/types/globals.d.ts"]
 }

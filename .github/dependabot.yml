@@ -20,7 +20,11 @@ updates:
         versions:
           - '> 4.x'
       # these are being updated to esm modules after these versions and electron doesn't currently natively support it
+      # TODO: electron 28 now supports esm, so we can remove this ignore
       - dependency-name: image-type
+        versions:
+          - '> 4.x'
+      - dependency-name: electron-dl
         versions:
           - '> 4.x'
       - dependency-name: globby
@@ -41,3 +45,16 @@ updates:
       day: sunday
     open-pull-requests-limit: 99
     versioning-strategy: increase
+
+  # Github actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    open-pull-requests-limit: 99
+    schedule:
+      interval: 'daily'
+  # Docker
+  - package-ecosystem: 'docker'
+    directory: '/'
+    open-pull-requests-limit: 99
+    schedule:
+      interval: 'daily'

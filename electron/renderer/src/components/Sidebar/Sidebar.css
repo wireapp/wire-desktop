@@ -20,7 +20,6 @@
 .Sidebar {
   background-color: var(--sidebar-color);
   width: 78px;
-  padding-top: 40px;
   display: flex;
   align-items: center;
   flex-direction: column;
