@@ -22,7 +22,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14.x
+          node-version: 18.x
       - name: Yarn cache
         uses: c-hive/gha-yarn-cache@v2.1.0
       - name: Install dependencies
