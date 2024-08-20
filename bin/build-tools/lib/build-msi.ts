@@ -38,9 +38,9 @@ export async function buildMSIConfig(
   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
   envFilePath: string = path.join(mainDir, '.env.defaults'),
 ): Promise<MSIConfigResult> {
-  // const wireJsonResolved = path.resolve(wireJsonPath);
-  // const envFileResolved = path.resolve(envFilePath);
-  // const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
+  const wireJsonResolved = path.resolve(wireJsonPath);
+  const envFileResolved = path.resolve(envFilePath);
+  const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const MSIConfig: MSIConfig = {
     target: 'msi',
@@ -48,6 +48,7 @@ export async function buildMSIConfig(
     oneClick: false,
     perMachine: false,
     runAfterFinish: false,
+    executableName: `${commonConfig.nameShort}-desktop`,
   };
 
   const builderConfig: electronBuilder.Configuration = {

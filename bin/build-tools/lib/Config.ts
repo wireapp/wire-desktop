@@ -79,4 +79,5 @@ export interface MSIConfig {
   oneClick: boolean;
   perMachine: boolean;
   runAfterFinish: boolean;
+  executableName: string;
 }
