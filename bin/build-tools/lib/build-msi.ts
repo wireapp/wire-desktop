@@ -27,19 +27,20 @@ import {MSIConfig} from './Config';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
-// const mainDir = path.resolve(__dirname, '../../../');
+const mainDir = path.resolve(__dirname, '../../../');
 
 interface MSIConfigResult {
   builderConfig: electronBuilder.Configuration;
   MSIConfig: MSIConfig;
 }
 
-export async function buildMSIConfig(): Promise<MSIConfigResult> {
-  //   wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
-  //   envFilePath: string = path.join(mainDir, '.env.defaults'),
-  //   const wireJsonResolved = path.resolve(wireJsonPath);
-  //   const envFileResolved = path.resolve(envFilePath);
-  //   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
+export async function buildMSIConfig(
+  wireJsonPath: string = path.join(mainDir, 'electron/wire.json'),
+  envFilePath: string = path.join(mainDir, '.env.defaults'),
+): Promise<MSIConfigResult> {
+  // const wireJsonResolved = path.resolve(wireJsonPath);
+  // const envFileResolved = path.resolve(envFilePath);
+  // const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const MSIConfig: MSIConfig = {
     target: 'msi',
