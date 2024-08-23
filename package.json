@@ -94,7 +94,7 @@
     "eslint-plugin-better-styled-components": "1.1.2",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jasmine": "4.2.0",
+    "eslint-plugin-jasmine": "4.2.1",
     "eslint-plugin-jest": "28.8.0",
     "eslint-plugin-jest-dom": "5.4.0",
     "eslint-plugin-jsdoc": "48.11.0",
