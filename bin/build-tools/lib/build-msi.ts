@@ -53,6 +53,7 @@ export async function buildMSIConfig(
 
   const builderConfig: electronBuilder.Configuration = {
     afterPack: afterPackWindows,
+    win: {icon: 'https://wire-app.wire.com/win/internal/wire.internal.ico'},
     msi: {oneClick: MSIConfig.oneClick, perMachine: MSIConfig.perMachine, runAfterFinish: MSIConfig.runAfterFinish},
   };
 
