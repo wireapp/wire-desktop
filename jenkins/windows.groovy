@@ -83,11 +83,11 @@ node('windows') {
         archiveArtifacts 'package.json,wrap\\dist\\**'
       }
 
-      stage('Print hash') {
-        try {
-          if (production) {
-            bat 'certUtil -hashfile "wrap\\dist\\Wire-Setup.exe" SHA256'
-          }
+      // stage('Print hash') {
+      //   try {
+      //     if (production) {
+      //       bat 'certUtil -hashfile "wrap\\dist\\Wire-Setup.exe" SHA256'
+      //     }
     } catch (e) {
           currentBuild.result = 'FAILED'
           wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} printing hash failed**\n${BUILD_URL}"
