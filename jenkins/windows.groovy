@@ -49,7 +49,7 @@ node('windows') {
     stage('Build installer') {
       try {
         withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
-          bat 'yarn build:win:installer'
+          bat 'yarn build:msi'
         }
     } catch (e) {
         currentBuild.result = 'FAILED'

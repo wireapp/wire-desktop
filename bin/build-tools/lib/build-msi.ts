@@ -53,13 +53,14 @@ export async function buildMSIConfig(
 
   const builderConfig: electronBuilder.Configuration = {
     afterPack: afterPackWindows,
+    msi: {oneClick: MSIConfig.oneClick, perMachine: MSIConfig.perMachine, runAfterFinish: MSIConfig.runAfterFinish},
   };
 
   return {builderConfig, MSIConfig};
 }
 
 async function afterPackWindows(context: electronBuilder.AfterPackContext) {
-  await flipElectronFuses(path.join(context.appOutDir, context.packager.platformSpecificBuildOptions.executableName));
+  await flipElectronFuses(path.join(context.appOutDir, '/Wire.exe'));
 }
 
 export async function buildMSIWrapper(

@@ -92,7 +92,7 @@ const platform = (commander.args[0] || '').toLowerCase();
     }
 
     case 'msi': {
-      const {MSIConfig, builderConfig} = await buildMSIConfig();
+      const {MSIConfig, builderConfig} = await buildMSIConfig(wireJson, envFile);
 
       logEntries(MSIConfig, 'MSIConfig', toolName);
       logEntries(builderConfig, 'builderConfig', toolName);
