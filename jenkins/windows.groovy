@@ -88,23 +88,23 @@ node('windows') {
       //     if (production) {
       //       bat 'certUtil -hashfile "wrap\\dist\\Wire-Setup.exe" SHA256'
       //     }
-    } catch (e) {
-          currentBuild.result = 'FAILED'
-          wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} printing hash failed**\n${BUILD_URL}"
-          throw e
-        }
-      }
+    // } catch (e) {
+    //       currentBuild.result = 'FAILED'
+    //       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} printing hash failed**\n${BUILD_URL}"
+    //       throw e
+    //     }
+      // }
 
-      stage('Trigger smoke tests') {
-        if (production) {
-          try {
-            build job: 'Wrapper_Windows_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-master.zinfra.io/')], wait: false
-      } catch (e) {
-            wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} Unable to trigger smoke tests for ${version}**\n${BUILD_URL}"
-            print e
-          }
-        }
-      }
+      // stage('Trigger smoke tests') {
+      //   if (production) {
+      //     try {
+      //       build job: 'Wrapper_Windows_Smoke_Tests', parameters: [run(description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"), string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-master.zinfra.io/')], wait: false
+      // } catch (e) {
+      //       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} Unable to trigger smoke tests for ${version}**\n${BUILD_URL}"
+      //       print e
+      //     }
+      //   }
+      // }
 
       wireSend secret: "${jenkinsbot_secret}", message: "🏞 **New build of ${JOB_NAME} ${version}**\n- Download: [Jenkins](${BUILD_URL})\n- Electron version: ${electronVersion}\n- Branch: [${GIT_BRANCH}](https://github.com/wireapp/wire-desktop/commits/${GIT_BRANCH})"
 }
