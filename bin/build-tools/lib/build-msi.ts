@@ -54,7 +54,12 @@ export async function buildMSIConfig(
   const builderConfig: electronBuilder.Configuration = {
     afterPack: afterPackWindows,
     win: {icon: `${commonConfig.electronDirectory}/img/logo.256.png`},
-    msi: {oneClick: MSIConfig.oneClick, perMachine: MSIConfig.perMachine, runAfterFinish: MSIConfig.runAfterFinish},
+    msi: {
+      oneClick: MSIConfig.oneClick,
+      perMachine: MSIConfig.perMachine,
+      runAfterFinish: MSIConfig.runAfterFinish,
+      artifactName: `${MSIConfig.executableName}-${commonConfig.version}.msi`,
+    },
   };
 
   return {builderConfig, MSIConfig};
