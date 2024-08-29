@@ -32,5 +32,7 @@ export const getPictureInPictureCallWindowOptions = (): Electron.BrowserWindowCo
     resizable: true,
     fullscreenable: true,
     maximizable: true,
+    alwaysOnTop: false,
+    minimizable: true,
   });
 };

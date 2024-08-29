@@ -87,6 +87,8 @@ export const getNewWindowOptions = ({
   resizable = false,
   fullscreenable = false,
   maximizable = false,
+  alwaysOnTop = true,
+  minimizable = false,
 }: {
   title?: string;
   parent?: Electron.BrowserWindow;
@@ -95,15 +97,17 @@ export const getNewWindowOptions = ({
   resizable?: boolean;
   fullscreenable?: boolean;
   maximizable?: boolean;
+  alwaysOnTop?: boolean;
+  minimizable?: boolean;
 }): Electron.BrowserWindowConstructorOptions => ({
-  alwaysOnTop: true,
+  alwaysOnTop,
   width,
   height,
   backgroundColor: '#FFFFFF',
   fullscreen: false,
   fullscreenable,
   maximizable,
-  minimizable: false,
+  minimizable,
   modal: false,
   movable: true,
   parent,
