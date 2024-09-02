@@ -4128,12 +4128,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:18.19.47":
-  version: 18.19.47
-  resolution: "@types/node@npm:18.19.47"
+"@types/node@npm:18.19.48":
+  version: 18.19.48
+  resolution: "@types/node@npm:18.19.48"
   dependencies:
     undici-types: ~5.26.4
-  checksum: e01f1afbc5430656ed781600eebae8d62a9ad242f23344bf486f5577aac49ecc4957972284e91d89762f1189063e674a650227d949868ad8e693a9373201411b
+  checksum: f0cb7a990f800de53cec29e7d8a722b42ead35d145f70b3d40046f0a8aef154ac62a70dda5a88157fb97d08b3f760b1fff03c7c85623e613beea26fc5147cdbd
   languageName: node
   linkType: hard
 
@@ -18232,7 +18232,7 @@ __metadata:
     "@types/lodash": 4.17.7
     "@types/minimist": 1.2.5
     "@types/mocha": 10.0.7
-    "@types/node": 18.19.47
+    "@types/node": 18.19.48
     "@types/open-graph": 0.2.5
     "@types/platform": 1.3.6
     "@types/prettier": ^2.7.3
