@@ -8959,16 +8959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-no-unsanitized@npm:4.1.0":
-  version: 4.1.0
-  resolution: "eslint-plugin-no-unsanitized@npm:4.1.0"
-  peerDependencies:
-    eslint: ^8 || ^9
-  checksum: 223ae216f3fa22612b3035e656e1861ab7ddd8bf26492ae38812306efc3991da91f4127b0884b5fa4c56ec3137d028d64e4ce8ee20ff50c055d1dc2e491fe580
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-no-unsanitized@npm:^4.0.1":
+"eslint-plugin-no-unsanitized@npm:4.0.2, eslint-plugin-no-unsanitized@npm:^4.0.1":
   version: 4.0.2
   resolution: "eslint-plugin-no-unsanitized@npm:4.0.2"
   peerDependencies:
@@ -18295,7 +18286,7 @@ __metadata:
     eslint-plugin-jest-dom: 5.4.0
     eslint-plugin-jsdoc: 48.11.0
     eslint-plugin-jsx-a11y: 6.9.0
-    eslint-plugin-no-unsanitized: 4.1.0
+    eslint-plugin-no-unsanitized: 4.0.2
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-react: 7.35.1
     eslint-plugin-react-hooks: 4.6.2
