@@ -20,6 +20,7 @@
 export type ConversationJoinData = {
   code: string;
   key: string;
+  domain: string;
 };
 
 export type Account = {
