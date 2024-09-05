@@ -10,7 +10,7 @@ Teamwork
     /* Edited by Teh Yong Zhe */
     <p>Jereal Tea was here</p>
 
-  /* Edited by LOW WEI HENG */
+  /* Edited by Low Wei Heng */
     <p>FIX THE BUG AGAIN</p>
 	
 	</body>
