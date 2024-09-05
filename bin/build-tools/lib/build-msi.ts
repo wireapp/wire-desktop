@@ -60,6 +60,9 @@ export async function buildMSIConfig(
       runAfterFinish: MSIConfig.runAfterFinish,
       artifactName: `${MSIConfig.executableName}-${commonConfig.version}.msi`,
     },
+    directories: {
+      output: commonConfig.distDir,
+    },
   };
 
   return {builderConfig, MSIConfig};
