@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20-bullseye
 
 ENV USE_HARD_LINKS false
 
