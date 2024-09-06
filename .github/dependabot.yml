@@ -38,6 +38,9 @@ updates:
       - dependency-name: electron-winstaller
         versions:
           - '> 4.x'
+      - dependency-name: eslint-plugin-no-unsanitized
+        versions:
+          - '> 4.0.x'
   - package-ecosystem: npm
     directory: '/app-config'
     schedule:
