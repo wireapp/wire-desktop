@@ -5851,9 +5851,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1690.0":
-  version: 2.1690.0
-  resolution: "aws-sdk@npm:2.1690.0"
+"aws-sdk@npm:2.1691.0":
+  version: 2.1691.0
+  resolution: "aws-sdk@npm:2.1691.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -5865,7 +5865,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.6.2
-  checksum: e7c6d1b044323cf28fd72de36f80d6e647ff9d8f5521651e297dfb6edc67dd71d0e5c0f777b7b295cb147c740a6d88b8d8a156f0a16cc4214839b0da46921c29
+  checksum: 8a7d614e98aedd7afa04792be38c377609a59424e966302aa26bec958c83f868f56a95a1bf78e8a897be243e16ea8c895c3a81f1ad794195743e8f8cc3dc8513
   languageName: node
   linkType: hard
 
@@ -18271,7 +18271,7 @@ __metadata:
     "@wireapp/webapp-events": 0.24.0
     adm-zip: 0.5.16
     auto-launch: 5.0.6
-    aws-sdk: 2.1690.0
+    aws-sdk: 2.1691.0
     axios: 0.21.2
     babel-core: 7.0.0-bridge.0
     babel-eslint: 10.1.0
