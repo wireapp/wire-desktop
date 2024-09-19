@@ -8818,10 +8818,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jasmine@npm:4.2.1":
-  version: 4.2.1
-  resolution: "eslint-plugin-jasmine@npm:4.2.1"
-  checksum: 03246f881809be53d470f09e861fdf28f3ecffcc62c8942bceb9aef7591ba8d2a3dd22c7fa1589bea6dee86ddb568ce35e735fc97b293825ccd8d7241c452e37
+"eslint-plugin-jasmine@npm:4.2.2":
+  version: 4.2.2
+  resolution: "eslint-plugin-jasmine@npm:4.2.2"
+  checksum: 6003e73eba131498c214fc7dbd759df8eb7df8c5c45fd6cfb4ed3ae4b3afe4f40b1d679cb93297e3c51ef86c3e151ae29233c47f5baf6007fa75f8d206f6e30f
   languageName: node
   linkType: hard
 
@@ -18298,7 +18298,7 @@ __metadata:
     eslint-plugin-better-styled-components: 1.1.2
     eslint-plugin-header: 3.1.1
     eslint-plugin-import: ^2.30.0
-    eslint-plugin-jasmine: 4.2.1
+    eslint-plugin-jasmine: 4.2.2
     eslint-plugin-jest: 28.8.3
     eslint-plugin-jest-dom: 5.4.0
     eslint-plugin-jsdoc: 48.11.0
