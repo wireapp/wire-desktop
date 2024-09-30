@@ -54,7 +54,7 @@ export async function buildMSIConfig(
 
   const builderConfig: electronBuilder.Configuration = {
     afterPack: afterPackWindows,
-    win: {icon: `${commonConfig.electronDirectory}/img/logo.256.png`},
+    win: {icon: `${commonConfig.electronDirectory}/img/logo.256.png`, executableName: MSIConfig.executableName},
     msi: {
       oneClick: MSIConfig.oneClick,
       perMachine: MSIConfig.perMachine,
@@ -70,9 +70,7 @@ export async function buildMSIConfig(
 }
 
 async function afterPackWindows(context: electronBuilder.AfterPackContext) {
-  await flipElectronFuses(
-    path.join(context.appOutDir, `/${context.packager.platformSpecificBuildOptions.executableName}.exe`),
-  );
+  await flipElectronFuses(path.join(context.appOutDir, `/${context.packager.config.win?.executableName}.exe`));
 }
 
 export async function buildMSIWrapper(
