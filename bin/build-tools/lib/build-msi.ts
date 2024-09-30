@@ -49,7 +49,7 @@ export async function buildMSIConfig(
     perMachine: false,
     runAfterFinish: false,
     installerName: `${commonConfig.nameShort}-desktop`,
-    executableName: `${commonConfig.nameShort}`,
+    executableName: `${commonConfig.name}`,
   };
 
   const builderConfig: electronBuilder.Configuration = {
