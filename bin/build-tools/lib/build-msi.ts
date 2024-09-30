@@ -48,7 +48,8 @@ export async function buildMSIConfig(
     oneClick: false,
     perMachine: false,
     runAfterFinish: false,
-    executableName: `${commonConfig.nameShort}-desktop`,
+    installerName: `${commonConfig.nameShort}-desktop`,
+    executableName: `${commonConfig.nameShort}`,
   };
 
   const builderConfig: electronBuilder.Configuration = {
@@ -58,7 +59,7 @@ export async function buildMSIConfig(
       oneClick: MSIConfig.oneClick,
       perMachine: MSIConfig.perMachine,
       runAfterFinish: MSIConfig.runAfterFinish,
-      artifactName: `${MSIConfig.executableName}-${commonConfig.version}.msi`,
+      artifactName: `${MSIConfig.installerName}-${commonConfig.version}.msi`,
     },
     directories: {
       output: commonConfig.distDir,
@@ -69,7 +70,9 @@ export async function buildMSIConfig(
 }
 
 async function afterPackWindows(context: electronBuilder.AfterPackContext) {
-  await flipElectronFuses(path.join(context.appOutDir, `/${context.packager.platformSpecificBuildOptions.name}.exe`));
+  await flipElectronFuses(
+    path.join(context.appOutDir, `/${context.packager.platformSpecificBuildOptions.executableName}.exe`),
+  );
 }
 
 export async function buildMSIWrapper(
