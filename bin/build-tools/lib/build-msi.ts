@@ -69,7 +69,7 @@ export async function buildMSIConfig(
 }
 
 async function afterPackWindows(context: electronBuilder.AfterPackContext) {
-  await flipElectronFuses(path.join(context.appOutDir, '/Wire.exe'));
+  await flipElectronFuses(path.join(context.appOutDir, `/${context.packager.platformSpecificBuildOptions.name}.exe`));
 }
 
 export async function buildMSIWrapper(
