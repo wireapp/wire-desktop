@@ -89,6 +89,7 @@ export const getNewWindowOptions = ({
   maximizable = false,
   alwaysOnTop = true,
   minimizable = false,
+  autoHideMenuBar = false,
 }: {
   title?: string;
   parent?: Electron.BrowserWindow;
@@ -99,6 +100,7 @@ export const getNewWindowOptions = ({
   maximizable?: boolean;
   alwaysOnTop?: boolean;
   minimizable?: boolean;
+  autoHideMenuBar?: boolean;
 }): Electron.BrowserWindowConstructorOptions => ({
   alwaysOnTop,
   width,
@@ -117,6 +119,7 @@ export const getNewWindowOptions = ({
   title: title,
   titleBarStyle: 'default',
   useContentSize: true,
+  autoHideMenuBar,
   webPreferences: {
     allowRunningInsecureContent: false,
     backgroundThrottling: false,
