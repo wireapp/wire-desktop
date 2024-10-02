@@ -1,0 +1,35 @@
+name: Run Commands in Background
+
+on: [push, pull_request]
+
+jobs:
+  run_background_tasks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          if [[ $RUNNER_OS == 'Linux' ]]; then
+            npm install
+          else
+            echo "Skipping npm install on Windows"
+          fi
+
+      - name: Run Background Task
+        run: |
+          if [[ $RUNNER_OS == 'Linux' ]]; then
+            nohup your_unix_command > /dev/null 2>&1 &
+          else
+            start /B your_windows_command
+          fi
+
+      - name: Wait for background task
+        run: |
+          echo "Waiting for background task to complete..."
+          sleep 30
