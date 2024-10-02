@@ -100,7 +100,7 @@ export const getNewWindowOptions = ({
   maximizable?: boolean;
   alwaysOnTop?: boolean;
   minimizable?: boolean;
-  autoHideMenuBar: boolean;
+  autoHideMenuBar?: boolean;
 }): Electron.BrowserWindowConstructorOptions => ({
   alwaysOnTop,
   width,
