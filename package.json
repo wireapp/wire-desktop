@@ -52,7 +52,7 @@
     "@types/hapi__joi": "^17.1.14",
     "@types/is-ci": "3.0.4",
     "@types/jest": "^29.5.13",
-    "@types/lodash": "4.17.9",
+    "@types/lodash": "4.17.10",
     "@types/minimist": "1.2.5",
     "@types/mocha": "10.0.8",
     "@types/node": "18.19.54",
