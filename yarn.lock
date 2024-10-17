@@ -4468,9 +4468,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/eslint-config@npm:3.0.18":
-  version: 3.0.18
-  resolution: "@wireapp/eslint-config@npm:3.0.18"
+"@wireapp/eslint-config@npm:3.0.19":
+  version: 3.0.19
+  resolution: "@wireapp/eslint-config@npm:3.0.19"
   dependencies:
     "@types/eslint": ^8
     "@types/prettier": ^3
@@ -4490,7 +4490,7 @@ __metadata:
     eslint-plugin-no-unsanitized: ^4.0.1
     eslint-plugin-prettier: ^5
     eslint-plugin-react: ^7.31.10
-    eslint-plugin-react-hooks: ^4.6.0
+    eslint-plugin-react-hooks: ^5.0.0
     eslint-plugin-simple-import-sort: ^12.0.0
     eslint-plugin-testing-library: ^6.0.0
     eslint-plugin-unused-imports: ^4
@@ -4499,7 +4499,7 @@ __metadata:
   peerDependencies:
     eslint: ^8
     prettier: ^3
-  checksum: 0991144d751b9c0d6bf218484fa1b890f7cf93f08d9ce547fd97ace6448886d05dcca08a78f44ceade6a89dc833b74da46d89b4d6edc39dcb3cafe03fa07da2c
+  checksum: a1c45f8319040ff3f57b319f38972cdd89e3b8e40390e8aa4dd3f5cd62bf76300bcfc01cd1248f4b16c37093948b5a0f8766913b5e3550fb730b3c6cbc0c70b8
   languageName: node
   linkType: hard
 
@@ -8483,12 +8483,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "eslint-plugin-react-hooks@npm:4.6.0"
+"eslint-plugin-react-hooks@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "eslint-plugin-react-hooks@npm:5.0.0"
   peerDependencies:
-    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
-  checksum: 23001801f14c1d16bf0a837ca7970d9dd94e7b560384b41db378b49b6e32dc43d6e2790de1bd737a652a86f81a08d6a91f402525061b47719328f586a57e86c3
+    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
+  checksum: eddd514a8796e8f805aa0c712d5fe6120fa6db778e3ad2949459b208f8a4bed6a48c152edfa9613f137c7527b00b42d489b5f94363d01d3a509e1f31630674dd
   languageName: node
   linkType: hard
 
@@ -17748,7 +17748,7 @@ __metadata:
     "@wireapp/certificate-check": 0.7.18
     "@wireapp/commons": 5.2.10
     "@wireapp/copy-config": 2.2.10
-    "@wireapp/eslint-config": 3.0.18
+    "@wireapp/eslint-config": 3.0.19
     "@wireapp/prettier-config": 0.6.4
     "@wireapp/protocol-messaging": 1.50.0
     "@wireapp/react-ui-kit": 9.24.0
