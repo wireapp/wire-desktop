@@ -27,6 +27,7 @@ export const isPictureInPictureCallWindow = (frameName: string): boolean => {
 
 export const getPictureInPictureCallWindowOptions = (): Electron.BrowserWindowConstructorOptions => {
   return getNewWindowOptions({
+    autoHideMenuBar: true,
     width: 1026,
     height: 829,
     resizable: true,

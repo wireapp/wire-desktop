@@ -1,7 +1,7 @@
 <!---
 PLEASE NOTE:
 Please remember that this is a bug tracker in a source code repository and not a discussion board. All developers get notified of each comment and will take the time for reading and commenting isses. We want to keep this as a place to easily track bugs in our code.
-If you have a feature request that affects Wire in general, was kindly ask you to file it at https://github.com/wireapp/wire/issues. Please direct feature requests specifically targeted at wire-desktop to our customer support at https://support.wire.com and/or social media channels.
+Please direct feature requests specifically targeted at wire-desktop to our customer support at https://support.wire.com.
 --->
 
 Wire version: <!-- Check the About dialog or run the app with `--version` flag -->
