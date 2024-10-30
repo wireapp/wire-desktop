@@ -77,8 +77,8 @@ export async function buildLinuxConfig(
     fpm: ['--name', linuxConfig.executableName],
   };
 
-  const rpmDepends = ['alsa-lib', 'GConf2', 'libappindicator', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'];
-  const debDepends = ['libappindicator1', 'libasound2', 'libgconf-2-4', 'libnotify-bin', 'libnss3', 'libxss1'];
+  const rpmDepends = ['alsa-lib', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'];
+  const debDepends = ['libasound2', 'libnotify-bin', 'libnss3', 'libxss1'];
 
   const builderConfig: electronBuilder.Configuration = {
     afterPack: afterPackLinux,

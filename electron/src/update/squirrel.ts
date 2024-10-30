@@ -122,24 +122,26 @@ async function scheduleUpdate(): Promise<void> {
 
 export async function handleSquirrelArgs(): Promise<void> {
   const squirrelEvent = process.argv[1];
+  // See https://github.com/Squirrel/Squirrel.Windows/blob/develop/docs/using/custom-squirrel-events-non-cs.md
 
   switch (squirrelEvent) {
     case SQUIRREL_EVENT.INSTALL:
     case SQUIRREL_EVENT.UPDATED: {
       logger.info(`Creating shortcuts for exe ${exePath}...`);
       await createShortcuts(exePath);
-      await lifecycle.quit();
+      await lifecycle.quit(true);
       return;
     }
 
     case SQUIRREL_EVENT.UNINSTALL: {
       await removeShortcuts();
-      await lifecycle.quit();
+      await lifecycle.quit(true);
       return;
     }
 
     case SQUIRREL_EVENT.OBSOLETE: {
-      await lifecycle.quit();
+      // This is called when the app is updated but the old version is still running
+      await lifecycle.quit(true);
       return;
     }
   }

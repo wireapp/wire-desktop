@@ -26,7 +26,6 @@ import {SettingsType} from '../settings/SettingsType';
 const argv = minimist(process.argv.slice(1));
 const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
 const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV] || webappUrlSetting;
-const isProdEnvironment = !!customWebappUrl;
 
 export enum ServerType {
   PRODUCTION = 'PRODUCTION',
@@ -43,11 +42,6 @@ interface AvailableEnvironment {
 
 let currentEnvironment = settings.restore<ServerType | undefined>(SettingsType.ENV);
 
-const URL_WEBSITE = {
-  PRODUCTION: config.websiteUrl,
-  STAGING: 'https://wire-website-staging.zinfra.io',
-};
-
 const webappEnvironments = {
   [ServerType.PRODUCTION]: {name: 'Production', server: ServerType.PRODUCTION, url: 'https://app.wire.com'},
   [ServerType.BETA]: {name: 'Beta', server: ServerType.BETA, url: 'https://wire-webapp-staging.wire.com'},
@@ -56,6 +50,7 @@ const webappEnvironments = {
 
 export const app = {
   ENV: config.environment,
+  DESKTOP_VERSION: config.version,
   IS_DEVELOPMENT: config.environment !== 'production',
   IS_PRODUCTION: config.environment === 'production',
   UPDATE_URL_WIN: config.updateUrl,
@@ -131,7 +126,7 @@ export function getAvailebleEnvironments(): AvailableEnvironment[] {
 export const web = {
   getWebappUrl,
   getWebsiteUrl: (path: string = ''): string => {
-    const baseUrl = isProdEnvironment ? URL_WEBSITE.PRODUCTION : URL_WEBSITE.STAGING;
+    const baseUrl = config.websiteUrl;
     return `${baseUrl}${path}`;
   },
 };

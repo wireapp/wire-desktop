@@ -78,3 +78,69 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
     logger.error(error);
   }
 };
+
+export const getNewWindowOptions = ({
+  parent,
+  title = '',
+  width,
+  height,
+  resizable = false,
+  fullscreenable = false,
+  maximizable = false,
+  alwaysOnTop = true,
+  minimizable = false,
+  autoHideMenuBar = false,
+}: {
+  title?: string;
+  parent?: Electron.BrowserWindow;
+  width: number;
+  height: number;
+  resizable?: boolean;
+  fullscreenable?: boolean;
+  maximizable?: boolean;
+  alwaysOnTop?: boolean;
+  minimizable?: boolean;
+  autoHideMenuBar?: boolean;
+}): Electron.BrowserWindowConstructorOptions => ({
+  alwaysOnTop,
+  width,
+  height,
+  backgroundColor: '#FFFFFF',
+  fullscreen: false,
+  fullscreenable,
+  maximizable,
+  minimizable,
+  modal: false,
+  movable: true,
+  parent,
+  resizable,
+  minHeight: height,
+  minWidth: width,
+  title: title,
+  titleBarStyle: 'default',
+  useContentSize: true,
+  autoHideMenuBar,
+  webPreferences: {
+    allowRunningInsecureContent: false,
+    backgroundThrottling: false,
+    contextIsolation: true,
+    devTools: false,
+    disableBlinkFeatures: '',
+    experimentalFeatures: false,
+    images: true,
+    javascript: true,
+    nodeIntegration: false,
+    nodeIntegrationInWorker: false,
+    offscreen: false,
+    partition: '',
+    plugins: false,
+    preload: '',
+    sandbox: true,
+    scrollBounce: true,
+    spellcheck: false,
+    textAreasAreResizable: false,
+    webSecurity: true,
+    webgl: false,
+    webviewTag: false,
+  },
+});

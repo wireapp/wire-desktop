@@ -36,6 +36,8 @@ export enum SettingsType {
   AUTO_LAUNCH = 'shouldAutoLaunch',
   /** Custom web app URL to use in on-premise deployments. The "env" setting must be set to "CUSTOM" to use this. */
   CUSTOM_WEBAPP_URL = 'customWebAppURL',
+  /** Custom download path for the app. */
+  DOWNLOAD_PATH = 'downloadPath',
   /** Enable spell checker in desktop app? */
   ENABLE_SPELL_CHECKING = 'enableSpellChecking',
   /** Which cloud environment ("PRODUCTION", "INTERNAL", "AVS", ...) to use when loading the webapp? */

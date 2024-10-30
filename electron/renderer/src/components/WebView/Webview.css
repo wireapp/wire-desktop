@@ -25,11 +25,7 @@
 }
 
 .Webview.hide {
-  /**
-   * Electron's recommended way of using 0px width and height was causing
-   * render issues when selecting a webview for the first time
-   */
-  z-index: var(--z-index-webview-hidden);
+  display: none;
 }
 
 .Webview-close {
