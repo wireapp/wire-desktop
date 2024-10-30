@@ -18,6 +18,8 @@
  */
 
 export interface CommonConfig {
+  aboutReleasesUrl: string;
+  aboutUpdatesUrl: string;
   adminUrl: string;
   appBase: string;
   buildDir: string;

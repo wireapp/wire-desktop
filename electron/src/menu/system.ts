@@ -96,6 +96,12 @@ const conversationTemplate: MenuItemConstructorOptions = {
         browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.START),
       label: locale.getText('menuStart'),
     },
+    {
+      accelerator: 'CmdOrCtrl+K',
+      click: (_menuItem, browserWindow) =>
+        browserWindow?.webContents.send(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.SEARCH),
+      label: locale.getText('menuSearch'),
+    },
     separatorTemplate,
     {
       click: (_menuItem, browserWindow) =>

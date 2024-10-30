@@ -36,6 +36,7 @@ describe('loadedAboutScreen', () => {
       electronVersion: 'Development',
       productName: 'Wire',
       webappVersion: '2019.04.10.0901',
+      webappAVSVersion: '9.0.test',
     });
 
     assert.ok(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []));
