@@ -13202,9 +13202,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.8.1":
-  version: 10.8.1
-  resolution: "mocha@npm:10.8.1"
+"mocha@npm:10.8.2":
+  version: 10.8.2
+  resolution: "mocha@npm:10.8.2"
   dependencies:
     ansi-colors: ^4.1.3
     browser-stdout: ^1.3.1
@@ -13229,7 +13229,7 @@ __metadata:
   bin:
     _mocha: bin/_mocha
     mocha: bin/mocha.js
-  checksum: 30428f19d6f106364a202ccc2c415296f84cd1b4b9a3b5cf7792dc1b05f7ec2fdd3773dae62599188778823b12e008e6351314d625ecb519e5b58d70f290003a
+  checksum: 68cb519503f1e8ffd9b0651e1aef75dfe4754425186756b21e53169da44b5bcb1889e2b743711205082763d3f9a42eb8eb2c13bb1a718a08cb3a5f563bfcacdc
   languageName: node
   linkType: hard
 
@@ -17924,7 +17924,7 @@ __metadata:
     lodash: 4.17.21
     logdown: 3.3.1
     minimist: 1.2.8
-    mocha: 10.8.1
+    mocha: 10.8.2
     nock: 13.5.5
     nyc: 15.1.0
     open-graph: 0.2.6
