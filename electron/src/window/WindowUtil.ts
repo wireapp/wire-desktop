@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, screen, shell} from 'electron';
+import {BaseWindow, BrowserWindow, screen, shell} from 'electron';
 
 import * as path from 'path';
 import {URL} from 'url';
@@ -76,6 +76,18 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
     await shell.openExternal(url);
   } catch (error) {
     logger.error(error);
+  }
+};
+
+export const sendToWebContents = (baseWindow: BaseWindow | undefined, channel: string, ...args: any[]) => {
+  if (baseWindow instanceof BrowserWindow) {
+    try {
+      baseWindow.webContents.send(channel, ...args);
+    } catch (error) {
+      logger.error('Failed to send event to webContents', error);
+    }
+  } else {
+    logger.error("This action's target is not an instance of BrowserWindow.");
   }
 };
 
