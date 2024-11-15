@@ -81,7 +81,13 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
 
 export const sendToWebContents = (baseWindow: BaseWindow | undefined, channel: string, ...args: any[]) => {
   if (baseWindow instanceof BrowserWindow) {
-    baseWindow.webContents.send(channel, ...args);
+    try {
+      baseWindow.webContents.send(channel, ...args);
+    } catch (error) {
+      logger.error('Failed to send event to webContents', error);
+    }
+  } else {
+    logger.error("This action's target is not an instance of BrowserWindow.");
   }
 };
 
