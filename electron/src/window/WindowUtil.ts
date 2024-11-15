@@ -17,7 +17,7 @@
  *
  */
 
-import {BrowserWindow, screen, shell} from 'electron';
+import {BaseWindow, BrowserWindow, screen, shell} from 'electron';
 
 import * as path from 'path';
 import {URL} from 'url';
@@ -76,6 +76,12 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
     await shell.openExternal(url);
   } catch (error) {
     logger.error(error);
+  }
+};
+
+export const sendToWebContents = (baseWindow: BaseWindow | undefined, channel: string, ...args: any[]) => {
+  if (baseWindow instanceof BrowserWindow) {
+    baseWindow.webContents.send(channel, ...args);
   }
 };
 
