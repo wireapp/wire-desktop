@@ -30,6 +30,7 @@ import {
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale';
 import {config} from '../../settings/config';
+import {sendToWebContents} from '../../window/WindowUtil';
 
 const remote = require('@electron/remote');
 
@@ -72,17 +73,17 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
 
   const template: MenuItemConstructorOptions[] = [
     {
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.CUT),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.CUT),
       enabled: editFlags.canCut,
       label: locale.getText('menuCut'),
     },
     {
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.COPY),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.COPY),
       enabled: editFlags.canCopy,
       label: locale.getText('menuCopy'),
     },
     {
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.PASTE),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.PASTE),
       enabled: editFlags.canPaste,
       label: locale.getText('menuPaste'),
     },
@@ -90,7 +91,7 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
       type: 'separator',
     },
     {
-      click: (_menuItem, browserWindow) => browserWindow?.webContents.send(EVENT_TYPE.EDIT.SELECT_ALL),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.SELECT_ALL),
       enabled: editFlags.canSelectAll,
       label: locale.getText('menuSelectAll'),
     },
