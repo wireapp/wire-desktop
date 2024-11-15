@@ -3399,6 +3399,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/eslint-scope@npm:^3.7.7":
+  version: 3.7.7
+  resolution: "@types/eslint-scope@npm:3.7.7"
+  dependencies:
+    "@types/eslint": "*"
+    "@types/estree": "*"
+  checksum: e2889a124aaab0b89af1bab5959847c5bec09809209255de0e63b9f54c629a94781daa04adb66bffcdd742f5e25a17614fb933965093c0eea64aacda4309380e
+  languageName: node
+  linkType: hard
+
+"@types/eslint@npm:*":
+  version: 9.6.1
+  resolution: "@types/eslint@npm:9.6.1"
+  dependencies:
+    "@types/estree": "*"
+    "@types/json-schema": "*"
+  checksum: c286e79707ab604b577cf8ce51d9bbb9780e3d6a68b38a83febe13fa05b8012c92de17c28532fac2b03d3c460123f5055d603a579685325246ca1c86828223e0
+  languageName: node
+  linkType: hard
+
 "@types/eslint@npm:^8":
   version: 8.44.3
   resolution: "@types/eslint@npm:8.44.3"
@@ -3426,10 +3446,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/estree@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "@types/estree@npm:1.0.5"
-  checksum: dd8b5bed28e6213b7acd0fb665a84e693554d850b0df423ac8076cc3ad5823a6bc26b0251d080bdc545af83179ede51dd3f6fa78cad2c46ed1f29624ddf3e41a
+"@types/estree@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "@types/estree@npm:1.0.6"
+  checksum: 8825d6e729e16445d9a1dd2fb1db2edc5ed400799064cd4d028150701031af012ba30d6d03fe9df40f4d7a437d0de6d2b256020152b7b09bde9f2e420afdffd9
   languageName: node
   linkType: hard
 
@@ -3664,12 +3684,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:18.19.61":
-  version: 18.19.61
-  resolution: "@types/node@npm:18.19.61"
+"@types/node@npm:18.19.64":
+  version: 18.19.64
+  resolution: "@types/node@npm:18.19.64"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 8114317ce83e9ae2f2bb4d21c076ac9f327f4b18d2c0495cd05960113996e7d0ccf8edf201b440597e1e7dc677750013bf25d1479ff32d1498a045b37ecc1ee8
+  checksum: e7680215b03c9bee8a33947f03d06048e8e460f23b1b7b29c45350cf437faa5f8fcb7d8c3eb8dfec8427923e7a184df42bc710c1b6252b4852e3ed7064c6228f
   languageName: node
   linkType: hard
 
@@ -4608,21 +4628,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/protocol-messaging@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@wireapp/protocol-messaging@npm:1.50.0"
+"@wireapp/protocol-messaging@npm:1.51.0":
+  version: 1.51.0
+  resolution: "@wireapp/protocol-messaging@npm:1.51.0"
   dependencies:
     long: 5.2.0
     protobufjs: 7.2.5
     protobufjs-cli: 1.1.2
     typescript: 4.8.4
-  checksum: f800aa6271e96fe47fbfdfaf97f949b56569f2ddd9238a1ef8e4402ca0024a1418d1620268aaecc746e62581d0cb12daeed20e535654755f3d81504fb594e92a
+  checksum: bb1c0a55309d3215f8c970313abc4464afcda35e847f0a0438563fdf61f81e2ddf806b3d350ea3f5a6afc61c115797e13dece8c16b6df50dbeeaddcae435c775
   languageName: node
   linkType: hard
 
-"@wireapp/react-ui-kit@npm:9.26.0":
-  version: 9.26.0
-  resolution: "@wireapp/react-ui-kit@npm:9.26.0"
+"@wireapp/react-ui-kit@npm:9.26.2":
+  version: 9.26.2
+  resolution: "@wireapp/react-ui-kit@npm:9.26.2"
   dependencies:
     "@types/color": 3.0.6
     color: 4.2.3
@@ -4637,7 +4657,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 5d86933b5de6048857164954efa5f292a5f9f7f72913908ff1d4dc31e8098495dea84b165590b325dd155308130dd7ea1c02e80044ffec784b073e4fadc19908
+  checksum: bc56db9288120fc32c12f9d9e4f7d85adc2e39de8368301b4837e9db312e08b688a681a115f599b6ddeb757ffe0178a9b84506c208beb1790bc02d1e6982b72e
   languageName: node
   linkType: hard
 
@@ -4693,15 +4713,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-import-attributes@npm:^1.9.5":
-  version: 1.9.5
-  resolution: "acorn-import-attributes@npm:1.9.5"
-  peerDependencies:
-    acorn: ^8
-  checksum: 1c0c49b6a244503964ae46ae850baccf306e84caf99bc2010ed6103c69a423987b07b520a6c619f075d215388bd4923eccac995886a54309eda049ab78a4be95
-  languageName: node
-  linkType: hard
-
 "acorn-jsx@npm:^5.3.2":
   version: 5.3.2
   resolution: "acorn-jsx@npm:5.3.2"
@@ -4718,7 +4729,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.1.0, acorn@npm:^8.4.1, acorn@npm:^8.7.1, acorn@npm:^8.8.0, acorn@npm:^8.8.1":
+"acorn@npm:^8.1.0, acorn@npm:^8.4.1, acorn@npm:^8.8.0, acorn@npm:^8.8.1":
   version: 8.8.2
   resolution: "acorn@npm:8.8.2"
   bin:
@@ -4733,6 +4744,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 677880034aee5bdf7434cc2d25b641d7bedb0b5ef47868a78dadabedccf58e1c5457526d9d8249cd253f2df087e081c3fe7d903b448d8e19e5131a3065b83c07
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.14.0":
+  version: 8.14.0
+  resolution: "acorn@npm:8.14.0"
+  bin:
+    acorn: bin/acorn
+  checksum: 8755074ba55fff94e84e81c72f1013c2d9c78e973c31231c8ae505a5f966859baf654bddd75046bffd73ce816b149298977fff5077a3033dedba0ae2aad152d4
   languageName: node
   linkType: hard
 
@@ -5450,9 +5470,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1691.0":
-  version: 2.1691.0
-  resolution: "aws-sdk@npm:2.1691.0"
+"aws-sdk@npm:2.1692.0":
+  version: 2.1692.0
+  resolution: "aws-sdk@npm:2.1692.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -5464,7 +5484,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.6.2
-  checksum: 8a7d614e98aedd7afa04792be38c377609a59424e966302aa26bec958c83f868f56a95a1bf78e8a897be243e16ea8c895c3a81f1ad794195743e8f8cc3dc8513
+  checksum: 7b245fab02afebeb731db68feeb63c60475511a28bee3ae763c1199e4816f2b2c12315d873c93d827fef5997271d44e00c412ceab2329ca3079797429467c782
   languageName: node
   linkType: hard
 
@@ -5804,20 +5824,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.21.10, browserslist@npm:^4.21.9":
-  version: 4.21.10
-  resolution: "browserslist@npm:4.21.10"
-  dependencies:
-    caniuse-lite: ^1.0.30001517
-    electron-to-chromium: ^1.4.477
-    node-releases: ^2.0.13
-    update-browserslist-db: ^1.0.11
-  bin:
-    browserslist: cli.js
-  checksum: 1e27c0f111a35d1dd0e8fc2c61781b0daefabc2c9471b0b10537ce54843014bceb2a1ce4571af1a82b2bf1e6e6e05d38865916689a158f03bc2c7a4ec2577db8
-  languageName: node
-  linkType: hard
-
 "browserslist@npm:^4.21.3":
   version: 4.21.5
   resolution: "browserslist@npm:4.21.5"
@@ -5829,6 +5835,20 @@ __metadata:
   bin:
     browserslist: cli.js
   checksum: 9755986b22e73a6a1497fd8797aedd88e04270be33ce66ed5d85a1c8a798292a65e222b0f251bafa1c2522261e237d73b08b58689d4920a607e5a53d56dc4706
+  languageName: node
+  linkType: hard
+
+"browserslist@npm:^4.21.9":
+  version: 4.21.10
+  resolution: "browserslist@npm:4.21.10"
+  dependencies:
+    caniuse-lite: ^1.0.30001517
+    electron-to-chromium: ^1.4.477
+    node-releases: ^2.0.13
+    update-browserslist-db: ^1.0.11
+  bin:
+    browserslist: cli.js
+  checksum: 1e27c0f111a35d1dd0e8fc2c61781b0daefabc2c9471b0b10537ce54843014bceb2a1ce4571af1a82b2bf1e6e6e05d38865916689a158f03bc2c7a4ec2577db8
   languageName: node
   linkType: hard
 
@@ -6580,10 +6600,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.38.1":
-  version: 3.38.1
-  resolution: "core-js@npm:3.38.1"
-  checksum: 55703c2f6fcd537e47a5cc83e9dc9884efef61861bbefb4a96a8c95e87956db980ce314628465dd49f14e626c5e633b9e3433f3e4a1f628404a14da420eb2556
+"core-js@npm:3.39.0":
+  version: 3.39.0
+  resolution: "core-js@npm:3.39.0"
+  checksum: 7a3670e9a2a89e0a049daa288d742d09f6e16d27a8945c5e2ef6fc45dc57e5c4bc5db589da05947486f54ae978d14cf27bd3fb1db0b9907000a611e8af37355b
   languageName: node
   linkType: hard
 
@@ -7527,16 +7547,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:29.4.6":
-  version: 29.4.6
-  resolution: "electron@npm:29.4.6"
+"electron@npm:33.2.0":
+  version: 33.2.0
+  resolution: "electron@npm:33.2.0"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^20.9.0
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 14f4ae506032227083e59db3188863c71cd89c9df9490cc4bb014af55c9d93bd585093e06db4f221e897aea5b01805d4ad11e5f6ae7b41cbe493d84d55e5ffbf
+  checksum: 4feacc8923fe4ab45da45d34823f949231da425c83ea2db2e483c2531f0320a1279a5b65913f447e145ab0a3f4e190bc192ed3a63ebe17a06347156e2ec52081
   languageName: node
   linkType: hard
 
@@ -8406,9 +8426,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:28.8.3":
-  version: 28.8.3
-  resolution: "eslint-plugin-jest@npm:28.8.3"
+"eslint-plugin-jest@npm:28.9.0":
+  version: 28.9.0
+  resolution: "eslint-plugin-jest@npm:28.9.0"
   dependencies:
     "@typescript-eslint/utils": ^6.0.0 || ^7.0.0 || ^8.0.0
   peerDependencies:
@@ -8420,7 +8440,7 @@ __metadata:
       optional: true
     jest:
       optional: true
-  checksum: e371fcbe2127a403824b6c23b66f6b2e2cc54074c3c70a9965d48bdcdfb461670965a7d7cdddab68f09e703d3a09a281d05591b1cb4315f5246d27fd8baa84ac
+  checksum: 90863fab5f3f2f033d98042b13769dc82504c489506872ae9926a1d2b6bcc25c5dc41105e28643f5eb81943aff1aa1cd4d44ada5c1add0a43f1c7a619adbc3d2
   languageName: node
   linkType: hard
 
@@ -13202,9 +13222,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.8.1":
-  version: 10.8.1
-  resolution: "mocha@npm:10.8.1"
+"mocha@npm:10.8.2":
+  version: 10.8.2
+  resolution: "mocha@npm:10.8.2"
   dependencies:
     ansi-colors: ^4.1.3
     browser-stdout: ^1.3.1
@@ -13229,7 +13249,7 @@ __metadata:
   bin:
     _mocha: bin/_mocha
     mocha: bin/mocha.js
-  checksum: 30428f19d6f106364a202ccc2c415296f84cd1b4b9a3b5cf7792dc1b05f7ec2fdd3773dae62599188778823b12e008e6351314d625ecb519e5b58d70f290003a
+  checksum: 68cb519503f1e8ffd9b0651e1aef75dfe4754425186756b21e53169da44b5bcb1889e2b743711205082763d3f9a42eb8eb2c13bb1a718a08cb3a5f563bfcacdc
   languageName: node
   linkType: hard
 
@@ -13335,14 +13355,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nock@npm:13.5.5":
-  version: 13.5.5
-  resolution: "nock@npm:13.5.5"
+"nock@npm:13.5.6":
+  version: 13.5.6
+  resolution: "nock@npm:13.5.6"
   dependencies:
     debug: ^4.1.0
     json-stringify-safe: ^5.0.1
     propagate: ^2.0.0
-  checksum: 91947b683992096a694140714323f11493b8ad9961c172e3e574c4801131fea259755e95c48e7e01527c14209967c20f151ff03b6bf6700471f0f76fa4071d32
+  checksum: 82d31ef7a428e8a6bc430b2772745ecb1f9c8835170789bbcc29c9036614adf3b7112daeb6d59edd93f4340a9a96acee401021572d469a7a0e09a669679f2794
   languageName: node
   linkType: hard
 
@@ -17590,17 +17610,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.95.0":
-  version: 5.95.0
-  resolution: "webpack@npm:5.95.0"
+"webpack@npm:5.96.1":
+  version: 5.96.1
+  resolution: "webpack@npm:5.96.1"
   dependencies:
-    "@types/estree": ^1.0.5
+    "@types/eslint-scope": ^3.7.7
+    "@types/estree": ^1.0.6
     "@webassemblyjs/ast": ^1.12.1
     "@webassemblyjs/wasm-edit": ^1.12.1
     "@webassemblyjs/wasm-parser": ^1.12.1
-    acorn: ^8.7.1
-    acorn-import-attributes: ^1.9.5
-    browserslist: ^4.21.10
+    acorn: ^8.14.0
+    browserslist: ^4.24.0
     chrome-trace-event: ^1.0.2
     enhanced-resolve: ^5.17.1
     es-module-lexer: ^1.2.1
@@ -17622,7 +17642,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 0c3dfe288de4d62f8f3dc25478a618894883cab739121330763b7847e43304630ea2815ae2351a5f8ff6ab7c9642caf530d503d89bda261fe2cd220e524dd5d1
+  checksum: ec3662f64895fae408440a997f87299e374c9d9f911f77b880bab46402f52221c7836bdf101fc2556338d07fc7cb86da50661f944eb1d1041a8361a5b9247876
   languageName: node
   linkType: hard
 
@@ -17848,7 +17868,7 @@ __metadata:
     "@types/lodash": 4.17.13
     "@types/minimist": 1.2.5
     "@types/mocha": 10.0.9
-    "@types/node": 18.19.61
+    "@types/node": 18.19.64
     "@types/open-graph": 0.2.5
     "@types/platform": 1.3.6
     "@types/prettier": ^2.7.3
@@ -17865,12 +17885,12 @@ __metadata:
     "@wireapp/copy-config": 2.2.10
     "@wireapp/eslint-config": 3.0.19
     "@wireapp/prettier-config": 0.6.4
-    "@wireapp/protocol-messaging": 1.50.0
-    "@wireapp/react-ui-kit": 9.26.0
+    "@wireapp/protocol-messaging": 1.51.0
+    "@wireapp/react-ui-kit": 9.26.2
     "@wireapp/webapp-events": 0.24.3
     adm-zip: 0.5.16
     auto-launch: 5.0.6
-    aws-sdk: 2.1691.0
+    aws-sdk: 2.1692.0
     axios: 0.21.2
     babel-core: 7.0.0-bridge.0
     babel-eslint: 10.1.0
@@ -17879,11 +17899,11 @@ __metadata:
     babel-plugin-istanbul: 6.1.1
     commander: 12.1.0
     content-type: 1.0.5
-    core-js: 3.38.1
+    core-js: 3.39.0
     cross-env: 7.0.3
     css-loader: 7.1.2
     dotenv: 16.4.5
-    electron: 29.4.6
+    electron: 33.2.0
     electron-builder: 24.13.3
     electron-dl: ^3.5.2
     electron-mocha: 12.3.1
@@ -17898,7 +17918,7 @@ __metadata:
     eslint-plugin-header: 3.1.1
     eslint-plugin-import: ^2.31.0
     eslint-plugin-jasmine: 4.2.2
-    eslint-plugin-jest: 28.8.3
+    eslint-plugin-jest: 28.9.0
     eslint-plugin-jest-dom: 5.4.0
     eslint-plugin-jsdoc: 48.11.0
     eslint-plugin-jsx-a11y: 6.10.2
@@ -17924,8 +17944,8 @@ __metadata:
     lodash: 4.17.21
     logdown: 3.3.1
     minimist: 1.2.8
-    mocha: 10.8.1
-    nock: 13.5.5
+    mocha: 10.8.2
+    nock: 13.5.6
     nyc: 15.1.0
     open-graph: 0.2.6
     prettier: 2.8.8
@@ -17942,7 +17962,7 @@ __metadata:
     ts-node: 10.9.2
     typescript: 5.6.3
     uuid: 9.0.1
-    webpack: 5.95.0
+    webpack: 5.96.1
     webpack-cli: 5.1.4
   languageName: unknown
   linkType: soft
