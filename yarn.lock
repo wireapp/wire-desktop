@@ -8394,9 +8394,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest-dom@npm:5.4.0":
-  version: 5.4.0
-  resolution: "eslint-plugin-jest-dom@npm:5.4.0"
+"eslint-plugin-jest-dom@npm:5.5.0":
+  version: 5.5.0
+  resolution: "eslint-plugin-jest-dom@npm:5.5.0"
   dependencies:
     "@babel/runtime": ^7.16.3
     requireindex: ^1.2.0
@@ -8406,7 +8406,7 @@ __metadata:
   peerDependenciesMeta:
     "@testing-library/dom":
       optional: true
-  checksum: 0e1d27ca040a7d7e698b7f1d4a480be4821ccad03f322360fb75723e558b4d00d86fdbf4aaf5f07f4bc259fd35a91fd14ea0f8ca788cc3e28db399c8ff653a6f
+  checksum: 4423ef06fae815d8278c0310b83dd7c97e44282a858fe259dca95affdb1ef53661c22eaa566f0202d391bf6fd07f57346aa26f3c2d36f34e7581394cf2e70221
   languageName: node
   linkType: hard
 
@@ -17919,7 +17919,7 @@ __metadata:
     eslint-plugin-import: ^2.31.0
     eslint-plugin-jasmine: 4.2.2
     eslint-plugin-jest: 28.9.0
-    eslint-plugin-jest-dom: 5.4.0
+    eslint-plugin-jest-dom: 5.5.0
     eslint-plugin-jsdoc: 48.11.0
     eslint-plugin-jsx-a11y: 6.10.2
     eslint-plugin-no-unsanitized: 4.0.2
