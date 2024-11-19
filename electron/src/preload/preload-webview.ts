@@ -199,6 +199,10 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.START}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.SHORTCUT.START);
   });
+  ipcRenderer.on(EVENT_TYPE.CONVERSATION.SEARCH, () => {
+    logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SEARCH}", forwarding to amplify ...`);
+    window.amplify.publish(WebAppEvents.SHORTCUT.SEARCH);
+  });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.VIDEO_CALL}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, true);
@@ -219,14 +223,20 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED}", forwarding to window ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
   });
-  ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, (_event, {code, key}: {code: string; key: string}) => {
-    logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
-    ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
-  });
-  ipcRenderer.on(WebAppEvents.CONVERSATION.JOIN, (_event, {code, key}: {code: string; key: string}) => {
-    logger.info(`Received event "${WebAppEvents.CONVERSATION.JOIN}", forwarding to window ...`);
-    window.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: {code, key}}));
-  });
+  ipcRenderer.on(
+    EVENT_TYPE.ACTION.JOIN_CONVERSATION,
+    (_event, {code, key, domain}: {code: string; key: string; domain?: string}) => {
+      logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
+      ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key, domain});
+    },
+  );
+  ipcRenderer.on(
+    WebAppEvents.CONVERSATION.JOIN,
+    (_event, {code, key, domain}: {code: string; key: string; domain: string}) => {
+      logger.info(`Received event "${WebAppEvents.CONVERSATION.JOIN}", forwarding to window ...`);
+      window.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: {code, key, domain}}));
+    },
+  );
 };
 
 function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
@@ -266,7 +276,7 @@ process.once('loaded', () => {
     version: 1,
   };
   global.environment = EnvironmentUtil;
-  global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION};
+  global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION, supportsCallingPopoutWindow: true};
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });

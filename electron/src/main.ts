@@ -45,6 +45,7 @@ import {LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
+import {getPictureInPictureCallWindowOptions, isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -171,23 +172,13 @@ app.setAppUserModelId(config.appUserModelId);
 // do not use mdns for local ip obfuscation to prevent windows firewall prompt
 app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
 
-try {
-  logger.info('GPUFeatureStatus:', app.getGPUFeatureStatus());
-  const has2dCanvas = app.getGPUFeatureStatus()?.['2d_canvas']?.startsWith('enabled');
-
-  if (!has2dCanvas) {
-    /*
-     * If the 2D canvas is unavailable, and we rely on hardware acceleration,
-     * Electron can't render anything and will only display a white screen. Thus
-     * we disable hardware acceleration completely.
-     */
-    logger.warn('2D canvas unavailable, disabling hardware acceleration');
+app.getGPUInfo('basic').then((info: any) => {
+  const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
+  if (gpuDevices.length > 0) {
+    logger.info('No GPU device found, disabling hardware acceleration');
     app.disableHardwareAcceleration();
   }
-} catch (error) {
-  logger.warn(`Can't read GPUFeatureStatus, disabling hardware acceleration`);
-  app.disableHardwareAcceleration();
-}
+});
 
 // IPC events
 const bindIpcEvents = (): void => {
@@ -591,46 +582,14 @@ class ElectronWrapperInit {
       if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
         return {
           action: 'allow',
-          overrideBrowserWindowOptions: {
-            alwaysOnTop: true,
-            backgroundColor: '#FFFFFF',
-            fullscreen: false,
-            fullscreenable: false,
-            height: 600,
-            maximizable: false,
-            minimizable: false,
-            modal: false,
-            movable: true,
-            parent: main,
-            resizable: false,
-            title: SingleSignOn.getWindowTitle(details.url),
-            titleBarStyle: 'default',
-            useContentSize: true,
-            webPreferences: {
-              allowRunningInsecureContent: false,
-              backgroundThrottling: false,
-              contextIsolation: true,
-              devTools: false,
-              disableBlinkFeatures: '',
-              experimentalFeatures: false,
-              images: true,
-              javascript: true,
-              nodeIntegration: false,
-              nodeIntegrationInWorker: false,
-              offscreen: false,
-              partition: '',
-              plugins: false,
-              preload: '',
-              sandbox: true,
-              scrollBounce: true,
-              spellcheck: false,
-              textAreasAreResizable: false,
-              webSecurity: true,
-              webgl: false,
-              webviewTag: false,
-            },
-            width: 480,
-          },
+          overrideBrowserWindowOptions: SingleSignOn.getSingleSignOnLoginWindowOptions(main, details.url),
+        };
+      }
+
+      if (isPictureInPictureCallWindow(details.frameName)) {
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: getPictureInPictureCallWindowOptions(),
         };
       }
 

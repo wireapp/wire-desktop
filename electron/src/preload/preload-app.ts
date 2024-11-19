@@ -47,12 +47,15 @@ const getWebviewById = (id: string): Electron.WebviewTag | null =>
 
 const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
-  ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, async (_event, {code, key}: {code: string; key: string}) => {
-    const selectedWebview = getSelectedWebview();
-    if (selectedWebview) {
-      await selectedWebview.send(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key});
-    }
-  });
+  ipcRenderer.on(
+    EVENT_TYPE.ACTION.JOIN_CONVERSATION,
+    async (_event, {code, key, domain}: {code: string; key: string; domain?: string}) => {
+      const selectedWebview = getSelectedWebview();
+      if (selectedWebview) {
+        await selectedWebview.send(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key, domain});
+      }
+    },
+  );
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_MENU, async (_event, action: string) => {
     const selectedWebview = getSelectedWebview();
@@ -128,10 +131,15 @@ const setupIpcInterface = (): void => {
     await accountWebview?.send(EVENT_TYPE.ACTION.SIGN_OUT);
   };
 
-  window.sendConversationJoinToHost = async (accountId: string, code: string, key: string): Promise<void> => {
+  window.sendConversationJoinToHost = async (
+    accountId: string,
+    code: string,
+    key: string,
+    domain?: string,
+  ): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
     logger.log(`Sending conversation join data to webview for account "${truncate(accountId, {length: 5})}".`);
-    await accountWebview?.send(WebAppEvents.CONVERSATION.JOIN, {code, key});
+    await accountWebview?.send(WebAppEvents.CONVERSATION.JOIN, {code, key, domain});
   };
 };
 

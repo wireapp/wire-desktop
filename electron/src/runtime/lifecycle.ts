@@ -54,7 +54,7 @@ export const checkSingleInstance = async () => {
     logger.info('Checking if we are the first instance ...', isFirstInstance);
 
     if (!EnvironmentUtil.platform.IS_WINDOWS && !isFirstInstance) {
-      await quit(false);
+      await quit();
     } else {
       app.on('second-instance', () => WindowManager.showPrimaryWindow());
     }
@@ -83,7 +83,7 @@ export const addRelaunchListeners = (listener: () => void) => {
   relaunchListeners.push(listener);
 };
 
-export const quit = async (clearCache = true): Promise<void> => {
+export const quit = async (clearCache = false): Promise<void> => {
   logger.info('Initiating app quit ...');
   settings.persistToFile();
 
