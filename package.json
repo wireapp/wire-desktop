@@ -4,7 +4,7 @@
     "@electron/remote": "2.1.2",
     "@hapi/joi": "17.1.1",
     "@wireapp/certificate-check": "0.7.18",
-    "@wireapp/commons": "5.2.13",
+    "@wireapp/commons": "5.3.0",
     "@wireapp/protocol-messaging": "1.51.0",
     "@wireapp/react-ui-kit": "9.26.2",
     "@wireapp/webapp-events": "0.24.3",
