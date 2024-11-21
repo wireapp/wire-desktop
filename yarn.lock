@@ -3663,10 +3663,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:10.0.9":
-  version: 10.0.9
-  resolution: "@types/mocha@npm:10.0.9"
-  checksum: cd15e7df49338466e75c580991d8fb3f86dad567f3abd6ca6489c0875b8af44f57a95167552fab7bbc950f53f97596be30b3507a9c16e0dc8d41a2d1e23b169d
+"@types/mocha@npm:10.0.10":
+  version: 10.0.10
+  resolution: "@types/mocha@npm:10.0.10"
+  checksum: 17a56add60a8cc8362d3c62cb6798be3f89f4b6ccd5b9abd12b46e31ff299be21ff2faebf5993de7e0099559f58ca5a3b49a505d302dfa5d65c5a4edfc089195
   languageName: node
   linkType: hard
 
@@ -17867,7 +17867,7 @@ __metadata:
     "@types/jest": ^29.5.14
     "@types/lodash": 4.17.13
     "@types/minimist": 1.2.5
-    "@types/mocha": 10.0.9
+    "@types/mocha": 10.0.10
     "@types/node": 18.19.64
     "@types/open-graph": 0.2.5
     "@types/platform": 1.3.6
