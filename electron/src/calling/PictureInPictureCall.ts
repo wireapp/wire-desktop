@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2023 Wire Swiss GmbH
+ * Copyright (C) 2024 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,29 +17,23 @@
  *
  */
 
-export type ConversationJoinData = {
-  code: string;
-  key: string;
-  domain: string;
+import {getNewWindowOptions} from '../window/WindowUtil';
+
+const PICTURE_IN_PICTURE_CALL_FRAME_NAME = 'WIRE_PICTURE_IN_PICTURE_CALL';
+
+export const isPictureInPictureCallWindow = (frameName: string): boolean => {
+  return frameName === PICTURE_IN_PICTURE_CALL_FRAME_NAME;
 };
 
-export type Account = {
-  availability?: number;
-  accentID?: number;
-  badgeCount: number;
-  conversationJoinData?: ConversationJoinData;
-  id: string;
-  isAdding: boolean;
-  lifecycle?: string;
-  name?: string;
-  picture?: string;
-  sessionID?: string;
-  ssoCode?: string;
-  teamID?: string;
-  teamRole: string;
-  visible: boolean;
-  webappUrl?: string;
-  userID?: string;
-  darkMode: boolean;
-  accountIndex: number;
+export const getPictureInPictureCallWindowOptions = (): Electron.BrowserWindowConstructorOptions => {
+  return getNewWindowOptions({
+    autoHideMenuBar: true,
+    width: 1026,
+    height: 829,
+    resizable: true,
+    fullscreenable: true,
+    maximizable: true,
+    alwaysOnTop: false,
+    minimizable: true,
+  });
 };

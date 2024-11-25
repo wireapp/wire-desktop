@@ -19,7 +19,7 @@
 
 import React from 'react';
 
-import UUID from 'uuidjs';
+import {v4 as uuidv4} from 'uuid';
 
 export const noop = () => {};
 
@@ -31,4 +31,4 @@ export const preventFocus = (fn: (event: React.MouseEvent<Element, MouseEvent>) 
   };
 };
 
-export const generateUUID = () => UUID.genV4().toString();
+export const generateUUID = () => uuidv4();
