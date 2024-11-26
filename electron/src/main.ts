@@ -41,7 +41,7 @@ import minimist from 'minimist';
 import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
 
-import {LogFactory} from '@wireapp/commons';
+import {DateUtil, LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
@@ -672,6 +672,7 @@ class ElectronWrapperInit {
             const colorCodeRegex = /%c(.+?)%c/gm;
             const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;
+            const {date, time} = DateUtil.isoFormat(new Date());
 
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
@@ -682,7 +683,11 @@ class ElectronWrapperInit {
               const accountIndex = contents.id - 2;
 
               if (webViewId) {
-                const logFilePath = path.join(LOG_DIR, `${accountIndex}_${webViewId}`, config.logFileName);
+                const logFilePath = path.join(
+                  LOG_DIR,
+                  `${accountIndex}_${date.replaceAll('-', '_')}_${time.replaceAll(':', '_')}_${webViewId}`,
+                  config.logFileName,
+                );
                 try {
                   await LogFactory.writeMessage(
                     message.replace(colorCodeRegex, '$1').replace(stylingRegex, '').replace(accessTokenRegex, ''),
