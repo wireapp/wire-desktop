@@ -98,9 +98,9 @@ export class TrayHandler {
 
   private flashApplicationWindow(win: BrowserWindow, count?: number): void {
     if (win.isFocused() || !count) {
-        win.flashFrame(false);
+      win.flashFrame(false);
     } else if (count > this.lastUnreadCount) {
-    /* After an Electron API change https://github.com/electron/electron/pull/41391
+      /* After an Electron API change https://github.com/electron/electron/pull/41391
        flashFrame() leads to a constant bouncing of the dock icon on macOS.
        By calling the dock.bounce() directly, we avoid this behavior. the "informational"
        is optional (default), but makes it easier to read
