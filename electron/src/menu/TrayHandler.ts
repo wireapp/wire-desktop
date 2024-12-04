@@ -96,7 +96,7 @@ export class TrayHandler {
     this.trayIcon?.setToolTip(config.name);
   }
 
- private flashApplicationWindow(win: BrowserWindow, count?: number): void {
+  private flashApplicationWindow(win: BrowserWindow, count?: number): void {
     if (win.isFocused() || !count) {
       if (process.platform === 'win32') {
         win.flashFrame(false);
@@ -113,7 +113,7 @@ export class TrayHandler {
     } else if (process.platform === 'win32') {
       win.flashFrame(true);
     }
-}
+  }
 
   private updateBadgeCount(count?: number): void {
     if (typeof count !== 'undefined') {
