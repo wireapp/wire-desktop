@@ -6,7 +6,7 @@
     "@wireapp/certificate-check": "0.7.19",
     "@wireapp/commons": "5.4.0",
     "@wireapp/protocol-messaging": "1.51.0",
-    "@wireapp/react-ui-kit": "9.28.0",
+    "@wireapp/react-ui-kit": "9.28.1",
     "@wireapp/webapp-events": "0.24.3",
     "auto-launch": "5.0.6",
     "axios": "0.21.2",
@@ -67,7 +67,7 @@
     "@types/uuid": "9.0.8",
     "@typescript-eslint/eslint-plugin": "7.17.0",
     "@typescript-eslint/parser": "7.18.0",
-    "@wireapp/copy-config": "2.2.10",
+    "@wireapp/copy-config": "2.2.11",
     "@wireapp/eslint-config": "3.0.20",
     "@wireapp/prettier-config": "0.6.4",
     "adm-zip": "0.5.16",
@@ -82,7 +82,7 @@
     "cross-env": "7.0.3",
     "css-loader": "7.1.2",
     "dotenv": "16.4.7",
-    "electron": "33.2.1",
+    "electron": "33.3.0",
     "electron-builder": "24.13.3",
     "electron-mocha": "12.3.1",
     "electron-packager": "17.1.2",
@@ -122,7 +122,7 @@
     "style-loader": "4.0.0",
     "ts-node": "10.9.2",
     "typescript": "5.7.2",
-    "webpack": "5.97.0",
+    "webpack": "5.97.1",
     "webpack-cli": "5.1.4"
   },
   "homepage": "https://wire.com",
@@ -203,6 +203,6 @@
     "translate:upload": "ts-node -P tsconfig.bin.json ./bin/translations_upload.ts",
     "translate:download": "ts-node -P tsconfig.bin.json ./bin/translations_download.ts"
   },
-  "version": "3.37.0",
+  "version": "3.38.0",
   "packageManager": "yarn@3.3.1"
 }

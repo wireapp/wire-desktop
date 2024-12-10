@@ -4569,11 +4569,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/copy-config@npm:2.2.10":
-  version: 2.2.10
-  resolution: "@wireapp/copy-config@npm:2.2.10"
+"@wireapp/copy-config@npm:2.2.11":
+  version: 2.2.11
+  resolution: "@wireapp/copy-config@npm:2.2.11"
   dependencies:
-    axios: 1.7.7
+    axios: 1.7.9
     copy: 0.3.2
     cosmiconfig: 9.0.0
     fs-extra: 11.2.0
@@ -4582,7 +4582,7 @@ __metadata:
     rimraf: 6.0.1
   bin:
     copy-config: lib/cli.js
-  checksum: f2f314ebdefa52b67e333e35a59f288d0bee5bc307811ddf32d752408797e6e9531a4fadac3524f679b351ff22677f3cc51a581f3a2c247fb9b4af048c2c3953
+  checksum: 2a8fc29b0ae9225b973958e908ff2e958875bb32d3d60ebef86f511988c5bde2d6310c16e8078b0bbf510f96d3531566aa4853abfa1f32fb9be4545669f64446
   languageName: node
   linkType: hard
 
@@ -4640,9 +4640,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/react-ui-kit@npm:9.28.0":
-  version: 9.28.0
-  resolution: "@wireapp/react-ui-kit@npm:9.28.0"
+"@wireapp/react-ui-kit@npm:9.28.1":
+  version: 9.28.1
+  resolution: "@wireapp/react-ui-kit@npm:9.28.1"
   dependencies:
     "@types/color": 3.0.6
     color: 4.2.3
@@ -4657,7 +4657,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: ae8f6193ef51f5e0da1f330b7e4e70419889465415e824c4fe65e4ca886924b9927fa2e7cf593eb6a64431692a8d11c7a6c0be700d5141a5e6bbbd886bf3e989
+  checksum: 585de9347e931c6a934e6088da6c694286e80b15d8ce10aa86d70a9fe88eaac4a4d9141c9cab487b2ae38c69b0682cd057bbe3dbd18acabc80644c554e3a120d
   languageName: node
   linkType: hard
 
@@ -5525,14 +5525,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.7.7":
-  version: 1.7.7
-  resolution: "axios@npm:1.7.7"
+"axios@npm:1.7.9":
+  version: 1.7.9
+  resolution: "axios@npm:1.7.9"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 882d4fe0ec694a07c7f5c1f68205eb6dc5a62aecdb632cc7a4a3d0985188ce3030e0b277e1a8260ac3f194d314ae342117660a151fabffdc5081ca0b5a8b47fe
+  checksum: cb8ce291818effda09240cb60f114d5625909b345e10f389a945320e06acf0bc949d0f8422d25720f5dd421362abee302c99f5e97edec4c156c8939814b23d19
   languageName: node
   linkType: hard
 
@@ -7559,16 +7559,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:33.2.1":
-  version: 33.2.1
-  resolution: "electron@npm:33.2.1"
+"electron@npm:33.3.0":
+  version: 33.3.0
+  resolution: "electron@npm:33.3.0"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^20.9.0
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: c5b7d5fe56f831da5d14be9d24d0a29fdb392d5b4e593b31200a9c01e6260d87bba1216c4cc17297b2f4838e0893428464b9e2ca71c3eaff499dbff1981c0670
+  checksum: d121a50bc3d5ce186ad98433df9b60c96ec93924dbf7f68777a3c03b40ef39729badf20689ecc4b513e80ecfab0773bdf991fd7686958072f0cb7dcadce3cf8a
   languageName: node
   linkType: hard
 
@@ -13321,11 +13321,11 @@ __metadata:
   linkType: hard
 
 "nanoid@npm:^3.3.7":
-  version: 3.3.7
-  resolution: "nanoid@npm:3.3.7"
+  version: 3.3.8
+  resolution: "nanoid@npm:3.3.8"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: d36c427e530713e4ac6567d488b489a36582ef89da1d6d4e3b87eded11eb10d7042a877958c6f104929809b2ab0bafa17652b076cdf84324aa75b30b722204f2
+  checksum: dfe0adbc0c77e9655b550c333075f51bb28cfc7568afbf3237249904f9c86c9aaaed1f113f0fddddba75673ee31c758c30c43d4414f014a52a7a626efc5958c9
   languageName: node
   linkType: hard
 
@@ -17625,9 +17625,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.97.0":
-  version: 5.97.0
-  resolution: "webpack@npm:5.97.0"
+"webpack@npm:5.97.1":
+  version: 5.97.1
+  resolution: "webpack@npm:5.97.1"
   dependencies:
     "@types/eslint-scope": ^3.7.7
     "@types/estree": ^1.0.6
@@ -17657,7 +17657,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 07ca08bd8b39080e548e05aca559b887f200bf057f8b9116907eaf22697e943a30cf7fbe9f884615906c30ea8cd911e49608afc481157a190327087ecb996a96
+  checksum: 649065e2258b495ae41a4088be804b4be2ec07d280aa514ebef43da79caf96fa973d26a08826c3902b5676a098d9b37c589f16be7b4da17b68b08b6c76441196
   languageName: node
   linkType: hard
 
@@ -17897,11 +17897,11 @@ __metadata:
     "@typescript-eslint/parser": 7.18.0
     "@wireapp/certificate-check": 0.7.19
     "@wireapp/commons": 5.4.0
-    "@wireapp/copy-config": 2.2.10
+    "@wireapp/copy-config": 2.2.11
     "@wireapp/eslint-config": 3.0.20
     "@wireapp/prettier-config": 0.6.4
     "@wireapp/protocol-messaging": 1.51.0
-    "@wireapp/react-ui-kit": 9.28.0
+    "@wireapp/react-ui-kit": 9.28.1
     "@wireapp/webapp-events": 0.24.3
     adm-zip: 0.5.16
     auto-launch: 5.0.6
@@ -17918,7 +17918,7 @@ __metadata:
     cross-env: 7.0.3
     css-loader: 7.1.2
     dotenv: 16.4.7
-    electron: 33.2.1
+    electron: 33.3.0
     electron-builder: 24.13.3
     electron-dl: ^3.5.2
     electron-mocha: 12.3.1
@@ -17977,7 +17977,7 @@ __metadata:
     ts-node: 10.9.2
     typescript: 5.7.2
     uuid: 9.0.1
-    webpack: 5.97.0
+    webpack: 5.97.1
     webpack-cli: 5.1.4
   languageName: unknown
   linkType: soft
