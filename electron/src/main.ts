@@ -171,6 +171,9 @@ app.setAppUserModelId(config.appUserModelId);
 
 // do not use mdns for local ip obfuscation to prevent windows firewall prompt
 app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
+// disable media session and hardware media key features as Wire is not a media player
+app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
+app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
 
 app.getGPUInfo('basic').then((info: any) => {
   const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
