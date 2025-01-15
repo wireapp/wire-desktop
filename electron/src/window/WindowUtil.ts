@@ -79,8 +79,12 @@ export const openExternal = async (url: string, httpsOnly: boolean = false): Pro
   }
 };
 
+const isBrowserWindow = (baseWindow: unknown): baseWindow is BrowserWindow => {
+  return baseWindow instanceof Object && 'webContents' in baseWindow;
+};
+
 export const sendToWebContents = (baseWindow: BaseWindow | undefined, channel: string, ...args: any[]) => {
-  if (baseWindow instanceof BrowserWindow) {
+  if (isBrowserWindow(baseWindow)) {
     try {
       baseWindow.webContents.send(channel, ...args);
     } catch (error) {
