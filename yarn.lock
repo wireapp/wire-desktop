@@ -9814,6 +9814,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fs-extra@npm:11.3.0":
+  version: 11.3.0
+  resolution: "fs-extra@npm:11.3.0"
+  dependencies:
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^2.0.0
+  checksum: f983c706e0c22b0c0747a8e9c76aed6f391ba2d76734cf2757cd84da13417b402ed68fe25bace65228856c61d36d3b41da198f1ffbf33d0b34283a2f7a62c6e9
+  languageName: node
+  linkType: hard
+
 "fs-extra@npm:^10.0.0, fs-extra@npm:^10.1.0":
   version: 10.1.0
   resolution: "fs-extra@npm:10.1.0"
@@ -18665,7 +18676,7 @@ __metadata:
     eslint-plugin-testing-library: 6.5.0
     eslint-plugin-unused-imports: 3.2.0
     form-data: 4.0.1
-    fs-extra: 11.2.0
+    fs-extra: 11.3.0
     get-proxy-settings: 0.1.13
     globby: 11.1
     husky: 4.3.8
