@@ -6517,10 +6517,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:12.1.0, commander@npm:~12.1.0":
-  version: 12.1.0
-  resolution: "commander@npm:12.1.0"
-  checksum: 68e9818b00fc1ed9cdab9eb16905551c2b768a317ae69a5e3c43924c2b20ac9bb65b27e1cab36aeda7b6496376d4da908996ba2c0b5d79463e0fb1e77935d514
+"commander@npm:13.0.0":
+  version: 13.0.0
+  resolution: "commander@npm:13.0.0"
+  checksum: 3981c8c197c93ceeb949f6e2250785ea319209c502b7c53d6dc36148347739c72b15de2e4bcad80bedc3f8e1e5544a89ca4e7d673b2f3238ac51b44292ad08d6
   languageName: node
   linkType: hard
 
@@ -6542,6 +6542,13 @@ __metadata:
   version: 5.1.0
   resolution: "commander@npm:5.1.0"
   checksum: 0b7fec1712fbcc6230fcb161d8d73b4730fa91a21dc089515489402ad78810547683f058e2a9835929c212fead1d6a6ade70db28bbb03edbc2829a9ab7d69447
+  languageName: node
+  linkType: hard
+
+"commander@npm:~12.1.0":
+  version: 12.1.0
+  resolution: "commander@npm:12.1.0"
+  checksum: 68e9818b00fc1ed9cdab9eb16905551c2b768a317ae69a5e3c43924c2b20ac9bb65b27e1cab36aeda7b6496376d4da908996ba2c0b5d79463e0fb1e77935d514
   languageName: node
   linkType: hard
 
@@ -18643,7 +18650,7 @@ __metadata:
     babel-jest: 29.7.0
     babel-loader: 9.2.1
     babel-plugin-istanbul: 6.1.1
-    commander: 12.1.0
+    commander: 13.0.0
     content-type: 1.0.5
     core-js: 3.40.0
     cross-env: 7.0.3
