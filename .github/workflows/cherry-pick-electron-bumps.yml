@@ -14,8 +14,8 @@ permissions:
 jobs:
   cherry_pick:
     env:
-      PR_TITLE: ${{ github.event.pull_request.title }}
-    if: ${{env.PR_TITLE}} == '*test test test*'
+      PR_TITLE: $
+    if: ${{ github.event.pull_request.title }} == '*test test test*'
     runs-on: ubuntu-latest
     steps:
       - name: checkout
