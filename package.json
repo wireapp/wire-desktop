@@ -68,7 +68,7 @@
     "@typescript-eslint/eslint-plugin": "7.17.0",
     "@typescript-eslint/parser": "7.18.0",
     "@wireapp/copy-config": "2.2.11",
-    "@wireapp/eslint-config": "3.0.20",
+    "@wireapp/eslint-config": "3.0.21",
     "@wireapp/prettier-config": "0.6.4",
     "adm-zip": "0.5.16",
     "aws-sdk": "2.1692.0",

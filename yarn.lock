@@ -4586,16 +4586,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/eslint-config@npm:3.0.20":
-  version: 3.0.20
-  resolution: "@wireapp/eslint-config@npm:3.0.20"
+"@wireapp/eslint-config@npm:3.0.21":
+  version: 3.0.21
+  resolution: "@wireapp/eslint-config@npm:3.0.21"
   dependencies:
     "@types/eslint": ^8
     "@types/prettier": ^3
     "@typescript-eslint/eslint-plugin": 7.17.0
     "@typescript-eslint/parser": 7.17.0
     eslint: ^8
-    eslint-config-prettier: ^9
+    eslint-config-prettier: ^10
     eslint-import-resolver-alias: ^1.1.2
     eslint-import-resolver-typescript: ^3.5.2
     eslint-plugin-better-styled-components: ^1.1.2
@@ -4617,7 +4617,7 @@ __metadata:
   peerDependencies:
     eslint: ^8
     prettier: ^3
-  checksum: 040ace8f317335ea63bb7415ff594047b800180c893433077c4ee1890041688e89686e08dd7efcfe9eebde18d53200366ae4d28a6583133acad4355dbd6655d4
+  checksum: 7f62a3168fb3f3bcc71a6333f3277e21d0a7bb446a39edb399aefd2515a163015623ed2584e6af69d030073b742a6e6934de696dd4b6d5f1a54553f9b0569316
   languageName: node
   linkType: hard
 
@@ -8403,14 +8403,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^9":
-  version: 9.0.0
-  resolution: "eslint-config-prettier@npm:9.0.0"
+"eslint-config-prettier@npm:^10":
+  version: 10.0.1
+  resolution: "eslint-config-prettier@npm:10.0.1"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
-    eslint-config-prettier: bin/cli.js
-  checksum: 362e991b6cb343f79362bada2d97c202e5303e6865888918a7445c555fb75e4c078b01278e90be98aa98ae22f8597d8e93d48314bec6824f540f7efcab3ce451
+    eslint-config-prettier: build/bin/cli.js
+  checksum: f827d9b0df5e088bb22c938e59bd4ade4df756ae73b13150652dcc64ee3b6b81d06f53baa47a51b4a44e3ece19e3a5357b79d01e5048fd7667af332dcca8473e
   languageName: node
   linkType: hard
 
@@ -18629,7 +18629,7 @@ __metadata:
     "@wireapp/certificate-check": 0.7.19
     "@wireapp/commons": 5.4.0
     "@wireapp/copy-config": 2.2.11
-    "@wireapp/eslint-config": 3.0.20
+    "@wireapp/eslint-config": 3.0.21
     "@wireapp/prettier-config": 0.6.4
     "@wireapp/protocol-messaging": 1.51.0
     "@wireapp/react-ui-kit": 9.29.2
