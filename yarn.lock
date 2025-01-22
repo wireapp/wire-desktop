@@ -3787,13 +3787,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.3.13":
-  version: 18.3.13
-  resolution: "@types/react@npm:18.3.13"
+"@types/react@npm:^19.0.7":
+  version: 19.0.7
+  resolution: "@types/react@npm:19.0.7"
   dependencies:
-    "@types/prop-types": "*"
     csstype: ^3.0.2
-  checksum: 5ccf75e8e52e30fd619046ce985d17152fdf92da3b27777cdcbe972c4557bb0f0d7cfda6b379c29e409f4c3293ad1277394eea6c865211c07bd92cab8dcb277f
+  checksum: 594e06f9d6e4d771d7046876de25ad019a55963912514499b1a1c92ea3a404bf0153bfe1c037675feef67ece22fc9bceb0c9bdfd26e7f735145924d4e3d3d8e7
   languageName: node
   linkType: hard
 
@@ -15263,12 +15262,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: ^1.1.0
-  checksum: a27bcfa8ff7c15a1e50244ad0d0c1cb2ad4375eeffefd266a64889beea6f6b64c4966c9b37d14ee32d6c9fcd5aa6ba183b6988167ab4d127d13e7cb5b386a376
+"react@npm:19.0.0":
+  version: 19.0.0
+  resolution: "react@npm:19.0.0"
+  checksum: 86de15d85b2465feb40297a90319c325cb07cf27191a361d47bcfe8c6126c973d660125aa67b8f4cbbe39f15a2f32efd0c814e98196d8e5b68c567ba40a399c6
   languageName: node
   linkType: hard
 
@@ -18618,7 +18615,7 @@ __metadata:
     "@types/open-graph": 0.2.5
     "@types/platform": 1.3.6
     "@types/prettier": ^2.7.3
-    "@types/react": ^18.3.13
+    "@types/react": ^19.0.7
     "@types/react-dom": ^18.3.1
     "@types/redux-logger": ^3.0.12
     "@types/sinon": 17.0.3
@@ -18695,7 +18692,7 @@ __metadata:
     nyc: 15.1.0
     open-graph: 0.2.6
     prettier: 2.8.8
-    react: 18.3.1
+    react: 19.0.0
     react-dom: 18.3.1
     react-redux: 8.1.3
     redux: 4.2.1
