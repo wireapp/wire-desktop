@@ -23,10 +23,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create PR to branch
+      - name: Create PR to mtt
         uses: gorillio/github-action-cherry-pick@master
         with:
           pr_branch: 'v/merge-to-test'
+        env:
+          GITHUB_TOKEN: ${{secrets.OTTO_THE_BOT_GH_TOKEN}}
+
+      - name: Create PR to mtt2
+        uses: gorillio/github-action-cherry-pick@master
+        with:
+          pr_branch: 'v/merge-to-test-2'
         env:
           GITHUB_TOKEN: ${{secrets.OTTO_THE_BOT_GH_TOKEN}}
 # testing auto merge on the desktop repo
