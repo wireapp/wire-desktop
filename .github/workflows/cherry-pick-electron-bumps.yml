@@ -13,9 +13,7 @@ permissions:
 
 jobs:
   cherry_pick:
-    env:
-      PR_TITLE: $
-    if: ${{ github.event.pull_request.title }} == '*bump electron from*'
+    if: ${{ github.event.pull_request.title }} == '*test testing ci*'
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -23,16 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create PR to staging
+      - name: Create PR to mtt
         uses: gorillio/github-action-cherry-pick@master
         with:
-          pr_branch: 'staging'
-        env:
-          GITHUB_TOKEN: ${{secrets.OTTO_THE_BOT_GH_TOKEN}}
-
-      - name: Create PR to main
-        uses: gorillio/github-action-cherry-pick@master
-        with:
-          pr_branch: 'main'
+          pr_branch: 'v/merge-to-test'
         env:
           GITHUB_TOKEN: ${{secrets.OTTO_THE_BOT_GH_TOKEN}}
