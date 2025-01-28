@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   cherry_pick:
-    if: ${{ github.event.pull_request.title }} == 'test testing ci'
+    if: contains(github.event.head_commit.message, 'test testing ci')
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -27,5 +27,11 @@ jobs:
           pr_branch: 'v/merge-to-test'
         env:
           GITHUB_TOKEN: ${{secrets.OTTO_THE_BOT_GH_TOKEN}}
+  # test test test
+  # test test test
+  # test test test
+  # test test test
+  # test test test
+  # test test test
   # test test test
   # test test test
