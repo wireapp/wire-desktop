@@ -13,7 +13,6 @@ permissions:
 
 jobs:
   cherry_pick:
-    if: contains(github.event.pull_request.title, 'test testing ci')
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -22,6 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create PR to mtt
+        if: contains(github.event.pull_request.title, 'test testing ci')
         uses: gorillio/github-action-cherry-pick@master
         with:
           pr_branch: 'v/merge-to-test'
