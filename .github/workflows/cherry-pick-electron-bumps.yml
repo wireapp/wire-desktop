@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   cherry_pick:
-    if: github.event.pull_request.title == 'test testing ci'
+    if: github.event.pull_request.title == '*test testing ci*'
     runs-on: ubuntu-latest
     steps:
       - name: checkout
