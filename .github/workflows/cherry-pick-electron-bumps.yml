@@ -29,7 +29,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.OTTO_THE_BOT_GH_TOKEN}}
 
       - name: Create PR to main
-        if: contains(github.event.head_commit.message, 'tbump electron from')
+        if: contains(github.event.head_commit.message, 'bump electron from')
         uses: gorillio/github-action-cherry-pick@master
         with:
           pr_branch: 'main'
