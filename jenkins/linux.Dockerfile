@@ -1,9 +1,9 @@
 FROM node:23-bullseye
 
-WORKDIR /home/node
+RUN mkdir /.yarn
 
 # Needed to workaround JENKINS-38438
-RUN chown -R 1016:1016 /home/node 
+RUN chown -R 1016:1016 /.yarn 
 
 RUN set -ex; \
     apt-get update; \
