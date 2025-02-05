@@ -1,9 +1,11 @@
 FROM node:23-bullseye
 
 RUN mkdir /.yarn
+RUN mkdir /.cache
 
 # Needed to workaround JENKINS-38438
-RUN chown -R 1016:1016 /.yarn 
+RUN chmod 666 /.yarn
+RUN chmod 666 /.cache
 
 RUN set -ex; \
     apt-get update; \
