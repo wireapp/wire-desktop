@@ -1,5 +1,7 @@
 FROM node:23-bullseye
 
+WORKDIR /home/node
+
 # Needed to workaround JENKINS-38438
 RUN chown -R 1016:1016 /home/node 
 
