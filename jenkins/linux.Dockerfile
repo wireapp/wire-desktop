@@ -4,8 +4,8 @@ RUN mkdir /.yarn
 RUN mkdir /.cache
 
 # Needed to workaround JENKINS-38438
-RUN chmod 666 /.yarn
-RUN chmod 666 /.cache
+RUN chmod 777 /.yarn
+RUN chmod 777 /.cache
 
 RUN set -ex; \
     apt-get update; \
