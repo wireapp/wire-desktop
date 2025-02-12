@@ -99,6 +99,17 @@ export ENABLE_ASAR="false"
 yarn build:linux
 ```
 
+### Other architectures
+
+To build for another architecture such as `arm64` run the following command:
+
+```shell
+export ARCH=<target>
+yarn build:linux
+```
+
+Replace `<target>` with your desired target (e.g. `arm64`). Have a look at the [documentation for `electron-builder`](https://www.electron.build/electron-builder.enumeration.arch) for the available target architectures. Only one architecture may be specified at a time.
+
 ### Troubleshooting
 
 If you are having troubles building Wire for Desktop, then [our troubleshooting page](https://github.com/wireapp/wire-desktop/wiki/Troubleshooting) might be of help.
