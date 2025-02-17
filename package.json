@@ -6,7 +6,7 @@
     "@wireapp/certificate-check": "0.7.19",
     "@wireapp/commons": "5.4.1",
     "@wireapp/protocol-messaging": "1.51.0",
-    "@wireapp/react-ui-kit": "9.36.0",
+    "@wireapp/react-ui-kit": "9.36.1",
     "@wireapp/webapp-events": "0.28.0",
     "auto-launch": "5.0.6",
     "axios": "0.21.2",
