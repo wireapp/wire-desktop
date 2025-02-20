@@ -8593,9 +8593,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-import-resolver-typescript@npm:^3.8.1":
-  version: 3.8.1
-  resolution: "eslint-import-resolver-typescript@npm:3.8.1"
+"eslint-import-resolver-typescript@npm:^3.8.2":
+  version: 3.8.2
+  resolution: "eslint-import-resolver-typescript@npm:3.8.2"
   dependencies:
     "@nolyfill/is-core-module": 1.0.39
     debug: ^4.3.7
@@ -8603,7 +8603,7 @@ __metadata:
     get-tsconfig: ^4.10.0
     is-bun-module: ^1.0.2
     stable-hash: ^0.0.4
-    tinyglobby: ^0.2.10
+    tinyglobby: ^0.2.11
   peerDependencies:
     eslint: "*"
     eslint-plugin-import: "*"
@@ -8613,7 +8613,7 @@ __metadata:
       optional: true
     eslint-plugin-import-x:
       optional: true
-  checksum: 5708062f83b4e45fc4bf4a5efc14a28cc7fbf5931e9b7d4ad3a25e9a59da6f252c42e4a5e932776cc552a3f46c15c617ce03af034699de290896c2a0a15077a8
+  checksum: 6eb80fd01c952b54256f262ee3c2c2dbd47bed62d1f8a1a1e909bdd14e020d21910837826dbe3ae0b9852eaeb34745a33ef4bdc5ce53576be7f4420b005fd52b
   languageName: node
   linkType: hard
 
@@ -9597,7 +9597,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fdir@npm:^6.4.2":
+"fdir@npm:^6.4.3":
   version: 6.4.3
   resolution: "fdir@npm:6.4.3"
   peerDependencies:
@@ -17411,13 +17411,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinyglobby@npm:^0.2.10":
-  version: 0.2.10
-  resolution: "tinyglobby@npm:0.2.10"
+"tinyglobby@npm:^0.2.11":
+  version: 0.2.12
+  resolution: "tinyglobby@npm:0.2.12"
   dependencies:
-    fdir: ^6.4.2
+    fdir: ^6.4.3
     picomatch: ^4.0.2
-  checksum: 7e2ffe262ebc149036bdef37c56b32d02d52cf09efa7d43dbdab2ea3c12844a4da881058835ce4c74d1891190e5ad5ec5133560a11ec8314849b68ad0d99d3f4
+  checksum: ef9357fa1b2b661afdccd315cb4995f5f36bce948faaace68aae85fe57bdd8f837883045c88efc50d3186bac6586e4ae2f31026b9a3aac061b884217e6092e23
   languageName: node
   linkType: hard
 
@@ -18816,7 +18816,7 @@ __metadata:
     eslint: 8.57.0
     eslint-config-prettier: 9.1.0
     eslint-import-resolver-alias: ^1.1.2
-    eslint-import-resolver-typescript: ^3.8.1
+    eslint-import-resolver-typescript: ^3.8.2
     eslint-plugin-better-styled-components: 1.1.2
     eslint-plugin-header: 3.1.1
     eslint-plugin-import: ^2.31.0
