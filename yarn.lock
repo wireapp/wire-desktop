@@ -2259,9 +2259,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/osx-sign@npm:1.3.2":
-  version: 1.3.2
-  resolution: "@electron/osx-sign@npm:1.3.2"
+"@electron/osx-sign@npm:1.3.3":
+  version: 1.3.3
+  resolution: "@electron/osx-sign@npm:1.3.3"
   dependencies:
     compare-version: ^0.1.2
     debug: ^4.3.4
@@ -2272,7 +2272,7 @@ __metadata:
   bin:
     electron-osx-flat: bin/electron-osx-flat.js
     electron-osx-sign: bin/electron-osx-sign.js
-  checksum: a77f3a2df47d75095e4af568099762587a3a688c6bebcfdcb30829cc5dbbeb5518e63ff22de4c3e0447de5b88fd42196c867a9332f08c266dcb257fd2e5fda96
+  checksum: 9e906c587b6efc7d3fc302e1653a685ac16310b6d47f6f213d5ff2d7877bbb06a56f4500cbd840dfd60a5b58f8cd1940e30fb6a600600ad6325b8298d0328e96
   languageName: node
   linkType: hard
 
@@ -18756,7 +18756,7 @@ __metadata:
     "@babel/preset-typescript": 7.26.0
     "@babel/register": 7.25.9
     "@electron/fuses": 1.8.0
-    "@electron/osx-sign": 1.3.2
+    "@electron/osx-sign": 1.3.3
     "@electron/remote": 2.1.2
     "@hapi/joi": 17.1.1
     "@types/adm-zip": 0.5.7
