@@ -87,7 +87,7 @@ node('windows') {
       stage('Print hash') {
         try {
           if (production) {
-            bat 'certUtil -hashfile "wrap\\dist\\Wire-Setup.exe" SHA256'
+            bat 'certUtil -hashfile "wrap\\dist\\WireInternal-Setup.exe" SHA256'
           }
     } catch (e) {
           currentBuild.result = 'FAILED'
