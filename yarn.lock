@@ -4765,9 +4765,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/react-ui-kit@npm:9.40.0":
-  version: 9.40.0
-  resolution: "@wireapp/react-ui-kit@npm:9.40.0"
+"@wireapp/react-ui-kit@npm:9.41.0":
+  version: 9.41.0
+  resolution: "@wireapp/react-ui-kit@npm:9.41.0"
   dependencies:
     "@types/color": 3.0.6
     color: 4.2.3
@@ -4782,7 +4782,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: bed4cb931038dae2b66063621e97b785f5551cec335ec8fad8e283f77d6e05afeaaf00836d33d7d468e56ee82758d1fb4cc042f85e51b678417e8be0a1057882
+  checksum: eff43a5c3d3a3f5814db266fa56998acdbfa2a5a6a7e0d1edb7742bf253c5c94c602a540228f86bdb5867b0a94b83016ac4762f64e80ec33d348776bef6aab01
   languageName: node
   linkType: hard
 
@@ -18817,7 +18817,7 @@ __metadata:
     "@wireapp/eslint-config": 3.0.21
     "@wireapp/prettier-config": 0.6.4
     "@wireapp/protocol-messaging": 1.51.0
-    "@wireapp/react-ui-kit": 9.40.0
+    "@wireapp/react-ui-kit": 9.41.0
     "@wireapp/webapp-events": 0.28.0
     adm-zip: 0.5.16
     auto-launch: 5.0.6
