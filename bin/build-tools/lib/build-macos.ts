@@ -94,7 +94,7 @@ export async function buildMacOSConfig(
     },
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas',
+    platform: 'mas', //  Mac App Store 
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
