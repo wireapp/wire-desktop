@@ -41,6 +41,36 @@ updates:
       - dependency-name: eslint-plugin-no-unsanitized
         versions:
           - '> 4.0.x'
+  # perform electron updates on main
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '05:00'
+      timezone: 'Europe/Berlin'
+    open-pull-requests-limit: 99
+    versioning-strategy: increase
+    target-branch: main
+    allow:
+      - dependency-name: electron
+    ignore:
+      - dependency-name: electron
+        update-types: ['version-update:semver-major']
+  # perform electron updates on staging
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '05:00'
+      timezone: 'Europe/Berlin'
+    open-pull-requests-limit: 99
+    versioning-strategy: increase
+    target-branch: staging
+    allow:
+      - dependency-name: electron
+    ignore:
+      - dependency-name: electron
+        update-types: ['version-update:semver-major']
   - package-ecosystem: npm
     directory: '/app-config'
     schedule:
