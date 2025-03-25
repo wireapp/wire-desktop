@@ -44,12 +44,12 @@ export async function buildMSIConfig(
 
   const MSIConfig: MSIConfig = {
     target: 'msi',
-    additionalWixArgs: undefined,
     oneClick: false,
     perMachine: false,
     runAfterFinish: false,
     installerName: `${commonConfig.nameShort}-desktop`,
     executableName: `${commonConfig.name}`,
+    additionalWixArgs: ['-dWIXUI_INSTALLDIR=APPLICATIONFOLDER', '-dAPPLICATIONFOLDER=C:\\Program Files\\Wire-Desktop'],
   };
 
   const builderConfig: electronBuilder.Configuration = {
@@ -63,6 +63,23 @@ export async function buildMSIConfig(
     },
     directories: {
       output: commonConfig.distDir,
+    },
+    msiProjectCreated: mainDir => {
+      const wxsFile = path.join(mainDir, commonConfig.distDir, `${commonConfig.name}.wsx`);
+      let content = fs.readFileSync(wxsFile, 'utf8');
+
+      // Add the WixUI_InstallDir dialog set and the WIXUI_INSTALLDIR property
+      content = content.replace(
+        '</Product>',
+        `
+        <UIRef Id="WixUI_InstallDir" />
+        <Property Id="WIXUI_INSTALLDIR" Value="APPLICATIONFOLDER" />
+        </Product>
+        `,
+      );
+
+      // Write the modified content back to the .wxs file
+      fs.writeFileSync(wxsFile, content, 'utf8');
     },
   };
 
