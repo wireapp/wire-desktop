@@ -130,8 +130,6 @@ export const getNewWindowOptions = ({
   movable: true,
   parent,
   resizable,
-  minHeight: height,
-  minWidth: width,
   title: title,
   titleBarStyle: 'default',
   useContentSize: true,
