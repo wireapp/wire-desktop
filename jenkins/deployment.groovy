@@ -303,8 +303,13 @@ node('built-in') {
 
             // Send notification to Wire Messenger for Mac Internal Build
             if (params.Release.equals('Internal') && projectName.contains('macOS')) {
-              wireSend secret: "$jenkinsbot_secret",
-                       message: "**New Internal Desktop Wrapper available!**\nDownload link: ${presignedUrl}\nLink is valid for 2 weeks."
+                wireSend secret: "$jenkinsbot_secret",
+                message: """
+                    **New internal desktop wrapper available!**
+                    [Download now](${presignedUrl})
+
+                    Link is valid for 2 weeks.
+                """.stripIndent()
             }
           }
 
