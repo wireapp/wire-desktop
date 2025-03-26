@@ -268,7 +268,7 @@ node('built-in') {
           artifacts.each { fileObj ->
             def presignedUrl = sh(
               script: """
-                aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
+                aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 1209600
               """,
               returnStdout: true
             ).trim()
@@ -295,11 +295,17 @@ node('built-in') {
           artifacts.each { fileObj ->
             def presignedUrl = sh(
               script: """
-                aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
+                aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 1209600
               """,
               returnStdout: true
             ).trim()
             sh "echo '${fileObj.name}: ${presignedUrl}' >> ${presignedFile}"
+
+            // Send notification to Wire Messenger for Mac Internal Build
+            if (params.Release.equals('Internal') && projectName.contains('macOS')) {
+              wireSend secret: "$jenkinsbot_secret",
+                       message: "**New Internal Desktop Wrapper available!**\nDownload link: ${presignedUrl}\nLink is valid for 2 weeks."
+            }
           }
 
           s3Upload(
@@ -309,7 +315,7 @@ node('built-in') {
             path: "${env.S3_PATH}/${presignedFile}"
           )
 
-          // Archive in Jenkins so teammates can see the URLs
+          // Archive in Jenkins 
           archiveArtifacts artifacts: presignedFile, fingerprint: true
         }
       }
