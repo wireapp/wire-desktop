@@ -60,7 +60,7 @@ node('windows') {
     // }
 
     stage('Sign installer') {
-      withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE'), string(credentialsId: 'SM_KEYPAIR_ALIAS', variable: 'SM_KEYPAIR_ALIAS')]) {
+      // withCredentials([string(credentialsId: 'SM_API_KEY', variable: 'SM_API_KEY'), string(credentialsId: 'SM_HOST', variable: 'SM_HOST'), string(credentialsId: 'SM_CLIENT_CERT_PASSWORD', variable: 'SM_CLIENT_CERT_PASSWORD'), file(credentialsId: 'SM_CLIENT_CERT_FILE', variable: 'SM_CLIENT_CERT_FILE'), string(credentialsId: 'SM_KEYPAIR_ALIAS', variable: 'SM_KEYPAIR_ALIAS')]) {
         try {
           bat 'for %%f in ("C:\\Users\\jenkins\\Documents\\jenkins\\workspace\\Wrapper_Windows_Production\\wrap\\dist\\*-Setup.exe") do (smctl sign --keypair-alias %SM_KEYPAIR_ALIAS% --config-file %SM_CLIENT_CERT_FILE% --input %%f -v)'
           } catch (e) {
@@ -68,7 +68,7 @@ node('windows') {
           wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
           throw e
         }
-      }
+      // }
     }
 
     stage('verify') {
