@@ -20,7 +20,7 @@ import axios, {AxiosError, AxiosRequestConfig} from 'axios';
 import fs from 'fs-extra';
 import logdown from 'logdown';
 
-import {logDry, TWO_HUNDRED_MB_IN_BYTES} from './deploy-utils';
+import {logDry, THREE_HUNDRED_MB_IN_BYTES} from './deploy-utils';
 
 /** @see https://developer.github.com/v3/repos/releases/#create-a-release */
 export interface GitHubAPIDraftData {
@@ -159,15 +159,15 @@ export class GitHubDraftDeployer {
     const url = `${uploadUrl}?name=${fileName}`;
 
     if (this.options.dryRun) {
-      logDry('uploadAsset', {file, headers, maxContentLength: TWO_HUNDRED_MB_IN_BYTES, url});
+      logDry('uploadAsset', {file, headers, maxContentLength: THREE_HUNDRED_MB_IN_BYTES, url});
       return;
     }
 
     try {
       const requestConfig: AxiosRequestConfig = {
         headers,
-        maxBodyLength: TWO_HUNDRED_MB_IN_BYTES,
-        maxContentLength: TWO_HUNDRED_MB_IN_BYTES,
+        maxBodyLength: THREE_HUNDRED_MB_IN_BYTES,
+        maxContentLength: THREE_HUNDRED_MB_IN_BYTES,
       };
       await axios.post(url, file, requestConfig);
     } catch (uploadError: any) {
