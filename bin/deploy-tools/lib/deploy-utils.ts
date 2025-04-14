@@ -43,7 +43,7 @@ export enum FileExtension {
   SIG = '.sig',
 }
 
-export const TWO_HUNDRED_MB_IN_BYTES = 209715200;
+export const THREE_HUNDRED_MB_IN_BYTES = 314572800;
 
 export async function find(fileGlob: string, options: {cwd?: string; safeGuard: false}): Promise<FindResult | null>;
 export async function find(fileGlob: string, options: {cwd?: string; safeGuard?: boolean}): Promise<FindResult>;
