@@ -121,7 +121,7 @@
     "sort-json": "2.0.1",
     "style-loader": "4.0.0",
     "ts-node": "10.9.2",
-    "typescript": "5.7.3",
+    "typescript": "5.8.3",
     "webpack": "5.99.7",
     "webpack-cli": "5.1.4"
   },
