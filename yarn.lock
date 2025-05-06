@@ -3631,12 +3631,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cheerio@npm:*":
-  version: 0.22.31
-  resolution: "@types/cheerio@npm:0.22.31"
+"@types/cheerio@npm:<1":
+  version: 0.22.35
+  resolution: "@types/cheerio@npm:0.22.35"
   dependencies:
     "@types/node": "*"
-  checksum: 8d73d22fdd384c290514dad6f9f4a436f5a90bc836bbe9b46fe4f557041a03484f0547291d0347185a806149f465355fc225dc87477b8cf5af5be307bb75e6a4
+  checksum: 34ef8f0f754bd022e7d686c7295fdba997766a796257add2377be256f215f2e12fe74218125570e61344dbd3de0a952495181981af1eeb8eebeb5cf886c62f1f
   languageName: node
   linkType: hard
 
@@ -3991,12 +3991,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/open-graph@npm:0.2.5":
-  version: 0.2.5
-  resolution: "@types/open-graph@npm:0.2.5"
+"@types/open-graph@npm:0.2.6":
+  version: 0.2.6
+  resolution: "@types/open-graph@npm:0.2.6"
   dependencies:
-    "@types/cheerio": "*"
-  checksum: 01228bc1328979834680aeb1de673f8204ec8f067d9e9b2fad13d2a006a4c5d2b1663b710414583bc2788ce2d35578377ab43bae00f9875de1f9d0c4c1ff8696
+    "@types/cheerio": <1
+  checksum: fb4ace56a854521653c077e87e079e15db36f2d2b0dfa4fa382344d318955931c9f6bbe9b777a2410a5941f7e5498d3d16cb79ae39e37ec9405be3a89d32cf36
   languageName: node
   linkType: hard
 
@@ -19026,7 +19026,7 @@ __metadata:
     "@types/minimist": 1.2.5
     "@types/mocha": 10.0.10
     "@types/node": 18.19.87
-    "@types/open-graph": 0.2.5
+    "@types/open-graph": 0.2.6
     "@types/platform": 1.3.6
     "@types/prettier": ^2.7.3
     "@types/react": ^18.3.13
