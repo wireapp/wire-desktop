@@ -8366,14 +8366,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:9.1.0":
-  version: 9.1.0
-  resolution: "eslint-config-prettier@npm:9.1.0"
+"eslint-config-prettier@npm:10.1.3":
+  version: 10.1.3
+  resolution: "eslint-config-prettier@npm:10.1.3"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
     eslint-config-prettier: bin/cli.js
-  checksum: 9229b768c879f500ee54ca05925f31b0c0bafff3d9f5521f98ff05127356de78c81deb9365c86a5ec4efa990cb72b74df8612ae15965b14136044c73e1f6a907
+  checksum: 0352377a576b218b3e2b92d8fa8eac68d71da8089e1489e5e6e217ea30a823db49799fd9123e922abd24370cad30dc23dd3c1b7ce40dd50659ca5bda826d0518
   languageName: node
   linkType: hard
 
@@ -18698,7 +18698,7 @@ __metadata:
     electron-window-state: 5.0.3
     electron-winstaller: 4.0.2
     eslint: 8.57.0
-    eslint-config-prettier: 9.1.0
+    eslint-config-prettier: 10.1.3
     eslint-import-resolver-alias: ^1.1.2
     eslint-import-resolver-typescript: ^3.8.7
     eslint-plugin-better-styled-components: 1.1.2
