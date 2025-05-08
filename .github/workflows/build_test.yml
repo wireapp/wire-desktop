@@ -23,8 +23,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-      - name: Yarn cache
-        uses: c-hive/gha-yarn-cache@v2.1.0
+          cache: 'yarn'
       - name: Install dependencies
         run: yarn --immutable
       - name: Use xvfb-run on Linux
