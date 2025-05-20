@@ -5055,9 +5055,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/react-ui-kit@npm:9.52.0":
-  version: 9.52.0
-  resolution: "@wireapp/react-ui-kit@npm:9.52.0"
+"@wireapp/react-ui-kit@npm:9.52.1":
+  version: 9.52.1
+  resolution: "@wireapp/react-ui-kit@npm:9.52.1"
   dependencies:
     "@radix-ui/react-dropdown-menu": 2.1.14
     "@types/color": 3.0.6
@@ -5073,7 +5073,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: d0618d13b2ece48f6ce34d13bdf4edec8ec9452502fc7e41490c93b768daba1d5f99155e407f2ad37b8f3121343471e2940c6b766621daa98298de9573230a36
+  checksum: dd09a8e72d9a81681e12bc84f5c08816e2c8140b666bd5dfbaea557a06e38690d0102dd703676fdbb9c6cca54d6c0deed66417f8605c3008d793949d83c4fcf3
   languageName: node
   linkType: hard
 
@@ -19282,7 +19282,7 @@ __metadata:
     "@wireapp/eslint-config": 3.0.21
     "@wireapp/prettier-config": 0.6.4
     "@wireapp/protocol-messaging": 1.52.0
-    "@wireapp/react-ui-kit": 9.52.0
+    "@wireapp/react-ui-kit": 9.52.1
     "@wireapp/webapp-events": 0.28.0
     adm-zip: 0.5.16
     auto-launch: 5.0.6
