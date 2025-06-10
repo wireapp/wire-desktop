@@ -78,7 +78,7 @@
     "babel-loader": "9.2.1",
     "babel-plugin-istanbul": "6.1.1",
     "commander": "12.1.0",
-    "core-js": "3.42.0",
+    "core-js": "3.43.0",
     "cross-env": "7.0.3",
     "css-loader": "7.1.2",
     "dotenv": "16.5.0",
