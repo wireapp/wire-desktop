@@ -10463,15 +10463,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:4.0.2":
-  version: 4.0.2
-  resolution: "form-data@npm:4.0.2"
+"form-data@npm:4.0.3":
+  version: 4.0.3
+  resolution: "form-data@npm:4.0.3"
   dependencies:
     asynckit: ^0.4.0
     combined-stream: ^1.0.8
     es-set-tostringtag: ^2.1.0
+    hasown: ^2.0.2
     mime-types: ^2.1.12
-  checksum: e887298b22c13c7c9c5a8ba3716f295a479a13ca78bfd855ef11cbce1bcf22bc0ae2062e94808e21d46e5c667664a1a1a8a7f57d7040193c1fefbfb11af58aab
+  checksum: b8e2568c0853ce167b2b9c9c4b81fe563f9ade647178baf6b6381cf8a11e3c01dd2b78a63ba367e6f5eab59afab8284a9438bb5ae768133f9d9fce6567fbc26a
   languageName: node
   linkType: hard
 
@@ -19534,7 +19535,7 @@ __metadata:
     eslint-plugin-simple-import-sort: 12.1.1
     eslint-plugin-testing-library: 6.5.0
     eslint-plugin-unused-imports: 3.2.0
-    form-data: 4.0.2
+    form-data: 4.0.3
     fs-extra: 11.3.0
     get-proxy-settings: 0.1.13
     globby: 11.1
