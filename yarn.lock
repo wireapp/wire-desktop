@@ -8194,10 +8194,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:16.6.0":
-  version: 16.6.0
-  resolution: "dotenv@npm:16.6.0"
-  checksum: ee594a60af62850fd28db49c14d08de54261ac138c9b7c2eeaf6b691b256ae54fe920729ccabd2a2d2f5a67223c218e9cd006f103dec5d54ce61ecd856633996
+"dotenv@npm:17.1.0":
+  version: 17.1.0
+  resolution: "dotenv@npm:17.1.0"
+  checksum: f52fa5a52b7f4a8d663b32b91896b87045f3040c33e021208ce9ae2b53e5a85a382914c4b6dea206aecfc16e74c06672c389831c883b66c41605d8f80880e17d
   languageName: node
   linkType: hard
 
@@ -19576,7 +19576,7 @@ __metadata:
     core-js: 3.44.0
     cross-env: 7.0.3
     css-loader: 7.1.2
-    dotenv: 16.6.0
+    dotenv: 17.1.0
     electron: 35.0.2
     electron-builder: 24.13.3
     electron-dl: ^3.5.2
