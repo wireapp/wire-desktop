@@ -13,7 +13,7 @@
     "content-type": "1.0.5",
     "electron-dl": "^3.5.2",
     "electron-window-state": "5.0.3",
-    "fs-extra": "11.3.0",
+    "fs-extra": "11.3.1",
     "get-proxy-settings": "0.1.13",
     "globby": "11.1",
     "iconv-lite": "0.6.3",
