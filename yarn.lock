@@ -3118,6 +3118,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mswjs/interceptors@npm:^0.39.5":
+  version: 0.39.5
+  resolution: "@mswjs/interceptors@npm:0.39.5"
+  dependencies:
+    "@open-draft/deferred-promise": ^2.2.0
+    "@open-draft/logger": ^0.3.0
+    "@open-draft/until": ^2.0.0
+    is-node-process: ^1.2.0
+    outvariant: ^1.4.3
+    strict-event-emitter: ^0.5.1
+  checksum: ba555a9023a6e156feb195b4d47194aa8ae77b2e73affc7b378f97e9b9c77a8a29396c184e066b9d554fafbc0a092d6e70811916dfe8448f15c32857c9565241
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^0.2.11":
   version: 0.2.12
   resolution: "@napi-rs/wasm-runtime@npm:0.2.12"
@@ -3180,6 +3194,30 @@ __metadata:
     mkdirp: ^1.0.4
     rimraf: ^3.0.2
   checksum: 52dc02259d98da517fae4cb3a0a3850227bdae4939dda1980b788a7670636ca2b4a01b58df03dd5f65c1e3cb70c50fa8ce5762b582b3f499ec30ee5ce1fd9380
+  languageName: node
+  linkType: hard
+
+"@open-draft/deferred-promise@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@open-draft/deferred-promise@npm:2.2.0"
+  checksum: 7f29d39725bb8ab5b62f89d88a4202ce2439ac740860979f9e3d0015dfe4bc3daddcfa5727fa4eed482fdbee770aa591b1136b98b0a0f0569a65294f35bdf56a
+  languageName: node
+  linkType: hard
+
+"@open-draft/logger@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@open-draft/logger@npm:0.3.0"
+  dependencies:
+    is-node-process: ^1.2.0
+    outvariant: ^1.4.0
+  checksum: 7adfe3d0ed8ca32333ce2a77f9a93d561ebc89c989eaa9722f1dc8a2d2854f5de1bef6fa6894cdf58e16fa4dd9cfa99444ea1f5cac6eb1518e9247911ed042d5
+  languageName: node
+  linkType: hard
+
+"@open-draft/until@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "@open-draft/until@npm:2.1.0"
+  checksum: 140ea3b16f4a3a6a729c1256050e20a93d408d7aa1e125648ce2665b3c526ed452510c6e4a6f4b15d95fb5e41203fb51510eb8fbc8812d5e5a91880293d66471
   languageName: node
   linkType: hard
 
@@ -12415,6 +12453,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-node-process@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "is-node-process@npm:1.2.0"
+  checksum: 930765cdc6d81ab8f1bbecbea4a8d35c7c6d88a3ff61f3630e0fc7f22d624d7661c1df05c58547d0eb6a639dfa9304682c8e342c4113a6ed51472b704cee2928
+  languageName: node
+  linkType: hard
+
 "is-number-object@npm:^1.0.4":
   version: 1.0.7
   resolution: "is-number-object@npm:1.0.7"
@@ -14883,14 +14928,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nock@npm:13.5.6":
-  version: 13.5.6
-  resolution: "nock@npm:13.5.6"
+"nock@npm:14.0.9":
+  version: 14.0.9
+  resolution: "nock@npm:14.0.9"
   dependencies:
-    debug: ^4.1.0
+    "@mswjs/interceptors": ^0.39.5
     json-stringify-safe: ^5.0.1
     propagate: ^2.0.0
-  checksum: 82d31ef7a428e8a6bc430b2772745ecb1f9c8835170789bbcc29c9036614adf3b7112daeb6d59edd93f4340a9a96acee401021572d469a7a0e09a669679f2794
+  checksum: c12032addbcf8d53c334f1c8333decf30454e3ebaa02c4ac433a4b8cf7c14be42ce5a50fc434618332f3134568086ccb641a21b0d30976a1312914959bc68f59
   languageName: node
   linkType: hard
 
@@ -15392,6 +15437,13 @@ __metadata:
   version: 1.0.2
   resolution: "os-homedir@npm:1.0.2"
   checksum: af609f5a7ab72de2f6ca9be6d6b91a599777afc122ac5cad47e126c1f67c176fe9b52516b9eeca1ff6ca0ab8587fe66208bc85e40a3940125f03cdb91408e9d2
+  languageName: node
+  linkType: hard
+
+"outvariant@npm:^1.4.0, outvariant@npm:^1.4.3":
+  version: 1.4.3
+  resolution: "outvariant@npm:1.4.3"
+  checksum: 4a3551fb2b45309e585eebf88bad094dbe56ac6d3a28d59dd2e4050b431aa2beb6097a0763fce3cd82ca0f077026f380a9b60fffc306aaf430141421e7a7b6ed
   languageName: node
   linkType: hard
 
@@ -17894,6 +17946,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"strict-event-emitter@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "strict-event-emitter@npm:0.5.1"
+  checksum: 350480431bc1c28fdb601ef4976c2f8155fc364b4740f9692dd03e5bdd48aafc99a5e021fe655fbd986d0b803e9f3fc5c4b018b35cb838c4690d60f2a26f1cf3
+  languageName: node
+  linkType: hard
+
 "string-argv@npm:^0.3.2":
   version: 0.3.2
   resolution: "string-argv@npm:0.3.2"
@@ -19994,7 +20053,7 @@ __metadata:
     logdown: 3.3.1
     minimist: 1.2.8
     mocha: 10.8.2
-    nock: 13.5.6
+    nock: 14.0.9
     nyc: 15.1.0
     open-graph: 0.2.6
     prettier: 2.8.8
