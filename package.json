@@ -79,7 +79,7 @@
     "babel-plugin-istanbul": "6.1.1",
     "commander": "12.1.0",
     "core-js": "3.45.1",
-    "cross-env": "7.0.3",
+    "cross-env": "10.0.0",
     "css-loader": "7.1.2",
     "dotenv": "16.6.0",
     "electron": "35.0.2",
