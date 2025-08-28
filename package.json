@@ -74,7 +74,7 @@
     "aws-sdk": "2.1692.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
-    "babel-jest": "29.7.0",
+    "babel-jest": "30.1.1",
     "babel-loader": "9.2.1",
     "babel-plugin-istanbul": "6.1.1",
     "commander": "12.1.0",
