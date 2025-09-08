@@ -29,8 +29,17 @@ import {config} from '../settings/config';
 const mainProcess = process;
 const app = Electron.app;
 
-const logDir = path.join(app.getPath('userData'), 'logs');
-const logFile = path.join(logDir, 'electron.log');
+let logFile: string;
+try {
+  if (app && app.getPath) {
+    const logDir = path.join(app.getPath('userData'), 'logs');
+    logFile = path.join(logDir, 'electron.log');
+  } else {
+    logFile = path.join(process.cwd(), 'logs', 'electron.log');
+  }
+} catch (error) {
+  logFile = path.join(process.cwd(), 'logs', 'electron.log');
+}
 
 const isDevelopment = config.environment !== 'production';
 const forceLogging = mainProcess.argv.includes('--enable-logging');

@@ -141,7 +141,19 @@ let current: SupportedI18nLanguage | undefined;
 export const getCurrent = (): SupportedI18nLanguage => {
   if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
-    const defaultLocale = parseLocale(app.getLocale().substring(0, 2));
+    let systemLocale = 'en';
+
+    try {
+      if (app && app.getLocale) {
+        systemLocale = app.getLocale().substring(0, 2);
+      }
+    } catch (error) {
+      if (typeof navigator !== 'undefined' && navigator.language) {
+        systemLocale = navigator.language.substring(0, 2);
+      }
+    }
+
+    const defaultLocale = parseLocale(systemLocale);
     current = settings.restore(SettingsType.LOCALE, defaultLocale);
   }
   return current;

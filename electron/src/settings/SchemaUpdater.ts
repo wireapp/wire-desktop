@@ -29,8 +29,28 @@ import {getLogger} from '../logging/getLogger';
 const app = Electron.app;
 
 const logger = getLogger(path.basename(__filename));
-const defaultPathV0 = path.join(app.getPath('userData'), 'init.json');
-const defaultPathV1 = path.join(app.getPath('userData'), 'config/init.json');
+
+const getDefaultPathV0 = (): string => {
+  try {
+    if (app && app.getPath) {
+      return path.join(app.getPath('userData'), 'init.json');
+    }
+  } catch (error) {
+    logger.error(error);
+  }
+  return path.join(process.cwd(), 'init.json');
+};
+
+const getDefaultPathV1 = (): string => {
+  try {
+    if (app && app.getPath) {
+      return path.join(app.getPath('userData'), 'config/init.json');
+    }
+  } catch (error) {
+    logger.error(error);
+  }
+  return path.join(process.cwd(), 'config/init.json');
+};
 
 export class SchemaUpdater {
   static SCHEMATA: Record<string, any> = {
@@ -39,7 +59,7 @@ export class SchemaUpdater {
     },
   };
 
-  static updateToVersion1(configFileV0 = defaultPathV0, configFileV1 = defaultPathV1): string {
+  static updateToVersion1(configFileV0 = getDefaultPathV0(), configFileV1 = getDefaultPathV1()): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
     if (fs.existsSync(configFileV0)) {
