@@ -52,12 +52,22 @@ function subscribeToThemeChange(): void {
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
+  // Listen for system theme changes from main process
+  function handleSystemThemeChange() {
+    ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED, async () => {
+      const useDarkMode = await ipcRenderer.invoke(EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS);
+      logger.info(`System theme changed, switching dark mode ${useDarkMode ? 'on' : 'off'} ...`);
+      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
+    });
+  }
+
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
     ipcRenderer.send(EVENT_TYPE.WEBAPP.APP_LOADED);
     initialThemeCheck();
   });
-  // TODO: Implement theme change listener via IPC
-  // For now, theme changes will be handled manually
+
+  // Set up system theme change listener
+  handleSystemThemeChange();
 }
 
 webFrame.setZoomFactor(1.0);

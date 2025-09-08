@@ -46,11 +46,6 @@ interface MenuItemTemplate {
   click?: () => void;
 }
 
-/**
- * Secure context menu implementation using IPC communication.
- * This replaces the previous @electron/remote implementation with secure contextBridge APIs.
- */
-
 const createTextMenu = (params: ContextMenuParams): MenuItemTemplate[] => {
   const {editFlags = {}, dictionarySuggestions = []} = params;
 

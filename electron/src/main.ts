@@ -300,6 +300,25 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     return nativeTheme.shouldUseDarkColors;
   });
 
+  // Listen for system theme changes and notify all webviews
+  nativeTheme.on('updated', () => {
+    const allWindows = BrowserWindow.getAllWindows();
+    allWindows.forEach(window => {
+      window.webContents.send(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED);
+      // Also send to all webviews within each window
+      window.webContents.executeJavaScript(`
+        const webviews = document.querySelectorAll('webview');
+        webviews.forEach(webview => {
+          if (webview.send) {
+            webview.send('${EVENT_TYPE.UI.SYSTEM_THEME_CHANGED}');
+          }
+        });
+      `).catch(() => {
+        // Ignore errors if window is not ready or doesn't have webviews
+      });
+    });
+  });
+
   ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.COPY_TEXT, (event, text: string) => {
     clipboard.writeText(text);
   });

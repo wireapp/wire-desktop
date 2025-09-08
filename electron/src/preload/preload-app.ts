@@ -136,6 +136,19 @@ const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACTION.START_LOGIN, event => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.START_LOGIN));
   });
+
+  // Listen for system theme changes and forward to all webviews
+  ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED, async () => {
+    logger.info('System theme changed, forwarding to all webviews...');
+    const webviews = document.querySelectorAll<Electron.WebviewTag>('webview');
+    webviews.forEach(async webview => {
+      try {
+        await webview.send(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED);
+      } catch (error) {
+        logger.warn('Failed to send theme change to webview:', error);
+      }
+    });
+  });
 };
 
 subscribeToMainProcessEvents();
