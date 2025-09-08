@@ -137,7 +137,6 @@ const subscribeToMainProcessEvents = (): void => {
     window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.START_LOGIN));
   });
 
-  // Listen for system theme changes and forward to all webviews
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED, async () => {
     logger.info('System theme changed, forwarding to all webviews...');
     const webviews = document.querySelectorAll<Electron.WebviewTag>('webview');

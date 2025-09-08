@@ -52,7 +52,6 @@ function subscribeToThemeChange(): void {
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
-  // Listen for system theme changes from main process
   function handleSystemThemeChange() {
     ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED, async () => {
       const useDarkMode = await ipcRenderer.invoke(EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS);
@@ -66,7 +65,6 @@ function subscribeToThemeChange(): void {
     initialThemeCheck();
   });
 
-  // Set up system theme change listener
   handleSystemThemeChange();
 }
 
