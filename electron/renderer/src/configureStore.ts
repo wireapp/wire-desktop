@@ -49,22 +49,35 @@ export const configureStore = (thunkArguments: Object) => {
   return store;
 };
 
+const isValidMiddleware = (middleware: unknown): middleware is Middleware => {
+  return typeof middleware === 'function';
+};
+
 const createMiddleware = (thunkArguments: Object = {}) => {
+  const thunkWithExtraArgument = thunk.withExtraArgument(thunkArguments);
+
   const middlewares: Middleware[] = [];
-  middlewares.push(thunk.withExtraArgument(thunkArguments) as Middleware);
+
+  middlewares.push(thunkWithExtraArgument);
+
   if (process.env.NODE_ENV !== 'production') {
-    middlewares.push(
-      createLogger({
-        collapsed: true,
-        diff: true,
-        duration: true,
-        level: {
-          action: 'info',
-          nextState: 'info',
-          prevState: false,
-        },
-      }) as Middleware,
-    );
+    const logger = createLogger({
+      collapsed: true,
+      diff: true,
+      duration: true,
+      level: {
+        action: 'info',
+        nextState: 'info',
+        prevState: false,
+      },
+    });
+
+    if (isValidMiddleware(logger)) {
+      middlewares.push(logger);
+    } else {
+      console.warn('Logger middleware failed type validation');
+    }
   }
+
   return applyMiddleware(...middlewares);
 };
