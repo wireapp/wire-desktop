@@ -46,6 +46,65 @@ interface MenuItemTemplate {
   click?: () => void;
 }
 
+const performCut = async (): Promise<void> => {
+  try {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const selectedText = selection.toString();
+      if (selectedText) {
+        await navigator.clipboard.writeText(selectedText);
+        selection.deleteFromDocument();
+      }
+    }
+  } catch (error) {
+    console.warn('Cut operation failed, falling back to execCommand:', error);
+    document.execCommand('cut');
+  }
+};
+
+const performCopy = async (): Promise<void> => {
+  try {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const selectedText = selection.toString();
+      if (selectedText) {
+        await navigator.clipboard.writeText(selectedText);
+      }
+    }
+  } catch (error) {
+    console.warn('Copy operation failed, falling back to execCommand:', error);
+    document.execCommand('copy');
+  }
+};
+
+const performPaste = async (): Promise<void> => {
+  try {
+    const text = await navigator.clipboard.readText();
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(document.createTextNode(text));
+      range.collapse(false);
+    }
+  } catch (error) {
+    console.warn('Paste operation failed, falling back to execCommand:', error);
+    document.execCommand('paste');
+  }
+};
+
+const performSelectAll = (): void => {
+  try {
+    const selection = window.getSelection();
+    if (selection) {
+      selection.selectAllChildren(document.body);
+    }
+  } catch (error) {
+    console.warn('Select all operation failed, falling back to execCommand:', error);
+    document.execCommand('selectAll');
+  }
+};
+
 const createTextMenu = (params: ContextMenuParams): MenuItemTemplate[] => {
   const {editFlags = {}, dictionarySuggestions = []} = params;
 
@@ -53,17 +112,17 @@ const createTextMenu = (params: ContextMenuParams): MenuItemTemplate[] => {
     {
       label: locale.getText('menuCut'),
       enabled: editFlags.canCut,
-      click: () => document.execCommand('cut'),
+      click: () => performCut(),
     },
     {
       label: locale.getText('menuCopy'),
       enabled: editFlags.canCopy,
-      click: () => document.execCommand('copy'),
+      click: () => performCopy(),
     },
     {
       label: locale.getText('menuPaste'),
       enabled: editFlags.canPaste,
-      click: () => document.execCommand('paste'),
+      click: () => performPaste(),
     },
     {
       type: 'separator',
@@ -71,7 +130,7 @@ const createTextMenu = (params: ContextMenuParams): MenuItemTemplate[] => {
     {
       label: locale.getText('menuSelectAll'),
       enabled: editFlags.canSelectAll,
-      click: () => document.execCommand('selectAll'),
+      click: () => performSelectAll(),
     },
   ];
 
@@ -178,7 +237,7 @@ const showContextMenu = (template: MenuItemTemplate[], x: number, y: number) => 
   document.body.appendChild(menu);
 
   const closeMenu = (event: MouseEvent) => {
-    if (!menu.contains(event.target as Node)) {
+    if (event.target && !menu.contains(event.target as Node)) {
       menu.remove();
       document.removeEventListener('click', closeMenu);
     }
@@ -210,7 +269,7 @@ document.addEventListener('contextmenu', event => {
   }
 
   const link = target.closest('a');
-  if (link && link.href) {
+  if (link?.href) {
     params.linkURL = link.href;
     const copyText = link.href.replace(/^mailto:/, '');
     const template = createDefaultMenu(copyText);
@@ -225,11 +284,15 @@ document.addEventListener('contextmenu', event => {
   }
 
   if (params.isEditable) {
+    const hasSelection = window.getSelection && (window.getSelection()?.toString().length ?? 0) > 0;
+    const hasClipboardAPI = 'clipboard' in navigator;
+    const isContentEditable = params.isEditable;
+
     params.editFlags = {
-      canCut: document.queryCommandEnabled('cut'),
-      canCopy: document.queryCommandEnabled('copy'),
-      canPaste: document.queryCommandEnabled('paste'),
-      canSelectAll: document.queryCommandEnabled('selectAll'),
+      canCut: hasSelection && isContentEditable,
+      canCopy: hasSelection || isContentEditable,
+      canPaste: hasClipboardAPI && isContentEditable,
+      canSelectAll: isContentEditable,
     };
     const template = createTextMenu(params);
     showContextMenu(template, params.x, params.y);
@@ -241,7 +304,7 @@ document.addEventListener('contextmenu', event => {
     element = element.parentElement!;
   }
 
-  if (element && element.classList.contains('text')) {
+  if (element?.classList.contains('text')) {
     const textContent = element.innerText?.trim();
     if (textContent) {
       const template = createDefaultMenu(textContent);
