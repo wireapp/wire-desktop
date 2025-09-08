@@ -138,15 +138,17 @@ const subscribeToMainProcessEvents = (): void => {
   });
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED, async () => {
-    logger.info('System theme changed, forwarding to all webviews...');
-    const webviews = document.querySelectorAll<Electron.WebviewTag>('webview');
-    webviews.forEach(async webview => {
+    logger.info('System theme changed, forwarding to active webview...');
+    const activeWebview = getSelectedWebview();
+    if (activeWebview) {
       try {
-        await webview.send(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED);
+        await activeWebview.send(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED);
       } catch (error) {
-        logger.warn('Failed to send theme change to webview:', error);
+        logger.warn('Failed to send theme change to active webview:', error);
       }
-    });
+    } else {
+      logger.warn('No active webview found to send theme change to');
+    }
   });
 };
 

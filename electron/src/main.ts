@@ -305,12 +305,10 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     allWindows.forEach(window => {
       window.webContents.send(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED);
       window.webContents.executeJavaScript(`
-        const webviews = document.querySelectorAll('webview');
-        webviews.forEach(webview => {
-          if (webview.send) {
-            webview.send('${EVENT_TYPE.UI.SYSTEM_THEME_CHANGED}');
-          }
-        });
+        const activeWebview = document.querySelector('webview.Webview:not(.hide)');
+        if (activeWebview && activeWebview.send) {
+          activeWebview.send('${EVENT_TYPE.UI.SYSTEM_THEME_CHANGED}');
+        }
       `);
     });
   });
