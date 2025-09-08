@@ -57,8 +57,7 @@ const performCut = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    console.warn('Cut operation failed, falling back to execCommand:', error);
-    document.execCommand('cut');
+    console.warn('Cut operation failed:', error);
   }
 };
 
@@ -72,8 +71,7 @@ const performCopy = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    console.warn('Copy operation failed, falling back to execCommand:', error);
-    document.execCommand('copy');
+    console.warn('Copy operation failed:', error);
   }
 };
 
@@ -88,8 +86,7 @@ const performPaste = async (): Promise<void> => {
       range.collapse(false);
     }
   } catch (error) {
-    console.warn('Paste operation failed, falling back to execCommand:', error);
-    document.execCommand('paste');
+    console.warn('Paste operation failed:', error);
   }
 };
 
@@ -100,8 +97,7 @@ const performSelectAll = (): void => {
       selection.selectAllChildren(document.body);
     }
   } catch (error) {
-    console.warn('Select all operation failed, falling back to execCommand:', error);
-    document.execCommand('selectAll');
+    console.warn('Select all operation failed:', error);
   }
 };
 
