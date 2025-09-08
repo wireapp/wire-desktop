@@ -32,7 +32,7 @@ export class WindowUrl {
     });
 
     // set the current language
-    envUrlParams.set('hl', wrapperLocale);
+    envUrlParams.set('hl', wrapperLocale());
 
     return customBackendUrlParsed.href;
   }

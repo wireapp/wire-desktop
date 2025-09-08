@@ -26,11 +26,22 @@ import {LogFactory, LoggerOptions} from '@wireapp/commons';
 
 import {config} from '../settings/config';
 
-const mainProcess = process || require('@electron/remote').process;
-const app = Electron.app || require('@electron/remote').app;
+const mainProcess = process;
+const app = Electron.app;
 
-const logDir = path.join(app.getPath('userData'), 'logs');
-const logFile = path.join(logDir, 'electron.log');
+let logFile: string;
+try {
+  if (app?.getPath) {
+    const logDir = path.join(app.getPath('userData'), 'logs');
+    logFile = path.join(logDir, 'electron.log');
+  } else {
+    logFile = path.join(process.cwd(), 'logs', 'electron.log');
+  }
+} catch (error) {
+  // Use console here as logger is not yet available during bootstrap
+  console.warn('Failed to get user data path for logs:', error);
+  logFile = path.join(process.cwd(), 'logs', 'electron.log');
+}
 
 const isDevelopment = config.environment !== 'production';
 const forceLogging = mainProcess.argv.includes('--enable-logging');
