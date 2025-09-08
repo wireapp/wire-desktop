@@ -32,22 +32,22 @@ const logger = getLogger(path.basename(__filename));
 
 const getDefaultPathV0 = (): string => {
   try {
-    if (app && app.getPath) {
+    if (app?.getPath) {
       return path.join(app.getPath('userData'), 'init.json');
     }
   } catch (error) {
-    logger.error(error);
+    logger.error('Failed to get user data path for V0 config:', error);
   }
   return path.join(process.cwd(), 'init.json');
 };
 
 const getDefaultPathV1 = (): string => {
   try {
-    if (app && app.getPath) {
+    if (app?.getPath) {
       return path.join(app.getPath('userData'), 'config/init.json');
     }
   } catch (error) {
-    logger.error(error);
+    logger.error('Failed to get user data path for V1 config:', error);
   }
   return path.join(process.cwd(), 'config/init.json');
 };

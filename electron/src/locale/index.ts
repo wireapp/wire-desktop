@@ -144,10 +144,11 @@ export const getCurrent = (): SupportedI18nLanguage => {
     let systemLocale = 'en';
 
     try {
-      if (app && app.getLocale) {
+      if (app?.getLocale) {
         systemLocale = app.getLocale().substring(0, 2);
       }
     } catch (error) {
+      console.warn('Failed to get system locale from app:', error);
       if (typeof navigator !== 'undefined' && navigator.language) {
         systemLocale = navigator.language.substring(0, 2);
       }
