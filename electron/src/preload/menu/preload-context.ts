@@ -19,8 +19,13 @@
 
 import {ipcRenderer} from 'electron';
 
+import * as path from 'path';
+
 import {EVENT_TYPE} from '../../lib/eventType';
 import * as locale from '../../locale';
+import {getLogger} from '../../logging/getLogger';
+
+const logger = getLogger(path.basename(__filename));
 
 interface ContextMenuParams {
   x: number;
@@ -57,7 +62,7 @@ const performCut = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    console.warn('Cut operation failed:', error);
+    logger.warn('Cut operation failed:', error);
   }
 };
 
