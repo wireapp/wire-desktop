@@ -18,7 +18,7 @@
  */
 
 import throttle from 'lodash/throttle';
-import {applyMiddleware, createStore} from 'redux';
+import {applyMiddleware, createStore, Middleware} from 'redux';
 import {createLogger} from 'redux-logger';
 import thunk from 'redux-thunk';
 
@@ -50,8 +50,8 @@ export const configureStore = (thunkArguments: Object) => {
 };
 
 const createMiddleware = (thunkArguments: Object = {}) => {
-  const middlewares = [];
-  middlewares.push(thunk.withExtraArgument(thunkArguments));
+  const middlewares: Middleware[] = [];
+  middlewares.push(thunk.withExtraArgument(thunkArguments) as Middleware);
   if (process.env.NODE_ENV !== 'production') {
     middlewares.push(
       createLogger({
@@ -63,7 +63,7 @@ const createMiddleware = (thunkArguments: Object = {}) => {
           nextState: 'info',
           prevState: false,
         },
-      }),
+      }) as Middleware,
     );
   }
   return applyMiddleware(...middlewares);
