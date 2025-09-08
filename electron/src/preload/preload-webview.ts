@@ -17,7 +17,7 @@
  *
  */
 
-import {ipcRenderer, webFrame} from 'electron';
+import {contextBridge, ipcRenderer, webFrame} from 'electron';
 import type {Data as OpenGraphResult} from 'open-graph';
 
 import * as path from 'path';
@@ -28,8 +28,6 @@ import {WebAppEvents} from '@wireapp/webapp-events';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-
-const remote = require('@electron/remote');
 
 interface TeamAccountInfo {
   accentID: number;
@@ -47,16 +45,8 @@ type Theme = 'dark' | 'default';
 const logger = getLogger(path.basename(__filename));
 
 function subscribeToThemeChange(): void {
-  function updateWebAppTheme(): void {
-    if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {
-      const useDarkMode = remote.nativeTheme.shouldUseDarkColors;
-      logger.info(`Switching dark mode ${useDarkMode ? 'on' : 'off'} ...`);
-      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
-    }
-  }
-
-  function initialThemeCheck() {
-    const useDarkMode = remote.nativeTheme.shouldUseDarkColors;
+  async function initialThemeCheck() {
+    const useDarkMode = await ipcRenderer.invoke(EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS);
     logger.info(`Switching initial dark mode ${useDarkMode ? 'on' : 'off'} ...`);
     window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
@@ -66,7 +56,8 @@ function subscribeToThemeChange(): void {
     ipcRenderer.send(EVENT_TYPE.WEBAPP.APP_LOADED);
     initialThemeCheck();
   });
-  remote.nativeTheme.on('updated', () => updateWebAppTheme());
+  // TODO: Implement theme change listener via IPC
+  // For now, theme changes will be handled manually
 }
 
 webFrame.setZoomFactor(1.0);
@@ -257,16 +248,15 @@ function reportWebappAVSVersion(): void {
 const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
 
-process.once('loaded', () => {
-  global.clearImmediate = _clearImmediate;
-  /**
-   * @todo: This can be improved by polyfilling getDisplayMedia function
-   * Example: https://github.com/electron/electron/issues/16513#issuecomment-602070250
-   */
-  global.desktopCapturer = {
-    getDesktopSources: opts => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
-  };
-  global.systemCrypto = {
+contextBridge.exposeInMainWorld('wireWebview', {
+  clearImmediate: _clearImmediate,
+  setImmediate: _setImmediate,
+
+  desktopCapturer: {
+    getDesktopSources: (opts: any) => ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, opts),
+  },
+
+  systemCrypto: {
     decrypt: async (encrypted: Uint8Array): Promise<string> => {
       return ipcRenderer.invoke(EVENT_TYPE.ACTION.DECRYPT, encrypted);
     },
@@ -274,11 +264,20 @@ process.once('loaded', () => {
       return ipcRenderer.invoke(EVENT_TYPE.ACTION.ENCRYPT, value);
     },
     version: 1,
-  };
-  global.environment = EnvironmentUtil;
-  global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION, supportsCallingPopoutWindow: true};
-  global.openGraphAsync = getOpenGraphDataViaChannel;
-  global.setImmediate = _setImmediate;
+  },
+
+  environment: EnvironmentUtil,
+  desktopAppConfig: {version: EnvironmentUtil.app.DESKTOP_VERSION, supportsCallingPopoutWindow: true},
+  openGraphAsync: getOpenGraphDataViaChannel,
+
+  contextMenu: {
+    copyText: (text: string) => ipcRenderer.invoke(EVENT_TYPE.CONTEXT_MENU.COPY_TEXT, text),
+    copyImage: (imageUrl: string) => ipcRenderer.invoke(EVENT_TYPE.CONTEXT_MENU.COPY_IMAGE, imageUrl),
+    saveImage: (imageUrl: string, timestamp?: string) =>
+      ipcRenderer.invoke(EVENT_TYPE.CONTEXT_MENU.SAVE_IMAGE, imageUrl, timestamp),
+    replaceMisspelling: (suggestion: string) =>
+      ipcRenderer.invoke(EVENT_TYPE.CONTEXT_MENU.REPLACE_MISSPELLING, suggestion),
+  },
 });
 
 const registerEvents = (): Promise<void> => {
