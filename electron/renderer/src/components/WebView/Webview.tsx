@@ -58,7 +58,7 @@ const getEnvironmentUrl = (account: Account) => {
   url.searchParams.set('id', account.id);
 
   // set the current language
-  url.searchParams.set('hl', wrapperLocale);
+  url.searchParams.set('hl', wrapperLocale());
 
   if (account.ssoCode && account.isAdding) {
     url.pathname = '/auth';

@@ -19,11 +19,10 @@
 
 import {i18nLanguageIdentifier} from '../../../src/locale';
 
-const locStrings = window.wireDesktop?.locStrings || {};
-const locStringsDefault = window.wireDesktop?.locStringsDefault || {};
-const locale = window.wireDesktop?.locale || 'en';
-
 export const getText = (stringIdentifier: i18nLanguageIdentifier, paramReplacements?: Record<string, string>) => {
+  const locStrings = window.wireDesktop?.locStrings || {};
+  const locStringsDefault = window.wireDesktop?.locStringsDefault || {};
+
   let str = locStrings[stringIdentifier] || locStringsDefault[stringIdentifier] || stringIdentifier;
 
   const replacements = {...paramReplacements};
@@ -37,4 +36,4 @@ export const getText = (stringIdentifier: i18nLanguageIdentifier, paramReplaceme
   return str;
 };
 
-export const wrapperLocale = locale;
+export const wrapperLocale = () => window.wireDesktop?.locale || 'en';
