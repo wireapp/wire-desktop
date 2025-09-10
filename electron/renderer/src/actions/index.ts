@@ -23,6 +23,7 @@ import {Availability} from '@wireapp/protocol-messaging';
 
 import {AccountAction, accountAction} from './AccountAction';
 
+import {getLogger} from '../../../src/logging/getLogger';
 import {AppDispatch, State} from '../index';
 import {generateUUID} from '../lib/util';
 import {
@@ -40,6 +41,8 @@ import {HideContextMenus, ToggleEditAccountVisibility} from '../reducers/context
 import {AccountSelector} from '../selector/AccountSelector';
 import {Account, ConversationJoinData} from '../types/account';
 import {ContextMenuState} from '../types/contextMenuState';
+
+const logger = getLogger('actions');
 
 export enum ACCOUNT_ACTION {
   ADD_ACCOUNT = 'ADD_ACCOUNT',
@@ -151,7 +154,7 @@ export const addAccountWithSession = () => {
     }
 
     if (hasReachedAccountLimit) {
-      console.warn('Reached number of maximum accounts');
+      logger.warn('Reached number of maximum accounts');
     } else {
       dispatch(addAccount());
     }
@@ -177,7 +180,7 @@ export const updateAccountData = (id: string, data: Partial<Account>) => {
     if (!validatedAccountData.error) {
       dispatch(updateAccount(id, validatedAccountData.value));
     } else {
-      console.warn('Got invalid account data:', validatedAccountData.error);
+      logger.warn('Got invalid account data:', validatedAccountData.error);
     }
   };
 };
@@ -199,7 +202,7 @@ export const updateAccountBadgeCount = (id: string, count: number) => {
         dispatch(updateAccountBadge(id, count));
       }
     } else {
-      console.warn('Missing account when updating badge count');
+      logger.warn('Missing account when updating badge count');
     }
   };
 };

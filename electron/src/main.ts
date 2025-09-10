@@ -125,7 +125,7 @@ if (customDownloadPath) {
 }
 
 if (argv[config.ARGUMENT.VERSION]) {
-  console.info(config.version);
+  logger.info(config.version);
   app.exit();
 }
 
@@ -328,7 +328,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       const image = nativeImage.createFromBuffer(Buffer.from(bytes));
       clipboard.writeImage(image);
     } catch (error) {
-      console.error('Failed to copy image:', error);
+      logger.error('Failed to copy image:', error);
     }
   });
 
@@ -342,7 +342,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       const bytes = await response.arrayBuffer();
       ipcMain.emit(EVENT_TYPE.ACTION.SAVE_PICTURE, event, new Uint8Array(bytes), timestamp);
     } catch (error) {
-      console.error('Failed to save image:', error);
+      logger.error('Failed to save image:', error);
     }
   });
 
@@ -665,7 +665,7 @@ class ElectronWrapperInit {
               this.ssoWindow = sso;
               this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
             })
-            .catch(error => console.info(error));
+            .catch(error => logger.info(error));
         });
       }
     };

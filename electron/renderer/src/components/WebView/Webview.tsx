@@ -27,6 +27,7 @@ import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-ki
 import './Webview.css';
 
 import {EVENT_TYPE} from '../../../../src/lib/eventType';
+import {getLogger} from '../../../../src/logging/getLogger';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -104,18 +105,17 @@ const Webview = ({
   const [canDelete, setCanDelete] = useState(false);
   const [url, setUrl] = useState(getEnvironmentUrl(account));
   const [webviewError, setWebviewError] = useState<DidFailLoadEvent | null>(null);
+  const logger = getLogger('Webview');
 
   useEffect(() => {
     const newUrl = getEnvironmentUrl(account);
-    console.info(`Loading WebApp URL "${newUrl}" ...`);
+    logger.info(`Loading WebApp URL "${newUrl}" ...`);
     if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {
-        webviewRef.current
-          .loadURL(newUrl)
-          .catch((error: any) => console.error(`Navigating to ${newUrl} failed`, error));
+        webviewRef.current.loadURL(newUrl).catch((error: any) => logger.error(`Navigating to ${newUrl} failed`, error));
       } catch (error) {
-        console.warn('Can not #loadURL before attaching webview to DOM', error);
+        logger.warn('Can not #loadURL before attaching webview to DOM', error);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,7 +164,7 @@ const Webview = ({
   useEffect(() => {
     const listener = (error: DidFailLoadEvent) => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
-      console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
+      logger.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
       if (error.validatedURL.startsWith(urlOrigin)) {
         setWebviewError(error);
       }

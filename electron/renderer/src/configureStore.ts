@@ -25,8 +25,11 @@ import thunk from 'redux-thunk';
 import {loadState, saveState} from './lib/localStorage';
 import reducers from './reducers';
 
+import {getLogger} from '../../src/logging/getLogger';
+
 const HALF_SECOND = 500;
 const persistedState = loadState();
+const fileLogger = getLogger('configureStore');
 
 export const configureStore = (thunkArguments: Object) => {
   const store = createStore(reducers, persistedState, createMiddleware(thunkArguments));
@@ -75,7 +78,7 @@ const createMiddleware = (thunkArguments: Object = {}) => {
     if (isValidMiddleware(logger)) {
       middlewares.push(logger);
     } else {
-      console.warn('Logger middleware failed type validation');
+      fileLogger.warn('Logger middleware failed type validation');
     }
   }
 

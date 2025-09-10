@@ -76,7 +76,7 @@ const performCopy = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    console.warn('Copy operation failed:', error);
+    logger.warn('Copy operation failed:', error);
   }
 };
 
@@ -91,7 +91,7 @@ const performPaste = async (): Promise<void> => {
       range.collapse(false);
     }
   } catch (error) {
-    console.warn('Paste operation failed:', error);
+    logger.warn('Paste operation failed:', error);
   }
 };
 
@@ -102,7 +102,7 @@ const performSelectAll = (): void => {
       selection.selectAllChildren(document.body);
     }
   } catch (error) {
-    console.warn('Select all operation failed:', error);
+    logger.warn('Select all operation failed:', error);
   }
 };
 
@@ -114,21 +114,21 @@ const createTextMenu = (params: ContextMenuParams): MenuItemTemplate[] => {
       label: locale.getText('menuCut'),
       enabled: editFlags.canCut,
       click: () => {
-        performCut().catch(console.error);
+        performCut().catch(logger.error);
       },
     },
     {
       label: locale.getText('menuCopy'),
       enabled: editFlags.canCopy,
       click: () => {
-        performCopy().catch(console.error);
+        performCopy().catch(logger.error);
       },
     },
     {
       label: locale.getText('menuPaste'),
       enabled: editFlags.canPaste,
       click: () => {
-        performPaste().catch(console.error);
+        performPaste().catch(logger.error);
       },
     },
     {

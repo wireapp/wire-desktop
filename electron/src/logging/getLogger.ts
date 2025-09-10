@@ -38,6 +38,7 @@ try {
     logFile = path.join(process.cwd(), 'logs', 'electron.log');
   }
 } catch (error) {
+  // Use console here as logger is not yet available during bootstrap
   console.warn('Failed to get user data path for logs:', error);
   logFile = path.join(process.cwd(), 'logs', 'electron.log');
 }
