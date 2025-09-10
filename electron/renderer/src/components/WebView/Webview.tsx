@@ -169,14 +169,16 @@ const Webview = ({
         setWebviewError(error);
       }
     };
-    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
+
+    const currentWebview = webviewRef.current;
+    currentWebview?.addEventListener(ON_WEBVIEW_ERROR, listener);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (currentWebview) {
+        currentWebview.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
-  }, [webviewRef, account]);
+  }, [account, logger]);
 
   useEffect(() => {
     const onIpcMessage = ({channel, args}: {args: unknown[]; channel: string}) => {
@@ -272,11 +274,12 @@ const Webview = ({
       }
     };
 
-    webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+    const currentWebview = webviewRef.current;
+    currentWebview?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (currentWebview) {
+        currentWebview.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
