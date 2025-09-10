@@ -281,7 +281,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       contextIsolation: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      sandbox: false,
+      sandbox: true,
       webviewTag: true,
     },
     width: mainWindowState.width,
@@ -702,7 +702,7 @@ class ElectronWrapperInit {
             webPreferences.preload = PRELOAD_RENDERER_JS;
             webPreferences.spellcheck = enableSpellChecking;
             webPreferences.webSecurity = true;
-            webPreferences.sandbox = false;
+            webPreferences.sandbox = true;
           });
           break;
         }
