@@ -211,7 +211,7 @@ const Webview = ({
         case EVENT_TYPE.LIFECYCLE.SIGNED_IN: {
           if (conversationJoinData) {
             const {code, key, domain} = conversationJoinData;
-            window.wireDesktop?.sendConversationJoinToHost(accountId, code, key, domain);
+            window.sendConversationJoinToHost(accountId, code, key, domain);
             setConversationJoinData(accountId, undefined);
           }
           updateAccountLifecycle(accountId, channel);
@@ -241,7 +241,7 @@ const Webview = ({
 
           if (isConversationJoinData(data)) {
             if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-              window.wireDesktop?.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
+              window.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
               setConversationJoinData(accountId, undefined);
             } else {
               setConversationJoinData(accountId, data);
@@ -283,7 +283,7 @@ const Webview = ({
   }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = (account: Account) => {
-    window.wireDesktop?.sendDeleteAccount(account.id, account.sessionID)?.then(() => {
+    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
       abortAccountCreation(account.id);
     });
   };

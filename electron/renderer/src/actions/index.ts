@@ -191,7 +191,7 @@ export const updateAccountBadgeCount = (id: string, count: number) => {
     }, 0);
     const ignoreFlash = account?.availability === Availability.Type.BUSY;
 
-    window.wireDesktop?.sendBadgeCount(accumulatedCount, ignoreFlash);
+    window.sendBadgeCount(accumulatedCount, ignoreFlash);
 
     if (account) {
       const countHasChanged = account.badgeCount !== count;

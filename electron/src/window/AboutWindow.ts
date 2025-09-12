@@ -74,7 +74,7 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
-        contextIsolation: true,
+        contextIsolation: false,
         javascript: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,

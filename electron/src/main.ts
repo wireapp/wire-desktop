@@ -17,17 +17,15 @@
  *
  */
 
+import * as remoteMain from '@electron/remote/main';
 import {
   app,
-  clipboard,
   dialog,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
   ipcMain,
   Menu,
-  nativeImage,
-  nativeTheme,
   WebContents,
   desktopCapturer,
   safeStorage,
@@ -75,6 +73,8 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
+
+remoteMain.initialize();
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -278,7 +278,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     title: config.name,
     webPreferences: {
       backgroundThrottling: false,
-      contextIsolation: true,
+      contextIsolation: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       sandbox: false,
@@ -296,49 +296,10 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   ipcMain.handle(EVENT_TYPE.ACTION.DECRYPT, (event, encrypted: Uint8Array) =>
     safeStorage.decryptString(Buffer.from(encrypted)),
   );
-  ipcMain.handle(EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS, () => {
-    return nativeTheme.shouldUseDarkColors;
-  });
-
-  ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.COPY_TEXT, (event, text: string) => {
-    clipboard.writeText(text);
-  });
-
-  ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.COPY_IMAGE, async (event, imageUrl: string) => {
-    try {
-      const response = await fetch(imageUrl, {
-        headers: {
-          'User-Agent': config.userAgent,
-        },
-      });
-      const bytes = await response.arrayBuffer();
-      const image = nativeImage.createFromBuffer(Buffer.from(bytes));
-      clipboard.writeImage(image);
-    } catch (error) {
-      console.error('Failed to copy image:', error);
-    }
-  });
-
-  ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.SAVE_IMAGE, async (event, imageUrl: string, timestamp?: string) => {
-    try {
-      const response = await fetch(imageUrl, {
-        headers: {
-          'User-Agent': config.userAgent,
-        },
-      });
-      const bytes = await response.arrayBuffer();
-      ipcMain.emit(EVENT_TYPE.ACTION.SAVE_PICTURE, event, new Uint8Array(bytes), timestamp);
-    } catch (error) {
-      console.error('Failed to save image:', error);
-    }
-  });
-
-  ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.REPLACE_MISSPELLING, (event, suggestion: string) => {
-    const webContents = event.sender;
-    webContents.replaceMisspelling(suggestion);
-  });
 
   main = new BrowserWindow(options);
+
+  remoteMain.enable(main.webContents);
 
   main.setMenuBarVisibility(showMenuBar);
 
@@ -671,6 +632,7 @@ class ElectronWrapperInit {
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
     app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
+      remoteMain.enable(contents);
       // disable new Windows by default on everything
       contents.setWindowOpenHandler(() => {
         return {action: 'deny'};
@@ -683,7 +645,7 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
-            webPreferences.contextIsolation = true;
+            webPreferences.contextIsolation = false;
             webPreferences.experimentalFeatures = false;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;

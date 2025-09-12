@@ -53,7 +53,7 @@ export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 export type SupportedI18nLanguage = keyof typeof SUPPORTED_LANGUAGES;
 export type SupportedI18nLanguageObject = Record<SupportedI18nLanguage, i18nStrings>;
 
-const app = Electron.app;
+const app = Electron.app || require('@electron/remote').app;
 
 export const LANGUAGES: SupportedI18nLanguageObject = {
   cs,
