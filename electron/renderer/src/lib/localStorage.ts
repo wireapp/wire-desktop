@@ -17,9 +17,11 @@
  *
  */
 
+import {getLogger} from '../../../src/logging/getLogger';
 import {State} from '../index';
 
 const STATE_NAME = 'state';
+const logger = getLogger('localStorage');
 
 export const loadState = (): State | undefined => {
   try {
@@ -27,7 +29,7 @@ export const loadState = (): State | undefined => {
     return !!serializedState ? (JSON.parse(serializedState) as State) : undefined;
   } catch (error) {
     if (error instanceof Error) {
-      console.error('ERROR: Failed to load state ', error.message);
+      logger.error('ERROR: Failed to load state ', error.message);
     }
     return undefined;
   }
@@ -39,7 +41,7 @@ export const saveState = (state: State) => {
     localStorage.setItem(STATE_NAME, serializedState);
   } catch (error) {
     if (error instanceof Error) {
-      console.error('ERROR: Failed to save state ', error.message);
+      logger.error('ERROR: Failed to save state ', error.message);
     }
   }
 };

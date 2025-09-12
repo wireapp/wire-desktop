@@ -19,6 +19,8 @@
 
 import * as Electron from 'electron';
 
+import * as path from 'path';
+
 import cs from './cs-CZ.json';
 import da from './da-DK.json';
 import de from './de-DE.json';
@@ -44,6 +46,7 @@ import tr from './tr-TR.json';
 import uk from './uk-UA.json';
 import zh from './zh-CN.json';
 
+import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
@@ -53,7 +56,8 @@ export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 export type SupportedI18nLanguage = keyof typeof SUPPORTED_LANGUAGES;
 export type SupportedI18nLanguageObject = Record<SupportedI18nLanguage, i18nStrings>;
 
-const app = Electron.app || require('@electron/remote').app;
+const app = Electron.app;
+const logger = getLogger(path.basename(__filename));
 
 export const LANGUAGES: SupportedI18nLanguageObject = {
   cs,
@@ -141,7 +145,20 @@ let current: SupportedI18nLanguage | undefined;
 export const getCurrent = (): SupportedI18nLanguage => {
   if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
-    const defaultLocale = parseLocale(app.getLocale().substring(0, 2));
+    let systemLocale = 'en';
+
+    try {
+      if (app?.getLocale) {
+        systemLocale = app.getLocale().substring(0, 2);
+      }
+    } catch (error) {
+      logger.warn('Failed to get system locale from app:', error);
+      if (typeof navigator !== 'undefined' && navigator.language) {
+        systemLocale = navigator.language.substring(0, 2);
+      }
+    }
+
+    const defaultLocale = parseLocale(systemLocale);
     current = settings.restore(SettingsType.LOCALE, defaultLocale);
   }
   return current;
