@@ -18,18 +18,15 @@
  */
 
 import throttle from 'lodash/throttle';
-import {applyMiddleware, createStore, Middleware} from 'redux';
+import {applyMiddleware, createStore} from 'redux';
 import {createLogger} from 'redux-logger';
 import thunk from 'redux-thunk';
 
 import {loadState, saveState} from './lib/localStorage';
 import reducers from './reducers';
 
-import {getLogger} from '../../src/logging/getLogger';
-
 const HALF_SECOND = 500;
 const persistedState = loadState();
-const fileLogger = getLogger('configureStore');
 
 export const configureStore = (thunkArguments: Object) => {
   const store = createStore(reducers, persistedState, createMiddleware(thunkArguments));
@@ -52,35 +49,22 @@ export const configureStore = (thunkArguments: Object) => {
   return store;
 };
 
-const isValidMiddleware = (middleware: unknown): middleware is Middleware => {
-  return typeof middleware === 'function';
-};
-
 const createMiddleware = (thunkArguments: Object = {}) => {
-  const thunkWithExtraArgument = thunk.withExtraArgument(thunkArguments);
-
-  const middlewares: Middleware[] = [];
-
-  middlewares.push(thunkWithExtraArgument);
-
+  const middlewares = [];
+  middlewares.push(thunk.withExtraArgument(thunkArguments));
   if (process.env.NODE_ENV !== 'production') {
-    const logger = createLogger({
-      collapsed: true,
-      diff: true,
-      duration: true,
-      level: {
-        action: 'info',
-        nextState: 'info',
-        prevState: false,
-      },
-    });
-
-    if (isValidMiddleware(logger)) {
-      middlewares.push(logger);
-    } else {
-      fileLogger.warn('Logger middleware failed type validation');
-    }
+    middlewares.push(
+      createLogger({
+        collapsed: true,
+        diff: true,
+        duration: true,
+        level: {
+          action: 'info',
+          nextState: 'info',
+          prevState: false,
+        },
+      }),
+    );
   }
-
   return applyMiddleware(...middlewares);
 };

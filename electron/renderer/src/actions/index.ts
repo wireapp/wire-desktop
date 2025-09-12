@@ -23,7 +23,6 @@ import {Availability} from '@wireapp/protocol-messaging';
 
 import {AccountAction, accountAction} from './AccountAction';
 
-import {getLogger} from '../../../src/logging/getLogger';
 import {AppDispatch, State} from '../index';
 import {generateUUID} from '../lib/util';
 import {
@@ -41,8 +40,6 @@ import {HideContextMenus, ToggleEditAccountVisibility} from '../reducers/context
 import {AccountSelector} from '../selector/AccountSelector';
 import {Account, ConversationJoinData} from '../types/account';
 import {ContextMenuState} from '../types/contextMenuState';
-
-const logger = getLogger('actions');
 
 export enum ACCOUNT_ACTION {
   ADD_ACCOUNT = 'ADD_ACCOUNT',
@@ -154,7 +151,7 @@ export const addAccountWithSession = () => {
     }
 
     if (hasReachedAccountLimit) {
-      logger.warn('Reached number of maximum accounts');
+      console.warn('Reached number of maximum accounts');
     } else {
       dispatch(addAccount());
     }
@@ -180,7 +177,7 @@ export const updateAccountData = (id: string, data: Partial<Account>) => {
     if (!validatedAccountData.error) {
       dispatch(updateAccount(id, validatedAccountData.value));
     } else {
-      logger.warn('Got invalid account data:', validatedAccountData.error);
+      console.warn('Got invalid account data:', validatedAccountData.error);
     }
   };
 };
@@ -194,7 +191,7 @@ export const updateAccountBadgeCount = (id: string, count: number) => {
     }, 0);
     const ignoreFlash = account?.availability === Availability.Type.BUSY;
 
-    window.wireDesktop?.sendBadgeCount(accumulatedCount, ignoreFlash);
+    window.sendBadgeCount(accumulatedCount, ignoreFlash);
 
     if (account) {
       const countHasChanged = account.badgeCount !== count;
@@ -202,7 +199,7 @@ export const updateAccountBadgeCount = (id: string, count: number) => {
         dispatch(updateAccountBadge(id, count));
       }
     } else {
-      logger.warn('Missing account when updating badge count');
+      console.warn('Missing account when updating badge count');
     }
   };
 };

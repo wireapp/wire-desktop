@@ -27,7 +27,7 @@ export interface CreateSSOAccountDetail {
   reachedMaximumAccounts?: boolean;
 }
 
-const dialog = Electron.dialog;
+const dialog = Electron.dialog || require('@electron/remote').dialog;
 
 export class AutomatedSingleSignOn {
   private async showError(): Promise<void> {
