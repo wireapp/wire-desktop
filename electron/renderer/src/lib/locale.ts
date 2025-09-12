@@ -19,12 +19,12 @@
 
 import {i18nLanguageIdentifier} from '../../../src/locale';
 
-window.locStrings = window.locStrings || {};
-window.locStringsDefault = window.locStringsDefault || {};
-window.locale = window.locale || 'en';
+const locStrings = window.wireDesktop?.locStrings || {};
+const locStringsDefault = window.wireDesktop?.locStringsDefault || {};
+const locale = window.wireDesktop?.locale || 'en';
 
 export const getText = (stringIdentifier: i18nLanguageIdentifier, paramReplacements?: Record<string, string>) => {
-  let str = window.locStrings[stringIdentifier] || window.locStringsDefault[stringIdentifier] || stringIdentifier;
+  let str = locStrings[stringIdentifier] || locStringsDefault[stringIdentifier] || stringIdentifier;
 
   const replacements = {...paramReplacements};
   for (const replacement of Object.keys(replacements)) {
@@ -37,4 +37,4 @@ export const getText = (stringIdentifier: i18nLanguageIdentifier, paramReplaceme
   return str;
 };
 
-export const wrapperLocale = window.locale;
+export const wrapperLocale = locale;
