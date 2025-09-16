@@ -278,7 +278,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     title: config.name,
     webPreferences: {
       backgroundThrottling: false,
-      contextIsolation: false,
+      contextIsolation: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       sandbox: false,
@@ -645,7 +645,7 @@ class ElectronWrapperInit {
             params.contextIsolation = 'true';
             params.plugins = 'false';
             webPreferences.allowRunningInsecureContent = false;
-            webPreferences.contextIsolation = false;
+            webPreferences.contextIsolation = true;
             webPreferences.experimentalFeatures = false;
             webPreferences.nodeIntegration = false;
             webPreferences.preload = PRELOAD_RENDERER_JS;
