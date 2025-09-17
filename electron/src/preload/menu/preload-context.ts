@@ -114,21 +114,21 @@ const createTextMenu = (params: ContextMenuParams): MenuItemTemplate[] => {
       label: locale.getText('menuCut'),
       enabled: editFlags.canCut,
       click: () => {
-        performCut().catch(logger.error);
+        performCut();
       },
     },
     {
       label: locale.getText('menuCopy'),
       enabled: editFlags.canCopy,
       click: () => {
-        performCopy().catch(logger.error);
+        performCopy();
       },
     },
     {
       label: locale.getText('menuPaste'),
       enabled: editFlags.canPaste,
       click: () => {
-        performPaste().catch(logger.error);
+        performPaste();
       },
     },
     {
