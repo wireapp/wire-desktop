@@ -300,16 +300,11 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     return nativeTheme.shouldUseDarkColors;
   });
 
+  // Listen for system theme changes and notify all windows
   nativeTheme.on('updated', () => {
     const allWindows = BrowserWindow.getAllWindows();
     allWindows.forEach(window => {
       window.webContents.send(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED);
-      window.webContents.executeJavaScript(`
-        const activeWebview = document.querySelector('webview.Webview:not(.hide)');
-        if (activeWebview && activeWebview.send) {
-          activeWebview.send('${EVENT_TYPE.UI.SYSTEM_THEME_CHANGED}');
-        }
-      `);
     });
   });
 
