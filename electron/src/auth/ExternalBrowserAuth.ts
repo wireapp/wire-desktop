@@ -17,7 +17,7 @@
  *
  */
 
-import {shell} from 'electron';
+import {app, shell} from 'electron';
 
 import * as crypto from 'crypto';
 import {URL} from 'url';
@@ -51,11 +51,21 @@ export class ExternalBrowserAuth {
   private static readonly DEFAULT_TIMEOUT = 300000; // 5 minutes
   private static readonly CALLBACK_PROTOCOL = `${config.customProtocolName}-auth`;
   private static readonly STATE_LENGTH = 32;
+  private static instance: ExternalBrowserAuth | null = null;
 
   private authState: string | null = null;
   private authPromise: Promise<ExternalAuthResult> | null = null;
   private authResolve: ((result: ExternalAuthResult) => void) | null = null;
   private timeoutId: NodeJS.Timeout | null = null;
+
+  /**
+   * Gets the singleton instance of ExternalBrowserAuth
+   * @returns {ExternalBrowserAuth} The singleton instance
+   */
+  static getInstance(): ExternalBrowserAuth {
+    ExternalBrowserAuth.instance ??= new ExternalBrowserAuth();
+    return ExternalBrowserAuth.instance;
+  }
 
   /**
    * Initiates an external browser authentication flow
@@ -222,15 +232,48 @@ export class ExternalBrowserAuth {
   }
 
   /**
+   * Handles incoming protocol URLs from the system
+   * @param {string} url The protocol URL received
+   * @returns {boolean} True if the URL was handled
+   */
+  static handleProtocolUrl(url: string): boolean {
+    const instance = ExternalBrowserAuth.getInstance();
+    return instance.handleCallback(url);
+  }
+
+  /**
    * Registers the custom protocol handler for auth callbacks
    * @returns {boolean} True if protocol handler was registered successfully
    */
   static registerProtocolHandler(): boolean {
     try {
-      // This would be implemented to register the custom protocol
-      // For now, we'll return true as a placeholder
-      logger.log(`Protocol handler for ${ExternalBrowserAuth.CALLBACK_PROTOCOL} would be registered here`);
-      return true;
+      const protocol = ExternalBrowserAuth.CALLBACK_PROTOCOL;
+
+      if (!protocol || protocol.length === 0) {
+        logger.error('Invalid protocol name for registration');
+        return false;
+      }
+
+      if (app.isDefaultProtocolClient(protocol)) {
+        logger.log(`Protocol ${protocol} is already registered`);
+        return true;
+      }
+
+      const success = app.setAsDefaultProtocolClient(protocol);
+
+      if (success) {
+        logger.log(`Successfully registered protocol handler for ${protocol}`);
+
+        const isRegistered = app.isDefaultProtocolClient(protocol);
+        if (!isRegistered) {
+          logger.warn(`Protocol registration reported success but verification failed for ${protocol}`);
+          return false;
+        }
+      } else {
+        logger.error(`Failed to register protocol handler for ${protocol}`);
+      }
+
+      return success;
     } catch (error) {
       logger.error('Failed to register protocol handler:', error);
       return false;
@@ -243,9 +286,33 @@ export class ExternalBrowserAuth {
    */
   static unregisterProtocolHandler(): boolean {
     try {
-      // This would be implemented to unregister the custom protocol
-      logger.log(`Protocol handler for ${ExternalBrowserAuth.CALLBACK_PROTOCOL} would be unregistered here`);
-      return true;
+      const protocol = ExternalBrowserAuth.CALLBACK_PROTOCOL;
+
+      if (!protocol || protocol.length === 0) {
+        logger.error('Invalid protocol name for unregistration');
+        return false;
+      }
+
+      if (!app.isDefaultProtocolClient(protocol)) {
+        logger.log(`Protocol ${protocol} is not registered`);
+        return true;
+      }
+
+      const success = app.removeAsDefaultProtocolClient(protocol);
+
+      if (success) {
+        logger.log(`Successfully unregistered protocol handler for ${protocol}`);
+
+        const isStillRegistered = app.isDefaultProtocolClient(protocol);
+        if (isStillRegistered) {
+          logger.warn(`Protocol unregistration reported success but verification failed for ${protocol}`);
+          return false;
+        }
+      } else {
+        logger.error(`Failed to unregister protocol handler for ${protocol}`);
+      }
+
+      return success;
     } catch (error) {
       logger.error('Failed to unregister protocol handler:', error);
       return false;
