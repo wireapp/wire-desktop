@@ -113,23 +113,17 @@ const createTextMenu = (params: ContextMenuParams): MenuItemTemplate[] => {
     {
       label: locale.getText('menuCut'),
       enabled: editFlags.canCut,
-      click: () => {
-        performCut();
-      },
+      click: performCut,
     },
     {
       label: locale.getText('menuCopy'),
       enabled: editFlags.canCopy,
-      click: () => {
-        performCopy();
-      },
+      click: performCopy,
     },
     {
       label: locale.getText('menuPaste'),
       enabled: editFlags.canPaste,
-      click: () => {
-        performPaste();
-      },
+      click: performPaste,
     },
     {
       type: 'separator',
@@ -137,7 +131,7 @@ const createTextMenu = (params: ContextMenuParams): MenuItemTemplate[] => {
     {
       label: locale.getText('menuSelectAll'),
       enabled: editFlags.canSelectAll,
-      click: () => performSelectAll(),
+      click: performSelectAll,
     },
   ];
 
@@ -320,4 +314,9 @@ document.addEventListener('contextmenu', event => {
   }
 });
 
+// Export statement to make this file a TypeScript module rather than a script.
+// Without any imports/exports, TypeScript treats this as a global script file.
+// As a script, all variables would be in the global scope, potentially causing naming conflicts.
+// The export {}; makes it a module, creating its own scope and preventing global pollution.
+// This is especially important for preload scripts where we want isolated execution.
 export {};
