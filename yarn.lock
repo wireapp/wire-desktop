@@ -4505,16 +4505,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/react-ui-kit@npm:9.59.1":
-  version: 9.59.1
-  resolution: "@wireapp/react-ui-kit@npm:9.59.1"
+"@wireapp/react-ui-kit@npm:9.63.0":
+  version: 9.63.0
+  resolution: "@wireapp/react-ui-kit@npm:9.63.0"
   dependencies:
     "@radix-ui/react-accordion": 1.2.11
     "@radix-ui/react-dropdown-menu": 2.1.14
     "@types/color": 3.0.6
     color: 4.2.3
     emotion-normalize: 11.0.1
-    react-select: 5.10.1
+    react-select: 5.10.2
     react-transition-group: 4.4.5
   peerDependencies:
     "@emotion/react": ^11
@@ -4524,7 +4524,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: ef8b49135ef0dfa061f071bf93f3df235fc67aa300b64fcbb1d78220759a3f929964c400df462d35c887e41a114691bc7eceff2d3c4c47ece440854b1ac20874
+  checksum: afa2042e7b13dec764d033e6e4fbc98c6cd85046034e4670cf813e55dbb13ad1036ca4e2dbc0da44db484b4754322e0d727dd8583577a278339362aad9e8763d
   languageName: node
   linkType: hard
 
@@ -13433,9 +13433,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select@npm:5.10.1":
-  version: 5.10.1
-  resolution: "react-select@npm:5.10.1"
+"react-select@npm:5.10.2":
+  version: 5.10.2
+  resolution: "react-select@npm:5.10.2"
   dependencies:
     "@babel/runtime": ^7.12.0
     "@emotion/cache": ^11.4.0
@@ -13449,7 +13449,7 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: b3050e46936416b024a8e76821beeb8b4275c1835db689aaaf1c8c3cae8afdade17a1711b53b63c72109b1c12711d64234285ea1468e95aaf33d5e6b0bb356e3
+  checksum: cff720173a31c9e28680dbacfe46b074595b6180ff92be7cac087247f153adf9cd7d631bc67f878660c6e9c3854c925447023f195b7ddd5ed23c3553d54c227d
   languageName: node
   linkType: hard
 
@@ -16280,7 +16280,7 @@ __metadata:
     "@wireapp/eslint-config": 3.1.2
     "@wireapp/prettier-config": 0.6.4
     "@wireapp/protocol-messaging": 1.53.0
-    "@wireapp/react-ui-kit": 9.59.1
+    "@wireapp/react-ui-kit": 9.63.0
     "@wireapp/webapp-events": 0.28.0
     adm-zip: 0.5.16
     auto-launch: 5.0.6
