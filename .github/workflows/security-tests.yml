@@ -59,16 +59,15 @@ jobs:
 
       - name: Run All Security Tests with Xvfb
         uses: GabrielBB/xvfb-action@b706e4e27b14669b486812790492dc50ca16b465 # v1.7
-        continue-on-error: true
         with:
           run: |
             cd test/e2e-security
             echo "Running Security Exposure Tests..."
-            yarn test:security:exposure || echo "Exposure tests failed"
+            yarn test:security:exposure
             echo "Running Security Validation Tests..."
-            yarn test:security:validation || echo "Validation tests failed"
+            yarn test:security:validation
             echo "Running Security Regression Tests..."
-            yarn test:security:regression || echo "Regression tests failed"
+            yarn test:security:regression
 
       - name: Upload Security Test Report
         if: always()
@@ -149,11 +148,15 @@ jobs:
 
       - name: Run npm audit
         run: npm audit --audit-level moderate
-        continue-on-error: true
 
       - name: Run security linting
         run: |
-          yarn eslint electron/src --ext .ts,.js --config .eslintrc.js --format json --output-file security-lint-report.json || true
+          if [ -f .eslintrc.js ]; then
+            yarn eslint electron/src --ext .ts,.js --config .eslintrc.js --format json --output-file security-lint-report.json
+          else
+            echo "ESLint config not found, skipping security linting"
+            echo '{"results": [], "errorCount": 0, "warningCount": 0}' > security-lint-report.json
+          fi
 
       - name: Upload Security Audit Results
         if: always()
