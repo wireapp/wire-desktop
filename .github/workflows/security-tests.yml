@@ -53,13 +53,15 @@ jobs:
       - name: Set up virtual display
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb
+          sudo apt-get install -y xvfb x11-utils
           # Start Xvfb and keep it running
           export DISPLAY=:99
           Xvfb :99 -ac -screen 0 1280x1024x24 > /dev/null 2>&1 &
           # Wait for Xvfb to be ready
           sleep 5
           echo "DISPLAY=:99" >> $GITHUB_ENV
+          # Verify Xvfb is working
+          xdpyinfo -display :99 | head -10 || echo "Warning: Could not verify X server"
 
       - name: Run Security E2E Tests
         working-directory: test/e2e-security

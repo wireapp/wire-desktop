@@ -92,8 +92,13 @@ export class WireDesktopLauncher {
         '--use-gl=swiftshader',
         '--disable-ipc-flooding-protection',
         '--disable-gpu-sandbox',
+        // Additional flags for window creation in headless environments
+        '--disable-backgrounding-occluded-windows',
+        '--disable-features=VizDisplayCompositor',
+        '--force-device-scale-factor=1',
+        '--window-size=1280,1024',
       );
-      console.log('CI environment detected, adding CI-specific flags (using xvfb-run for display)');
+      console.log('CI environment detected, adding CI-specific flags (using Xvfb for display)');
     }
 
     if (devTools) {
@@ -148,9 +153,37 @@ export class WireDesktopLauncher {
         timeout,
       });
 
-      await this.app.waitForEvent('window', {timeout});
+      console.log('Electron process started, waiting for window...');
 
-      this.mainPage = await this.app.firstWindow();
+      // Listen for console events to debug what's happening
+      this.app.on('close', () => {
+        console.log('Electron application closed');
+      });
+
+      // Add error handling for window event
+      try {
+        await this.app.waitForEvent('window', {timeout});
+        console.log('Window event received');
+      } catch (windowError) {
+        console.error('Window event timeout. This might indicate the app is running headless or crashed during startup.');
+
+        // Try to get the first window anyway
+        const windows = this.app.windows();
+        console.log(`Current windows count: ${windows.length}`);
+
+        if (windows.length > 0) {
+          console.log('Found existing window, using it');
+          this.mainPage = windows[0];
+        } else {
+          // For headless testing, create a minimal window or handle differently
+          console.log('No windows found, the app might be running in true headless mode');
+          throw windowError;
+        }
+      }
+
+      if (!this.mainPage) {
+        this.mainPage = await this.app.firstWindow();
+      }
 
       await this.mainPage.waitForLoadState('domcontentloaded', {timeout});
 
@@ -162,6 +195,20 @@ export class WireDesktopLauncher {
       };
     } catch (error) {
       console.error('Failed to launch Wire Desktop:', error);
+
+      // Additional debugging info
+      if (this.app) {
+        console.log('App object exists, checking context...');
+        try {
+          const context = this.app.context();
+          console.log('App context available');
+          const pages = context.pages();
+          console.log(`Context pages count: ${pages.length}`);
+        } catch (contextError) {
+          console.error('Error accessing app context:', contextError);
+        }
+      }
+
       await this.cleanup();
       throw error;
     }
