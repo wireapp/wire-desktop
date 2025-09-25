@@ -32,6 +32,7 @@ jobs:
         with:
           node-version: 18.x
           cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
 
       - name: Install dependencies
         run: yarn --immutable
@@ -49,25 +50,32 @@ jobs:
           cd test/e2e-security
           yarn playwright install --with-deps
 
-
-
       - name: Run Security E2E Tests
         working-directory: test/e2e-security
         env:
+          DISPLAY: ':99'
           ELECTRON_DISABLE_SECURITY_WARNINGS: true
           ELECTRON_DISABLE_GPU: true
           ELECTRON_NO_ATTACH_CONSOLE: true
+          ELECTRON_ENABLE_LOGGING: true
           NODE_ENV: test
           WIRE_FORCE_EXTERNAL_AUTH: false
+          HEADLESS: true
         run: |
+          # Start Xvfb in background
+          export DISPLAY=:99
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          sleep 3
+
+          echo "DISPLAY is set to: $DISPLAY"
           echo "Running Security Exposure Tests..."
-          xvfb-run --auto-servernum yarn test:security:exposure
+          yarn test:security:exposure
 
           echo "Running Security Validation Tests..."
-          xvfb-run --auto-servernum yarn test:security:validation
+          yarn test:security:validation
 
           echo "Running Security Regression Tests..."
-          xvfb-run --auto-servernum yarn test:security:regression
+          yarn test:security:regression
 
       - name: Upload Security Test Report
         if: always()

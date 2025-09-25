@@ -47,6 +47,31 @@ export default defineConfig({
 
     actionTimeout: 30000, // 30 seconds
     navigationTimeout: 30000, // 30 seconds
+
+    // Electron-specific settings for CI
+    launchOptions: {
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-gpu-sandbox',
+        '--disable-software-rasterizer',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+        '--disable-features=TranslateUI',
+        '--disable-extensions',
+        '--no-first-run',
+        '--disable-default-apps',
+      ],
+      env: {
+        DISPLAY: process.env.DISPLAY || ':99',
+        ELECTRON_DISABLE_SECURITY_WARNINGS: 'true',
+        ELECTRON_DISABLE_GPU: 'true',
+        ELECTRON_NO_ATTACH_CONSOLE: 'true',
+      }
+    }
   },
 
   expect: {
