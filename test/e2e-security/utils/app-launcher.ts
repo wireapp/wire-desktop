@@ -78,7 +78,7 @@ export class WireDesktopLauncher {
         '--disable-setuid-sandbox',
         '--no-first-run',
         '--no-zygote',
-        '--single-process',
+        // NOTE: Removed --single-process as it can interfere with DevTools WebSocket connection
         '--disable-background-timer-throttling',
         '--disable-backgrounding-occluded-windows',
         '--disable-renderer-backgrounding',
