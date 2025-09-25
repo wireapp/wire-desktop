@@ -1,0 +1,41 @@
+{
+  "name": "wire-desktop-security-tests",
+  "version": "1.0.0",
+  "description": "Comprehensive security e2e tests for Wire Desktop application",
+  "scripts": {
+    "test:security": "playwright test --config=playwright.config.ts",
+    "test:security:exposure": "playwright test --config=playwright.config.ts --project=security-exposure",
+    "test:security:validation": "playwright test --config=playwright.config.ts --project=security-validation",
+    "test:security:regression": "playwright test --config=playwright.config.ts --project=security-regression",
+    "test:security:debug": "playwright test --config=playwright.config.ts --debug",
+    "test:security:headed": "playwright test --config=playwright.config.ts --headed",
+    "test:security:ui": "playwright test --config=playwright.config.ts --ui",
+    "test:security:report": "playwright show-report security-test-report",
+    "test:security:install": "playwright install",
+    "test:context-isolation": "playwright test --config=playwright.config.ts --grep=\"@context-isolation\"",
+    "test:sandbox": "playwright test --config=playwright.config.ts --grep=\"@sandbox\"",
+    "test:auth": "playwright test --config=playwright.config.ts --grep=\"@auth\"",
+    "build:app": "cd ../.. && yarn build:ts",
+    "start:test-server": "echo 'Test server placeholder - implement if needed'"
+  },
+  "keywords": [
+    "wire",
+    "desktop",
+    "security",
+    "e2e",
+    "playwright",
+    "context-isolation",
+    "sandbox",
+    "electron"
+  ],
+  "author": "Wire Swiss GmbH",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

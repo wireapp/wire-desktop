@@ -33,3 +33,11 @@ resources
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# E2E test artifacts
+test/e2e-security/test-results/
+test/e2e-security/security-test-report/
+test/e2e-security/node_modules/
+test/e2e-security/.yarn/cache/
+test/e2e-security/.yarn/install-state.gz
+test-results/

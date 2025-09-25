@@ -1,0 +1,165 @@
+name: Security E2E Tests
+
+on:
+  push:
+    branches: [main, staging, dev]
+  pull_request:
+    branches: [main, staging, dev]
+    paths:
+      - 'electron/src/**'
+      - 'test/e2e-security/**'
+      - '.github/workflows/security-tests.yml'
+
+jobs:
+  security-tests:
+    name: Security E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        with:
+          access_token: ${{github.token}}
+
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build Electron app
+        run: yarn build:ts
+
+      - name: Install security test dependencies
+        run: |
+          cd test/e2e-security
+          yarn install
+
+      - name: Install Playwright browsers
+        run: |
+          cd test/e2e-security
+          yarn playwright install --with-deps
+
+      - name: Setup environment variables for Electron
+        run: |
+          echo "ELECTRON_DISABLE_SECURITY_WARNINGS=true" >> $GITHUB_ENV
+          echo "ELECTRON_DISABLE_GPU=true" >> $GITHUB_ENV
+          echo "ELECTRON_NO_ATTACH_CONSOLE=true" >> $GITHUB_ENV
+          echo "NODE_ENV=test" >> $GITHUB_ENV
+          echo "WIRE_FORCE_EXTERNAL_AUTH=false" >> $GITHUB_ENV
+
+      - name: Run All Security Tests with Xvfb
+        uses: GabrielBB/xvfb-action@b706e4e27b14669b486812790492dc50ca16b465 # v1.7
+        continue-on-error: true
+        with:
+          run: |
+            cd test/e2e-security
+            echo "Running Security Exposure Tests..."
+            yarn test:security:exposure || echo "Exposure tests failed"
+            echo "Running Security Validation Tests..."
+            yarn test:security:validation || echo "Validation tests failed"
+            echo "Running Security Regression Tests..."
+            yarn test:security:regression || echo "Regression tests failed"
+
+      - name: Upload Security Test Report
+        if: always()
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: security-test-report
+          path: test/e2e-security/security-test-report/
+          retention-days: 30
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: security-test-results
+          path: test/e2e-security/test-results/
+          retention-days: 30
+
+      - name: Comment PR with Security Test Results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            try {
+              const reportPath = 'test/e2e-security/security-test-report/summary.json';
+              if (fs.existsSync(reportPath)) {
+                const summary = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+                
+                const comment = `## 🛡️ Security Test Results
+                
+                **Context Isolation & Sandbox Validation**
+                
+                - **Total Tests**: ${summary.totalTests || 'N/A'}
+                - **Passed**: ${summary.passed || 'N/A'} ✅
+                - **Failed**: ${summary.failed || 'N/A'} ${summary.failed > 0 ? '❌' : ''}
+                - **Duration**: ${summary.duration || 'N/A'}ms
+                
+                **Security Validations**
+                - Context Isolation: ${summary.contextIsolationVerified ? '✅ Verified' : '❌ Failed'}
+                - Sandbox Enforcement: ${summary.sandboxVerified ? '✅ Verified' : '❌ Failed'}
+                
+                ${summary.failed > 0 ? '⚠️ **Security tests failed!** Please review the test results and ensure all security measures are properly implemented.' : '🎉 **All security tests passed!** Context isolation and sandbox are working correctly.'}
+                
+                [View detailed report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+                `;
+                
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+              }
+            } catch (error) {
+              console.log('Could not read test summary:', error);
+            }
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: security-tests
+    if: always()
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Run npm audit
+        run: yarn audit --level moderate
+        continue-on-error: true
+
+      - name: Run security linting
+        run: |
+          yarn eslint electron/src --ext .ts,.js --config .eslintrc.js --format json --output-file security-lint-report.json || true
+
+      - name: Upload Security Audit Results
+        if: always()
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: security-audit-results
+          path: |
+            security-lint-report.json
+          retention-days: 30

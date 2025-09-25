@@ -24,7 +24,7 @@
 const jestConfig = {
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['<rootDir>/electron/dist'],
+  testPathIgnorePatterns: ['<rootDir>/electron/dist', '<rootDir>/test/e2e-security'],
 };
 
 module.exports = jestConfig;
