@@ -112,6 +112,13 @@ export class WireDesktopLauncher {
     const testEnv = {
       NODE_ENV: 'test',
       WIRE_FORCE_EXTERNAL_AUTH: 'false',
+      // Ensure DISPLAY is passed through in CI environments
+      ...(process.env.CI || process.env.GITHUB_ACTIONS ? {
+        DISPLAY: process.env.DISPLAY || ':99',
+        ELECTRON_DISABLE_SECURITY_WARNINGS: process.env.ELECTRON_DISABLE_SECURITY_WARNINGS || 'true',
+        ELECTRON_DISABLE_GPU: process.env.ELECTRON_DISABLE_GPU || 'true',
+        ELECTRON_NO_ATTACH_CONSOLE: process.env.ELECTRON_NO_ATTACH_CONSOLE || 'true',
+      } : {}),
       ...env,
     };
 
@@ -120,6 +127,15 @@ export class WireDesktopLauncher {
     console.log('Electron path:', electronPath);
     console.log('App path:', appPath);
     console.log('Environment:', testEnv);
+
+    // Additional CI debugging
+    if (process.env.CI || process.env.GITHUB_ACTIONS) {
+      console.log('CI Environment Debug:');
+      console.log('- DISPLAY:', process.env.DISPLAY);
+      console.log('- CI:', process.env.CI);
+      console.log('- GITHUB_ACTIONS:', process.env.GITHUB_ACTIONS);
+      console.log('- Current working directory:', process.cwd());
+    }
 
     if (!fs.existsSync(electronPath)) {
       throw new Error(`Electron binary not found at: ${electronPath}`);

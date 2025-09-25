@@ -49,22 +49,23 @@ jobs:
           cd test/e2e-security
           yarn playwright install --with-deps
 
-      - name: Setup environment variables for Electron
-        run: |
-          echo "ELECTRON_DISABLE_SECURITY_WARNINGS=true" >> $GITHUB_ENV
-          echo "ELECTRON_DISABLE_GPU=true" >> $GITHUB_ENV
-          echo "ELECTRON_NO_ATTACH_CONSOLE=true" >> $GITHUB_ENV
-          echo "NODE_ENV=test" >> $GITHUB_ENV
-          echo "WIRE_FORCE_EXTERNAL_AUTH=false" >> $GITHUB_ENV
-          echo "DISPLAY=:99" >> $GITHUB_ENV
+
 
       - name: Run All Security Tests with Xvfb
         uses: GabrielBB/xvfb-action@b706e4e27b14669b486812790492dc50ca16b465 # v1.7
+        env:
+          DISPLAY: :99
+          ELECTRON_DISABLE_SECURITY_WARNINGS: true
+          ELECTRON_DISABLE_GPU: true
+          ELECTRON_NO_ATTACH_CONSOLE: true
+          NODE_ENV: test
+          WIRE_FORCE_EXTERNAL_AUTH: false
         with:
           working-directory: test/e2e-security
           run: |
             echo "Starting security tests with virtual display..."
-            echo "DISPLAY environment: $DISPLAY"
+            echo "Running environment debug script..."
+            node debug-display.js
             echo "Running Security Exposure Tests..."
             yarn test:security:exposure
             echo "Running Security Validation Tests..."
