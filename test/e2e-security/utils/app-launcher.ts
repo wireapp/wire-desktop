@@ -22,6 +22,11 @@ import {_electron as electron, ElectronApplication, Page} from '@playwright/test
 import * as fs from 'fs';
 import * as path from 'path';
 
+// Handle unhandled promise rejections in tests
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[AppLauncher] Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 export interface AppLaunchOptions {
   args?: string[];
 
@@ -66,7 +71,7 @@ export class WireDesktopLauncher {
 
     if (process.env.CI || process.env.GITHUB_ACTIONS) {
       defaultArgs.push(
-        '--headless',
+        // NOTE: Removed --headless because we use Xvfb in CI which provides a virtual display
         '--no-sandbox',
         '--disable-gpu',
         '--disable-dev-shm-usage',
@@ -89,14 +94,15 @@ export class WireDesktopLauncher {
         '--use-gl=swiftshader',
         '--disable-ipc-flooding-protection',
       );
-      console.log('CI environment detected, adding headless flags');
+      console.log('CI environment detected, adding CI-specific flags (using Xvfb for display)');
     }
 
     if (devTools) {
       defaultArgs.push('--devtools');
     }
 
-    if (headless) {
+    // Only use --headless if not in CI (where we use Xvfb instead)
+    if (headless && !process.env.CI && !process.env.GITHUB_ACTIONS) {
       defaultArgs.push('--headless');
     }
 
