@@ -73,7 +73,6 @@ export class WireDesktopLauncher {
       defaultArgs.push(
         // NOTE: Removed --headless because we use Xvfb in CI which provides a virtual display
         '--no-sandbox',
-        '--disable-gpu',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-first-run',
@@ -87,12 +86,14 @@ export class WireDesktopLauncher {
         '--disable-translate',
         '--disable-sync',
         '--disable-background-networking',
-        '--disable-software-rasterizer',
         '--disable-features=TranslateUI,BlinkGenPropertyTrees',
         '--disable-web-security',
         '--disable-features=VizDisplayCompositor',
+        // Use software rendering for CI environments
         '--use-gl=swiftshader',
         '--disable-ipc-flooding-protection',
+        // Add display environment for Linux CI
+        '--disable-gpu-sandbox',
       );
       console.log('CI environment detected, adding CI-specific flags (using Xvfb for display)');
     }
