@@ -84,12 +84,10 @@ export class WireDesktopLauncher {
         '--disable-sync',
         '--disable-background-networking',
         '--disable-features=TranslateUI,BlinkGenPropertyTrees',
-        '--disable-web-security',
         '--disable-features=VizDisplayCompositor',
 
         '--use-gl=swiftshader',
         '--disable-ipc-flooding-protection',
-        '--disable-gpu-sandbox',
 
         '--disable-backgrounding-occluded-windows',
         '--disable-features=VizDisplayCompositor',
