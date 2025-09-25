@@ -18,7 +18,6 @@
 
 import {NETWORK_ENDPOINTS, WEBVIEW_SECURITY_ATTRIBUTES} from './test-constants';
 
-
 export interface StorageTestResult {
   localStorageAvailable: boolean;
   sessionStorageAvailable: boolean;

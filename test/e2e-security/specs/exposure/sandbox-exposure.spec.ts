@@ -28,7 +28,6 @@ test.describe('Sandbox Exposure Tests', () => {
     const {securityHelpers} = getContext();
     const result = await securityHelpers.testFileSystemAccess();
 
-    // In headless mode, file system APIs might behave differently
     if (result.success && result.details.showOpenFilePicker === false) {
       expect(result.success).toBe(true);
       expect(result.details.showOpenFilePicker).toBe(false);
@@ -36,7 +35,7 @@ test.describe('Sandbox Exposure Tests', () => {
     } else {
       console.log('⚠️  File system access not fully blocked - this may be expected in headless security testing mode');
       console.log('   File system test results:', result.details);
-      // For security tests, we verify the test ran and got a result
+
       expect(result).toBeDefined();
       expect(result.details).toBeDefined();
       console.log('✅ File system security test completed for headless mode');
@@ -79,7 +78,6 @@ test.describe('Sandbox Exposure Tests', () => {
       return tests;
     });
 
-    // In headless mode, network restrictions might be different
     if (networkTest.localhost === false && networkTest.fileProtocol === false && networkTest.localIP === false) {
       expect(networkTest.localhost).toBe(false);
       expect(networkTest.fileProtocol).toBe(false);
@@ -88,7 +86,7 @@ test.describe('Sandbox Exposure Tests', () => {
     } else {
       console.log('⚠️  Network access not fully blocked - this may be expected in headless security testing mode');
       console.log('   Network test results:', networkTest);
-      // For security tests, we verify the test ran and got results
+
       expect(networkTest).toBeDefined();
       expect(typeof networkTest.localhost).toBe('boolean');
       expect(typeof networkTest.fileProtocol).toBe('boolean');
@@ -157,9 +155,7 @@ test.describe('Sandbox Exposure Tests', () => {
 
     console.log('🔍 WebRTC test result:', webrtcTest);
 
-    // In headless mode, WebRTC might expose more IPs than in a sandboxed environment
-    // Based on test results, we typically see 2 IPs in headless mode
-    const expectedMaxIPs = 5; // Allow up to 5 IPs in any test environment
+    const expectedMaxIPs = 5;
     expect((webrtcTest as any).localIPsFound).toBeLessThanOrEqual(expectedMaxIPs);
   });
 
@@ -201,7 +197,6 @@ test.describe('Sandbox Exposure Tests', () => {
       return tests;
     });
 
-    // In headless mode, clipboard restrictions might be different
     if (clipboardTest.readText === false && clipboardTest.readPermission === false) {
       expect(clipboardTest.readText).toBe(false);
       expect(clipboardTest.readPermission).toBe(false);
@@ -209,7 +204,7 @@ test.describe('Sandbox Exposure Tests', () => {
     } else {
       console.log('⚠️  Clipboard access not fully restricted - this may be expected in headless security testing mode');
       console.log('   Clipboard test results:', clipboardTest);
-      // For security tests, we verify the test ran and got results
+
       expect(clipboardTest).toBeDefined();
       expect(typeof clipboardTest.readText).toBe('boolean');
       expect(typeof clipboardTest.readPermission).toBe('boolean');
@@ -315,7 +310,6 @@ test.describe('Sandbox Exposure Tests', () => {
       return tests;
     });
 
-    // In headless mode, media access restrictions might be different
     if (mediaTest.camera.blocked && mediaTest.microphone.blocked && mediaTest.both.blocked) {
       expect(mediaTest.camera.blocked).toBe(true);
       expect(mediaTest.microphone.blocked).toBe(true);
@@ -324,7 +318,7 @@ test.describe('Sandbox Exposure Tests', () => {
     } else {
       console.log('⚠️  Media access not fully blocked - this may be expected in headless security testing mode');
       console.log('   Media test results:', mediaTest);
-      // For security tests, we verify the test ran and got results
+
       expect(mediaTest).toBeDefined();
       expect(mediaTest.camera).toBeDefined();
       expect(mediaTest.microphone).toBeDefined();
@@ -369,7 +363,6 @@ test.describe('Sandbox Exposure Tests', () => {
 
     console.log('🔍 Comprehensive sandbox test:', comprehensiveTest);
 
-    // In headless mode, sandbox restrictions might be different
     const restrictions = comprehensiveTest.restrictions;
     if (restrictions.fileSystemAccess && restrictions.networkRestrictions && restrictions.clipboardRestrictions) {
       expect(restrictions.fileSystemAccess).toBe(true);
@@ -377,9 +370,11 @@ test.describe('Sandbox Exposure Tests', () => {
       expect(restrictions.clipboardRestrictions).toBe(true);
       console.log('✅ All sandbox restrictions properly enforced');
     } else {
-      console.log('⚠️  Some sandbox restrictions not enforced - this may be expected in headless security testing mode');
+      console.log(
+        '⚠️  Some sandbox restrictions not enforced - this may be expected in headless security testing mode',
+      );
       console.log('   Restrictions status:', restrictions);
-      // For security tests, we verify the test ran and got results
+
       expect(restrictions).toBeDefined();
       expect(typeof restrictions.fileSystemAccess).toBe('boolean');
       expect(typeof restrictions.networkRestrictions).toBe('boolean');

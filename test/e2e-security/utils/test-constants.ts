@@ -62,9 +62,7 @@ export const WEBVIEW_SECURITY_ATTRIBUTES = {
   WEB_SECURITY: 'true',
 } as const;
 
-
 export const TEST_EVALUATIONS = {
-
   checkAPIAvailability: (apis: string[]) => {
     return apis.reduce((result, api) => {
       result[api] = typeof (window as any)[api] !== 'undefined';
@@ -85,7 +83,6 @@ export const COMMON_ASSERTIONS = {
       throw new Error(`Security vulnerability: ${apiName} access not blocked`);
     }
   },
-
 
   assertWebviewSecurity: (config: any) => {
     if (config.nodeintegration !== WEBVIEW_SECURITY_ATTRIBUTES.NODE_INTEGRATION) {

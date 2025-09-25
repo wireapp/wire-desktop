@@ -81,7 +81,6 @@ test.describe('Context Isolation Exposure Tests', () => {
 
     const fsResult = await injectionHelpers.testEvalInjection(maliciousPayloads.fileSystemAccess);
 
-    // In headless mode, security boundaries might be different
     if (fsResult.blocked) {
       expect(fsResult.blocked).toBe(true);
       expect(fsResult.success).toBe(false);
@@ -89,7 +88,7 @@ test.describe('Context Isolation Exposure Tests', () => {
     } else {
       console.log('⚠️  File system access not blocked - this may be expected in headless security testing mode');
       console.log('   FS test results:', fsResult.details);
-      // For security tests, we verify the test ran and got a result
+
       expect(fsResult).toBeDefined();
       expect(fsResult.details).toBeDefined();
       console.log('✅ File system security test completed for headless mode');
@@ -101,7 +100,6 @@ test.describe('Context Isolation Exposure Tests', () => {
 
     const execResult = await injectionHelpers.testEvalInjection(maliciousPayloads.childProcessAccess);
 
-    // In headless mode, security boundaries might be different
     if (execResult.blocked) {
       expect(execResult.blocked).toBe(true);
       expect(execResult.success).toBe(false);
@@ -109,7 +107,7 @@ test.describe('Context Isolation Exposure Tests', () => {
     } else {
       console.log('⚠️  Child process execution not blocked - this may be expected in headless security testing mode');
       console.log('   Exec test results:', execResult.details);
-      // For security tests, we verify the test ran and got a result
+
       expect(execResult).toBeDefined();
       expect(execResult.details).toBeDefined();
       console.log('✅ Child process security test completed for headless mode');
@@ -129,7 +127,6 @@ test.describe('Context Isolation Exposure Tests', () => {
 
     const result = await injectionHelpers.testScriptInjection(maliciousScript);
 
-    // In headless mode, security boundaries might be different
     if (result.blocked) {
       expect(result.blocked).toBe(true);
       expect(result.success).toBe(false);
@@ -137,7 +134,7 @@ test.describe('Context Isolation Exposure Tests', () => {
     } else {
       console.log('⚠️  Script injection not blocked - this may be expected in headless security testing mode');
       console.log('   Script injection test results:', result.details);
-      // For security tests, we verify the test ran and got a result
+
       expect(result).toBeDefined();
       expect(result.details).toBeDefined();
       console.log('✅ Script injection security test completed for headless mode');
@@ -203,28 +200,30 @@ test.describe('Context Isolation Exposure Tests', () => {
 
     const blockRate = blockedCount / totalTests;
 
-    // In headless mode, security boundaries are different, so we use a lower threshold
-    // Based on current test results, headless mode typically blocks 2/6 (33%) of injection attempts
-    const expectedBlockRate = 0.3; // Accept 30% or higher block rate
+    const expectedBlockRate = 0.3;
 
-    console.log(`🔍 Block rate: ${blockRate.toFixed(2)} (${blockedCount}/${totalTests}), Expected: ${expectedBlockRate}`);
+    console.log(
+      `🔍 Block rate: ${blockRate.toFixed(2)} (${blockedCount}/${totalTests}), Expected: ${expectedBlockRate}`,
+    );
     expect(blockRate).toBeGreaterThanOrEqual(expectedBlockRate);
 
     const criticalMethods = ['script-injection', 'eval-injection', 'function-injection'];
     const criticalResults = injectionResults.filter(r => criticalMethods.includes(r.method));
     const criticalBlocked = criticalResults.filter(r => r.blocked).length;
 
-    // In headless mode, critical injection methods might not be blocked
-    // We log the results but don't enforce strict blocking requirements
     console.log(`🔍 Critical methods blocked: ${criticalBlocked}/${criticalResults.length}`);
     if (criticalBlocked === criticalResults.length) {
       console.log('✅ All critical injection methods properly blocked');
     } else {
-      console.log('⚠️  Some critical injection methods not blocked - this may be expected in headless security testing mode');
-      console.log('   Critical results:', criticalResults.map(r => `${r.method}: ${r.blocked ? 'BLOCKED' : 'ALLOWED'}`));
+      console.log(
+        '⚠️  Some critical injection methods not blocked - this may be expected in headless security testing mode',
+      );
+      console.log(
+        '   Critical results:',
+        criticalResults.map(r => `${r.method}: ${r.blocked ? 'BLOCKED' : 'ALLOWED'}`),
+      );
     }
 
-    // For headless mode, we just verify that we got results for critical methods
     expect(criticalResults.length).toBeGreaterThan(0);
   });
 });

@@ -1,22 +1,3 @@
-/*
- * Wire
- * Copyright (C) 2025 Wire Swiss GmbH
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/.
- *
- */
-
 import {defineConfig, devices} from '@playwright/test';
 
 import * as path from 'path';
@@ -28,7 +9,7 @@ export default defineConfig({
 
   forbidOnly: !!process.env.CI,
 
-  retries: process.env.CI ? 3 : 0,
+  retries: process.env.CI ? 1 : 0,
 
   workers: 1,
 
@@ -38,39 +19,39 @@ export default defineConfig({
     ['list'],
   ],
 
-  timeout: process.env.CI ? 120000 : 60000,
+  timeout: process.env.CI ? 45000 : 60000,
 
   use: {
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
 
-    actionTimeout: 30000, // 30 seconds
-    navigationTimeout: 30000, // 30 seconds
+    actionTimeout: process.env.CI ? 15000 : 30000,
+    navigationTimeout: process.env.CI ? 15000 : 30000,
   },
 
   expect: {
-    timeout: 10000, // 10 seconds for assertions
+    timeout: 10000,
   },
 
   projects: [
     {
       name: 'security-exposure',
-      testMatch: '**/exposure/**/*.spec.ts',
+      testMatch: '**/exposure  *.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
       },
     },
     {
       name: 'security-validation',
-      testMatch: '**/validation/**/*.spec.ts',
+      testMatch: '**/validation  *.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
       },
     },
     {
       name: 'security-regression',
-      testMatch: '**/regression/**/*.spec.ts',
+      testMatch: '**/regression  *.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
       },

@@ -25,13 +25,12 @@ import {testContextIsolation, testWebviewSecurity, assertWebviewSecurity} from '
 
 test.describe('Context Isolation Validation Tests', () => {
   const getContext = CommonTestPatterns.setupSecurityTest();
-  let launcher: any; // Keep for compatibility with existing tests
+  let launcher: any;
 
   test('should have contextBridge APIs properly exposed @security @validation @context-isolation', async () => {
     const {securityHelpers} = getContext();
     const result = await securityHelpers.testContextBridgeAccess();
 
-    // In headless mode, Wire-specific APIs might not be available
     if (result.success && result.details.wireDesktop.exists) {
       expect(result.success).toBe(true);
       expect(result.details.wireDesktop.exists).toBe(true);
@@ -39,9 +38,11 @@ test.describe('Context Isolation Validation Tests', () => {
       expect(result.details.wireDesktop.hasSendBadgeCount).toBe(true);
       CommonTestPatterns.logTestResult('contextBridge APIs properly exposed', result.details, true);
     } else {
-      console.log('⚠️  Wire-specific contextBridge APIs not available - this is expected in headless security testing mode');
+      console.log(
+        '⚠️  Wire-specific contextBridge APIs not available - this is expected in headless security testing mode',
+      );
       console.log('   Context bridge test results:', result.details);
-      // For security tests, we verify that the context is isolated even without Wire APIs
+
       expect(result.details).toBeDefined();
       console.log('✅ Context isolation validation completed for headless mode');
     }
@@ -65,7 +66,6 @@ test.describe('Context Isolation Validation Tests', () => {
       };
     });
 
-    // In headless mode, wireDesktop API might not be available
     if (wireDesktopTest.exists) {
       expect(wireDesktopTest.exists).toBe(true);
       expect(typeof wireDesktopTest.locale).toBe('string');
@@ -77,7 +77,7 @@ test.describe('Context Isolation Validation Tests', () => {
     } else {
       console.log('⚠️  wireDesktop API not available - this is expected in headless security testing mode');
       console.log('   wireDesktop test results:', wireDesktopTest);
-      // For security tests, we verify the page is accessible and context is isolated
+
       const pageTitle = await page.title();
       const bodyExists = await page.evaluate(() => !!document.body);
       expect(bodyExists).toBe(true);
@@ -150,7 +150,6 @@ test.describe('Context Isolation Validation Tests', () => {
       return tests;
     });
 
-    // In headless mode, IPC functions might not be available
     if (ipcTest.available && 'badgeCountFunction' in ipcTest) {
       expect(ipcTest.available).toBe(true);
       expect(ipcTest.badgeCountFunction).toBe(true);
@@ -159,7 +158,7 @@ test.describe('Context Isolation Validation Tests', () => {
     } else {
       console.log('⚠️  IPC functions not available - this is expected in headless security testing mode');
       console.log('   IPC test results:', ipcTest);
-      // For security tests, we verify the page is accessible
+
       const bodyExists = await page.evaluate(() => !!document.body);
       expect(bodyExists).toBe(true);
       console.log('✅ IPC isolation validation completed for headless mode');
@@ -229,6 +228,4 @@ test.describe('Context Isolation Validation Tests', () => {
 
     console.log('✅ Preload script security validated:', preloadTest);
   });
-
-  // Comprehensive security validation test removed - needs proper setup with SecurityHelpers
 });

@@ -22,7 +22,6 @@ import {_electron as electron, ElectronApplication, Page} from '@playwright/test
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Handle unhandled promise rejections in tests
 process.on('unhandledRejection', (reason, promise) => {
   console.error('[AppLauncher] Unhandled Rejection at:', promise, 'reason:', reason);
 });
@@ -44,7 +43,7 @@ export class WireDesktopLauncher {
   private mainPage: Page | null = null;
 
   async launch(options: AppLaunchOptions = {}): Promise<{app: ElectronApplication; page: Page}> {
-    const {args = [], env = {}, devTools = false, timeout = 30000, headless = true} = options;
+    const {args = [], env = {}, devTools = false, timeout = 15000, headless = true} = options;
 
     const projectRoot = path.join(process.cwd(), '../..');
 
@@ -71,7 +70,6 @@ export class WireDesktopLauncher {
 
     if (process.env.CI || process.env.GITHUB_ACTIONS) {
       defaultArgs.push(
-        // NOTE: Removed --headless because we use xvfb-run which provides a virtual display
         '--no-sandbox',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
@@ -88,11 +86,11 @@ export class WireDesktopLauncher {
         '--disable-features=TranslateUI,BlinkGenPropertyTrees',
         '--disable-web-security',
         '--disable-features=VizDisplayCompositor',
-        // Use software rendering for CI environments
+
         '--use-gl=swiftshader',
         '--disable-ipc-flooding-protection',
         '--disable-gpu-sandbox',
-        // Additional flags for window creation in headless environments
+
         '--disable-backgrounding-occluded-windows',
         '--disable-features=VizDisplayCompositor',
         '--force-device-scale-factor=1',
@@ -105,7 +103,6 @@ export class WireDesktopLauncher {
       defaultArgs.push('--devtools');
     }
 
-    // Add --headless for local headless testing (CI headless is handled above)
     if (headless && !process.env.CI && !process.env.GITHUB_ACTIONS) {
       defaultArgs.push('--headless');
     }
@@ -115,13 +112,15 @@ export class WireDesktopLauncher {
     const testEnv = {
       NODE_ENV: 'test',
       WIRE_FORCE_EXTERNAL_AUTH: 'false',
-      // Pass through CI environment variables
-      ...(process.env.CI || process.env.GITHUB_ACTIONS ? {
-        DISPLAY: process.env.DISPLAY || ':99',
-        ELECTRON_DISABLE_SECURITY_WARNINGS: process.env.ELECTRON_DISABLE_SECURITY_WARNINGS || 'true',
-        ELECTRON_DISABLE_GPU: process.env.ELECTRON_DISABLE_GPU || 'true',
-        ELECTRON_NO_ATTACH_CONSOLE: process.env.ELECTRON_NO_ATTACH_CONSOLE || 'true',
-      } : {}),
+
+      ...(process.env.CI || process.env.GITHUB_ACTIONS
+        ? {
+            DISPLAY: process.env.DISPLAY || ':99',
+            ELECTRON_DISABLE_SECURITY_WARNINGS: process.env.ELECTRON_DISABLE_SECURITY_WARNINGS || 'true',
+            ELECTRON_DISABLE_GPU: process.env.ELECTRON_DISABLE_GPU || 'true',
+            ELECTRON_NO_ATTACH_CONSOLE: process.env.ELECTRON_NO_ATTACH_CONSOLE || 'true',
+          }
+        : {}),
       ...env,
     };
 
@@ -131,7 +130,6 @@ export class WireDesktopLauncher {
     console.log('App path:', appPath);
     console.log('Environment:', testEnv);
 
-    // Additional CI debugging
     if (process.env.CI || process.env.GITHUB_ACTIONS) {
       console.log('CI Environment Debug:');
       console.log('- CI:', process.env.CI);
@@ -155,19 +153,17 @@ export class WireDesktopLauncher {
 
       console.log('Electron process started, waiting for window...');
 
-      // Listen for console events to debug what's happening
       this.app.on('close', () => {
         console.log('Electron application closed');
       });
 
-      // Add error handling for window event
+      const windowTimeout = process.env.CI || process.env.GITHUB_ACTIONS ? 10000 : timeout;
       try {
-        await this.app.waitForEvent('window', {timeout});
+        await this.app.waitForEvent('window', {timeout: windowTimeout});
         console.log('Window event received');
       } catch (windowError) {
-        console.error('Window event timeout. This might indicate the app is running headless or crashed during startup.');
+        console.log('Window event timeout, checking for existing windows...');
 
-        // Try to get the first window anyway
         const windows = this.app.windows();
         console.log(`Current windows count: ${windows.length}`);
 
@@ -175,7 +171,6 @@ export class WireDesktopLauncher {
           console.log('Found existing window, using it');
           this.mainPage = windows[0];
         } else {
-          // For headless testing, create a minimal window or handle differently
           console.log('No windows found, the app might be running in true headless mode');
           throw windowError;
         }
@@ -196,7 +191,6 @@ export class WireDesktopLauncher {
     } catch (error) {
       console.error('Failed to launch Wire Desktop:', error);
 
-      // Additional debugging info
       if (this.app) {
         console.log('App object exists, checking context...');
         try {
@@ -222,14 +216,14 @@ export class WireDesktopLauncher {
     return this.app;
   }
 
-  async waitForAppReady(timeout = 30000): Promise<void> {
+  async waitForAppReady(timeout = 15000): Promise<void> {
     if (!this.mainPage) {
       throw new Error('App not launched');
     }
 
-    const selectorTimeout = process.env.CI || process.env.GITHUB_ACTIONS ? 15000 : 5000;
-    const loadStateTimeout = process.env.CI || process.env.GITHUB_ACTIONS ? 20000 : 10000;
-    const finalWait = process.env.CI || process.env.GITHUB_ACTIONS ? 5000 : 2000;
+    const selectorTimeout = process.env.CI || process.env.GITHUB_ACTIONS ? 8000 : 5000;
+    const loadStateTimeout = process.env.CI || process.env.GITHUB_ACTIONS ? 10000 : 10000;
+    const finalWait = process.env.CI || process.env.GITHUB_ACTIONS ? 2000 : 2000;
 
     try {
       await this.mainPage.waitForSelector('[data-uie-name="wire-app"]', {timeout: selectorTimeout});

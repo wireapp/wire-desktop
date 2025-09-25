@@ -44,7 +44,7 @@ async function setupCIEnvironment(): Promise<void> {
 async function globalSetup(): Promise<void> {
   console.log('🔧 Setting up Wire Desktop Security E2E Tests...');
 
-  process.on('unhandledRejection', (error) => {
+  process.on('unhandledRejection', error => {
     console.error('Unhandled promise rejection:', error);
     if (process.env.CI) {
       process.exit(1);

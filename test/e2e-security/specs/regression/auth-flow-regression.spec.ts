@@ -44,8 +44,6 @@ test.describe('Authentication Flow Regression Tests', () => {
     const loginInterface = await AuthTestPatterns.testLoginInterface(page);
     const hasLoginElements = Object.values(loginInterface).some(Boolean);
 
-    // In headless security testing mode, login elements might not be present
-    // This is expected behavior as we're testing the security boundaries, not the UI
     if (hasLoginElements) {
       console.log('✅ Login interface elements found:', loginInterface);
     } else {
@@ -53,7 +51,6 @@ test.describe('Authentication Flow Regression Tests', () => {
       console.log('   Interface check results:', loginInterface);
     }
 
-    // For security tests, we just need to verify the page is accessible and DOM is working
     const pageTitle = await page.title();
     const bodyExists = await page.evaluate(() => !!document.body);
     expect(bodyExists).toBe(true);
@@ -90,7 +87,6 @@ test.describe('Authentication Flow Regression Tests', () => {
     const page = testBase.getMainPage();
     const formTest = await AuthTestPatterns.testFormValidation(page);
 
-    // In headless mode, form elements might not be present
     if (formTest.inputsFound) {
       expect(formTest.inputsFound).toBe(true);
       expect(formTest.inputsInteractive).toBe(true);
@@ -99,7 +95,7 @@ test.describe('Authentication Flow Regression Tests', () => {
     } else {
       console.log('⚠️  No form inputs found - this is expected in headless security testing mode');
       console.log('   Form test results:', formTest);
-      // For security tests, we just verify the page is accessible
+
       const pageTitle = await page.title();
       const bodyExists = await page.evaluate(() => !!document.body);
       expect(bodyExists).toBe(true);
