@@ -71,7 +71,7 @@ export class WireDesktopLauncher {
 
     if (process.env.CI || process.env.GITHUB_ACTIONS) {
       defaultArgs.push(
-        '--headless', // Use headless mode in CI - Playwright will handle this properly
+        // NOTE: Removed --headless because we use xvfb-run which provides a virtual display
         '--no-sandbox',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
@@ -92,11 +92,8 @@ export class WireDesktopLauncher {
         '--use-gl=swiftshader',
         '--disable-ipc-flooding-protection',
         '--disable-gpu-sandbox',
-        // Additional headless-specific flags
-        '--virtual-time-budget=5000',
-        '--run-all-compositor-stages-before-draw',
       );
-      console.log('CI environment detected, adding CI-specific flags for headless operation');
+      console.log('CI environment detected, adding CI-specific flags (using xvfb-run for display)');
     }
 
     if (devTools) {
@@ -133,7 +130,7 @@ export class WireDesktopLauncher {
       console.log('CI Environment Debug:');
       console.log('- CI:', process.env.CI);
       console.log('- GITHUB_ACTIONS:', process.env.GITHUB_ACTIONS);
-      console.log('- Headless mode: enabled via Playwright');
+      console.log('- Virtual display: provided by xvfb-run');
       console.log('- Current working directory:', process.cwd());
     }
 

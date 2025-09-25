@@ -61,13 +61,13 @@ jobs:
           WIRE_FORCE_EXTERNAL_AUTH: false
         run: |
           echo "Running Security Exposure Tests..."
-          yarn test:security:exposure
+          xvfb-run --auto-servernum yarn test:security:exposure
 
           echo "Running Security Validation Tests..."
-          yarn test:security:validation
+          xvfb-run --auto-servernum yarn test:security:validation
 
           echo "Running Security Regression Tests..."
-          yarn test:security:regression
+          xvfb-run --auto-servernum yarn test:security:regression
 
       - name: Upload Security Test Report
         if: always()
