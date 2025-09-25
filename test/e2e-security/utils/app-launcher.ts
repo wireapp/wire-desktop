@@ -71,13 +71,12 @@ export class WireDesktopLauncher {
 
     if (process.env.CI || process.env.GITHUB_ACTIONS) {
       defaultArgs.push(
-        // NOTE: Removed --headless because we use Xvfb in CI which provides a virtual display
+        '--headless', // Use headless mode in CI - Playwright will handle this properly
         '--no-sandbox',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-first-run',
         '--no-zygote',
-        // NOTE: Removed --single-process as it can interfere with DevTools WebSocket connection
         '--disable-background-timer-throttling',
         '--disable-backgrounding-occluded-windows',
         '--disable-renderer-backgrounding',
@@ -92,17 +91,19 @@ export class WireDesktopLauncher {
         // Use software rendering for CI environments
         '--use-gl=swiftshader',
         '--disable-ipc-flooding-protection',
-        // Add display environment for Linux CI
         '--disable-gpu-sandbox',
+        // Additional headless-specific flags
+        '--virtual-time-budget=5000',
+        '--run-all-compositor-stages-before-draw',
       );
-      console.log('CI environment detected, adding CI-specific flags (using Xvfb for display)');
+      console.log('CI environment detected, adding CI-specific flags for headless operation');
     }
 
     if (devTools) {
       defaultArgs.push('--devtools');
     }
 
-    // Only use --headless if not in CI (where we use Xvfb instead)
+    // Add --headless for local headless testing (CI headless is handled above)
     if (headless && !process.env.CI && !process.env.GITHUB_ACTIONS) {
       defaultArgs.push('--headless');
     }
@@ -112,9 +113,8 @@ export class WireDesktopLauncher {
     const testEnv = {
       NODE_ENV: 'test',
       WIRE_FORCE_EXTERNAL_AUTH: 'false',
-      // Ensure DISPLAY is passed through in CI environments
+      // Pass through CI environment variables
       ...(process.env.CI || process.env.GITHUB_ACTIONS ? {
-        DISPLAY: process.env.DISPLAY || ':99',
         ELECTRON_DISABLE_SECURITY_WARNINGS: process.env.ELECTRON_DISABLE_SECURITY_WARNINGS || 'true',
         ELECTRON_DISABLE_GPU: process.env.ELECTRON_DISABLE_GPU || 'true',
         ELECTRON_NO_ATTACH_CONSOLE: process.env.ELECTRON_NO_ATTACH_CONSOLE || 'true',
@@ -131,9 +131,9 @@ export class WireDesktopLauncher {
     // Additional CI debugging
     if (process.env.CI || process.env.GITHUB_ACTIONS) {
       console.log('CI Environment Debug:');
-      console.log('- DISPLAY:', process.env.DISPLAY);
       console.log('- CI:', process.env.CI);
       console.log('- GITHUB_ACTIONS:', process.env.GITHUB_ACTIONS);
+      console.log('- Headless mode: enabled via Playwright');
       console.log('- Current working directory:', process.cwd());
     }
 

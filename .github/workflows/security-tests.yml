@@ -51,27 +51,23 @@ jobs:
 
 
 
-      - name: Run All Security Tests with Xvfb
-        uses: GabrielBB/xvfb-action@b706e4e27b14669b486812790492dc50ca16b465 # v1.7
+      - name: Run Security E2E Tests
+        working-directory: test/e2e-security
         env:
-          DISPLAY: :99
           ELECTRON_DISABLE_SECURITY_WARNINGS: true
           ELECTRON_DISABLE_GPU: true
           ELECTRON_NO_ATTACH_CONSOLE: true
           NODE_ENV: test
           WIRE_FORCE_EXTERNAL_AUTH: false
-        with:
-          working-directory: test/e2e-security
-          run: |
-            echo "Starting security tests with virtual display..."
-            echo "Running environment debug script..."
-            node debug-display.js
-            echo "Running Security Exposure Tests..."
-            yarn test:security:exposure
-            echo "Running Security Validation Tests..."
-            yarn test:security:validation
-            echo "Running Security Regression Tests..."
-            yarn test:security:regression
+        run: |
+          echo "Running Security Exposure Tests..."
+          yarn test:security:exposure
+
+          echo "Running Security Validation Tests..."
+          yarn test:security:validation
+
+          echo "Running Security Regression Tests..."
+          yarn test:security:regression
 
       - name: Upload Security Test Report
         if: always()

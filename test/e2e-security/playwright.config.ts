@@ -47,20 +47,6 @@ export default defineConfig({
 
     actionTimeout: 30000, // 30 seconds
     navigationTimeout: 30000, // 30 seconds
-
-    // Ensure environment variables are available to tests
-    ...(process.env.CI || process.env.GITHUB_ACTIONS ? {
-      launchOptions: {
-        env: {
-          DISPLAY: process.env.DISPLAY || ':99',
-          ELECTRON_DISABLE_SECURITY_WARNINGS: 'true',
-          ELECTRON_DISABLE_GPU: 'true',
-          ELECTRON_NO_ATTACH_CONSOLE: 'true',
-          NODE_ENV: 'test',
-          WIRE_FORCE_EXTERNAL_AUTH: 'false',
-        }
-      }
-    } : {}),
   },
 
   expect: {
