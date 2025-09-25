@@ -45,7 +45,15 @@ jobs:
           cd test/e2e-security
           yarn install
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('test/e2e-security/yarn.lock') }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: |
           cd test/e2e-security
           yarn playwright install --with-deps

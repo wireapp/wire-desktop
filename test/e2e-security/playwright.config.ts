@@ -37,21 +37,21 @@ export default defineConfig({
   projects: [
     {
       name: 'security-exposure',
-      testMatch: '**/exposure  *.spec.ts',
+      testMatch: '**/exposure/**/*.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
       },
     },
     {
       name: 'security-validation',
-      testMatch: '**/validation  *.spec.ts',
+      testMatch: '**/validation/**/*.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
       },
     },
     {
       name: 'security-regression',
-      testMatch: '**/regression  *.spec.ts',
+      testMatch: '**/regression/**/*.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
       },
