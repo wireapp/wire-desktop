@@ -148,7 +148,7 @@ jobs:
         run: yarn --immutable
 
       - name: Run npm audit
-        run: yarn audit --level moderate
+        run: npm audit --audit-level moderate
         continue-on-error: true
 
       - name: Run security linting
