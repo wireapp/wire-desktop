@@ -112,6 +112,7 @@ export class WireDesktopLauncher {
       WIRE_FORCE_EXTERNAL_AUTH: 'false',
       // Pass through CI environment variables
       ...(process.env.CI || process.env.GITHUB_ACTIONS ? {
+        DISPLAY: process.env.DISPLAY || ':99',
         ELECTRON_DISABLE_SECURITY_WARNINGS: process.env.ELECTRON_DISABLE_SECURITY_WARNINGS || 'true',
         ELECTRON_DISABLE_GPU: process.env.ELECTRON_DISABLE_GPU || 'true',
         ELECTRON_NO_ATTACH_CONSOLE: process.env.ELECTRON_NO_ATTACH_CONSOLE || 'true',
@@ -130,7 +131,8 @@ export class WireDesktopLauncher {
       console.log('CI Environment Debug:');
       console.log('- CI:', process.env.CI);
       console.log('- GITHUB_ACTIONS:', process.env.GITHUB_ACTIONS);
-      console.log('- Virtual display: provided by xvfb-run');
+      console.log('- DISPLAY:', process.env.DISPLAY);
+      console.log('- Virtual display: provided by Xvfb');
       console.log('- Current working directory:', process.cwd());
     }
 

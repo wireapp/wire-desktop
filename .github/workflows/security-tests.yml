@@ -50,6 +50,17 @@ jobs:
           cd test/e2e-security
           yarn playwright install --with-deps
 
+      - name: Set up virtual display
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          # Start Xvfb and keep it running
+          export DISPLAY=:99
+          Xvfb :99 -ac -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          # Wait for Xvfb to be ready
+          sleep 5
+          echo "DISPLAY=:99" >> $GITHUB_ENV
+
       - name: Run Security E2E Tests
         working-directory: test/e2e-security
         env:
@@ -62,12 +73,10 @@ jobs:
           WIRE_FORCE_EXTERNAL_AUTH: false
           HEADLESS: true
         run: |
-          # Start Xvfb in background
-          export DISPLAY=:99
-          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-          sleep 3
-
           echo "DISPLAY is set to: $DISPLAY"
+          echo "Verifying X server is running..."
+          xdpyinfo -display :99 || echo "Warning: xdpyinfo failed, but continuing..."
+
           echo "Running Security Exposure Tests..."
           yarn test:security:exposure
 
