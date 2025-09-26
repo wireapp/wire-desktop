@@ -68,7 +68,7 @@
     "@typescript-eslint/parser": "7.18.0",
     "@wireapp/copy-config": "2.3.3",
     "@wireapp/eslint-config": "3.1.2",
-    "@wireapp/prettier-config": "0.6.4",
+    "@wireapp/prettier-config": "0.6.5",
     "adm-zip": "0.5.16",
     "aws-sdk": "2.1692.0",
     "babel-core": "7.0.0-bridge.0",
