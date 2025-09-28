@@ -19,21 +19,47 @@
 
 import {i18nLanguageIdentifier} from '../../../src/locale';
 
-export const getText = (stringIdentifier: i18nLanguageIdentifier, paramReplacements?: Record<string, string>) => {
-  const locStrings = window.wireDesktop?.locStrings || {};
-  const locStringsDefault = window.wireDesktop?.locStringsDefault || {};
+interface WireDesktopGlobal {
+  wireDesktop?: {
+    locStrings?: Record<string, string>;
+    locStringsDefault?: Record<string, string>;
+    locale?: string;
+  };
+}
 
-  let str = locStrings[stringIdentifier] || locStringsDefault[stringIdentifier] || stringIdentifier;
+export const getText = (
+  stringIdentifier: i18nLanguageIdentifier,
+  paramReplacements?: Record<string, string>,
+): string => {
+  const wireDesktop = (globalThis as WireDesktopGlobal).wireDesktop;
+  const locStrings = wireDesktop?.locStrings || {};
+  const locStringsDefault = wireDesktop?.locStringsDefault || {};
 
-  const replacements = {...paramReplacements};
-  for (const replacement of Object.keys(replacements)) {
-    const regex = new RegExp(`{${replacement}}`, 'g');
-    if (str.match(regex)) {
-      str = str.replace(regex, replacements[replacement]);
+  const locStringsMap = new Map(Object.entries(locStrings));
+  const locStringsDefaultMap = new Map(Object.entries(locStringsDefault));
+
+  let str: string =
+    (locStringsMap.get(stringIdentifier) as string) ||
+    (locStringsDefaultMap.get(stringIdentifier) as string) ||
+    stringIdentifier;
+
+  if (paramReplacements) {
+    const replacementsMap = new Map(Object.entries(paramReplacements));
+    for (const [replacement, value] of replacementsMap) {
+      if (!/^[a-zA-Z0-9_-]+$/.test(replacement)) {
+        continue;
+      }
+      if (typeof value !== 'string') {
+        continue;
+      }
+      const placeholder = `{${replacement}}`;
+      if (str.includes(placeholder)) {
+        str = str.replaceAll(placeholder, value);
+      }
     }
   }
 
   return str;
 };
 
-export const wrapperLocale = () => window.wireDesktop?.locale || 'en';
+export const wrapperLocale = (): string => (globalThis as WireDesktopGlobal).wireDesktop?.locale || 'en';

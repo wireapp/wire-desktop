@@ -27,7 +27,7 @@ import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 export declare global {
   /* eslint-disable no-var */
-  var _ConfigurationPersistence: Record<string, any>;
+  var _ConfigurationPersistence: Record<string, unknown>;
   var desktopCapturer: {
     getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
   };
@@ -51,7 +51,19 @@ export declare global {
 
   interface Window {
     amplify: amplify;
-    wire: any;
+    wire: {
+      app?: {
+        service?: {
+          storage?: unknown;
+        };
+      };
+      auth?: {
+        repository?: unknown;
+      };
+      tracking?: {
+        repository?: unknown;
+      };
+    };
     z: {
       event: {
         WebApp: typeof WebAppEvents;
@@ -109,7 +121,7 @@ export declare global {
 
   namespace NodeJS {
     interface Global {
-      _ConfigurationPersistence: Record<string, any>;
+      _ConfigurationPersistence: Record<string, unknown>;
       desktopCapturer: {
         getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
       };
@@ -126,5 +138,31 @@ export declare global {
         version: number;
       };
     }
+  }
+
+  interface WebPreferencesExtended extends Electron.WebPreferences {
+    autosize?: string;
+    contextIsolation?: boolean | string;
+    plugins?: string | boolean;
+  }
+
+  interface WebviewParams {
+    autosize?: string;
+    contextIsolation?: string;
+    plugins?: string;
+  }
+
+  interface GPUInfo {
+    gpuDevice?: Array<{
+      deviceId: number;
+      vendorId: number;
+      description: string;
+    }>;
+    auxAttributes?: Record<string, unknown>;
+    featureStatus?: Record<string, unknown>;
+    driverBugWorkarounds?: string[];
+    videoDecodeAcceleratorSupportedProfiles?: Array<unknown>;
+    videoEncodeAcceleratorSupportedProfiles?: Array<unknown>;
+    imageDecodeAcceleratorSupportedProfiles?: Array<unknown>;
   }
 }

@@ -19,7 +19,7 @@
 
 import JSZip from 'jszip';
 
-import * as path from 'path';
+import * as path from 'node:path';
 
 import {getLogger} from '../logging/getLogger';
 
@@ -29,8 +29,12 @@ export const zipFiles = async (files: Record<string, Uint8Array>): Promise<JSZip
   const zip = new JSZip();
 
   try {
-    for (const filename in files) {
-      zip.file(filename, files[filename], {binary: true});
+    for (const [filename, content] of Object.entries(files)) {
+      if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+        logger.warn(`Skipping unsafe filename: ${filename}`);
+        continue;
+      }
+      zip.file(filename, content, {binary: true});
     }
   } catch (error) {
     logger.error(error);

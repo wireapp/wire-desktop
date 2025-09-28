@@ -20,7 +20,7 @@
 import * as Electron from 'electron';
 import fs from 'fs-extra';
 
-import * as path from 'path';
+import * as path from 'node:path';
 
 import {SettingsType} from './SettingsType';
 
@@ -62,24 +62,40 @@ export class SchemaUpdater {
   static updateToVersion1(configFileV0 = getDefaultPathV0(), configFileV1 = getDefaultPathV1()): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
-    if (fs.existsSync(configFileV0)) {
+    const path = require('node:path');
+    const resolvedV0 = path.resolve(configFileV0);
+    const resolvedV1 = path.resolve(configFileV1);
+
+    if (resolvedV0.includes('..') || resolvedV1.includes('..')) {
+      throw new Error('Invalid config file paths');
+    }
+
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    if (fs.existsSync(resolvedV0)) {
       try {
-        fs.moveSync(configFileV0, configFileV1, {overwrite: true});
-        Object.assign(config, fs.readJSONSync(configFileV1));
-      } catch (error: any) {
-        logger.log(`Could not upgrade "${configFileV0}" to "${configFileV1}": ${error.message}`, error);
+        fs.moveSync(resolvedV0, resolvedV1, {overwrite: true});
+        Object.assign(config, fs.readJSONSync(resolvedV1));
+      } catch (error) {
+        logger.log(
+          `Could not upgrade "${configFileV0}" to "${configFileV1}": ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          error,
+        );
       }
 
-      const getSetting = (setting: string) => (config.hasOwnProperty(setting) ? config[setting] : undefined);
-      const hasNoConfigVersion = typeof getSetting('configVersion') === 'undefined';
+      const configMap = new Map(Object.entries(config));
+      const getSetting = (setting: string) => configMap.get(setting);
+      const hasNoConfigVersion = getSetting('configVersion') === undefined;
 
       if (hasNoConfigVersion) {
-        [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS].forEach(setting => {
-          if (typeof getSetting(setting) !== 'undefined') {
-            delete config[setting];
+        for (const setting of [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS]) {
+          if (getSetting(setting) !== undefined) {
+            configMap.delete(setting);
             logger.log(`Deleted "${setting}" property from old init file.`);
           }
-        });
+        }
+        Object.assign(config, Object.fromEntries(configMap));
       }
 
       try {

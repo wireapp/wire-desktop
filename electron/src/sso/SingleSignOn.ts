@@ -29,13 +29,13 @@ import {
   HandlerDetails,
 } from 'electron';
 
-import * as crypto from 'crypto';
-import * as path from 'path';
-import {URL} from 'url';
+import * as crypto from 'node:crypto';
+import * as path from 'node:path';
+import {URL} from 'node:url';
 
 import {LogFactory} from '@wireapp/commons';
 
-import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {dispatchSSOMessage} from '../lib/ElectronUtil';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
 import {getWebViewId} from '../runtime/lifecycle';
 import {config} from '../settings/config';
@@ -106,7 +106,7 @@ export class SingleSignOn {
     // Show the window(s)
     await this.ssoWindow?.loadURL(this.windowOriginUrl.toString());
 
-    if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
+    if (argv[config.ARGUMENT.DEVTOOLS] !== undefined) {
       this.ssoWindow?.webContents.openDevTools({mode: 'detach'});
     }
     return this;
@@ -243,7 +243,7 @@ export class SingleSignOn {
         }
 
         if (typeof SingleSignOn.loginAuthorizationSecret !== 'string') {
-          throw new Error('Secret has not be set or has been consumed');
+          throw new TypeError('Secret has not be set or has been consumed');
         }
 
         if (requestURL.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
@@ -253,7 +253,7 @@ export class SingleSignOn {
         const type = requestURL.searchParams.get('type');
 
         if (typeof type !== 'string') {
-          throw new Error('Response is empty');
+          throw new TypeError('Response is empty');
         }
 
         if (type.length > SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT) {
@@ -301,15 +301,7 @@ export class SingleSignOn {
   };
 
   private async dispatchResponse(type: string): Promise<void> {
-    // Ensure guest window provided type is valid
-    const isTypeValid = /^[A-Z_]{1,255}$/g;
-    if (isTypeValid.test(type) === false) {
-      throw new Error('Invalid type detected, aborting.');
-    }
-
-    // Fake postMessage to the webview
-    const snippet = `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}}))`;
-    await executeJavaScriptWithoutResult(snippet, this.senderWebContents);
+    await dispatchSSOMessage(type, this.windowOriginUrl.origin, this.senderWebContents);
   }
 
   private async wipeSessionData() {

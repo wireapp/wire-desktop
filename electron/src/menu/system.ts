@@ -20,7 +20,7 @@
 import autoLaunch from 'auto-launch';
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
 
-import * as path from 'path';
+import * as path from 'node:path';
 
 import {downloadLogs} from '../lib/download';
 import {EVENT_TYPE} from '../lib/eventType';
@@ -51,9 +51,12 @@ const separatorTemplate: MenuItemConstructorOptions = {
 };
 
 const createLanguageTemplate = (languageCode: locale.SupportedI18nLanguage): MenuItemConstructorOptions => {
+  const supportedLanguagesMap = new Map(Object.entries(locale.SUPPORTED_LANGUAGES));
+  const languageLabel = supportedLanguagesMap.get(languageCode) || languageCode;
+
   return {
     click: () => changeLocale(languageCode),
-    label: locale.SUPPORTED_LANGUAGES[languageCode],
+    label: languageLabel,
     type: 'radio',
   };
 };
@@ -379,7 +382,10 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: l
       processMenu(item.submenu as Iterable<MenuItemConstructorOptions>, language);
     }
 
-    if (locale.SUPPORTED_LANGUAGES[language] === item.label) {
+    const supportedLanguagesMap = new Map(Object.entries(locale.SUPPORTED_LANGUAGES));
+    const languageLabel = supportedLanguagesMap.get(language);
+
+    if (languageLabel === item.label) {
       item.checked = true;
     }
   }

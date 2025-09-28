@@ -21,8 +21,8 @@
 
 import fs from 'fs-extra';
 
-import * as childProcess from 'child_process';
-import * as path from 'path';
+import * as childProcess from 'node:child_process';
+import * as path from 'node:path';
 
 import {StringUtil} from '@wireapp/commons';
 
@@ -90,7 +90,15 @@ function spawn(command: string, args: string[]): Promise<void> {
 
 async function spawnUpdate(args: string[]): Promise<void> {
   logger.info(`Running updater with args ${JSON.stringify(args)} ...`);
-  const updateDotExeExists = fs.existsSync(updateDotExe);
+
+  const path = require('node:path');
+  const resolvedUpdaterPath = path.resolve(updateDotExe);
+  if (resolvedUpdaterPath.includes('..') || !resolvedUpdaterPath.endsWith('.exe')) {
+    throw new Error('Invalid updater path');
+  }
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
+  const updateDotExeExists = fs.existsSync(resolvedUpdaterPath);
   if (!updateDotExeExists) {
     logger.info(`Could not find updater in "${updateDotExe}".`);
   }

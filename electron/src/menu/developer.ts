@@ -19,7 +19,7 @@
 
 import {MenuItem, MenuItemConstructorOptions} from 'electron';
 
-import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {openWebViewDevTools} from '../lib/ElectronUtil';
 import {getAvailebleEnvironments, setEnvironment} from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
@@ -35,8 +35,7 @@ export const openDevTools = async (webViewIndex?: number | true): Promise<void> 
 
   if (primaryWindow) {
     if (typeof webViewIndex === 'number' && webViewIndex > 0) {
-      const snippet = `document.getElementsByTagName("webview")[${webViewIndex - 1}].openDevTools({mode: "detach"})`;
-      await executeJavaScriptWithoutResult(snippet, primaryWindow.webContents);
+      await openWebViewDevTools(webViewIndex - 1, primaryWindow.webContents);
     } else {
       primaryWindow.webContents.toggleDevTools();
     }
