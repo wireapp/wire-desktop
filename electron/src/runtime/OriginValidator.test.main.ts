@@ -17,7 +17,7 @@
  *
  */
 
-import * as assert from 'assert';
+import * as assert from 'node:assert';
 
 import {OriginValidator} from './OriginValidator';
 
@@ -164,17 +164,17 @@ describe('OriginValidator', () => {
 
     const invalidPaths = ['/invalid/path', '/admin/users', '/api/users', '/public/assets'];
 
-    validPaths.forEach(path => {
+    for (const path of validPaths) {
       it(`should accept valid SSO path: ${path}`, () => {
         assert.strictEqual(OriginValidator.isValidSSOPath(path), true);
       });
-    });
+    }
 
-    invalidPaths.forEach(path => {
+    for (const path of invalidPaths) {
       it(`should reject invalid path: ${path}`, () => {
         assert.strictEqual(OriginValidator.isValidSSOPath(path), false);
       });
-    });
+    }
   });
 
   describe('isValidHostname', () => {
@@ -186,6 +186,7 @@ describe('OriginValidator', () => {
     });
 
     it('should reject IP addresses', () => {
+      // NOSONAR - Test data: verifying security validation rejects IP addresses
       assert.strictEqual(OriginValidator.isValidHostname('192.168.1.1'), false);
       assert.strictEqual(OriginValidator.isValidHostname('10.0.0.1'), false);
       assert.strictEqual(OriginValidator.isValidHostname('2001:0db8:85a3:0000:0000:8a2e:0370:7334'), false);
