@@ -45,7 +45,6 @@ const PRELOAD_APP_FILE = path.resolve(__dirname, '../electron/src/preload/preloa
  * @returns {string} The EVENT_TYPE object as a string
  */
 function extractEventType(sourceContent) {
-  // Find the start of EVENT_TYPE export
   const startMatch = sourceContent.match(/export const EVENT_TYPE = \{/);
   if (!startMatch) {
     throw new Error('Could not find EVENT_TYPE export in source file');
@@ -55,7 +54,6 @@ function extractEventType(sourceContent) {
   let braceCount = 0;
   let endIndex = startIndex;
   
-  // Find the matching closing brace
   for (let i = startIndex; i < sourceContent.length; i++) {
     const char = sourceContent[i];
     if (char === '{') {
@@ -179,14 +177,12 @@ export {};
 function updatePreloadAppFile(filePath, eventTypeObject) {
   let content = fs.readFileSync(filePath, 'utf8');
 
-  // Find the existing EVENT_TYPE declaration
   const eventTypeStart = content.indexOf('const EVENT_TYPE = {');
   if (eventTypeStart === -1) {
     console.log('No EVENT_TYPE duplication found in preload-app.ts');
     return;
   }
 
-  // Find the end of the EVENT_TYPE object
   let braceCount = 0;
   let eventTypeEnd = eventTypeStart;
   for (let i = eventTypeStart; i < content.length; i++) {
@@ -196,7 +192,6 @@ function updatePreloadAppFile(filePath, eventTypeObject) {
     } else if (char === '}') {
       braceCount--;
       if (braceCount === 0) {
-        // Find the end of the line (including semicolon)
         while (i < content.length && content[i] !== '\n') {
           i++;
         }
@@ -206,11 +201,9 @@ function updatePreloadAppFile(filePath, eventTypeObject) {
     }
   }
 
-  // Replace the existing EVENT_TYPE with the synchronized version
   const beforeEventType = content.substring(0, eventTypeStart);
   const afterEventType = content.substring(eventTypeEnd + 1);
 
-  // Generate the updated EVENT_TYPE with proper comment
   const updatedEventType = `/**
  * Event type constants for IPC communication
  *
@@ -232,18 +225,14 @@ function syncEvents() {
   try {
     console.log('Synchronizing EVENT_TYPE constants...');
     
-    // Read the source file
     const sourceContent = fs.readFileSync(SOURCE_FILE, 'utf8');
     
-    // Extract EVENT_TYPE object
     const eventTypeObject = extractEventType(sourceContent);
     
-    // Generate and write shared constants file
     const sharedContent = generateSharedConstantsContent(eventTypeObject);
     fs.writeFileSync(SHARED_CONSTANTS_FILE, sharedContent, 'utf8');
     console.log('✓ Updated shared/contextIsolationConstants.ts');
     
-    // Update preload-app.ts with synchronized EVENT_TYPE constants
     updatePreloadAppFile(PRELOAD_APP_FILE, eventTypeObject);
     console.log('✓ Updated preload/preload-app.ts');
     
@@ -256,5 +245,4 @@ function syncEvents() {
   }
 }
 
-// Run the sync
 syncEvents();
