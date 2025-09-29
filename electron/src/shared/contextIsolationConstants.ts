@@ -41,6 +41,7 @@
  * Context Isolation Security: Due to context isolation, we cannot import the main process
  * eventType module directly in renderer/preload, so we maintain this synchronized copy.
  */
+// NOSONAR - Duplication required for context isolation, must be kept in sync with main process
 export const EVENT_TYPE = {
   ACCOUNT: {
     DATA_DELETED: 'EVENT_TYPE.ACCOUNT.DATA_DELETED',
@@ -145,6 +146,7 @@ export const WebAppEvents = {
  * @param {string} name - The logger name/context for identifying log sources
  * @returns {Object} Logger interface with info, log, warn, and error methods
  */
+// NOSONAR - Duplication required for sandboxed context isolation
 export const createSandboxLogger = (name: string) => ({
   info: (message: string, ...args: any[]) => {
     // eslint-disable-next-line no-console

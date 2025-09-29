@@ -88,6 +88,7 @@ const WebAppEvents = {
  * EVENT_TYPE definitions. They are duplicated here because preload scripts cannot
  * import from main process modules due to context isolation.
  */
+// NOSONAR - Duplication required for sandboxed preload context isolation
 const EVENT_TYPE = {
   ACCOUNT: {
     UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
@@ -158,6 +159,7 @@ const EVENT_TYPE = {
  * @param {string} prefix - The prefix to use for log messages
  * @returns {Object} Logger object with info, log, warn, and error methods
  */
+// NOSONAR - Duplication required for sandboxed preload context isolation
 const createSandboxLogger = (prefix: string) => ({
   info: (message: string, ...args: any[]) => {
     // eslint-disable-next-line no-console
