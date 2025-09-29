@@ -22,8 +22,6 @@ import {contextBridge, ipcRenderer, webFrame} from 'electron';
 // Context Isolation Security: Import shared constants for type safety and maintainability
 import {EVENT_TYPE, WebAppEvents, createSandboxLogger} from '../shared/contextIsolationConstants';
 
-
-
 /**
  * Platform detection utilities for sandboxed context
  *

@@ -151,15 +151,26 @@ export const WebAppEvents = {
 
 /**
  * Simple logger implementation for preload scripts.
- * 
+ *
  * Context Isolation Security: Main process getLogger cannot be imported in preload
  * scripts. This provides a safe logging interface using console methods.
+ *
+ * @param {string} name - The name/prefix for the logger
+ * @returns {Object} Logger object with info, log, warn, and error methods
  */
 export const createSandboxLogger = (name: string) => ({
-  info: (message: string, ...args: any[]) => console.info(\`[\${name}] \${message}\`, ...args),
-  log: (message: string, ...args: any[]) => console.log(\`[\${name}] \${message}\`, ...args),
-  warn: (message: string, ...args: any[]) => console.warn(\`[\${name}] \${message}\`, ...args),
-  error: (message: string, ...args: any[]) => console.error(\`[\${name}] \${message}\`, ...args),
+  info: (message: string, ...args: any[]) =>
+    // eslint-disable-next-line no-console
+    console.info(\`[\${name}] \${message}\`, ...args),
+  log: (message: string, ...args: any[]) =>
+    // eslint-disable-next-line no-console
+    console.log(\`[\${name}] \${message}\`, ...args),
+  warn: (message: string, ...args: any[]) =>
+    // eslint-disable-next-line no-console
+    console.warn(\`[\${name}] \${message}\`, ...args),
+  error: (message: string, ...args: any[]) =>
+    // eslint-disable-next-line no-console
+    console.error(\`[\${name}] \${message}\`, ...args),
 });
 
 // Export this to make the file a module and prevent global scope pollution
