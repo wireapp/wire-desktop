@@ -158,7 +158,7 @@
     "build:macos:internal:x64": "yarn build:macos:internal -a x64",
     "build:macos:internal:arm64": "yarn build:macos:internal -a arm64",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
-    "build:ts": "yarn clear:ts && tsc -P tsconfig.build.json",
+    "build:ts": "yarn clear:ts && node bin/inject-version.js && tsc -P tsconfig.build.json && node bin/inject-version.js restore",
     "build:ts:bin": "tsc -P tsconfig.bin.json --noEmit",
     "build:ts:tests": "tsc -P tsconfig.mocha.json --noEmit",
     "build:win": "yarn build:prepare && ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts windows",

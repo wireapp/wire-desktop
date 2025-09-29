@@ -228,9 +228,9 @@ const EnvironmentUtil = {
     })(),
   },
   app: {
-    // Context Isolation Security: Version is hardcoded to avoid importing config module
+    // Context Isolation Security: Version is injected at build time to avoid importing config module
     // This should match the version in wire.json
-    DESKTOP_VERSION: '3.40.0',
+    DESKTOP_VERSION: process.env.DESKTOP_VERSION || 'unknown',
   },
 };
 
