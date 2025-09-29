@@ -286,7 +286,8 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
       contextIsolation: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      sandbox: true,
+      // Disabled to allow preload-app.js to import shared constants
+      sandbox: false,
       webviewTag: true,
     },
     width: mainWindowState.width,
