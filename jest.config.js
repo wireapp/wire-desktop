@@ -24,7 +24,7 @@
 const jestConfig = {
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['<rootDir>/electron/dist'],
+  testPathIgnorePatterns: ['<rootDir>/electron/dist', '<rootDir>/electron/src'],
 };
 
 module.exports = jestConfig;

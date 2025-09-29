@@ -38,6 +38,7 @@ import {LogFactory} from '@wireapp/commons';
 import {dispatchSSOMessage} from '../lib/ElectronUtil';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
 import {getWebViewId} from '../runtime/lifecycle';
+import {OriginValidator} from '../runtime/OriginValidator';
 import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
 
@@ -85,6 +86,12 @@ export class SingleSignOn {
   }
 
   public readonly init = async (): Promise<SingleSignOn> => {
+    const urlValidation = OriginValidator.validateSSORedirectURL(this.windowOriginUrl.toString());
+    if (!urlValidation.isValid) {
+      SingleSignOn.logger.error(`SSO URL validation failed: ${urlValidation.reason}`);
+      throw new Error(`Invalid SSO URL: ${urlValidation.reason}`);
+    }
+
     // Create a ephemeral and isolated session
     this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
 
@@ -103,8 +110,8 @@ export class SingleSignOn {
     // Note: we need to create the window before otherwise it does not work
     await SingleSignOn.registerProtocol(this.session, type => this.finalizeLogin(type));
 
-    // Show the window(s)
-    await this.ssoWindow?.loadURL(this.windowOriginUrl.toString());
+    // Show the window(s) - use validated URL
+    await this.ssoWindow?.loadURL(urlValidation.sanitizedUrl || this.windowOriginUrl.toString());
 
     if (argv[config.ARGUMENT.DEVTOOLS] !== undefined) {
       this.ssoWindow?.webContents.openDevTools({mode: 'detach'});
@@ -140,18 +147,53 @@ export class SingleSignOn {
     ssoWindow.on('page-title-updated', event => event.preventDefault());
     // Prevent new windows (open external pages in OS browser)
     ssoWindow.webContents.setWindowOpenHandler((details: HandlerDetails): {action: 'deny'} => {
+      SingleSignOn.logger.log(`Blocking new window request to: ${details.url}`);
       void WindowUtil.openExternal(details.url, true);
       return {action: 'deny'};
     });
 
-    ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
-      const {origin} = new URL(url);
+    ssoWindow.webContents.session.on('will-download', event => {
+      SingleSignOn.logger.warn('Blocking download attempt in SSO window');
+      event.preventDefault();
+    });
 
-      if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
+    ssoWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+      SingleSignOn.logger.warn(`Blocking permission request for: ${permission}`);
+      callback(false);
+    });
+
+    ssoWindow.webContents.on('certificate-error', (event, url, error, certificate, callback) => {
+      SingleSignOn.logger.error(`Certificate error for ${url}: ${error}`);
+      event.preventDefault();
+      callback(false);
+    });
+
+    ssoWindow.webContents.on('will-navigate', (event: ElectronEvent, url: string) => {
+      SingleSignOn.logger.log(`SSO window attempting to navigate to: ${url}`);
+
+      try {
+        const urlValidation = OriginValidator.validateSSORedirectURL(url);
+
+        if (!urlValidation.isValid) {
+          SingleSignOn.logger.warn(`Blocking navigation to invalid URL: ${url}. Reason: ${urlValidation.reason}`);
+          event.preventDefault();
+          return;
+        }
+
+        const {origin} = new URL(url);
+
+        if (origin.length > SingleSignOn.MAX_LENGTH_ORIGIN) {
+          SingleSignOn.logger.warn(`Blocking navigation to URL with excessive origin length: ${url}`);
+          event.preventDefault();
+          return;
+        }
+
+        ssoWindow.setTitle(SingleSignOn.getWindowTitle(origin));
+        SingleSignOn.logger.log(`Allowing navigation to validated URL: ${url}`);
+      } catch (error) {
+        SingleSignOn.logger.error(`Error validating navigation URL: ${url}`, error);
         event.preventDefault();
       }
-
-      ssoWindow.setTitle(SingleSignOn.getWindowTitle(origin));
     });
 
     if (ENABLE_LOGGING) {
