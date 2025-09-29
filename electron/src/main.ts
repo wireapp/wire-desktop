@@ -826,4 +826,4 @@ let main: BrowserWindow;
       logger.error(error);
     }
   }
-})().catch(error => logger.error('Main process initialization failed:', error));
+})();
