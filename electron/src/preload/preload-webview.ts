@@ -22,7 +22,10 @@ import type {Data as OpenGraphResult} from 'open-graph';
 
 import type {Availability} from '@wireapp/protocol-messaging';
 
-import {EVENT_TYPE, createSandboxLogger} from '../shared/contextIsolationConstants';
+// Context Isolation Security: Constants and utilities must be defined inline
+// because sandboxed preload scripts cannot import from relative paths due to
+// limited CommonJS module resolution in Electron's sandbox environment.
+// These are kept in sync with ../shared/contextIsolationConstants.ts
 // Context Isolation Security: WebApp events constants
 // These cannot be imported from @wireapp/webapp-events due to context isolation restrictions.
 const WebAppEvents = {
@@ -80,9 +83,100 @@ const WebAppEvents = {
   },
 } as const;
 
-// EVENT_TYPE imported from shared constants
+/**
+ * Event type constants for IPC communication
+ *
+ * IMPORTANT: This is a necessary duplication of ../shared/contextIsolationConstants.ts
+ * due to Electron sandbox limitations. Keep in sync with the shared file.
+ */
+const EVENT_TYPE = {
+  ACCOUNT: {
+    UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
+  },
+  ACTION: {
+    CHANGE_DOWNLOAD_LOCATION: 'EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION',
+    DECRYPT: 'EVENT_TYPE.ACTION.DECRYPT',
+    ENCRYPT: 'EVENT_TYPE.ACTION.ENCRYPT',
+    GET_DESKTOP_SOURCES: 'EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES',
+    GET_OG_DATA: 'EVENT_TYPE.ACTION.GET_OG_DATA',
+    JOIN_CONVERSATION: 'EVENT_TYPE.ACTION.JOIN_CONVERSATION',
+    NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
+    SIGN_OUT: 'EVENT_TYPE.ACTION.SIGN_OUT',
+  },
+  CONTEXT_MENU: {
+    COPY_TEXT: 'EVENT_TYPE.CONTEXT_MENU.COPY_TEXT',
+    COPY_IMAGE: 'EVENT_TYPE.CONTEXT_MENU.COPY_IMAGE',
+    SAVE_IMAGE: 'EVENT_TYPE.CONTEXT_MENU.SAVE_IMAGE',
+    REPLACE_MISSPELLING: 'EVENT_TYPE.CONTEXT_MENU.REPLACE_MISSPELLING',
+  },
+  CONVERSATION: {
+    ADD_PEOPLE: 'EVENT_TYPE.CONVERSATION.ADD_PEOPLE',
+    ARCHIVE: 'EVENT_TYPE.CONVERSATION.ARCHIVE',
+    CALL: 'EVENT_TYPE.CONVERSATION.CALL',
+    DELETE: 'EVENT_TYPE.CONVERSATION.DELETE',
+    PEOPLE: 'EVENT_TYPE.CONVERSATION.PEOPLE',
+    PING: 'EVENT_TYPE.CONVERSATION.PING',
+    SEARCH: 'EVENT_TYPE.CONVERSATION.SEARCH',
+    SHOW_NEXT: 'EVENT_TYPE.CONVERSATION.SHOW_NEXT',
+    SHOW_PREVIOUS: 'EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS',
+    START: 'EVENT_TYPE.CONVERSATION.START',
+    TOGGLE_MUTE: 'EVENT_TYPE.CONVERSATION.TOGGLE_MUTE',
+    VIDEO_CALL: 'EVENT_TYPE.CONVERSATION.VIDEO_CALL',
+  },
+  LIFECYCLE: {
+    SIGNED_IN: 'EVENT_TYPE.LIFECYCLE.SIGNED_IN',
+    SIGNED_OUT: 'EVENT_TYPE.LIFECYCLE.SIGNED_OUT',
+    SIGN_OUT: 'EVENT_TYPE.LIFECYCLE.SIGN_OUT',
+    UNREAD_COUNT: 'EVENT_TYPE.LIFECYCLE.UNREAD_COUNT',
+  },
+  PREFERENCES: {
+    SHOW: 'EVENT_TYPE.PREFERENCES.SHOW',
+  },
+  UI: {
+    SHOULD_USE_DARK_COLORS: 'EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS',
+    SYSTEM_THEME_CHANGED: 'EVENT_TYPE.UI.SYSTEM_THEME_CHANGED',
+    THEME_UPDATE: 'EVENT_TYPE.UI.THEME_UPDATE',
+    WEBAPP_VERSION: 'EVENT_TYPE.UI.WEBAPP_VERSION',
+    WEBAPP_AVS_VERSION: 'EVENT_TYPE.UI.WEBAPP_AVS_VERSION',
+  },
+  WEBAPP: {
+    APP_LOADED: 'EVENT_TYPE.WEBAPP.APP_LOADED',
+    CHANGE_LOCATION_HASH: 'EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH',
+  },
+  WRAPPER: {
+    NAVIGATE_WEBVIEW: 'EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW',
+    RELAUNCH: 'EVENT_TYPE.WRAPPER.RELAUNCH',
+    UPDATE_AVAILABLE: 'EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE',
+  },
+} as const;
 
-// createSandboxLogger imported from shared constants
+/**
+ * Safe logger for sandboxed preload context
+ *
+ * IMPORTANT: This is a necessary duplication of ../shared/contextIsolationConstants.ts
+ * due to Electron sandbox limitations. Keep in sync with the shared file.
+ *
+ * @param {string} prefix - The prefix to use for log messages
+ * @returns {Object} Logger object with info, log, warn, and error methods
+ */
+const createSandboxLogger = (prefix: string) => ({
+  info: (message: string, ...args: any[]) => {
+    // eslint-disable-next-line no-console
+    console.log(`[${prefix}] ${message}`, ...args);
+  },
+  log: (message: string, ...args: any[]) => {
+    // eslint-disable-next-line no-console
+    console.log(`[${prefix}] ${message}`, ...args);
+  },
+  warn: (message: string, ...args: any[]) => {
+    // eslint-disable-next-line no-console
+    console.warn(`[${prefix}] ${message}`, ...args);
+  },
+  error: (message: string, ...args: any[]) => {
+    // eslint-disable-next-line no-console
+    console.error(`[${prefix}] ${message}`, ...args);
+  },
+});
 
 /**
  * Environment utilities for sandboxed context
