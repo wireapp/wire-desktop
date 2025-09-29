@@ -23,7 +23,7 @@ import {Availability} from '@wireapp/protocol-messaging';
 
 import {AccountAction, accountAction} from './AccountAction';
 
-import {getLogger} from '../../../src/logging/getLogger';
+import {createSandboxLogger} from '../../../src/shared/contextIsolationConstants';
 import {AppDispatch, State} from '../index';
 import {generateUUID} from '../lib/util';
 import {
@@ -42,7 +42,13 @@ import {AccountSelector} from '../selector/AccountSelector';
 import {Account, ConversationJoinData} from '../types/account';
 import {ContextMenuState} from '../types/contextMenuState';
 
-const logger = getLogger('actions');
+/**
+ * Logger for renderer actions
+ *
+ * Context Isolation Security: Uses shared sandbox logger instead of main process getLogger
+ * which is not available in the sandboxed renderer process due to context isolation.
+ */
+const logger = createSandboxLogger('renderer-actions');
 
 export enum ACCOUNT_ACTION {
   ADD_ACCOUNT = 'ADD_ACCOUNT',
@@ -127,7 +133,7 @@ export const abortAccountCreation = (id: string) => {
   return (dispatch: AppDispatch, getState: () => State) => {
     // Note: It's not guaranteed that the dispatched action "deleteAccount" generates a new state without the deleted account
     const accounts = AccountSelector.getAccounts(getState()).filter(account => account.id !== id);
-    const lastAccount = accounts[accounts.length - 1];
+    const lastAccount = accounts.at(-1);
 
     dispatch(deleteAccount(id));
 
@@ -177,12 +183,21 @@ export const updateAccountData = (id: string, data: Partial<Account>) => {
   return (dispatch: AppDispatch) => {
     const validatedAccountData = accountDataSchema.validate(data);
 
-    if (!validatedAccountData.error) {
-      dispatch(updateAccount(id, validatedAccountData.value));
-    } else {
+    if (validatedAccountData.error) {
       logger.warn('Got invalid account data:', validatedAccountData.error);
+    } else {
+      dispatch(updateAccount(id, validatedAccountData.value));
     }
   };
+};
+
+/**
+ * Type guard to check if wireDesktop API is available
+ * Context Isolation Security: Safely checks for wireDesktop API without type assertions
+ * @returns {boolean} True if wireDesktop API is available and functional
+ */
+const hasWireDesktopAPI = (): boolean => {
+  return globalThis.window !== undefined && typeof globalThis.window.wireDesktop?.sendBadgeCount === 'function';
 };
 
 export const updateAccountBadgeCount = (id: string, count: number) => {
@@ -194,7 +209,9 @@ export const updateAccountBadgeCount = (id: string, count: number) => {
     }, 0);
     const ignoreFlash = account?.availability === Availability.Type.BUSY;
 
-    window.wireDesktop?.sendBadgeCount(accumulatedCount, ignoreFlash);
+    if (hasWireDesktopAPI()) {
+      globalThis.window.wireDesktop.sendBadgeCount(accumulatedCount, ignoreFlash);
+    }
 
     if (account) {
       const countHasChanged = account.badgeCount !== count;

@@ -20,7 +20,7 @@
 import * as fs from 'fs-extra';
 import * as logdown from 'logdown';
 
-import * as path from 'path';
+import * as path from 'node:path';
 
 import {SchemaUpdater} from './SchemaUpdater';
 
@@ -34,38 +34,36 @@ class ConfigurationPersistence {
     this.configFile = SchemaUpdater.updateToVersion1();
     this.logger = getLogger(path.basename(__filename));
 
-    if (typeof global._ConfigurationPersistence === 'undefined') {
-      global._ConfigurationPersistence = this.readFromFile();
-    }
+    globalThis._ConfigurationPersistence ??= this.readFromFile();
 
     this.logger.info('Initializing ConfigurationPersistence');
   }
 
   delete(name: string): true {
     this.logger.info(`Deleting "${name}"`);
-    delete global._ConfigurationPersistence[name];
+    delete globalThis._ConfigurationPersistence[name];
     return true;
   }
 
   save<T>(name: string, value: T): true {
     this.logger.info(`Saving "${name}" with value:`, value);
-    global._ConfigurationPersistence[name] = value;
+    globalThis._ConfigurationPersistence[name] = value;
     return true;
   }
 
   restore<T>(name: string, defaultValue?: T): T {
     this.logger.info(`Restoring "${name}"`);
-    const value = global._ConfigurationPersistence[name];
-    return typeof value !== 'undefined' ? value : defaultValue;
+    const value = globalThis._ConfigurationPersistence[name];
+    return value === undefined ? (defaultValue as T) : value;
   }
 
   persistToFile(): void {
     this.logger.info(
       `Saving configuration to persistent storage in "${this.configFile}":`,
-      global._ConfigurationPersistence,
+      globalThis._ConfigurationPersistence,
     );
     try {
-      return fs.outputJsonSync(this.configFile, global._ConfigurationPersistence, {spaces: 2});
+      return fs.outputJsonSync(this.configFile, globalThis._ConfigurationPersistence, {spaces: 2});
     } catch (error) {
       this.logger.error('An error occurred while persisting the configuration', error);
     }
@@ -81,7 +79,8 @@ class ConfigurationPersistence {
       this.logger.warn('No config found');
       const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:
-      return SchemaUpdater.SCHEMATA[schemataKeys[schemataKeys.length - 1]];
+      const lastKey = schemataKeys.at(-1);
+      return SchemaUpdater.SCHEMATA[lastKey!];
     }
   }
 }
