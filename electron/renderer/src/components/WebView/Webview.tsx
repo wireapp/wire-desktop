@@ -26,8 +26,7 @@ import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-ki
 
 import './Webview.css';
 
-import {EVENT_TYPE} from '../../../../src/lib/eventType';
-import {getLogger} from '../../../../src/logging/getLogger';
+import {EVENT_TYPE, createSandboxLogger} from '../../../../src/shared/contextIsolationConstants';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -49,8 +48,20 @@ import {LoadingSpinner} from '../LoadingSpinner';
 type WebviewTag = Electron.WebviewTag;
 type DidFailLoadEvent = Electron.DidFailLoadEvent;
 
+interface WireDesktopGlobal {
+  wireDesktop?: {
+    sendConversationJoinToHost: (accountId: string, code: string, key: string, domain: string) => void;
+    sendDeleteAccount: (accountId: string, sessionId?: string) => Promise<void>;
+  };
+  location: typeof globalThis.location;
+  setTimeout: typeof globalThis.setTimeout;
+  clearTimeout: typeof globalThis.clearTimeout;
+}
+
+const rendererGlobal = globalThis as unknown as WireDesktopGlobal;
+
 const getEnvironmentUrl = (account: Account) => {
-  const currentLocation = new URL(window.location.href);
+  const currentLocation = new URL(globalThis.location.href);
   const envParam = account.webappUrl || currentLocation.searchParams.get('env');
   const decodedEnvParam = decodeURIComponent(envParam!);
   const url = new URL(decodedEnvParam);
@@ -105,7 +116,13 @@ const Webview = ({
   const [canDelete, setCanDelete] = useState(false);
   const [url, setUrl] = useState(getEnvironmentUrl(account));
   const [webviewError, setWebviewError] = useState<DidFailLoadEvent | null>(null);
-  const logger = getLogger('Webview');
+  /**
+   * Logger for Webview component
+   *
+   * Context Isolation Security: Uses shared sandbox logger instead of main process getLogger
+   * which is not available in the sandboxed renderer process due to context isolation.
+   */
+  const logger = createSandboxLogger('Webview');
 
   useEffect(() => {
     const newUrl = getEnvironmentUrl(account);
@@ -124,7 +141,7 @@ const Webview = ({
   // https://github.com/electron/electron/issues/14474#issuecomment-425794480
   useEffect(() => {
     const webview = webviewRef.current;
-    const currentLocation = new URL(window.location.href);
+    const currentLocation = new URL(globalThis.location.href);
     const focusParam = currentLocation.searchParams.get('focus');
 
     const focusWebView = () => {
@@ -151,13 +168,13 @@ const Webview = ({
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | number;
     if (webviewError) {
-      timeoutId = window.setTimeout(() => {
+      timeoutId = globalThis.setTimeout(() => {
         setWebviewError(null);
         webviewRef.current?.reload();
       }, 5000);
     }
     return () => {
-      window.clearTimeout(timeoutId);
+      globalThis.clearTimeout(timeoutId);
     };
   }, [webviewError]);
 
@@ -189,7 +206,7 @@ const Webview = ({
           const [customUrl] = args;
 
           if (isString(customUrl)) {
-            const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
+            const updatedWebapp = WindowUrl.createWebAppUrl(globalThis.location.toString(), customUrl);
             updateAccountData(accountId, {
               webappUrl: updatedWebapp,
             });
@@ -213,7 +230,7 @@ const Webview = ({
         case EVENT_TYPE.LIFECYCLE.SIGNED_IN: {
           if (conversationJoinData) {
             const {code, key, domain} = conversationJoinData;
-            window.wireDesktop?.sendConversationJoinToHost(accountId, code, key, domain);
+            rendererGlobal.wireDesktop?.sendConversationJoinToHost(accountId, code, key, domain);
             setConversationJoinData(accountId, undefined);
           }
           updateAccountLifecycle(accountId, channel);
@@ -243,7 +260,7 @@ const Webview = ({
 
           if (isConversationJoinData(data)) {
             if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-              window.wireDesktop?.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
+              rendererGlobal.wireDesktop?.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
               setConversationJoinData(accountId, undefined);
             } else {
               setConversationJoinData(accountId, data);
@@ -286,7 +303,7 @@ const Webview = ({
   }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = (account: Account) => {
-    window.wireDesktop?.sendDeleteAccount(account.id, account.sessionID)?.then(() => {
+    rendererGlobal.wireDesktop?.sendDeleteAccount(account.id, account.sessionID)?.then(() => {
       abortAccountCreation(account.id);
     });
   };
