@@ -30,6 +30,7 @@ import {contextBridge, ipcRenderer, webFrame} from 'electron';
  * EVENT_TYPE definitions. They are duplicated here because preload scripts cannot
  * import from main process modules due to context isolation.
  */
+// sonar:off
 // NOSONAR - Duplication required for sandboxed preload context isolation
 const EVENT_TYPE = {
   ACCOUNT: {
@@ -73,6 +74,7 @@ const EVENT_TYPE = {
     RELOAD: 'EVENT_TYPE.WRAPPER.RELOAD',
   },
 } as const;
+// sonar:on
 
 /**
  * WebApp events for communication with Wire web application
@@ -97,6 +99,7 @@ const WebAppEvents = {
  * @param {string} prefix - The prefix to use for log messages
  * @returns {Object} Logger object with info, log, warn, and error methods
  */
+// sonar:off
 // NOSONAR - Duplication required for sandboxed preload context isolation
 const createSandboxLogger = (prefix: string) => ({
   info: (message: string, ...args: any[]) => {
@@ -116,6 +119,7 @@ const createSandboxLogger = (prefix: string) => ({
     console.error(`[${prefix}] ${message}`, ...args);
   },
 });
+// sonar:on
 
 /**
  * Platform detection utilities for sandboxed context

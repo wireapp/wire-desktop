@@ -88,6 +88,7 @@ const WebAppEvents = {
  * EVENT_TYPE definitions. They are duplicated here because preload scripts cannot
  * import from main process modules due to context isolation.
  */
+// sonar:off
 // NOSONAR - Duplication required for sandboxed preload context isolation
 const EVENT_TYPE = {
   ACCOUNT: {
@@ -149,6 +150,7 @@ const EVENT_TYPE = {
     UPDATE_AVAILABLE: 'EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE',
   },
 } as const;
+// sonar:on
 
 /**
  * Safe logger for sandboxed preload context
@@ -159,6 +161,7 @@ const EVENT_TYPE = {
  * @param {string} prefix - The prefix to use for log messages
  * @returns {Object} Logger object with info, log, warn, and error methods
  */
+// sonar:off
 // NOSONAR - Duplication required for sandboxed preload context isolation
 const createSandboxLogger = (prefix: string) => ({
   info: (message: string, ...args: any[]) => {
@@ -178,6 +181,7 @@ const createSandboxLogger = (prefix: string) => ({
     console.error(`[${prefix}] ${message}`, ...args);
   },
 });
+// sonar:on
 /**
  * Environment utilities for sandboxed context
  *
