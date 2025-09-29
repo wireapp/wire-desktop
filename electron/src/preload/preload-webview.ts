@@ -20,14 +20,183 @@
 import {contextBridge, ipcRenderer, webFrame} from 'electron';
 import type {Data as OpenGraphResult} from 'open-graph';
 
-import * as path from 'path';
-
 import type {Availability} from '@wireapp/protocol-messaging';
-import {WebAppEvents} from '@wireapp/webapp-events';
+// Context Isolation Security: WebApp events constants
+// These cannot be imported from @wireapp/webapp-events due to context isolation restrictions.
+const WebAppEvents = {
+  CALL: {
+    STATE: {
+      TOGGLE: 'wire.webapp.call.state.toggle',
+    },
+  },
+  CONVERSATION: {
+    JOIN: 'wire.webapp.conversation.join',
+  },
+  LIFECYCLE: {
+    ASK_TO_CLEAR_DATA: 'wire.webapp.lifecycle.ask_to_clear_data',
+    CHANGE_ENVIRONMENT: 'wire.webapp.lifecycle.change_environment',
+    LOADED: 'wire.webapp.lifecycle.loaded',
+    RESTART: 'wire.webapp.lifecycle.restart',
+    SIGN_OUT: 'wire.webapp.lifecycle.sign_out',
+    SIGNED_OUT: 'wire.webapp.lifecycle.signed_out',
+    SSO_WINDOW_CLOSE: 'wire.webapp.lifecycle.sso_window_close',
+    SSO_WINDOW_CLOSED: 'wire.webapp.lifecycle.sso_window_closed',
+    SSO_WINDOW_FOCUS: 'wire.webapp.lifecycle.sso_window_focus',
+    UNREAD_COUNT: 'wire.webapp.lifecycle.unread_count',
+    UPDATE: 'wire.webapp.lifecycle.update',
+  },
+  NOTIFICATION: {
+    CLICK: 'wire.webapp.notification.click',
+  },
+  PREFERENCES: {
+    MANAGE_ACCOUNT: 'wire.webapp.preferences.manage_account',
+  },
+  PROPERTIES: {
+    UPDATE: {
+      INTERFACE: {
+        USE_DARK_MODE: 'wire.webapp.properties.update.interface.use_dark_mode',
+        THEME: 'wire.webapp.properties.update.interface.theme',
+      },
+    },
+    UPDATED: 'wire.webapp.properties.updated',
+  },
+  SHORTCUT: {
+    ADD_PEOPLE: 'wire.webapp.shortcut.add_people',
+    ARCHIVE: 'wire.webapp.shortcut.archive',
+    DELETE: 'wire.webapp.shortcut.delete',
+    NEXT: 'wire.webapp.shortcut.next',
+    PEOPLE: 'wire.webapp.shortcut.people',
+    PING: 'wire.webapp.shortcut.ping',
+    PREV: 'wire.webapp.shortcut.prev',
+    SEARCH: 'wire.webapp.shortcut.search',
+    SILENCE: 'wire.webapp.shortcut.silence',
+    START: 'wire.webapp.shortcut.start',
+  },
+  TEAM: {
+    DOWNLOAD_PATH_UPDATE: 'wire.webapp.team.download_path_update',
+    INFO: 'wire.webapp.team.info',
+  },
+} as const;
 
-import {EVENT_TYPE} from '../lib/eventType';
-import {getLogger} from '../logging/getLogger';
-import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+// Context Isolation Security: Inline constants and utilities
+// These cannot be imported from main process modules due to context isolation restrictions.
+
+/**
+ * Event type constants for IPC communication
+ *
+ * Context Isolation Security: These constants must be kept in sync with main process
+ * EVENT_TYPE definitions. They are duplicated here because preload scripts cannot
+ * import from main process modules due to context isolation.
+ */
+const EVENT_TYPE = {
+  ACCOUNT: {
+    UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
+  },
+  ACTION: {
+    CHANGE_DOWNLOAD_LOCATION: 'EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION',
+    DECRYPT: 'EVENT_TYPE.ACTION.DECRYPT',
+    ENCRYPT: 'EVENT_TYPE.ACTION.ENCRYPT',
+    GET_DESKTOP_SOURCES: 'EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES',
+    GET_OG_DATA: 'EVENT_TYPE.ACTION.GET_OG_DATA',
+    JOIN_CONVERSATION: 'EVENT_TYPE.ACTION.JOIN_CONVERSATION',
+    NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
+    SIGN_OUT: 'EVENT_TYPE.ACTION.SIGN_OUT',
+  },
+  CONTEXT_MENU: {
+    COPY_TEXT: 'EVENT_TYPE.CONTEXT_MENU.COPY_TEXT',
+    COPY_IMAGE: 'EVENT_TYPE.CONTEXT_MENU.COPY_IMAGE',
+    SAVE_IMAGE: 'EVENT_TYPE.CONTEXT_MENU.SAVE_IMAGE',
+    REPLACE_MISSPELLING: 'EVENT_TYPE.CONTEXT_MENU.REPLACE_MISSPELLING',
+  },
+  CONVERSATION: {
+    ADD_PEOPLE: 'EVENT_TYPE.CONVERSATION.ADD_PEOPLE',
+    ARCHIVE: 'EVENT_TYPE.CONVERSATION.ARCHIVE',
+    CALL: 'EVENT_TYPE.CONVERSATION.CALL',
+    DELETE: 'EVENT_TYPE.CONVERSATION.DELETE',
+    PEOPLE: 'EVENT_TYPE.CONVERSATION.PEOPLE',
+    PING: 'EVENT_TYPE.CONVERSATION.PING',
+    SEARCH: 'EVENT_TYPE.CONVERSATION.SEARCH',
+    SHOW_NEXT: 'EVENT_TYPE.CONVERSATION.SHOW_NEXT',
+    SHOW_PREVIOUS: 'EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS',
+    START: 'EVENT_TYPE.CONVERSATION.START',
+    TOGGLE_MUTE: 'EVENT_TYPE.CONVERSATION.TOGGLE_MUTE',
+    VIDEO_CALL: 'EVENT_TYPE.CONVERSATION.VIDEO_CALL',
+  },
+  LIFECYCLE: {
+    SIGNED_IN: 'EVENT_TYPE.LIFECYCLE.SIGNED_IN',
+    SIGNED_OUT: 'EVENT_TYPE.LIFECYCLE.SIGNED_OUT',
+    SIGN_OUT: 'EVENT_TYPE.LIFECYCLE.SIGN_OUT',
+    UNREAD_COUNT: 'EVENT_TYPE.LIFECYCLE.UNREAD_COUNT',
+  },
+  PREFERENCES: {
+    SHOW: 'EVENT_TYPE.PREFERENCES.SHOW',
+  },
+  UI: {
+    SHOULD_USE_DARK_COLORS: 'EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS',
+    SYSTEM_THEME_CHANGED: 'EVENT_TYPE.UI.SYSTEM_THEME_CHANGED',
+    THEME_UPDATE: 'EVENT_TYPE.UI.THEME_UPDATE',
+    WEBAPP_VERSION: 'EVENT_TYPE.UI.WEBAPP_VERSION',
+    WEBAPP_AVS_VERSION: 'EVENT_TYPE.UI.WEBAPP_AVS_VERSION',
+  },
+  WEBAPP: {
+    APP_LOADED: 'EVENT_TYPE.WEBAPP.APP_LOADED',
+    CHANGE_LOCATION_HASH: 'EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH',
+  },
+  WRAPPER: {
+    NAVIGATE_WEBVIEW: 'EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW',
+    RELAUNCH: 'EVENT_TYPE.WRAPPER.RELAUNCH',
+    UPDATE_AVAILABLE: 'EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE',
+  },
+} as const;
+
+/**
+ * Safe logger for sandboxed preload context
+ *
+ * Context Isolation Security: Uses console.log instead of main process logger
+ * which cannot be accessed in preload scripts due to context isolation.
+ *
+ * @param {string} prefix - The prefix to use for log messages
+ * @returns {Object} Logger object with info, log, warn, and error methods
+ */
+const createSandboxLogger = (prefix: string) => ({
+  info: (message: string, ...args: any[]) => {
+    // eslint-disable-next-line no-console
+    console.log(`[${prefix}] ${message}`, ...args);
+  },
+  log: (message: string, ...args: any[]) => {
+    // eslint-disable-next-line no-console
+    console.log(`[${prefix}] ${message}`, ...args);
+  },
+  warn: (message: string, ...args: any[]) => {
+    // eslint-disable-next-line no-console
+    console.warn(`[${prefix}] ${message}`, ...args);
+  },
+  error: (message: string, ...args: any[]) => {
+    // eslint-disable-next-line no-console
+    console.error(`[${prefix}] ${message}`, ...args);
+  },
+});
+/**
+ * Environment utilities for sandboxed context
+ *
+ * Context Isolation Security: Safe environment detection that works in
+ * sandboxed contexts without accessing main process modules.
+ */
+const EnvironmentUtil = {
+  platform: {
+    IS_MAC_OS:
+      typeof process !== 'undefined'
+        ? process.platform === 'darwin'
+        : typeof navigator !== 'undefined'
+        ? navigator.platform.includes('Mac')
+        : false,
+  },
+  app: {
+    // Context Isolation Security: Version is hardcoded to avoid importing config module
+    // This should match the version in wire.json
+    DESKTOP_VERSION: '3.40.0',
+  },
+};
 
 interface TeamAccountInfo {
   accentID: number;
@@ -42,7 +211,13 @@ interface TeamAccountInfo {
 
 type Theme = 'dark' | 'default';
 
-const logger = getLogger(path.basename(__filename));
+/**
+ * Logger for preload webview script
+ *
+ * Context Isolation Security: Uses shared sandbox logger instead of main process getLogger
+ * which cannot be imported in preload scripts due to context isolation.
+ */
+const logger = createSandboxLogger('preload-webview');
 
 function subscribeToThemeChange(): void {
   async function initialThemeCheck() {

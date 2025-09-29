@@ -23,7 +23,7 @@ import {Availability} from '@wireapp/protocol-messaging';
 
 import {AccountAction, accountAction} from './AccountAction';
 
-import {getLogger} from '../../../src/logging/getLogger';
+import {createSandboxLogger} from '../../../src/shared/contextIsolationConstants';
 import {AppDispatch, State} from '../index';
 import {generateUUID} from '../lib/util';
 import {
@@ -42,7 +42,13 @@ import {AccountSelector} from '../selector/AccountSelector';
 import {Account, ConversationJoinData} from '../types/account';
 import {ContextMenuState} from '../types/contextMenuState';
 
-const logger = getLogger('actions');
+/**
+ * Logger for renderer actions
+ *
+ * Context Isolation Security: Uses shared sandbox logger instead of main process getLogger
+ * which is not available in the sandboxed renderer process due to context isolation.
+ */
+const logger = createSandboxLogger('renderer-actions');
 
 export enum ACCOUNT_ACTION {
   ADD_ACCOUNT = 'ADD_ACCOUNT',

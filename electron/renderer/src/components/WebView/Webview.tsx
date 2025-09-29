@@ -26,8 +26,7 @@ import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-ki
 
 import './Webview.css';
 
-import {EVENT_TYPE} from '../../../../src/lib/eventType';
-import {getLogger} from '../../../../src/logging/getLogger';
+import {EVENT_TYPE, createSandboxLogger} from '../../../../src/shared/contextIsolationConstants';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -105,7 +104,13 @@ const Webview = ({
   const [canDelete, setCanDelete] = useState(false);
   const [url, setUrl] = useState(getEnvironmentUrl(account));
   const [webviewError, setWebviewError] = useState<DidFailLoadEvent | null>(null);
-  const logger = getLogger('Webview');
+  /**
+   * Logger for Webview component
+   *
+   * Context Isolation Security: Uses shared sandbox logger instead of main process getLogger
+   * which is not available in the sandboxed renderer process due to context isolation.
+   */
+  const logger = createSandboxLogger('Webview');
 
   useEffect(() => {
     const newUrl = getEnvironmentUrl(account);
