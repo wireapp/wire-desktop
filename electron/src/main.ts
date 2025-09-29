@@ -648,6 +648,21 @@ let main: BrowserWindow;
         return {action: 'deny'};
       };
 
+      const handleSSOWindow = async (
+        win: BrowserWindow,
+        event: ElectronEvent,
+        url: string,
+        options: BrowserWindowConstructorOptions,
+      ): Promise<void> => {
+        try {
+          const sso = await new SingleSignOn(win, event, url, options).init();
+          this.ssoWindow = sso;
+          this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
+        } catch (error) {
+          logger.info(error);
+        }
+      };
+
       const openLinkInNewWindow = (
         win: BrowserWindow,
         url: string,
@@ -656,15 +671,7 @@ let main: BrowserWindow;
         options: BrowserWindowConstructorOptions,
       ): Promise<void> | void => {
         if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
-          const singleSignOn = new SingleSignOn(win, event, url, options).init();
-          return new Promise(() => {
-            singleSignOn
-              .then(sso => {
-                this.ssoWindow = sso;
-                this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
-              })
-              .catch(error => logger.info(error));
-          });
+          return handleSSOWindow(win, event, url, options);
         }
       };
 

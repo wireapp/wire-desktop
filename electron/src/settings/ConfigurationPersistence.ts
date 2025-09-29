@@ -54,7 +54,7 @@ class ConfigurationPersistence {
   restore<T>(name: string, defaultValue?: T): T {
     this.logger.info(`Restoring "${name}"`);
     const value = globalThis._ConfigurationPersistence[name];
-    return value !== undefined ? value : (defaultValue as T);
+    return value === undefined ? (defaultValue as T) : value;
   }
 
   persistToFile(): void {
