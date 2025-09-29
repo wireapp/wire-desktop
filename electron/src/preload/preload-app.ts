@@ -309,15 +309,17 @@ const subscribeToMainProcessEvents = (): void => {
 
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
     const webviews = document.querySelectorAll<Electron.WebviewTag>('webview');
-    webviews.forEach(webview => webview.reload());
+    for (const webview of webviews) {
+      webview.reload();
+    }
   });
 
   ipcRenderer.on(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, (_event, accountIndex: number) => {
-    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
+    globalThis.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex}}));
   });
 
   ipcRenderer.on(EVENT_TYPE.ACTION.START_LOGIN, _event => {
-    window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.START_LOGIN));
+    globalThis.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.START_LOGIN));
   });
 
   ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED, async () => {

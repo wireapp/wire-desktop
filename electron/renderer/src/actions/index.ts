@@ -183,10 +183,10 @@ export const updateAccountData = (id: string, data: Partial<Account>) => {
   return (dispatch: AppDispatch) => {
     const validatedAccountData = accountDataSchema.validate(data);
 
-    if (!validatedAccountData.error) {
-      dispatch(updateAccount(id, validatedAccountData.value));
-    } else {
+    if (validatedAccountData.error) {
       logger.warn('Got invalid account data:', validatedAccountData.error);
+    } else {
+      dispatch(updateAccount(id, validatedAccountData.value));
     }
   };
 };
@@ -200,7 +200,12 @@ export const updateAccountBadgeCount = (id: string, count: number) => {
     }, 0);
     const ignoreFlash = account?.availability === Availability.Type.BUSY;
 
-    window.wireDesktop?.sendBadgeCount(accumulatedCount, ignoreFlash);
+    const wireDesktopAPI = globalThis as unknown as {
+      wireDesktop?: {
+        sendBadgeCount: (count: number, ignoreFlash: boolean) => void;
+      };
+    };
+    wireDesktopAPI.wireDesktop?.sendBadgeCount(accumulatedCount, ignoreFlash);
 
     if (account) {
       const countHasChanged = account.badgeCount !== count;

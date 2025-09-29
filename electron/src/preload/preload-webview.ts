@@ -279,7 +279,7 @@ function subscribeToThemeChange(): void {
   handleSystemThemeChange();
 }
 
-webFrame.setZoomFactor(1.0);
+webFrame.setZoomFactor(1);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
 const subscribeToWebappEvents = (): void => {

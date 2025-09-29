@@ -254,7 +254,7 @@ export const truncate = (str: string, options: {length: number}): string => {
  * dependencies to be safely imported in renderer/preload. This provides a minimal interface.
  */
 export class SandboxAutomatedSingleSignOn {
-  private logger = createSandboxLogger('SandboxAutomatedSingleSignOn');
+  private readonly logger = createSandboxLogger('SandboxAutomatedSingleSignOn');
 
   start(code: string): void {
     // Simplified SSO handling - just log for now since full implementation has too many dependencies
@@ -263,5 +263,7 @@ export class SandboxAutomatedSingleSignOn {
   }
 }
 
-// Export this to make the file a module and prevent global scope pollution
-export {};
+// This export statement is required to make this file a TypeScript module
+// and prevent global scope pollution. Without it, all declarations would
+// be in the global scope, which can cause naming conflicts.
+export type {};
