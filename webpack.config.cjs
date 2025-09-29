@@ -18,7 +18,7 @@
  */
 
 const webpack = require('webpack');
-const fs = require('fs');
+const fs = require('node:fs');
 
 const path = require('path');
 
@@ -26,7 +26,7 @@ const path = require('path');
  * @type {(env: {production?: true}) => import('webpack').Configuration}
  * */
 
-module.exports = (env = {}) => {
+module.exports = function createWebpackConfig(env = {}) {
   // Read version from wire.json at build time
   let desktopVersion = 'unknown';
   try {

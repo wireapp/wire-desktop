@@ -197,7 +197,9 @@ export const updateAccountData = (id: string, data: Partial<Account>) => {
  * @returns {boolean} True if wireDesktop API is available and functional
  */
 const hasWireDesktopAPI = (): boolean => {
-  return typeof window !== 'undefined' && typeof window.wireDesktop?.sendBadgeCount === 'function';
+  return (
+    typeof globalThis.window !== 'undefined' && typeof globalThis.window.wireDesktop?.sendBadgeCount === 'function'
+  );
 };
 
 export const updateAccountBadgeCount = (id: string, count: number) => {
@@ -210,7 +212,7 @@ export const updateAccountBadgeCount = (id: string, count: number) => {
     const ignoreFlash = account?.availability === Availability.Type.BUSY;
 
     if (hasWireDesktopAPI()) {
-      window.wireDesktop.sendBadgeCount(accumulatedCount, ignoreFlash);
+      globalThis.window.wireDesktop.sendBadgeCount(accumulatedCount, ignoreFlash);
     }
 
     if (account) {

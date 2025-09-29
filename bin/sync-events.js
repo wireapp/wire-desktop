@@ -19,8 +19,8 @@
  *
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 /**
  * Automated Event Type Synchronization
@@ -45,11 +45,12 @@ const PRELOAD_APP_FILE = path.resolve(__dirname, '../electron/src/preload/preloa
  * @returns {string} The EVENT_TYPE object as a string
  */
 function extractEventType(sourceContent) {
-  const startMatch = sourceContent.match(/export const EVENT_TYPE = \{/);
+  const regex = /export const EVENT_TYPE = \{/;
+  const startMatch = regex.exec(sourceContent);
   if (!startMatch) {
     throw new Error('Could not find EVENT_TYPE export in source file');
   }
-  
+
   const startIndex = startMatch.index;
   let braceCount = 0;
   let endIndex = startIndex;
@@ -203,10 +204,11 @@ function updatePreloadAppFile(filePath, eventTypeObject) {
     } else if (char === '}') {
       braceCount--;
       if (braceCount === 0) {
-        while (i < content.length && content[i] !== '\n') {
-          i++;
+        let endPos = i;
+        while (endPos < content.length && content[endPos] !== '\n') {
+          endPos++;
         }
-        eventTypeEnd = i;
+        eventTypeEnd = endPos;
         break;
       }
     }

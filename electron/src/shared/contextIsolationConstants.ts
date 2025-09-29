@@ -187,5 +187,5 @@ export const createSandboxLogger = (name: string) => ({
     console.error(`[${name}] ${message}`, ...args),
 });
 
-// Export this to make the file a module and prevent global scope pollution
-export {};
+// Export a type to make the file a module and prevent global scope pollution
+export type SandboxLogger = ReturnType<typeof createSandboxLogger>;

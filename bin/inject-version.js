@@ -19,8 +19,8 @@
  *
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 /**
  * Inject version from wire.json into preload scripts at build time
@@ -47,7 +47,7 @@ function injectVersion() {
     const replacement = `'${version}'`;
     
     if (preloadContent.match(originalPattern)) {
-      preloadContent = preloadContent.replace(originalPattern, replacement);
+      preloadContent = preloadContent.replaceAll(originalPattern, replacement);
       
       fs.writeFileSync(PRELOAD_WEBVIEW_PATH, preloadContent, 'utf8');
       console.log(`Successfully injected version ${version} into preload-webview.ts`);
@@ -70,7 +70,7 @@ function restoreVersion() {
     const desktopVersionLine = /DESKTOP_VERSION: '[^']+'/g;
 
     if (preloadContent.match(desktopVersionLine)) {
-      preloadContent = preloadContent.replace(desktopVersionLine, "DESKTOP_VERSION: process.env.DESKTOP_VERSION || 'unknown'");
+      preloadContent = preloadContent.replaceAll(desktopVersionLine, "DESKTOP_VERSION: process.env.DESKTOP_VERSION || 'unknown'");
 
       fs.writeFileSync(PRELOAD_WEBVIEW_PATH, preloadContent, 'utf8');
       console.log('Successfully restored original version pattern in preload-webview.ts');
