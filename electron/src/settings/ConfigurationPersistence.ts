@@ -34,9 +34,7 @@ class ConfigurationPersistence {
     this.configFile = SchemaUpdater.updateToVersion1();
     this.logger = getLogger(path.basename(__filename));
 
-    if (globalThis._ConfigurationPersistence === undefined) {
-      globalThis._ConfigurationPersistence = this.readFromFile();
-    }
+    globalThis._ConfigurationPersistence ??= this.readFromFile();
 
     this.logger.info('Initializing ConfigurationPersistence');
   }
@@ -81,7 +79,8 @@ class ConfigurationPersistence {
       this.logger.warn('No config found');
       const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:
-      return SchemaUpdater.SCHEMATA[schemataKeys[schemataKeys.length - 1]];
+      const lastKey = schemataKeys.at(-1);
+      return SchemaUpdater.SCHEMATA[lastKey!];
     }
   }
 }

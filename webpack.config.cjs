@@ -43,7 +43,7 @@ module.exports = function createWebpackConfig(env = {}) {
     externals: {
       'fs-extra': '{}',
     },
-    mode: !env.production ? 'development' : 'production',
+    mode: env.production ? 'production' : 'development',
     module: {
       rules: [
         {
