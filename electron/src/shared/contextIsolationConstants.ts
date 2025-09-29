@@ -263,7 +263,5 @@ export class SandboxAutomatedSingleSignOn {
   }
 }
 
-// This export statement is required to make this file a TypeScript module
-// and prevent global scope pollution. Without it, all declarations would
-// be in the global scope, which can cause naming conflicts.
-export type ModuleMarker = never;
+// Export a constant to make this file a TypeScript module and prevent global scope pollution
+export const MODULE_MARKER = Symbol('contextIsolationConstants');
