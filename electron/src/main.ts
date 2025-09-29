@@ -160,7 +160,8 @@ let isFullScreen = false;
 let isQuitting = false;
 let main: BrowserWindow;
 
-(async () => { // NOSONAR
+// eslint-disable-next-line prettier/prettier
+(async () => { // NOSONAR - TypeScript config doesn't support top-level await, IIFE pattern required
   for (const [key, value] of Object.entries(config)) {
     if (value === undefined || (typeof value === 'number' && Number.isNaN(value))) {
       logger.warn(`Configuration key "${key}" not defined.`);
