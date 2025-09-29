@@ -178,12 +178,17 @@ export const createSandboxLogger = (name: string) => ({
 export const SandboxEnvironmentUtil = {
   platform: {
     // Safe platform detection that works in both renderer and preload contexts
-    IS_MAC_OS:
-      typeof process !== 'undefined'
-        ? process.platform === 'darwin'
-        : typeof navigator !== 'undefined'
-        ? navigator.platform.includes('Mac')
-        : false,
+    IS_MAC_OS: (() => {
+      // Check process.platform first (Node.js environment)
+      if (typeof process !== 'undefined') {
+        return process.platform === 'darwin';
+      }
+      // Fallback to user agent string for browser environments
+      if (typeof navigator !== 'undefined' && navigator.userAgent) {
+        return navigator.userAgent.includes('Mac');
+      }
+      return false;
+    })(),
   },
 } as const;
 

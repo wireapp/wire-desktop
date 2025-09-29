@@ -33,7 +33,7 @@ const logger = createSandboxLogger('localStorage');
 export const loadState = (): State | undefined => {
   try {
     const serializedState = localStorage.getItem(STATE_NAME);
-    return !!serializedState ? (JSON.parse(serializedState) as State) : undefined;
+    return serializedState ? (JSON.parse(serializedState) as State) : undefined;
   } catch (error) {
     if (error instanceof Error) {
       logger.error('ERROR: Failed to load state ', error.message);

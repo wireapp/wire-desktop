@@ -51,7 +51,7 @@ const getClassName = (account: Account) => {
 };
 
 const handleSwitchAccount = (accountIndex: number) => {
-  window.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accountIndex}}));
+  globalThis.dispatchEvent(new CustomEvent(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, {detail: {accountIndex: accountIndex}}));
 };
 
 interface SidebarProps {

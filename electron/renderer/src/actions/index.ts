@@ -133,7 +133,7 @@ export const abortAccountCreation = (id: string) => {
   return (dispatch: AppDispatch, getState: () => State) => {
     // Note: It's not guaranteed that the dispatched action "deleteAccount" generates a new state without the deleted account
     const accounts = AccountSelector.getAccounts(getState()).filter(account => account.id !== id);
-    const lastAccount = accounts[accounts.length - 1];
+    const lastAccount = accounts.at(-1);
 
     dispatch(deleteAccount(id));
 

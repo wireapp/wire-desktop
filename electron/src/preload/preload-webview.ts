@@ -22,6 +22,35 @@ import type {Data as OpenGraphResult} from 'open-graph';
 
 import type {Availability} from '@wireapp/protocol-messaging';
 
+interface WebviewGlobal {
+  amplify: {
+    publish: (event: string, ...args: any[]) => void;
+    subscribe: (event: string, callback: (...args: any[]) => void) => void;
+    unsubscribe: (event: string, callback: (...args: any[]) => void) => void;
+  };
+  wire: any;
+  z: {
+    event: any;
+    util: {
+      Environment: {
+        version: (includeWrapper: boolean) => string;
+        avsVersion?: () => string;
+      };
+    };
+    lifecycle: {
+      UPDATE_SOURCE: {
+        DESKTOP: string;
+      };
+    };
+  };
+  addEventListener: typeof globalThis.addEventListener;
+  dispatchEvent: typeof globalThis.dispatchEvent;
+  location: typeof globalThis.location;
+  close: () => void;
+}
+
+const webviewGlobal = globalThis as unknown as WebviewGlobal;
+
 // Context Isolation Security: Constants and utilities must be defined inline
 // because sandboxed preload scripts cannot import from relative paths due to
 // limited CommonJS module resolution in Electron's sandbox environment.
@@ -186,12 +215,17 @@ const createSandboxLogger = (prefix: string) => ({
  */
 const EnvironmentUtil = {
   platform: {
-    IS_MAC_OS:
-      typeof process !== 'undefined'
-        ? process.platform === 'darwin'
-        : typeof navigator !== 'undefined'
-        ? navigator.platform.includes('Mac')
-        : false,
+    IS_MAC_OS: (() => {
+      // Check process.platform first (Node.js environment)
+      if (typeof process !== 'undefined') {
+        return process.platform === 'darwin';
+      }
+      // Fallback to user agent string for browser environments
+      if (typeof navigator !== 'undefined' && navigator.userAgent) {
+        return navigator.userAgent.includes('Mac');
+      }
+      return false;
+    })(),
   },
   app: {
     // Context Isolation Security: Version is hardcoded to avoid importing config module
@@ -225,19 +259,19 @@ function subscribeToThemeChange(): void {
   async function initialThemeCheck() {
     const useDarkMode = await ipcRenderer.invoke(EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS);
     logger.info(`Switching initial dark mode ${useDarkMode ? 'on' : 'off'} ...`);
-    window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
-    window.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
+    webviewGlobal.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
+    webviewGlobal.amplify.unsubscribe(WebAppEvents.LIFECYCLE.LOADED, initialThemeCheck);
   }
 
   function handleSystemThemeChange() {
     ipcRenderer.on(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED, async () => {
       const useDarkMode = await ipcRenderer.invoke(EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS);
       logger.info(`System theme changed, switching dark mode ${useDarkMode ? 'on' : 'off'} ...`);
-      window.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
+      webviewGlobal.amplify.publish(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.USE_DARK_MODE, useDarkMode);
     });
   }
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
     ipcRenderer.send(EVENT_TYPE.WEBAPP.APP_LOADED);
     initialThemeCheck();
   });
@@ -249,52 +283,52 @@ webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
 const subscribeToWebappEvents = (): void => {
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.RESTART, () => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.LIFECYCLE.RESTART, () => {
     logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.RESTART}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.WRAPPER.RELAUNCH);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => {
     logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.LOADED}", forwarding event ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_IN);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGN_OUT, () => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGN_OUT, () => {
     logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.SIGN_OUT}", forwarding event ...`);
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGN_OUT);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGNED_OUT, (clearData: boolean) => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.LIFECYCLE.SIGNED_OUT, (clearData: boolean) => {
     logger.info(
       `Received amplify event "${WebAppEvents.LIFECYCLE.SIGNED_OUT}", (clearData: "${clearData}") forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.SIGNED_OUT, clearData);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE, () => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE, () => {
     logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE}" event`);
     ipcRenderer.send(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSE);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS, () => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS, () => {
     logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS}" event`);
     ipcRenderer.send(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS);
   });
 
-  window.amplify.subscribe(WebAppEvents.LIFECYCLE.UNREAD_COUNT, (count: string) => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.LIFECYCLE.UNREAD_COUNT, (count: string) => {
     logger.info(
       `Received amplify event "${WebAppEvents.LIFECYCLE.UNREAD_COUNT}" (count: "${count}"), forwarding event ...`,
     );
     ipcRenderer.sendToHost(EVENT_TYPE.LIFECYCLE.UNREAD_COUNT, count);
   });
 
-  window.amplify.subscribe(WebAppEvents.NOTIFICATION.CLICK, () => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.NOTIFICATION.CLICK, () => {
     logger.info(`Received amplify event "${WebAppEvents.NOTIFICATION.CLICK}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
     ipcRenderer.sendToHost(EVENT_TYPE.ACTION.NOTIFICATION_CLICK);
   });
 
-  window.amplify.subscribe(WebAppEvents.TEAM.INFO, (info: TeamAccountInfo) => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.TEAM.INFO, (info: TeamAccountInfo) => {
     const debugInfo = {
       ...info,
       picture: typeof info.picture === 'string' ? `${info.picture.substring(0, 100)}...` : '',
@@ -306,98 +340,101 @@ const subscribeToWebappEvents = (): void => {
     ipcRenderer.sendToHost(EVENT_TYPE.ACCOUNT.UPDATE_INFO, info);
   });
 
-  window.amplify.subscribe(WebAppEvents.TEAM.DOWNLOAD_PATH_UPDATE, (downloadPath?: string) => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.TEAM.DOWNLOAD_PATH_UPDATE, (downloadPath?: string) => {
     logger.info(`Received amplify event ${WebAppEvents.TEAM.DOWNLOAD_PATH_UPDATE}:`, `"${downloadPath}",`);
     logger.info('forwarding last event ...');
     ipcRenderer.send(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, downloadPath);
   });
 
-  window.addEventListener(WebAppEvents.LIFECYCLE.CHANGE_ENVIRONMENT, event => {
+  webviewGlobal.addEventListener(WebAppEvents.LIFECYCLE.CHANGE_ENVIRONMENT, event => {
     const data = (event as CustomEvent).detail;
     if (data) {
       ipcRenderer.sendToHost(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW, data.url);
     }
   });
 
-  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: Theme) => {
+  webviewGlobal.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATE.INTERFACE.THEME, (theme: Theme) => {
     ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, theme);
   });
 
-  window.amplify.subscribe(WebAppEvents.PROPERTIES.UPDATED, (properties: {settings: {interface: {theme: Theme}}}) => {
-    ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, properties.settings.interface.theme);
-  });
+  webviewGlobal.amplify.subscribe(
+    WebAppEvents.PROPERTIES.UPDATED,
+    (properties: {settings: {interface: {theme: Theme}}}) => {
+      ipcRenderer.sendToHost(EVENT_TYPE.UI.THEME_UPDATE, properties.settings.interface.theme);
+    },
+  );
 };
 
 const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.ADD_PEOPLE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ADD_PEOPLE}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.ADD_PEOPLE);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.ADD_PEOPLE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.ARCHIVE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.ARCHIVE}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.ARCHIVE);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.ARCHIVE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.CALL, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.CALL}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, false);
+    webviewGlobal.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, false);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.DELETE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.DELETE}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.DELETE);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.DELETE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_NEXT, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_NEXT}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.NEXT);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.NEXT);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.PEOPLE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.PEOPLE}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.PEOPLE);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.PEOPLE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.PING, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.PING}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.PING);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.PING);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.PREV);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.PREV);
   });
   ipcRenderer.on(EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH, (_event, hash: string) => {
     logger.info(
       `Received event "${EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH}" (hash: "${hash}"), forwarding to amplify ...`,
     );
-    window.location.hash = hash;
+    webviewGlobal.location.hash = hash;
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.TOGGLE_MUTE, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.TOGGLE_MUTE}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.SILENCE);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.SILENCE);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.START, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.START}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.START);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.START);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.SEARCH, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.SEARCH}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.SHORTCUT.SEARCH);
+    webviewGlobal.amplify.publish(WebAppEvents.SHORTCUT.SEARCH);
   });
   ipcRenderer.on(EVENT_TYPE.CONVERSATION.VIDEO_CALL, () => {
     logger.info(`Received event "${EVENT_TYPE.CONVERSATION.VIDEO_CALL}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, true);
+    webviewGlobal.amplify.publish(WebAppEvents.CALL.STATE.TOGGLE, true);
   });
   ipcRenderer.on(EVENT_TYPE.PREFERENCES.SHOW, () => {
     logger.info(`Received event "${EVENT_TYPE.PREFERENCES.SHOW}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.PREFERENCES.MANAGE_ACCOUNT);
+    webviewGlobal.amplify.publish(WebAppEvents.PREFERENCES.MANAGE_ACCOUNT);
   });
   ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
     logger.info(`Received event "${EVENT_TYPE.ACTION.SIGN_OUT}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.LIFECYCLE.ASK_TO_CLEAR_DATA);
+    webviewGlobal.amplify.publish(WebAppEvents.LIFECYCLE.ASK_TO_CLEAR_DATA);
   });
   ipcRenderer.on(EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE, () => {
     logger.info(`Received event "${EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE}", forwarding to amplify ...`);
-    window.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, window.z.lifecycle.UPDATE_SOURCE.DESKTOP);
+    webviewGlobal.amplify.publish(WebAppEvents.LIFECYCLE.UPDATE, webviewGlobal.z.lifecycle.UPDATE_SOURCE.DESKTOP);
   });
   ipcRenderer.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED, () => {
     logger.info(`Received event "${WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED}", forwarding to window ...`);
-    window.amplify.publish(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
+    webviewGlobal.amplify.publish(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
   });
   ipcRenderer.on(
     EVENT_TYPE.ACTION.JOIN_CONVERSATION,
@@ -410,7 +447,7 @@ const subscribeToMainProcessEvents = (): void => {
     WebAppEvents.CONVERSATION.JOIN,
     (_event, {code, key, domain}: {code: string; key: string; domain: string}) => {
       logger.info(`Received event "${WebAppEvents.CONVERSATION.JOIN}", forwarding to window ...`);
-      window.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: {code, key, domain}}));
+      webviewGlobal.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: {code, key, domain}}));
     },
   );
 };
@@ -420,10 +457,10 @@ function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
 }
 
 function reportWebappVersion(): void {
-  ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, window.z.util.Environment.version(false));
+  ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_VERSION, webviewGlobal.z.util.Environment.version(false));
 }
 function reportWebappAVSVersion(): void {
-  const avsVersion = window.z.util.Environment.avsVersion?.();
+  const avsVersion = webviewGlobal.z.util.Environment.avsVersion?.();
   if (avsVersion) {
     ipcRenderer.send(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, avsVersion);
   }
@@ -470,7 +507,7 @@ const registerEvents = (): Promise<void> => {
     const HALF_SECOND_IN_MILLIS = 500;
     const intervalId = setInterval(() => {
       logger.info('Attempting to register event handlers...');
-      if (window.amplify && window.wire && window.z?.event) {
+      if (webviewGlobal.amplify && webviewGlobal.wire && webviewGlobal.z?.event) {
         clearInterval(intervalId);
         return resolve();
       }
@@ -478,7 +515,7 @@ const registerEvents = (): Promise<void> => {
   });
 };
 
-window.addEventListener('DOMContentLoaded', async () => {
+webviewGlobal.addEventListener('DOMContentLoaded', async () => {
   await registerEvents();
   logger.info('Registering event handlers');
   subscribeToMainProcessEvents();
@@ -490,6 +527,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   await import('./menu/preload-context');
 });
 
-// overwrite window.close() to prevent webapp from closing itself
+// overwrite webviewGlobal.close() to prevent webapp from closing itself
 // see SQSERVICES-1882 and SQSERVICES-1919
-window.close = () => {};
+webviewGlobal.close = () => {};
