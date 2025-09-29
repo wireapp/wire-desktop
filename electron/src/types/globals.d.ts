@@ -126,5 +126,10 @@ export declare global {
         version: number;
       };
     }
+
+    interface ProcessEnv {
+      /** Desktop version injected at build time from wire.json */
+      DESKTOP_VERSION?: string;
+    }
   }
 }

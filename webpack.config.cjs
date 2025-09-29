@@ -18,49 +18,61 @@
  */
 
 const webpack = require('webpack');
+const fs = require('node:fs');
 
-const path = require('path');
+const path = require('node:path');
 
 /**
  * @type {(env: {production?: true}) => import('webpack').Configuration}
  * */
 
-module.exports = (env = {}) => ({
-  devtool: env.production ? undefined : 'eval-cheap-source-map',
-  entry: path.resolve(__dirname, 'electron/renderer/src/index.tsx'),
-  externals: {
-    'fs-extra': '{}',
-  },
-  mode: !env.production ? 'development' : 'production',
-  module: {
-    rules: [
-      {
-        exclude: /node_modules/,
-        test: /\.[tj]sx?$/,
-        use: ['babel-loader'],
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
+module.exports = function createWebpackConfig(env = {}) {
+  // Read version from wire.json at build time
+  let desktopVersion = 'unknown';
+  try {
+    const wireJsonPath = path.resolve(__dirname, 'electron/wire.json');
+    const wireJson = JSON.parse(fs.readFileSync(wireJsonPath, 'utf8'));
+    desktopVersion = wireJson.version || 'unknown';
+  } catch (error) {
+    console.warn('Could not read version from wire.json:', error.message);
+  }
+
+  return {
+    devtool: env.production ? undefined : 'eval-cheap-source-map',
+    entry: path.resolve(__dirname, 'electron/renderer/src/index.tsx'),
+    externals: {
+      'fs-extra': '{}',
+    },
+    mode: env.production ? 'production' : 'development',
+    module: {
+      rules: [
+        {
+          exclude: /node_modules/,
+          test: /\.[tj]sx?$/,
+          use: ['babel-loader'],
+        },
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader'],
+        },
+      ],
+    },
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'electron/renderer/dist'),
+    },
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: env.production ? '"production"' : '"development"',
+          DESKTOP_VERSION: `"${desktopVersion}"`,
+        },
+      }),
     ],
-  },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'electron/renderer/dist'),
-  },
-  plugins: env.production
-    ? [
-        new webpack.DefinePlugin({
-          'process.env': {
-            NODE_ENV: '"production"',
-          },
-        }),
-      ]
-    : undefined,
-  resolve: {
-    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
-  },
-  stats: 'errors-only',
-  target: 'electron-renderer',
-});
+    resolve: {
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+    },
+    stats: 'errors-only',
+    target: 'electron-renderer',
+  };
+};

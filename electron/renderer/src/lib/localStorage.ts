@@ -17,16 +17,23 @@
  *
  */
 
-import {getLogger} from '../../../src/logging/getLogger';
+import {createSandboxLogger} from '../../../src/shared/contextIsolationConstants';
 import {State} from '../index';
 
 const STATE_NAME = 'state';
-const logger = getLogger('localStorage');
+
+/**
+ * Logger for localStorage operations
+ *
+ * Context Isolation Security: Uses shared sandbox logger instead of main process getLogger
+ * which is not available in the sandboxed renderer process due to context isolation.
+ */
+const logger = createSandboxLogger('localStorage');
 
 export const loadState = (): State | undefined => {
   try {
     const serializedState = localStorage.getItem(STATE_NAME);
-    return !!serializedState ? (JSON.parse(serializedState) as State) : undefined;
+    return serializedState ? (JSON.parse(serializedState) as State) : undefined;
   } catch (error) {
     if (error instanceof Error) {
       logger.error('ERROR: Failed to load state ', error.message);

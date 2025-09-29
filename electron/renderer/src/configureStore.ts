@@ -25,11 +25,18 @@ import thunk from 'redux-thunk';
 import {loadState, saveState} from './lib/localStorage';
 import reducers from './reducers';
 
-import {getLogger} from '../../src/logging/getLogger';
+import {createSandboxLogger} from '../../src/shared/contextIsolationConstants';
+
+/**
+ * Logger for Redux store configuration
+ *
+ * Context Isolation Security: Uses shared sandbox logger instead of main process getLogger
+ * which is not available in the sandboxed renderer process due to context isolation.
+ */
+const fileLogger = createSandboxLogger('configureStore');
 
 const HALF_SECOND = 500;
 const persistedState = loadState();
-const fileLogger = getLogger('configureStore');
 
 export const configureStore = (thunkArguments: Object) => {
   const store = createStore(reducers, persistedState, createMiddleware(thunkArguments));
