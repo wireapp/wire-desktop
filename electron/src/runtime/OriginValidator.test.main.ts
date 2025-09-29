@@ -63,10 +63,32 @@ describe('OriginValidator', () => {
       assert.strictEqual(result.reason, 'Only HTTPS protocol is allowed for SSO redirects');
     });
 
-    it('should reject URLs from non-allowed origins', () => {
-      const result = OriginValidator.validateSSORedirectURL('https://evil.com/sso/login', allowedOrigins);
+    it('should accept external identity provider domains with valid paths', () => {
+      // External identity providers (SAML, OAuth, OIDC) are allowed for SSO redirects
+      const result = OriginValidator.validateSSORedirectURL('https://idp.example.com/saml/login', allowedOrigins);
+      assert.strictEqual(result.isValid, true);
+      assert.strictEqual(result.sanitizedUrl, 'https://idp.example.com/saml/login');
+    });
+
+    it('should accept external identity provider domains with query parameters', () => {
+      const result = OriginValidator.validateSSORedirectURL(
+        'https://login.microsoftonline.com/?client_id=123',
+        allowedOrigins,
+      );
+      assert.strictEqual(result.isValid, true);
+    });
+
+    it('should reject external domains with only root path and no query', () => {
+      // External domains must have a path or query parameters
+      const result = OriginValidator.validateSSORedirectURL('https://evil.com/', allowedOrigins);
       assert.strictEqual(result.isValid, false);
-      assert.ok(result.reason?.includes('Origin https://evil.com is not in the allowed list'));
+      assert.strictEqual(result.reason, 'External identity provider URL must include a path or query parameters');
+    });
+
+    it('should reject external domains with invalid hostname format', () => {
+      const result = OriginValidator.validateSSORedirectURL('https://192.168.1.1/login', allowedOrigins);
+      assert.strictEqual(result.isValid, false);
+      assert.strictEqual(result.reason, 'Invalid hostname format for external identity provider');
     });
 
     it('should reject URLs with suspicious patterns', () => {
@@ -78,13 +100,14 @@ describe('OriginValidator', () => {
       assert.strictEqual(result.reason, 'URL contains suspicious patterns');
     });
 
-    it('should reject URLs with invalid SSO paths', () => {
+    it('should reject Wire backend URLs with invalid SSO paths', () => {
+      // Wire backend origins must have valid SSO paths
       const result = OriginValidator.validateSSORedirectURL(
         'https://staging-nginz-https.zinfra.io/invalid/path',
         allowedOrigins,
       );
       assert.strictEqual(result.isValid, false);
-      assert.strictEqual(result.reason, 'Invalid SSO path detected');
+      assert.strictEqual(result.reason, 'Invalid SSO path detected for Wire backend');
     });
 
     it('should handle invalid URL format', () => {
@@ -151,6 +174,33 @@ describe('OriginValidator', () => {
       it(`should reject invalid path: ${path}`, () => {
         assert.strictEqual(OriginValidator.isValidSSOPath(path), false);
       });
+    });
+  });
+
+  describe('isValidHostname', () => {
+    it('should accept valid domain names', () => {
+      assert.strictEqual(OriginValidator.isValidHostname('example.com'), true);
+      assert.strictEqual(OriginValidator.isValidHostname('subdomain.example.com'), true);
+      assert.strictEqual(OriginValidator.isValidHostname('login.microsoftonline.com'), true);
+      assert.strictEqual(OriginValidator.isValidHostname('idp.company-name.co.uk'), true);
+    });
+
+    it('should reject IP addresses', () => {
+      assert.strictEqual(OriginValidator.isValidHostname('192.168.1.1'), false);
+      assert.strictEqual(OriginValidator.isValidHostname('10.0.0.1'), false);
+      assert.strictEqual(OriginValidator.isValidHostname('2001:0db8:85a3:0000:0000:8a2e:0370:7334'), false);
+    });
+
+    it('should reject hostnames without dots (require FQDN)', () => {
+      assert.strictEqual(OriginValidator.isValidHostname('localhost'), false);
+      assert.strictEqual(OriginValidator.isValidHostname('hostname'), false);
+    });
+
+    it('should reject empty or invalid hostnames', () => {
+      assert.strictEqual(OriginValidator.isValidHostname(''), false);
+      assert.strictEqual(OriginValidator.isValidHostname('invalid..hostname'), false);
+      assert.strictEqual(OriginValidator.isValidHostname('-invalid.com'), false);
+      assert.strictEqual(OriginValidator.isValidHostname('invalid-.com'), false);
     });
   });
 
