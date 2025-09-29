@@ -59,6 +59,53 @@ export class SchemaUpdater {
     },
   };
 
+  private static validateConfigPaths(resolvedV0: string, resolvedV1: string): void {
+    if (resolvedV0.includes('..') || resolvedV1.includes('..')) {
+      throw new Error('Invalid config file paths');
+    }
+  }
+
+  private static migrateConfigFile(configFileV0: string, configFileV1: string, config: any): void {
+    try {
+      fs.moveSync(configFileV0, configFileV1, {overwrite: true});
+      Object.assign(config, fs.readJSONSync(configFileV1));
+    } catch (error) {
+      logger.log(
+        `Could not upgrade "${configFileV0}" to "${configFileV1}": ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        error,
+      );
+    }
+  }
+
+  private static cleanupLegacySettings(config: any): void {
+    const configMap = new Map(Object.entries(config));
+    const getSetting = (setting: string) => configMap.get(setting);
+    const hasNoConfigVersion = getSetting('configVersion') === undefined;
+
+    if (hasNoConfigVersion) {
+      for (const setting of [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS]) {
+        if (getSetting(setting) !== undefined) {
+          configMap.delete(setting);
+          logger.log(`Deleted "${setting}" property from old init file.`);
+        }
+      }
+      Object.assign(config, Object.fromEntries(configMap));
+    }
+  }
+
+  private static writeConfigFile(configFileV1: string, config: any): void {
+    try {
+      fs.writeJsonSync(configFileV1, config, {spaces: 2});
+    } catch (error) {
+      logger.log(
+        `Failed to write config to "${configFileV1}": ${error instanceof Error ? error.message : String(error)}`,
+        error,
+      );
+    }
+  }
+
   static updateToVersion1(configFileV0 = getDefaultPathV0(), configFileV1 = getDefaultPathV1()): string {
     const config = SchemaUpdater.SCHEMATA.VERSION_1;
 
@@ -66,43 +113,13 @@ export class SchemaUpdater {
     const resolvedV0 = path.resolve(configFileV0);
     const resolvedV1 = path.resolve(configFileV1);
 
-    if (resolvedV0.includes('..') || resolvedV1.includes('..')) {
-      throw new Error('Invalid config file paths');
-    }
+    SchemaUpdater.validateConfigPaths(resolvedV0, resolvedV1);
 
     // eslint-disable-next-line security/detect-non-literal-fs-filename
     if (fs.existsSync(resolvedV0)) {
-      try {
-        fs.moveSync(resolvedV0, resolvedV1, {overwrite: true});
-        Object.assign(config, fs.readJSONSync(resolvedV1));
-      } catch (error) {
-        logger.log(
-          `Could not upgrade "${configFileV0}" to "${configFileV1}": ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          error,
-        );
-      }
-
-      const configMap = new Map(Object.entries(config));
-      const getSetting = (setting: string) => configMap.get(setting);
-      const hasNoConfigVersion = getSetting('configVersion') === undefined;
-
-      if (hasNoConfigVersion) {
-        for (const setting of [SettingsType.FULL_SCREEN, SettingsType.WINDOW_BOUNDS]) {
-          if (getSetting(setting) !== undefined) {
-            configMap.delete(setting);
-            logger.log(`Deleted "${setting}" property from old init file.`);
-          }
-        }
-        Object.assign(config, Object.fromEntries(configMap));
-      }
-
-      try {
-        fs.writeJsonSync(configFileV1, config, {spaces: 2});
-      } catch (error: any) {
-        logger.log(`Failed to write config to "${configFileV1}": ${error.message}`, error);
-      }
+      SchemaUpdater.migrateConfigFile(resolvedV0, resolvedV1, config);
+      SchemaUpdater.cleanupLegacySettings(config);
+      SchemaUpdater.writeConfigFile(resolvedV1, config);
     }
 
     return configFileV1;

@@ -174,8 +174,8 @@ app.setAppUserModelId(config.appUserModelId);
 // do not use mdns for local ip obfuscation to prevent windows firewall prompt
 app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
 
-(async () => {
-  // NOSONAR: Using async IIFE instead of top-level await for TypeScript compatibility (CommonJS module)
+// eslint-disable-next-line prettier/prettier
+(async () => { // NOSONAR - TypeScript config doesn't support top-level await, IIFE pattern required
   const info = (await app.getGPUInfo('basic')) as GPUInfo;
   const gpuDevices = info.gpuDevice || [];
   if (gpuDevices.length > 0) {
@@ -843,8 +843,8 @@ const setupKeyboardHandling = (contents: WebContents): void => {
 
 customProtocolHandler.registerCoreProtocol();
 handlePortableFlags();
-(async () => {
-  // NOSONAR: Using async IIFE instead of top-level await for TypeScript compatibility (CommonJS module)
+// eslint-disable-next-line prettier/prettier
+(async () => { // NOSONAR - TypeScript config doesn't support top-level await, IIFE pattern required
   try {
     await lifecycle.checkSingleInstance();
     await lifecycle.initSquirrelListener();
@@ -866,5 +866,12 @@ if (lifecycle.isFirstInstance) {
   handleAppEvents();
   renameWebViewLogFiles();
   fs.ensureFileSync(LOG_FILE);
-  new ElectronWrapperInit().run().catch(error => logger.error(error));
+  // eslint-disable-next-line prettier/prettier
+  (async () => { // NOSONAR - TypeScript config doesn't support top-level await, IIFE pattern required
+    try {
+      await new ElectronWrapperInit().run();
+    } catch (error) {
+      logger.error(error);
+    }
+  })();
 }
