@@ -29,20 +29,20 @@
  * literals that define event types and logging interfaces. No sensitive functionality
  * is exposed.
  *
- * IMPORTANT: These constants are automatically synchronized from their main process
+ * IMPORTANT: These constants are automatically generated from their main process
  * counterparts using the 'yarn sync:events' command. Do not edit manually.
- * - EVENT_TYPE is synced from electron/src/lib/eventType.ts
+ * - EVENT_TYPE is automatically generated from electron/src/lib/eventType.ts
  * - WebAppEvents must match @wireapp/webapp-events
  */
 
 /**
  * Event type constants for IPC communication between main and renderer/preload processes.
- * These are automatically synchronized from electron/src/lib/eventType.ts.
+ * These are automatically generated from electron/src/lib/eventType.ts using 'yarn sync:events'.
  *
  * Context Isolation Security: Due to context isolation, we cannot import the main process
- * eventType module directly in renderer/preload, so we maintain this synchronized copy.
+ * eventType module directly in renderer/preload, so we maintain this automatically generated copy.
  */
-// NOSONAR - Duplication required for context isolation, automatically synced
+// NOSONAR - Duplication required for context isolation, automatically generated
 export const EVENT_TYPE = {
   ABOUT: {
     LOADED: 'EVENT_TYPE.ABOUT.LOADED',
@@ -165,26 +165,15 @@ export const WebAppEvents = {
 
 /**
  * Simple logger implementation for preload scripts.
- *
+ * 
  * Context Isolation Security: Main process getLogger cannot be imported in preload
  * scripts. This provides a safe logging interface using console methods.
- *
- * @param {string} name - The name/prefix for the logger
- * @returns {Object} Logger object with info, log, warn, and error methods
  */
 export const createSandboxLogger = (name: string) => ({
-  info: (message: string, ...args: any[]) =>
-    // eslint-disable-next-line no-console
-    console.info(`[${name}] ${message}`, ...args),
-  log: (message: string, ...args: any[]) =>
-    // eslint-disable-next-line no-console
-    console.log(`[${name}] ${message}`, ...args),
-  warn: (message: string, ...args: any[]) =>
-    // eslint-disable-next-line no-console
-    console.warn(`[${name}] ${message}`, ...args),
-  error: (message: string, ...args: any[]) =>
-    // eslint-disable-next-line no-console
-    console.error(`[${name}] ${message}`, ...args),
+  info: (message: string, ...args: any[]) => console.info(`[${name}] ${message}`, ...args),
+  log: (message: string, ...args: any[]) => console.log(`[${name}] ${message}`, ...args),
+  warn: (message: string, ...args: any[]) => console.warn(`[${name}] ${message}`, ...args),
+  error: (message: string, ...args: any[]) => console.error(`[${name}] ${message}`, ...args),
 });
 
 // Export this to make the file a module and prevent global scope pollution
