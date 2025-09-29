@@ -193,6 +193,7 @@
     "start:localzinfra": "yarn start --env=https://local.zinfra.io:8081",
     "start:prod": "yarn start --env=https://app.wire.com",
     "start:fed": "yarn start --env=https://webapp.${FED}.wire.link/ ",
+    "sync:events": "node bin/sync-events.js",
     "test": "yarn test:types && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn test:bin",
     "test:bin": "mocha --require .babel-register.js \"bin/**/*.test?(.main).ts\"",
     "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\" --no-sandbox",

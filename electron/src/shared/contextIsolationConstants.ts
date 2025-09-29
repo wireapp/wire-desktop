@@ -29,20 +29,27 @@
  * literals that define event types and logging interfaces. No sensitive functionality
  * is exposed.
  *
- * IMPORTANT: These constants must be kept in sync with their main process counterparts:
- * - EVENT_TYPE must match electron/src/lib/eventType.ts
+ * IMPORTANT: These constants are automatically synchronized from their main process
+ * counterparts using the 'yarn sync:events' command. Do not edit manually.
+ * - EVENT_TYPE is synced from electron/src/lib/eventType.ts
  * - WebAppEvents must match @wireapp/webapp-events
  */
 
 /**
  * Event type constants for IPC communication between main and renderer/preload processes.
- * These must match the constants in electron/src/lib/eventType.ts exactly.
+ * These are automatically synchronized from electron/src/lib/eventType.ts.
  *
  * Context Isolation Security: Due to context isolation, we cannot import the main process
  * eventType module directly in renderer/preload, so we maintain this synchronized copy.
  */
-// NOSONAR - Duplication required for context isolation, must be kept in sync with main process
+// NOSONAR - Duplication required for context isolation, automatically synced
 export const EVENT_TYPE = {
+  ABOUT: {
+    LOADED: 'EVENT_TYPE.ABOUT.LOADED',
+    LOCALE_RENDER: 'EVENT_TYPE.ABOUT.LOCALE_RENDER',
+    LOCALE_VALUES: 'EVENT_TYPE.ABOUT.LOCALE_VALUES',
+    SHOW: 'EVENT_TYPE.ABOUT.SHOW',
+  },
   ACCOUNT: {
     DATA_DELETED: 'EVENT_TYPE.ACCOUNT.DATA_DELETED',
     DELETE_DATA: 'EVENT_TYPE.ACCOUNT.DELETE_DATA',
@@ -50,7 +57,11 @@ export const EVENT_TYPE = {
     UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
   },
   ACTION: {
+    CHANGE_ENVIRONMENT: 'EVENT_TYPE.ACTION.CHANGE_ENVIRONMENT',
     CHANGE_DOWNLOAD_LOCATION: 'EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION',
+    COPY_TO_CLIPBOARD: 'EVENT_TYPE.ACTION.COPY_TO_CLIPBOARD',
+    CREATE_SSO_ACCOUNT: 'EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT',
+    CREATE_SSO_ACCOUNT_RESPONSE: 'EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT_RESPONSE',
     DECRYPT: 'EVENT_TYPE.ACTION.DECRYPT',
     DEEP_LINK_SUBMIT: 'EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT',
     ENCRYPT: 'EVENT_TYPE.ACTION.ENCRYPT',
@@ -58,15 +69,10 @@ export const EVENT_TYPE = {
     GET_OG_DATA: 'EVENT_TYPE.ACTION.GET_OG_DATA',
     JOIN_CONVERSATION: 'EVENT_TYPE.ACTION.JOIN_CONVERSATION',
     NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
+    SAVE_PICTURE: 'EVENT_TYPE.ACTION.SAVE_PICTURE',
     SIGN_OUT: 'EVENT_TYPE.ACTION.SIGN_OUT',
     START_LOGIN: 'EVENT_TYPE.ACTION.START_LOGIN',
     SWITCH_ACCOUNT: 'EVENT_TYPE.ACTION.SWITCH_ACCOUNT',
-  },
-  CONTEXT_MENU: {
-    COPY_TEXT: 'EVENT_TYPE.CONTEXT_MENU.COPY_TEXT',
-    COPY_IMAGE: 'EVENT_TYPE.CONTEXT_MENU.COPY_IMAGE',
-    SAVE_IMAGE: 'EVENT_TYPE.CONTEXT_MENU.SAVE_IMAGE',
-    REPLACE_MISSPELLING: 'EVENT_TYPE.CONTEXT_MENU.REPLACE_MISSPELLING',
   },
   CONVERSATION: {
     ADD_PEOPLE: 'EVENT_TYPE.CONVERSATION.ADD_PEOPLE',
@@ -75,10 +81,10 @@ export const EVENT_TYPE = {
     DELETE: 'EVENT_TYPE.CONVERSATION.DELETE',
     PEOPLE: 'EVENT_TYPE.CONVERSATION.PEOPLE',
     PING: 'EVENT_TYPE.CONVERSATION.PING',
-    SEARCH: 'EVENT_TYPE.CONVERSATION.SEARCH',
     SHOW_NEXT: 'EVENT_TYPE.CONVERSATION.SHOW_NEXT',
     SHOW_PREVIOUS: 'EVENT_TYPE.CONVERSATION.SHOW_PREVIOUS',
     START: 'EVENT_TYPE.CONVERSATION.START',
+    SEARCH: 'EVENT_TYPE.CONVERSATION.SEARCH',
     TOGGLE_MUTE: 'EVENT_TYPE.CONVERSATION.TOGGLE_MUTE',
     VIDEO_CALL: 'EVENT_TYPE.CONVERSATION.VIDEO_CALL',
   },
@@ -99,6 +105,20 @@ export const EVENT_TYPE = {
   PREFERENCES: {
     SHOW: 'EVENT_TYPE.PREFERENCES.SHOW',
   },
+  PROXY_PROMPT: {
+    CANCELED: 'EVENT_TYPE.PROXY_PROMPT.CANCELED',
+    LOADED: 'EVENT_TYPE.PROXY_PROMPT.LOADED',
+    LOCALE_RENDER: 'EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER',
+    LOCALE_VALUES: 'EVENT_TYPE.PROXY_PROMPT.LOCALE_VALUES',
+    SUBMITTED: 'EVENT_TYPE.PROXY_PROMPT.AUTHENTICATION_DATA',
+  },
+  CONTEXT_MENU: {
+    SHOW: 'EVENT_TYPE.CONTEXT_MENU.SHOW',
+    COPY_TEXT: 'EVENT_TYPE.CONTEXT_MENU.COPY_TEXT',
+    COPY_IMAGE: 'EVENT_TYPE.CONTEXT_MENU.COPY_IMAGE',
+    SAVE_IMAGE: 'EVENT_TYPE.CONTEXT_MENU.SAVE_IMAGE',
+    REPLACE_MISSPELLING: 'EVENT_TYPE.CONTEXT_MENU.REPLACE_MISSPELLING',
+  },
   UI: {
     BADGE_COUNT: 'EVENT_TYPE.UI.BADGE_COUNT',
     SHOULD_USE_DARK_COLORS: 'EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS',
@@ -116,152 +136,56 @@ export const EVENT_TYPE = {
     NAVIGATE_WEBVIEW: 'EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW',
     RELAUNCH: 'EVENT_TYPE.WRAPPER.RELAUNCH',
     RELOAD: 'EVENT_TYPE.WRAPPER.RELOAD',
+    UPDATE: 'EVENT_TYPE.WRAPPER.UPDATE',
     UPDATE_AVAILABLE: 'EVENT_TYPE.WRAPPER.UPDATE_AVAILABLE',
   },
-} as const;
+};
 
 /**
- * WebApp events constants for communication with the webapp.
+ * WebApp events constants for preload scripts.
  * These must match the constants from @wireapp/webapp-events.
- *
- * Context Isolation Security: Due to context isolation, external modules may not be
- * available in all renderer/preload contexts, so we maintain this local copy.
  */
 export const WebAppEvents = {
   CONVERSATION: {
     JOIN: 'wire.webapp.conversation.join',
   },
   LIFECYCLE: {
+    CHANGE_ENVIRONMENT: 'wire.webapp.lifecycle.change_environment',
     SSO_WINDOW_CLOSED: 'wire.webapp.lifecycle.sso_window_closed',
   },
+  PROPERTIES: {
+    UPDATE: {
+      INTERFACE: {
+        THEME: 'wire.webapp.properties.update.interface.theme',
+      },
+    },
+    UPDATED: 'wire.webapp.properties.updated',
+  },
 } as const;
 
 /**
- * Simple logger interface for renderer and preload processes.
+ * Simple logger implementation for preload scripts.
  *
- * Context Isolation Security: The main process logger (getLogger) cannot be imported
- * in renderer/preload due to context isolation. This provides a safe, sandboxed logging
- * interface that uses console methods which are available in these contexts.
+ * Context Isolation Security: Main process getLogger cannot be imported in preload
+ * scripts. This provides a safe logging interface using console methods.
  *
- * @param {string} name - The logger name/context for identifying log sources
- * @returns {Object} Logger interface with info, log, warn, and error methods
+ * @param {string} name - The name/prefix for the logger
+ * @returns {Object} Logger object with info, log, warn, and error methods
  */
-// NOSONAR - Duplication required for sandboxed context isolation
 export const createSandboxLogger = (name: string) => ({
-  info: (message: string, ...args: any[]) => {
+  info: (message: string, ...args: any[]) =>
     // eslint-disable-next-line no-console
-    console.info(`[${name}] ${message}`, ...args);
-  },
-  log: (message: string, ...args: any[]) => {
+    console.info(`[${name}] ${message}`, ...args),
+  log: (message: string, ...args: any[]) =>
     // eslint-disable-next-line no-console
-    console.log(`[${name}] ${message}`, ...args);
-  },
-  warn: (message: string, ...args: any[]) => {
+    console.log(`[${name}] ${message}`, ...args),
+  warn: (message: string, ...args: any[]) =>
     // eslint-disable-next-line no-console
-    console.warn(`[${name}] ${message}`, ...args);
-  },
-  error: (message: string, ...args: any[]) => {
+    console.warn(`[${name}] ${message}`, ...args),
+  error: (message: string, ...args: any[]) =>
     // eslint-disable-next-line no-console
-    console.error(`[${name}] ${message}`, ...args);
-  },
+    console.error(`[${name}] ${message}`, ...args),
 });
 
-/**
- * Platform detection utilities for renderer and preload processes.
- *
- * Context Isolation Security: Main process environment utilities cannot be imported
- * in renderer/preload. The process object may not be available in renderer context,
- * so we provide safe platform detection that works in both contexts.
- *
- * @returns {Object} Environment utilities with platform detection
- */
-export const SandboxEnvironmentUtil = {
-  platform: {
-    // Safe platform detection that works in both renderer and preload contexts
-    IS_MAC_OS: (() => {
-      // Check process.platform first (Node.js environment)
-      if (typeof process !== 'undefined') {
-        return process.platform === 'darwin';
-      }
-      // Fallback to user agent string for browser environments
-      if (typeof navigator !== 'undefined' && navigator.userAgent) {
-        return navigator.userAgent.includes('Mac');
-      }
-      return false;
-    })(),
-  },
-} as const;
-
-/**
- * Simple locale implementation for renderer and preload processes.
- *
- * Context Isolation Security: Main process locale module cannot be imported
- * in renderer/preload, so we provide this safe locale detection.
- *
- * @returns {Object} Locale utilities with getCurrentLocale function and LANGUAGES object
- */
-export const createSandboxLocale = () => {
-  const getCurrentLocale = (): string => {
-    try {
-      // Safe locale detection that works in both renderer and preload contexts
-      const browserLang =
-        typeof navigator !== 'undefined' && navigator.language ? navigator.language.substring(0, 2) : 'en';
-      const supportedLanguages = ['en', 'de', 'es', 'fr', 'it', 'pl', 'pt', 'ru', 'zh'];
-      return supportedLanguages.includes(browserLang) ? browserLang : 'en';
-    } catch {
-      return 'en';
-    }
-  };
-
-  return {
-    getCurrent: getCurrentLocale,
-    LANGUAGES: {
-      en: {},
-      de: {},
-      es: {},
-      fr: {},
-      it: {},
-      pl: {},
-      pt: {},
-      ru: {},
-      zh: {},
-      [getCurrentLocale()]: {}, // Dynamic key for current locale
-    } as Record<string, any>,
-  };
-};
-
-/**
- * Simple truncate function to replace lodash dependency in sandboxed contexts.
- *
- * Context Isolation Security: External dependencies like lodash may not be
- * available in renderer/preload context, so we provide this safe implementation.
- *
- * @param {string} str - The string to truncate
- * @param {Object} options - Options object with length property
- * @returns {string} The truncated string with ellipsis if needed
- */
-export const truncate = (str: string, options: {length: number}): string => {
-  if (str.length <= options.length) {
-    return str;
-  }
-  return `${str.slice(0, options.length - 3)}...`;
-};
-
-/**
- * Simplified AutomatedSingleSignOn implementation for sandboxed contexts.
- *
- * Context Isolation Security: The full SSO implementation has too many main process
- * dependencies to be safely imported in renderer/preload. This provides a minimal interface.
- */
-export class SandboxAutomatedSingleSignOn {
-  private readonly logger = createSandboxLogger('SandboxAutomatedSingleSignOn');
-
-  start(code: string): void {
-    // Simplified SSO handling - just log for now since full implementation has too many dependencies
-    this.logger.info('SSO login requested with code:', `${code.substring(0, 10)}...`);
-    // In a real implementation, this would handle the SSO flow through IPC to main process
-  }
-}
-
-// Export a constant to make this file a TypeScript module and prevent global scope pollution
-export const MODULE_MARKER = Symbol('contextIsolationConstants');
+// Export this to make the file a module and prevent global scope pollution
+export {};

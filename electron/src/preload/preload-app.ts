@@ -19,102 +19,10 @@
 
 import {contextBridge, ipcRenderer, webFrame} from 'electron';
 
-// Context Isolation Security: Constants and utilities must be defined inline
-// because sandboxed preload scripts cannot import from relative paths due to
-// limited CommonJS module resolution in Electron's sandbox environment.
-// These are kept in sync with ../shared/contextIsolationConstants.ts
+// Context Isolation Security: Import shared constants for type safety and maintainability
+import {EVENT_TYPE, WebAppEvents, createSandboxLogger} from '../shared/contextIsolationConstants';
 
-/**
- * Event type constants for IPC communication
- *
- * IMPORTANT: This is a necessary duplication of ../shared/contextIsolationConstants.ts
- * due to Electron sandbox limitations. Keep in sync with the shared file.
- */
-const EVENT_TYPE = {
-  ACCOUNT: {
-    DATA_DELETED: 'EVENT_TYPE.ACCOUNT.DATA_DELETED',
-    DELETE_DATA: 'EVENT_TYPE.ACCOUNT.DELETE_DATA',
-    SSO_LOGIN: 'EVENT_TYPE.ACCOUNT.SSO_LOGIN',
-    UPDATE_INFO: 'EVENT_TYPE.ACCOUNT.UPDATE_INFO',
-  },
-  ACTION: {
-    DEEP_LINK_SUBMIT: 'EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT',
-    JOIN_CONVERSATION: 'EVENT_TYPE.ACTION.JOIN_CONVERSATION',
-    NOTIFICATION_CLICK: 'EVENT_TYPE.ACTION.NOTIFICATION_CLICK',
-    SIGN_OUT: 'EVENT_TYPE.ACTION.SIGN_OUT',
-    START_LOGIN: 'EVENT_TYPE.ACTION.START_LOGIN',
-    SWITCH_ACCOUNT: 'EVENT_TYPE.ACTION.SWITCH_ACCOUNT',
-  },
-  EDIT: {
-    COPY: 'EVENT_TYPE.EDIT.COPY',
-    CUT: 'EVENT_TYPE.EDIT.CUT',
-    PASTE: 'EVENT_TYPE.EDIT.PASTE',
-    REDO: 'EVENT_TYPE.EDIT.REDO',
-    SELECT_ALL: 'EVENT_TYPE.EDIT.SELECT_ALL',
-    UNDO: 'EVENT_TYPE.EDIT.UNDO',
-  },
-  LIFECYCLE: {
-    SIGNED_IN: 'EVENT_TYPE.LIFECYCLE.SIGNED_IN',
-    SIGNED_OUT: 'EVENT_TYPE.LIFECYCLE.SIGNED_OUT',
-    SIGN_OUT: 'EVENT_TYPE.LIFECYCLE.SIGN_OUT',
-    UNREAD_COUNT: 'EVENT_TYPE.LIFECYCLE.UNREAD_COUNT',
-  },
-  UI: {
-    BADGE_COUNT: 'EVENT_TYPE.UI.BADGE_COUNT',
-    SYSTEM_MENU: 'EVENT_TYPE.UI.SYSTEM_MENU',
-    SYSTEM_THEME_CHANGED: 'EVENT_TYPE.UI.SYSTEM_THEME_CHANGED',
-    THEME_UPDATE: 'EVENT_TYPE.UI.THEME_UPDATE',
-  },
-  WEBAPP: {
-    CHANGE_LOCATION_HASH: 'EVENT_TYPE.WEBAPP.CHANGE_LOCATION_HASH',
-  },
-  WRAPPER: {
-    RELOAD: 'EVENT_TYPE.WRAPPER.RELOAD',
-  },
-} as const;
 
-/**
- * WebApp events for communication with Wire web application
- *
- * IMPORTANT: This is a necessary duplication of ../shared/contextIsolationConstants.ts
- * due to Electron sandbox limitations. Keep in sync with the shared file.
- */
-const WebAppEvents = {
-  CONVERSATION: {
-    JOIN: 'wire.webapp.conversation.join',
-  },
-  LIFECYCLE: {
-    SSO_WINDOW_CLOSED: 'wire.webapp.lifecycle.sso_window_closed',
-  },
-} as const;
-
-/**
- * Safe logger for sandboxed preload context
- *
- * IMPORTANT: This is a necessary duplication of ../shared/contextIsolationConstants.ts
- * due to Electron sandbox limitations. Keep in sync with the shared file.
- *
- * @param {string} prefix - The prefix to use for log messages
- * @returns {Object} Logger object with info, log, warn, and error methods
- */
-const createSandboxLogger = (prefix: string) => ({
-  info: (message: string, ...args: any[]) => {
-    // eslint-disable-next-line no-console
-    console.log(`[${prefix}] ${message}`, ...args);
-  },
-  log: (message: string, ...args: any[]) => {
-    // eslint-disable-next-line no-console
-    console.log(`[${prefix}] ${message}`, ...args);
-  },
-  warn: (message: string, ...args: any[]) => {
-    // eslint-disable-next-line no-console
-    console.warn(`[${prefix}] ${message}`, ...args);
-  },
-  error: (message: string, ...args: any[]) => {
-    // eslint-disable-next-line no-console
-    console.error(`[${prefix}] ${message}`, ...args);
-  },
-});
 
 /**
  * Platform detection utilities for sandboxed context
