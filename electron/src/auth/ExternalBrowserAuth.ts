@@ -19,8 +19,8 @@
 
 import {app, shell} from 'electron';
 
-import * as crypto from 'crypto';
-import {URL} from 'url';
+import * as crypto from 'node:crypto';
+import {URL} from 'node:url';
 
 import {getLogger} from '../logging/getLogger';
 import {OriginValidator} from '../runtime/OriginValidator';

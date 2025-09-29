@@ -20,7 +20,7 @@
 import {shell} from 'electron';
 import {stub, SinonStub} from 'sinon';
 
-import * as assert from 'assert';
+import * as assert from 'node:assert';
 
 import {ExternalBrowserAuth} from './ExternalBrowserAuth';
 

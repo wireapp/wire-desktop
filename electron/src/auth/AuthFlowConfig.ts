@@ -19,7 +19,7 @@
 
 import {app} from 'electron';
 
-import * as os from 'os';
+import * as os from 'node:os';
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
@@ -208,7 +208,7 @@ export class AuthFlowConfig {
     const providers = Object.values(AuthProvider);
 
     logger.log('Current authentication flow configuration:');
-    providers.forEach(provider => {
+    for (const provider of providers) {
       const config = this.getFlowConfig(provider);
       const useExternal = this.shouldUseExternalBrowser(provider);
 
@@ -218,7 +218,7 @@ export class AuthFlowConfig {
       logger.log(`    Timeout: ${config.timeout}ms`);
       logger.log(`    Context Isolation: ${config.enableContextIsolation}`);
       logger.log(`    Sandbox: ${config.enableSandbox}`);
-    });
+    }
   }
 
   /**
