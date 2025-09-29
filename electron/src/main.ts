@@ -748,10 +748,12 @@ const configureWebviewSecurity = (
   enableSpellChecking: boolean,
 ): void => {
   params.autosize = 'false';
-  params.contextIsolation = 'true';
+  // Context isolation disabled for webview to allow preload script to access webapp globals (amplify, wire, z)
+  // This is required for the preload-webview.ts registerEvents() function to work
+  params.contextIsolation = 'false';
   params.plugins = 'false';
   webPreferences.allowRunningInsecureContent = false;
-  webPreferences.contextIsolation = true;
+  webPreferences.contextIsolation = false;
   webPreferences.experimentalFeatures = false;
   webPreferences.nodeIntegration = false;
   webPreferences.preload = PRELOAD_RENDERER_JS;
