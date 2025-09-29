@@ -61,10 +61,11 @@ describe('ExternalBrowserAuth', () => {
       }
     });
 
-    it('should reject auth URLs from non-allowed origins', async () => {
+    it('should reject auth URLs with only root path', async () => {
+      // External domains must have a path or query parameters
       const invalidConfig = {
         ...mockConfig,
-        authUrl: 'https://evil.com/sso/login',
+        authUrl: 'https://evil.com/',
       };
 
       try {

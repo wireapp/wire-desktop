@@ -186,10 +186,9 @@ describe('OriginValidator', () => {
     });
 
     it('should reject IP addresses', () => {
-      // NOSONAR - Test data: verifying security validation rejects IP addresses
-      assert.strictEqual(OriginValidator.isValidHostname('192.168.1.1'), false);
-      assert.strictEqual(OriginValidator.isValidHostname('10.0.0.1'), false);
-      assert.strictEqual(OriginValidator.isValidHostname('2001:0db8:85a3:0000:0000:8a2e:0370:7334'), false);
+      assert.strictEqual(OriginValidator.isValidHostname('192.168.1.1'), false); // NOSONAR - Test data
+      assert.strictEqual(OriginValidator.isValidHostname('10.0.0.1'), false); // NOSONAR - Test data
+      assert.strictEqual(OriginValidator.isValidHostname('2001:0db8:85a3:0000:0000:8a2e:0370:7334'), false); // NOSONAR - Test data
     });
 
     it('should reject hostnames without dots (require FQDN)', () => {
