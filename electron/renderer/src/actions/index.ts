@@ -191,6 +191,15 @@ export const updateAccountData = (id: string, data: Partial<Account>) => {
   };
 };
 
+/**
+ * Type guard to check if wireDesktop API is available
+ * Context Isolation Security: Safely checks for wireDesktop API without type assertions
+ * @returns {boolean} True if wireDesktop API is available and functional
+ */
+const hasWireDesktopAPI = (): boolean => {
+  return typeof window !== 'undefined' && typeof window.wireDesktop?.sendBadgeCount === 'function';
+};
+
 export const updateAccountBadgeCount = (id: string, count: number) => {
   return (dispatch: AppDispatch, getState: () => State) => {
     const accounts = getState().accounts;
@@ -200,12 +209,9 @@ export const updateAccountBadgeCount = (id: string, count: number) => {
     }, 0);
     const ignoreFlash = account?.availability === Availability.Type.BUSY;
 
-    const wireDesktopAPI = globalThis as unknown as {
-      wireDesktop?: {
-        sendBadgeCount: (count: number, ignoreFlash: boolean) => void;
-      };
-    };
-    wireDesktopAPI.wireDesktop?.sendBadgeCount(accumulatedCount, ignoreFlash);
+    if (hasWireDesktopAPI()) {
+      window.wireDesktop.sendBadgeCount(accumulatedCount, ignoreFlash);
+    }
 
     if (account) {
       const countHasChanged = account.badgeCount !== count;
