@@ -40,8 +40,8 @@ import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';
 
-import * as path from 'path';
-import {URL, pathToFileURL} from 'url';
+import * as path from 'node:path';
+import {URL, pathToFileURL} from 'node:url';
 
 import {DateUtil, LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';

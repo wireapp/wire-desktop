@@ -20,7 +20,7 @@
 const webpack = require('webpack');
 const fs = require('node:fs');
 
-const path = require('path');
+const path = require('node:path');
 
 /**
  * @type {(env: {production?: true}) => import('webpack').Configuration}

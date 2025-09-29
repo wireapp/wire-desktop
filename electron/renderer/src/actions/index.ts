@@ -197,9 +197,7 @@ export const updateAccountData = (id: string, data: Partial<Account>) => {
  * @returns {boolean} True if wireDesktop API is available and functional
  */
 const hasWireDesktopAPI = (): boolean => {
-  return (
-    typeof globalThis.window !== 'undefined' && typeof globalThis.window.wireDesktop?.sendBadgeCount === 'function'
-  );
+  return globalThis.window !== undefined && typeof globalThis.window.wireDesktop?.sendBadgeCount === 'function';
 };
 
 export const updateAccountBadgeCount = (id: string, count: number) => {
