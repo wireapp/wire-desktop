@@ -48,6 +48,11 @@ import {LoadingSpinner} from '../LoadingSpinner';
 type WebviewTag = Electron.WebviewTag;
 type DidFailLoadEvent = Electron.DidFailLoadEvent;
 
+declare global {
+  // eslint-disable-next-line no-var
+  var wireDesktop: Window['wireDesktop'];
+}
+
 const getEnvironmentUrl = (account: Account) => {
   const currentLocation = new URL(globalThis.location.href);
   const envParam = account.webappUrl || currentLocation.searchParams.get('env');
@@ -218,7 +223,7 @@ const Webview = ({
         case EVENT_TYPE.LIFECYCLE.SIGNED_IN: {
           if (conversationJoinData) {
             const {code, key, domain} = conversationJoinData;
-            window.wireDesktop?.sendConversationJoinToHost(accountId, code, key, domain);
+            globalThis.wireDesktop?.sendConversationJoinToHost(accountId, code, key, domain);
             setConversationJoinData(accountId, undefined);
           }
           updateAccountLifecycle(accountId, channel);
@@ -248,7 +253,7 @@ const Webview = ({
 
           if (isConversationJoinData(data)) {
             if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-              window.wireDesktop?.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
+              globalThis.wireDesktop?.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
               setConversationJoinData(accountId, undefined);
             } else {
               setConversationJoinData(accountId, data);
@@ -291,7 +296,7 @@ const Webview = ({
   }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = (account: Account) => {
-    window.wireDesktop?.sendDeleteAccount(account.id, account.sessionID)?.then(() => {
+    globalThis.wireDesktop?.sendDeleteAccount(account.id, account.sessionID)?.then(() => {
       abortAccountCreation(account.id);
     });
   };

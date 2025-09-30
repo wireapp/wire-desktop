@@ -19,11 +19,16 @@
 
 import {i18nLanguageIdentifier} from '../../../src/locale';
 
+declare global {
+  // eslint-disable-next-line no-var
+  var wireDesktop: Window['wireDesktop'];
+}
+
 export const getText = (
   stringIdentifier: i18nLanguageIdentifier,
   paramReplacements?: Record<string, string>,
 ): string => {
-  const wireDesktop = window.wireDesktop;
+  const wireDesktop = globalThis.wireDesktop;
   const locStrings = wireDesktop?.locStrings || {};
   const locStringsDefault = wireDesktop?.locStringsDefault || {};
 
@@ -54,4 +59,4 @@ export const getText = (
   return str;
 };
 
-export const wrapperLocale = (): string => window.wireDesktop?.locale || 'en';
+export const wrapperLocale = (): string => globalThis.wireDesktop?.locale || 'en';
