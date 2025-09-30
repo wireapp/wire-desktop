@@ -19,19 +19,11 @@
 
 import {i18nLanguageIdentifier} from '../../../src/locale';
 
-interface WireDesktopGlobal {
-  wireDesktop?: {
-    locStrings?: Record<string, string>;
-    locStringsDefault?: Record<string, string>;
-    locale?: string;
-  };
-}
-
 export const getText = (
   stringIdentifier: i18nLanguageIdentifier,
   paramReplacements?: Record<string, string>,
 ): string => {
-  const wireDesktop = (globalThis as WireDesktopGlobal).wireDesktop;
+  const wireDesktop = window.wireDesktop;
   const locStrings = wireDesktop?.locStrings || {};
   const locStringsDefault = wireDesktop?.locStringsDefault || {};
 
@@ -62,4 +54,4 @@ export const getText = (
   return str;
 };
 
-export const wrapperLocale = (): string => (globalThis as WireDesktopGlobal).wireDesktop?.locale || 'en';
+export const wrapperLocale = (): string => window.wireDesktop?.locale || 'en';
