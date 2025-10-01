@@ -299,9 +299,12 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, (_event, opts) => desktopCapturer.getSources(opts));
   ipcMain.handle(EVENT_TYPE.ACTION.ENCRYPT, (_event, plaintext: string) => safeStorage.encryptString(plaintext));
-  ipcMain.handle(EVENT_TYPE.ACTION.DECRYPT, (_event, encrypted: Uint8Array) =>
-    safeStorage.decryptString(Buffer.from(encrypted)),
-  );
+  ipcMain.handle(EVENT_TYPE.ACTION.DECRYPT, (_event, encrypted: Uint8Array | Buffer | ArrayBuffer | number[]) => {
+    // Convert various array-like types to Buffer for decryption
+    // When data is sent over IPC, Uint8Arrays get converted to plain objects with numeric keys
+    const buffer = Buffer.isBuffer(encrypted) ? encrypted : Buffer.from(encrypted as Uint8Array);
+    return safeStorage.decryptString(buffer);
+  });
   ipcMain.handle(EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS, () => {
     return nativeTheme.shouldUseDarkColors;
   });

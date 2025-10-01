@@ -17,7 +17,7 @@
  *
  */
 
-import {contextBridge, ipcRenderer, webFrame} from 'electron';
+import {ipcRenderer, webFrame} from 'electron';
 import type {Data as OpenGraphResult} from 'open-graph';
 
 import type {Availability} from '@wireapp/protocol-messaging';
@@ -470,7 +470,7 @@ function reportWebappAVSVersion(): void {
 const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
 
-contextBridge.exposeInMainWorld('wireWebview', {
+const wireWebviewAPI = {
   clearImmediate: _clearImmediate,
   setImmediate: _setImmediate,
 
@@ -500,7 +500,13 @@ contextBridge.exposeInMainWorld('wireWebview', {
     replaceMisspelling: (suggestion: string) =>
       ipcRenderer.invoke(EVENT_TYPE.CONTEXT_MENU.REPLACE_MISSPELLING, suggestion),
   },
-});
+};
+
+(globalThis as Record<string, unknown>).wireWebview = wireWebviewAPI;
+(globalThis as Record<string, unknown>).desktopCapturer = wireWebviewAPI.desktopCapturer;
+(globalThis as Record<string, unknown>).systemCrypto = wireWebviewAPI.systemCrypto;
+(globalThis as Record<string, unknown>).environment = wireWebviewAPI.environment;
+(globalThis as Record<string, unknown>).desktopAppConfig = wireWebviewAPI.desktopAppConfig;
 
 const registerEvents = (): Promise<void> => {
   return new Promise(resolve => {
@@ -523,8 +529,6 @@ webviewGlobal.addEventListener('DOMContentLoaded', async () => {
   subscribeToWebappEvents();
   reportWebappVersion();
   reportWebappAVSVersion();
-  // include context menu
-  await import('./menu/preload-context');
 });
 
 // overwrite webviewGlobal.close() to prevent webapp from closing itself
