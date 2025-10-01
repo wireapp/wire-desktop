@@ -57,7 +57,8 @@ export const app = {
 };
 
 const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
-  let envVarContent = process.env[envVar] || '';
+  const envVarsMap = new Map(Object.entries(process.env));
+  let envVarContent = envVarsMap.get(envVar) || '';
 
   if (!caseSensitive) {
     envVar = envVar.toLowerCase();
@@ -93,7 +94,8 @@ export const setEnvironment = (env: ServerType): void => {
  * @returns {string} the url of the webapp
  */
 function getWebappUrl() {
-  const envUrl = currentEnvironment && webappEnvironments[currentEnvironment]?.url;
+  const webappEnvironmentsMap = new Map(Object.entries(webappEnvironments));
+  const envUrl = currentEnvironment && webappEnvironmentsMap.get(currentEnvironment)?.url;
   return customWebappUrl ?? envUrl ?? config.appBase;
 }
 

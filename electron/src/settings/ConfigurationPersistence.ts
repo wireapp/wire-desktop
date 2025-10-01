@@ -41,20 +41,25 @@ class ConfigurationPersistence {
 
   delete(name: string): true {
     this.logger.info(`Deleting "${name}"`);
-    delete globalThis._ConfigurationPersistence[name];
+    const configMap = new Map(Object.entries(globalThis._ConfigurationPersistence));
+    configMap.delete(name);
+    globalThis._ConfigurationPersistence = Object.fromEntries(configMap);
     return true;
   }
 
   save<T>(name: string, value: T): true {
     this.logger.info(`Saving "${name}" with value:`, value);
-    globalThis._ConfigurationPersistence[name] = value;
+    const configMap = new Map(Object.entries(globalThis._ConfigurationPersistence));
+    configMap.set(name, value);
+    globalThis._ConfigurationPersistence = Object.fromEntries(configMap);
     return true;
   }
 
-  restore<T>(name: string, defaultValue?: T): T {
+  restore<T>(name: string, defaultValue?: T): T | undefined {
     this.logger.info(`Restoring "${name}"`);
-    const value = globalThis._ConfigurationPersistence[name];
-    return value === undefined ? (defaultValue as T) : value;
+    const configMap = new Map(Object.entries(globalThis._ConfigurationPersistence));
+    const value = configMap.get(name);
+    return (value as T) ?? defaultValue;
   }
 
   persistToFile(): void {
@@ -79,8 +84,7 @@ class ConfigurationPersistence {
       this.logger.warn('No config found');
       const schemataKeys = Object.keys(SchemaUpdater.SCHEMATA);
       // In case of an error, always use the latest schema with sensible defaults:
-      const lastKey = schemataKeys.at(-1);
-      return SchemaUpdater.SCHEMATA[lastKey!];
+      return SchemaUpdater.SCHEMATA[schemataKeys.at(-1)!];
     }
   }
 }

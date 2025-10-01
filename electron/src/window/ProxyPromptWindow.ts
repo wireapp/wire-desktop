@@ -19,8 +19,8 @@
 
 import {app, BrowserWindow, ipcMain, session} from 'electron';
 
-import * as path from 'path';
-import {pathToFileURL} from 'url';
+import * as path from 'node:path';
+import {pathToFileURL} from 'node:url';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale';
@@ -29,7 +29,7 @@ import {config} from '../settings/config';
 const appPath = path.join(app.getAppPath(), config.electronDirectory);
 
 const promptHtmlPath = pathToFileURL(path.join(appPath, 'html/proxy-prompt.html')).href;
-const proxyPromptWindowAllowList = [promptHtmlPath, pathToFileURL(path.join(appPath, 'css/proxy-prompt.css'))];
+const proxyPromptWindowAllowList = new Set([promptHtmlPath, pathToFileURL(path.join(appPath, 'css/proxy-prompt.css'))]);
 const preloadPath = path.join(appPath, 'dist/preload/menu/preload-proxy-prompt.js');
 
 const windowSize = {
@@ -70,7 +70,7 @@ const showWindow = async () => {
     // see https://github.com/electron/electron/issues/8841
     proxyPromptWindow.webContents.session.webRequest.onBeforeRequest(async ({url}, callback) => {
       // Only allow those URLs to be opened within the window
-      if (proxyPromptWindowAllowList.includes(url)) {
+      if (proxyPromptWindowAllowList.has(url)) {
         return callback({cancel: false});
       }
 
@@ -82,7 +82,11 @@ const showWindow = async () => {
         const isExpected = event.sender.id === proxyPromptWindow.webContents.id;
         if (isExpected) {
           const resultLabels: Record<string, string> = {};
-          labels.forEach(label => (resultLabels[label] = locale.getText(label)));
+          const resultLabelsMap = new Map();
+          for (const label of labels) {
+            resultLabelsMap.set(label, locale.getText(label));
+          }
+          Object.assign(resultLabels, Object.fromEntries(resultLabelsMap));
           event.reply(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, resultLabels);
         }
       }

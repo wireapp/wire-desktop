@@ -28,7 +28,9 @@
     "redux": "4.2.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.4.2",
-    "uuid": "9.0.1"
+    "uuid": "9.0.1",
+    "validator": "^13.15.15",
+    "xss": "^1.0.15"
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
@@ -64,6 +66,7 @@
     "@types/sinon": "17.0.3",
     "@types/sort-json": "2.0.3",
     "@types/uuid": "9.0.8",
+    "@types/validator": "^13.15.3",
     "@typescript-eslint/eslint-plugin": "7.17.0",
     "@typescript-eslint/parser": "7.18.0",
     "@wireapp/copy-config": "2.3.4",
@@ -102,6 +105,7 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "4.6.2",
+    "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "eslint-plugin-testing-library": "6.5.0",
     "eslint-plugin-unused-imports": "3.2.0",

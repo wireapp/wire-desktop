@@ -19,7 +19,7 @@
 
 import * as Electron from 'electron';
 
-import * as path from 'path';
+import * as path from 'node:path';
 
 import cs from './cs-CZ.json';
 import da from './da-DK.json';
@@ -159,7 +159,7 @@ export const getCurrent = (): SupportedI18nLanguage => {
     }
 
     const defaultLocale = parseLocale(systemLocale);
-    current = settings.restore(SettingsType.LOCALE, defaultLocale);
+    current = settings.restore(SettingsType.LOCALE, defaultLocale) || defaultLocale;
   }
   return current;
 };
@@ -178,17 +178,38 @@ export const getText = (
   paramReplacements?: Record<string, string>,
 ): string => {
   const strings = getCurrent();
-  let translationText = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
+
+  const languagesMap = new Map(Object.entries(LANGUAGES));
+  const currentLanguage = languagesMap.get(strings);
+  const englishLanguage = languagesMap.get('en');
+
+  if (!currentLanguage || !englishLanguage) {
+    throw new Error(`Language data not found for "${strings}"`);
+  }
+
+  const currentLangMap = new Map(Object.entries(currentLanguage));
+  const englishLangMap = new Map(Object.entries(englishLanguage));
+
+  let translationText = currentLangMap.get(stringIdentifier) || englishLangMap.get(stringIdentifier);
 
   if (!translationText) {
     throw new Error(`Translation for "${stringIdentifier}" could not be found.`);
   }
 
-  const replacements: Record<string, string> = {...customReplacements, ...paramReplacements};
-  for (const replacement of Object.keys(replacements)) {
-    const regex = new RegExp(`{${replacement}}`, 'g');
-    if (translationText.match(regex)) {
-      translationText = translationText.replace(regex, replacements[replacement]);
+  const customReplacementsMap = new Map(Object.entries(customReplacements || {}));
+  const paramReplacementsMap = new Map(Object.entries(paramReplacements || {}));
+  const allReplacements = new Map([...customReplacementsMap, ...paramReplacementsMap]);
+
+  for (const [replacement, value] of allReplacements) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(replacement)) {
+      continue;
+    }
+    if (typeof value !== 'string') {
+      continue;
+    }
+    const placeholder = `{${replacement}}`;
+    if (translationText.includes(placeholder)) {
+      translationText = translationText.replaceAll(placeholder, value);
     }
   }
 

@@ -177,7 +177,9 @@ export const OriginValidator = {
       return false;
     }
 
+    // eslint-disable-next-line security/detect-unsafe-regex
     const ipv4Pattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+    // eslint-disable-next-line security/detect-unsafe-regex
     const ipv6Pattern = /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/;
     if (ipv4Pattern.test(hostname) || ipv6Pattern.test(hostname)) {
       return false;
@@ -188,6 +190,7 @@ export const OriginValidator = {
     }
 
     const hostnamePattern =
+      // eslint-disable-next-line security/detect-unsafe-regex
       /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     if (!hostnamePattern.test(hostname)) {
       return false;
