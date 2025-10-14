@@ -99,7 +99,7 @@
     "eslint-plugin-jasmine": "4.2.2",
     "eslint-plugin-jest": "28.14.0",
     "eslint-plugin-jest-dom": "5.5.0",
-    "eslint-plugin-jsdoc": "48.11.0",
+    "eslint-plugin-jsdoc": "61.1.2",
     "eslint-plugin-jsx-a11y": "6.10.2",
     "eslint-plugin-no-unsanitized": "4.0.2",
     "eslint-plugin-prettier": "4.2.1",
