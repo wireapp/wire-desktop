@@ -5221,15 +5221,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:0.21.2":
-  version: 0.21.2
-  resolution: "axios@npm:0.21.2"
-  dependencies:
-    follow-redirects: ^1.14.0
-  checksum: 41299c21f77323e7c56ea49d2d5ed25407d24bb145a4ce3441a8db17359ae56554f9495dca6e15d343a9530e106212a684c75a4db3bedfbe19f6414a8d94378e
-  languageName: node
-  linkType: hard
-
 "axios@npm:1.12.2":
   version: 1.12.2
   resolution: "axios@npm:1.12.2"
@@ -6099,7 +6090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"combined-stream@npm:^1.0.6, combined-stream@npm:^1.0.8, combined-stream@npm:~1.0.6":
+"combined-stream@npm:^1.0.8, combined-stream@npm:~1.0.6":
   version: 1.0.8
   resolution: "combined-stream@npm:1.0.8"
   dependencies:
@@ -8649,7 +8640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.15.6":
   version: 1.15.11
   resolution: "follow-redirects@npm:1.15.11"
   peerDependenciesMeta:
@@ -8695,7 +8686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:4.0.4, form-data@npm:^4.0.0, form-data@npm:^4.0.4":
+"form-data@npm:>=2.5.4":
   version: 4.0.4
   resolution: "form-data@npm:4.0.4"
   dependencies:
@@ -8705,17 +8696,6 @@ __metadata:
     hasown: ^2.0.2
     mime-types: ^2.1.12
   checksum: 9b7788836df9fa5a6999e0c02515b001946b2a868cfe53f026c69e2c537a2ff9fbfb8e9d2b678744628f3dc7a2d6e14e4e45dfaf68aa6239727f0bdb8ce0abf2
-  languageName: node
-  linkType: hard
-
-"form-data@npm:~2.3.2":
-  version: 2.3.3
-  resolution: "form-data@npm:2.3.3"
-  dependencies:
-    asynckit: ^0.4.0
-    combined-stream: ^1.0.6
-    mime-types: ^2.1.12
-  checksum: 10c1780fa13dbe1ff3100114c2ce1f9307f8be10b14bf16e103815356ff567b6be39d70fc4a40f8990b9660012dc24b0f5e1dde1b6426166eb23a445ba068ca3
   languageName: node
   linkType: hard
 
@@ -12054,37 +12034,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.8.2":
-  version: 10.8.2
-  resolution: "mocha@npm:10.8.2"
-  dependencies:
-    ansi-colors: ^4.1.3
-    browser-stdout: ^1.3.1
-    chokidar: ^3.5.3
-    debug: ^4.3.5
-    diff: ^5.2.0
-    escape-string-regexp: ^4.0.0
-    find-up: ^5.0.0
-    glob: ^8.1.0
-    he: ^1.2.0
-    js-yaml: ^4.1.0
-    log-symbols: ^4.1.0
-    minimatch: ^5.1.6
-    ms: ^2.1.3
-    serialize-javascript: ^6.0.2
-    strip-json-comments: ^3.1.1
-    supports-color: ^8.1.1
-    workerpool: ^6.5.1
-    yargs: ^16.2.0
-    yargs-parser: ^20.2.9
-    yargs-unparser: ^2.0.0
-  bin:
-    _mocha: bin/_mocha
-    mocha: bin/mocha.js
-  checksum: 68cb519503f1e8ffd9b0651e1aef75dfe4754425186756b21e53169da44b5bcb1889e2b743711205082763d3f9a42eb8eb2c13bb1a718a08cb3a5f563bfcacdc
-  languageName: node
-  linkType: hard
-
 "mocha@npm:=10.4.0":
   version: 10.4.0
   resolution: "mocha@npm:10.4.0"
@@ -12113,6 +12062,37 @@ __metadata:
     _mocha: bin/_mocha
     mocha: bin/mocha.js
   checksum: 090771d6d42a65a934c7ed448d524bcc663836351af9f0678578caa69943b01a9535a73192d24fd625b3fdb5979cce5834dfe65e3e1ee982444d65e19975b81c
+  languageName: node
+  linkType: hard
+
+"mocha@npm:^10.8.2":
+  version: 10.8.2
+  resolution: "mocha@npm:10.8.2"
+  dependencies:
+    ansi-colors: ^4.1.3
+    browser-stdout: ^1.3.1
+    chokidar: ^3.5.3
+    debug: ^4.3.5
+    diff: ^5.2.0
+    escape-string-regexp: ^4.0.0
+    find-up: ^5.0.0
+    glob: ^8.1.0
+    he: ^1.2.0
+    js-yaml: ^4.1.0
+    log-symbols: ^4.1.0
+    minimatch: ^5.1.6
+    ms: ^2.1.3
+    serialize-javascript: ^6.0.2
+    strip-json-comments: ^3.1.1
+    supports-color: ^8.1.1
+    workerpool: ^6.5.1
+    yargs: ^16.2.0
+    yargs-parser: ^20.2.9
+    yargs-unparser: ^2.0.0
+  bin:
+    _mocha: bin/_mocha
+    mocha: bin/mocha.js
+  checksum: 68cb519503f1e8ffd9b0651e1aef75dfe4754425186756b21e53169da44b5bcb1889e2b743711205082763d3f9a42eb8eb2c13bb1a718a08cb3a5f563bfcacdc
   languageName: node
   linkType: hard
 
@@ -16391,7 +16371,7 @@ __metadata:
     adm-zip: 0.5.16
     auto-launch: 5.0.6
     aws-sdk: 2.1692.0
-    axios: 0.21.2
+    axios: 1.12.2
     babel-core: 7.0.0-bridge.0
     babel-eslint: 10.1.0
     babel-jest: 29.7.0
@@ -16445,7 +16425,7 @@ __metadata:
     lodash: 4.17.21
     logdown: 3.3.1
     minimist: 1.2.8
-    mocha: 10.8.2
+    mocha: ^10.8.2
     nock: 13.5.6
     nyc: 15.1.0
     open-graph: 0.2.6
