@@ -1157,7 +1157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-react-display-name@npm:^7.27.1":
+"@babel/plugin-transform-react-display-name@npm:^7.28.0":
   version: 7.28.0
   resolution: "@babel/plugin-transform-react-display-name@npm:7.28.0"
   dependencies:
@@ -1451,19 +1451,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-react@npm:7.27.1":
-  version: 7.27.1
-  resolution: "@babel/preset-react@npm:7.27.1"
+"@babel/preset-react@npm:7.28.5":
+  version: 7.28.5
+  resolution: "@babel/preset-react@npm:7.28.5"
   dependencies:
     "@babel/helper-plugin-utils": ^7.27.1
     "@babel/helper-validator-option": ^7.27.1
-    "@babel/plugin-transform-react-display-name": ^7.27.1
+    "@babel/plugin-transform-react-display-name": ^7.28.0
     "@babel/plugin-transform-react-jsx": ^7.27.1
     "@babel/plugin-transform-react-jsx-development": ^7.27.1
     "@babel/plugin-transform-react-pure-annotations": ^7.27.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 00bc146f9c742eed804c598d3f31b7d889c1baf8c768989b7f84a93ca527dd1518d3b86781e89ca45cae6dbee136510d3a121658e01416c5578aecf751517bb5
+  checksum: 13bc1fe4dde0a29d00323e46749e5beb457844507cb3afa2fefbd85d283c2d4836f9e4a780be735de58a44c505870476dc2838f1f8faf9d6f056481e65f1a0fb
   languageName: node
   linkType: hard
 
@@ -16466,7 +16466,7 @@ __metadata:
     "@babel/plugin-proposal-class-properties": 7.18.6
     "@babel/plugin-proposal-optional-chaining": 7.21.0
     "@babel/preset-env": 7.28.5
-    "@babel/preset-react": 7.27.1
+    "@babel/preset-react": 7.28.5
     "@babel/preset-typescript": 7.28.5
     "@babel/register": 7.28.3
     "@electron/fuses": 1.8.0
