@@ -37,7 +37,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.28.5":
+"@babel/core@npm:7.28.5, @babel/core@npm:^7.24.4":
   version: 7.28.5
   resolution: "@babel/core@npm:7.28.5"
   dependencies:
@@ -355,7 +355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.28.5":
+"@babel/parser@npm:^7.24.4, @babel/parser@npm:^7.28.5":
   version: 7.28.5
   resolution: "@babel/parser@npm:7.28.5"
   dependencies:
@@ -7953,12 +7953,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:4.6.2":
-  version: 4.6.2
-  resolution: "eslint-plugin-react-hooks@npm:4.6.2"
+"eslint-plugin-react-hooks@npm:7.0.0":
+  version: 7.0.0
+  resolution: "eslint-plugin-react-hooks@npm:7.0.0"
+  dependencies:
+    "@babel/core": ^7.24.4
+    "@babel/parser": ^7.24.4
+    hermes-parser: ^0.25.1
+    zod: ^3.22.4 || ^4.0.0
+    zod-validation-error: ^3.0.3 || ^4.0.0
   peerDependencies:
-    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
-  checksum: 395c433610f59577cfcf3f2e42bcb130436c8a0b3777ac64f441d88c5275f4fcfc89094cedab270f2822daf29af1079151a7a6579a8e9ea8cee66540ba0384c4
+    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
+  checksum: 2ce87bf30b42b086ed053ed371492e926837dc674fc362a6c3ce5a19d2507f58c29dfbb8fc59e102029acbd9104f86043901bbf56e21035aabaf6746673d3c08
   languageName: node
   linkType: hard
 
@@ -9444,6 +9450,22 @@ __metadata:
   bin:
     he: bin/he
   checksum: 3d4d6babccccd79c5c5a3f929a68af33360d6445587d628087f39a965079d84f18ce9c3d3f917ee1e3978916fc833bb8b29377c3b403f919426f91bc6965e7a7
+  languageName: node
+  linkType: hard
+
+"hermes-estree@npm:0.25.1":
+  version: 0.25.1
+  resolution: "hermes-estree@npm:0.25.1"
+  checksum: 97f42e9178dff61db017810b4f79f5a2cdbb3cde94b7d99ba84ed632ee2adfcae2244555587951b3151fc036676c68f48f57fbe2b49e253eb1f3f904d284a8b0
+  languageName: node
+  linkType: hard
+
+"hermes-parser@npm:^0.25.1":
+  version: 0.25.1
+  resolution: "hermes-parser@npm:0.25.1"
+  dependencies:
+    hermes-estree: 0.25.1
+  checksum: 4edcfaa3030931343b540182b83c432aba4cdcb1925952521ab4cfb7ab90c2c1543dfcb042ccd51d5e81e4bfe2809420e85902c2ff95ef7c6c64644ce17138ea
   languageName: node
   linkType: hard
 
@@ -16542,7 +16564,7 @@ __metadata:
     eslint-plugin-no-unsanitized: 4.0.2
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-react: 7.37.5
-    eslint-plugin-react-hooks: 4.6.2
+    eslint-plugin-react-hooks: 7.0.0
     eslint-plugin-security: ^3.0.1
     eslint-plugin-simple-import-sort: 12.1.1
     eslint-plugin-testing-library: 6.5.0
@@ -16931,5 +16953,21 @@ __metadata:
   version: 1.2.1
   resolution: "yocto-queue@npm:1.2.1"
   checksum: 0843d6c2c0558e5c06e98edf9c17942f25c769e21b519303a5c2adefd5b738c9b2054204dc856ac0cd9d134b1bc27d928ce84fd23c9e2423b7e013d5a6f50577
+  languageName: node
+  linkType: hard
+
+"zod-validation-error@npm:^3.0.3 || ^4.0.0":
+  version: 4.0.2
+  resolution: "zod-validation-error@npm:4.0.2"
+  peerDependencies:
+    zod: ^3.25.0 || ^4.0.0
+  checksum: f16ccbc08c5345f28788beea814d82e1f047978414f1511bd97a171580d7dbe63cecc368caa352c1391e201539288c241d61145e57c6b84cb19112dc88a72098
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.22.4 || ^4.0.0":
+  version: 4.1.12
+  resolution: "zod@npm:4.1.12"
+  checksum: 91174acc7d2ca5572ad522643474ddd60640cf6877b5d76e5d583eb25e3c4072c6f5eb92ab94f231ec5ce61c6acdfc3e0166de45fb1005b1ea54986b026b765f
   languageName: node
   linkType: hard
