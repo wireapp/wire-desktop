@@ -148,6 +148,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-create-class-features-plugin@npm:^7.28.5":
+  version: 7.28.5
+  resolution: "@babel/helper-create-class-features-plugin@npm:7.28.5"
+  dependencies:
+    "@babel/helper-annotate-as-pure": ^7.27.3
+    "@babel/helper-member-expression-to-functions": ^7.28.5
+    "@babel/helper-optimise-call-expression": ^7.27.1
+    "@babel/helper-replace-supers": ^7.27.1
+    "@babel/helper-skip-transparent-expression-wrappers": ^7.27.1
+    "@babel/traverse": ^7.28.5
+    semver: ^6.3.1
+  peerDependencies:
+    "@babel/core": ^7.0.0
+  checksum: 98f94a27bcde0cf0b847c41e1307057a1caddd131fb5fa0b1566e0c15ccc20b0ebab9667d782bffcd3eac9262226b18e86dcf30ab0f4dc5d14b1e1bf243aba49
+  languageName: node
+  linkType: hard
+
 "@babel/helper-create-regexp-features-plugin@npm:^7.18.6, @babel/helper-create-regexp-features-plugin@npm:^7.27.1":
   version: 7.27.1
   resolution: "@babel/helper-create-regexp-features-plugin@npm:7.27.1"
@@ -190,6 +207,16 @@ __metadata:
     "@babel/traverse": ^7.27.1
     "@babel/types": ^7.27.1
   checksum: b13a3d120015a6fd2f6e6c2ff789cd12498745ef028710cba612cfb751b91ace700c3f96c1689228d1dcb41e9d4cf83d6dff8627dcb0c8da12d79440e783c6b8
+  languageName: node
+  linkType: hard
+
+"@babel/helper-member-expression-to-functions@npm:^7.28.5":
+  version: 7.28.5
+  resolution: "@babel/helper-member-expression-to-functions@npm:7.28.5"
+  dependencies:
+    "@babel/traverse": ^7.28.5
+    "@babel/types": ^7.28.5
+  checksum: 447d385233bae2eea713df1785f819b5a5ca272950740da123c42d23f491045120f0fbbb5609c091f7a9bbd40f289a442846dde0cb1bf0c59440fa093690cf7c
   languageName: node
   linkType: hard
 
@@ -1269,18 +1296,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-typescript@npm:^7.27.1":
-  version: 7.28.0
-  resolution: "@babel/plugin-transform-typescript@npm:7.28.0"
+"@babel/plugin-transform-typescript@npm:^7.28.5":
+  version: 7.28.5
+  resolution: "@babel/plugin-transform-typescript@npm:7.28.5"
   dependencies:
     "@babel/helper-annotate-as-pure": ^7.27.3
-    "@babel/helper-create-class-features-plugin": ^7.27.1
+    "@babel/helper-create-class-features-plugin": ^7.28.5
     "@babel/helper-plugin-utils": ^7.27.1
     "@babel/helper-skip-transparent-expression-wrappers": ^7.27.1
     "@babel/plugin-syntax-typescript": ^7.27.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 14c1024bcd57fcd469d90cf0c15c3cd4e771e2eb2cd9afee3aa79b59c8ed103654f7c5c71cdb3bfe31c1d0cb08bfad8c80f5aa1d24b4b454bd21301d5925533d
+  checksum: 202785e9cc6fb04efba091b3d5560cc8089cdc54df12fafa3d32ed7089e8d7a95b92b2fb1b53ec3e4db3bbafe56e8b32a3530cac004b3e493e902def8666001d
   languageName: node
   linkType: hard
 
@@ -1440,18 +1467,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:7.27.1":
-  version: 7.27.1
-  resolution: "@babel/preset-typescript@npm:7.27.1"
+"@babel/preset-typescript@npm:7.28.5":
+  version: 7.28.5
+  resolution: "@babel/preset-typescript@npm:7.28.5"
   dependencies:
     "@babel/helper-plugin-utils": ^7.27.1
     "@babel/helper-validator-option": ^7.27.1
     "@babel/plugin-syntax-jsx": ^7.27.1
     "@babel/plugin-transform-modules-commonjs": ^7.27.1
-    "@babel/plugin-transform-typescript": ^7.27.1
+    "@babel/plugin-transform-typescript": ^7.28.5
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 38020f1b23e88ec4fbffd5737da455d8939244bddfb48a2516aef93fb5947bd9163fb807ce6eff3e43fa5ffe9113aa131305fef0fb5053998410bbfcfe6ce0ec
+  checksum: 22f889835d9db1e627846e71ca2f02e2d24e2eb9ebcf9845b3b1d37bd3a53787967bafabbbcb342f06aaf7627399a7102ba6ca18f9a0e17066c865d680d2ceb9
   languageName: node
   linkType: hard
 
@@ -16440,7 +16467,7 @@ __metadata:
     "@babel/plugin-proposal-optional-chaining": 7.21.0
     "@babel/preset-env": 7.28.5
     "@babel/preset-react": 7.27.1
-    "@babel/preset-typescript": 7.27.1
+    "@babel/preset-typescript": 7.28.5
     "@babel/register": 7.28.3
     "@electron/fuses": 1.8.0
     "@electron/osx-sign": 1.3.3
