@@ -70,7 +70,7 @@ jobs:
           yarn npm audit --all --recursive > audit-report.txt || true
 
       - name: Upload audit results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dependency-audit-results
           path: |
