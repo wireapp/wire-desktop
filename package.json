@@ -69,7 +69,7 @@
     "@types/sinon": "17.0.3",
     "@types/sort-json": "2.0.3",
     "@types/uuid": "9.0.8",
-    "@types/validator": "^13.15.3",
+    "@types/validator": "^13.15.4",
     "@typescript-eslint/eslint-plugin": "7.17.0",
     "@typescript-eslint/parser": "7.18.0",
     "@wireapp/copy-config": "2.3.4",
