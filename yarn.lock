@@ -5369,14 +5369,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.13.0":
-  version: 1.13.0
-  resolution: "axios@npm:1.13.0"
+"axios@npm:1.13.1":
+  version: 1.13.1
+  resolution: "axios@npm:1.13.1"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.4
     proxy-from-env: ^1.1.0
-  checksum: ec2767925b633d23c5c665414b643215359cd6c38491f6f18acaa700a9f206407624e1439f51a1d7b1ab6ef9174e20196b1728c09a7646f89ff38f5d5072419a
+  checksum: fd34e26d22adaba5ce59b02963ecc4f7a6a4a44950014512f3f86dde10ab30df377dd10260ea9d36aafe9f1f87191a95f5b50c3979485be50f10b465c7b1a164
   languageName: node
   linkType: hard
 
@@ -16519,7 +16519,7 @@ __metadata:
     adm-zip: 0.5.16
     auto-launch: 5.0.6
     aws-sdk: 2.1692.0
-    axios: 1.13.0
+    axios: 1.13.1
     babel-core: 7.0.0-bridge.0
     babel-eslint: 10.1.0
     babel-jest: 29.7.0
