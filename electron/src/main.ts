@@ -170,7 +170,6 @@ Object.entries(config).forEach(([key, value]) => {
 app.setAppUserModelId(config.appUserModelId);
 
 // do not use mdns for local ip obfuscation to prevent windows firewall prompt
-// app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
 app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'all');
 app.getGPUInfo('basic').then((info: any) => {
   const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
