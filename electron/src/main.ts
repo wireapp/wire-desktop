@@ -17,17 +17,15 @@
  *
  */
 
+import * as remoteMain from '@electron/remote/main';
 import {
   app,
-  clipboard,
   dialog,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
   ipcMain,
   Menu,
-  nativeImage,
-  nativeTheme,
   WebContents,
   desktopCapturer,
   safeStorage,
@@ -40,8 +38,8 @@ import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';
 
-import * as path from 'node:path';
-import {URL, pathToFileURL} from 'node:url';
+import * as path from 'path';
+import {URL, pathToFileURL} from 'url';
 
 import {DateUtil, LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
@@ -75,6 +73,8 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
+
+remoteMain.initialize();
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
@@ -125,7 +125,7 @@ if (customDownloadPath) {
 }
 
 if (argv[config.ARGUMENT.VERSION]) {
-  logger.info(config.version);
+  console.info(config.version);
   app.exit();
 }
 
@@ -146,9 +146,7 @@ if (argv[config.ARGUMENT.PROXY_SERVER] || fileBasedProxyConfig) {
       throw new Error('No protocol for the proxy server specified.');
     }
   } catch (error) {
-    logger.error(
-      `Could not parse authenticated proxy URL: "${error instanceof Error ? error.message : String(error)}"`,
-    );
+    logger.error(`Could not parse authenticated proxy URL: "${(error as any).message}"`);
   }
 }
 
@@ -162,11 +160,11 @@ let isFullScreen = false;
 let isQuitting = false;
 let main: BrowserWindow;
 
-for (const [key, value] of Object.entries(config)) {
-  if (value === undefined || (typeof value === 'number' && Number.isNaN(value))) {
+Object.entries(config).forEach(([key, value]) => {
+  if (typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) {
     logger.warn(`Configuration key "${key}" not defined.`);
   }
-}
+});
 
 // Squirrel setup
 app.setAppUserModelId(config.appUserModelId);
@@ -174,15 +172,13 @@ app.setAppUserModelId(config.appUserModelId);
 // do not use mdns for local ip obfuscation to prevent windows firewall prompt
 app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
 
-// eslint-disable-next-line prettier/prettier
-(async () => { // NOSONAR - TypeScript config doesn't support top-level await, IIFE pattern required
-  const info = (await app.getGPUInfo('basic')) as GPUInfo;
-  const gpuDevices = info.gpuDevice || [];
+app.getGPUInfo('basic').then((info: any) => {
+  const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
   if (gpuDevices.length > 0) {
     logger.info('No GPU device found, disabling hardware acceleration');
     app.disableHardwareAcceleration();
   }
-})();
+});
 
 // IPC events
 const bindIpcEvents = (): void => {
@@ -220,17 +216,16 @@ const bindIpcEvents = (): void => {
 
 const checkConfigV0FullScreen = (mainWindowState: windowStateKeeper.State): void => {
   // if a user still has the old config version 0 and had the window maximized last time
-  if (mainWindowState.isMaximized === undefined && isFullScreen === true) {
+  if (typeof mainWindowState.isMaximized === 'undefined' && isFullScreen === true) {
     main.maximize();
   }
 };
 
 const initWindowStateKeeper = (): windowStateKeeper.State => {
-  const defaultBounds = {
+  const loadedWindowBounds = settings.restore(SettingsType.WINDOW_BOUNDS, {
     height: WINDOW_SIZE.DEFAULT_HEIGHT,
     width: WINDOW_SIZE.DEFAULT_WIDTH,
-  };
-  const loadedWindowBounds = settings.restore(SettingsType.WINDOW_BOUNDS, defaultBounds) || defaultBounds;
+  });
 
   // load version 0 full screen setting
   const showInFullScreen = settings.restore(SettingsType.FULL_SCREEN, 'not-set-in-v0');
@@ -241,10 +236,10 @@ const initWindowStateKeeper = (): windowStateKeeper.State => {
     path: path.join(app.getPath('userData'), 'config'),
   };
 
-  if (showInFullScreen !== 'not-set-in-v0' && typeof showInFullScreen === 'boolean') {
-    stateKeeperOptions.fullScreen = showInFullScreen;
-    stateKeeperOptions.maximize = showInFullScreen;
-    isFullScreen = showInFullScreen;
+  if (showInFullScreen !== 'not-set-in-v0') {
+    stateKeeperOptions.fullScreen = showInFullScreen as boolean;
+    stateKeeperOptions.maximize = showInFullScreen as boolean;
+    isFullScreen = showInFullScreen as boolean;
   }
 
   return windowStateKeeper(stateKeeperOptions);
@@ -270,7 +265,7 @@ function getMainWindowUrl() {
 
 // App Windows
 const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise<void> => {
-  const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true) ?? true;
+  const showMenuBar = settings.restore(SettingsType.SHOW_MENU_BAR, true);
 
   const options: BrowserWindowConstructorOptions = {
     autoHideMenuBar: !showMenuBar,
@@ -283,10 +278,9 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     title: config.name,
     webPreferences: {
       backgroundThrottling: false,
-      contextIsolation: true,
+      contextIsolation: false,
       nodeIntegration: false,
       preload: PRELOAD_JS,
-      // Disabled to allow preload-app.js to import shared constants
       sandbox: false,
       webviewTag: true,
     },
@@ -297,65 +291,15 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     y: mainWindowState.y,
   };
 
-  ipcMain.handle(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, (_event, opts) => desktopCapturer.getSources(opts));
-  ipcMain.handle(EVENT_TYPE.ACTION.ENCRYPT, (_event, plaintext: string) => safeStorage.encryptString(plaintext));
-  ipcMain.handle(EVENT_TYPE.ACTION.DECRYPT, (_event, encrypted: Uint8Array | Buffer | ArrayBuffer | number[]) => {
-    // Convert various array-like types to Buffer for decryption
-    // When data is sent over IPC, Uint8Arrays get converted to plain objects with numeric keys
-    const buffer = Buffer.isBuffer(encrypted) ? encrypted : Buffer.from(encrypted as Uint8Array);
-    return safeStorage.decryptString(buffer);
-  });
-  ipcMain.handle(EVENT_TYPE.UI.SHOULD_USE_DARK_COLORS, () => {
-    return nativeTheme.shouldUseDarkColors;
-  });
-
-  // Listen for system theme changes and notify all windows
-  nativeTheme.on('updated', () => {
-    const allWindows = BrowserWindow.getAllWindows();
-    for (const window of allWindows) {
-      window.webContents.send(EVENT_TYPE.UI.SYSTEM_THEME_CHANGED);
-    }
-  });
-
-  ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.COPY_TEXT, (_event, text: string) => {
-    clipboard.writeText(text);
-  });
-
-  ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.COPY_IMAGE, async (_event, imageUrl: string) => {
-    try {
-      const response = await fetch(imageUrl, {
-        headers: {
-          'User-Agent': config.userAgent,
-        },
-      });
-      const bytes = await response.arrayBuffer();
-      const image = nativeImage.createFromBuffer(Buffer.from(bytes));
-      clipboard.writeImage(image);
-    } catch (error) {
-      logger.error('Failed to copy image:', error);
-    }
-  });
-
-  ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.SAVE_IMAGE, async (event, imageUrl: string, timestamp?: string) => {
-    try {
-      const response = await fetch(imageUrl, {
-        headers: {
-          'User-Agent': config.userAgent,
-        },
-      });
-      const bytes = await response.arrayBuffer();
-      ipcMain.emit(EVENT_TYPE.ACTION.SAVE_PICTURE, event, new Uint8Array(bytes), timestamp);
-    } catch (error) {
-      logger.error('Failed to save image:', error);
-    }
-  });
-
-  ipcMain.handle(EVENT_TYPE.CONTEXT_MENU.REPLACE_MISSPELLING, (event, suggestion: string) => {
-    const webContents = event.sender;
-    webContents.replaceMisspelling(suggestion);
-  });
+  ipcMain.handle(EVENT_TYPE.ACTION.GET_DESKTOP_SOURCES, (event, opts) => desktopCapturer.getSources(opts));
+  ipcMain.handle(EVENT_TYPE.ACTION.ENCRYPT, (event, plaintext: string) => safeStorage.encryptString(plaintext));
+  ipcMain.handle(EVENT_TYPE.ACTION.DECRYPT, (event, encrypted: Uint8Array) =>
+    safeStorage.decryptString(Buffer.from(encrypted)),
+  );
 
   main = new BrowserWindow(options);
+
+  remoteMain.enable(main.webContents);
 
   main.setMenuBarVisibility(showMenuBar);
 
@@ -363,7 +307,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   attachCertificateVerifyProcManagerTo(main);
   checkConfigV0FullScreen(mainWindowState);
 
-  if (argv[config.ARGUMENT.DEVTOOLS] !== undefined) {
+  if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
     openDevTools(argv[config.ARGUMENT.DEVTOOLS]).catch(() =>
       logger.warn(`Could not open DevTools with index "${argv[config.ARGUMENT.DEVTOOLS]}". Does the account exist?`),
     );
@@ -384,7 +328,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
   });
 
   // Handle the new window event in the main Browser Window
-  main.webContents.setWindowOpenHandler(_details => {
+  main.webContents.setWindowOpenHandler(details => {
     return {action: 'deny'};
   });
 
@@ -413,13 +357,13 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  app.on('render-process-gone', async (_event, _, details) => {
+  app.on('render-process-gone', async (event, _, details) => {
     logger.error('WebContents crashed. Will reload the window.');
     logger.error(JSON.stringify(details));
     try {
       main.reload();
     } catch (error) {
-      showErrorDialog(`Could not reload the window: ${error instanceof Error ? error.message : String(error)}`);
+      showErrorDialog(`Could not reload the window: ${(error as any).message}`);
       logger.error('Could not reload the window:', error);
     }
   });
@@ -434,13 +378,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
 
   const mainURL = getMainWindowUrl();
   await main.loadURL(mainURL.href);
-  const path = require('node:path');
-  const resolvedCSSPath = path.resolve(WRAPPER_CSS);
-  if (!resolvedCSSPath.endsWith('.css') || resolvedCSSPath.includes('..')) {
-    throw new Error('Invalid CSS file path');
-  }
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
-  const wrapperCSSContent = await fs.readFile(resolvedCSSPath, 'utf8');
+  const wrapperCSSContent = await fs.readFile(WRAPPER_CSS, 'utf8');
   await main.webContents.insertCSS(wrapperCSSContent);
 };
 
@@ -489,7 +427,7 @@ const handleAppEvents = (): void => {
 
             const {username, password} = promptData;
             // remove the colon from the protocol to align it with other usages of `generateProxyURL`
-            const protocol = proxyInfoArg?.protocol?.replaceAll(':', '');
+            const protocol = proxyInfoArg?.protocol?.replace(':', '');
             proxyInfoArg = ProxyAuth.generateProxyURL(
               {host, port},
               {
@@ -513,7 +451,7 @@ const handleAppEvents = (): void => {
           try {
             main.reload();
           } catch (error) {
-            showErrorDialog(`Could not reload the window: ${error instanceof Error ? error.message : String(error)}`);
+            showErrorDialog(`Could not reload the window: ${(error as any).message}`);
             logger.error('Could not reload the window:', error);
           }
         });
@@ -543,22 +481,12 @@ const handleAppEvents = (): void => {
 const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string): void => {
   for (const file of files) {
     try {
-      const path = require('node:path');
-      const resolvedFile = path.resolve(file);
-      if (resolvedFile.includes('..') || !resolvedFile.endsWith(oldExtension)) {
-        logger.warn(`Skipping unsafe file path: ${file}`);
-        continue;
-      }
-
-      // eslint-disable-next-line security/detect-non-literal-fs-filename
-      const fileStat = fs.statSync(resolvedFile);
-      if (fileStat.isFile() && resolvedFile.endsWith(oldExtension)) {
-        const newFile = resolvedFile.replaceAll(oldExtension, newExtension);
-        // eslint-disable-next-line security/detect-non-literal-fs-filename
-        fs.renameSync(resolvedFile, newFile);
+      const fileStat = fs.statSync(file);
+      if (fileStat.isFile() && file.endsWith(oldExtension)) {
+        fs.renameSync(file, file.replace(oldExtension, newExtension));
       }
     } catch (error) {
-      logger.error(`Failed to rename log file: "${error instanceof Error ? error.message : String(error)}"`);
+      logger.error(`Failed to rename log file: "${(error as any).message}"`);
     }
   }
 };
@@ -569,7 +497,7 @@ const renameWebViewLogFiles = (): void => {
     const logFiles = getLogFilenames(LOG_DIR, true);
     renameFileExtensions(logFiles, '.log', '.old');
   } catch (error) {
-    logger.log(`Failed to read log directory with error: ${error instanceof Error ? error.message : String(error)}`);
+    logger.log(`Failed to read log directory with error: ${(error as any).message}`);
   }
 };
 
@@ -670,27 +598,28 @@ class ElectronWrapperInit {
       return {action: 'deny'};
     };
 
-    const openLinkInNewWindow = async (
+    const openLinkInNewWindow = (
       win: BrowserWindow,
       url: string,
       event: ElectronEvent,
       frameName: string,
       options: BrowserWindowConstructorOptions,
-    ): Promise<void> => {
+    ): Promise<void> | void => {
       if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
         const singleSignOn = new SingleSignOn(win, event, url, options).init();
-        try {
-          const sso = await singleSignOn;
-          this.ssoWindow = sso;
-          this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
-        } catch (error) {
-          logger.info(error);
-        }
+        return new Promise(() => {
+          singleSignOn
+            .then(sso => {
+              this.ssoWindow = sso;
+              this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
+            })
+            .catch(error => console.info(error));
+        });
       }
     };
 
     // Keeping this Function for future use
-    const willNavigateInWebview = (_event: ElectronEvent, url: string, baseUrl: string): void => {
+    const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
       // Ensure navigation is to an allowed domain
       if (OriginValidator.isMatchingHost(url, baseUrl)) {
         this.logger.log(`Navigating inside <webview>. URL: ${url}`);
@@ -700,9 +629,10 @@ class ElectronWrapperInit {
       }
     };
 
-    const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true) ?? true;
+    const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
     app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
+      remoteMain.enable(contents);
       // disable new Windows by default on everything
       contents.setWindowOpenHandler(() => {
         return {action: 'deny'};
@@ -710,7 +640,18 @@ class ElectronWrapperInit {
       switch (contents.getType()) {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
-            configureWebviewSecurity(webPreferences, params, enableSpellChecking);
+            // Use secure defaults
+            params.autosize = 'false';
+            params.contextIsolation = 'true';
+            params.plugins = 'false';
+            webPreferences.allowRunningInsecureContent = false;
+            webPreferences.contextIsolation = false;
+            webPreferences.experimentalFeatures = false;
+            webPreferences.nodeIntegration = false;
+            webPreferences.preload = PRELOAD_RENDERER_JS;
+            webPreferences.spellcheck = enableSpellChecking;
+            webPreferences.webSecurity = true;
+            webPreferences.sandbox = false;
           });
           break;
         }
@@ -727,16 +668,69 @@ class ElectronWrapperInit {
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });
-          setupWebviewLogging(contents);
+          if (ENABLE_LOGGING) {
+            const colorCodeRegex = /%c(.+?)%c/gm;
+            const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
+            const accessTokenRegex = /access_token=[^ &]+/gm;
+            const {date, time} = DateUtil.isoFormat(new Date());
 
-          setupSpellChecking(contents, enableSpellChecking, currentLocale);
+            contents.on('console-message', async (_event, _level, message) => {
+              const webViewId = lifecycle.getWebViewId(contents);
+              /*
+               * Note: WebContents with ID `1` is the main window, `2` is the
+               * sidebar and `3` is the first account.
+               */
+              const accountIndex = contents.id - 2;
+
+              if (webViewId) {
+                const logFilePath = path.join(
+                  LOG_DIR,
+                  `${accountIndex}_${date.replaceAll('-', '_')}_${time.replaceAll(':', '_')}_${webViewId}`,
+                  config.logFileName,
+                );
+                try {
+                  await LogFactory.writeMessage(
+                    message.replace(colorCodeRegex, '$1').replace(stylingRegex, '').replace(accessTokenRegex, ''),
+                    logFilePath,
+                  );
+                } catch (error) {
+                  logger.error(`Cannot write to log file "${logFilePath}": ${(error as any).message}`, error);
+                }
+              }
+            });
+          }
+
+          if (enableSpellChecking) {
+            try {
+              const availableSpellCheckerLanguages = contents.session.availableSpellCheckerLanguages;
+              const foundLanguages = locale.supportedSpellCheckLanguages[currentLocale].filter(language =>
+                availableSpellCheckerLanguages.includes(language),
+              );
+              contents.session.setSpellCheckerLanguages(foundLanguages);
+            } catch (error) {
+              logger.error(error);
+              contents.session.setSpellCheckerLanguages([]);
+            }
+          }
 
           // Disable TLS < v1.2
           contents.session.setSSLConfig({minVersion: 'tls1.2'});
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
-          setupKeyboardHandling(contents);
+          contents.on('before-input-event', (_event, input) => {
+            if (input.type === 'keyUp' && input.key === 'Alt') {
+              const mainBrowserWindow = WindowManager.getPrimaryWindow();
+
+              if (mainBrowserWindow) {
+                const isAutoHide = mainBrowserWindow.isMenuBarAutoHide();
+                const isVisible = mainBrowserWindow.isMenuBarVisible();
+                if (isAutoHide) {
+                  mainBrowserWindow.setMenuBarVisibility(!isVisible);
+                }
+              }
+            }
+          });
 
           break;
         }
@@ -745,116 +739,12 @@ class ElectronWrapperInit {
   }
 }
 
-const configureWebviewSecurity = (
-  webPreferences: WebPreferencesExtended,
-  params: WebviewParams,
-  enableSpellChecking: boolean,
-): void => {
-  params.autosize = 'false';
-  // Context isolation disabled for webview to allow preload script to access webapp globals (amplify, wire, z)
-  // This is required for the preload-webview.ts registerEvents() function to work
-  params.contextIsolation = 'false';
-  params.plugins = 'false';
-  webPreferences.allowRunningInsecureContent = false;
-  webPreferences.contextIsolation = false;
-  webPreferences.experimentalFeatures = false;
-  webPreferences.nodeIntegration = false;
-  webPreferences.preload = PRELOAD_RENDERER_JS;
-  webPreferences.spellcheck = enableSpellChecking;
-  webPreferences.webSecurity = true;
-  webPreferences.sandbox = true;
-};
-
-const setupWebviewLogging = (contents: WebContents): void => {
-  if (!ENABLE_LOGGING) {
-    return;
-  }
-
-  const colorCodeRegex = /%c(.+?)%c/gm;
-  const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
-  const accessTokenRegex = /access_token=[^ &]+/gm;
-  const {date, time} = DateUtil.isoFormat(new Date());
-
-  contents.on('console-message', async (_event, _level, message) => {
-    const webViewId = lifecycle.getWebViewId(contents);
-    /*
-     * Note: WebContents with ID `1` is the main window, `2` is the
-     * sidebar and `3` is the first account.
-     */
-    const accountIndex = contents.id - 2;
-
-    if (webViewId) {
-      const logFilePath = path.join(
-        LOG_DIR,
-        `${accountIndex}_${date.replaceAll('-', '_')}_${time.replaceAll(':', '_')}_${webViewId}`,
-        config.logFileName,
-      );
-      try {
-        await LogFactory.writeMessage(
-          message.replaceAll(colorCodeRegex, '$1').replaceAll(stylingRegex, '').replaceAll(accessTokenRegex, ''),
-          logFilePath,
-        );
-      } catch (error) {
-        logger.error(
-          `Cannot write to log file "${logFilePath}": ${error instanceof Error ? error.message : String(error)}`,
-          error,
-        );
-      }
-    }
-  });
-};
-
-const setupSpellChecking = (contents: WebContents, enableSpellChecking: boolean, currentLocale: string): void => {
-  if (!enableSpellChecking) {
-    return;
-  }
-
-  try {
-    const availableSpellCheckerLanguages = contents.session.availableSpellCheckerLanguages;
-    const supportedLanguagesMap = new Map(Object.entries(locale.supportedSpellCheckLanguages));
-    const currentLocaleLanguages = supportedLanguagesMap.get(currentLocale);
-
-    if (currentLocaleLanguages && Array.isArray(currentLocaleLanguages)) {
-      const foundLanguages = currentLocaleLanguages.filter(language =>
-        availableSpellCheckerLanguages.includes(language),
-      );
-      contents.session.setSpellCheckerLanguages(foundLanguages);
-    } else {
-      contents.session.setSpellCheckerLanguages([]);
-    }
-  } catch (error) {
-    logger.error(error);
-    contents.session.setSpellCheckerLanguages([]);
-  }
-};
-
-const setupKeyboardHandling = (contents: WebContents): void => {
-  contents.on('before-input-event', (_event, input) => {
-    if (input.type === 'keyUp' && input.key === 'Alt') {
-      const mainBrowserWindow = WindowManager.getPrimaryWindow();
-
-      if (mainBrowserWindow) {
-        const isAutoHide = mainBrowserWindow.isMenuBarAutoHide();
-        const isVisible = mainBrowserWindow.isMenuBarVisible();
-        if (isAutoHide) {
-          mainBrowserWindow.setMenuBarVisibility(!isVisible);
-        }
-      }
-    }
-  });
-};
-
 customProtocolHandler.registerCoreProtocol();
 handlePortableFlags();
-// eslint-disable-next-line prettier/prettier
-(async () => { // NOSONAR - TypeScript config doesn't support top-level await, IIFE pattern required
-  try {
-    await lifecycle.checkSingleInstance();
-    await lifecycle.initSquirrelListener();
-  } catch (error) {
-    logger.error(error);
-  }
-})();
+lifecycle
+  .checkSingleInstance()
+  .then(() => lifecycle.initSquirrelListener())
+  .catch(error => logger.error(error));
 
 // Reloads the entire view when a `relaunch` is triggered (MacOS only, as other platform will quit and restart the app)
 lifecycle.addRelaunchListeners(async () => {
@@ -869,12 +759,5 @@ if (lifecycle.isFirstInstance) {
   handleAppEvents();
   renameWebViewLogFiles();
   fs.ensureFileSync(LOG_FILE);
-  // eslint-disable-next-line prettier/prettier
-  (async () => { // NOSONAR - TypeScript config doesn't support top-level await, IIFE pattern required
-    try {
-      await new ElectronWrapperInit().run();
-    } catch (error) {
-      logger.error(error);
-    }
-  })();
+  new ElectronWrapperInit().run().catch(error => logger.error(error));
 }

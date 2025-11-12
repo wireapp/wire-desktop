@@ -20,7 +20,7 @@
 import {BrowserWindow, Certificate, Request as CertificateVerifyRequest, dialog} from 'electron';
 import * as fs from 'fs-extra';
 
-import * as path from 'node:path';
+import * as path from 'path';
 
 import * as certificateUtils from '@wireapp/certificate-check';
 
@@ -115,13 +115,7 @@ class CertificateVerifyProcManager {
             defaultPath: `${hostname}.pem`,
           });
           if (chosenPath !== undefined) {
-            const path = require('node:path');
-            const resolvedPath = path.resolve(chosenPath);
-            if (resolvedPath.includes('..') || !resolvedPath.endsWith('.pem')) {
-              throw new Error('Invalid file path selected');
-            }
-            // eslint-disable-next-line security/detect-non-literal-fs-filename
-            await fs.writeFile(resolvedPath, Buffer.from(certificate.data));
+            await fs.writeFile(chosenPath, Buffer.from(certificate.data));
           }
           // Go back on details window
           await this.displayCertificateDetails(hostname, certificate, options);
@@ -222,7 +216,7 @@ export const setCertificateVerifyProc = async (
   // Check certificate pinning
   if (certificateUtils.hostnameShouldBePinned(hostname) && CertificateVerifyProcManager.isCertificatePinningEnabled()) {
     const pinningResults = certificateUtils.verifyPinning(hostname, validatedCertificate);
-    const falsyValue = Object.values(pinningResults).includes(false);
+    const falsyValue = Object.values(pinningResults).some(val => val === false);
 
     if (falsyValue || pinningResults.errorMessage) {
       logger.error(`Certificate verification failed for "${hostname}".`);

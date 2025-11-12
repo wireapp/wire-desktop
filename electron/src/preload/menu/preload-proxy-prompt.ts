@@ -22,10 +22,10 @@ import {ipcRenderer} from 'electron';
 import {EVENT_TYPE} from '../../lib/eventType';
 
 ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOCALE_RENDER, (event, labels: string[]) => {
-  for (const [label, text] of Object.entries(labels)) {
+  for (const label in labels) {
     const labelElement = document.querySelector(`[data-string="${label}"]`);
-    if (labelElement && typeof text === 'string') {
-      labelElement.textContent = text;
+    if (labelElement) {
+      labelElement.textContent = labels[label];
     }
   }
 });
@@ -34,8 +34,9 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
   const labels = [];
   const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
 
-  for (const label of Array.from(dataStrings)) {
-    if (label.dataset?.string) {
+  for (const index in dataStrings) {
+    const label = dataStrings[index];
+    if (label.dataset) {
       labels.push(label.dataset.string);
     }
   }
@@ -66,7 +67,7 @@ ipcRenderer.once(EVENT_TYPE.PROXY_PROMPT.LOADED, () => {
 
     form.addEventListener('submit', () => sendData());
 
-    globalThis.addEventListener('keydown', event => {
+    window.addEventListener('keydown', event => {
       if (event.key === 'Escape') {
         ipcRenderer.send(EVENT_TYPE.PROXY_PROMPT.CANCELED);
         window.close();

@@ -18,18 +18,9 @@
  */
 
 import autoLaunch from 'auto-launch';
-import {
-  BaseWindow,
-  BrowserWindow,
-  dialog,
-  globalShortcut,
-  ipcMain,
-  Menu,
-  MenuItemConstructorOptions,
-  webContents,
-} from 'electron';
+import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
 
-import * as path from 'node:path';
+import * as path from 'path';
 
 import {downloadLogs} from '../lib/download';
 import {EVENT_TYPE} from '../lib/eventType';
@@ -60,12 +51,9 @@ const separatorTemplate: MenuItemConstructorOptions = {
 };
 
 const createLanguageTemplate = (languageCode: locale.SupportedI18nLanguage): MenuItemConstructorOptions => {
-  const supportedLanguagesMap = new Map(Object.entries(locale.SUPPORTED_LANGUAGES));
-  const languageLabel = supportedLanguagesMap.get(languageCode) || languageCode;
-
   return {
     click: () => changeLocale(languageCode),
-    label: languageLabel,
+    label: locale.SUPPORTED_LANGUAGES[languageCode],
     type: 'radio',
   };
 };
@@ -195,114 +183,39 @@ const toggleAutoLaunchTemplate: MenuItemConstructorOptions = {
   type: 'checkbox',
 };
 
-/**
- * Type guard to check if a BaseWindow is a BrowserWindow
- * @param {unknown} baseWindow - The window to check
- * @returns {boolean} True if the window is a BrowserWindow
- */
-const isBrowserWindow = (baseWindow: unknown): baseWindow is BrowserWindow => {
-  return baseWindow instanceof Object && 'webContents' in baseWindow;
-};
-
-/**
- * Execute edit command on the focused webContents
- * This finds the currently focused webview and executes the edit command on it
- * @param {BaseWindow | undefined} baseWindow - The browser window containing the webviews
- * @param {'copy' | 'cut' | 'paste' | 'undo' | 'redo' | 'selectAll'} command - The edit command to execute
- * @returns {void}
- */
-const executeEditCommand = (
-  baseWindow: BaseWindow | undefined,
-  command: 'copy' | 'cut' | 'paste' | 'undo' | 'redo' | 'selectAll',
-): void => {
-  if (!isBrowserWindow(baseWindow)) {
-    logger.error("This action's target is not an instance of BrowserWindow.");
-    return;
-  }
-
-  try {
-    const focusedWebContents = webContents.getFocusedWebContents();
-    if (focusedWebContents && focusedWebContents !== baseWindow.webContents) {
-      switch (command) {
-        case 'copy':
-          focusedWebContents.copy();
-          break;
-        case 'cut':
-          focusedWebContents.cut();
-          break;
-        case 'paste':
-          focusedWebContents.paste();
-          break;
-        case 'undo':
-          focusedWebContents.undo();
-          break;
-        case 'redo':
-          focusedWebContents.redo();
-          break;
-        case 'selectAll':
-          focusedWebContents.selectAll();
-          break;
-      }
-    } else {
-      switch (command) {
-        case 'copy':
-          baseWindow.webContents.copy();
-          break;
-        case 'cut':
-          baseWindow.webContents.cut();
-          break;
-        case 'paste':
-          baseWindow.webContents.paste();
-          break;
-        case 'undo':
-          baseWindow.webContents.undo();
-          break;
-        case 'redo':
-          baseWindow.webContents.redo();
-          break;
-        case 'selectAll':
-          baseWindow.webContents.selectAll();
-          break;
-      }
-    }
-  } catch (error) {
-    logger.error(`Failed to execute edit command "${command}"`, error);
-  }
-};
-
 const editTemplate: MenuItemConstructorOptions = {
   label: `&${locale.getText('menuEdit')}`,
   submenu: [
     {
       accelerator: 'CmdOrCtrl+Z',
-      click: (_menuItem, baseWindow) => executeEditCommand(baseWindow, 'undo'),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.UNDO),
       label: locale.getText('menuUndo'),
     },
     {
       accelerator: 'Shift+CmdOrCtrl+Z',
-      click: (_menuItem, baseWindow) => executeEditCommand(baseWindow, 'redo'),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.REDO),
       label: locale.getText('menuRedo'),
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+X',
-      click: (_menuItem, baseWindow) => executeEditCommand(baseWindow, 'cut'),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.CUT),
       label: locale.getText('menuCut'),
     },
     {
       accelerator: 'CmdOrCtrl+C',
-      click: (_menuItem, baseWindow) => executeEditCommand(baseWindow, 'copy'),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.COPY),
       label: locale.getText('menuCopy'),
     },
     {
       accelerator: 'CmdOrCtrl+V',
-      click: (_menuItem, baseWindow) => executeEditCommand(baseWindow, 'paste'),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.PASTE),
       label: locale.getText('menuPaste'),
     },
     separatorTemplate,
     {
       accelerator: 'CmdOrCtrl+A',
-      click: (_menuItem, baseWindow) => executeEditCommand(baseWindow, 'selectAll'),
+      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.SELECT_ALL),
       label: locale.getText('menuSelectAll'),
     },
   ],
@@ -466,10 +379,7 @@ const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: l
       processMenu(item.submenu as Iterable<MenuItemConstructorOptions>, language);
     }
 
-    const supportedLanguagesMap = new Map(Object.entries(locale.SUPPORTED_LANGUAGES));
-    const languageLabel = supportedLanguagesMap.get(language);
-
-    if (languageLabel === item.label) {
+    if (locale.SUPPORTED_LANGUAGES[language] === item.label) {
       item.checked = true;
     }
   }

@@ -26,7 +26,7 @@ import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-ki
 
 import './Webview.css';
 
-import {EVENT_TYPE, createSandboxLogger} from '../../../../src/shared/contextIsolationConstants';
+import {EVENT_TYPE} from '../../../../src/lib/eventType';
 import {
   abortAccountCreation,
   resetIdentity,
@@ -48,13 +48,8 @@ import {LoadingSpinner} from '../LoadingSpinner';
 type WebviewTag = Electron.WebviewTag;
 type DidFailLoadEvent = Electron.DidFailLoadEvent;
 
-declare global {
-  // eslint-disable-next-line no-var
-  var wireDesktop: Window['wireDesktop'];
-}
-
 const getEnvironmentUrl = (account: Account) => {
-  const currentLocation = new URL(globalThis.location.href);
+  const currentLocation = new URL(window.location.href);
   const envParam = account.webappUrl || currentLocation.searchParams.get('env');
   const decodedEnvParam = decodeURIComponent(envParam!);
   const url = new URL(decodedEnvParam);
@@ -63,7 +58,7 @@ const getEnvironmentUrl = (account: Account) => {
   url.searchParams.set('id', account.id);
 
   // set the current language
-  url.searchParams.set('hl', wrapperLocale());
+  url.searchParams.set('hl', wrapperLocale);
 
   if (account.ssoCode && account.isAdding) {
     url.pathname = '/auth';
@@ -109,23 +104,18 @@ const Webview = ({
   const [canDelete, setCanDelete] = useState(false);
   const [url, setUrl] = useState(getEnvironmentUrl(account));
   const [webviewError, setWebviewError] = useState<DidFailLoadEvent | null>(null);
-  /**
-   * Logger for Webview component
-   *
-   * Context Isolation Security: Uses shared sandbox logger instead of main process getLogger
-   * which is not available in the sandboxed renderer process due to context isolation.
-   */
-  const logger = createSandboxLogger('Webview');
 
   useEffect(() => {
     const newUrl = getEnvironmentUrl(account);
-    logger.info(`Loading WebApp URL "${newUrl}" ...`);
+    console.info(`Loading WebApp URL "${newUrl}" ...`);
     if (url !== newUrl && webviewRef.current) {
       setUrl(newUrl);
       try {
-        webviewRef.current.loadURL(newUrl).catch((error: any) => logger.error(`Navigating to ${newUrl} failed`, error));
+        webviewRef.current
+          .loadURL(newUrl)
+          .catch((error: any) => console.error(`Navigating to ${newUrl} failed`, error));
       } catch (error) {
-        logger.warn('Can not #loadURL before attaching webview to DOM', error);
+        console.warn('Can not #loadURL before attaching webview to DOM', error);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -134,7 +124,7 @@ const Webview = ({
   // https://github.com/electron/electron/issues/14474#issuecomment-425794480
   useEffect(() => {
     const webview = webviewRef.current;
-    const currentLocation = new URL(globalThis.location.href);
+    const currentLocation = new URL(window.location.href);
     const focusParam = currentLocation.searchParams.get('focus');
 
     const focusWebView = () => {
@@ -161,34 +151,32 @@ const Webview = ({
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | number;
     if (webviewError) {
-      timeoutId = globalThis.setTimeout(() => {
+      timeoutId = window.setTimeout(() => {
         setWebviewError(null);
         webviewRef.current?.reload();
       }, 5000);
     }
     return () => {
-      globalThis.clearTimeout(timeoutId);
+      window.clearTimeout(timeoutId);
     };
   }, [webviewError]);
 
   useEffect(() => {
     const listener = (error: DidFailLoadEvent) => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
-      logger.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
+      console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
       if (error.validatedURL.startsWith(urlOrigin)) {
         setWebviewError(error);
       }
     };
-
-    const currentWebview = webviewRef.current;
-    currentWebview?.addEventListener(ON_WEBVIEW_ERROR, listener);
+    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
 
     return () => {
-      if (currentWebview) {
-        currentWebview.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (webviewRef.current) {
+        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
-  }, [account, logger]);
+  }, [webviewRef, account]);
 
   useEffect(() => {
     const onIpcMessage = ({channel, args}: {args: unknown[]; channel: string}) => {
@@ -199,7 +187,7 @@ const Webview = ({
           const [customUrl] = args;
 
           if (isString(customUrl)) {
-            const updatedWebapp = WindowUrl.createWebAppUrl(globalThis.location.toString(), customUrl);
+            const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
             updateAccountData(accountId, {
               webappUrl: updatedWebapp,
             });
@@ -223,7 +211,7 @@ const Webview = ({
         case EVENT_TYPE.LIFECYCLE.SIGNED_IN: {
           if (conversationJoinData) {
             const {code, key, domain} = conversationJoinData;
-            globalThis.wireDesktop?.sendConversationJoinToHost(accountId, code, key, domain);
+            window.sendConversationJoinToHost(accountId, code, key, domain);
             setConversationJoinData(accountId, undefined);
           }
           updateAccountLifecycle(accountId, channel);
@@ -253,7 +241,7 @@ const Webview = ({
 
           if (isConversationJoinData(data)) {
             if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-              globalThis.wireDesktop?.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
+              window.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
               setConversationJoinData(accountId, undefined);
             } else {
               setConversationJoinData(accountId, data);
@@ -284,19 +272,18 @@ const Webview = ({
       }
     };
 
-    const currentWebview = webviewRef.current;
-    currentWebview?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+    webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
 
     return () => {
-      if (currentWebview) {
-        currentWebview.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webviewRef.current) {
+        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = (account: Account) => {
-    globalThis.wireDesktop?.sendDeleteAccount(account.id, account.sessionID)?.then(() => {
+    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
       abortAccountCreation(account.id);
     });
   };

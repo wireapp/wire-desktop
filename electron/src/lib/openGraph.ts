@@ -31,8 +31,7 @@ import {config} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
 
-// In axios 1.x, the http adapter is used by default in Node.js environment
-// No need to explicitly set it anymore
+axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
 
 const arrayify = <T>(value: T[] | T = []): T[] => (Array.isArray(value) ? value : [value]);
 

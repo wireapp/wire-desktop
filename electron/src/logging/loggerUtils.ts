@@ -21,7 +21,7 @@ import {app} from 'electron';
 import * as fs from 'fs-extra';
 import globby from 'globby';
 
-import * as path from 'node:path';
+import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
 
@@ -39,18 +39,10 @@ export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
   const relativeFilePaths = getLogFilenames();
 
   for (const relativeFilePath of relativeFilePaths) {
-    if (relativeFilePath.includes('..') || path.isAbsolute(relativeFilePath)) {
-      logger.warn(`Skipping unsafe file path: ${relativeFilePath}`);
-      continue;
-    }
-
     const resolvedPath = path.join(logDir, relativeFilePath);
     try {
-      // eslint-disable-next-line security/detect-non-literal-fs-filename
       const fileContent = await fs.readFile(resolvedPath);
-      const logFilesMap = new Map(Object.entries(logFiles));
-      logFilesMap.set(relativeFilePath, fileContent);
-      Object.assign(logFiles, Object.fromEntries(logFilesMap));
+      logFiles[relativeFilePath] = fileContent;
     } catch (error) {
       logger.error(error);
     }

@@ -17,7 +17,7 @@
   "parserOptions": {
     "project": ["./tsconfig.json", "./tsconfig.mocha.json", "./tsconfig.bin.json"]
   },
-  "plugins": ["jasmine", "security", "no-unsanitized"],
+  "plugins": ["jasmine"],
   "rules": {
     "import/no-default-export": "off",
     "no-magic-numbers": "off",
@@ -27,21 +27,7 @@
       {
         "assertFunctionNames": ["expect", "fc.assert", "assert"]
       }
-    ],
-    "security/detect-eval-with-expression": "error",
-    "security/detect-non-literal-require": "error",
-    "security/detect-non-literal-regexp": "error",
-    "security/detect-unsafe-regex": "error",
-    "security/detect-buffer-noassert": "error",
-    "security/detect-child-process": "error",
-    "security/detect-disable-mustache-escape": "error",
-    "security/detect-no-csrf-before-method-override": "error",
-    "security/detect-non-literal-fs-filename": "error",
-    "security/detect-object-injection": "error",
-    "security/detect-possible-timing-attacks": "error",
-    "security/detect-pseudoRandomBytes": "error",
-    "no-unsanitized/method": "error",
-    "no-unsanitized/property": "error"
+    ]
   },
   "settings": {
     "import/resolver": {
