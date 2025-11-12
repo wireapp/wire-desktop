@@ -5442,7 +5442,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-istanbul@npm:6.1.1, babel-plugin-istanbul@npm:^6.1.1":
+"babel-plugin-istanbul@npm:7.0.1":
+  version: 7.0.1
+  resolution: "babel-plugin-istanbul@npm:7.0.1"
+  dependencies:
+    "@babel/helper-plugin-utils": ^7.0.0
+    "@istanbuljs/load-nyc-config": ^1.0.0
+    "@istanbuljs/schema": ^0.1.3
+    istanbul-lib-instrument: ^6.0.2
+    test-exclude: ^6.0.0
+  checksum: 06195af9022a1a2dad23bc4f2f9c226d053304889ae2be23a32aa3df821d2e61055a8eb533f204b10ee9899120e4f52bef6f0c4ab84a960cb2211cf638174aa2
+  languageName: node
+  linkType: hard
+
+"babel-plugin-istanbul@npm:^6.1.1":
   version: 6.1.1
   resolution: "babel-plugin-istanbul@npm:6.1.1"
   dependencies:
@@ -10410,7 +10423,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-instrument@npm:^6.0.0":
+"istanbul-lib-instrument@npm:^6.0.0, istanbul-lib-instrument@npm:^6.0.2":
   version: 6.0.3
   resolution: "istanbul-lib-instrument@npm:6.0.3"
   dependencies:
@@ -16524,7 +16537,7 @@ __metadata:
     babel-eslint: 10.1.0
     babel-jest: 29.7.0
     babel-loader: 9.2.1
-    babel-plugin-istanbul: 6.1.1
+    babel-plugin-istanbul: 7.0.1
     commander: 12.1.0
     content-type: 1.0.5
     core-js: 3.46.0
