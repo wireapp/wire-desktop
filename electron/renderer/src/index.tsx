@@ -50,7 +50,7 @@ const store = configureStore({actions: actionRoot});
 
 export type AppDispatch = typeof store.dispatch;
 
-globalThis.addEventListener(
+window.addEventListener(
   EVENT_TYPE.ACTION.SWITCH_ACCOUNT,
   event => {
     // @ts-ignore
@@ -58,7 +58,7 @@ globalThis.addEventListener(
   },
   false,
 );
-globalThis.addEventListener(
+window.addEventListener(
   EVENT_TYPE.ACTION.CREATE_SSO_ACCOUNT,
   event => {
     // @ts-ignore
@@ -67,7 +67,7 @@ globalThis.addEventListener(
   false,
 );
 
-globalThis.addEventListener(
+window.addEventListener(
   EVENT_TYPE.ACTION.START_LOGIN,
   event => {
     // @ts-ignore

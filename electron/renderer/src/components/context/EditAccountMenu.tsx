@@ -64,7 +64,7 @@ const EditAccountMenu = ({
         <ContextMenuItem
           onClick={() => {
             connected.switchWebview(accountIndex);
-            window.wireDesktop?.sendLogoutAccount(accountId);
+            window.sendLogoutAccount(accountId);
           }}
         >
           {getText('wrapperLogOut')}
@@ -73,7 +73,7 @@ const EditAccountMenu = ({
 
       <ContextMenuItem
         onClick={() => {
-          window.wireDesktop?.sendDeleteAccount(accountId, sessionID)?.then(() => {
+          window.sendDeleteAccount(accountId, sessionID).then(() => {
             connected.abortAccountCreation(accountId);
           });
         }}

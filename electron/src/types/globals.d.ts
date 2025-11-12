@@ -27,7 +27,7 @@ import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 export declare global {
   /* eslint-disable no-var */
-  var _ConfigurationPersistence: Record<string, unknown>;
+  var _ConfigurationPersistence: Record<string, any>;
   var desktopCapturer: {
     getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
   };
@@ -51,19 +51,16 @@ export declare global {
 
   interface Window {
     amplify: amplify;
-    wire: {
-      app?: {
-        service?: {
-          storage?: unknown;
-        };
-      };
-      auth?: {
-        repository?: unknown;
-      };
-      tracking?: {
-        repository?: unknown;
-      };
-    };
+    isMac: boolean;
+    locale: SupportedI18nLanguage;
+    locStrings: i18nStrings;
+    locStringsDefault: i18nStrings;
+    sendBadgeCount(count: number, ignoreFlash: boolean): void;
+    sendConversationJoinToHost(accountId: string, code: string, key: string, domain?: string): void;
+    sendDeleteAccount(accountId: string, sessionID?: string): Promise<void>;
+    sendLogoutAccount(accountId: string): Promise<void>;
+    submitDeepLink(url: string): void;
+    wire: any;
     z: {
       event: {
         WebApp: typeof WebAppEvents;
@@ -80,48 +77,11 @@ export declare global {
         };
       };
     };
-
-    wireDesktop: {
-      isMac: boolean;
-      locale: SupportedI18nLanguage;
-      locStrings: i18nStrings;
-      locStringsDefault: i18nStrings;
-      sendBadgeCount(count: number, ignoreFlash: boolean): void;
-      sendConversationJoinToHost(accountId: string, code: string, key: string, domain?: string): void;
-      sendDeleteAccount(accountId: string, sessionID?: string): Promise<void>;
-      sendLogoutAccount(accountId: string): Promise<void>;
-      submitDeepLink(url: string): void;
-    };
-
-    wireWebview: {
-      clearImmediate: typeof clearImmediate;
-      setImmediate: typeof setImmediate;
-      desktopCapturer: {
-        getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
-      };
-      systemCrypto: {
-        decrypt: (payload: Uint8Array) => Promise<string>;
-        encrypt: (value: string) => Promise<Uint8Array>;
-        version: number;
-      };
-      environment: typeof EnvironmentUtil;
-      desktopAppConfig: {
-        version: string;
-        supportsCallingPopoutWindow?: boolean;
-      };
-      openGraphAsync: (url: string) => Promise<OpenGraphResult>;
-      contextMenu: {
-        copyText: (text: string) => Promise<void>;
-        copyImage: (imageUrl: string) => Promise<void>;
-        saveImage: (imageUrl: string, timestamp?: string) => Promise<void>;
-        replaceMisspelling: (suggestion: string) => Promise<void>;
-      };
-    };
   }
 
   namespace NodeJS {
     interface Global {
-      _ConfigurationPersistence: Record<string, unknown>;
+      _ConfigurationPersistence: Record<string, any>;
       desktopCapturer: {
         getDesktopSources(options: Electron.SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
       };
@@ -138,36 +98,5 @@ export declare global {
         version: number;
       };
     }
-
-    interface ProcessEnv {
-      /** Desktop version injected at build time from wire.json */
-      DESKTOP_VERSION?: string;
-    }
-  }
-
-  interface WebPreferencesExtended extends Electron.WebPreferences {
-    autosize?: string;
-    contextIsolation?: boolean | string;
-    plugins?: string | boolean;
-  }
-
-  interface WebviewParams {
-    autosize?: string;
-    contextIsolation?: string;
-    plugins?: string;
-  }
-
-  interface GPUInfo {
-    gpuDevice?: Array<{
-      deviceId: number;
-      vendorId: number;
-      description: string;
-    }>;
-    auxAttributes?: Record<string, unknown>;
-    featureStatus?: Record<string, unknown>;
-    driverBugWorkarounds?: string[];
-    videoDecodeAcceleratorSupportedProfiles?: Array<unknown>;
-    videoEncodeAcceleratorSupportedProfiles?: Array<unknown>;
-    imageDecodeAcceleratorSupportedProfiles?: Array<unknown>;
   }
 }

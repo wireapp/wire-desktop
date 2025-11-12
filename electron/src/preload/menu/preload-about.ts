@@ -82,8 +82,9 @@ export function loadedAboutScreen(_event: unknown, details: Details): void {
   const labels = [];
   const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
 
-  for (const label of Array.from(dataStrings)) {
-    if (label.dataset?.string) {
+  for (const index in dataStrings) {
+    const label = dataStrings[index];
+    if (label.dataset) {
       labels.push(label.dataset.string);
     }
   }

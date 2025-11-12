@@ -21,7 +21,7 @@ import {dialog, SaveDialogOptions} from 'electron';
 import * as fs from 'fs-extra';
 import imageType from 'image-type';
 
-import * as path from 'node:path';
+import * as path from 'path';
 
 import {DateUtil} from '@wireapp/commons';
 
@@ -36,7 +36,7 @@ export const downloadLogs = async (bytes: Uint8Array, timestamp: Date = new Date
 
   const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(timestamp);
 
-  const formattedTimeShort = formattedTime.replaceAll(':', '-').substr(0, 5);
+  const formattedTimeShort = formattedTime.replace(/:/g, '-').substr(0, 5);
   const filename = `wire-logs-${formattedDate}-${formattedTimeShort}.zip`;
 
   return downloadFile(bytes, filename, options);
@@ -65,13 +65,7 @@ export const downloadFile = async (bytes: Uint8Array, filename: string, options?
   try {
     const {filePath: chosenPath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
     if (chosenPath) {
-      const path = require('node:path');
-      const resolvedPath = path.resolve(chosenPath);
-      if (resolvedPath.includes('..')) {
-        throw new Error('Invalid file path selected');
-      }
-      // eslint-disable-next-line security/detect-non-literal-fs-filename
-      await fs.writeFile(resolvedPath, bytes);
+      await fs.writeFile(chosenPath, bytes);
     }
   } catch (error) {
     logger.error(error);
@@ -81,5 +75,5 @@ export const downloadFile = async (bytes: Uint8Array, filename: string, options?
 export const suggestFileName = (timestamp?: string): string => {
   const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
   const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
-  return `Wire ${formattedDate} at ${formattedTime}`.replaceAll(':', '-');
+  return `Wire ${formattedDate} at ${formattedTime}`.replace(/:/g, '-');
 };

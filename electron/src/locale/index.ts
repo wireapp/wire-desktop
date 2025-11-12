@@ -19,8 +19,6 @@
 
 import * as Electron from 'electron';
 
-import * as path from 'node:path';
-
 import cs from './cs-CZ.json';
 import da from './da-DK.json';
 import de from './de-DE.json';
@@ -46,7 +44,6 @@ import tr from './tr-TR.json';
 import uk from './uk-UA.json';
 import zh from './zh-CN.json';
 
-import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
@@ -56,8 +53,7 @@ export type i18nStrings = Record<i18nLanguageIdentifier, string>;
 export type SupportedI18nLanguage = keyof typeof SUPPORTED_LANGUAGES;
 export type SupportedI18nLanguageObject = Record<SupportedI18nLanguage, i18nStrings>;
 
-const app = Electron.app;
-const logger = getLogger(path.basename(__filename));
+const app = Electron.app || require('@electron/remote').app;
 
 export const LANGUAGES: SupportedI18nLanguageObject = {
   cs,
@@ -145,21 +141,8 @@ let current: SupportedI18nLanguage | undefined;
 export const getCurrent = (): SupportedI18nLanguage => {
   if (!current) {
     // We care only about the language part and not the country (en_US, de_DE)
-    let systemLocale = 'en';
-
-    try {
-      if (app?.getLocale) {
-        systemLocale = app.getLocale().substring(0, 2);
-      }
-    } catch (error) {
-      logger.warn('Failed to get system locale from app:', error);
-      if (typeof navigator !== 'undefined' && navigator.language) {
-        systemLocale = navigator.language.substring(0, 2);
-      }
-    }
-
-    const defaultLocale = parseLocale(systemLocale);
-    current = settings.restore(SettingsType.LOCALE, defaultLocale) || defaultLocale;
+    const defaultLocale = parseLocale(app.getLocale().substring(0, 2));
+    current = settings.restore(SettingsType.LOCALE, defaultLocale);
   }
   return current;
 };
@@ -178,38 +161,17 @@ export const getText = (
   paramReplacements?: Record<string, string>,
 ): string => {
   const strings = getCurrent();
-
-  const languagesMap = new Map(Object.entries(LANGUAGES));
-  const currentLanguage = languagesMap.get(strings);
-  const englishLanguage = languagesMap.get('en');
-
-  if (!currentLanguage || !englishLanguage) {
-    throw new Error(`Language data not found for "${strings}"`);
-  }
-
-  const currentLangMap = new Map(Object.entries(currentLanguage));
-  const englishLangMap = new Map(Object.entries(englishLanguage));
-
-  let translationText = currentLangMap.get(stringIdentifier) || englishLangMap.get(stringIdentifier);
+  let translationText = LANGUAGES[strings][stringIdentifier] || LANGUAGES.en[stringIdentifier];
 
   if (!translationText) {
     throw new Error(`Translation for "${stringIdentifier}" could not be found.`);
   }
 
-  const customReplacementsMap = new Map(Object.entries(customReplacements || {}));
-  const paramReplacementsMap = new Map(Object.entries(paramReplacements || {}));
-  const allReplacements = new Map([...customReplacementsMap, ...paramReplacementsMap]);
-
-  for (const [replacement, value] of allReplacements) {
-    if (!/^[a-zA-Z0-9_-]+$/.test(replacement)) {
-      continue;
-    }
-    if (typeof value !== 'string') {
-      continue;
-    }
-    const placeholder = `{${replacement}}`;
-    if (translationText.includes(placeholder)) {
-      translationText = translationText.replaceAll(placeholder, value);
+  const replacements: Record<string, string> = {...customReplacements, ...paramReplacements};
+  for (const replacement of Object.keys(replacements)) {
+    const regex = new RegExp(`{${replacement}}`, 'g');
+    if (translationText.match(regex)) {
+      translationText = translationText.replace(regex, replacements[replacement]);
     }
   }
 

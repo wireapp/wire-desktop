@@ -19,8 +19,8 @@
 
 import {app, BrowserWindow, ipcMain, session} from 'electron';
 
-import * as path from 'node:path';
-import {pathToFileURL} from 'node:url';
+import * as path from 'path';
+import {pathToFileURL} from 'url';
 
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale';
@@ -38,11 +38,11 @@ const iconPath = path.join(APP_PATH, 'img', iconFileName);
 
 // Local files
 const ABOUT_HTML = pathToFileURL(path.join(APP_PATH, 'html/about.html')).href;
-const ABOUT_WINDOW_ALLOWLIST = new Set([
+const ABOUT_WINDOW_ALLOWLIST = [
   ABOUT_HTML,
   pathToFileURL(path.join(APP_PATH, 'img/logo.256.png')).href,
   pathToFileURL(path.join(APP_PATH, 'css/about.css')).href,
-]);
+];
 const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/menu/preload-about.js');
 
 const WINDOW_SIZE = {
@@ -74,12 +74,12 @@ const showWindow = async () => {
       show: false,
       title: config.name,
       webPreferences: {
-        contextIsolation: true,
+        contextIsolation: false,
         javascript: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         preload: PRELOAD_JS,
-        sandbox: true,
+        sandbox: false,
         session: session.fromPartition('about-window'),
         spellcheck: false,
         webviewTag: false,
@@ -93,7 +93,7 @@ const showWindow = async () => {
     // see https://github.com/electron/electron/issues/8841
     aboutWindow.webContents.session.webRequest.onBeforeRequest(async ({url}, callback) => {
       // Only allow those URLs to be opened within the window
-      if (ABOUT_WINDOW_ALLOWLIST.has(url)) {
+      if (ABOUT_WINDOW_ALLOWLIST.includes(url)) {
         return callback({cancel: false});
       }
     });
@@ -110,13 +110,9 @@ const showWindow = async () => {
         const isExpected = event.sender.id === aboutWindow.webContents.id;
         if (isExpected) {
           const localeValues: Record<string, string> = {};
-          const localeValuesMap = new Map();
-          for (const label of labels) {
-            localeValuesMap.set(label, locale.getText(label));
-          }
-          localeValuesMap.set('aboutReleasesUrl', config.aboutReleasesUrl);
-          localeValuesMap.set('aboutUpdatesUrl', config.aboutUpdatesUrl);
-          Object.assign(localeValues, Object.fromEntries(localeValuesMap));
+          labels.forEach(label => (localeValues[label] = locale.getText(label)));
+          localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
+          localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
           event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
         }
       }

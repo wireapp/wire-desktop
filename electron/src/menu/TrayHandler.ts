@@ -106,7 +106,7 @@ export class TrayHandler {
        is optional (default), but makes it easier to read
     */
       if (process.platform === 'darwin') {
-        app.dock?.bounce('informational');
+        app.dock.bounce('informational');
       } else {
         win.flashFrame(true);
       }

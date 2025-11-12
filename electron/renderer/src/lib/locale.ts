@@ -19,44 +19,22 @@
 
 import {i18nLanguageIdentifier} from '../../../src/locale';
 
-declare global {
-  // eslint-disable-next-line no-var
-  var wireDesktop: Window['wireDesktop'];
-}
+window.locStrings = window.locStrings || {};
+window.locStringsDefault = window.locStringsDefault || {};
+window.locale = window.locale || 'en';
 
-export const getText = (
-  stringIdentifier: i18nLanguageIdentifier,
-  paramReplacements?: Record<string, string>,
-): string => {
-  const wireDesktop = globalThis.wireDesktop;
-  const locStrings = wireDesktop?.locStrings || {};
-  const locStringsDefault = wireDesktop?.locStringsDefault || {};
+export const getText = (stringIdentifier: i18nLanguageIdentifier, paramReplacements?: Record<string, string>) => {
+  let str = window.locStrings[stringIdentifier] || window.locStringsDefault[stringIdentifier] || stringIdentifier;
 
-  const locStringsMap = new Map(Object.entries(locStrings));
-  const locStringsDefaultMap = new Map(Object.entries(locStringsDefault));
-
-  let str: string =
-    (locStringsMap.get(stringIdentifier) as string) ||
-    (locStringsDefaultMap.get(stringIdentifier) as string) ||
-    stringIdentifier;
-
-  if (paramReplacements) {
-    const replacementsMap = new Map(Object.entries(paramReplacements));
-    for (const [replacement, value] of replacementsMap) {
-      if (!/^[a-zA-Z0-9_-]+$/.test(replacement)) {
-        continue;
-      }
-      if (typeof value !== 'string') {
-        continue;
-      }
-      const placeholder = `{${replacement}}`;
-      if (str.includes(placeholder)) {
-        str = str.replaceAll(placeholder, value);
-      }
+  const replacements = {...paramReplacements};
+  for (const replacement of Object.keys(replacements)) {
+    const regex = new RegExp(`{${replacement}}`, 'g');
+    if (str.match(regex)) {
+      str = str.replace(regex, replacements[replacement]);
     }
   }
 
   return str;
 };
 
-export const wrapperLocale = (): string => globalThis.wireDesktop?.locale || 'en';
+export const wrapperLocale = window.locale;
