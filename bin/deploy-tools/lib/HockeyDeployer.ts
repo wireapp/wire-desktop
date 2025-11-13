@@ -22,7 +22,7 @@ import fs from 'fs-extra';
 import logdown from 'logdown';
 import path from 'path';
 
-import {logDry, TWO_HUNDRED_MB_IN_BYTES} from './deploy-utils';
+import {logDry, THREE_HUNDRED_MB_IN_BYTES} from './deploy-utils';
 
 const HOCKEY_API_URL = 'https://rink.hockeyapp.net/api/2/apps';
 
@@ -162,7 +162,7 @@ export class HockeyDeployer {
     }
 
     try {
-      await axios.put<void>(hockeyUrl, formData, {headers, maxContentLength: TWO_HUNDRED_MB_IN_BYTES});
+      await axios.put<void>(hockeyUrl, formData, {headers, maxContentLength: THREE_HUNDRED_MB_IN_BYTES});
     } catch (error) {
       this.logger.error(error);
       const {status, statusText} = (error as AxiosError).response || {};

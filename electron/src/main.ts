@@ -169,8 +169,11 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(config.appUserModelId);
 
-// do not use mdns for local ip obfuscation to prevent windows firewall prompt
-app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
+// Disable mDNS IP masking so local/private IPs are exposed (prevents Windows firewall prompt)
+app.commandLine.appendSwitch('disable-features', 'webrtc-hide-local-ips-with-mdns');
+
+// Allow both public and private interfaces for WebRTC
+app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'default_public_and_private_interfaces');
 
 app.getGPUInfo('basic').then((info: any) => {
   const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
