@@ -5568,10 +5568,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/prettier-config@npm:0.6.4":
-  version: 0.6.4
-  resolution: "@wireapp/prettier-config@npm:0.6.4"
-  checksum: 539490f03a3dfc48d4299daba2f078da525a080e2025dc0dbf0c903e04f37baecd369c0a2aa4c5b3ef610917e19a70330595ef401609eef2a5a1956aca0515d7
+"@wireapp/prettier-config@npm:0.6.9":
+  version: 0.6.9
+  resolution: "@wireapp/prettier-config@npm:0.6.9"
+  checksum: 950380e0dcd9f2caac34eccfd66fb738ff60b59b11761d87035b1b1157421463afd240f7140516ef0898769fdba92927bd276b2b6b7f76343e130134ba9fb3ef
   languageName: node
   linkType: hard
 
@@ -20016,7 +20016,7 @@ __metadata:
     "@wireapp/commons": 5.4.4
     "@wireapp/copy-config": 2.3.2
     "@wireapp/eslint-config": 3.1.2
-    "@wireapp/prettier-config": 0.6.4
+    "@wireapp/prettier-config": 0.6.9
     "@wireapp/protocol-messaging": 1.55.0
     "@wireapp/react-ui-kit": 9.59.1
     "@wireapp/webapp-events": 0.28.0
