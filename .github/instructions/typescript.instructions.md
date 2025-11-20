@@ -1,8 +1,8 @@
 ---
 appliesTo:
   paths:
-    - 'src/**/*.ts'
-    - 'src/**/*.tsx'
+    - 'electron/**/*.ts'
+    - 'electron/**/*.tsx'
 ---
 
 # Copilot — TypeScript safety
