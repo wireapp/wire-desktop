@@ -10,3 +10,21 @@
   title: '^feat(\(.+\))?:.*'
 'type: test 👷':
   title: '^test(\(.+\))?:.*'
+
+# Sizes
+'👕 size: XS':
+  size-below: 10
+'👕 size: S':
+  size-above: 9
+  size-below: 100
+'👕 size: M':
+  size-above: 99
+  size-below: 300
+'👕 size: L':
+  size-above: 299
+  size-below: 500
+'👕 size: XL':
+  size-above: 499
+  size-below: 1000
+'👕 size: XXL':
+  size-above: 999
