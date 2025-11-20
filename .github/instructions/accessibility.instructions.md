@@ -1,7 +1,7 @@
 ---
 appliesTo:
   paths:
-    - 'src/**/*'
+    - 'electron/**/*'
 ---
 
 # Copilot — Accessibility

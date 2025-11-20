@@ -1,7 +1,7 @@
 ---
 appliesTo:
   paths:
-    - 'src/**/*.tsx'
+    - 'electron/**/*.tsx'
 ---
 
 # Copilot — React code review rules
