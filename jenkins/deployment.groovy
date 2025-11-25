@@ -405,7 +405,26 @@ node('built-in') {
           string(credentialsId: 'MACOS_NOTARIZATION_ASC_PROVIDER', variable: 'MACOS_NOTARIZATION_ASC_PROVIDER'),
         ]) {
           if (params.DRY_RUN) {
+            // DRY RUN: log useful info
+            def size = sh(script: "stat -f%z '${pkgPath}'", returnStdout: true).trim()
+            def sha  = sh(script: "shasum -a 256 '${pkgPath}' | awk '{print \$1}'", returnStdout: true).trim()
+
             echo "DRY RUN enabled – skipping upload to App Store Connect"
+            echo "Would have uploaded pkg: ${pkgPath}"
+            echo "Package size: ${size} bytes"
+            echo "Package SHA-256: ${sha}"
+
+            echo """
+            DRY RUN – would run:
+            xcrun altool \\
+              --upload-package "${pkgPath}" \\
+              --type macos \\
+              --username "\$MACOS_NOTARIZATION_APPLE_ID" \\
+              --password ***hidden*** \\
+              --asc-provider "\$MACOS_NOTARIZATION_ASC_PROVIDER"
+            """
+
+            echo "DRY RUN — simulated result: SUCCESS (upload skipped)"
           } else {
             // Run altool
             def status = sh(
