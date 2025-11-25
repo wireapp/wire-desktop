@@ -384,6 +384,64 @@ node('built-in') {
   }
 
   // ------------------------------------------------------------------------
+  // If this is macOS Production: upload .pkg to App Store Connect
+  // ------------------------------------------------------------------------
+  if (projectName.contains('macOS') && params.Release.equals('Production')) {
+    stage('Upload macOS pkg to App Store Connect') {
+      try {
+        // Find the .pkg that was copied from the build job
+        def pkgFiles = findFiles(glob: 'wrap/dist/*.pkg')
+        if (pkgFiles.length == 0) {
+          error("No .pkg file found in wrap/dist for App Store Connect upload")
+        }
+
+        def pkgPath = pkgFiles[0].path
+        echo "Uploading ${pkgPath} to App Store Connect via altool"
+
+        // Reuse the same credentials already used for notarization
+        withCredentials([
+          string(credentialsId: 'MACOS_NOTARIZATION_APPLE_ID',     variable: 'MACOS_NOTARIZATION_APPLE_ID'),
+          string(credentialsId: 'MACOS_NOTARIZATION_PASSWORD',     variable: 'MACOS_NOTARIZATION_PASSWORD'),
+          string(credentialsId: 'MACOS_NOTARIZATION_ASC_PROVIDER', variable: 'MACOS_NOTARIZATION_ASC_PROVIDER'),
+        ]) {
+          if (params.DRY_RUN) {
+            echo "DRY RUN enabled – skipping upload to App Store Connect"
+          } else {
+            // Run altool
+            def status = sh(
+              script: """
+                set -euo pipefail
+
+                xcrun altool \\
+                  --upload-package "${pkgPath}" \\
+                  --type macos \\
+                  --username "\$MACOS_NOTARIZATION_APPLE_ID" \\
+                  --password "\$MACOS_NOTARIZATION_PASSWORD" \\
+                  --asc-provider "\$MACOS_NOTARIZATION_ASC_PROVIDER"
+              """,
+              returnStatus: true
+            )
+
+            if (status != 0) {
+              echo "❌ App Store Connect upload failed with exit code ${status}. Check the altool output above for details."
+              error "App Store Connect upload failed (exit code ${status})"
+            } else {
+              echo "✅ App Store Connect upload finished successfully."
+            }
+          }
+        }
+
+        echo "Upload to App Store Connect stage completed."
+      } catch(e) {
+        currentBuild.result = 'FAILED'
+        wireSend secret: "$jenkinsbot_secret",
+                 message: "**Upload macOS pkg to App Store Connect failed for ${version}** see: ${JOB_URL}"
+        throw e
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------------
   // If Release == Production, do a draft GitHub release
   // ------------------------------------------------------------------------
   if (params.Release.equals('Production')) {
