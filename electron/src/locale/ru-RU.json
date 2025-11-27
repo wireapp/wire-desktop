@@ -103,5 +103,12 @@
   "promptCancel": "Отмена",
   "promptWarning": "Предупреждение",
   "promptError": "Ошибка",
-  "urlBlockedPromptText": "Потенциально небезопасный URL-адрес заблокирован. Если вы все еще хотите его открыть, скопируйте его и откройте соответствующее приложение."
+  "urlBlockedPromptText": "Потенциально небезопасный URL-адрес заблокирован. Если вы все еще хотите его открыть, скопируйте его и откройте соответствующее приложение.",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }

@@ -103,5 +103,12 @@
   "promptCancel": "Abbrechen",
   "promptWarning": "Warnung",
   "promptError": "Fehler",
-  "urlBlockedPromptText": "Eine potenziell unsichere URL wurde gesperrt. Wenn Sie diese trotzdem öffnen möchten, kopieren Sie die URL und öffnen Sie die entsprechende Anwendung."
+  "urlBlockedPromptText": "Eine potenziell unsichere URL wurde gesperrt. Wenn Sie diese trotzdem öffnen möchten, kopieren Sie die URL und öffnen Sie die entsprechende Anwendung.",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }

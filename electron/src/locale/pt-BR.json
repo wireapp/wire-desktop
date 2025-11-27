@@ -103,5 +103,12 @@
   "promptCancel": "Cancelar",
   "promptWarning": "Atenção",
   "promptError": "Erro",
-  "urlBlockedPromptText": "Um URL potencialmente inseguro foi bloqueado. Se você ainda deseja abri-lo, copie o URL e abra o aplicativo apropriado."
+  "urlBlockedPromptText": "Um URL potencialmente inseguro foi bloqueado. Se você ainda deseja abri-lo, copie o URL e abra o aplicativo apropriado.",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }
