@@ -30,7 +30,7 @@ node('built-in') {
 
   stage('Checkout & Clean') {
     git branch: "${GIT_BRANCH}", url: 'https://github.com/wireapp/wire-desktop.git'
-    sh returnStatus: true, script: 'rm -rf *.pkg *.zip ./wrap/dist/ ./node_modules/'
+    sh returnStatus: true, script: 'rm -rf *.pkg *.zip ./wrap/dist/ ./wrap/build/ ./node_modules/'
   }
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
@@ -87,15 +87,15 @@ node('built-in') {
         def AWS_ACCESS_KEY_CREDENTIALS_ID = ''
         def AWS_SECRET_CREDENTIALS_ID = ''
 
-        if (params.Release.equals('Production')) {
+        if (params.Release == 'Production') {
           env.S3_PATH = 'win/prod'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
-        } else if (params.Release.equals('Internal')) {
+        } else if (params.Release == 'Internal') {
           env.S3_PATH = 'win/internal'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
-        } else if (params.Release.equals('Custom')) {
+        } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.WIN_S3_BUCKET
           env.S3_PATH = params.WIN_S3_PATH
           AWS_ACCESS_KEY_CREDENTIALS_ID = params.AWS_CUSTOM_ACCESS_KEY_ID
@@ -133,17 +133,17 @@ node('built-in') {
         def AWS_SECRET_CREDENTIALS_ID = ''
 
         // Decide the s3path based on release
-        if (params.Release.equals('Production')) {
+        if (params.Release == 'Production') {
           env.S3_PATH = 'mac/prod'
           env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
-        } else if (params.Release.equals('Internal')) {
+        } else if (params.Release == 'Internal') {
           env.S3_PATH = 'mac/internal'
           env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
-        } else if (params.Release.equals('Custom')) {
+        } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.MAC_S3_BUCKET
           env.S3_PATH = params.MAC_S3_PATH
           AWS_ACCESS_KEY_CREDENTIALS_ID = params.AWS_CUSTOM_ACCESS_KEY_ID
@@ -171,13 +171,69 @@ node('built-in') {
 
               echo "Uploading ${pkgFilePath} to s3://${env.S3_BUCKET}/${s3DestinationPath}"
 
-              // Upload file
-              s3Upload(
-                acl: 'Private',
-                bucket: env.S3_BUCKET,
-                file: pkgFilePath,
-                path: s3DestinationPath
-              )
+              if (params.DRY_RUN) {
+                echo "DRY RUN enabled – skipping upload of macOS .pkg"
+              } else {
+                s3Upload(
+                  acl: 'Private',
+                  bucket: env.S3_BUCKET,
+                  file: pkgFilePath,
+                  path: s3DestinationPath
+                )
+              }
+
+              // ------------------------------------------------------------------
+              // Internal macOS auto-update artifacts for electron-updater
+              // (latest-mac.yml + WireInternal-<version>.zip)
+              // ------------------------------------------------------------------
+              if (params.Release == 'Internal') {
+                echo 'Uploading internal macOS auto-update artifacts (latest-mac.yml + zip)'
+
+                def updatesPrefix = "${env.S3_PATH}/updates/"
+
+                // latest-mac.yml
+                def latestFiles = findFiles(glob: 'wrap/dist/latest-mac.yml')
+                if (latestFiles && latestFiles.size() > 0) {
+                  def latestPath = latestFiles[0].path
+                  def latestDest = updatesPrefix + 'latest-mac.yml'
+                  echo "Preparing latest-mac.yml upload to s3://${env.S3_BUCKET}/${latestDest}"
+
+                  if (params.DRY_RUN) {
+                    echo "DRY RUN enabled – would upload ${latestPath} to s3://${env.S3_BUCKET}/${latestDest}"
+                  } else {
+                    s3Upload(
+                      acl: 'Private',
+                      bucket: env.S3_BUCKET,
+                      file: latestPath,
+                      path: latestDest
+                    )
+                  }
+                } else {
+                  echo 'No latest-mac.yml found in wrap/dist – skipping upload'
+                }
+
+                // WireInternal-<version>.zip
+                def zipFiles = findFiles(glob: 'wrap/dist/WireInternal-*.zip')
+                if (!zipFiles || zipFiles.size() == 0) {
+                  echo 'No WireInternal-*.zip found in wrap/dist – skipping zip upload'
+                } else {
+                  zipFiles.each { z ->
+                    def zipDest = updatesPrefix + z.name
+                    echo "Preparing ${z.path} upload to s3://${env.S3_BUCKET}/${zipDest}"
+
+                    if (params.DRY_RUN) {
+                      echo "DRY RUN enabled – would upload ${z.path} to s3://${env.S3_BUCKET}/${zipDest}"
+                    } else {
+                      s3Upload(
+                        acl: 'Private',
+                        bucket: env.S3_BUCKET,
+                        file: z.path,
+                        path: zipDest
+                      )
+                    }
+                  }
+                }
+              }
             }
           }
         } catch(e) {
@@ -192,7 +248,7 @@ node('built-in') {
         // 3) Linux S3 Upload
         // -----------------------------
         try {
-          if (params.Release.equals('Production')) {
+          if (params.Release == 'Production') {
             S3_NAME = 'linux'
 
             withAWS(region:'eu-west-1', credentials: 'wire-taco') {
@@ -212,9 +268,9 @@ node('built-in') {
                          path: S3_NAME + '/' + it.name
               }
             }
-          } else if (params.Release.equals('Custom')) {
+          } else if (params.Release == 'Custom') {
             error('Please set S3_NAME for custom Linux')
-          } else if (params.Release.equals('Internal')) {
+          } else if (params.Release == 'Internal') {
             S3_NAME = 'linux-internal'
 
             withAWS(region:'eu-west-1', credentials: 'wire-taco') {
@@ -260,7 +316,7 @@ node('built-in') {
 
       // Make sure we use Jenkins AWS plugin + local "aws" command
       withAWS(region: 'eu-west-1', credentials: 'wire-taco') {
-        if (params.Release.equals('Custom')) {
+        if (params.Release == 'Custom') {
           // Custom (on-prem)
           presignedFile = 'custom-presigned-urls.txt'
           sh "rm -f ${presignedFile}"
@@ -288,7 +344,7 @@ node('built-in') {
 
         } else {
           // Internal or Production
-          def fileSuffix = params.Release.equals('Production') ? 'prod' : 'internal'
+          def fileSuffix = params.Release == 'Production' ? 'prod' : 'internal'
           presignedFile = "${fileSuffix}-presigned-urls.txt"
           sh "rm -f ${presignedFile}"
 
@@ -328,17 +384,17 @@ node('built-in') {
           def AWS_ACCESS_KEY_CREDENTIALS_ID = ''
           def AWS_SECRET_CREDENTIALS_ID = ''
 
-          if (params.Release.equals('Production')) {
+          if (params.Release == 'Production') {
             S3_PATH = 'win/prod'
             S3_NAME = 'wire-' + version
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
-          } else if (params.Release.equals('Internal')) {
+          } else if (params.Release == 'Internal') {
             S3_PATH = 'win/internal'
             S3_NAME = 'wireinternal-' + version
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
-          } else if (params.Release.equals('Custom')) {
+          } else if (params.Release == 'Custom') {
             S3_BUCKET = params.WIN_S3_BUCKET
             S3_PATH = params.WIN_S3_PATH
             S3_NAME = 'wire-ey-' + version
@@ -386,7 +442,7 @@ node('built-in') {
   // ------------------------------------------------------------------------
   // If this is macOS Production: upload .pkg to App Store Connect
   // ------------------------------------------------------------------------
-  if (projectName.contains('macOS') && params.Release.equals('Production')) {
+  if (projectName.contains('macOS') && params.Release == 'Production') {
     stage('Upload macOS pkg to App Store Connect') {
       try {
         // Find the .pkg that was copied from the build job
@@ -463,7 +519,7 @@ node('built-in') {
   // ------------------------------------------------------------------------
   // If Release == Production, do a draft GitHub release
   // ------------------------------------------------------------------------
-  if (params.Release.equals('Production')) {
+  if (params.Release == 'Production') {
     stage('Upload build as draft to GitHub') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {

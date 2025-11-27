@@ -75,13 +75,57 @@ node('built-in') {
   }
 
   stage('Archive build artifacts') {
+    // TODO (mac auto-update v2):
+    // This Jenkins step manually generates latest-mac.yml and uploads artifacts to wire-taco.
+    // Once macOS wrapper builds are moved to electron-builder, drop this and use
+    // `electron-builder --publish` to create + upload the update metadata instead.
+
     if (!production && !custom) {
       // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-universal/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
+      def appPath = "${WORKSPACE}/wrap/build/WireInternal-mas-universal/WireInternal.app/"
+      def distDir = "${WORKSPACE}/wrap/dist"
+      def baseZipName = "WireInternal.zip"
+      def versionedZipName = "WireInternal-${version}.zip"
+
+      sh """
+        mkdir -p "${distDir}"
+        ditto -c -k --sequesterRsrc --keepParent "${appPath}" "${distDir}/${baseZipName}"
+        cp "${distDir}/${baseZipName}" "${distDir}/${versionedZipName}"
+      """
+
+      // Compute size and sha512 (base64) for electron-updater generic provider
+      def size = sh(
+        script: "stat -f%z \"${distDir}/${versionedZipName}\"",
+        returnStdout: true
+      ).trim()
+
+      def sha512Base64 = sh(
+        script: "shasum -a 512 \"${distDir}/${versionedZipName}\" | awk '{print \$1}' | xxd -r -p | base64",
+        returnStdout: true
+      ).trim()
+
+      def releaseDate = sh(
+        script: "date -u +%Y-%m-%dT%H:%M:%S.000Z",
+        returnStdout: true
+      ).trim()
+
+      // Write latest-mac.yml in the format electron-updater expects
+      writeFile file: "${distDir}/latest-mac.yml", text: """
+  version: ${version}
+  files:
+    - url: ${versionedZipName}
+      sha512: ${sha512Base64}
+      size: ${size}
+  path: ${versionedZipName}
+  sha512: ${sha512Base64}
+  releaseDate: '${releaseDate}'
+  """.stripIndent()
     }
+
     archiveArtifacts "package.json,wrap/dist/**"
     sh returnStatus: true, script: 'rm -rf wrap/'
   }
+
 
   stage('Trigger smoke tests') {
     if (production) {
