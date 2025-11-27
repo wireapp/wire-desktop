@@ -103,5 +103,12 @@
   "promptCancel": "取消",
   "promptWarning": "注意",
   "promptError": "错误",
-  "urlBlockedPromptText": "一个可能不安全的URL已被屏蔽。如果您仍然想要浏览，请复制 URL 到浏览器中打开。"
+  "urlBlockedPromptText": "一个可能不安全的URL已被屏蔽。如果您仍然想要浏览，请复制 URL 到浏览器中打开。",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }

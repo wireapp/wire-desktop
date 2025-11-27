@@ -103,5 +103,12 @@
   "promptCancel": "Annuler",
   "promptWarning": "Avertissement",
   "promptError": "Erreur",
-  "urlBlockedPromptText": "Une URL potentiellement dangereuse a été bloquée. Si vous souhaitez quand même l'ouvrir, copiez l'URL et ouvrez l'application appropriée."
+  "urlBlockedPromptText": "Une URL potentiellement dangereuse a été bloquée. Si vous souhaitez quand même l'ouvrir, copiez l'URL et ouvrez l'application appropriée.",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }

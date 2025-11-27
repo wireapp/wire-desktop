@@ -103,5 +103,12 @@
   "promptCancel": "لغو",
   "promptWarning": "هشدار",
   "promptError": "خطا",
-  "urlBlockedPromptText": "یک لینک نا امن مسدود شد. اگر همچنان مایل به باز کردن آن هستید، آن را کپی کرده و در نرم افزار دیگری باز کنید."
+  "urlBlockedPromptText": "یک لینک نا امن مسدود شد. اگر همچنان مایل به باز کردن آن هستید، آن را کپی کرده و در نرم افزار دیگری باز کنید.",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }
