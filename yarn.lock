@@ -5604,11 +5604,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/copy-config@npm:2.3.2":
-  version: 2.3.2
-  resolution: "@wireapp/copy-config@npm:2.3.2"
+"@wireapp/copy-config@npm:2.3.8":
+  version: 2.3.8
+  resolution: "@wireapp/copy-config@npm:2.3.8"
   dependencies:
-    axios: 1.11.0
+    axios: 1.12.2
     copy: 0.3.2
     cosmiconfig: 9.0.0
     fs-extra: 11.3.1
@@ -5617,7 +5617,7 @@ __metadata:
     rimraf: 6.0.1
   bin:
     copy-config: lib/cli.js
-  checksum: 2f66d89dabd7816c6144ae4801d8204d71283a9ee78068e6dade19b47e7b74c76354b20230cd8b0a475dbb87f068b29777f6a49d93b50432327825e80ee49ad8
+  checksum: 4099a6ecc1c5d47098129e7daef76cad6535dce5ce4e493ff38ae97c131c8be7cd41fe8975f4c963eeb923884be187b3b1ee21d4d88a0a832598c4f150158a79
   languageName: node
   linkType: hard
 
@@ -6617,14 +6617,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.11.0":
-  version: 1.11.0
-  resolution: "axios@npm:1.11.0"
+"axios@npm:1.12.2":
+  version: 1.12.2
+  resolution: "axios@npm:1.12.2"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.4
     proxy-from-env: ^1.1.0
-  checksum: 0a33dc600b588bfd3111b198d5985527ed89f722817455d7cdb66c1d055e5f8859cc2bebb7320888957fc8458ebe77d5f83af02af9cd260217c91c4e92b6dfb6
+  checksum: f0331594fe053a4bbff04104edb073973a3aabfad2e56b0aa18de82428aa63f6f0839ca3d837258ec739cb4528014121793b1649a21e5115ffb2bf8237eadca3
   languageName: node
   linkType: hard
 
@@ -20181,7 +20181,7 @@ __metadata:
     "@typescript-eslint/parser": 7.18.0
     "@wireapp/certificate-check": 0.7.19
     "@wireapp/commons": 5.4.9
-    "@wireapp/copy-config": 2.3.2
+    "@wireapp/copy-config": 2.3.8
     "@wireapp/eslint-config": 3.1.7
     "@wireapp/prettier-config": 0.6.9
     "@wireapp/protocol-messaging": 1.55.0
