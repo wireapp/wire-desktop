@@ -27,4 +27,5 @@ export type ContextMenuState = {
   isAtLeastAdmin: boolean;
   lifecycle?: string;
   sessionID?: string;
+  shouldAutoFocus?: boolean;
 };

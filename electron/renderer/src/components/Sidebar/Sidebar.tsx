@@ -17,7 +17,7 @@
  *
  */
 
-import React from 'react';
+import React, {CSSProperties, useEffect, useRef} from 'react';
 
 import {connect} from 'react-redux';
 
@@ -28,6 +28,7 @@ import {addAccountWithSession, setAccountContextHidden, toggleEditAccountMenuVis
 import {State} from '../../index';
 import {colorFromId} from '../../lib/accentColor';
 import {isEnterKey} from '../../lib/keyboardUtil';
+import {getText} from '../../lib/locale';
 import {preventFocus} from '../../lib/util';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {ContextMenuSelector} from '../../selector/ContextMenuSelector';
@@ -37,8 +38,8 @@ import {AccountIcon} from '../AccountIcon';
 import AddAccountTrigger from '../context/AddAccountTrigger';
 import EditAccountMenu from '../context/EditAccountMenu';
 
-const centerOfEventTarget = (event: React.MouseEvent<Element, MouseEvent>) => {
-  const clientRectangle = event.currentTarget.getBoundingClientRect();
+const centerOfTarget = (target: Element) => {
+  const clientRectangle = target.getBoundingClientRect();
   const centerX = clientRectangle.left + clientRectangle.width / 2;
   const centerY = clientRectangle.top + clientRectangle.height / 2;
   return {centerX, centerY};
@@ -78,62 +79,107 @@ const Sidebar = ({
   isAddingAccount,
   isEditAccountMenuVisible = false,
   ...connected
-}: SidebarProps) => (
-  <div
-    role="button"
-    tabIndex={0}
-    className={`${isDarkMode ? 'Sidebar theme-dark' : 'Sidebar theme-light'}`}
-    style={!hasCreatedAccount ? {display: 'none'} : {}}
-    onMouseDown={preventFocus()}
-    onKeyDown={connected.setAccountContextHidden}
-    onClick={connected.setAccountContextHidden}
-  >
-    {accounts.map(account => {
-      const accountIndex = accounts.indexOf(account);
-      return (
-        <div className="Sidebar-cell" key={account.id}>
-          <div
-            role="button"
-            style={{color: colorFromId(currentAccentID)}}
-            className={getClassName(account)}
-            tabIndex={0}
-            onClick={preventFocus(() => handleSwitchAccount(accountIndex))}
-            onKeyDown={event => {
-              if (isEnterKey(event)) {
-                handleSwitchAccount(accountIndex);
-              }
-            }}
-            onContextMenu={preventFocus((event: React.MouseEvent<Element, MouseEvent>) => {
-              const isAtLeastAdmin =
-                account.teamRole === 'z.team.TeamRole.ROLE.OWNER' || account.teamRole === 'z.team.TeamRole.ROLE.ADMIN';
-              const {centerX, centerY} = centerOfEventTarget(event);
+}: SidebarProps) => {
+  const menuTriggerRef = useRef<HTMLElement | null>(null);
+  const shouldRestoreFocusRef = useRef(false);
 
-              connected.toggleEditAccountMenuVisibility({
-                position: {
-                  centerY,
-                  centerX,
-                },
-                isAtLeastAdmin,
-                accountId: account.id,
-                sessionID: account.sessionID,
-                lifecycle: account.lifecycle,
-              });
-            })}
-            onMouseDown={preventFocus()}
-          >
-            <AccountIcon account={account} />
+  useEffect(() => {
+    if (!isEditAccountMenuVisible && shouldRestoreFocusRef.current && menuTriggerRef.current) {
+      menuTriggerRef.current.focus();
+      shouldRestoreFocusRef.current = false;
+    }
+  }, [isEditAccountMenuVisible]);
+
+  const showAccountContextMenu = (target: Element, account: Account, shouldAutoFocus = false) => {
+    const {centerX, centerY} = centerOfTarget(target);
+    const isAtLeastAdmin =
+      account.teamRole === 'z.team.TeamRole.ROLE.OWNER' || account.teamRole === 'z.team.TeamRole.ROLE.ADMIN';
+
+    menuTriggerRef.current = target as HTMLElement;
+    shouldRestoreFocusRef.current = shouldAutoFocus;
+
+    connected.toggleEditAccountMenuVisibility({
+      position: {
+        centerY,
+        centerX,
+      },
+      isAtLeastAdmin,
+      accountId: account.id,
+      sessionID: account.sessionID,
+      lifecycle: account.lifecycle,
+      shouldAutoFocus,
+    });
+  };
+
+  const accountLabel = (account: Account) => {
+    const accountType = account.teamID ? getText('sidebarAccountTypeTeam') : getText('sidebarAccountTypePersonal');
+    const accountName = account.name || getText('sidebarAccountNameFallback');
+    const selectionState = account.visible ? getText('sidebarAccountSelected') : getText('sidebarAccountUnselected');
+    return getText('sidebarAccountLabel', {accountType, accountName, selectionState});
+  };
+
+  return (
+    <div
+      className={`${isDarkMode ? 'Sidebar theme-dark' : 'Sidebar theme-light'}`}
+      style={
+        {
+          '--account-accent-color': colorFromId(currentAccentID),
+          ...(hasCreatedAccount ? {} : {display: 'none'}),
+        } as CSSProperties
+      }
+    >
+      {accounts.map(account => {
+        const accountIndex = accounts.indexOf(account);
+        const hasNotifications = account.badgeCount > 0;
+        const notificationDescriptionId = hasNotifications ? `sidebar-badge-${account.id}` : undefined;
+        const notificationText = hasNotifications ? getText('sidebarAccountNotification') : undefined;
+        return (
+          <div className="Sidebar-cell" key={account.id}>
+            <div
+              role="button"
+              className={getClassName(account)}
+              tabIndex={0}
+              data-account-id={account.id}
+              onClick={preventFocus(() => handleSwitchAccount(accountIndex))}
+              aria-describedby={notificationDescriptionId}
+              onKeyDown={event => {
+                if (isEnterKey(event)) {
+                  handleSwitchAccount(accountIndex);
+                  return;
+                }
+
+                const isContextMenuKey = event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10');
+                if (isContextMenuKey) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  showAccountContextMenu(event.currentTarget, account, true);
+                }
+              }}
+              onContextMenu={preventFocus((event: React.MouseEvent<Element, MouseEvent>) => {
+                showAccountContextMenu(event.currentTarget, account);
+              })}
+              onMouseDown={preventFocus()}
+              aria-label={accountLabel(account)}
+            >
+              {hasNotifications && (
+                <span id={notificationDescriptionId} className="visually-hidden">
+                  {notificationText}
+                </span>
+              )}
+              <AccountIcon account={account} />
+            </div>
           </div>
-        </div>
-      );
-    })}
+        );
+      })}
 
-    {!isAddingAccount && !hasReachedLimitOfAccounts && (
-      <AddAccountTrigger id="account" onClick={connected.addAccountWithSession} />
-    )}
+      {!isAddingAccount && !hasReachedLimitOfAccounts && (
+        <AddAccountTrigger id="account" onClick={connected.addAccountWithSession} />
+      )}
 
-    {isEditAccountMenuVisible && <EditAccountMenu />}
-  </div>
-);
+      {isEditAccountMenuVisible && <EditAccountMenu />}
+    </div>
+  );
+};
 
 export default connect(
   (state: State) => ({
