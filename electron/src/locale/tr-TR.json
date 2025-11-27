@@ -103,5 +103,12 @@
   "promptCancel": "İptal",
   "promptWarning": "Dikkat",
   "promptError": "Hata",
-  "urlBlockedPromptText": "Potansiyel tehlikeli bir URL engellendi. Eğer açmak isterseniz, URL'yi kopyalayıp uygun uygulamada açın"
+  "urlBlockedPromptText": "Potansiyel tehlikeli bir URL engellendi. Eğer açmak isterseniz, URL'yi kopyalayıp uygun uygulamada açın",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }

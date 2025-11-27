@@ -103,5 +103,12 @@
   "promptCancel": "Anuluj",
   "promptWarning": "Ostrzeżenie",
   "promptError": "Błąd",
-  "urlBlockedPromptText": "Potencjalnie niebezpieczny adres URL został zablokowany. Jeśli nadal chcesz go otworzyć, skopiuj adres URL i samodzielnie wklej go w przeglądarce internetowej."
+  "urlBlockedPromptText": "Potencjalnie niebezpieczny adres URL został zablokowany. Jeśli nadal chcesz go otworzyć, skopiuj adres URL i samodzielnie wklej go w przeglądarce internetowej.",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }

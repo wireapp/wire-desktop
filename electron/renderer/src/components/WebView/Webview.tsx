@@ -306,8 +306,7 @@ const Webview = ({
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}
         style={{backgroundColor: COLOR.GRAY_LIGHTEN_88}}
-        tabIndex={-1}
-        /* eslint-enable react/no-unknown-property */
+        tabIndex={account.visible ? 0 : -1}
       />
 
       {webviewError && (

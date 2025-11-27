@@ -103,5 +103,12 @@
   "promptCancel": "キャンセル",
   "promptWarning": "警告",
   "promptError": "エラー",
-  "urlBlockedPromptText": "安全でない可能性のあるURLがブロックされました。それでも開きたい場合は、URLをコピーし、適切なアプリケーションで開いてください。"
+  "urlBlockedPromptText": "安全でない可能性のあるURLがブロックされました。それでも開きたい場合は、URLをコピーし、適切なアプリケーションで開いてください。",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }
