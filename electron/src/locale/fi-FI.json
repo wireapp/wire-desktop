@@ -103,5 +103,12 @@
   "promptCancel": "Peruuta",
   "promptWarning": "Varoitus",
   "promptError": "Virhe",
-  "urlBlockedPromptText": "Mahdollisesti vaarallinen URL-osoite on estetty. Jos silti haluat avata kyseisen URL-osoitteen, kopioi osoite leikepöydälle ja avaa se sopivalla sovelluksella."
+  "urlBlockedPromptText": "Mahdollisesti vaarallinen URL-osoite on estetty. Jos silti haluat avata kyseisen URL-osoitteen, kopioi osoite leikepöydälle ja avaa se sopivalla sovelluksella.",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }

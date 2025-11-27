@@ -52,6 +52,7 @@ export const initialState: ContextMenuState = {
     centerY: 0,
   },
   sessionID: '',
+  shouldAutoFocus: false,
 };
 
 export default (state = initialState, action: ContextMenuActions): ContextMenuState => {
@@ -77,6 +78,7 @@ export default (state = initialState, action: ContextMenuActions): ContextMenuSt
         lifecycle: action.payload.lifecycle,
         position: action.payload.position,
         sessionID: action.payload.sessionID,
+        shouldAutoFocus: action.payload.shouldAutoFocus ?? false,
       };
     }
 

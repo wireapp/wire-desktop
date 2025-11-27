@@ -103,5 +103,12 @@
   "promptCancel": "Avbryt",
   "promptWarning": "Varning",
   "promptError": "Fel",
-  "urlBlockedPromptText": "En potentiellt osäker webbadress har blockerats. Kopiera URL:en och öppna passande applikation om du fortfarande vill öppna den."
+  "urlBlockedPromptText": "En potentiellt osäker webbadress har blockerats. Kopiera URL:en och öppna passande applikation om du fortfarande vill öppna den.",
+  "sidebarAccountNotification": "New message or missed call",
+  "sidebarAccountTypeTeam": "Team account",
+  "sidebarAccountTypePersonal": "Personal account",
+  "sidebarAccountSelected": "selected",
+  "sidebarAccountUnselected": "unselected",
+  "sidebarAccountLabel": "{accountType}, {accountName}, {selectionState}",
+  "sidebarAccountNameFallback": "Account"
 }
