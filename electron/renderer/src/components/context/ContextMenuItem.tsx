@@ -19,22 +19,17 @@
 
 import {HTMLAttributes, ReactElement} from 'react';
 
-interface ContextMenuItem extends HTMLAttributes<HTMLDivElement> {
+interface ContextMenuItem extends HTMLAttributes<HTMLButtonElement> {
   children: ReactElement | string;
   onClick: () => void;
 }
 
-const ContextMenuItem = ({onClick, children}: ContextMenuItem) => (
-  <div
-    role="button"
-    tabIndex={0}
-    data-uie-name="item-context-menu"
-    className="ContextMenu-item"
-    onClick={onClick}
-    onKeyDown={onClick}
-  >
-    {children}
-  </div>
-);
+const ContextMenuItem = ({onClick, children}: ContextMenuItem) => {
+  return (
+    <button type="button" data-uie-name="item-context-menu" className="ContextMenu-item" onClick={onClick}>
+      {children}
+    </button>
+  );
+};
 
 export default ContextMenuItem;

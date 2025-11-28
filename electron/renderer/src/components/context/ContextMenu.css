@@ -33,13 +33,26 @@
 }
 
 .ContextMenu-item {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   cursor: pointer;
-  padding-left: 24px;
+  padding: 0 16px 0 24px;
   color: var(--graphite-dark);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  line-height: inherit;
 }
 
 .ContextMenuTrigger {
   opacity: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 8px;
+  border-radius: 4px;
   transition: opacity;
   transition-timing-function: var(--ease-out-quart);
   transition-duration: var(--animation-timing-slow);
@@ -47,9 +60,15 @@
 
 .ContextMenuTrigger:focus-visible {
   opacity: 1;
+  outline: 1px solid var(--account-accent-color, var(--border-color));
 }
 
 .ContextMenu-item:hover,
 .ContextMenu-item.selected {
+  background-color: rgba(0, 0, 0, 0.16);
+}
+
+.ContextMenu-item:focus {
+  outline: none;
   background-color: rgba(0, 0, 0, 0.16);
 }
