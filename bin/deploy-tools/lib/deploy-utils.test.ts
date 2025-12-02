@@ -17,18 +17,21 @@
  */
 
 import * as assert from 'assert';
-
 import {find} from './deploy-utils';
 
 describe('deploy-utils', () => {
   it('safeguard prevents further code execution', async () => {
+    // safeGuard: true should throw an error
     try {
-      await find('invalid-file', {safeGuard: true});
+      await find('invalid-file', {cwd: __dirname, safeGuard: true});
       assert.fail('find should throw an error with safeguard');
-    } catch (error) {}
+    } catch (error) {
+      // expected
+    }
 
+    // safeGuard: false should return null instead of throwing
     try {
-      const result = await find('invalid-file', {safeGuard: false});
+      const result = await find('invalid-file', {cwd: __dirname, safeGuard: false});
       assert.strictEqual(result, null);
     } catch (error) {
       assert.fail('find should not throw an error without safeguard');

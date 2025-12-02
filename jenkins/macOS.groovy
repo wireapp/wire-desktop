@@ -66,6 +66,46 @@ node('built-in') {
     }
   }
 
+  // ------------------------------------------------------------------------
+  // Notarize & staple macOS pkg (internal only)
+  // ------------------------------------------------------------------------
+  if (!production && !custom) {
+    stage('Notarize macOS pkg') {
+      // Only run if a .pkg exists (macOS builds)
+      def pkgExists = (sh(script: 'ls wrap/dist/*.pkg >/dev/null 2>&1', returnStatus: true) == 0)
+      if (!pkgExists) {
+        echo 'No .pkg found in wrap/dist, skipping notarization'
+      } else {
+        withCredentials([
+          string(credentialsId: 'MACOS_NOTARIZATION_APPLE_ID',     variable: 'MACOS_NOTARIZATION_APPLE_ID'),
+          string(credentialsId: 'MACOS_NOTARIZATION_PASSWORD',     variable: 'MACOS_NOTARIZATION_PASSWORD'),
+          string(credentialsId: 'MACOS_NOTARIZATION_ASC_PROVIDER', variable: 'MACOS_NOTARIZATION_ASC_PROVIDER'),
+        ]) {
+          sh '''
+            set -euo pipefail
+
+            PKG_FILE=$(ls wrap/dist/*.pkg | head -n 1)
+            echo "Submitting $PKG_FILE for notarization…"
+
+            xcrun notarytool submit "$PKG_FILE" \
+              --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
+              --team-id "$MACOS_NOTARIZATION_ASC_PROVIDER" \
+              --password "@env:MACOS_NOTARIZATION_PASSWORD" \
+              --wait
+
+            echo "Stapling notarization ticket to $PKG_FILE…"
+            xcrun stapler staple "$PKG_FILE"
+
+            echo "Verifying Gatekeeper assessment…"
+            spctl -a -vv -t install "$PKG_FILE"
+
+            echo "Notarization and stapling completed successfully."
+          '''
+        }
+      }
+    }
+  }
+
   if (production) {
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
