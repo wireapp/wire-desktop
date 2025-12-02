@@ -17,7 +17,7 @@
  *
  */
 
-import {MenuItem, MenuItemConstructorOptions} from 'electron';
+import {BrowserWindow, MenuItem, MenuItemConstructorOptions} from 'electron';
 
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
 import {getAvailebleEnvironments, setEnvironment} from '../runtime/EnvironmentUtil';
@@ -42,6 +42,7 @@ export const openDevTools = async (webViewIndex?: number | true): Promise<void> 
     }
   }
 };
+
 
 const devToolsTemplate: MenuItemConstructorOptions = {
   label: 'Toggle DevTools',
@@ -106,12 +107,36 @@ const separatorTemplate: MenuItemConstructorOptions = {
   type: 'separator',
 };
 
+const openWebRTCInternals = () => {
+    const win = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+      },
+    });
+
+    win.webContents.setWindowOpenHandler(() => ({
+      action: "allow",
+    }));
+
+    win.loadURL("chrome://webrtc-internals/");
+};
+
+const webRTCInternalsTemplate: MenuItemConstructorOptions = {
+  label: 'Toggle WebRTC Internals',
+  click: () => openWebRTCInternals(),
+};
+
 const menuTemplate: MenuItemConstructorOptions = {
   id: 'Developer',
   label: '&Developer',
   submenu: [
     devToolsTemplate,
     reloadTemplate,
+    separatorTemplate,
+    webRTCInternalsTemplate,
     separatorTemplate,
     {
       enabled: false,
