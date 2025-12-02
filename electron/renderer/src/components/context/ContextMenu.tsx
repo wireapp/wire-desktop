@@ -17,7 +17,7 @@
  *
  */
 
-import {ReactNode, useEffect, useRef} from 'react';
+import {KeyboardEvent as ReactKeyboardEvent, ReactNode, useEffect, useRef} from 'react';
 
 import {connect} from 'react-redux';
 
@@ -36,26 +36,40 @@ interface ContextMenuProps {
   position: Position;
   children: ReactNode;
   setAccountContextHidden: () => void;
+  shouldAutoFocus?: boolean;
 }
 
-const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuProps) => {
+enum MenuKey {
+  ArrowDown = 'ArrowDown',
+  ArrowUp = 'ArrowUp',
+  Escape = 'Escape',
+  Tab = 'Tab',
+}
+
+const ContextMenu = ({position, children, setAccountContextHidden, shouldAutoFocus = false}: ContextMenuProps) => {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (menuRef.current) {
-      const {centerX, centerY} = position;
-
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-
-      const menuWidth = menuRef.current.offsetWidth;
-      const menuHeight = menuRef.current.offsetHeight;
-
-      menuRef.current.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
-      menuRef.current.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
+    if (!menuRef.current) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [menuRef]);
+
+    const {centerX, centerY} = position;
+
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    const menuWidth = menuRef.current.offsetWidth;
+    const menuHeight = menuRef.current.offsetHeight;
+
+    menuRef.current.style.left = `${windowWidth - centerX < menuWidth ? centerX - menuWidth : centerX}px`;
+    menuRef.current.style.top = `${windowHeight - centerY < menuHeight ? centerY - menuHeight : centerY}px`;
+
+    if (shouldAutoFocus) {
+      const firstMenuItem = menuRef.current.querySelector('[data-uie-name="item-context-menu"]') as HTMLElement | null;
+      firstMenuItem?.focus();
+    }
+  }, [position, shouldAutoFocus]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -77,10 +91,48 @@ const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuP
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    const KEY_ESCAPE = 27;
-    if (event.keyCode === KEY_ESCAPE) {
+    if (event.key === MenuKey.Escape) {
       hide();
     }
+  };
+
+  const handleMenuKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key === MenuKey.Escape) {
+      event.preventDefault();
+      event.stopPropagation();
+      hide();
+      return;
+    }
+
+    if (event.key !== MenuKey.ArrowDown && event.key !== MenuKey.ArrowUp && event.key !== MenuKey.Tab) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!menuRef.current) {
+      return;
+    }
+
+    const menuItems = Array.from(
+      menuRef.current.querySelectorAll('[data-uie-name="item-context-menu"]'),
+    ) as HTMLElement[];
+
+    if (!menuItems.length) {
+      return;
+    }
+
+    const currentElement = document.activeElement as HTMLElement | null;
+    const currentIndex = currentElement ? menuItems.indexOf(currentElement) : -1;
+
+    const direction =
+      event.key === MenuKey.ArrowDown ? 1 : event.key === MenuKey.ArrowUp ? -1 : event.shiftKey ? -1 : 1;
+    const fallbackIndex = direction === 1 ? 0 : menuItems.length - 1;
+    const nextIndex =
+      currentIndex === -1 ? fallbackIndex : (currentIndex + direction + menuItems.length) % menuItems.length;
+
+    menuItems[nextIndex]?.focus();
   };
 
   const handleMouseDown = (event: MouseEvent) => {
@@ -94,7 +146,9 @@ const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuP
   };
 
   return (
-    <div className="ContextMenu" ref={menuRef}>
+    // menus best practice is to move focus to the first menu item
+    // Keep the wrapper out of tab order
+    <div role="menu" tabIndex={-1} className="ContextMenu" ref={menuRef} onKeyDown={handleMenuKeyDown}>
       {children}
     </div>
   );
@@ -103,6 +157,7 @@ const ContextMenu = ({position, children, setAccountContextHidden}: ContextMenuP
 export default connect(
   (state: State) => ({
     position: ContextMenuSelector.getPosition(state),
+    shouldAutoFocus: ContextMenuSelector.shouldAutoFocus(state),
   }),
   {setAccountContextHidden},
 )(ContextMenu);

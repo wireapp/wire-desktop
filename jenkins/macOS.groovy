@@ -33,7 +33,7 @@ node('built-in') {
   stage('Build') {
     try {
       withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
-        sh 'security unlock-keychain -p \"$MACOS_KEYCHAIN_PASSWORD\" /Users/jenkins/Library/Keychains/login.keychain'
+        sh 'security unlock-keychain -p \"$MACOS_KEYCHAIN_PASSWORD\" /Users/jenkins/Library/Keychains/login.keychain-db'
       }
       withEnv(["PATH+NODE=${NODE}/bin"]) {
         sh 'node -v'
@@ -66,6 +66,46 @@ node('built-in') {
     }
   }
 
+  // ------------------------------------------------------------------------
+  // Notarize & staple macOS pkg (internal only)
+  // ------------------------------------------------------------------------
+  if (!production && !custom) {
+    stage('Notarize macOS pkg') {
+      // Only run if a .pkg exists (macOS builds)
+      def pkgExists = (sh(script: 'ls wrap/dist/*.pkg >/dev/null 2>&1', returnStatus: true) == 0)
+      if (!pkgExists) {
+        echo 'No .pkg found in wrap/dist, skipping notarization'
+      } else {
+        withCredentials([
+          string(credentialsId: 'MACOS_NOTARIZATION_APPLE_ID',     variable: 'MACOS_NOTARIZATION_APPLE_ID'),
+          string(credentialsId: 'MACOS_NOTARIZATION_PASSWORD',     variable: 'MACOS_NOTARIZATION_PASSWORD'),
+          string(credentialsId: 'MACOS_NOTARIZATION_ASC_PROVIDER', variable: 'MACOS_NOTARIZATION_ASC_PROVIDER'),
+        ]) {
+          sh '''
+            set -euo pipefail
+
+            PKG_FILE=$(ls wrap/dist/*.pkg | head -n 1)
+            echo "Submitting $PKG_FILE for notarization…"
+
+            xcrun notarytool submit "$PKG_FILE" \
+              --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
+              --team-id "$MACOS_NOTARIZATION_ASC_PROVIDER" \
+              --password "@env:MACOS_NOTARIZATION_PASSWORD" \
+              --wait
+
+            echo "Stapling notarization ticket to $PKG_FILE…"
+            xcrun stapler staple "$PKG_FILE"
+
+            echo "Verifying Gatekeeper assessment…"
+            spctl -a -vv -t install "$PKG_FILE"
+
+            echo "Notarization and stapling completed successfully."
+          '''
+        }
+      }
+    }
+  }
+
   if (production) {
     stage('Create SHA256 checksums') {
       withCredentials([file(credentialsId: 'D599C1AA126762B1.asc', variable: 'PGP_PRIVATE_KEY_FILE'), string(credentialsId: 'PGP_PASSPHRASE', variable: 'PGP_PASSPHRASE')]) {
@@ -75,13 +115,57 @@ node('built-in') {
   }
 
   stage('Archive build artifacts') {
+    // TODO (mac auto-update v2):
+    // This Jenkins step manually generates latest-mac.yml and uploads artifacts to wire-taco.
+    // Once macOS wrapper builds are moved to electron-builder, drop this and use
+    // `electron-builder --publish` to create + upload the update metadata instead.
+
     if (!production && !custom) {
       // Internal
-      sh "ditto -c -k --sequesterRsrc --keepParent \"${WORKSPACE}/wrap/build/WireInternal-mas-universal/WireInternal.app/\" \"${WORKSPACE}/wrap/dist/WireInternal.zip\""
+      def appPath = "${WORKSPACE}/wrap/build/WireInternal-mas-universal/WireInternal.app/"
+      def distDir = "${WORKSPACE}/wrap/dist"
+      def baseZipName = "WireInternal.zip"
+      def versionedZipName = "WireInternal-${version}.zip"
+
+      sh """
+        mkdir -p "${distDir}"
+        ditto -c -k --sequesterRsrc --keepParent "${appPath}" "${distDir}/${baseZipName}"
+        cp "${distDir}/${baseZipName}" "${distDir}/${versionedZipName}"
+      """
+
+      // Compute size and sha512 (base64) for electron-updater generic provider
+      def size = sh(
+        script: "stat -f%z \"${distDir}/${versionedZipName}\"",
+        returnStdout: true
+      ).trim()
+
+      def sha512Base64 = sh(
+        script: "shasum -a 512 \"${distDir}/${versionedZipName}\" | awk '{print \$1}' | xxd -r -p | base64",
+        returnStdout: true
+      ).trim()
+
+      def releaseDate = sh(
+        script: "date -u +%Y-%m-%dT%H:%M:%S.000Z",
+        returnStdout: true
+      ).trim()
+
+      // Write latest-mac.yml in the format electron-updater expects
+      writeFile file: "${distDir}/latest-mac.yml", text: """
+  version: ${version}
+  files:
+    - url: ${versionedZipName}
+      sha512: ${sha512Base64}
+      size: ${size}
+  path: ${versionedZipName}
+  sha512: ${sha512Base64}
+  releaseDate: '${releaseDate}'
+  """.stripIndent()
     }
+
     archiveArtifacts "package.json,wrap/dist/**"
     sh returnStatus: true, script: 'rm -rf wrap/'
   }
+
 
   stage('Trigger smoke tests') {
     if (production) {

@@ -69,6 +69,7 @@ import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
+import {initMacAutoUpdater} from './update/macosAutoUpdater';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
@@ -105,6 +106,7 @@ const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
 const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
+const isInternalBuild = (): boolean => config.environment === 'internal';
 
 if (customDownloadPath) {
   electronDl({
@@ -169,8 +171,11 @@ Object.entries(config).forEach(([key, value]) => {
 // Squirrel setup
 app.setAppUserModelId(config.appUserModelId);
 
-// do not use mdns for local ip obfuscation to prevent windows firewall prompt
-app.commandLine.appendSwitch('disable-features', 'WebRtcHideLocalIpsWithMdns');
+// Disable mDNS IP masking so local/private IPs are exposed (prevents Windows firewall prompt)
+app.commandLine.appendSwitch('disable-features', 'webrtc-hide-local-ips-with-mdns');
+
+// Allow both public and private interfaces for WebRTC
+app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'default_public_and_private_interfaces');
 
 app.getGPUInfo('basic').then((info: any) => {
   const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
@@ -476,6 +481,25 @@ const handleAppEvents = (): void => {
       tray.initTray();
     }
     await showMainWindow(mainWindowState);
+
+    app.on('ready', async () => {
+      const mainWindowState = initWindowStateKeeper();
+      const appMenu = systemMenu.createMenu(isFullScreen);
+      if (EnvironmentUtil.app.IS_DEVELOPMENT) {
+        appMenu.append(developerMenu);
+      }
+
+      Menu.setApplicationMenu(appMenu);
+      tray = new TrayHandler();
+      if (!EnvironmentUtil.platform.IS_MAC_OS) {
+        tray.initTray();
+      }
+      await showMainWindow(mainWindowState);
+
+      if (EnvironmentUtil.platform.IS_MAC_OS && isInternalBuild()) {
+        initMacAutoUpdater(main);
+      }
+    });
   });
 };
 

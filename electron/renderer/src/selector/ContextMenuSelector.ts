@@ -28,4 +28,5 @@ export class ContextMenuSelector {
   static getIsAtLeastAdmin = (state: State) => ContextMenuSelector.getContextMenuState(state).isAtLeastAdmin;
   static getLifecycle = (state: State) => ContextMenuSelector.getContextMenuState(state).lifecycle;
   static getSessionId = (state: State) => ContextMenuSelector.getContextMenuState(state).sessionID;
+  static shouldAutoFocus = (state: State) => ContextMenuSelector.getContextMenuState(state).shouldAutoFocus;
 }

@@ -26,6 +26,17 @@
   flex: 0 0 auto;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 .Sidebar:hover .ContextMenuTrigger {
   opacity: 1;
 }
@@ -37,6 +48,11 @@
   width: 100%;
   height: 56px;
   cursor: pointer;
+}
+
+.Sidebar-icon:focus {
+  outline: 1px solid var(--account-accent-color);
+  border-radius: 4px;
 }
 
 .Sidebar-icon-badge {
