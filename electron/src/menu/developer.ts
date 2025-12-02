@@ -43,7 +43,6 @@ export const openDevTools = async (webViewIndex?: number | true): Promise<void> 
   }
 };
 
-
 const devToolsTemplate: MenuItemConstructorOptions = {
   label: 'Toggle DevTools',
   submenu: [
@@ -108,20 +107,20 @@ const separatorTemplate: MenuItemConstructorOptions = {
 };
 
 const openWebRTCInternals = () => {
-    const win = new BrowserWindow({
-      width: 1200,
-      height: 800,
-      webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true,
-      },
-    });
+  const win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+    },
+  });
 
-    win.webContents.setWindowOpenHandler(() => ({
-      action: "allow",
-    }));
+  win.webContents.setWindowOpenHandler(() => ({
+    action: 'allow',
+  }));
 
-    win.loadURL("chrome://webrtc-internals/");
+  win.loadURL('chrome://webrtc-internals/');
 };
 
 const webRTCInternalsTemplate: MenuItemConstructorOptions = {
