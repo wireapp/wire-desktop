@@ -90,7 +90,7 @@ node('built-in') {
             xcrun notarytool submit "$PKG_FILE" \
               --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
               --team-id "$MACOS_NOTARIZATION_ASC_PROVIDER" \
-              --password "$MACOS_NOTARIZATION_PASSWORD" \
+              --password "@env:MACOS_NOTARIZATION_PASSWORD" \
               --wait
 
             echo "Stapling notarization ticket to $PKG_FILE…"
