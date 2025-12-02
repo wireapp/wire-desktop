@@ -97,7 +97,7 @@ node('built-in') {
             xcrun stapler staple "$PKG_FILE"
 
             echo "Verifying Gatekeeper assessment…"
-            spctl -a -vv "$PKG_FILE"
+            spctl -a -vv -t install "$PKG_FILE"
 
             echo "Notarization and stapling completed successfully."
           '''
