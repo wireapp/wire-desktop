@@ -69,6 +69,7 @@ import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
+import {initMacAutoUpdater} from './update/macosAutoUpdater';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
@@ -105,6 +106,7 @@ const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
 const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
+const isInternalBuild = (): boolean => config.environment === 'internal';
 
 if (customDownloadPath) {
   electronDl({
@@ -478,6 +480,25 @@ const handleAppEvents = (): void => {
       tray.initTray();
     }
     await showMainWindow(mainWindowState);
+
+    app.on('ready', async () => {
+      const mainWindowState = initWindowStateKeeper();
+      const appMenu = systemMenu.createMenu(isFullScreen);
+      if (EnvironmentUtil.app.IS_DEVELOPMENT) {
+        appMenu.append(developerMenu);
+      }
+
+      Menu.setApplicationMenu(appMenu);
+      tray = new TrayHandler();
+      if (!EnvironmentUtil.platform.IS_MAC_OS) {
+        tray.initTray();
+      }
+      await showMainWindow(mainWindowState);
+
+      if (EnvironmentUtil.platform.IS_MAC_OS && isInternalBuild()) {
+        initMacAutoUpdater(main);
+      }
+    });
   });
 };
 
