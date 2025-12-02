@@ -1,11 +1,13 @@
 version: 2
 updates:
+  # NPM – root (all deps except the ones explicitly ignored)
   - package-ecosystem: npm
     directory: '/'
     schedule:
       interval: daily
       time: '05:00'
       timezone: 'Europe/Berlin'
+    target-branch: dev
     open-pull-requests-limit: 99
     versioning-strategy: increase
     ignore:
@@ -41,53 +43,29 @@ updates:
       - dependency-name: eslint-plugin-no-unsanitized
         versions:
           - '> 4.0.x'
-  # perform electron updates on main
-  - package-ecosystem: npm
-    directory: '/'
-    schedule:
-      interval: daily
-      time: '05:00'
-      timezone: 'Europe/Berlin'
-    open-pull-requests-limit: 99
-    versioning-strategy: increase
-    target-branch: main
-    allow:
-      - dependency-name: electron
-    ignore:
-      - dependency-name: electron
-        update-types: ['version-update:semver-major']
-  # perform electron updates on staging
-  - package-ecosystem: npm
-    directory: '/'
-    schedule:
-      interval: daily
-      time: '05:00'
-      timezone: 'Europe/Berlin'
-    open-pull-requests-limit: 99
-    versioning-strategy: increase
-    target-branch: staging
-    allow:
-      - dependency-name: electron
-    ignore:
-      - dependency-name: electron
-        update-types: ['version-update:semver-major']
+
+  # NPM – app-config
   - package-ecosystem: npm
     directory: '/app-config'
     schedule:
       interval: weekly
       day: sunday
+    target-branch: dev
     open-pull-requests-limit: 99
     versioning-strategy: increase
 
-  # Github actions
-  - package-ecosystem: 'github-actions'
+  # GitHub Actions
+  - package-ecosystem: github-actions
     directory: '/'
+    target-branch: dev
     open-pull-requests-limit: 99
     schedule:
-      interval: 'daily'
+      interval: daily
+
   # Docker
-  - package-ecosystem: 'docker'
+  - package-ecosystem: docker
     directory: '/'
+    target-branch: dev
     open-pull-requests-limit: 99
     schedule:
-      interval: 'daily'
+      interval: daily
