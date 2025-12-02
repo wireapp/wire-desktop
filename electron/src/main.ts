@@ -471,6 +471,7 @@ const handleAppEvents = (): void => {
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen);
     if (EnvironmentUtil.app.IS_DEVELOPMENT) {
+      app.commandLine.appendSwitch('enable-webrtc-internals');
       appMenu.append(developerMenu);
     }
 
