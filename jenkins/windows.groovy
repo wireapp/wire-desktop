@@ -50,7 +50,12 @@ node('windows') {
   stage('Build installer') {
     try {
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
-        bat 'yarn build:win:installer'
+        if (production || custom) {
+          bat 'yarn build:win:installer'
+        } else {
+          // For internal builds disable auto-signing and use internal config
+          bat 'yarn build:win:installer:internal'
+        }
       }
     } catch (e) {
       currentBuild.result = 'FAILED'
