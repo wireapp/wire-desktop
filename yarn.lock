@@ -4762,12 +4762,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/redux-logger@npm:^3.0.12":
-  version: 3.0.12
-  resolution: "@types/redux-logger@npm:3.0.12"
+"@types/redux-logger@npm:^3.0.13":
+  version: 3.0.13
+  resolution: "@types/redux-logger@npm:3.0.13"
   dependencies:
-    redux: ^4.0.0
-  checksum: fbe1ab82e81686c46758cd133c0af42cf848072d4c2335011dadee106054f96c1688a68f1431600eb392d936366fa338d3f532403e8b694940474ce5269b68df
+    redux: ^5.0.0
+  checksum: fb8386c6a0940a3b3864039b5ceb420c5f75186e9ad2b166820e27201b3b0ca6a387bcb766d778343f69b1af768c624911e62e6bca19392e9d5b89c524ef176c
   languageName: node
   linkType: hard
 
@@ -17147,12 +17147,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:4.2.1, redux@npm:^4.0.0":
+"redux@npm:4.2.1":
   version: 4.2.1
   resolution: "redux@npm:4.2.1"
   dependencies:
     "@babel/runtime": ^7.9.2
   checksum: f63b9060c3a1d930ae775252bb6e579b42415aee7a23c4114e21a0b4ba7ec12f0ec76936c00f546893f06e139819f0e2855e0d55ebfce34ca9c026241a6950dd
+  languageName: node
+  linkType: hard
+
+"redux@npm:^5.0.0":
+  version: 5.0.1
+  resolution: "redux@npm:5.0.1"
+  checksum: e74affa9009dd5d994878b9a1ce30d6569d986117175056edb003de2651c05b10fe7819d6fa94aea1a94de9a82f252f986547f007a2fbeb35c317a2e5f5ecf2c
   languageName: node
   linkType: hard
 
@@ -20688,7 +20695,7 @@ __metadata:
     "@types/prettier": ^2.7.3
     "@types/react": ^18.3.13
     "@types/react-dom": ^18.3.1
-    "@types/redux-logger": ^3.0.12
+    "@types/redux-logger": ^3.0.13
     "@types/sinon": 17.0.3
     "@types/sort-json": 2.0.3
     "@types/uuid": 9.0.8
