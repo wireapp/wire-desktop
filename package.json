@@ -106,7 +106,7 @@
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "eslint-plugin-testing-library": "6.5.0",
-    "eslint-plugin-unused-imports": "3.2.0",
+    "eslint-plugin-unused-imports": "4.3.0",
     "form-data": "4.0.5",
     "husky": "4.3.8",
     "is-ci": "3.0.1",
