@@ -11,7 +11,7 @@
     "auto-launch": "5.0.6",
     "axios": "0.21.2",
     "content-type": "1.0.5",
-    "electron-dl": "^3.5.2",
+    "electron-dl": "^4.0.0",
     "electron-updater": "^6.6.2",
     "electron-window-state": "5.0.3",
     "fs-extra": "11.3.2",

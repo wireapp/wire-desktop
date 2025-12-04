@@ -8844,14 +8844,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-dl@npm:^3.5.2":
-  version: 3.5.2
-  resolution: "electron-dl@npm:3.5.2"
+"electron-dl@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "electron-dl@npm:4.0.0"
   dependencies:
     ext-name: ^5.0.0
-    pupa: ^2.0.1
-    unused-filename: ^2.1.0
-  checksum: 7714599f74f6036bf36f19a20a56dbc407d3e05518b4a38f5c9ce23a251f4d7442bf47dec4fa9cabb02509b4fe4c58752702b85deded016d213303bb16d230a2
+    pupa: ^3.1.0
+    unused-filename: ^4.0.1
+  checksum: 2c152be48bd66e9325f7e48ea53cdc41f2a8674361c6729117ebae2dc37ff22216ccf60545e8e554c89a505e350200ed8918a6011dd71e571c1b41553fb485ec
   languageName: node
   linkType: hard
 
@@ -9731,10 +9731,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"escape-goat@npm:^2.0.0":
-  version: 2.1.1
-  resolution: "escape-goat@npm:2.1.1"
-  checksum: ce05c70c20dd7007b60d2d644b625da5412325fdb57acf671ba06cb2ab3cd6789e2087026921a05b665b0a03fadee2955e7fc0b9a67da15a6551a980b260eba7
+"escape-goat@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "escape-goat@npm:4.0.0"
+  checksum: 7034e0025eec7b751074b837f10312c5b768493265bdad046347c0aadbc1e652776f7e5df94766473fecb5d3681169cc188fe9ccc1e22be53318c18be1671cc0
   languageName: node
   linkType: hard
 
@@ -9756,6 +9756,13 @@ __metadata:
   version: 2.0.0
   resolution: "escape-string-regexp@npm:2.0.0"
   checksum: 9f8a2d5743677c16e85c810e3024d54f0c8dea6424fad3c79ef6666e81dd0846f7437f5e729dfcdac8981bc9e5294c39b4580814d114076b8d36318f46ae4395
+  languageName: node
+  linkType: hard
+
+"escape-string-regexp@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "escape-string-regexp@npm:5.0.0"
+  checksum: 20daabe197f3cb198ec28546deebcf24b3dbb1a5a269184381b3116d12f0532e06007f4bc8da25669d6a7f8efb68db0758df4cd981f57bc5b57f521a3e12c59e
   languageName: node
   linkType: hard
 
@@ -15368,13 +15375,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"modify-filename@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "modify-filename@npm:1.1.0"
-  checksum: a1d104cf99ade063c05c79e4db47ef6263a116386568d7661ae4a00a390da72d5944070a64dba09867231a8eb6cbab57498ada99cb4b5ae0fded10831995079b
-  languageName: node
-  linkType: hard
-
 "ms@npm:2.0.0":
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
@@ -16831,12 +16831,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pupa@npm:^2.0.1":
-  version: 2.1.1
-  resolution: "pupa@npm:2.1.1"
+"pupa@npm:^3.1.0":
+  version: 3.3.0
+  resolution: "pupa@npm:3.3.0"
   dependencies:
-    escape-goat: ^2.0.0
-  checksum: 49529e50372ffdb0cccf0efa0f3b3cb0a2c77805d0d9cc2725bd2a0f6bb414631e61c93a38561b26be1259550b7bb6c2cb92315aa09c8bf93f3bdcb49f2b2fb7
+    escape-goat: ^4.0.0
+  checksum: a26b57cb4ff761495628b3630ab65fd97229d19314dbd9a08133d34f3f85fdb368da478f7b4a57647660c6d2973f0dae740668f8809c5861e3ede99e938ded05
   languageName: node
   linkType: hard
 
@@ -19983,13 +19983,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unused-filename@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "unused-filename@npm:2.1.0"
+"unused-filename@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "unused-filename@npm:4.0.1"
   dependencies:
-    modify-filename: ^1.1.0
-    path-exists: ^4.0.0
-  checksum: 66fb62b5043a6a87dc30960778ba3d836fb45fef9b7e29a842fce12f25ffc5936e350dc281b79a73ff5498c515504538e72b529993759178156398fcdb8491a5
+    escape-string-regexp: ^5.0.0
+    path-exists: ^5.0.0
+  checksum: ca15d4957b8a3bac538480eb523f4e7f4a99e1cf4ecd6e4a678c95c89f8ee8202056514380fb89e455efef75440f7c091bfa845f488bdcf220219ac87468d4b2
   languageName: node
   linkType: hard
 
@@ -20719,7 +20719,7 @@ __metadata:
     dotenv: 16.6.0
     electron: 38.7.2
     electron-builder: 25.1.8
-    electron-dl: ^3.5.2
+    electron-dl: ^4.0.0
     electron-mocha: 12.3.1
     electron-packager: 17.1.2
     electron-updater: ^6.6.2
