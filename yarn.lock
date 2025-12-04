@@ -7537,6 +7537,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ci-info@npm:^4.1.0":
+  version: 4.3.1
+  resolution: "ci-info@npm:4.3.1"
+  checksum: 66c159d92648e8a07acab0a3a0681bff6ccc39aa44916263208c4d97bbbeedbbc886d7611fd30c21df1aa624ce3c6fcdfde982e74689e3e014e064e1d0805f94
+  languageName: node
+  linkType: hard
+
 "cjs-module-lexer@npm:^1.0.0":
   version: 1.2.2
   resolution: "cjs-module-lexer@npm:1.2.2"
@@ -12670,7 +12677,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-ci@npm:3.0.1, is-ci@npm:^3.0.0":
+"is-ci@npm:4.1.0":
+  version: 4.1.0
+  resolution: "is-ci@npm:4.1.0"
+  dependencies:
+    ci-info: ^4.1.0
+  bin:
+    is-ci: bin.js
+  checksum: f63a9e951262b9f4ccea73f47743efb1bfe87de84b5352dc02966c90bf61c2a9e9426a43ef53fdd18bd5f33616015b97bb5ae89251fb0f573e6cf7a01d036295
+  languageName: node
+  linkType: hard
+
+"is-ci@npm:^3.0.0":
   version: 3.0.1
   resolution: "is-ci@npm:3.0.1"
   dependencies:
@@ -20751,7 +20769,7 @@ __metadata:
     husky: 4.3.8
     iconv-lite: 0.7.0
     image-type: 4.1.0
-    is-ci: 3.0.1
+    is-ci: 4.1.0
     jest: 29.7.0
     jest-environment-jsdom: 29.7.0
     jszip: 3.10.1
