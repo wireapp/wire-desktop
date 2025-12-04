@@ -30,7 +30,7 @@
     "redux": "4.2.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.4.2",
-    "uuid": "9.0.1"
+    "uuid": "13.0.0"
   },
   "description": "The most secure collaboration platform.",
   "devDependencies": {
