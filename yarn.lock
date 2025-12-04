@@ -2256,6 +2256,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron/asar@npm:3.2.18":
+  version: 3.2.18
+  resolution: "@electron/asar@npm:3.2.18"
+  dependencies:
+    commander: ^5.0.0
+    glob: ^7.1.6
+    minimatch: ^3.0.4
+  bin:
+    asar: bin/asar.js
+  checksum: bbb983d9395d92a6cb7405435d734e465f13346b78b398ba787ed04b8d626b634eecaadfa04f43a73ba5883613acb96807869b31953304038352c8b9d4197532
+  languageName: node
+  linkType: hard
+
 "@electron/asar@npm:^3.2.1":
   version: 3.2.4
   resolution: "@electron/asar@npm:3.2.4"
@@ -2283,7 +2296,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/fuses@npm:1.8.0":
+"@electron/fuses@npm:1.8.0, @electron/fuses@npm:^1.8.0":
   version: 1.8.0
   resolution: "@electron/fuses@npm:1.8.0"
   dependencies:
@@ -2312,6 +2325,26 @@ __metadata:
     global-agent:
       optional: true
   checksum: 900845cc0b31b54761fc9b0ada2dea1e999e59aacc48999d53903bcb7c9a0a7356b5fe736cf610b2a56c5a21f5a3c0e083b2ed2b7e52c36a4d0f420d4b5ec268
+  languageName: node
+  linkType: hard
+
+"@electron/node-gyp@git+https://github.com/electron/node-gyp.git#06b29aafb7708acef8b3669835c8a7857ebc92d2":
+  version: 10.2.0-electron.1
+  resolution: "@electron/node-gyp@https://github.com/electron/node-gyp.git#commit=06b29aafb7708acef8b3669835c8a7857ebc92d2"
+  dependencies:
+    env-paths: ^2.2.0
+    exponential-backoff: ^3.1.1
+    glob: ^8.1.0
+    graceful-fs: ^4.2.6
+    make-fetch-happen: ^10.2.1
+    nopt: ^6.0.0
+    proc-log: ^2.0.1
+    semver: ^7.3.5
+    tar: ^6.2.1
+    which: ^2.0.2
+  bin:
+    node-gyp: ./bin/node-gyp.js
+  checksum: c3a5c3b3a69286db9beceb5beb5141e37e2ccc2dc5f0dffbf53b623c8a6b6e1a762939d143bb2e38b7323b2db8f97f2777309e1cd6351c37b7b2e00ad7797576
   languageName: node
   linkType: hard
 
@@ -2387,10 +2420,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/rebuild@npm:3.6.1":
-  version: 3.6.1
-  resolution: "@electron/rebuild@npm:3.6.1"
+"@electron/rebuild@npm:3.7.0":
+  version: 3.7.0
+  resolution: "@electron/rebuild@npm:3.7.0"
   dependencies:
+    "@electron/node-gyp": "git+https://github.com/electron/node-gyp.git#06b29aafb7708acef8b3669835c8a7857ebc92d2"
     "@malept/cross-spawn-promise": ^2.0.0
     chalk: ^4.0.0
     debug: ^4.1.1
@@ -2399,7 +2433,7 @@ __metadata:
     got: ^11.7.0
     node-abi: ^3.45.0
     node-api-version: ^0.2.0
-    node-gyp: ^9.0.0
+    node-gyp: latest
     ora: ^5.1.0
     read-binary-file-arch: ^1.0.6
     semver: ^7.3.5
@@ -2407,7 +2441,7 @@ __metadata:
     yargs: ^17.0.1
   bin:
     electron-rebuild: lib/cli.js
-  checksum: 90766c7341997a54319bc215014de829d3f3ab1976fd80c4fa9846f5672bdf2b6c7b0f87fe5edee290caf6c7e9a60774607b46b97dea20ac65c5567af7f694ae
+  checksum: b51e4782032e7ae3bc4bef581a257efff4f4afad833d30b22dbbe5d11c727817748aeb7032cdf12c6edf3613108654fde0c777a37dbeb156d1301683893e5400
   languageName: node
   linkType: hard
 
@@ -6105,36 +6139,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app-builder-bin@npm:5.0.0-alpha.10":
-  version: 5.0.0-alpha.10
-  resolution: "app-builder-bin@npm:5.0.0-alpha.10"
-  checksum: 7c5d9e80fb345e14dda141ba4b0d8a5a6657736a029220742b94b648588fa18bd777991883ecd566974b7848a05f1d25b3bcc1302dbb48ae59602f45d57d3d3c
+"app-builder-bin@npm:5.0.0-alpha.12":
+  version: 5.0.0-alpha.12
+  resolution: "app-builder-bin@npm:5.0.0-alpha.12"
+  checksum: 9ff9f5c4670d3d376b1719af3a2a88abfdf1e58652aae55a0bcd52cc3cee93e36dda8e0d24536f24c99e5531ae4e3b10531abd33c4d7cc6be8d7ca08ff08b987
   languageName: node
   linkType: hard
 
-"app-builder-lib@npm:25.1.8":
-  version: 25.1.8
-  resolution: "app-builder-lib@npm:25.1.8"
+"app-builder-lib@npm:26.0.12":
+  version: 26.0.12
+  resolution: "app-builder-lib@npm:26.0.12"
   dependencies:
     "@develar/schema-utils": ~2.6.5
+    "@electron/asar": 3.2.18
+    "@electron/fuses": ^1.8.0
     "@electron/notarize": 2.5.0
     "@electron/osx-sign": 1.3.1
-    "@electron/rebuild": 3.6.1
+    "@electron/rebuild": 3.7.0
     "@electron/universal": 2.0.1
     "@malept/flatpak-bundler": ^0.4.0
     "@types/fs-extra": 9.0.13
     async-exit-hook: ^2.0.1
-    bluebird-lst: ^1.0.9
-    builder-util: 25.1.7
-    builder-util-runtime: 9.2.10
+    builder-util: 26.0.11
+    builder-util-runtime: 9.3.1
     chromium-pickle-js: ^0.2.0
     config-file-ts: 0.2.8-rc1
     debug: ^4.3.4
     dotenv: ^16.4.5
     dotenv-expand: ^11.0.6
     ejs: ^3.1.8
-    electron-publish: 25.1.7
-    form-data: ^4.0.0
+    electron-publish: 26.0.11
     fs-extra: ^10.1.0
     hosted-git-info: ^4.1.0
     is-ci: ^3.0.0
@@ -6143,15 +6177,16 @@ __metadata:
     json5: ^2.2.3
     lazy-val: ^1.0.5
     minimatch: ^10.0.0
+    plist: 3.1.0
     resedit: ^1.7.0
-    sanitize-filename: ^1.6.3
     semver: ^7.3.8
     tar: ^6.1.12
     temp-file: ^3.4.0
+    tiny-async-pool: 1.3.0
   peerDependencies:
-    dmg-builder: 25.1.8
-    electron-builder-squirrel-windows: 25.1.8
-  checksum: 8150728a14d6d346b3e2f8a35718a6ee13085032e855e4c2c57fc48fe6d1e0526b69851362ca0625b7e2aaf885331630ac3faf614fce75747be1f9a48ca71c93
+    dmg-builder: 26.0.12
+    electron-builder-squirrel-windows: 26.0.12
+  checksum: c434525c9a8883a25ab7a31ca57abd7e5c7751a518277d3597486d0b2947796712fa35ff714305450358199d22f7140979c1d947273808819bd5f44248004a04
   languageName: node
   linkType: hard
 
@@ -6970,16 +7005,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird-lst@npm:^1.0.9":
-  version: 1.0.9
-  resolution: "bluebird-lst@npm:1.0.9"
-  dependencies:
-    bluebird: ^3.5.5
-  checksum: 5662542d7303cfc2dcd63e87e153cd0cc6adb2d8b383d08cb11582625ba5f0116b2eb725ea471feaea74e993482634c4c5bcb39b0b6efd42fc2fc749f5c6e0da
-  languageName: node
-  linkType: hard
-
-"bluebird@npm:^3.1.1, bluebird@npm:^3.4.1, bluebird@npm:^3.5.0, bluebird@npm:^3.5.5, bluebird@npm:^3.7.2":
+"bluebird@npm:^3.1.1, bluebird@npm:^3.4.1, bluebird@npm:^3.5.0, bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -7152,13 +7178,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builder-util-runtime@npm:9.2.10":
-  version: 9.2.10
-  resolution: "builder-util-runtime@npm:9.2.10"
+"builder-util-runtime@npm:9.3.1":
+  version: 9.3.1
+  resolution: "builder-util-runtime@npm:9.3.1"
   dependencies:
     debug: ^4.3.4
     sax: ^1.2.4
-  checksum: 4507253fc7d50943526d00725322cbfdc9b80aad44c4a160eb4257a8ec97ddc6262448ddd840aa1520e2a4252b2b5b04d0a5caac2138be033117f1d445cf5ce7
+  checksum: 00a6cc472977d7e97ea18fafbb5861659b92207b6841bbc3b172dc310e59abcfe89302397e9c7989a1afa2669f6b253fcb3adf28096d5e14ff0acc2f4337e7b2
   languageName: node
   linkType: hard
 
@@ -7172,27 +7198,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builder-util@npm:25.1.7":
-  version: 25.1.7
-  resolution: "builder-util@npm:25.1.7"
+"builder-util@npm:26.0.11":
+  version: 26.0.11
+  resolution: "builder-util@npm:26.0.11"
   dependencies:
     7zip-bin: ~5.2.0
     "@types/debug": ^4.1.6
-    app-builder-bin: 5.0.0-alpha.10
-    bluebird-lst: ^1.0.9
-    builder-util-runtime: 9.2.10
+    app-builder-bin: 5.0.0-alpha.12
+    builder-util-runtime: 9.3.1
     chalk: ^4.1.2
-    cross-spawn: ^7.0.3
+    cross-spawn: ^7.0.6
     debug: ^4.3.4
     fs-extra: ^10.1.0
     http-proxy-agent: ^7.0.0
     https-proxy-agent: ^7.0.0
     is-ci: ^3.0.0
     js-yaml: ^4.1.0
+    sanitize-filename: ^1.6.3
     source-map-support: ^0.5.19
     stat-mode: ^1.0.0
     temp-file: ^3.4.0
-  checksum: 546df686d38bf715f9dc2e9aa59f48f799e9a3677a2cae1d22b8b60ae29327b322dca0622bb0e1b774ee4a599ca8e91cbe39ccf558950eb77d1988c6809e8807
+    tiny-async-pool: 1.3.0
+  checksum: cf5f7ceb5cd22c78950a8218467c140d6c99da035c7c20c327bf51c4a6c8bd8f289a25da6ae108a6c88085f4391ca203090c15ce75f6438be6657cff3b466533
   languageName: node
   linkType: hard
 
@@ -8031,6 +8058,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-spawn@npm:^7.0.6":
+  version: 7.0.6
+  resolution: "cross-spawn@npm:7.0.6"
+  dependencies:
+    path-key: ^3.1.0
+    shebang-command: ^2.0.0
+    which: ^2.0.1
+  checksum: 8d306efacaf6f3f60e0224c287664093fa9185680b2d195852ba9a863f85d02dcc737094c6e512175f8ee0161f9b87c73c6826034c2422e39de7d6569cf4503b
+  languageName: node
+  linkType: hard
+
 "css-loader@npm:7.1.2":
   version: 7.1.2
   resolution: "css-loader@npm:7.1.2"
@@ -8625,13 +8663,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dmg-builder@npm:25.1.8":
-  version: 25.1.8
-  resolution: "dmg-builder@npm:25.1.8"
+"dmg-builder@npm:26.0.12":
+  version: 26.0.12
+  resolution: "dmg-builder@npm:26.0.12"
   dependencies:
-    app-builder-lib: 25.1.8
-    builder-util: 25.1.7
-    builder-util-runtime: 9.2.10
+    app-builder-lib: 26.0.12
+    builder-util: 26.0.11
+    builder-util-runtime: 9.3.1
     dmg-license: ^1.0.11
     fs-extra: ^10.1.0
     iconv-lite: ^0.6.2
@@ -8639,7 +8677,7 @@ __metadata:
   dependenciesMeta:
     dmg-license:
       optional: true
-  checksum: 86938fbf2050518dba203dbd262b138983de84e831a90004d64f150dd717df7670b39c8563ae33fe86dd5e50c5cd934036fd9db73dd2beecd6d2de84d335a6f1
+  checksum: 4a9d9c8d2cc1f154a999c2ad2314e46df298c7592a9af7143d26e1ee84d1a06cee6405eb1ac17d9f5bf9c57d9f72cc44567f87799a71a4f259030a72a3ad4620
   languageName: node
   linkType: hard
 
@@ -8823,15 +8861,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder@npm:25.1.8":
-  version: 25.1.8
-  resolution: "electron-builder@npm:25.1.8"
+"electron-builder@npm:26.0.12":
+  version: 26.0.12
+  resolution: "electron-builder@npm:26.0.12"
   dependencies:
-    app-builder-lib: 25.1.8
-    builder-util: 25.1.7
-    builder-util-runtime: 9.2.10
+    app-builder-lib: 26.0.12
+    builder-util: 26.0.11
+    builder-util-runtime: 9.3.1
     chalk: ^4.1.2
-    dmg-builder: 25.1.8
+    dmg-builder: 26.0.12
     fs-extra: ^10.1.0
     is-ci: ^3.0.0
     lazy-val: ^1.0.5
@@ -8840,7 +8878,7 @@ __metadata:
   bin:
     electron-builder: cli.js
     install-app-deps: install-app-deps.js
-  checksum: 3f55eec8f9cc53c655f4b6b0200b79703f26ebf0f1457f5a99a8f2f3ce0ebb2ac29f4d8297dc861d23bb40c76241b9e8210d2ddbeac1aec9700306fdf08f6894
+  checksum: 9376d0591d9d881be7ccbedaa6a0584744c2293ef7a2411a4c3709a310454a728377dc464298033166895ffc6d11ebb60e272ace91b60400ec067ea30930e1ec
   languageName: node
   linkType: hard
 
@@ -8899,18 +8937,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-publish@npm:25.1.7":
-  version: 25.1.7
-  resolution: "electron-publish@npm:25.1.7"
+"electron-publish@npm:26.0.11":
+  version: 26.0.11
+  resolution: "electron-publish@npm:26.0.11"
   dependencies:
     "@types/fs-extra": ^9.0.11
-    builder-util: 25.1.7
-    builder-util-runtime: 9.2.10
+    builder-util: 26.0.11
+    builder-util-runtime: 9.3.1
     chalk: ^4.1.2
+    form-data: ^4.0.0
     fs-extra: ^10.1.0
     lazy-val: ^1.0.5
     mime: ^2.5.2
-  checksum: 9d87cc3b473c96d1f2623b1fdbc3b2155a11f5fecca0cdc69a8f9d4da5b6e0e44fd25883ed8d081aabe8c79c0f7ce860ecad4d59ea85e00daf7c850dbef4bd03
+  checksum: 626ed5682d09ccad3474be58fb4d98079eeda30dafaa28c7c5f291d0e3d784e00f3a14988134193f622cca14ebc6057705b5cd7ab021944e039b5308e607e6fd
   languageName: node
   linkType: hard
 
@@ -14927,7 +14966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"make-fetch-happen@npm:^10.0.3":
+"make-fetch-happen@npm:^10.0.3, make-fetch-happen@npm:^10.2.1":
   version: 10.2.1
   resolution: "make-fetch-happen@npm:10.2.1"
   dependencies:
@@ -15483,27 +15522,6 @@ __metadata:
   dependencies:
     semver: ^7.3.5
   checksum: 78a3056873a8a15c4b0f3ed1f64d294fe4e0ba4a4d08b5f9cfa06a8586ff9bc7c942ef17648171b000d7343d216b7e07dc4787d6ba98307f0a2de9ef13722f3a
-  languageName: node
-  linkType: hard
-
-"node-gyp@npm:^9.0.0":
-  version: 9.4.1
-  resolution: "node-gyp@npm:9.4.1"
-  dependencies:
-    env-paths: ^2.2.0
-    exponential-backoff: ^3.1.1
-    glob: ^7.1.4
-    graceful-fs: ^4.2.6
-    make-fetch-happen: ^10.0.3
-    nopt: ^6.0.0
-    npmlog: ^6.0.0
-    rimraf: ^3.0.2
-    semver: ^7.3.5
-    tar: ^6.1.2
-    which: ^2.0.2
-  bin:
-    node-gyp: bin/node-gyp.js
-  checksum: 8576c439e9e925ab50679f87b7dfa7aa6739e42822e2ad4e26c36341c0ba7163fdf5a946f0a67a476d2f24662bc40d6c97bd9e79ced4321506738e6b760a1577
   languageName: node
   linkType: hard
 
@@ -16502,17 +16520,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"plist@npm:^3.0.0, plist@npm:^3.0.4":
-  version: 3.0.6
-  resolution: "plist@npm:3.0.6"
-  dependencies:
-    base64-js: ^1.5.1
-    xmlbuilder: ^15.1.1
-  checksum: e21390fab8a3c388f8f51b76c0aa187242a40537119ce865d8637630e7d7df79b21f841ec6a4668e7c68d409a6f584d696619099a6125d28011561639c0823b8
-  languageName: node
-  linkType: hard
-
-"plist@npm:^3.0.5, plist@npm:^3.1.0":
+"plist@npm:3.1.0, plist@npm:^3.0.5, plist@npm:^3.1.0":
   version: 3.1.0
   resolution: "plist@npm:3.1.0"
   dependencies:
@@ -16520,6 +16528,16 @@ __metadata:
     base64-js: ^1.5.1
     xmlbuilder: ^15.1.1
   checksum: c8ea013da8646d4c50dff82f9be39488054621cc229957621bb00add42b5d4ce3657cf58d4b10c50f7dea1a81118f825838f838baeb4e6f17fab453ecf91d424
+  languageName: node
+  linkType: hard
+
+"plist@npm:^3.0.0, plist@npm:^3.0.4":
+  version: 3.0.6
+  resolution: "plist@npm:3.0.6"
+  dependencies:
+    base64-js: ^1.5.1
+    xmlbuilder: ^15.1.1
+  checksum: e21390fab8a3c388f8f51b76c0aa187242a40537119ce865d8637630e7d7df79b21f841ec6a4668e7c68d409a6f584d696619099a6125d28011561639c0823b8
   languageName: node
   linkType: hard
 
@@ -16672,6 +16690,13 @@ __metadata:
     ansi-styles: ^5.0.0
     react-is: ^18.0.0
   checksum: 032c1602383e71e9c0c02a01bbd25d6759d60e9c7cf21937dde8357aa753da348fcec5def5d1002c9678a8524d5fe099ad98861286550ef44de8808cc61e43b6
+  languageName: node
+  linkType: hard
+
+"proc-log@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "proc-log@npm:2.0.1"
+  checksum: f6f23564ff759097db37443e6e2765af84979a703d2c52c1b9df506ee9f87caa101ba49d8fdc115c1a313ec78e37e8134704e9069e6a870f3499d98bb24c436f
   languageName: node
   linkType: hard
 
@@ -17977,7 +18002,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.6.0":
+"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.5.0, semver@npm:^5.6.0":
   version: 5.7.2
   resolution: "semver@npm:5.7.2"
   bin:
@@ -19055,7 +19080,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^6.0.5, tar@npm:^6.1.11, tar@npm:^6.1.12, tar@npm:^6.1.2":
+"tar@npm:^6.0.5, tar@npm:^6.1.11, tar@npm:^6.1.12, tar@npm:^6.1.2, tar@npm:^6.2.1":
   version: 6.2.1
   resolution: "tar@npm:6.2.1"
   dependencies:
@@ -19150,6 +19175,15 @@ __metadata:
     readable-stream: ~2.3.6
     xtend: ~4.0.1
   checksum: beb0f338aa2931e5660ec7bf3ad949e6d2e068c31f4737b9525e5201b824ac40cac6a337224856b56bd1ddd866334bbfb92a9f57cd6f66bc3f18d3d86fc0fe50
+  languageName: node
+  linkType: hard
+
+"tiny-async-pool@npm:1.3.0":
+  version: 1.3.0
+  resolution: "tiny-async-pool@npm:1.3.0"
+  dependencies:
+    semver: ^5.5.0
+  checksum: d51630522317b82355afa32b79ac3a02bcc29ef81e8045a95a2e4dfa736525bf4bcba1394abfb4169188fe42e3a9d9e4b378367f46daeb6b4b945d7cb727f860
   languageName: node
   linkType: hard
 
@@ -20718,7 +20752,7 @@ __metadata:
     css-loader: 7.1.2
     dotenv: 16.6.0
     electron: 38.7.2
-    electron-builder: 25.1.8
+    electron-builder: 26.0.12
     electron-dl: ^3.5.2
     electron-mocha: 12.3.1
     electron-packager: 17.1.2
