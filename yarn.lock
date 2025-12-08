@@ -8942,9 +8942,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-updater@npm:^6.6.2":
-  version: 6.7.2
-  resolution: "electron-updater@npm:6.7.2"
+"electron-updater@npm:^6.7.3":
+  version: 6.7.3
+  resolution: "electron-updater@npm:6.7.3"
   dependencies:
     builder-util-runtime: 9.5.1
     fs-extra: ^10.1.0
@@ -8952,9 +8952,9 @@ __metadata:
     lazy-val: ^1.0.5
     lodash.escaperegexp: ^4.1.2
     lodash.isequal: ^4.5.0
-    semver: 7.7.2
+    semver: ~7.7.3
     tiny-typed-emitter: ^2.1.0
-  checksum: 4c49ab68acd621f1c0f9487cd636e53a0a91fe1c952b89dc7fa86dd01914c4ab236747a79917d34bc9b65e57b83909da622dd6a65cd5bfe221a9d21c68d0696e
+  checksum: cee3ab54ced051584452effbeebaf31f35edfa1278f511db2c8437f4ba22be2ee43c95fccb11ed55f301a0bc918c90eb3dd69556afd2adaac8c768260b006c0c
   languageName: node
   linkType: hard
 
@@ -17986,15 +17986,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.7.2, semver@npm:^7.7.1":
-  version: 7.7.2
-  resolution: "semver@npm:7.7.2"
-  bin:
-    semver: bin/semver.js
-  checksum: dd94ba8f1cbc903d8eeb4dd8bf19f46b3deb14262b6717d0de3c804b594058ae785ef2e4b46c5c3b58733c99c83339068203002f9e37cfe44f7e2cc5e3d2f621
-  languageName: node
-  linkType: hard
-
 "semver@npm:^6.0.0, semver@npm:^6.2.0, semver@npm:^6.3.0":
   version: 6.3.0
   resolution: "semver@npm:6.3.0"
@@ -18052,6 +18043,24 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 4110ec5d015c9438f322257b1c51fe30276e5f766a3f64c09edd1d7ea7118ecbc3f379f3b69032bacf13116dc7abc4ad8ce0d7e2bd642e26b0d271b56b61a7d8
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.7.1":
+  version: 7.7.2
+  resolution: "semver@npm:7.7.2"
+  bin:
+    semver: bin/semver.js
+  checksum: dd94ba8f1cbc903d8eeb4dd8bf19f46b3deb14262b6717d0de3c804b594058ae785ef2e4b46c5c3b58733c99c83339068203002f9e37cfe44f7e2cc5e3d2f621
+  languageName: node
+  linkType: hard
+
+"semver@npm:~7.7.3":
+  version: 7.7.3
+  resolution: "semver@npm:7.7.3"
+  bin:
+    semver: bin/semver.js
+  checksum: f013a3ee4607857bcd3503b6ac1d80165f7f8ea94f5d55e2d3e33df82fce487aa3313b987abf9b39e0793c83c9fc67b76c36c067625141a9f6f704ae0ea18db2
   languageName: node
   linkType: hard
 
@@ -20722,7 +20731,7 @@ __metadata:
     electron-dl: ^3.5.2
     electron-mocha: 12.3.1
     electron-packager: 17.1.2
-    electron-updater: ^6.6.2
+    electron-updater: ^6.7.3
     electron-window-state: 5.0.3
     electron-winstaller: 4.0.2
     eslint: 8.57.0
