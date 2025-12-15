@@ -169,11 +169,12 @@ const Webview = ({
         setWebviewError(error);
       }
     };
-    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
+    const webview = webviewRef.current;
+    webview?.addEventListener(ON_WEBVIEW_ERROR, listener);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (webview) {
+        webview.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
   }, [webviewRef, account]);
@@ -272,11 +273,12 @@ const Webview = ({
       }
     };
 
-    webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+    const webview = webviewRef.current;
+    webview?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webview) {
+        webview.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -292,11 +294,12 @@ const Webview = ({
     }
 
     // For existing accounts, delete the webview data first
-    window.electronAPI.sendDeleteAccount(account.id, account.sessionID)
+    window.electronAPI
+      .sendDeleteAccount(account.id, account.sessionID)
       .then(() => {
         abortAccountCreation(account.id);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Failed to delete account:', error);
         // Still abort account creation even if deletion fails
         abortAccountCreation(account.id);
