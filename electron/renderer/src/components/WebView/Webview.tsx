@@ -38,7 +38,7 @@ import {
 } from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
 import {State} from '../../index';
-import {getText, wrapperLocale} from '../../lib/locale';
+import {getText, getWrapperLocale} from '../../lib/locale';
 import {WindowUrl} from '../../lib/WindowUrl';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {Account, ConversationJoinData} from '../../types/account';
@@ -58,7 +58,7 @@ const getEnvironmentUrl = (account: Account) => {
   url.searchParams.set('id', account.id);
 
   // set the current language
-  url.searchParams.set('hl', wrapperLocale);
+  url.searchParams.set('hl', getWrapperLocale());
 
   if (account.ssoCode && account.isAdding) {
     url.pathname = '/auth';

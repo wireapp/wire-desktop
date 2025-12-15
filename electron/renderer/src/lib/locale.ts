@@ -64,32 +64,14 @@ export const getText = (stringIdentifier: i18nLanguageIdentifier, paramReplaceme
   return str;
 };
 
-// wrapperLocale is used as a constant in WindowUrl.ts and Webview.tsx
-// We'll initialize it lazily - it will be 'en' initially and may update when electronAPI becomes available
-// For now, we'll use a getter function approach, but export it as a value for compatibility
-let _wrapperLocale: SupportedI18nLanguage = 'en' as SupportedI18nLanguage;
-
-// Try to initialize immediately, but don't fail if electronAPI isn't ready
-try {
-  const info = getLocaleInfo();
-  _wrapperLocale = info.current;
-} catch {
-  // Ignore errors - will use 'en' as default
-}
-
-// Update locale when electronAPI becomes available (if it wasn't available initially)
-if (typeof window !== 'undefined') {
-  // Use a small delay to allow preload script to finish
-  setTimeout(() => {
-    try {
-      const info = getLocaleInfo();
-      if (info.current !== 'en' || window.electronAPI) {
-        _wrapperLocale = info.current;
-      }
-    } catch {
-      // Ignore errors
-    }
-  }, 100);
-}
-
-export const wrapperLocale: SupportedI18nLanguage = _wrapperLocale;
+// getWrapperLocale is used in WindowUrl.ts and Webview.tsx
+// Use a getter function to always get the current locale value
+// Electron guarantees preload scripts execute before renderer code,
+// so window.electronAPI should always be available
+export const getWrapperLocale = (): SupportedI18nLanguage => {
+  if (window.electronAPI) {
+    return window.electronAPI.locale.current;
+  }
+  // Fallback for development/testing or edge cases
+  return 'en' as SupportedI18nLanguage;
+};
