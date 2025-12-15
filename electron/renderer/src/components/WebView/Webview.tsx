@@ -211,7 +211,7 @@ const Webview = ({
         case EVENT_TYPE.LIFECYCLE.SIGNED_IN: {
           if (conversationJoinData) {
             const {code, key, domain} = conversationJoinData;
-            window.sendConversationJoinToHost(accountId, code, key, domain);
+            window.electronAPI.sendConversationJoinToHost(accountId, code, key, domain);
             setConversationJoinData(accountId, undefined);
           }
           updateAccountLifecycle(accountId, channel);
@@ -241,7 +241,7 @@ const Webview = ({
 
           if (isConversationJoinData(data)) {
             if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-              window.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
+              window.electronAPI.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
               setConversationJoinData(accountId, undefined);
             } else {
               setConversationJoinData(accountId, data);
@@ -283,7 +283,7 @@ const Webview = ({
   }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = (account: Account) => {
-    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
+    window.electronAPI.sendDeleteAccount(account.id, account.sessionID).then(() => {
       abortAccountCreation(account.id);
     });
   };

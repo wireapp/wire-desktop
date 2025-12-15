@@ -51,15 +51,21 @@ export declare global {
 
   interface Window {
     amplify: amplify;
-    isMac: boolean;
-    locale: SupportedI18nLanguage;
-    locStrings: i18nStrings;
-    locStringsDefault: i18nStrings;
-    sendBadgeCount(count: number, ignoreFlash: boolean): void;
-    sendConversationJoinToHost(accountId: string, code: string, key: string, domain?: string): void;
-    sendDeleteAccount(accountId: string, sessionID?: string): Promise<void>;
-    sendLogoutAccount(accountId: string): Promise<void>;
-    submitDeepLink(url: string): void;
+    electronAPI: {
+      locale: {
+        current: SupportedI18nLanguage;
+        strings: i18nStrings;
+        stringsDefault: i18nStrings;
+      };
+      environment: {
+        isMac: boolean;
+      };
+      sendBadgeCount(count: number, ignoreFlash: boolean): void;
+      sendConversationJoinToHost(accountId: string, code: string, key: string, domain?: string): void;
+      sendDeleteAccount(accountId: string, sessionID?: string): Promise<void>;
+      sendLogoutAccount(accountId: string): Promise<void>;
+      submitDeepLink(url: string): void;
+    };
     wire: any;
     z: {
       event: {

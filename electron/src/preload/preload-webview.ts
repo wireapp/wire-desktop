@@ -20,8 +20,6 @@
 import {ipcRenderer, webFrame} from 'electron';
 import type {Data as OpenGraphResult} from 'open-graph';
 
-import * as path from 'path';
-
 import type {Availability} from '@wireapp/protocol-messaging';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
@@ -44,7 +42,7 @@ interface TeamAccountInfo {
 
 type Theme = 'dark' | 'default';
 
-const logger = getLogger(path.basename(__filename));
+const logger = getLogger('preload-webview');
 
 function subscribeToThemeChange(): void {
   function updateWebAppTheme(): void {

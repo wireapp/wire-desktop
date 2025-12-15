@@ -17,10 +17,8 @@
  *
  */
 
-import {ipcRenderer, webFrame} from 'electron';
+import {contextBridge, ipcRenderer, webFrame} from 'electron';
 import {truncate} from 'lodash';
-
-import * as path from 'path';
 
 import {WebAppEvents} from '@wireapp/webapp-events';
 
@@ -30,15 +28,9 @@ import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {AutomatedSingleSignOn} from '../sso/AutomatedSingleSignOn';
 
-const logger = getLogger(path.basename(__filename));
+const logger = getLogger('preload-app');
 
 webFrame.setVisualZoomLevelLimits(1, 1);
-
-window.locStrings = locale.LANGUAGES[locale.getCurrent()];
-window.locStringsDefault = locale.LANGUAGES.en;
-window.locale = locale.getCurrent();
-
-window.isMac = EnvironmentUtil.platform.IS_MAC_OS;
 
 const getSelectedWebview = (): Electron.WebviewTag | null =>
   document.querySelector<Electron.WebviewTag>('.Webview:not(.hide)');
@@ -99,16 +91,25 @@ const subscribeToMainProcessEvents = (): void => {
   });
 };
 
-const setupIpcInterface = (): void => {
-  window.sendBadgeCount = (count: number, ignoreFlash: boolean): void => {
+// Expose APIs via contextBridge for context isolation
+const electronAPI = {
+  // Locale and environment info
+  locale: {
+    current: locale.getCurrent(),
+    strings: locale.LANGUAGES[locale.getCurrent()],
+    stringsDefault: locale.LANGUAGES.en,
+  },
+  environment: {
+    isMac: EnvironmentUtil.platform.IS_MAC_OS,
+  },
+  // IPC methods
+  sendBadgeCount: (count: number, ignoreFlash: boolean): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, {count, ignoreFlash});
-  };
-
-  window.submitDeepLink = (url: string): void => {
+  },
+  submitDeepLink: (url: string): void => {
     ipcRenderer.send(EVENT_TYPE.ACTION.DEEP_LINK_SUBMIT, url);
-  };
-
-  window.sendDeleteAccount = (accountId: string, sessionID?: string): Promise<void> => {
+  },
+  sendDeleteAccount: (accountId: string, sessionID?: string): Promise<void> => {
     const truncatedId = truncate(accountId, {length: 5});
 
     return new Promise((resolve, reject) => {
@@ -123,27 +124,20 @@ const setupIpcInterface = (): void => {
       ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountId, sessionID);
     });
-  };
-
-  window.sendLogoutAccount = async (accountId: string): Promise<void> => {
+  },
+  sendLogoutAccount: async (accountId: string): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
     logger.log(`Sending logout signal to webview for account "${truncate(accountId, {length: 5})}".`);
     await accountWebview?.send(EVENT_TYPE.ACTION.SIGN_OUT);
-  };
-
-  window.sendConversationJoinToHost = async (
-    accountId: string,
-    code: string,
-    key: string,
-    domain?: string,
-  ): Promise<void> => {
+  },
+  sendConversationJoinToHost: async (accountId: string, code: string, key: string, domain?: string): Promise<void> => {
     const accountWebview = getWebviewById(accountId);
     logger.log(`Sending conversation join data to webview for account "${truncate(accountId, {length: 5})}".`);
     await accountWebview?.send(WebAppEvents.CONVERSATION.JOIN, {code, key, domain});
-  };
+  },
 };
 
-setupIpcInterface();
+contextBridge.exposeInMainWorld('electronAPI', electronAPI);
 subscribeToMainProcessEvents();
 
 window.addEventListener('focus', () => {
