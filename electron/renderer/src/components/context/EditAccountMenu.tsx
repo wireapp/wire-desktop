@@ -73,9 +73,15 @@ const EditAccountMenu = ({
 
       <ContextMenuItem
         onClick={() => {
-          window.electronAPI.sendDeleteAccount(accountId, sessionID).then(() => {
-            connected.abortAccountCreation(accountId);
-          });
+          window.electronAPI.sendDeleteAccount(accountId, sessionID)
+            .then(() => {
+              connected.abortAccountCreation(accountId);
+            })
+            .catch((error) => {
+              console.error('Failed to delete account:', error);
+              // Still abort account creation even if deletion fails
+              connected.abortAccountCreation(accountId);
+            });
         }}
       >
         {getText('wrapperRemoveAccount')}

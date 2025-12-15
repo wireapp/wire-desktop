@@ -148,10 +148,21 @@ const electronAPI = {
         return reject(`Webview for account "${truncatedId}" does not exist`);
       }
 
-      logger.info(`Processing deletion of "${truncatedId}"`);
-      const viewInstanceId = accountWebview.getWebContentsId();
-      ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
-      ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountId, sessionID);
+      try {
+        // getWebContentsId() may not be available until webview is fully attached
+        if (typeof accountWebview.getWebContentsId !== 'function') {
+          // eslint-disable-next-line prefer-promise-reject-errors
+          return reject(`Webview for account "${truncatedId}" is not ready (getWebContentsId not available)`);
+        }
+
+        logger.info(`Processing deletion of "${truncatedId}"`);
+        const viewInstanceId = accountWebview.getWebContentsId();
+        ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
+        ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountId, sessionID);
+      } catch (error) {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject(`Failed to get webContents ID for account "${truncatedId}": ${error}`);
+      }
     });
   },
   sendLogoutAccount: async (accountId: string): Promise<void> => {

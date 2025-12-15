@@ -283,9 +283,24 @@ const Webview = ({
   }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = (account: Account) => {
-    window.electronAPI.sendDeleteAccount(account.id, account.sessionID).then(() => {
+    // For accounts being added (no webview yet), just abort creation directly
+    const accountWebview = document.querySelector<Electron.WebviewTag>(`.Webview[data-accountid="${account.id}"]`);
+    if (!accountWebview) {
+      // Webview doesn't exist yet (account being added), just abort creation
       abortAccountCreation(account.id);
-    });
+      return;
+    }
+
+    // For existing accounts, delete the webview data first
+    window.electronAPI.sendDeleteAccount(account.id, account.sessionID)
+      .then(() => {
+        abortAccountCreation(account.id);
+      })
+      .catch((error) => {
+        console.error('Failed to delete account:', error);
+        // Still abort account creation even if deletion fails
+        abortAccountCreation(account.id);
+      });
   };
 
   return (
