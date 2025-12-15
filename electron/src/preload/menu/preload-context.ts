@@ -70,20 +70,29 @@ const createDefaultMenu = (copyContext: string) =>
 
 const createTextMenu = (params: ContextMenuParams, webContents: WebContents): ElectronMenu => {
   const {editFlags, dictionarySuggestions} = params;
+  // Detect if context menu is triggered from a webview
+  const isWebview = webContents.getType() === 'webview';
+  const webContentsId = webContents.id;
 
   const template: MenuItemConstructorOptions[] = [
     {
-      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.CUT),
+      click: isWebview
+        ? () => webContents.cut()
+        : (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.CUT, webContentsId),
       enabled: editFlags.canCut,
       label: locale.getText('menuCut'),
     },
     {
-      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.COPY),
+      click: isWebview
+        ? () => webContents.copy()
+        : (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.COPY, webContentsId),
       enabled: editFlags.canCopy,
       label: locale.getText('menuCopy'),
     },
     {
-      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.PASTE),
+      click: isWebview
+        ? () => webContents.paste()
+        : (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.PASTE, webContentsId),
       enabled: editFlags.canPaste,
       label: locale.getText('menuPaste'),
     },
@@ -91,7 +100,9 @@ const createTextMenu = (params: ContextMenuParams, webContents: WebContents): El
       type: 'separator',
     },
     {
-      click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.SELECT_ALL),
+      click: isWebview
+        ? () => webContents.selectAll()
+        : (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.EDIT.SELECT_ALL, webContentsId),
       enabled: editFlags.canSelectAll,
       label: locale.getText('menuSelectAll'),
     },

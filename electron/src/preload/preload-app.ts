@@ -37,6 +37,23 @@ const getSelectedWebview = (): Electron.WebviewTag | null =>
 const getWebviewById = (id: string): Electron.WebviewTag | null =>
   document.querySelector<Electron.WebviewTag>(`.Webview[data-accountid="${id}"]`);
 
+// Helper to find and focus a webview by webContents ID
+const focusWebviewByContentsId = (webContentsId: number): Electron.WebviewTag | null => {
+  const webviews = document.querySelectorAll<Electron.WebviewTag>('.Webview');
+  for (const webview of webviews) {
+    try {
+      if (webview.getWebContentsId() === webContentsId) {
+        webview.blur();
+        webview.focus();
+        return webview;
+      }
+    } catch (error) {
+      // Ignore errors when getting webContentsId
+    }
+  }
+  return null;
+};
+
 const subscribeToMainProcessEvents = (): void => {
   ipcRenderer.on(EVENT_TYPE.ACCOUNT.SSO_LOGIN, (_event, code: string) => new AutomatedSingleSignOn().start(code));
   ipcRenderer.on(
@@ -70,11 +87,23 @@ const subscribeToMainProcessEvents = (): void => {
     }
   });
 
-  ipcRenderer.on(EVENT_TYPE.EDIT.COPY, () => getSelectedWebview()?.copy());
-  ipcRenderer.on(EVENT_TYPE.EDIT.CUT, () => getSelectedWebview()?.cut());
-  ipcRenderer.on(EVENT_TYPE.EDIT.PASTE, () => getSelectedWebview()?.paste());
+  ipcRenderer.on(EVENT_TYPE.EDIT.COPY, (_event, webContentsId?: number) => {
+    const targetWebview = webContentsId !== undefined ? focusWebviewByContentsId(webContentsId) : getSelectedWebview();
+    targetWebview?.copy();
+  });
+  ipcRenderer.on(EVENT_TYPE.EDIT.CUT, (_event, webContentsId?: number) => {
+    const targetWebview = webContentsId !== undefined ? focusWebviewByContentsId(webContentsId) : getSelectedWebview();
+    targetWebview?.cut();
+  });
+  ipcRenderer.on(EVENT_TYPE.EDIT.PASTE, (_event, webContentsId?: number) => {
+    const targetWebview = webContentsId !== undefined ? focusWebviewByContentsId(webContentsId) : getSelectedWebview();
+    targetWebview?.paste();
+  });
   ipcRenderer.on(EVENT_TYPE.EDIT.REDO, () => getSelectedWebview()?.redo());
-  ipcRenderer.on(EVENT_TYPE.EDIT.SELECT_ALL, () => getSelectedWebview()?.selectAll());
+  ipcRenderer.on(EVENT_TYPE.EDIT.SELECT_ALL, (_event, webContentsId?: number) => {
+    const targetWebview = webContentsId !== undefined ? focusWebviewByContentsId(webContentsId) : getSelectedWebview();
+    targetWebview?.selectAll();
+  });
   ipcRenderer.on(EVENT_TYPE.EDIT.UNDO, () => getSelectedWebview()?.undo());
 
   ipcRenderer.on(EVENT_TYPE.WRAPPER.RELOAD, (): void => {
