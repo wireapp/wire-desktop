@@ -55,6 +55,13 @@ export type SupportedI18nLanguageObject = Record<SupportedI18nLanguage, i18nStri
 
 const app = Electron.app || require('@electron/remote').app;
 
+const parseLocale = (locale: string): SupportedI18nLanguage => {
+  const languageKeys = Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
+  return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
+};
+
+const getSystemLocale = (): SupportedI18nLanguage => parseLocale(app.getLocale().substring(0, 2));
+
 export const LANGUAGES: SupportedI18nLanguageObject = {
   cs,
   da,
@@ -139,17 +146,18 @@ export const SUPPORTED_LANGUAGES = {
 let current: SupportedI18nLanguage | undefined;
 
 export const getCurrent = (): SupportedI18nLanguage => {
-  if (!current) {
-    // We care only about the language part and not the country (en_US, de_DE)
-    const defaultLocale = parseLocale(app.getLocale().substring(0, 2));
-    current = settings.restore(SettingsType.LOCALE, defaultLocale);
-  }
-  return current;
-};
+  const savedLocale = settings.restore<SupportedI18nLanguage | undefined>(SettingsType.LOCALE);
+  const savedOverride = settings.restore<boolean | undefined>(SettingsType.LOCALE_OVERRIDE);
 
-const parseLocale = (locale: string): SupportedI18nLanguage => {
-  const languageKeys = Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
-  return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
+  // If the override flag is missing, assume the user wanted an override only when the saved value differs
+  // from the current system locale. This keeps existing manual choices intact while allowing auto language
+  // to track OS changes.
+  const systemLocale = getSystemLocale();
+  const hasUserOverride =
+    typeof savedOverride === 'boolean' ? savedOverride : Boolean(savedLocale && savedLocale !== systemLocale);
+
+  current = savedLocale && hasUserOverride ? parseLocale(savedLocale) : systemLocale;
+  return current;
 };
 
 const customReplacements: Record<string, string> = {
@@ -181,4 +189,14 @@ export const getText = (
 export const setLocale = (locale: string): void => {
   current = parseLocale(locale);
   settings.save(SettingsType.LOCALE, current);
+  const systemLocale = getSystemLocale();
+  const isOverride = current !== systemLocale;
+
+  if (isOverride) {
+    settings.save(SettingsType.LOCALE_OVERRIDE, true);
+    settings.save(SettingsType.LOCALE, current);
+  } else {
+    settings.delete(SettingsType.LOCALE_OVERRIDE);
+    settings.delete(SettingsType.LOCALE);
+  }
 };
