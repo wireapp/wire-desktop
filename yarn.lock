@@ -5742,15 +5742,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/protocol-messaging@npm:1.55.0":
-  version: 1.55.0
-  resolution: "@wireapp/protocol-messaging@npm:1.55.0"
+"@wireapp/protocol-messaging@npm:1.56.0":
+  version: 1.56.0
+  resolution: "@wireapp/protocol-messaging@npm:1.56.0"
   dependencies:
     long: 5.2.0
     protobufjs: 7.2.5
     protobufjs-cli: 1.1.2
     typescript: 4.8.4
-  checksum: 111db983a2511354362c08cbb3cb5196d2ab627cc1d0e98898351a6658d4733f6f71e0ad5951950fb6a774274fc30710480eb805f69fc11098959cf9dd0a2e75
+  checksum: 27993987bf517e59bd74907f14aa8f6e6ea2151c70e25732eb89ad4d27bdc8bfc4f1b2b6bdfc38a90c5e3b6db2615904a755b83f96aedcdd175a18a12c127599
   languageName: node
   linkType: hard
 
@@ -20708,7 +20708,7 @@ __metadata:
     "@wireapp/copy-config": 2.3.9
     "@wireapp/eslint-config": 3.1.7
     "@wireapp/prettier-config": 0.6.9
-    "@wireapp/protocol-messaging": 1.55.0
+    "@wireapp/protocol-messaging": 1.56.0
     "@wireapp/react-ui-kit": 9.59.1
     "@wireapp/webapp-events": 0.28.6
     adm-zip: 0.5.16
