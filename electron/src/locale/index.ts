@@ -146,17 +146,23 @@ export const SUPPORTED_LANGUAGES = {
 let current: SupportedI18nLanguage | undefined;
 
 export const getCurrent = (): SupportedI18nLanguage => {
-  const savedLocale = settings.restore<SupportedI18nLanguage | undefined>(SettingsType.LOCALE);
-  const savedOverride = settings.restore<boolean | undefined>(SettingsType.LOCALE_OVERRIDE);
-
-  // If the override flag is missing, assume the user wanted an override only when the saved value differs
-  // from the current system locale. This keeps existing manual choices intact while allowing auto language
-  // to track OS changes.
   const systemLocale = getSystemLocale();
-  const hasUserOverride =
-    typeof savedOverride === 'boolean' ? savedOverride : Boolean(savedLocale && savedLocale !== systemLocale);
 
-  current = savedLocale && hasUserOverride ? parseLocale(savedLocale) : systemLocale;
+  if (!current) {
+    const savedLocale = settings.restore<SupportedI18nLanguage | undefined>(SettingsType.LOCALE);
+    const savedOverride = settings.restore<boolean | undefined>(SettingsType.LOCALE_OVERRIDE);
+    const hasUserOverride =
+      typeof savedOverride === 'boolean' ? savedOverride : Boolean(savedLocale && savedLocale !== systemLocale);
+
+    current = savedLocale && hasUserOverride ? parseLocale(savedLocale) : systemLocale;
+    return current;
+  }
+
+  // If there’s no override and the system locale changed, update the cache
+  const hasOverride = settings.restore<boolean | undefined>(SettingsType.LOCALE_OVERRIDE) === true;
+  if (!hasOverride && current !== systemLocale) {
+    current = systemLocale;
+  }
   return current;
 };
 
@@ -188,7 +194,7 @@ export const getText = (
 
 export const setLocale = (locale: string): void => {
   current = parseLocale(locale);
-  settings.save(SettingsType.LOCALE, current);
+
   const systemLocale = getSystemLocale();
   const isOverride = current !== systemLocale;
 
