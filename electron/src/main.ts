@@ -38,6 +38,7 @@ import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';
 
+import {execSync} from 'child_process';
 import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
 
@@ -74,7 +75,6 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
-import {execSync} from "child_process";
 
 const logger = getLogger(path.basename(__filename));
 
@@ -788,10 +788,7 @@ if (lifecycle.isFirstInstance) {
 
 function isAffectedHPDevice(): boolean {
   try {
-    const output = execSync(
-      'wmic computersystem get model',
-      { encoding: 'utf8', timeout: 1000 }
-    );
+    const output = execSync('wmic computersystem get model', {encoding: 'utf8', timeout: 1000});
     return /elitebook 840 g7/i.test(output);
   } catch {
     return false;
