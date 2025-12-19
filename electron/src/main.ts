@@ -74,6 +74,11 @@ import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
+import {execSync} from "child_process";
+
+if (process.platform === 'win32' && isAffectedHPDevice()) {
+  app.disableHardwareAcceleration();
+}
 
 remoteMain.initialize();
 
@@ -777,4 +782,16 @@ if (lifecycle.isFirstInstance) {
   renameWebViewLogFiles();
   fs.ensureFileSync(LOG_FILE);
   new ElectronWrapperInit().run().catch(error => logger.error(error));
+}
+
+function isAffectedHPDevice(): boolean {
+  try {
+    const output = execSync(
+      'wmic computersystem get model',
+      { encoding: 'utf8', timeout: 1000 }
+    );
+    return /elitebook 840 g7/i.test(output);
+  } catch {
+    return false;
+  }
 }
