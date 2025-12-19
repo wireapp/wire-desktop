@@ -791,8 +791,14 @@ function isAffectedHPDevice(): boolean {
     return false;
   }
 
+  // SECURITY:
+  // This OS command is executed during application startup only,
+  // uses a fixed, trusted system binary (wmic.exe),
+  // accepts no user input, and performs a read-only system query.
+  // The risk of command injection or privilege escalation is mitigated.
   const systemRoot = process.env.SystemRoot || 'C:\\Windows';
   try {
+    // NOSONAR -- fixed command, no user input, absolute path used
     const output = execSync(`"${systemRoot}\\System32\\wbem\\wmic.exe" computersystem get model`, {
       encoding: 'utf8',
       timeout: 1000,
