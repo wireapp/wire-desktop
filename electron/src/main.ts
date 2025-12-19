@@ -76,8 +76,11 @@ import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
 import {execSync} from "child_process";
 
+const logger = getLogger(path.basename(__filename));
+
 if (process.platform === 'win32' && isAffectedHPDevice()) {
   app.disableHardwareAcceleration();
+  logger.info('Disabling hardware acceleration for affected HP devices.');
 }
 
 remoteMain.initialize();
@@ -106,7 +109,6 @@ const customProtocolHandler = new CustomProtocolHandler();
 const argv = minimist(process.argv.slice(1));
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
-const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
