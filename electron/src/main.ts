@@ -787,8 +787,16 @@ if (lifecycle.isFirstInstance) {
 }
 
 function isAffectedHPDevice(): boolean {
+  if (process.platform === 'win32') {
+    return false;
+  }
+
+  const systemRoot = process.env.SystemRoot || 'C:\\Windows';
   try {
-    const output = execSync('wmic computersystem get model', {encoding: 'utf8', timeout: 1000});
+    const output = execSync(`"${systemRoot}\\System32\\wbem\\wmic.exe" computersystem get model`, {
+      encoding: 'utf8',
+      timeout: 1000,
+    });
     return /elitebook 840 g7/i.test(output);
   } catch {
     return false;
