@@ -177,14 +177,6 @@ app.commandLine.appendSwitch('disable-features', 'webrtc-hide-local-ips-with-mdn
 // Allow both public and private interfaces for WebRTC
 app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'default_public_and_private_interfaces');
 
-app.getGPUInfo('basic').then((info: any) => {
-  const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
-  if (gpuDevices.length > 0) {
-    logger.info('No GPU device found, disabling hardware acceleration');
-    app.disableHardwareAcceleration();
-  }
-});
-
 // IPC events
 const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
