@@ -12342,12 +12342,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iconv-lite@npm:0.7.0":
-  version: 0.7.0
-  resolution: "iconv-lite@npm:0.7.0"
+"iconv-lite@npm:0.7.1":
+  version: 0.7.1
+  resolution: "iconv-lite@npm:0.7.1"
   dependencies:
     safer-buffer: ">= 2.1.2 < 3.0.0"
-  checksum: f362a8befb95e37f29be1d1290c17e0c9d0d4ad4fa62fcfd813cc9c937ab89401abed9a011f83e10651a267abb2aa231ec7da91d843570bec873bd98489b5bf8
+  checksum: d20ea696c8bace51b8d4e1c7e7eda3e51a2ffd72fde2caa54aeff6dc6bc23a60db0b111db750c84b397874a04923c5b0f1cc8beb400349fb1a83a797a85ec082
   languageName: node
   linkType: hard
 
@@ -20769,7 +20769,7 @@ __metadata:
     get-proxy-settings: 0.1.13
     globby: 11.1
     husky: 4.3.8
-    iconv-lite: 0.7.0
+    iconv-lite: 0.7.1
     image-type: 4.1.0
     is-ci: 3.0.1
     jest: 29.7.0
