@@ -787,7 +787,7 @@ if (lifecycle.isFirstInstance) {
 }
 
 function isAffectedHPDevice(): boolean {
-  if (process.platform === 'win32') {
+  if (process.platform !== 'win32') {
     return false;
   }
 
