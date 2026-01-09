@@ -5683,20 +5683,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/copy-config@npm:2.3.9":
-  version: 2.3.9
-  resolution: "@wireapp/copy-config@npm:2.3.9"
+"@wireapp/copy-config@npm:2.3.10":
+  version: 2.3.10
+  resolution: "@wireapp/copy-config@npm:2.3.10"
   dependencies:
     axios: 1.13.2
     copy: 0.3.2
     cosmiconfig: 9.0.0
-    fs-extra: 11.3.1
+    fs-extra: 11.3.3
     jszip: 3.10.1
     logdown: 3.3.1
     rimraf: 6.1.2
   bin:
     copy-config: lib/cli.js
-  checksum: 907bca95c8e5693733466b0d9153fbaf9fa9b9ba24c0d4b9dba1ee40f3318fd08dd16cc951893374a26c3eee7a8902588109d9d9a9e5770328dfea3e65d73a05
+  checksum: fa114e9a5e16d095c6176642d94655019ae94cf00362ff1e262ad1ab54971c221d3021141f8847e75ca57e0d395bc69d3b4ad27c6afd31c06971aa26ca83b93b
   languageName: node
   linkType: hard
 
@@ -11287,17 +11287,6 @@ __metadata:
   version: 0.1.0
   resolution: "fs-exists-sync@npm:0.1.0"
   checksum: 850a0d6e4c03a7bd2fd25043f77cd9d6be9c3b48bb99308bcfe9c94f3f92f65f2cd3fa036e13a1b0ba7a46d2e58792f53e578f01d75fbdcd56baeb9eed63b705
-  languageName: node
-  linkType: hard
-
-"fs-extra@npm:11.3.1":
-  version: 11.3.1
-  resolution: "fs-extra@npm:11.3.1"
-  dependencies:
-    graceful-fs: ^4.2.0
-    jsonfile: ^6.0.1
-    universalify: ^2.0.0
-  checksum: 12968b8b426f298c9ddfa9c2163e828a3bdf295b222895073faaec9798286102d771f54374498b934520cab6ef900ee3d643ea53b98a82703d5c546e16975538
   languageName: node
   linkType: hard
 
@@ -20716,7 +20705,7 @@ __metadata:
     "@typescript-eslint/parser": 7.18.0
     "@wireapp/certificate-check": 0.7.25
     "@wireapp/commons": 5.4.11
-    "@wireapp/copy-config": 2.3.9
+    "@wireapp/copy-config": 2.3.10
     "@wireapp/eslint-config": 3.1.7
     "@wireapp/prettier-config": 0.6.9
     "@wireapp/protocol-messaging": 1.56.0
