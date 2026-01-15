@@ -442,7 +442,7 @@ node('built-in') {
   // ------------------------------------------------------------------------
   // If this is macOS Production: upload .pkg to App Store Connect
   // ------------------------------------------------------------------------
-  if (projectName.contains('macOS') && params.Release == 'Production') {
+  if (projectName.contains('macOS') && params.Release == 'Production' && params.UPLOAD_TO_APP_STORE == true) {
     stage('Upload macOS pkg to App Store Connect') {
       try {
         // Find the .pkg that was copied from the build job
