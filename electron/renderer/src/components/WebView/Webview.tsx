@@ -19,10 +19,9 @@
 
 import {useEffect, useRef, useState} from 'react';
 
-import {SVGIcon} from '@wireapp/react-ui-kit/lib/Icon/SVGIcon';
 import {connect} from 'react-redux';
 
-import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
+import {SVGIcon, ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 
 import './Webview.css';
 

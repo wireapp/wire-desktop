@@ -17,7 +17,7 @@
  *
  */
 
-import {flipFuses, FuseV1Options, FuseVersion} from '@electron/fuses';
+// ES module will be imported dynamically where needed
 import * as dotenv from 'dotenv';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -83,6 +83,7 @@ export async function getCommonConfig(envFile: string, wireJson: string): Promis
 
 export async function flipElectronFuses(pathToElectron: string) {
   logger.log(`Flipping fuses in "${pathToElectron}".`);
+  const {flipFuses, FuseV1Options, FuseVersion} = await import('@electron/fuses');
   await flipFuses(pathToElectron, {
     // see also https://www.electronjs.org/docs/latest/tutorial/fuses
     version: FuseVersion.V1,

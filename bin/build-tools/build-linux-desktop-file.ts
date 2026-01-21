@@ -24,12 +24,25 @@ void (async () => {
   try {
     const config = await buildLinuxConfig();
     const desktopConfig = config.builderConfig.deb?.desktop;
-    desktopConfig.Comment = pkg.description;
-    desktopConfig.Exec = `${pkg.name} %U`;
-    desktopConfig.Icon = pkg.name;
-    desktopConfig.Terminal = false;
-    desktopConfig.Type = 'Application';
-    const formattedEntry = Object.entries(desktopConfig)
+
+    // Initialize entry if it doesn't exist
+    if (!desktopConfig?.entry) {
+      if (desktopConfig) {
+        desktopConfig.entry = {};
+      } else {
+        console.error('desktopConfig is null or undefined');
+        process.exit(1);
+      }
+    }
+
+    // Set properties in the entry object
+    desktopConfig.entry.Comment = pkg.description;
+    desktopConfig.entry.Exec = `${pkg.name} %U`;
+    desktopConfig.entry.Icon = pkg.name;
+    desktopConfig.entry.Terminal = 'false';
+    desktopConfig.entry.Type = 'Application';
+
+    const formattedEntry = Object.entries(desktopConfig.entry)
       .map(([key, value]) => `${key}=${value}`)
       .sort((entryA, entryB) => entryA.localeCompare(entryB))
       .join('\n');

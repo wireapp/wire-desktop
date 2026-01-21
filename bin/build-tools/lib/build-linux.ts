@@ -60,13 +60,15 @@ export async function buildLinuxConfig(
   };
 
   const linuxDesktopConfig = {
-    Categories: linuxConfig.categories,
-    GenericName: linuxConfig.genericName,
-    Keywords: linuxConfig.keywords,
-    MimeType: `x-scheme-handler/${commonConfig.customProtocolName}`,
-    Name: commonConfig.name,
-    StartupWMClass: commonConfig.name,
-    Version: '1.1',
+    entry: {
+      Categories: linuxConfig.categories,
+      GenericName: linuxConfig.genericName,
+      Keywords: linuxConfig.keywords,
+      MimeType: `x-scheme-handler/${commonConfig.customProtocolName}`,
+      Name: commonConfig.name,
+      StartupWMClass: commonConfig.name,
+      Version: '1.1',
+    },
   };
 
   const platformSpecificConfig = {
