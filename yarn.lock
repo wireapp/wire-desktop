@@ -5747,9 +5747,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/copy-config@npm:2.3.10":
-  version: 2.3.10
-  resolution: "@wireapp/copy-config@npm:2.3.10"
+"@wireapp/copy-config@npm:2.3.11":
+  version: 2.3.11
+  resolution: "@wireapp/copy-config@npm:2.3.11"
   dependencies:
     axios: 1.13.2
     copy: 0.3.2
@@ -5760,7 +5760,7 @@ __metadata:
     rimraf: 6.1.2
   bin:
     copy-config: lib/cli.js
-  checksum: fa114e9a5e16d095c6176642d94655019ae94cf00362ff1e262ad1ab54971c221d3021141f8847e75ca57e0d395bc69d3b4ad27c6afd31c06971aa26ca83b93b
+  checksum: dc8259f40f7b7c013a414d4b312426f659dd4c344f601520b369222ca3b27c38d10d4dd31568fd80e579f89afffe50b009185e6d041f73eefb570d2fbe356771
   languageName: node
   linkType: hard
 
@@ -20819,7 +20819,7 @@ __metadata:
     "@typescript-eslint/parser": 7.18.0
     "@wireapp/certificate-check": 0.7.26
     "@wireapp/commons": 5.4.12
-    "@wireapp/copy-config": 2.3.10
+    "@wireapp/copy-config": 2.3.11
     "@wireapp/eslint-config": 3.1.8
     "@wireapp/prettier-config": 0.6.10
     "@wireapp/protocol-messaging": 1.56.0
