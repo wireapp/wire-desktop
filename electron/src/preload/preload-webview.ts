@@ -303,7 +303,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   reportWebappVersion();
   reportWebappAVSVersion();
   // include context menu
-  await import('./menu/preload-context');
+  await import('./menu/preload-context.js');
 });
 
 // overwrite window.close() to prevent webapp from closing itself

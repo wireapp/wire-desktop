@@ -31,7 +31,7 @@ import {
   safeStorage,
   HandlerDetails,
 } from 'electron';
-import electronDl from 'electron-dl';
+// Using dynamic import for ES module
 import windowStateKeeper from 'electron-window-state';
 import fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
@@ -107,21 +107,24 @@ const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOW
 const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
 
 if (customDownloadPath) {
-  electronDl({
-    directory: appHomePath(customDownloadPath),
-    saveAs: false,
-    onCompleted: () => {
-      dialog.showMessageBox({
-        type: 'none',
-        icon: ICON,
-        title: locale.getText('enforcedDownloadComplete'),
-        message: locale.getText('enforcedDownloadMessage', {
-          path: appHomePath(customDownloadPath) ?? app.getPath('downloads'),
-        }),
-        buttons: [locale.getText('enforcedDownloadButton')],
-      });
-    },
-  });
+  (async () => {
+    const electronDl = await import('electron-dl');
+    electronDl.default({
+      directory: appHomePath(customDownloadPath),
+      saveAs: false,
+      onCompleted: () => {
+        dialog.showMessageBox({
+          type: 'none',
+          icon: ICON,
+          title: locale.getText('enforcedDownloadComplete'),
+          message: locale.getText('enforcedDownloadMessage', {
+            path: appHomePath(customDownloadPath) ?? app.getPath('downloads'),
+          }),
+          buttons: [locale.getText('enforcedDownloadButton')],
+        });
+      },
+    });
+  })();
 }
 
 if (argv[config.ARGUMENT.VERSION]) {

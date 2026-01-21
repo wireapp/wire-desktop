@@ -17,7 +17,7 @@
  *
  */
 
-import {flatAsync as buildPkg} from '@electron/osx-sign';
+// ES module will be imported dynamically where needed
 import electronPackager, {ArchOption} from 'electron-packager';
 import fs from 'fs-extra';
 import path from 'path';
@@ -94,7 +94,7 @@ export async function buildMacOSConfig(
     },
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas', //  Mac App Store 
+    platform: 'mas', //  Mac App Store
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
@@ -169,6 +169,7 @@ export async function buildMacOSWrapper(
       if (signManually) {
         await manualMacOSSign(appFile, pkgFile, commonConfig, macOSConfig);
       } else {
+        const {flat: buildPkg} = await import('@electron/osx-sign');
         await buildPkg({
           app: appFile,
           identity: macOSConfig.certNameInstaller,
