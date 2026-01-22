@@ -5764,9 +5764,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wireapp/eslint-config@npm:3.1.8":
-  version: 3.1.8
-  resolution: "@wireapp/eslint-config@npm:3.1.8"
+"@wireapp/eslint-config@npm:3.1.9":
+  version: 3.1.9
+  resolution: "@wireapp/eslint-config@npm:3.1.9"
   dependencies:
     "@types/eslint": ^8
     "@types/prettier": ^3
@@ -5795,7 +5795,7 @@ __metadata:
   peerDependencies:
     eslint: ^8
     prettier: ^3
-  checksum: c63bdbc914de55fa392413bd8cf811487fcecc3de792688b6dd71ae09a4cc89b8bd02c68e5d68224221903a8a9e7c58b888c36ea3b71a0d5811c2dcf2b6c4798
+  checksum: 6d75ff4044507d710761fa10b4a7a8e7f3fede978e37e5b39e5900f5c7374b98224751bd25b3e761799408b8ebbdf2eb0dce65125d450f41abe15a18323bc32c
   languageName: node
   linkType: hard
 
@@ -20827,7 +20827,7 @@ __metadata:
     "@wireapp/certificate-check": 0.7.26
     "@wireapp/commons": 5.4.13
     "@wireapp/copy-config": 2.3.11
-    "@wireapp/eslint-config": 3.1.8
+    "@wireapp/eslint-config": 3.1.9
     "@wireapp/prettier-config": 0.6.10
     "@wireapp/protocol-messaging": 1.56.0
     "@wireapp/react-ui-kit": 9.59.1
