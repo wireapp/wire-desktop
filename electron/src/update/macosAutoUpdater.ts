@@ -21,12 +21,18 @@ import {BrowserWindow, dialog} from 'electron';
 import {autoUpdater} from 'electron-updater';
 
 import {getLogger} from '../logging/getLogger';
+import {getManagedConfig} from '../settings/ManagedConfig';
 import {config} from '../settings/config';
 
 const logger = getLogger('MacAutoUpdater');
 const isInternalBuild = (): boolean => config.environment === 'internal';
 
 export function initMacAutoUpdater(mainWindow: BrowserWindow): void {
+  const {config: managedConfig} = getManagedConfig();
+  if (managedConfig.disableAutoUpdate) {
+    logger.log('Skipping auto-update: disabled by managed configuration');
+    return;
+  }
   // Skip in dev
   if (process.env.NODE_ENV === 'development') {
     logger.log('Skipping auto-update in development');

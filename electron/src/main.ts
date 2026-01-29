@@ -67,6 +67,7 @@ import * as lifecycle from './runtime/lifecycle';
 import {OriginValidator} from './runtime/OriginValidator';
 import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
+import {getManagedConfig, getManagedConfigForRenderer} from './settings/ManagedConfig';
 import {SettingsType} from './settings/SettingsType';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {initMacAutoUpdater} from './update/macosAutoUpdater';
@@ -99,31 +100,62 @@ const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
 const argv = minimist(process.argv.slice(1));
+const {config: managedConfig} = getManagedConfig();
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
 const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
-const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
+
+/**
+ * Resolves a managed download path under user home. Returns null if the path escapes home
+ * (e.g. ".." traversal) or is empty/whitespace. Used for user-content downloads on Windows and macOS.
+ */
+const getSafeDownloadDirectory = (relativePath: string): string | null => {
+  const trimmed = relativePath?.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const home = app.getPath('home');
+  const resolved = path.resolve(home, trimmed);
+  const normalizedHome = path.resolve(home);
+  const normalizedResolved = path.resolve(resolved);
+  if (!normalizedResolved.startsWith(normalizedHome + path.sep) && normalizedResolved !== normalizedHome) {
+    return null;
+  }
+  return normalizedResolved;
+};
+
 const isInternalBuild = (): boolean => config.environment === 'internal';
 
-if (customDownloadPath) {
-  electronDl({
-    directory: appHomePath(customDownloadPath),
-    saveAs: false,
-    onCompleted: () => {
-      dialog.showMessageBox({
-        type: 'none',
-        icon: ICON,
-        title: locale.getText('enforcedDownloadComplete'),
-        message: locale.getText('enforcedDownloadMessage', {
-          path: appHomePath(customDownloadPath) ?? app.getPath('downloads'),
-        }),
-        buttons: [locale.getText('enforcedDownloadButton')],
-      });
-    },
-  });
+/** Managed download path is supported on Windows and macOS only (user-content download folder). */
+const useManagedDownloadPath =
+  (EnvironmentUtil.platform.IS_WINDOWS || EnvironmentUtil.platform.IS_MAC_OS) &&
+  typeof customDownloadPath === 'string' &&
+  customDownloadPath.length > 0;
+
+if (useManagedDownloadPath) {
+  const safeDir = getSafeDownloadDirectory(customDownloadPath);
+  if (safeDir) {
+    electronDl({
+      directory: safeDir,
+      saveAs: false,
+      onCompleted: () => {
+        dialog.showMessageBox({
+          type: 'none',
+          icon: ICON,
+          title: locale.getText('enforcedDownloadComplete'),
+          message: locale.getText('enforcedDownloadMessage', {
+            path: safeDir,
+          }),
+          buttons: [locale.getText('enforcedDownloadButton')],
+        });
+      },
+    });
+  } else {
+    logger.warn('Managed download path rejected (path traversal or invalid).');
+  }
 }
 
 if (argv[config.ARGUMENT.VERSION]) {
@@ -133,12 +165,29 @@ if (argv[config.ARGUMENT.VERSION]) {
 
 logger.info(`Initializing ${config.name} v${config.version} ...`);
 
-if (argv[config.ARGUMENT.PROXY_SERVER] || fileBasedProxyConfig) {
+const managedProxyServerUrl = managedConfig.proxyServerUrl;
+const proxyServerUrl =
+  typeof managedProxyServerUrl !== 'undefined'
+    ? managedProxyServerUrl
+    : argv[config.ARGUMENT.PROXY_SERVER] || fileBasedProxyConfig;
+if (typeof managedProxyServerUrl !== 'undefined' && argv[config.ARGUMENT.PROXY_SERVER]) {
+  logger.info('Ignoring --proxy-server flag because managed proxy configuration is set.');
+}
+
+if (proxyServerUrl) {
   try {
-    proxyInfoArg = new URL(argv[config.ARGUMENT.PROXY_SERVER] || fileBasedProxyConfig);
-    if (!argv[config.ARGUMENT.PROXY_SERVER] && fileBasedProxyConfig) {
+    proxyInfoArg = new URL(proxyServerUrl);
+    if (
+      !argv[config.ARGUMENT.PROXY_SERVER] &&
+      fileBasedProxyConfig &&
+      typeof managedProxyServerUrl === 'undefined'
+    ) {
       logger.info(`Using proxy server URL from "init.json": ${fileBasedProxyConfig}`);
       app.commandLine.appendSwitch('proxy-server', fileBasedProxyConfig);
+    }
+    if (typeof managedProxyServerUrl !== 'undefined') {
+      logger.info('Using proxy server URL from managed configuration.');
+      app.commandLine.appendSwitch('proxy-server', managedProxyServerUrl);
     }
     if (!/^(https?|socks[45]):$/.test(proxyInfoArg.protocol)) {
       throw new Error('Invalid protocol for the proxy server specified.');
@@ -206,16 +255,28 @@ const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
+  /** Serves redacted managed config to renderer; avoids registry/OS access in webview process. */
+  ipcMain.handle(EVENT_TYPE.ACTION.GET_MANAGED_CONFIG, () => getManagedConfigForRenderer());
 
+  /** Download location: Windows/macOS only; blocked when managed; path validated to prevent traversal. */
   ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
-    if (EnvironmentUtil.platform.IS_WINDOWS) {
-      if (downloadPath) {
-        fs.ensureDirSync(appHomePath(downloadPath));
-      }
-      //save the downloadPath locally
-      settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
-      settings.persistToFile();
+    if (!EnvironmentUtil.platform.IS_WINDOWS && !EnvironmentUtil.platform.IS_MAC_OS) {
+      return;
     }
+    if (typeof managedConfig.downloadPath !== 'undefined') {
+      logger.info('Ignoring download path change because managed configuration is set.');
+      return;
+    }
+    if (downloadPath) {
+      const safeDir = getSafeDownloadDirectory(downloadPath);
+      if (!safeDir) {
+        logger.warn('Download path change rejected (path traversal or invalid).');
+        return;
+      }
+      fs.ensureDirSync(safeDir);
+    }
+    settings.save(SettingsType.DOWNLOAD_PATH, downloadPath);
+    settings.persistToFile();
   });
 };
 
@@ -476,6 +537,7 @@ const handleAppEvents = (): void => {
     }
 
     Menu.setApplicationMenu(appMenu);
+    await systemMenu.applyManagedAutoLaunchSetting();
     tray = new TrayHandler();
     if (!EnvironmentUtil.platform.IS_MAC_OS) {
       tray.initTray();
@@ -490,6 +552,7 @@ const handleAppEvents = (): void => {
       }
 
       Menu.setApplicationMenu(appMenu);
+      await systemMenu.applyManagedAutoLaunchSetting();
       tray = new TrayHandler();
       if (!EnvironmentUtil.platform.IS_MAC_OS) {
         tray.initTray();

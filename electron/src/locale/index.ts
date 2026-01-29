@@ -46,6 +46,7 @@ import zh from './zh-CN.json';
 
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
+import {getManagedSettingOverride, isSettingManaged} from '../settings/ManagedConfig';
 import {SettingsType} from '../settings/SettingsType';
 
 export type i18nLanguageIdentifier = keyof typeof en;
@@ -58,6 +59,23 @@ const app = Electron.app || require('@electron/remote').app;
 const parseLocale = (locale: string): SupportedI18nLanguage => {
   const languageKeys = Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
   return languageKeys.find(languageKey => languageKey === locale) || languageKeys[0];
+};
+
+/**
+ * Normalize managed locale (e.g. pt-BR, en-US) to a supported key (pt, en) so it matches
+ * existing app behaviour. Empty/whitespace falls back to default via parseLocale('').
+ */
+const normalizeManagedLocale = (raw: string): SupportedI18nLanguage => {
+  const trimmed = raw?.trim();
+  if (!trimmed) {
+    return parseLocale('');
+  }
+  const keys = Object.keys(SUPPORTED_LANGUAGES) as SupportedI18nLanguage[];
+  if (keys.includes(trimmed as SupportedI18nLanguage)) {
+    return trimmed as SupportedI18nLanguage;
+  }
+  const primary = trimmed.split('-')[0]?.trim() || trimmed;
+  return parseLocale(primary);
 };
 
 const getSystemLocale = (): SupportedI18nLanguage => parseLocale(app.getLocale().substring(0, 2));
@@ -147,14 +165,27 @@ let current: SupportedI18nLanguage | undefined;
 
 export const getCurrent = (): SupportedI18nLanguage => {
   const systemLocale = getSystemLocale();
+  const managedLocaleRaw = getManagedSettingOverride<string>(SettingsType.LOCALE);
+  const isLocaleManaged = typeof managedLocaleRaw !== 'undefined';
+  const managedLocale = isLocaleManaged ? normalizeManagedLocale(managedLocaleRaw) : undefined;
 
   if (!current) {
-    const savedLocale = settings.restore<SupportedI18nLanguage | undefined>(SettingsType.LOCALE);
+    const savedLocale = isLocaleManaged
+      ? managedLocale
+      : settings.restore<SupportedI18nLanguage | undefined>(SettingsType.LOCALE);
     const savedOverride = settings.restore<boolean | undefined>(SettingsType.LOCALE_OVERRIDE);
-    const hasUserOverride =
-      typeof savedOverride === 'boolean' ? savedOverride : Boolean(savedLocale && savedLocale !== systemLocale);
+    const hasUserOverride = isLocaleManaged
+      ? true
+      : typeof savedOverride === 'boolean'
+        ? savedOverride
+        : Boolean(savedLocale && savedLocale !== systemLocale);
 
     current = savedLocale && hasUserOverride ? parseLocale(savedLocale) : systemLocale;
+    return current;
+  }
+
+  if (isLocaleManaged && managedLocale) {
+    current = managedLocale;
     return current;
   }
 
@@ -193,6 +224,9 @@ export const getText = (
 };
 
 export const setLocale = (locale: string): void => {
+  if (isSettingManaged(SettingsType.LOCALE)) {
+    return;
+  }
   current = parseLocale(locale);
 
   const systemLocale = getSystemLocale();

@@ -257,7 +257,7 @@ function reportWebappAVSVersion(): void {
 const _clearImmediate = clearImmediate;
 const _setImmediate = setImmediate;
 
-process.once('loaded', () => {
+process.once('loaded', async () => {
   global.clearImmediate = _clearImmediate;
   /**
    * @todo: This can be improved by polyfilling getDisplayMedia function
@@ -276,7 +276,13 @@ process.once('loaded', () => {
     version: 1,
   };
   global.environment = EnvironmentUtil;
-  global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION, supportsCallingPopoutWindow: true};
+  /** Managed config from main only (redacted); no registry/OS access in renderer. */
+  const managedConfig = await ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_MANAGED_CONFIG);
+  global.desktopAppConfig = {
+    version: EnvironmentUtil.app.DESKTOP_VERSION,
+    supportsCallingPopoutWindow: true,
+    managedConfig,
+  };
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });

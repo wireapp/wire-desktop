@@ -23,6 +23,8 @@ import * as logdown from 'logdown';
 import * as path from 'path';
 
 import {SchemaUpdater} from './SchemaUpdater';
+import {getManagedSettingOverride, isSettingManaged} from './ManagedConfig';
+import {SettingsType} from './SettingsType';
 
 import {getLogger} from '../logging/getLogger';
 
@@ -42,12 +44,20 @@ class ConfigurationPersistence {
   }
 
   delete(name: string): true {
+    if (isSettingManaged(name as SettingsType)) {
+      this.logger.warn(`Ignoring delete for managed setting "${name}".`);
+      return true;
+    }
     this.logger.info(`Deleting "${name}"`);
     delete global._ConfigurationPersistence[name];
     return true;
   }
 
   save<T>(name: string, value: T): true {
+    if (isSettingManaged(name as SettingsType)) {
+      this.logger.warn(`Ignoring save for managed setting "${name}".`);
+      return true;
+    }
     this.logger.info(`Saving "${name}" with value:`, value);
     global._ConfigurationPersistence[name] = value;
     return true;
@@ -55,6 +65,10 @@ class ConfigurationPersistence {
 
   restore<T>(name: string, defaultValue?: T): T {
     this.logger.info(`Restoring "${name}"`);
+    const managedOverride = getManagedSettingOverride<T>(name as SettingsType);
+    if (typeof managedOverride !== 'undefined') {
+      return managedOverride;
+    }
     const value = global._ConfigurationPersistence[name];
     return typeof value !== 'undefined' ? value : defaultValue;
   }

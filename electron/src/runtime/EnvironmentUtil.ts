@@ -20,12 +20,17 @@
 import minimist from 'minimist';
 
 import {config} from '../settings/config';
+import {getManagedConfig} from '../settings/ManagedConfig';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
 
 const argv = minimist(process.argv.slice(1));
+const {config: managedConfig} = getManagedConfig();
 const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
-const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV] || webappUrlSetting;
+const managedWebappUrl = managedConfig.webappUrl;
+/** Environment is from settings/argv only; MDM cannot set environment (enterprises use test builds for that). */
+const ignoreEnvArgument = typeof managedWebappUrl !== 'undefined';
+const customWebappUrl: string | undefined = ignoreEnvArgument ? managedWebappUrl : argv[config.ARGUMENT.ENV] || webappUrlSetting;
 
 export enum ServerType {
   PRODUCTION = 'PRODUCTION',
@@ -53,7 +58,7 @@ export const app = {
   DESKTOP_VERSION: config.version,
   IS_DEVELOPMENT: config.environment !== 'production',
   IS_PRODUCTION: config.environment === 'production',
-  UPDATE_URL_WIN: config.updateUrl,
+  UPDATE_URL_WIN: managedConfig.updateUrlWin || config.updateUrl,
 };
 
 const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {

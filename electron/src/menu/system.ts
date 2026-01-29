@@ -32,6 +32,7 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
+import {isSettingManaged} from '../settings/ManagedConfig';
 import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
 import {openExternal, sendToWebContents} from '../window/WindowUtil';
@@ -65,6 +66,7 @@ const createLanguageSubmenu = (): MenuItemConstructorOptions[] => {
 };
 
 const localeTemplate: MenuItemConstructorOptions = {
+  enabled: !isSettingManaged(SettingsType.LOCALE),
   label: locale.getText('menuLocale'),
   submenu: createLanguageSubmenu(),
 };
@@ -82,6 +84,7 @@ const signOutTemplate: MenuItemConstructorOptions = {
 
 const spellingTemplate: MenuItemConstructorOptions = {
   checked: settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true),
+  enabled: !isSettingManaged(SettingsType.ENABLE_SPELL_CHECKING),
   click: () => toggleSpellChecking(),
   label: locale.getText('menuEnableSpellChecking'),
   type: 'checkbox',
@@ -154,6 +157,7 @@ const showWireTemplate: MenuItemConstructorOptions = {
 
 const toggleMenuTemplate: MenuItemConstructorOptions = {
   checked: settings.restore(SettingsType.SHOW_MENU_BAR, true),
+  enabled: !isSettingManaged(SettingsType.SHOW_MENU_BAR),
   click: () => toggleMenuBar(),
   label: locale.getText('menuShowHide'),
   type: 'checkbox',
@@ -174,7 +178,11 @@ const toggleFullScreenTemplate: MenuItemConstructorOptions = {
 
 const toggleAutoLaunchTemplate: MenuItemConstructorOptions = {
   checked: settings.restore(SettingsType.AUTO_LAUNCH, false),
+  enabled: !isSettingManaged(SettingsType.AUTO_LAUNCH),
   click: () => {
+    if (isSettingManaged(SettingsType.AUTO_LAUNCH)) {
+      return;
+    }
     const shouldAutoLaunch = !settings.restore(SettingsType.AUTO_LAUNCH);
     settings.save(SettingsType.AUTO_LAUNCH, shouldAutoLaunch);
     return shouldAutoLaunch ? launcher.enable() : launcher.disable();
@@ -401,6 +409,10 @@ const showRestartMessageBox = async () => {
 };
 
 const changeLocale = async (language: locale.SupportedI18nLanguage): Promise<void> => {
+  if (isSettingManaged(SettingsType.LOCALE)) {
+    logger.info('Ignoring locale change because managed configuration is set.');
+    return;
+  }
   locale.setLocale(language);
   await showRestartMessageBox();
 };
@@ -477,6 +489,10 @@ export const createMenu = (isFullScreen: boolean): Menu => {
 };
 
 export const toggleMenuBar = (): void => {
+  if (isSettingManaged(SettingsType.SHOW_MENU_BAR)) {
+    logger.info('Ignoring menu bar toggle because managed configuration is set.');
+    return;
+  }
   const mainBrowserWindow = WindowManager.getPrimaryWindow();
 
   if (mainBrowserWindow) {
@@ -488,9 +504,29 @@ export const toggleMenuBar = (): void => {
 };
 
 export const toggleSpellChecking = async (): Promise<void> => {
+  if (isSettingManaged(SettingsType.ENABLE_SPELL_CHECKING)) {
+    logger.info('Ignoring spell checking toggle because managed configuration is set.');
+    return;
+  }
   const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
   settings.save(SettingsType.ENABLE_SPELL_CHECKING, !enableSpellChecking);
   await showRestartMessageBox();
+};
+
+export const applyManagedAutoLaunchSetting = async (): Promise<void> => {
+  if (!isSettingManaged(SettingsType.AUTO_LAUNCH)) {
+    return;
+  }
+  const shouldAutoLaunch = settings.restore(SettingsType.AUTO_LAUNCH, false);
+  try {
+    if (shouldAutoLaunch) {
+      await launcher.enable();
+    } else {
+      await launcher.disable();
+    }
+  } catch (error) {
+    logger.error('Failed to apply managed auto-launch setting', error);
+  }
 };
 
 export const registerGlobalShortcuts = (): void => {

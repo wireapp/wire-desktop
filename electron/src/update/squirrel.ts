@@ -31,6 +31,7 @@ import {createShortcuts, removeShortcuts} from './shortcuts';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
+import {getManagedConfig} from '../settings/ManagedConfig';
 import {config, MINUTE_IN_MILLIS, HOUR_IN_MILLIS} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
@@ -42,6 +43,7 @@ const exeName = path.basename(process.execPath);
 const exePath = path.join(rootFolder, exeName);
 
 const windowsAppData = process.env.APPDATA;
+const {config: managedConfig} = getManagedConfig();
 
 if (!windowsAppData && EnvironmentUtil.platform.IS_WINDOWS) {
   logger.error('No Windows AppData directory found.');
@@ -103,6 +105,10 @@ async function spawnUpdate(args: string[]): Promise<void> {
 }
 
 export async function installUpdate(): Promise<void> {
+  if (managedConfig.disableAutoUpdate) {
+    logger.info('Skipping update install: disabled by managed configuration.');
+    return;
+  }
   logger.info(`Checking for Windows updates at "${EnvironmentUtil.app.UPDATE_URL_WIN}" ...`);
   await spawnUpdate(['--update', EnvironmentUtil.app.UPDATE_URL_WIN]);
 }
@@ -144,6 +150,11 @@ export async function handleSquirrelArgs(): Promise<void> {
       await lifecycle.quit(true);
       return;
     }
+  }
+
+  if (managedConfig.disableAutoUpdate) {
+    logger.info('Skipping update scheduler: disabled by managed configuration.');
+    return;
   }
 
   await scheduleUpdate();
