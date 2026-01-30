@@ -31,8 +31,8 @@ import {createShortcuts, removeShortcuts} from './shortcuts';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
-import {getManagedConfig} from '../settings/ManagedConfig';
 import {config, MINUTE_IN_MILLIS, HOUR_IN_MILLIS} from '../settings/config';
+import {getManagedConfig} from '../settings/ManagedConfig';
 
 const logger = getLogger(path.basename(__filename));
 

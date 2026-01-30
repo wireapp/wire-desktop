@@ -23,8 +23,8 @@ import type {Data as OpenGraphResult} from 'open-graph';
 import type {WebAppEvents} from '@wireapp/webapp-events';
 
 import type {i18nStrings, SupportedI18nLanguage} from '../locale';
-import type {ManagedConfig} from '../settings/ManagedConfig';
 import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import type {ManagedConfig} from '../settings/ManagedConfig';
 
 export declare global {
   /* eslint-disable no-var */

@@ -22,8 +22,8 @@ import * as logdown from 'logdown';
 
 import * as path from 'path';
 
-import {SchemaUpdater} from './SchemaUpdater';
 import {getManagedSettingOverride, isSettingManaged} from './ManagedConfig';
+import {SchemaUpdater} from './SchemaUpdater';
 import {SettingsType} from './SettingsType';
 
 import {getLogger} from '../logging/getLogger';

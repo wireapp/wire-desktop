@@ -21,8 +21,8 @@ import {BrowserWindow, dialog} from 'electron';
 import {autoUpdater} from 'electron-updater';
 
 import {getLogger} from '../logging/getLogger';
-import {getManagedConfig} from '../settings/ManagedConfig';
 import {config} from '../settings/config';
+import {getManagedConfig} from '../settings/ManagedConfig';
 
 const logger = getLogger('MacAutoUpdater');
 const isInternalBuild = (): boolean => config.environment === 'internal';
