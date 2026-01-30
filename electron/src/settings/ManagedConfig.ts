@@ -26,6 +26,7 @@
 
 import {execFileSync} from 'child_process';
 import * as Electron from 'electron';
+import * as path from 'path';
 import Joi from '@hapi/joi';
 import {URL} from 'url';
 
@@ -163,18 +164,25 @@ export const parseRegistryValue = (entry: RegistryValue, expectedType: ManagedVa
   return undefined;
 };
 
+/** Full path to reg.exe so we do not depend on PATH (avoids running a substituted binary). */
+const getRegExePath = (): string =>
+  path.join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'reg.exe');
+
 /** Queries a single Windows registry key. keyPath must be built from sanitizeRegistryAppKey to avoid injection. */
 const queryRegistryKey = (keyPath: string): Record<string, RegistryValue> => {
   try {
-    const output = execFileSync('reg', ['query', keyPath], {encoding: 'utf8'});
+    const output = execFileSync(getRegExePath(), ['query', keyPath], {encoding: 'utf8'});
     const values: Record<string, RegistryValue> = {};
 
     for (const line of output.split(/\r?\n/)) {
-      const match = line.match(/^\s*([^\s]+)\s+(REG_\w+)\s+(.*)$/);
-      if (!match) {
+      // Match name and type only; take rest of line as value to avoid ReDoS from (.*)$ backtracking.
+      const prefixMatch = line.match(/^\s*([^\s]+)\s+(REG_\w+)\s+/);
+      if (!prefixMatch) {
         continue;
       }
-      const [, name, type, value] = match;
+      const name = prefixMatch[1];
+      const type = prefixMatch[2];
+      const value = line.slice(prefixMatch[0].length).trim();
       values[name] = {type, value};
     }
 
