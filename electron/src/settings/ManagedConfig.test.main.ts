@@ -139,7 +139,10 @@ describe('ManagedConfig', () => {
 
     it('getManagedSettingOverride returns managed value when override is set', () => {
       getManagedConfig(fixture);
-      assert.strictEqual(getManagedSettingOverride<string>(SettingsType.CUSTOM_WEBAPP_URL), 'https://custom.example.com');
+      assert.strictEqual(
+        getManagedSettingOverride<string>(SettingsType.CUSTOM_WEBAPP_URL),
+        'https://custom.example.com',
+      );
       assert.strictEqual(getManagedSettingOverride<string>(SettingsType.DOWNLOAD_PATH), 'Downloads');
       assert.strictEqual(getManagedSettingOverride<string>(SettingsType.LOCALE), 'de');
     });

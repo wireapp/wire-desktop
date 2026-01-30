@@ -64,6 +64,8 @@ const parseLocale = (locale: string): SupportedI18nLanguage => {
 /**
  * Normalize managed locale (e.g. pt-BR, en-US) to a supported key (pt, en) so it matches
  * existing app behaviour. Empty/whitespace falls back to default via parseLocale('').
+ * @param {string} raw - Managed locale string from MDM (e.g. "pt-BR", "en").
+ * @returns {SupportedI18nLanguage} A supported language key for the app.
  */
 const normalizeManagedLocale = (raw: string): SupportedI18nLanguage => {
   const trimmed = raw?.trim();
@@ -177,8 +179,8 @@ export const getCurrent = (): SupportedI18nLanguage => {
     const hasUserOverride = isLocaleManaged
       ? true
       : typeof savedOverride === 'boolean'
-        ? savedOverride
-        : Boolean(savedLocale && savedLocale !== systemLocale);
+      ? savedOverride
+      : Boolean(savedLocale && savedLocale !== systemLocale);
 
     current = savedLocale && hasUserOverride ? parseLocale(savedLocale) : systemLocale;
     return current;

@@ -11,7 +11,7 @@ This document describes how to configure Wire Desktop using Mobile Device Manage
 ## Supported managed settings
 
 | Key | Type | Description | Validation |
-|-----|------|-------------|------------|
+| --- | --- | --- | --- |
 | **webappUrl** | string | Custom web app URL (e.g. on-premise). When set, the app loads this URL instead of the default backend. | `http` or `https` URI |
 | **updateUrlWin** | string | Windows: URL used to check for application updates. | `http` or `https` URI |
 | **proxyServerUrl** | string | Proxy server URL (e.g. `http://proxy.example.com:8080` or `https://user:password@proxy.example.com:8080`). | `http`, `https`, `socks4`, or `socks5` URI |
@@ -40,8 +40,8 @@ The app reads from **two** locations (policy overrides user):
 ### Value types
 
 - **String settings** (e.g. `webappUrl`, `proxyServerUrl`, `downloadPath`, `locale`): use `REG_SZ`.
-- **Boolean settings** (e.g. `disableAutoUpdate`, `enableSpellChecking`, `showMenuBar`, `autoLaunch`): use either  
-  - `REG_DWORD` with `0` (false) or `1` (true), or  
+- **Boolean settings** (e.g. `disableAutoUpdate`, `enableSpellChecking`, `showMenuBar`, `autoLaunch`): use either
+  - `REG_DWORD` with `0` (false) or `1` (true), or
   - `REG_SZ` with `true`/`false`, `yes`/`no`, or `1`/`0`.
 
 ### Example: Group Policy (ADMX)
@@ -67,7 +67,7 @@ Users must restart Wire Desktop for new or changed managed settings to take effe
 
 Wire Desktop reads managed configuration from the application’s preference domain (CFPreferences / `NSUserDefaults`). You can deploy these via:
 
-- **MDM configuration profile** that configures managed app preferences for the Wire app, or  
+- **MDM configuration profile** that configures managed app preferences for the Wire app, or
 - **`defaults write`** (or equivalent) in the app’s preference domain, deployed by your MDM or deployment tooling.
 
 ### Preference keys

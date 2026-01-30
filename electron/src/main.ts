@@ -111,6 +111,8 @@ const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOW
 /**
  * Resolves a managed download path under user home. Returns null if the path escapes home
  * (e.g. ".." traversal) or is empty/whitespace. Used for user-content downloads on Windows and macOS.
+ * @param {string} relativePath - Path relative to user home (e.g. "Documents\\WireDownloads").
+ * @returns {string | null} Resolved absolute path, or null if invalid or escaping home.
  */
 const getSafeDownloadDirectory = (relativePath: string): string | null => {
   const trimmed = relativePath?.trim();
@@ -177,11 +179,7 @@ if (typeof managedProxyServerUrl !== 'undefined' && argv[config.ARGUMENT.PROXY_S
 if (proxyServerUrl) {
   try {
     proxyInfoArg = new URL(proxyServerUrl);
-    if (
-      !argv[config.ARGUMENT.PROXY_SERVER] &&
-      fileBasedProxyConfig &&
-      typeof managedProxyServerUrl === 'undefined'
-    ) {
+    if (!argv[config.ARGUMENT.PROXY_SERVER] && fileBasedProxyConfig && typeof managedProxyServerUrl === 'undefined') {
       logger.info(`Using proxy server URL from "init.json": ${fileBasedProxyConfig}`);
       app.commandLine.appendSwitch('proxy-server', fileBasedProxyConfig);
     }

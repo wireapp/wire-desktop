@@ -24,14 +24,16 @@
  * in the main process only; renderer receives redacted config via IPC.
  */
 
-import {execFileSync} from 'child_process';
-import * as Electron from 'electron';
-import * as path from 'path';
 import Joi from '@hapi/joi';
+import * as Electron from 'electron';
+
+import {execFileSync} from 'child_process';
+import * as path from 'path';
 import {URL} from 'url';
 
-import {getLogger} from '../logging/getLogger';
 import {SettingsType} from './SettingsType';
+
+import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger('ManagedConfig');
 const app = Electron.app || require('@electron/remote').app;
@@ -90,15 +92,23 @@ const SETTINGS_MANAGED_MAP: Partial<Record<SettingsType, ManagedKey>> = {
 };
 
 const managedSchema = Joi.object({
-  webappUrl: Joi.string().trim().uri({scheme: ['http', 'https']}),
-  updateUrlWin: Joi.string().trim().uri({scheme: ['http', 'https']}),
-  proxyServerUrl: Joi.string().trim().uri({scheme: ['http', 'https', 'socks4', 'socks5']}),
+  webappUrl: Joi.string()
+    .trim()
+    .uri({scheme: ['http', 'https']}),
+  updateUrlWin: Joi.string()
+    .trim()
+    .uri({scheme: ['http', 'https']}),
+  proxyServerUrl: Joi.string()
+    .trim()
+    .uri({scheme: ['http', 'https', 'socks4', 'socks5']}),
   disableAutoUpdate: Joi.boolean(),
   downloadPath: Joi.string().trim().min(1),
   enableSpellChecking: Joi.boolean(),
   showMenuBar: Joi.boolean(),
   autoLaunch: Joi.boolean(),
-  locale: Joi.string().trim().pattern(/^[A-Za-z]{2,3}(-[A-Za-z]{2,3})?$/),
+  locale: Joi.string()
+    .trim()
+    .pattern(/^[A-Za-z]{2,3}(-[A-Za-z]{2,3})?$/),
 }).unknown(false);
 
 /**
@@ -107,13 +117,22 @@ const managedSchema = Joi.object({
  */
 let cachedConfig: ManagedConfigResult | null = null;
 
-/** Sanitize app name for use in Windows registry key path (alphanumeric only). */
+/**
+ * Sanitize app name for use in Windows registry key path (alphanumeric only).
+ * @param {string} appName - Application name from app.getName().
+ * @returns {string} Safe string for use in registry path.
+ */
 const sanitizeRegistryAppKey = (appName: string): string => {
   const raw = (appName || 'Wire').trim();
   const safe = raw.replace(/[^A-Za-z0-9]/g, '');
   return safe.length > 0 ? safe : 'Wire';
 };
 
+/**
+ * Build policy and user registry key paths for the app.
+ * @param {string} appName - Application name from app.getName().
+ * @returns {Object} Object with policy and user key paths.
+ */
 const toRegistryPaths = (appName: string) => {
   const registryAppKey = sanitizeRegistryAppKey(appName);
   return {
@@ -138,7 +157,10 @@ export const parseRegistryNumber = (rawValue: string): number | undefined => {
   return Number.isNaN(parsed) ? undefined : parsed;
 };
 
-export const parseRegistryValue = (entry: RegistryValue, expectedType: ManagedValueType): string | boolean | undefined => {
+export const parseRegistryValue = (
+  entry: RegistryValue,
+  expectedType: ManagedValueType,
+): string | boolean | undefined => {
   const rawValue = entry.value.trim();
   if (!rawValue) {
     return undefined;
@@ -164,11 +186,17 @@ export const parseRegistryValue = (entry: RegistryValue, expectedType: ManagedVa
   return undefined;
 };
 
-/** Full path to reg.exe so we do not depend on PATH (avoids running a substituted binary). */
-const getRegExePath = (): string =>
-  path.join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'reg.exe');
+/**
+ * Full path to reg.exe so we do not depend on PATH (avoids running a substituted binary).
+ * @returns {string} Absolute path to reg.exe.
+ */
+const getRegExePath = (): string => path.join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'reg.exe');
 
-/** Queries a single Windows registry key. keyPath must be built from sanitizeRegistryAppKey to avoid injection. */
+/**
+ * Queries a single Windows registry key. keyPath must be built from sanitizeRegistryAppKey to avoid injection.
+ * @param {string} keyPath - Registry path (e.g. HKCU\\Software\\Policies\\Wire\\Wire).
+ * @returns {Record<string, RegistryValue>} Map of value name to { type, value }.
+ */
 const queryRegistryKey = (keyPath: string): Record<string, RegistryValue> => {
   try {
     const output = execFileSync(getRegExePath(), ['query', keyPath], {encoding: 'utf8'});
@@ -192,7 +220,10 @@ const queryRegistryKey = (keyPath: string): Record<string, RegistryValue> => {
   }
 };
 
-/** Reads managed config from Windows Registry (policy then user). keyPath is built from sanitized app name. */
+/**
+ * Reads managed config from Windows Registry (policy then user). keyPath is built from sanitized app name.
+ * @returns {Object} Raw config and source metadata.
+ */
 const readWindowsRegistryConfig = (): {rawConfig: Record<string, unknown>; source: ManagedConfigSource} => {
   const appName = app?.getName?.() || 'Wire';
   const registryPaths = toRegistryPaths(appName);
@@ -239,7 +270,10 @@ const readWindowsRegistryConfig = (): {rawConfig: Record<string, unknown>; sourc
   };
 };
 
-/** Reads managed config from macOS system preferences (CFPreferences / getUserDefault). */
+/**
+ * Reads managed config from macOS system preferences (CFPreferences / getUserDefault).
+ * @returns {Object} Raw config and source.
+ */
 const readMacManagedConfig = (): {rawConfig: Record<string, unknown>; source: ManagedConfigSource} => {
   const rawConfig: Record<string, unknown> = {};
 
@@ -269,8 +303,16 @@ const readMacManagedConfig = (): {rawConfig: Record<string, unknown>; source: Ma
   };
 };
 
-/** Validates and normalizes raw config; strips unknown keys and invalid values. Safe to call with untrusted input. */
-export const normalizeManagedConfig = (rawConfig: Record<string, unknown>, source: ManagedConfigSource): ManagedConfigResult => {
+/**
+ * Validates and normalizes raw config; strips unknown keys and invalid values. Safe to call with untrusted input.
+ * @param {Record<string, unknown>} rawConfig - Raw key-value map from registry or macOS preferences.
+ * @param {ManagedConfigSource} source - Source metadata (platform, location).
+ * @returns {ManagedConfigResult} Validated config and source.
+ */
+export const normalizeManagedConfig = (
+  rawConfig: Record<string, unknown>,
+  source: ManagedConfigSource,
+): ManagedConfigResult => {
   const validation = managedSchema.validate(rawConfig, {
     abortEarly: false,
     convert: true,
@@ -299,6 +341,10 @@ export const normalizeManagedConfig = (rawConfig: Record<string, unknown>, sourc
   return {config, source};
 };
 
+/**
+ * Loads managed config from OS (Windows Registry or macOS preferences).
+ * @returns {ManagedConfigResult} Validated config and source, or empty config on unsupported platform.
+ */
 const loadManagedConfig = (): ManagedConfigResult => {
   if (process.platform === 'win32') {
     const {rawConfig, source} = readWindowsRegistryConfig();
@@ -319,6 +365,8 @@ const loadManagedConfig = (): ManagedConfigResult => {
 /**
  * Removes username and password from a proxy URL. Use before exposing config to the renderer
  * so proxy credentials are never sent to untrusted context.
+ * @param {string} proxyServerUrl - Proxy URL (may contain user:password).
+ * @returns {string} URL with credentials stripped, or original if invalid.
  */
 export const redactProxyCredentials = (proxyServerUrl: string): string => {
   try {
@@ -336,7 +384,8 @@ export const redactProxyCredentials = (proxyServerUrl: string): string => {
 
 /**
  * Returns the current managed config. Loaded once and cached for process lifetime (no hot reload).
- * @param override - Test-only: when provided, used as the config and cached so subsequent callers see it.
+ * @param {ManagedConfigResult} [override] - Test-only: when provided, used as the config and cached.
+ * @returns {ManagedConfigResult} Current managed config and source.
  */
 export const getManagedConfig = (override?: ManagedConfigResult): ManagedConfigResult => {
   if (override !== undefined) {
@@ -349,7 +398,10 @@ export const getManagedConfig = (override?: ManagedConfigResult): ManagedConfigR
   return cachedConfig;
 };
 
-/** Returns config safe for renderer: proxy URL is redacted so credentials are never exposed. */
+/**
+ * Returns config safe for renderer: proxy URL is redacted so credentials are never exposed.
+ * @returns {ManagedConfig} Managed config with proxy credentials stripped.
+ */
 export const getManagedConfigForRenderer = (): ManagedConfig => {
   const {config} = getManagedConfig();
   if (!config.proxyServerUrl) {
