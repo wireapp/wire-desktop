@@ -291,6 +291,10 @@ const readMacManagedConfig = (): {rawConfig: Record<string, unknown>; source: Ma
     if (value === null || typeof value === 'undefined') {
       return;
     }
+    // macOS: getUserDefault(key, 'string') returns "" for unset keys; treat as not set.
+    if (expectedType === 'string' && value === '') {
+      return;
+    }
     rawConfig[key] = value;
   });
 
@@ -329,7 +333,10 @@ export const normalizeManagedConfig = (
   if (validation.error) {
     const invalidKeys = new Set(validation.error.details.map(detail => String(detail.path[0])));
     invalidKeys.forEach(key => {
-      logger.warn(`Ignoring managed config "${key}" due to validation failure.`);
+      const detail = validation.error!.details.find(d => String(d.path[0]) === key);
+      const reason = detail?.message ?? 'validation failure';
+      logger.warn(`Ignoring managed config "${key}" due to validation failure: ${reason}.`);
+      delete (config as Record<string, unknown>)[key];
     });
   }
 

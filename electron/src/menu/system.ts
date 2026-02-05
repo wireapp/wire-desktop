@@ -517,6 +517,9 @@ export const applyManagedAutoLaunchSetting = async (): Promise<void> => {
   if (!isSettingManaged(SettingsType.AUTO_LAUNCH)) {
     return;
   }
+  if (config.name === 'Electron') {
+    return;
+  }
   const shouldAutoLaunch = settings.restore(SettingsType.AUTO_LAUNCH, false);
   try {
     if (shouldAutoLaunch) {
@@ -524,7 +527,13 @@ export const applyManagedAutoLaunchSetting = async (): Promise<void> => {
     } else {
       await launcher.disable();
     }
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    const isLoginItemNotFound =
+      message.includes('-1728') || message.includes("Can't get login item") || message.includes('cannot be read');
+    if (!shouldAutoLaunch && isLoginItemNotFound) {
+      return;
+    }
     logger.error('Failed to apply managed auto-launch setting', error);
   }
 };

@@ -28,10 +28,12 @@ const argv = minimist(process.argv.slice(1));
 const {config: managedConfig} = getManagedConfig();
 const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
 const managedWebappUrl = managedConfig.webappUrl;
+const effectiveManagedWebappUrl =
+  typeof managedWebappUrl === 'string' && managedWebappUrl.trim() !== '' ? managedWebappUrl.trim() : undefined;
 /** Environment is from settings/argv only; MDM cannot set environment (enterprises use test builds for that). */
-const ignoreEnvArgument = typeof managedWebappUrl !== 'undefined';
+const ignoreEnvArgument = effectiveManagedWebappUrl !== undefined;
 const customWebappUrl: string | undefined = ignoreEnvArgument
-  ? managedWebappUrl
+  ? effectiveManagedWebappUrl
   : argv[config.ARGUMENT.ENV] || webappUrlSetting;
 
 export enum ServerType {
@@ -101,7 +103,9 @@ export const setEnvironment = (env: ServerType): void => {
  */
 function getWebappUrl() {
   const envUrl = currentEnvironment && webappEnvironments[currentEnvironment]?.url;
-  return customWebappUrl ?? envUrl ?? config.appBase;
+  const effectiveCustom =
+    typeof customWebappUrl === 'string' && customWebappUrl.trim() !== '' ? customWebappUrl.trim() : undefined;
+  return effectiveCustom ?? envUrl ?? config.appBase;
 }
 
 /**
