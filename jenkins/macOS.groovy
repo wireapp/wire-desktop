@@ -6,6 +6,7 @@ def parseJson(def text) {
 node('built-in') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
+  def skipNotarization = params.containsKey('SKIP_NOTARIZATION') ? params.SKIP_NOTARIZATION : true  
   def NODE = tool name: 'node-v18.18.0', type: 'nodejs'
   def privateAPIResult = ''
 
@@ -69,7 +70,7 @@ node('built-in') {
   // ------------------------------------------------------------------------
   // Notarize & staple macOS pkg (internal only)
   // ------------------------------------------------------------------------
-  if (!production && !custom) {
+  if (!production && !custom && !skipNotarization) {
     stage('Notarize macOS pkg') {
       // Only run if a .pkg exists (macOS builds)
       def pkgExists = (sh(script: 'ls wrap/dist/*.pkg >/dev/null 2>&1', returnStatus: true) == 0)
