@@ -69,6 +69,7 @@ import {OriginValidator} from './runtime/OriginValidator';
 import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import * as SettingsUtil  from './settings/SettingsUtil';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {initMacAutoUpdater} from './update/macosAutoUpdater';
 import {AboutWindow} from './window/AboutWindow';
@@ -78,10 +79,9 @@ import * as WindowUtil from './window/WindowUtil';
 
 const logger = getLogger(path.basename(__filename));
 
-if (process.platform === 'win32' && isAffectedHPDevice()) {
-  app.disableHardwareAcceleration();
-  logger.info('Disabling hardware acceleration for affected HP devices.');
-}
+// Set first main settings like hardware acceleration for video rendering
+// This needs to be done before the app is ready, otherwise it will be overwritten by the main process
+handleHardwareAcceleration();
 
 remoteMain.initialize();
 
@@ -786,25 +786,12 @@ if (lifecycle.isFirstInstance) {
   new ElectronWrapperInit().run().catch(error => logger.error(error));
 }
 
-function isAffectedHPDevice(): boolean {
-  if (process.platform !== 'win32') {
-    return false;
-  }
-
-  // SECURITY:
-  // This OS command is executed during application startup only,
-  // uses a fixed, trusted system binary (wmic.exe),
-  // accepts no user input, and performs a read-only system query.
-  // The risk of command injection or privilege escalation is mitigated.
-  const systemRoot = process.env.SystemRoot || 'C:\\Windows';
-  try {
-    // NOSONAR -- fixed command, no user input, absolute path used
-    const output = execSync(`"${systemRoot}\\System32\\wbem\\wmic.exe" computersystem get model`, {
-      encoding: 'utf8',
-      timeout: 1000,
-    });
-    return /elitebook 840 g7/i.test(output);
-  } catch {
-    return false;
+function handleHardwareAcceleration(): void {
+  const isEnabledHw = SettingsUtil.isHardwareAccelerationEnabled();
+  if (!isEnabledHw) {
+    app.disableHardwareAcceleration();
+    logger.info('Hardware acceleration is disabled.');
+  } else {
+    logger.info('Hardware acceleration is enabled.');
   }
 }
