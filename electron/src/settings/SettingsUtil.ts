@@ -1,5 +1,5 @@
-import {settings} from "ConfigurationPersistence";
-import {SettingsType} from "SettingsType";
+import {settings} from "./ConfigurationPersistence";
+import {SettingsType} from "./SettingsType";
 
 export const setHardwareAccelerationEnabled = (enabled: boolean): void => {
   settings.save(SettingsType.HARDWARE_ACCELERATION_ENABLED, enabled);

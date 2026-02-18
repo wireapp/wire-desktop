@@ -38,7 +38,6 @@ import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';
 
-import {execSync} from 'child_process';
 import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
 
