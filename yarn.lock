@@ -8052,9 +8052,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:7.1.3":
-  version: 7.1.3
-  resolution: "css-loader@npm:7.1.3"
+"css-loader@npm:7.1.4":
+  version: 7.1.4
+  resolution: "css-loader@npm:7.1.4"
   dependencies:
     icss-utils: ^5.1.0
     postcss: ^8.4.40
@@ -8065,14 +8065,14 @@ __metadata:
     postcss-value-parser: ^4.2.0
     semver: ^7.6.3
   peerDependencies:
-    "@rspack/core": 0.x || 1.x
+    "@rspack/core": 0.x || ^1.0.0 || ^2.0.0-0
     webpack: ^5.27.0
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
     webpack:
       optional: true
-  checksum: 9f99c689ced3ca5a7909ac3d0fb1f84e7deb5ecceabbefbf6eaba974dd3a8e88b465fe3e9b1beb330246a98f96be61f63279d1fd373bd59d4f40b317a996b5eb
+  checksum: 92a486a6fb224540d6fd57a7dc6877cd5fc5296414dece1da0857224492147aa71887aea0d9ff04c5a76cbd12bd4d65ed5b02f58510dc3fc7e7a426c04259162
   languageName: node
   linkType: hard
 
@@ -9016,16 +9016,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:38.8.0":
-  version: 38.8.0
-  resolution: "electron@npm:38.8.0"
+"electron@npm:38.8.2":
+  version: 38.8.2
+  resolution: "electron@npm:38.8.2"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^22.7.7
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 1b7801eecf1cd941826e5c3eaa7741c51d7f28a31437f5e15b278c30382900de59ead6585a2affc4cf7f93cad25420eea4fc96f2db8ecebd9604f6b8ee0a7c59
+  checksum: c01c669ac4f482704413ea0deb391c77da334e98e2f668428365b63258325cfe3cb776c07718ec2ec2210871516f955f0b380446dc9214676c8c80734ca831b3
   languageName: node
   linkType: hard
 
@@ -20418,9 +20418,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.105.0":
-  version: 5.105.0
-  resolution: "webpack@npm:5.105.0"
+"webpack@npm:5.105.2":
+  version: 5.105.2
+  resolution: "webpack@npm:5.105.2"
   dependencies:
     "@types/eslint-scope": ^3.7.7
     "@types/estree": ^1.0.8
@@ -20452,7 +20452,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 15ee99e08e5ff88a34e84641b99bfe1416d4e0f7fc8929e50ca33294cf731188ce233ce9f311f51298abdc106ae03e8b2321dc74a8120f90ddeeec43ba744659
+  checksum: c5568f6d54fedadadc61d09e72e9eddd1aea7b2ac9ff80355c1107a2305efd82a6de508383da2b0c065a86e4c3d748d2e1ae666274afccda9c5774a7f5993fed
   languageName: node
   linkType: hard
 
@@ -20786,9 +20786,9 @@ __metadata:
     content-type: 1.0.5
     core-js: 3.48.0
     cross-env: 7.0.3
-    css-loader: 7.1.3
+    css-loader: 7.1.4
     dotenv: 16.6.0
-    electron: 38.8.0
+    electron: 38.8.2
     electron-builder: 25.1.8
     electron-dl: ^3.5.2
     electron-mocha: 12.3.1
@@ -20848,7 +20848,7 @@ __metadata:
     ts-node: 10.9.2
     typescript: 5.7.3
     uuid: 9.0.1
-    webpack: 5.105.0
+    webpack: 5.105.2
     webpack-cli: 5.1.4
   languageName: unknown
   linkType: soft
