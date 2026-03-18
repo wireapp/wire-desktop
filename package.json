@@ -124,7 +124,7 @@
     "ts-node": "10.9.2",
     "typescript": "5.7.3",
     "webpack": "5.105.4",
-    "webpack-cli": "5.1.4"
+    "webpack-cli": "7.0.2"
   },
   "homepage": "https://wire.com",
   "husky": {
