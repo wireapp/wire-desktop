@@ -46,6 +46,8 @@ export enum SettingsType {
   FULL_SCREEN = 'fullscreen',
   /** Which language (ISO 639-1) should be used to load our web app (de, en, fr, etc.)? */
   LOCALE = 'locale',
+  /** Whether the locale has been explicitly set by the user instead of using the system default. */
+  LOCALE_OVERRIDE = 'localeOverride',
   /** Defines the proxy server url (e.g. http://127.0.0.1:3128)
    *
    * https://github.com/wireapp/wire-desktop/wiki/Start-Parameters#use-authenticated-proxy-server
