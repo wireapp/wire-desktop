@@ -11,6 +11,6 @@ jobs:
     steps:
       # The settings for this action are in `.github/labeler.yml`.
       # See https://github.com/srvaroa/labeler.
-      - uses: srvaroa/labeler@0a20eccb8c94a1ee0bed5f16859aece1c45c3e55
+      - uses: srvaroa/labeler@bf262763a8a8e191f5847873aecc0f29df84f957
         env:
           GITHUB_TOKEN: ${{secrets.OTTO_THE_BOT_GH_TOKEN}}
