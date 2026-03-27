@@ -787,10 +787,10 @@ if (lifecycle.isFirstInstance) {
 
 function handleHardwareAcceleration(): void {
   const isEnabledHw = SettingsUtil.isHardwareAccelerationEnabled();
-  if (!isEnabledHw) {
+  if (isEnabledHw) {
+    logger.info('Hardware acceleration is enabled.');
+  } else {
     app.disableHardwareAcceleration();
     logger.info('Hardware acceleration is disabled.');
-  } else {
-    logger.info('Hardware acceleration is enabled.');
   }
 }
