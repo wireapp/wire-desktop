@@ -43,7 +43,7 @@ export declare global {
     version: number;
   };
   var environment: typeof EnvironmentUtil;
-  var desktopAppSettings: typeof SettingsUtil
+  var desktopAppSettings: typeof SettingsUtil;
   var openGraphAsync: (url: string) => Promise<OpenGraphResult>;
   var desktopAppConfig: {
     version: string;

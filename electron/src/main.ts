@@ -68,7 +68,7 @@ import {OriginValidator} from './runtime/OriginValidator';
 import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
-import * as SettingsUtil  from './settings/SettingsUtil';
+import * as SettingsUtil from './settings/SettingsUtil';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {initMacAutoUpdater} from './update/macosAutoUpdater';
 import {AboutWindow} from './window/AboutWindow';
