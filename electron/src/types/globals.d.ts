@@ -24,6 +24,7 @@ import type {WebAppEvents} from '@wireapp/webapp-events';
 
 import type {i18nStrings, SupportedI18nLanguage} from '../locale';
 import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import type * as SettingsUtil from '../settings/SettingsUtil';
 
 export declare global {
   /* eslint-disable no-var */
@@ -42,6 +43,7 @@ export declare global {
     version: number;
   };
   var environment: typeof EnvironmentUtil;
+  var desktopAppSettings: typeof SettingsUtil;
   var openGraphAsync: (url: string) => Promise<OpenGraphResult>;
   var desktopAppConfig: {
     version: string;

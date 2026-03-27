@@ -68,12 +68,19 @@ import {OriginValidator} from './runtime/OriginValidator';
 import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import * as SettingsUtil from './settings/SettingsUtil';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {initMacAutoUpdater} from './update/macosAutoUpdater';
 import {AboutWindow} from './window/AboutWindow';
 import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
+
+const logger = getLogger(path.basename(__filename));
+
+// Set first main settings like hardware acceleration for video rendering
+// This needs to be done before the app is ready, otherwise it will be overwritten by the main process
+handleHardwareAcceleration();
 
 remoteMain.initialize();
 
@@ -101,7 +108,6 @@ const customProtocolHandler = new CustomProtocolHandler();
 const argv = minimist(process.argv.slice(1));
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
-const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
@@ -176,14 +182,6 @@ app.commandLine.appendSwitch('disable-features', 'webrtc-hide-local-ips-with-mdn
 
 // Allow both public and private interfaces for WebRTC
 app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'default_public_and_private_interfaces');
-
-app.getGPUInfo('basic').then((info: any) => {
-  const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
-  if (gpuDevices.length > 0) {
-    logger.info('No GPU device found, disabling hardware acceleration');
-    app.disableHardwareAcceleration();
-  }
-});
 
 // IPC events
 const bindIpcEvents = (): void => {
@@ -785,4 +783,14 @@ if (lifecycle.isFirstInstance) {
   renameWebViewLogFiles();
   fs.ensureFileSync(LOG_FILE);
   new ElectronWrapperInit().run().catch(error => logger.error(error));
+}
+
+function handleHardwareAcceleration(): void {
+  const isEnabledHw = SettingsUtil.isHardwareAccelerationEnabled();
+  if (isEnabledHw) {
+    logger.info('Hardware acceleration is enabled.');
+  } else {
+    app.disableHardwareAcceleration();
+    logger.info('Hardware acceleration is disabled.');
+  }
 }

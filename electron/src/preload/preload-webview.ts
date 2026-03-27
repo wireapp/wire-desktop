@@ -28,6 +28,7 @@ import {WebAppEvents} from '@wireapp/webapp-events';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import * as SettingsUtil from '../settings/SettingsUtil';
 
 const remote = require('@electron/remote');
 
@@ -277,6 +278,7 @@ process.once('loaded', () => {
   };
   global.environment = EnvironmentUtil;
   global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION, supportsCallingPopoutWindow: true};
+  global.desktopAppSettings = SettingsUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });

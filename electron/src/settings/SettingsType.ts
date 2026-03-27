@@ -58,4 +58,6 @@ export enum SettingsType {
   SHOW_MENU_BAR = 'showMenu',
   /** At which part of the screen shall the app be initially rendered? */
   WINDOW_BOUNDS = 'bounds',
+  /** Enable disabling of hardware GPU support during video rendering */
+  HARDWARE_ACCELERATION_ENABLED = 'hardwareAccelerationEnabled',
 }
