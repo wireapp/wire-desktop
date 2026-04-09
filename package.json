@@ -82,7 +82,7 @@
     "core-js": "3.49.0",
     "cross-env": "7.0.3",
     "css-loader": "7.1.4",
-    "dotenv": "16.6.0",
+    "dotenv": "17.4.1",
     "electron": "38.8.6",
     "electron-builder": "25.1.8",
     "electron-mocha": "12.3.1",
