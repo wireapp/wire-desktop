@@ -20428,9 +20428,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.105.4":
-  version: 5.105.4
-  resolution: "webpack@npm:5.105.4"
+"webpack@npm:5.106.0":
+  version: 5.106.0
+  resolution: "webpack@npm:5.106.0"
   dependencies:
     "@types/eslint-scope": ^3.7.7
     "@types/estree": ^1.0.8
@@ -20462,7 +20462,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: b1a109016630b2817463981d28aa760f2a9a4cbb0098875ea40abbe694f5b93c708ab3cbca577865faf4046d9946cca7f660fa5a872440605008e19a5874182b
+  checksum: 90a48ee360dcc8dff01234ef7df075c05cc3a1fab79b0b247e8003c07dce8727205713c1d18e0771bdfe906d6614bea56273d2375f756fa84e2109a82ecb07ca
   languageName: node
   linkType: hard
 
@@ -20858,7 +20858,7 @@ __metadata:
     ts-node: 10.9.2
     typescript: 5.7.3
     uuid: 9.0.1
-    webpack: 5.105.4
+    webpack: 5.106.0
     webpack-cli: 5.1.4
   languageName: unknown
   linkType: soft
