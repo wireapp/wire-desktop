@@ -6758,15 +6758,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:0.21.2":
-  version: 0.21.2
-  resolution: "axios@npm:0.21.2"
-  dependencies:
-    follow-redirects: ^1.14.0
-  checksum: 41299c21f77323e7c56ea49d2d5ed25407d24bb145a4ce3441a8db17359ae56554f9495dca6e15d343a9530e106212a684c75a4db3bedfbe19f6414a8d94378e
-  languageName: node
-  linkType: hard
-
 "axios@npm:1.13.3":
   version: 1.13.3
   resolution: "axios@npm:1.13.3"
@@ -6775,6 +6766,17 @@ __metadata:
     form-data: ^4.0.4
     proxy-from-env: ^1.1.0
   checksum: e7031ed19df27c417ce9750c2659b0f4d809b54f98a99a3ea75e1873edd8074a437b2f4453585616d88de2dccac0ab89c2778080f832311bbc3bdf6a7c1b0c15
+  languageName: node
+  linkType: hard
+
+"axios@npm:1.15.2":
+  version: 1.15.2
+  resolution: "axios@npm:1.15.2"
+  dependencies:
+    follow-redirects: ^1.15.11
+    form-data: ^4.0.5
+    proxy-from-env: ^2.1.0
+  checksum: e7d208b751959c7c6936417b870d6286979e0dff17784ae230d3988e754b6322682cb136e25669b534072b6f44c08715801ab961227eb8cc075323d9fda8ad43
   languageName: node
   linkType: hard
 
@@ -11199,7 +11201,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.15.11, follow-redirects@npm:^1.15.6":
   version: 1.16.0
   resolution: "follow-redirects@npm:1.16.0"
   peerDependenciesMeta:
@@ -11254,7 +11256,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:4.0.5":
+"form-data@npm:4.0.5, form-data@npm:^4.0.5":
   version: 4.0.5
   resolution: "form-data@npm:4.0.5"
   dependencies:
@@ -16853,6 +16855,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"proxy-from-env@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "proxy-from-env@npm:2.1.0"
+  checksum: b106ad790f26d47ba4791af3fe8cba5c8d35d85020119c82c05b413eb11b3ab97d2393ecaed51bca97c2788fa256408283dfeb4d970b2ebcae6702310f064e7e
+  languageName: node
+  linkType: hard
+
 "psl@npm:^1.1.28, psl@npm:^1.1.33":
   version: 1.9.0
   resolution: "psl@npm:1.9.0"
@@ -20792,7 +20801,7 @@ __metadata:
     adm-zip: 0.5.17
     auto-launch: 5.0.6
     aws-sdk: 2.1693.0
-    axios: 0.21.2
+    axios: 1.15.2
     babel-core: 7.0.0-bridge.0
     babel-eslint: 10.1.0
     babel-jest: 29.7.0
