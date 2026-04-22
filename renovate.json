@@ -3,7 +3,7 @@
   "extends": ["config:recommended", ":semanticCommits"],
   "labels": ["renovate"],
   "timezone": "Europe/Berlin",
-  "baseBranches": ["dev"],
+  "baseBranchPatterns": ["dev"],
   "dependencyDashboard": true,
   "rebaseWhen": "conflicted",
   "prConcurrentLimit": 5,
@@ -60,19 +60,41 @@
       "groupName": "eslint tooling"
     },
     {
-      "matchPackageNames": ["jest", "babel-jest", "jest-environment-jsdom", "@types/jest"],
+      "matchPackageNames": [
+        "jest",
+        "babel-jest",
+        "jest-environment-jsdom",
+        "@types/jest"
+      ],
       "groupName": "jest tooling"
     },
     {
-      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
       "groupName": "react runtime and types"
     },
     {
-      "matchPackageNames": ["@electron/remote", "electron", "electron-dl", "electron-updater", "electron-window-state"],
+      "matchPackageNames": [
+        "@electron/remote",
+        "electron",
+        "electron-dl",
+        "electron-updater",
+        "electron-window-state"
+      ],
       "groupName": "electron runtime"
     },
     {
-      "matchPackageNames": ["@electron/fuses", "@electron/osx-sign", "electron-builder", "electron-packager", "electron-winstaller"],
+      "matchPackageNames": [
+        "@electron/fuses",
+        "@electron/osx-sign",
+        "electron-builder",
+        "electron-packager",
+        "electron-winstaller"
+      ],
       "groupName": "electron packaging"
     },
     {
@@ -98,7 +120,13 @@
       "groupName": "desktop transpilation and bundling"
     },
     {
-      "matchPackageNames": ["electron-mocha", "mocha", "sinon", "@types/sinon", "@types/mocha"],
+      "matchPackageNames": [
+        "electron-mocha",
+        "mocha",
+        "sinon",
+        "@types/sinon",
+        "@types/mocha"
+      ],
       "groupName": "electron and mocha test tooling"
     },
     {
