@@ -3,7 +3,6 @@
   "extends": ["config:recommended", ":semanticCommits"],
   "labels": ["renovate"],
   "timezone": "Europe/Berlin",
-  "baseBranches": ["dev"],
   "dependencyDashboard": true,
   "rebaseWhen": "conflicted",
   "prConcurrentLimit": 5,
