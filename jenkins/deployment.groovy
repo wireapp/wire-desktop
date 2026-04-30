@@ -314,7 +314,19 @@ node('built-in') {
 
       def presignedFile
 
-      // Make sure we use Jenkins AWS plugin + local "aws" command
+      sh '''
+        if ! command -v aws >/dev/null 2>&1; then
+          echo "Installing AWS CLI locally..."
+          mkdir -p $HOME/bin
+          rm -rf aws awscliv2.zip
+          curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+          unzip -oq awscliv2.zip
+          ./aws/install --bin-dir $HOME/bin --install-dir $HOME/aws-cli --update
+          export PATH=$HOME/bin:$PATH
+        fi
+        aws --version
+      '''
+
       withAWS(region: 'eu-west-1', credentials: 'wire-taco') {
         if (params.Release == 'Custom') {
           // Custom (on-prem)
