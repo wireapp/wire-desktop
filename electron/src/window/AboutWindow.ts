@@ -26,10 +26,14 @@ import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import {config} from '../settings/config';
+import {WindowManager} from '../window/WindowManager';
 import * as WindowUtil from '../window/WindowUtil';
 
-let webappVersion: string;
+let webappVersion = '';
 let webappAVSVersion: string | undefined;
+
+const VERSION_REQUEST_TIMEOUT_MS = 1500;
+const AVS_VERSION_GRACE_PERIOD_MS = 50;
 
 // Paths
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
@@ -50,16 +54,67 @@ const WINDOW_SIZE = {
   WIDTH: 304,
 };
 
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => {
+ipcMain.on(EVENT_TYPE.UI.WEBAPP_VERSION, (_event, version: string) => {
   webappVersion = version;
 });
 
-ipcMain.once(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, (_event, version: string) => {
+ipcMain.on(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, (_event, version: string) => {
   webappAVSVersion = version;
 });
 
+const requestActiveWebappVersions = async (): Promise<{webappVersion: string; webappAVSVersion?: string}> => {
+  const primaryWindow = WindowManager.getPrimaryWindow();
+
+  if (!primaryWindow) {
+    return {webappVersion, webappAVSVersion};
+  }
+
+  return new Promise(resolve => {
+    let requestedVersion = webappVersion;
+    let requestedAVSVersion = webappAVSVersion;
+    let hasResolved = false;
+    let gracePeriodId: ReturnType<typeof setTimeout> | undefined;
+
+    const resolveWithValues = () => {
+      if (hasResolved) {
+        return;
+      }
+      hasResolved = true;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      if (gracePeriodId) {
+        clearTimeout(gracePeriodId);
+      }
+      ipcMain.removeListener(EVENT_TYPE.UI.WEBAPP_VERSION, onVersion);
+      ipcMain.removeListener(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, onAVSVersion);
+      resolve({webappVersion: requestedVersion, webappAVSVersion: requestedAVSVersion});
+    };
+
+    const onVersion = (_event: Electron.IpcMainEvent, version: string) => {
+      requestedVersion = version;
+      if (gracePeriodId) {
+        clearTimeout(gracePeriodId);
+      }
+      // Wait briefly for optional AVS version that can arrive right after main version.
+      gracePeriodId = setTimeout(resolveWithValues, AVS_VERSION_GRACE_PERIOD_MS);
+    };
+
+    const onAVSVersion = (_event: Electron.IpcMainEvent, version: string) => {
+      requestedAVSVersion = version;
+      resolveWithValues();
+    };
+
+    ipcMain.on(EVENT_TYPE.UI.WEBAPP_VERSION, onVersion);
+    ipcMain.on(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, onAVSVersion);
+    const timeoutId = setTimeout(resolveWithValues, VERSION_REQUEST_TIMEOUT_MS);
+    primaryWindow.webContents.send(EVENT_TYPE.UI.REQUEST_WEBAPP_VERSION);
+  });
+};
+
 const showWindow = async () => {
   let aboutWindow: BrowserWindow | undefined;
+  const activeWebappVersions = await requestActiveWebappVersions();
 
   if (!aboutWindow) {
     aboutWindow = new BrowserWindow({
@@ -136,8 +191,8 @@ const showWindow = async () => {
         copyright: config.copyright,
         electronVersion: config.version,
         productName: config.name,
-        webappVersion,
-        webappAVSVersion,
+        webappVersion: activeWebappVersions.webappVersion,
+        webappAVSVersion: activeWebappVersions.webappAVSVersion,
       });
     }
   }
