@@ -68,7 +68,6 @@ import {OriginValidator} from './runtime/OriginValidator';
 import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
-import * as SettingsUtil from './settings/SettingsUtil';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {initMacAutoUpdater} from './update/macosAutoUpdater';
 import {AboutWindow} from './window/AboutWindow';
@@ -77,10 +76,6 @@ import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
 
 const logger = getLogger(path.basename(__filename));
-
-// Set first main settings like hardware acceleration for video rendering
-// This needs to be done before the app is ready, otherwise it will be overwritten by the main process
-handleHardwareAcceleration();
 
 remoteMain.initialize();
 
@@ -783,14 +778,4 @@ if (lifecycle.isFirstInstance) {
   renameWebViewLogFiles();
   fs.ensureFileSync(LOG_FILE);
   new ElectronWrapperInit().run().catch(error => logger.error(error));
-}
-
-function handleHardwareAcceleration(): void {
-  const isEnabledHw = SettingsUtil.isHardwareAccelerationEnabled();
-  if (isEnabledHw) {
-    logger.info('Hardware acceleration is enabled.');
-  } else {
-    app.disableHardwareAcceleration();
-    logger.info('Hardware acceleration is disabled.');
-  }
 }
