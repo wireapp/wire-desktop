@@ -17,8 +17,27 @@
  *
  */
 
-import {test, expect} from './fixtures';
+import {test as baseTest} from '@playwright/test';
 
-test('starts the app', async ({page}) => {
-  await expect(page.getByText('Wire')).toBeVisible();
+import {createApp, type App} from './utils/createApp';
+
+type FixtureOptions = {appOptions: {env: string}};
+
+type Fixtures = {app: App};
+
+export const test = baseTest.extend<FixtureOptions & Fixtures>({
+  appOptions: {env: 'https://wire-webapp-dev.zinfra.io'},
+
+  app: async ({appOptions}, use) => {
+    const app = await createApp(appOptions);
+    await use(app);
+    await app.close();
+  },
+
+  // Overwrite of the default page fixture to reference the apps page instead
+  page: async ({app}, use) => {
+    await use(app.page);
+  },
 });
+
+export * from '@playwright/test';
