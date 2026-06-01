@@ -198,6 +198,7 @@
     "start:fed": "yarn start --env=https://webapp.${FED}.wire.link/ ",
     "test": "yarn test:types && yarn prestart && yarn build:ts:tests && yarn test:react && yarn test:main && yarn test:renderer && yarn test:bin",
     "test:bin": "mocha --require .babel-register.js \"bin/**/*.test?(.main).ts\"",
+    "test:e2e": "playwright test",
     "test:main": "electron-mocha --require .babel-register.js \"electron/src/**/*.test?(.main).ts\" --no-sandbox",
     "test:renderer": "electron-mocha --renderer --require .babel-register.js \"electron/src/**/*.test?(.renderer).ts\" --no-sandbox --window-config electron/test/mocha-window-config.json",
     "test:types": "tsc --noEmit",
