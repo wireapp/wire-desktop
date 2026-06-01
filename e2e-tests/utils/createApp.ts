@@ -28,8 +28,7 @@ export type App = ElectronApplication & {
 
 export const createApp = async (options: {env: string}): Promise<App> => {
   const app = await electron.launch({
-    args: ['.', `--env=${options.env}`],
-    locale: 'en', // ToDo: The locale isn't respected by the mounted webview
+    args: ['.', `--env=${options.env}`, '--lang=en'],
   });
 
   /**

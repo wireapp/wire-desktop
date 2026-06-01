@@ -20,5 +20,5 @@
 import {test, expect} from './fixtures';
 
 test('starts the app', async ({page}) => {
-  await expect(page.getByText('Wire')).toBeVisible();
+  await expect(page.getByText('Welcome to Wire!')).toBeVisible();
 });
