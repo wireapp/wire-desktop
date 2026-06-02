@@ -19,9 +19,13 @@
 
 import {test as baseTest} from '@playwright/test';
 
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+
 import {createApp, type App} from './utils/createApp';
 
-type FixtureOptions = {appOptions: {env: string}};
+type FixtureOptions = {appOptions: {env: string; lang?: string}};
 
 type Fixtures = {app: App};
 
@@ -29,9 +33,14 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
   appOptions: {env: 'https://wire-webapp-dev.zinfra.io'},
 
   app: async ({appOptions}, use) => {
-    const app = await createApp(appOptions);
+    // Always use a fresh temporary directory for the user data to ensure test isolation
+    const tempUserDataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-desktop-e2e-tests-'));
+    const app = await createApp({...appOptions, dataDir: tempUserDataDir});
+
     await use(app);
+
     await app.close();
+    await fs.rm(tempUserDataDir, {recursive: true});
   },
 
   // Overwrite of the default page fixture to reference the apps page instead

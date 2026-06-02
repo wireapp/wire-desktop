@@ -19,10 +19,6 @@
 
 import {_electron as electron, ElectronApplication, Page} from '@playwright/test';
 
-import fs from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-
 export type App = ElectronApplication & {
   /* The playwright page for the main electron window wrapping the webapp */
   wrapper: Page;
@@ -30,18 +26,9 @@ export type App = ElectronApplication & {
   page: Page;
 };
 
-export const createApp = async (options: {env: string}): Promise<App> => {
-  const tempUserDataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-desktop-e2e-test-'));
-
+export const createApp = async (options: {env: string; lang?: string; dataDir: string}): Promise<App> => {
   const app = await electron.launch({
-    args: [
-      '.',
-      `--env=${options.env}`,
-      // All tests should launch the app in english by default no matter the local systems language
-      '--lang=en',
-      // Always use a new temp dir to store the application data so no state is shared between tests
-      `--user-data-dir=${tempUserDataDir}`,
-    ],
+    args: ['.', `--env=${options.env}`, `--lang=${options.lang ?? 'en'}`, `--user-data-dir=${options.dataDir}`],
   });
 
   /**
