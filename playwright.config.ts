@@ -22,7 +22,7 @@ import dotenv from 'dotenv';
 
 import path from 'node:path';
 
-dotenv.config({path: path.resolve(__dirname, '.env')});
+dotenv.config({path: path.resolve(__dirname, './e2e-tests/.env')});
 
 /**
  * See https://playwright.dev/docs/test-configuration.

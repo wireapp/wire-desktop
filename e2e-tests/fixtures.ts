@@ -25,12 +25,12 @@ import path from 'node:path';
 
 import {createApp, type App} from './utils/createApp';
 
-type FixtureOptions = {appOptions: {env: string; lang?: string}};
+type FixtureOptions = {appOptions: {env?: string; lang?: string}};
 
 type Fixtures = {app: App};
 
 export const test = baseTest.extend<FixtureOptions & Fixtures>({
-  appOptions: {env: 'https://wire-webapp-dev.zinfra.io'},
+  appOptions: {env: process.env.WEBAPP_URL, lang: 'en'},
 
   app: async ({appOptions}, use) => {
     // Always use a fresh temporary directory for the user data to ensure test isolation

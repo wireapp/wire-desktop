@@ -26,7 +26,11 @@ export type App = ElectronApplication & {
   page: Page;
 };
 
-export const createApp = async (options: {env: string; lang?: string; dataDir: string}): Promise<App> => {
+export const createApp = async (options: {env?: string; lang?: string; dataDir: string}): Promise<App> => {
+  if (!options.env) {
+    throw new Error(`Can't create app without environment, make sure the env var "WEBAPP_URL" is set`);
+  }
+
   const app = await electron.launch({
     args: ['.', `--env=${options.env}`, `--lang=${options.lang ?? 'en'}`, `--user-data-dir=${options.dataDir}`],
   });
