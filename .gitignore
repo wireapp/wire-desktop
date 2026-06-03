@@ -3,6 +3,7 @@
 .vscode
 *.log
 *.pkg
+.env
 coverage
 .nyc_output
 /config
@@ -35,6 +36,7 @@ resources
 !.yarn/versions
 
 # Playwright
+!e2e-tests/.env.tpl
 /test-results/
 /playwright-report/
 /blob-report/
