@@ -336,7 +336,7 @@ node('built-in') {
           artifacts.each { fileObj ->
             def presignedUrl = sh(
               script: """
-                aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
+                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
               """,
               returnStdout: true
             ).trim()
@@ -363,7 +363,7 @@ node('built-in') {
           artifacts.each { fileObj ->
             def presignedUrl = sh(
               script: """
-                aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
+                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
               """,
               returnStdout: true
             ).trim()
