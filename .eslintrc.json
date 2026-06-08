@@ -3,7 +3,13 @@
     "jasmine": true
   },
   "extends": "@wireapp/eslint-config",
-  "ignorePatterns": ["**/*.js", "**/*.jsx"], // Ignore JS files until we migrate to TS
+  "ignorePatterns": [
+    // Ignore JS files until we migrate to TS
+    "**/*.js",
+    "**/*.jsx",
+    // Ignore generated files from linting
+    "e2e-tests/backend/generated/**"
+  ],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
