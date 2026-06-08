@@ -19,3 +19,19 @@ The E2E tests depend on configs / secrets which need to be provided as environme
 Before attempting to execute the E2E tests make sure to run the script `yarn run prestart` once. It will generate the outputs needed for launching the application within the tests.
 
 To then execute the e2e tests run `yarn run test:e2e` which will execute all of them. To only run specific tests you can pass the file containing them e.g. `yarn run test:e2e e2e-tests/specs/example.spec.ts`.
+
+### Brig API Client
+
+The E2E tests use a generated, type-safe client for Brig internal API calls.
+
+The generated client lives at:
+
+`e2e-tests/backend/generated/brig-api.ts`
+
+Do not update this file manually. It is generated from the Brig OpenAPI specification with `oazapfts`.
+
+To regenerate the file, run `yarn test:generate:e2e:brig-api`. Then review the diff carefully.
+
+If the operation names changed, update the wrapper in:
+
+`e2e-tests/backend/brig/BrigApiClient.ts`

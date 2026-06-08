@@ -3,6 +3,7 @@
   "dependencies": {
     "@electron/remote": "2.1.3",
     "@hapi/joi": "17.1.1",
+    "@oazapfts/runtime": "^1.2.0",
     "@wireapp/certificate-check": "0.7.27",
     "@wireapp/commons": "5.4.13",
     "@wireapp/protocol-messaging": "1.56.0",
@@ -117,6 +118,7 @@
     "mocha": "10.8.2",
     "nock": "13.5.6",
     "nyc": "15.1.0",
+    "oazapfts": "^7.5.0",
     "prettier": "2.8.8",
     "rimraf": "5.0.8",
     "sinon": "17.0.2",
@@ -204,7 +206,8 @@
     "test:types": "tsc --noEmit",
     "test:react": "jest",
     "translate:upload": "ts-node -P tsconfig.bin.json ./bin/translations_upload.ts",
-    "translate:download": "ts-node -P tsconfig.bin.json ./bin/translations_download.ts"
+    "translate:download": "ts-node -P tsconfig.bin.json ./bin/translations_download.ts",
+    "test:e2e:generate:brig-api": "oazapfts --argumentStyle=object --optimistic --useUnknown --futureStripLegacyMethods https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig-swagger.json e2e-tests/backend/brig/generated/brig-api.ts"
   },
   "version": "3.42.0",
   "packageManager": "yarn@3.3.1"

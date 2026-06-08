@@ -23,14 +23,19 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import {BrigApiClient, createBrigApiClient} from './backend/brig';
 import {createApp, type App} from './utils/createApp';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
 
-type Fixtures = {app: App};
+type Fixtures = {app: App; brigApi: BrigApiClient};
 
 export const test = baseTest.extend<FixtureOptions & Fixtures>({
   appOptions: {env: process.env.WEBAPP_URL, lang: 'en'},
+
+  brigApi: async ({}, use) => {
+    await use(createBrigApiClient());
+  },
 
   app: async ({appOptions}, use) => {
     // Always use a fresh temporary directory for the user data to ensure test isolation
