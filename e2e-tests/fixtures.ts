@@ -35,12 +35,15 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
 
   /* Api client for the [brig](https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig/) api */
   brigApi: async ({}, use) => {
-    await use(
-      new BrigApiClient({
-        baseUrl: process.env.BACKEND_URL!,
-        basicAuth: process.env.BACKEND_BASIC_AUTH!,
-      }),
-    );
+    if (process.env.BACKEND_URL === undefined) {
+      throw new Error('Missing env var BACKEND_URL');
+    }
+
+    if (process.env.BACKEND_BASIC_AUTH === undefined) {
+      throw new Error('Missing env var BACKEND_BASIC_AUTH');
+    }
+
+    await use(new BrigApiClient({baseUrl: process.env.BACKEND_URL, basicAuth: process.env.BACKEND_BASIC_AUTH}));
   },
 
   app: async ({appOptions}, use) => {
