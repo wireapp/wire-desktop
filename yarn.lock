@@ -2496,7 +2496,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oazapfts/runtime@npm:^1.2.0":
+"@oazapfts/runtime@npm:1.2.0":
   version: 1.2.0
   resolution: "@oazapfts/runtime@npm:1.2.0"
   checksum: 37da303d42e012d2d6a7f29e6dc22751a2cfe2f69d8ebefc226a0c0ff3c68b7738fb4148f5f4897af7579ec844424400508007fddd62eed7fef270161d7392c2
@@ -12856,7 +12856,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oazapfts@npm:^7.5.0":
+"oazapfts@npm:7.5.0":
   version: 7.5.0
   resolution: "oazapfts@npm:7.5.0"
   dependencies:
@@ -16955,7 +16955,7 @@ __metadata:
     "@electron/osx-sign": 1.3.3
     "@electron/remote": 2.1.3
     "@hapi/joi": 17.1.1
-    "@oazapfts/runtime": ^1.2.0
+    "@oazapfts/runtime": 1.2.0
     "@playwright/test": 1.60.0
     "@types/adm-zip": 0.5.8
     "@types/amplify": 1.1.28
@@ -17049,7 +17049,7 @@ __metadata:
     mocha: 10.8.2
     nock: 13.5.6
     nyc: 15.1.0
-    oazapfts: ^7.5.0
+    oazapfts: 7.5.0
     open-graph: 0.2.6
     prettier: 2.8.8
     react: 18.3.1
