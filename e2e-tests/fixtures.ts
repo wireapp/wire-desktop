@@ -23,7 +23,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import {BrigApiClient, createBrigApiClient} from './backend/brig';
+import {BrigApiClient} from './backend/BrigApiClient';
 import {createApp, type App} from './utils/createApp';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
@@ -33,8 +33,14 @@ type Fixtures = {app: App; brigApi: BrigApiClient};
 export const test = baseTest.extend<FixtureOptions & Fixtures>({
   appOptions: {env: process.env.WEBAPP_URL, lang: 'en'},
 
+  /* Api client for the [brig](https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig/) api */
   brigApi: async ({}, use) => {
-    await use(createBrigApiClient());
+    await use(
+      new BrigApiClient({
+        baseUrl: process.env.BACKEND_URL!,
+        basicAuth: process.env.BACKEND_BASIC_AUTH!,
+      }),
+    );
   },
 
   app: async ({appOptions}, use) => {

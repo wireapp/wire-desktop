@@ -26,6 +26,9 @@ type BrigApiClientConfig = {
   basicAuth: string;
 };
 
+/**
+ * Wrapper around the generated API client to expose a curried version of them providing defaults for the instance and optionally adapting the api with reasonable defaults
+ */
 export class BrigApiClient {
   private readonly requestOptions: RequestOpts;
 

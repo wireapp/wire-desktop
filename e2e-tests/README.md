@@ -20,18 +20,18 @@ Before attempting to execute the E2E tests make sure to run the script `yarn run
 
 To then execute the e2e tests run `yarn run test:e2e` which will execute all of them. To only run specific tests you can pass the file containing them e.g. `yarn run test:e2e e2e-tests/specs/example.spec.ts`.
 
-### Brig API Client
+## Api Clients
 
-The E2E tests use a generated, type-safe client for Brig internal API calls.
+The E2E tests use a generated, type-safe clients for internal API calls.
 
-The generated client lives at:
+The generated clients live at: `e2e-tests/backend/generated/`. Do not update these files manually, they is generated from the OpenAPI specifications with [oazapfts](https://github.com/oazapfts/oazapfts).
 
-`e2e-tests/backend/generated/brig-api.ts`
+### Updating
 
-Do not update this file manually. It is generated from the Brig OpenAPI specification with `oazapfts`.
+To regenerate the clients, run all or only selected commands from the following code block:
 
-To regenerate the file, run `yarn test:generate:e2e:brig-api`. Then review the diff carefully.
+```bash
+yarn oazapfts --argumentStyle=object --optimistic --useUnknown --futureStripLegacyMethods https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig-swagger.json e2e-tests/backend/generated/brigApi.ts
+```
 
-If the operation names changed, update the wrapper in:
-
-`e2e-tests/backend/brig/BrigApiClient.ts`
+If the operation names or parameters changed, update the respective wrapper in: `e2e-tests/backend/*ApiClient.ts`. Also make sure to commit the changes made to the generated files, since some of the APIs are not versioned we don't want to rely on automatic generation e.g. within postinstall.
