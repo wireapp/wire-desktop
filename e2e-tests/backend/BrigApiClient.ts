@@ -19,7 +19,7 @@
 
 import {type RequestOpts} from '@oazapfts/runtime';
 
-import * as brigApi from './generated/brig-api';
+import * as brigApi from './generated/brigApi';
 
 export type BrigApiClientConfig = {
   baseUrl: string;
