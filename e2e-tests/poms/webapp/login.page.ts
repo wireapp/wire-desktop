@@ -17,14 +17,10 @@
  *
  */
 
-import {expect, test} from '../../fixtures';
-import {loginPage} from '../../poms/webapp/login.page';
-import {ssoPage} from '../../poms/webapp/sso.page';
-import {createUser} from '../../utils/createUser';
+import {Page} from '@playwright/test';
 
-test('I want to register a new Wire account', {tag: ['@TC-10924', '@crit-flow-web']}, async ({page}) => {
-  const user = createUser();
-  await ssoPage(page).codeEmailInput.fill(user.email);
-  await ssoPage(page).loginButton.click();
-  await expect(loginPage(page).createAccountButton).toBeVisible();
-});
+export const loginPage = (page: Page) => {
+  return {
+    createAccountButton: page.getByRole('button', {name: 'Create account'}),
+  };
+};
