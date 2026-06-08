@@ -42,6 +42,7 @@ export class BrigApiClient {
   }
 
   async getUserActivationCode(email: string) {
-    return brigApi.iGetUserActivationCode({email}, this.requestOptions);
+    const res = await brigApi.iGetUserActivationCode({email}, this.requestOptions);
+    return res.code;
   }
 }
