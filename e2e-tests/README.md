@@ -19,3 +19,19 @@ The E2E tests depend on configs / secrets which need to be provided as environme
 Before attempting to execute the E2E tests make sure to run the script `yarn run prestart` once. It will generate the outputs needed for launching the application within the tests.
 
 To then execute the e2e tests run `yarn run test:e2e` which will execute all of them. To only run specific tests you can pass the file containing them e.g. `yarn run test:e2e e2e-tests/specs/example.spec.ts`.
+
+## Api Clients
+
+The E2E tests use a generated, type-safe clients for internal API calls.
+
+The generated clients live at: `e2e-tests/backend/generated/`. Do not update these files manually, they is generated from the OpenAPI specifications with [oazapfts](https://github.com/oazapfts/oazapfts).
+
+### Updating
+
+To regenerate the clients, run all or only selected commands from the following code block:
+
+```bash
+yarn oazapfts --argumentStyle=object --optimistic --useUnknown --futureStripLegacyMethods https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig-swagger.json e2e-tests/backend/generated/brigApi.ts
+```
+
+If the operation names or parameters changed, update the respective wrapper in: `e2e-tests/backend/*ApiClient.ts`. Also make sure to commit the changes made to the generated files, since some of the APIs are not versioned we don't want to rely on automatic generation e.g. within postinstall.
