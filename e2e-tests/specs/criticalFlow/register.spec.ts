@@ -19,6 +19,7 @@
 
 import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
+import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
 import {emailVerificationPage} from '../../poms/webapp/emailVerification.page';
 import {loginPage} from '../../poms/webapp/login.page';
 import {registrationPage} from '../../poms/webapp/registration.page';
@@ -79,7 +80,7 @@ test('I want to register a new Wire account', {tag: ['@TC-10924', '@crit-flow-we
   });
 
   await test.step("User verifies he's now logged in with his new account", async () => {
-    await expect(page.getByTestId('element-avatar-user')).toContainText(user.initials);
+    await expect(conversationsSidebar(page).userAvatar).toContainText(user.initials);
     await expect(accountsSidebar(app).getAccount(user)).toBeVisible();
   });
 });
