@@ -32,6 +32,7 @@ To regenerate the clients, run all or only selected commands from the following 
 
 ```bash
 yarn oazapfts --argumentStyle=object --optimistic --useUnknown --futureStripLegacyMethods https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig-swagger.json e2e-tests/backend/generated/brigApi.ts
+yarn oazapfts --argumentStyle=object --useUnknown --futureStripLegacyMethods https://staging-nginz-https.zinfra.io/v15/api/swagger.json e2e-tests/backend/generated/publicApi.ts
 ```
 
 If the operation names or parameters changed, update the respective wrapper in: `e2e-tests/backend/*ApiClient.ts`. Also make sure to commit the changes made to the generated files, since some of the APIs are not versioned we don't want to rely on automatic generation e.g. within postinstall.
