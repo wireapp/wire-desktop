@@ -47,7 +47,7 @@ export const createUser = (): User => {
     get fullName() {
       return `${this.firstName} ${this.lastName}`;
     },
-    email: faker.internet.email({provider: 'wire.engineering'}),
+    email: faker.internet.email({firstName, lastName, provider: 'wire.engineering'}),
     password: generateValidPassword(),
   };
 };
