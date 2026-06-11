@@ -17,13 +17,29 @@
  *
  */
 
-import {test} from '../../fixtures';
+import {expect, test} from '../../fixtures';
+import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
+import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
+import {LOGIN_TIMEOUT, loginPage} from '../../poms/webapp/login.page';
+import {ssoPage} from '../../poms/webapp/sso.page';
 
 test(
   'I want to log in with my existing Wire account',
   {tag: ['@TC-10923', '@crit-flow-desktop']},
-  async ({createUser}) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async ({app, page, createUser}) => {
     const user = await createUser();
+
+    await test.step('User logs in', async () => {
+      await ssoPage(page).codeEmailInput.fill(user.email);
+      await ssoPage(page).loginButton.click();
+
+      await loginPage(page).passwordInput.fill(user.password);
+      await loginPage(page).loginButton.click();
+    });
+
+    await test.step("User verifies he's now logged in with his new account", async () => {
+      await expect(conversationsSidebar(page).userAvatar).toContainText(user.initials, {timeout: LOGIN_TIMEOUT});
+      await expect(accountsSidebar(app).getAccount(user)).toBeVisible();
+    });
   },
 );

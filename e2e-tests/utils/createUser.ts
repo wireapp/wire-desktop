@@ -66,7 +66,7 @@ export const registerUser = async (
   user: User,
   {publicApi, brigApi}: {publicApi: PublicApiClient; brigApi: BrigApiClient},
 ): Promise<RegisteredUser> => {
-  const {zuidCookie, ...registeredUserData} = await publicApi.registerUser(user);
+  const {zuidCookie} = await publicApi.registerUser(user);
 
   const activationCode = await brigApi.getUserActivationCode(user.email);
   await publicApi.activateAccount(user.email, activationCode);
@@ -76,9 +76,7 @@ export const registerUser = async (
   await publicApi.setUsername(accessToken, user.username);
 
   return {
-    ...registeredUserData,
-    username: user.username,
-    password: user.password,
+    ...user,
     token: accessToken,
   };
 };

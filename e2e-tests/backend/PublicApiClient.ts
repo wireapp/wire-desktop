@@ -23,11 +23,7 @@ import * as publicApiClient from './generated/publicApi';
 
 import {User} from '../utils/createUser';
 
-export type RegisteredUser = publicApiClient.User & {
-  username: string;
-  password: string;
-  token: string;
-};
+export type RegisteredUser = User & {token: string};
 
 export type PublicApiClientConfig = {
   baseUrl: string;
