@@ -2783,6 +2783,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@faker-js/faker@npm:10.4.0":
+  version: 10.4.0
+  resolution: "@faker-js/faker@npm:10.4.0"
+  checksum: f57d9cce75e967e5c94b80ca3b4d4037147b7688a43d1140eb3319a6b97fb6baaf06fba34c9804cf3441172a1a9ad1724aa7a319cec1f101887c7b3fdc0b4ac3
+  languageName: node
+  linkType: hard
+
 "@floating-ui/core@npm:^1.2.6":
   version: 1.2.6
   resolution: "@floating-ui/core@npm:1.2.6"
@@ -20910,6 +20917,7 @@ __metadata:
     "@electron/fuses": 1.8.0
     "@electron/osx-sign": 1.3.3
     "@electron/remote": 2.1.3
+    "@faker-js/faker": 10.4.0
     "@hapi/joi": 17.1.1
     "@oazapfts/runtime": 1.2.0
     "@playwright/test": 1.60.0
