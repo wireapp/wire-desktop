@@ -24,14 +24,30 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {BrigApiClient} from './backend/BrigApiClient';
+import {PublicApiClient, RegisteredUser} from './backend/PublicApiClient';
 import {createApp, type App} from './utils/createApp';
+import {createUser, registerUser} from './utils/createUser';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
 
-type Fixtures = {app: App; brigApi: BrigApiClient};
+type Fixtures = {
+  app: App;
+  publicApi: PublicApiClient;
+  brigApi: BrigApiClient;
+
+  createUser: () => Promise<RegisteredUser>;
+};
 
 export const test = baseTest.extend<FixtureOptions & Fixtures>({
   appOptions: {env: process.env.WEBAPP_URL, lang: 'en'},
+
+  publicApi: async ({}, use) => {
+    if (process.env.BACKEND_URL === undefined) {
+      throw new Error('Missing env var BACKEND_URL');
+    }
+
+    await use(new PublicApiClient({baseUrl: process.env.BACKEND_URL}));
+  },
 
   /* Api client for the [brig](https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig/) api */
   brigApi: async ({}, use) => {
@@ -60,6 +76,19 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
   // Overwrite of the default page fixture to reference the apps page instead
   page: async ({app}, use) => {
     await use(app.page);
+  },
+
+  createUser: async ({publicApi, brigApi}, use) => {
+    const users: RegisteredUser[] = [];
+
+    await use(async () => {
+      const userData = createUser();
+      const user = await registerUser(userData, {publicApi, brigApi});
+      users.push(user);
+      return user;
+    });
+
+    await Promise.all(users.map(user => publicApi.deleteUser(user)));
   },
 });
 
