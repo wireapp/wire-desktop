@@ -63,7 +63,9 @@ test('I want to register a new Wire account', {tag: ['@TC-10924', '@crit-flow-we
   });
 
   await test.step('User does not want to receive news and updates via email', async () => {
-    await page.getByTestId('modal-marketing-consent').getByRole('button', {name: 'No, thanks'}).click();
+    const modal = page.getByRole('dialog');
+    await expect(modal).toContainText('Do you want to receive news and product updates from Wire via email?');
+    await modal.getByRole('button', {name: 'No, thanks'}).click();
   });
 
   await test.step('User checks the automatically generated username', async () => {
