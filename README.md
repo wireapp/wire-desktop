@@ -22,7 +22,7 @@ Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireap
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) >= 10
+- [Node.js](https://nodejs.org/) matching the version defined in `.node-version`
 - Npm
 - Git
 - Yarn (Install using the official instructions at https://yarnpkg.com/lang/en/docs/install/, and not using the package recommended by apt-get)
