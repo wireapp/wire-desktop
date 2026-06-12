@@ -22,7 +22,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version-file: '.node-version'
           cache: 'yarn'
       - name: Install dependencies
         run: yarn --immutable
