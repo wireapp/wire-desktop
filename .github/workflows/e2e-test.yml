@@ -37,4 +37,5 @@ jobs:
         run: yarn prestart
 
       - name: Run E2E tests
-        run: yarn test:e2e
+        # We use xvfb to simulate a virtual display in order for electron to work in CI
+        run: xvfb-run yarn test:e2e
