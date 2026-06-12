@@ -13,6 +13,10 @@
   },
   "packageRules": [
     {
+      "matchDepNames": ["node"],
+      "groupName": "Node Version"
+    },
+    {
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
     },
