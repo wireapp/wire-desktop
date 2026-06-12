@@ -24,6 +24,9 @@ jobs:
       - name: Install JS dependencies
         run: yarn --immutable
 
+      - name: Install Playwright browsers
+        run: yarn playwright install --only-shell --with-deps chromium
+
       - uses: 1password/install-cli-action@8d006a0d0a4fd505af7f7ce589e7f768385ff5e4
       - name: Generate env file
         run: op inject -i e2e-tests/.env.tpl -o e2e-tests/.env
