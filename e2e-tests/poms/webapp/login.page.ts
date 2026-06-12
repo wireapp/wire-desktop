@@ -19,8 +19,12 @@
 
 import {Page} from '@playwright/test';
 
+export const LOGIN_TIMEOUT = 40_000;
+
 export const loginPage = (page: Page) => {
   return {
+    passwordInput: page.getByPlaceholder('Password'),
+    loginButton: page.getByRole('button', {name: 'Log in'}),
     createAccountButton: page.getByRole('button', {name: 'Create account'}),
   };
 };
