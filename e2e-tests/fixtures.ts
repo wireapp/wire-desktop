@@ -63,12 +63,22 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     await use(new BrigApiClient({baseUrl: process.env.BACKEND_URL, basicAuth: process.env.BACKEND_BASIC_AUTH}));
   },
 
-  app: async ({appOptions}, use) => {
+  app: async ({appOptions}, use, testInfo) => {
     // Always use a fresh temporary directory for the user data to ensure test isolation
     const tempUserDataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-desktop-e2e-tests-'));
     const app = await createApp({...appOptions, dataDir: tempUserDataDir});
 
+    // Traces for the electron app need to be collected manually as it uses a non default context
+    await app.page.context().tracing.start({screenshots: true, snapshots: true});
+
     await use(app);
+
+    // Add the trace of the first run as attachment if it failed
+    if (testInfo.status === 'failed' && testInfo.retry === 0) {
+      const tracePath = testInfo.outputPath('app-trace.zip');
+      await app.page.context().tracing.stop({path: tracePath});
+      await testInfo.attach('app-trace.zip', {path: tracePath});
+    }
 
     await app.close();
     await fs.rm(tempUserDataDir, {recursive: true});

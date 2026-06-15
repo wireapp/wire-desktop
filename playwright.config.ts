@@ -43,8 +43,8 @@ export default defineConfig({
   expect: {timeout: 10_000},
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    // Behavior for tracing the web browser, for traces of the electron app see its fixture in `e2e-tests/fixtures.ts`
+    trace: 'retain-on-first-failure',
     testIdAttribute: 'data-uie-name',
     baseURL: process.env.WEBAPP_URL,
   },
