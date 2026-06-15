@@ -20,11 +20,65 @@
 import {test, expect} from '../../fixtures';
 
 test.describe('Keyboard Shortcuts', () => {
+  test.beforeEach(async ({app}) => {
+    await app.evaluate(async ({BrowserWindow, Menu}) => {
+      const win = BrowserWindow.getAllWindows()[0];
+
+      const win32Template = {
+        label: `Windows`,
+        submenu: [
+          {
+            accelerator: 'Ctrl+,',
+            click: () => win.webContents.send('EVENT_TYPE.UI.SYSTEM_MENU', 'EVENT_TYPE.PREFERENCES.SHOW'),
+            label: 'Settings',
+          },
+        ],
+      };
+
+      const darwinTemplate = {
+        label: 'Darwin',
+        submenu: [
+          {
+            accelerator: 'Command+,',
+            click: () => win.webContents.send('EVENT_TYPE.UI.SYSTEM_MENU', 'EVENT_TYPE.PREFERENCES.SHOW'),
+            label: 'Preferences',
+          },
+        ],
+      };
+
+      const generalTemplate = {
+        label: 'Darwin & Windows',
+        submenu: [
+          {
+            click: () => win.webContents.send('EVENT_TYPE.UI.SYSTEM_MENU', 'EVENT_TYPE.ACTION.SIGN_OUT'),
+            label: 'Log Out',
+          },
+          {
+            click: () => win.webContents.send('EVENT_TYPE.UI.SYSTEM_MENU', 'EVENT_TYPE.CONVERSATION.PING'),
+            label: 'Ping',
+          },
+          {
+            accelerator: 'CmdOrCtrl+N',
+            click: () => win.webContents.send('EVENT_TYPE.UI.SYSTEM_MENU', 'EVENT_TYPE.CONVERSATION.START'),
+            label: 'Create Group',
+          },
+          {
+            accelerator: 'CmdOrCtrl+M',
+            click: () => win.webContents.send('EVENT_TYPE.UI.SYSTEM_MENU', 'EVENT_TYPE.CONVERSATION.TOGGLE_MUTE'),
+            label: 'Toggle mute',
+          },
+        ],
+      };
+
+      const menu = Menu.buildFromTemplate([win32Template, darwinTemplate, generalTemplate]);
+      Menu.setApplicationMenu(menu);
+    });
+  });
+
   test(
     'Create new group conversation using keyboard shortcuts',
     {tag: ['@TC-10968', '@regression']},
     async ({app, page}) => {
-      await expect(page.getByText('Welcome to Wire!').first()).toBeVisible();
       // Using a test account with a pre-created conversation to skip the onboarding flow faster
       const email = '';
       const password = '';
@@ -33,6 +87,10 @@ test.describe('Keyboard Shortcuts', () => {
       await page.locator('[data-uie-name="do-sso-sign-in"]').click();
       await page.locator('[data-uie-name="enter-password"]').fill(password);
       await page.locator('[data-uie-name="do-sign-in"]').click();
+
+      await page.locator('[data-uie-name="go-remove-device"]').first().click({timeout: 50000});
+      await page.getByRole('textbox', {name: 'Password'}).fill(password);
+      await page.getByRole('button', {name: 'Remove device'}).click();
 
       await page.locator('[data-uie-name="do-history-confirm"]').click();
       await expect(page.getByText('All conversations')).toBeVisible({timeout: 40000});
@@ -65,7 +123,6 @@ test.describe('Keyboard Shortcuts', () => {
     'Mute and unmute group and 1:1 conversations with keyboard shortcut',
     {tag: ['@TC-10965', '@regression']},
     async ({app, page}) => {
-      await expect(page.getByText('Welcome to Wire!').first()).toBeVisible();
       // Use a test account with a pre-created conversation to skip the onboarding flow faster
       const email = '';
       const password = '';
@@ -74,18 +131,113 @@ test.describe('Keyboard Shortcuts', () => {
       await page.locator('[data-uie-name="do-sso-sign-in"]').click();
       await page.locator('[data-uie-name="enter-password"]').fill(password);
       await page.locator('[data-uie-name="do-sign-in"]').click();
+
+      await page.locator('[data-uie-name="go-remove-device"]').first().click({timeout: 50000});
+      await page.getByRole('textbox', {name: 'Password'}).fill(password);
+      await page.getByRole('button', {name: 'Remove device'}).click();
+
       await page.locator('[data-uie-name="do-history-confirm"]').click();
-
       await expect(page.getByText('All conversations')).toBeVisible({timeout: 40000});
-      // For keyboard shortcuts registered as global shortcuts in the main process
-      await app.evaluate(async ({BrowserWindow}) => {
-        const win = BrowserWindow.getAllWindows()[0];
 
-        win.webContents.send('EVENT_TYPE.UI.SYSTEM_MENU', 'EVENT_TYPE.CONVERSATION.TOGGLE_MUTE');
+      // For keyboard shortcuts registered as global shortcuts in the main process
+      await app.evaluate(async ({BrowserWindow, Menu}) => {
+        const menu = Menu.getApplicationMenu();
+        const target = menu?.items
+          .flatMap(item => item.submenu?.items ?? [])
+          .find(item => item.accelerator === 'CmdOrCtrl+M');
+
+        if (!target) {
+          throw new Error('Menu item not found');
+        }
+
+        const targetWindow = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+        if (!targetWindow) {
+          throw new Error('No Electron window found to send the menu event to');
+        }
+
+        target.click(target, targetWindow);
       });
 
       // 3. Verification Assertion
       await expect(page.getByText('Notifications')).toBeVisible();
     },
   );
+
+  test('Open preferences with menu bar on macOS', {tag: ['@TC-2654', '@regression']}, async ({app, page}) => {
+    await expect(page.getByText('Welcome to Wire!')).toBeVisible({timeout: 20000});
+    // Using a test account with a pre-created conversation to skip the onboarding flow faster
+    const email = '';
+    const password = '';
+
+    await page.locator('#sso-code-email').fill(email);
+    await page.locator('[data-uie-name="do-sso-sign-in"]').click();
+    await page.locator('[data-uie-name="enter-password"]').fill(password);
+    await page.locator('[data-uie-name="do-sign-in"]').click();
+
+    await page.locator('[data-uie-name="go-remove-device"]').first().click({timeout: 50000});
+    await page.getByRole('textbox', {name: 'Password'}).fill(password);
+    await page.getByRole('button', {name: 'Remove device'}).click();
+
+    await page.locator('[data-uie-name="do-history-confirm"]').click();
+    await expect(page.getByText('All conversations')).toBeVisible({timeout: 40000});
+
+    // For keyboard shortcuts registered in the application menu
+    await app.evaluate(async ({BrowserWindow, Menu}) => {
+      const menu = Menu.getApplicationMenu();
+
+      const target = menu?.items.flatMap(item => item.submenu?.items ?? []).find(item => item.label === 'Preferences');
+
+      if (!target) {
+        throw new Error('Menu item not found');
+      }
+
+      const targetWindow = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+      if (!targetWindow) {
+        throw new Error('No Electron window found to send the menu event to');
+      }
+
+      target.click(target, targetWindow);
+    });
+
+    await expect(page.getByText('Preferences')).toBeVisible();
+  });
+
+  test('Open preferences with menu bar on Windows', {tag: ['@TC-2655', '@regression']}, async ({app, page}) => {
+    await expect(page.getByText('Welcome to Wire!')).toBeVisible({timeout: 20000});
+    // Using a test account with a pre-created conversation to skip the onboarding flow faster
+    const email = '';
+    const password = '';
+
+    await page.locator('#sso-code-email').fill(email);
+    await page.locator('[data-uie-name="do-sso-sign-in"]').click();
+    await page.locator('[data-uie-name="enter-password"]').fill(password);
+    await page.locator('[data-uie-name="do-sign-in"]').click();
+
+    await page.locator('[data-uie-name="go-remove-device"]').first().click({timeout: 50000});
+    await page.getByRole('textbox', {name: 'Password'}).fill(password);
+    await page.getByRole('button', {name: 'Remove device'}).click();
+
+    await page.locator('[data-uie-name="do-history-confirm"]').click();
+    await expect(page.getByText('All conversations')).toBeVisible({timeout: 40000});
+
+    // For keyboard shortcuts registered in the application menu
+    await app.evaluate(async ({BrowserWindow, Menu}) => {
+      const menu = Menu.getApplicationMenu();
+
+      const target = menu?.items.flatMap(item => item.submenu?.items ?? []).find(item => item.label === 'Settings');
+
+      if (!target) {
+        throw new Error('Menu item not found');
+      }
+
+      const targetWindow = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+      if (!targetWindow) {
+        throw new Error('No Electron window found to send the menu event to');
+      }
+
+      target.click(target, targetWindow);
+    });
+
+    await expect(page.getByText('Preferences')).toBeVisible();
+  });
 });
