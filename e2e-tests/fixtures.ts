@@ -17,7 +17,7 @@
  *
  */
 
-import {test as baseTest} from '@playwright/test';
+import {test as baseTest, BrowserContext, Page} from '@playwright/test';
 
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -36,6 +36,7 @@ type Fixtures = {
   brigApi: BrigApiClient;
 
   createUser: () => Promise<RegisteredUser>;
+  createPage: () => Promise<Page>;
 };
 
 export const test = baseTest.extend<FixtureOptions & Fixtures>({
@@ -89,6 +90,23 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     });
 
     await Promise.all(users.map(user => publicApi.deleteUser(user)));
+  },
+
+  createPage: async ({browser}, use) => {
+    const contexts: BrowserContext[] = [];
+
+    await use(async () => {
+      const context = await browser.newContext();
+      contexts.push(context);
+
+      const page = await context.newPage();
+      await page.goto('/'); // Open the base url to ensure the page starts in the same state as the app
+
+      return page;
+    });
+
+    // Close all contexts created throughout the tests (will automatically close all pages associated with each context)
+    await Promise.all(contexts.map(ctx => ctx.close()));
   },
 });
 
