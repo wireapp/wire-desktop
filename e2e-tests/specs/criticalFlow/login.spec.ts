@@ -20,8 +20,7 @@
 import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
-import {LOGIN_TIMEOUT, loginPage} from '../../poms/webapp/login.page';
-import {ssoPage} from '../../poms/webapp/sso.page';
+import {login} from '../../utils/login';
 
 test(
   'I want to log in with my existing Wire account',
@@ -30,15 +29,11 @@ test(
     const user = await createUser();
 
     await test.step('User logs in', async () => {
-      await ssoPage(page).codeEmailInput.fill(user.email);
-      await ssoPage(page).loginButton.click();
-
-      await loginPage(page).passwordInput.fill(user.password);
-      await loginPage(page).loginButton.click();
+      await login(page, user);
     });
 
     await test.step("User verifies he's now logged in with his new account", async () => {
-      await expect(conversationsSidebar(page).userAvatar).toContainText(user.initials, {timeout: LOGIN_TIMEOUT});
+      await expect(conversationsSidebar(page).userAvatar).toContainText(user.initials);
       await expect(accountsSidebar(app).getAccount(user)).toBeVisible();
     });
   },
