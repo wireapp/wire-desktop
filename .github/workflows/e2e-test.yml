@@ -41,6 +41,12 @@ jobs:
         # We use xvfb to simulate a virtual display in order for electron to work in CI
         run: xvfb-run yarn test:e2e
 
+      - name: Upload test report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-report
+          path: playwright-report/html
+
       - name: Generate report description
         id: generate-description
         run: |
