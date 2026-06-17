@@ -23,10 +23,10 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import {createApp, type App} from './actions/createApp';
+import {createUser, registerUser} from './actions/createUser';
 import {BrigApiClient} from './backend/BrigApiClient';
 import {PublicApiClient, RegisteredUser} from './backend/PublicApiClient';
-import {createApp, type App} from './utils/createApp';
-import {createUser, registerUser} from './utils/createUser';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
 

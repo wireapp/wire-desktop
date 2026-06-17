@@ -17,11 +17,21 @@
  *
  */
 
-import {App} from '../../actions/createApp';
-import {User} from '../../actions/createUser';
+import {Page} from '@playwright/test';
 
-export const accountsSidebar = (app: App) => {
-  return {
-    getAccount: (user: User) => app.wrapper.getByRole('button', {name: user.fullName}),
-  };
+import {User} from './createUser';
+
+import {conversationsSidebar} from '../poms/webapp/conversationsSidebar.page';
+import {LOGIN_TIMEOUT, loginPage} from '../poms/webapp/login.page';
+import {ssoPage} from '../poms/webapp/sso.page';
+
+/* Visit the sso page and execute the login for the user */
+export const loginUser = async (page: Page, user: User) => {
+  await ssoPage(page).codeEmailInput.fill(user.email);
+  await ssoPage(page).loginButton.click();
+
+  await loginPage(page).passwordInput.fill(user.password);
+  await loginPage(page).loginButton.click();
+
+  await conversationsSidebar(page).userAvatar.waitFor({state: 'visible', timeout: LOGIN_TIMEOUT});
 };
