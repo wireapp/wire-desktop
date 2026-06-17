@@ -42,6 +42,12 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
     console.log(...args);
   });
 
+  // Mock safeStorage API of electron as it doesn't work for the headless linux used in CI
+  app.evaluate(({safeStorage}) => {
+    safeStorage.encryptString = (plainText: string) => Buffer.from(plainText, 'utf-8');
+    safeStorage.decryptString = (encrypted: Buffer) => Buffer.from(encrypted).toString('utf-8');
+  });
+
   /**
    * The webview element isn't treated as a regular webcomponent / iframe by electron but as individual window.
    * So in order to access the contents of the application we need to use the second window.
