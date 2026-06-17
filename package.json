@@ -111,11 +111,9 @@
     "eslint-plugin-testing-library": "6.5.0",
     "eslint-plugin-unused-imports": "3.2.0",
     "form-data": "4.0.5",
-    "husky": "4.3.8",
     "is-ci": "3.0.1",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
-    "lint-staged": "15.5.2",
     "mocha": "10.8.2",
     "nock": "13.5.6",
     "nyc": "15.1.0",
@@ -131,20 +129,7 @@
     "webpack-cli": "5.1.4"
   },
   "homepage": "https://wire.com",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "license": "GPL-3.0",
-  "lint-staged": {
-    "*.{js,jsx,ts}": [
-      "eslint --fix"
-    ],
-    "*.{json,md,css,yml,html}": [
-      "prettier --write"
-    ]
-  },
   "main": "electron/dist/main.js",
   "name": "wire-desktop",
   "prettier": "@wireapp/prettier-config",

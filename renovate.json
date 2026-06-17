@@ -105,10 +105,6 @@
       "groupName": "electron and mocha test tooling"
     },
     {
-      "matchPackageNames": ["husky"],
-      "allowedVersions": "<5"
-    },
-    {
       "matchPackageNames": ["image-type"],
       "allowedVersions": "<5"
     },
