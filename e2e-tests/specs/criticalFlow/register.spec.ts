@@ -21,7 +21,7 @@ import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
 import {emailVerificationPage} from '../../poms/webapp/emailVerification.page';
-import {loginPage} from '../../poms/webapp/login.page';
+import {LOGIN_TIMEOUT, loginPage} from '../../poms/webapp/login.page';
 import {registrationPage} from '../../poms/webapp/registration.page';
 import {setAccountTypePage} from '../../poms/webapp/setAccountType.page';
 import {setHandlePage} from '../../poms/webapp/setHandle.page';
@@ -80,7 +80,7 @@ test(
 
     await test.step('User declines sending usage data', async () => {
       const modal = page.getByRole('dialog');
-      await expect(modal).toContainText('Consent to share user data');
+      await expect(modal).toContainText('Consent to share user data', {timeout: LOGIN_TIMEOUT});
       await modal.getByRole('button', {name: 'Decline'}).click();
     });
 
