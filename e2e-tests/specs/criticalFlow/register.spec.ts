@@ -17,6 +17,7 @@
  *
  */
 
+import {createUser} from '../../actions/createUser';
 import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
@@ -26,7 +27,6 @@ import {registrationPage} from '../../poms/webapp/registration.page';
 import {setAccountTypePage} from '../../poms/webapp/setAccountType.page';
 import {setHandlePage} from '../../poms/webapp/setHandle.page';
 import {ssoPage} from '../../poms/webapp/sso.page';
-import {createUser} from '../../utils/createUser';
 
 test(
   'I want to register a new Wire account',

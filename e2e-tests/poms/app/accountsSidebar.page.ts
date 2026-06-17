@@ -17,8 +17,8 @@
  *
  */
 
-import {App} from '../../utils/createApp';
-import {User} from '../../utils/createUser';
+import {App} from '../../actions/createApp';
+import {User} from '../../actions/createUser';
 
 export const accountsSidebar = (app: App) => {
   return {

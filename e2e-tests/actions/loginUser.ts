@@ -26,7 +26,7 @@ import {LOGIN_TIMEOUT, loginPage} from '../poms/webapp/login.page';
 import {ssoPage} from '../poms/webapp/sso.page';
 
 /* Visit the sso page and execute the login for the user */
-export const login = async (page: Page, user: User) => {
+export const loginUser = async (page: Page, user: User) => {
   await ssoPage(page).codeEmailInput.fill(user.email);
   await ssoPage(page).loginButton.click();
 

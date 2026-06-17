@@ -21,7 +21,7 @@ import {ok, type RequestOpts} from '@oazapfts/runtime';
 
 import * as publicApiClient from './generated/publicApi';
 
-import {User} from '../utils/createUser';
+import {User} from '../actions/createUser';
 
 export type RegisteredUser = User & {token: string};
 

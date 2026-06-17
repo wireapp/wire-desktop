@@ -17,10 +17,10 @@
  *
  */
 
+import {loginUser} from '../../actions/loginUser';
 import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
-import {login} from '../../utils/login';
 
 test(
   'I want to log in with my existing Wire account',
@@ -29,7 +29,7 @@ test(
     const user = await createUser();
 
     await test.step('User logs in', async () => {
-      await login(page, user);
+      await loginUser(page, user);
     });
 
     await test.step("User verifies he's now logged in with his new account", async () => {
