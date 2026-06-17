@@ -35,6 +35,13 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
     args: ['.', `--env=${options.env}`, `--lang=${options.lang ?? 'en'}`, `--user-data-dir=${options.dataDir}`],
   });
 
+  // Forward all logs from the electron apps main thread to the terminal
+  app.on('console', async msg => {
+    const args = await Promise.all(msg.args().map(arg => arg.jsonValue()));
+    // eslint-disable-next-line no-console
+    console.log(...args);
+  });
+
   /**
    * The webview element isn't treated as a regular webcomponent / iframe by electron but as individual window.
    * So in order to access the contents of the application we need to use the second window.
