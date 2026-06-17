@@ -20,6 +20,43 @@ Before attempting to execute the E2E tests make sure to run the script `yarn run
 
 To then execute the e2e tests run `yarn run test:e2e` which will execute all of them. To only run specific tests you can pass the file containing them e.g. `yarn run test:e2e e2e-tests/specs/example.spec.ts`.
 
+## Architecture
+
+### Directory structure
+
+```
+/e2e-tests
+  /actions
+    Directory containing re-usable actions to be used by multiple test suites.
+    Actions in here use the POMs stored in `e2e-tests/poms` and group them to semantic actions e.g. `loginUser()`.
+
+    An action is just a functions accepting dependencies like typically the page to execute the action on. It should not do any assertions.
+    Only create an action if it is needed by multiple test suites, very test specific actions should stay within the test suite they're used in.
+    Try to apply the [Rule of three](https://en.wikipedia.org/wiki/Rule_of_three_(computer_programming)) before abstracting to early.
+  /backend
+    All logic for interacting with backends.
+    Within the tests we need to make calls to different backends, to do so we use auto generated api clients.
+    The generated code is stored within `/backend/generated` while custom clients wrapping the raw api calls, to e.g. provide auth centrally, are placed in the root of the "backend" directory.
+  /poms
+    The tests follow the [Page Object Model](https://martinfowler.com/bliki/PageObject.html) pattern.
+    This means that locators for elements should be placed within re-usable objects to avoid duplication of locators making maintenance easier should any of them change.
+
+    Since Wire doesn't have many "Pages" in the sense of routes to navigate to but many highly interactive components per page some of the objects in here may also be referred to as "COMs" (Component Object Models). However for familiarity and to not introduce to much custom wording, the folder is simply named "poms".
+
+    From an implementation point of view a POM is just a factory function accepting a page / app and returning an object containing locators and actions to interact with the component / page and do assertions on it within tests.
+
+    The "poms" directory is separated into POMs for the Wire Desktop app itself and POMs for Wire Web running inside of it.
+    App POMs accept the type `App` as dependency to interact with e.g. locate the accounts in the accounts sidebar. While the webapp POMs accept a `Page` to e.g. send a message inside a chat. This split is intentional as the POMs for webapp can be used to interact with both, the app instance as well as web pages serving as additional instances to e.g. test communication between multiple users.
+  /scripts
+    Holds custom scripts used in CI to e.g. aggregate and upload the test results to our QA Platform
+  /specs
+    The directory containing the tests. Each test suite is it's own file grouping multiple tests for the same topic.
+    There's no need to wrap such a file in an identically named folder.
+  fixtures.ts
+    The central file containing all setup for the tests. In here the instance of the App is created so it can be used within tests.
+    It also provides fixtures e.g. for user creation and instances for the API clients.
+```
+
 ## Api Clients
 
 The E2E tests use a generated, type-safe clients for internal API calls.
