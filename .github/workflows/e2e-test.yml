@@ -1,0 +1,120 @@
+name: E2E Tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Execute workflow every night throughout the week
+    - cron: '37 04 * * 1-5'
+
+jobs:
+  run_tests:
+    name: Run E2E Tests
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version-file: '.node-version'
+          cache: 'yarn'
+
+      - name: Install JS dependencies
+        run: yarn --immutable
+
+      - name: Install Playwright browsers
+        run: yarn playwright install --only-shell --with-deps chromium
+
+      - uses: 1password/install-cli-action@8d006a0d0a4fd505af7f7ce589e7f768385ff5e4
+      - name: Generate env file
+        run: op inject -i e2e-tests/.env.tpl -o e2e-tests/.env
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Build application
+        run: yarn prestart
+
+      - name: Run E2E tests
+        continue-on-error: true
+        # We use xvfb to simulate a virtual display in order for electron to work in CI
+        run: xvfb-run yarn test:e2e
+
+      - name: Upload test report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-report
+          path: playwright-report/html
+
+      - name: Generate report description
+        id: generate-description
+        run: |
+          REPORT_FILE="playwright-report/report.json"
+          if [ ! -f "$REPORT_FILE" ]; then
+              echo "Error: File '$REPORT_FILE' not found!"
+              exit 1
+          fi
+
+          FAILED=$(jq '.stats.unexpected' "$REPORT_FILE")
+          MESSAGE=$(jq -c '
+            # Recursively find all objects that have a non-empty "specs" array
+            # Capture the suite title and prepend it to the test title
+            [.. | objects | select(has("specs") and (.specs | length > 0)) | .title as $suite | .specs[] | .title as $title | .tests[] | {title: ($suite + " > " + $title), status: .status}] as $tests |
+            
+            # Calculate aggregates
+            ($tests | length) as $total |
+            ($tests | map(select(.status == "expected")) | length) as $passed |
+            ($tests | map(select(.status == "unexpected")) | length) as $failed |
+            ($tests | map(select(.status == "flaky")) | length) as $flaky |
+            ($tests | map(select(.status == "skipped")) | length) as $skipped |
+            
+            # Generate unique lists for failed and flaky tests
+            ($tests | map(select(.status == "unexpected")) | map("  ❌ " + .title) | unique | join("\n")) as $failed_list |
+            ($tests | map(select(.status == "flaky")) | map("  ⚠️ " + .title) | unique | join("\n")) as $flaky_list |
+            
+            # Construct the final formatted message
+            "📋 **Desktop E2E Test Run Summary**\n" +
+            "Build URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n" +
+            "======================================\n" +
+            "**Total Tests:** \($total)\n" +
+            "✅ **Passed:** \($passed)\n" +
+            "❌ **Failed:** \($failed)\n" +
+            "⚠️ **Flaky:** \($flaky)\n" +
+            (if $skipped > 0 then "⏭️ **Skipped:** \($skipped)\n" else "" end) +
+            "======================================\n" +
+            (if $failed > 0 then "\n❌ **Failed Tests:**\n\($failed_list)\n" else "" end) +
+            (if $flaky > 0 then "\n⚠️ **Flaky Tests:**\n\($flaky_list)\n" else "" end)
+          ' $REPORT_FILE)
+
+          echo "failed_tests=$FAILED" >> $GITHUB_OUTPUT
+          echo "report_message=$MESSAGE" >> $GITHUB_OUTPUT
+
+      - name: Upload report to Testiny
+        continue-on-error: true
+        env:
+          TESTINY_API_KEY: ${{ secrets.TESTINY_API_KEY }}
+          TESTINY_TEST_PLAN_ID: 117 # 117 is the id of the "Regression" test plan within Testiny
+          DESCRIPTION: ${{ steps.generate-description.outputs.report_message }}
+        run: |
+          # Extract description from json format so it can be quoted correctly
+          RAW_DESCRIPTION=$(echo "$DESCRIPTION" | jq -r '.')
+
+          node ./e2e-tests/scripts/uploadTestReport.ts \
+          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
+          --testPlanId="$TESTINY_TEST_PLAN_ID" \
+          --description="$RAW_DESCRIPTION" \
+          --reportPath="./playwright-report/report.json"
+
+      - name: Notify on Wire about failed tests
+        if: ${{ !cancelled() && steps.generate-description.outputs.failed_tests > 0 }}
+        uses: 8398a7/action-slack@293f8dc0f9731ac35321056641cdef895f4f65f8
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.WIRE_E2E_TEST_BOT_WEBHOOK_URL }}
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "text": ${{ steps.generate-description.outputs.report_message }},
+            }

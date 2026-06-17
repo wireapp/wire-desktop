@@ -37,14 +37,20 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests because there can only be one running instance of the app at a time */
   workers: 1,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  // Only generate reports on CI
+  reporter: process.env.CI
+    ? [
+        ['html', {outputFolder: 'playwright-report/html', open: 'never'}],
+        ['json', {outputFile: 'playwright-report/report.json'}],
+        ['line'],
+      ]
+    : 'line',
   timeout: 90_000,
   expect: {timeout: 10_000},
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    // Behavior for tracing the web browser, for traces of the electron app see its fixture in `e2e-tests/fixtures.ts`
+    trace: 'retain-on-first-failure',
     testIdAttribute: 'data-uie-name',
     baseURL: process.env.WEBAPP_URL,
   },
