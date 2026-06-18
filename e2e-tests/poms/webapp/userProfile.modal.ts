@@ -19,13 +19,9 @@
 
 import {Page} from '@playwright/test';
 
-export const conversationsSidebar = (page: Page) => {
-  const sidebar = page.getByRole('complementary').getByRole('navigation');
-
+export const userProfileModal = (page: Page) => {
   return {
-    userAvatar: sidebar.getByTestId('element-avatar-user'),
-    clickConnectButton: async () => {
-      await page.getByTestId('go-people').click();
-    },
+    connectButton: page.getByTestId('modal-user-profile').getByTestId('do-send-request'),
+    startConversationButton: page.getByTestId('modal-user-profile').getByTestId('start-conversation'),
   };
 };
