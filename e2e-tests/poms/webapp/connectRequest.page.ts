@@ -19,13 +19,11 @@
 
 import {Page} from '@playwright/test';
 
-export const conversationsSidebar = (page: Page) => {
-  const sidebar = page.getByRole('complementary').getByRole('navigation');
-
+export const connectRequestPage = (page: Page) => {
+  const clickConnectButton = async () => {
+    await page.locator('[data-uie-name="connect-request"] [data-uie-name="do-accept"]').click();
+  };
   return {
-    userAvatar: sidebar.getByTestId('element-avatar-user'),
-    clickConnectButton: async () => {
-      await page.getByTestId('go-people').click();
-    },
+    clickConnectButton,
   };
 };

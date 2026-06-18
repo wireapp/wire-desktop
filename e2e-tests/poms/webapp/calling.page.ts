@@ -19,13 +19,12 @@
 
 import {Page} from '@playwright/test';
 
-export const conversationsSidebar = (page: Page) => {
-  const sidebar = page.getByRole('complementary').getByRole('navigation');
+export const callingPage = (page: Page) => {
+  const callCell = page.locator('[data-uie-name="item-call"]');
 
   return {
-    userAvatar: sidebar.getByTestId('element-avatar-user'),
-    clickConnectButton: async () => {
-      await page.getByTestId('go-people').click();
-    },
+    callCell,
+    acceptCallButton: callCell.getByRole('button', {name: 'Accept'}),
+    goFullScreen: page.locator('[data-uie-name="do-maximize-call"]'),
   };
 };

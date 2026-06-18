@@ -32,7 +32,14 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
   }
 
   const app = await electron.launch({
-    args: ['.', `--env=${options.env}`, `--lang=${options.lang ?? 'en'}`, `--user-data-dir=${options.dataDir}`],
+    args: [
+      '.',
+      `--env=${options.env}`,
+      `--lang=${options.lang ?? 'en'}`,
+      `--user-data-dir=${options.dataDir}`,
+      '--use-fake-device-for-media-stream',
+      '--use-fake-ui-for-media-stream',
+    ],
   });
 
   // Forward all logs from the electron apps main thread to the terminal

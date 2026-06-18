@@ -24,6 +24,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {createApp, type App} from './actions/createApp';
+import {createTeam, Team} from './actions/createTeam';
 import {createUser, registerUser} from './actions/createUser';
 import {BrigApiClient} from './backend/BrigApiClient';
 import {PublicApiClient, RegisteredUser} from './backend/PublicApiClient';
@@ -37,6 +38,7 @@ type Fixtures = {
 
   createUser: () => Promise<RegisteredUser>;
   createPage: () => Promise<Page>;
+  createTeam: (...args: Parameters<typeof createTeam> extends [any, ...infer Args] ? Args : never) => Promise<Team>;
 };
 
 export const test = baseTest.extend<FixtureOptions & Fixtures>({
@@ -110,13 +112,25 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
       contexts.push(context);
 
       const page = await context.newPage();
-      await page.goto('/'); // Open the base url to ensure the page starts in the same state as the app
+      await page.goto('/', {waitUntil: 'networkidle'}); // Open the base url to ensure the page starts in the same state as the app
 
       return page;
     });
 
     // Close all contexts created throughout the tests (will automatically close all pages associated with each context)
     await Promise.all(contexts.map(ctx => ctx.close()));
+  },
+
+  createTeam: async ({publicApi, brigApi}, use) => {
+    const teamOwners: RegisteredUser[] = [];
+
+    await use(async (teamName, options) => {
+      const team = await createTeam({publicApi, brigApi}, teamName, options);
+      teamOwners.push(team.owner);
+      return team;
+    });
+
+    await Promise.all(teamOwners.map(owner => publicApi.deleteTeam(owner, owner.teamId)));
   },
 });
 

@@ -30,6 +30,7 @@ export type User = {
   fullName: string;
   email: string;
   password: string;
+  teamId: string;
 };
 
 export const createUser = (): User => {
@@ -49,6 +50,7 @@ export const createUser = (): User => {
     },
     email: faker.internet.email({firstName, lastName, provider: 'wire.engineering'}),
     password: generateValidPassword(),
+    teamId: '',
   };
 };
 

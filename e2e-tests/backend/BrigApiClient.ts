@@ -18,6 +18,7 @@
  */
 
 import {type RequestOpts} from '@oazapfts/runtime';
+import axios from 'axios';
 
 import * as brigApi from './generated/brigApi';
 
@@ -44,5 +45,23 @@ export class BrigApiClient {
   async getUserActivationCode(email: string) {
     const res = await brigApi.iGetUserActivationCode({email}, this.requestOptions);
     return res.code;
+  }
+
+  async getTeamActivationCode(team: string, invitationId: string) {
+    const res = await brigApi.getInvitationCode({team, invitationId}, this.requestOptions);
+    return res.code;
+  }
+
+  async unlockConferenceCallingFeature(teamId: string) {
+    const {baseUrl, headers} = this.requestOptions;
+
+    await axios.put(`${baseUrl}i/teams/${teamId}/features/conferenceCalling/unlocked`, {}, {headers});
+    await axios.patch(
+      `${baseUrl}i/teams/${teamId}/features/conferenceCalling`,
+      {
+        status: 'enabled',
+      },
+      {headers},
+    );
   }
 }

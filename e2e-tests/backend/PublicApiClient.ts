@@ -21,6 +21,7 @@ import {ok, type RequestOpts} from '@oazapfts/runtime';
 
 import * as publicApiClient from './generated/publicApi';
 
+import {Role} from '../actions/createTeam';
 import {User} from '../actions/createUser';
 
 export type RegisteredUser = User & {token: string};
@@ -116,6 +117,92 @@ export class PublicApiClient {
         headers: {
           ...this.requestOptions.headers,
           Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+  }
+
+  async upgradeUserToTeamOwner(owner: RegisteredUser, teamName: string) {
+    const response = await ok(
+      publicApiClient.upgradePersonalToTeam(
+        {
+          bindingNewTeamUser: {
+            name: teamName,
+            icon: 'default',
+          },
+        },
+        {
+          ...this.requestOptions,
+          headers: {
+            ...this.requestOptions.headers,
+            Authorization: `Bearer ${owner.token}`,
+          },
+        },
+      ),
+    );
+
+    return {teamId: response.team_id, teamName: response.team_name};
+  }
+
+  async sendTeamInvitation(
+    emailOfInvitee: string,
+    teamOwner: RegisteredUser,
+    role: publicApiClient.Role = Role.MEMBER,
+  ) {
+    const response = await ok(
+      publicApiClient.sendTeamInvitation(
+        {
+          tid: teamOwner.teamId,
+          invitationRequest: {
+            email: emailOfInvitee,
+            role,
+            allow_existing: true,
+          },
+        },
+        {
+          ...this.requestOptions,
+          headers: {
+            ...this.requestOptions.headers,
+            Authorization: `Bearer ${teamOwner.token}`,
+          },
+        },
+      ),
+    );
+
+    return response.id;
+  }
+
+  async acceptTeamInvitation(teamInvitationCode: string, user: Pick<RegisteredUser, 'password' | 'token'>) {
+    await publicApiClient.acceptTeamInvitation(
+      {
+        acceptTeamInvitation: {
+          code: teamInvitationCode,
+          password: user.password,
+        },
+      },
+      {
+        ...this.requestOptions,
+        headers: {
+          ...this.requestOptions.headers,
+          Authorization: `Bearer ${user.token}`,
+        },
+      },
+    );
+  }
+
+  async deleteTeam(user: RegisteredUser, teamId: string) {
+    await publicApiClient.deleteTeam(
+      {
+        tid: teamId,
+        teamDeleteData: {
+          password: user.password,
+        },
+      },
+      {
+        ...this.requestOptions,
+        headers: {
+          ...this.requestOptions.headers,
+          Authorization: `Bearer ${user.token}`,
         },
       },
     );
