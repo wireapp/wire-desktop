@@ -126,7 +126,7 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
       contexts.push(context);
 
       const page = await context.newPage();
-      await page.goto('/', {waitUntil: 'networkidle'}); // Open the base url to ensure the page starts in the same state as the app
+      await page.goto('/'); // Open the base url to ensure the page starts in the same state as the app
 
       return page;
     });
