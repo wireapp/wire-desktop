@@ -24,7 +24,6 @@ import {Page} from '../fixtures';
 import {conversationsList} from '../poms/webapp/conversationList.page';
 import {groupCreationPage} from '../poms/webapp/groupCreation.page';
 import {startUIPage} from '../poms/webapp/startUI.page';
-import {userProfileModal} from '../poms/webapp/userProfile.modal';
 
 export const createGroup = async (page: Page, conversationName: string, users: User[]) => {
   await conversationsList(page).clickCreateGroup();
@@ -38,7 +37,8 @@ export async function sendConnectionRequest(sender: Page, receiver: User) {
 
   await startUIPage(sender).searchInput.fill(receiver.username);
   await startUIPage(sender).searchResults.filter({hasText: receiver.username}).click();
-  await userProfileModal(sender).connectButton.click();
+
+  await sender.getByRole('dialog').getByRole('button', {name: 'Send connection request'}).click();
 }
 
 export async function connectWithUser(sender: Page, receiver: User) {
@@ -46,5 +46,6 @@ export async function connectWithUser(sender: Page, receiver: User) {
 
   await startUIPage(sender).searchInput.fill(receiver.username);
   await startUIPage(sender).searchResults.filter({hasText: receiver.username}).click();
-  await userProfileModal(sender).startConversationButton.click();
+
+  await sender.getByRole('dialog').getByRole('button', {name: 'Start conversation'}).click();
 }
