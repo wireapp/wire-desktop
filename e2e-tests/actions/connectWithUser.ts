@@ -19,11 +19,16 @@
 
 import {Page} from '@playwright/test';
 
-export const conversationsSidebar = (page: Page) => {
-  const sidebar = page.getByRole('complementary').getByRole('navigation');
+import {User} from './createUser';
 
-  return {
-    userAvatar: sidebar.getByTestId('element-avatar-user'),
-    connectButton: sidebar.getByTestId('go-people'),
-  };
-};
+import {conversationsSidebar} from '../poms/webapp/conversationsSidebar.page';
+import {startUI} from '../poms/webapp/startUI.page';
+
+export async function connectWithUser(page: Page, receiver: User) {
+  await conversationsSidebar(page).connectButton.click();
+
+  await startUI(page).searchInput.fill(receiver.username);
+  await startUI(page).searchResults.filter({hasText: receiver.username}).click();
+
+  await page.getByRole('dialog').getByRole('button', {name: 'Start conversation'}).click();
+}
