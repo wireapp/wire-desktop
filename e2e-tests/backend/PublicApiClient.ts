@@ -21,7 +21,6 @@ import {ok, type RequestOpts} from '@oazapfts/runtime';
 
 import * as publicApiClient from './generated/publicApi';
 
-import {Role} from '../actions/createTeam';
 import {User} from '../actions/createUser';
 
 export type RegisteredUser = User & {token: string};
@@ -146,7 +145,7 @@ export class PublicApiClient {
     return {teamId: response.team_id, teamName: response.team_name};
   }
 
-  async sendTeamInvitation(emailOfInvitee: string, teamOwner: TeamOwner, role: publicApiClient.Role = Role.MEMBER) {
+  async sendTeamInvitation(emailOfInvitee: string, teamOwner: TeamOwner, role: publicApiClient.Role = 'member') {
     const response = await ok(
       publicApiClient.sendTeamInvitation(
         {
