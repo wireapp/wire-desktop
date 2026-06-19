@@ -26,6 +26,8 @@ import {User} from '../actions/createUser';
 
 export type RegisteredUser = User & {token: string};
 
+export type TeamOwner = RegisteredUser & {teamId: string};
+
 export type PublicApiClientConfig = {
   baseUrl: string;
 };
@@ -144,11 +146,7 @@ export class PublicApiClient {
     return {teamId: response.team_id, teamName: response.team_name};
   }
 
-  async sendTeamInvitation(
-    emailOfInvitee: string,
-    teamOwner: RegisteredUser,
-    role: publicApiClient.Role = Role.MEMBER,
-  ) {
+  async sendTeamInvitation(emailOfInvitee: string, teamOwner: TeamOwner, role: publicApiClient.Role = Role.MEMBER) {
     const response = await ok(
       publicApiClient.sendTeamInvitation(
         {

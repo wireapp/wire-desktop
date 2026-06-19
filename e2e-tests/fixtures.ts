@@ -27,7 +27,7 @@ import {createApp, type App} from './actions/createApp';
 import {createTeam, Team} from './actions/createTeam';
 import {createUser, registerUser} from './actions/createUser';
 import {BrigApiClient} from './backend/BrigApiClient';
-import {PublicApiClient, RegisteredUser} from './backend/PublicApiClient';
+import {PublicApiClient, RegisteredUser, TeamOwner} from './backend/PublicApiClient';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
 
@@ -122,7 +122,7 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
   },
 
   createTeam: async ({publicApi, brigApi}, use) => {
-    const teamOwners: RegisteredUser[] = [];
+    const teamOwners: TeamOwner[] = [];
 
     await use(async (teamName, options) => {
       const team = await createTeam({publicApi, brigApi}, teamName, options);
