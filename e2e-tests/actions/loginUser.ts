@@ -21,7 +21,6 @@ import {Page} from '@playwright/test';
 
 import {User} from './createUser';
 
-import {confirmModal} from '../poms/webapp/confirm.modal';
 import {conversationsSidebar} from '../poms/webapp/conversationsSidebar.page';
 import {LOGIN_TIMEOUT, loginPage} from '../poms/webapp/login.page';
 import {ssoPage} from '../poms/webapp/sso.page';
@@ -34,6 +33,5 @@ export const loginUser = async (page: Page, user: User) => {
   await loginPage(page).passwordInput.fill(user.password);
   await loginPage(page).loginButton.click();
 
-  await confirmModal(page).actionButton.click({timeout: LOGIN_TIMEOUT});
-  await conversationsSidebar(page).userAvatar.waitFor({state: 'visible'});
+  await conversationsSidebar(page).userAvatar.waitFor({state: 'visible', timeout: LOGIN_TIMEOUT});
 };

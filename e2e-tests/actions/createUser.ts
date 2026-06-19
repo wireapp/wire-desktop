@@ -65,6 +65,7 @@ const generateValidPassword = () => {
 export const registerUser = async (
   user: User,
   {publicApi, brigApi}: {publicApi: PublicApiClient; brigApi: BrigApiClient},
+  options?: {telemetryDataSharing?: boolean},
 ): Promise<RegisteredUser> => {
   const {zuidCookie} = await publicApi.registerUser(user);
 
@@ -75,8 +76,11 @@ export const registerUser = async (
 
   await publicApi.setUsername(accessToken, user.username);
 
-  return {
-    ...user,
-    token: accessToken,
-  };
+  const registeredUser = {...user, token: accessToken};
+
+  if (options?.telemetryDataSharing !== undefined) {
+    await publicApi.setProperties(registeredUser, {telemetryDataSharing: options.telemetryDataSharing});
+  }
+
+  return registeredUser;
 };

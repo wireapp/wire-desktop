@@ -44,7 +44,11 @@ export const createTeam = async (
     };
   },
 ) => {
-  const user = await registerUser(createUser(), {publicApi: api.publicApi, brigApi: api.brigApi});
+  const user = await registerUser(
+    createUser(),
+    {publicApi: api.publicApi, brigApi: api.brigApi},
+    {telemetryDataSharing: false},
+  );
 
   const {teamId} = await api.publicApi.upgradeUserToTeamOwner(user, teamName);
   const owner: TeamOwner = {...user, teamId};

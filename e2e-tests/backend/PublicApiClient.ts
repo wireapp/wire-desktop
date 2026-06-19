@@ -123,6 +123,21 @@ export class PublicApiClient {
     );
   }
 
+  async setProperties(user: RegisteredUser, properties: {telemetryDataSharing?: boolean}) {
+    await publicApiClient.setProperty(
+      {
+        key: 'webapp',
+        propertyValue: {
+          settings: {privacy: {telemetry_data_sharing: properties.telemetryDataSharing}},
+        },
+      },
+      {
+        ...this.requestOptions,
+        headers: {...this.requestOptions.headers, Authorization: `Bearer ${user.token}`},
+      },
+    );
+  }
+
   async upgradeUserToTeamOwner(owner: RegisteredUser, teamName: string) {
     const response = await ok(
       publicApiClient.upgradePersonalToTeam(

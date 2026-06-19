@@ -96,7 +96,7 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
 
     await use(async () => {
       const userData = createUser();
-      const user = await registerUser(userData, {publicApi, brigApi});
+      const user = await registerUser(userData, {publicApi, brigApi}, {telemetryDataSharing: false});
       users.push(user);
       return user;
     });
