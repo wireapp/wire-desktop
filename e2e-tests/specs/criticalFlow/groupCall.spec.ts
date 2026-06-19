@@ -42,7 +42,7 @@ test(
 
     await test.step('Owner starts call', async () => {
       await conversationsList(page).getConversation(conversationName).open();
-      await conversationPage(page).startCall();
+      await conversationPage(page).startCallButton.click();
       await expect(callingPage(page).callCell).toBeVisible();
     });
 
