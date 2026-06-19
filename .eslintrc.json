@@ -32,7 +32,7 @@
       }
     },
     {
-      "files": ["e2e-tests/**/*.ts"],
+      "files": ["e2e-tests/poms/**/*.ts"],
       "rules": {
         "no-restricted-syntax": [
           "error",
@@ -41,11 +41,11 @@
             "message": "Enums are banned in the e2e-tests folder. Prefer string literal unions or `as const` objects instead."
           },
           {
-            "selector": "BlockStatement[body.length=1] > ExpressionStatement > AwaitExpression > CallExpression[callee.type=\"MemberExpression\"][callee.property.name=/^(click|dblclick|tripleclick|tap|fill|type|press|check|uncheck|selectOption|setChecked|hover|focus|blur|clear|selectText|setInputFiles)$/]",
+            "selector": ":function > BlockStatement[body.length=1] > ExpressionStatement > AwaitExpression > CallExpression[callee.type=\"MemberExpression\"][callee.property.name=/^(click|dblclick|tripleclick|tap|fill|type|press|check|uncheck|selectOption|setChecked|hover|focus|blur|clear|selectText|setInputFiles)$/]",
             "message": "Do not wrap a single Playwright action in a custom function inside a POM. Instead, return the locator from the POM and call the action on it in the test."
           },
           {
-            "selector": "BlockStatement[body.length=1] > ExpressionStatement > CallExpression[callee.type=\"MemberExpression\"][callee.property.name=/^(click|dblclick|tripleclick|tap|fill|type|press|check|uncheck|selectOption|setChecked|hover|focus|blur|clear|selectText|setInputFiles)$/]",
+            "selector": ":function > BlockStatement[body.length=1] > ExpressionStatement > CallExpression[callee.type=\"MemberExpression\"][callee.property.name=/^(click|dblclick|tripleclick|tap|fill|type|press|check|uncheck|selectOption|setChecked|hover|focus|blur|clear|selectText|setInputFiles)$/]",
             "message": "Do not wrap a single Playwright action in a custom function inside a POM. Instead, return the locator from the POM and call the action on it in the test."
           },
           {
