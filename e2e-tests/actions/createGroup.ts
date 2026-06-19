@@ -17,37 +17,17 @@
  *
  */
 
-import {conversationsSidebar} from './../poms/webapp/conversationsSidebar.page';
 import {User} from './createUser';
 
 import {Page} from '../fixtures';
 import {conversationsList} from '../poms/webapp/conversationList.page';
 import {groupCreationModal} from '../poms/webapp/groupCreation.modal';
-import {startUIPage} from '../poms/webapp/startUI.page';
 
 export const createGroup = async (page: Page, conversationName: string, users: User[]) => {
-  await conversationsList(page).clickCreateGroup();
+  await conversationsList(page).createGroupButton.click();
 
   const modal = groupCreationModal(page);
   await modal.setGroupName(conversationName);
   await modal.selectGroupMembers(...users.map(user => user.username));
   await modal.doneButton.click();
 };
-
-export async function sendConnectionRequest(sender: Page, receiver: User) {
-  await conversationsSidebar(sender).clickConnectButton();
-
-  await startUIPage(sender).searchInput.fill(receiver.username);
-  await startUIPage(sender).searchResults.filter({hasText: receiver.username}).click();
-
-  await sender.getByRole('dialog').getByRole('button', {name: 'Send connection request'}).click();
-}
-
-export async function connectWithUser(sender: Page, receiver: User) {
-  await conversationsSidebar(sender).clickConnectButton();
-
-  await startUIPage(sender).searchInput.fill(receiver.username);
-  await startUIPage(sender).searchResults.filter({hasText: receiver.username}).click();
-
-  await sender.getByRole('dialog').getByRole('button', {name: 'Start conversation'}).click();
-}
