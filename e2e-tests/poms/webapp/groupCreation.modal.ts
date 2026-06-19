@@ -19,27 +19,26 @@
 
 import {Page} from '@playwright/test';
 
-export const groupCreationPage = (page: Page) => {
-  const searchPeopleList = page.getByRole('dialog').getByRole('list');
+export const groupCreationModal = (page: Page) => {
+  const modal = page.getByRole('dialog');
+
   const setGroupName = async (name: string) => {
-    await page.getByRole('textbox', {name: 'Group name'}).fill(name);
-    await page.getByRole('button', {name: 'Next'}).click();
+    await modal.getByRole('textbox', {name: 'Group name'}).fill(name);
+    await modal.getByRole('button', {name: 'Next'}).click();
   };
 
   const selectGroupMembers = async (...usernames: string[]) => {
     for (const username of usernames) {
-      await page.getByRole('dialog').getByLabel('Search by name').fill(username);
-      await searchPeopleList.getByRole('listitem').filter({hasText: username}).click();
+      await modal.getByLabel('Search by name').fill(username);
+      await modal.getByRole('list').getByRole('listitem').filter({hasText: username}).click();
     }
   };
 
-  const clickCreateGroupButton = async () => {
-    await page.locator('[data-uie-name="do-create-group"]').click();
-  };
+  const doneButton = modal.getByRole('button', {name: 'Done'});
 
-  return {
+  return Object.assign(modal, {
     setGroupName,
     selectGroupMembers,
-    clickCreateGroupButton,
-  };
+    doneButton,
+  });
 };

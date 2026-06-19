@@ -22,14 +22,16 @@ import {User} from './createUser';
 
 import {Page} from '../fixtures';
 import {conversationsList} from '../poms/webapp/conversationList.page';
-import {groupCreationPage} from '../poms/webapp/groupCreation.page';
+import {groupCreationModal} from '../poms/webapp/groupCreation.modal';
 import {startUIPage} from '../poms/webapp/startUI.page';
 
 export const createGroup = async (page: Page, conversationName: string, users: User[]) => {
   await conversationsList(page).clickCreateGroup();
-  await groupCreationPage(page).setGroupName(conversationName);
-  await groupCreationPage(page).selectGroupMembers(...users.map(user => user.username));
-  await groupCreationPage(page).clickCreateGroupButton();
+
+  const modal = groupCreationModal(page);
+  await modal.setGroupName(conversationName);
+  await modal.selectGroupMembers(...users.map(user => user.username));
+  await modal.doneButton.click();
 };
 
 export async function sendConnectionRequest(sender: Page, receiver: User) {
