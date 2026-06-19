@@ -91,7 +91,8 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     await use(app.page);
   },
 
-  createUser: async ({publicApi, brigApi}, use) => {
+  // The app fixture needs to be a dependency of createUser to ensure it is cleaned up after the team
+  createUser: async ({app: _app, publicApi, brigApi}, use) => {
     const users: RegisteredUser[] = [];
 
     await use(async () => {
@@ -102,6 +103,19 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     });
 
     await Promise.all(users.map(user => publicApi.deleteUser(user)));
+  },
+
+  // The app fixture needs to be a dependency of createTeam to ensure it is cleaned up after the team
+  createTeam: async ({app: _app, publicApi, brigApi}, use) => {
+    const teamOwners: TeamOwner[] = [];
+
+    await use(async (teamName, options) => {
+      const team = await createTeam({publicApi, brigApi}, teamName, options);
+      teamOwners.push(team.owner);
+      return team;
+    });
+
+    await Promise.all(teamOwners.map(owner => publicApi.deleteTeam(owner, owner.teamId)));
   },
 
   createPage: async ({browser}, use) => {
@@ -119,18 +133,6 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
 
     // Close all contexts created throughout the tests (will automatically close all pages associated with each context)
     await Promise.all(contexts.map(ctx => ctx.close()));
-  },
-
-  createTeam: async ({publicApi, brigApi}, use) => {
-    const teamOwners: TeamOwner[] = [];
-
-    await use(async (teamName, options) => {
-      const team = await createTeam({publicApi, brigApi}, teamName, options);
-      teamOwners.push(team.owner);
-      return team;
-    });
-
-    await Promise.all(teamOwners.map(owner => publicApi.deleteTeam(owner, owner.teamId)));
   },
 });
 
