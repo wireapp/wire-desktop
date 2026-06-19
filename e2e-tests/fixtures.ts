@@ -27,7 +27,7 @@ import {createApp, type App} from './actions/createApp';
 import {createTeam, Team} from './actions/createTeam';
 import {createUser, registerUser} from './actions/createUser';
 import {BrigApiClient} from './backend/BrigApiClient';
-import {PublicApiClient, RegisteredUser} from './backend/PublicApiClient';
+import {PublicApiClient, RegisteredUser, TeamOwner} from './backend/PublicApiClient';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
 
@@ -91,17 +91,31 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     await use(app.page);
   },
 
-  createUser: async ({publicApi, brigApi}, use) => {
+  // The app fixture needs to be a dependency of createUser to ensure it is cleaned up after the team
+  createUser: async ({app: _app, publicApi, brigApi}, use) => {
     const users: RegisteredUser[] = [];
 
     await use(async () => {
       const userData = createUser();
-      const user = await registerUser(userData, {publicApi, brigApi});
+      const user = await registerUser(userData, {publicApi, brigApi}, {telemetryDataSharing: false});
       users.push(user);
       return user;
     });
 
     await Promise.all(users.map(user => publicApi.deleteUser(user)));
+  },
+
+  // The app fixture needs to be a dependency of createTeam to ensure it is cleaned up after the team
+  createTeam: async ({app: _app, publicApi, brigApi}, use) => {
+    const teamOwners: TeamOwner[] = [];
+
+    await use(async (teamName, options) => {
+      const team = await createTeam({publicApi, brigApi}, teamName, options);
+      teamOwners.push(team.owner);
+      return team;
+    });
+
+    await Promise.all(teamOwners.map(owner => publicApi.deleteTeam(owner)));
   },
 
   createPage: async ({browser}, use) => {
@@ -112,25 +126,13 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
       contexts.push(context);
 
       const page = await context.newPage();
-      await page.goto('/', {waitUntil: 'networkidle'}); // Open the base url to ensure the page starts in the same state as the app
+      await page.goto('/'); // Open the base url to ensure the page starts in the same state as the app
 
       return page;
     });
 
     // Close all contexts created throughout the tests (will automatically close all pages associated with each context)
     await Promise.all(contexts.map(ctx => ctx.close()));
-  },
-
-  createTeam: async ({publicApi, brigApi}, use) => {
-    const teamOwners: RegisteredUser[] = [];
-
-    await use(async (teamName, options) => {
-      const team = await createTeam({publicApi, brigApi}, teamName, options);
-      teamOwners.push(team.owner);
-      return team;
-    });
-
-    await Promise.all(teamOwners.map(owner => publicApi.deleteTeam(owner, owner.teamId)));
   },
 });
 

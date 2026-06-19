@@ -53,15 +53,16 @@ export class BrigApiClient {
   }
 
   async unlockConferenceCallingFeature(teamId: string) {
-    const {baseUrl, headers} = this.requestOptions;
+    const {baseUrl: baseURL, headers} = this.requestOptions;
 
-    await axios.put(`${baseUrl}i/teams/${teamId}/features/conferenceCalling/unlocked`, {}, {headers});
+    // These internal endpoints are currently not documented within the OpenAPI spec, until they are we have to fall back to manual untyped calls
+    await axios.put(`/i/teams/${teamId}/features/conferenceCalling/unlocked`, {}, {headers, baseURL});
     await axios.patch(
-      `${baseUrl}i/teams/${teamId}/features/conferenceCalling`,
+      `/i/teams/${teamId}/features/conferenceCalling`,
       {
         status: 'enabled',
       },
-      {headers},
+      {headers, baseURL},
     );
   }
 }

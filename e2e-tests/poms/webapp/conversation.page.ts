@@ -19,12 +19,10 @@
 
 import {Page} from '@playwright/test';
 
-export const conversationPage = (page: Page) => {
-  const startCall = async () => {
-    await page.locator('[data-uie-name="do-call"]').click();
-  };
+export const conversation = (page: Page) => {
+  const startCallButton = page.locator('[data-uie-name="do-call"]');
 
   return {
-    startCall,
+    startCallButton,
   };
 };

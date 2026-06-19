@@ -17,8 +17,18 @@
  *
  */
 
-import {test, expect} from '../fixtures';
+import {Page} from '@playwright/test';
 
-test('starts the app', async ({page}) => {
-  await expect(page.getByText('Welcome to Wire!')).toBeVisible();
-});
+import {User} from './createUser';
+
+import {conversationsSidebar} from '../poms/webapp/conversationsSidebar.page';
+import {startUI} from '../poms/webapp/startUI.page';
+
+export async function sendConnectionRequest(page: Page, receiver: User) {
+  await conversationsSidebar(page).connectButton.click();
+
+  await startUI(page).searchInput.fill(receiver.username);
+  await startUI(page).searchResults.filter({hasText: receiver.username}).click();
+
+  await page.getByRole('dialog').getByRole('button', {name: 'Connect'}).click();
+}

@@ -17,11 +17,17 @@
  *
  */
 
-import {Page} from '@playwright/test';
+import {User} from './createUser';
 
-export const confirmModal = (page: Page) => {
-  const modal = page.getByTestId('modal-template-confirm');
-  return {
-    actionButton: modal.getByTestId('do-action'),
-  };
+import {Page} from '../fixtures';
+import {conversationsList} from '../poms/webapp/conversationList.page';
+import {groupCreationModal} from '../poms/webapp/groupCreation.modal';
+
+export const createGroup = async (page: Page, conversationName: string, users: User[]) => {
+  await conversationsList(page).createGroupButton.click();
+
+  const modal = groupCreationModal(page);
+  await modal.setGroupName(conversationName);
+  await modal.selectGroupMembers(...users.map(user => user.username));
+  await modal.doneButton.click();
 };

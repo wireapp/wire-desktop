@@ -24,8 +24,6 @@ export const conversationsSidebar = (page: Page) => {
 
   return {
     userAvatar: sidebar.getByTestId('element-avatar-user'),
-    clickConnectButton: async () => {
-      await page.getByTestId('go-people').click();
-    },
+    connectButton: sidebar.getByTestId('go-people'),
   };
 };

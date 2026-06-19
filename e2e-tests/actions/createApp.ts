@@ -33,12 +33,15 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
 
   const app = await electron.launch({
     args: [
+      // Chromium launch args
+      `--user-data-dir=${options.dataDir}`,
+      '--use-fake-device-for-media-stream', // Provide fake devices for audio & video device input
+      '--use-fake-ui-for-media-stream', // Bypasses the popup to grant permission and select video / audio input device by automatically selecting the default one
+      '--mute-audio', // Mute all audio output from the test browser because e.g. the ringtone of a call can be annoying during testing
       '.',
+      // Wire specific cli flags to set during launch
       `--env=${options.env}`,
       `--lang=${options.lang ?? 'en'}`,
-      `--user-data-dir=${options.dataDir}`,
-      '--use-fake-device-for-media-stream',
-      '--use-fake-ui-for-media-stream',
     ],
   });
 

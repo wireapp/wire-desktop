@@ -19,7 +19,7 @@
 
 import {Page} from '@playwright/test';
 
-export const startUIPage = (page: Page) => {
+export const startUI = (page: Page) => {
   const component = page.locator('#start-ui');
 
   return {

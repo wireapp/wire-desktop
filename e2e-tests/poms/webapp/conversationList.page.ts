@@ -36,10 +36,10 @@ export const conversationsList = (page: Page) => {
     return enhancedLocator;
   };
 
+  const createGroupButton = page.getByTestId('conversation-list-header').getByTestId('go-create-group');
+
   return {
     getConversation,
-    clickCreateGroup: async () => {
-      await page.getByTestId('conversation-list-header').getByTestId('go-create-group').click();
-    },
+    createGroupButton,
   };
 };

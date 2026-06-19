@@ -20,27 +20,22 @@
 import {createUser, registerUser} from './createUser';
 
 import {BrigApiClient} from '../backend/BrigApiClient';
-import {PublicApiClient, RegisteredUser} from '../backend/PublicApiClient';
+import {PublicApiClient, RegisteredUser, TeamOwner} from '../backend/PublicApiClient';
+
+export type TeamRole = 'admin' | 'partner' | 'owner' | 'member';
 
 export type Team = {
   teamId: string;
-  owner: RegisteredUser;
+  owner: TeamOwner;
   /** Add a new member to the team after its initial creation */
-  addTeamMember: (member: RegisteredUser, options?: {role?: keyof typeof Role}) => Promise<void>;
+  addTeamMember: (member: RegisteredUser, options?: {role?: TeamRole}) => Promise<void>;
 };
-
-export enum Role {
-  ADMIN = 'admin',
-  EXTERNAL = 'partner',
-  MEMBER = 'member',
-  OWNER = 'owner',
-}
 
 export const createTeam = async (
   api: {publicApi: PublicApiClient; brigApi: BrigApiClient},
   teamName: string,
   options?: {
-    users?: (RegisteredUser | {user: RegisteredUser; role?: keyof typeof Role})[];
+    users?: (RegisteredUser | {user: RegisteredUser; role?: TeamRole})[];
     features?: {
       conferenceCalling?: boolean;
       channels?: boolean;
@@ -49,16 +44,19 @@ export const createTeam = async (
     };
   },
 ) => {
-  const user = createUser();
-  const owner = await registerUser(user, {publicApi: api.publicApi, brigApi: api.brigApi});
+  const user = await registerUser(
+    createUser(),
+    {publicApi: api.publicApi, brigApi: api.brigApi},
+    {telemetryDataSharing: false},
+  );
 
-  const {teamId} = await api.publicApi.upgradeUserToTeamOwner(owner, teamName);
-  owner.teamId = teamId;
+  const {teamId} = await api.publicApi.upgradeUserToTeamOwner(user, teamName);
+  const owner: TeamOwner = {...user, teamId};
 
   const addTeamMember: Team['addTeamMember'] = async (member, options) => {
-    const invitationId = await api.publicApi.sendTeamInvitation(member.email, owner, Role[options?.role ?? 'MEMBER']);
+    const invitationId = await api.publicApi.sendTeamInvitation(owner, member.email, options?.role ?? 'member');
     const invitationCode = await api.brigApi.getTeamActivationCode(owner.teamId, invitationId);
-    await api.publicApi.acceptTeamInvitation(invitationCode, member);
+    await api.publicApi.acceptTeamInvitation(member, invitationCode);
   };
 
   if (options?.users) {

@@ -30,7 +30,6 @@ export type User = {
   fullName: string;
   email: string;
   password: string;
-  teamId: string;
 };
 
 export const createUser = (): User => {
@@ -50,7 +49,6 @@ export const createUser = (): User => {
     },
     email: faker.internet.email({firstName, lastName, provider: 'wire.engineering'}),
     password: generateValidPassword(),
-    teamId: '',
   };
 };
 
@@ -67,6 +65,7 @@ const generateValidPassword = () => {
 export const registerUser = async (
   user: User,
   {publicApi, brigApi}: {publicApi: PublicApiClient; brigApi: BrigApiClient},
+  options?: {telemetryDataSharing?: boolean},
 ): Promise<RegisteredUser> => {
   const {zuidCookie} = await publicApi.registerUser(user);
 
@@ -77,8 +76,11 @@ export const registerUser = async (
 
   await publicApi.setUsername(accessToken, user.username);
 
-  return {
-    ...user,
-    token: accessToken,
-  };
+  const registeredUser = {...user, token: accessToken};
+
+  if (options?.telemetryDataSharing !== undefined) {
+    await publicApi.setProperties(registeredUser, {telemetryDataSharing: options.telemetryDataSharing});
+  }
+
+  return registeredUser;
 };
