@@ -115,7 +115,7 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
       return team;
     });
 
-    await Promise.all(teamOwners.map(owner => publicApi.deleteTeam(owner, owner.teamId)));
+    await Promise.all(teamOwners.map(owner => publicApi.deleteTeam(owner)));
   },
 
   createPage: async ({browser}, use) => {

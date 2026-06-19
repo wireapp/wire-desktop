@@ -54,9 +54,9 @@ export const createTeam = async (
   const owner: TeamOwner = {...user, teamId};
 
   const addTeamMember: Team['addTeamMember'] = async (member, options) => {
-    const invitationId = await api.publicApi.sendTeamInvitation(member.email, owner, options?.role ?? 'member');
+    const invitationId = await api.publicApi.sendTeamInvitation(owner, member.email, options?.role ?? 'member');
     const invitationCode = await api.brigApi.getTeamActivationCode(owner.teamId, invitationId);
-    await api.publicApi.acceptTeamInvitation(invitationCode, member);
+    await api.publicApi.acceptTeamInvitation(member, invitationCode);
   };
 
   if (options?.users) {

@@ -160,7 +160,7 @@ export class PublicApiClient {
     return {teamId: response.team_id, teamName: response.team_name};
   }
 
-  async sendTeamInvitation(emailOfInvitee: string, teamOwner: TeamOwner, role: publicApiClient.Role = 'member') {
+  async sendTeamInvitation(teamOwner: TeamOwner, emailOfInvitee: string, role: publicApiClient.Role = 'member') {
     const response = await ok(
       publicApiClient.sendTeamInvitation(
         {
@@ -184,7 +184,7 @@ export class PublicApiClient {
     return response.id;
   }
 
-  async acceptTeamInvitation(teamInvitationCode: string, user: Pick<RegisteredUser, 'password' | 'token'>) {
+  async acceptTeamInvitation(user: Pick<RegisteredUser, 'password' | 'token'>, teamInvitationCode: string) {
     await publicApiClient.acceptTeamInvitation(
       {
         acceptTeamInvitation: {
@@ -202,19 +202,19 @@ export class PublicApiClient {
     );
   }
 
-  async deleteTeam(user: RegisteredUser, teamId: string) {
+  async deleteTeam(teamOwner: TeamOwner) {
     await publicApiClient.deleteTeam(
       {
-        tid: teamId,
+        tid: teamOwner.teamId,
         teamDeleteData: {
-          password: user.password,
+          password: teamOwner.password,
         },
       },
       {
         ...this.requestOptions,
         headers: {
           ...this.requestOptions.headers,
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${teamOwner.token}`,
         },
       },
     );
