@@ -19,7 +19,7 @@
 
 import {loginUser} from './../../actions/loginUser';
 import {callingPage} from './../../poms/webapp/calling.page';
-import {conversationPage} from './../../poms/webapp/conversation.page';
+import {conversation} from './../../poms/webapp/conversation.page';
 
 import {createGroup} from '../../actions/createGroup';
 import {test, expect} from '../../fixtures';
@@ -42,7 +42,7 @@ test(
 
     await test.step('Owner starts call', async () => {
       await conversationsList(page).getConversation(conversationName).open();
-      await conversationPage(page).startCallButton.click();
+      await conversation(page).startCallButton.click();
       await expect(callingPage(page).callCell).toBeVisible();
     });
 

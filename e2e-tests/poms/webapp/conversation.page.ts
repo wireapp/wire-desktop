@@ -19,7 +19,7 @@
 
 import {Page} from '@playwright/test';
 
-export const conversationPage = (page: Page) => {
+export const conversation = (page: Page) => {
   const startCallButton = page.locator('[data-uie-name="do-call"]');
 
   return {
