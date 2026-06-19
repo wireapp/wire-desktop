@@ -18,6 +18,18 @@
         "@typescript-eslint/typedef": "off",
         "no-unused-vars": "off"
       }
+    },
+    {
+      "files": ["e2e-tests/**/*.ts"],
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "TSEnumDeclaration",
+            "message": "Enums are banned in the e2e-tests folder. Prefer string literal unions or `as const` objects instead."
+          }
+        ]
+      }
     }
   ],
   "parserOptions": {
