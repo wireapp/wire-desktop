@@ -18,7 +18,7 @@
  */
 
 import {loginUser} from './../../actions/loginUser';
-import {callingPage} from './../../poms/webapp/calling.page';
+import {callCell} from './../../poms/webapp/callCell.page';
 import {conversation} from './../../poms/webapp/conversation.page';
 
 import {createGroup} from '../../actions/createGroup';
@@ -43,15 +43,15 @@ test(
     await test.step('Owner starts call', async () => {
       await conversationsList(page).getConversation(conversationName).open();
       await conversation(page).startCallButton.click();
-      await expect(callingPage(page).callCell).toBeVisible();
+      await expect(callCell(page)).toBeVisible();
     });
 
     await test.step('Member accepts call', async () => {
       await conversationsList(memberPage).getConversation(conversationName).open();
-      await callingPage(memberPage).acceptCallButton.click();
+      await callCell(memberPage).acceptCallButton.click();
 
-      await expect(callingPage(memberPage).goFullScreen).toBeVisible();
-      await expect(callingPage(page).goFullScreen).toBeVisible();
+      await expect(callCell(memberPage).goFullScreen).toBeVisible();
+      await expect(callCell(page).goFullScreen).toBeVisible();
     });
   },
 );

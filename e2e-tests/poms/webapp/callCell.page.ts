@@ -19,12 +19,11 @@
 
 import {Page} from '@playwright/test';
 
-export const callingPage = (page: Page) => {
+export const callCell = (page: Page) => {
   const callCell = page.locator('[data-uie-name="item-call"]');
 
-  return {
-    callCell,
+  return Object.assign(callCell, {
     acceptCallButton: callCell.getByRole('button', {name: 'Accept'}),
     goFullScreen: page.locator('[data-uie-name="do-maximize-call"]'),
-  };
+  });
 };
