@@ -120,6 +120,8 @@ const Sidebar = ({
 
   return (
     <div
+      role={'navigation'}
+      aria-label={'Accounts Sidebar'}
       className={`${isDarkMode ? 'Sidebar theme-dark' : 'Sidebar theme-light'}`}
       style={
         {
