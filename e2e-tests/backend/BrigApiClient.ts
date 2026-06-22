@@ -18,7 +18,6 @@
  */
 
 import {type RequestOpts} from '@oazapfts/runtime';
-import axios from 'axios';
 
 import * as brigApi from './generated/brigApi';
 
@@ -50,19 +49,5 @@ export class BrigApiClient {
   async getTeamActivationCode(team: string, invitationId: string) {
     const res = await brigApi.getInvitationCode({team, invitationId}, this.requestOptions);
     return res.code;
-  }
-
-  async unlockConferenceCallingFeature(teamId: string) {
-    const {baseUrl: baseURL, headers} = this.requestOptions;
-
-    // These internal endpoints are currently not documented within the OpenAPI spec, until they are we have to fall back to manual untyped calls
-    await axios.put(`/i/teams/${teamId}/features/conferenceCalling/unlocked`, {}, {headers, baseURL});
-    await axios.patch(
-      `/i/teams/${teamId}/features/conferenceCalling`,
-      {
-        status: 'enabled',
-      },
-      {headers, baseURL},
-    );
   }
 }

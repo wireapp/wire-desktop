@@ -126,11 +126,11 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
   },
 
   // The app fixture needs to be a dependency of createTeam to ensure it is cleaned up after the team
-  createTeam: async ({app: _app, publicApi, brigApi}, use) => {
+  createTeam: async ({app: _app, publicApi, brigApi, sternApi}, use) => {
     const teamOwners: TeamOwner[] = [];
 
     await use(async (teamName, options) => {
-      const team = await createTeam({publicApi, brigApi}, teamName, options);
+      const team = await createTeam({publicApi, brigApi, sternApi}, teamName, options);
       teamOwners.push(team.owner);
       return team;
     });

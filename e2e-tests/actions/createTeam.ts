@@ -21,6 +21,7 @@ import {createUser, registerUser} from './createUser';
 
 import {BrigApiClient} from '../backend/BrigApiClient';
 import {PublicApiClient, RegisteredUser, TeamOwner} from '../backend/PublicApiClient';
+import {SternApiClient} from '../backend/SternApiClient';
 
 export type TeamRole = 'admin' | 'partner' | 'owner' | 'member';
 
@@ -32,7 +33,7 @@ export type Team = {
 };
 
 export const createTeam = async (
-  api: {publicApi: PublicApiClient; brigApi: BrigApiClient},
+  api: {publicApi: PublicApiClient; brigApi: BrigApiClient; sternApi: SternApiClient},
   teamName: string,
   options?: {
     users?: (RegisteredUser | {user: RegisteredUser; role?: TeamRole})[];
@@ -76,7 +77,7 @@ export const createTeam = async (
     await new Promise(resolve => setTimeout(resolve, 5000));
 
     if (options.features.conferenceCalling) {
-      await api.brigApi.unlockConferenceCallingFeature(teamId);
+      await api.sternApi.unlockConferenceCallingFeature(teamId);
     }
   }
 
