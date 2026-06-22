@@ -20,7 +20,7 @@
 import {connectWithUser} from '../../actions/connectWithUser';
 import {loginUser} from '../../actions/loginUser';
 import {expect, test} from '../../fixtures';
-import {callingPage} from '../../poms/webapp/calling.page';
+import {callCell} from '../../poms/webapp/callCell.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
 
@@ -38,17 +38,17 @@ test(
     await test.step('User A calls user B', async () => {
       await conversationsList(userAPage).getConversation(userB.fullName).open();
       await conversation(userAPage).startCallButton.click();
-      await expect(callingPage(userAPage).callCell).toBeVisible();
+      await expect(callCell(userAPage)).toBeVisible();
     });
 
     await test.step('User B sees call and picks up', async () => {
-      await expect(callingPage(userBPage).callCell).toBeVisible();
-      await callingPage(userBPage).acceptCallButton.click();
+      await expect(callCell(userBPage)).toBeVisible();
+      await callCell(userBPage).acceptCallButton.click();
     });
 
     await test.step('A and B should see the call with each other', async () => {
-      await expect(callingPage(userAPage).goFullScreen).toBeVisible();
-      await expect(callingPage(userBPage).goFullScreen).toBeVisible();
+      await expect(callCell(userAPage).goFullScreen).toBeVisible();
+      await expect(callCell(userBPage).goFullScreen).toBeVisible();
     });
   },
 );
