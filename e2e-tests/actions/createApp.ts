@@ -69,11 +69,5 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
   returnValue.wrapper = await app.waitForEvent('window');
   returnValue.page = await app.waitForEvent('window');
 
-  // app.on('window', async newPage => {
-  //   returnValue.page = newPage;
-  //   // eslint-disable-next-line no-console
-  //   console.log('Page opened');
-  // });
-
   return returnValue;
 };
