@@ -19,9 +19,9 @@
 
 import {type RequestOpts} from '@oazapfts/runtime';
 
-import * as brigApi from './generated/brigApi';
+import * as galleyApi from './generated/galleyApi';
 
-export type BrigApiClientConfig = {
+export type GalleyApiClientConfig = {
   baseUrl: string;
   basicAuth: string;
 };
@@ -29,10 +29,10 @@ export type BrigApiClientConfig = {
 /**
  * Wrapper around the generated API client to expose a curried version of them providing defaults for the instance and optionally adapting the api with reasonable defaults
  */
-export class BrigApiClient {
+export class GalleyApiClient {
   private readonly requestOptions: RequestOpts;
 
-  constructor({baseUrl, basicAuth}: BrigApiClientConfig) {
+  constructor({baseUrl, basicAuth}: GalleyApiClientConfig) {
     this.requestOptions = {
       baseUrl,
       headers: {
@@ -41,13 +41,16 @@ export class BrigApiClient {
     };
   }
 
-  async getUserActivationCode(email: string) {
-    const res = await brigApi.iGetUserActivationCode({email}, this.requestOptions);
-    return res.code;
-  }
-
-  async getTeamActivationCode(team: string, invitationId: string) {
-    const res = await brigApi.getInvitationCode({team, invitationId}, this.requestOptions);
-    return res.code;
+  async unlockConferenceCallingFeature(teamId: string) {
+    await galleyApi.ilockConferenceCallingConfigB({tid: teamId, lockStatus: 'unlocked'}, this.requestOptions);
+    await galleyApi.ipatchConferenceCallingConfigB(
+      {
+        tid: teamId,
+        lockableFturPhCnfigBIdyNjkxOtExMTgz: {
+          status: 'enabled',
+        },
+      },
+      this.requestOptions,
+    );
   }
 }

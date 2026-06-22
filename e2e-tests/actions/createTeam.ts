@@ -20,6 +20,7 @@
 import {createUser, registerUser} from './createUser';
 
 import {BrigApiClient} from '../backend/BrigApiClient';
+import {GalleyApiClient} from '../backend/GalleyApiClient';
 import {PublicApiClient, RegisteredUser, TeamOwner} from '../backend/PublicApiClient';
 
 export type TeamRole = 'admin' | 'partner' | 'owner' | 'member';
@@ -32,7 +33,7 @@ export type Team = {
 };
 
 export const createTeam = async (
-  api: {publicApi: PublicApiClient; brigApi: BrigApiClient},
+  api: {publicApi: PublicApiClient; brigApi: BrigApiClient; galleyApi: GalleyApiClient},
   teamName: string,
   options?: {
     users?: (RegisteredUser | {user: RegisteredUser; role?: TeamRole})[];
@@ -76,7 +77,7 @@ export const createTeam = async (
     await new Promise(resolve => setTimeout(resolve, 5000));
 
     if (options.features.conferenceCalling) {
-      await api.brigApi.unlockConferenceCallingFeature(teamId);
+      await api.galleyApi.unlockConferenceCallingFeature(teamId);
     }
   }
 
