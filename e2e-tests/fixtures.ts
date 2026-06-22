@@ -27,6 +27,7 @@ import {createApp, type App} from './actions/createApp';
 import {createTeam, Team} from './actions/createTeam';
 import {createUser, registerUser} from './actions/createUser';
 import {BrigApiClient} from './backend/BrigApiClient';
+import {GalleyApiClient} from './backend/GalleyApiClient';
 import {PublicApiClient, RegisteredUser, TeamOwner} from './backend/PublicApiClient';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
@@ -35,6 +36,7 @@ type Fixtures = {
   app: App;
   publicApi: PublicApiClient;
   brigApi: BrigApiClient;
+  galleyApi: GalleyApiClient;
 
   createUser: () => Promise<RegisteredUser>;
   createPage: () => Promise<Page>;
@@ -52,7 +54,6 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     await use(new PublicApiClient({baseUrl: process.env.BACKEND_URL}));
   },
 
-  /* Api client for the [brig](https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig/) api */
   brigApi: async ({}, use) => {
     if (process.env.BACKEND_URL === undefined) {
       throw new Error('Missing env var BACKEND_URL');
@@ -63,6 +64,18 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     }
 
     await use(new BrigApiClient({baseUrl: process.env.BACKEND_URL, basicAuth: process.env.BACKEND_BASIC_AUTH}));
+  },
+
+  galleyApi: async ({}, use) => {
+    if (process.env.BACKEND_URL === undefined) {
+      throw new Error('Missing env var BACKEND_URL');
+    }
+
+    if (process.env.BACKEND_BASIC_AUTH === undefined) {
+      throw new Error('Missing env var BACKEND_BASIC_AUTH');
+    }
+
+    await use(new GalleyApiClient({baseUrl: process.env.BACKEND_URL, basicAuth: process.env.BACKEND_BASIC_AUTH}));
   },
 
   app: async ({appOptions}, use, testInfo) => {
@@ -106,11 +119,11 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
   },
 
   // The app fixture needs to be a dependency of createTeam to ensure it is cleaned up after the team
-  createTeam: async ({app: _app, publicApi, brigApi}, use) => {
+  createTeam: async ({app: _app, publicApi, brigApi, galleyApi}, use) => {
     const teamOwners: TeamOwner[] = [];
 
     await use(async (teamName, options) => {
-      const team = await createTeam({publicApi, brigApi}, teamName, options);
+      const team = await createTeam({publicApi, brigApi, galleyApi}, teamName, options);
       teamOwners.push(team.owner);
       return team;
     });

@@ -69,6 +69,7 @@ To regenerate the clients, run all or only selected commands from the following 
 
 ```bash
 yarn oazapfts --argumentStyle=object --optimistic --useUnknown --futureStripLegacyMethods https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/brig-swagger.json e2e-tests/backend/generated/brigApi.ts
+yarn oazapfts --argumentStyle=object --optimistic --useUnknown --futureStripLegacyMethods https://staging-nginz-https.zinfra.io/api-internal/swagger-ui/galley-swagger.json e2e-tests/backend/generated/galleyApi.ts
 yarn oazapfts --argumentStyle=object --useUnknown --futureStripLegacyMethods https://staging-nginz-https.zinfra.io/v15/api/swagger.json e2e-tests/backend/generated/publicApi.ts
 ```
 
