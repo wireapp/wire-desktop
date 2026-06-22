@@ -162,6 +162,7 @@ const Sidebar = ({
               })}
               onMouseDown={preventFocus()}
               aria-label={accountLabel(account)}
+              data-uie-name="account-cell"
             >
               {hasNotifications && (
                 <span id={notificationDescriptionId} className="visually-hidden">

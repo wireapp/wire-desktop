@@ -21,12 +21,11 @@ import {App} from '../../actions/createApp';
 import {User} from '../../actions/createUser';
 
 export const accountsSidebar = (app: App) => {
+  const sidebar = app.wrapper.getByRole('navigation', {name: 'Accounts Sidebar'});
   return {
     getAccount: (user: User) => app.wrapper.getByRole('button', {name: user.fullName}),
-    // TODO: delete line below and uncomment new way to locate
-    sidebar: app.wrapper.locator('.Sidebar'),
-    // sidebar: app.wrapper.getByRole('navigation', {name: 'Accounts Sidebar'}),
-    addAccountButton: app.wrapper.locator('[data-uie-name="do-open-plus-menu"]'),
-    accountItems: app.wrapper.locator('[data-uie-name="item-team"]'),
+    sidebar,
+    addAccountButton: app.wrapper.getByTestId('do-open-plus-menu'),
+    accountItems: sidebar.getByTestId('account-cell'),
   };
 };
