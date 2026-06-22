@@ -28,6 +28,7 @@ import {createTeam, Team} from './actions/createTeam';
 import {createUser, registerUser} from './actions/createUser';
 import {BrigApiClient} from './backend/BrigApiClient';
 import {PublicApiClient, RegisteredUser, TeamOwner} from './backend/PublicApiClient';
+import {SternApiClient} from './backend/SternApiClient';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
 
@@ -35,6 +36,7 @@ type Fixtures = {
   app: App;
   publicApi: PublicApiClient;
   brigApi: BrigApiClient;
+  sternApi: SternApiClient;
 
   createUser: () => Promise<RegisteredUser>;
   createPage: () => Promise<Page>;
@@ -63,6 +65,24 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     }
 
     await use(new BrigApiClient({baseUrl: process.env.BACKEND_URL, basicAuth: process.env.BACKEND_BASIC_AUTH}));
+  },
+
+  sternApi: async ({}, use) => {
+    if (process.env.BACKEND_URL === undefined) {
+      throw new Error('Missing env var BACKEND_URL');
+    }
+
+    if (process.env.BACKEND_BASIC_AUTH === undefined) {
+      throw new Error('Missing env var BACKEND_BASIC_AUTH');
+    }
+
+    await use(
+      new SternApiClient({
+        // Stern is proxied under the path "/i/" so we need to set it as baseURL
+        baseUrl: new URL('/i/', process.env.BACKEND_URL).toString(),
+        basicAuth: process.env.BACKEND_BASIC_AUTH,
+      }),
+    );
   },
 
   app: async ({appOptions}, use, testInfo) => {
