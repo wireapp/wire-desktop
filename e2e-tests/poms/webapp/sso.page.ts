@@ -23,6 +23,5 @@ export const ssoPage = (page: Page) => {
   return {
     codeEmailInput: page.locator('#sso-code-email'),
     loginButton: page.getByRole('button', {name: 'Log in'}),
-    header: page.locator('#sso-login-heading-text'),
   };
 };

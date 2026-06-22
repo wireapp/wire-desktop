@@ -47,7 +47,7 @@ test(
       const newPage = await windowPromise;
 
       await expect(ssoPage(newPage).loginButton).toBeVisible();
-      await expect(ssoPage(newPage).header).toContainText('Welcome to Wire!');
+      await expect(newPage.getByText('Welcome to Wire!')).toBeVisible();
 
       return newPage;
     });
