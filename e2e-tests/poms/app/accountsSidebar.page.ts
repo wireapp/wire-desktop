@@ -21,7 +21,10 @@ import {App} from '../../actions/createApp';
 import {User} from '../../actions/createUser';
 
 export const accountsSidebar = (app: App) => {
-  return {
-    getAccount: (user: User) => app.wrapper.getByRole('button', {name: user.fullName}),
-  };
+  const sidebar = app.wrapper.getByRole('navigation', {name: 'Accounts Sidebar'});
+  return Object.assign(sidebar, {
+    getAccount: (user: User) => sidebar.getByRole('button', {name: user.fullName}),
+    addAccountButton: sidebar.getByTestId('do-open-plus-menu'),
+    accountItems: sidebar.getByTestId('account-cell'),
+  });
 };

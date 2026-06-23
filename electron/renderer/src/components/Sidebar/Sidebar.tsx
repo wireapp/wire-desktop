@@ -120,6 +120,8 @@ const Sidebar = ({
 
   return (
     <div
+      role={'navigation'}
+      aria-label={'Accounts Sidebar'}
       className={`${isDarkMode ? 'Sidebar theme-dark' : 'Sidebar theme-light'}`}
       style={
         {
@@ -160,6 +162,7 @@ const Sidebar = ({
               })}
               onMouseDown={preventFocus()}
               aria-label={accountLabel(account)}
+              data-uie-name="account-cell"
             >
               {hasNotifications && (
                 <span id={notificationDescriptionId} className="visually-hidden">
