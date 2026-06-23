@@ -62,12 +62,8 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
    * The webview element isn't treated as a regular webcomponent / iframe by electron but as individual window.
    * So in order to access the contents of the application we need to use the second window.
    */
-  const returnValue = app as ElectronApplication & {
-    wrapper: Page;
-    page: Page;
-  };
-  returnValue.wrapper = await app.waitForEvent('window');
-  returnValue.page = await app.waitForEvent('window');
+  const wrapper = await app.waitForEvent('window');
+  const page = await app.waitForEvent('window');
 
-  return returnValue;
+  return Object.assign(app, {wrapper, page});
 };
