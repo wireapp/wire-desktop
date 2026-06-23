@@ -20,6 +20,7 @@
 import {connectWithUser} from '../../actions/connectWithUser';
 import {createGroup} from '../../actions/createGroup';
 import {loginUser} from '../../actions/loginUser';
+import {interceptNotifications} from '../../actions/mockNotifications';
 import {test, expect} from '../../fixtures';
 import {appIcon} from '../../poms/app/appIcon.page';
 import {conversation} from '../../poms/webapp/conversation.page';
@@ -73,6 +74,44 @@ test.describe('Notifications', () => {
     await test.step('The number on the app icon should return to 1 when the message is read', async () => {
       await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
       await expect.poll(() => appIcon(app).getBadgeCount()).toEqual(1);
+    });
+  });
+
+  test('I want to open the conversation by clicking on the notification I received', async ({
+    app,
+    createUser,
+    createTeam,
+    createPage,
+  }) => {
+    const userB = await createUser();
+    const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+    const userBPage = await createPage();
+
+    await Promise.all([loginUser(app.page, userA), loginUser(userBPage, userB)]);
+
+    await test.step('User B opens a conversation and a group with user A', async () => {
+      await connectWithUser(userBPage, userA);
+      await createGroup(userBPage, 'Distraction Group', [userA]);
+    });
+
+    await test.step('User A opens the distraction group', async () => {
+      await conversationsList(app.page).getConversation('Distraction Group').open();
+    });
+
+    const {getNotifications, clickNotification} = await interceptNotifications(app);
+
+    await test.step('User B sends a message to A in 1on1', async () => {
+      await conversationsList(userBPage).getConversation(userA.fullName, {protocol: 'mls'}).open();
+      await conversation(userBPage).sendMessage('Test Message');
+    });
+
+    await test.step('User A should see one notification', async () => {
+      await expect.poll(() => getNotifications()).toMatchObject([{body: 'Test Message'}]);
+    });
+
+    await test.step('User A should change the conversation when he clicks the notification', async () => {
+      await clickNotification({body: 'Test Message'});
+      await expect(conversation(app.page).conversationTitle).toContainText(userB.fullName);
     });
   });
 });
