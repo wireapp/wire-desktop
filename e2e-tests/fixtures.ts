@@ -104,8 +104,7 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     await use(app.page);
   },
 
-  // The app fixture needs to be a dependency of createUser to ensure it is cleaned up after the team
-  createUser: async ({app: _app, publicApi, brigApi}, use) => {
+  createUser: async ({publicApi, brigApi}, use) => {
     const users: RegisteredUser[] = [];
 
     await use(async () => {
@@ -118,8 +117,7 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     await Promise.all(users.map(user => publicApi.deleteUser(user)));
   },
 
-  // The app fixture needs to be a dependency of createTeam to ensure it is cleaned up after the team
-  createTeam: async ({app: _app, publicApi, brigApi, galleyApi}, use) => {
+  createTeam: async ({publicApi, brigApi, galleyApi}, use) => {
     const teamOwners: TeamOwner[] = [];
 
     await use(async (teamName, options) => {
@@ -133,18 +131,21 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
 
   createPage: async ({browser}, use) => {
     const contexts: BrowserContext[] = [];
+    const pages: Page[] = [];
 
     await use(async () => {
       const context = await browser.newContext();
       contexts.push(context);
 
       const page = await context.newPage();
+      pages.push(page);
       await page.goto('/'); // Open the base url to ensure the page starts in the same state as the app
 
       return page;
     });
 
-    // Close all contexts created throughout the tests (will automatically close all pages associated with each context)
+    // Close all pages created throughout the tests and dismiss before unload dialogs
+    await Promise.all(pages.map(page => page.close({runBeforeUnload: true})));
     await Promise.all(contexts.map(ctx => ctx.close()));
   },
 });
