@@ -17,14 +17,8 @@
  *
  */
 
-import {settings} from './ConfigurationPersistence';
-import {SettingsType} from './SettingsType';
+import {test, expect} from '../fixtures';
 
-export const setHardwareAccelerationEnabled = (enabled: boolean): void => {
-  settings.save(SettingsType.HARDWARE_ACCELERATION_ENABLED, enabled);
-  settings.persistToFile();
-};
-
-export const isHardwareAccelerationEnabled = (): boolean => {
-  return settings.restore(SettingsType.HARDWARE_ACCELERATION_ENABLED, true);
-};
+test('starts the app', async ({page}) => {
+  await expect(page.getByText('Welcome to Wire!')).toBeVisible();
+});

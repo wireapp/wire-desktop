@@ -28,7 +28,6 @@ import {WebAppEvents} from '@wireapp/webapp-events';
 import {EVENT_TYPE} from '../lib/eventType';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
-import * as SettingsUtil from '../settings/SettingsUtil';
 
 const remote = require('@electron/remote');
 
@@ -212,6 +211,11 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.PREFERENCES.SHOW}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.PREFERENCES.MANAGE_ACCOUNT);
   });
+  ipcRenderer.on(EVENT_TYPE.UI.REQUEST_WEBAPP_VERSION, () => {
+    logger.info(`Received event "${EVENT_TYPE.UI.REQUEST_WEBAPP_VERSION}", reporting versions ...`);
+    reportWebappVersion();
+    reportWebappAVSVersion();
+  });
   ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
     logger.info(`Received event "${EVENT_TYPE.ACTION.SIGN_OUT}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.ASK_TO_CLEAR_DATA);
@@ -278,7 +282,6 @@ process.once('loaded', () => {
   };
   global.environment = EnvironmentUtil;
   global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION, supportsCallingPopoutWindow: true};
-  global.desktopAppSettings = SettingsUtil;
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
