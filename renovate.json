@@ -1,0 +1,128 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":semanticCommits"],
+  "labels": ["renovate"],
+  "timezone": "Europe/Berlin",
+  "dependencyDashboard": true,
+  "rebaseWhen": "conflicted",
+  "prConcurrentLimit": 5,
+  "configMigration": true,
+  "minimumReleaseAge": "3 days",
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "matchFileNames": ["app-config/package.json"],
+      "groupName": "desktop app configuration"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "groupName": "docker images"
+    },
+    {
+      "extends": ["monorepo:typescript-eslint"],
+      "groupName": "typescript-eslint"
+    },
+    {
+      "matchPackageNames": [
+        "eslint",
+        "@types/eslint",
+        "@wireapp/eslint-config",
+        "eslint-config-prettier",
+        "eslint-import-resolver-alias",
+        "eslint-import-resolver-typescript",
+        "eslint-plugin-better-styled-components",
+        "eslint-plugin-header",
+        "eslint-plugin-import",
+        "eslint-plugin-jasmine",
+        "eslint-plugin-jest",
+        "eslint-plugin-jest-dom",
+        "eslint-plugin-jsdoc",
+        "eslint-plugin-jsx-a11y",
+        "eslint-plugin-no-unsanitized",
+        "eslint-plugin-prettier",
+        "eslint-plugin-react",
+        "eslint-plugin-react-hooks",
+        "eslint-plugin-simple-import-sort",
+        "eslint-plugin-testing-library",
+        "eslint-plugin-unused-imports"
+      ],
+      "groupName": "eslint tooling"
+    },
+    {
+      "matchPackageNames": ["jest", "babel-jest", "jest-environment-jsdom", "@types/jest"],
+      "groupName": "jest tooling"
+    },
+    {
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "react runtime and types"
+    },
+    {
+      "matchPackageNames": ["@electron/remote", "electron", "electron-dl", "electron-updater", "electron-window-state"],
+      "groupName": "electron runtime"
+    },
+    {
+      "matchPackageNames": ["@electron/fuses", "@electron/osx-sign", "electron-builder", "electron-packager", "electron-winstaller"],
+      "groupName": "electron packaging"
+    },
+    {
+      "matchPackageNames": [
+        "@babel/core",
+        "@babel/helper-string-parser",
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-optional-chaining",
+        "@babel/preset-env",
+        "@babel/preset-react",
+        "@babel/preset-typescript",
+        "@babel/register",
+        "babel-core",
+        "babel-loader",
+        "babel-plugin-istanbul",
+        "css-loader",
+        "style-loader",
+        "ts-node",
+        "typescript",
+        "webpack",
+        "webpack-cli"
+      ],
+      "groupName": "desktop transpilation and bundling"
+    },
+    {
+      "matchPackageNames": ["electron-mocha", "mocha", "sinon", "@types/sinon", "@types/mocha"],
+      "groupName": "electron and mocha test tooling"
+    },
+    {
+      "matchPackageNames": ["husky"],
+      "allowedVersions": "<5"
+    },
+    {
+      "matchPackageNames": ["image-type"],
+      "allowedVersions": "<5"
+    },
+    {
+      "matchPackageNames": ["electron-dl"],
+      "allowedVersions": "<5"
+    },
+    {
+      "matchPackageNames": ["globby"],
+      "allowedVersions": "<12"
+    },
+    {
+      "matchPackageNames": ["electron-winstaller"],
+      "allowedVersions": "<5"
+    },
+    {
+      "matchPackageNames": ["eslint-plugin-no-unsanitized"],
+      "allowedVersions": "4.0.x"
+    }
+  ]
+}

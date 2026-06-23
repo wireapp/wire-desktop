@@ -64,6 +64,13 @@ const subscribeToMainProcessEvents = (): void => {
     }
   });
 
+  ipcRenderer.on(EVENT_TYPE.UI.REQUEST_WEBAPP_VERSION, async () => {
+    const selectedWebview = getSelectedWebview();
+    if (selectedWebview) {
+      await selectedWebview.send(EVENT_TYPE.UI.REQUEST_WEBAPP_VERSION);
+    }
+  });
+
   ipcRenderer.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED, async () => {
     const selectedWebview = getSelectedWebview();
     if (selectedWebview) {

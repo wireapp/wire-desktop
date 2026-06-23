@@ -211,6 +211,11 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${EVENT_TYPE.PREFERENCES.SHOW}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.PREFERENCES.MANAGE_ACCOUNT);
   });
+  ipcRenderer.on(EVENT_TYPE.UI.REQUEST_WEBAPP_VERSION, () => {
+    logger.info(`Received event "${EVENT_TYPE.UI.REQUEST_WEBAPP_VERSION}", reporting versions ...`);
+    reportWebappVersion();
+    reportWebappAVSVersion();
+  });
   ipcRenderer.on(EVENT_TYPE.ACTION.SIGN_OUT, () => {
     logger.info(`Received event "${EVENT_TYPE.ACTION.SIGN_OUT}", forwarding to amplify ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.ASK_TO_CLEAR_DATA);

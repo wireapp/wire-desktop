@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext"]
+  },
+  "include": ["e2e-tests/**/*.ts", "playwright.config.ts"]
+}

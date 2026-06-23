@@ -4,8 +4,8 @@ on:
     types: [opened, edited, synchronize]
 jobs:
   add-jira-description:
-    # avoid triggering this action on dependabot PRs
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    # avoid triggering this action on renovate PRs
+    if: ${{ github.actor != 'renovate[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: cakeinpanic/jira-description-action@235b8296c8b4f88c564297246810f084f853dac1

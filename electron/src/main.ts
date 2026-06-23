@@ -75,6 +75,8 @@ import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
 
+const logger = getLogger(path.basename(__filename));
+
 remoteMain.initialize();
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
@@ -101,7 +103,6 @@ const customProtocolHandler = new CustomProtocolHandler();
 const argv = minimist(process.argv.slice(1));
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
-const logger = getLogger(path.basename(__filename));
 const currentLocale = locale.getCurrent();
 const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMENT.HIDDEN]);
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
@@ -176,14 +177,6 @@ app.commandLine.appendSwitch('disable-features', 'webrtc-hide-local-ips-with-mdn
 
 // Allow both public and private interfaces for WebRTC
 app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'default_public_and_private_interfaces');
-
-app.getGPUInfo('basic').then((info: any) => {
-  const gpuDevices = 'gpuDevice' in info ? info.gpuDevice : [];
-  if (gpuDevices.length > 0) {
-    logger.info('No GPU device found, disabling hardware acceleration');
-    app.disableHardwareAcceleration();
-  }
-});
 
 // IPC events
 const bindIpcEvents = (): void => {

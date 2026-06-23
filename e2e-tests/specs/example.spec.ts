@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2023 Wire Swiss GmbH
+ * Copyright (C) 2026 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,8 @@
  *
  */
 
-// import type {Config} from 'jest';
+import {test, expect} from '../fixtures';
 
-/** @type {import('@jest/types').Config.InitialOptions} */
-// const jestConfig: Config = {
-const jestConfig = {
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['<rootDir>/electron/dist', '<rootDir>/e2e-tests'],
-};
-
-module.exports = jestConfig;
+test('starts the app', async ({page}) => {
+  await expect(page.getByText('Welcome to Wire!')).toBeVisible();
+});
