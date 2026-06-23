@@ -40,7 +40,7 @@ test(
     });
 
     const newPage = await test.step('UserA clicks on `+` button to add new account', async () => {
-      await accountsSidebar(app).sidebar.hover();
+      await accountsSidebar(app).hover();
 
       const windowPromise = app.waitForEvent('window');
       await accountsSidebar(app).addAccountButton.click();
