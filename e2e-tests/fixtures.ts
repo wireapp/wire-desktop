@@ -17,7 +17,7 @@
  *
  */
 
-import {test as baseTest, Page} from '@playwright/test';
+import {test as baseTest, BrowserContext, Page} from '@playwright/test';
 
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -130,10 +130,12 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
   },
 
   createPage: async ({browser}, use) => {
+    const contexts: BrowserContext[] = [];
     const pages: Page[] = [];
 
     await use(async () => {
       const context = await browser.newContext();
+      contexts.push(context);
 
       const page = await context.newPage();
       pages.push(page);
@@ -144,6 +146,7 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
 
     // Close all pages created throughout the tests and dismiss before unload dialogs
     await Promise.all(pages.map(page => page.close({runBeforeUnload: true})));
+    await Promise.all(contexts.map(ctx => ctx.close()));
   },
 });
 
