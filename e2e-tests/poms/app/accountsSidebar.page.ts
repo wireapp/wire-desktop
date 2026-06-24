@@ -22,9 +22,33 @@ import {User} from '../../actions/createUser';
 
 export const accountsSidebar = (app: App) => {
   const sidebar = app.wrapper.getByRole('navigation', {name: 'Accounts Sidebar'});
+
+  const accountItems = sidebar.getByTestId('account-cell');
+  const addAccountButton = sidebar.getByTestId('do-open-plus-menu');
+
+  /* Trigger the flow to add a new account, replacing the currenly shown page with the page for adding the new account */
+  const addAccount = async () => {
+    await sidebar.hover();
+
+    const newWindowPromise = app.waitForEvent('window');
+    await addAccountButton.click();
+
+    // Set the current page to the now visible one
+    app.page = await newWindowPromise;
+  };
+
+  /* Switch to the account at the given index, replacing the currently shown page with the page of the other account */
+  const switchAccount = async (index: number) => {
+    await accountItems.nth(index).click();
+
+    // Set the current page to the new active one. The first index in the windows list is always the wrapper
+    app.page = app.windows()[index + 1];
+  };
+
   return Object.assign(sidebar, {
+    accountItems,
     getAccount: (user: User) => sidebar.getByRole('button', {name: user.fullName}),
-    addAccountButton: sidebar.getByTestId('do-open-plus-menu'),
-    accountItems: sidebar.getByTestId('account-cell'),
+    addAccount,
+    switchAccount,
   });
 };
