@@ -281,7 +281,19 @@ process.once('loaded', () => {
     version: 1,
   };
   global.environment = EnvironmentUtil;
-  global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION, supportsCallingPopoutWindow: true};
+  // Read synchronously so the value is present at the exact point `desktopAppConfig` is assigned.
+  // The main-process handler returns a pre-read, memoized value, so the blocking call is negligible.
+  let managedConfig = {isManaged: false};
+  try {
+    managedConfig = ipcRenderer.sendSync(EVENT_TYPE.MANAGED.GET_CONFIG) ?? {isManaged: false};
+  } catch (error) {
+    logger.warn('Failed to read managed config from the main process, treating the device as unmanaged:', error);
+  }
+  global.desktopAppConfig = {
+    version: EnvironmentUtil.app.DESKTOP_VERSION,
+    supportsCallingPopoutWindow: true,
+    managedConfig,
+  };
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
