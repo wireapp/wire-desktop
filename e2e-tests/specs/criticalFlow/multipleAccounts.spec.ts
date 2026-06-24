@@ -39,29 +39,23 @@ test(
       await expect(accountsSidebar(app).getAccount(userA)).toBeVisible();
     });
 
-    const newPage = await test.step('UserA clicks on `+` button to add new account', async () => {
-      await accountsSidebar(app).hover();
+    await test.step('UserA clicks on `+` button to add new account', async () => {
+      await accountsSidebar(app).addAccount();
 
-      const windowPromise = app.waitForEvent('window');
-      await accountsSidebar(app).addAccountButton.click();
-      const newPage = await windowPromise;
-
-      await expect(ssoPage(newPage).loginButton).toBeVisible();
-      await expect(newPage.getByText('Welcome to Wire!')).toBeVisible();
-
-      return newPage;
+      await expect(ssoPage(app.page).loginButton).toBeVisible();
+      await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
     });
 
     await test.step('UserA logs in with second account', async () => {
-      await loginUser(newPage, userA2);
-      await expect(conversationsSidebar(newPage).userAvatar).toContainText(userA2.initials);
+      await loginUser(app.page, userA2);
+      await expect(conversationsSidebar(app.page).userAvatar).toContainText(userA2.initials);
       await expect(accountsSidebar(app).getAccount(userA)).toBeVisible();
       await expect(accountsSidebar(app).getAccount(userA2)).toBeVisible();
       await expect(accountsSidebar(app).accountItems).toHaveCount(2);
     });
 
     await test.step('UserA clicks on first account in the accounts list', async () => {
-      await accountsSidebar(app).getAccount(userA).click();
+      await accountsSidebar(app).switchAccount(0);
       await expect(conversationsSidebar(app.page).userAvatar).toContainText(userA.initials);
     });
   },

@@ -25,15 +25,15 @@ import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page'
 test(
   'I want to log in with my existing Wire account',
   {tag: ['@TC-10923', '@crit-flow-desktop']},
-  async ({app, page, createUser}) => {
+  async ({app, createUser}) => {
     const user = await createUser();
 
     await test.step('User logs in', async () => {
-      await loginUser(page, user);
+      await loginUser(app.page, user);
     });
 
     await test.step("User verifies he's now logged in with his new account", async () => {
-      await expect(conversationsSidebar(page).userAvatar).toContainText(user.initials);
+      await expect(conversationsSidebar(app.page).userAvatar).toContainText(user.initials);
       await expect(accountsSidebar(app).getAccount(user)).toBeVisible();
     });
   },

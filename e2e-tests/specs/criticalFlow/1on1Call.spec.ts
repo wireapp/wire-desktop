@@ -27,9 +27,10 @@ import {conversationsList} from '../../poms/webapp/conversationList.page';
 test(
   'I want to call someone directly',
   {tag: ['@TC-10926', '@crit-flow-desktop']},
-  async ({page: userAPage, createUser, createTeam, createPage}) => {
+  async ({app, createUser, createTeam, createPage}) => {
     const userB = await createUser();
     const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+    const userAPage = app.page;
     const userBPage = await createPage();
 
     await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);

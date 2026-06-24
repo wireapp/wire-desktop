@@ -28,22 +28,22 @@ import {conversationsList} from '../../poms/webapp/conversationList.page';
 test(
   'I want to have a group call',
   {tag: ['@TC-11071', '@crit-flow-web']},
-  async ({page, createUser, createTeam, createPage}) => {
+  async ({app, createUser, createTeam, createPage}) => {
     const [member, memberPage] = await Promise.all([createUser(), createPage()]);
     const team = await createTeam('Calling', {users: [member], features: {conferenceCalling: true}});
-    const owner = team.owner;
+    const [owner, ownerPage] = [team.owner, app.page];
     const conversationName = 'Calling';
 
-    await Promise.all([loginUser(memberPage, member), loginUser(page, owner)]);
+    await Promise.all([loginUser(memberPage, member), loginUser(ownerPage, owner)]);
 
     await test.step('Owner creates group and adds the member', async () => {
-      await createGroup(page, conversationName, [member]);
+      await createGroup(ownerPage, conversationName, [member]);
     });
 
     await test.step('Owner starts call', async () => {
-      await conversationsList(page).getConversation(conversationName).open();
-      await conversation(page).startCallButton.click();
-      await expect(callCell(page)).toBeVisible();
+      await conversationsList(ownerPage).getConversation(conversationName).open();
+      await conversation(ownerPage).startCallButton.click();
+      await expect(callCell(ownerPage)).toBeVisible();
     });
 
     await test.step('Member accepts call', async () => {
@@ -51,7 +51,7 @@ test(
       await callCell(memberPage).acceptCallButton.click();
 
       await expect(callCell(memberPage).goFullScreen).toBeVisible();
-      await expect(callCell(page).goFullScreen).toBeVisible();
+      await expect(callCell(ownerPage).goFullScreen).toBeVisible();
     });
   },
 );

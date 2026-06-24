@@ -99,11 +99,6 @@ export const test = baseTest.extend<FixtureOptions & Fixtures>({
     await fs.rm(tempUserDataDir, {recursive: true});
   },
 
-  // Overwrite of the default page fixture to reference the apps page instead
-  page: async ({app}, use) => {
-    await use(app.page);
-  },
-
   createUser: async ({publicApi, brigApi}, use) => {
     const users: RegisteredUser[] = [];
 
