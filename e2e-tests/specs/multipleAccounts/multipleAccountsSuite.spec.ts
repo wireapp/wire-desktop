@@ -69,4 +69,37 @@ test.describe('Multiple Accounts', async () => {
       });
     },
   );
+
+  test(
+    'I want to remove my secondary account',
+    {tag: ['@TC-11003', '@crit-flow-desktop']},
+    async ({app, createUser}) => {
+      const userA = await createUser();
+      const userB = await createUser();
+
+      await test.step('UserA logs in', async () => {
+        await loginUser(app.page, userA);
+      });
+
+      await test.step('UserA logs in with second account', async () => {
+        await accountsSidebar(app).addAccount();
+        await loginUser(app.page, userB);
+        await expect(accountsSidebar(app).getAccount(userA)).toBeVisible();
+        await expect(accountsSidebar(app).getAccount(userB)).toBeVisible();
+        await expect(accountsSidebar(app).accountItems).toHaveCount(2);
+      });
+
+      await test.step('UserA switches back to main account', async () => {
+        await accountsSidebar(app).switchAccount(0);
+      });
+
+      await test.step('UserA removes secondary account', async () => {
+        await accountsSidebar(app).getAccount(userB).click({button: 'right'});
+        await accountsSidebar(app).getByRole('button', {name: 'Remove Account'}).click();
+        await expect(accountsSidebar(app).getAccount(userA)).toBeVisible();
+        await expect(accountsSidebar(app).getAccount(userB)).not.toBeVisible();
+        await expect(accountsSidebar(app).accountItems).toHaveCount(1);
+      });
+    },
+  );
 });
