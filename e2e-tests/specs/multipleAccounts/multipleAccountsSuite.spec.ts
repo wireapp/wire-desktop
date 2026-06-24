@@ -19,8 +19,11 @@
 
 import {createGroup} from '../../actions/createGroup';
 import {loginUser} from '../../actions/loginUser';
+import {sendConnectionRequest} from '../../actions/sendConnectionRequest';
 import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
+import {connectionRequestPage} from '../../poms/webapp/connectionRequest.page';
+import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
 
@@ -152,6 +155,62 @@ test.describe('Multiple Accounts', async () => {
     await test.step('Verify `+` is no longer visible', async () => {
       await accountsSidebar(app).getAccount(userB).hover();
       await expect(accountsSidebar(app).addAccountButton).not.toBeVisible();
+    });
+  });
+
+  test('Verify correct account gets notified', {tag: ['@TC-11006', '@regression']}, async ({app, createUser}) => {
+    const userA = await createUser();
+    const userB = await createUser();
+    const conversationName = 'MultiAcc';
+
+    await test.step('UserA logs in', async () => {
+      await loginUser(app.page, userA);
+    });
+
+    await test.step('UserA connects with UserB', async () => {
+      await sendConnectionRequest(app.page, userB);
+    });
+
+    await test.step('UserA adds account for UserB and UserB accepts connection request', async () => {
+      await accountsSidebar(app).addAccount();
+      await loginUser(app.page, userB);
+      await connectionRequestPage(app.page).connectButton.click();
+      await accountsSidebar(app).switchAccount(0);
+      await expect(conversationsSidebar(app.page).userAvatar).toContainText(userA.initials);
+    });
+
+    await test.step('UserA creates group conversation with UserB', async () => {
+      await createGroup(app.page, conversationName, [userB]);
+    });
+
+    await test.step('UserA sends message to group conversation', async () => {
+      await conversationsList(app.page).getConversation(conversationName).open();
+      await conversation(app.page).sendMessage('Papaya');
+    });
+
+    await test.step('Notification Dot on UserB profile in sidebar is visible', async () => {
+      await expect(accountsSidebar(app).getAccount(userB).notificationDot).toBeVisible();
+    });
+
+    await test.step('UserA switches to UserB account, reads message and notification dot vanishes', async () => {
+      await accountsSidebar(app).switchAccount(1);
+      await conversationsList(app.page).getConversation(conversationName).open();
+      await expect(accountsSidebar(app).getAccount(userB).notificationDot).toBeHidden();
+    });
+
+    await test.step('UserB sends message to group conversation', async () => {
+      await conversationsList(app.page).getConversation(conversationName).open();
+      await conversation(app.page).sendMessage('Guava');
+    });
+
+    await test.step('Notification Dot on UserA profile in sidebar is visible', async () => {
+      await expect(accountsSidebar(app).getAccount(userA).notificationDot).toBeVisible();
+    });
+
+    await test.step('UserB switches to UserA account, reads message and notification dot vanishes', async () => {
+      await accountsSidebar(app).switchAccount(0);
+      await conversationsList(app.page).getConversation(conversationName).open();
+      await expect(accountsSidebar(app).getAccount(userA).notificationDot).toBeHidden();
     });
   });
 });

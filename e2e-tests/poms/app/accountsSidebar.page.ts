@@ -48,7 +48,13 @@ export const accountsSidebar = (app: App) => {
   return Object.assign(sidebar, {
     accountItems,
     addAccountButton,
-    getAccount: (user: User) => sidebar.getByRole('button', {name: user.fullName}),
+    getAccount: (user: User) => {
+      const accountLocator = sidebar.getByRole('button', {name: user.fullName});
+
+      return Object.assign(accountLocator, {
+        notificationDot: accountLocator.getByText('New message or missed call'),
+      });
+    },
     addAccount,
     switchAccount,
   });
