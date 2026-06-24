@@ -47,6 +47,7 @@ export const accountsSidebar = (app: App) => {
 
   return Object.assign(sidebar, {
     accountItems,
+    addAccountButton,
     getAccount: (user: User) => sidebar.getByRole('button', {name: user.fullName}),
     addAccount,
     switchAccount,

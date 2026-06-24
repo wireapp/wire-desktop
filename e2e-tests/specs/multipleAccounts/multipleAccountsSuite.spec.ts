@@ -127,4 +127,31 @@ test.describe('Multiple Accounts', async () => {
       await expect(accountsSidebar(app).accountItems).toHaveCount(1);
     });
   });
+
+  test('Verify max account limit of three accounts', {tag: ['@TC-11005', '@regression']}, async ({app, createUser}) => {
+    const userA = await createUser();
+    const userB = await createUser();
+    const userC = await createUser();
+
+    await test.step('Preconditions: UserA and UserB are already logged in', async () => {
+      await loginUser(app.page, userA);
+      await accountsSidebar(app).addAccount();
+      await loginUser(app.page, userB);
+    });
+
+    await test.step('Verify `+` is still visible', async () => {
+      await accountsSidebar(app).getAccount(userB).hover();
+      await expect(accountsSidebar(app).addAccountButton).toBeVisible();
+    });
+
+    await test.step('UserA adds third account', async () => {
+      await accountsSidebar(app).addAccount();
+      await loginUser(app.page, userC);
+    });
+
+    await test.step('Verify `+` is no longer visible', async () => {
+      await accountsSidebar(app).getAccount(userB).hover();
+      await expect(accountsSidebar(app).addAccountButton).not.toBeVisible();
+    });
+  });
 });
