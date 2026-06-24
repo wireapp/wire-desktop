@@ -28,65 +28,61 @@ import {setAccountTypePage} from '../../poms/webapp/setAccountType.page';
 import {setHandlePage} from '../../poms/webapp/setHandle.page';
 import {ssoPage} from '../../poms/webapp/sso.page';
 
-test(
-  'I want to register a new Wire account',
-  {tag: ['@TC-10924', '@crit-flow-desktop']},
-  async ({app, page, brigApi}) => {
-    const user = createUser();
+test('I want to register a new Wire account', {tag: ['@TC-10924', '@crit-flow-desktop']}, async ({app, brigApi}) => {
+  const user = createUser();
 
-    await test.step('User initiates the registration from the log in page', async () => {
-      await ssoPage(page).codeEmailInput.fill(user.email);
-      await ssoPage(page).loginButton.click();
-      await expect(loginPage(page).createAccountButton).toBeVisible();
+  await test.step('User initiates the registration from the log in page', async () => {
+    await ssoPage(app.page).codeEmailInput.fill(user.email);
+    await ssoPage(app.page).loginButton.click();
+    await expect(loginPage(app.page).createAccountButton).toBeVisible();
 
-      await loginPage(page).createAccountButton.click();
+    await loginPage(app.page).createAccountButton.click();
 
-      await setAccountTypePage(page).createPersonalAccountButton.click();
-    });
+    await setAccountTypePage(app.page).createPersonalAccountButton.click();
+  });
 
-    await test.step('User completes the signup', async () => {
-      const {nameInput, emailInput, passwordInput, confirmPasswordInput, termsAndConditionsCheckbox, submitButton} =
-        registrationPage(page);
+  await test.step('User completes the signup', async () => {
+    const {nameInput, emailInput, passwordInput, confirmPasswordInput, termsAndConditionsCheckbox, submitButton} =
+      registrationPage(app.page);
 
-      await nameInput.fill(user.fullName);
-      await emailInput.fill(user.email);
-      await passwordInput.fill(user.password);
-      await confirmPasswordInput.fill(user.password);
-      await termsAndConditionsCheckbox.check({force: true});
+    await nameInput.fill(user.fullName);
+    await emailInput.fill(user.email);
+    await passwordInput.fill(user.password);
+    await confirmPasswordInput.fill(user.password);
+    await termsAndConditionsCheckbox.check({force: true});
 
-      await submitButton.click();
-    });
+    await submitButton.click();
+  });
 
-    await test.step('User enters activation code from email', async () => {
-      const {verificationCodeInput, enterVerificationCode} = emailVerificationPage(page);
-      await expect(verificationCodeInput).toBeVisible();
+  await test.step('User enters activation code from email', async () => {
+    const {verificationCodeInput, enterVerificationCode} = emailVerificationPage(app.page);
+    await expect(verificationCodeInput).toBeVisible();
 
-      const verificationCode = await brigApi.getUserActivationCode(user.email);
-      await enterVerificationCode(verificationCode);
-    });
+    const verificationCode = await brigApi.getUserActivationCode(user.email);
+    await enterVerificationCode(verificationCode);
+  });
 
-    await test.step('User does not want to receive news and updates via email', async () => {
-      const modal = page.getByRole('dialog');
-      await expect(modal).toContainText('Do you want to receive news and product updates from Wire via email?');
-      await modal.getByRole('button', {name: 'No, thanks'}).click();
-    });
+  await test.step('User does not want to receive news and updates via email', async () => {
+    const modal = app.page.getByRole('dialog');
+    await expect(modal).toContainText('Do you want to receive news and product updates from Wire via email?');
+    await modal.getByRole('button', {name: 'No, thanks'}).click();
+  });
 
-    await test.step('User checks the automatically generated username', async () => {
-      const {pageTitle, handleInput, continueButton} = setHandlePage(page);
-      await expect(pageTitle).toBeVisible();
-      await expect(handleInput).not.toHaveValue('');
-      await continueButton.click();
-    });
+  await test.step('User checks the automatically generated username', async () => {
+    const {pageTitle, handleInput, continueButton} = setHandlePage(app.page);
+    await expect(pageTitle).toBeVisible();
+    await expect(handleInput).not.toHaveValue('');
+    await continueButton.click();
+  });
 
-    await test.step('User declines sending usage data', async () => {
-      const modal = page.getByRole('dialog');
-      await expect(modal).toContainText('Consent to share user data', {timeout: LOGIN_TIMEOUT});
-      await modal.getByRole('button', {name: 'Decline'}).click();
-    });
+  await test.step('User declines sending usage data', async () => {
+    const modal = app.page.getByRole('dialog');
+    await expect(modal).toContainText('Consent to share user data', {timeout: LOGIN_TIMEOUT});
+    await modal.getByRole('button', {name: 'Decline'}).click();
+  });
 
-    await test.step("User verifies he's now logged in with his new account", async () => {
-      await expect(conversationsSidebar(page).userAvatar).toContainText(user.initials);
-      await expect(accountsSidebar(app).getAccount(user)).toBeVisible();
-    });
-  },
-);
+  await test.step("User verifies he's now logged in with his new account", async () => {
+    await expect(conversationsSidebar(app.page).userAvatar).toContainText(user.initials);
+    await expect(accountsSidebar(app).getAccount(user)).toBeVisible();
+  });
+});
