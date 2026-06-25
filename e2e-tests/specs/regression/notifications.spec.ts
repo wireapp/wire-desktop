@@ -144,10 +144,10 @@ test.describe('Notifications', () => {
 
       await test.step('A clicks on the notification of the first message', async () => {
         await clickNotification({body: 'Test Message 1'});
-
-        // ToDo: Figure out which webview is the currently active one to verify the switch by click worked
-        await expect(conversation(app.page).conversationTitle).toContainText(userB.fullName);
+        await expect(accountsSidebar(app).getAccount(userA1).activeBorder).toBeVisible();
         await expect(accountsSidebar(app).getAccount(userA1).notificationDot).not.toBeVisible();
+
+        await expect(conversation(app.page).conversationTitle).toContainText(userB.fullName);
         await expect.poll(() => appIcon(app).getBadgeCount()).toBe(1);
       });
     },

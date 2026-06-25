@@ -29,6 +29,7 @@ export const accountsSidebar = (app: App) => {
   const getAccount = (user: RegisteredUser) => {
     const accountLocator = sidebar.locator(`[data-account-id="${user.id}"]`);
     return Object.assign(accountLocator, {
+      activeBorder: accountLocator.getByTestId('item-selected'),
       notificationDot: accountLocator.getByText('New message or missed call'),
     });
   };

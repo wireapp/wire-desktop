@@ -65,5 +65,31 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
   const wrapper = await app.waitForEvent('window');
   const page = await app.waitForEvent('window');
 
-  return Object.assign(app, {wrapper, page});
+  const enhancedApp = Object.assign(app, {wrapper, page});
+
+  /* Make a callback function available on the wrappers window object so it can notify the paywright process */
+  const onActiveAccountChange = (newAccountId: string) => {
+    const newActivePage = app.windows().find(page => {
+      // Compare the id of the window to the one which became active (removing the hash based routing)
+      return newAccountId === new URLSearchParams(page.url().split('#')[0]).get('id');
+    });
+
+    // If there's a new active account, update the page property of app with its page
+    if (newActivePage !== undefined) {
+      enhancedApp.page = newActivePage;
+    }
+  };
+  await wrapper.exposeFunction('onActiveAccountChange', onActiveAccountChange);
+
+  /* Observe the list of webviews for changes, if the currently visible webview changes inform the playwright process about the new accountId */
+  await wrapper.locator('ul.WebviewList').evaluate(list => {
+    new window.MutationObserver(() => {
+      const activeAccountId = list.querySelector('webview[visible="true"]')?.getAttribute('data-accountid');
+      if (activeAccountId != undefined) {
+        onActiveAccountChange(activeAccountId);
+      }
+    }).observe(list, {attributeFilter: ['visible'], childList: true, subtree: true});
+  });
+
+  return enhancedApp;
 };
