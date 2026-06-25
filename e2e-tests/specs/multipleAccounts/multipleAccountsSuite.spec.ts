@@ -26,6 +26,7 @@ import {connectionRequestPage} from '../../poms/webapp/connectionRequest.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
+import {ssoPage} from '../../poms/webapp/sso.page';
 
 test.describe('Multiple Accounts', async () => {
   test(
@@ -72,6 +73,23 @@ test.describe('Multiple Accounts', async () => {
       });
     },
   );
+
+  test('I want to remove the only account I have', {tag: ['@TC-11070', '@regression']}, async ({app, createUser}) => {
+    const userA = await createUser();
+
+    await test.step('UserA logs in', async () => {
+      await loginUser(app.page, userA);
+    });
+
+    await test.step('UserA removes account', async () => {
+      await accountsSidebar(app).removeAccount(0);
+    });
+
+    await test.step('UserA gets redirected to SSO-Page', async () => {
+      await expect(ssoPage(app.page).loginButton).toBeVisible();
+      await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
+    });
+  });
 
   test('I want to remove my secondary account', {tag: ['@TC-11003', '@regression']}, async ({app, createUser}) => {
     const userA = await createUser();
