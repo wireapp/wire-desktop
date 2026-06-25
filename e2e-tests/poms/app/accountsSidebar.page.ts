@@ -46,10 +46,16 @@ export const accountsSidebar = (app: App) => {
   };
 
   const removeAccount = async (index: number) => {
-    const newWindowPromise = app.waitForEvent('window');
-    await accountItems.nth(index).click({button: 'right'});
-    await sidebar.getByRole('button', {name: 'Remove Account'}).click();
-    app.page = await newWindowPromise;
+    if (app.windows().length <= 2) {
+      const newWindowPromise = app.waitForEvent('window');
+      await accountItems.nth(index).click({button: 'right'});
+      await sidebar.getByRole('button', {name: 'Remove Account'}).click();
+      app.page = await newWindowPromise;
+    } else {
+      await accountItems.nth(index).click({button: 'right'});
+      await sidebar.getByRole('button', {name: 'Remove Account'}).click();
+      app.page = app.windows().at(-1)!;
+    }
   };
 
   return Object.assign(sidebar, {

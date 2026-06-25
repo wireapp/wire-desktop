@@ -26,6 +26,7 @@ import {connectionRequestPage} from '../../poms/webapp/connectionRequest.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
+import {LOGIN_TIMEOUT} from '../../poms/webapp/login.page';
 import {ssoPage} from '../../poms/webapp/sso.page';
 
 test.describe('Multiple Accounts', async () => {
@@ -86,7 +87,7 @@ test.describe('Multiple Accounts', async () => {
     });
 
     await test.step('UserA gets redirected to SSO-Page', async () => {
-      await expect(ssoPage(app.page).loginButton).toBeVisible();
+      await expect(ssoPage(app.page).loginButton).toBeVisible({timeout: LOGIN_TIMEOUT});
       await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
     });
   });
@@ -112,9 +113,8 @@ test.describe('Multiple Accounts', async () => {
     });
 
     await test.step('UserA removes secondary account', async () => {
-      await accountsSidebar(app).getAccount(userB).click({button: 'right'});
-      await accountsSidebar(app).getByRole('button', {name: 'Remove Account'}).click();
-      await expect(accountsSidebar(app).getAccount(userA)).toBeVisible();
+      await accountsSidebar(app).removeAccount(1);
+      await expect(accountsSidebar(app).getAccount(userA)).toBeVisible({timeout: LOGIN_TIMEOUT});
       await expect(accountsSidebar(app).getAccount(userB)).not.toBeVisible();
       await expect(accountsSidebar(app).accountItems).toHaveCount(1);
     });
@@ -141,8 +141,7 @@ test.describe('Multiple Accounts', async () => {
     });
 
     await test.step('UserA removes active main account', async () => {
-      await accountsSidebar(app).getAccount(userA).click({button: 'right'});
-      await accountsSidebar(app).getByRole('button', {name: 'Remove Account'}).click();
+      await accountsSidebar(app).removeAccount(0);
       await expect(accountsSidebar(app).getAccount(userB)).toBeVisible();
       await expect(accountsSidebar(app).getAccount(userA)).not.toBeVisible();
       await expect(accountsSidebar(app).accountItems).toHaveCount(1);
