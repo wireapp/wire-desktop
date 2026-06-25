@@ -141,7 +141,7 @@ const Sidebar = ({
               role="button"
               className={getClassName(account)}
               tabIndex={0}
-              data-account-id={account.id}
+              data-account-id={account.userID}
               onClick={preventFocus(() => handleSwitchAccount(accountIndex))}
               aria-describedby={notificationDescriptionId}
               onKeyDown={event => {
