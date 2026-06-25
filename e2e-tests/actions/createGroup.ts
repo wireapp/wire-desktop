@@ -28,6 +28,11 @@ export const createGroup = async (page: Page, conversationName: string, users: U
 
   const modal = groupCreationModal(page);
   await modal.setGroupName(conversationName);
-  await modal.selectGroupMembers(...users.map(user => user.username));
-  await modal.doneButton.click();
+  // Allows creation of empty group
+  if (users && users.length > 0) {
+    await modal.selectGroupMembers(...users.map(user => user.username));
+    await modal.doneButton.click();
+  } else {
+    await modal.getByRole('button', {name: 'Skip'}).click();
+  }
 };

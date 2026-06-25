@@ -45,10 +45,31 @@ export const accountsSidebar = (app: App) => {
     app.page = app.windows()[index + 1];
   };
 
+  const removeAccount = async (index: number) => {
+    if (app.windows().length <= 2) {
+      const newWindowPromise = app.waitForEvent('window');
+      await accountItems.nth(index).click({button: 'right'});
+      await sidebar.getByRole('button', {name: 'Remove Account'}).click();
+      app.page = await newWindowPromise;
+    } else {
+      await accountItems.nth(index).click({button: 'right'});
+      await sidebar.getByRole('button', {name: 'Remove Account'}).click();
+      app.page = app.windows().at(-1)!;
+    }
+  };
+
   return Object.assign(sidebar, {
     accountItems,
-    getAccount: (user: User) => sidebar.getByRole('button', {name: user.fullName}),
+    addAccountButton,
+    getAccount: (user: User) => {
+      const accountLocator = sidebar.getByRole('button', {name: user.fullName});
+
+      return Object.assign(accountLocator, {
+        notificationDot: accountLocator.getByText('New message or missed call'),
+      });
+    },
     addAccount,
     switchAccount,
+    removeAccount,
   });
 };
