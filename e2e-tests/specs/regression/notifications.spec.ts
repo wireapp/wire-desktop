@@ -78,4 +78,27 @@ test.describe('Notifications', () => {
       });
     },
   );
+
+  test(
+    "I don't want to receive notifications for messages in the conversation I have currently open",
+    {tag: ['@TC-11269', '@regression']},
+    async ({app, createUser, createTeam, createPage}) => {
+      const userB = await createUser();
+      const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(app.page, userA), loginUser(userBPage, userB)]);
+      await connectWithUser(app.page, userB);
+
+      await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
+      await conversationsList(userBPage).getConversation(userA.fullName, {protocol: 'mls'}).open();
+
+      const {getNotifications} = await interceptNotifications(app);
+
+      await conversation(userBPage).sendMessage('Test Message');
+
+      await expect(conversation(app.page).getMessage({content: 'Test Message'})).toBeVisible();
+      await expect.poll(() => getNotifications()).not.toContainEqual(expect.objectContaining({body: 'Test Message'}));
+    },
+  );
 });
