@@ -22,6 +22,7 @@ import {createGroup} from '../../actions/createGroup';
 import {loginUser} from '../../actions/loginUser';
 import {interceptNotifications} from '../../actions/mockNotifications';
 import {test, expect} from '../../fixtures';
+import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
 import {appIcon} from '../../poms/app/appIcon.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
@@ -99,6 +100,56 @@ test.describe('Notifications', () => {
 
       await expect(conversation(app.page).getMessage({content: 'Test Message'})).toBeVisible();
       await expect.poll(() => getNotifications()).not.toContainEqual(expect.objectContaining({body: 'Test Message'}));
+    },
+  );
+
+  test(
+    'I want to receive notifications from multiple accounts',
+    {tag: ['@TC-11268', '@regression']},
+    async ({app, createUser, createTeam, createPage}) => {
+      const userA1 = await createUser();
+      const userA2 = await createUser();
+      const {owner: userB} = await createTeam('Test Team', {users: [userA1, userA2]});
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(app.page, userA1), loginUser(userBPage, userB)]);
+      await connectWithUser(userBPage, userA1);
+      await connectWithUser(userBPage, userA2);
+
+      await createGroup(app.page, 'Distraction Group', []);
+      await conversationsList(app.page).getConversation('Distraction Group').open();
+
+      await accountsSidebar(app).addAccount();
+      await loginUser(app.page, userA2);
+      await createGroup(app.page, 'Distraction Group', []);
+      await conversationsList(app.page).getConversation('Distraction Group').open();
+
+      const {clickNotification} = await interceptNotifications(app);
+
+      await test.step('B sends a message to user As first account', async () => {
+        await conversationsList(userBPage).getConversation(userA1.fullName, {protocol: 'mls'}).open();
+        await conversation(userBPage).sendMessage('Test Message 1');
+
+        await expect(accountsSidebar(app).getAccount(userA1).notificationDot).toBeVisible();
+        await expect.poll(() => appIcon(app).getBadgeCount()).toBe(1);
+      });
+
+      await test.step('B sends a message to user As second account', async () => {
+        await conversationsList(userBPage).getConversation(userA2.fullName, {protocol: 'mls'}).open();
+        await conversation(userBPage).sendMessage('Test Message 2');
+
+        await expect(accountsSidebar(app).getAccount(userA2).notificationDot).toBeVisible();
+        await expect.poll(() => appIcon(app).getBadgeCount()).toBe(2);
+      });
+
+      await test.step('A clicks on the notification of the first message', async () => {
+        await clickNotification({body: 'Test Message 1'});
+
+        // ToDo: Figure out which webview is the currently active one to verify the switch by click worked
+        await expect(conversation(app.page).conversationTitle).toContainText(userB.fullName);
+        await expect(accountsSidebar(app).getAccount(userA1).notificationDot).not.toBeVisible();
+        await expect.poll(() => appIcon(app).getBadgeCount()).toBe(1);
+      });
     },
   );
 });
