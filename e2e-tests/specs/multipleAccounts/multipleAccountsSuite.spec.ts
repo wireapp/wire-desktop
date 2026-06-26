@@ -35,7 +35,7 @@ test.describe('Multiple Accounts', async () => {
     {tag: ['@TC-11002', '@regression']},
     async ({app, createTeam}) => {
       const userATeam = await createTeam('Multiple Accounts A', {users: []});
-      const [userA, userAPage] = [userATeam.owner, app.page];
+      const userA = userATeam.owner;
       const userAGroup = 'User A Group';
 
       const userBTeam = await createTeam('Multiple Accounts B', {users: []});
@@ -43,12 +43,12 @@ test.describe('Multiple Accounts', async () => {
       const userBGroup = 'User B Group';
 
       await test.step('UserA logs in', async () => {
-        await loginUser(userAPage, userA);
-        await expect(conversationsSidebar(userAPage).userAvatar).toContainText(userA.initials);
+        await loginUser(app.page, userA);
+        await expect(conversationsSidebar(app.page).userAvatar).toContainText(userA.initials);
       });
 
       await test.step('UserA creates empty group', async () => {
-        await createGroup(userAPage, userAGroup, []);
+        await createGroup(app.page, userAGroup, []);
       });
 
       await test.step('UserA adds new Account', async () => {
@@ -70,7 +70,7 @@ test.describe('Multiple Accounts', async () => {
       });
 
       await test.step('UserA does not see group conversation of UserB', async () => {
-        await expect(conversationsList(userAPage).getConversation(userBGroup)).not.toBeVisible();
+        await expect(conversationsList(app.page).getConversation(userBGroup)).not.toBeVisible();
       });
     },
   );
