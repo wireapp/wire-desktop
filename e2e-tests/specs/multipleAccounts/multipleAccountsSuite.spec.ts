@@ -69,7 +69,7 @@ test.describe('Multiple Accounts', async () => {
         await accountsSidebar(app).switchAccount(0);
       });
 
-      await test.step('UserA does not see group conversation of UserA', async () => {
+      await test.step('UserA does not see group conversation of UserB', async () => {
         await expect(conversationsList(userAPage).getConversation(userBGroup)).not.toBeVisible();
       });
     },
