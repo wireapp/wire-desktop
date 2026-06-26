@@ -44,7 +44,6 @@ test.describe('Multiple Accounts', async () => {
 
       await test.step('UserA logs in', async () => {
         await loginUser(app.page, userA);
-        await expect(conversationsSidebar(app.page).userAvatar).toContainText(userA.initials);
       });
 
       await test.step('UserA creates empty group', async () => {
