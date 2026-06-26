@@ -23,7 +23,7 @@ import * as publicApiClient from './generated/publicApi';
 
 import {User} from '../actions/createUser';
 
-export type RegisteredUser = User & {token: string};
+export type RegisteredUser = User & {id: string; token: string};
 
 export type TeamOwner = RegisteredUser & {teamId: string};
 
