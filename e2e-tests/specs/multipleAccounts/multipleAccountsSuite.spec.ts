@@ -145,6 +145,7 @@ test.describe('Multiple Accounts', async () => {
       await expect(accountsSidebar(app).getAccount(userB)).toBeVisible();
       await expect(accountsSidebar(app).getAccount(userA)).not.toBeVisible();
       await expect(accountsSidebar(app).accountItems).toHaveCount(1);
+      await expect(conversationsSidebar(app.page).userAvatar).toContainText(userB.initials);
     });
   });
 
