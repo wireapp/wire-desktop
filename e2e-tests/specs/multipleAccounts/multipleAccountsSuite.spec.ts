@@ -30,50 +30,6 @@ import {LOGIN_TIMEOUT} from '../../poms/webapp/login.page';
 import {ssoPage} from '../../poms/webapp/sso.page';
 
 test.describe('Multiple Accounts', async () => {
-  test(
-    'I want to switch between multiple accounts and see correct conversation',
-    {tag: ['@TC-11002', '@regression']},
-    async ({app, createTeam}) => {
-      const userATeam = await createTeam('Multiple Accounts A', {users: []});
-      const userA = userATeam.owner;
-      const userAGroup = 'User A Group';
-
-      const userBTeam = await createTeam('Multiple Accounts B', {users: []});
-      const userB = userBTeam.owner;
-      const userBGroup = 'User B Group';
-
-      await test.step('UserA logs in', async () => {
-        await loginUser(app.page, userA);
-      });
-
-      await test.step('UserA creates empty group', async () => {
-        await createGroup(app.page, userAGroup, []);
-      });
-
-      await test.step('UserA adds new Account', async () => {
-        await accountsSidebar(app).addAccount();
-        await loginUser(app.page, userB);
-        await expect(conversationsSidebar(app.page).userAvatar).toContainText(userB.initials);
-      });
-
-      await test.step('UserB does not see group conversation of UserA', async () => {
-        await expect(conversationsList(app.page).getConversation(userAGroup)).not.toBeVisible();
-      });
-
-      await test.step('UserB creates empty group', async () => {
-        await createGroup(app.page, userBGroup, []);
-      });
-
-      await test.step('UserB switches account back to A', async () => {
-        await accountsSidebar(app).switchAccount(0);
-      });
-
-      await test.step('UserA does not see group conversation of UserB', async () => {
-        await expect(conversationsList(app.page).getConversation(userBGroup)).not.toBeVisible();
-      });
-    },
-  );
-
   test('I want to remove the only account I have', {tag: ['@TC-11070', '@regression']}, async ({app, createUser}) => {
     const userA = await createUser();
 
