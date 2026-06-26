@@ -60,7 +60,7 @@ test.describe('Notifications', () => {
       });
 
       await test.step('User A should see one unread message on the app icon', async () => {
-        await expect.poll(() => appIcon(app).getBadgeCount()).toEqual(1);
+        await expect.poll(() => appIcon(app).getBadgeCount()).toBe(1);
       });
 
       await test.step('User B sends an other message into a group with A', async () => {
@@ -70,13 +70,13 @@ test.describe('Notifications', () => {
       });
 
       await test.step('User A should see two unread messages on the app icon', async () => {
-        await expect.poll(() => appIcon(app).getBadgeCount()).toEqual(2);
+        await expect.poll(() => appIcon(app).getBadgeCount()).toBe(2);
       });
 
       await test.step('The number on the app icon should return to 1 when the message is read', async () => {
         await clickNotification({body: 'Test Message 1'});
         await expect(conversation(app.page).conversationTitle).toContainText(userB.fullName);
-        await expect.poll(() => appIcon(app).getBadgeCount()).toEqual(1);
+        await expect.poll(() => appIcon(app).getBadgeCount()).toBe(1);
       });
     },
   );
