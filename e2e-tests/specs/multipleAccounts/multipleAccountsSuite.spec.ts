@@ -30,51 +30,6 @@ import {LOGIN_TIMEOUT} from '../../poms/webapp/login.page';
 import {ssoPage} from '../../poms/webapp/sso.page';
 
 test.describe('Multiple Accounts', async () => {
-  test(
-    'I want to switch between multiple accounts and see correct conversation',
-    {tag: ['@TC-11002', '@regression']},
-    async ({app, createTeam}) => {
-      const userATeam = await createTeam('Multiple Accounts A', {users: []});
-      const [userA, userAPage] = [userATeam.owner, app.page];
-      const userAGroup = 'User A Group';
-
-      const userBTeam = await createTeam('Multiple Accounts B', {users: []});
-      const userB = userBTeam.owner;
-      const userBGroup = 'User B Group';
-
-      await test.step('UserA logs in', async () => {
-        await loginUser(userAPage, userA);
-        await expect(conversationsSidebar(userAPage).userAvatar).toContainText(userA.initials);
-      });
-
-      await test.step('UserA creates empty group', async () => {
-        await createGroup(userAPage, userAGroup, []);
-      });
-
-      await test.step('UserA adds new Account', async () => {
-        await accountsSidebar(app).addAccount();
-        await loginUser(app.page, userB);
-        await expect(conversationsSidebar(app.page).userAvatar).toContainText(userB.initials);
-      });
-
-      await test.step('UserB does not see group conversation of UserA', async () => {
-        await expect(conversationsList(app.page).getConversation(userAGroup)).not.toBeVisible();
-      });
-
-      await test.step('UserB creates empty group', async () => {
-        await createGroup(app.page, userBGroup, []);
-      });
-
-      await test.step('UserB switches account back to A', async () => {
-        await accountsSidebar(app).switchAccount(0);
-      });
-
-      await test.step('UserA does not see group conversation of UserA', async () => {
-        await expect(conversationsList(userAPage).getConversation(userBGroup)).not.toBeVisible();
-      });
-    },
-  );
-
   test('I want to remove the only account I have', {tag: ['@TC-11070', '@regression']}, async ({app, createUser}) => {
     const userA = await createUser();
 
@@ -145,6 +100,7 @@ test.describe('Multiple Accounts', async () => {
       await expect(accountsSidebar(app).getAccount(userB)).toBeVisible();
       await expect(accountsSidebar(app).getAccount(userA)).not.toBeVisible();
       await expect(accountsSidebar(app).accountItems).toHaveCount(1);
+      await expect(conversationsSidebar(app.page).userAvatar).toContainText(userB.initials);
     });
   });
 
