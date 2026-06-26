@@ -21,6 +21,7 @@ import {connectWithUser} from '../../actions/connectWithUser';
 import {createGroup} from '../../actions/createGroup';
 import {loginUser} from '../../actions/loginUser';
 import {interceptNotifications} from '../../actions/mockNotifications';
+import {watchActiveAccount} from '../../actions/watchActiveAccount';
 import {test, expect} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
 import {appIcon} from '../../poms/app/appIcon.page';
@@ -143,6 +144,8 @@ test.describe('Notifications', () => {
       });
 
       await test.step('A clicks on the notification of the first message', async () => {
+        // Watch the active account to update the currently active page when the notification click changes it
+        await watchActiveAccount(app, newActivePage => (app.page = newActivePage));
         await clickNotification({body: 'Test Message 1'});
         await expect(accountsSidebar(app).getAccount(userA1).activeBorder).toBeVisible();
         await expect(accountsSidebar(app).getAccount(userA1).notificationDot).not.toBeVisible();
