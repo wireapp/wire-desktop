@@ -22,6 +22,7 @@ import {Page} from '@playwright/test';
 import {User} from '../../actions/createUser';
 
 export const conversation = (page: Page) => {
+  const conversationTitle = page.getByTestId('status-conversation-title-bar-label');
   const startCallButton = page.getByTestId('do-call');
 
   /**
@@ -64,6 +65,7 @@ export const conversation = (page: Page) => {
   };
 
   return {
+    conversationTitle,
     startCallButton,
     sendMessage,
     getMessage,

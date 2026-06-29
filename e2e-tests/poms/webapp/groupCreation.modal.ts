@@ -35,10 +35,12 @@ export const groupCreationModal = (page: Page) => {
   };
 
   const doneButton = modal.getByRole('button', {name: 'Done'});
+  const skipButton = modal.getByRole('button', {name: 'Skip'});
 
   return Object.assign(modal, {
     setGroupName,
     selectGroupMembers,
     doneButton,
+    skipButton,
   });
 };

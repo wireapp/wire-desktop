@@ -18,13 +18,21 @@
  */
 
 import {App} from '../../actions/createApp';
-import {User} from '../../actions/createUser';
+import {RegisteredUser} from '../../backend/PublicApiClient';
 
 export const accountsSidebar = (app: App) => {
   const sidebar = app.wrapper.getByRole('navigation', {name: 'Accounts Sidebar'});
 
   const accountItems = sidebar.getByTestId('account-cell');
   const addAccountButton = sidebar.getByTestId('do-open-plus-menu');
+
+  const getAccount = (user: RegisteredUser) => {
+    const accountLocator = sidebar.locator(`[data-account-id="${user.id}"]`);
+    return Object.assign(accountLocator, {
+      activeBorder: accountLocator.getByTestId('item-selected'),
+      notificationDot: accountLocator.getByText('New message or missed call'),
+    });
+  };
 
   /* Trigger the flow to add a new account, replacing the currenly shown page with the page for adding the new account */
   const addAccount = async () => {
@@ -61,13 +69,7 @@ export const accountsSidebar = (app: App) => {
   return Object.assign(sidebar, {
     accountItems,
     addAccountButton,
-    getAccount: (user: User) => {
-      const accountLocator = sidebar.getByRole('button', {name: user.fullName});
-
-      return Object.assign(accountLocator, {
-        notificationDot: accountLocator.getByText('New message or missed call'),
-      });
-    },
+    getAccount,
     addAccount,
     switchAccount,
     removeAccount,
