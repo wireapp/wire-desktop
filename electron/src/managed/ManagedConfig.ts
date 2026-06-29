@@ -28,15 +28,16 @@ const logger = getLogger('ManagedConfig');
 
 /**
  * The single, OS-independent signal the desktop forwards to the webapp. The webapp owns App-lock
- * enforcement; the desktop only reports whether the device is company-managed.
+ * enforcement; the desktop only reports whether the App-lock override applies.
  */
 export interface ManagedConfig {
-  isManaged: boolean;
+  /** When true, App-lock is forced on, overriding the team-level App-lock setting. */
+  applockOverride: boolean;
 }
 
 let cached: ManagedConfig | undefined;
 
-function detectIsManaged(): boolean {
+function detectApplockOverride(): boolean {
   if (EnvironmentUtil.platform.IS_WINDOWS) {
     return isDeviceManagedWindows();
   }
@@ -54,14 +55,14 @@ function detectIsManaged(): boolean {
 // so non-managed devices and existing on-prem deployments are unaffected.
 export function getManagedConfig(): ManagedConfig {
   if (!cached) {
-    let isManaged = false;
+    let applockOverride = false;
     try {
-      isManaged = detectIsManaged();
+      applockOverride = detectApplockOverride();
     } catch (error) {
       logger.warn('Failed to read managed device configuration, treating the device as unmanaged:', error);
     }
-    cached = {isManaged};
-    logger.info(`Managed device detection: isManaged=${isManaged}`);
+    cached = {applockOverride};
+    logger.info(`Managed device detection: applockOverride=${applockOverride}`);
   }
   return cached;
 }

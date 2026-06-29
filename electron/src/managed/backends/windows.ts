@@ -19,7 +19,7 @@
 
 import {getLogger} from '../../logging/getLogger';
 import {
-  MANAGED_VALUE_NAME,
+  APPLOCK_OVERRIDE_KEY,
   WINDOWS_CLOUD_DOMAIN_JOIN_KEY,
   WINDOWS_ENROLLMENTS_KEY,
   WINDOWS_POLICY_KEY,
@@ -70,20 +70,20 @@ function subkeysOf(registry: RegistryJs, hive: number, subkey: string): string[]
   }
 }
 
-// Treats `1` (REG_DWORD) and `"1"`/`"true"` (REG_SZ) as the enabled managed flag.
-function isManagedFlagEnabled(value: RegistryValue): boolean {
-  if (value.name !== MANAGED_VALUE_NAME) {
+// Treats `1` (REG_DWORD) and `"1"`/`"true"` (REG_SZ) as the enabled override flag.
+function isOverrideEnabled(value: RegistryValue): boolean {
+  if (value.name !== APPLOCK_OVERRIDE_KEY) {
     return false;
   }
   const {data} = value;
   return data === 1 || data === true || data === '1' || (typeof data === 'string' && data.toLowerCase() === 'true');
 }
 
-// True when an organization has set the managed flag via Group Policy (machine-wide or per-user).
+// True when an organization has set the App-lock override flag via Group Policy (machine-wide or per-user).
 function hasWirePolicyPayload(registry: RegistryJs): boolean {
   const {HKEY} = registry;
   return [HKEY.HKEY_LOCAL_MACHINE, HKEY.HKEY_CURRENT_USER].some(hive =>
-    valuesOf(registry, hive, WINDOWS_POLICY_KEY).some(isManagedFlagEnabled),
+    valuesOf(registry, hive, WINDOWS_POLICY_KEY).some(isOverrideEnabled),
   );
 }
 

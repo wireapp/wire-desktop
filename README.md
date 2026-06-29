@@ -56,29 +56,29 @@ yarn test
 
 ### Managed device configuration (MDM)
 
-On company-managed devices, an MDM administrator can flag the device as managed so the webapp can enforce
-App-lock regardless of the team-level setting. The desktop app reads a single `isManaged` flag at startup —
-without spawning any shell command — and forwards it to the webapp as `window.desktopAppConfig.managedConfig`.
+On company-managed devices, an MDM administrator can force App-lock on, overriding the team-level App-lock
+setting. The desktop app reads a single `applockOverride` flag at startup — without spawning any shell
+command — and forwards it to the webapp as `window.desktopAppConfig.managedConfig`.
 
 The flag is read from organization-agnostic, Wire-vendor locations (no customer/company name is hardcoded):
 
 | OS | Source | Signal |
 | :-- | :-- | :-- |
-| Windows | Registry `…\SOFTWARE\Policies\Wire` (HKLM, HKCU fallback) | `isManaged` value = `1`, **or** the device is MDM-enrolled / Azure-AD joined |
-| macOS | App's managed preferences domain (MDM AppConfig profile) | `isManaged` boolean = `true` |
-| Linux | `/etc/wire/managed.json` | `{"isManaged": true}` (presence means managed unless explicitly `false`) |
+| Windows | Registry `…\SOFTWARE\Policies\Wire` (HKLM, HKCU fallback) | `applockOverride` value = `1`, **or** the device is MDM-enrolled / Azure-AD joined |
+| macOS | App's managed preferences domain (MDM AppConfig profile) | `applockOverride` boolean = `true` |
+| Linux | `/etc/wire/managed.json` | `{"applockOverride": true}` (presence means managed unless explicitly `false`) |
 
 #### Testing locally
 
 For each OS: plant the flag, relaunch the app, then open DevTools on the webapp's `<webview>` and evaluate
-`window.desktopAppConfig.managedConfig` — expect `{isManaged: true}`. With nothing planted it must be
-`{isManaged: false}` and the app behaves as before.
+`window.desktopAppConfig.managedConfig` — expect `{applockOverride: true}`. With nothing planted it must be
+`{applockOverride: false}` and the app behaves as before.
 
 **Windows** (elevated prompt):
 
 ```cmd
-reg add "HKLM\SOFTWARE\Policies\Wire" /v isManaged /t REG_DWORD /d 1 /f
-:: relaunch app -> isManaged === true
+reg add "HKLM\SOFTWARE\Policies\Wire" /v applockOverride /t REG_DWORD /d 1 /f
+:: relaunch app -> applockOverride === true
 reg delete "HKLM\SOFTWARE\Policies\Wire" /f
 ```
 
@@ -88,22 +88,22 @@ value needed).
 **macOS** (use the running build's bundle id — production is `com.wearezeta.zclient.mac`; dev/internal differ):
 
 ```shell
-defaults write com.wearezeta.zclient.mac isManaged -bool true
-# relaunch app -> isManaged === true
-defaults delete com.wearezeta.zclient.mac isManaged
+defaults write com.wearezeta.zclient.mac applockOverride -bool true
+# relaunch app -> applockOverride === true
+defaults delete com.wearezeta.zclient.mac applockOverride
 ```
 
 To validate the real MDM path (managed-preferences domain):
 
 ```shell
-sudo defaults write "/Library/Managed Preferences/com.wearezeta.zclient.mac.plist" isManaged -bool true
+sudo defaults write "/Library/Managed Preferences/com.wearezeta.zclient.mac.plist" applockOverride -bool true
 ```
 
 **Linux**:
 
 ```shell
-echo '{"isManaged": true}' | sudo tee /etc/wire/managed.json
-# relaunch app -> isManaged === true
+echo '{"applockOverride": true}' | sudo tee /etc/wire/managed.json
+# relaunch app -> applockOverride === true
 sudo rm /etc/wire/managed.json
 ```
 

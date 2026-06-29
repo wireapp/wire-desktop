@@ -20,17 +20,17 @@
 import * as fs from 'fs-extra';
 
 import {getLogger} from '../../logging/getLogger';
-import {LINUX_MANAGED_CONFIG_PATH, MANAGED_VALUE_NAME} from '../constants';
+import {APPLOCK_OVERRIDE_KEY, LINUX_MANAGED_CONFIG_PATH} from '../constants';
 
 const logger = getLogger('ManagedConfig/linux');
 
 // Linux has no standard MDM enrollment API, so managed status is driven by the presence of a
 // machine-wide managed config file placed by the organization. The file's presence means managed,
-// unless it explicitly opts out with `{"isManaged": false}`. A missing/unreadable file means unmanaged.
+// unless it explicitly opts out with `{"applockOverride": false}`. A missing/unreadable file means unmanaged.
 export function isDeviceManagedLinux(): boolean {
   try {
     const managedConfig = fs.readJSONSync(LINUX_MANAGED_CONFIG_PATH);
-    return managedConfig?.[MANAGED_VALUE_NAME] !== false;
+    return managedConfig?.[APPLOCK_OVERRIDE_KEY] !== false;
   } catch {
     // Missing file is the normal unmanaged path; only log genuine parse errors.
     if (fs.pathExistsSync(LINUX_MANAGED_CONFIG_PATH)) {

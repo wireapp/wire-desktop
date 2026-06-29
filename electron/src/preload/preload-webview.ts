@@ -283,9 +283,9 @@ process.once('loaded', () => {
   global.environment = EnvironmentUtil;
   // Read synchronously so the value is present at the exact point `desktopAppConfig` is assigned.
   // The main-process handler returns a pre-read, memoized value, so the blocking call is negligible.
-  let managedConfig = {isManaged: false};
+  let managedConfig = {applockOverride: false};
   try {
-    managedConfig = ipcRenderer.sendSync(EVENT_TYPE.MANAGED.GET_CONFIG) ?? {isManaged: false};
+    managedConfig = ipcRenderer.sendSync(EVENT_TYPE.MANAGED.GET_CONFIG) ?? {applockOverride: false};
   } catch (error) {
     logger.warn('Failed to read managed config from the main process, treating the device as unmanaged:', error);
   }

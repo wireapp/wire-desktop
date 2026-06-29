@@ -20,7 +20,7 @@
 import {systemPreferences} from 'electron';
 
 import {getLogger} from '../../logging/getLogger';
-import {MANAGED_VALUE_NAME} from '../constants';
+import {APPLOCK_OVERRIDE_KEY} from '../constants';
 
 const logger = getLogger('ManagedConfig/macos');
 
@@ -30,7 +30,7 @@ const logger = getLogger('ManagedConfig/macos');
 // own defaults domain (no shell), returning `false` when the preference is not set.
 export function isDeviceManagedMacOS(): boolean {
   try {
-    return systemPreferences.getUserDefault(MANAGED_VALUE_NAME, 'boolean') === true;
+    return systemPreferences.getUserDefault(APPLOCK_OVERRIDE_KEY, 'boolean') === true;
   } catch (error) {
     logger.warn('Failed to read managed preference, treating the device as unmanaged:', error);
     return false;

@@ -18,7 +18,7 @@
  */
 
 /**
- * Locations the desktop app reads to decide whether the device is company-managed.
+ * Locations the desktop app reads to decide whether the App-lock override is enforced.
  *
  * These are organization-agnostic, Wire-vendor locations: no specific customer/company
  * name is encoded. Any organization's MDM writes the managed payload into these standard
@@ -28,10 +28,10 @@
  * teams so all platforms read the same MDM payload convention.
  */
 
-/** The managed flag an organization sets to `true`/`1`. Same name across all platforms for consistency. */
-export const MANAGED_VALUE_NAME = 'isManaged';
+/** The App-lock override flag an organization sets to `true`/`1`. Same name across all platforms. */
+export const APPLOCK_OVERRIDE_KEY = 'applockOverride';
 
-/** Windows: machine-wide Group Policy key. The `MANAGED_VALUE_NAME` value under it drives managed status. */
+/** Windows: machine-wide Group Policy key. The `APPLOCK_OVERRIDE_KEY` value under it drives the override. */
 export const WINDOWS_POLICY_KEY = 'SOFTWARE\\Policies\\Wire';
 
 /** Windows: MDM enrollment registry. A subkey carrying a `UPN`/`ProviderID` means the device is enrolled. */
@@ -40,7 +40,7 @@ export const WINDOWS_ENROLLMENTS_KEY = 'SOFTWARE\\Microsoft\\Enrollments';
 /** Windows: Azure AD / Entra device join. A subkey under JoinInfo means the device is joined. */
 export const WINDOWS_CLOUD_DOMAIN_JOIN_KEY = 'SYSTEM\\CurrentControlSet\\Control\\CloudDomainJoin\\JoinInfo';
 
-// macOS reads `MANAGED_VALUE_NAME` from the app's defaults domain (pushed via an MDM AppConfig profile).
+// macOS reads `APPLOCK_OVERRIDE_KEY` from the app's defaults domain (pushed via an MDM AppConfig profile).
 
-/** Linux: machine-wide managed config file holding the `MANAGED_VALUE_NAME` flag. */
+/** Linux: machine-wide managed config file holding the `APPLOCK_OVERRIDE_KEY` flag. */
 export const LINUX_MANAGED_CONFIG_PATH = '/etc/wire/managed.json';

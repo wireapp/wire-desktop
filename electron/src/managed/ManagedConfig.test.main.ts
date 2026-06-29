@@ -40,32 +40,32 @@ describe('getManagedConfig', () => {
     clearManagedConfigCache();
   });
 
-  it('reports managed when a managed config payload is present', () => {
-    replace(fs, 'readJSONSync', fake.returns({isManaged: true}) as any);
-    assert.deepStrictEqual(getManagedConfig(), {isManaged: true});
+  it('enables the override when a managed config payload is present', () => {
+    replace(fs, 'readJSONSync', fake.returns({applockOverride: true}) as any);
+    assert.deepStrictEqual(getManagedConfig(), {applockOverride: true});
   });
 
-  it('reports unmanaged when no managed config is present', () => {
+  it('disables the override when no managed config is present', () => {
     replace(fs, 'readJSONSync', fake.throws(new Error('ENOENT')) as any);
     replace(fs, 'pathExistsSync', fake.returns(false) as any);
-    assert.deepStrictEqual(getManagedConfig(), {isManaged: false});
+    assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 
-  it('treats a present payload as managed unless it explicitly opts out', () => {
-    replace(fs, 'readJSONSync', fake.returns({isManaged: false}) as any);
-    assert.deepStrictEqual(getManagedConfig(), {isManaged: false});
+  it('treats a present payload as enabled unless it explicitly opts out', () => {
+    replace(fs, 'readJSONSync', fake.returns({applockOverride: false}) as any);
+    assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 
   it('memoizes the result and reads the underlying source only once', () => {
-    const readSource = fake.returns({isManaged: true});
+    const readSource = fake.returns({applockOverride: true});
     replace(fs, 'readJSONSync', readSource as any);
     getManagedConfig();
     getManagedConfig();
     assert.strictEqual(readSource.callCount, 1);
   });
 
-  it('never throws and defaults to unmanaged on an unrecognized platform', () => {
+  it('never throws and defaults to disabled on an unrecognized platform', () => {
     replace(EnvironmentUtil.platform, 'IS_LINUX', false);
-    assert.deepStrictEqual(getManagedConfig(), {isManaged: false});
+    assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 });
