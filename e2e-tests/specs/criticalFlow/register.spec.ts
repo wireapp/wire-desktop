@@ -83,6 +83,6 @@ test('I want to register a new Wire account', {tag: ['@TC-10924', '@crit-flow-de
 
   await test.step("User verifies he's now logged in with his new account", async () => {
     await expect(conversationsSidebar(app.page).userAvatar).toContainText(user.initials);
-    await expect(accountsSidebar(app).getAccount(user)).toBeVisible();
+    await expect(accountsSidebar(app).getByRole('button', {name: user.fullName})).toBeVisible();
   });
 });

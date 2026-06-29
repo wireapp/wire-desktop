@@ -18,13 +18,21 @@
  */
 
 import {App} from '../../actions/createApp';
-import {User} from '../../actions/createUser';
+import {RegisteredUser} from '../../backend/PublicApiClient';
 
 export const accountsSidebar = (app: App) => {
   const sidebar = app.wrapper.getByRole('navigation', {name: 'Accounts Sidebar'});
 
   const accountItems = sidebar.getByTestId('account-cell');
   const addAccountButton = sidebar.getByTestId('do-open-plus-menu');
+
+  const getAccount = (user: RegisteredUser) => {
+    const accountLocator = sidebar.locator(`[data-account-id="${user.id}"]`);
+    return Object.assign(accountLocator, {
+      activeBorder: accountLocator.getByTestId('item-selected'),
+      notificationDot: accountLocator.getByText('New message or missed call'),
+    });
+  };
 
   /* Trigger the flow to add a new account, replacing the currenly shown page with the page for adding the new account */
   const addAccount = async () => {
@@ -45,10 +53,25 @@ export const accountsSidebar = (app: App) => {
     app.page = app.windows()[index + 1];
   };
 
+  const removeAccount = async (index: number) => {
+    if (app.windows().length <= 2) {
+      const newWindowPromise = app.waitForEvent('window');
+      await accountItems.nth(index).click({button: 'right'});
+      await sidebar.getByRole('button', {name: 'Remove Account'}).click();
+      app.page = await newWindowPromise;
+    } else {
+      await accountItems.nth(index).click({button: 'right'});
+      await sidebar.getByRole('button', {name: 'Remove Account'}).click();
+      app.page = app.windows().at(-1)!;
+    }
+  };
+
   return Object.assign(sidebar, {
     accountItems,
-    getAccount: (user: User) => sidebar.getByRole('button', {name: user.fullName}),
+    addAccountButton,
+    getAccount,
     addAccount,
     switchAccount,
+    removeAccount,
   });
 };

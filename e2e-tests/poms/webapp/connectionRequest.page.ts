@@ -17,22 +17,10 @@
  *
  */
 
-import {User} from './createUser';
+import {Page} from '@playwright/test';
 
-import {Page} from '../fixtures';
-import {conversationsList} from '../poms/webapp/conversationList.page';
-import {groupCreationModal} from '../poms/webapp/groupCreation.modal';
-
-export const createGroup = async (page: Page, conversationName: string, users: User[]) => {
-  await conversationsList(page).createGroupButton.click();
-
-  const modal = groupCreationModal(page);
-  await modal.setGroupName(conversationName);
-  // Allows creation of empty group
-  if (users.length > 0) {
-    await modal.selectGroupMembers(...users.map(user => user.username));
-    await modal.doneButton.click();
-  } else {
-    await modal.skipButton.click();
-  }
+export const connectionRequestPage = (page: Page) => {
+  return {
+    connectButton: page.getByRole('button', {name: 'Connect'}),
+  };
 };

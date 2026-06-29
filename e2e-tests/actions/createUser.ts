@@ -67,7 +67,11 @@ export const registerUser = async (
   {publicApi, brigApi}: {publicApi: PublicApiClient; brigApi: BrigApiClient},
   options?: {telemetryDataSharing?: boolean},
 ): Promise<RegisteredUser> => {
-  const {zuidCookie} = await publicApi.registerUser(user);
+  const {id, zuidCookie} = await publicApi.registerUser(user);
+
+  if (id === undefined) {
+    throw new Error(`Failed to register user`);
+  }
 
   const activationCode = await brigApi.getUserActivationCode(user.email);
   await publicApi.activateAccount(user.email, activationCode);
@@ -76,7 +80,7 @@ export const registerUser = async (
 
   await publicApi.setUsername(accessToken, user.username);
 
-  const registeredUser = {...user, token: accessToken};
+  const registeredUser = {...user, id, token: accessToken};
 
   if (options?.telemetryDataSharing !== undefined) {
     await publicApi.setProperties(registeredUser, {telemetryDataSharing: options.telemetryDataSharing});
