@@ -25,6 +25,7 @@ import {conversation} from '../../poms/webapp/conversation.page';
 import {type App} from '../../actions/createApp';
 import {conversationsList} from './../../poms/webapp/conversationList.page';
 import {MenuItem} from 'electron';
+import {loginPage} from '../../poms/webapp/login.page';
 
 /**
  * Triggers an Electron application menu item by matching its label.
@@ -101,4 +102,27 @@ test.describe('Menu Bar', () => {
       });
     },
   );
+
+  test(
+    'Verify I can create a group conversation with menu bar',
+    {tag: ['@TC-11066', '@regression']},
+    async ({app, createUser}) => {
+      const user = await createUser();
+      await loginUser(app.page, user);
+
+      const menuItem = await triggerApplicationMenu(app, ['Create Group']);
+
+      expect(menuItem.accelerator).toBe('CmdOrCtrl+N');
+      await expect(app.page.getByRole('dialog').getByText('Create group')).toBeVisible();
+    },
+  );
+
+  test('Sign out with menu bar', {tag: ['@TC-11041', '@regression']}, async ({app, createUser}) => {
+    const user = await createUser();
+    await loginUser(app.page, user);
+
+    await triggerApplicationMenu(app, ['Log Out']);
+    await app.page.getByRole('dialog').getByRole('button', {name: 'Log out'}).click();
+    await expect(loginPage(app.page).loginButton).toBeVisible();
+  });
 });
