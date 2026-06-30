@@ -26,6 +26,7 @@ import {type App} from '../../actions/createApp';
 import {conversationsList} from './../../poms/webapp/conversationList.page';
 import {MenuItem} from 'electron';
 import {loginPage} from '../../poms/webapp/login.page';
+import {connectWithUser} from '../../actions/connectWithUser';
 
 /**
  * Triggers an Electron application menu item by matching its label.
@@ -125,4 +126,33 @@ test.describe('Menu Bar', () => {
     await app.page.getByRole('dialog').getByRole('button', {name: 'Log out'}).click();
     await expect(loginPage(app.page).loginButton).toBeVisible();
   });
+
+  test(
+    'Verify I can ping 1:1 and group conversation using the menu bar',
+    {tag: ['@TC-11043', '@regression']},
+    async ({app, createUser, createTeam, createPage}) => {
+      const userB = await createUser();
+      const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+      const userAPage = app.page;
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
+      await connectWithUser(userAPage, userB);
+
+      await test.step('User A can ping 1:1 conversation', async () => {
+        await conversationsList(userAPage).getConversation(userB.fullName).open();
+        await triggerApplicationMenu(app, ['Ping']);
+
+        await expect(conversation(app.page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
+      });
+
+      await test.step('User A can ping group conversation', async () => {
+        await createGroup(app.page, 'Test group', [userB]);
+        await conversationsList(userAPage).getConversation('Test group').open();
+        await triggerApplicationMenu(app, ['Ping']);
+
+        await expect(conversation(app.page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
+      });
+    },
+  );
 });
