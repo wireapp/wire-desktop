@@ -20,8 +20,10 @@
 import {Page} from '@playwright/test';
 
 export const conversationsList = (page: Page) => {
+  const items = page.getByTestId('item-conversation');
+
   const getConversation = (conversationName: string, options?: {protocol?: 'mls' | 'proteus'}) => {
-    let conversation = page.getByTestId('item-conversation').filter({hasText: conversationName});
+    let conversation = items.filter({hasText: conversationName});
 
     if (options?.protocol) {
       conversation = conversation.and(page.locator(`[data-protocol="${options.protocol}"]`));
@@ -39,6 +41,7 @@ export const conversationsList = (page: Page) => {
   const createGroupButton = page.getByTestId('conversation-list-header').getByTestId('go-create-group');
 
   return {
+    items,
     getConversation,
     createGroupButton,
   };
