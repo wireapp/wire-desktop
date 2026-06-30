@@ -53,7 +53,7 @@ function renderWebappVersions(details: Pick<Details, 'webappVersion' | 'webappAV
 
   const webappAVSVersionElement = document.getElementById('webappAVSVersion');
   if (webappAVSVersionElement !== null) {
-    webappAVSVersionElement.textContent = details.webappAVSVersion !== undefined ? details.webappAVSVersion : '';
+    webappAVSVersionElement.textContent = details.webappAVSVersion ?? '';
   }
 }
 

@@ -105,7 +105,7 @@ function requestActiveWebappVersions(): Promise<WebappVersions> {
         return;
       }
 
-      webappVersion = requestedVersion !== undefined ? requestedVersion : webappVersion;
+      webappVersion = requestedVersion ?? webappVersion;
       webappAVSVersion = requestedAVSVersion;
       resolve({webappVersion, webappAVSVersion});
     }
