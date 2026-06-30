@@ -81,13 +81,13 @@ export function loadedAboutScreen(_event: unknown, details: Details): void {
   }
 
   // Get locales
-  const labels = [];
+  const labels: string[] = [];
   const dataStrings = document.querySelectorAll<HTMLDivElement>('[data-string]');
 
-  for (const index in dataStrings) {
-    const label = dataStrings[index];
-    if (label.dataset !== undefined) {
-      labels.push(label.dataset.string);
+  for (const label of Array.from(dataStrings)) {
+    const localeLabel = label.dataset.string;
+    if (localeLabel !== undefined) {
+      labels.push(localeLabel);
     }
   }
 

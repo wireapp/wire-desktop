@@ -72,11 +72,11 @@ function getCachedWebappVersions(): WebappVersions {
   return {webappVersion, webappAVSVersion};
 }
 
-async function requestActiveWebappVersions(): Promise<WebappVersions> {
+function requestActiveWebappVersions(): Promise<WebappVersions> {
   const primaryWindow = WindowManager.getPrimaryWindow();
 
   if (primaryWindow === undefined) {
-    return getCachedWebappVersions();
+    return Promise.resolve(getCachedWebappVersions());
   }
 
   return new Promise(resolve => {
@@ -148,18 +148,21 @@ function renderAboutWindow(activeWebappVersions: WebappVersions): void {
 }
 
 ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: locale.i18nLanguageIdentifier[]) => {
-  if (aboutWindow !== undefined) {
-    const isExpected = event.sender.id === aboutWindow.webContents.id;
-    if (isExpected === true) {
-      const localeValues: Record<string, string> = {};
-      labels.forEach(label => {
-        localeValues[label] = locale.getText(label);
-      });
-      localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
-      localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
-      event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
-    }
+  if (aboutWindow === undefined) {
+    return;
   }
+
+  if (event.sender.id !== aboutWindow.webContents.id) {
+    return;
+  }
+
+  const localeValues: Record<string, string> = {};
+  labels.forEach(label => {
+    localeValues[label] = locale.getText(label);
+  });
+  localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
+  localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
+  event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
 });
 
 async function showWindow() {

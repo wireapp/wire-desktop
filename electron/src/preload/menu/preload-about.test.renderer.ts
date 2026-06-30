@@ -44,7 +44,7 @@ describe('loadedAboutScreen', () => {
       webappAVSVersion: '9.0.test',
     });
 
-    assert.ok(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []));
+    assert.strictEqual(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []), true);
     done();
   });
 
@@ -80,8 +80,8 @@ describe('loadedAboutScreen', () => {
       assert.fail('Expected webapp AVS version element to exist');
     }
 
-    assert.equal(webappVersionElement.textContent, '2019.04.10.0902');
-    assert.equal(webappAVSVersionElement.textContent, '');
-    assert.equal(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []), true);
+    assert.strictEqual(webappVersionElement.textContent, '2019.04.10.0902');
+    assert.strictEqual(webappAVSVersionElement.textContent, '');
+    assert.strictEqual(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []), true);
   });
 });
