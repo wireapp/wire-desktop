@@ -52,16 +52,6 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
     console.log(...args);
   });
 
-  // Mock badge APIs of electron as they don't work for the headless linux used in CI
-  app.evaluate(({app}) => {
-    let badgeCount = 0;
-    app.setBadgeCount = (count: number) => {
-      badgeCount = count;
-      return true;
-    };
-    app.getBadgeCount = () => badgeCount;
-  });
-
   /**
    * The webview element isn't treated as a regular webcomponent / iframe by electron but as individual window.
    * So in order to access the contents of the application we need to use the second window.
