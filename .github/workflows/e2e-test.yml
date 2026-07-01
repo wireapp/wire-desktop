@@ -1,6 +1,9 @@
 name: E2E Tests
 
 on:
+  # This Workflow can be run by labelling a PR with "run-e2e", in this case reporting is skipped.
+  pull_request:
+    types: [labeled, opened, synchronize, reopened]
   workflow_dispatch:
   schedule:
     # Execute workflow every night throughout the week
@@ -10,6 +13,7 @@ jobs:
   run_tests:
     name: Run E2E Tests
     runs-on: ubuntu-24.04
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-e2e') }}
 
     steps:
       - name: Checkout
@@ -91,6 +95,7 @@ jobs:
           echo "report_message=$MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Upload report to Testiny
+        if: ${{ github.event_name != 'pull_request' }}
         continue-on-error: true
         env:
           TESTINY_API_KEY: ${{ secrets.TESTINY_API_KEY }}
@@ -107,7 +112,7 @@ jobs:
           --reportPath="./playwright-report/report.json"
 
       - name: Notify on Wire about failed tests
-        if: ${{ !cancelled() && steps.generate-description.outputs.failed_tests > 0 }}
+        if: ${{ github.event_name != 'pull_request' && !cancelled() && steps.generate-description.outputs.failed_tests > 0 }}
         uses: 8398a7/action-slack@293f8dc0f9731ac35321056641cdef895f4f65f8
         continue-on-error: true
         env:
