@@ -127,6 +127,21 @@ test.describe('Menu Bar', () => {
     await expect(loginPage(app.page).loginButton).toBeVisible();
   });
 
+  test(
+    'Verify adding people to the conversation with menu bar',
+    {tag: ['@TC-11046', '@regression']},
+    async ({app, createUser}) => {
+      const user = await createUser();
+      await loginUser(app.page, user);
+
+      await createGroup(app.page, 'Test group', []);
+      await conversationsList(app.page).getConversation('Test group').open();
+
+      await triggerApplicationMenu(app, ['Add People...']);
+      await expect(app.page.locator('#add-participants')).toBeVisible();
+    },
+  );
+
   const testCases = [
     {
       name: 'Verify opening people popover with menu bar in the conversation',
