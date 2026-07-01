@@ -30,7 +30,10 @@ import {BrigApiClient} from './backend/BrigApiClient';
 import {GalleyApiClient} from './backend/GalleyApiClient';
 import {PublicApiClient, RegisteredUser, TeamOwner} from './backend/PublicApiClient';
 
-type FixtureOptions = {appOptions: {env?: string; lang?: string}};
+export type TestOptions = {
+  os: 'windows' | 'macOS';
+  appOptions: {env?: string; lang?: string};
+};
 
 type Fixtures = {
   app: App;
@@ -43,7 +46,9 @@ type Fixtures = {
   createTeam: (...args: Parameters<typeof createTeam> extends [any, ...infer Args] ? Args : never) => Promise<Team>;
 };
 
-export const test = baseTest.extend<FixtureOptions & Fixtures>({
+export const test = baseTest.extend<TestOptions & Fixtures>({
+  // The os option is set by the project within playwright.config.ts
+  os: ['macOS', {option: true}],
   appOptions: {env: process.env.WEBAPP_URL, lang: 'en'},
 
   publicApi: async ({}, use) => {
