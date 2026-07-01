@@ -52,10 +52,17 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
     console.log(...args);
   });
 
-  // Mock safeStorage API of electron as it doesn't work for the headless linux used in CI
-  app.evaluate(({safeStorage}) => {
+  // Mock safeStorage and badge APIs of electron as they don't work for the headless linux used in CI
+  app.evaluate(({safeStorage, app}) => {
     safeStorage.encryptString = (plainText: string) => Buffer.from(plainText, 'utf-8');
     safeStorage.decryptString = (encrypted: Buffer) => Buffer.from(encrypted).toString('utf-8');
+
+    let badgeCount = 0;
+    app.setBadgeCount = (count: number) => {
+      badgeCount = count;
+      return true;
+    };
+    app.getBadgeCount = () => badgeCount;
   });
 
   /**
