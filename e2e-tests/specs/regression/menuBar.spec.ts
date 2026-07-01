@@ -19,7 +19,7 @@
 
 import {createGroup} from '../../actions/createGroup';
 import {loginUser} from '../../actions/loginUser';
-import {test, expect} from '../../fixtures';
+import {test, expect, Page} from '../../fixtures';
 import {settingsPage} from '../../poms/webapp/settings.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {type App} from '../../actions/createApp';
@@ -127,10 +127,45 @@ test.describe('Menu Bar', () => {
     await expect(loginPage(app.page).loginButton).toBeVisible();
   });
 
-  test(
-    'Delete conversation content with menu bar',
-    {tag: ['@TC-11042', '@regression']},
-    async ({app, createUser, createTeam, createPage}) => {
+  const testCases = [
+    {
+      name: 'Verify opening people popover with menu bar in the conversation',
+      tag: '@TC-11045',
+      menuItem: 'People',
+      verifyDirect: async (page: Page) => {
+        await expect(page.getByTestId('status-profile-picture')).toBeVisible();
+      },
+      verifyGroup: async (page: Page) => {
+        await expect(page.getByTestId('list-users')).toBeVisible();
+      },
+    },
+    {
+      name: 'Delete conversation content with menu bar',
+      tag: '@TC-11042',
+      menuItem: 'Delete Content...',
+      verifyDirect: async (page: Page) => {
+        await expect(page.getByRole('dialog').getByText('Clear content?')).toBeVisible();
+        await page.getByRole('dialog').getByRole('button', {name: 'Cancel'}).click();
+      },
+      verifyGroup: async (page: Page) => {
+        await expect(page.getByRole('dialog').getByText('Clear content?')).toBeVisible();
+      },
+    },
+    {
+      name: 'Verify I can ping 1:1 and group conversation using the menu bar',
+      tag: '@TC-11043',
+      menuItem: 'Ping',
+      verifyDirect: async (page: Page) => {
+        await expect(conversation(page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
+      },
+      verifyGroup: async (page: Page) => {
+        await expect(conversation(page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
+      },
+    },
+  ];
+
+  testCases.forEach(({name, tag, menuItem, verifyDirect, verifyGroup}) => {
+    test(name, {tag: [tag, '@regression']}, async ({app, createUser, createTeam, createPage}) => {
       const userB = await createUser();
       const {owner: userA} = await createTeam('Test Team', {users: [userB]});
       const userAPage = app.page;
@@ -139,50 +174,18 @@ test.describe('Menu Bar', () => {
       await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
       await connectWithUser(userAPage, userB);
 
-      await test.step('User A can delete 1:1 conversation', async () => {
+      await test.step('User A actions in 1:1 conversation', async () => {
         await conversationsList(userAPage).getConversation(userB.fullName).open();
-        await triggerApplicationMenu(app, ['Delete Content...']);
-
-        await expect(app.page.getByRole('dialog').getByText('Clear content?')).toBeVisible();
-        await app.page.getByRole('dialog').getByRole('button', {name: 'Cancel'}).click();
+        await triggerApplicationMenu(app, [menuItem]);
+        await verifyDirect(app.page);
       });
 
-      await test.step('User A can ping group conversation', async () => {
+      await test.step('User A actions in group conversation', async () => {
         await createGroup(app.page, 'Test group', [userB]);
         await conversationsList(userAPage).getConversation('Test group').open();
-
-        await triggerApplicationMenu(app, ['Delete Content...']);
-        await expect(app.page.getByRole('dialog').getByText('Clear content?')).toBeVisible();
+        await triggerApplicationMenu(app, [menuItem]);
+        await verifyGroup(app.page);
       });
-    },
-  );
-
-  test(
-    'Verify I can ping 1:1 and group conversation using the menu bar',
-    {tag: ['@TC-11043', '@regression']},
-    async ({app, createUser, createTeam, createPage}) => {
-      const userB = await createUser();
-      const {owner: userA} = await createTeam('Test Team', {users: [userB]});
-      const userAPage = app.page;
-      const userBPage = await createPage();
-
-      await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
-      await connectWithUser(userAPage, userB);
-
-      await test.step('User A can ping 1:1 conversation', async () => {
-        await conversationsList(userAPage).getConversation(userB.fullName).open();
-        await triggerApplicationMenu(app, ['Ping']);
-
-        await expect(conversation(app.page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
-      });
-
-      await test.step('User A can ping group conversation', async () => {
-        await createGroup(app.page, 'Test group', [userB]);
-        await conversationsList(userAPage).getConversation('Test group').open();
-        await triggerApplicationMenu(app, ['Ping']);
-
-        await expect(conversation(app.page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
-      });
-    },
-  );
+    });
+  });
 });
