@@ -9,6 +9,10 @@ on:
     # Execute workflow every night throughout the week
     - cron: '37 04 * * 1-5'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   run_tests:
     name: Run E2E Tests
