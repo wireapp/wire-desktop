@@ -27,6 +27,7 @@ import {conversationsList} from './../../poms/webapp/conversationList.page';
 import {MenuItem} from 'electron';
 import {loginPage} from '../../poms/webapp/login.page';
 import {connectWithUser} from '../../actions/connectWithUser';
+import {callCell} from '../../poms/webapp/callCell.page';
 
 /**
  * Triggers an Electron application menu item by matching its label.
@@ -144,17 +145,6 @@ test.describe('Menu Bar', () => {
 
   const testCases = [
     {
-      name: 'Verify opening people popover with menu bar in the conversation',
-      tag: '@TC-11045',
-      menuItem: 'People',
-      verifyDirect: async (page: Page) => {
-        await expect(page.getByTestId('status-profile-picture')).toBeVisible();
-      },
-      verifyGroup: async (page: Page) => {
-        await expect(page.getByTestId('list-users')).toBeVisible();
-      },
-    },
-    {
       name: 'Delete conversation content with menu bar',
       tag: '@TC-11042',
       menuItem: 'Delete Content...',
@@ -175,6 +165,29 @@ test.describe('Menu Bar', () => {
       },
       verifyGroup: async (page: Page) => {
         await expect(conversation(page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
+      },
+    },
+    {
+      name: 'Verify starting a call via the menu bar',
+      tag: '@TC-11044',
+      menuItem: 'Call',
+      verifyDirect: async (page: Page) => {
+        await expect(callCell(page)).toBeVisible();
+        await callCell(page).declineButton.click();
+      },
+      verifyGroup: async (page: Page) => {
+        await expect(callCell(page)).toBeVisible();
+      },
+    },
+    {
+      name: 'Verify opening people popover with menu bar in the conversation',
+      tag: '@TC-11045',
+      menuItem: 'People',
+      verifyDirect: async (page: Page) => {
+        await expect(page.getByTestId('status-profile-picture')).toBeVisible();
+      },
+      verifyGroup: async (page: Page) => {
+        await expect(page.getByTestId('list-users')).toBeVisible();
       },
     },
   ];
