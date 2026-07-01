@@ -128,6 +128,36 @@ test.describe('Menu Bar', () => {
   });
 
   test(
+    'Delete conversation content with menu bar',
+    {tag: ['@TC-11042', '@regression']},
+    async ({app, createUser, createTeam, createPage}) => {
+      const userB = await createUser();
+      const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+      const userAPage = app.page;
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
+      await connectWithUser(userAPage, userB);
+
+      await test.step('User A can delete 1:1 conversation', async () => {
+        await conversationsList(userAPage).getConversation(userB.fullName).open();
+        await triggerApplicationMenu(app, ['Delete Content...']);
+
+        await expect(app.page.getByRole('dialog').getByText('Clear content?')).toBeVisible();
+        await app.page.getByRole('dialog').getByRole('button', {name: 'Cancel'}).click();
+      });
+
+      await test.step('User A can ping group conversation', async () => {
+        await createGroup(app.page, 'Test group', [userB]);
+        await conversationsList(userAPage).getConversation('Test group').open();
+
+        await triggerApplicationMenu(app, ['Delete Content...']);
+        await expect(app.page.getByRole('dialog').getByText('Clear content?')).toBeVisible();
+      });
+    },
+  );
+
+  test(
     'Verify I can ping 1:1 and group conversation using the menu bar',
     {tag: ['@TC-11043', '@regression']},
     async ({app, createUser, createTeam, createPage}) => {
