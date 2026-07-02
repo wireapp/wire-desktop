@@ -17,8 +17,7 @@
  *
  */
 
-import {App} from '../../actions/createApp';
-import {RegisteredUser} from '../../backend/PublicApiClient';
+import {App, RegisteredUser} from '../../types';
 
 export const accountsSidebar = (app: App) => {
   const sidebar = app.wrapper.getByRole('navigation', {name: 'Accounts Sidebar'});

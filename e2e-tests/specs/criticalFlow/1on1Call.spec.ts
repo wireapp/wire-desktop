@@ -17,12 +17,9 @@
  *
  */
 
-import {connectWithUser} from '../../actions/connectWithUser';
-import {loginUser} from '../../actions/loginUser';
+import {connectWithUser, loginUser} from '../../actions';
 import {expect, test} from '../../fixtures';
-import {callCell} from '../../poms/webapp/callCell.page';
-import {conversation} from '../../poms/webapp/conversation.page';
-import {conversationsList} from '../../poms/webapp/conversationList.page';
+import {callCell, conversation, conversationsList} from '../../poms/webapp';
 
 test(
   'I want to call someone directly',

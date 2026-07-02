@@ -17,16 +17,10 @@
  *
  */
 
-import {connectWithUser} from '../../actions/connectWithUser';
-import {createGroup} from '../../actions/createGroup';
-import {loginUser} from '../../actions/loginUser';
-import {interceptNotifications} from '../../actions/mockNotifications';
-import {watchActiveAccount} from '../../actions/watchActiveAccount';
+import {connectWithUser, createGroup, loginUser, interceptNotifications, watchActiveAccount} from '../../actions';
 import {test, expect} from '../../fixtures';
-import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
-import {appIcon} from '../../poms/app/appIcon.page';
-import {conversation} from '../../poms/webapp/conversation.page';
-import {conversationsList} from '../../poms/webapp/conversationList.page';
+import {accountsSidebar, appIcon} from '../../poms/app';
+import {conversation, conversationsList} from '../../poms/webapp';
 
 test.describe('Notifications', () => {
   test(

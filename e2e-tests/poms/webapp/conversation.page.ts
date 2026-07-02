@@ -19,7 +19,7 @@
 
 import {Page} from '@playwright/test';
 
-import {User} from '../../actions/createUser';
+import {User} from '../../types';
 
 export const conversation = (page: Page) => {
   const conversationTitle = page.getByTestId('status-conversation-title-bar-label');

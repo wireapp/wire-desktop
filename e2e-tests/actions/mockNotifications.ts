@@ -19,7 +19,7 @@
 
 import {Page} from '@playwright/test';
 
-import {App} from './createApp';
+import {App} from '../types';
 
 declare global {
   interface Window {

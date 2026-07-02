@@ -19,18 +19,8 @@
 
 import {faker} from '@faker-js/faker';
 
-import {BrigApiClient} from '../backend/BrigApiClient';
-import {PublicApiClient, RegisteredUser} from '../backend/PublicApiClient';
-
-export type User = {
-  firstName: string;
-  lastName: string;
-  username: string;
-  initials: string;
-  fullName: string;
-  email: string;
-  password: string;
-};
+import {BrigApiClient, PublicApiClient} from '../backend';
+import {User, RegisteredUser} from '../types';
 
 export const createUser = (): User => {
   const firstName = faker.person.firstName();

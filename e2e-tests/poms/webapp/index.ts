@@ -17,16 +17,16 @@
  *
  */
 
-import {Page} from '@playwright/test';
-
-import {conversationsSidebar, startUI} from '../poms/webapp';
-import {User} from '../types';
-
-export async function connectWithUser(page: Page, receiver: User) {
-  await conversationsSidebar(page).connectButton.click();
-
-  await startUI(page).searchInput.fill(receiver.username);
-  await startUI(page).searchResults.filter({hasText: receiver.username}).click();
-
-  await page.getByRole('dialog').getByRole('button', {name: 'Start conversation'}).click();
-}
+export * from './callCell.page';
+export * from './connectionRequest.page';
+export * from './conversation.page';
+export * from './conversationList.page';
+export * from './conversationsSidebar.page';
+export * from './emailVerification.page';
+export * from './groupCreation.modal';
+export * from './login.page';
+export * from './registration.page';
+export * from './setAccountType.page';
+export * from './setHandle.page';
+export * from './sso.page';
+export * from './startUI.page';

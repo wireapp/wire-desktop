@@ -17,11 +17,10 @@
  *
  */
 
-import {loginUser} from '../../actions/loginUser';
+import {loginUser} from '../../actions';
 import {expect, test} from '../../fixtures';
-import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
-import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
-import {ssoPage} from '../../poms/webapp/sso.page';
+import {accountsSidebar} from '../../poms/app';
+import {conversationsSidebar, ssoPage} from '../../poms/webapp';
 
 test(
   'I want to add multiple accounts to the app and switch between them',

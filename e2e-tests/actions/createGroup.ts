@@ -17,11 +17,9 @@
  *
  */
 
-import {User} from './createUser';
-
 import {Page} from '../fixtures';
-import {conversationsList} from '../poms/webapp/conversationList.page';
-import {groupCreationModal} from '../poms/webapp/groupCreation.modal';
+import {conversationsList, groupCreationModal} from '../poms/webapp';
+import {User} from '../types';
 
 export const createGroup = async (page: Page, conversationName: string, users: User[]) => {
   await conversationsList(page).createGroupButton.click();

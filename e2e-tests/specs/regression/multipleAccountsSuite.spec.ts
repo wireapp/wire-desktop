@@ -17,17 +17,17 @@
  *
  */
 
-import {createGroup} from '../../actions/createGroup';
-import {loginUser} from '../../actions/loginUser';
-import {sendConnectionRequest} from '../../actions/sendConnectionRequest';
+import {createGroup, loginUser, sendConnectionRequest} from '../../actions';
 import {expect, test} from '../../fixtures';
-import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
-import {connectionRequestPage} from '../../poms/webapp/connectionRequest.page';
-import {conversation} from '../../poms/webapp/conversation.page';
-import {conversationsList} from '../../poms/webapp/conversationList.page';
-import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
-import {LOGIN_TIMEOUT} from '../../poms/webapp/login.page';
-import {ssoPage} from '../../poms/webapp/sso.page';
+import {accountsSidebar} from '../../poms/app';
+import {
+  connectionRequestPage,
+  conversation,
+  conversationsList,
+  conversationsSidebar,
+  LOGIN_TIMEOUT,
+  ssoPage,
+} from '../../poms/webapp';
 
 test.describe('Multiple Accounts', async () => {
   test('I want to remove the only account I have', {tag: ['@TC-11070', '@regression']}, async ({app, createUser}) => {

@@ -19,10 +19,8 @@
 
 import {Page} from '@playwright/test';
 
-import {User} from './createUser';
-
-import {conversationsSidebar} from '../poms/webapp/conversationsSidebar.page';
-import {startUI} from '../poms/webapp/startUI.page';
+import {conversationsSidebar, startUI} from '../poms/webapp';
+import {User} from '../types';
 
 export async function sendConnectionRequest(page: Page, receiver: User) {
   await conversationsSidebar(page).connectButton.click();

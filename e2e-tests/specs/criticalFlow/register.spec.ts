@@ -17,16 +17,19 @@
  *
  */
 
-import {createUser} from '../../actions/createUser';
+import {createUser} from '../../actions';
 import {expect, test} from '../../fixtures';
-import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
-import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
-import {emailVerificationPage} from '../../poms/webapp/emailVerification.page';
-import {LOGIN_TIMEOUT, loginPage} from '../../poms/webapp/login.page';
-import {registrationPage} from '../../poms/webapp/registration.page';
-import {setAccountTypePage} from '../../poms/webapp/setAccountType.page';
-import {setHandlePage} from '../../poms/webapp/setHandle.page';
-import {ssoPage} from '../../poms/webapp/sso.page';
+import {accountsSidebar} from '../../poms/app';
+import {
+  conversationsSidebar,
+  emailVerificationPage,
+  LOGIN_TIMEOUT,
+  loginPage,
+  registrationPage,
+  setAccountTypePage,
+  setHandlePage,
+  ssoPage,
+} from '../../poms/webapp';
 
 test('I want to register a new Wire account', {tag: ['@TC-10924', '@crit-flow-desktop']}, async ({app, brigApi}) => {
   const user = createUser();

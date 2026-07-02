@@ -23,12 +23,9 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import {createApp, type App} from './actions/createApp';
-import {createTeam, Team} from './actions/createTeam';
-import {createUser, registerUser} from './actions/createUser';
-import {BrigApiClient} from './backend/BrigApiClient';
-import {GalleyApiClient} from './backend/GalleyApiClient';
-import {PublicApiClient, RegisteredUser, TeamOwner} from './backend/PublicApiClient';
+import {createApp, createTeam, createUser, registerUser} from './actions';
+import {BrigApiClient, GalleyApiClient, PublicApiClient} from './backend';
+import {App, Team, TeamOwner, RegisteredUser} from './types';
 
 type FixtureOptions = {appOptions: {env?: string; lang?: string}};
 

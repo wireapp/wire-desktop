@@ -19,18 +19,8 @@
 
 import {createUser, registerUser} from './createUser';
 
-import {BrigApiClient} from '../backend/BrigApiClient';
-import {GalleyApiClient} from '../backend/GalleyApiClient';
-import {PublicApiClient, RegisteredUser, TeamOwner} from '../backend/PublicApiClient';
-
-export type TeamRole = 'admin' | 'partner' | 'owner' | 'member';
-
-export type Team = {
-  teamId: string;
-  owner: TeamOwner;
-  /** Add a new member to the team after its initial creation */
-  addTeamMember: (member: RegisteredUser, options?: {role?: TeamRole}) => Promise<void>;
-};
+import {BrigApiClient, GalleyApiClient, PublicApiClient} from '../backend';
+import {RegisteredUser, TeamOwner, Team, TeamRole} from '../types';
 
 export const createTeam = async (
   api: {publicApi: PublicApiClient; brigApi: BrigApiClient; galleyApi: GalleyApiClient},

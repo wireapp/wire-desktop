@@ -17,10 +17,10 @@
  *
  */
 
-import {loginUser} from '../../actions/loginUser';
+import {loginUser} from '../../actions';
 import {expect, test} from '../../fixtures';
-import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
-import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
+import {accountsSidebar} from '../../poms/app';
+import {conversationsSidebar} from '../../poms/webapp';
 
 test(
   'I want to log in with my existing Wire account',

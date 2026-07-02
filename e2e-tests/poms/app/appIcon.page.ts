@@ -17,7 +17,7 @@
  *
  */
 
-import {App} from '../../actions/createApp';
+import {App} from '../../types';
 
 export const appIcon = (app: App) => {
   return {

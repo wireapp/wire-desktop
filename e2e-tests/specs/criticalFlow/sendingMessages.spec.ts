@@ -17,12 +17,9 @@
  *
  */
 
-import {connectWithUser} from '../../actions/connectWithUser';
-import {createGroup} from '../../actions/createGroup';
-import {loginUser} from '../../actions/loginUser';
+import {connectWithUser, createGroup, loginUser} from '../../actions';
 import {test, expect} from '../../fixtures';
-import {conversation} from '../../poms/webapp/conversation.page';
-import {conversationsList} from '../../poms/webapp/conversationList.page';
+import {conversation, conversationsList} from '../../poms/webapp';
 
 test(
   'I want to exchange text messages with other users',

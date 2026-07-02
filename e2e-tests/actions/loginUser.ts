@@ -19,11 +19,8 @@
 
 import {Page} from '@playwright/test';
 
-import {User} from './createUser';
-
-import {conversationsSidebar} from '../poms/webapp/conversationsSidebar.page';
-import {LOGIN_TIMEOUT, loginPage} from '../poms/webapp/login.page';
-import {ssoPage} from '../poms/webapp/sso.page';
+import {conversationsSidebar, LOGIN_TIMEOUT, loginPage, ssoPage} from '../poms/webapp';
+import {User} from '../types';
 
 /* Visit the sso page and execute the login for the user */
 export const loginUser = async (page: Page, user: User) => {

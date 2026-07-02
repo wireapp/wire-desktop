@@ -17,16 +17,6 @@
  *
  */
 
-import {Page} from '@playwright/test';
-
-import {conversationsSidebar, startUI} from '../poms/webapp';
-import {User} from '../types';
-
-export async function connectWithUser(page: Page, receiver: User) {
-  await conversationsSidebar(page).connectButton.click();
-
-  await startUI(page).searchInput.fill(receiver.username);
-  await startUI(page).searchResults.filter({hasText: receiver.username}).click();
-
-  await page.getByRole('dialog').getByRole('button', {name: 'Start conversation'}).click();
-}
+export * from './BrigApiClient';
+export * from './GalleyApiClient';
+export * from './PublicApiClient';

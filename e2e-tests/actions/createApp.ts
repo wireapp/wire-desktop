@@ -17,14 +17,9 @@
  *
  */
 
-import {_electron as electron, ElectronApplication, Page} from '@playwright/test';
+import {_electron as electron} from '@playwright/test';
 
-export type App = ElectronApplication & {
-  /* The playwright page for the main electron window wrapping the webapp */
-  wrapper: Page;
-  /* The playwright page for the currently shown webapp */
-  page: Page;
-};
+import {App} from '../types';
 
 export const createApp = async (options: {env?: string; lang?: string; dataDir: string}): Promise<App> => {
   if (!options.env) {

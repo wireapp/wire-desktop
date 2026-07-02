@@ -17,13 +17,10 @@
  *
  */
 
-import {loginUser} from './../../actions/loginUser';
-import {callCell} from './../../poms/webapp/callCell.page';
-import {conversation} from './../../poms/webapp/conversation.page';
+import {loginUser, createGroup} from './../../actions';
+import {conversation, conversationsList, callCell} from './../../poms/webapp';
 
-import {createGroup} from '../../actions/createGroup';
 import {test, expect} from '../../fixtures';
-import {conversationsList} from '../../poms/webapp/conversationList.page';
 
 test(
   'I want to have a group call',
