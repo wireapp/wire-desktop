@@ -50,7 +50,7 @@ const triggerApplicationMenu = async (app: App, labels: string[]): Promise<Pick<
       throw new Error('Menu item not found');
     }
 
-    const targetWindow = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+    const targetWindow = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0];
     if (!targetWindow) {
       throw new Error('No Electron window found to send the menu event to');
     }
@@ -141,7 +141,7 @@ test.describe('Menu Bar', () => {
       const menuItem = await triggerApplicationMenu(app, ['Add People...']);
 
       expect(menuItem.accelerator).toBe('Shift+CmdOrCtrl+K');
-      await expect(app.page.locator('#add-participants')).toBeVisible();
+      await expect(app.page.getByRole('complementary').filter({hasText: 'Add participants'})).toBeVisible();
     },
   );
 
@@ -161,18 +161,18 @@ test.describe('Menu Bar', () => {
       await expect(conversationsList(app.page).items).toHaveCount(2);
 
       await test.step('Archive in 1:1 conversation', async () => {
-        await conversationsList(app.page).getConversation(userB.fullName).open();
+        await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
         const menuItem = await triggerApplicationMenu(app, ['Archive']);
 
         expect(menuItem.accelerator).toBe('CmdOrCtrl+D');
-        await expect(conversationsList(app.page).getConversation(userB.fullName)).not.toBeVisible();
+        await expect(conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
         await expect(conversationsList(app.page).items).toHaveCount(1);
       });
 
       await test.step('Archive group conversation', async () => {
         await conversationsList(userAPage).getConversation('Test group').open();
         await triggerApplicationMenu(app, ['Archive']);
-        await expect(conversationsList(app.page).getConversation(userB.fullName)).not.toBeVisible();
+        await expect(conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
         await expect(conversationsList(app.page).items).toHaveCount(0);
       });
 
@@ -219,21 +219,9 @@ test.describe('Menu Bar', () => {
         await expect(callCell(page)).toBeVisible();
       },
     },
-    {
-      name: 'Verify opening people popover with menu bar in the conversation',
-      tag: '@TC-11045',
-      menuItem: 'People',
-      expectedAccelerator: 'CmdOrCtrl+I',
-      verifyDirect: async (page: Page) => {
-        await expect(page.getByTestId('status-profile-picture')).toBeVisible();
-      },
-      verifyGroup: async (page: Page) => {
-        await expect(page.getByTestId('list-users')).toBeVisible();
-      },
-    },
   ];
 
-  testCases.forEach(({name, tag, menuItem, expectedAccelerator, verifyDirect, verifyGroup}) => {
+  testCases.forEach(({name, tag, menuItem, verifyDirect, verifyGroup}) => {
     test(name, {tag: [tag, '@regression']}, async ({app, createUser, createTeam, createPage}) => {
       const userB = await createUser();
       const {owner: userA} = await createTeam('Test Team', {users: [userB]});
@@ -244,11 +232,8 @@ test.describe('Menu Bar', () => {
       await connectWithUser(userAPage, userB);
 
       await test.step('User A actions in 1:1 conversation', async () => {
-        await conversationsList(userAPage).getConversation(userB.fullName).open();
-        const menuResult = await triggerApplicationMenu(app, [menuItem]);
-        if (expectedAccelerator) {
-          expect(menuResult?.accelerator).toBe(expectedAccelerator);
-        }
+        await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
+        await triggerApplicationMenu(app, [menuItem]);
         await verifyDirect(app.page);
       });
 
@@ -260,4 +245,32 @@ test.describe('Menu Bar', () => {
       });
     });
   });
+
+  test(
+    'Verify opening people popover with menu bar in the conversation',
+    {tag: ['@TC-11045', '@regression']},
+    async ({app, createUser, createTeam, createPage}) => {
+      const userB = await createUser();
+      const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+      const userAPage = app.page;
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
+      await connectWithUser(userAPage, userB);
+
+      await test.step('User A can open people popover in 1:1 conversation', async () => {
+        await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
+        const menuResult = await triggerApplicationMenu(app, ['People']);
+        expect(menuResult?.accelerator).toBe('CmdOrCtrl+I');
+        await expect(app.page.getByTestId('status-profile-picture')).toBeVisible();
+      });
+
+      await test.step('User A can open conversation details in group conversation', async () => {
+        await createGroup(app.page, 'Test group', [userB]);
+        await conversationsList(userAPage).getConversation('Test group').open();
+        await triggerApplicationMenu(app, ['People']);
+        await expect(app.page.getByTestId('list-users')).toBeVisible();
+      });
+    },
+  );
 });
