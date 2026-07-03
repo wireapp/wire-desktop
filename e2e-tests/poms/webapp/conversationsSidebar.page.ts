@@ -25,5 +25,6 @@ export const conversationsSidebar = (page: Page) => {
   return {
     userAvatar: sidebar.getByTestId('element-avatar-user'),
     connectButton: sidebar.getByTestId('go-people'),
+    archiveButton: sidebar.getByTestId('go-archive'),
   };
 };

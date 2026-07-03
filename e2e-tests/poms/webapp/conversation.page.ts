@@ -24,7 +24,7 @@ import {User} from '../../actions/createUser';
 export const conversation = (page: Page) => {
   const conversationTitle = page.getByTestId('status-conversation-title-bar-label');
   const startCallButton = page.getByTestId('do-call');
-
+  const systemMessages = page.locator('[data-uie-name="item-message"].system-message:not([data-uie-send-status="1"])');
   /**
    * The attribute 'send-status' will be 1 while the message is being sent, since we only want to assert on sent messages these messages will be excluded. See: {@see StatusTypes}
    * Status type -1 ensures that system messages do NOT count as sent messages
@@ -67,6 +67,7 @@ export const conversation = (page: Page) => {
   return {
     conversationTitle,
     startCallButton,
+    systemMessages,
     sendMessage,
     getMessage,
   };
