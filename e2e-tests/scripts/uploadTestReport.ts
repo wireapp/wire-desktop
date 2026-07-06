@@ -37,7 +37,7 @@ const {values: args} = parseArgs({
     },
     reportPath: {
       type: 'string',
-      description: 'Path to the playright report in json format',
+      description: 'Path to the playwright report in json format',
     },
     runName: {
       type: 'string',
@@ -121,12 +121,11 @@ async function deleteTestRun(runId: number) {
 }
 
 type TestinyTestCaseMapping = {
-  project: string;
   ids: {testcase_id: number; testrun_id: number};
   mapped: {assigned_to: 'ANY'; result_status: 'NOTRUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'SKIPPED'};
 };
 
-function transformReportToTestinyMappings(report: JSONReport, runId: number) {
+function transformReportToTestinyMappings(report: JSONReport, runId: number, project: string) {
   // Mapping from playwrights status to the result expected by Testiny
   const resultMap: Record<JSONReportTest['status'], TestinyTestCaseMapping['mapped']['result_status']> = {
     expected: 'PASSED',
@@ -137,6 +136,7 @@ function transformReportToTestinyMappings(report: JSONReport, runId: number) {
 
   return report.suites
     .flatMap(suite => getTests(suite))
+    .filter(test => test.projectName === project)
     .reduce<TestinyTestCaseMapping[]>((acc, test) => {
       const testIds = test.tags
         .filter(tag => tag.startsWith('TC-'))
@@ -145,7 +145,6 @@ function transformReportToTestinyMappings(report: JSONReport, runId: number) {
 
       for (const testId of testIds) {
         acc.push({
-          project: test.projectName,
           ids: {testrun_id: runId, testcase_id: testId},
           mapped: {assigned_to: 'ANY', result_status: resultMap[test.status]},
         });
@@ -197,9 +196,7 @@ async function main() {
   console.log(`Created test run with id: ${testRun.id}`);
 
   try {
-    const testResults = transformReportToTestinyMappings(report, testRun.id).filter(
-      mapping => mapping.project === args.project,
-    );
+    const testResults = transformReportToTestinyMappings(report, testRun.id, args.project);
 
     await addTestResultsToRun(testResults);
     console.log(`Added ${testResults.length} test results to test run`);
