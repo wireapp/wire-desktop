@@ -47,6 +47,10 @@ const {values: args} = parseArgs({
       type: 'string',
       description: 'ID of the test plan this run should be associated with',
     },
+    project: {
+      type: 'string',
+      description: 'The playwright project to create the run for',
+    },
     description: {
       type: 'string',
       description: 'Description to add to the run, supports markdown',
@@ -62,9 +66,9 @@ const getTests = (suite: JSONReportSuite): (JSONReportTest & Pick<JSONReportSpec
 };
 
 type TestRun = {id: number};
-async function createTestRun(options?: {testPlanId?: number; description?: string}): Promise<TestRun> {
+async function createTestRun(options: {testPlanId?: number; description?: string}): Promise<TestRun> {
   const body = {
-    title: args.runName,
+    title: `${args.runName} (${args.project})`,
     project_id: TESTINY_PROJECT_ID,
     testplan_id: options?.testPlanId,
     description: options?.description,
@@ -117,6 +121,7 @@ async function deleteTestRun(runId: number) {
 }
 
 type TestinyTestCaseMapping = {
+  project: string;
   ids: {testcase_id: number; testrun_id: number};
   mapped: {assigned_to: 'ANY'; result_status: 'NOTRUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'SKIPPED'};
 };
@@ -140,6 +145,7 @@ function transformReportToTestinyMappings(report: JSONReport, runId: number) {
 
       for (const testId of testIds) {
         acc.push({
+          project: test.projectName,
           ids: {testrun_id: runId, testcase_id: testId},
           mapped: {assigned_to: 'ANY', result_status: resultMap[test.status]},
         });
@@ -174,6 +180,9 @@ async function main() {
   if (args.runName === undefined) {
     throw new Error('Missing required arg runName');
   }
+  if (args.project === undefined) {
+    throw new Error('Missing required arg project');
+  }
 
   const reportAbsPath = path.resolve(args.reportPath);
   if (!fs.existsSync(reportAbsPath)) {
@@ -188,7 +197,9 @@ async function main() {
   console.log(`Created test run with id: ${testRun.id}`);
 
   try {
-    const testResults = transformReportToTestinyMappings(report, testRun.id);
+    const testResults = transformReportToTestinyMappings(report, testRun.id).filter(
+      mapping => mapping.project === args.project,
+    );
 
     await addTestResultsToRun(testResults);
     console.log(`Added ${testResults.length} test results to test run`);

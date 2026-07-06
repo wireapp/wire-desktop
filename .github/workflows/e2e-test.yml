@@ -103,6 +103,29 @@ jobs:
           name: playwright-report
           path: playwright-report/html
 
+      - name: Upload report to Testiny
+        if: ${{ github.event_name != 'pull_request' }}
+        continue-on-error: true
+        env:
+          TESTINY_API_KEY: ${{ secrets.TESTINY_API_KEY }}
+          DESCRIPTION: 'Build URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        run: |
+          # Upload test run for windows
+          node ./e2e-tests/scripts/uploadTestReport.ts \
+          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
+          --project="windows" \
+          --testPlanId="118" \
+          --description="$DESCRIPTION" \
+          --reportPath="./playwright-report/report.json"
+
+          # Upload test run for macOS
+          node ./e2e-tests/scripts/uploadTestReport.ts \
+          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
+          --project="macOS" \
+          --testPlanId="119" \
+          --description="$DESCRIPTION" \
+          --reportPath="./playwright-report/report.json"
+
       - name: Generate report description
         id: generate-description
         run: |
@@ -145,23 +168,6 @@ jobs:
 
           echo "failed_tests=$FAILED" >> $GITHUB_OUTPUT
           echo "report_message=$MESSAGE" >> $GITHUB_OUTPUT
-
-      - name: Upload report to Testiny
-        if: ${{ github.event_name != 'pull_request' }}
-        continue-on-error: true
-        env:
-          TESTINY_API_KEY: ${{ secrets.TESTINY_API_KEY }}
-          TESTINY_TEST_PLAN_ID: 117 # 117 is the id of the "Regression" test plan within Testiny
-          DESCRIPTION: ${{ steps.generate-description.outputs.report_message }}
-        run: |
-          # Extract description from json format so it can be quoted correctly
-          RAW_DESCRIPTION=$(echo "$DESCRIPTION" | jq -r '.')
-
-          node ./e2e-tests/scripts/uploadTestReport.ts \
-          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
-          --testPlanId="$TESTINY_TEST_PLAN_ID" \
-          --description="$RAW_DESCRIPTION" \
-          --reportPath="./playwright-report/report.json"
 
       - name: Notify on Wire about failed tests
         if: ${{ github.event_name != 'pull_request' && !cancelled() && steps.generate-description.outputs.failed_tests > 0 }}
