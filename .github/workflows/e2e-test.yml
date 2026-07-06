@@ -15,10 +15,65 @@ concurrency:
 
 jobs:
   run_tests:
-    name: Run E2E Tests
-    runs-on: ubuntu-24.04
+    name: Run E2E Tests (${{ matrix.project }})
     if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-e2e') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [windows, macOS]
+        include:
+          - project: windows
+            os: windows-2025
+          - project: macOS
+            os: macos-26
+    runs-on: ${{ matrix.os }}
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version-file: '.node-version'
+          cache: 'yarn'
+
+      - name: Install JS dependencies
+        shell: bash
+        run: yarn --immutable
+
+      - name: Install Playwright browsers
+        shell: bash
+        run: yarn playwright install --only-shell --with-deps chromium
+
+      - uses: 1password/install-cli-action@8d006a0d0a4fd505af7f7ce589e7f768385ff5e4
+      - name: Generate env file
+        shell: bash
+        run: op inject -i e2e-tests/.env.tpl -o e2e-tests/.env
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Build application
+        shell: bash
+        run: yarn prestart
+
+      - name: Run E2E tests
+        shell: bash
+        continue-on-error: true
+        run: yarn test:e2e --project=${{ matrix.project }} --reporter=blob
+        env:
+          PLAYWRIGHT_BLOB_OUTPUT_DIR: playwright-blobs
+
+      - name: Upload blob report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-blobs-${{ matrix.project }}
+          path: playwright-blobs
+
+  merge_reports:
+    name: Merge and Publish Reports
+    needs: run_tests
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -32,28 +87,44 @@ jobs:
       - name: Install JS dependencies
         run: yarn --immutable
 
-      - name: Install Playwright browsers
-        run: yarn playwright install --only-shell --with-deps chromium
+      - name: Download playwright blobs
+        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        with:
+          path: playwright-blobs
+          pattern: playwright-blobs-*
+          merge-multiple: true
 
-      - uses: 1password/install-cli-action@8d006a0d0a4fd505af7f7ce589e7f768385ff5e4
-      - name: Generate env file
-        run: op inject -i e2e-tests/.env.tpl -o e2e-tests/.env
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-      - name: Build application
-        run: yarn prestart
-
-      - name: Run E2E tests
-        continue-on-error: true
-        # We use xvfb to simulate a virtual display in order for electron to work in CI
-        run: xvfb-run yarn test:e2e
+      - name: Merge Playwright reports
+        run: yarn playwright merge-reports --config=playwright.config.ts playwright-blobs
 
       - name: Upload test report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: playwright-report
           path: playwright-report/html
+
+      - name: Upload report to Testiny
+        if: ${{ github.event_name != 'pull_request' }}
+        continue-on-error: true
+        env:
+          TESTINY_API_KEY: ${{ secrets.TESTINY_API_KEY }}
+          DESCRIPTION: 'Build URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        run: |
+          # Upload test run for windows
+          node ./e2e-tests/scripts/uploadTestReport.ts \
+          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
+          --project="windows" \
+          --testPlanId="118" \
+          --description="$DESCRIPTION" \
+          --reportPath="./playwright-report/report.json"
+
+          # Upload test run for macOS
+          node ./e2e-tests/scripts/uploadTestReport.ts \
+          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
+          --project="macOS" \
+          --testPlanId="119" \
+          --description="$DESCRIPTION" \
+          --reportPath="./playwright-report/report.json"
 
       - name: Generate report description
         id: generate-description
@@ -97,23 +168,6 @@ jobs:
 
           echo "failed_tests=$FAILED" >> $GITHUB_OUTPUT
           echo "report_message=$MESSAGE" >> $GITHUB_OUTPUT
-
-      - name: Upload report to Testiny
-        if: ${{ github.event_name != 'pull_request' }}
-        continue-on-error: true
-        env:
-          TESTINY_API_KEY: ${{ secrets.TESTINY_API_KEY }}
-          TESTINY_TEST_PLAN_ID: 117 # 117 is the id of the "Regression" test plan within Testiny
-          DESCRIPTION: ${{ steps.generate-description.outputs.report_message }}
-        run: |
-          # Extract description from json format so it can be quoted correctly
-          RAW_DESCRIPTION=$(echo "$DESCRIPTION" | jq -r '.')
-
-          node ./e2e-tests/scripts/uploadTestReport.ts \
-          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
-          --testPlanId="$TESTINY_TEST_PLAN_ID" \
-          --description="$RAW_DESCRIPTION" \
-          --reportPath="./playwright-report/report.json"
 
       - name: Notify on Wire about failed tests
         if: ${{ github.event_name != 'pull_request' && !cancelled() && steps.generate-description.outputs.failed_tests > 0 }}

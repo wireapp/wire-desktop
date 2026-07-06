@@ -22,12 +22,14 @@ import dotenv from 'dotenv';
 
 import path from 'node:path';
 
+import {TestOptions} from './e2e-tests/fixtures';
+
 dotenv.config({path: path.resolve(__dirname, './e2e-tests/.env')});
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+export default defineConfig<TestOptions>({
   testDir: './e2e-tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -56,11 +58,26 @@ export default defineConfig({
     permissions: ['camera', 'microphone'],
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects for multiple operating systems */
   projects: [
     {
-      name: 'chromium',
+      name: 'windows',
       use: {
+        os: 'windows',
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: [
+            '--use-fake-device-for-media-stream', // Provide fake devices for audio & video device input
+            '--use-fake-ui-for-media-stream', // Bypasses the popup to grant permission and select video / audio input device by automatically selecting the default one
+            '--mute-audio', // Mute all audio output from the test browser because e.g. the ringtone of a call can be annoying during testing
+          ],
+        },
+      },
+    },
+    {
+      name: 'macOS',
+      use: {
+        os: 'macOS',
         ...devices['Desktop Chrome'],
         launchOptions: {
           args: [

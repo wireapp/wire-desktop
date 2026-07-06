@@ -37,7 +37,7 @@ const {values: args} = parseArgs({
     },
     reportPath: {
       type: 'string',
-      description: 'Path to the playright report in json format',
+      description: 'Path to the playwright report in json format',
     },
     runName: {
       type: 'string',
@@ -46,6 +46,10 @@ const {values: args} = parseArgs({
     testPlanId: {
       type: 'string',
       description: 'ID of the test plan this run should be associated with',
+    },
+    project: {
+      type: 'string',
+      description: 'The playwright project to create the run for',
     },
     description: {
       type: 'string',
@@ -62,9 +66,9 @@ const getTests = (suite: JSONReportSuite): (JSONReportTest & Pick<JSONReportSpec
 };
 
 type TestRun = {id: number};
-async function createTestRun(options?: {testPlanId?: number; description?: string}): Promise<TestRun> {
+async function createTestRun(options: {testPlanId?: number; description?: string}): Promise<TestRun> {
   const body = {
-    title: args.runName,
+    title: `${args.runName} (${args.project})`,
     project_id: TESTINY_PROJECT_ID,
     testplan_id: options?.testPlanId,
     description: options?.description,
@@ -121,7 +125,7 @@ type TestinyTestCaseMapping = {
   mapped: {assigned_to: 'ANY'; result_status: 'NOTRUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'SKIPPED'};
 };
 
-function transformReportToTestinyMappings(report: JSONReport, runId: number) {
+function transformReportToTestinyMappings(report: JSONReport, runId: number, project: string) {
   // Mapping from playwrights status to the result expected by Testiny
   const resultMap: Record<JSONReportTest['status'], TestinyTestCaseMapping['mapped']['result_status']> = {
     expected: 'PASSED',
@@ -132,6 +136,7 @@ function transformReportToTestinyMappings(report: JSONReport, runId: number) {
 
   return report.suites
     .flatMap(suite => getTests(suite))
+    .filter(test => test.projectName === project)
     .reduce<TestinyTestCaseMapping[]>((acc, test) => {
       const testIds = test.tags
         .filter(tag => tag.startsWith('TC-'))
@@ -174,6 +179,9 @@ async function main() {
   if (args.runName === undefined) {
     throw new Error('Missing required arg runName');
   }
+  if (args.project === undefined) {
+    throw new Error('Missing required arg project');
+  }
 
   const reportAbsPath = path.resolve(args.reportPath);
   if (!fs.existsSync(reportAbsPath)) {
@@ -188,7 +196,7 @@ async function main() {
   console.log(`Created test run with id: ${testRun.id}`);
 
   try {
-    const testResults = transformReportToTestinyMappings(report, testRun.id);
+    const testResults = transformReportToTestinyMappings(report, testRun.id, args.project);
 
     await addTestResultsToRun(testResults);
     console.log(`Added ${testResults.length} test results to test run`);
