@@ -1,0 +1,148 @@
+/*
+ * Wire
+ * Copyright (C) 2026 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
+import * as fs from 'fs';
+import * as path from 'path';
+
+import {connectWithUser} from '../../actions/connectWithUser';
+import {loginUser, loginUserAfterDataCleanup} from '../../actions/loginUser';
+import {expect, test} from '../../fixtures';
+import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
+import {logoutPopup} from '../../poms/app/logoutPopup.page';
+import {conversation} from '../../poms/webapp/conversation.page';
+import {conversationsList} from '../../poms/webapp/conversationList.page';
+import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
+
+test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, createUser, createTeam, createPage}) => {
+  const userB = await createUser();
+  const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+  const userBPage = await createPage();
+
+  await Promise.all([loginUser(app.page, userA), loginUser(userBPage, userB)]);
+  await connectWithUser(app.page, userB);
+
+  await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
+  await conversationsList(userBPage).getConversation(userA.fullName, {protocol: 'mls'}).open();
+
+  await test.step('User B sends a message to User A', async () => {
+    await conversation(userBPage).sendMessage('Test message');
+    await expect(conversation(app.page).getMessage({content: 'Test message'})).toBeVisible();
+  });
+
+  await test.step("User right-clicks on the Account A's avatar on the sidebar with accounts' avatars", async () => {
+    const accounts = accountsSidebar(app).accountItems;
+    await accounts.first().click({button: 'right'});
+    const logoutSidebarButton = accountsSidebar(app).logoutButton;
+    const removeAccountButton = accountsSidebar(app).removeAccountButton;
+    await expect(logoutSidebarButton).toBeVisible();
+    await expect(removeAccountButton).toBeVisible();
+  });
+
+  await test.step("User clicks 'Log out' option", async () => {
+    const logoutSidebarButton = accountsSidebar(app).logoutButton;
+    await logoutSidebarButton.click();
+    const popupTitle = logoutPopup(app).getTitle();
+    await expect(popupTitle).toBeVisible();
+    const popupTitleText = await popupTitle.textContent();
+    await expect(popupTitleText).toBe('Clear Data?');
+    const logoutPopupButton = logoutPopup(app).getLogoutButton();
+    await expect(logoutPopupButton).toBeVisible();
+  });
+
+  await test.step("User clicks 'Log Out' button on the popup", async () => {
+    const logoutPopupButton = logoutPopup(app).getLogoutButton();
+    await logoutPopupButton.click();
+    await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
+  });
+
+  await test.step('User logs in into Account A again', async () => {
+    await loginUser(app.page, userA);
+    await expect(conversationsSidebar(app.page).userAvatar).toContainText(userA.initials);
+    await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
+    await expect(conversation(app.page).getMessage({content: 'Test message'})).toBeVisible();
+  });
+
+  await test.step('User A opens the conversation with User B', async () => {
+    await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
+    await expect(conversation(app.page).getMessage({content: 'Test message'})).toBeVisible();
+  });
+
+  await test.step('User A logs out checking the Clear Data checkbox', async () => {
+    const userDataDir = await app.evaluate(async ({app: electronApp}) => {
+      return electronApp.getPath('userData');
+    });
+    const sessionStorePath = path.join(userDataDir, 'Default', 'Local Storage');
+
+    await accountsSidebar(app).sidebar.click(); //workaround step to remove the context menu
+    await accountsSidebar(app).logOut(0);
+    const clearDataCheckbox = logoutPopup(app).getClearDataCheckbox();
+    await expect(clearDataCheckbox).toBeVisible();
+    await clearDataCheckbox.click({force: true});
+    await expect(clearDataCheckbox).toBeChecked();
+    const logoutPopupButton = logoutPopup(app).getLogoutButton();
+
+    const [newWindow] = await Promise.all([app.waitForEvent('window'), logoutPopupButton.click()]);
+    app.page = newWindow;
+
+    await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
+
+    const isCleaned = !fs.existsSync(sessionStorePath) || fs.readdirSync(sessionStorePath).length === 0;
+    expect(isCleaned).toBe(true);
+  });
+
+  await test.step('User A logs back in', async () => {
+    await loginUserAfterDataCleanup(app.page, userA);
+    await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
+    await expect(conversation(app.page).getMessage({content: 'Test message'})).toBeHidden();
+  });
+});
+
+test(
+  'Logout from the secondary account while the first one is active',
+  {tag: ['@TC-11287', '@crit-flow-desktop']},
+  async ({app, createUser}) => {
+    const userA = await createUser();
+    const userB = await createUser();
+
+    await loginUser(app.page, userA);
+    await accountsSidebar(app).addAccount();
+    await loginUser(app.page, userB);
+    await accountsSidebar(app).switchAccount(0);
+
+    await test.step("User right-clicks on the Account B's avatar on the sidebar with accounts' avatars and clicks 'Log out' option", async () => {
+      await accountsSidebar(app).logOut(1);
+      const userBAccount = accountsSidebar(app).getAccount(userB);
+      await expect(userBAccount.activeBorder).toBeVisible();
+      const userAAccount = accountsSidebar(app).getAccount(userA);
+      await expect(userAAccount.activeBorder).toBeHidden();
+    });
+
+    await test.step("User clicks 'Log Out' button on the popup", async () => {
+      app.page = app.windows()[2];
+      const logoutPopupButton = logoutPopup(app).getLogoutButton();
+      await logoutPopupButton.click();
+      await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
+    });
+
+    await test.step('User switches to Account A and opens the profile sidebar', async () => {
+      await accountsSidebar(app).switchAccount(0);
+      await expect(conversationsSidebar(app.page).userAvatar).toContainText(userA.initials);
+    });
+  },
+);
