@@ -32,7 +32,7 @@ import {PublicApiClient, RegisteredUser, TeamOwner} from './backend/PublicApiCli
 
 export type TestOptions = {
   os: 'windows' | 'macOS';
-  appOptions: {env?: string; lang?: string};
+  appOptions: {env?: string; lang?: string; bypassPermissions?: boolean};
 };
 
 type Fixtures = {

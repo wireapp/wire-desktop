@@ -25,7 +25,7 @@ import {callCell} from '../../poms/webapp/callCell.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
 
-test.describe('Calling', () => {
+test.describe('Calling - Feature Functionality', () => {
   test(
     'Verify call window maximization in 1:1 and the group call',
     {tag: ['@TC-11291', '@regression']},
@@ -66,6 +66,39 @@ test.describe('Calling', () => {
           await fullscreenWindow.getByRole('button', {name: 'Hang up'}).click();
         });
       }
+    },
+  );
+});
+
+test.describe('Calling - Negative Scenarios / Permissions', () => {
+  test.use({
+    appOptions: async ({appOptions}, use) => {
+      await use({
+        ...appOptions,
+        bypassPermissions: false,
+      });
+    },
+  });
+
+  test(
+    'Verify call establishment fails without required permissions',
+    {tag: ['@TC-11297', '@regression']},
+    async ({app, createUser, createTeam, createPage}) => {
+      const userB = await createUser();
+      const {owner: userA} = await createTeam('Test Team', {
+        users: [userB],
+      });
+      const userAPage = app.page;
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
+      await connectWithUser(userAPage, userB);
+
+      await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
+      await conversation(userAPage).startCallButton.click();
+
+      await expect(app.page.getByText('No camera access')).toBeVisible();
+      await expect(conversation(userAPage).systemMessages.filter({hasText: 'You called'})).toBeVisible();
     },
   );
 });
