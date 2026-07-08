@@ -17,8 +17,9 @@
  *
  */
 
-import * as assert from 'assert';
 import {fake, replace, restore} from 'sinon';
+
+import * as assert from 'assert';
 
 import * as linuxBackend from './backends/linux';
 import {clearManagedConfigCache, getManagedConfig} from './ManagedConfig';
