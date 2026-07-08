@@ -56,9 +56,7 @@ yarn test
 
 ### Managed device configuration (MDM)
 
-On company-managed devices, an MDM administrator can force App-lock on, overriding the team-level App-lock
-setting. The desktop app reads a single `applockOverride` flag at startup — without spawning any shell
-command — and forwards it to the webapp as `window.desktopAppConfig.managedConfig`.
+On company-managed devices, an MDM administrator can force App-lock on, overriding the team-level App-lock setting. The desktop app reads a single `applockOverride` flag at startup — without spawning any shell command — and forwards it to the webapp as `window.desktopAppConfig.managedConfig`.
 
 The flag is read from organization-agnostic, Wire-vendor locations (no customer/company name is hardcoded):
 
@@ -70,9 +68,7 @@ The flag is read from organization-agnostic, Wire-vendor locations (no customer/
 
 #### Testing locally
 
-For each OS: plant the flag, relaunch the app, then open DevTools on the webapp's `<webview>` and evaluate
-`window.desktopAppConfig.managedConfig` — expect `{applockOverride: true}`. With nothing planted it must be
-`{applockOverride: false}` and the app behaves as before.
+For each OS: plant the flag, relaunch the app, then open DevTools on the webapp's `<webview>` and evaluate `window.desktopAppConfig.managedConfig` — expect `{applockOverride: true}`. With nothing planted it must be `{applockOverride: false}` and the app behaves as before.
 
 **Windows** (elevated prompt):
 
@@ -82,8 +78,7 @@ reg add "HKLM\SOFTWARE\Policies\Wire" /v applockOverride /t REG_DWORD /d 1 /f
 reg delete "HKLM\SOFTWARE\Policies\Wire" /f
 ```
 
-Enrollment is detected automatically on an Intune/MDM-enrolled or Azure-AD-joined machine (no `Policies\Wire`
-value needed).
+Enrollment is detected automatically on an Intune/MDM-enrolled or Azure-AD-joined machine (no `Policies\Wire` value needed).
 
 **macOS** (use the running build's bundle id — production is `com.wearezeta.zclient.mac`; dev/internal differ):
 
