@@ -46,36 +46,25 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
   });
 
   await test.step("User right-clicks on the Account A's avatar on the sidebar with accounts' avatars", async () => {
-    const accounts = accountsSidebar(app).accountItems;
-    await accounts.first().click({button: 'right'});
-    const logoutSidebarButton = accountsSidebar(app).logoutButton;
-    const removeAccountButton = accountsSidebar(app).removeAccountButton;
-    await expect(logoutSidebarButton).toBeVisible();
-    await expect(removeAccountButton).toBeVisible();
+    await accountsSidebar(app).accountItems.first().click({button: 'right'});
+    await expect(accountsSidebar(app).logoutButton).toBeVisible();
+    await expect(accountsSidebar(app).removeAccountButton).toBeVisible();
   });
 
   await test.step("User clicks 'Log out' option", async () => {
-    const logoutSidebarButton = accountsSidebar(app).logoutButton;
-    await logoutSidebarButton.click();
-    const popupTitle = logoutPopup(app).getTitle();
-    await expect(popupTitle).toBeVisible();
-    const popupTitleText = await popupTitle.textContent();
-    await expect(popupTitleText).toBe('Clear Data?');
-    const logoutPopupButton = logoutPopup(app).getLogoutButton();
-    await expect(logoutPopupButton).toBeVisible();
+    await accountsSidebar(app).logoutButton.click();
+    await expect(logoutPopup(app).title).toHaveText('Clear Data?');
+    await expect(logoutPopup(app).logoutButton).toBeVisible();
   });
 
   await test.step("User clicks 'Log Out' button on the popup", async () => {
-    const logoutPopupButton = logoutPopup(app).getLogoutButton();
-    await logoutPopupButton.click();
+    await logoutPopup(app).logoutButton.click();
     await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
   });
 
   await test.step('User logs in into Account A again', async () => {
     await loginUser(app.page, userA);
     await expect(conversationsSidebar(app.page).userAvatar).toContainText(userA.initials);
-    await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
-    await expect(conversation(app.page).getMessage({content: 'Test message'})).toBeVisible();
   });
 
   await test.step('User A opens the conversation with User B', async () => {
@@ -91,11 +80,11 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
 
     await accountsSidebar(app).sidebar.click(); //workaround step to remove the context menu
     await accountsSidebar(app).logOut(0);
-    const clearDataCheckbox = logoutPopup(app).getClearDataCheckbox();
+    const clearDataCheckbox = logoutPopup(app).clearDataCheckbox;
     await expect(clearDataCheckbox).toBeVisible();
-    await clearDataCheckbox.click({force: true});
+    await app.page.getByText('Delete all your personal information').click();
     await expect(clearDataCheckbox).toBeChecked();
-    const logoutPopupButton = logoutPopup(app).getLogoutButton();
+    const logoutPopupButton = logoutPopup(app).logoutButton;
 
     const [newWindow] = await Promise.all([app.waitForEvent('window'), logoutPopupButton.click()]);
     app.page = newWindow;
@@ -128,15 +117,14 @@ test(
     await test.step("User right-clicks on the Account B's avatar on the sidebar with accounts' avatars and clicks 'Log out' option", async () => {
       await accountsSidebar(app).logOut(1);
       const userBAccount = accountsSidebar(app).getAccount(userB);
-      await expect(userBAccount.activeBorder).toBeVisible();
       const userAAccount = accountsSidebar(app).getAccount(userA);
+      await expect(userBAccount.activeBorder).toBeVisible();
       await expect(userAAccount.activeBorder).toBeHidden();
     });
 
     await test.step("User clicks 'Log Out' button on the popup", async () => {
       app.page = app.windows()[2];
-      const logoutPopupButton = logoutPopup(app).getLogoutButton();
-      await logoutPopupButton.click();
+      await logoutPopup(app).logoutButton.click();
       await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
     });
 

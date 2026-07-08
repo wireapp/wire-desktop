@@ -19,11 +19,9 @@
 
 import {App} from '../../actions/createApp';
 
-export const logoutPopup = (app: App) => {
-  return {
-    getTitle: () => app.page.getByTestId('status-modal-title'),
-    getClearDataCheckbox: () => app.page.getByTestId('modal-option-checkbox'),
-    getCancelButton: () => app.page.getByTestId('do-secondary'),
-    getLogoutButton: () => app.page.getByTestId('do-action'),
-  };
-};
+export const logoutPopup = (app: App) => ({
+  title: app.page.getByTestId('status-modal-title'),
+  clearDataCheckbox: app.page.getByTestId('modal-option-checkbox'),
+  cancelButton: app.page.getByTestId('do-secondary'),
+  logoutButton: app.page.getByTestId('do-action'),
+});
