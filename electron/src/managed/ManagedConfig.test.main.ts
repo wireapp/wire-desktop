@@ -17,11 +17,10 @@
  *
  */
 
-import * as fs from 'fs-extra';
+import * as assert from 'assert';
 import {fake, replace, restore} from 'sinon';
 
-import * as assert from 'assert';
-
+import * as linuxBackend from './backends/linux';
 import {clearManagedConfigCache, getManagedConfig} from './ManagedConfig';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -29,10 +28,6 @@ import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 describe('getManagedConfig', () => {
   beforeEach(() => {
     clearManagedConfigCache();
-    // Force the Linux code path so the test is deterministic regardless of the host OS.
-    replace(EnvironmentUtil.platform, 'IS_WINDOWS', false);
-    replace(EnvironmentUtil.platform, 'IS_MAC_OS', false);
-    replace(EnvironmentUtil.platform, 'IS_LINUX', true);
   });
 
   afterEach(() => {
@@ -41,31 +36,34 @@ describe('getManagedConfig', () => {
   });
 
   it('enables the override when a managed config payload is present', () => {
-    replace(fs, 'readJSONSync', fake.returns({applockOverride: true}) as any);
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: true});
+    replace(linuxBackend, 'isDeviceManagedLinux', fake.returns(true) as any);
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: true});
   });
 
   it('disables the override when no managed config is present', () => {
-    replace(fs, 'readJSONSync', fake.throws(new Error('ENOENT')) as any);
-    replace(fs, 'pathExistsSync', fake.returns(false) as any);
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: true});
+    replace(linuxBackend, 'isDeviceManagedLinux', fake.returns(false) as any);
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 
   it('treats a present payload as enabled unless it explicitly opts out', () => {
-    replace(fs, 'readJSONSync', fake.returns({applockOverride: false}) as any);
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: true});
+    replace(linuxBackend, 'isDeviceManagedLinux', fake.returns(false) as any);
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 
   it('memoizes the result and reads the underlying source only once', () => {
-    const readSource = fake.returns({applockOverride: true});
-    replace(fs, 'readJSONSync', readSource as any);
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: true});
+    const backendCall = fake.returns(false);
+    replace(linuxBackend, 'isDeviceManagedLinux', backendCall as any);
     getManagedConfig();
     getManagedConfig();
-    assert.strictEqual(readSource.callCount, 1);
+    assert.strictEqual(backendCall.callCount, 1);
   });
 
   it('never throws and defaults to disabled on an unrecognized platform', () => {
-    replace(EnvironmentUtil.platform, 'IS_LINUX', false);
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: false});
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 });
