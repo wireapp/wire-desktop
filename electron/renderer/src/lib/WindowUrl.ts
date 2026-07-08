@@ -19,10 +19,72 @@
 
 import {wrapperLocale} from './locale';
 
+const staticResourcePathPrefixes = [
+  '/min',
+  '/assets',
+  '/audio',
+  '/ext',
+  '/font',
+  '/image',
+  '/proto',
+  '/style',
+  '/worker',
+];
+
+const staticResourcePathExtensions = [
+  '.js',
+  '.css',
+  '.map',
+  '.wasm',
+  '.mjs',
+  '.json',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.svg',
+  '.ico',
+  '.woff',
+  '.woff2',
+  '.ttf',
+  '.mp3',
+  '.ogg',
+];
+
+export function isAllowedWebAppNavigationUrl(url: URL): boolean {
+  const pathname = url.pathname.toLowerCase();
+  const hasStaticResourcePrefix = staticResourcePathPrefixes.some(
+    pathPrefix => pathname === pathPrefix || pathname.startsWith(`${pathPrefix}/`),
+  );
+
+  if (hasStaticResourcePrefix) {
+    return false;
+  }
+
+  if (pathname === '/sw.js') {
+    return false;
+  }
+
+  const hasStaticResourceExtension = staticResourcePathExtensions.some(extension => pathname.endsWith(extension));
+
+  if (hasStaticResourceExtension) {
+    return false;
+  }
+
+  return true;
+}
+
 export class WindowUrl {
-  static createWebAppUrl(localRendererUrl: URL | string, customBackendUrl: string) {
+  static createWebAppUrl(localRendererUrl: URL | string, customBackendUrl: string): string {
     const localFileParams = new URL(localRendererUrl).searchParams;
     const customBackendUrlParsed = new URL(customBackendUrl);
+
+    if (!isAllowedWebAppNavigationUrl(customBackendUrlParsed)) {
+      throw new Error(
+        `Invalid WebApp URL: static resource URLs cannot be used as WebApp navigation URLs (${customBackendUrlParsed.href})`,
+      );
+    }
+
     const envUrl = decodeURIComponent(localFileParams.get('env')!);
     const envUrlParams = new URL(envUrl).searchParams;
 
