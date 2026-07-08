@@ -276,7 +276,7 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     title: config.name,
     webPreferences: {
       backgroundThrottling: false,
-      contextIsolation: false,
+      contextIsolation: true,
       nodeIntegration: false,
       preload: PRELOAD_JS,
       sandbox: false,

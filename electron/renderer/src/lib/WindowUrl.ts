@@ -17,7 +17,7 @@
  *
  */
 
-import {wrapperLocale} from './locale';
+import {getWrapperLocale} from './locale';
 
 export class WindowUrl {
   static createWebAppUrl(localRendererUrl: URL | string, customBackendUrl: string) {
@@ -32,7 +32,7 @@ export class WindowUrl {
     });
 
     // set the current language
-    envUrlParams.set('hl', wrapperLocale);
+    envUrlParams.set('hl', getWrapperLocale());
 
     return customBackendUrlParsed.href;
   }

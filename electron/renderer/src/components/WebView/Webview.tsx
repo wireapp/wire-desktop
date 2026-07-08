@@ -38,7 +38,7 @@ import {
 } from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
 import {State} from '../../index';
-import {getText, wrapperLocale} from '../../lib/locale';
+import {getText, getWrapperLocale} from '../../lib/locale';
 import {WindowUrl} from '../../lib/WindowUrl';
 import {AccountSelector} from '../../selector/AccountSelector';
 import {Account, ConversationJoinData} from '../../types/account';
@@ -58,7 +58,7 @@ const getEnvironmentUrl = (account: Account) => {
   url.searchParams.set('id', account.id);
 
   // set the current language
-  url.searchParams.set('hl', wrapperLocale);
+  url.searchParams.set('hl', getWrapperLocale());
 
   if (account.ssoCode && account.isAdding) {
     url.pathname = '/auth';
@@ -169,11 +169,12 @@ const Webview = ({
         setWebviewError(error);
       }
     };
-    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
+    const webview = webviewRef.current;
+    webview?.addEventListener(ON_WEBVIEW_ERROR, listener);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (webview) {
+        webview.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
   }, [webviewRef, account]);
@@ -211,7 +212,7 @@ const Webview = ({
         case EVENT_TYPE.LIFECYCLE.SIGNED_IN: {
           if (conversationJoinData) {
             const {code, key, domain} = conversationJoinData;
-            window.sendConversationJoinToHost(accountId, code, key, domain);
+            window.electronAPI.sendConversationJoinToHost(accountId, code, key, domain);
             setConversationJoinData(accountId, undefined);
           }
           updateAccountLifecycle(accountId, channel);
@@ -241,7 +242,7 @@ const Webview = ({
 
           if (isConversationJoinData(data)) {
             if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-              window.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
+              window.electronAPI.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
               setConversationJoinData(accountId, undefined);
             } else {
               setConversationJoinData(accountId, data);
@@ -272,20 +273,37 @@ const Webview = ({
       }
     };
 
-    webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
+    const webview = webviewRef.current;
+    webview?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webview) {
+        webview.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, accountLifecycle, conversationJoinData]);
 
   const deleteWebview = (account: Account) => {
-    window.sendDeleteAccount(account.id, account.sessionID).then(() => {
+    // For accounts being added (no webview yet), just abort creation directly
+    const accountWebview = document.querySelector<Electron.WebviewTag>(`.Webview[data-accountid="${account.id}"]`);
+    if (!accountWebview) {
+      // Webview doesn't exist yet (account being added), just abort creation
       abortAccountCreation(account.id);
-    });
+      return;
+    }
+
+    // For existing accounts, delete the webview data first
+    window.electronAPI
+      .sendDeleteAccount(account.id, account.sessionID)
+      .then(() => {
+        abortAccountCreation(account.id);
+      })
+      .catch(error => {
+        console.error('Failed to delete account:', error);
+        // Still abort account creation even if deletion fails
+        abortAccountCreation(account.id);
+      });
   };
 
   return (
