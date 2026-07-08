@@ -187,10 +187,14 @@ const Webview = ({
           const [customUrl] = args;
 
           if (isString(customUrl)) {
-            const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
-            updateAccountData(accountId, {
-              webappUrl: updatedWebapp,
-            });
+            try {
+              const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
+              updateAccountData(accountId, {
+                webappUrl: updatedWebapp,
+              });
+            } catch (error) {
+              console.warn(`Ignoring invalid WebApp navigation URL "${customUrl}"`, error);
+            }
           }
           break;
         }
