@@ -78,7 +78,9 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
     });
     const sessionStorePath = path.join(userDataDir, 'Default', 'Local Storage');
 
-    await accountsSidebar(app).sidebar.click(); //workaround step to remove the context menu
+    // TODO (WPB-26936): Remove this workaround once the issue is resolved
+    await accountsSidebar(app).sidebar.click(); 
+    
     await accountsSidebar(app).logOut(0);
     const clearDataCheckbox = logoutPopup(app).clearDataCheckbox;
     await expect(clearDataCheckbox).toBeVisible();
