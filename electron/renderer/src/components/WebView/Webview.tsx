@@ -162,6 +162,7 @@ const Webview = ({
   }, [webviewError]);
 
   useEffect(() => {
+    const webview = webviewRef.current;
     const listener = (error: DidFailLoadEvent) => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
       console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
@@ -169,11 +170,11 @@ const Webview = ({
         setWebviewError(error);
       }
     };
-    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
+    webview?.addEventListener(ON_WEBVIEW_ERROR, listener);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (webview) {
+        webview.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
   }, [webviewRef, account]);
@@ -276,11 +277,13 @@ const Webview = ({
       }
     };
 
+    const webview = webviewRef.current;
+
     webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webview) {
+        webview.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

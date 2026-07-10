@@ -133,6 +133,9 @@
   "license": "GPL-3.0",
   "main": "electron/dist/main.js",
   "name": "wire-desktop",
+  "optionalDependencies": {
+    "registry-js": "1.16.1"
+  },
   "prettier": "@wireapp/prettier-config",
   "private": true,
   "productName": "WireDevelopment",
