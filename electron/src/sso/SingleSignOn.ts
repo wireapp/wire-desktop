@@ -29,6 +29,7 @@ import {
 } from 'electron';
 
 import * as crypto from 'crypto';
+import * as logdown from 'logdown';
 import * as path from 'path';
 import {URL} from 'url';
 
@@ -45,6 +46,11 @@ import * as WindowUtil from '../window/WindowUtil';
 const minimist = require('minimist');
 
 const argv = minimist(process.argv.slice(1));
+
+function getSingleSignOnLogger(): logdown.Logger {
+  return getLogger(path.basename(__filename));
+}
+
 export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
@@ -54,8 +60,6 @@ export class SingleSignOn {
   private static readonly SSO_SESSION_NAME = 'sso';
   private static readonly MAX_LENGTH_ORIGIN_DOMAIN = 255;
   private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + SingleSignOn.MAX_LENGTH_ORIGIN_DOMAIN;
-  private static readonly logger = getLogger(path.basename(__filename));
-
   private static readonly RESPONSE_TYPES = {
     AUTH_ERROR_COOKIE: 'AUTH_ERROR_COOKIE',
     AUTH_ERROR_SESS_NOT_AVAILABLE: 'AUTH_ERROR_SESS_NOT_AVAILABLE',
@@ -265,7 +269,7 @@ export class SingleSignOn {
 
         finalizeLogin(type);
       } catch (error) {
-        SingleSignOn.logger.error(error);
+        getSingleSignOnLogger().error(error);
       }
     };
 
@@ -294,7 +298,7 @@ export class SingleSignOn {
       try {
         await SingleSignOn.copyCookies(this.session, this.senderWebContents.session, this.windowOriginUrl);
       } catch (error) {
-        SingleSignOn.logger.warn(error);
+        getSingleSignOnLogger().warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
         return;
       }

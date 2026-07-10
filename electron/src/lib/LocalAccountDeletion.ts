@@ -19,6 +19,7 @@
 
 import {app, Session, webContents} from 'electron';
 import * as fs from 'fs-extra';
+import * as logdown from 'logdown';
 import {truncate} from 'lodash';
 
 import * as path from 'path';
@@ -29,7 +30,10 @@ import {getLogDirectory} from '../logging/getLogDirectory';
 import {getLogger} from '../logging/getLogger';
 
 const USER_DATA_DIR = app.getPath('userData');
-const logger = getLogger(path.basename(__filename));
+
+function getLocalAccountDeletionLogger(): logdown.Logger {
+  return getLogger(path.basename(__filename));
+}
 
 const clearStorage = async (session: Session): Promise<void> => {
   await session.clearStorageData();
@@ -49,11 +53,13 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     if (!webviewWebContent.hostWebContents) {
       throw new Error('Only a webview can have its storage wiped');
     }
-    logger.log(`Deleting session data for account "${truncatedId}"...`);
+    getLocalAccountDeletionLogger().log(`Deleting session data for account "${truncatedId}"...`);
     await clearStorage(webviewWebContent.session);
-    logger.log(`Deleted session data for account "${truncatedId}".`);
+    getLocalAccountDeletionLogger().log(`Deleted session data for account "${truncatedId}".`);
   } catch (error: any) {
-    logger.error(`Failed to delete session data for account "${truncatedId}", reason: "${error.message}".`);
+    getLocalAccountDeletionLogger().error(
+      `Failed to delete session data for account "${truncatedId}", reason: "${error.message}".`,
+    );
   }
 
   // Delete the webview partition
@@ -67,9 +73,9 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
       }
       const partitionDir = path.join(USER_DATA_DIR, 'Partitions', partitionId);
       await fs.remove(partitionDir);
-      logger.log(`Deleted partition "${partitionId}" for account "${truncatedId}".`);
+      getLocalAccountDeletionLogger().log(`Deleted partition "${partitionId}" for account "${truncatedId}".`);
     } catch (error: any) {
-      logger.log(
+      getLocalAccountDeletionLogger().log(
         `Unable to delete partition "${partitionId}" for account "${truncatedId}", reason: "${error.message}".`,
       );
     }
@@ -83,8 +89,10 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     const sessionFolder = path.join(getLogDirectory(), accountId);
     await fs.remove(sessionFolder);
 
-    logger.log(`Deleted logs folder for account "${truncatedId}".`);
+    getLocalAccountDeletionLogger().log(`Deleted logs folder for account "${truncatedId}".`);
   } catch (error: any) {
-    logger.error(`Failed to delete logs folder for account "${truncatedId}", reason: "${error.message}".`);
+    getLocalAccountDeletionLogger().error(
+      `Failed to delete logs folder for account "${truncatedId}", reason: "${error.message}".`,
+    );
   }
 }

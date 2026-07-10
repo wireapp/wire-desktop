@@ -19,13 +19,16 @@
 
 import * as fs from 'fs-extra';
 import globby from 'globby';
+import * as logdown from 'logdown';
 
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
 import {getLogDirectory} from './getLogDirectory';
 
-const logger = getLogger(path.basename(__filename));
+function getLogExportLogger(): logdown.Logger {
+  return getLogger(path.basename(__filename));
+}
 
 export function getLogFilenames(base: string = getLogDirectory(), absolute: boolean = false): string[] {
   return globby.sync('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
@@ -42,7 +45,7 @@ export async function gatherLogs(logDirectory: string = getLogDirectory()): Prom
       const fileContent = await fs.readFile(resolvedPath);
       logFiles[relativeFilePath] = fileContent;
     } catch (error) {
-      logger.error(error);
+      getLogExportLogger().error(error);
     }
   }
 
