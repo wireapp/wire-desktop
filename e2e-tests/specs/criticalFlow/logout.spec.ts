@@ -125,7 +125,7 @@ test(
     });
 
     await test.step("User clicks 'Log Out' button on the popup", async () => {
-      app.page = app.windows()[2];
+      accountsSidebar(app).switchToNonActiveWindow();
       await logoutPopup(app).logoutButton.click();
       await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
     });
