@@ -44,7 +44,10 @@ export function getMainProcessLogFilePath(logDirectory: string): string {
 
 export function getLegacyWebviewLogDirectory(options: LegacyWebviewLogPathOptions): string {
   const formattedDate = DateUtil.isoFormat(options.createdAt);
-  const accountDirectoryName = `${options.accountIndex}_${formattedDate.date.replaceAll('-', '_')}_${formattedDate.time.replaceAll(':', '_')}_${options.accountId}`;
+  const accountDirectoryName = `${options.accountIndex}_${formattedDate.date.replaceAll(
+    '-',
+    '_',
+  )}_${formattedDate.time.replaceAll(':', '_')}_${options.accountId}`;
 
   return path.join(options.logDirectory, accountDirectoryName);
 }

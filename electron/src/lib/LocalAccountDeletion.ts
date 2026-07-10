@@ -19,8 +19,8 @@
 
 import {app, Session, webContents} from 'electron';
 import * as fs from 'fs-extra';
-import * as logdown from 'logdown';
 import {truncate} from 'lodash';
+import * as logdown from 'logdown';
 
 import * as path from 'path';
 

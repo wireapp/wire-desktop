@@ -34,7 +34,12 @@ function getErrorMessage(error: unknown): string {
   return String(error);
 }
 
-export function renameLogFileExtensions(files: string[], oldExtension: string, newExtension: string, logger: LogFileMigrationLogger): void {
+export function renameLogFileExtensions(
+  files: string[],
+  oldExtension: string,
+  newExtension: string,
+  logger: LogFileMigrationLogger,
+): void {
   for (const file of files) {
     try {
       const fileStat = fs.statSync(file);

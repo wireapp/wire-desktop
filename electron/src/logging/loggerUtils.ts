@@ -23,8 +23,9 @@ import * as logdown from 'logdown';
 
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
 import {getLogDirectory} from './getLogDirectory';
+
+import {getLogger} from '../logging/getLogger';
 
 function getLogExportLogger(): logdown.Logger {
   return getLogger(path.basename(__filename));

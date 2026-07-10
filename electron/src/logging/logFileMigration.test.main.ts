@@ -17,8 +17,9 @@
  *
  */
 
-import * as assert from 'assert';
 import * as fs from 'fs-extra';
+
+import * as assert from 'assert';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -49,7 +50,10 @@ describe('logFileMigration', () => {
     renameWebviewLogFiles(temporaryLogDirectory, migrationLogger);
 
     const actualLogFileExists = await fs.pathExists(nestedLogFilePath);
-    const actualRenamedFileContent = await fs.readFile(path.join(temporaryLogDirectory, 'account', 'console.old'), 'utf8');
+    const actualRenamedFileContent = await fs.readFile(
+      path.join(temporaryLogDirectory, 'account', 'console.old'),
+      'utf8',
+    );
     const actualExistingOldFileContent = await fs.readFile(nestedOldFilePath, 'utf8');
 
     assert.strictEqual(actualLogFileExists, false);

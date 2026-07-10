@@ -12,10 +12,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
  */
 
-import * as assert from 'assert';
 import {app} from 'electron';
+
+import * as assert from 'assert';
 import * as path from 'path';
 
 import {getLogDirectory} from './getLogDirectory';

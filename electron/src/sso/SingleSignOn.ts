@@ -27,9 +27,9 @@ import {
   WebContents,
   HandlerDetails,
 } from 'electron';
+import * as logdown from 'logdown';
 
 import * as crypto from 'crypto';
-import * as logdown from 'logdown';
 import * as path from 'path';
 import {URL} from 'url';
 

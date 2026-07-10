@@ -21,9 +21,10 @@ import * as logdown from 'logdown';
 
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
 
-import {config} from '../settings/config';
 import {getLogDirectory} from './getLogDirectory';
 import {getMainProcessLogFilePath} from './logPaths';
+
+import {config} from '../settings/config';
 
 const mainProcess = process || require('@electron/remote').process;
 
