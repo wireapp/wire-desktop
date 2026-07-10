@@ -22,6 +22,8 @@ import {fake, replace, restore} from 'sinon';
 import * as assert from 'assert';
 
 import * as linuxBackend from './backends/linux';
+import * as macosBackend from './backends/macos';
+import * as windowsBackend from './backends/windows';
 import {clearManagedConfigCache, getManagedConfig} from './ManagedConfig';
 
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -65,6 +67,30 @@ describe('getManagedConfig', () => {
 
   it('never throws and defaults to disabled on an unrecognized platform', () => {
     replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: false});
+    assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
+  });
+
+  it('enables the override on Windows when a managed config payload is present', () => {
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: true, IS_MAC_OS: false, IS_LINUX: false});
+    replace(windowsBackend, 'isDeviceManagedWindows', fake.returns(true) as any);
+    assert.deepStrictEqual(getManagedConfig(), {applockOverride: true});
+  });
+
+  it('disables the override on Windows when no managed config is present', () => {
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: true, IS_MAC_OS: false, IS_LINUX: false});
+    replace(windowsBackend, 'isDeviceManagedWindows', fake.returns(false) as any);
+    assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
+  });
+
+  it('enables the override on macOS when a managed config payload is present', () => {
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: true, IS_LINUX: false});
+    replace(macosBackend, 'isDeviceManagedMacOS', fake.returns(true) as any);
+    assert.deepStrictEqual(getManagedConfig(), {applockOverride: true});
+  });
+
+  it('disables the override on macOS when no managed config is present', () => {
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: true, IS_LINUX: false});
+    replace(macosBackend, 'isDeviceManagedMacOS', fake.returns(false) as any);
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 });
