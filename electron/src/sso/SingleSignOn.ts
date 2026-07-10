@@ -18,7 +18,6 @@
  */
 
 import {
-  app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
@@ -36,7 +35,9 @@ import {URL} from 'url';
 import {LogFactory} from '@wireapp/commons';
 
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {getLogDirectory} from '../logging/getLogDirectory';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
+import {getAccountLogFilePath} from '../logging/logPaths';
 import {getWebViewId} from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
@@ -44,8 +45,6 @@ import * as WindowUtil from '../window/WindowUtil';
 const minimist = require('minimist');
 
 const argv = minimist(process.argv.slice(1));
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-
 export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
@@ -158,7 +157,11 @@ export class SingleSignOn {
       ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
         const webViewId = getWebViewId(ssoWindow.webContents);
         if (webViewId) {
-          const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
+          const logFilePath = getAccountLogFilePath({
+            accountId: webViewId,
+            logDirectory: getLogDirectory(),
+            logFileName: config.logFileName,
+          });
           try {
             await LogFactory.writeMessage(message, logFilePath);
           } catch (error: any) {
