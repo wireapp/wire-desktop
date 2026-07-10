@@ -17,29 +17,27 @@
  *
  */
 
-import {app} from 'electron';
 import * as fs from 'fs-extra';
 import globby from 'globby';
 
 import * as path from 'path';
 
 import {getLogger} from '../logging/getLogger';
+import {getLogDirectory} from './getLogDirectory';
 
 const logger = getLogger(path.basename(__filename));
 
-export const logDir = path.join(app.getPath('userData'), 'logs');
-
-export function getLogFilenames(base: string = logDir, absolute: boolean = false): string[] {
+export function getLogFilenames(base: string = getLogDirectory(), absolute: boolean = false): string[] {
   return globby.sync('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
 }
 
-export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
+export async function gatherLogs(logDirectory: string = getLogDirectory()): Promise<Record<string, Uint8Array>> {
   const logFiles: Record<string, Uint8Array> = {};
 
-  const relativeFilePaths = getLogFilenames();
+  const relativeFilePaths = getLogFilenames(logDirectory);
 
   for (const relativeFilePath of relativeFilePaths) {
-    const resolvedPath = path.join(logDir, relativeFilePath);
+    const resolvedPath = path.join(logDirectory, relativeFilePath);
     try {
       const fileContent = await fs.readFile(resolvedPath);
       logFiles[relativeFilePath] = fileContent;
