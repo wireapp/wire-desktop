@@ -57,6 +57,7 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
 import * as locale from './locale';
+import {renameWebviewLogFiles} from './logging/logFileMigration';
 import {getLogDirectory} from './logging/getLogDirectory';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLegacyWebviewLogFilePath, getMainProcessLogFilePath} from './logging/logPaths';
@@ -507,29 +508,6 @@ const handleAppEvents = (): void => {
   });
 };
 
-const renameFileExtensions = (files: string[], oldExtension: string, newExtension: string): void => {
-  for (const file of files) {
-    try {
-      const fileStat = fs.statSync(file);
-      if (fileStat.isFile() && file.endsWith(oldExtension)) {
-        fs.renameSync(file, file.replace(oldExtension, newExtension));
-      }
-    } catch (error) {
-      logger.error(`Failed to rename log file: "${(error as any).message}"`);
-    }
-  }
-};
-
-const renameWebViewLogFiles = (): void => {
-  // Rename "console.log" to "console.old" (for every log directory of every account)
-  try {
-    const logFiles = getLogFilenames(LOG_DIR, true);
-    renameFileExtensions(logFiles, '.log', '.old');
-  } catch (error) {
-    logger.log(`Failed to read log directory with error: ${(error as any).message}`);
-  }
-};
-
 const addLinuxWorkarounds = (): void => {
   if (EnvironmentUtil.platform.IS_LINUX) {
     // Fix indicator icon on Unity
@@ -791,7 +769,7 @@ if (lifecycle.isFirstInstance) {
   addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
-  renameWebViewLogFiles();
+  renameWebviewLogFiles(getLogDirectory(), logger);
   fs.ensureFileSync(getMainProcessLogFilePath(getLogDirectory()));
   new ElectronWrapperInit().run().catch(error => logger.error(error));
 }
