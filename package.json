@@ -30,7 +30,6 @@
     "redux": "4.2.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.4.2",
-    "registry-js": "1.16.1",
     "uuid": "9.0.1"
   },
   "description": "The most secure collaboration platform.",
@@ -133,6 +132,9 @@
   "license": "GPL-3.0",
   "main": "electron/dist/main.js",
   "name": "wire-desktop",
+  "optionalDependencies": {
+    "registry-js": "1.16.1"
+  },
   "prettier": "@wireapp/prettier-config",
   "private": true,
   "productName": "WireDevelopment",
