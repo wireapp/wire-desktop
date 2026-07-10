@@ -41,7 +41,7 @@ import minimist from 'minimist';
 import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
 
-import {DateUtil, LogFactory} from '@wireapp/commons';
+import {LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
@@ -57,8 +57,9 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
 import * as locale from './locale';
+import {getLogDirectory} from './logging/getLogDirectory';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
-import {getLogFilenames} from './logging/loggerUtils';
+import {getLegacyWebviewLogFilePath, getMainProcessLogFilePath} from './logging/logPaths';
 import {getManagedConfig} from './managed/ManagedConfig';
 import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -76,14 +77,18 @@ import {ProxyPromptWindow} from './window/ProxyPromptWindow';
 import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
 
+const argv = minimist(process.argv.slice(1));
+const portableUserDataDirectory = handlePortableFlags();
 const logger = getLogger(path.basename(__filename));
+
+if (typeof portableUserDataDirectory === 'string') {
+  logger.log(`Saving user data to "${portableUserDataDirectory}".`);
+}
 
 remoteMain.initialize();
 
 const APP_PATH = path.join(app.getAppPath(), config.electronDirectory);
 const INDEX_HTML = path.join(APP_PATH, 'renderer/index.html');
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
-const LOG_FILE = path.join(LOG_DIR, 'electron.log');
 const PRELOAD_JS = path.join(APP_PATH, 'dist/preload/preload-app.js');
 const PRELOAD_RENDERER_JS = path.join(APP_PATH, 'dist/preload/preload-webview.js');
 const WRAPPER_CSS = path.join(APP_PATH, 'css/wrapper.css');
@@ -101,7 +106,6 @@ let proxyInfoArg: URL | undefined;
 const customProtocolHandler = new CustomProtocolHandler();
 
 // Config
-const argv = minimist(process.argv.slice(1));
 const fileBasedProxyConfig = settings.restore<string | undefined>(SettingsType.PROXY_SERVER_URL);
 
 const currentLocale = locale.getCurrent();
@@ -541,16 +545,18 @@ const addLinuxWorkarounds = (): void => {
   }
 };
 
-const handlePortableFlags = (): void => {
+function handlePortableFlags(): string | undefined {
   if (argv[config.ARGUMENT.USER_DATA_DIR] || argv[config.ARGUMENT.PORTABLE]) {
-    const USER_PATH = argv[config.ARGUMENT.USER_DATA_DIR]
+    const portableUserDataDirectory = argv[config.ARGUMENT.USER_DATA_DIR]
       ? path.resolve(argv[config.ARGUMENT.USER_DATA_DIR])
       : path.join(process.env.APPIMAGE || process.execPath, '../Data');
 
-    logger.log(`Saving user data to "${USER_PATH}".`);
-    app.setPath('userData', USER_PATH);
+    app.setPath('userData', portableUserDataDirectory);
+    return portableUserDataDirectory;
   }
-};
+
+  return undefined;
+}
 
 const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: Electron.WebContents): Promise<void> => {
   const proxyURL = authenticatedProxyDetails.origin.split('://')[1];
@@ -697,7 +703,7 @@ class ElectronWrapperInit {
             const colorCodeRegex = /%c(.+?)%c/gm;
             const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;
-            const {date, time} = DateUtil.isoFormat(new Date());
+            const logCreationTime = new Date();
 
             contents.on('console-message', async (_event, _level, message) => {
               const webViewId = lifecycle.getWebViewId(contents);
@@ -708,9 +714,13 @@ class ElectronWrapperInit {
               const accountIndex = contents.id - 2;
 
               if (webViewId) {
-                const logFilePath = path.join(
-                  LOG_DIR,
-                  `${accountIndex}_${date.replaceAll('-', '_')}_${time.replaceAll(':', '_')}_${webViewId}`,
+                const logFilePath = getLegacyWebviewLogFilePath(
+                  {
+                    accountId: webViewId,
+                    accountIndex,
+                    createdAt: logCreationTime,
+                    logDirectory: getLogDirectory(),
+                  },
                   config.logFileName,
                 );
                 try {
@@ -765,7 +775,6 @@ class ElectronWrapperInit {
 }
 
 customProtocolHandler.registerCoreProtocol();
-handlePortableFlags();
 lifecycle
   .checkSingleInstance()
   .then(() => lifecycle.initSquirrelListener())
@@ -783,6 +792,6 @@ if (lifecycle.isFirstInstance) {
   bindIpcEvents();
   handleAppEvents();
   renameWebViewLogFiles();
-  fs.ensureFileSync(LOG_FILE);
+  fs.ensureFileSync(getMainProcessLogFilePath(getLogDirectory()));
   new ElectronWrapperInit().run().catch(error => logger.error(error));
 }

@@ -23,6 +23,7 @@ import * as path from 'path';
 import {
   getAccountLogFilePath,
   getLegacyWebviewLogDirectory,
+  getLegacyWebviewLogFilePath,
   getLogDirectoryPath,
   getMainProcessLogFilePath,
 } from './logPaths';
@@ -59,6 +60,25 @@ describe('logPaths', () => {
     const expectedLogFilePath = path.join(
       '/temporary/user-data/logs',
       'a0fddc04-8bf4-4e06-9741-060ac777ed00',
+      'console.log',
+    );
+
+    assert.strictEqual(actualLogFilePath, expectedLogFilePath);
+  });
+
+  it('constructs a legacy webview log file path', () => {
+    const actualLogFilePath = getLegacyWebviewLogFilePath(
+      {
+        accountId: 'a0fddc04-8bf4-4e06-9741-060ac777ed00',
+        accountIndex: 1,
+        createdAt: new Date('2020-05-04T13:42:00.000Z'),
+        logDirectory: '/temporary/user-data/logs',
+      },
+      'console.log',
+    );
+    const expectedLogFilePath = path.join(
+      '/temporary/user-data/logs',
+      '1_2020_05_04_13_42_00_a0fddc04-8bf4-4e06-9741-060ac777ed00',
       'console.log',
     );
 

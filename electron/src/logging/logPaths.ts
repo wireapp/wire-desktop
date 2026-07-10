@@ -49,6 +49,10 @@ export function getLegacyWebviewLogDirectory(options: LegacyWebviewLogPathOption
   return path.join(options.logDirectory, accountDirectoryName);
 }
 
+export function getLegacyWebviewLogFilePath(options: LegacyWebviewLogPathOptions, logFileName: string): string {
+  return path.join(getLegacyWebviewLogDirectory(options), logFileName);
+}
+
 export function getAccountLogFilePath(options: AccountLogFilePathOptions): string {
   return path.join(options.logDirectory, options.accountId, options.logFileName);
 }
