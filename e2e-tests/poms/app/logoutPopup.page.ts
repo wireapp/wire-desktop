@@ -24,4 +24,5 @@ export const logoutPopup = (app: App) => ({
   clearDataCheckbox: app.page.getByTestId('modal-option-checkbox'),
   cancelButton: app.page.getByTestId('do-secondary'),
   logoutButton: app.page.getByTestId('do-action'),
+  closeButton: app.page.getByTestId('do-close'),
 });

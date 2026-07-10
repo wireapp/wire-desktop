@@ -55,9 +55,39 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
     await accountsSidebar(app).logoutButton.click();
     await expect(logoutPopup(app).title).toHaveText('Clear Data?');
     await expect(logoutPopup(app).logoutButton).toBeVisible();
+    await expect(logoutPopup(app).cancelButton).toBeVisible();
+    await expect(logoutPopup(app).closeButton).toBeVisible();
   });
 
-  await test.step("User clicks 'Log Out' button on the popup", async () => {
+  await test.step("User clicks 'Cancel' button on the popup", async () => {
+    await logoutPopup(app).cancelButton.click();
+    await expect(logoutPopup(app).title).toBeHidden();
+    await expect(logoutPopup(app).logoutButton).toBeHidden();
+    await expect(logoutPopup(app).cancelButton).toBeHidden();
+    await expect(logoutPopup(app).closeButton).toBeHidden();
+  });
+
+  await test.step("User clicks 'Log out' option again and click close button (cross icon)", async () => {
+    // TODO (WPB-26936): Remove this workaround once the issue is resolved
+    await accountsSidebar(app).sidebar.click();
+
+    await accountsSidebar(app).accountItems.first().click({button: 'right'});
+    await accountsSidebar(app).logoutButton.click();
+
+    await logoutPopup(app).closeButton.click();
+    await expect(logoutPopup(app).title).toBeHidden();
+    await expect(logoutPopup(app).logoutButton).toBeHidden();
+    await expect(logoutPopup(app).cancelButton).toBeHidden();
+    await expect(logoutPopup(app).closeButton).toBeHidden();
+  });
+
+  await test.step("User clicks 'Log out' option again and User clicks 'Log Out' button on the popup", async () => {
+    // TODO (WPB-26936): Remove this workaround once the issue is resolved
+    await accountsSidebar(app).sidebar.click();
+
+    await accountsSidebar(app).accountItems.first().click({button: 'right'});
+    await accountsSidebar(app).logoutButton.click();
+
     await logoutPopup(app).logoutButton.click();
     await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
   });
