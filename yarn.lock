@@ -20976,6 +20976,9 @@ __metadata:
     uuid: 9.0.1
     webpack: 5.106.2
     webpack-cli: 5.1.4
+  dependenciesMeta:
+    registry-js:
+      optional: true
   languageName: unknown
   linkType: soft
 
