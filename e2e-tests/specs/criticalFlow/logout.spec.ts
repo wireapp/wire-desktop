@@ -22,6 +22,7 @@ import * as path from 'path';
 
 import {connectWithUser} from '../../actions/connectWithUser';
 import {loginUser, loginUserAfterDataCleanup} from '../../actions/loginUser';
+import {watchActiveAccount} from '../../actions/watchActiveAccount';
 import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
 import {logoutPopup} from '../../poms/app/logoutPopup.page';
@@ -147,6 +148,7 @@ test(
     await accountsSidebar(app).switchAccount(0);
 
     await test.step("User right-clicks on the Account B's avatar on the sidebar with accounts' avatars and clicks 'Log out' option", async () => {
+      await watchActiveAccount(app, newActivePage => (app.page = newActivePage));
       await accountsSidebar(app).logOut(1);
       const userBAccount = accountsSidebar(app).getAccount(userB);
       const userAAccount = accountsSidebar(app).getAccount(userA);
@@ -155,7 +157,6 @@ test(
     });
 
     await test.step("User clicks 'Log Out' button on the popup", async () => {
-      accountsSidebar(app).switchToNonActiveWindow();
       await logoutPopup(app).logoutButton.click();
       await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
     });
