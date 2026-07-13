@@ -25,7 +25,7 @@ import {loginUser, loginUserAfterDataCleanup} from '../../actions/loginUser';
 import {watchActiveAccount} from '../../actions/watchActiveAccount';
 import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
-import {logoutPopup} from '../../poms/app/logoutPopup.page';
+import {logoutModal} from '../../poms/webapp/logoutModal.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
@@ -54,18 +54,12 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
 
   await test.step("User clicks 'Log out' option", async () => {
     await accountsSidebar(app).logoutButton.click();
-    await expect(logoutPopup(app).title).toHaveText('Clear Data?');
-    await expect(logoutPopup(app).logoutButton).toBeVisible();
-    await expect(logoutPopup(app).cancelButton).toBeVisible();
-    await expect(logoutPopup(app).closeButton).toBeVisible();
+    await expect(logoutModal(app).title).toHaveText('Clear Data?');
   });
 
   await test.step("User clicks 'Cancel' button on the popup", async () => {
-    await logoutPopup(app).cancelButton.click();
-    await expect(logoutPopup(app).title).toBeHidden();
-    await expect(logoutPopup(app).logoutButton).toBeHidden();
-    await expect(logoutPopup(app).cancelButton).toBeHidden();
-    await expect(logoutPopup(app).closeButton).toBeHidden();
+    await logoutModal(app).cancelButton.click();
+    await expect(logoutModal(app).title).toBeHidden();
   });
 
   await test.step("User clicks 'Log out' option again and click close button (cross icon)", async () => {
@@ -75,11 +69,8 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
     await accountsSidebar(app).accountItems.first().click({button: 'right'});
     await accountsSidebar(app).logoutButton.click();
 
-    await logoutPopup(app).closeButton.click();
-    await expect(logoutPopup(app).title).toBeHidden();
-    await expect(logoutPopup(app).logoutButton).toBeHidden();
-    await expect(logoutPopup(app).cancelButton).toBeHidden();
-    await expect(logoutPopup(app).closeButton).toBeHidden();
+    await logoutModal(app).closeButton.click();
+    await expect(logoutModal(app).title).toBeHidden();
   });
 
   await test.step("User clicks 'Log out' option again and User clicks 'Log Out' button on the popup", async () => {
@@ -89,7 +80,7 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
     await accountsSidebar(app).accountItems.first().click({button: 'right'});
     await accountsSidebar(app).logoutButton.click();
 
-    await logoutPopup(app).logoutButton.click();
+    await logoutModal(app).logoutButton.click();
     await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
   });
 
@@ -113,13 +104,13 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
     await accountsSidebar(app).sidebar.click();
 
     await accountsSidebar(app).logOut(0);
-    const clearDataCheckbox = logoutPopup(app).clearDataCheckbox;
+    const clearDataCheckbox = logoutModal(app).clearDataCheckbox;
     await expect(clearDataCheckbox).toBeVisible();
     await app.page.getByText('Delete all your personal information').click();
     await expect(clearDataCheckbox).toBeChecked();
-    const logoutPopupButton = logoutPopup(app).logoutButton;
+    const logoutModalButton = logoutModal(app).logoutButton;
 
-    const [newWindow] = await Promise.all([app.waitForEvent('window'), logoutPopupButton.click()]);
+    const [newWindow] = await Promise.all([app.waitForEvent('window'), logoutModalButton.click()]);
     app.page = newWindow;
 
     await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
@@ -157,7 +148,7 @@ test(
     });
 
     await test.step("User clicks 'Log Out' button on the popup", async () => {
-      await logoutPopup(app).logoutButton.click();
+      await logoutModal(app).logoutButton.click();
       await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
     });
 

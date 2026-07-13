@@ -19,7 +19,7 @@
 
 import {App} from '../../actions/createApp';
 
-export const logoutPopup = (app: App) => ({
+export const logoutModal = (app: App) => ({
   title: app.page.getByTestId('status-modal-title'),
   clearDataCheckbox: app.page.getByTestId('modal-option-checkbox'),
   cancelButton: app.page.getByTestId('do-secondary'),
