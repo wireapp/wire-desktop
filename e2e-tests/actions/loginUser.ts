@@ -17,7 +17,7 @@
  *
  */
 
-import {expect, Page} from '@playwright/test';
+import {Page} from '@playwright/test';
 
 import {User} from './createUser';
 
@@ -42,7 +42,6 @@ export const loginUser = async (page: Page, user: User) => {
 export const loginUserAfterDataCleanup = async (page: Page, user: User) => {
   await fillLoginCredentials(page, user);
   const historyConfirmButton = loginPage(page).historyConfirmButton;
-  await expect(historyConfirmButton).toBeVisible();
   await historyConfirmButton.click();
 
   await conversationsSidebar(page).userAvatar.waitFor({state: 'visible', timeout: LOGIN_TIMEOUT});

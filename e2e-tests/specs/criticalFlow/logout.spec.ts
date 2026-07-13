@@ -25,10 +25,10 @@ import {loginUser, loginUserAfterDataCleanup} from '../../actions/loginUser';
 import {watchActiveAccount} from '../../actions/watchActiveAccount';
 import {expect, test} from '../../fixtures';
 import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
-import {logoutModal} from '../../poms/webapp/logoutModal.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
+import {logoutModal} from '../../poms/webapp/logoutModal.page';
 
 test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, createUser, createTeam, createPage}) => {
   const userB = await createUser();
