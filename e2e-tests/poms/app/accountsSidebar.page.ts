@@ -55,16 +55,6 @@ export const accountsSidebar = (app: App) => {
     app.page = app.windows()[index + 1];
   };
 
-  const switchToNonActiveWindow = async () => {
-    const inactiveWindow = app.windows().find(win => win !== app.page && win.url().startsWith('http'));
-
-    if (!inactiveWindow) {
-      throw new Error('No inactive window found');
-    }
-
-    app.page = inactiveWindow;
-  };
-
   const logOut = async (index: number) => {
     await accountItems.nth(index).click({button: 'right'});
     await logoutButton.click();
@@ -92,7 +82,6 @@ export const accountsSidebar = (app: App) => {
     getAccount,
     addAccount,
     switchAccount,
-    switchToNonActiveWindow,
     logOut,
     removeAccount,
   });
