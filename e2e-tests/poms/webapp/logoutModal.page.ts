@@ -17,15 +17,12 @@
  *
  */
 
-import {Page} from '@playwright/test';
+import {App} from '../../actions/createApp';
 
-export const LOGIN_TIMEOUT = 40_000;
-
-export const loginPage = (page: Page) => {
-  return {
-    passwordInput: page.getByPlaceholder('Password'),
-    loginButton: page.getByRole('button', {name: 'Log in'}),
-    createAccountButton: page.getByRole('button', {name: 'Create account'}),
-    historyConfirmButton: page.getByTestId('do-history-confirm'),
-  };
-};
+export const logoutModal = (app: App) => ({
+  title: app.page.getByTestId('status-modal-title'),
+  clearDataCheckbox: app.page.getByTestId('modal-option-checkbox'),
+  cancelButton: app.page.getByTestId('do-secondary'),
+  logoutButton: app.page.getByTestId('do-action'),
+  closeButton: app.page.getByTestId('do-close'),
+});

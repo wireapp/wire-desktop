@@ -25,6 +25,8 @@ export const accountsSidebar = (app: App) => {
 
   const accountItems = sidebar.getByTestId('account-cell');
   const addAccountButton = sidebar.getByTestId('do-open-plus-menu');
+  const logoutButton = sidebar.getByRole('button', {name: 'Log out'});
+  const removeAccountButton = sidebar.getByRole('button', {name: 'Remove Account'});
 
   const getAccount = (user: RegisteredUser) => {
     const accountLocator = sidebar.locator(`[data-account-id="${user.id}"]`);
@@ -53,25 +55,34 @@ export const accountsSidebar = (app: App) => {
     app.page = app.windows()[index + 1];
   };
 
+  const logOut = async (index: number) => {
+    await accountItems.nth(index).click({button: 'right'});
+    await logoutButton.click();
+  };
+
   const removeAccount = async (index: number) => {
     if (app.windows().length <= 2) {
       const newWindowPromise = app.waitForEvent('window');
       await accountItems.nth(index).click({button: 'right'});
-      await sidebar.getByRole('button', {name: 'Remove Account'}).click();
+      await removeAccountButton.click();
       app.page = await newWindowPromise;
     } else {
       await accountItems.nth(index).click({button: 'right'});
-      await sidebar.getByRole('button', {name: 'Remove Account'}).click();
+      await removeAccountButton.click();
       app.page = app.windows().at(-1)!;
     }
   };
 
   return Object.assign(sidebar, {
+    sidebar,
     accountItems,
     addAccountButton,
+    logoutButton,
+    removeAccountButton,
     getAccount,
     addAccount,
     switchAccount,
+    logOut,
     removeAccount,
   });
 };
