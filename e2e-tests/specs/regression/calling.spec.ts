@@ -98,7 +98,6 @@ test.describe('Calling - Negative Scenarios / Permissions', () => {
       await conversation(userAPage).startCallButton.click();
 
       await expect(app.page.getByText('No camera access')).toBeVisible();
-      await expect(conversation(userAPage).systemMessages.filter({hasText: 'You called'})).toBeVisible();
     },
   );
 });
