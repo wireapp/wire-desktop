@@ -25,15 +25,14 @@ export const menuBar = (app: App) => {
   // eslint-disable-next-line valid-jsdoc
   /**
    * Triggers an Electron application menu item by matching its label.
-   * Supports cross-platform variants by accepting either a single string or an array of strings.
-   * @param {string[]} labels - The menu label(s) to match against (e.g., 'Settings' or ['Preferences', 'Settings'])
+   * @param {string} label - The menu label to match against (e.g., 'Settings')
    * @returns A Promise resolving to the serialized accelerator string of the clicked MenuItem
    */
-  const triggerApplicationMenu = async (labels: string[]): Promise<Pick<MenuItem, 'accelerator'>> => {
-    return await app.evaluate(async ({Menu, BrowserWindow}, targets) => {
+  const triggerApplicationMenu = async (label: string): Promise<Pick<MenuItem, 'accelerator'>> => {
+    return await app.evaluate(async ({Menu, BrowserWindow}, label) => {
       const menu = Menu.getApplicationMenu();
 
-      const target = menu?.items.flatMap(item => item.submenu?.items ?? []).find(item => targets.includes(item.label));
+      const target = menu?.items.flatMap(item => item.submenu?.items ?? []).find(item => label === item.label);
 
       if (!target) {
         throw new Error('Menu item not found');
@@ -49,7 +48,7 @@ export const menuBar = (app: App) => {
       return {
         accelerator: target.accelerator,
       };
-    }, labels);
+    }, label);
   };
 
   return {triggerApplicationMenu};
