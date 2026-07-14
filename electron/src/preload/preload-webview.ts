@@ -26,6 +26,7 @@ import type {Availability} from '@wireapp/protocol-messaging';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import {EVENT_TYPE} from '../lib/eventType';
+import {forwardWrapperReloadRequest} from '../lib/forwardWrapperReloadRequest';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
@@ -73,6 +74,11 @@ webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
 const subscribeToWebappEvents = (): void => {
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.REFRESH, () => {
+    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.REFRESH}", forwarding event ...`);
+    forwardWrapperReloadRequest(ipcRenderer);
+  });
+
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.RESTART, () => {
     logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.RESTART}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.WRAPPER.RELAUNCH);

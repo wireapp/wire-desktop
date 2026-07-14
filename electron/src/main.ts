@@ -53,6 +53,7 @@ import {
 import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
+import {forwardWrapperReloadRequest} from './lib/forwardWrapperReloadRequest';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
@@ -196,6 +197,7 @@ const bindIpcEvents = (): void => {
     await deleteAccount(id, accountId, partitionId);
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
+  ipcMain.on(EVENT_TYPE.WRAPPER.RELOAD, () => forwardWrapperReloadRequest(main.webContents));
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 
