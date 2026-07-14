@@ -17,21 +17,16 @@
  *
  */
 
-import {_electron as electron, ElectronApplication, Page} from '@playwright/test';
+import {_electron as electron} from '@playwright/test';
 
-export type App = ElectronApplication & {
-  /* The playwright page for the main electron window wrapping the webapp */
-  wrapper: Page;
-  /* The playwright page for the currently shown webapp */
-  page: Page;
-};
+export type App = Awaited<ReturnType<typeof createApp>>;
 
 export const createApp = async (options: {
   env?: string;
   lang?: string;
   dataDir: string;
   bypassPermissions?: boolean;
-}): Promise<App> => {
+}) => {
   if (!options.env) {
     throw new Error(`Can't create app without environment, make sure the env var "WEBAPP_URL" is set`);
   }
@@ -65,5 +60,25 @@ export const createApp = async (options: {
   const wrapper = await app.waitForEvent('window');
   const page = await app.waitForEvent('window');
 
-  return Object.assign(app, {wrapper, page});
+  return Object.assign(app, {
+    /* The playwright page for the main electron window wrapping the webapp */
+    wrapper,
+    /* The playwright page for the currently shown webapp */
+    page,
+    /**
+     * Utility function to re-open the application re-using the existing storage state
+     * **Important:** the existing app won't be updated by this, instead the variable needs to be re-assigned
+     * @returns {App} app
+     */
+    reopen: async () => {
+      await app.close();
+
+      // During the re-launch the old instance of the app is closed. However the fixture is still pointing to it, so we set its close function to now close the relaunched instance.
+      // This way it's ensured that even after relaunch(es) the app will always be cleaned up.
+      const relaunchedApp = await createApp(options);
+      app.close = relaunchedApp.close;
+
+      return relaunchedApp;
+    },
+  });
 };
