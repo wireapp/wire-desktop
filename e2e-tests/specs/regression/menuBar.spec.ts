@@ -17,63 +17,34 @@
  *
  */
 
-import {MenuItem} from 'electron';
-
 import {conversationsList} from './../../poms/webapp/conversationList.page';
 
 import {connectWithUser} from '../../actions/connectWithUser';
-import {type App} from '../../actions/createApp';
 import {createGroup} from '../../actions/createGroup';
 import {loginUser} from '../../actions/loginUser';
 import {test, expect, Page} from '../../fixtures';
+import {menuBar} from '../../poms/app/menuBar.page';
 import {callCell} from '../../poms/webapp/callCell.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
 import {loginPage} from '../../poms/webapp/login.page';
 import {settingsPage} from '../../poms/webapp/settings.page';
 
-/**
- * Triggers an Electron application menu item by matching its label.
- * Supports cross-platform variants by accepting either a single string or an array of strings.
- * * @param {object} app - The Playwright Electron application instance
- * @param {string[]} labels - The menu label(s) to match against (e.g., 'Settings' or ['Preferences', 'Settings'])
- * @returns A Promise resolving to the serialized accelerator string of the clicked MenuItem
- */
-
-const triggerApplicationMenu = async (app: App, labels: string[]): Promise<Pick<MenuItem, 'accelerator'>> => {
-  return await app.evaluate(async ({Menu, BrowserWindow}, targets) => {
-    const menu = Menu.getApplicationMenu();
-
-    const target = menu?.items.flatMap(item => item.submenu?.items ?? []).find(item => targets.includes(item.label));
-
-    if (!target) {
-      throw new Error('Menu item not found');
-    }
-
-    const targetWindow = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0];
-    if (!targetWindow) {
-      throw new Error('No Electron window found to send the menu event to');
-    }
-
-    // Programmatically trigger the menu item's click action
-    target.click(target, targetWindow);
-    return {
-      accelerator: target.accelerator,
-    };
-  }, labels);
-};
-
 test.describe('Menu Bar', () => {
-  test('Open preferences/settings with menu bar', {tag: ['@TC-11010', '@regression']}, async ({app, createUser}) => {
-    const user = await createUser();
-    await loginUser(app.page, user);
+  test(
+    'Open preferences/settings with menu bar',
+    {tag: ['@TC-11010', '@regression']},
+    async ({os, app, createUser}) => {
+      const user = await createUser();
+      await loginUser(app.page, user);
 
-    // Access the native Electron application menu and click the appropriate item
-    const menuItem = await triggerApplicationMenu(app, ['Preferences', 'Settings']);
+      // Access the native Electron application menu and click the appropriate item
+      const menuItem = await menuBar(app).triggerApplicationMenu(['Preferences', 'Settings']);
 
-    expect(menuItem.accelerator).toMatch(/^(Command\+,|Ctrl\+,)$/);
-    await expect(settingsPage(app.page).accountButton).toBeVisible();
-  });
+      expect(menuItem.accelerator).toMatch(/^(Command\+,|Ctrl\+,)$/);
+      await expect(settingsPage(app.page).accountButton).toBeVisible();
+    },
+  );
 
   test(
     'Verify switching to next and previous conversation using menu bar',
@@ -90,14 +61,14 @@ test.describe('Menu Bar', () => {
 
       await test.step('Verify navigation to the next conversation and validate its keyboard shortcut', async () => {
         await conversationsList(app.page).getConversation('Group 1').open();
-        const menuItem = await triggerApplicationMenu(app, ['Next Conversation']);
+        const menuItem = await menuBar(app).triggerApplicationMenu(['Next Conversation']);
 
         expect(menuItem.accelerator).toMatch(/^(Alt\+(Cmd|Shift)\+Up)$/);
         await expect(conversation(app.page).conversationTitle).toContainText('Group 2');
       });
 
       await test.step('Navigate to the previous conversation via the application menu', async () => {
-        const menuItem = await triggerApplicationMenu(app, ['Previous Conversation']);
+        const menuItem = await menuBar(app).triggerApplicationMenu(['Previous Conversation']);
 
         expect(menuItem.accelerator).toMatch(/^(Alt\+(Cmd|Shift)\+Down)$/);
         await expect(conversation(app.page).conversationTitle).toContainText('Group 1');
@@ -112,7 +83,7 @@ test.describe('Menu Bar', () => {
       const user = await createUser();
       await loginUser(app.page, user);
 
-      const menuItem = await triggerApplicationMenu(app, ['Create Group']);
+      const menuItem = await menuBar(app).triggerApplicationMenu(['Create Group']);
 
       expect(menuItem.accelerator).toBe('CmdOrCtrl+N');
       await expect(app.page.getByRole('dialog').getByText('Create group')).toBeVisible();
@@ -123,7 +94,7 @@ test.describe('Menu Bar', () => {
     const user = await createUser();
     await loginUser(app.page, user);
 
-    await triggerApplicationMenu(app, ['Log Out']);
+    await menuBar(app).triggerApplicationMenu(['Log Out']);
     await app.page.getByRole('dialog').getByRole('button', {name: 'Log out'}).click();
     await expect(loginPage(app.page).loginButton).toBeVisible();
   });
@@ -138,7 +109,7 @@ test.describe('Menu Bar', () => {
       await createGroup(app.page, 'Test group', []);
       await conversationsList(app.page).getConversation('Test group').open();
 
-      const menuItem = await triggerApplicationMenu(app, ['Add People...']);
+      const menuItem = await menuBar(app).triggerApplicationMenu(['Add People...']);
 
       expect(menuItem.accelerator).toBe('Shift+CmdOrCtrl+K');
       await expect(app.page.getByRole('complementary').filter({hasText: 'Add participants'})).toBeVisible();
@@ -162,7 +133,7 @@ test.describe('Menu Bar', () => {
 
       await test.step('Archive in 1:1 conversation', async () => {
         await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
-        const menuItem = await triggerApplicationMenu(app, ['Archive']);
+        const menuItem = await menuBar(app).triggerApplicationMenu(['Archive']);
 
         expect(menuItem.accelerator).toBe('CmdOrCtrl+D');
         await expect(conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
@@ -171,7 +142,7 @@ test.describe('Menu Bar', () => {
 
       await test.step('Archive group conversation', async () => {
         await conversationsList(userAPage).getConversation('Test group').open();
-        await triggerApplicationMenu(app, ['Archive']);
+        await menuBar(app).triggerApplicationMenu(['Archive']);
         await expect(conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
         await expect(conversationsList(app.page).items).toHaveCount(0);
       });
@@ -233,14 +204,14 @@ test.describe('Menu Bar', () => {
 
       await test.step('User A actions in 1:1 conversation', async () => {
         await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
-        await triggerApplicationMenu(app, [menuItem]);
+        await menuBar(app).triggerApplicationMenu([menuItem]);
         await verifyDirect(app.page);
       });
 
       await test.step('User A actions in group conversation', async () => {
         await createGroup(app.page, 'Test group', [userB]);
         await conversationsList(userAPage).getConversation('Test group').open();
-        await triggerApplicationMenu(app, [menuItem]);
+        await menuBar(app).triggerApplicationMenu([menuItem]);
         await verifyGroup(app.page);
       });
     });
@@ -260,7 +231,7 @@ test.describe('Menu Bar', () => {
 
       await test.step('User A can open people popover in 1:1 conversation', async () => {
         await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
-        const menuResult = await triggerApplicationMenu(app, ['People']);
+        const menuResult = await menuBar(app).triggerApplicationMenu(['People']);
         expect(menuResult?.accelerator).toBe('CmdOrCtrl+I');
         await expect(app.page.getByTestId('status-profile-picture')).toBeVisible();
       });
@@ -268,7 +239,7 @@ test.describe('Menu Bar', () => {
       await test.step('User A can open conversation details in group conversation', async () => {
         await createGroup(app.page, 'Test group', [userB]);
         await conversationsList(userAPage).getConversation('Test group').open();
-        await triggerApplicationMenu(app, ['People']);
+        await menuBar(app).triggerApplicationMenu(['People']);
         await expect(app.page.getByTestId('list-users')).toBeVisible();
       });
     },
