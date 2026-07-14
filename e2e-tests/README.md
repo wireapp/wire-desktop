@@ -57,13 +57,13 @@ To then execute the e2e tests run `yarn run test:e2e` which will execute all of 
     It also provides fixtures e.g. for user creation and instances for the API clients.
 ```
 
-## Api Clients
+### Api Clients
 
 The E2E tests use a generated, type-safe clients for internal API calls.
 
 The generated clients live at: `e2e-tests/backend/generated/`. Do not update these files manually, they is generated from the OpenAPI specifications with [oazapfts](https://github.com/oazapfts/oazapfts).
 
-### Updating
+#### Updating
 
 To regenerate the clients, run all or only selected commands from the following code block:
 
@@ -74,3 +74,9 @@ yarn oazapfts --argumentStyle=object --useUnknown --futureStripLegacyMethods htt
 ```
 
 If the operation names or parameters changed, update the respective wrapper in: `e2e-tests/backend/*ApiClient.ts`. Also make sure to commit the changes made to the generated files, since some of the APIs are not versioned we don't want to rely on automatic generation e.g. within postinstall.
+
+### Continuous integration
+
+The E2E tests are executed every night as part of the `e2e-test` workflow. They are executed on both, Windows and MacOS since these are the two main supported operating systems. The results of the test runs are reported to [Testiny](https://app.testiny.io/DESK/testruns) where the status of the tests and regressions over time can be inspected. Please note that the test results are split between Windows and MacOS, as Testiny doesn't support the same test being executed multiple times within one test run.
+
+This approach utilizes E2E tests as a tool for monitoring instead of strict guard in front of pull requests. However, it's possible to optionally execute the E2E tests as part of a pull request e.g. if the PR adds new tests or refactors something critical. To do so, just add the label **run-e2e** to the PR and the tests will be executed for the PRs branch.
