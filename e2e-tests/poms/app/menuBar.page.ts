@@ -22,6 +22,43 @@ import type {MenuItem} from 'electron';
 import type {App} from '../../actions/createApp';
 
 export const menuBar = (app: App) => {
+  /* Get the current lange set in the apps menu bar */
+  const getCurrentLanguage = async () => {
+    return await app.evaluate(async ({Menu}) => {
+      const menu = Menu.getApplicationMenu();
+      const languageItem = menu?.items
+        .flatMap(item => item.submenu?.items ?? [])
+        .find(item => ['Language', 'Sprache'].includes(item.label));
+
+      if (!languageItem) {
+        throw new Error('Language menu item not found');
+      }
+
+      return languageItem.submenu?.items.find(item => item.checked === true)?.label;
+    });
+  };
+
+  /* Change the language of the app by selecting it from the menu bar */
+  const switchLanguage = async (language: string) => {
+    await app.evaluate(async ({Menu}, language) => {
+      const menu = Menu.getApplicationMenu();
+      const languageItem = menu?.items
+        .flatMap(item => item.submenu?.items ?? [])
+        .find(item => ['Language', 'Sprache'].includes(item.label));
+
+      if (!languageItem) {
+        throw new Error('Language menu item not found');
+      }
+
+      const targetItem = languageItem.submenu?.items.find(item => item.label === language);
+      if (!targetItem) {
+        throw new Error(`Language "${language}" not found in the menu`);
+      }
+
+      targetItem.click();
+    }, language);
+  };
+
   // eslint-disable-next-line valid-jsdoc
   /**
    * Triggers an Electron application menu item by matching its label.
@@ -45,11 +82,9 @@ export const menuBar = (app: App) => {
 
       // Programmatically trigger the menu item's click action
       target.click(target, targetWindow);
-      return {
-        accelerator: target.accelerator,
-      };
+      return target;
     }, label);
   };
 
-  return {triggerApplicationMenu};
+  return {getCurrentLanguage, switchLanguage, triggerApplicationMenu};
 };
