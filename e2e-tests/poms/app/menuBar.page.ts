@@ -65,7 +65,7 @@ export const menuBar = (app: App) => {
    * @param {string} label - The menu label to match against (e.g., 'Settings')
    * @returns A Promise resolving to the serialized accelerator string of the clicked MenuItem
    */
-  const triggerApplicationMenu = async (label: string): Promise<Pick<MenuItem, 'accelerator'>> => {
+  const clickItem = async (label: string): Promise<Pick<MenuItem, 'accelerator'>> => {
     return await app.evaluate(async ({Menu, BrowserWindow}, label) => {
       const menu = Menu.getApplicationMenu();
 
@@ -86,5 +86,5 @@ export const menuBar = (app: App) => {
     }, label);
   };
 
-  return {getCurrentLanguage, switchLanguage, triggerApplicationMenu};
+  return {getCurrentLanguage, switchLanguage, clickItem};
 };
