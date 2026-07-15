@@ -42,7 +42,10 @@ export const createApp = async (options: {env?: string; lang?: string; dataDir: 
 
   // Forward all logs from the electron apps main thread to the terminal
   app.on('console', async msg => {
-    const args = await Promise.all(msg.args().map(arg => arg.jsonValue()));
+    const args = (await Promise.allSettled(msg.args().map(arg => arg.jsonValue())))
+      .filter(result => result.status === 'fulfilled')
+      .map(arg => arg.value);
+
     // eslint-disable-next-line no-console
     console.log(...args);
   });
