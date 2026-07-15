@@ -6,6 +6,13 @@ This readme serves as documentation for the E2E tests which are part of this rep
 
 Make sure you already followed the instructions of the [README.md](../README.md) in the root of this repository e.g. for installing dependencies.
 
+### Installing dependencies
+
+1. Install JS dependencies: `yarn --immutable`
+2. Install Playwright browsers (needed for some tests): `yarn playwright install --only-shell --with-deps chromium`
+
+_Note: If in doubt, refer to test jobs in [git actions workflows folder](/.github/workflows)._
+
 ### Setting up environment variables
 
 The E2E tests depend on configs / secrets which need to be provided as environment variables in order to run them. These secrets are stored within 1Password. To create a `.env` file containing the actual values follow these steps:

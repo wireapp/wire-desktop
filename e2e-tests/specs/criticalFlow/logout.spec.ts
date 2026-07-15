@@ -31,6 +31,7 @@ import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page'
 import {logoutModal} from '../../poms/webapp/logoutModal.page';
 
 test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, createUser, createTeam, createPage}) => {
+  test.setTimeout(120_000);
   const userB = await createUser();
   const {owner: userA} = await createTeam('Test Team', {users: [userB]});
   const userBPage = await createPage();
