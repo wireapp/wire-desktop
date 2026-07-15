@@ -100,8 +100,11 @@ export const test = baseTest.extend<TestOptions & Fixtures>({
       await testInfo.attach('app-trace.zip', {path: tracePath});
     }
 
-    await app.close();
-    await fs.rm(tempUserDataDir, {recursive: true, force: true, maxRetries: 3, retryDelay: 1_000});
+    // This block is to clean up the data stored in the temp dir, it's optional and e.g. windows file locking should not cause the test to fail
+    try {
+      await app.close();
+      await fs.rm(tempUserDataDir, {recursive: true, force: true, maxRetries: 3, retryDelay: 1_000});
+    } catch {}
   },
 
   createUser: async ({publicApi, brigApi}, use) => {
