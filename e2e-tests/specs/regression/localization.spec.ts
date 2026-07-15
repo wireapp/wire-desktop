@@ -66,7 +66,7 @@ test.describe('Localization', () => {
           const stubMeta = {calls: [] as unknown[]};
           const stubFunction: typeof dialog.showMessageBox = async (...args: unknown[]) => {
             stubMeta.calls.push(args);
-            return {response: 0, checkboxChecked: false}; // Response 0 means button at index one which ignores the reboot as we have to do it manually
+            return {response: 1, checkboxChecked: false}; // Response 0 means button at index one which ignores the reboot as we have to do it manually
           };
 
           // We overload the stub function to add the __mock property to it. This way we can check the arguments it was called with in the next test step
