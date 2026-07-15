@@ -26,5 +26,6 @@ export const callCell = (page: Page) => {
     acceptCallButton: callCell.getByRole('button', {name: 'Accept'}),
     declineButton: callCell.getByRole('button', {name: 'Hang up'}),
     goFullScreen: page.locator('[data-uie-name="do-maximize-call"]'),
+    openInNewWindow: page.getByRole('button', {name: 'Open in a new window'}),
   });
 };
