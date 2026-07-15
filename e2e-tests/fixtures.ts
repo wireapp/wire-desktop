@@ -101,7 +101,7 @@ export const test = baseTest.extend<TestOptions & Fixtures>({
     }
 
     await app.close();
-    await fs.rm(tempUserDataDir, {recursive: true, maxRetries: 3, retryDelay: 1_000});
+    await fs.rm(tempUserDataDir, {recursive: true, force: true, maxRetries: 3, retryDelay: 1_000});
   },
 
   createUser: async ({publicApi, brigApi}, use) => {
