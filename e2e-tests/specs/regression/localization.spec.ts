@@ -20,6 +20,7 @@
 import {loginUser} from '../../actions/loginUser';
 import {expect, test} from '../../fixtures';
 import {menuBar} from '../../poms/app/menuBar.page';
+import {LOGIN_TIMEOUT} from '../../poms/webapp/login.page';
 import {ssoPage} from '../../poms/webapp/sso.page';
 
 test.describe('Localization', () => {
@@ -106,7 +107,7 @@ test.describe('Localization', () => {
       });
 
       await test.step('Verify German "Alle Unterhaltungen"', async () => {
-        await expect(app.page.getByText('Alle Unterhaltungen', {exact: true})).toBeVisible();
+        await expect(app.page.getByText('Alle Unterhaltungen', {exact: true})).toBeVisible({timeout: LOGIN_TIMEOUT});
       });
     },
   );
