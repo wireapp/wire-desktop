@@ -59,12 +59,12 @@ jobs:
 
       - name: Run E2E tests
         shell: bash
-        continue-on-error: true
         run: yarn test:e2e --project=${{ matrix.project }} --reporter=blob
         env:
           PLAYWRIGHT_BLOB_OUTPUT_DIR: playwright-blobs
 
       - name: Upload blob report
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: playwright-blobs-${{ matrix.project }}
@@ -73,6 +73,7 @@ jobs:
   merge_reports:
     name: Merge and Publish Reports
     needs: run_tests
+    if: ${{ !cancelled() && needs.run_tests.result != 'skipped' }}
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -140,18 +141,18 @@ jobs:
             # Recursively find all objects that have a non-empty "specs" array
             # Capture the suite title and prepend it to the test title
             [.. | objects | select(has("specs") and (.specs | length > 0)) | .title as $suite | .specs[] | .title as $title | .tests[] | {title: ($suite + " > " + $title), status: .status}] as $tests |
-            
+
             # Calculate aggregates
             ($tests | length) as $total |
             ($tests | map(select(.status == "expected")) | length) as $passed |
             ($tests | map(select(.status == "unexpected")) | length) as $failed |
             ($tests | map(select(.status == "flaky")) | length) as $flaky |
             ($tests | map(select(.status == "skipped")) | length) as $skipped |
-            
+
             # Generate unique lists for failed and flaky tests
             ($tests | map(select(.status == "unexpected")) | map("  ❌ " + .title) | unique | join("\n")) as $failed_list |
             ($tests | map(select(.status == "flaky")) | map("  ⚠️ " + .title) | unique | join("\n")) as $flaky_list |
-            
+
             # Construct the final formatted message
             "📋 **Desktop E2E Test Run Summary**\n" +
             "Build URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n" +
