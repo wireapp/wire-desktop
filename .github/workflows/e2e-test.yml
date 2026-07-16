@@ -3,7 +3,7 @@ name: E2E Tests
 on:
   # This Workflow can be run by labelling a PR with "run-e2e", in this case reporting is skipped.
   pull_request:
-    types: [ labeled, opened, synchronize, reopened ]
+    types: [labeled, opened, synchronize, reopened]
   workflow_dispatch:
   schedule:
     # Execute workflow every night throughout the week
@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [ windows, macOS ]
+        project: [windows, macOS]
         include:
           - project: windows
             os: windows-2025
