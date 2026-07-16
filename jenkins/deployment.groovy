@@ -20,6 +20,7 @@ return list
 Add additional choice parameter "Release" with:
 Internal
 Production
+Wire-Gov
 Custom (needs special env variables)
 */
 node('built-in') {
@@ -95,6 +96,11 @@ node('built-in') {
           env.S3_PATH = 'win/internal'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
+        } else if (params.Release == 'Wire-Gov') {
+          env.S3_BUCKET = 'wire-gov'
+          env.S3_PATH = 'win/'
+          AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
+          AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.WIN_S3_BUCKET
           env.S3_PATH = params.WIN_S3_PATH
@@ -143,6 +149,11 @@ node('built-in') {
           env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
+        } else if (params.Release == 'Wire-Gov') {
+          env.S3_PATH = 'mac/'
+          env.S3_BUCKET = 'wire-gov'
+          AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
+          AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.MAC_S3_BUCKET
           env.S3_PATH = params.MAC_S3_PATH
@@ -183,11 +194,13 @@ node('built-in') {
               }
 
               // ------------------------------------------------------------------
-              // Internal macOS auto-update artifacts for electron-updater
-              // (latest-mac.yml + WireInternal-<version>.zip)
+              // Internal & Wire-Gov macOS auto-update artifacts for electron-updater
+              // (latest-mac.yml + zip)
               // ------------------------------------------------------------------
-              if (params.Release == 'Internal') {
-                echo 'Uploading internal macOS auto-update artifacts (latest-mac.yml + zip)'
+              if (params.Release == 'Internal' || params.Release == 'Wire-Gov') {
+                def buildType = params.Release == 'Internal' ? 'internal' : 'wire-gov'
+                def zipPattern = params.Release == 'Internal' ? 'WireInternal-*.zip' : 'WireGov-*.zip'
+                echo "Uploading ${buildType} macOS auto-update artifacts (latest-mac.yml + zip)"
 
                 def updatesPrefix = "${env.S3_PATH}/updates/"
 
@@ -212,10 +225,10 @@ node('built-in') {
                   echo 'No latest-mac.yml found in wrap/dist – skipping upload'
                 }
 
-                // WireInternal-<version>.zip
-                def zipFiles = findFiles(glob: 'wrap/dist/WireInternal-*.zip')
+                // Versioned zip (WireInternal-*.zip or WireGov-*.zip)
+                def zipFiles = findFiles(glob: "wrap/dist/${zipPattern}")
                 if (!zipFiles || zipFiles.size() == 0) {
-                  echo 'No WireInternal-*.zip found in wrap/dist – skipping zip upload'
+                  echo "No ${zipPattern} found in wrap/dist – skipping zip upload"
                 } else {
                   zipFiles.each { z ->
                     def zipDest = updatesPrefix + z.name
@@ -264,6 +277,27 @@ node('built-in') {
               files.each {
                 s3Upload acl: 'PublicRead',
                          bucket: S3_BUCKET,
+                         file: it.path,
+                         path: S3_NAME + '/' + it.name
+              }
+            }
+          } else if (params.Release == 'Wire-Gov') {
+            env.S3_BUCKET = 'wire-gov'
+            S3_NAME = 'linux'
+
+            withAWS(region:'eu-west-1', credentials: 'wire-taco') {
+              echo('Upload repository files to wire-gov bucket')
+              s3Upload acl: 'PrivateRead',
+                       bucket: env.S3_BUCKET,
+                       workingDir: 'wrap/dist/',
+                       includePathPattern: 'debian/**',
+                       path: S3_NAME + '/'
+
+              echo('Upload files to wire-gov bucket')
+              files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
+              files.each {
+                s3Upload acl: 'PrivateRead',
+                         bucket: env.S3_BUCKET,
                          file: it.path,
                          path: S3_NAME + '/' + it.name
               }
