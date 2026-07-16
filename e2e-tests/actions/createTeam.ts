@@ -21,6 +21,7 @@ import {createUser, registerUser} from './createUser';
 
 import {BrigApiClient} from '../backend/BrigApiClient';
 import {GalleyApiClient} from '../backend/GalleyApiClient';
+import {IbisApiClient} from '../backend/IbisApiClient';
 import {PublicApiClient, RegisteredUser, TeamOwner} from '../backend/PublicApiClient';
 
 export type TeamRole = 'admin' | 'partner' | 'owner' | 'member';
@@ -33,7 +34,7 @@ export type Team = {
 };
 
 export const createTeam = async (
-  api: {publicApi: PublicApiClient; brigApi: BrigApiClient; galleyApi: GalleyApiClient},
+  api: {publicApi: PublicApiClient; brigApi: BrigApiClient; galleyApi: GalleyApiClient; ibisApi: IbisApiClient},
   teamName: string,
   options?: {
     users?: (RegisteredUser | {user: RegisteredUser; role?: TeamRole})[];
@@ -72,9 +73,7 @@ export const createTeam = async (
   }
 
   if (options?.features && Object.values(options.features).some(Boolean)) {
-    // The team will be reset right after initialization, so we need to wait a short time for it to finish
-    // before changing feature configs since they would otherwise be overwritten (See WPB-23698)
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await api.ibisApi.upgradeTeam(owner);
 
     if (options.features.conferenceCalling) {
       await api.galleyApi.unlockConferenceCallingFeature(teamId);
