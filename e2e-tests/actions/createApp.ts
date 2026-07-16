@@ -75,6 +75,7 @@ export const createApp = async (options: {
      */
     reopen: async () => {
       await app.close();
+      await new Promise(res => setTimeout(res, 3_000)); // Add a small delay so the process can fully close
 
       // During the re-launch the old instance of the app is closed. However the fixture is still pointing to it, so we set its close function to now close the relaunched instance.
       // This way it's ensured that even after relaunch(es) the app will always be cleaned up.
