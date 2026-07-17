@@ -128,28 +128,28 @@ test.describe('Menu Bar', () => {
       await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
       await connectWithUser(userAPage, userB);
 
-      await createGroup(app.page, 'Test group', []);
-      await expect(conversationsList(app.page).items).toHaveCount(2);
+      await createGroup(userAPage, 'Test group', []);
+      await expect(conversationsList(userAPage).items).toHaveCount(2);
 
       await test.step('Archive in 1:1 conversation', async () => {
-        await conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'}).open();
+        await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
         const menuItem = await menuBar(app).clickItem('Archive');
 
         expect(menuItem.accelerator).toBe('CmdOrCtrl+D');
-        await expect(conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
-        await expect(conversationsList(app.page).items).toHaveCount(1);
+        await expect(conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
+        await expect(conversationsList(userAPage).items).toHaveCount(1);
       });
 
       await test.step('Archive group conversation', async () => {
         await conversationsList(userAPage).getConversation('Test group').open();
         await menuBar(app).clickItem('Archive');
-        await expect(conversationsList(app.page).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
-        await expect(conversationsList(app.page).items).toHaveCount(0);
+        await expect(conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
+        await expect(conversationsList(userAPage).items).toHaveCount(0);
       });
 
       await test.step('Confirm that conversations were moved to archive folder', async () => {
         await conversationsSidebar(userAPage).archiveButton.click();
-        await expect(conversationsList(app.page).items).toHaveCount(2);
+        await expect(conversationsList(userAPage).items).toHaveCount(2);
       });
     },
   );
@@ -205,14 +205,14 @@ test.describe('Menu Bar', () => {
       await test.step('User A actions in 1:1 conversation', async () => {
         await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
         await menuBar(app).clickItem(menuItem);
-        await verifyDirect(app.page);
+        await verifyDirect(userAPage);
       });
 
       await test.step('User A actions in group conversation', async () => {
-        await createGroup(app.page, 'Test group', [userB]);
+        await createGroup(userAPage, 'Test group', [userB]);
         await conversationsList(userAPage).getConversation('Test group').open();
         await menuBar(app).clickItem(menuItem);
-        await verifyGroup(app.page);
+        await verifyGroup(userAPage);
       });
     });
   });
@@ -233,14 +233,14 @@ test.describe('Menu Bar', () => {
         await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
         const menuResult = await menuBar(app).clickItem('People');
         expect(menuResult?.accelerator).toBe('CmdOrCtrl+I');
-        await expect(app.page.getByTestId('status-profile-picture')).toBeVisible();
+        await expect(userAPage.getByTestId('status-profile-picture')).toBeVisible();
       });
 
       await test.step('User A can open conversation details in group conversation', async () => {
-        await createGroup(app.page, 'Test group', [userB]);
+        await createGroup(userAPage, 'Test group', [userB]);
         await conversationsList(userAPage).getConversation('Test group').open();
         await menuBar(app).clickItem('People');
-        await expect(app.page.getByTestId('list-users')).toBeVisible();
+        await expect(userAPage.getByTestId('list-users')).toBeVisible();
       });
     },
   );
