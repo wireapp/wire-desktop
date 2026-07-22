@@ -27,7 +27,7 @@ interface WireJson {
   customProtocolName: string;
   description: string;
   electronDirectory: string;
-  environment: 'internal' | 'production';
+  environment: 'internal' | 'production' | 'wire-gov';
   legalUrl: string;
   licensesUrl: string;
   maximumAccounts: string;

@@ -110,5 +110,7 @@
   "promptCancel": "Annulla",
   "promptWarning": "Attenzione",
   "promptError": "Errore",
-  "urlBlockedPromptText": "Un URL potenzialmente non sicuro è stato bloccato. Se vuoi ancora aprirlo, copia l'URL e apri l'applicazione appropriata."
+  "urlBlockedPromptText": "Un URL potenzialmente non sicuro è stato bloccato. Se vuoi ancora aprirlo, copia l'URL e apri l'applicazione appropriata.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
 }
