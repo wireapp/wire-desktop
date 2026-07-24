@@ -25,6 +25,7 @@ import * as path from 'path';
 import type {Availability} from '@wireapp/protocol-messaging';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
+import {createDesktopAppConfig} from '../lib/desktopAppConfig';
 import {EVENT_TYPE} from '../lib/eventType';
 import {forwardWrapperReloadRequest} from '../lib/forwardWrapperReloadRequest';
 import {getLogger} from '../logging/getLogger';
@@ -295,11 +296,7 @@ process.once('loaded', () => {
   } catch (error) {
     logger.warn('Failed to read managed config from the main process, treating the device as unmanaged:', error);
   }
-  global.desktopAppConfig = {
-    version: EnvironmentUtil.app.DESKTOP_VERSION,
-    supportsCallingPopoutWindow: true,
-    managedConfig,
-  };
+  global.desktopAppConfig = createDesktopAppConfig(EnvironmentUtil.app.DESKTOP_VERSION, managedConfig);
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
