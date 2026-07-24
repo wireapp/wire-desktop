@@ -20,6 +20,7 @@ node("macos") {
     env.APP_ENV = 'wire-gov'
     env.APP_NAME = 'WireGov'
     env.APP_NAME_SHORT = 'WireGov'
+    env.MACOS_BUNDLE_ID = 'com.wearezeta.zclient.mac'
   } else if (!production && !custom) {
     env.APP_ENV = 'internal'
   }
