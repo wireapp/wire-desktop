@@ -18,6 +18,8 @@ node("macos") {
 
   if (wireGov) {
     env.APP_ENV = 'wire-gov'
+    env.APP_NAME = 'WireGov'
+    env.APP_NAME_SHORT = 'WireGov'
   } else if (!production && !custom) {
     env.APP_ENV = 'internal'
   }
