@@ -161,6 +161,8 @@ node('built-in') {
           AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
         }
 
+        echo "AWS_ACCESS_KEY_CREDENTIALS_ID: '${AWS_ACCESS_KEY_CREDENTIALS_ID}'"
+        echo "AWS_SECRET_CREDENTIALS_ID: '${AWS_SECRET_CREDENTIALS_ID}'"
         try {
           withCredentials([
             string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
