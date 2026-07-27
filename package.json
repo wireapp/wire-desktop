@@ -160,6 +160,13 @@
     "build:macos:internal": "cross-env-shell APP_ENV=internal \"yarn configure && yarn build:macos\"",
     "build:macos:internal:x64": "yarn build:macos:internal -a x64",
     "build:macos:internal:arm64": "yarn build:macos:internal -a arm64",
+    "build:linux:wire-gov": "cross-env-shell APP_ENV=wire-gov \"yarn configure && yarn build:linux\"",
+    "build:macos:wire-gov": "cross-env-shell APP_ENV=wire-gov \"yarn configure && yarn build:macos\"",
+    "build:macos:wire-gov:x64": "yarn build:macos:wire-gov -a x64",
+    "build:macos:wire-gov:arm64": "yarn build:macos:wire-gov -a arm64",
+    "build:win:wire-gov": "cross-env-shell APP_ENV=wire-gov \"yarn configure && yarn build:win\"",
+    "build:win:wire-gov:ia32": "cross-env-shell APP_ENV=wire-gov \"yarn build:win -a ia32\"",
+    "build:win:installer:wire-gov": "cross-env-shell APP_ENV=wire-gov \"yarn build:win:installer -m\"",
     "build:prepare": "yarn clear:wrap && yarn build:ts && yarn bundle",
     "build:ts": "yarn clear:ts && tsc -P tsconfig.build.json",
     "build:ts:bin": "tsc -P tsconfig.bin.json --noEmit",
@@ -206,6 +213,6 @@
     "translate:upload": "ts-node -P tsconfig.bin.json ./bin/translations_upload.ts",
     "translate:download": "ts-node -P tsconfig.bin.json ./bin/translations_download.ts"
   },
-  "version": "3.42.0",
+  "version": "3.43.0",
   "packageManager": "yarn@3.3.1"
 }

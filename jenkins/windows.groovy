@@ -7,6 +7,7 @@ node('windows') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
+  def wireGov = params.containsKey('WIRE_GOV') ? params.WIRE_GOV : false
   def NODE = tool name: 'node-v18.18.0', type: 'nodejs'
 
   def jenkinsbot_secret = ''
@@ -15,7 +16,9 @@ node('windows') {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
-  if (!production && !custom) {
+  if (wireGov) {
+    env.APP_ENV = 'wire-gov'
+  } else if (!production && !custom) {
     env.APP_ENV = 'internal'
   }
 
@@ -38,7 +41,13 @@ node('windows') {
         bat 'npm -v'
         bat 'npm install -g yarn'
         bat 'yarn'
-        bat 'yarn build:win'
+        if (production) {
+          bat 'yarn build:win'
+        } else if (wireGov) {
+          bat 'yarn build:win:wire-gov'
+        } else {
+          bat 'yarn build:win:internal'
+        }
       }
     } catch (e) {
       currentBuild.result = 'FAILED'
@@ -52,6 +61,8 @@ node('windows') {
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
         if (production || custom) {
           bat 'yarn build:win:installer'
+        } else if (wireGov) {
+          bat 'yarn build:win:installer:wire-gov'
         } else {
           // For internal builds disable auto-signing and use internal config
           bat 'yarn build:win:installer:internal'

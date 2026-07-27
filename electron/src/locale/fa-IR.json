@@ -110,5 +110,7 @@
   "promptCancel": "لغو",
   "promptWarning": "هشدار",
   "promptError": "خطا",
-  "urlBlockedPromptText": "یک لینک نا امن مسدود شد. اگر همچنان مایل به باز کردن آن هستید، آن را کپی کرده و در نرم افزار دیگری باز کنید."
+  "urlBlockedPromptText": "یک لینک نا امن مسدود شد. اگر همچنان مایل به باز کردن آن هستید، آن را کپی کرده و در نرم افزار دیگری باز کنید.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
 }
