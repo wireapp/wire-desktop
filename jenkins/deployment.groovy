@@ -36,6 +36,7 @@ node('built-in') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
+  echo("projectName: ${projectName}")
   echo("version: ${version}")
   def buildNumber = version.tokenize('.')[2]
   def NODE = tool name: 'node-v20.10.0', type: 'nodejs'
