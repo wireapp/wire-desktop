@@ -41,6 +41,7 @@ node('built-in') {
   def buildNumber = version.tokenize('.')[2]
   def NODE = tool name: 'node-v20.10.0', type: 'nodejs'
   env.DRY_RUN = params.DRY_RUN ? "--dry-run" : ""
+  echo("Release param: '${params.Release}'")
 
   stage('Get build artifacts') {
     try {
