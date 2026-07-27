@@ -36,12 +36,10 @@ node('built-in') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
-  echo("projectName: ${projectName}")
   echo("version: ${version}")
   def buildNumber = version.tokenize('.')[2]
   def NODE = tool name: 'node-v20.10.0', type: 'nodejs'
   env.DRY_RUN = params.DRY_RUN ? "--dry-run" : ""
-  echo("Release param: '${params.Release}'")
 
   stage('Get build artifacts') {
     try {
@@ -100,7 +98,7 @@ node('built-in') {
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Wire-Gov') {
           env.S3_PATH = 'win/wire-gov'
-          env.S3_BUCKET = 'wire-gov'
+          env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
@@ -153,7 +151,7 @@ node('built-in') {
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Wire-Gov') {
           env.S3_PATH = 'mac/wire-gov'
-          env.S3_BUCKET = 'wire-gov'
+          env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
@@ -163,8 +161,6 @@ node('built-in') {
           AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
         }
 
-        echo "AWS_ACCESS_KEY_CREDENTIALS_ID: '${AWS_ACCESS_KEY_CREDENTIALS_ID}'"
-        echo "AWS_SECRET_CREDENTIALS_ID: '${AWS_SECRET_CREDENTIALS_ID}'"
         try {
           withCredentials([
             string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
@@ -413,7 +409,7 @@ node('built-in') {
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release == 'Wire-Gov') {
-            S3_BUCKET = 'wire-gov'
+            S3_BUCKET = 'wire-taco'
             S3_PATH = 'win/wire-gov'
             S3_NAME = 'wiregov-' + version
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
