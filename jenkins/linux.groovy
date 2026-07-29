@@ -8,7 +8,7 @@ node('linux') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
-  def wireGov = params.containsKey('WIRE_GOV') ? params.WIRE_GOV : false
+  def wireGov = params.WIRE_GOV
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
