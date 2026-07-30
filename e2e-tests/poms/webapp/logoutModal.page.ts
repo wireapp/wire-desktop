@@ -17,8 +17,12 @@
  *
  */
 
-import {test, expect} from '../fixtures';
+import {App} from '../../actions/createApp';
 
-test('starts the app', async ({page}) => {
-  await expect(page.getByText('Welcome to Wire!')).toBeVisible();
+export const logoutModal = (app: App) => ({
+  title: app.page.getByTestId('status-modal-title'),
+  clearDataCheckbox: app.page.getByTestId('modal-option-checkbox'),
+  cancelButton: app.page.getByTestId('do-secondary'),
+  logoutButton: app.page.getByTestId('do-action'),
+  closeButton: app.page.getByTestId('do-close'),
 });

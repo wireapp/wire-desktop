@@ -25,7 +25,9 @@ import * as path from 'path';
 import type {Availability} from '@wireapp/protocol-messaging';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
+import {createDesktopAppConfig} from '../lib/desktopAppConfig';
 import {EVENT_TYPE} from '../lib/eventType';
+import {forwardWrapperReloadRequest} from '../lib/forwardWrapperReloadRequest';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
@@ -73,6 +75,11 @@ webFrame.setZoomFactor(1.0);
 webFrame.setVisualZoomLevelLimits(1, 1);
 
 const subscribeToWebappEvents = (): void => {
+  window.amplify.subscribe(WebAppEvents.LIFECYCLE.REFRESH, () => {
+    logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.REFRESH}", forwarding event ...`);
+    forwardWrapperReloadRequest(ipcRenderer);
+  });
+
   window.amplify.subscribe(WebAppEvents.LIFECYCLE.RESTART, () => {
     logger.info(`Received amplify event "${WebAppEvents.LIFECYCLE.RESTART}", forwarding event ...`);
     ipcRenderer.send(EVENT_TYPE.WRAPPER.RELAUNCH);
@@ -281,7 +288,15 @@ process.once('loaded', () => {
     version: 1,
   };
   global.environment = EnvironmentUtil;
-  global.desktopAppConfig = {version: EnvironmentUtil.app.DESKTOP_VERSION, supportsCallingPopoutWindow: true};
+  // Read synchronously so the value is present at the exact point `desktopAppConfig` is assigned.
+  // The main-process handler returns a pre-read, memoized value, so the blocking call is negligible.
+  let managedConfig = {applockOverride: false};
+  try {
+    managedConfig = ipcRenderer.sendSync(EVENT_TYPE.MANAGED.GET_CONFIG) ?? {applockOverride: false};
+  } catch (error) {
+    logger.warn('Failed to read managed config from the main process, treating the device as unmanaged:', error);
+  }
+  global.desktopAppConfig = createDesktopAppConfig(EnvironmentUtil.app.DESKTOP_VERSION, managedConfig);
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });

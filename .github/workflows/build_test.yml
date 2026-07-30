@@ -5,16 +5,18 @@ on:
     branches: [main, staging, dev]
   pull_request:
     branches: [main, staging, dev]
+  merge_group:
+    branches: [main, staging, dev]
+
+concurrency:
+  group: build-test-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build_test:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.13.1
-        with:
-          access_token: ${{github.token}}
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -22,7 +24,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version-file: '.node-version'
           cache: 'yarn'
       - name: Install dependencies
         run: yarn --immutable
