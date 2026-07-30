@@ -110,5 +110,7 @@
   "promptCancel": "Скасувати",
   "promptWarning": "Попередження",
   "promptError": "Помилка",
-  "urlBlockedPromptText": "Потенційно небезпечний URL було заблоковано. Якщо ви все ще хочете відкрити його, скопіюйте URL в буфер обміну та відкрийте відповідну програму."
+  "urlBlockedPromptText": "Потенційно небезпечний URL було заблоковано. Якщо ви все ще хочете відкрити його, скопіюйте URL в буфер обміну та відкрийте відповідну програму.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
 }

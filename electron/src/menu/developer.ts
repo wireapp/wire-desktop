@@ -20,7 +20,7 @@
 import {BrowserWindow, MenuItem, MenuItemConstructorOptions} from 'electron';
 
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
-import {getAvailebleEnvironments, setEnvironment} from '../runtime/EnvironmentUtil';
+import {getAvailableEnvironments, setEnvironment} from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
@@ -68,7 +68,7 @@ const devToolsTemplate: MenuItemConstructorOptions = {
 
 const createEnvironmentTemplates = (): MenuItemConstructorOptions[] => {
   const environmentTemplate: MenuItemConstructorOptions[] = [];
-  const environments = getAvailebleEnvironments();
+  const environments = getAvailableEnvironments();
 
   for (const env of environments) {
     environmentTemplate.push({

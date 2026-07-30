@@ -51,8 +51,9 @@ const webappEnvironments = {
 export const app = {
   ENV: config.environment,
   DESKTOP_VERSION: config.version,
-  IS_DEVELOPMENT: config.environment !== 'production',
+  IS_DEVELOPMENT: config.environment !== 'production' && config.environment !== 'wire-gov',
   IS_PRODUCTION: config.environment === 'production',
+  IS_WIRE_GOV: config.environment === 'wire-gov',
   UPDATE_URL_WIN: config.updateUrl,
 };
 
@@ -87,22 +88,33 @@ export const setEnvironment = (env: ServerType): void => {
 
 /**
  * will return the url of the webapp.
- * If there is a custom url set, it will return that one.
- * else it will return the url of the current environment.
- * If no environment is set, it will use the default value set in the config
- * @returns {string} the url of the webapp
+ * For Wire Gov builds, only the custom URL from init.json (`customWebAppURL`) is honored —
+ * there is no Production/Beta/Edge fallback and no build-time default.
+ * Otherwise: if there is a custom url set, it will return that one,
+ * else it will return the url of the current environment,
+ * and if no environment is set, it will use the default value set in the config.
+ * @returns {string | undefined} the url of the webapp, or undefined if none is configured
  */
 function getWebappUrl() {
+  if (app.IS_WIRE_GOV) {
+    return customWebappUrl;
+  }
   const envUrl = currentEnvironment && webappEnvironments[currentEnvironment]?.url;
   return customWebappUrl ?? envUrl ?? config.appBase;
 }
 
 /**
  * Gives all the environments that are available to the app.
- * It will add the custom url (set by the --env option) if set
+ * It will add the custom url (set by the --env option) if set.
+ * Wire Gov builds only ever run against the URL configured in init.json and never expose
+ * a switcher, so no entries are returned for them.
  * @returns {AvailableEnvironment[]} all the environment the app can run against
  */
-export function getAvailebleEnvironments(): AvailableEnvironment[] {
+export function getAvailableEnvironments(): AvailableEnvironment[] {
+  if (app.IS_WIRE_GOV) {
+    return [];
+  }
+
   const customEnv = customWebappUrl
     ? {
         name: customWebappUrl.replace(/^https?:\/\//, ''),

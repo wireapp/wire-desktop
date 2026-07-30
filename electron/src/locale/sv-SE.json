@@ -110,5 +110,7 @@
   "promptCancel": "Avbryt",
   "promptWarning": "Varning",
   "promptError": "Fel",
-  "urlBlockedPromptText": "En potentiellt osäker webbadress har blockerats. Kopiera URL:en och öppna passande applikation om du fortfarande vill öppna den."
+  "urlBlockedPromptText": "En potentiellt osäker webbadress har blockerats. Kopiera URL:en och öppna passande applikation om du fortfarande vill öppna den.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
 }

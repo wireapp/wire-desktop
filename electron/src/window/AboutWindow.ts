@@ -165,7 +165,8 @@ ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: locale.i18nLanguageId
   event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
 });
 
-async function showWindow() {
+const showWindow = async () => {
+  // let aboutWindow: BrowserWindow | undefined;
   const activeWebappVersions = await requestActiveWebappVersions();
 
   if (aboutWindow === undefined) {
@@ -235,6 +236,6 @@ async function showWindow() {
 
   renderAboutWindow(activeWebappVersions);
   aboutWindow.show();
-}
+};
 
 export const AboutWindow = {showWindow};

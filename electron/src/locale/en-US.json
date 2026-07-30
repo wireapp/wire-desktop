@@ -73,6 +73,8 @@
   "menuView": "View",
   "menuWindow": "Window",
   "noInternet": "No Internet",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "The proxy requires authentication with username and password.",
   "proxyPromptPassword": "Password",
   "proxyPromptTitle": "Proxy authentication",

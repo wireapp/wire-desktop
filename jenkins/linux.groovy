@@ -8,13 +8,16 @@ node('linux') {
 
   def production = params.PRODUCTION
   def custom = params.CUSTOM
+  def wireGov = params.WIRE_GOV
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
-  if (!production && !custom) {
+  if (wireGov) {
+    env.APP_ENV = 'wire-gov'
+  } else if (!production && !custom) {
     env.APP_ENV = 'internal'
   }
 
@@ -42,7 +45,13 @@ node('linux') {
         sh 'node -v'
         sh 'npm -v'
         sh 'yarn'
-        sh 'yarn build:linux'
+        if (production) {
+          sh 'yarn build:linux'
+        } else if (wireGov) {
+          sh 'yarn build:linux:wire-gov'
+        } else {
+          sh 'yarn build:linux:internal'
+        }
       } catch(e) {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🐧 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"

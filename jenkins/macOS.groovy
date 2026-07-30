@@ -6,6 +6,7 @@ def parseJson(def text) {
 node("macos") {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
+  def wireGov = params.WIRE_GOV
   def skipNotarization = params.containsKey('SKIP_NOTARIZATION') ? params.SKIP_NOTARIZATION : true  
   def NODE = tool name: 'node-v18.18.0', type: 'nodejs'
   def privateAPIResult = ''
@@ -15,7 +16,12 @@ node("macos") {
     jenkinsbot_secret = env.JENKINSBOT_SECRET
   }
 
-  if (!production && !custom) {
+  if (wireGov) {
+    env.APP_ENV = 'wire-gov'
+    env.APP_NAME = 'WireGov'
+    env.APP_NAME_SHORT = 'WireGov'
+    env.MACOS_BUNDLE_ID = 'com.wearezeta.zclient.mac'
+  } else if (!production && !custom) {
     env.APP_ENV = 'internal'
   }
 
@@ -51,6 +57,12 @@ node("macos") {
           echo privateAPIResult
         } else if (custom) {
           sh 'yarn build:macos'
+        } else if (wireGov) {
+          sh 'yarn build:macos:wire-gov'
+
+          echo 'Checking for private Apple APIs ...'
+          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireGov-mas-universal/WireGov.app"', returnStdout: true
+          echo privateAPIResult
         } else {
           // internal
           sh 'yarn build:macos:internal'
@@ -68,7 +80,7 @@ node("macos") {
   }
 
   // ------------------------------------------------------------------------
-  // Notarize & staple macOS pkg (internal only)
+  // Notarize & staple macOS pkg (internal & wire-gov only)
   // ------------------------------------------------------------------------
   if (!production && !custom && !skipNotarization) {
     stage('Notarize macOS pkg') {
@@ -121,12 +133,14 @@ node("macos") {
     // Once macOS wrapper builds are moved to electron-builder, drop this and use
     // `electron-builder --publish` to create + upload the update metadata instead.
 
+    def appName = wireGov ? 'WireGov' : (production ? 'Wire' : 'WireInternal')
+    def buildPath = wireGov ? 'WireGov-mas-universal' : (production ? 'Wire-mas-universal' : 'WireInternal-mas-universal')
+
     if (!production && !custom) {
-      // Internal
-      def appPath = "${WORKSPACE}/wrap/build/WireInternal-mas-universal/WireInternal.app/"
+      def appPath = "${WORKSPACE}/wrap/build/${buildPath}/${appName}.app/"
       def distDir = "${WORKSPACE}/wrap/dist"
-      def baseZipName = "WireInternal.zip"
-      def versionedZipName = "WireInternal-${version}.zip"
+      def baseZipName = "${appName}.zip"
+      def versionedZipName = "${appName}-${version}.zip"
 
       sh """
         mkdir -p "${distDir}"
