@@ -1,0 +1,184 @@
+name: E2E Tests
+
+on:
+  # This Workflow can be run by labelling a PR with "run-e2e", in this case reporting is skipped.
+  pull_request:
+    types: [labeled, opened, synchronize, reopened]
+  workflow_dispatch:
+  schedule:
+    # Execute workflow every night throughout the week
+    - cron: '37 04 * * 1-5'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  run_tests:
+    name: Run E2E Tests (${{ matrix.project }})
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-e2e') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [windows, macOS]
+        include:
+          - project: windows
+            os: windows-2025
+          - project: macOS
+            os: macos-26
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version-file: '.node-version'
+          cache: 'yarn'
+
+      - name: Install JS dependencies
+        shell: bash
+        run: yarn --immutable
+
+      - name: Install Playwright browsers
+        shell: bash
+        run: yarn playwright install --only-shell --with-deps chromium
+
+      - uses: 1password/install-cli-action@8d006a0d0a4fd505af7f7ce589e7f768385ff5e4
+      - name: Generate env file
+        shell: bash
+        run: op inject -i e2e-tests/.env.tpl -o e2e-tests/.env
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Build application
+        shell: bash
+        run: yarn prestart
+
+      - name: Run E2E tests
+        shell: bash
+        run: yarn test:e2e --project=${{ matrix.project }} --reporter=blob
+        env:
+          PLAYWRIGHT_BLOB_OUTPUT_DIR: playwright-blobs
+
+      - name: Upload blob report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-blobs-${{ matrix.project }}
+          path: playwright-blobs
+
+  merge_reports:
+    name: Merge and Publish Reports
+    needs: run_tests
+    if: ${{ !cancelled() && needs.run_tests.result != 'skipped' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version-file: '.node-version'
+          cache: 'yarn'
+
+      - name: Install JS dependencies
+        run: yarn --immutable
+
+      - name: Download playwright blobs
+        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        with:
+          path: playwright-blobs
+          pattern: playwright-blobs-*
+          merge-multiple: true
+
+      - name: Merge Playwright reports
+        run: yarn playwright merge-reports --config=playwright.config.ts playwright-blobs
+
+      - name: Upload test report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-report
+          path: playwright-report/html
+
+      - name: Upload report to Testiny
+        if: ${{ github.event_name != 'pull_request' }}
+        continue-on-error: true
+        env:
+          TESTINY_API_KEY: ${{ secrets.TESTINY_API_KEY }}
+          DESCRIPTION: 'Build URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        run: |
+          # Upload test run for windows
+          node ./e2e-tests/scripts/uploadTestReport.ts \
+          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
+          --project="windows" \
+          --testPlanId="118" \
+          --description="$DESCRIPTION" \
+          --reportPath="./playwright-report/report.json"
+
+          # Upload test run for macOS
+          node ./e2e-tests/scripts/uploadTestReport.ts \
+          --runName="Regression $(date +'%m/%d/%Y - %H:%M')" \
+          --project="macOS" \
+          --testPlanId="119" \
+          --description="$DESCRIPTION" \
+          --reportPath="./playwright-report/report.json"
+
+      - name: Generate report description
+        id: generate-description
+        run: |
+          REPORT_FILE="playwright-report/report.json"
+          if [ ! -f "$REPORT_FILE" ]; then
+              echo "Error: File '$REPORT_FILE' not found!"
+              exit 1
+          fi
+
+          FAILED=$(jq '.stats.unexpected' "$REPORT_FILE")
+          MESSAGE=$(jq -c '
+            # Recursively find all objects that have a non-empty "specs" array
+            # Capture the suite title and prepend it to the test title
+            [.. | objects | select(has("specs") and (.specs | length > 0)) | .title as $suite | .specs[] | .title as $title | .tests[] | {title: ($suite + " > " + $title), status: .status}] as $tests |
+
+            # Calculate aggregates
+            ($tests | length) as $total |
+            ($tests | map(select(.status == "expected")) | length) as $passed |
+            ($tests | map(select(.status == "unexpected")) | length) as $failed |
+            ($tests | map(select(.status == "flaky")) | length) as $flaky |
+            ($tests | map(select(.status == "skipped")) | length) as $skipped |
+
+            # Generate unique lists for failed and flaky tests
+            ($tests | map(select(.status == "unexpected")) | map("  ❌ " + .title) | unique | join("\n")) as $failed_list |
+            ($tests | map(select(.status == "flaky")) | map("  ⚠️ " + .title) | unique | join("\n")) as $flaky_list |
+
+            # Construct the final formatted message
+            "📋 **Desktop E2E Test Run Summary**\n" +
+            "Build URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n" +
+            "======================================\n" +
+            "**Total Tests:** \($total)\n" +
+            "✅ **Passed:** \($passed)\n" +
+            "❌ **Failed:** \($failed)\n" +
+            "⚠️ **Flaky:** \($flaky)\n" +
+            (if $skipped > 0 then "⏭️ **Skipped:** \($skipped)\n" else "" end) +
+            "======================================\n" +
+            (if $failed > 0 then "\n❌ **Failed Tests:**\n\($failed_list)\n" else "" end) +
+            (if $flaky > 0 then "\n⚠️ **Flaky Tests:**\n\($flaky_list)\n" else "" end)
+          ' $REPORT_FILE)
+
+          echo "failed_tests=$FAILED" >> $GITHUB_OUTPUT
+          echo "report_message=$MESSAGE" >> $GITHUB_OUTPUT
+
+      - name: Notify on Wire about failed tests
+        if: ${{ github.event_name != 'pull_request' && !cancelled() && steps.generate-description.outputs.failed_tests > 0 }}
+        uses: 8398a7/action-slack@293f8dc0f9731ac35321056641cdef895f4f65f8
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.WIRE_E2E_TEST_BOT_WEBHOOK_URL }}
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "text": ${{ steps.generate-description.outputs.report_message }},
+            }

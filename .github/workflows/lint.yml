@@ -2,9 +2,11 @@ name: Lint
 
 on:
   push:
-    branches: [main, dev, staging]
+    branches: [main, staging, dev]
   pull_request:
-    branches: [main, dev, staging]
+    branches: [main, staging, dev]
+  merge_group:
+    branches: [main, staging, dev]
 
 concurrency:
   group: lint-${{ github.ref }}
@@ -21,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version-file: '.node-version'
           cache: 'yarn'
 
       - name: Install JS dependencies

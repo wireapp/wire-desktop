@@ -3,7 +3,13 @@
     "jasmine": true
   },
   "extends": "@wireapp/eslint-config",
-  "ignorePatterns": ["**/*.js", "**/*.jsx"], // Ignore JS files until we migrate to TS
+  "ignorePatterns": [
+    // Ignore JS files until we migrate to TS
+    "**/*.js",
+    "**/*.jsx",
+    // Ignore generated files from linting
+    "e2e-tests/backend/generated/**"
+  ],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
@@ -11,6 +17,46 @@
         "@typescript-eslint/member-ordering": "off",
         "@typescript-eslint/typedef": "off",
         "no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["e2e-tests/**/*.ts"],
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "TSEnumDeclaration",
+            "message": "Enums are banned in the e2e-tests folder. Prefer string literal unions or `as const` objects instead."
+          }
+        ]
+      }
+    },
+    {
+      "files": ["e2e-tests/poms/**/*.ts"],
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "TSEnumDeclaration",
+            "message": "Enums are banned in the e2e-tests folder. Prefer string literal unions or `as const` objects instead."
+          },
+          {
+            "selector": ":function > BlockStatement[body.length=1] > ExpressionStatement > AwaitExpression > CallExpression[callee.type=\"MemberExpression\"][callee.property.name=/^(click|dblclick|tripleclick|tap|fill|type|press|check|uncheck|selectOption|setChecked|hover|focus|blur|clear|selectText|setInputFiles)$/]",
+            "message": "Do not wrap a single Playwright action in a custom function inside a POM. Instead, return the locator from the POM and call the action on it in the test."
+          },
+          {
+            "selector": ":function > BlockStatement[body.length=1] > ExpressionStatement > CallExpression[callee.type=\"MemberExpression\"][callee.property.name=/^(click|dblclick|tripleclick|tap|fill|type|press|check|uncheck|selectOption|setChecked|hover|focus|blur|clear|selectText|setInputFiles)$/]",
+            "message": "Do not wrap a single Playwright action in a custom function inside a POM. Instead, return the locator from the POM and call the action on it in the test."
+          },
+          {
+            "selector": "ArrowFunctionExpression[body.type=\"AwaitExpression\"] > AwaitExpression > CallExpression[callee.type=\"MemberExpression\"][callee.property.name=/^(click|dblclick|tripleclick|tap|fill|type|press|check|uncheck|selectOption|setChecked|hover|focus|blur|clear|selectText|setInputFiles)$/]",
+            "message": "Do not wrap a single Playwright action in a custom function inside a POM. Instead, return the locator from the POM and call the action on it in the test."
+          },
+          {
+            "selector": "ArrowFunctionExpression[body.type=\"CallExpression\"] > CallExpression[callee.type=\"MemberExpression\"][callee.property.name=/^(click|dblclick|tripleclick|tap|fill|type|press|check|uncheck|selectOption|setChecked|hover|focus|blur|clear|selectText|setInputFiles)$/]",
+            "message": "Do not wrap a single Playwright action in a custom function inside a POM. Instead, return the locator from the POM and call the action on it in the test."
+          }
+        ]
       }
     }
   ],

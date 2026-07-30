@@ -172,6 +172,7 @@ const Webview = ({
   }, [webviewError]);
 
   useEffect(() => {
+    const webview = webviewRef.current;
     if (noUrlConfigured) {
       return;
     }
@@ -182,11 +183,11 @@ const Webview = ({
         setWebviewError(error);
       }
     };
-    webviewRef.current?.addEventListener(ON_WEBVIEW_ERROR, listener);
+    webview?.addEventListener(ON_WEBVIEW_ERROR, listener);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_WEBVIEW_ERROR, listener);
+      if (webview) {
+        webview.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
   }, [webviewRef, account, noUrlConfigured]);
@@ -200,10 +201,14 @@ const Webview = ({
           const [customUrl] = args;
 
           if (isString(customUrl)) {
-            const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
-            updateAccountData(accountId, {
-              webappUrl: updatedWebapp,
-            });
+            try {
+              const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
+              updateAccountData(accountId, {
+                webappUrl: updatedWebapp,
+              });
+            } catch (error) {
+              console.warn(`Ignoring invalid WebApp navigation URL "${customUrl}"`, error);
+            }
           }
           break;
         }
@@ -285,11 +290,13 @@ const Webview = ({
       }
     };
 
+    const webview = webviewRef.current;
+
     webviewRef.current?.addEventListener(ON_IPC_MESSAGE, onIpcMessage);
 
     return () => {
-      if (webviewRef.current) {
-        webviewRef.current.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
+      if (webview) {
+        webview.removeEventListener(ON_IPC_MESSAGE, onIpcMessage);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -13,6 +13,10 @@
   },
   "packageRules": [
     {
+      "matchDepNames": ["node"],
+      "groupName": "Node Version"
+    },
+    {
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
     },
@@ -99,10 +103,6 @@
     {
       "matchPackageNames": ["electron-mocha", "mocha", "sinon", "@types/sinon", "@types/mocha"],
       "groupName": "electron and mocha test tooling"
-    },
-    {
-      "matchPackageNames": ["husky"],
-      "allowedVersions": "<5"
     },
     {
       "matchPackageNames": ["image-type"],

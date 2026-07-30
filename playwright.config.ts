@@ -22,12 +22,14 @@ import dotenv from 'dotenv';
 
 import path from 'node:path';
 
+import {TestOptions} from './e2e-tests/fixtures';
+
 dotenv.config({path: path.resolve(__dirname, './e2e-tests/.env')});
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+export default defineConfig<TestOptions>({
   testDir: './e2e-tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -37,19 +39,54 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests because there can only be one running instance of the app at a time */
   workers: 1,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  // Only generate reports on CI
+  reporter: process.env.CI
+    ? [
+        ['html', {outputFolder: 'playwright-report/html', open: 'never'}],
+        ['json', {outputFile: 'playwright-report/report.json'}],
+        ['line'],
+      ]
+    : 'line',
+  timeout: 90_000,
+  expect: {timeout: 10_000},
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    // Behavior for tracing the web browser, for traces of the electron app see its fixture in `e2e-tests/fixtures.ts`
+    trace: 'retain-on-first-failure',
+    testIdAttribute: 'data-uie-name',
+    baseURL: process.env.WEBAPP_URL,
+    permissions: ['camera', 'microphone'],
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects for multiple operating systems */
   projects: [
     {
-      name: 'chromium',
-      use: {...devices['Desktop Chrome']},
+      name: 'windows',
+      use: {
+        os: 'windows',
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: [
+            '--use-fake-device-for-media-stream', // Provide fake devices for audio & video device input
+            '--use-fake-ui-for-media-stream', // Bypasses the popup to grant permission and select video / audio input device by automatically selecting the default one
+            '--mute-audio', // Mute all audio output from the test browser because e.g. the ringtone of a call can be annoying during testing
+          ],
+        },
+      },
+    },
+    {
+      name: 'macOS',
+      use: {
+        os: 'macOS',
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: [
+            '--use-fake-device-for-media-stream', // Provide fake devices for audio & video device input
+            '--use-fake-ui-for-media-stream', // Bypasses the popup to grant permission and select video / audio input device by automatically selecting the default one
+            '--mute-audio', // Mute all audio output from the test browser because e.g. the ringtone of a call can be annoying during testing
+          ],
+        },
+      },
     },
   ],
 });

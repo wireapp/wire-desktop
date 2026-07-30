@@ -53,12 +53,14 @@ import {
 import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
+import {forwardWrapperReloadRequest} from './lib/forwardWrapperReloadRequest';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
 import * as locale from './locale';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
 import {getLogFilenames} from './logging/loggerUtils';
+import {getManagedConfig} from './managed/ManagedConfig';
 import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
@@ -195,8 +197,15 @@ const bindIpcEvents = (): void => {
     await deleteAccount(id, accountId, partitionId);
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
+  ipcMain.on(EVENT_TYPE.WRAPPER.RELOAD, () => forwardWrapperReloadRequest(main.webContents));
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
+
+  // Answered synchronously: the webview preload reads this via `ipcRenderer.sendSync` while it builds
+  // `window.desktopAppConfig`. The value is pre-read and memoized, so the handler does no I/O here.
+  ipcMain.on(EVENT_TYPE.MANAGED.GET_CONFIG, event => {
+    event.returnValue = getManagedConfig();
+  });
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
 

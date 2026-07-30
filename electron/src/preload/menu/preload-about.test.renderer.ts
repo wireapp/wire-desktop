@@ -18,15 +18,20 @@
  */
 
 import {ipcRenderer} from 'electron';
-import {spy} from 'sinon';
+import {restore, spy} from 'sinon';
 
 import * as assert from 'assert';
 
-import {loadedAboutScreen} from './preload-about';
+import {loadedAboutScreen, updateAboutScreenVersions} from './preload-about';
 
 import {EVENT_TYPE} from '../../lib/eventType';
 
 describe('loadedAboutScreen', () => {
+  afterEach(() => {
+    restore();
+    document.body.innerHTML = '';
+  });
+
   // eslint-disable-next-line jest/no-done-callback
   it('publishes labels', done => {
     const sendSpy = spy(ipcRenderer, 'send');
@@ -39,7 +44,44 @@ describe('loadedAboutScreen', () => {
       webappAVSVersion: '9.0.test',
     });
 
-    assert.ok(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []));
+    assert.strictEqual(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []), true);
     done();
+  });
+
+  it('updates webapp version values without requesting locales again', () => {
+    const sendSpy = spy(ipcRenderer, 'send');
+    document.body.innerHTML = `
+      <span id="webappVersion"></span>
+      <span id="webappAVSVersion">stale-avs-version</span>
+    `;
+
+    loadedAboutScreen(null, {
+      copyright: '&copy; Wire Swiss GmbH',
+      electronVersion: 'Development',
+      productName: 'Wire',
+      webappVersion: '2019.04.10.0901',
+      webappAVSVersion: '9.0.test',
+    });
+    updateAboutScreenVersions(null, {
+      copyright: '&copy; Wire Swiss GmbH',
+      electronVersion: 'Development',
+      productName: 'Wire',
+      webappVersion: '2019.04.10.0902',
+    });
+
+    const webappVersionElement = document.getElementById('webappVersion');
+    const webappAVSVersionElement = document.getElementById('webappAVSVersion');
+
+    if (webappVersionElement === null) {
+      assert.fail('Expected webapp version element to exist');
+    }
+
+    if (webappAVSVersionElement === null) {
+      assert.fail('Expected webapp AVS version element to exist');
+    }
+
+    assert.strictEqual(webappVersionElement.textContent, '2019.04.10.0902');
+    assert.strictEqual(webappAVSVersionElement.textContent, '');
+    assert.strictEqual(sendSpy.calledOnceWith(EVENT_TYPE.ABOUT.LOCALE_VALUES, []), true);
   });
 });

@@ -31,6 +31,7 @@ import * as WindowUtil from '../window/WindowUtil';
 
 let webappVersion = '';
 let webappAVSVersion: string | undefined;
+let aboutWindow: BrowserWindow | undefined;
 
 const VERSION_REQUEST_TIMEOUT_MS = 1500;
 const AVS_VERSION_GRACE_PERIOD_MS = 50;
@@ -62,61 +63,113 @@ ipcMain.on(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, (_event, version: string) => {
   webappAVSVersion = version;
 });
 
-const requestActiveWebappVersions = async (): Promise<{webappVersion: string; webappAVSVersion?: string}> => {
+interface WebappVersions {
+  webappVersion: string;
+  webappAVSVersion?: string;
+}
+
+function getCachedWebappVersions(): WebappVersions {
+  return {webappVersion, webappAVSVersion};
+}
+
+function requestActiveWebappVersions(): Promise<WebappVersions> {
   const primaryWindow = WindowManager.getPrimaryWindow();
 
-  if (!primaryWindow) {
-    return {webappVersion, webappAVSVersion};
+  if (primaryWindow === undefined) {
+    return Promise.resolve(getCachedWebappVersions());
   }
 
   return new Promise(resolve => {
-    let requestedVersion = webappVersion;
-    let requestedAVSVersion = webappAVSVersion;
+    let requestedVersion: string | undefined;
+    let requestedAVSVersion: string | undefined;
     let hasResolved = false;
+    let hasReceivedVersion = false;
     let gracePeriodId: ReturnType<typeof setTimeout> | undefined;
 
-    const resolveWithValues = () => {
-      if (hasResolved) {
+    function resolveWithValues(): void {
+      if (hasResolved === true) {
         return;
       }
       hasResolved = true;
-      if (timeoutId) {
+      if (timeoutId !== undefined) {
         clearTimeout(timeoutId);
       }
-      if (gracePeriodId) {
+      if (gracePeriodId !== undefined) {
         clearTimeout(gracePeriodId);
       }
       ipcMain.removeListener(EVENT_TYPE.UI.WEBAPP_VERSION, onVersion);
       ipcMain.removeListener(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, onAVSVersion);
-      resolve({webappVersion: requestedVersion, webappAVSVersion: requestedAVSVersion});
-    };
 
-    const onVersion = (_event: Electron.IpcMainEvent, version: string) => {
+      if (hasReceivedVersion === false) {
+        resolve(getCachedWebappVersions());
+        return;
+      }
+
+      webappVersion = requestedVersion ?? webappVersion;
+      webappAVSVersion = requestedAVSVersion;
+      resolve({webappVersion, webappAVSVersion});
+    }
+
+    function onVersion(_event: Electron.IpcMainEvent, version: string): void {
+      hasReceivedVersion = true;
       requestedVersion = version;
-      if (gracePeriodId) {
+      requestedAVSVersion = undefined;
+      if (gracePeriodId !== undefined) {
         clearTimeout(gracePeriodId);
       }
       // Wait briefly for optional AVS version that can arrive right after main version.
       gracePeriodId = setTimeout(resolveWithValues, AVS_VERSION_GRACE_PERIOD_MS);
-    };
+    }
 
-    const onAVSVersion = (_event: Electron.IpcMainEvent, version: string) => {
+    function onAVSVersion(_event: Electron.IpcMainEvent, version: string): void {
       requestedAVSVersion = version;
       resolveWithValues();
-    };
+    }
 
     ipcMain.on(EVENT_TYPE.UI.WEBAPP_VERSION, onVersion);
     ipcMain.on(EVENT_TYPE.UI.WEBAPP_AVS_VERSION, onAVSVersion);
     const timeoutId = setTimeout(resolveWithValues, VERSION_REQUEST_TIMEOUT_MS);
     primaryWindow.webContents.send(EVENT_TYPE.UI.REQUEST_WEBAPP_VERSION);
   });
-};
+}
+
+function renderAboutWindow(activeWebappVersions: WebappVersions): void {
+  if (aboutWindow === undefined) {
+    return;
+  }
+
+  aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
+    copyright: config.copyright,
+    electronVersion: config.version,
+    productName: config.name,
+    webappVersion: activeWebappVersions.webappVersion,
+    webappAVSVersion: activeWebappVersions.webappAVSVersion,
+  });
+}
+
+ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: locale.i18nLanguageIdentifier[]) => {
+  if (aboutWindow === undefined) {
+    return;
+  }
+
+  if (event.sender.id !== aboutWindow.webContents.id) {
+    return;
+  }
+
+  const localeValues: Record<string, string> = {};
+  labels.forEach(label => {
+    localeValues[label] = locale.getText(label);
+  });
+  localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
+  localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
+  event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
+});
 
 const showWindow = async () => {
-  let aboutWindow: BrowserWindow | undefined;
+  // let aboutWindow: BrowserWindow | undefined;
   const activeWebappVersions = await requestActiveWebappVersions();
 
-  if (!aboutWindow) {
+  if (aboutWindow === undefined) {
     aboutWindow = new BrowserWindow({
       alwaysOnTop: false,
       backgroundColor: '#ececec',
@@ -159,44 +212,29 @@ const showWindow = async () => {
       return {action: 'deny'};
     });
 
-    // Locales
-    ipcMain.on(EVENT_TYPE.ABOUT.LOCALE_VALUES, (event, labels: locale.i18nLanguageIdentifier[]) => {
-      if (aboutWindow) {
-        const isExpected = event.sender.id === aboutWindow.webContents.id;
-        if (isExpected) {
-          const localeValues: Record<string, string> = {};
-          labels.forEach(label => (localeValues[label] = locale.getText(label)));
-          localeValues.aboutReleasesUrl = config.aboutReleasesUrl;
-          localeValues.aboutUpdatesUrl = config.aboutUpdatesUrl;
-          event.reply(EVENT_TYPE.ABOUT.LOCALE_RENDER, localeValues);
-        }
-      }
-    });
-
     // Close window via escape
     aboutWindow.webContents.on('before-input-event', (_event, input) => {
-      if (input.type === 'keyDown' && input.key === 'Escape') {
-        if (aboutWindow) {
-          aboutWindow.close();
-        }
+      if (input.type !== 'keyDown') {
+        return;
+      }
+
+      if (input.key !== 'Escape') {
+        return;
+      }
+
+      if (aboutWindow !== undefined) {
+        aboutWindow.close();
       }
     });
 
-    aboutWindow.on('closed', () => (aboutWindow = undefined));
+    aboutWindow.on('closed', () => {
+      aboutWindow = undefined;
+    });
 
     await aboutWindow.loadURL(ABOUT_HTML);
-
-    if (aboutWindow) {
-      aboutWindow.webContents.send(EVENT_TYPE.ABOUT.LOADED, {
-        copyright: config.copyright,
-        electronVersion: config.version,
-        productName: config.name,
-        webappVersion: activeWebappVersions.webappVersion,
-        webappAVSVersion: activeWebappVersions.webappAVSVersion,
-      });
-    }
   }
 
+  renderAboutWindow(activeWebappVersions);
   aboutWindow.show();
 };
 

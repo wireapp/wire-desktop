@@ -22,6 +22,7 @@ import type {Data as OpenGraphResult} from 'open-graph';
 
 import type {WebAppEvents} from '@wireapp/webapp-events';
 
+import type {DesktopAppConfig} from '../lib/desktopAppConfig';
 import type {i18nStrings, SupportedI18nLanguage} from '../locale';
 import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
@@ -43,10 +44,7 @@ export declare global {
   };
   var environment: typeof EnvironmentUtil;
   var openGraphAsync: (url: string) => Promise<OpenGraphResult>;
-  var desktopAppConfig: {
-    version: string;
-    supportsCallingPopoutWindow?: boolean;
-  };
+  var desktopAppConfig: DesktopAppConfig;
   /* eslint-enable no-var */
 
   interface Window {

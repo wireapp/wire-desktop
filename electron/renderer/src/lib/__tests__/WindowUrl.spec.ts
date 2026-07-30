@@ -20,7 +20,7 @@
 import {WindowUrl} from '../WindowUrl';
 
 describe('WindowUrl', () => {
-  describe('createWebappUrl', () => {
+  describe('createWebAppUrl', () => {
     it('creates a custom environment WebApp URL based on parameters from an existing renderer page', () => {
       const rendererPage =
         'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=https%3A%2F%2Fwire-webapp-dev.zinfra.io%3Fhl%3Den%26enableLogging%3D%40wireapp%2F*';
@@ -34,10 +34,23 @@ describe('WindowUrl', () => {
       const rendererPage = 'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=undefined';
       const customWebApp = 'https://webapp.qa-demo.wire.link?clienttype=permanent';
 
-      try {
-        const url = WindowUrl.createWebAppUrl(rendererPage, customWebApp);
-        expect(url).toBe('Invalid URL: undefined');
-      } catch (error) {}
+      expect(() => WindowUrl.createWebAppUrl(rendererPage, customWebApp)).toThrow();
+    });
+
+    it.each([
+      'https://example.com/min/app.js',
+      'https://example.com/min/vendor.js',
+      'https://example.com/assets/foo.png',
+      'https://example.com/style/app.css',
+      'https://example.com/sw.js',
+      'https://example.com/downloads/app.js',
+    ])('rejects static resource WebApp URLs: %s', customWebApp => {
+      const rendererPage =
+        'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=https%3A%2F%2Fwire-webapp-dev.zinfra.io%3Fhl%3Den%26enableLogging%3D%40wireapp%2F*';
+
+      expect(() => WindowUrl.createWebAppUrl(rendererPage, customWebApp)).toThrow(
+        'Invalid WebApp URL: static resource URLs cannot be used as WebApp navigation URLs',
+      );
     });
   });
 });
