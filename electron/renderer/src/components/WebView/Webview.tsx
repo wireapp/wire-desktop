@@ -44,9 +44,15 @@ import {AccountSelector} from '../../selector/AccountSelector';
 import {Account, ConversationJoinData} from '../../types/account';
 import {isAccount, isBoolean, isConversationJoinData, isNumber, isString} from '../../types/guards';
 import {LoadingSpinner} from '../LoadingSpinner';
+import {NoUrlConfigured} from '../NoUrlConfigured/NoUrlConfigured';
 
 type WebviewTag = Electron.WebviewTag;
 type DidFailLoadEvent = Electron.DidFailLoadEvent;
+
+const isNoUrlConfigured = () => {
+  const currentLocation = new URL(window.location.href);
+  return currentLocation.searchParams.get('noUrlConfigured') === 'true';
+};
 
 const getEnvironmentUrl = (account: Account) => {
   const currentLocation = new URL(window.location.href);
@@ -100,12 +106,16 @@ const Webview = ({
   updateAccountLifecycle,
   updateAccountDarkMode,
 }: WebviewProps) => {
+  const noUrlConfigured = isNoUrlConfigured();
   const webviewRef = useRef<WebviewTag | null>(null);
   const [canDelete, setCanDelete] = useState(false);
-  const [url, setUrl] = useState(getEnvironmentUrl(account));
+  const [url, setUrl] = useState(noUrlConfigured ? '' : getEnvironmentUrl(account));
   const [webviewError, setWebviewError] = useState<DidFailLoadEvent | null>(null);
 
   useEffect(() => {
+    if (noUrlConfigured) {
+      return;
+    }
     const newUrl = getEnvironmentUrl(account);
     console.info(`Loading WebApp URL "${newUrl}" ...`);
     if (url !== newUrl && webviewRef.current) {
@@ -163,6 +173,9 @@ const Webview = ({
 
   useEffect(() => {
     const webview = webviewRef.current;
+    if (noUrlConfigured) {
+      return;
+    }
     const listener = (error: DidFailLoadEvent) => {
       const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
       console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
@@ -177,7 +190,7 @@ const Webview = ({
         webview.removeEventListener(ON_WEBVIEW_ERROR, listener);
       }
     };
-  }, [webviewRef, account]);
+  }, [webviewRef, account, noUrlConfigured]);
 
   useEffect(() => {
     const onIpcMessage = ({channel, args}: {args: unknown[]; channel: string}) => {
@@ -294,6 +307,10 @@ const Webview = ({
       abortAccountCreation(account.id);
     });
   };
+
+  if (noUrlConfigured) {
+    return <NoUrlConfigured accountId={account.id} visible={account.visible} />;
+  }
 
   return (
     <>

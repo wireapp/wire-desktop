@@ -110,5 +110,7 @@
   "promptCancel": "Peruuta",
   "promptWarning": "Varoitus",
   "promptError": "Virhe",
-  "urlBlockedPromptText": "Mahdollisesti vaarallinen URL-osoite on estetty. Jos silti haluat avata kyseisen URL-osoitteen, kopioi osoite leikepöydälle ja avaa se sopivalla sovelluksella."
+  "urlBlockedPromptText": "Mahdollisesti vaarallinen URL-osoite on estetty. Jos silti haluat avata kyseisen URL-osoitteen, kopioi osoite leikepöydälle ja avaa se sopivalla sovelluksella.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
 }

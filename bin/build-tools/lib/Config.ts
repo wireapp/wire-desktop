@@ -30,7 +30,7 @@ export interface CommonConfig {
   distDir: string;
   electronDirectory: string;
   enableAsar: boolean;
-  environment: 'internal' | 'production';
+  environment: 'internal' | 'production' | 'wire-gov';
   legalUrl: string;
   licensesUrl: string;
   maximumAccounts: string;
