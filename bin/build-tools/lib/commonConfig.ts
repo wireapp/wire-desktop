@@ -39,16 +39,21 @@ export async function getCommonConfig(envFile: string, wireJson: string): Promis
 
   dotenv.config({path: envFileResolved});
 
-  const IS_PRODUCTION = process.env.APP_ENV !== 'internal';
+  const IS_PRODUCTION = process.env.APP_ENV !== 'internal' && process.env.APP_ENV !== 'wire-gov';
+  const APP_ENV = process.env.APP_ENV;
+  const isKnownAppEnv = APP_ENV === 'internal' || APP_ENV === 'wire-gov';
 
   const getProjectVersion = async () => {
     const {stdout: commitId} = await execAsync('git rev-parse --short HEAD');
 
     const versionWithoutZero = (defaultConfig.version || '0').replace(/\.0$/, '');
     const buildNumber = `${process.env.BUILD_NUMBER || `0-${commitId || 'unknown'}`}`;
-    const maybeInternal = IS_PRODUCTION ? '' : '-internal';
+    let versionSuffix = '';
+    if (!IS_PRODUCTION) {
+      versionSuffix = process.env.APP_ENV === 'wire-gov' ? '-wire-gov' : '-internal';
+    }
 
-    return `${versionWithoutZero}.${buildNumber}${maybeInternal}`;
+    return `${versionWithoutZero}.${buildNumber}${versionSuffix}`;
   };
 
   const commonConfig: CommonConfig = {
@@ -65,7 +70,7 @@ export async function getCommonConfig(envFile: string, wireJson: string): Promis
     distDir: defaultConfig.distDir || 'wrap/dist',
     electronDirectory: defaultConfig.electronDirectory || 'electron',
     enableAsar: process.env.ENABLE_ASAR === 'false' ? false : defaultConfig.enableAsar,
-    environment: IS_PRODUCTION ? 'production' : defaultConfig.environment,
+    environment: IS_PRODUCTION ? 'production' : isKnownAppEnv ? APP_ENV : defaultConfig.environment,
     legalUrl: process.env.URL_LEGAL || defaultConfig.legalUrl,
     licensesUrl: process.env.URL_LICENSES || defaultConfig.licensesUrl,
     maximumAccounts: process.env.APP_MAXIMUM_ACCOUNTS || defaultConfig.maximumAccounts,

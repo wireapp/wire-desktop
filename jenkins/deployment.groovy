@@ -20,6 +20,7 @@ return list
 Add additional choice parameter "Release" with:
 Internal
 Production
+Wire-Gov
 Custom (needs special env variables)
 */
 node('built-in') {
@@ -95,6 +96,11 @@ node('built-in') {
           env.S3_PATH = 'win/internal'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
+        } else if (params.Release == 'Wire-Gov') {
+          env.S3_PATH = 'win/wire-gov'
+          env.S3_BUCKET = 'wire-taco'
+          AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
+          AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.WIN_S3_BUCKET
           env.S3_PATH = params.WIN_S3_PATH
@@ -143,6 +149,11 @@ node('built-in') {
           env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
+        } else if (params.Release == 'Wire-Gov') {
+          env.S3_PATH = 'mac/wire-gov'
+          env.S3_BUCKET = 'wire-taco'
+          AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
+          AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.MAC_S3_BUCKET
           env.S3_PATH = params.MAC_S3_PATH
@@ -183,11 +194,12 @@ node('built-in') {
               }
 
               // ------------------------------------------------------------------
-              // Internal macOS auto-update artifacts for electron-updater
-              // (latest-mac.yml + WireInternal-<version>.zip)
+              // Internal & Wire-Gov macOS auto-update artifacts for electron-updater
+              // (latest-mac.yml + zip)
               // ------------------------------------------------------------------
-              if (params.Release == 'Internal') {
-                echo 'Uploading internal macOS auto-update artifacts (latest-mac.yml + zip)'
+              if (params.Release == 'Internal' || params.Release == 'Wire-Gov') {
+                def zipPattern = params.Release == 'Wire-Gov' ? 'WireGov-*.zip' : 'WireInternal-*.zip'
+                echo "Uploading macOS auto-update artifacts (latest-mac.yml + zip) for ${params.Release}"
 
                 def updatesPrefix = "${env.S3_PATH}/updates/"
 
@@ -212,10 +224,10 @@ node('built-in') {
                   echo 'No latest-mac.yml found in wrap/dist – skipping upload'
                 }
 
-                // WireInternal-<version>.zip
-                def zipFiles = findFiles(glob: 'wrap/dist/WireInternal-*.zip')
+                // versioned zip
+                def zipFiles = findFiles(glob: "wrap/dist/${zipPattern}")
                 if (!zipFiles || zipFiles.size() == 0) {
-                  echo 'No WireInternal-*.zip found in wrap/dist – skipping zip upload'
+                  echo "No ${zipPattern} found in wrap/dist – skipping zip upload"
                 } else {
                   zipFiles.each { z ->
                     def zipDest = updatesPrefix + z.name
@@ -248,47 +260,37 @@ node('built-in') {
         // 3) Linux S3 Upload
         // -----------------------------
         try {
+          if (params.Release == 'Custom') {
+            error('Please set S3_NAME for custom Linux')
+          }
+
+          if (params.Release == 'Custom') {
+            error('Please set S3_NAME for custom Linux')
+          }
+
           if (params.Release == 'Production') {
             S3_NAME = 'linux'
-
-            withAWS(region:'eu-west-1', credentials: 'wire-taco') {
-              echo('Upload repository files')
-              s3Upload acl: 'PublicRead',
-                       bucket: S3_BUCKET,
-                       workingDir: 'wrap/dist/',
-                       includePathPattern: 'debian/**',
-                       path: S3_NAME + '/'
-
-              echo('Upload files for download page')
-              files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
-              files.each {
-                s3Upload acl: 'PublicRead',
-                         bucket: S3_BUCKET,
-                         file: it.path,
-                         path: S3_NAME + '/' + it.name
-              }
-            }
-          } else if (params.Release == 'Custom') {
-            error('Please set S3_NAME for custom Linux')
           } else if (params.Release == 'Internal') {
             S3_NAME = 'linux-internal'
+          } else if (params.Release == 'Wire-Gov') {
+            S3_NAME = 'linux-wire-gov'
+          }
 
-            withAWS(region:'eu-west-1', credentials: 'wire-taco') {
-              echo('Upload repository files')
+          withAWS(region:'eu-west-1', credentials: 'wire-taco') {
+            echo('Upload repository files')
+            s3Upload acl: 'PublicRead',
+                     bucket: S3_BUCKET,
+                     workingDir: 'wrap/dist/',
+                     includePathPattern: 'debian/**',
+                     path: S3_NAME + '/'
+
+            echo('Upload files for download page')
+            files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
+            files.each {
               s3Upload acl: 'PublicRead',
                        bucket: S3_BUCKET,
-                       workingDir: 'wrap/dist/',
-                       includePathPattern: 'debian/**',
-                       path: S3_NAME + '/'
-
-              echo('Upload files for download page')
-              files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
-              files.each {
-                s3Upload acl: 'PublicRead',
-                         bucket: S3_BUCKET,
-                         file: it.path,
-                         path: S3_NAME + '/' + it.name
-              }
+                       file: it.path,
+                       path: S3_NAME + '/' + it.name
             }
           }
         } catch(e) {
@@ -356,7 +358,7 @@ node('built-in') {
 
         } else {
           // Internal or Production
-          def fileSuffix = params.Release == 'Production' ? 'prod' : 'internal'
+          def fileSuffix = params.Release == 'Production' ? 'prod' : (params.Release == 'Wire-Gov' ? 'wire-gov' : 'internal')
           presignedFile = "${fileSuffix}-presigned-urls.txt"
           sh "rm -f ${presignedFile}"
 
@@ -404,6 +406,12 @@ node('built-in') {
           } else if (params.Release == 'Internal') {
             S3_PATH = 'win/internal'
             S3_NAME = 'wireinternal-' + version
+            AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
+            AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
+          } else if (params.Release == 'Wire-Gov') {
+            S3_BUCKET = 'wire-taco'
+            S3_PATH = 'win/wire-gov'
+            S3_NAME = 'wiregov-' + version
             AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
             AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
           } else if (params.Release == 'Custom') {

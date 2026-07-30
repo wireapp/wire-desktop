@@ -110,5 +110,7 @@
   "promptCancel": "Anuluj",
   "promptWarning": "Ostrzeżenie",
   "promptError": "Błąd",
-  "urlBlockedPromptText": "Potencjalnie niebezpieczny adres URL został zablokowany. Jeśli nadal chcesz go otworzyć, skopiuj adres URL i samodzielnie wklej go w przeglądarce internetowej."
+  "urlBlockedPromptText": "Potencjalnie niebezpieczny adres URL został zablokowany. Jeśli nadal chcesz go otworzyć, skopiuj adres URL i samodzielnie wklej go w przeglądarce internetowej.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
 }

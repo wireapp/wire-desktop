@@ -110,5 +110,7 @@
   "promptCancel": "取消",
   "promptWarning": "注意",
   "promptError": "错误",
-  "urlBlockedPromptText": "一个可能不安全的URL已被屏蔽。如果您仍然想要浏览，请复制 URL 到浏览器中打开。"
+  "urlBlockedPromptText": "一个可能不安全的URL已被屏蔽。如果您仍然想要浏览，请复制 URL 到浏览器中打开。",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
 }

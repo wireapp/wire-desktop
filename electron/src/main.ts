@@ -254,6 +254,15 @@ const initWindowStateKeeper = (): windowStateKeeper.State => {
 
 function getMainWindowUrl() {
   const baseUrl = EnvironmentUtil.web.getWebappUrl();
+  const mainURL = pathToFileURL(INDEX_HTML);
+  mainURL.searchParams.set('focus', String(!startHidden));
+
+  if (!baseUrl) {
+    // No URL configured in init.json (only applies to Wire Gov builds, which don't fall back to a default).
+    mainURL.searchParams.set('noUrlConfigured', 'true');
+    return mainURL;
+  }
+
   const webappURL = new URL(baseUrl);
   webappURL.searchParams.set('hl', currentLocale);
 
@@ -264,9 +273,7 @@ function getMainWindowUrl() {
   if (customProtocolHandler.hashLocation) {
     webappURL.hash = customProtocolHandler.hashLocation;
   }
-  const mainURL = pathToFileURL(INDEX_HTML);
   mainURL.searchParams.set('env', encodeURIComponent(webappURL.href));
-  mainURL.searchParams.set('focus', String(!startHidden));
   return mainURL;
 }
 

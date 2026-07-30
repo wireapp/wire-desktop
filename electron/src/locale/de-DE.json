@@ -110,5 +110,7 @@
   "promptCancel": "Abbrechen",
   "promptWarning": "Warnung",
   "promptError": "Fehler",
-  "urlBlockedPromptText": "Eine potenziell unsichere URL wurde gesperrt. Wenn Sie diese trotzdem öffnen möchten, kopieren Sie die URL und öffnen Sie die entsprechende Anwendung."
+  "urlBlockedPromptText": "Eine potenziell unsichere URL wurde gesperrt. Wenn Sie diese trotzdem öffnen möchten, kopieren Sie die URL und öffnen Sie die entsprechende Anwendung.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
 }
