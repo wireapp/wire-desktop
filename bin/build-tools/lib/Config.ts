@@ -76,5 +76,6 @@ export interface WindowsInstallerConfig {
 export interface WindowsMsiConfig {
   appId: string;
   artifactName: string;
+  manufacturer: string;
   upgradeCode: string;
 }

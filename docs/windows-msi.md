@@ -1,6 +1,6 @@
 # Windows MSI distribution
 
-Wire's native MSI is intended for managed, per-machine Windows deployments. It installs the existing packaged Electron application under `Program Files`; it does not wrap or invoke the legacy Squirrel `Setup.exe`.
+Wire's native MSI is intended for managed, per-machine Windows 10 and later deployments. It installs the existing packaged Electron application under `Program Files`; it does not wrap or invoke the legacy Squirrel `Setup.exe`.
 
 ## Build
 
@@ -15,7 +15,7 @@ yarn build:win:msi -m
 
 Interactive installation uses the standard assisted Windows Installer flow with a Wire-branded banner, including welcome, installation location, readiness, progress, and completion pages. The managed deployment defaults create both desktop and Start Menu shortcuts; they are not optional features in the installer UI.
 
-The standard Wire environments have permanent MSI upgrade codes in `build-windows-msi.ts`. Never change an upgrade code after its first release. A custom-branded build must set `WIN_MSI_UPGRADE_CODE` to its own permanent UUID so that it cannot collide with a standard Wire installation.
+The standard Wire environments have permanent MSI upgrade codes in `build-windows-msi.ts`. Never change an upgrade code after its first release. A custom-branded build must set `WIN_MSI_UPGRADE_CODE` to its own permanent GUID so that it cannot collide with a standard Wire installation. The MSI manufacturer defaults to `Wire Swiss GmbH`; an OEM build can override it with `WIN_MSI_MANUFACTURER`.
 
 The Squirrel installer remains available as a separate build target during migration. MSI artifacts are published under `win/msi/<environment>` and must never replace the `RELEASES` metadata used by existing Squirrel installations.
 
@@ -54,7 +54,8 @@ Do not delete the Squirrel update feed while supported Squirrel installations re
 
 A release candidate is acceptable only after it has been exercised on a supported Windows version and satisfies all of the following:
 
-- The MSI and every packaged executable pass `signtool.exe verify /pa`.
+- The Windows WiX build completes with MSI validation and warnings-as-errors enabled.
+- The MSI and every packaged executable pass `signtool.exe verify /pa /all /tw`, including their SHA-256 signatures and timestamps.
 - Interactive and `/qn` installation succeed for a standard managed user with elevation supplied by the deployment system.
 - Wire is installed under `Program Files` and appears exactly once in Apps & Features with the correct publisher, version, and icon.
 - Start Menu and desktop shortcuts launch Wire and carry the configured application user model ID.

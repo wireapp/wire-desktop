@@ -27,6 +27,7 @@ const envFilePath = path.join(__dirname, '../../../.env.defaults');
 const originalEnvironment = {
   appEnvironment: process.env.APP_ENV,
   appName: process.env.APP_NAME,
+  manufacturer: process.env.WIN_MSI_MANUFACTURER,
   upgradeCode: process.env.WIN_MSI_UPGRADE_CODE,
 };
 
@@ -42,6 +43,7 @@ describe('build-windows-msi', () => {
   afterEach(() => {
     restoreEnvironmentVariable('APP_ENV', originalEnvironment.appEnvironment);
     restoreEnvironmentVariable('APP_NAME', originalEnvironment.appName);
+    restoreEnvironmentVariable('WIN_MSI_MANUFACTURER', originalEnvironment.manufacturer);
     restoreEnvironmentVariable('WIN_MSI_UPGRADE_CODE', originalEnvironment.upgradeCode);
   });
 
@@ -50,7 +52,9 @@ describe('build-windows-msi', () => {
       const {builderConfig, windowsMsiConfig} = await buildWindowsMsiConfig(wireJsonPath, envFilePath, true);
 
       assert.strictEqual(windowsMsiConfig.appId, 'com.squirrel.wire.wire');
+      assert.strictEqual(windowsMsiConfig.manufacturer, 'Wire Swiss GmbH');
       assert.strictEqual(windowsMsiConfig.upgradeCode, '620FCDDD-30CB-4241-A347-D34CF682A358');
+      assert.deepStrictEqual(builderConfig.extraMetadata?.author, {name: windowsMsiConfig.manufacturer});
       assert.strictEqual(builderConfig.msi?.oneClick, false);
       assert.strictEqual(builderConfig.msi?.perMachine, true);
       assert.strictEqual(builderConfig.msi?.runAfterFinish, false);
@@ -73,11 +77,20 @@ describe('build-windows-msi', () => {
     });
 
     it('honors and normalizes a configured upgrade code', async () => {
-      process.env.WIN_MSI_UPGRADE_CODE = '{C88AA646-1E4B-4C0A-A05A-8BB72BBADBBB}';
+      process.env.WIN_MSI_UPGRADE_CODE = '{C88AA646-1E4B-FC0A-005A-8BB72BBADBBB}';
 
       const {windowsMsiConfig} = await buildWindowsMsiConfig(wireJsonPath, envFilePath);
 
-      assert.strictEqual(windowsMsiConfig.upgradeCode, 'C88AA646-1E4B-4C0A-A05A-8BB72BBADBBB');
+      assert.strictEqual(windowsMsiConfig.upgradeCode, 'C88AA646-1E4B-FC0A-005A-8BB72BBADBBB');
+    });
+
+    it('honors a configured manufacturer', async () => {
+      process.env.WIN_MSI_MANUFACTURER = 'Customer Corporation';
+
+      const {builderConfig, windowsMsiConfig} = await buildWindowsMsiConfig(wireJsonPath, envFilePath);
+
+      assert.strictEqual(windowsMsiConfig.manufacturer, 'Customer Corporation');
+      assert.strictEqual(builderConfig.extraMetadata?.author?.name, windowsMsiConfig.manufacturer);
     });
 
     it('rejects an invalid configured upgrade code', async () => {
@@ -97,6 +110,7 @@ describe('build-windows-msi', () => {
     it('brands the assisted UI and makes the URL protocol and desktop shortcut identity MSI-owned', () => {
       const project = `
         <Product Name="Wire">
+          <Condition Message="Windows 7 and above is required"><![CDATA[Installed OR VersionNT >= 601]]></Condition>
           <Component>
             <File Name="Wire.exe" Id="mainExecutable">
               <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="Wire"/>
@@ -107,6 +121,8 @@ describe('build-windows-msi', () => {
       const result = customizeMsiProject(project, 'wire', 'com.squirrel.wire.wire', 'Wire', 'msi-banner.bmp');
 
       assert.match(result, /WixVariable Id="WixUIBannerBmp" Value="msi-banner\.bmp"/);
+      assert.match(result, /Windows 10 or above is required/);
+      assert.match(result, /VersionNT >= 1000/);
       assert.match(result, /ShortcutProperty Key="System\.AppUserModel\.ID" Value="com\.squirrel\.wire\.wire"/);
       assert.match(result, /RegistryKey Root="HKLM" Key="Software\\Classes\\wire"/);
       assert.match(result, /Value="&quot;\[#mainExecutable\]&quot; &quot;%1&quot;"/);
@@ -120,7 +136,10 @@ describe('build-windows-msi', () => {
     });
 
     it('fails if electron-builder no longer generates the expected desktop shortcut', () => {
-      const project = '<Product><Component><File Name="Wire.exe" Id="mainExecutable"/></Component></Product>';
+      const project = `<Product>
+        <Condition Message="Windows 7 and above is required"><![CDATA[Installed OR VersionNT >= 601]]></Condition>
+        <Component><File Name="Wire.exe" Id="mainExecutable"/></Component>
+      </Product>`;
 
       assert.throws(
         () => customizeMsiProject(project, 'wire', 'com.squirrel.wire.wire', 'Wire', 'msi-banner.bmp'),

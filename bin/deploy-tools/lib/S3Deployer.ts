@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2019 Wire Swiss GmbH
+ * Copyright (C) 2026 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +14,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
  */
 
-import {Logger} from '@wireapp/commons';
-import {getLogger} from '../../bin-utils';
 import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
+
 import path from 'path';
 
+import {Logger} from '@wireapp/commons';
+
 import {find, FindResult, logDry} from './deploy-utils';
+
+import {getLogger} from '../../bin-utils';
 
 export interface S3DeployerOptions {
   accessKeyId: string;
@@ -94,7 +98,7 @@ export class S3Deployer {
         },
       ];
     } else if (platform.includes('windows')) {
-      const msi = await find('*.msi', {cwd: basePath, safeGuard: false});
+      const msi = await find(`*-${version}-*.msi`, {cwd: basePath, safeGuard: false});
       if (msi) {
         return [{...msi, filePath: path.join(basePath, msi.fileName)}];
       }

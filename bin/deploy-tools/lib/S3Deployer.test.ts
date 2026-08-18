@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2019 Wire Swiss GmbH
+ * Copyright (C) 2026 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,10 +14,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
  */
 
-import assert from 'node:assert';
 import fs from 'fs-extra';
+
+import assert from 'node:assert';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -38,7 +40,7 @@ describe('S3Deployer', () => {
         secretAccessKey: '',
       });
 
-      await s3Deployer.copyOnS3({bucket: '', s3FromPath: '', s3ToPath: ''});
+      await assert.doesNotReject(() => s3Deployer.copyOnS3({bucket: '', s3FromPath: '', s3ToPath: ''}));
     });
   });
 
@@ -48,6 +50,7 @@ describe('S3Deployer', () => {
       temporaryDirectories.push(basePath);
       const fileName = 'Wire-3.42.123-x64.msi';
       await fs.ensureFile(path.join(basePath, fileName));
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.122-x64.msi'));
       const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
 
       const files = await s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123');

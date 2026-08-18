@@ -30,6 +30,7 @@ import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 const mainDir = path.resolve(__dirname, '../../../');
+const DEFAULT_MSI_MANUFACTURER = 'Wire Swiss GmbH';
 
 const DEFAULT_MSI_IDENTITIES = {
   internal: {productName: 'WireInternal', upgradeCode: '673C5C7F-2923-483B-8EDB-34EDBDFCFF8A'},
@@ -53,7 +54,7 @@ function escapeXmlAttribute(value: string): string {
 
 function validateUpgradeCode(upgradeCode: string): string {
   const normalized = upgradeCode.replace(/^\{(.+)\}$/, '$1').toUpperCase();
-  if (!/^[0-9A-F]{8}-[0-9A-F]{4}-[1-5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/.test(normalized)) {
+  if (!/^[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}$/.test(normalized)) {
     throw new Error(`Invalid Windows MSI upgrade code "${upgradeCode}".`);
   }
   return normalized;
@@ -111,6 +112,16 @@ export function customizeMsiProject(
     `$&\n    <WixVariable Id="WixUIBannerBmp" Value="${banner}"/>`,
   );
 
+  const electronBuilderOsCondition =
+    /<Condition Message="Windows 7 and above is required"><!\[CDATA\[Installed OR VersionNT >= 601\]\]><\/Condition>/;
+  if (!electronBuilderOsCondition.test(customizedProject)) {
+    throw new Error('Could not find the operating system condition in the generated MSI project.');
+  }
+  customizedProject = customizedProject.replace(
+    electronBuilderOsCondition,
+    '<Condition Message="Windows 10 or above is required"><![CDATA[Installed OR VersionNT >= 1000]]></Condition>',
+  );
+
   const escapedAppId = escapeXmlAttribute(appId);
   const desktopShortcutPattern = /(<Shortcut Id="desktopShortcut"[^>]*?)\/>/;
   if (!desktopShortcutPattern.test(customizedProject)) {
@@ -140,10 +151,15 @@ export async function buildWindowsMsiConfig(
   }
   const configuredUpgradeCode = process.env.WIN_MSI_UPGRADE_CODE || defaultIdentity.upgradeCode;
   const upgradeCode = validateUpgradeCode(configuredUpgradeCode);
+  const manufacturer = (process.env.WIN_MSI_MANUFACTURER || DEFAULT_MSI_MANUFACTURER).trim();
+  if (!manufacturer) {
+    throw new Error('Windows MSI manufacturer must not be empty.');
+  }
 
   const windowsMsiConfig: WindowsMsiConfig = {
     appId,
     artifactName: '${productName}-${version}-${arch}.${ext}',
+    manufacturer,
     upgradeCode,
   };
 
@@ -154,6 +170,9 @@ export async function buildWindowsMsiConfig(
     directories: {
       buildResources: commonConfig.electronDirectory,
       output: commonConfig.distDir,
+    },
+    extraMetadata: {
+      author: {name: windowsMsiConfig.manufacturer},
     },
     msi: {
       artifactName: windowsMsiConfig.artifactName,
