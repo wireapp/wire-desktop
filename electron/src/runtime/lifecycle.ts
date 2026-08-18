@@ -38,7 +38,7 @@ export let isFirstInstance: boolean | undefined = undefined;
 const relaunchListeners: (() => void)[] = [];
 
 export async function initSquirrelListener(): Promise<void> {
-  if (EnvironmentUtil.platform.IS_WINDOWS) {
+  if (EnvironmentUtil.platform.IS_WINDOWS && Squirrel.isSquirrelInstallation()) {
     logger.info('Checking for Windows update ...');
     await Squirrel.handleSquirrelArgs();
 

@@ -16,9 +16,20 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
+import assert from 'node:assert';
+import fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
+
 import {S3Deployer} from './S3Deployer';
 
 describe('S3Deployer', () => {
+  const temporaryDirectories: string[] = [];
+
+  afterEach(async () => {
+    await Promise.all(temporaryDirectories.splice(0).map(directory => fs.remove(directory)));
+  });
+
   describe('copyOnS3', () => {
     it(`doesn't upload anything if dry run is set`, async () => {
       const s3Deployer = new S3Deployer({
@@ -28,6 +39,20 @@ describe('S3Deployer', () => {
       });
 
       await s3Deployer.copyOnS3({bucket: '', s3FromPath: '', s3ToPath: ''});
+    });
+  });
+
+  describe('findUploadFiles', () => {
+    it('selects a native MSI without requiring Squirrel release artifacts', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-msi-deployer-'));
+      temporaryDirectories.push(basePath);
+      const fileName = 'Wire-3.42.123-x64.msi';
+      await fs.ensureFile(path.join(basePath, fileName));
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      const files = await s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123');
+
+      assert.deepStrictEqual(files, [{fileName, filePath: path.join(basePath, fileName)}]);
     });
   });
 });

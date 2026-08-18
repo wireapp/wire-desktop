@@ -36,6 +36,7 @@ node('built-in') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
+  def isWindowsMsi = false
   echo("version: ${version}")
   def buildNumber = version.tokenize('.')[2]
   def NODE = tool name: 'node-v20.10.0', type: 'nodejs'
@@ -58,6 +59,8 @@ node('built-in') {
       throw e
     }
   }
+
+  isWindowsMsi = projectName.contains('Windows') && findFiles(glob: 'wrap/dist/*.msi').length > 0
 
   currentBuild.displayName = "Deploy ${projectName} ${version}"
 
@@ -89,15 +92,15 @@ node('built-in') {
         def AWS_SECRET_CREDENTIALS_ID = ''
 
         if (params.Release == 'Production') {
-          env.S3_PATH = 'win/prod'
+          env.S3_PATH = isWindowsMsi ? 'win/msi/prod' : 'win/prod'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Internal') {
-          env.S3_PATH = 'win/internal'
+          env.S3_PATH = isWindowsMsi ? 'win/msi/internal' : 'win/internal'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Wire-Gov') {
-          env.S3_PATH = 'win/wire-gov'
+          env.S3_PATH = isWindowsMsi ? 'win/msi/wire-gov' : 'win/wire-gov'
           env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
@@ -389,7 +392,7 @@ node('built-in') {
   // ------------------------------------------------------------------------
   // Windows-specific stage: Update RELEASES file for Squirrel auto-updates
   // ------------------------------------------------------------------------
-  if (projectName.contains('Windows')) {
+  if (projectName.contains('Windows') && !isWindowsMsi) {
     stage('Update RELEASES file') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {

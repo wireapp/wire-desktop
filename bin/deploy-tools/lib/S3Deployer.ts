@@ -94,6 +94,11 @@ export class S3Deployer {
         },
       ];
     } else if (platform.includes('windows')) {
+      const msi = await find('*.msi', {cwd: basePath, safeGuard: false});
+      if (msi) {
+        return [{...msi, filePath: path.join(basePath, msi.fileName)}];
+      }
+
       const setupExe = await find('*-Setup.exe', {cwd: basePath});
       const nupkgFile = await find('*-full.nupkg', {cwd: basePath});
       const releasesFile = await find('RELEASES', {cwd: basePath});

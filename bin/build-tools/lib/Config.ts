@@ -72,3 +72,9 @@ export interface WindowsInstallerConfig {
   installerIconUrl: string;
   loadingGif: string;
 }
+
+export interface WindowsMsiConfig {
+  appId: string;
+  artifactName: string;
+  upgradeCode: string;
+}
