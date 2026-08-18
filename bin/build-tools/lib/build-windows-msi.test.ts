@@ -51,6 +51,7 @@ describe('build-windows-msi', () => {
 
       assert.strictEqual(windowsMsiConfig.appId, 'com.squirrel.wire.wire');
       assert.strictEqual(windowsMsiConfig.upgradeCode, '620FCDDD-30CB-4241-A347-D34CF682A358');
+      assert.strictEqual(builderConfig.msi?.oneClick, false);
       assert.strictEqual(builderConfig.msi?.perMachine, true);
       assert.strictEqual(builderConfig.msi?.runAfterFinish, false);
       assert.strictEqual(builderConfig.msi?.upgradeCode, windowsMsiConfig.upgradeCode);

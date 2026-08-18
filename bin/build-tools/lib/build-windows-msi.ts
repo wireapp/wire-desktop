@@ -148,7 +148,7 @@ export async function buildWindowsMsiConfig(
       artifactName: windowsMsiConfig.artifactName,
       createDesktopShortcut: true,
       createStartMenuShortcut: true,
-      oneClick: true,
+      oneClick: false,
       perMachine: true,
       runAfterFinish: false,
       shortcutName: commonConfig.name,

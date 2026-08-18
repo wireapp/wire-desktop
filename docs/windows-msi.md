@@ -13,6 +13,8 @@ yarn build:win:msi -m
 
 `-m` disables electron-builder's automatic signing. Jenkins uses this mode because it signs the packaged Windows executables before creating the MSI, and signs the resulting MSI separately with the managed signing service.
 
+Interactive installation uses the standard assisted Windows Installer flow, including welcome, installation location, readiness, progress, and completion pages. The managed deployment defaults create both desktop and Start Menu shortcuts; they are not optional features in the installer UI.
+
 The standard Wire environments have permanent MSI upgrade codes in `build-windows-msi.ts`. Never change an upgrade code after its first release. A custom-branded build must set `WIN_MSI_UPGRADE_CODE` to its own permanent UUID so that it cannot collide with a standard Wire installation.
 
 The Squirrel installer remains available as a separate build target during migration. MSI artifacts are published under `win/msi/<environment>` and must never replace the `RELEASES` metadata used by existing Squirrel installations.
