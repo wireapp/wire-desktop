@@ -94,16 +94,19 @@ describe('build-windows-msi', () => {
   });
 
   describe('customizeMsiProject', () => {
-    it('makes the URL protocol and desktop shortcut identity MSI-owned', () => {
+    it('brands the assisted UI and makes the URL protocol and desktop shortcut identity MSI-owned', () => {
       const project = `
-        <Component>
-          <File Name="Wire.exe" Id="mainExecutable">
-            <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="Wire"/>
-          </File>
-        </Component>`;
+        <Product Name="Wire">
+          <Component>
+            <File Name="Wire.exe" Id="mainExecutable">
+              <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="Wire"/>
+            </File>
+          </Component>
+        </Product>`;
 
-      const result = customizeMsiProject(project, 'wire', 'com.squirrel.wire.wire', 'Wire');
+      const result = customizeMsiProject(project, 'wire', 'com.squirrel.wire.wire', 'Wire', 'msi-banner.bmp');
 
+      assert.match(result, /WixVariable Id="WixUIBannerBmp" Value="msi-banner\.bmp"/);
       assert.match(result, /ShortcutProperty Key="System\.AppUserModel\.ID" Value="com\.squirrel\.wire\.wire"/);
       assert.match(result, /RegistryKey Root="HKLM" Key="Software\\Classes\\wire"/);
       assert.match(result, /Value="&quot;\[#mainExecutable\]&quot; &quot;%1&quot;"/);
@@ -111,16 +114,16 @@ describe('build-windows-msi', () => {
 
     it('fails if electron-builder no longer generates the expected main executable component', () => {
       assert.throws(
-        () => customizeMsiProject('<Product/>', 'wire', 'com.squirrel.wire.wire', 'Wire'),
+        () => customizeMsiProject('<Product/>', 'wire', 'com.squirrel.wire.wire', 'Wire', 'msi-banner.bmp'),
         /Could not find the main executable/,
       );
     });
 
     it('fails if electron-builder no longer generates the expected desktop shortcut', () => {
-      const project = '<Component><File Name="Wire.exe" Id="mainExecutable"/></Component>';
+      const project = '<Product><Component><File Name="Wire.exe" Id="mainExecutable"/></Component></Product>';
 
       assert.throws(
-        () => customizeMsiProject(project, 'wire', 'com.squirrel.wire.wire', 'Wire'),
+        () => customizeMsiProject(project, 'wire', 'com.squirrel.wire.wire', 'Wire', 'msi-banner.bmp'),
         /Could not find the desktop shortcut/,
       );
     });

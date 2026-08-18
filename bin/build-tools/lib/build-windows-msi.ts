@@ -66,6 +66,7 @@ export function customizeMsiProject(
   customProtocolName: string,
   appId: string,
   productName: string,
+  bannerFileName: string,
 ): string {
   if (!/^[a-z][a-z0-9+.-]*$/i.test(customProtocolName)) {
     throw new Error(`Invalid custom protocol name "${customProtocolName}".`);
@@ -99,6 +100,16 @@ export function customizeMsiProject(
 
   let customizedProject =
     project.slice(0, componentEndPosition) + protocolRegistry + project.slice(componentEndPosition);
+
+  const productOpeningTag = /<Product(?:\s[^>]*)?>/;
+  if (!productOpeningTag.test(customizedProject)) {
+    throw new Error('Could not find the product in the generated MSI project.');
+  }
+  const banner = escapeXmlAttribute(bannerFileName);
+  customizedProject = customizedProject.replace(
+    productOpeningTag,
+    `$&\n    <WixVariable Id="WixUIBannerBmp" Value="${banner}"/>`,
+  );
 
   const escapedAppId = escapeXmlAttribute(appId);
   const desktopShortcutPattern = /(<Shortcut Id="desktopShortcut"[^>]*?)\/>/;
@@ -156,12 +167,16 @@ export async function buildWindowsMsiConfig(
       warningsAsErrors: true,
     },
     msiProjectCreated: async projectFile => {
+      const bannerSource = path.join(mainDir, 'bin/build-tools/assets/msi-banner.bmp');
+      const bannerFileName = path.basename(bannerSource);
+      await fs.copy(bannerSource, path.join(path.dirname(projectFile), bannerFileName));
       const project = await fs.readFile(projectFile, 'utf8');
       const customizedProject = customizeMsiProject(
         project,
         commonConfig.customProtocolName,
         windowsMsiConfig.appId,
         commonConfig.name,
+        bannerFileName,
       );
       await fs.writeFile(projectFile, customizedProject);
     },

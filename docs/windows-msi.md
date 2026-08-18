@@ -13,7 +13,7 @@ yarn build:win:msi -m
 
 `-m` disables electron-builder's automatic signing. Jenkins uses this mode because it signs the packaged Windows executables before creating the MSI, and signs the resulting MSI separately with the managed signing service.
 
-Interactive installation uses the standard assisted Windows Installer flow, including welcome, installation location, readiness, progress, and completion pages. The managed deployment defaults create both desktop and Start Menu shortcuts; they are not optional features in the installer UI.
+Interactive installation uses the standard assisted Windows Installer flow with a Wire-branded banner, including welcome, installation location, readiness, progress, and completion pages. The managed deployment defaults create both desktop and Start Menu shortcuts; they are not optional features in the installer UI.
 
 The standard Wire environments have permanent MSI upgrade codes in `build-windows-msi.ts`. Never change an upgrade code after its first release. A custom-branded build must set `WIN_MSI_UPGRADE_CODE` to its own permanent UUID so that it cannot collide with a standard Wire installation.
 
@@ -33,6 +33,16 @@ msiexec.exe /x Wire-<version>-x64.msi /qn /norestart /l*v Wire-uninstall.log
 ```
 
 The endpoint-management policy should close Wire before an upgrade. A deployment must handle Windows Installer exit codes, including reboot-required results, rather than treating every non-zero result as a generic failure.
+
+## MDM deployment contract
+
+Assign the MSI to devices and install it in the local SYSTEM context. It is a per-machine package (`ALLUSERS=1`) and does not require an interactive user session; the assisted wizard is skipped when `/qn` is used.
+
+Use the endpoint-management system's MSI inventory for detection. A release has a version-specific product code, while the upgrade code remains stable for the product family. A custom detection rule should therefore check the installed product identity and version, not the MSI filename alone.
+
+Treat Windows Installer success and reboot-required results according to the endpoint-management system's conventions. In particular, `0` is success, while `1641` and `3010` indicate successful installation with a reboot initiated or required. Retain the verbose MSI log when diagnosing a failed deployment.
+
+Before broad deployment, validate fresh install, upgrade, repair, and uninstall while running as SYSTEM on every supported Windows version. The MSI and all packaged executables must be signed and timestamped with the production certificate; an unsigned local build is only suitable for development testing.
 
 ## Migration from Squirrel
 
