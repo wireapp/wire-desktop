@@ -51,6 +51,8 @@ export interface S3CopyOptions {
   s3ToPath: string;
 }
 
+export type WindowsArtifactType = 'auto' | 'msi' | 'squirrel';
+
 export class S3Deployer {
   private readonly options: Required<S3DeployerOptions>;
   private readonly S3Instance: S3;
@@ -69,7 +71,12 @@ export class S3Deployer {
     this.logger = getLogger('deploy-tools', toolName);
   }
 
-  async findUploadFiles(platform: string, basePath: string, version: string): Promise<FindResult[]> {
+  async findUploadFiles(
+    platform: string,
+    basePath: string,
+    version: string,
+    windowsArtifact: WindowsArtifactType = 'auto',
+  ): Promise<FindResult[]> {
     if (platform.includes('linux')) {
       const appImage = await find('*.AppImage', {cwd: basePath});
       const debImage = await find('*.deb', {cwd: basePath});
@@ -98,8 +105,15 @@ export class S3Deployer {
         },
       ];
     } else if (platform.includes('windows')) {
+      if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
+        throw new Error(`Invalid Windows artifact type "${windowsArtifact}"`);
+      }
+
       const msi = await find(`*-${version}-*.msi`, {cwd: basePath, safeGuard: false});
-      if (msi) {
+      if (windowsArtifact === 'msi' && !msi) {
+        throw new Error(`Could not find an MSI for version "${version}".`);
+      }
+      if (msi && windowsArtifact !== 'squirrel') {
         return [{...msi, filePath: path.join(basePath, msi.fileName)}];
       }
 

@@ -45,17 +45,41 @@ describe('S3Deployer', () => {
   });
 
   describe('findUploadFiles', () => {
-    it('selects a native MSI without requiring Squirrel release artifacts', async () => {
+    it('selects the requested native MSI when Squirrel artifacts are also present', async () => {
       const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-msi-deployer-'));
       temporaryDirectories.push(basePath);
       const fileName = 'Wire-3.42.123-x64.msi';
       await fs.ensureFile(path.join(basePath, fileName));
       await fs.ensureFile(path.join(basePath, 'Wire-3.42.122-x64.msi'));
+      await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
+      await fs.ensureFile(path.join(basePath, 'RELEASES'));
       const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
 
-      const files = await s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123');
+      const files = await s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123', 'msi');
 
       assert.deepStrictEqual(files, [{fileName, filePath: path.join(basePath, fileName)}]);
+    });
+
+    it('selects Squirrel artifacts when an MSI is also present', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-squirrel-deployer-'));
+      temporaryDirectories.push(basePath);
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-x64.msi'));
+      await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
+      await fs.ensureFile(path.join(basePath, 'RELEASES'));
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      const files = await s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123', 'squirrel');
+
+      assert.deepStrictEqual(files, [
+        {
+          fileName: 'Wire-3.42.123-full.nupkg',
+          filePath: path.join(basePath, 'Wire-3.42.123-full.nupkg'),
+        },
+        {fileName: 'Wire-3.42.123-RELEASES', filePath: path.join(basePath, 'RELEASES')},
+        {fileName: 'Wire-3.42.123.exe', filePath: path.join(basePath, 'Wire-Setup.exe')},
+      ]);
     });
   });
 });

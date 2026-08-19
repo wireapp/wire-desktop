@@ -78,20 +78,15 @@ node('windows') {
     }
   }
 
-  stage('Build MSI') {
+  stage('Build installers') {
     try {
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
-        if (production || custom) {
-          bat 'yarn build:win:msi -m'
-        } else if (wireGov) {
-          bat 'yarn build:win:msi:wire-gov'
-        } else {
-          bat 'yarn build:win:msi:internal'
-        }
+        // Build both installer families from the same signed application without cleaning between them.
+        bat 'yarn build:win:installers'
       }
     } catch (e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} building MSI failed**\n${BUILD_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} building installers failed**\n${BUILD_URL}"
       throw e
     }
   }
@@ -106,6 +101,7 @@ node('windows') {
         string(credentialsId: 'SM_KEYPAIR_ALIAS',         variable: 'SM_KEYPAIR_ALIAS')
       ]) {
         try {
+          bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp --failfast --exit-non-zero-on-fail -v || exit /b 1)'
           bat 'for %%f in ("wrap\\dist\\*.msi") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp --failfast --exit-non-zero-on-fail -v || exit /b 1)'
         } catch (e) {
           currentBuild.result = 'FAILED'
@@ -122,6 +118,7 @@ node('windows') {
     if (production) {
       try {
         bat 'for /r "wrap\\build" %%f in (*.exe) do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
+        bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
         bat 'for %%f in ("wrap\\dist\\*.msi") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
       } catch (e) {
         currentBuild.result = 'FAILED'
@@ -140,7 +137,7 @@ node('windows') {
   stage('Print hash') {
     try {
       if (production) {
-        bat 'for %%f in ("wrap\\dist\\*.msi") do (certUtil -hashfile %%f SHA256)'
+        bat 'for %%f in ("wrap\\dist\\*-Setup.exe" "wrap\\dist\\*.msi") do (certUtil -hashfile "%%~ff" SHA256)'
       }
     } catch (e) {
       currentBuild.result = 'FAILED'

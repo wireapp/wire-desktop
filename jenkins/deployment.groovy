@@ -36,7 +36,8 @@ node('built-in') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
-  def isWindowsMsi = false
+  def hasWindowsMsi = false
+  def hasWindowsSquirrel = false
   echo("version: ${version}")
   def buildNumber = version.tokenize('.')[2]
   def NODE = tool name: 'node-v20.10.0', type: 'nodejs'
@@ -60,7 +61,11 @@ node('built-in') {
     }
   }
 
-  isWindowsMsi = projectName.contains('Windows') && findFiles(glob: 'wrap/dist/*.msi').length > 0
+  hasWindowsMsi = projectName.contains('Windows') && findFiles(glob: 'wrap/dist/*.msi').length > 0
+  hasWindowsSquirrel = projectName.contains('Windows') &&
+    findFiles(glob: 'wrap/dist/*-Setup.exe').length > 0 &&
+    findFiles(glob: 'wrap/dist/*-full.nupkg').length > 0 &&
+    findFiles(glob: 'wrap/dist/RELEASES').length > 0
 
   currentBuild.displayName = "Deploy ${projectName} ${version}"
 
@@ -88,27 +93,36 @@ node('built-in') {
         // 1) Windows S3 Upload
         // -----------------------------
         env.S3_PATH = ''
+        env.MSI_S3_PATH = ''
         def AWS_ACCESS_KEY_CREDENTIALS_ID = ''
         def AWS_SECRET_CREDENTIALS_ID = ''
 
         if (params.Release == 'Production') {
-          env.S3_PATH = isWindowsMsi ? 'win/msi/prod' : 'win/prod'
+          env.S3_PATH = 'win/prod'
+          env.MSI_S3_PATH = 'win/msi/prod'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Internal') {
-          env.S3_PATH = isWindowsMsi ? 'win/msi/internal' : 'win/internal'
+          env.S3_PATH = 'win/internal'
+          env.MSI_S3_PATH = 'win/msi/internal'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Wire-Gov') {
-          env.S3_PATH = isWindowsMsi ? 'win/msi/wire-gov' : 'win/wire-gov'
+          env.S3_PATH = 'win/wire-gov'
+          env.MSI_S3_PATH = 'win/msi/wire-gov'
           env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.WIN_S3_BUCKET
           env.S3_PATH = params.WIN_S3_PATH
+          env.MSI_S3_PATH = params.WIN_S3_PATH
           AWS_ACCESS_KEY_CREDENTIALS_ID = params.AWS_CUSTOM_ACCESS_KEY_ID
           AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
+        }
+
+        if (!hasWindowsSquirrel && !hasWindowsMsi) {
+          error('No complete Windows Squirrel or MSI artifact set found')
         }
 
         try {
@@ -116,16 +130,32 @@ node('built-in') {
             string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
             string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
-            sh '''
-              jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
-                --bucket "$S3_BUCKET" \
-                --s3path "$S3_PATH" \
-                --key-id "$AWS_ACCESS_KEY_ID" \
-                --secret-key "$AWS_SECRET_ACCESS_KEY" \
-                --wrapper-build "$WRAPPER_BUILD" \
-                --path "$SEARCH_PATH" \
-                $DRY_RUN
-            '''
+            if (hasWindowsSquirrel) {
+              sh '''
+                jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
+                  --bucket "$S3_BUCKET" \
+                  --s3path "$S3_PATH" \
+                  --windows-artifact squirrel \
+                  --key-id "$AWS_ACCESS_KEY_ID" \
+                  --secret-key "$AWS_SECRET_ACCESS_KEY" \
+                  --wrapper-build "$WRAPPER_BUILD" \
+                  --path "$SEARCH_PATH" \
+                  $DRY_RUN
+              '''
+            }
+            if (hasWindowsMsi) {
+              sh '''
+                jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
+                  --bucket "$S3_BUCKET" \
+                  --s3path "$MSI_S3_PATH" \
+                  --windows-artifact msi \
+                  --key-id "$AWS_ACCESS_KEY_ID" \
+                  --secret-key "$AWS_SECRET_ACCESS_KEY" \
+                  --wrapper-build "$WRAPPER_BUILD" \
+                  --path "$SEARCH_PATH" \
+                  $DRY_RUN
+              '''
+            }
           }
         } catch(e) {
           currentBuild.result = 'FAILED'

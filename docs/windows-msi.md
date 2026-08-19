@@ -11,15 +11,17 @@ yarn build:win
 yarn build:win:msi -m
 ```
 
+The Windows Jenkins job uses `yarn build:win:installers` to create the Squirrel and MSI artifacts together without cleaning `wrap/dist` between them. The individual installer commands continue to clean their output for local builds.
+
 `-m` disables electron-builder's automatic signing. Jenkins uses this mode because it signs the packaged Windows executables before creating the MSI, and signs the resulting MSI separately with the managed signing service.
 
 Interactive installation uses the standard assisted Windows Installer flow with a Wire-branded banner, including welcome, installation location, readiness, progress, and completion pages. The managed deployment defaults create both desktop and Start Menu shortcuts; they are not optional features in the installer UI.
 
 The standard Wire environments have permanent MSI upgrade codes in `build-windows-msi.ts`. Never change an upgrade code after its first release. A custom-branded build must set `WIN_MSI_UPGRADE_CODE` to its own permanent GUID so that it cannot collide with a standard Wire installation. The MSI manufacturer defaults to `Wire Swiss GmbH`; an OEM build can override it with `WIN_MSI_MANUFACTURER`.
 
-The Squirrel installer remains available as a separate build target during migration. MSI artifacts are published under `win/msi/<environment>` and must never replace the `RELEASES` metadata used by existing Squirrel installations.
+The production job builds and archives both installer families during migration. Squirrel artifacts remain published under `win/<environment>` and MSI artifacts are published separately under `win/msi/<environment>`; an MSI must never replace the `RELEASES` metadata used by existing Squirrel installations.
 
-Before promoting the first MSI release, update the download-page consumer and the external `Wrapper_Windows_Smoke_Tests` Jenkins job to select and install the versioned `.msi` artifact instead of `Wire-Setup.exe`.
+Before promoting the first MSI release, add MSI selection and installation coverage to the download-page consumer and the external Windows smoke tests without removing the existing Squirrel release coverage.
 
 ## Updates
 

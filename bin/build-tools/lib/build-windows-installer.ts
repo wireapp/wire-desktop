@@ -99,7 +99,8 @@ export async function buildWindowsInstaller(
     logger.log(`Built installer in "${buildDir}"`);
   } catch (error) {
     logger.error(error);
+    throw error;
+  } finally {
+    await restoreFiles(backup);
   }
-
-  await restoreFiles(backup);
 }
