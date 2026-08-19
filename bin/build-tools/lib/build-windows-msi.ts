@@ -119,7 +119,7 @@ export function customizeMsiProject(
   }
   customizedProject = customizedProject.replace(
     electronBuilderOsCondition,
-    '<Condition Message="Windows 10 or above is required"><![CDATA[Installed OR VersionNT >= 1000]]></Condition>',
+    '<Condition Message="Windows 10 or above is required"><![CDATA[Installed OR (VersionNT >= 603 AND WindowsBuild >= 10240)]]></Condition>',
   );
 
   const escapedAppId = escapeXmlAttribute(appId);

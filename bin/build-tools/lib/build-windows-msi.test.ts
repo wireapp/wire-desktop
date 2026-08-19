@@ -122,7 +122,8 @@ describe('build-windows-msi', () => {
 
       assert.match(result, /WixVariable Id="WixUIBannerBmp" Value="msi-banner\.bmp"/);
       assert.match(result, /Windows 10 or above is required/);
-      assert.match(result, /VersionNT >= 1000/);
+      assert.match(result, /VersionNT >= 603 AND WindowsBuild >= 10240/);
+      assert.doesNotMatch(result, /VersionNT >= 1000/);
       assert.match(result, /ShortcutProperty Key="System\.AppUserModel\.ID" Value="com\.squirrel\.wire\.wire"/);
       assert.match(result, /RegistryKey Root="HKLM" Key="Software\\Classes\\wire"/);
       assert.match(result, /Value="&quot;\[#mainExecutable\]&quot; &quot;%1&quot;"/);
