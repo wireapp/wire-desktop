@@ -85,6 +85,7 @@ export function customizeMsiProject(
 
   const protocol = escapeXmlAttribute(customProtocolName);
   const description = escapeXmlAttribute(`${productName} URL`);
+  const configurationRegistryKey = escapeXmlAttribute(`Software\\Wire\\${productName}`);
   const protocolRegistry = [
     `        <RegistryKey Root="HKLM" Key="Software\\Classes\\${protocol}">`,
     `          <RegistryValue Type="string" Value="URL:${description}"/>`,
@@ -95,6 +96,9 @@ export function customizeMsiProject(
     '          <RegistryKey Key="shell\\open\\command">',
     '            <RegistryValue Type="string" Value="&quot;[#mainExecutable]&quot; &quot;%1&quot;"/>',
     '          </RegistryKey>',
+    '        </RegistryKey>',
+    `        <RegistryKey Root="HKLM" Key="${configurationRegistryKey}">`,
+    '          <RegistryValue Name="WebAppUrl" Type="string" Value="[WIRE_WEBAPP_URL]"/>',
     '        </RegistryKey>',
     '      ',
   ].join('\n');
@@ -107,10 +111,16 @@ export function customizeMsiProject(
     throw new Error('Could not find the product in the generated MSI project.');
   }
   const banner = escapeXmlAttribute(bannerFileName);
-  customizedProject = customizedProject.replace(
-    productOpeningTag,
-    `$&\n    <WixVariable Id="WixUIBannerBmp" Value="${banner}"/>`,
-  );
+  const msiProperties = [
+    `    <WixVariable Id="WixUIBannerBmp" Value="${banner}"/>`,
+    '    <Property Id="WIRE_WEBAPP_URL" Secure="yes"/>',
+    '    <Property Id="WIRE_CLEAR_WEBAPP_URL" Secure="yes"/>',
+    '    <Property Id="WIRE_EXISTING_WEBAPP_URL">',
+    `      <RegistrySearch Id="WireExistingWebAppUrl" Root="HKLM" Key="${configurationRegistryKey}" Name="WebAppUrl" Type="raw" Win64="yes"/>`,
+    '    </Property>',
+    '    <SetProperty Id="WIRE_WEBAPP_URL" Value="[WIRE_EXISTING_WEBAPP_URL]" After="AppSearch" Sequence="both">NOT WIRE_WEBAPP_URL AND NOT WIRE_CLEAR_WEBAPP_URL AND WIRE_EXISTING_WEBAPP_URL</SetProperty>',
+  ].join('\n');
+  customizedProject = customizedProject.replace(productOpeningTag, `$&\n${msiProperties}`);
 
   const electronBuilderOsCondition =
     /<Condition Message="Windows 7 and above is required"><!\[CDATA\[Installed OR VersionNT >= 601\]\]><\/Condition>/;

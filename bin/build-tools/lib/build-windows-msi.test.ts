@@ -127,6 +127,15 @@ describe('build-windows-msi', () => {
       assert.match(result, /ShortcutProperty Key="System\.AppUserModel\.ID" Value="com\.squirrel\.wire\.wire"/);
       assert.match(result, /RegistryKey Root="HKLM" Key="Software\\Classes\\wire"/);
       assert.match(result, /Value="&quot;\[#mainExecutable\]&quot; &quot;%1&quot;"/);
+      assert.match(result, /Property Id="WIRE_WEBAPP_URL" Secure="yes"/);
+      assert.match(result, /Property Id="WIRE_CLEAR_WEBAPP_URL" Secure="yes"/);
+      assert.match(
+        result,
+        /RegistrySearch Id="WireExistingWebAppUrl" Root="HKLM" Key="Software\\Wire\\Wire" Name="WebAppUrl" Type="raw" Win64="yes"/,
+      );
+      assert.match(result, /SetProperty Id="WIRE_WEBAPP_URL" Value="\[WIRE_EXISTING_WEBAPP_URL\]"/);
+      assert.match(result, /NOT WIRE_WEBAPP_URL AND NOT WIRE_CLEAR_WEBAPP_URL AND WIRE_EXISTING_WEBAPP_URL/);
+      assert.match(result, /RegistryValue Name="WebAppUrl" Type="string" Value="\[WIRE_WEBAPP_URL\]"/);
     });
 
     it('fails if electron-builder no longer generates the expected main executable component', () => {

@@ -34,6 +34,16 @@ msiexec.exe /i Wire-<version>-x64.msi /qn /norestart /l*v Wire-install.log
 msiexec.exe /x Wire-<version>-x64.msi /qn /norestart /l*v Wire-uninstall.log
 ```
 
+An organization can set the web application endpoint while installing or upgrading the MSI:
+
+```powershell
+msiexec.exe /i Wire-<version>-x64.msi WIRE_WEBAPP_URL="https://wire.example.com" /qn /norestart
+```
+
+`WIRE_WEBAPP_URL` is a secure public Windows Installer property. The MSI stores it machine-wide as `WebAppUrl` under `HKLM\Software\Wire\<product name>`, retains it when a later MSI is deployed without the property, and removes the MSI-owned value on uninstall. Supply a new value to change the endpoint during an upgrade, or `WIRE_CLEAR_WEBAPP_URL=1` to return to the application's normal environment selection.
+
+Only credential-free HTTPS URLs are accepted. The machine-wide value takes precedence over `--env` and per-user `init.json`; an invalid managed value fails closed instead of silently connecting to a different environment. Windows Installer logs public properties, so the configured URL must not contain credentials or other secrets.
+
 The endpoint-management policy should close Wire before an upgrade. A deployment must handle Windows Installer exit codes, including reboot-required results, rather than treating every non-zero result as a generic failure.
 
 ## MDM deployment contract
@@ -62,6 +72,7 @@ A release candidate is acceptable only after it has been exercised on a supporte
 - Wire is installed under `Program Files` and appears exactly once in Apps & Features with the correct publisher, version, and icon.
 - Start Menu and desktop shortcuts launch Wire and carry the configured application user model ID.
 - The configured custom URL protocol launches the installed executable.
+- `WIRE_WEBAPP_URL` configures the intended endpoint for every user, survives an upgrade where the property is omitted, and can be replaced or cleared explicitly.
 - A higher version upgrades in place, leaves one Apps & Features entry, and preserves user data.
 - A lower version is rejected and same-version repair does not create a second installation.
 - Upgrade behaviour while Wire is running is understood and documented for the deployment policy.
