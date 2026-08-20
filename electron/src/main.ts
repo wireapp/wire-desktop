@@ -111,6 +111,20 @@ const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOW
 const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
 const isInternalBuild = (): boolean => config.environment === 'internal';
 
+const configureWebAuthn = (): void => {
+  if (!EnvironmentUtil.platform.IS_MAC_OS) {
+    return;
+  }
+
+  app.configureWebAuthn({
+    touchID: {
+      keychainAccessGroup: config.webAuthnKeychainAccessGroup,
+      promptReason: 'sign in to $1',
+    },
+  });
+  logger.info('Configured the macOS WebAuthn platform authenticator.');
+};
+
 if (customDownloadPath) {
   electronDl({
     directory: appHomePath(customDownloadPath),
@@ -477,6 +491,7 @@ const handleAppEvents = (): void => {
 
   // System Menu, Tray Icon & Show window
   app.on('ready', async () => {
+    configureWebAuthn();
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen);
     if (EnvironmentUtil.app.IS_DEVELOPMENT) {

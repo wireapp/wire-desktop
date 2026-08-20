@@ -126,6 +126,7 @@ describe('commonConfig', () => {
         raygunApiKey: generateUUID(),
         supportUrl: generateUUID(),
         updateUrl: generateUUID(),
+        webAuthnKeychainAccessGroup: generateUUID(),
         websiteUrl: generateUUID(),
       };
 
@@ -152,6 +153,7 @@ describe('commonConfig', () => {
       assert.strictEqual(commonConfig.raygunApiKey, wireJson.raygunApiKey);
       assert.strictEqual(commonConfig.supportUrl, wireJson.supportUrl);
       assert.strictEqual(commonConfig.updateUrl, wireJson.updateUrl);
+      assert.strictEqual(commonConfig.webAuthnKeychainAccessGroup, wireJson.webAuthnKeychainAccessGroup);
       assert.strictEqual(commonConfig.websiteUrl, wireJson.websiteUrl);
 
       await fs.remove(tempDir);
