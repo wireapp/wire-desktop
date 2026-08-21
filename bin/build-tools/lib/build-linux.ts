@@ -60,13 +60,15 @@ export async function buildLinuxConfig(
   };
 
   const linuxDesktopConfig = {
-    Categories: linuxConfig.categories,
-    GenericName: linuxConfig.genericName,
-    Keywords: linuxConfig.keywords,
-    MimeType: `x-scheme-handler/${commonConfig.customProtocolName}`,
-    Name: commonConfig.name,
-    StartupWMClass: commonConfig.name,
-    Version: '1.1',
+    entry: {
+      Categories: linuxConfig.categories,
+      GenericName: linuxConfig.genericName,
+      Keywords: linuxConfig.keywords,
+      MimeType: `x-scheme-handler/${commonConfig.customProtocolName}`,
+      Name: commonConfig.name,
+      StartupWMClass: commonConfig.name,
+      Version: '1.1',
+    },
   };
 
   const platformSpecificConfig = {
@@ -154,6 +156,15 @@ export async function buildLinuxWrapper(
     {spaces: 2},
   );
   await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
+
+  // When this script runs via `ts-node -P tsconfig.bin.json`, ts-node prepends its own CLI
+  // (`ts-node/dist/bin.js -P tsconfig.bin.json`) to `process.execArgv`. `@electron/rebuild` forks a
+  // node-gyp worker with `cwd` set to each native module's directory, and `fork` inherits
+  // `process.execArgv` by default. The relative `-P tsconfig.bin.json` is then re-resolved against the
+  // module's directory (e.g. `node_modules/registry-js/tsconfig.bin.json`), which does not exist, and
+  // the rebuild fails with `TS5083: Cannot read file`. Native workers do not need ts-node, so we clear
+  // `execArgv` before the build to prevent them from re-running the ts-node CLI.
+  process.execArgv = [];
 
   try {
     const builtPackages = await electronBuilder.build({config: builderConfig, targets});
