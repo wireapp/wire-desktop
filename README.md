@@ -129,6 +129,8 @@ yarn build:win
 yarn build:linux
 ```
 
+Signed macOS builds require a provisioning profile because WebAuthn uses a restricted keychain-access-group entitlement. Provide the profile through `MACOS_PROVISIONING_PROFILE`; the build embeds it in the application before applying the final signature. Jenkins expects Secret file credentials named `MACOS_PROVISIONING_PROFILE` and `MACOS_PROVISIONING_PROFILE_INTERNAL` for the corresponding bundle identifiers.
+
 ### Other Linux targets
 
 If you would like to build for another Linux target, run the following command:

@@ -33,12 +33,14 @@ describe('build-macos', () => {
       const certNameInstaller = generateUUID();
       const notarizeAppleId = generateUUID();
       const notarizeApplePassword = generateUUID();
+      const provisioningProfile = __filename;
 
       process.env.MACOS_BUNDLE_ID = bundleId;
       process.env.MACOS_CERTIFICATE_NAME_APPLICATION = certNameApplication;
       process.env.MACOS_CERTIFICATE_NAME_INSTALLER = certNameInstaller;
       process.env.MACOS_NOTARIZE_APPLE_ID = notarizeAppleId;
       process.env.MACOS_NOTARIZE_APPLE_PASSWORD = notarizeApplePassword;
+      process.env.MACOS_PROVISIONING_PROFILE = provisioningProfile;
 
       const {macOSConfig} = await buildMacOSConfig(wireJsonPath, envFilePath);
 
@@ -47,12 +49,14 @@ describe('build-macos', () => {
       assert.strictEqual(macOSConfig.certNameInstaller, certNameInstaller);
       assert.strictEqual(macOSConfig.notarizeAppleId, notarizeAppleId);
       assert.strictEqual(macOSConfig.notarizeApplePassword, notarizeApplePassword);
+      assert.strictEqual(macOSConfig.provisioningProfile, provisioningProfile);
 
       delete process.env.MACOS_BUNDLE_ID;
       delete process.env.MACOS_CERTIFICATE_NAME_APPLICATION;
       delete process.env.MACOS_CERTIFICATE_NAME_INSTALLER;
       delete process.env.MACOS_NOTARIZE_APPLE_ID;
       delete process.env.MACOS_NOTARIZE_APPLE_PASSWORD;
+      delete process.env.MACOS_PROVISIONING_PROFILE;
     });
   });
 });

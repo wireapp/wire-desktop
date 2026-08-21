@@ -10,6 +10,7 @@ node("macos") {
   def skipNotarization = params.containsKey('SKIP_NOTARIZATION') ? params.SKIP_NOTARIZATION : true  
   def NODE = tool name: 'node-v18.18.0', type: 'nodejs'
   def privateAPIResult = ''
+  def provisioningProfileCredential = (!production && !custom && !wireGov) ? 'MACOS_PROVISIONING_PROFILE_INTERNAL' : 'MACOS_PROVISIONING_PROFILE'
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -39,37 +40,49 @@ node("macos") {
 
   stage('Build') {
     try {
-      withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
+      withCredentials([
+        string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD'),
+        file(credentialsId: provisioningProfileCredential, variable: 'MACOS_PROVISIONING_PROFILE'),
+      ]) {
         sh 'security unlock-keychain -p \"$MACOS_KEYCHAIN_PASSWORD\" /Users/jenkins/Library/Keychains/login.keychain-db'
-      }
-      withEnv(["PATH+NODE=${NODE}/bin"]) {
-        sh 'node -v'
-        sh 'npm -v'
-        sh 'npm install -g yarn'
-        sh 'yarn'
-        if (production) {
-          withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
+        withEnv(["PATH+NODE=${NODE}/bin"]) {
+          sh 'node -v'
+          sh 'npm -v'
+          sh 'npm install -g yarn'
+          sh 'yarn'
+          sh 'security cms -D -i "$MACOS_PROVISIONING_PROFILE" >/dev/null'
+          if (production) {
+            withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
+              sh 'yarn build:macos'
+            }
+
+            echo 'Checking for private Apple APIs ...'
+            privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-universal/Wire.app"', returnStdout: true
+            echo privateAPIResult
+          } else if (custom) {
             sh 'yarn build:macos'
+          } else if (wireGov) {
+            sh 'yarn build:macos:wire-gov'
+
+            echo 'Checking for private Apple APIs ...'
+            privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireGov-mas-universal/WireGov.app"', returnStdout: true
+            echo privateAPIResult
+          } else {
+            // internal
+            sh 'yarn build:macos:internal'
+
+            echo 'Checking for private Apple APIs ...'
+            privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-universal/WireInternal.app"', returnStdout: true
+            echo privateAPIResult
           }
 
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-universal/Wire.app"', returnStdout: true
-          echo privateAPIResult
-        } else if (custom) {
-          sh 'yarn build:macos'
-        } else if (wireGov) {
-          sh 'yarn build:macos:wire-gov'
-
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireGov-mas-universal/WireGov.app"', returnStdout: true
-          echo privateAPIResult
-        } else {
-          // internal
-          sh 'yarn build:macos:internal'
-
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-universal/WireInternal.app"', returnStdout: true
-          echo privateAPIResult
+          sh '''
+            set -euo pipefail
+            APP_FILE=$(find wrap/build -maxdepth 2 -type d -name '*.app' | head -n 1)
+            test -n "$APP_FILE"
+            test -f "$APP_FILE/Contents/embedded.provisionprofile"
+            codesign --verify --deep --strict --verbose=2 "$APP_FILE"
+          '''
         }
       }
     } catch(e) {

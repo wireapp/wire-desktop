@@ -63,6 +63,7 @@ export interface MacOSConfig {
   electronMirror: string | null;
   notarizeAppleId: string | null;
   notarizeApplePassword: string | null;
+  provisioningProfile: string | null;
 }
 
 export interface WindowsConfig {
