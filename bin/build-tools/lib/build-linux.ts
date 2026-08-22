@@ -20,6 +20,7 @@
 import * as electronBuilder from 'electron-builder';
 import fs from 'fs-extra';
 import path from 'path';
+import sanitizeFilename from 'sanitize-filename';
 
 import {backupFiles, getLogger, restoreFiles} from '../../bin-utils';
 import {getCommonConfig, flipElectronFuses} from './commonConfig';
@@ -71,16 +72,41 @@ export async function buildLinuxConfig(
     },
   };
 
+  const sanitizedProductName = sanitizeFilename(commonConfig.name);
+
+  // fpm supports packaging multiple `source/=dest` directory trees into one archive. Staging the
+  // `/usr/bin/<executable>` symlink here (instead of creating it via a `ln -sf` in the postinstall
+  // script) makes rpm/dpkg track it as a real package file: `rpm -ql`/`dpkg -L` list it, `rpm -V`
+  // verifies its target, and it's automatically removed on uninstall/upgrade without a postremove
+  // script having to `rm -f` it by hand.
+  const linuxSymlinkStagingDir = path.join(mainDir, 'wrap', '.linux-symlinks');
+  await fs.remove(linuxSymlinkStagingDir);
+  const executableSymlinkPath = path.join(linuxSymlinkStagingDir, 'usr/bin', linuxConfig.executableName);
+  await fs.ensureDir(path.dirname(executableSymlinkPath));
+  await fs.symlink(`/opt/${sanitizedProductName}/${linuxConfig.executableName}`, executableSymlinkPath);
+
+  // fpm's arg parser stops treating tokens as `--flag`s as soon as it sees the first bare
+  // `source=dest` positional, so all flags must precede `fpmExtraFiles` in the final array.
+  const fpmBaseFlags = ['--name', linuxConfig.executableName];
+  const fpmExtraFiles = [`${linuxSymlinkStagingDir}/=/`];
+
   const platformSpecificConfig = {
     afterInstall: 'bin/deb/after-install.tpl',
     afterRemove: 'bin/deb/after-remove.tpl',
     category: 'Network',
     desktop: linuxDesktopConfig,
-    fpm: ['--name', linuxConfig.executableName],
+    fpm: [...fpmBaseFlags, ...fpmExtraFiles],
   };
 
   const rpmDepends = ['alsa-lib', 'libnotify', 'libXScrnSaver', 'libXtst', 'nss'];
   const debDepends = ['libasound2', 'libnotify-bin', 'libnss3', 'libxss1'];
+
+  // chrome-sandbox needs to run setuid-root. Declaring that via `%attr` here (rather than only
+  // `chmod`/`chown` in the postinstall script) records the setuid bit in the rpm's own file
+  // metadata, so `rpm -V` doesn't permanently flag the file as modified after every install.
+  // The path must match electron-builder's own AppInfo.sanitizedProductName (sanitize-filename
+  // applied to productName), which is what actually determines the file's install path.
+  const rpmChromeSandboxAttr = `4755,root,root:/opt/${sanitizedProductName}/chrome-sandbox`;
 
   const builderConfig: electronBuilder.Configuration = {
     afterPack: afterPackLinux,
@@ -115,7 +141,9 @@ export async function buildLinuxConfig(
     removePackageScripts: true,
     rpm: {
       ...platformSpecificConfig,
+      afterInstall: 'bin/rpm/after-install.tpl',
       depends: rpmDepends,
+      fpm: [...fpmBaseFlags, '--rpm-attr', rpmChromeSandboxAttr, ...fpmExtraFiles],
     },
   };
 

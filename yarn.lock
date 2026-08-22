@@ -18113,7 +18113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-filename@npm:^1.6.3":
+"sanitize-filename@npm:1.6.3, sanitize-filename@npm:^1.6.3":
   version: 1.6.3
   resolution: "sanitize-filename@npm:1.6.3"
   dependencies:
@@ -21056,6 +21056,7 @@ __metadata:
     redux-thunk: 2.4.2
     registry-js: 1.16.1
     rimraf: 5.0.8
+    sanitize-filename: 1.6.3
     sinon: 17.0.2
     sort-json: 2.0.1
     style-loader: 4.0.0

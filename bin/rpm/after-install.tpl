@@ -18,6 +18,6 @@ if [ -L '/usr/local/bin/wire' ] || [ -L '/usr/local/bin/${executable}' ]; then
   if [ -L '/usr/local/bin/${executable}' ] && [ "$(readlink '/usr/local/bin/${executable}')" = '/opt/${sanitizedProductName}/${executable}' ]; then rm -f '/usr/local/bin/${executable}'; fi
 fi
 
-# Prepare Chrome sandbox
-chown root:root '/opt/${sanitizedProductName}/chrome-sandbox'
-chmod 4755 '/opt/${sanitizedProductName}/chrome-sandbox'
+# The /usr/bin/${executable} symlink and chrome-sandbox's setuid bit are both declared as
+# real package file attributes (see linuxSymlinkStagingDir and rpmChromeSandboxAttr in
+# build-linux.ts) and applied by rpm itself during install, so nothing to do here for either.
