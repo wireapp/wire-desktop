@@ -81,7 +81,9 @@ export async function buildLinuxConfig(
   // script having to `rm -f` it by hand.
   const linuxSymlinkStagingDir = path.join(mainDir, 'wrap', '.linux-symlinks');
   await fs.remove(linuxSymlinkStagingDir);
-  const executableSymlinkPath = path.join(linuxSymlinkStagingDir, 'usr/bin', linuxConfig.executableName);
+  // executableName can come from the LINUX_NAME_SHORT env var; basename it so a value containing
+  // path separators can't write the symlink outside linuxSymlinkStagingDir.
+  const executableSymlinkPath = path.join(linuxSymlinkStagingDir, 'usr/bin', path.basename(linuxConfig.executableName));
   await fs.ensureDir(path.dirname(executableSymlinkPath));
   await fs.symlink(`/opt/${sanitizedProductName}/${linuxConfig.executableName}`, executableSymlinkPath);
 
