@@ -30,6 +30,22 @@ const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
 const mainDir = path.resolve(__dirname, '../../../');
 
+/**
+ * Constrain the executable name to a single, safe filesystem/package path segment.
+ *
+ * `executableName` can come from the `LINUX_NAME_SHORT` env var (or is derived from config read from
+ * the user-supplied wire.json path), and it is later used as a path component: the `/usr/bin`
+ * symlink target and the package `--name`. Rejecting anything that is not a plain segment (no path
+ * separators, no `..`) validates the user input before it reaches any `path.join`/`path.resolve`
+ * sink, preventing path traversal.
+ */
+function sanitizeExecutableName(name: string): string {
+  if (!/^[A-Za-z0-9._-]+$/.test(name)) {
+    throw new Error(`Invalid executable name: "${name}"`);
+  }
+  return name;
+}
+
 interface LinuxConfigResult {
   builderConfig: electronBuilder.Configuration;
   linuxConfig: LinuxConfig;
@@ -55,7 +71,7 @@ export async function buildLinuxConfig(
   const linuxConfig: LinuxConfig = {
     ...linuxDefaultConfig,
     categories: process.env.LINUX_CATEGORIES || linuxDefaultConfig.categories,
-    executableName: process.env.LINUX_NAME_SHORT || linuxDefaultConfig.executableName,
+    executableName: sanitizeExecutableName(process.env.LINUX_NAME_SHORT || linuxDefaultConfig.executableName),
     keywords: process.env.LINUX_KEYWORDS || linuxDefaultConfig.keywords,
     targets: process.env.LINUX_TARGET ? process.env.LINUX_TARGET.split(',') : linuxDefaultConfig.targets,
   };
@@ -81,9 +97,9 @@ export async function buildLinuxConfig(
   // script having to `rm -f` it by hand.
   const linuxSymlinkStagingDir = path.join(mainDir, 'wrap', '.linux-symlinks');
   await fs.remove(linuxSymlinkStagingDir);
-  // executableName can come from the LINUX_NAME_SHORT env var; basename it so a value containing
-  // path separators can't write the symlink outside linuxSymlinkStagingDir.
-  const executableSymlinkPath = path.join(linuxSymlinkStagingDir, 'usr/bin', path.basename(linuxConfig.executableName));
+  // executableName can come from the LINUX_NAME_SHORT env var; it is validated to a single safe path
+  // segment by sanitizeExecutableName() above, so no path traversal is possible here.
+  const executableSymlinkPath = path.join(linuxSymlinkStagingDir, 'usr/bin', linuxConfig.executableName);
   await fs.ensureDir(path.dirname(executableSymlinkPath));
   await fs.symlink(`/opt/${sanitizedProductName}/${linuxConfig.executableName}`, executableSymlinkPath);
 
