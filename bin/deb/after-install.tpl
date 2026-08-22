@@ -12,10 +12,10 @@ if test -e "${old_exec}"; then
 fi
 
 # Clean up old invalid links
-if [ -L '/usr/local/bin/wire' ] || [ -L '/usr/local/bin/<%= executable %>' ]; then
+if [ -L '/usr/local/bin/wire' ] || [ -L '/usr/local/bin/${executable}' ]; then
   echo "Removing old invalid symlinks"
   if [ -L '/usr/local/bin/wire' ] && [ "$(readlink '/usr/local/bin/wire')" = "${old_exec}" ]; then rm -f /usr/local/bin/wire; fi
-  if [ -L '/usr/local/bin/<%= executable %>' ] && [ "$(readlink '/usr/local/bin/<%= executable %>')" = '/opt/<% productFilename %>/<%= executable %>' ]; then rm -f '/usr/local/bin/<%= executable %>'; fi
+  if [ -L '/usr/local/bin/${executable}' ] && [ "$(readlink '/usr/local/bin/${executable}')" = '/opt/${sanitizedProductName}/${executable}' ]; then rm -f '/usr/local/bin/${executable}'; fi
 fi
 
 # Link to the binary
