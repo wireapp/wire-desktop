@@ -23,6 +23,16 @@ Production
 Wire-Gov
 Custom (needs special env variables)
 */
+def s3PathForArtifact(def projectName, def artifactName, def defaultPath, def windowsMsiPath) {
+  if (projectName.contains('Windows') && artifactName.toLowerCase().endsWith('.msi')) {
+    if (!windowsMsiPath) {
+      throw new IllegalStateException('Windows MSI S3 path is not configured')
+    }
+    return windowsMsiPath
+  }
+  return defaultPath
+}
+
 node('built-in') {
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: 'JENKINSBOT_WRAPPER_CHAT', variable: 'JENKINSBOT_SECRET')]) {
@@ -369,9 +379,10 @@ node('built-in') {
           sh "rm -f ${presignedFile}"
 
           artifacts.each { fileObj ->
+            def artifactS3Path = s3PathForArtifact(projectName, fileObj.name, env.S3_PATH, env.MSI_S3_PATH)
             def presignedUrl = sh(
               script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
+                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${artifactS3Path}/${fileObj.name} --expires-in 604800
               """,
               returnStdout: true
             ).trim()
@@ -396,9 +407,10 @@ node('built-in') {
           sh "rm -f ${presignedFile}"
 
           artifacts.each { fileObj ->
+            def artifactS3Path = s3PathForArtifact(projectName, fileObj.name, env.S3_PATH, env.MSI_S3_PATH)
             def presignedUrl = sh(
               script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
+                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${artifactS3Path}/${fileObj.name} --expires-in 604800
               """,
               returnStdout: true
             ).trim()
