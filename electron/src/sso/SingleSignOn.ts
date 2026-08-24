@@ -170,7 +170,7 @@ export class SingleSignOn {
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
 
-            console.error(`Cannot write to log file "${logFilePath}": ${errorMessage}`, error);
+            console.error('Cannot write to log file:', logFilePath, errorMessage, error);
           }
         }
       });
