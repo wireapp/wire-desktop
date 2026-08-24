@@ -37,11 +37,11 @@ import fs from 'fs-extra';
 import {getProxySettings} from 'get-proxy-settings';
 import logdown from 'logdown';
 import minimist from 'minimist';
+import {Maybe} from 'true-myth';
 
 import * as path from 'path';
 import {URL, pathToFileURL} from 'url';
 
-import {LogFactory} from '@wireapp/commons';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
@@ -58,8 +58,10 @@ import {deleteAccount} from './lib/LocalAccountDeletion';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
 import * as locale from './locale';
+import {getActiveLogFilePaths, writeBoundedLogMessage} from './logging/desktopLogWriter';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
-import {renameWebViewLogFiles} from './logging/logMigration';
+import {cleanupDesktopLogs, DESKTOP_LOG_RETENTION_POLICY} from './logging/logCleanup';
+import {scheduleLogCleanup} from './logging/logCleanupScheduler';
 import {getLogDirectory, getMainProcessLogPath, getWebViewLogPath} from './logging/logPaths';
 import {getManagedConfig} from './managed/ManagedConfig';
 import {developerMenu, openDevTools} from './menu/developer';
@@ -80,8 +82,26 @@ import {WindowManager} from './window/WindowManager';
 import * as WindowUtil from './window/WindowUtil';
 
 const MAIN_PROCESS_LOGGER_NAME = 'main.js';
+const LOG_CLEANUP_INTERVAL_MILLISECONDS = 60 * 60 * 1_000;
 const logger = getLogger(MAIN_PROCESS_LOGGER_NAME);
 const configuredUserDataPath = getConfiguredPortableUserDataPath();
+
+function runDesktopLogCleanup(): Promise<void> {
+  return cleanupDesktopLogs({
+    activeFilePaths: getActiveLogFilePaths(),
+    logDirectory: getLogDirectory(),
+    policy: DESKTOP_LOG_RETENTION_POLICY,
+  });
+}
+
+type OpenLinkInNewWindowParameters = {
+  accountId: Maybe<string>;
+  browserWindow: BrowserWindow;
+  frameName: string;
+  options: BrowserWindowConstructorOptions;
+  senderWebContents: WebContents;
+  url: string;
+};
 
 remoteMain.initialize();
 
@@ -617,26 +637,29 @@ class ElectronWrapperInit {
       return {action: 'deny'};
     };
 
-    const openLinkInNewWindow = (
-      win: BrowserWindow,
-      url: string,
-      event: ElectronEvent,
-      frameName: string,
-      options: BrowserWindowConstructorOptions,
-    ): Promise<void> | void => {
-      if (SingleSignOn.isSingleSignOnLoginWindow(frameName)) {
-        const singleSignOn = new SingleSignOn(win, event, url, options).init();
+    function openLinkInNewWindow(
+      electronWrapperInitialization: ElectronWrapperInit,
+      parameters: OpenLinkInNewWindowParameters,
+    ): Promise<void> | void {
+      if (SingleSignOn.isSingleSignOnLoginWindow(parameters.frameName)) {
+        const singleSignOn = new SingleSignOn(
+          parameters.browserWindow,
+          parameters.senderWebContents,
+          parameters.accountId,
+          parameters.url,
+          parameters.options,
+        ).init();
 
         return new Promise(() => {
           singleSignOn
             .then(sso => {
-              this.ssoWindow = sso;
-              this.ssoWindow.onClose = this.sendSSOWindowCloseEvent;
+              electronWrapperInitialization.ssoWindow = sso;
+              electronWrapperInitialization.ssoWindow.onClose = electronWrapperInitialization.sendSSOWindowCloseEvent;
             })
             .catch(error => console.info(error));
         });
       }
-    };
+    }
 
     // Keeping this Function for future use
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
@@ -651,7 +674,7 @@ class ElectronWrapperInit {
 
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
-    app.on('web-contents-created', async (webviewEvent: ElectronEvent, contents: WebContents) => {
+    app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
       remoteMain.enable(contents);
       // disable new Windows by default on everything
       contents.setWindowOpenHandler(() => {
@@ -682,8 +705,17 @@ class ElectronWrapperInit {
           }
           // Open webview links outside of the app
           contents.setWindowOpenHandler(openLinkInNewWindowHandler);
-          contents.on('did-create-window', async (win, {url, frameName, options}) => {
-            await openLinkInNewWindow(win, url, webviewEvent, frameName, options);
+          contents.on('did-create-window', async (win, windowCreationDetails) => {
+            const {frameName, options, url} = windowCreationDetails;
+
+            await openLinkInNewWindow(this, {
+              accountId: lifecycle.getAccountId(contents),
+              browserWindow: win,
+              frameName,
+              options,
+              senderWebContents: contents,
+              url,
+            });
           });
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
@@ -692,30 +724,28 @@ class ElectronWrapperInit {
             const colorCodeRegex = /%c(.+?)%c/gm;
             const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
             const accessTokenRegex = /access_token=[^ &]+/gm;
-            const logDate = new Date();
 
             contents.on('console-message', async (_event, _level, message) => {
-              const webViewId = lifecycle.getWebViewId(contents);
-              /*
-               * Note: WebContents with ID `1` is the main window, `2` is the
-               * sidebar and `3` is the first account.
-               */
-              const accountIndex = contents.id - 2;
+              const accountId = lifecycle.getAccountId(contents);
 
-              if (webViewId) {
+              if (accountId.isJust) {
                 const logFilePath = getWebViewLogPath({
-                  accountIndex,
-                  date: logDate,
+                  accountId: accountId.value,
+                  date: new Date(),
                   logDirectory: getLogDirectory(),
-                  webViewId,
                 });
                 try {
-                  await LogFactory.writeMessage(
-                    message.replace(colorCodeRegex, '$1').replace(stylingRegex, '').replace(accessTokenRegex, ''),
+                  await writeBoundedLogMessage({
                     logFilePath,
-                  );
+                    message: message
+                      .replace(colorCodeRegex, '$1')
+                      .replace(stylingRegex, '')
+                      .replace(accessTokenRegex, ''),
+                  });
                 } catch (error) {
-                  logger.error(`Cannot write to log file "${logFilePath}": ${(error as any).message}`, error);
+                  const errorMessage = error instanceof Error ? error.message : String(error);
+
+                  logger.error(`Cannot write to log file "${logFilePath}": ${errorMessage}`, error);
                 }
               }
             });
@@ -778,7 +808,14 @@ if (lifecycle.isFirstInstance) {
   addLinuxWorkarounds();
   bindIpcEvents();
   handleAppEvents();
-  renameWebViewLogFiles(getLogDirectory(), logger);
-  fs.ensureFileSync(getMainProcessLogPath({logDirectory: getLogDirectory()}));
+  fs.ensureFileSync(getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}));
+  void runDesktopLogCleanup();
+  scheduleLogCleanup({
+    intervalMilliseconds: LOG_CLEANUP_INTERVAL_MILLISECONDS,
+    runCleanup: runDesktopLogCleanup,
+    setInterval: (callback: () => void, intervalMilliseconds: number): NodeJS.Timeout => {
+      return setInterval(callback, intervalMilliseconds);
+    },
+  });
   new ElectronWrapperInit().run().catch(error => logger.error(error));
 }

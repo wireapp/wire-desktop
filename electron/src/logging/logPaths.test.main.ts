@@ -37,32 +37,48 @@ describe('desktop log paths', () => {
   });
 
   it('preserves the existing main-process log path', () => {
-    const actualPath = getMainProcessLogPath({logDirectory: path.join('user-data', 'logs')});
-    const expectedPath = path.join('user-data', 'logs', 'electron.log');
-
-    assert.strictEqual(actualPath, expectedPath);
-  });
-
-  it('preserves the existing webview directory format', () => {
-    const actualPath = getWebViewLogPath({
-      accountIndex: 2,
+    const actualPath = getMainProcessLogPath({
       date: new Date('2026-07-10T12:34:56.000Z'),
       logDirectory: path.join('user-data', 'logs'),
-      webViewId: 'account-webview-id',
     });
-    const expectedPath = path.join('user-data', 'logs', '2_2026_07_10_12_34_56_account-webview-id', 'console.log');
+    const expectedPath = path.join('user-data', 'logs', '2026-07-10', 'electron.log');
 
     assert.strictEqual(actualPath, expectedPath);
   });
 
-  it('preserves the existing SSO log path', () => {
-    const actualPath = getSsoLogPath({
+  it('uses the account UUID below the UTC daily directory for webview logs', () => {
+    const actualPath = getWebViewLogPath({
+      accountId: 'account-id',
+      date: new Date('2026-07-10T12:34:56.000Z'),
       logDirectory: path.join('user-data', 'logs'),
-      logFileName: 'console.log',
-      webViewId: 'sso-webview-id',
     });
-    const expectedPath = path.join('user-data', 'logs', 'sso-webview-id', 'console.log');
+    const expectedPath = path.join('user-data', 'logs', '2026-07-10', 'accounts', 'account-id', 'console.log');
 
     assert.strictEqual(actualPath, expectedPath);
+  });
+
+  it('uses the same account directory for SSO logs', () => {
+    const actualPath = getSsoLogPath({
+      accountId: 'account-id',
+      date: new Date('2026-07-10T12:34:56.000Z'),
+      logDirectory: path.join('user-data', 'logs'),
+    });
+    const expectedPath = path.join('user-data', 'logs', '2026-07-10', 'accounts', 'account-id', 'sso.log');
+
+    assert.strictEqual(actualPath, expectedPath);
+  });
+
+  it('switches daily directories at UTC midnight', () => {
+    const beforeMidnightPath = getMainProcessLogPath({
+      date: new Date('2026-07-10T23:59:59.999Z'),
+      logDirectory: path.join('user-data', 'logs'),
+    });
+    const afterMidnightPath = getMainProcessLogPath({
+      date: new Date('2026-07-11T00:00:00.000Z'),
+      logDirectory: path.join('user-data', 'logs'),
+    });
+
+    assert.strictEqual(path.dirname(beforeMidnightPath), path.join('user-data', 'logs', '2026-07-10'));
+    assert.strictEqual(path.dirname(afterMidnightPath), path.join('user-data', 'logs', '2026-07-11'));
   });
 });

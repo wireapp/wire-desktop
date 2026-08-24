@@ -39,7 +39,7 @@ describe('desktop log file discovery', () => {
       const symbolicLinkPath = path.join(temporaryLogDirectory, 'linked-account');
       await fs.symlink(symbolicLinkTarget, symbolicLinkPath, 'dir');
 
-      const actualPaths = getLogFilenames({absolute: false, baseDirectory: temporaryLogDirectory}).sort();
+      const actualPaths = getLogFilenames({absolute: false, baseDirectory: temporaryLogDirectory}).toSorted();
       const expectedPaths = ['account/console.log', 'account/console.old', 'electron.log'];
 
       assert.deepStrictEqual(actualPaths, expectedPaths);

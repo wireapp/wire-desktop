@@ -21,53 +21,65 @@ import * as Electron from 'electron';
 
 import * as path from 'path';
 
-import {DateUtil} from '@wireapp/commons';
-
 import {config} from '../settings/config';
 
 const app = Electron.app || require('@electron/remote').app;
 
 export const LOG_DIRECTORY_NAME = 'logs';
 export const MAIN_PROCESS_LOG_FILE_NAME = 'electron.log';
+export const ACCOUNT_LOG_DIRECTORY_NAME = 'accounts';
+export const SSO_LOG_FILE_NAME = 'sso.log';
 
 export type WebViewLogPathParameters = {
-  accountIndex: number;
+  accountId: string;
   date: Date;
   logDirectory: string;
-  webViewId: string;
 };
 
 export type MainProcessLogPathParameters = {
+  date: Date;
   logDirectory: string;
 };
 
 export type SsoLogPathParameters = {
+  accountId: string;
+  date: Date;
   logDirectory: string;
-  logFileName: string;
-  webViewId: string;
 };
+
+type DailyLogDirectoryParameters = {
+  date: Date;
+  logDirectory: string;
+};
+
+function getDailyLogDirectory(parameters: DailyLogDirectoryParameters): string {
+  const utcDate = parameters.date.toISOString().slice(0, 10);
+
+  return path.join(parameters.logDirectory, utcDate);
+}
 
 export function getLogDirectory(): string {
   return path.join(app.getPath('userData'), LOG_DIRECTORY_NAME);
 }
 
 export function getMainProcessLogPath(parameters: MainProcessLogPathParameters): string {
-  return path.join(parameters.logDirectory, MAIN_PROCESS_LOG_FILE_NAME);
+  return path.join(getDailyLogDirectory(parameters), MAIN_PROCESS_LOG_FILE_NAME);
 }
 
 export function getWebViewLogPath(parameters: WebViewLogPathParameters): string {
-  const {accountIndex, date, logDirectory, webViewId} = parameters;
-  const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(date);
-  const directoryName = `${accountIndex}_${formattedDate.replaceAll('-', '_')}_${formattedTime.replaceAll(
-    ':',
-    '_',
-  )}_${webViewId}`;
-
-  return path.join(logDirectory, directoryName, config.logFileName);
+  return path.join(
+    getDailyLogDirectory(parameters),
+    ACCOUNT_LOG_DIRECTORY_NAME,
+    parameters.accountId,
+    config.logFileName,
+  );
 }
 
 export function getSsoLogPath(parameters: SsoLogPathParameters): string {
-  const {logDirectory, logFileName, webViewId} = parameters;
-
-  return path.join(logDirectory, webViewId, logFileName);
+  return path.join(
+    getDailyLogDirectory(parameters),
+    ACCOUNT_LOG_DIRECTORY_NAME,
+    parameters.accountId,
+    SSO_LOG_FILE_NAME,
+  );
 }

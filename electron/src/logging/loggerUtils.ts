@@ -21,7 +21,9 @@ import * as fs from 'fs-extra';
 
 import * as path from 'path';
 
+import {getActiveLogFilePaths} from './desktopLogWriter';
 import {getLogger} from './getLogger';
+import {cleanupDesktopLogs, DESKTOP_LOG_RETENTION_POLICY} from './logCleanup';
 import {getLogFilenames as getLogFilenamesFromRoot, LogFileDiscoveryOptions} from './logFiles';
 import {getLogDirectory} from './logPaths';
 
@@ -34,6 +36,12 @@ export function getLogFilenames(parameters: LogFileDiscoveryOptions): string[] {
 export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
   const logFiles: Record<string, Uint8Array> = {};
   const logDirectory = getLogDirectory();
+
+  await cleanupDesktopLogs({
+    activeFilePaths: getActiveLogFilePaths(),
+    logDirectory,
+    policy: DESKTOP_LOG_RETENTION_POLICY,
+  });
 
   const relativeFilePaths = getLogFilenames({absolute: false, baseDirectory: logDirectory});
 

@@ -27,17 +27,16 @@ import {
   WebContents,
   HandlerDetails,
 } from 'electron';
+import {Maybe} from 'true-myth';
 
 import * as crypto from 'crypto';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {LogFactory} from '@wireapp/commons';
-
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {writeBoundedLogMessage} from '../logging/desktopLogWriter';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
 import {getLogDirectory, getSsoLogPath} from '../logging/logPaths';
-import {getWebViewId} from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
 
@@ -67,19 +66,22 @@ export class SingleSignOn {
   private session: Session | undefined;
   private ssoWindow: BrowserWindow | undefined;
   private readonly senderWebContents: WebContents;
+  private readonly accountId: Maybe<string>;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
   public onClose = () => {};
 
   constructor(
     ssoWindow: BrowserWindow,
-    senderEvent: ElectronEvent,
+    senderWebContents: WebContents,
+    accountId: Maybe<string>,
     windowOriginURL: string,
     windowOptions: BrowserWindowConstructorOptions,
   ) {
     this.windowOptions = windowOptions;
     this.ssoWindow = ssoWindow;
-    this.senderWebContents = (senderEvent as any).sender;
+    this.senderWebContents = senderWebContents;
+    this.accountId = accountId;
     this.windowOriginUrl = new URL(windowOriginURL);
   }
 
@@ -157,17 +159,18 @@ export class SingleSignOn {
 
     if (ENABLE_LOGGING) {
       ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
-        const webViewId = getWebViewId(ssoWindow.webContents);
-        if (webViewId) {
+        if (this.accountId.isJust) {
           const logFilePath = getSsoLogPath({
+            accountId: this.accountId.value,
+            date: new Date(),
             logDirectory: getLogDirectory(),
-            logFileName: config.logFileName,
-            webViewId,
           });
           try {
-            await LogFactory.writeMessage(message, logFilePath);
-          } catch (error: any) {
-            console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+            await writeBoundedLogMessage({logFilePath, message});
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+
+            console.error(`Cannot write to log file "${logFilePath}": ${errorMessage}`, error);
           }
         }
       });

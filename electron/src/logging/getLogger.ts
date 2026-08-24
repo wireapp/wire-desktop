@@ -21,6 +21,7 @@ import * as logdown from 'logdown';
 
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
 
+import {writeBoundedLogMessage} from './desktopLogWriter';
 import {getLogDirectory, getMainProcessLogPath} from './logPaths';
 
 import {config} from '../settings/config';
@@ -32,9 +33,23 @@ const forceLogging = mainProcess.argv.includes('--enable-logging');
 export const LOGGER_NAMESPACE = '@wireapp/desktop';
 export const ENABLE_LOGGING = isDevelopment || forceLogging;
 
+function writeMainProcessLog(transportOptions: logdown.TransportOptions): void {
+  const logFilePath = getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()});
+  const logMessage = `${transportOptions.args[0]} ${transportOptions.msg}`;
+
+  void writeBoundedLogMessage({logFilePath, message: logMessage});
+}
+
+function configureLogTransports(): void {
+  if (logdown.transports.length === 0) {
+    logdown.transports.push(LogFactory.addTimestamp);
+    logdown.transports.push(writeMainProcessLog);
+  }
+}
+
 export function getLogger(name: string): logdown.Logger {
   const options: LoggerOptions = {
-    logFilePath: getMainProcessLogPath({logDirectory: getLogDirectory()}),
+    logFilePath: getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}),
     namespace: LOGGER_NAMESPACE,
     separator: '/',
   };
@@ -42,6 +57,8 @@ export function getLogger(name: string): logdown.Logger {
   if (ENABLE_LOGGING) {
     options.forceEnable = true;
   }
+
+  configureLogTransports();
 
   return LogFactory.getLogger(name, options);
 }
