@@ -17,12 +17,20 @@
  *
  */
 
-import {configurePortableUserDataAtStartup} from './runtime/configurePortableUserData';
+import globby from 'globby';
 
-configurePortableUserDataAtStartup();
+export type LogFileDiscoveryOptions = {
+  absolute: boolean;
+  baseDirectory: string;
+};
 
-function loadMainProcess(): void {
-  require('./mainProcess');
+export function getLogFilenames(parameters: LogFileDiscoveryOptions): string[] {
+  const {absolute, baseDirectory} = parameters;
+
+  return globby.sync('**/*.{log,old}', {
+    absolute,
+    cwd: baseDirectory,
+    followSymbolicLinks: false,
+    onlyFiles: true,
+  });
 }
-
-loadMainProcess();

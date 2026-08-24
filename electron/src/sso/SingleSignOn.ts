@@ -18,7 +18,6 @@
  */
 
 import {
-  app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
@@ -37,6 +36,7 @@ import {LogFactory} from '@wireapp/commons';
 
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
+import {getLogDirectory, getSsoLogPath} from '../logging/logPaths';
 import {getWebViewId} from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
@@ -44,7 +44,6 @@ import * as WindowUtil from '../window/WindowUtil';
 const minimist = require('minimist');
 
 const argv = minimist(process.argv.slice(1));
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 
 export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
@@ -109,6 +108,7 @@ export class SingleSignOn {
     if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
       this.ssoWindow?.webContents.openDevTools({mode: 'detach'});
     }
+
     return this;
   };
 
@@ -141,6 +141,7 @@ export class SingleSignOn {
     // Prevent new windows (open external pages in OS browser)
     ssoWindow.webContents.setWindowOpenHandler((details: HandlerDetails): {action: 'deny'} => {
       void WindowUtil.openExternal(details.url, true);
+
       return {action: 'deny'};
     });
 
@@ -158,7 +159,11 @@ export class SingleSignOn {
       ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
         const webViewId = getWebViewId(ssoWindow.webContents);
         if (webViewId) {
-          const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
+          const logFilePath = getSsoLogPath({
+            logDirectory: getLogDirectory(),
+            logFileName: config.logFileName,
+            webViewId,
+          });
           try {
             await LogFactory.writeMessage(message, logFilePath);
           } catch (error: any) {
@@ -284,6 +289,7 @@ export class SingleSignOn {
     if (type === SingleSignOn.RESPONSE_TYPES.AUTH_SUCCESS) {
       if (!this.session) {
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_SESS_NOT_AVAILABLE);
+
         return;
       }
 
@@ -293,6 +299,7 @@ export class SingleSignOn {
       } catch (error) {
         SingleSignOn.logger.warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
+
         return;
       }
     }

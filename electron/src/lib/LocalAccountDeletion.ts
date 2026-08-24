@@ -26,9 +26,9 @@ import * as path from 'path';
 import {ValidationUtil} from '@wireapp/commons';
 
 import {getLogger} from '../logging/getLogger';
+import {getLogDirectory} from '../logging/logPaths';
 
 const USER_DATA_DIR = app.getPath('userData');
-const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
 
 const logger = getLogger(path.basename(__filename));
 
@@ -81,7 +81,7 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     if (!ValidationUtil.isUUIDv4(accountId)) {
       throw new Error('Account is not an UUID');
     }
-    const sessionFolder = path.join(LOG_DIR, accountId);
+    const sessionFolder = path.join(getLogDirectory(), accountId);
     await fs.remove(sessionFolder);
 
     logger.log(`Deleted logs folder for account "${truncatedId}".`);
