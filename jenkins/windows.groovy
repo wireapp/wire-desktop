@@ -83,6 +83,10 @@ node('windows') {
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
         // Build both installer families from the same signed application without cleaning between them.
         bat 'yarn build:win:installers'
+        bat 'if not exist "wrap\\dist\\*-Setup.exe" (echo Missing Squirrel Setup executable & exit /b 1)'
+        bat 'if not exist "wrap\\dist\\*-full.nupkg" (echo Missing Squirrel package & exit /b 1)'
+        bat 'if not exist "wrap\\dist\\RELEASES" (echo Missing Squirrel RELEASES file & exit /b 1)'
+        bat 'if not exist "wrap\\dist\\*.msi" (echo Missing MSI package & exit /b 1)'
       }
     } catch (e) {
       currentBuild.result = 'FAILED'
