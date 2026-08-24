@@ -26,6 +26,13 @@ const repositoryRoot = path.resolve(process.cwd());
 const deploymentPipeline = fs.readFileSync(path.join(repositoryRoot, 'jenkins/deployment.groovy'), 'utf8');
 
 describe('Jenkins Windows deployment', () => {
+  it('requires the primary Squirrel artifact set before deploying Windows artifacts', () => {
+    assert.match(
+      deploymentPipeline,
+      /if \(!hasWindowsSquirrel\) \{\s+error\('No complete Windows Squirrel artifact set found'\)/,
+    );
+  });
+
   it('updates the Squirrel feed whenever a complete Squirrel artifact set is present', () => {
     assert.doesNotMatch(deploymentPipeline, /\bisWindowsMsi\b/);
     assert.match(deploymentPipeline, /if \(hasWindowsSquirrel\) \{\s+stage\('Update RELEASES file'\)/);

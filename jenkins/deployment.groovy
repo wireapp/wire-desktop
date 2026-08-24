@@ -131,8 +131,8 @@ node('built-in') {
           AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
         }
 
-        if (!hasWindowsSquirrel && !hasWindowsMsi) {
-          error('No complete Windows Squirrel or MSI artifact set found')
+        if (!hasWindowsSquirrel) {
+          error('No complete Windows Squirrel artifact set found')
         }
 
         try {
