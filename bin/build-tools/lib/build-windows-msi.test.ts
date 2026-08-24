@@ -17,10 +17,13 @@
  *
  */
 
+import fs from 'fs-extra';
+
 import assert from 'node:assert';
+import os from 'node:os';
 import path from 'node:path';
 
-import {buildWindowsMsiConfig, customizeMsiProject} from './build-windows-msi';
+import {buildWindowsMsiConfig, customizeMsiProject, validateWindowsMsiAppDirectory} from './build-windows-msi';
 
 const wireJsonPath = path.join(__dirname, '../../../electron/wire.json');
 const envFilePath = path.join(__dirname, '../../../.env.defaults');
@@ -155,6 +158,20 @@ describe('build-windows-msi', () => {
         () => customizeMsiProject(project, 'wire', 'com.squirrel.wire.wire', 'Wire', 'msi-banner.bmp'),
         /Could not find the desktop shortcut/,
       );
+    });
+  });
+
+  describe('validateWindowsMsiAppDirectory', () => {
+    it('rejects a directory already mutated by Squirrel packaging', async () => {
+      const appDirectory = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-msi-app-directory-'));
+      try {
+        await fs.ensureFile(path.join(appDirectory, 'Wire.exe'));
+        await fs.ensureFile(path.join(appDirectory, 'Squirrel.exe'));
+
+        await assert.rejects(validateWindowsMsiAppDirectory(appDirectory, 'Wire'), /contains the Squirrel updater/);
+      } finally {
+        await fs.remove(appDirectory);
+      }
     });
   });
 });

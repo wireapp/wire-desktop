@@ -223,6 +223,17 @@ export async function buildWindowsMsiConfig(
   return {builderConfig, windowsMsiConfig};
 }
 
+export async function validateWindowsMsiAppDirectory(appDirectory: string, executableName: string): Promise<void> {
+  if (!(await fs.pathExists(path.join(appDirectory, `${executableName}.exe`)))) {
+    throw new Error(`Packaged Windows application not found in "${appDirectory}". Run the Windows build first.`);
+  }
+  if (await fs.pathExists(path.join(appDirectory, 'Squirrel.exe'))) {
+    throw new Error(
+      `Packaged Windows application in "${appDirectory}" contains the Squirrel updater. Build the MSI before the Squirrel installer.`,
+    );
+  }
+}
+
 export async function buildWindowsMsi(
   builderConfig: electronBuilder.Configuration,
   packageJsonPath: string,
@@ -240,9 +251,7 @@ export async function buildWindowsMsi(
 
   logger.info(`Building ${commonConfig.name} ${commonConfig.version} MSI for Windows ...`);
 
-  if (!(await fs.pathExists(path.join(appDirectory, `${commonConfig.name}.exe`)))) {
-    throw new Error(`Packaged Windows application not found in "${appDirectory}". Run the Windows build first.`);
-  }
+  await validateWindowsMsiAppDirectory(appDirectory, commonConfig.name);
 
   const backup = await backupFiles([packageJsonResolved, wireJsonResolved]);
   const packageJsonContent = await fs.readJson(packageJsonResolved);
