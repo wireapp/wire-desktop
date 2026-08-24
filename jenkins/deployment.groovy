@@ -422,7 +422,7 @@ node('built-in') {
   // ------------------------------------------------------------------------
   // Windows-specific stage: Update RELEASES file for Squirrel auto-updates
   // ------------------------------------------------------------------------
-  if (projectName.contains('Windows') && !isWindowsMsi) {
+  if (hasWindowsSquirrel) {
     stage('Update RELEASES file') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
