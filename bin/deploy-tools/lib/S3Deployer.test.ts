@@ -81,5 +81,20 @@ describe('S3Deployer', () => {
         {fileName: 'Wire-3.42.123.exe', filePath: path.join(basePath, 'Wire-Setup.exe')},
       ]);
     });
+
+    it('rejects ambiguous automatic selection when both Windows installer families are present', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-ambiguous-deployer-'));
+      temporaryDirectories.push(basePath);
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-x64.msi'));
+      await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
+      await fs.ensureFile(path.join(basePath, 'RELEASES'));
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      await assert.rejects(
+        s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123'),
+        /contains both Squirrel and MSI artifacts; select one explicitly/,
+      );
+    });
   });
 });

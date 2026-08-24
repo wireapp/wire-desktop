@@ -113,6 +113,18 @@ export class S3Deployer {
       if (windowsArtifact === 'msi' && !msi) {
         throw new Error(`Could not find an MSI for version "${version}".`);
       }
+      if (msi && windowsArtifact === 'auto') {
+        const [setupExe, nupkgFile, releasesFile] = await Promise.all([
+          find('*-Setup.exe', {cwd: basePath, safeGuard: false}),
+          find('*-full.nupkg', {cwd: basePath, safeGuard: false}),
+          find('RELEASES', {cwd: basePath, safeGuard: false}),
+        ]);
+        if (setupExe && nupkgFile && releasesFile) {
+          throw new Error(
+            'Windows artifact directory contains both Squirrel and MSI artifacts; select one explicitly.',
+          );
+        }
+      }
       if (msi && windowsArtifact !== 'squirrel') {
         return [{...msi, filePath: path.join(basePath, msi.fileName)}];
       }
