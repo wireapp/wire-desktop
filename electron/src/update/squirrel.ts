@@ -19,14 +19,13 @@
 
 // https://github.com/atom/atom/blob/ce18e1b7d65808c42df5b612d124935ab5c06490/src/main-process/squirrel-update.js
 
-import fs from 'fs-extra';
-
 import * as childProcess from 'child_process';
 import * as path from 'path';
 
 import {StringUtil} from '@wireapp/commons';
 
 import {createShortcuts, removeShortcuts} from './shortcuts';
+import {isSquirrelInstallation as updaterExists} from './squirrelInstallation';
 
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -52,6 +51,10 @@ enum SQUIRREL_EVENT {
   OBSOLETE = '--squirrel-obsolete',
   UNINSTALL = '--squirrel-uninstall',
   UPDATED = '--squirrel-updated',
+}
+
+export function isSquirrelInstallation(updaterPath: string = updateDotExe): boolean {
+  return updaterExists(updaterPath);
 }
 
 function spawn(command: string, args: string[]): Promise<void> {
@@ -90,9 +93,9 @@ function spawn(command: string, args: string[]): Promise<void> {
 
 async function spawnUpdate(args: string[]): Promise<void> {
   logger.info(`Running updater with args ${JSON.stringify(args)} ...`);
-  const updateDotExeExists = fs.existsSync(updateDotExe);
-  if (!updateDotExeExists) {
+  if (!isSquirrelInstallation()) {
     logger.info(`Could not find updater in "${updateDotExe}".`);
+    return;
   }
 
   try {

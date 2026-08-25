@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2019 Wire Swiss GmbH
+ * Copyright (C) 2026 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +14,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
  */
 
-import {Logger} from '@wireapp/commons';
-import {getLogger} from '../../bin-utils';
 import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
+
 import path from 'path';
 
+import {Logger} from '@wireapp/commons';
+
 import {find, FindResult, logDry} from './deploy-utils';
+
+import {getLogger} from '../../bin-utils';
 
 export interface S3DeployerOptions {
   accessKeyId: string;
@@ -47,6 +51,8 @@ export interface S3CopyOptions {
   s3ToPath: string;
 }
 
+export type WindowsArtifactType = 'auto' | 'msi' | 'squirrel';
+
 export class S3Deployer {
   private readonly options: Required<S3DeployerOptions>;
   private readonly S3Instance: S3;
@@ -65,7 +71,12 @@ export class S3Deployer {
     this.logger = getLogger('deploy-tools', toolName);
   }
 
-  async findUploadFiles(platform: string, basePath: string, version: string): Promise<FindResult[]> {
+  async findUploadFiles(
+    platform: string,
+    basePath: string,
+    version: string,
+    windowsArtifact: WindowsArtifactType = 'auto',
+  ): Promise<FindResult[]> {
     if (platform.includes('linux')) {
       const appImage = await find('*.AppImage', {cwd: basePath});
       const debImage = await find('*.deb', {cwd: basePath});
@@ -94,6 +105,30 @@ export class S3Deployer {
         },
       ];
     } else if (platform.includes('windows')) {
+      if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
+        throw new Error(`Invalid Windows artifact type "${windowsArtifact}"`);
+      }
+
+      const msi = await find(`*-${version}-*.msi`, {cwd: basePath, safeGuard: false});
+      if (windowsArtifact === 'msi' && !msi) {
+        throw new Error(`Could not find an MSI for version "${version}".`);
+      }
+      if (msi && windowsArtifact === 'auto') {
+        const [setupExe, nupkgFile, releasesFile] = await Promise.all([
+          find('*-Setup.exe', {cwd: basePath, safeGuard: false}),
+          find('*-full.nupkg', {cwd: basePath, safeGuard: false}),
+          find('RELEASES', {cwd: basePath, safeGuard: false}),
+        ]);
+        if (setupExe && nupkgFile && releasesFile) {
+          throw new Error(
+            'Windows artifact directory contains both Squirrel and MSI artifacts; select one explicitly.',
+          );
+        }
+      }
+      if (msi && windowsArtifact !== 'squirrel') {
+        return [{...msi, filePath: path.join(basePath, msi.fileName)}];
+      }
+
       const setupExe = await find('*-Setup.exe', {cwd: basePath});
       const nupkgFile = await find('*-full.nupkg', {cwd: basePath});
       const releasesFile = await find('RELEASES', {cwd: basePath});

@@ -23,6 +23,16 @@ Production
 Wire-Gov
 Custom (needs special env variables)
 */
+def s3PathForArtifact(def projectName, def artifactName, def defaultPath, def windowsMsiPath) {
+  if (projectName.contains('Windows') && artifactName.toLowerCase().endsWith('.msi')) {
+    if (!windowsMsiPath) {
+      throw new IllegalStateException('Windows MSI S3 path is not configured')
+    }
+    return windowsMsiPath
+  }
+  return defaultPath
+}
+
 node('built-in') {
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: 'JENKINSBOT_WRAPPER_CHAT', variable: 'JENKINSBOT_SECRET')]) {
@@ -36,6 +46,8 @@ node('built-in') {
 
   def projectName = env.WRAPPER_BUILD.tokenize('#')[0]
   def version = env.WRAPPER_BUILD.tokenize('#')[1]
+  def hasWindowsMsi = false
+  def hasWindowsSquirrel = false
   echo("version: ${version}")
   def buildNumber = version.tokenize('.')[2]
   def NODE = tool name: 'node-v20.10.0', type: 'nodejs'
@@ -58,6 +70,12 @@ node('built-in') {
       throw e
     }
   }
+
+  hasWindowsMsi = projectName.contains('Windows') && findFiles(glob: 'wrap/dist/*.msi').length > 0
+  hasWindowsSquirrel = projectName.contains('Windows') &&
+    findFiles(glob: 'wrap/dist/*-Setup.exe').length > 0 &&
+    findFiles(glob: 'wrap/dist/*-full.nupkg').length > 0 &&
+    findFiles(glob: 'wrap/dist/RELEASES').length > 0
 
   currentBuild.displayName = "Deploy ${projectName} ${version}"
 
@@ -85,27 +103,36 @@ node('built-in') {
         // 1) Windows S3 Upload
         // -----------------------------
         env.S3_PATH = ''
+        env.MSI_S3_PATH = ''
         def AWS_ACCESS_KEY_CREDENTIALS_ID = ''
         def AWS_SECRET_CREDENTIALS_ID = ''
 
         if (params.Release == 'Production') {
           env.S3_PATH = 'win/prod'
+          env.MSI_S3_PATH = 'win/msi/prod'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Internal') {
           env.S3_PATH = 'win/internal'
+          env.MSI_S3_PATH = 'win/msi/internal'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Wire-Gov') {
           env.S3_PATH = 'win/wire-gov'
+          env.MSI_S3_PATH = 'win/msi/wire-gov'
           env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.WIN_S3_BUCKET
           env.S3_PATH = params.WIN_S3_PATH
+          env.MSI_S3_PATH = params.WIN_S3_PATH
           AWS_ACCESS_KEY_CREDENTIALS_ID = params.AWS_CUSTOM_ACCESS_KEY_ID
           AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
+        }
+
+        if (!hasWindowsSquirrel) {
+          error('No complete Windows Squirrel artifact set found')
         }
 
         try {
@@ -113,16 +140,32 @@ node('built-in') {
             string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
             string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
-            sh '''
-              jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
-                --bucket "$S3_BUCKET" \
-                --s3path "$S3_PATH" \
-                --key-id "$AWS_ACCESS_KEY_ID" \
-                --secret-key "$AWS_SECRET_ACCESS_KEY" \
-                --wrapper-build "$WRAPPER_BUILD" \
-                --path "$SEARCH_PATH" \
-                $DRY_RUN
-            '''
+            if (hasWindowsSquirrel) {
+              sh '''
+                jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
+                  --bucket "$S3_BUCKET" \
+                  --s3path "$S3_PATH" \
+                  --windows-artifact squirrel \
+                  --key-id "$AWS_ACCESS_KEY_ID" \
+                  --secret-key "$AWS_SECRET_ACCESS_KEY" \
+                  --wrapper-build "$WRAPPER_BUILD" \
+                  --path "$SEARCH_PATH" \
+                  $DRY_RUN
+              '''
+            }
+            if (hasWindowsMsi) {
+              sh '''
+                jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
+                  --bucket "$S3_BUCKET" \
+                  --s3path "$MSI_S3_PATH" \
+                  --windows-artifact msi \
+                  --key-id "$AWS_ACCESS_KEY_ID" \
+                  --secret-key "$AWS_SECRET_ACCESS_KEY" \
+                  --wrapper-build "$WRAPPER_BUILD" \
+                  --path "$SEARCH_PATH" \
+                  $DRY_RUN
+              '''
+            }
           }
         } catch(e) {
           currentBuild.result = 'FAILED'
@@ -336,9 +379,10 @@ node('built-in') {
           sh "rm -f ${presignedFile}"
 
           artifacts.each { fileObj ->
+            def artifactS3Path = s3PathForArtifact(projectName, fileObj.name, env.S3_PATH, env.MSI_S3_PATH)
             def presignedUrl = sh(
               script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
+                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${artifactS3Path}/${fileObj.name} --expires-in 604800
               """,
               returnStdout: true
             ).trim()
@@ -363,9 +407,10 @@ node('built-in') {
           sh "rm -f ${presignedFile}"
 
           artifacts.each { fileObj ->
+            def artifactS3Path = s3PathForArtifact(projectName, fileObj.name, env.S3_PATH, env.MSI_S3_PATH)
             def presignedUrl = sh(
               script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
+                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${artifactS3Path}/${fileObj.name} --expires-in 604800
               """,
               returnStdout: true
             ).trim()
@@ -389,7 +434,7 @@ node('built-in') {
   // ------------------------------------------------------------------------
   // Windows-specific stage: Update RELEASES file for Squirrel auto-updates
   // ------------------------------------------------------------------------
-  if (projectName.contains('Windows')) {
+  if (hasWindowsSquirrel) {
     stage('Update RELEASES file') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
