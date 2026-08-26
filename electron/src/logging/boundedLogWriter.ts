@@ -22,6 +22,8 @@ import {Maybe} from 'true-myth';
 import * as os from 'os';
 import * as path from 'path';
 
+import {LogMaintenanceCoordinator} from './logMaintenance';
+
 export type BoundedLogWriterDependencies = {
   appendFile: (filePath: string, content: string) => Promise<void>;
   ensureDirectory: (directoryPath: string) => Promise<void>;
@@ -32,8 +34,9 @@ export type BoundedLogWriterDependencies = {
 };
 
 export type CreateBoundedLogWriterParameters = {
-  afterRotation: (parameters: LogRotationNotificationParameters) => Promise<void>;
+  afterWrite: () => Promise<void>;
   dependencies: BoundedLogWriterDependencies;
+  maintenanceCoordinator: LogMaintenanceCoordinator;
   maximumFileSizeBytes: number;
 };
 
@@ -42,13 +45,9 @@ export type WriteLogMessageParameters = {
   message: string;
 };
 
-export type LogRotationNotificationParameters = {
-  activeFilePaths: ReadonlySet<string>;
-  logFilePath: string;
-};
-
 export type BoundedLogWriter = {
   getActiveFilePaths: () => ReadonlySet<string>;
+  runMaintenance<Result>(operation: () => Promise<Result>): Promise<Result>;
   write: (parameters: WriteLogMessageParameters) => Promise<void>;
 };
 
@@ -69,11 +68,13 @@ type RotateLogFileParameters = {
 };
 
 type WriteLogEntryParameters = {
-  afterRotation: (parameters: LogRotationNotificationParameters) => Promise<void>;
   dependencies: BoundedLogWriterDependencies;
-  getActiveFilePaths: () => ReadonlySet<string>;
   maximumFileSizeBytes: number;
   writeParameters: WriteLogMessageParameters;
+};
+
+type WriteLogEntryResult = {
+  requiresPostWriteCleanup: boolean;
 };
 
 function isExistingFileError(error: unknown): boolean {
@@ -115,7 +116,7 @@ async function rotateLogFile(parameters: RotateLogFileParameters): Promise<void>
   }
 }
 
-async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<void> {
+async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<WriteLogEntryResult> {
   const logEntry = `${parameters.writeParameters.message}${os.EOL}`;
   const logEntrySizeBytes = Buffer.byteLength(logEntry);
 
@@ -124,6 +125,7 @@ async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<void>
   const currentFileSizeBytes = await parameters.dependencies.getFileSize(parameters.writeParameters.logFilePath);
   const wouldExceedMaximumFileSize =
     currentFileSizeBytes > 0 && currentFileSizeBytes + logEntrySizeBytes > parameters.maximumFileSizeBytes;
+  let didRotate = false;
 
   if (wouldExceedMaximumFileSize) {
     await rotateLogFile({
@@ -132,13 +134,12 @@ async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<void>
       dependencies: parameters.dependencies,
       logFilePath: parameters.writeParameters.logFilePath,
     });
-    await parameters.afterRotation({
-      activeFilePaths: parameters.getActiveFilePaths(),
-      logFilePath: parameters.writeParameters.logFilePath,
-    });
+    didRotate = true;
   }
 
   await parameters.dependencies.appendFile(parameters.writeParameters.logFilePath, logEntry);
+
+  return {requiresPostWriteCleanup: didRotate || logEntrySizeBytes > parameters.maximumFileSizeBytes};
 }
 
 function removePendingWrite(pendingWrites: PendingWrites, logFilePath: string, pendingWrite: Promise<void>): void {
@@ -147,34 +148,60 @@ function removePendingWrite(pendingWrites: PendingWrites, logFilePath: string, p
   }
 }
 
-function ignorePreviousWriteFailure(): void {}
+type RunQueuedWriteParameters = {
+  afterWrite: () => Promise<void>;
+  maintenanceCoordinator: LogMaintenanceCoordinator;
+  maximumFileSizeBytes: number;
+  previousWrite: Promise<void>;
+  writeParameters: WriteLogMessageParameters;
+  dependencies: BoundedLogWriterDependencies;
+};
+
+async function runQueuedWrite(parameters: RunQueuedWriteParameters): Promise<void> {
+  try {
+    await parameters.previousWrite;
+  } catch {
+    // A failed previous write must not prevent the next queued write.
+  }
+
+  const writeResult = await parameters.maintenanceCoordinator.runWrite(() => {
+    return writeLogEntry({
+      dependencies: parameters.dependencies,
+      maximumFileSizeBytes: parameters.maximumFileSizeBytes,
+      writeParameters: parameters.writeParameters,
+    });
+  });
+
+  if (writeResult.requiresPostWriteCleanup) {
+    await parameters.afterWrite();
+  }
+}
 
 export function createBoundedLogWriter(parameters: CreateBoundedLogWriterParameters): BoundedLogWriter {
   const pendingWrites: PendingWrites = new Map();
 
   function writeLogMessage(writeParameters: WriteLogMessageParameters): Promise<void> {
     const previousWrite = Maybe.of(pendingWrites.get(writeParameters.logFilePath)).unwrapOr(Promise.resolve());
-    const writeOperation = previousWrite.catch(ignorePreviousWriteFailure).then(() => {
-      return writeLogEntry({
-        afterRotation: parameters.afterRotation,
-        dependencies: parameters.dependencies,
-        getActiveFilePaths,
-        maximumFileSizeBytes: parameters.maximumFileSizeBytes,
-        writeParameters,
-      });
+    const writeOperation = runQueuedWrite({
+      afterWrite: parameters.afterWrite,
+      dependencies: parameters.dependencies,
+      maintenanceCoordinator: parameters.maintenanceCoordinator,
+      maximumFileSizeBytes: parameters.maximumFileSizeBytes,
+      previousWrite,
+      writeParameters,
     });
 
-    let pendingWrite = Promise.resolve();
-    pendingWrite = writeOperation.then(
-      () => {
-        return removePendingWrite(pendingWrites, writeParameters.logFilePath, pendingWrite);
-      },
-      error => {
-        removePendingWrite(pendingWrites, writeParameters.logFilePath, pendingWrite);
+    let pendingWrite: Promise<void> = Promise.resolve();
 
-        throw error;
-      },
-    );
+    async function removePendingWriteAfterCompletion(): Promise<void> {
+      try {
+        await writeOperation;
+      } finally {
+        removePendingWrite(pendingWrites, writeParameters.logFilePath, pendingWrite);
+      }
+    }
+
+    pendingWrite = removePendingWriteAfterCompletion();
     pendingWrites.set(writeParameters.logFilePath, pendingWrite);
 
     return pendingWrite;
@@ -184,5 +211,9 @@ export function createBoundedLogWriter(parameters: CreateBoundedLogWriterParamet
     return new Set(pendingWrites.keys());
   }
 
-  return {getActiveFilePaths, write: writeLogMessage};
+  return {
+    getActiveFilePaths,
+    runMaintenance: parameters.maintenanceCoordinator.runMaintenance,
+    write: writeLogMessage,
+  };
 }
