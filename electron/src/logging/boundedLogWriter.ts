@@ -46,7 +46,6 @@ export type WriteLogMessageParameters = {
 };
 
 export type BoundedLogWriter = {
-  getActiveFilePaths: () => ReadonlySet<string>;
   runMaintenance<Result>(operation: () => Promise<Result>): Promise<Result>;
   write: (parameters: WriteLogMessageParameters) => Promise<void>;
 };
@@ -207,12 +206,7 @@ export function createBoundedLogWriter(parameters: CreateBoundedLogWriterParamet
     return pendingWrite;
   }
 
-  function getActiveFilePaths(): ReadonlySet<string> {
-    return new Set(pendingWrites.keys());
-  }
-
   return {
-    getActiveFilePaths,
     runMaintenance: parameters.maintenanceCoordinator.runMaintenance,
     write: writeLogMessage,
   };

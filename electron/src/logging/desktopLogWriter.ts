@@ -92,7 +92,7 @@ let currentDesktopLogCleanup: Maybe<Promise<void>> = Maybe.nothing<Promise<void>
 
 export function runDesktopLogCleanupWithinMaintenance(): Promise<void> {
   return cleanupDesktopLogs({
-    activeFilePaths: desktopBoundedLogWriter.getActiveFilePaths(),
+    activeFilePaths: new Set<string>(),
     logDirectory: getLogDirectory(),
     policy: DESKTOP_LOG_RETENTION_POLICY,
   });
