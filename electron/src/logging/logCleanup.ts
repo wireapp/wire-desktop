@@ -20,8 +20,12 @@
 import * as fs from 'fs-extra';
 import {Maybe} from 'true-myth';
 
-import * as path from 'path';
-
+import {getLogDirectoryAncestors} from './logDirectoryAncestors';
+import {
+  LogDirectoryCleanupDependencies,
+  LogDirectoryCleanupResult,
+  removeEmptyLogDirectory,
+} from './logDirectoryCleanup';
 import {getLogFilenames} from './logFiles';
 import {LogFileMetadata, LogRetentionPlanParameters, LogRetentionPolicy, planLogCleanup} from './logRetention';
 
@@ -36,7 +40,7 @@ export type LogCleanupDependencies = {
   discoverLogFilePaths: (logDirectory: string) => Promise<readonly string[]>;
   getCurrentTimeMilliseconds: () => number;
   getFileMetadata: (filePath: string) => Promise<LogFileMetadata>;
-  removeEmptyDirectory: (directoryPath: string) => Promise<void>;
+  removeEmptyDirectory: (directoryPath: string) => Promise<LogDirectoryCleanupResult>;
   removeFile: (filePath: string) => Promise<void>;
   reportFailure: (message: string, error: unknown) => void;
 };
@@ -56,30 +60,32 @@ type CleanupFileMetadataParameters = {
   dependencies: LogCleanupDependencies;
 };
 
-function getParentDirectories(filePaths: readonly string[]): string[] {
+function compareDirectoryDepth(firstPath: string, secondPath: string): number {
+  const pathLengthDifference = secondPath.length - firstPath.length;
+
+  if (pathLengthDifference !== 0) {
+    return pathLengthDifference;
+  }
+
+  if (firstPath < secondPath) {
+    return -1;
+  }
+
+  if (firstPath > secondPath) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function getParentDirectories(filePaths: readonly string[], logDirectory: string): string[] {
   const parentDirectories = new Set(
-    filePaths.map(filePath => {
-      return path.dirname(filePath);
+    filePaths.flatMap(filePath => {
+      return getLogDirectoryAncestors({logDirectory, pathToRemove: filePath, pathType: 'file'});
     }),
   );
 
-  return [...parentDirectories].toSorted((firstPath, secondPath) => {
-    const pathLengthDifference = secondPath.length - firstPath.length;
-
-    if (pathLengthDifference !== 0) {
-      return pathLengthDifference;
-    }
-
-    if (firstPath < secondPath) {
-      return -1;
-    }
-
-    if (firstPath > secondPath) {
-      return 1;
-    }
-
-    return 0;
-  });
+  return [...parentDirectories].toSorted(compareDirectoryDepth);
 }
 
 async function getCleanupFileMetadata(parameters: CleanupFileMetadataParameters): Promise<LogFileMetadata[]> {
@@ -108,11 +114,16 @@ async function removePlannedFiles(filePaths: readonly string[], dependencies: Lo
 
 async function removeParentDirectories(
   filePaths: readonly string[],
+  logDirectory: string,
   dependencies: LogCleanupDependencies,
 ): Promise<void> {
-  for (const directoryPath of getParentDirectories(filePaths)) {
+  for (const directoryPath of getParentDirectories(filePaths, logDirectory)) {
     try {
-      await dependencies.removeEmptyDirectory(directoryPath);
+      const cleanupResult = await dependencies.removeEmptyDirectory(directoryPath);
+
+      if (cleanupResult.isErr) {
+        dependencies.reportFailure(`Failed to remove empty log directory "${directoryPath}"`, cleanupResult.error);
+      }
     } catch (error) {
       dependencies.reportFailure(`Failed to remove empty log directory "${directoryPath}"`, error);
     }
@@ -140,20 +151,30 @@ async function runCleanup(parameters: RunLogCleanupParameters, dependencies: Log
   const retentionPlan = planLogCleanup(retentionPlanParameters);
 
   await removePlannedFiles(retentionPlan.filesToDelete, dependencies);
-  await removeParentDirectories(logFilePaths, dependencies);
+  await removeParentDirectories(retentionPlan.filesToDelete, parameters.logDirectory, dependencies);
 }
 
-function isMissingPathError(error: unknown): boolean {
-  return error instanceof Error && 'code' in error && error.code === 'ENOENT';
+function createLogDirectoryCleanupDependencies(): LogDirectoryCleanupDependencies {
+  return {
+    async getDirectoryMetadata(directoryPath: string) {
+      const directoryStatistics = await fs.lstat(directoryPath);
+
+      return {
+        isDirectory: directoryStatistics.isDirectory(),
+        isSymbolicLink: directoryStatistics.isSymbolicLink(),
+      };
+    },
+    async removeDirectory(directoryPath: string): Promise<void> {
+      await fs.rmdir(directoryPath);
+    },
+  };
 }
 
-function isNonEmptyDirectoryError(error: unknown): boolean {
-  return error instanceof Error && 'code' in error && (error.code === 'ENOTEMPTY' || error.code === 'EEXIST');
-}
-
-function createFileSystemDependencies(
+export function createLogCleanupFileSystemDependencies(
   reportFailure: (message: string, error: unknown) => void,
 ): LogCleanupDependencies {
+  const directoryCleanupDependencies = createLogDirectoryCleanupDependencies();
+
   return {
     async discoverLogFilePaths(logDirectory: string): Promise<readonly string[]> {
       return getLogFilenames({absolute: true, baseDirectory: logDirectory});
@@ -171,22 +192,8 @@ function createFileSystemDependencies(
         modifiedTimeMilliseconds: fileStatistics.mtimeMs,
       };
     },
-    async removeEmptyDirectory(directoryPath: string): Promise<void> {
-      try {
-        const directoryStatistics = await fs.lstat(directoryPath);
-
-        if (directoryStatistics.isSymbolicLink() || directoryStatistics.isDirectory() === false) {
-          return;
-        }
-
-        await fs.rmdir(directoryPath);
-      } catch (error) {
-        if (isMissingPathError(error) || isNonEmptyDirectoryError(error)) {
-          return;
-        }
-
-        throw error;
-      }
+    async removeEmptyDirectory(directoryPath: string): Promise<LogDirectoryCleanupResult> {
+      return removeEmptyLogDirectory({directoryPath, dependencies: directoryCleanupDependencies});
     },
     async removeFile(filePath: string): Promise<void> {
       await fs.unlink(filePath);
@@ -219,7 +226,7 @@ export function createLogCleanup(dependencies: LogCleanupDependencies): LogClean
 }
 
 const desktopLogCleanup = createLogCleanup(
-  createFileSystemDependencies((message: string, error: unknown): void => {
+  createLogCleanupFileSystemDependencies((message: string, error: unknown): void => {
     console.error(message, error);
   }),
 );
