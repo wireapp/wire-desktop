@@ -17,21 +17,22 @@
  *
  */
 
-export type UnrefableInterval = {
-  unref: () => void;
+export type InitializeDesktopLogLifecycleParameters = {
+  initializeWebviewLogging: () => Promise<void>;
+  reportCleanupFailure: (error: unknown) => void;
+  runInitialCleanup: () => Promise<void>;
+  schedulePeriodicCleanup: () => void;
 };
 
-export type ScheduleLogCleanupParameters = {
-  fireAndForget: (asyncAction: () => Promise<unknown>) => void;
-  intervalMilliseconds: number;
-  runCleanup: () => Promise<void>;
-  setInterval: (callback: () => void, intervalMilliseconds: number) => UnrefableInterval;
-};
+export async function initializeDesktopLogLifecycle(
+  parameters: InitializeDesktopLogLifecycleParameters,
+): Promise<void> {
+  try {
+    await parameters.runInitialCleanup();
+  } catch (error) {
+    parameters.reportCleanupFailure(error);
+  }
 
-export function scheduleLogCleanup(parameters: ScheduleLogCleanupParameters): void {
-  const cleanupInterval = parameters.setInterval(() => {
-    parameters.fireAndForget(parameters.runCleanup);
-  }, parameters.intervalMilliseconds);
-
-  cleanupInterval.unref();
+  parameters.schedulePeriodicCleanup();
+  await parameters.initializeWebviewLogging();
 }

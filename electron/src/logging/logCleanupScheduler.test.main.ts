@@ -21,6 +21,8 @@ import * as assert from 'assert';
 
 import {scheduleLogCleanup, UnrefableInterval} from './logCleanupScheduler';
 
+import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
+
 describe('desktop log cleanup scheduler', () => {
   it('schedules an unrefed hourly cleanup interval', async () => {
     let scheduledCallback: () => void = () => {};
@@ -32,8 +34,14 @@ describe('desktop log cleanup scheduler', () => {
         wasUnrefed = true;
       },
     };
+    const invoker = createFireAndForgetInvoker({
+      reportFailure(error: unknown): void {
+        throw error;
+      },
+    });
 
     scheduleLogCleanup({
+      fireAndForget: invoker.fireAndForget,
       intervalMilliseconds: 60_000,
       async runCleanup(): Promise<void> {
         cleanupRunCount += 1;
