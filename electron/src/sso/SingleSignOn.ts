@@ -18,7 +18,6 @@
  */
 
 import {
-  app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event as ElectronEvent,
@@ -28,23 +27,22 @@ import {
   WebContents,
   HandlerDetails,
 } from 'electron';
+import {Maybe} from 'true-myth';
 
 import * as crypto from 'crypto';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {LogFactory} from '@wireapp/commons';
-
 import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {writeBoundedLogMessage} from '../logging/desktopLogWriter';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
-import {getWebViewId} from '../runtime/lifecycle';
+import {getLogDirectory, getSsoLogPath} from '../logging/logPaths';
 import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
 
 const minimist = require('minimist');
 
 const argv = minimist(process.argv.slice(1));
-const LOG_DIR = path.join(app.getPath('userData'), 'logs');
 
 export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
@@ -68,19 +66,22 @@ export class SingleSignOn {
   private session: Session | undefined;
   private ssoWindow: BrowserWindow | undefined;
   private readonly senderWebContents: WebContents;
+  private readonly accountId: Maybe<string>;
   private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
   public onClose = () => {};
 
   constructor(
     ssoWindow: BrowserWindow,
-    senderEvent: ElectronEvent,
+    senderWebContents: WebContents,
+    accountId: Maybe<string>,
     windowOriginURL: string,
     windowOptions: BrowserWindowConstructorOptions,
   ) {
     this.windowOptions = windowOptions;
     this.ssoWindow = ssoWindow;
-    this.senderWebContents = (senderEvent as any).sender;
+    this.senderWebContents = senderWebContents;
+    this.accountId = accountId;
     this.windowOriginUrl = new URL(windowOriginURL);
   }
 
@@ -109,6 +110,7 @@ export class SingleSignOn {
     if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
       this.ssoWindow?.webContents.openDevTools({mode: 'detach'});
     }
+
     return this;
   };
 
@@ -141,6 +143,7 @@ export class SingleSignOn {
     // Prevent new windows (open external pages in OS browser)
     ssoWindow.webContents.setWindowOpenHandler((details: HandlerDetails): {action: 'deny'} => {
       void WindowUtil.openExternal(details.url, true);
+
       return {action: 'deny'};
     });
 
@@ -156,13 +159,18 @@ export class SingleSignOn {
 
     if (ENABLE_LOGGING) {
       ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
-        const webViewId = getWebViewId(ssoWindow.webContents);
-        if (webViewId) {
-          const logFilePath = path.join(LOG_DIR, webViewId, config.logFileName);
+        if (this.accountId.isJust) {
+          const logFilePath = getSsoLogPath({
+            accountId: this.accountId.value,
+            date: new Date(),
+            logDirectory: getLogDirectory(),
+          });
           try {
-            await LogFactory.writeMessage(message, logFilePath);
-          } catch (error: any) {
-            console.error(`Cannot write to log file "${logFilePath}": ${error.message}`, error);
+            await writeBoundedLogMessage({logFilePath, message});
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+
+            console.error('Cannot write to log file:', logFilePath, errorMessage, error);
           }
         }
       });
@@ -284,6 +292,7 @@ export class SingleSignOn {
     if (type === SingleSignOn.RESPONSE_TYPES.AUTH_SUCCESS) {
       if (!this.session) {
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_SESS_NOT_AVAILABLE);
+
         return;
       }
 
@@ -293,6 +302,7 @@ export class SingleSignOn {
       } catch (error) {
         SingleSignOn.logger.warn(error);
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_COOKIE);
+
         return;
       }
     }

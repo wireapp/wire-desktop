@@ -17,12 +17,20 @@
  *
  */
 
-import {configurePortableUserDataAtStartup} from './runtime/configurePortableUserData';
+export type UnrefableInterval = {
+  unref: () => void;
+};
 
-configurePortableUserDataAtStartup();
+export type ScheduleLogCleanupParameters = {
+  intervalMilliseconds: number;
+  runCleanup: () => Promise<void>;
+  setInterval: (callback: () => void, intervalMilliseconds: number) => UnrefableInterval;
+};
 
-function loadMainProcess(): void {
-  require('./mainProcess');
+export function scheduleLogCleanup(parameters: ScheduleLogCleanupParameters): void {
+  const cleanupInterval = parameters.setInterval(() => {
+    void parameters.runCleanup();
+  }, parameters.intervalMilliseconds);
+
+  cleanupInterval.unref();
 }
-
-loadMainProcess();

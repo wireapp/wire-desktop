@@ -25,12 +25,21 @@ import * as path from 'path';
 
 import {ValidationUtil} from '@wireapp/commons';
 
-import {getLogger} from '../logging/getLogger';
+import {deleteAccountLogDirectories} from './accountLogDeletion';
 
-const USER_DATA_DIR = app.getPath('userData');
-const LOG_DIR = path.join(USER_DATA_DIR, 'logs');
+import {getLogger} from '../logging/getLogger';
+import {getLogFilenames} from '../logging/logFiles';
+import {getLogDirectory} from '../logging/logPaths';
 
 const logger = getLogger(path.basename(__filename));
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function getUserDataDirectory(): string {
+  return app.getPath('userData');
+}
 
 const clearStorage = async (session: Session): Promise<void> => {
   await session.clearStorageData();
@@ -53,8 +62,8 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     logger.log(`Deleting session data for account "${truncatedId}"...`);
     await clearStorage(webviewWebContent.session);
     logger.log(`Deleted session data for account "${truncatedId}".`);
-  } catch (error: any) {
-    logger.error(`Failed to delete session data for account "${truncatedId}", reason: "${error.message}".`);
+  } catch (error) {
+    logger.error(`Failed to delete session data for account "${truncatedId}", reason: "${getErrorMessage(error)}".`);
   }
 
   // Delete the webview partition
@@ -66,12 +75,14 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
       if (!ValidationUtil.isUUIDv4(partitionId)) {
         throw new Error('Partition is not an UUID');
       }
-      const partitionDir = path.join(USER_DATA_DIR, 'Partitions', partitionId);
+      const partitionDir = path.join(getUserDataDirectory(), 'Partitions', partitionId);
       await fs.remove(partitionDir);
       logger.log(`Deleted partition "${partitionId}" for account "${truncatedId}".`);
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+
       logger.log(
-        `Unable to delete partition "${partitionId}" for account "${truncatedId}", reason: "${error.message}".`,
+        `Unable to delete partition "${partitionId}" for account "${truncatedId}", reason: "${errorMessage}".`,
       );
     }
   }
@@ -81,11 +92,37 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     if (!ValidationUtil.isUUIDv4(accountId)) {
       throw new Error('Account is not an UUID');
     }
-    const sessionFolder = path.join(LOG_DIR, accountId);
-    await fs.remove(sessionFolder);
+    const logDirectory = getLogDirectory();
+    const logFilePaths = getLogFilenames({absolute: true, baseDirectory: logDirectory});
+    await deleteAccountLogDirectories({
+      accountId,
+      dependencies: {
+        async isSafeDirectory(directoryPath: string): Promise<boolean> {
+          try {
+            const directoryStatistics = await fs.lstat(directoryPath);
+
+            return directoryStatistics.isDirectory() && directoryStatistics.isSymbolicLink() === false;
+          } catch (error) {
+            if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+              return false;
+            }
+
+            throw error;
+          }
+        },
+        async removeDirectory(directoryPath: string): Promise<void> {
+          await fs.remove(directoryPath);
+        },
+        reportFailure: (message: string, error: unknown): void => {
+          logger.error(`${message}: ${getErrorMessage(error)}`);
+        },
+      },
+      filePaths: logFilePaths,
+      logDirectory,
+    });
 
     logger.log(`Deleted logs folder for account "${truncatedId}".`);
-  } catch (error: any) {
-    logger.error(`Failed to delete logs folder for account "${truncatedId}", reason: "${error.message}".`);
+  } catch (error) {
+    logger.error(`Failed to delete logs folder for account "${truncatedId}", reason: "${getErrorMessage(error)}".`);
   }
 }

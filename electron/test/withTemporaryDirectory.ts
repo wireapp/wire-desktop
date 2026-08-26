@@ -17,12 +17,24 @@
  *
  */
 
-import {configurePortableUserDataAtStartup} from './runtime/configurePortableUserData';
+import * as fs from 'fs-extra';
 
-configurePortableUserDataAtStartup();
+import * as os from 'os';
+import * as path from 'path';
 
-function loadMainProcess(): void {
-  require('./mainProcess');
+export type TemporaryDirectoryTest = (temporaryDirectory: string) => Promise<void>;
+
+export function withTemporaryDirectory(
+  temporaryDirectoryPrefix: string,
+  testFunction: TemporaryDirectoryTest,
+): () => Promise<void> {
+  return async function runTemporaryDirectoryTest(): Promise<void> {
+    const temporaryDirectory = await fs.mkdtemp(path.join(os.tmpdir(), temporaryDirectoryPrefix));
+
+    try {
+      await testFunction(temporaryDirectory);
+    } finally {
+      await fs.remove(temporaryDirectory);
+    }
+  };
 }
-
-loadMainProcess();

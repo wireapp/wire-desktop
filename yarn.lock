@@ -19514,6 +19514,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"true-myth@npm:7.4.0":
+  version: 7.4.0
+  resolution: "true-myth@npm:7.4.0"
+  checksum: 2f94f5d73d8109be27797ef91e106b5bca3aca25a8db793f89e189d8e311749b84eea52e35a9dc17a7827161aa90b42644b7c17a68bb3e1518e2193b93669968
+  languageName: node
+  linkType: hard
+
 "truncate-utf8-bytes@npm:^1.0.0":
   version: 1.0.2
   resolution: "truncate-utf8-bytes@npm:1.0.2"
@@ -20971,6 +20978,7 @@ __metadata:
     sinon: 17.0.2
     sort-json: 2.0.1
     style-loader: 4.0.0
+    true-myth: 7.4.0
     ts-node: 10.9.2
     typescript: 5.7.3
     uuid: 9.0.1
