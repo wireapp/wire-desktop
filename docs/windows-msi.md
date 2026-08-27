@@ -15,6 +15,8 @@ The Windows Jenkins job uses `yarn build:win:installers` to create the Squirrel 
 
 `-m` disables electron-builder's automatic signing. Jenkins uses this mode because it signs the packaged Windows executables before creating the MSI, and signs the resulting MSI separately with the managed signing service.
 
+The Windows 10 minimum-version check reads `CurrentBuildNumber` from the 64-bit Windows registry. Do not replace it with Windows Installer's built-in version properties, which can report compatibility values on modern Windows.
+
 Interactive installation uses the standard assisted Windows Installer flow with a Wire-branded banner, including welcome, installation location, readiness, progress, and completion pages. The managed deployment defaults create both desktop and Start Menu shortcuts; they are not optional features in the installer UI.
 
 The standard Wire environments have permanent MSI upgrade codes in `build-windows-msi.ts`. Never change an upgrade code after its first release. A custom-branded build must set `WIN_MSI_UPGRADE_CODE` to its own permanent GUID so that it cannot collide with a standard Wire installation. The MSI manufacturer defaults to `Wire Swiss GmbH`; an OEM build can override it with `WIN_MSI_MANUFACTURER`.

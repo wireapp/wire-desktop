@@ -110,6 +110,27 @@ describe('build-windows-msi', () => {
   });
 
   describe('customizeMsiProject', () => {
+    it('regression: detects Windows 10 and later from the actual registry build number', () => {
+      const project = `<Product>
+        <Condition Message="Windows 7 and above is required"><![CDATA[Installed OR VersionNT >= 601]]></Condition>
+        <Component>
+          <File Name="Wire.exe" Id="mainExecutable">
+            <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="Wire"/>
+          </File>
+        </Component>
+      </Product>`;
+
+      const result = customizeMsiProject(project, 'wire', 'com.squirrel.wire.wire', 'Wire', 'msi-banner.bmp');
+
+      assert.match(result, /Property Id="WIRE_WINDOWS_BUILD" Secure="yes"/);
+      assert.match(
+        result,
+        /RegistrySearch Id="WireWindowsBuild" Root="HKLM" Key="SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" Name="CurrentBuildNumber" Type="raw" Win64="yes"/,
+      );
+      assert.match(result, /Installed OR WIRE_WINDOWS_BUILD >= 10240/);
+      assert.doesNotMatch(result, /VersionNT >= 603 AND WindowsBuild >= 10240/);
+    });
+
     it('brands the assisted UI and makes the URL protocol and desktop shortcut identity MSI-owned', () => {
       const project = `
         <Product Name="Wire">
@@ -125,8 +146,6 @@ describe('build-windows-msi', () => {
 
       assert.match(result, /WixVariable Id="WixUIBannerBmp" Value="msi-banner\.bmp"/);
       assert.match(result, /Windows 10 or above is required/);
-      assert.match(result, /VersionNT >= 603 AND WindowsBuild >= 10240/);
-      assert.doesNotMatch(result, /VersionNT >= 1000/);
       assert.match(result, /ShortcutProperty Key="System\.AppUserModel\.ID" Value="com\.squirrel\.wire\.wire"/);
       assert.match(result, /RegistryKey Root="HKLM" Key="Software\\Classes\\wire"/);
       assert.match(result, /Value="&quot;\[#mainExecutable\]&quot; &quot;%1&quot;"/);
