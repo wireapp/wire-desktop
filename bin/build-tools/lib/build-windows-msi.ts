@@ -113,6 +113,9 @@ export function customizeMsiProject(
   const banner = escapeXmlAttribute(bannerFileName);
   const msiProperties = [
     `    <WixVariable Id="WixUIBannerBmp" Value="${banner}"/>`,
+    '    <Property Id="WIRE_WINDOWS_BUILD" Secure="yes">',
+    '      <RegistrySearch Id="WireWindowsBuild" Root="HKLM" Key="SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" Name="CurrentBuildNumber" Type="raw" Win64="yes"/>',
+    '    </Property>',
     '    <Property Id="WIRE_WEBAPP_URL" Secure="yes"/>',
     '    <Property Id="WIRE_CLEAR_WEBAPP_URL" Secure="yes"/>',
     '    <Property Id="WIRE_EXISTING_WEBAPP_URL">',
@@ -129,7 +132,9 @@ export function customizeMsiProject(
   }
   customizedProject = customizedProject.replace(
     electronBuilderOsCondition,
-    '<Condition Message="Windows 10 or above is required"><![CDATA[Installed OR (VersionNT >= 603 AND WindowsBuild >= 10240)]]></Condition>',
+    // Windows Installer can expose compatibility values for its built-in OS properties on modern Windows. Read the
+    // actual build from the registry instead; 10240 is the first public Windows 10 build.
+    '<Condition Message="Windows 10 or above is required"><![CDATA[Installed OR WIRE_WINDOWS_BUILD >= 10240]]></Condition>',
   );
 
   const escapedAppId = escapeXmlAttribute(appId);
