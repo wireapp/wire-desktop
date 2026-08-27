@@ -21,7 +21,7 @@ import * as logdown from 'logdown';
 
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
 
-import {writeBoundedLogMessage} from './desktopLogWriter';
+import {fireAndForgetDesktopLogOperation, writeBoundedLogMessage} from './desktopLogWriter';
 import {getLogDirectory, getMainProcessLogPath} from './logPaths';
 
 import {config} from '../settings/config';
@@ -37,7 +37,9 @@ function writeMainProcessLog(transportOptions: logdown.TransportOptions): void {
   const logFilePath = getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()});
   const logMessage = `${transportOptions.args[0]} ${transportOptions.msg}`;
 
-  void writeBoundedLogMessage({logFilePath, message: logMessage});
+  fireAndForgetDesktopLogOperation(async (): Promise<void> => {
+    await writeBoundedLogMessage({logFilePath, message: logMessage});
+  });
 }
 
 function configureLogTransports(): void {

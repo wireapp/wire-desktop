@@ -23,8 +23,12 @@ import * as assert from 'assert';
 import * as path from 'path';
 
 import {BoundedLogWriter, BoundedLogWriterDependencies, createBoundedLogWriter} from './boundedLogWriter';
+import {createLogCleanup, createLogCleanupFileSystemDependencies} from './logCleanup';
+import {createLogMaintenanceCoordinator} from './logMaintenance';
+import {LogRetentionPolicy} from './logRetention';
 
 import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
+import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
 
 function createTestFileSystemDependencies(currentTimeMilliseconds: number): BoundedLogWriterDependencies {
   return {
@@ -73,8 +77,18 @@ function waitMilliseconds(milliseconds: number): Promise<void> {
   });
 }
 
-function ignoreLogRotation(): Promise<void> {
+function ignorePostWriteCleanup(): Promise<void> {
   return Promise.resolve();
+}
+
+function createTestMaintenanceCoordinator() {
+  const invoker = createFireAndForgetInvoker({
+    reportFailure(): void {
+      // The coordinator's public promises report expected operation failures.
+    },
+  });
+
+  return createLogMaintenanceCoordinator({fireAndForget: invoker.fireAndForget});
 }
 
 describe('bounded desktop log writer', () => {
@@ -83,8 +97,9 @@ describe('bounded desktop log writer', () => {
     withTemporaryDirectory('wire-bounded-log-writer-', async (temporaryLogDirectory: string) => {
       const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
       const boundedLogWriter = createBoundedLogWriter({
-        afterRotation: ignoreLogRotation,
+        afterWrite: ignorePostWriteCleanup,
         dependencies: createTestFileSystemDependencies(1),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
         maximumFileSizeBytes: 1024,
       });
 
@@ -116,8 +131,9 @@ describe('bounded desktop log writer', () => {
         },
       };
       const boundedLogWriter = createBoundedLogWriter({
-        afterRotation: ignoreLogRotation,
+        afterWrite: ignorePostWriteCleanup,
         dependencies,
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
         maximumFileSizeBytes: 1024,
       });
 
@@ -131,15 +147,42 @@ describe('bounded desktop log writer', () => {
   );
 
   it(
+    'appends to a pre-existing current file with a fresh writer instance',
+    withTemporaryDirectory('wire-bounded-log-restart-', async (temporaryLogDirectory: string) => {
+      const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
+      const firstWriter = createBoundedLogWriter({
+        afterWrite: ignorePostWriteCleanup,
+        dependencies: createTestFileSystemDependencies(7),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
+        maximumFileSizeBytes: 1024,
+      });
+      const secondWriter = createBoundedLogWriter({
+        afterWrite: ignorePostWriteCleanup,
+        dependencies: createTestFileSystemDependencies(7),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
+        maximumFileSizeBytes: 1024,
+      });
+
+      await firstWriter.write({logFilePath, message: 'before restart'});
+      await secondWriter.write({logFilePath, message: 'after restart'});
+
+      const actualLogContent = await fs.readFile(logFilePath, 'utf8');
+
+      assert.strictEqual(actualLogContent, 'before restart\nafter restart\n');
+    }),
+  );
+
+  it(
     'rotates before an entry exceeds the configured file size',
     withTemporaryDirectory('wire-bounded-log-rotation-', async (temporaryLogDirectory: string) => {
       const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
       let rotationCount = 0;
       const boundedLogWriter = createBoundedLogWriter({
-        async afterRotation(): Promise<void> {
+        async afterWrite(): Promise<void> {
           rotationCount += 1;
         },
         dependencies: createTestFileSystemDependencies(2),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
         maximumFileSizeBytes: 10,
       });
 
@@ -161,8 +204,9 @@ describe('bounded desktop log writer', () => {
       const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
       const existingRotatedLogPath = `${logFilePath}.3-0.old`;
       const boundedLogWriter = createBoundedLogWriter({
-        afterRotation: ignoreLogRotation,
+        afterWrite: ignorePostWriteCleanup,
         dependencies: createTestFileSystemDependencies(3),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
         maximumFileSizeBytes: 10,
       });
 
@@ -182,8 +226,9 @@ describe('bounded desktop log writer', () => {
     withTemporaryDirectory('wire-bounded-log-large-entry-', async (temporaryLogDirectory: string) => {
       const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
       const boundedLogWriter = createBoundedLogWriter({
-        afterRotation: ignoreLogRotation,
+        afterWrite: ignorePostWriteCleanup,
         dependencies: createTestFileSystemDependencies(4),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
         maximumFileSizeBytes: 5,
       });
 
@@ -195,6 +240,111 @@ describe('bounded desktop log writer', () => {
 
       assert.strictEqual(actualCurrentLogContent, 'x\n');
       assert.strictEqual(actualRotatedLogContent, '123456\n');
+    }),
+  );
+
+  it(
+    'runs post-write cleanup after an oversized entry',
+    withTemporaryDirectory('wire-bounded-log-large-entry-cleanup-', async (temporaryLogDirectory: string) => {
+      const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
+      let cleanupCount = 0;
+      const boundedLogWriter = createBoundedLogWriter({
+        async afterWrite(): Promise<void> {
+          cleanupCount += 1;
+        },
+        dependencies: createTestFileSystemDependencies(5),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
+        maximumFileSizeBytes: 5,
+      });
+
+      await boundedLogWriter.write({logFilePath, message: '123456'});
+
+      assert.strictEqual(cleanupCount, 1);
+    }),
+  );
+
+  it(
+    'removes an oversized entry during post-write cleanup',
+    withTemporaryDirectory('wire-bounded-log-large-entry-retention-', async (temporaryLogDirectory: string) => {
+      const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
+      const maintenanceCoordinator = createTestMaintenanceCoordinator();
+      const retentionPolicy: LogRetentionPolicy = {
+        maximumAgeMilliseconds: 7 * 24 * 60 * 60 * 1_000,
+        maximumTotalSizeBytes: 10,
+      };
+      const cleanupFailureMessages: string[] = [];
+      const cleanup = createLogCleanup(
+        createLogCleanupFileSystemDependencies((message: string): void => {
+          cleanupFailureMessages.push(message);
+        }),
+      );
+      let isWriteCriticalSectionActive = false;
+      let writtenLogSizeBytes = 0;
+      let cleanupCount = 0;
+      let cleanupStartedAfterWriteCriticalSection = false;
+      const baseDependencies = createTestFileSystemDependencies(9);
+      const dependencies: BoundedLogWriterDependencies = {
+        ...baseDependencies,
+        async appendFile(filePath: string, content: string): Promise<void> {
+          isWriteCriticalSectionActive = true;
+
+          try {
+            await fs.appendFile(filePath, content);
+            writtenLogSizeBytes = Buffer.byteLength(content);
+          } finally {
+            isWriteCriticalSectionActive = false;
+          }
+        },
+      };
+      const boundedLogWriter = createBoundedLogWriter({
+        async afterWrite(): Promise<void> {
+          cleanupCount += 1;
+          await maintenanceCoordinator.runMaintenance(async (): Promise<void> => {
+            cleanupStartedAfterWriteCriticalSection = isWriteCriticalSectionActive === false;
+            await cleanup.run({
+              activeFilePaths: new Set<string>(),
+              logDirectory: temporaryLogDirectory,
+              policy: retentionPolicy,
+            });
+          });
+        },
+        dependencies,
+        maintenanceCoordinator,
+        maximumFileSizeBytes: 5,
+      });
+
+      await boundedLogWriter.write({logFilePath, message: '1234567890'});
+
+      assert.strictEqual(writtenLogSizeBytes, 11);
+      assert.strictEqual(cleanupCount, 1);
+      assert.strictEqual(cleanupStartedAfterWriteCriticalSection, true);
+      assert.strictEqual(cleanupFailureMessages.length, 0);
+      assert.strictEqual(await fs.pathExists(logFilePath), false);
+    }),
+  );
+
+  it(
+    'does not deadlock when rotation cleanup requests maintenance',
+    withTemporaryDirectory('wire-bounded-log-rotation-cleanup-', async (temporaryLogDirectory: string) => {
+      const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
+      const maintenanceCoordinator = createTestMaintenanceCoordinator();
+      let cleanupCount = 0;
+      const boundedLogWriter = createBoundedLogWriter({
+        async afterWrite(): Promise<void> {
+          cleanupCount += 1;
+          await maintenanceCoordinator.runMaintenance(async (): Promise<void> => {
+            // The test only verifies that the maintenance request completes.
+          });
+        },
+        dependencies: createTestFileSystemDependencies(6),
+        maintenanceCoordinator,
+        maximumFileSizeBytes: 10,
+      });
+
+      await boundedLogWriter.write({logFilePath, message: '12345'});
+      await boundedLogWriter.write({logFilePath, message: '6789'});
+
+      assert.strictEqual(cleanupCount, 1);
     }),
   );
 });

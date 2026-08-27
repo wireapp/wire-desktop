@@ -53,16 +53,17 @@ import {
 import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
+import {createFireAndForgetInvoker} from './lib/fireAndForgetInvoker';
 import {forwardWrapperReloadRequest} from './lib/forwardWrapperReloadRequest';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
 import * as locale from './locale';
-import {getActiveLogFilePaths, writeBoundedLogMessage} from './logging/desktopLogWriter';
+import {runDesktopLogCleanup, writeBoundedLogMessage} from './logging/desktopLogWriter';
 import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
-import {cleanupDesktopLogs, DESKTOP_LOG_RETENTION_POLICY} from './logging/logCleanup';
 import {scheduleLogCleanup} from './logging/logCleanupScheduler';
 import {getLogDirectory, getMainProcessLogPath, getWebViewLogPath} from './logging/logPaths';
+import {initializeDesktopLogLifecycle} from './logging/logStartup';
 import {getManagedConfig} from './managed/ManagedConfig';
 import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -84,15 +85,12 @@ import * as WindowUtil from './window/WindowUtil';
 const MAIN_PROCESS_LOGGER_NAME = 'main.js';
 const LOG_CLEANUP_INTERVAL_MILLISECONDS = 60 * 60 * 1_000;
 const logger = getLogger(MAIN_PROCESS_LOGGER_NAME);
+const mainProcessFireAndForgetInvoker = createFireAndForgetInvoker({
+  reportFailure(error: unknown): void {
+    logger.error('Failed to execute a main-process background operation.', error);
+  },
+});
 const configuredUserDataPath = getConfiguredPortableUserDataPath();
-
-function runDesktopLogCleanup(): Promise<void> {
-  return cleanupDesktopLogs({
-    activeFilePaths: getActiveLogFilePaths(),
-    logDirectory: getLogDirectory(),
-    policy: DESKTOP_LOG_RETENTION_POLICY,
-  });
-}
 
 type OpenLinkInNewWindowParameters = {
   accountId: Maybe<string>;
@@ -632,7 +630,7 @@ class ElectronWrapperInit {
       }
 
       this.logger.log('Opening an external window from a webview.');
-      void WindowUtil.openExternal(details.url);
+      mainProcessFireAndForgetInvoker.fireAndForget(() => WindowUtil.openExternal(details.url));
 
       return {action: 'deny'};
     };
@@ -809,13 +807,25 @@ if (lifecycle.isFirstInstance) {
   bindIpcEvents();
   handleAppEvents();
   fs.ensureFileSync(getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}));
-  void runDesktopLogCleanup();
-  scheduleLogCleanup({
-    intervalMilliseconds: LOG_CLEANUP_INTERVAL_MILLISECONDS,
-    runCleanup: runDesktopLogCleanup,
-    setInterval: (callback: () => void, intervalMilliseconds: number): NodeJS.Timeout => {
-      return setInterval(callback, intervalMilliseconds);
-    },
+  mainProcessFireAndForgetInvoker.fireAndForget(async (): Promise<void> => {
+    await initializeDesktopLogLifecycle({
+      async initializeWebviewLogging(): Promise<void> {
+        await new ElectronWrapperInit().run();
+      },
+      reportCleanupFailure(error: unknown): void {
+        logger.error('Failed to complete initial desktop log cleanup.', error);
+      },
+      runInitialCleanup: runDesktopLogCleanup,
+      schedulePeriodicCleanup(): void {
+        scheduleLogCleanup({
+          fireAndForget: mainProcessFireAndForgetInvoker.fireAndForget,
+          intervalMilliseconds: LOG_CLEANUP_INTERVAL_MILLISECONDS,
+          runCleanup: runDesktopLogCleanup,
+          setInterval(callback: () => void, intervalMilliseconds: number): NodeJS.Timeout {
+            return setInterval(callback, intervalMilliseconds);
+          },
+        });
+      },
+    });
   });
-  new ElectronWrapperInit().run().catch(error => logger.error(error));
 }

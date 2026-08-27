@@ -28,6 +28,11 @@ import {ValidationUtil} from '@wireapp/commons';
 import {deleteAccountLogDirectories} from './accountLogDeletion';
 
 import {getLogger} from '../logging/getLogger';
+import {
+  LogDirectoryCleanupDependencies,
+  LogDirectoryCleanupResult,
+  removeEmptyLogDirectoryAncestors,
+} from '../logging/logDirectoryCleanup';
 import {getLogFilenames} from '../logging/logFiles';
 import {getLogDirectory} from '../logging/logPaths';
 
@@ -94,14 +99,28 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     }
     const logDirectory = getLogDirectory();
     const logFilePaths = getLogFilenames({absolute: true, baseDirectory: logDirectory});
+    const directoryCleanupDependencies: LogDirectoryCleanupDependencies = {
+      async getDirectoryMetadata(directoryPath: string) {
+        const directoryStatistics = await fs.lstat(directoryPath);
+
+        return {
+          isDirectory: directoryStatistics.isDirectory(),
+          isSymbolicLink: directoryStatistics.isSymbolicLink(),
+        };
+      },
+      async removeDirectory(directoryPath: string): Promise<void> {
+        await fs.rmdir(directoryPath);
+      },
+    };
+
     await deleteAccountLogDirectories({
       accountId,
       dependencies: {
         async isSafeDirectory(directoryPath: string): Promise<boolean> {
           try {
-            const directoryStatistics = await fs.lstat(directoryPath);
+            const directoryMetadata = await directoryCleanupDependencies.getDirectoryMetadata(directoryPath);
 
-            return directoryStatistics.isDirectory() && directoryStatistics.isSymbolicLink() === false;
+            return directoryMetadata.isDirectory && directoryMetadata.isSymbolicLink === false;
           } catch (error) {
             if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
               return false;
@@ -109,6 +128,14 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
 
             throw error;
           }
+        },
+        async removeEmptyDirectoryAncestors(directoryPath: string): Promise<LogDirectoryCleanupResult> {
+          return removeEmptyLogDirectoryAncestors({
+            dependencies: directoryCleanupDependencies,
+            logDirectory,
+            pathToRemove: directoryPath,
+            pathType: 'directory',
+          });
         },
         async removeDirectory(directoryPath: string): Promise<void> {
           await fs.remove(directoryPath);

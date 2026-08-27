@@ -21,9 +21,9 @@ import * as fs from 'fs-extra';
 
 import * as path from 'path';
 
-import {getActiveLogFilePaths} from './desktopLogWriter';
+import {runDesktopLogCleanupWithinMaintenance, runDesktopLogMaintenance} from './desktopLogWriter';
 import {getLogger} from './getLogger';
-import {cleanupDesktopLogs, DESKTOP_LOG_RETENTION_POLICY} from './logCleanup';
+import {gatherLogFiles} from './logExport';
 import {getLogFilenames as getLogFilenamesFromRoot, LogFileDiscoveryOptions} from './logFiles';
 import {getLogDirectory} from './logPaths';
 
@@ -34,26 +34,20 @@ export function getLogFilenames(parameters: LogFileDiscoveryOptions): string[] {
 }
 
 export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
-  const logFiles: Record<string, Uint8Array> = {};
   const logDirectory = getLogDirectory();
 
-  await cleanupDesktopLogs({
-    activeFilePaths: getActiveLogFilePaths(),
+  return gatherLogFiles({
+    cleanup: runDesktopLogCleanupWithinMaintenance,
+    discoverLogFilePaths: (): readonly string[] => {
+      return getLogFilenames({absolute: false, baseDirectory: logDirectory});
+    },
     logDirectory,
-    policy: DESKTOP_LOG_RETENTION_POLICY,
-  });
-
-  const relativeFilePaths = getLogFilenames({absolute: false, baseDirectory: logDirectory});
-
-  for (const relativeFilePath of relativeFilePaths) {
-    const resolvedPath = path.join(logDirectory, relativeFilePath);
-    try {
-      const fileContent = await fs.readFile(resolvedPath);
-      logFiles[relativeFilePath] = fileContent;
-    } catch (error) {
+    readFile: (filePath: string): Promise<Uint8Array> => {
+      return fs.readFile(filePath);
+    },
+    reportReadFailure: (_filePath: string, error: unknown): void => {
       logger.error(error);
-    }
-  }
-
-  return logFiles;
+    },
+    runMaintenance: runDesktopLogMaintenance,
+  });
 }

@@ -17,10 +17,22 @@
  *
  */
 
-import * as assert from 'assert';
+import * as fs from 'fs-extra';
+import {Result} from 'true-myth';
 
-import {createLogCleanup, LogCleanupDependencies, RunLogCleanupParameters} from './logCleanup';
+import * as assert from 'assert';
+import * as path from 'path';
+
+import {
+  createLogCleanup,
+  createLogCleanupFileSystemDependencies,
+  LogCleanupDependencies,
+  RunLogCleanupParameters,
+} from './logCleanup';
+import {LogDirectoryCleanupResult} from './logDirectoryCleanup';
 import {LogFileMetadata} from './logRetention';
+
+import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
 
 type CleanupTestState = {
   failures: string[];
@@ -52,8 +64,10 @@ function createCleanupTestDependencies(
 
       throw new Error(`Missing test metadata for ${filePath}`);
     },
-    async removeEmptyDirectory(directoryPath: string): Promise<void> {
+    async removeEmptyDirectory(directoryPath: string): Promise<LogDirectoryCleanupResult> {
       state.removedDirectories.push(directoryPath);
+
+      return Result.ok();
     },
     async removeFile(filePath: string): Promise<void> {
       state.removedFiles.push(filePath);
@@ -76,7 +90,12 @@ describe('desktop log cleanup', () => {
   it('removes planned files and their empty parent directories', async () => {
     const state: CleanupTestState = {failures: [], removedDirectories: [], removedFiles: []};
     const fileMetadata: LogFileMetadata[] = [
-      {filePath: 'logs/old/console.log', fileSizeBytes: 10, isSymbolicLink: false, modifiedTimeMilliseconds: 1},
+      {
+        filePath: 'logs/2026-08-20/accounts/account/console.log',
+        fileSizeBytes: 10,
+        isSymbolicLink: false,
+        modifiedTimeMilliseconds: 1,
+      },
       {
         filePath: 'logs/recent/console.log',
         fileSizeBytes: 10,
@@ -88,8 +107,12 @@ describe('desktop log cleanup', () => {
 
     await cleanup.run(createCleanupParameters(new Set()));
 
-    assert.deepStrictEqual(state.removedFiles, ['logs/old/console.log']);
-    assert.deepStrictEqual(state.removedDirectories, ['logs/recent', 'logs/old']);
+    assert.deepStrictEqual(state.removedFiles, ['logs/2026-08-20/accounts/account/console.log']);
+    assert.deepStrictEqual(state.removedDirectories, [
+      'logs/2026-08-20/accounts/account',
+      'logs/2026-08-20/accounts',
+      'logs/2026-08-20',
+    ]);
     assert.deepStrictEqual(state.failures, []);
   });
 
@@ -152,4 +175,34 @@ describe('desktop log cleanup', () => {
 
     assert.strictEqual(discoveryCount, 1);
   });
+
+  it(
+    'removes empty ancestors without removing the log root or following symbolic links',
+    withTemporaryDirectory('wire-log-cleanup-directories-', async (temporaryLogDirectory: string) => {
+      const reportFailure = (): void => {
+        // The test expects no filesystem failures.
+      };
+      const dependencies = createLogCleanupFileSystemDependencies(reportFailure);
+      const dateDirectory = path.join(temporaryLogDirectory, '2026-08-20');
+      const accountsDirectory = path.join(dateDirectory, 'accounts');
+      const accountDirectory = path.join(accountsDirectory, 'account');
+      const symbolicLinkTarget = path.join(temporaryLogDirectory, 'symbolic-link-target');
+      const symbolicLinkPath = path.join(accountsDirectory, 'symbolic-link');
+
+      await fs.ensureDir(accountDirectory);
+      await fs.ensureDir(symbolicLinkTarget);
+      await fs.symlink(symbolicLinkTarget, symbolicLinkPath, 'dir');
+
+      await dependencies.removeEmptyDirectory(accountDirectory);
+      await dependencies.removeEmptyDirectory(accountsDirectory);
+      await dependencies.removeEmptyDirectory(dateDirectory);
+      await dependencies.removeEmptyDirectory(symbolicLinkPath);
+
+      assert.strictEqual(await fs.pathExists(accountDirectory), false);
+      assert.strictEqual(await fs.pathExists(accountsDirectory), true);
+      assert.strictEqual(await fs.pathExists(dateDirectory), true);
+      assert.strictEqual(await fs.pathExists(temporaryLogDirectory), true);
+      assert.strictEqual((await fs.lstat(symbolicLinkPath)).isSymbolicLink(), true);
+    }),
+  );
 });
