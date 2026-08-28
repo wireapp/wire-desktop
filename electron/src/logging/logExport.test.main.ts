@@ -43,13 +43,12 @@ import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
 
 type CreateSnapshotTestOptions = {
   cleanup: () => Promise<void>;
-  dependencies: LogSnapshotFileSystemDependencies;
   discoverLogFilePaths: () => readonly string[];
   logDirectory: string;
   maintenanceCoordinator: ReturnType<typeof createLogMaintenanceCoordinator>;
   reportFailure: (message: string, error: unknown) => void;
   temporaryDirectoryPrefix: string;
-};
+} & LogSnapshotFileSystemDependencies;
 
 function runNoopCleanup(): Promise<void> {
   return Promise.resolve();
@@ -75,12 +74,18 @@ function createTestMaintenanceCoordinator(): ReturnType<typeof createLogMaintena
 }
 
 function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLogSnapshotOptions {
+  const {copyFile, createTemporaryDirectory, ensureDirectory, getFileMetadata, removeDirectory} = options;
+
   return {
+    copyFile,
     cleanup: options.cleanup,
-    dependencies: options.dependencies,
+    createTemporaryDirectory,
     discoverLogFilePaths: options.discoverLogFilePaths,
+    ensureDirectory,
+    getFileMetadata,
     logDirectory: options.logDirectory,
     reportFailure: options.reportFailure,
+    removeDirectory,
     runMaintenance: options.maintenanceCoordinator.runMaintenance,
     temporaryDirectoryPrefix: options.temporaryDirectoryPrefix,
   };
@@ -108,20 +113,25 @@ describe('desktop log export', () => {
         await fs.outputFile(logFilePath, 'complete entry\n');
       });
       const events: string[] = [];
+      const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
       const snapshotPromise = createLogSnapshot(
         createSnapshotTestOptions({
           async cleanup() {
             events.push('cleanup');
           },
-          dependencies: createLogSnapshotFileSystemDependencies(),
+          copyFile: snapshotFileSystemDependencies.copyFile,
+          createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
           discoverLogFilePaths() {
             events.push('discover');
 
             return ['electron.log'];
           },
+          ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+          getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator,
           reportFailure: noop,
+          removeDirectory: snapshotFileSystemDependencies.removeDirectory,
           temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
@@ -158,22 +168,29 @@ describe('desktop log export', () => {
       const copiedFiles: Array<{sourceFilePath: string; destinationFilePath: string}> = [];
       const defaultDependencies = createLogSnapshotFileSystemDependencies();
       const dependencies: LogSnapshotFileSystemDependencies = {
-        ...defaultDependencies,
         async copyFile(sourceFilePath: string, destinationFilePath: string) {
           copiedFiles.push({sourceFilePath, destinationFilePath});
           await defaultDependencies.copyFile(sourceFilePath, destinationFilePath);
         },
+        createTemporaryDirectory: defaultDependencies.createTemporaryDirectory,
+        ensureDirectory: defaultDependencies.ensureDirectory,
+        getFileMetadata: defaultDependencies.getFileMetadata,
+        removeDirectory: defaultDependencies.removeDirectory,
       };
       const snapshot = await createLogSnapshot(
         createSnapshotTestOptions({
           cleanup: runNoopCleanup,
-          dependencies,
+          copyFile: dependencies.copyFile,
+          createTemporaryDirectory: dependencies.createTemporaryDirectory,
           discoverLogFilePaths() {
             return ['electron.log'];
           },
+          ensureDirectory: dependencies.ensureDirectory,
+          getFileMetadata: dependencies.getFileMetadata,
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator: createTestMaintenanceCoordinator(),
           reportFailure: noop,
+          removeDirectory: dependencies.removeDirectory,
           temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
@@ -210,10 +227,12 @@ describe('desktop log export', () => {
       await fs.outputFile(path.join(symbolicLinkDirectoryTargetPath, 'console.log'), 'must not be copied\n');
       await fs.symlink(symbolicLinkDirectoryTargetPath, symbolicLinkDirectoryPath, 'dir');
 
+      const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
       const snapshot = await createLogSnapshot(
         createSnapshotTestOptions({
           cleanup: runNoopCleanup,
-          dependencies: createLogSnapshotFileSystemDependencies(),
+          copyFile: snapshotFileSystemDependencies.copyFile,
+          createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
           discoverLogFilePaths() {
             return [
               currentLogRelativePath,
@@ -223,9 +242,12 @@ describe('desktop log export', () => {
               'linked-account/console.log',
             ];
           },
+          ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+          getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator: createTestMaintenanceCoordinator(),
           reportFailure: noop,
+          removeDirectory: snapshotFileSystemDependencies.removeDirectory,
           temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
@@ -261,11 +283,14 @@ describe('desktop log export', () => {
       const removedSnapshotDirectories: string[] = [];
       const defaultDependencies = createLogSnapshotFileSystemDependencies();
       const dependencies: LogSnapshotFileSystemDependencies = {
-        ...defaultDependencies,
         async removeDirectory(directoryPath: string) {
           removedSnapshotDirectories.push(directoryPath);
           await defaultDependencies.removeDirectory(directoryPath);
         },
+        copyFile: defaultDependencies.copyFile,
+        createTemporaryDirectory: defaultDependencies.createTemporaryDirectory,
+        ensureDirectory: defaultDependencies.ensureDirectory,
+        getFileMetadata: defaultDependencies.getFileMetadata,
       };
 
       try {
@@ -273,13 +298,17 @@ describe('desktop log export', () => {
           createLogSnapshot(
             createSnapshotTestOptions({
               cleanup: runNoopCleanup,
-              dependencies,
+              copyFile: dependencies.copyFile,
+              createTemporaryDirectory: dependencies.createTemporaryDirectory,
               discoverLogFilePaths() {
                 return [relativeEscapePath];
               },
+              ensureDirectory: dependencies.ensureDirectory,
+              getFileMetadata: dependencies.getFileMetadata,
               logDirectory: temporaryLogDirectory,
               maintenanceCoordinator: createTestMaintenanceCoordinator(),
               reportFailure: noop,
+              removeDirectory: dependencies.removeDirectory,
               temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
             }),
           ),
@@ -299,16 +328,21 @@ describe('desktop log export', () => {
     withTemporaryDirectory('wire-log-export-resume-', async (temporaryLogDirectory: string) => {
       await fs.outputFile(path.join(temporaryLogDirectory, 'electron.log'), 'before archive\n');
       const maintenanceCoordinator = createTestMaintenanceCoordinator();
+      const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
       const snapshotPromise = createLogSnapshot(
         createSnapshotTestOptions({
           cleanup: runNoopCleanup,
-          dependencies: createLogSnapshotFileSystemDependencies(),
+          copyFile: snapshotFileSystemDependencies.copyFile,
+          createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
           discoverLogFilePaths() {
             return ['electron.log'];
           },
+          ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+          getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator,
           reportFailure: noop,
+          removeDirectory: snapshotFileSystemDependencies.removeDirectory,
           temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
@@ -358,6 +392,8 @@ describe('desktop log export', () => {
       await fs.outputFile(path.join(temporaryLogDirectory, rotatedLogRelativePath), 'rotated\n');
       await fs.outputFile(path.join(temporaryLogDirectory, legacyLogRelativePath), 'legacy\n');
       const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
+      const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
+      const archiveDependencies = createLogArchiveDependencies(noop);
       const exportFireAndForgetInvoker = createFireAndForgetInvoker({reportFailure: noop});
       let createdSnapshot: Maybe<LogSnapshot> = Maybe.nothing<LogSnapshot>();
 
@@ -366,13 +402,17 @@ describe('desktop log export', () => {
           const snapshot = await createLogSnapshot(
             createSnapshotTestOptions({
               cleanup: runNoopCleanup,
-              dependencies: createLogSnapshotFileSystemDependencies(),
+              copyFile: snapshotFileSystemDependencies.copyFile,
+              createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
               discoverLogFilePaths() {
                 return getLogFilenames({absolute: false, baseDirectory: temporaryLogDirectory});
               },
+              ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+              getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
               logDirectory: temporaryLogDirectory,
               maintenanceCoordinator: createTestMaintenanceCoordinator(),
               reportFailure: noop,
+              removeDirectory: snapshotFileSystemDependencies.removeDirectory,
               temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
             }),
           );
@@ -381,13 +421,17 @@ describe('desktop log export', () => {
           return snapshot;
         },
         destinationPath: archivePath,
-        removeSnapshotDirectory: createLogSnapshotFileSystemDependencies().removeDirectory,
+        removeSnapshotDirectory: snapshotFileSystemDependencies.removeDirectory,
         reportFailure: noop,
         async streamSnapshot({destinationPath, snapshotFiles}) {
           await streamLogFilesToZip({
+            createArchive: archiveDependencies.createArchive,
+            createOutputStream: archiveDependencies.createOutputStream,
             destinationPath,
+            pathExists: archiveDependencies.pathExists,
+            removeFile: archiveDependencies.removeFile,
+            reportFailure: archiveDependencies.reportFailure,
             snapshotFiles,
-            dependencies: createLogArchiveDependencies(noop),
           });
         },
       });
@@ -438,13 +482,6 @@ describe('desktop log export', () => {
       const archiveDependencies = createLogArchiveDependencies(noop);
       let outputStream: Maybe<Writable> = Maybe.nothing<Writable>();
       const failingArchiveDependencies = {
-        ...archiveDependencies,
-        createOutputStream(destinationPath: string) {
-          const createdOutputStream = archiveDependencies.createOutputStream(destinationPath);
-          outputStream = Maybe.just(createdOutputStream);
-
-          return createdOutputStream;
-        },
         createArchive() {
           const createdArchive = archiveDependencies.createArchive();
           createdArchive.on('error', noop);
@@ -466,13 +503,26 @@ describe('desktop log export', () => {
 
           return createdArchive;
         },
+        createOutputStream(destinationPath: string) {
+          const createdOutputStream = archiveDependencies.createOutputStream(destinationPath);
+          outputStream = Maybe.just(createdOutputStream);
+
+          return createdOutputStream;
+        },
+        pathExists: archiveDependencies.pathExists,
+        removeFile: archiveDependencies.removeFile,
+        reportFailure: archiveDependencies.reportFailure,
       };
 
       await assert.rejects(
         streamLogFilesToZip({
+          createArchive: failingArchiveDependencies.createArchive,
+          createOutputStream: failingArchiveDependencies.createOutputStream,
           destinationPath: archivePath,
+          pathExists: failingArchiveDependencies.pathExists,
+          removeFile: failingArchiveDependencies.removeFile,
+          reportFailure: failingArchiveDependencies.reportFailure,
           snapshotFiles: [],
-          dependencies: failingArchiveDependencies,
         }),
         archiveFailure,
       );
@@ -489,13 +539,6 @@ describe('desktop log export', () => {
       const archiveDependencies = createLogArchiveDependencies(noop);
       let outputStream: Maybe<Writable> = Maybe.nothing<Writable>();
       const failingArchiveDependencies = {
-        ...archiveDependencies,
-        createOutputStream(destinationPath: string) {
-          const createdOutputStream = archiveDependencies.createOutputStream(destinationPath);
-          outputStream = Maybe.just(createdOutputStream);
-
-          return createdOutputStream;
-        },
         createArchive() {
           const createdArchive = archiveDependencies.createArchive();
           createdArchive.finalize = function finalize(): Promise<void> {
@@ -514,13 +557,26 @@ describe('desktop log export', () => {
 
           return createdArchive;
         },
+        createOutputStream(destinationPath: string) {
+          const createdOutputStream = archiveDependencies.createOutputStream(destinationPath);
+          outputStream = Maybe.just(createdOutputStream);
+
+          return createdOutputStream;
+        },
+        pathExists: archiveDependencies.pathExists,
+        removeFile: archiveDependencies.removeFile,
+        reportFailure: archiveDependencies.reportFailure,
       };
 
       await assert.rejects(
         streamLogFilesToZip({
+          createArchive: failingArchiveDependencies.createArchive,
+          createOutputStream: failingArchiveDependencies.createOutputStream,
           destinationPath: archivePath,
+          pathExists: failingArchiveDependencies.pathExists,
+          removeFile: failingArchiveDependencies.removeFile,
+          reportFailure: failingArchiveDependencies.reportFailure,
           snapshotFiles: [],
-          dependencies: failingArchiveDependencies,
         }),
         outputFailure,
       );
@@ -538,20 +594,24 @@ describe('desktop log export', () => {
       const snapshotPromise = createLogSnapshot(
         createSnapshotTestOptions({
           cleanup: runNoopCleanup,
-          dependencies: snapshotFileSystemDependencies,
+          copyFile: snapshotFileSystemDependencies.copyFile,
+          createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
           discoverLogFilePaths() {
             return ['electron.log'];
           },
+          ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+          getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator: createTestMaintenanceCoordinator(),
           reportFailure: noop,
+          removeDirectory: snapshotFileSystemDependencies.removeDirectory,
           temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
       let wrotePartialArchive = false;
       const archiveDependencies = createLogArchiveDependencies(noop);
       const failingArchiveDependencies = {
-        ...archiveDependencies,
+        createArchive: archiveDependencies.createArchive,
         createOutputStream() {
           return new Writable({
             write(chunk: Buffer, _encoding: BufferEncoding, callback: (error?: Error) => void): void {
@@ -564,6 +624,9 @@ describe('desktop log export', () => {
             },
           });
         },
+        pathExists: archiveDependencies.pathExists,
+        removeFile: archiveDependencies.removeFile,
+        reportFailure: archiveDependencies.reportFailure,
       };
 
       await assert.rejects(
@@ -576,9 +639,13 @@ describe('desktop log export', () => {
           reportFailure: noop,
           async streamSnapshot({destinationPath, snapshotFiles}) {
             await streamLogFilesToZip({
+              createArchive: failingArchiveDependencies.createArchive,
+              createOutputStream: failingArchiveDependencies.createOutputStream,
               destinationPath,
+              pathExists: failingArchiveDependencies.pathExists,
+              removeFile: failingArchiveDependencies.removeFile,
+              reportFailure: failingArchiveDependencies.reportFailure,
               snapshotFiles,
-              dependencies: failingArchiveDependencies,
             });
           },
         }),

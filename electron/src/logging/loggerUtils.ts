@@ -54,7 +54,11 @@ export async function exportLogs(destinationPath: string): Promise<void> {
           },
           runMaintenance: runDesktopLogMaintenance,
           temporaryDirectoryPrefix: path.join(os.tmpdir(), 'wire-log-snapshot-'),
-          dependencies: snapshotFileSystemDependencies,
+          copyFile: snapshotFileSystemDependencies.copyFile,
+          createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
+          ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+          getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
+          removeDirectory: snapshotFileSystemDependencies.removeDirectory,
         });
       },
       destinationPath,
@@ -64,9 +68,13 @@ export async function exportLogs(destinationPath: string): Promise<void> {
       },
       streamSnapshot({destinationPath: snapshotDestinationPath, snapshotFiles}) {
         return streamLogFilesToZip({
+          createArchive: archiveDependencies.createArchive,
+          createOutputStream: archiveDependencies.createOutputStream,
           destinationPath: snapshotDestinationPath,
+          pathExists: archiveDependencies.pathExists,
+          removeFile: archiveDependencies.removeFile,
+          reportFailure: archiveDependencies.reportFailure,
           snapshotFiles,
-          dependencies: archiveDependencies,
         });
       },
     });
