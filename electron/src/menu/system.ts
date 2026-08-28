@@ -17,17 +17,17 @@
  *
  */
 
+import type {WallClock} from '@enormora/wall-clock/wall-clock';
 import autoLaunch from 'auto-launch';
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
 
 import * as path from 'path';
 
-import {downloadLogs} from '../lib/download';
+import {chooseLogDownloadPath, downloadLogArchive} from '../lib/download';
 import {EVENT_TYPE} from '../lib/eventType';
-import {zipFiles, createFile} from '../lib/zip';
 import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
-import {gatherLogs} from '../logging/loggerUtils';
+import {exportLogs} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
@@ -249,45 +249,47 @@ const windowTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-const downloadLogsTemplate: MenuItemConstructorOptions = {
-  click: async () => {
-    const logFiles = await gatherLogs();
-    const archive = await zipFiles(logFiles);
-    const archiveFile = await createFile(archive);
-    await downloadLogs(archiveFile);
-  },
-  label: locale.getText('menuDownloadDebugLogs'),
-};
+function createDownloadLogsTemplate(wallClock: WallClock): MenuItemConstructorOptions {
+  return {
+    click() {
+      return downloadLogArchive({
+        chooseDestinationPath() {
+          return chooseLogDownloadPath(wallClock.currentDate);
+        },
+        writeArchive: exportLogs,
+      });
+    },
+    label: locale.getText('menuDownloadDebugLogs'),
+  };
+}
 
-const helpTemplate: MenuItemConstructorOptions = {
-  label: `&${locale.getText('menuHelp')}`,
-  role: 'help',
-  submenu: [
-    {
-      click: () => openExternal(config.legalUrl, true),
-      label: locale.getText('menuLegal'),
-    },
-    // TODO: removing these temporarily until such a time as the website is fixed.
-    // See https://wearezeta.atlassian.net/browse/SQCORE-1271 for more information.
-    // {
-    //   click: () => openExternal(config.privacyUrl, true),
-    //   label: locale.getText('menuPrivacy'),
-    // },
-    // {
-    //   click: () => openExternal(config.licensesUrl, true),
-    //   label: locale.getText('menuLicense'),
-    // },
-    {
-      click: () => openExternal(config.supportUrl, true),
-      label: locale.getText('menuSupport'),
-    },
-    {
-      click: () => openExternal(EnvironmentUtil.web.getWebsiteUrl(), true),
-      label: locale.getText('menuAppURL'),
-    },
-    downloadLogsTemplate,
-  ],
-};
+function createHelpTemplate(wallClock: WallClock): MenuItemConstructorOptions {
+  return {
+    label: `&${locale.getText('menuHelp')}`,
+    role: 'help',
+    submenu: [
+      {
+        click() {
+          return openExternal(config.legalUrl, true);
+        },
+        label: locale.getText('menuLegal'),
+      },
+      {
+        click() {
+          return openExternal(config.supportUrl, true);
+        },
+        label: locale.getText('menuSupport'),
+      },
+      {
+        click() {
+          return openExternal(EnvironmentUtil.web.getWebsiteUrl(), true);
+        },
+        label: locale.getText('menuAppURL'),
+      },
+      createDownloadLogsTemplate(wallClock),
+    ],
+  };
+}
 
 const darwinTemplate: MenuItemConstructorOptions = {
   label: `&${config.name}`,
@@ -405,7 +407,8 @@ const changeLocale = async (language: locale.SupportedI18nLanguage): Promise<voi
   await showRestartMessageBox();
 };
 
-export const createMenu = (isFullScreen: boolean): Menu => {
+export function createMenu(isFullScreen: boolean, wallClock: WallClock): Menu {
+  const helpTemplate = createHelpTemplate(wallClock);
   const menuTemplate = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
 
   if (EnvironmentUtil.platform.IS_MAC_OS) {
@@ -474,7 +477,7 @@ export const createMenu = (isFullScreen: boolean): Menu => {
 
   processMenu(menuTemplate, locale.getCurrent());
   return Menu.buildFromTemplate(menuTemplate);
-};
+}
 
 export const toggleMenuBar = (): void => {
   const mainBrowserWindow = WindowManager.getPrimaryWindow();

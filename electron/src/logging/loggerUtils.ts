@@ -17,13 +17,17 @@
  *
  */
 
-import * as fs from 'fs-extra';
-
 import * as path from 'path';
 
 import {runDesktopLogCleanupWithinMaintenance, runDesktopLogMaintenance} from './desktopLogWriter';
 import {getLogger} from './getLogger';
-import {gatherLogFiles} from './logExport';
+import {
+  createLogArchiveDependencies,
+  createLogSnapshot,
+  createLogSnapshotFileSystemDependencies,
+  exportLogFiles,
+  streamLogFilesToZip,
+} from './logExport';
 import {getLogFilenames as getLogFilenamesFromRoot, LogFileDiscoveryOptions} from './logFiles';
 import {getLogDirectory} from './logPaths';
 
@@ -33,21 +37,43 @@ export function getLogFilenames(parameters: LogFileDiscoveryOptions): string[] {
   return getLogFilenamesFromRoot(parameters);
 }
 
-export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
+export async function exportLogs(destinationPath: string): Promise<void> {
   const logDirectory = getLogDirectory();
-
-  return gatherLogFiles({
-    cleanup: runDesktopLogCleanupWithinMaintenance,
-    discoverLogFilePaths: (): readonly string[] => {
-      return getLogFilenames({absolute: false, baseDirectory: logDirectory});
-    },
-    logDirectory,
-    readFile: (filePath: string): Promise<Uint8Array> => {
-      return fs.readFile(filePath);
-    },
-    reportReadFailure: (_filePath: string, error: unknown): void => {
-      logger.error(error);
-    },
-    runMaintenance: runDesktopLogMaintenance,
+  const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
+  const archiveDependencies = createLogArchiveDependencies((message: string, error: unknown): void => {
+    logger.error(message, error);
   });
+
+  try {
+    await exportLogFiles({
+      createSnapshot() {
+        return createLogSnapshot({
+          cleanup: runDesktopLogCleanupWithinMaintenance,
+          discoverLogFilePaths(): readonly string[] {
+            return getLogFilenames({absolute: false, baseDirectory: logDirectory});
+          },
+          logDirectory,
+          reportFailure(message: string, error: unknown): void {
+            logger.error(message, error);
+          },
+          runMaintenance: runDesktopLogMaintenance,
+          dependencies: snapshotFileSystemDependencies,
+        });
+      },
+      destinationPath,
+      removeSnapshotDirectory: snapshotFileSystemDependencies.removeDirectory,
+      reportFailure(message: string, error: unknown): void {
+        logger.error(message, error);
+      },
+      streamSnapshot({destinationPath: snapshotDestinationPath, snapshotFiles}) {
+        return streamLogFilesToZip({
+          destinationPath: snapshotDestinationPath,
+          snapshotFiles,
+          dependencies: archiveDependencies,
+        });
+      },
+    });
+  } catch (error) {
+    logger.error('Failed to export desktop logs.', error);
+  }
 }
