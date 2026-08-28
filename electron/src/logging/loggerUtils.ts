@@ -17,17 +17,13 @@
  *
  */
 
+import * as os from 'os';
 import * as path from 'path';
 
 import {runDesktopLogCleanupWithinMaintenance, runDesktopLogMaintenance} from './desktopLogWriter';
 import {getLogger} from './getLogger';
-import {
-  createLogArchiveDependencies,
-  createLogSnapshot,
-  createLogSnapshotFileSystemDependencies,
-  exportLogFiles,
-  streamLogFilesToZip,
-} from './logExport';
+import {createLogSnapshot, exportLogFiles, streamLogFilesToZip} from './logExport';
+import {createLogArchiveDependencies, createLogSnapshotFileSystemDependencies} from './logExportDependencies';
 import {getLogFilenames as getLogFilenamesFromRoot, LogFileDiscoveryOptions} from './logFiles';
 import {getLogDirectory} from './logPaths';
 
@@ -57,6 +53,7 @@ export async function exportLogs(destinationPath: string): Promise<void> {
             logger.error(message, error);
           },
           runMaintenance: runDesktopLogMaintenance,
+          temporaryDirectoryPrefix: path.join(os.tmpdir(), 'wire-log-snapshot-'),
           dependencies: snapshotFileSystemDependencies,
         });
       },

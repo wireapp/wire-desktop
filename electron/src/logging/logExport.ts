@@ -17,12 +17,10 @@
  *
  */
 
-import {ZipArchive} from 'archiver';
-import * as fs from 'fs-extra';
+import type {ZipArchive} from 'archiver';
 import noop from 'lodash/noop';
 import {Maybe} from 'true-myth';
 
-import * as os from 'os';
 import * as path from 'path';
 import {Writable} from 'stream';
 import {finished} from 'stream/promises';
@@ -56,6 +54,7 @@ export type CreateLogSnapshotOptions = {
   logDirectory: string;
   reportFailure: (message: string, error: unknown) => void;
   runMaintenance<Result>(operation: () => Promise<Result>): Promise<Result>;
+  temporaryDirectoryPrefix: string;
   dependencies: LogSnapshotFileSystemDependencies;
 };
 
@@ -111,8 +110,6 @@ type RemoveIncompleteDestinationFileOptions = {
   outputStreamCreated: boolean;
   exportOptions: StreamLogFilesToZipOptions;
 };
-
-const logSnapshotDirectoryPrefix = path.join(os.tmpdir(), 'wire-log-snapshot-');
 
 function isMissingFileError(error: unknown): boolean {
   return error instanceof Error && 'code' in error && error.code === 'ENOENT';
@@ -213,7 +210,7 @@ export async function createLogSnapshot(options: CreateLogSnapshotOptions): Prom
 
       const relativeLogFilePaths = options.discoverLogFilePaths();
       const createdSnapshotDirectoryPath = await options.dependencies.createTemporaryDirectory(
-        logSnapshotDirectoryPrefix,
+        options.temporaryDirectoryPrefix,
       );
       snapshotDirectoryPath = Maybe.just(createdSnapshotDirectoryPath);
       const snapshotFiles: LogSnapshotFile[] = [];
@@ -351,49 +348,4 @@ export async function exportLogFiles(options: ExportLogFilesOptions): Promise<vo
       options.reportFailure(`Failed to remove temporary log snapshot "${snapshot.directoryPath}"`, error);
     }
   }
-}
-
-export function createLogSnapshotFileSystemDependencies(): LogSnapshotFileSystemDependencies {
-  return {
-    async copyFile(sourceFilePath: string, destinationFilePath: string) {
-      await fs.copyFile(sourceFilePath, destinationFilePath);
-    },
-    async createTemporaryDirectory(temporaryDirectoryPrefix: string) {
-      return fs.mkdtemp(temporaryDirectoryPrefix);
-    },
-    async ensureDirectory(directoryPath: string) {
-      await fs.ensureDir(directoryPath);
-    },
-    async getFileMetadata(filePath: string) {
-      const fileStatistics = await fs.lstat(filePath);
-
-      return {
-        isFile: fileStatistics.isFile(),
-        isSymbolicLink: fileStatistics.isSymbolicLink(),
-      };
-    },
-    async removeDirectory(directoryPath: string) {
-      await fs.remove(directoryPath);
-    },
-  };
-}
-
-export function createLogArchiveDependencies(
-  reportFailure: (message: string, error: unknown) => void,
-): LogArchiveDependencies {
-  return {
-    createArchive() {
-      return new ZipArchive({zlib: {level: 6}});
-    },
-    createOutputStream(destinationPath: string) {
-      return fs.createWriteStream(destinationPath);
-    },
-    pathExists(filePath: string) {
-      return fs.pathExists(filePath);
-    },
-    removeFile(filePath: string) {
-      return fs.unlink(filePath);
-    },
-    reportFailure,
-  };
 }

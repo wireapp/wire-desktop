@@ -27,15 +27,14 @@ import * as path from 'path';
 import {Writable} from 'stream';
 
 import {
-  createLogArchiveDependencies,
   createLogSnapshot,
-  createLogSnapshotFileSystemDependencies,
   CreateLogSnapshotOptions,
   exportLogFiles,
   LogSnapshot,
   LogSnapshotFileSystemDependencies,
   streamLogFilesToZip,
 } from './logExport';
+import {createLogArchiveDependencies, createLogSnapshotFileSystemDependencies} from './logExportDependencies';
 import {getLogFilenames} from './logFiles';
 import {createLogMaintenanceCoordinator} from './logMaintenance';
 
@@ -49,6 +48,7 @@ type CreateSnapshotTestOptions = {
   logDirectory: string;
   maintenanceCoordinator: ReturnType<typeof createLogMaintenanceCoordinator>;
   reportFailure: (message: string, error: unknown) => void;
+  temporaryDirectoryPrefix: string;
 };
 
 function runNoopCleanup(): Promise<void> {
@@ -82,6 +82,7 @@ function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLo
     logDirectory: options.logDirectory,
     reportFailure: options.reportFailure,
     runMaintenance: options.maintenanceCoordinator.runMaintenance,
+    temporaryDirectoryPrefix: options.temporaryDirectoryPrefix,
   };
 }
 
@@ -121,6 +122,7 @@ describe('desktop log export', () => {
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator,
           reportFailure: noop,
+          temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
 
@@ -172,6 +174,7 @@ describe('desktop log export', () => {
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator: createTestMaintenanceCoordinator(),
           reportFailure: noop,
+          temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
 
@@ -223,6 +226,7 @@ describe('desktop log export', () => {
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator: createTestMaintenanceCoordinator(),
           reportFailure: noop,
+          temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
 
@@ -276,6 +280,7 @@ describe('desktop log export', () => {
               logDirectory: temporaryLogDirectory,
               maintenanceCoordinator: createTestMaintenanceCoordinator(),
               reportFailure: noop,
+              temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
             }),
           ),
         );
@@ -304,6 +309,7 @@ describe('desktop log export', () => {
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator,
           reportFailure: noop,
+          temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
       const zipStarted = createDeferredCompletion();
@@ -366,6 +372,7 @@ describe('desktop log export', () => {
               logDirectory: temporaryLogDirectory,
               maintenanceCoordinator: createTestMaintenanceCoordinator(),
               reportFailure: noop,
+              temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
             }),
           );
           createdSnapshot = Maybe.just(snapshot);
@@ -434,6 +441,7 @@ describe('desktop log export', () => {
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator: createTestMaintenanceCoordinator(),
           reportFailure: noop,
+          temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
         }),
       );
       let wrotePartialArchive = false;
