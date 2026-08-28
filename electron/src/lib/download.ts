@@ -51,16 +51,16 @@ export async function chooseLogDownloadPath(timestamp: Date): Promise<Maybe<stri
   }
 }
 
-export type DownloadLogArchiveParameters = {
+export type DownloadLogArchiveOptions = {
   chooseDestinationPath: () => Promise<Maybe<string>>;
   writeArchive: (destinationPath: string) => Promise<void>;
 };
 
-export async function downloadLogArchive(parameters: DownloadLogArchiveParameters): Promise<void> {
-  const destinationPath = await parameters.chooseDestinationPath();
+export async function downloadLogArchive(options: DownloadLogArchiveOptions): Promise<void> {
+  const destinationPath = await options.chooseDestinationPath();
 
   if (destinationPath.isJust) {
-    await parameters.writeArchive(destinationPath.value);
+    await options.writeArchive(destinationPath.value);
   }
 }
 

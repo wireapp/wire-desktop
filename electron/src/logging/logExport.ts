@@ -50,7 +50,7 @@ export type LogSnapshotFileSystemDependencies = {
   removeDirectory: (directoryPath: string) => Promise<void>;
 };
 
-export type CreateLogSnapshotParameters = {
+export type CreateLogSnapshotOptions = {
   cleanup: () => Promise<void>;
   discoverLogFilePaths: () => readonly string[];
   logDirectory: string;
@@ -59,7 +59,7 @@ export type CreateLogSnapshotParameters = {
   dependencies: LogSnapshotFileSystemDependencies;
 };
 
-export type StreamLogFilesToZipParameters = {
+export type StreamLogFilesToZipOptions = {
   destinationPath: string;
   snapshotFiles: readonly LogSnapshotFile[];
   dependencies: LogArchiveDependencies;
@@ -73,25 +73,25 @@ export type LogArchiveDependencies = {
   reportFailure: (message: string, error: unknown) => void;
 };
 
-export type StreamSnapshotParameters = {
+export type StreamSnapshotOptions = {
   destinationPath: string;
   snapshotFiles: readonly LogSnapshotFile[];
 };
 
-export type ExportLogFilesParameters = {
+export type ExportLogFilesOptions = {
   createSnapshot: () => Promise<LogSnapshot>;
   destinationPath: string;
   removeSnapshotDirectory: (directoryPath: string) => Promise<void>;
   reportFailure: (message: string, error: unknown) => void;
-  streamSnapshot: (parameters: StreamSnapshotParameters) => Promise<void>;
+  streamSnapshot: (options: StreamSnapshotOptions) => Promise<void>;
 };
 
-type ResolvePathWithinDirectoryParameters = {
+type ResolvePathWithinDirectoryOptions = {
   directoryPath: string;
   relativePath: string;
 };
 
-type CopyLogFileToSnapshotParameters = {
+type CopyLogFileToSnapshotOptions = {
   logDirectory: string;
   relativePath: string;
   sourceFilePath: string;
@@ -99,17 +99,17 @@ type CopyLogFileToSnapshotParameters = {
   dependencies: LogSnapshotFileSystemDependencies;
 };
 
-type GetSafeSourceFileMetadataParameters = {
+type GetSafeSourceFileMetadataOptions = {
   logDirectory: string;
   sourceFilePath: string;
   dependencies: LogSnapshotFileSystemDependencies;
 };
 
-type RemoveIncompleteDestinationFileParameters = {
+type RemoveIncompleteDestinationFileOptions = {
   destinationPath: string;
   destinationAlreadyExisted: boolean;
   outputStreamCreated: boolean;
-  exportParameters: StreamLogFilesToZipParameters;
+  exportOptions: StreamLogFilesToZipOptions;
 };
 
 const logSnapshotDirectoryPrefix = path.join(os.tmpdir(), 'wire-log-snapshot-');
@@ -118,14 +118,14 @@ function isMissingFileError(error: unknown): boolean {
   return error instanceof Error && 'code' in error && error.code === 'ENOENT';
 }
 
-export function resolvePathWithinDirectory(parameters: ResolvePathWithinDirectoryParameters): string {
-  const resolvedDirectoryPath = path.resolve(parameters.directoryPath);
+export function resolvePathWithinDirectory(options: ResolvePathWithinDirectoryOptions): string {
+  const resolvedDirectoryPath = path.resolve(options.directoryPath);
 
-  if (parameters.relativePath.length === 0 || path.isAbsolute(parameters.relativePath)) {
-    throw new Error(`Log path must be a non-empty relative path: ${parameters.relativePath}`);
+  if (options.relativePath.length === 0 || path.isAbsolute(options.relativePath)) {
+    throw new Error(`Log path must be a non-empty relative path: ${options.relativePath}`);
   }
 
-  const resolvedPath = path.resolve(resolvedDirectoryPath, parameters.relativePath);
+  const resolvedPath = path.resolve(resolvedDirectoryPath, options.relativePath);
   const relativeResolvedPath = path.relative(resolvedDirectoryPath, resolvedPath);
   const isOutsideDirectory =
     relativeResolvedPath === '' ||
@@ -134,7 +134,7 @@ export function resolvePathWithinDirectory(parameters: ResolvePathWithinDirector
     path.isAbsolute(relativeResolvedPath);
 
   if (isOutsideDirectory) {
-    throw new Error(`Log path escapes its directory: ${parameters.relativePath}`);
+    throw new Error(`Log path escapes its directory: ${options.relativePath}`);
   }
 
   return resolvedPath;
@@ -145,16 +145,16 @@ function getArchiveRelativePath(relativePath: string): string {
 }
 
 async function getSafeSourceFileMetadata(
-  parameters: GetSafeSourceFileMetadataParameters,
+  options: GetSafeSourceFileMetadataOptions,
 ): Promise<Maybe<LogSnapshotFileMetadata>> {
-  const resolvedLogDirectory = path.resolve(parameters.logDirectory);
-  const sourceRelativePath = path.relative(resolvedLogDirectory, parameters.sourceFilePath);
+  const resolvedLogDirectory = path.resolve(options.logDirectory);
+  const sourceRelativePath = path.relative(resolvedLogDirectory, options.sourceFilePath);
   let currentPath = resolvedLogDirectory;
   let sourceFileMetadata: Maybe<LogSnapshotFileMetadata> = Maybe.nothing<LogSnapshotFileMetadata>();
 
   for (const pathPart of sourceRelativePath.split(path.sep)) {
     currentPath = path.join(currentPath, pathPart);
-    const currentFileMetadata = await parameters.dependencies.getFileMetadata(currentPath);
+    const currentFileMetadata = await options.dependencies.getFileMetadata(currentPath);
     sourceFileMetadata = Maybe.just(currentFileMetadata);
 
     if (currentFileMetadata.isSymbolicLink === true) {
@@ -165,11 +165,11 @@ async function getSafeSourceFileMetadata(
   return sourceFileMetadata;
 }
 
-async function copyLogFileToSnapshot(parameters: CopyLogFileToSnapshotParameters): Promise<Maybe<LogSnapshotFile>> {
+async function copyLogFileToSnapshot(options: CopyLogFileToSnapshotOptions): Promise<Maybe<LogSnapshotFile>> {
   const sourceFileMetadata = await getSafeSourceFileMetadata({
-    dependencies: parameters.dependencies,
-    logDirectory: parameters.logDirectory,
-    sourceFilePath: parameters.sourceFilePath,
+    dependencies: options.dependencies,
+    logDirectory: options.logDirectory,
+    sourceFilePath: options.sourceFilePath,
   });
 
   if (sourceFileMetadata.isJust === false) {
@@ -180,59 +180,59 @@ async function copyLogFileToSnapshot(parameters: CopyLogFileToSnapshotParameters
     return Maybe.nothing<LogSnapshotFile>();
   }
 
-  await parameters.dependencies.ensureDirectory(path.dirname(parameters.snapshotFilePath));
-  await parameters.dependencies.copyFile(parameters.sourceFilePath, parameters.snapshotFilePath);
+  await options.dependencies.ensureDirectory(path.dirname(options.snapshotFilePath));
+  await options.dependencies.copyFile(options.sourceFilePath, options.snapshotFilePath);
 
   return Maybe.just({
-    absolutePath: parameters.snapshotFilePath,
-    relativePath: getArchiveRelativePath(parameters.relativePath),
+    absolutePath: options.snapshotFilePath,
+    relativePath: getArchiveRelativePath(options.relativePath),
   });
 }
 
 async function removeSnapshotDirectoryAfterFailure(
   snapshotDirectoryPath: Maybe<string>,
-  parameters: CreateLogSnapshotParameters,
+  options: CreateLogSnapshotOptions,
 ): Promise<void> {
   if (snapshotDirectoryPath.isJust === false) {
     return;
   }
 
   try {
-    await parameters.dependencies.removeDirectory(snapshotDirectoryPath.value);
+    await options.dependencies.removeDirectory(snapshotDirectoryPath.value);
   } catch (error) {
-    parameters.reportFailure(`Failed to remove temporary log snapshot "${snapshotDirectoryPath.value}"`, error);
+    options.reportFailure(`Failed to remove temporary log snapshot "${snapshotDirectoryPath.value}"`, error);
   }
 }
 
-export async function createLogSnapshot(parameters: CreateLogSnapshotParameters): Promise<LogSnapshot> {
+export async function createLogSnapshot(options: CreateLogSnapshotOptions): Promise<LogSnapshot> {
   let snapshotDirectoryPath: Maybe<string> = Maybe.nothing<string>();
 
   try {
-    return await parameters.runMaintenance(async () => {
-      await parameters.cleanup();
+    return await options.runMaintenance(async () => {
+      await options.cleanup();
 
-      const relativeLogFilePaths = parameters.discoverLogFilePaths();
-      const createdSnapshotDirectoryPath = await parameters.dependencies.createTemporaryDirectory(
+      const relativeLogFilePaths = options.discoverLogFilePaths();
+      const createdSnapshotDirectoryPath = await options.dependencies.createTemporaryDirectory(
         logSnapshotDirectoryPrefix,
       );
       snapshotDirectoryPath = Maybe.just(createdSnapshotDirectoryPath);
       const snapshotFiles: LogSnapshotFile[] = [];
 
       for (const relativePath of relativeLogFilePaths) {
-        const sourceFilePath = resolvePathWithinDirectory({directoryPath: parameters.logDirectory, relativePath});
+        const sourceFilePath = resolvePathWithinDirectory({directoryPath: options.logDirectory, relativePath});
         const snapshotFilePath = resolvePathWithinDirectory({
           directoryPath: createdSnapshotDirectoryPath,
           relativePath,
         });
 
         const snapshotFile = await copyLogFileToSnapshot({
-          dependencies: parameters.dependencies,
-          logDirectory: parameters.logDirectory,
+          dependencies: options.dependencies,
+          logDirectory: options.logDirectory,
           relativePath,
           sourceFilePath,
           snapshotFilePath,
         }).catch(error => {
-          parameters.reportFailure(`Failed to copy log file "${relativePath}" to the temporary snapshot`, error);
+          options.reportFailure(`Failed to copy log file "${relativePath}" to the temporary snapshot`, error);
 
           return Maybe.nothing<LogSnapshotFile>();
         });
@@ -245,25 +245,25 @@ export async function createLogSnapshot(parameters: CreateLogSnapshotParameters)
       return {directoryPath: createdSnapshotDirectoryPath, files: snapshotFiles};
     });
   } catch (error) {
-    await removeSnapshotDirectoryAfterFailure(snapshotDirectoryPath, parameters);
+    await removeSnapshotDirectoryAfterFailure(snapshotDirectoryPath, options);
     throw error;
   }
 }
 
-async function removeIncompleteDestinationFile(parameters: RemoveIncompleteDestinationFileParameters): Promise<void> {
-  if (parameters.destinationAlreadyExisted || parameters.outputStreamCreated === false) {
+async function removeIncompleteDestinationFile(options: RemoveIncompleteDestinationFileOptions): Promise<void> {
+  if (options.destinationAlreadyExisted || options.outputStreamCreated === false) {
     return;
   }
 
   try {
-    await parameters.exportParameters.dependencies.removeFile(parameters.destinationPath);
+    await options.exportOptions.dependencies.removeFile(options.destinationPath);
   } catch (error) {
     if (isMissingFileError(error)) {
       return;
     }
 
-    parameters.exportParameters.dependencies.reportFailure(
-      `Failed to remove incomplete log archive "${parameters.destinationPath}"`,
+    options.exportOptions.dependencies.reportFailure(
+      `Failed to remove incomplete log archive "${options.destinationPath}"`,
       error,
     );
   }
@@ -284,8 +284,8 @@ async function waitForPromiseToSettle(promise: Promise<void>): Promise<void> {
   }
 }
 
-export async function streamLogFilesToZip(parameters: StreamLogFilesToZipParameters): Promise<void> {
-  const destinationAlreadyExisted = await parameters.dependencies.pathExists(parameters.destinationPath);
+export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): Promise<void> {
+  const destinationAlreadyExisted = await options.dependencies.pathExists(options.destinationPath);
   let outputStream: Maybe<Writable> = Maybe.nothing<Writable>();
   let outputStreamCreated = false;
   let archive: Maybe<ZipArchive> = Maybe.nothing<ZipArchive>();
@@ -293,17 +293,17 @@ export async function streamLogFilesToZip(parameters: StreamLogFilesToZipParamet
   let outputCompletion: Maybe<Promise<void>> = Maybe.nothing<Promise<void>>();
 
   try {
-    const createdOutputStream = parameters.dependencies.createOutputStream(parameters.destinationPath);
+    const createdOutputStream = options.dependencies.createOutputStream(options.destinationPath);
     outputStream = Maybe.just(createdOutputStream);
     outputStreamCreated = true;
     const createdOutputCompletion = finished(createdOutputStream);
     outputCompletion = Maybe.just(createdOutputCompletion);
     void waitForPromiseToSettle(createdOutputCompletion);
-    const createdArchive = parameters.dependencies.createArchive();
+    const createdArchive = options.dependencies.createArchive();
     archive = Maybe.just(createdArchive);
     createdArchive.pipe(createdOutputStream);
 
-    for (const snapshotFile of parameters.snapshotFiles) {
+    for (const snapshotFile of options.snapshotFiles) {
       createdArchive.file(snapshotFile.absolutePath, {name: snapshotFile.relativePath});
     }
 
@@ -329,26 +329,26 @@ export async function streamLogFilesToZip(parameters: StreamLogFilesToZipParamet
     }
 
     await removeIncompleteDestinationFile({
-      destinationPath: parameters.destinationPath,
+      destinationPath: options.destinationPath,
       destinationAlreadyExisted,
       outputStreamCreated,
-      exportParameters: parameters,
+      exportOptions: options,
     });
 
     throw error;
   }
 }
 
-export async function exportLogFiles(parameters: ExportLogFilesParameters): Promise<void> {
-  const snapshot = await parameters.createSnapshot();
+export async function exportLogFiles(options: ExportLogFilesOptions): Promise<void> {
+  const snapshot = await options.createSnapshot();
 
   try {
-    await parameters.streamSnapshot({destinationPath: parameters.destinationPath, snapshotFiles: snapshot.files});
+    await options.streamSnapshot({destinationPath: options.destinationPath, snapshotFiles: snapshot.files});
   } finally {
     try {
-      await parameters.removeSnapshotDirectory(snapshot.directoryPath);
+      await options.removeSnapshotDirectory(snapshot.directoryPath);
     } catch (error) {
-      parameters.reportFailure(`Failed to remove temporary log snapshot "${snapshot.directoryPath}"`, error);
+      options.reportFailure(`Failed to remove temporary log snapshot "${snapshot.directoryPath}"`, error);
     }
   }
 }

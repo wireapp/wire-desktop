@@ -30,6 +30,7 @@ import {
   createLogArchiveDependencies,
   createLogSnapshot,
   createLogSnapshotFileSystemDependencies,
+  CreateLogSnapshotOptions,
   exportLogFiles,
   LogSnapshot,
   LogSnapshotFileSystemDependencies,
@@ -41,7 +42,7 @@ import {createLogMaintenanceCoordinator} from './logMaintenance';
 import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
 import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
 
-type CreateSnapshotTestParameters = {
+type CreateSnapshotTestOptions = {
   cleanup: () => Promise<void>;
   dependencies: LogSnapshotFileSystemDependencies;
   discoverLogFilePaths: () => readonly string[];
@@ -63,7 +64,7 @@ function createDeferredCompletion(): {promise: Promise<void>; resolve: () => voi
   return {promise, resolve: resolvePromise};
 }
 
-function createTestMaintenanceCoordinator() {
+function createTestMaintenanceCoordinator(): ReturnType<typeof createLogMaintenanceCoordinator> {
   const invoker = createFireAndForgetInvoker({
     reportFailure(): void {
       // The coordinator's public promises report expected operation failures.
@@ -73,14 +74,14 @@ function createTestMaintenanceCoordinator() {
   return createLogMaintenanceCoordinator({fireAndForget: invoker.fireAndForget});
 }
 
-function createSnapshotTestParameters(parameters: CreateSnapshotTestParameters) {
+function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLogSnapshotOptions {
   return {
-    cleanup: parameters.cleanup,
-    dependencies: parameters.dependencies,
-    discoverLogFilePaths: parameters.discoverLogFilePaths,
-    logDirectory: parameters.logDirectory,
-    reportFailure: parameters.reportFailure,
-    runMaintenance: parameters.maintenanceCoordinator.runMaintenance,
+    cleanup: options.cleanup,
+    dependencies: options.dependencies,
+    discoverLogFilePaths: options.discoverLogFilePaths,
+    logDirectory: options.logDirectory,
+    reportFailure: options.reportFailure,
+    runMaintenance: options.maintenanceCoordinator.runMaintenance,
   };
 }
 
@@ -107,7 +108,7 @@ describe('desktop log export', () => {
       });
       const events: string[] = [];
       const snapshotPromise = createLogSnapshot(
-        createSnapshotTestParameters({
+        createSnapshotTestOptions({
           async cleanup(): Promise<void> {
             events.push('cleanup');
           },
@@ -162,7 +163,7 @@ describe('desktop log export', () => {
         },
       };
       const snapshot = await createLogSnapshot(
-        createSnapshotTestParameters({
+        createSnapshotTestOptions({
           cleanup: runNoopCleanup,
           dependencies,
           discoverLogFilePaths(): readonly string[] {
@@ -207,7 +208,7 @@ describe('desktop log export', () => {
       await fs.symlink(symbolicLinkDirectoryTargetPath, symbolicLinkDirectoryPath, 'dir');
 
       const snapshot = await createLogSnapshot(
-        createSnapshotTestParameters({
+        createSnapshotTestOptions({
           cleanup: runNoopCleanup,
           dependencies: createLogSnapshotFileSystemDependencies(),
           discoverLogFilePaths(): readonly string[] {
@@ -266,7 +267,7 @@ describe('desktop log export', () => {
       try {
         await assert.rejects(
           createLogSnapshot(
-            createSnapshotTestParameters({
+            createSnapshotTestOptions({
               cleanup: runNoopCleanup,
               dependencies,
               discoverLogFilePaths(): readonly string[] {
@@ -294,7 +295,7 @@ describe('desktop log export', () => {
       await fs.outputFile(path.join(temporaryLogDirectory, 'electron.log'), 'before archive\n');
       const maintenanceCoordinator = createTestMaintenanceCoordinator();
       const snapshotPromise = createLogSnapshot(
-        createSnapshotTestParameters({
+        createSnapshotTestOptions({
           cleanup: runNoopCleanup,
           dependencies: createLogSnapshotFileSystemDependencies(),
           discoverLogFilePaths(): readonly string[] {
@@ -356,7 +357,7 @@ describe('desktop log export', () => {
       await exportLogFiles({
         async createSnapshot(): Promise<LogSnapshot> {
           const snapshot = await createLogSnapshot(
-            createSnapshotTestParameters({
+            createSnapshotTestOptions({
               cleanup: runNoopCleanup,
               dependencies: createLogSnapshotFileSystemDependencies(),
               discoverLogFilePaths(): readonly string[] {
@@ -424,7 +425,7 @@ describe('desktop log export', () => {
       const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
       const outputFailure = new Error('output failed');
       const snapshotPromise = createLogSnapshot(
-        createSnapshotTestParameters({
+        createSnapshotTestOptions({
           cleanup: runNoopCleanup,
           dependencies: snapshotFileSystemDependencies,
           discoverLogFilePaths(): readonly string[] {
