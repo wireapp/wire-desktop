@@ -20,11 +20,7 @@
 import * as os from 'os';
 import * as path from 'path';
 
-import {
-  fireAndForgetDesktopLogOperation,
-  runDesktopLogCleanupWithinMaintenance,
-  runDesktopLogMaintenance,
-} from './desktopLogWriter';
+import {runDesktopLogCleanupWithinMaintenance, runDesktopLogMaintenance} from './desktopLogWriter';
 import {getLogger} from './getLogger';
 import {createLogSnapshot, exportLogFiles, streamLogFilesToZip} from './logExport';
 import {createLogArchiveDependencies, createLogSnapshotFileSystemDependencies} from './logExportDependencies';
@@ -71,7 +67,6 @@ export async function exportLogs(destinationPath: string): Promise<void> {
           destinationPath: snapshotDestinationPath,
           snapshotFiles,
           dependencies: archiveDependencies,
-          fireAndForget: fireAndForgetDesktopLogOperation,
         });
       },
     });

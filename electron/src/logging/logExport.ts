@@ -62,7 +62,6 @@ export type StreamLogFilesToZipOptions = {
   destinationPath: string;
   snapshotFiles: readonly LogSnapshotFile[];
   dependencies: LogArchiveDependencies;
-  fireAndForget: (asyncAction: () => Promise<unknown>) => void;
 };
 
 export type LogArchiveDependencies = {
@@ -287,7 +286,6 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
   let outputStream: Maybe<Writable> = Maybe.nothing<Writable>();
   let outputStreamCreated = false;
   let archive: Maybe<ZipArchive> = Maybe.nothing<ZipArchive>();
-  let archiveFinalization: Maybe<Promise<void>> = Maybe.nothing<Promise<void>>();
   let outputCompletion: Maybe<Promise<void>> = Maybe.nothing<Promise<void>>();
 
   try {
@@ -296,7 +294,6 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
     outputStreamCreated = true;
     const createdOutputCompletion = finished(createdOutputStream);
     outputCompletion = Maybe.just(createdOutputCompletion);
-    options.fireAndForget(() => waitForPromiseToSettle(createdOutputCompletion));
     const createdArchive = options.dependencies.createArchive();
     archive = Maybe.just(createdArchive);
     createdArchive.pipe(createdOutputStream);
@@ -306,9 +303,7 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
     }
 
     const archiveFailure = waitForArchiveFailure(createdArchive);
-    options.fireAndForget(() => waitForPromiseToSettle(archiveFailure));
     const createdArchiveFinalization = createdArchive.finalize();
-    archiveFinalization = Maybe.just(createdArchiveFinalization);
     await Promise.race([createdArchiveFinalization, archiveFailure, createdOutputCompletion]);
     await createdArchiveFinalization;
     await createdOutputCompletion;
@@ -319,11 +314,6 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
 
     if (outputStream.isJust) {
       outputStream.value.destroy(error instanceof Error ? error : new Error('Log archive output failed'));
-    }
-
-    if (archiveFinalization.isJust) {
-      const completedArchiveFinalization = archiveFinalization.value;
-      options.fireAndForget(() => waitForPromiseToSettle(completedArchiveFinalization));
     }
 
     if (outputCompletion.isJust) {

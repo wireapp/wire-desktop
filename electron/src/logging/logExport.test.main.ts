@@ -74,12 +74,6 @@ function createTestMaintenanceCoordinator(): ReturnType<typeof createLogMaintena
   return createLogMaintenanceCoordinator({fireAndForget: invoker.fireAndForget});
 }
 
-function createTestFireAndForget(): (asyncAction: () => Promise<unknown>) => void {
-  const invoker = createFireAndForgetInvoker({reportFailure: noop});
-
-  return invoker.fireAndForget;
-}
-
 function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLogSnapshotOptions {
   return {
     cleanup: options.cleanup,
@@ -364,9 +358,10 @@ describe('desktop log export', () => {
       await fs.outputFile(path.join(temporaryLogDirectory, rotatedLogRelativePath), 'rotated\n');
       await fs.outputFile(path.join(temporaryLogDirectory, legacyLogRelativePath), 'legacy\n');
       const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
+      const exportFireAndForgetInvoker = createFireAndForgetInvoker({reportFailure: noop});
       let createdSnapshot: Maybe<LogSnapshot> = Maybe.nothing<LogSnapshot>();
 
-      await exportLogFiles({
+      const exportPromise = exportLogFiles({
         async createSnapshot() {
           const snapshot = await createLogSnapshot(
             createSnapshotTestOptions({
@@ -393,10 +388,14 @@ describe('desktop log export', () => {
             destinationPath,
             snapshotFiles,
             dependencies: createLogArchiveDependencies(noop),
-            fireAndForget: createTestFireAndForget(),
           });
         },
       });
+      exportFireAndForgetInvoker.fireAndForget(() => {
+        return exportPromise;
+      });
+      await exportPromise;
+      await exportFireAndForgetInvoker.waitUntilAllSettled();
 
       const createdSnapshotDirectoryPath = createdSnapshot.match({
         Just(snapshot) {
@@ -474,7 +473,6 @@ describe('desktop log export', () => {
           destinationPath: archivePath,
           snapshotFiles: [],
           dependencies: failingArchiveDependencies,
-          fireAndForget: createTestFireAndForget(),
         }),
         archiveFailure,
       );
@@ -523,7 +521,6 @@ describe('desktop log export', () => {
           destinationPath: archivePath,
           snapshotFiles: [],
           dependencies: failingArchiveDependencies,
-          fireAndForget: createTestFireAndForget(),
         }),
         outputFailure,
       );
@@ -582,7 +579,6 @@ describe('desktop log export', () => {
               destinationPath,
               snapshotFiles,
               dependencies: failingArchiveDependencies,
-              fireAndForget: createTestFireAndForget(),
             });
           },
         }),
