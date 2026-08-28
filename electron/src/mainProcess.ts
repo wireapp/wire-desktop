@@ -18,6 +18,7 @@
  */
 
 import * as remoteMain from '@electron/remote/main';
+import type {WallClock} from '@enormora/wall-clock/wall-clock';
 import {
   app,
   dialog,
@@ -85,6 +86,11 @@ import * as WindowUtil from './window/WindowUtil';
 const MAIN_PROCESS_LOGGER_NAME = 'main.js';
 const LOG_CLEANUP_INTERVAL_MILLISECONDS = 60 * 60 * 1_000;
 const logger = getLogger(MAIN_PROCESS_LOGGER_NAME);
+type WallClockModule = {
+  readonly createDesktopWallClock: () => WallClock;
+};
+const wallClockModule = require('./runtime/wallClockLoader.mjs') as WallClockModule;
+const wallClock = wallClockModule.createDesktopWallClock();
 const mainProcessFireAndForgetInvoker = createFireAndForgetInvoker({
   reportFailure(error: unknown): void {
     logger.error('Failed to execute a main-process background operation.', error);
@@ -202,8 +208,11 @@ app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'default_public_
 
 // IPC events
 const bindIpcEvents = (): void => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
-    return downloadImage(bytes, timestamp);
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp: unknown) => {
+    const imageTimestamp =
+      typeof timestamp === 'string' && timestamp.length > 0 ? Maybe.just(timestamp) : Maybe.nothing<string>();
+
+    return downloadImage(bytes, imageTimestamp);
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => WindowManager.showPrimaryWindow());
@@ -501,7 +510,7 @@ const handleAppEvents = (): void => {
   // System Menu, Tray Icon & Show window
   app.on('ready', async () => {
     const mainWindowState = initWindowStateKeeper();
-    const appMenu = systemMenu.createMenu(isFullScreen);
+    const appMenu = systemMenu.createMenu(isFullScreen, wallClock);
     if (EnvironmentUtil.app.IS_DEVELOPMENT) {
       app.commandLine.appendSwitch('enable-webrtc-internals');
       appMenu.append(developerMenu);
@@ -516,7 +525,7 @@ const handleAppEvents = (): void => {
 
     app.on('ready', async () => {
       const mainWindowState = initWindowStateKeeper();
-      const appMenu = systemMenu.createMenu(isFullScreen);
+      const appMenu = systemMenu.createMenu(isFullScreen, wallClock);
       if (EnvironmentUtil.app.IS_DEVELOPMENT) {
         appMenu.append(developerMenu);
       }
