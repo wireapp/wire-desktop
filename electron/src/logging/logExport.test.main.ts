@@ -74,6 +74,12 @@ function createTestMaintenanceCoordinator(): ReturnType<typeof createLogMaintena
   return createLogMaintenanceCoordinator({fireAndForget: invoker.fireAndForget});
 }
 
+function createTestFireAndForget(): (asyncAction: () => Promise<unknown>) => void {
+  const invoker = createFireAndForgetInvoker({reportFailure: noop});
+
+  return invoker.fireAndForget;
+}
+
 function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLogSnapshotOptions {
   return {
     cleanup: options.cleanup,
@@ -387,6 +393,7 @@ describe('desktop log export', () => {
             destinationPath,
             snapshotFiles,
             dependencies: createLogArchiveDependencies(noop),
+            fireAndForget: createTestFireAndForget(),
           });
         },
       });
@@ -421,6 +428,106 @@ describe('desktop log export', () => {
       assert.strictEqual(getArchiveEntryContents(archive, nestedLogRelativePath), 'nested\n');
       assert.strictEqual(getArchiveEntryContents(archive, rotatedLogRelativePath), 'rotated\n');
       assert.strictEqual(getArchiveEntryContents(archive, legacyLogRelativePath), 'legacy\n');
+    }),
+  );
+
+  it(
+    'catches an archive error emitted immediately during finalization',
+    withTemporaryDirectory('wire-log-export-archive-error-', async (temporaryLogDirectory: string) => {
+      const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
+      const archiveFailure = new Error('archive failed during finalization');
+      const archiveDependencies = createLogArchiveDependencies(noop);
+      let outputStream: Maybe<Writable> = Maybe.nothing<Writable>();
+      const failingArchiveDependencies = {
+        ...archiveDependencies,
+        createOutputStream(destinationPath: string) {
+          const createdOutputStream = archiveDependencies.createOutputStream(destinationPath);
+          outputStream = Maybe.just(createdOutputStream);
+
+          return createdOutputStream;
+        },
+        createArchive() {
+          const createdArchive = archiveDependencies.createArchive();
+          createdArchive.on('error', noop);
+          createdArchive.finalize = function finalize(): Promise<void> {
+            createdArchive.emit('error', archiveFailure);
+            outputStream.match({
+              Just(createdOutputStream) {
+                createdOutputStream.end();
+              },
+              Nothing() {
+                throw new Error('The archive output stream was not created');
+              },
+            });
+
+            return new Promise<void>(resolve => {
+              setImmediate(resolve);
+            });
+          };
+
+          return createdArchive;
+        },
+      };
+
+      await assert.rejects(
+        streamLogFilesToZip({
+          destinationPath: archivePath,
+          snapshotFiles: [],
+          dependencies: failingArchiveDependencies,
+          fireAndForget: createTestFireAndForget(),
+        }),
+        archiveFailure,
+      );
+      assert.strictEqual(await fs.pathExists(archivePath), false);
+    }),
+  );
+
+  it(
+    'propagates output failure before archive finalization completes',
+    withTemporaryDirectory('wire-log-export-output-error-', async (temporaryLogDirectory: string) => {
+      const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
+      const outputFailure = new Error('output failed before archive finalization');
+      const archiveFinalization = createDeferredCompletion();
+      const archiveDependencies = createLogArchiveDependencies(noop);
+      let outputStream: Maybe<Writable> = Maybe.nothing<Writable>();
+      const failingArchiveDependencies = {
+        ...archiveDependencies,
+        createOutputStream(destinationPath: string) {
+          const createdOutputStream = archiveDependencies.createOutputStream(destinationPath);
+          outputStream = Maybe.just(createdOutputStream);
+
+          return createdOutputStream;
+        },
+        createArchive() {
+          const createdArchive = archiveDependencies.createArchive();
+          createdArchive.finalize = function finalize(): Promise<void> {
+            outputStream.match({
+              Just(createdOutputStream) {
+                createdOutputStream.destroy(outputFailure);
+              },
+              Nothing() {
+                throw new Error('The archive output stream was not created');
+              },
+            });
+            setImmediate(archiveFinalization.resolve);
+
+            return archiveFinalization.promise;
+          };
+
+          return createdArchive;
+        },
+      };
+
+      await assert.rejects(
+        streamLogFilesToZip({
+          destinationPath: archivePath,
+          snapshotFiles: [],
+          dependencies: failingArchiveDependencies,
+          fireAndForget: createTestFireAndForget(),
+        }),
+        outputFailure,
+      );
+      assert.strictEqual(await fs.pathExists(archivePath), false);
     }),
   );
 
@@ -475,6 +582,7 @@ describe('desktop log export', () => {
               destinationPath,
               snapshotFiles,
               dependencies: failingArchiveDependencies,
+              fireAndForget: createTestFireAndForget(),
             });
           },
         }),

@@ -62,6 +62,7 @@ export type StreamLogFilesToZipOptions = {
   destinationPath: string;
   snapshotFiles: readonly LogSnapshotFile[];
   dependencies: LogArchiveDependencies;
+  fireAndForget: (asyncAction: () => Promise<unknown>) => void;
 };
 
 export type LogArchiveDependencies = {
@@ -295,7 +296,7 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
     outputStreamCreated = true;
     const createdOutputCompletion = finished(createdOutputStream);
     outputCompletion = Maybe.just(createdOutputCompletion);
-    void waitForPromiseToSettle(createdOutputCompletion);
+    options.fireAndForget(() => waitForPromiseToSettle(createdOutputCompletion));
     const createdArchive = options.dependencies.createArchive();
     archive = Maybe.just(createdArchive);
     createdArchive.pipe(createdOutputStream);
@@ -304,9 +305,12 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
       createdArchive.file(snapshotFile.absolutePath, {name: snapshotFile.relativePath});
     }
 
+    const archiveFailure = waitForArchiveFailure(createdArchive);
+    options.fireAndForget(() => waitForPromiseToSettle(archiveFailure));
     const createdArchiveFinalization = createdArchive.finalize();
     archiveFinalization = Maybe.just(createdArchiveFinalization);
-    await Promise.race([createdArchiveFinalization, waitForArchiveFailure(createdArchive)]);
+    await Promise.race([createdArchiveFinalization, archiveFailure, createdOutputCompletion]);
+    await createdArchiveFinalization;
     await createdOutputCompletion;
   } catch (error) {
     if (archive.isJust) {
@@ -318,7 +322,8 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
     }
 
     if (archiveFinalization.isJust) {
-      await waitForPromiseToSettle(archiveFinalization.value);
+      const completedArchiveFinalization = archiveFinalization.value;
+      options.fireAndForget(() => waitForPromiseToSettle(completedArchiveFinalization));
     }
 
     if (outputCompletion.isJust) {
