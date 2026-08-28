@@ -49,11 +49,11 @@ export async function exportLogs(destinationPath: string): Promise<void> {
       createSnapshot() {
         return createLogSnapshot({
           cleanup: runDesktopLogCleanupWithinMaintenance,
-          discoverLogFilePaths(): readonly string[] {
+          discoverLogFilePaths() {
             return getLogFilenames({absolute: false, baseDirectory: logDirectory});
           },
           logDirectory,
-          reportFailure(message: string, error: unknown): void {
+          reportFailure(message: string, error: unknown) {
             logger.error(message, error);
           },
           runMaintenance: runDesktopLogMaintenance,
@@ -62,7 +62,7 @@ export async function exportLogs(destinationPath: string): Promise<void> {
       },
       destinationPath,
       removeSnapshotDirectory: snapshotFileSystemDependencies.removeDirectory,
-      reportFailure(message: string, error: unknown): void {
+      reportFailure(message: string, error: unknown) {
         logger.error(message, error);
       },
       streamSnapshot({destinationPath: snapshotDestinationPath, snapshotFiles}) {

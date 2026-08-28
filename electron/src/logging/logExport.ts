@@ -355,16 +355,16 @@ export async function exportLogFiles(options: ExportLogFilesOptions): Promise<vo
 
 export function createLogSnapshotFileSystemDependencies(): LogSnapshotFileSystemDependencies {
   return {
-    async copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void> {
+    async copyFile(sourceFilePath: string, destinationFilePath: string) {
       await fs.copyFile(sourceFilePath, destinationFilePath);
     },
-    async createTemporaryDirectory(temporaryDirectoryPrefix: string): Promise<string> {
+    async createTemporaryDirectory(temporaryDirectoryPrefix: string) {
       return fs.mkdtemp(temporaryDirectoryPrefix);
     },
-    async ensureDirectory(directoryPath: string): Promise<void> {
+    async ensureDirectory(directoryPath: string) {
       await fs.ensureDir(directoryPath);
     },
-    async getFileMetadata(filePath: string): Promise<LogSnapshotFileMetadata> {
+    async getFileMetadata(filePath: string) {
       const fileStatistics = await fs.lstat(filePath);
 
       return {
@@ -372,7 +372,7 @@ export function createLogSnapshotFileSystemDependencies(): LogSnapshotFileSystem
         isSymbolicLink: fileStatistics.isSymbolicLink(),
       };
     },
-    async removeDirectory(directoryPath: string): Promise<void> {
+    async removeDirectory(directoryPath: string) {
       await fs.remove(directoryPath);
     },
   };

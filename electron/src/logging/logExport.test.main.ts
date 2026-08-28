@@ -66,7 +66,7 @@ function createDeferredCompletion(): {promise: Promise<void>; resolve: () => voi
 
 function createTestMaintenanceCoordinator(): ReturnType<typeof createLogMaintenanceCoordinator> {
   const invoker = createFireAndForgetInvoker({
-    reportFailure(): void {
+    reportFailure() {
       // The coordinator's public promises report expected operation failures.
     },
   });
@@ -109,11 +109,11 @@ describe('desktop log export', () => {
       const events: string[] = [];
       const snapshotPromise = createLogSnapshot(
         createSnapshotTestOptions({
-          async cleanup(): Promise<void> {
+          async cleanup() {
             events.push('cleanup');
           },
           dependencies: createLogSnapshotFileSystemDependencies(),
-          discoverLogFilePaths(): readonly string[] {
+          discoverLogFilePaths() {
             events.push('discover');
 
             return ['electron.log'];
@@ -157,7 +157,7 @@ describe('desktop log export', () => {
       const defaultDependencies = createLogSnapshotFileSystemDependencies();
       const dependencies: LogSnapshotFileSystemDependencies = {
         ...defaultDependencies,
-        async copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void> {
+        async copyFile(sourceFilePath: string, destinationFilePath: string) {
           copiedFiles.push({sourceFilePath, destinationFilePath});
           await defaultDependencies.copyFile(sourceFilePath, destinationFilePath);
         },
@@ -166,7 +166,7 @@ describe('desktop log export', () => {
         createSnapshotTestOptions({
           cleanup: runNoopCleanup,
           dependencies,
-          discoverLogFilePaths(): readonly string[] {
+          discoverLogFilePaths() {
             return ['electron.log'];
           },
           logDirectory: temporaryLogDirectory,
@@ -211,7 +211,7 @@ describe('desktop log export', () => {
         createSnapshotTestOptions({
           cleanup: runNoopCleanup,
           dependencies: createLogSnapshotFileSystemDependencies(),
-          discoverLogFilePaths(): readonly string[] {
+          discoverLogFilePaths() {
             return [
               currentLogRelativePath,
               rotatedLogRelativePath,
@@ -258,7 +258,7 @@ describe('desktop log export', () => {
       const defaultDependencies = createLogSnapshotFileSystemDependencies();
       const dependencies: LogSnapshotFileSystemDependencies = {
         ...defaultDependencies,
-        async removeDirectory(directoryPath: string): Promise<void> {
+        async removeDirectory(directoryPath: string) {
           removedSnapshotDirectories.push(directoryPath);
           await defaultDependencies.removeDirectory(directoryPath);
         },
@@ -270,7 +270,7 @@ describe('desktop log export', () => {
             createSnapshotTestOptions({
               cleanup: runNoopCleanup,
               dependencies,
-              discoverLogFilePaths(): readonly string[] {
+              discoverLogFilePaths() {
                 return [relativeEscapePath];
               },
               logDirectory: temporaryLogDirectory,
@@ -298,7 +298,7 @@ describe('desktop log export', () => {
         createSnapshotTestOptions({
           cleanup: runNoopCleanup,
           dependencies: createLogSnapshotFileSystemDependencies(),
-          discoverLogFilePaths(): readonly string[] {
+          discoverLogFilePaths() {
             return ['electron.log'];
           },
           logDirectory: temporaryLogDirectory,
@@ -310,15 +310,15 @@ describe('desktop log export', () => {
       const zipCompletion = createDeferredCompletion();
       let exportCompleted = false;
       const exportPromise = exportLogFiles({
-        async createSnapshot(): Promise<LogSnapshot> {
+        async createSnapshot() {
           return snapshotPromise;
         },
         destinationPath: path.join(temporaryLogDirectory, 'logs.zip'),
-        async removeSnapshotDirectory(directoryPath: string): Promise<void> {
+        async removeSnapshotDirectory(directoryPath: string) {
           await fs.remove(directoryPath);
         },
         reportFailure: noop,
-        async streamSnapshot(): Promise<void> {
+        async streamSnapshot() {
           zipStarted.resolve();
           await zipCompletion.promise;
         },
@@ -355,12 +355,12 @@ describe('desktop log export', () => {
       let createdSnapshot: Maybe<LogSnapshot> = Maybe.nothing<LogSnapshot>();
 
       await exportLogFiles({
-        async createSnapshot(): Promise<LogSnapshot> {
+        async createSnapshot() {
           const snapshot = await createLogSnapshot(
             createSnapshotTestOptions({
               cleanup: runNoopCleanup,
               dependencies: createLogSnapshotFileSystemDependencies(),
-              discoverLogFilePaths(): readonly string[] {
+              discoverLogFilePaths() {
                 return getLogFilenames({absolute: false, baseDirectory: temporaryLogDirectory});
               },
               logDirectory: temporaryLogDirectory,
@@ -375,7 +375,7 @@ describe('desktop log export', () => {
         destinationPath: archivePath,
         removeSnapshotDirectory: createLogSnapshotFileSystemDependencies().removeDirectory,
         reportFailure: noop,
-        async streamSnapshot({destinationPath, snapshotFiles}): Promise<void> {
+        async streamSnapshot({destinationPath, snapshotFiles}) {
           await streamLogFilesToZip({
             destinationPath,
             snapshotFiles,
@@ -428,7 +428,7 @@ describe('desktop log export', () => {
         createSnapshotTestOptions({
           cleanup: runNoopCleanup,
           dependencies: snapshotFileSystemDependencies,
-          discoverLogFilePaths(): readonly string[] {
+          discoverLogFilePaths() {
             return ['electron.log'];
           },
           logDirectory: temporaryLogDirectory,
@@ -440,7 +440,7 @@ describe('desktop log export', () => {
       const archiveDependencies = createLogArchiveDependencies(noop);
       const failingArchiveDependencies = {
         ...archiveDependencies,
-        createOutputStream(): Writable {
+        createOutputStream() {
           return new Writable({
             write(chunk: Buffer, _encoding: BufferEncoding, callback: (error?: Error) => void): void {
               if (wrotePartialArchive === false) {
@@ -456,7 +456,7 @@ describe('desktop log export', () => {
 
       await assert.rejects(
         exportLogFiles({
-          async createSnapshot(): Promise<LogSnapshot> {
+          async createSnapshot() {
             return snapshotPromise;
           },
           destinationPath: archivePath,

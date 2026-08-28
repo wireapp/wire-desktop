@@ -36,10 +36,10 @@ describe('download', () => {
     let exportWorkCount = 0;
 
     await downloadLogArchive({
-      async chooseDestinationPath(): Promise<Maybe<string>> {
+      async chooseDestinationPath() {
         return Maybe.nothing<string>();
       },
-      async writeArchive(): Promise<void> {
+      async writeArchive() {
         exportWorkCount += 1;
       },
     });
@@ -51,12 +51,12 @@ describe('download', () => {
     const events: string[] = [];
 
     await downloadLogArchive({
-      async chooseDestinationPath(): Promise<Maybe<string>> {
+      async chooseDestinationPath() {
         events.push('choose-destination');
 
         return Maybe.just('logs.zip');
       },
-      async writeArchive(): Promise<void> {
+      async writeArchive() {
         events.push('write-archive');
       },
     });
