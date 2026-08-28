@@ -20,6 +20,7 @@
 import {dialog, SaveDialogOptions} from 'electron';
 import * as fs from 'fs-extra';
 import imageType from 'image-type';
+import {Maybe} from 'true-myth';
 
 import * as path from 'path';
 
@@ -29,7 +30,7 @@ import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
 
-export const downloadLogs = async (bytes: Uint8Array, timestamp: Date = new Date()) => {
+export async function chooseLogDownloadPath(timestamp: Date): Promise<Maybe<string>> {
   const options: SaveDialogOptions = {
     filters: [{extensions: ['zip'], name: 'Archives (*.zip)'}],
   };
@@ -39,41 +40,64 @@ export const downloadLogs = async (bytes: Uint8Array, timestamp: Date = new Date
   const formattedTimeShort = formattedTime.replace(/:/g, '-').substr(0, 5);
   const filename = `wire-logs-${formattedDate}-${formattedTimeShort}.zip`;
 
-  return downloadFile(bytes, filename, options);
+  try {
+    const {filePath: chosenPath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
+
+    return Maybe.of(chosenPath);
+  } catch (error) {
+    logger.error(error);
+
+    return Maybe.nothing<string>();
+  }
+}
+
+export type DownloadLogArchiveParameters = {
+  chooseDestinationPath: () => Promise<Maybe<string>>;
+  writeArchive: (destinationPath: string) => Promise<void>;
 };
 
-export const downloadImage = async (bytes: Uint8Array, timestamp?: string): Promise<void> => {
-  const type = imageType(bytes);
+export async function downloadLogArchive(parameters: DownloadLogArchiveParameters): Promise<void> {
+  const destinationPath = await parameters.chooseDestinationPath();
+
+  if (destinationPath.isJust) {
+    await parameters.writeArchive(destinationPath.value);
+  }
+}
+
+export async function downloadImage(bytes: Uint8Array, timestamp: Maybe<string>): Promise<void> {
+  const detectedImageType = Maybe.of(imageType(bytes));
   const options: SaveDialogOptions = {};
 
   let filename = suggestFileName(timestamp);
 
-  if (type?.ext) {
+  if (detectedImageType.isJust && detectedImageType.value.ext) {
     options.filters = [
       {
-        extensions: [type.ext],
+        extensions: [detectedImageType.value.ext],
         name: 'Images',
       },
     ];
-    filename += `.${type.ext}`;
+    filename += `.${detectedImageType.value.ext}`;
   }
 
   return downloadFile(bytes, filename, options);
-};
+}
 
-export const downloadFile = async (bytes: Uint8Array, filename: string, options?: SaveDialogOptions): Promise<void> => {
+export async function downloadFile(bytes: Uint8Array, filename: string, options: SaveDialogOptions): Promise<void> {
   try {
-    const {filePath: chosenPath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
-    if (chosenPath) {
-      await fs.writeFile(chosenPath, bytes);
+    const saveDialogResult = await dialog.showSaveDialog({defaultPath: filename, ...options});
+    const chosenPath = Maybe.of(saveDialogResult.filePath);
+
+    if (chosenPath.isJust) {
+      await fs.writeFile(chosenPath.value, bytes);
     }
   } catch (error) {
     logger.error(error);
   }
-};
+}
 
-export const suggestFileName = (timestamp?: string): string => {
-  const imageDate = timestamp ? new Date(Number(timestamp)) : new Date();
+export function suggestFileName(timestamp: Maybe<string>): string {
+  const imageDate = timestamp.isJust ? new Date(Number(timestamp.value)) : new Date();
   const {date: formattedDate, time: formattedTime} = DateUtil.isoFormat(imageDate);
   return `Wire ${formattedDate} at ${formattedTime}`.replace(/:/g, '-');
-};
+}

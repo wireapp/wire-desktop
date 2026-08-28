@@ -202,8 +202,11 @@ app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'default_public_
 
 // IPC events
 const bindIpcEvents = (): void => {
-  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp?: string) => {
-    return downloadImage(bytes, timestamp);
+  ipcMain.on(EVENT_TYPE.ACTION.SAVE_PICTURE, (_event, bytes: Uint8Array, timestamp: unknown) => {
+    const imageTimestamp =
+      typeof timestamp === 'string' && timestamp.length > 0 ? Maybe.just(timestamp) : Maybe.nothing<string>();
+
+    return downloadImage(bytes, imageTimestamp);
   });
 
   ipcMain.on(EVENT_TYPE.ACTION.NOTIFICATION_CLICK, () => WindowManager.showPrimaryWindow());

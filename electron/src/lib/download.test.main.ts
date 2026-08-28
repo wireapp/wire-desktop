@@ -17,15 +17,50 @@
  *
  */
 
+import {Maybe} from 'true-myth';
+
 import * as assert from 'assert';
 
-import {suggestFileName} from './download';
+import {downloadLogArchive, suggestFileName} from './download';
 
 describe('download', () => {
   it('converts colons to dashes because colons cannot be used in filenames on Windows', async () => {
     // May 4th 2020, 13:42:00
-    const actual = suggestFileName('1588599720000');
+    const actual = suggestFileName(Maybe.just('1588599720000'));
     const expected = `Wire 2020-05-04 at 13-42-00`;
+
     assert.equal(actual, expected);
+  });
+
+  it('does no export work when the save dialog is cancelled', async () => {
+    let exportWorkCount = 0;
+
+    await downloadLogArchive({
+      async chooseDestinationPath(): Promise<Maybe<string>> {
+        return Maybe.nothing<string>();
+      },
+      async writeArchive(): Promise<void> {
+        exportWorkCount += 1;
+      },
+    });
+
+    assert.strictEqual(exportWorkCount, 0);
+  });
+
+  it('writes the archive only after a destination has been selected', async () => {
+    const events: string[] = [];
+
+    await downloadLogArchive({
+      async chooseDestinationPath(): Promise<Maybe<string>> {
+        events.push('choose-destination');
+
+        return Maybe.just('logs.zip');
+      },
+      async writeArchive(): Promise<void> {
+        events.push('write-archive');
+      },
+    });
+
+    assert.deepStrictEqual(events, ['choose-destination', 'write-archive']);
   });
 });
