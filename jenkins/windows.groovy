@@ -101,7 +101,7 @@ node('windows') {
   }
 
   stage('Sign installer') {
-    if (production) {
+    if (production || wireGov) {
       withCredentials([
         string(credentialsId: 'SM_API_KEY',               variable: 'SM_API_KEY'),
         string(credentialsId: 'SM_HOST',                  variable: 'SM_HOST'),
@@ -124,7 +124,7 @@ node('windows') {
   }
 
   stage('verify') {
-    if (production) {
+    if (production || wireGov) {
       try {
         bat 'for /r "wrap\\build" %%f in (*.exe) do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
         bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
