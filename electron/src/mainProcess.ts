@@ -47,6 +47,7 @@ import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
 import {getPictureInPictureCallWindowOptions, isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
+import {initializeFirstInstance} from './lib/applicationBootstrap';
 import {
   attachTo as attachCertificateVerifyProcManagerTo,
   setCertificateVerifyProc,
@@ -595,7 +596,7 @@ class ElectronWrapperInit {
     ipcMain.on(WebAppEvents.LIFECYCLE.SSO_WINDOW_FOCUS, this.focusSSOWindow);
   }
 
-  async run(): Promise<void> {
+  run(): void {
     this.logger.log('webviewProtection init');
     this.webviewProtection();
   }
@@ -813,28 +814,38 @@ lifecycle.addRelaunchListeners(async () => {
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
   addLinuxWorkarounds();
-  bindIpcEvents();
-  handleAppEvents();
-  fs.ensureFileSync(getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}));
-  mainProcessFireAndForgetInvoker.fireAndForget(async (): Promise<void> => {
-    await initializeDesktopLogLifecycle({
-      async initializeWebviewLogging(): Promise<void> {
-        await new ElectronWrapperInit().run();
-      },
-      reportCleanupFailure(error: unknown): void {
-        logger.error('Failed to complete initial desktop log cleanup.', error);
-      },
-      runInitialCleanup: runDesktopLogCleanup,
-      schedulePeriodicCleanup(): void {
-        scheduleLogCleanup({
-          fireAndForget: mainProcessFireAndForgetInvoker.fireAndForget,
-          intervalMilliseconds: LOG_CLEANUP_INTERVAL_MILLISECONDS,
-          runCleanup: runDesktopLogCleanup,
-          setInterval(callback: () => void, intervalMilliseconds: number): NodeJS.Timeout {
-            return setInterval(callback, intervalMilliseconds);
+  initializeFirstInstance({
+    bindIpcEvents,
+    ensureMainProcessLogFile() {
+      fs.ensureFileSync(getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}));
+    },
+    handleAppEvents,
+    initializeElectronWrapper() {
+      try {
+        new ElectronWrapperInit().run();
+      } catch (error) {
+        logger.error(error);
+      }
+    },
+    startDesktopLogLifecycle() {
+      mainProcessFireAndForgetInvoker.fireAndForget(async () => {
+        await initializeDesktopLogLifecycle({
+          reportCleanupFailure(error: unknown) {
+            logger.error('Failed to complete initial desktop log cleanup.', error);
+          },
+          runInitialCleanup: runDesktopLogCleanup,
+          schedulePeriodicCleanup() {
+            scheduleLogCleanup({
+              fireAndForget: mainProcessFireAndForgetInvoker.fireAndForget,
+              intervalMilliseconds: LOG_CLEANUP_INTERVAL_MILLISECONDS,
+              runCleanup: runDesktopLogCleanup,
+              setInterval(callback: () => void, intervalMilliseconds: number): NodeJS.Timeout {
+                return setInterval(callback, intervalMilliseconds);
+              },
+            });
           },
         });
-      },
-    });
+      });
+    },
   });
 }
