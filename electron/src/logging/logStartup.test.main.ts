@@ -33,22 +33,19 @@ function createDeferredCompletion(): {promise: Promise<void>; resolve: () => voi
 }
 
 describe('desktop log startup', () => {
-  it('completes cleanup before scheduling and initializing webview logging', async () => {
+  it('completes initial cleanup before scheduling periodic cleanup', async () => {
     const events: string[] = [];
     const cleanupCompletion = createDeferredCompletion();
     const startup = initializeDesktopLogLifecycle({
-      async initializeWebviewLogging(): Promise<void> {
-        events.push('initialize-webview-logging');
-      },
-      reportCleanupFailure(): void {
+      reportCleanupFailure() {
         events.push('cleanup-failed');
       },
-      async runInitialCleanup(): Promise<void> {
+      async runInitialCleanup() {
         events.push('cleanup-started');
         await cleanupCompletion.promise;
         events.push('cleanup-completed');
       },
-      schedulePeriodicCleanup(): void {
+      schedulePeriodicCleanup() {
         events.push('schedule-cleanup');
       },
     });
@@ -60,12 +57,7 @@ describe('desktop log startup', () => {
     cleanupCompletion.resolve();
     await startup;
 
-    assert.deepStrictEqual(events, [
-      'cleanup-started',
-      'cleanup-completed',
-      'schedule-cleanup',
-      'initialize-webview-logging',
-    ]);
+    assert.deepStrictEqual(events, ['cleanup-started', 'cleanup-completed', 'schedule-cleanup']);
   });
 
   it('reports cleanup failure and continues startup', async () => {
@@ -73,21 +65,18 @@ describe('desktop log startup', () => {
     const cleanupFailure = new Error('cleanup failed');
 
     await initializeDesktopLogLifecycle({
-      async initializeWebviewLogging(): Promise<void> {
-        events.push('initialize-webview-logging');
-      },
-      reportCleanupFailure(error: unknown): void {
+      reportCleanupFailure(error: unknown) {
         assert.strictEqual(error, cleanupFailure);
         events.push('cleanup-failed');
       },
-      async runInitialCleanup(): Promise<void> {
+      async runInitialCleanup() {
         throw cleanupFailure;
       },
-      schedulePeriodicCleanup(): void {
+      schedulePeriodicCleanup() {
         events.push('schedule-cleanup');
       },
     });
 
-    assert.deepStrictEqual(events, ['cleanup-failed', 'schedule-cleanup', 'initialize-webview-logging']);
+    assert.deepStrictEqual(events, ['cleanup-failed', 'schedule-cleanup']);
   });
 });

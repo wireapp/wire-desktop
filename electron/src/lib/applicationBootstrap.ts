@@ -17,18 +17,19 @@
  *
  */
 
-export type InitializeDesktopLogLifecycleOptions = {
-  reportCleanupFailure: (error: unknown) => void;
-  runInitialCleanup: () => Promise<void>;
-  schedulePeriodicCleanup: () => void;
+export type InitializeFirstInstanceOptions = {
+  bindIpcEvents: () => void;
+  ensureMainProcessLogFile: () => void;
+  handleAppEvents: () => void;
+  initializeElectronWrapper: () => void;
+  startDesktopLogLifecycle: () => void;
 };
 
-export async function initializeDesktopLogLifecycle(options: InitializeDesktopLogLifecycleOptions): Promise<void> {
-  try {
-    await options.runInitialCleanup();
-  } catch (error) {
-    options.reportCleanupFailure(error);
-  }
-
-  options.schedulePeriodicCleanup();
+export function initializeFirstInstance(options: InitializeFirstInstanceOptions): void {
+  options.bindIpcEvents();
+  options.ensureMainProcessLogFile();
+  // Electron does not replay web-contents-created, so handlers must be registered before app events can create windows.
+  options.initializeElectronWrapper();
+  options.handleAppEvents();
+  options.startDesktopLogLifecycle();
 }
