@@ -4936,12 +4936,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sinon@npm:17.0.3":
-  version: 17.0.3
-  resolution: "@types/sinon@npm:17.0.3"
+"@types/sinon@npm:17.0.4":
+  version: 17.0.4
+  resolution: "@types/sinon@npm:17.0.4"
   dependencies:
     "@types/sinonjs__fake-timers": "*"
-  checksum: c8e9956d9c90fe1ec1cc43085ae48897f93f9ea86e909ab47f255ea71f5229651faa070393950fb6923aef426c84e92b375503f9f8886ef44668b82a8ee49e9a
+  checksum: 487f43bda8d8b2ef32d1b3c08e5a68e17705d2c7470ea89c8fd62e3a086f9a35faf65d37a57bf189004c4e7adbc5f9562dfaa332c54e06a8d99fc7361f3ac004
   languageName: node
   linkType: hard
 
@@ -21217,7 +21217,7 @@ __metadata:
     "@types/react": ^18.3.13
     "@types/react-dom": ^18.3.1
     "@types/redux-logger": ^3.0.12
-    "@types/sinon": 17.0.3
+    "@types/sinon": 17.0.4
     "@types/sort-json": 2.0.3
     "@types/uuid": 9.0.8
     "@typescript-eslint/eslint-plugin": 7.17.0
