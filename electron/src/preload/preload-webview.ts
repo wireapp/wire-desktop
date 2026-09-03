@@ -289,14 +289,17 @@ process.once('loaded', () => {
   };
   global.environment = EnvironmentUtil;
   // Read synchronously so the value is present at the exact point `desktopAppConfig` is assigned.
-  // The main-process handler returns a pre-read, memoized value, so the blocking call is negligible.
-  let managedConfig = {applockOverride: false};
+  const fallbackDesktopAppConfig = createDesktopAppConfig({
+    managedConfig: {applockOverride: false},
+    version: EnvironmentUtil.app.DESKTOP_VERSION,
+  });
+  let resolvedDesktopAppConfig = fallbackDesktopAppConfig;
   try {
-    managedConfig = ipcRenderer.sendSync(EVENT_TYPE.MANAGED.GET_CONFIG) ?? {applockOverride: false};
+    resolvedDesktopAppConfig = ipcRenderer.sendSync(EVENT_TYPE.DESKTOP.GET_CONFIG) ?? fallbackDesktopAppConfig;
   } catch (error) {
-    logger.warn('Failed to read managed config from the main process, treating the device as unmanaged:', error);
+    logger.warn('Failed to read desktop config from the main process, using the unmanaged fallback:', error);
   }
-  global.desktopAppConfig = createDesktopAppConfig(EnvironmentUtil.app.DESKTOP_VERSION, managedConfig);
+  global.desktopAppConfig = resolvedDesktopAppConfig;
   global.openGraphAsync = getOpenGraphDataViaChannel;
   global.setImmediate = _setImmediate;
 });
