@@ -11,7 +11,7 @@
     "@wireapp/webapp-events": "0.29.2",
     "archiver": "8.0.0",
     "auto-launch": "5.0.6",
-    "axios": "0.21.2",
+    "axios": "1.18.0",
     "content-type": "1.0.5",
     "electron-dl": "^3.5.2",
     "electron-updater": "^6.8.3",
