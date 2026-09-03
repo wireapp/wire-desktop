@@ -18,12 +18,7 @@
  */
 
 import {getLogger} from '../../logging/getLogger';
-import {
-  APPLOCK_OVERRIDE_KEY,
-  WINDOWS_CLOUD_DOMAIN_JOIN_KEY,
-  WINDOWS_ENROLLMENTS_KEY,
-  WINDOWS_POLICY_KEY,
-} from '../constants';
+import {APPLOCK_OVERRIDE_KEY, WINDOWS_POLICY_KEY} from '../constants';
 
 const logger = getLogger('ManagedConfig/windows');
 
@@ -62,14 +57,6 @@ function valuesOf(registry: RegistryJs, hive: number, subkey: string): RegistryV
   }
 }
 
-function subkeysOf(registry: RegistryJs, hive: number, subkey: string): string[] {
-  try {
-    return registry.enumerateKeys(hive, subkey) ?? [];
-  } catch {
-    return [];
-  }
-}
-
 // Treats `1` (REG_DWORD) and `"1"`/`"true"` (REG_SZ) as the enabled override flag.
 function isOverrideEnabled(value: RegistryValue): boolean {
   if (value.name !== APPLOCK_OVERRIDE_KEY) {
@@ -87,25 +74,10 @@ function hasWirePolicyPayload(registry: RegistryJs): boolean {
   );
 }
 
-// True when the device is MDM-enrolled or Azure AD / Entra joined.
-function isDeviceEnrolled(registry: RegistryJs): boolean {
-  const {HKEY} = registry;
-
-  const isMdmEnrolled = subkeysOf(registry, HKEY.HKEY_LOCAL_MACHINE, WINDOWS_ENROLLMENTS_KEY).some(enrollmentKey => {
-    const values = valuesOf(registry, HKEY.HKEY_LOCAL_MACHINE, `${WINDOWS_ENROLLMENTS_KEY}\\${enrollmentKey}`);
-    return values.some(({name}) => name === 'UPN' || name === 'ProviderID');
-  });
-  if (isMdmEnrolled) {
-    return true;
-  }
-
-  return subkeysOf(registry, HKEY.HKEY_LOCAL_MACHINE, WINDOWS_CLOUD_DOMAIN_JOIN_KEY).length > 0;
-}
-
 export function isDeviceManagedWindows(): boolean {
   const registry = loadRegistry();
   if (!registry) {
     return false;
   }
-  return hasWirePolicyPayload(registry) || isDeviceEnrolled(registry);
+  return hasWirePolicyPayload(registry);
 }
