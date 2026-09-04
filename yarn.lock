@@ -2881,19 +2881,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/joi@npm:17.1.1":
-  version: 17.1.1
-  resolution: "@hapi/joi@npm:17.1.1"
-  dependencies:
-    "@hapi/address": ^4.0.1
-    "@hapi/formula": ^2.0.0
-    "@hapi/hoek": ^9.0.0
-    "@hapi/pinpoint": ^2.0.0
-    "@hapi/topo": ^5.0.0
-  checksum: 803d77e19e26802860de22b8d1ae3435679844202703d20bfd6246a8c6aa00143ce48d0e8beecf55812334e8e89ac04b79301264d4a3f87c980eb0c0646b33ab
-  languageName: node
-  linkType: hard
-
 "@hapi/pinpoint@npm:^2.0.0":
   version: 2.0.1
   resolution: "@hapi/pinpoint@npm:2.0.1"
@@ -14390,6 +14377,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"joi@npm:17.1.1":
+  version: 17.1.1
+  resolution: "joi@npm:17.1.1"
+  dependencies:
+    "@hapi/address": ^4.0.1
+    "@hapi/formula": ^2.0.0
+    "@hapi/hoek": ^9.0.0
+    "@hapi/pinpoint": ^2.0.0
+    "@hapi/topo": ^5.0.0
+  checksum: 5822468c2023f0a2fc07c74770800d4142061571a517b52b5f63ba49cb95ea1b291b05da341582dd131c855d6d3e894b14b4ef980ecedb4f2bfe3199cc85cc46
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^3.0.0 || ^4.0.0, js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -21194,7 +21194,6 @@ __metadata:
     "@electron/remote": 2.1.3
     "@enormora/wall-clock": 0.0.3
     "@faker-js/faker": 10.4.0
-    "@hapi/joi": 17.1.1
     "@oazapfts/runtime": 1.2.0
     "@playwright/test": 1.60.0
     "@types/adm-zip": 0.5.8
@@ -21282,6 +21281,7 @@ __metadata:
     is-ci: 3.0.1
     jest: 29.7.0
     jest-environment-jsdom: 29.7.0
+    joi: 17.1.1
     jszip: 3.10.1
     lodash: 4.18.1
     logdown: 3.3.1
