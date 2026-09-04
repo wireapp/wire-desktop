@@ -21,14 +21,24 @@ import type {ManagedConfig} from '../managed/ManagedConfig';
 
 export type DesktopAppConfig = {
   readonly version: string;
+  readonly regionalLocale?: string;
   readonly supportsCallingPopoutWindow?: boolean;
   readonly supportsWebViewRefresh?: boolean;
   readonly managedConfig?: ManagedConfig;
 };
 
-export function createDesktopAppConfig(version: string, managedConfig: ManagedConfig): DesktopAppConfig {
+type CreateDesktopAppConfigOptions = {
+  readonly managedConfig: ManagedConfig;
+  readonly regionalLocale?: string;
+  readonly version: string;
+};
+
+export function createDesktopAppConfig(options: CreateDesktopAppConfigOptions): DesktopAppConfig {
+  const {managedConfig, regionalLocale, version} = options;
+
   return {
     version,
+    regionalLocale,
     supportsCallingPopoutWindow: true,
     supportsWebViewRefresh: true,
     managedConfig,

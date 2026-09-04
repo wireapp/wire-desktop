@@ -53,6 +53,8 @@ import {
   setCertificateVerifyProc,
 } from './lib/CertificateVerifyProcManager';
 import {CustomProtocolHandler} from './lib/CoreProtocol';
+import {createDesktopAppConfig} from './lib/desktopAppConfig';
+import type {DesktopAppConfig} from './lib/desktopAppConfig';
 import {downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {createFireAndForgetInvoker} from './lib/fireAndForgetInvoker';
@@ -191,6 +193,7 @@ let tray: TrayHandler;
 let isFullScreen = false;
 let isQuitting = false;
 let main: BrowserWindow;
+let desktopAppConfig: DesktopAppConfig | undefined;
 
 Object.entries(config).forEach(([key, value]) => {
   if (typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) {
@@ -232,9 +235,10 @@ const bindIpcEvents = (): void => {
   ipcMain.on(EVENT_TYPE.ABOUT.SHOW, () => AboutWindow.showWindow());
 
   // Answered synchronously: the webview preload reads this via `ipcRenderer.sendSync` while it builds
-  // `window.desktopAppConfig`. The value is pre-read and memoized, so the handler does no I/O here.
-  ipcMain.on(EVENT_TYPE.MANAGED.GET_CONFIG, event => {
-    event.returnValue = getManagedConfig();
+  // `window.desktopAppConfig`. The config is resolved after app readiness and the handler only returns
+  // the cached serializable value.
+  ipcMain.on(EVENT_TYPE.DESKTOP.GET_CONFIG, event => {
+    event.returnValue = desktopAppConfig;
   });
 
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
@@ -510,6 +514,18 @@ const handleAppEvents = (): void => {
 
   // System Menu, Tray Icon & Show window
   app.on('ready', async () => {
+    let regionalLocale: string | undefined;
+    try {
+      regionalLocale = app.getSystemLocale();
+    } catch (error) {
+      logger.warn('Failed to read the system regional locale, omitting it from the desktop config:', error);
+    }
+    desktopAppConfig = createDesktopAppConfig({
+      managedConfig: getManagedConfig(),
+      regionalLocale,
+      version: EnvironmentUtil.app.DESKTOP_VERSION,
+    });
+
     const mainWindowState = initWindowStateKeeper();
     const appMenu = systemMenu.createMenu(isFullScreen, wallClock);
     if (EnvironmentUtil.app.IS_DEVELOPMENT) {
