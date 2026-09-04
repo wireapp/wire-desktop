@@ -17,30 +17,41 @@
  *
  */
 
-import * as Electron from 'electron';
 import * as logdown from 'logdown';
 
-import * as path from 'path';
-
 import {LogFactory, LoggerOptions} from '@wireapp/commons';
+
+import {fireAndForgetDesktopLogOperation, writeBoundedLogMessage} from './desktopLogWriter';
+import {getLogDirectory, getMainProcessLogPath} from './logPaths';
 
 import {config} from '../settings/config';
 
 const mainProcess = process || require('@electron/remote').process;
-const app = Electron.app || require('@electron/remote').app;
-
-const logDir = path.join(app.getPath('userData'), 'logs');
-const logFile = path.join(logDir, 'electron.log');
-
 const isDevelopment = config.environment !== 'production';
 const forceLogging = mainProcess.argv.includes('--enable-logging');
 
 export const LOGGER_NAMESPACE = '@wireapp/desktop';
 export const ENABLE_LOGGING = isDevelopment || forceLogging;
 
+function writeMainProcessLog(transportOptions: logdown.TransportOptions): void {
+  const logFilePath = getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()});
+  const logMessage = `${transportOptions.args[0]} ${transportOptions.msg}`;
+
+  fireAndForgetDesktopLogOperation(async (): Promise<void> => {
+    await writeBoundedLogMessage({logFilePath, message: logMessage});
+  });
+}
+
+function configureLogTransports(): void {
+  if (logdown.transports.length === 0) {
+    logdown.transports.push(LogFactory.addTimestamp);
+    logdown.transports.push(writeMainProcessLog);
+  }
+}
+
 export function getLogger(name: string): logdown.Logger {
   const options: LoggerOptions = {
-    logFilePath: logFile,
+    logFilePath: getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}),
     namespace: LOGGER_NAMESPACE,
     separator: '/',
   };
@@ -48,6 +59,8 @@ export function getLogger(name: string): logdown.Logger {
   if (ENABLE_LOGGING) {
     options.forceEnable = true;
   }
+
+  configureLogTransports();
 
   return LogFactory.getLogger(name, options);
 }

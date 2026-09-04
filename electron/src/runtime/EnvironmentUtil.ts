@@ -19,13 +19,31 @@
 
 import minimist from 'minimist';
 
+import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 import {settings} from '../settings/ConfigurationPersistence';
 import {SettingsType} from '../settings/SettingsType';
+import {getWindowsMsiWebAppConfiguration, selectWebAppUrlOverride} from '../settings/WindowsMsiConfiguration';
 
+const logger = getLogger('EnvironmentUtil');
 const argv = minimist(process.argv.slice(1));
 const webappUrlSetting = settings.restore<string | undefined>(SettingsType.CUSTOM_WEBAPP_URL);
-const customWebappUrl: string | undefined = argv[config.ARGUMENT.ENV] || webappUrlSetting;
+const windowsMsiWebAppConfiguration =
+  process.platform === 'win32' ? getWindowsMsiWebAppConfiguration(config.name) : {isConfigured: false};
+if (windowsMsiWebAppConfiguration.issue) {
+  const message = `MSI webapp configuration issue: ${windowsMsiWebAppConfiguration.issue}`;
+  if (windowsMsiWebAppConfiguration.isConfigured) {
+    // Never log the configured value: a malformed URL could contain credentials or other sensitive data.
+    logger.error(`${message}; refusing to fall back to an unmanaged endpoint.`);
+  } else {
+    logger.warn(`${message}; continuing without machine-wide configuration.`);
+  }
+}
+const customWebappUrl = selectWebAppUrlOverride(
+  windowsMsiWebAppConfiguration,
+  argv[config.ARGUMENT.ENV],
+  webappUrlSetting,
+);
 
 export enum ServerType {
   PRODUCTION = 'PRODUCTION',
@@ -96,6 +114,9 @@ export const setEnvironment = (env: ServerType): void => {
  * @returns {string | undefined} the url of the webapp, or undefined if none is configured
  */
 function getWebappUrl() {
+  if (windowsMsiWebAppConfiguration.isConfigured && !customWebappUrl) {
+    return undefined;
+  }
   if (app.IS_WIRE_GOV) {
     return customWebappUrl;
   }

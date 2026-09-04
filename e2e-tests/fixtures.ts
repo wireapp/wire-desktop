@@ -28,6 +28,7 @@ import {createTeam, Team} from './actions/createTeam';
 import {createUser, registerUser} from './actions/createUser';
 import {BrigApiClient} from './backend/BrigApiClient';
 import {GalleyApiClient} from './backend/GalleyApiClient';
+import {IbisApiClient} from './backend/IbisApiClient';
 import {PublicApiClient, RegisteredUser, TeamOwner} from './backend/PublicApiClient';
 
 export type TestOptions = {
@@ -40,6 +41,7 @@ type Fixtures = {
   publicApi: PublicApiClient;
   brigApi: BrigApiClient;
   galleyApi: GalleyApiClient;
+  ibisApi: IbisApiClient;
 
   createUser: () => Promise<RegisteredUser>;
   createPage: () => Promise<Page>;
@@ -83,6 +85,14 @@ export const test = baseTest.extend<TestOptions & Fixtures>({
     await use(new GalleyApiClient({baseUrl: process.env.BACKEND_URL, basicAuth: process.env.BACKEND_BASIC_AUTH}));
   },
 
+  ibisApi: async ({}, use) => {
+    if (process.env.BACKEND_URL === undefined) {
+      throw new Error('Missing env var BACKEND_URL');
+    }
+
+    await use(new IbisApiClient({baseUrl: process.env.BACKEND_URL}));
+  },
+
   app: async ({appOptions}, use, testInfo) => {
     // Always use a fresh temporary directory for the user data to ensure test isolation
     const tempUserDataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-desktop-e2e-tests-'));
@@ -120,11 +130,11 @@ export const test = baseTest.extend<TestOptions & Fixtures>({
     await Promise.all(users.map(user => publicApi.deleteUser(user)));
   },
 
-  createTeam: async ({publicApi, brigApi, galleyApi}, use) => {
+  createTeam: async ({publicApi, brigApi, galleyApi, ibisApi}, use) => {
     const teamOwners: TeamOwner[] = [];
 
     await use(async (teamName, options) => {
-      const team = await createTeam({publicApi, brigApi, galleyApi}, teamName, options);
+      const team = await createTeam({publicApi, brigApi, galleyApi, ibisApi}, teamName, options);
       teamOwners.push(team.owner);
       return team;
     });

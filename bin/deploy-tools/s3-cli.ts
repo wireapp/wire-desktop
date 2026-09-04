@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2019 Wire Swiss GmbH
+ * Copyright (C) 2026 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,13 +14,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
  */
 
 import {program as commander} from 'commander';
+
 import path from 'path';
 
+import {S3Deployer, WindowsArtifactType} from './lib/S3Deployer';
+
 import {checkCommanderOptions, getLogger} from '../bin-utils';
-import {S3Deployer} from './lib/S3Deployer';
 
 const toolName = path.basename(__filename).replace(/\.[jt]s$/, '');
 const logger = getLogger('deploy-tools', toolName);
@@ -34,6 +37,7 @@ commander
   .option('-k, --secret-key <id>', 'Specify the AWS secret access key ID')
   .option('-p, --path <path>', 'Specify the local path to search for files (e.g. "../../wrap")')
   .option('-s, --s3path <path>', 'Specify the base path on S3 (e.g. "apps/windows")')
+  .option('--windows-artifact <type>', 'Select Windows artifacts: auto, squirrel, or msi', 'auto')
   .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
   .parse(process.argv);
 
@@ -47,6 +51,13 @@ if (!commanderOptions.wrapperBuild.includes('#')) {
   process.exit(1);
 }
 
+const windowsArtifact = commanderOptions.windowsArtifact as WindowsArtifactType;
+if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
+  logger.error(`Invalid Windows artifact type "${windowsArtifact}"`);
+  commander.outputHelp();
+  process.exit(1);
+}
+
 (async () => {
   const searchBasePath = commanderOptions.path || path.join(__dirname, '../../wrap');
   const s3BasePath = `${commanderOptions.s3path || ''}/`;
@@ -55,7 +66,7 @@ if (!commanderOptions.wrapperBuild.includes('#')) {
 
   const s3Deployer = new S3Deployer({accessKeyId, dryRun: commanderOptions.dryRun || false, secretAccessKey});
 
-  const files = await s3Deployer.findUploadFiles(platform, searchBasePath, version);
+  const files = await s3Deployer.findUploadFiles(platform, searchBasePath, version, windowsArtifact);
 
   for (let index = 0; index < files.length; index++) {
     const file = files[index];

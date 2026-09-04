@@ -17,15 +17,20 @@
  *
  */
 
-import {LogFactory} from '@wireapp/commons';
 import {program as commander} from 'commander';
+import * as electronBuilder from 'electron-builder';
+
 import path from 'path';
 
-import {logEntries} from '../bin-utils';
+import {LogFactory} from '@wireapp/commons';
+
 import {buildLinuxConfig, buildLinuxWrapper} from './lib/build-linux';
 import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
+import {buildWindowsMsi, buildWindowsMsiConfig} from './lib/build-windows-msi';
+
+import {logEntries} from '../bin-utils';
 
 const toolName = path.basename(__filename).replace('.ts', '');
 const logger = LogFactory.getLogger(toolName, {forceEnable: true, namespace: '@wireapp/build-tools'});
@@ -34,7 +39,7 @@ const appSource = path.join(__dirname, '../../');
 commander
   .name(toolName)
   .description(
-    'Build the Wire wrapper for your platform.\n\nValid values for platform are: "windows", "windows-installer", "macos", "linux".',
+    'Build the Wire wrapper for your platform.\n\nValid values for platform are: "windows", "windows-installer", "windows-msi", "macos", "linux".',
   )
   .option('-e, --env-file <path>', 'Specify the env file path', path.join(appSource, '.env.defaults'))
   .option(
@@ -69,6 +74,16 @@ const platform = (commander.args[0] || '').toLowerCase();
       logEntries(wInstallerOptions, 'wInstallerOptions', toolName);
 
       return buildWindowsInstaller(wireJson, envFile, wInstallerOptions);
+    }
+
+    case 'windows-msi': {
+      const {builderConfig, windowsMsiConfig} = await buildWindowsMsiConfig(wireJson, envFile, manualSign);
+      const msiArchitecture = architecture ? electronBuilder.archFromString(architecture) : undefined;
+
+      logEntries(windowsMsiConfig, 'windowsMsiConfig', toolName);
+      logEntries(builderConfig, 'builderConfig', toolName);
+
+      return buildWindowsMsi(builderConfig, packageJson, wireJson, envFile, msiArchitecture);
     }
 
     case 'mac':

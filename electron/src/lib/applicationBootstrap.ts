@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2020 Wire Swiss GmbH
+ * Copyright (C) 2026 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,28 +17,19 @@
  *
  */
 
-import JSZip from 'jszip';
-
-import * as path from 'path';
-
-import {getLogger} from '../logging/getLogger';
-
-const logger = getLogger(path.basename(__filename));
-
-export const zipFiles = async (files: Record<string, Uint8Array>): Promise<JSZip> => {
-  const zip = new JSZip();
-
-  try {
-    for (const filename in files) {
-      zip.file(filename, files[filename], {binary: true});
-    }
-  } catch (error) {
-    logger.error(error);
-  }
-
-  return zip;
+export type InitializeFirstInstanceOptions = {
+  bindIpcEvents: () => void;
+  ensureMainProcessLogFile: () => void;
+  handleAppEvents: () => void;
+  initializeElectronWrapper: () => void;
+  startDesktopLogLifecycle: () => void;
 };
 
-export const createFile = (zip: JSZip): Promise<Uint8Array> => {
-  return zip.generateAsync({compression: 'DEFLATE', type: 'uint8array'});
-};
+export function initializeFirstInstance(options: InitializeFirstInstanceOptions): void {
+  options.bindIpcEvents();
+  options.ensureMainProcessLogFile();
+  // Electron does not replay web-contents-created, so handlers must be registered before app events can create windows.
+  options.initializeElectronWrapper();
+  options.handleAppEvents();
+  options.startDesktopLogLifecycle();
+}

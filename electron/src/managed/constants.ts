@@ -34,12 +34,6 @@ export const APPLOCK_OVERRIDE_KEY = 'applockOverride';
 /** Windows: machine-wide Group Policy key. The `APPLOCK_OVERRIDE_KEY` value under it drives the override. */
 export const WINDOWS_POLICY_KEY = 'SOFTWARE\\Policies\\Wire';
 
-/** Windows: MDM enrollment registry. A subkey carrying a `UPN`/`ProviderID` means the device is enrolled. */
-export const WINDOWS_ENROLLMENTS_KEY = 'SOFTWARE\\Microsoft\\Enrollments';
-
-/** Windows: Azure AD / Entra device join. A subkey under JoinInfo means the device is joined. */
-export const WINDOWS_CLOUD_DOMAIN_JOIN_KEY = 'SYSTEM\\CurrentControlSet\\Control\\CloudDomainJoin\\JoinInfo';
-
 // macOS reads `APPLOCK_OVERRIDE_KEY` from the app's defaults domain (pushed via an MDM AppConfig profile).
 
 /** Linux: machine-wide managed config file holding the `APPLOCK_OVERRIDE_KEY` flag. */

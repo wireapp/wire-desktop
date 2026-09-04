@@ -56,21 +56,46 @@ node('windows') {
     }
   }
 
-  stage('Build installer') {
+  stage('Sign application') {
+    if (production) {
+      withCredentials([
+        string(credentialsId: 'SM_API_KEY',               variable: 'SM_API_KEY'),
+        string(credentialsId: 'SM_HOST',                  variable: 'SM_HOST'),
+        string(credentialsId: 'SM_CLIENT_CERT_PASSWORD',  variable: 'SM_CLIENT_CERT_PASSWORD'),
+        file  (credentialsId: 'SM_CLIENT_CERT_FILE',      variable: 'SM_CLIENT_CERT_FILE'),
+        string(credentialsId: 'SM_KEYPAIR_ALIAS',         variable: 'SM_KEYPAIR_ALIAS')
+      ]) {
+        try {
+          bat 'for /r "wrap\\build" %%f in (*.exe) do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp --failfast --exit-non-zero-on-fail -v || exit /b 1)'
+        } catch (e) {
+          currentBuild.result = 'FAILED'
+          wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing application failed**\n${BUILD_URL}"
+          throw e
+        }
+      }
+    } else {
+      echo 'Skipping application signing for non-production build (nightly/custom).'
+    }
+  }
+
+  stage('Build installers') {
     try {
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
+        // Build the MSI before Squirrel injects its updater into the application directory. Squirrel keeps its
+        // established signing path for production and custom builds.
         if (production || custom) {
-          bat 'yarn build:win:installer'
-        } else if (wireGov) {
-          bat 'yarn build:win:installer:wire-gov'
+          bat 'yarn build:win:installers'
         } else {
-          // For internal builds disable auto-signing and use internal config
-          bat 'yarn build:win:installer:internal'
+          bat 'yarn build:win:installers:manual'
         }
+        bat 'if not exist "wrap\\dist\\*-Setup.exe" (echo Missing Squirrel Setup executable & exit /b 1)'
+        bat 'if not exist "wrap\\dist\\*-full.nupkg" (echo Missing Squirrel package & exit /b 1)'
+        bat 'if not exist "wrap\\dist\\RELEASES" (echo Missing Squirrel RELEASES file & exit /b 1)'
+        bat 'if not exist "wrap\\dist\\*.msi" (echo Missing MSI package & exit /b 1)'
       }
     } catch (e) {
       currentBuild.result = 'FAILED'
-      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} building installer failed**\n${BUILD_URL}"
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} building installers failed**\n${BUILD_URL}"
       throw e
     }
   }
@@ -85,7 +110,8 @@ node('windows') {
         string(credentialsId: 'SM_KEYPAIR_ALIAS',         variable: 'SM_KEYPAIR_ALIAS')
       ]) {
         try {
-          bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (smctl sign --keypair-alias %SM_KEYPAIR_ALIAS% --config-file %SM_CLIENT_CERT_FILE% --input %%f -v)'
+          bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp --failfast --exit-non-zero-on-fail -v || exit /b 1)'
+          bat 'for %%f in ("wrap\\dist\\*.msi") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp --failfast --exit-non-zero-on-fail -v || exit /b 1)'
         } catch (e) {
           currentBuild.result = 'FAILED'
           wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
@@ -100,7 +126,9 @@ node('windows') {
   stage('verify') {
     if (production || wireGov) {
       try {
-        bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (signtool.exe verify /v /pa %%f)'
+        bat 'for /r "wrap\\build" %%f in (*.exe) do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
+        bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
+        bat 'for %%f in ("wrap\\dist\\*.msi") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
       } catch (e) {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} verifying installer failed**\n${BUILD_URL}"
@@ -118,7 +146,7 @@ node('windows') {
   stage('Print hash') {
     try {
       if (production) {
-        bat 'certUtil -hashfile "wrap\\dist\\Wire-Setup.exe" SHA256'
+        bat 'for %%f in ("wrap\\dist\\*-Setup.exe" "wrap\\dist\\*.msi") do (certUtil -hashfile "%%~ff" SHA256)'
       }
     } catch (e) {
       currentBuild.result = 'FAILED'
@@ -133,7 +161,7 @@ node('windows') {
         build job: 'Wrapper_Windows_Smoke_Tests',
           parameters: [
             run   (description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"),
-            string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-master.zinfra.io/')
+            string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-dev.zinfra.io/')
           ],
           wait: false
       } catch (e) {

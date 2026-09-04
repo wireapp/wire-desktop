@@ -17,36 +17,68 @@
  *
  */
 
-import {app} from 'electron';
-import * as fs from 'fs-extra';
-import globby from 'globby';
-
+import * as os from 'os';
 import * as path from 'path';
 
-import {getLogger} from '../logging/getLogger';
+import {runDesktopLogCleanupWithinMaintenance, runDesktopLogMaintenance} from './desktopLogWriter';
+import {getLogger} from './getLogger';
+import {createLogSnapshot, exportLogFiles, streamLogFilesToZip} from './logExport';
+import {createLogArchiveDependencies, createLogSnapshotFileSystemDependencies} from './logExportDependencies';
+import {getLogFilenames as getLogFilenamesFromRoot, LogFileDiscoveryOptions} from './logFiles';
+import {getLogDirectory} from './logPaths';
 
 const logger = getLogger(path.basename(__filename));
 
-export const logDir = path.join(app.getPath('userData'), 'logs');
-
-export function getLogFilenames(base: string = logDir, absolute: boolean = false): string[] {
-  return globby.sync('**/*.{log,old}', {absolute, cwd: base, followSymbolicLinks: false, onlyFiles: true});
+export function getLogFilenames(parameters: LogFileDiscoveryOptions): string[] {
+  return getLogFilenamesFromRoot(parameters);
 }
 
-export async function gatherLogs(): Promise<Record<string, Uint8Array>> {
-  const logFiles: Record<string, Uint8Array> = {};
+export async function exportLogs(destinationPath: string): Promise<void> {
+  const logDirectory = getLogDirectory();
+  const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
+  const archiveDependencies = createLogArchiveDependencies((message: string, error: unknown): void => {
+    logger.error(message, error);
+  });
 
-  const relativeFilePaths = getLogFilenames();
-
-  for (const relativeFilePath of relativeFilePaths) {
-    const resolvedPath = path.join(logDir, relativeFilePath);
-    try {
-      const fileContent = await fs.readFile(resolvedPath);
-      logFiles[relativeFilePath] = fileContent;
-    } catch (error) {
-      logger.error(error);
-    }
+  try {
+    await exportLogFiles({
+      createSnapshot() {
+        return createLogSnapshot({
+          cleanup: runDesktopLogCleanupWithinMaintenance,
+          discoverLogFilePaths() {
+            return getLogFilenames({absolute: false, baseDirectory: logDirectory});
+          },
+          logDirectory,
+          reportFailure(message: string, error: unknown) {
+            logger.error(message, error);
+          },
+          runMaintenance: runDesktopLogMaintenance,
+          temporaryDirectoryPrefix: path.join(os.tmpdir(), 'wire-log-snapshot-'),
+          copyFile: snapshotFileSystemDependencies.copyFile,
+          createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
+          ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+          getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
+          removeDirectory: snapshotFileSystemDependencies.removeDirectory,
+        });
+      },
+      destinationPath,
+      removeSnapshotDirectory: snapshotFileSystemDependencies.removeDirectory,
+      reportFailure(message: string, error: unknown) {
+        logger.error(message, error);
+      },
+      streamSnapshot({destinationPath: snapshotDestinationPath, snapshotFiles}) {
+        return streamLogFilesToZip({
+          createArchive: archiveDependencies.createArchive,
+          createOutputStream: archiveDependencies.createOutputStream,
+          destinationPath: snapshotDestinationPath,
+          pathExists: archiveDependencies.pathExists,
+          removeFile: archiveDependencies.removeFile,
+          reportFailure: archiveDependencies.reportFailure,
+          snapshotFiles,
+        });
+      },
+    });
+  } catch (error) {
+    logger.error('Failed to export desktop logs.', error);
   }
-
-  return logFiles;
 }

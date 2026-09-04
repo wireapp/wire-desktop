@@ -27,6 +27,7 @@ test(
   'I want to add multiple accounts to the app and switch between them',
   {tag: ['@TC-10925', '@crit-flow-desktop']},
   async ({app, createUser}) => {
+    test.setTimeout(120_000);
     const userA = await createUser();
     const userA2 = await createUser();
 

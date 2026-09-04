@@ -18,6 +18,7 @@
  */
 
 import {app, session, ipcMain, WebContents} from 'electron';
+import {Maybe} from 'true-myth';
 
 import * as path from 'path';
 
@@ -38,7 +39,7 @@ export let isFirstInstance: boolean | undefined = undefined;
 const relaunchListeners: (() => void)[] = [];
 
 export async function initSquirrelListener(): Promise<void> {
-  if (EnvironmentUtil.platform.IS_WINDOWS) {
+  if (EnvironmentUtil.platform.IS_WINDOWS && Squirrel.isSquirrelInstallation()) {
     logger.info('Checking for Windows update ...');
     await Squirrel.handleSquirrelArgs();
 
@@ -61,18 +62,22 @@ export const checkSingleInstance = async () => {
   }
 };
 
-export const getWebViewId = (contents?: WebContents): string | undefined => {
-  if (!contents) {
-    return undefined;
-  }
+export function getAccountId(contents: WebContents): Maybe<string> {
   try {
     const currentLocation = new URL(contents.getURL());
-    const webViewId = currentLocation.searchParams.get('id');
-    return webViewId && ValidationUtil.isUUIDv4(webViewId) ? webViewId : undefined;
+    const accountId = Maybe.of(currentLocation.searchParams.get('id'));
+
+    return accountId.andThen(value => {
+      if (ValidationUtil.isUUIDv4(value)) {
+        return Maybe.just(value);
+      }
+
+      return Maybe.nothing<string>();
+    });
   } catch (error) {
-    return undefined;
+    return Maybe.nothing<string>();
   }
-};
+}
 
 /**
  * will register a function that will be called in case of a relaunch in MacOS (see https://github.com/electron/electron/issues/13696)
