@@ -30,7 +30,7 @@ import {getLogFilenames} from './logFiles';
 import {LogFileMetadata, LogRetentionPlanParameters, LogRetentionPolicy, planLogCleanup} from './logRetention';
 
 export const DESKTOP_LOG_MAXIMUM_AGE_MILLISECONDS = 7 * 24 * 60 * 60 * 1_000;
-export const DESKTOP_LOG_MAXIMUM_TOTAL_SIZE_BYTES = 100 * 1024 * 1024;
+export const DESKTOP_LOG_MAXIMUM_TOTAL_SIZE_BYTES = 500 * 1024 * 1024;
 export const DESKTOP_LOG_RETENTION_POLICY: LogRetentionPolicy = {
   maximumAgeMilliseconds: DESKTOP_LOG_MAXIMUM_AGE_MILLISECONDS,
   maximumTotalSizeBytes: DESKTOP_LOG_MAXIMUM_TOTAL_SIZE_BYTES,
