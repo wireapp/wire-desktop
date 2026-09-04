@@ -26,11 +26,14 @@ import * as path from 'path';
 import {
   createLogCleanup,
   createLogCleanupFileSystemDependencies,
+  DESKTOP_LOG_MAXIMUM_AGE_MILLISECONDS,
+  DESKTOP_LOG_MAXIMUM_TOTAL_SIZE_BYTES,
+  DESKTOP_LOG_RETENTION_POLICY,
   LogCleanupDependencies,
   RunLogCleanupParameters,
 } from './logCleanup';
 import {LogDirectoryCleanupResult} from './logDirectoryCleanup';
-import {LogFileMetadata} from './logRetention';
+import {LogFileMetadata, LogRetentionPolicy} from './logRetention';
 
 import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
 
@@ -38,6 +41,16 @@ type CleanupTestState = {
   failures: string[];
   removedDirectories: string[];
   removedFiles: string[];
+};
+
+const testLogRetentionPolicy: LogRetentionPolicy = {
+  maximumAgeMilliseconds: 100,
+  maximumTotalSizeBytes: 100,
+};
+
+type CleanupTestOptions = {
+  activeFilePaths: ReadonlySet<string>;
+  policy?: LogRetentionPolicy;
 };
 
 function createCleanupTestDependencies(
@@ -78,15 +91,79 @@ function createCleanupTestDependencies(
   };
 }
 
-function createCleanupParameters(activeFilePaths: ReadonlySet<string>): RunLogCleanupParameters {
+function createCleanupOptions(options: CleanupTestOptions): RunLogCleanupParameters {
+  const retentionPolicy = options.policy ?? testLogRetentionPolicy;
+
   return {
-    activeFilePaths,
+    activeFilePaths: options.activeFilePaths,
     logDirectory: 'logs',
-    policy: {maximumAgeMilliseconds: 100, maximumTotalSizeBytes: 100},
+    policy: retentionPolicy,
   };
 }
 
 describe('desktop log cleanup', () => {
+  it('uses a seven-day age limit and a 500 MiB total size limit', () => {
+    assert.strictEqual(DESKTOP_LOG_MAXIMUM_AGE_MILLISECONDS, 7 * 24 * 60 * 60 * 1_000);
+    assert.strictEqual(DESKTOP_LOG_MAXIMUM_TOTAL_SIZE_BYTES, 500 * 1024 * 1024);
+    assert.deepStrictEqual(DESKTOP_LOG_RETENTION_POLICY, {
+      maximumAgeMilliseconds: DESKTOP_LOG_MAXIMUM_AGE_MILLISECONDS,
+      maximumTotalSizeBytes: DESKTOP_LOG_MAXIMUM_TOTAL_SIZE_BYTES,
+    });
+  });
+
+  it('retains recent files when total usage is below the desktop total size limit', async () => {
+    const state: CleanupTestState = {failures: [], removedDirectories: [], removedFiles: []};
+    const fileMetadata: LogFileMetadata[] = [
+      {
+        filePath: 'logs/newest.log',
+        fileSizeBytes: DESKTOP_LOG_MAXIMUM_TOTAL_SIZE_BYTES - 2,
+        isSymbolicLink: false,
+        modifiedTimeMilliseconds: 999_999,
+      },
+      {
+        filePath: 'logs/second-newest.log',
+        fileSizeBytes: 1,
+        isSymbolicLink: false,
+        modifiedTimeMilliseconds: 999_998,
+      },
+    ];
+    const cleanup = createLogCleanup(createCleanupTestDependencies(fileMetadata, state));
+
+    await cleanup.run(createCleanupOptions({activeFilePaths: new Set(), policy: DESKTOP_LOG_RETENTION_POLICY}));
+
+    assert.deepStrictEqual(state.removedFiles, []);
+  });
+
+  it('removes the oldest eligible files when desktop total usage exceeds the limit', async () => {
+    const state: CleanupTestState = {failures: [], removedDirectories: [], removedFiles: []};
+    const fileSizeBytes = Math.floor(DESKTOP_LOG_MAXIMUM_TOTAL_SIZE_BYTES / 2) + 1;
+    const fileMetadata: LogFileMetadata[] = [
+      {
+        filePath: 'logs/newest.log',
+        fileSizeBytes,
+        isSymbolicLink: false,
+        modifiedTimeMilliseconds: 3,
+      },
+      {
+        filePath: 'logs/oldest.log',
+        fileSizeBytes,
+        isSymbolicLink: false,
+        modifiedTimeMilliseconds: 1,
+      },
+      {
+        filePath: 'logs/middle.log',
+        fileSizeBytes,
+        isSymbolicLink: false,
+        modifiedTimeMilliseconds: 2,
+      },
+    ];
+    const cleanup = createLogCleanup(createCleanupTestDependencies(fileMetadata, state));
+
+    await cleanup.run(createCleanupOptions({activeFilePaths: new Set(), policy: DESKTOP_LOG_RETENTION_POLICY}));
+
+    assert.deepStrictEqual(state.removedFiles, ['logs/oldest.log', 'logs/middle.log']);
+  });
+
   it('removes planned files and their empty parent directories', async () => {
     const state: CleanupTestState = {failures: [], removedDirectories: [], removedFiles: []};
     const fileMetadata: LogFileMetadata[] = [
@@ -105,7 +182,7 @@ describe('desktop log cleanup', () => {
     ];
     const cleanup = createLogCleanup(createCleanupTestDependencies(fileMetadata, state));
 
-    await cleanup.run(createCleanupParameters(new Set()));
+    await cleanup.run(createCleanupOptions({activeFilePaths: new Set()}));
 
     assert.deepStrictEqual(state.removedFiles, ['logs/2026-08-20/accounts/account/console.log']);
     assert.deepStrictEqual(state.removedDirectories, [
@@ -124,7 +201,7 @@ describe('desktop log cleanup', () => {
     ];
     const cleanup = createLogCleanup(createCleanupTestDependencies(fileMetadata, state));
 
-    await cleanup.run(createCleanupParameters(new Set(['logs/active.log'])));
+    await cleanup.run(createCleanupOptions({activeFilePaths: new Set(['logs/active.log'])}));
 
     assert.deepStrictEqual(state.removedFiles, ['logs/eligible.log']);
   });
@@ -147,7 +224,7 @@ describe('desktop log cleanup', () => {
       },
     });
 
-    await cleanup.run(createCleanupParameters(new Set()));
+    await cleanup.run(createCleanupOptions({activeFilePaths: new Set()}));
 
     assert.deepStrictEqual(state.removedFiles, ['logs/second.log']);
     assert.strictEqual(state.failures.length, 1);
@@ -169,9 +246,9 @@ describe('desktop log cleanup', () => {
         return [];
       },
     });
-    const cleanupParameters = createCleanupParameters(new Set());
+    const cleanupOptions = createCleanupOptions({activeFilePaths: new Set()});
 
-    await Promise.all([cleanup.run(cleanupParameters), cleanup.run(cleanupParameters)]);
+    await Promise.all([cleanup.run(cleanupOptions), cleanup.run(cleanupOptions)]);
 
     assert.strictEqual(discoveryCount, 1);
   });
