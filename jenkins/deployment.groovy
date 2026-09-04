@@ -5,7 +5,7 @@ def list = []
 jobs = jenkins.getAllItems()
 jobs.each { job ->
   name = job.fullName
-  if (name.contains('Windows Internal') || name.contains('Wrapper_Linux') || name.contains('Wrapper_macOS')) {
+  if (name.contains('Windows Internal') || name.contains('Wrapper_macOS')) {
     builds = job.builds
     for (i = 0; i <5; i++) {
       lastbuild = job.builds[i]
@@ -298,50 +298,8 @@ node('built-in') {
           throw e
         }
 
-      } else if (projectName.contains('Linux')) {
-        // -----------------------------
-        // 3) Linux S3 Upload
-        // -----------------------------
-        try {
-          if (params.Release == 'Custom') {
-            error('Please set S3_NAME for custom Linux')
-          }
-
-          if (params.Release == 'Custom') {
-            error('Please set S3_NAME for custom Linux')
-          }
-
-          if (params.Release == 'Production') {
-            S3_NAME = 'linux'
-          } else if (params.Release == 'Internal') {
-            S3_NAME = 'linux-internal'
-          } else if (params.Release == 'Wire-Gov') {
-            S3_NAME = 'linux-wire-gov'
-          }
-
-          withAWS(region:'eu-west-1', credentials: 'wire-taco') {
-            echo('Upload repository files')
-            s3Upload acl: 'PublicRead',
-                     bucket: S3_BUCKET,
-                     workingDir: 'wrap/dist/',
-                     includePathPattern: 'debian/**',
-                     path: S3_NAME + '/'
-
-            echo('Upload files for download page')
-            files = findFiles(glob: 'wrap/dist/*.deb,wrap/dist/*.AppImage')
-            files.each {
-              s3Upload acl: 'PublicRead',
-                       bucket: S3_BUCKET,
-                       file: it.path,
-                       path: S3_NAME + '/' + it.name
-            }
-          }
-        } catch(e) {
-          currentBuild.result = 'FAILED'
-          wireSend secret: "$jenkinsbot_secret",
-                   message: "**Deploying to S3 failed for ${version}** see: ${JOB_URL}"
-          throw e
-        }
+      } else {
+        error("Unsupported wrapper build project: ${projectName}")
       }
     }
   }
