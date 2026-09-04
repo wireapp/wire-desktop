@@ -161,7 +161,7 @@ node('windows') {
         build job: 'Wrapper_Windows_Smoke_Tests',
           parameters: [
             run   (description: '', name: 'WRAPPER_BUILD', runId: "Wrapper_Windows_Production#${BUILD_ID}"),
-            string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-master.zinfra.io/')
+            string(name: 'WEBAPP_ENV', value: 'https://wire-webapp-dev.zinfra.io/')
           ],
           wait: false
       } catch (e) {
