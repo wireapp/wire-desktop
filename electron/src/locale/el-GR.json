@@ -73,6 +73,8 @@
   "menuView": "Προβολή",
   "menuWindow": "Παράθυρο",
   "noInternet": "No Internet",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "The proxy requires authentication with username and password.",
   "proxyPromptPassword": "Password",
   "proxyPromptTitle": "Proxy authentication",
@@ -110,7 +112,5 @@
   "promptCancel": "Cancel",
   "promptWarning": "Warning",
   "promptError": "Error",
-  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application."
 }

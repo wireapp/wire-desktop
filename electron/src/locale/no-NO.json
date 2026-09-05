@@ -73,6 +73,8 @@
   "menuView": "Vis",
   "menuWindow": "Vindu",
   "noInternet": "Ingen Internett",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "Proxyen krever godkjenning med brukernavn og passord.",
   "proxyPromptPassword": "Passord",
   "proxyPromptTitle": "Proxy autentisering",
@@ -110,7 +112,5 @@
   "promptCancel": "Avbryt",
   "promptWarning": "Advarsel",
   "promptError": "Feil",
-  "urlBlockedPromptText": "",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": ""
 }
