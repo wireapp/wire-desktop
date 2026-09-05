@@ -73,6 +73,8 @@
   "menuView": "දකින්න",
   "menuWindow": "කවුළුව",
   "noInternet": "අන්තර්ජාලය නැත",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "ප්‍රතියුක්තය සඳහා පරිශ්‍රීලක නාමයක් හා මුරපදයක් වුවමනාය.",
   "proxyPromptPassword": "මුරපදය",
   "proxyPromptTitle": "ප්‍රතියුක්තය සත්‍යාපනය",
@@ -110,7 +112,5 @@
   "promptCancel": "අවලංගු කරන්න",
   "promptWarning": "අවවාදයයි!",
   "promptError": "දෝෂයකි",
-  "urlBlockedPromptText": "අනාරක්‍ෂිත ඒ.ස.නි. (URL) අවහිර කර ඇත. ඔබට තවමත් එය විවෘත කිරීමට වුවමනා නම්, එය පිටපත් කර සුදුසු මෘදුකාංගයක් හරහා විවෘත කරන්න.",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "අනාරක්‍ෂිත ඒ.ස.නි. (URL) අවහිර කර ඇත. ඔබට තවමත් එය විවෘත කිරීමට වුවමනා නම්, එය පිටපත් කර සුදුසු මෘදුකාංගයක් හරහා විවෘත කරන්න."
 }

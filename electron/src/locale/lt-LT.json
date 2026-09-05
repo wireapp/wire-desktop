@@ -73,6 +73,8 @@
   "menuView": "Rodinys",
   "menuWindow": "Langas",
   "noInternet": "Nėra interneto",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "Įgaliotasis serveris reikalauja nustatyti tapatybę naudojant naudotojo vardą ir slaptažodį.",
   "proxyPromptPassword": "Slaptažodis",
   "proxyPromptTitle": "Įgaliotojo serverio tapatybės nustatymas",
@@ -110,7 +112,5 @@
   "promptCancel": "Atsisakyti",
   "promptWarning": "Įspėjimas",
   "promptError": "Klaida",
-  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application."
 }

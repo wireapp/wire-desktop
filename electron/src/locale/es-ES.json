@@ -73,6 +73,8 @@
   "menuView": "Vista",
   "menuWindow": "Ventana",
   "noInternet": "Sin conexión a Internet",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "El proxy requiere autenticación con nombre de usuario y contraseña.",
   "proxyPromptPassword": "Contraseña",
   "proxyPromptTitle": "Autenticación de proxy",
@@ -110,7 +112,5 @@
   "promptCancel": "Cancelar",
   "promptWarning": "Advertencia",
   "promptError": "Error",
-  "urlBlockedPromptText": "Una URL potencialmente insegura ha sido bloqueada. Si aún desea abrirla, copie la URL y abra la aplicación apropiada.",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "Una URL potencialmente insegura ha sido bloqueada. Si aún desea abrirla, copie la URL y abra la aplicación apropiada."
 }

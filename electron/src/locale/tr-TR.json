@@ -73,6 +73,8 @@
   "menuView": "Görüntüle",
   "menuWindow": "Pencere",
   "noInternet": "İnternet bağlantısı yok",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "Proxy kullanıcı adı ve şifre ile doğrulama gerektirmektedir.",
   "proxyPromptPassword": "Şifre",
   "proxyPromptTitle": "Proxy Doğrulaması",
@@ -110,7 +112,5 @@
   "promptCancel": "İptal",
   "promptWarning": "Dikkat",
   "promptError": "Hata",
-  "urlBlockedPromptText": "Potansiyel tehlikeli bir URL engellendi. Eğer açmak isterseniz, URL'yi kopyalayıp uygun uygulamada açın",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "Potansiyel tehlikeli bir URL engellendi. Eğer açmak isterseniz, URL'yi kopyalayıp uygun uygulamada açın"
 }
