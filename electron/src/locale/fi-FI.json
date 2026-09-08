@@ -73,6 +73,8 @@
   "menuView": "Näytä",
   "menuWindow": "Ikkuna",
   "noInternet": "Ei internet-yhteyttä",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "Välityspalvelin vaatii tunnistautumisen käyttäjätunnuksella sekä salasanalla.",
   "proxyPromptPassword": "Salasana",
   "proxyPromptTitle": "Proxy tunnistus",
@@ -110,7 +112,5 @@
   "promptCancel": "Peruuta",
   "promptWarning": "Varoitus",
   "promptError": "Virhe",
-  "urlBlockedPromptText": "Mahdollisesti vaarallinen URL-osoite on estetty. Jos silti haluat avata kyseisen URL-osoitteen, kopioi osoite leikepöydälle ja avaa se sopivalla sovelluksella.",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "Mahdollisesti vaarallinen URL-osoite on estetty. Jos silti haluat avata kyseisen URL-osoitteen, kopioi osoite leikepöydälle ja avaa se sopivalla sovelluksella."
 }
