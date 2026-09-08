@@ -73,6 +73,8 @@
   "menuView": "ビュー",
   "menuWindow": "ウィンドウ",
   "noInternet": "インターネット未接続",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "プロキシ認証のためにはユーザー名とパスワードが必要です。",
   "proxyPromptPassword": "パスワード",
   "proxyPromptTitle": "プロキシ認証",
@@ -110,7 +112,5 @@
   "promptCancel": "キャンセル",
   "promptWarning": "警告",
   "promptError": "エラー",
-  "urlBlockedPromptText": "安全でない可能性のあるURLがブロックされました。それでも開きたい場合は、URLをコピーし、適切なアプリケーションで開いてください。",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "安全でない可能性のあるURLがブロックされました。それでも開きたい場合は、URLをコピーし、適切なアプリケーションで開いてください。"
 }

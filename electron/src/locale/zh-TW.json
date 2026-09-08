@@ -73,6 +73,8 @@
   "menuView": "檢視",
   "menuWindow": "視窗",
   "noInternet": "No Internet",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "Proxy認證需要您的帳號密碼",
   "proxyPromptPassword": "密碼",
   "proxyPromptTitle": "Proxy認證",
@@ -110,7 +112,5 @@
   "promptCancel": "取消",
   "promptWarning": "Warning",
   "promptError": "Error",
-  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application.",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "A potentially unsafe URL has been blocked. If you still wish to open it, copy the URL and open the appropriate application."
 }

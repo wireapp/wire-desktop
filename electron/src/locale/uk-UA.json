@@ -73,6 +73,8 @@
   "menuView": "Вигляд",
   "menuWindow": "Вікно",
   "noInternet": "Відсутнє підключення до інтернету",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "Проксі-сервер вимагає аутентифікацію з ім'ям користувача і паролем.",
   "proxyPromptPassword": "Пароль",
   "proxyPromptTitle": "Аутентифікація на проксі-сервері",
@@ -110,7 +112,5 @@
   "promptCancel": "Скасувати",
   "promptWarning": "Попередження",
   "promptError": "Помилка",
-  "urlBlockedPromptText": "Потенційно небезпечний URL було заблоковано. Якщо ви все ще хочете відкрити його, скопіюйте URL в буфер обміну та відкрийте відповідну програму.",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "Потенційно небезпечний URL було заблоковано. Якщо ви все ще хочете відкрити його, скопіюйте URL в буфер обміну та відкрийте відповідну програму."
 }

@@ -73,6 +73,8 @@
   "menuView": "Affichage",
   "menuWindow": "Fenêtre",
   "noInternet": "Pas de connexion internet",
+  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend.",
+  "noUrlConfiguredTitle": "Welcome to Wire Gov",
   "proxyPromptHeadline": "Le proxy a besoin d’une authentification. Veuillez fournir un nom d’utilisateur et un mot de passe.",
   "proxyPromptPassword": "Mot de passe",
   "proxyPromptTitle": "Authentification proxy",
@@ -110,7 +112,5 @@
   "promptCancel": "Annuler",
   "promptWarning": "Avertissement",
   "promptError": "Erreur",
-  "urlBlockedPromptText": "Une URL potentiellement dangereuse a été bloquée. Si vous souhaitez quand même l'ouvrir, copiez l'URL et ouvrez l'application appropriée.",
-  "noUrlConfiguredTitle": "Welcome to Wire Gov",
-  "noUrlConfiguredDescription": "To use the app, ask your admin to connect you to the right backend."
+  "urlBlockedPromptText": "Une URL potentiellement dangereuse a été bloquée. Si vous souhaitez quand même l'ouvrir, copiez l'URL et ouvrez l'application appropriée."
 }
