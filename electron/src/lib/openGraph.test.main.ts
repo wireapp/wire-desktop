@@ -21,89 +21,79 @@ import nock, {cleanAll} from 'nock';
 
 import * as assert from 'assert';
 
-import {axiosWithContentLimit, axiosWithCookie} from './openGraph';
+import {getOpenGraphDataAsync} from './openGraph';
 
-const exampleUrl = 'https://example.com';
-const defaultMessage = 'Hello from nock!';
-const defaultMessageUtf8 = [72, 101, 108, 108, 111, 32, 102, 114, 111, 109, 32, 110, 111, 99, 107, 33];
+const host = 'https://93.184.216.34';
 
-const russianMessage = 'Привет из нока!';
-const russianMessageKoi8r = [240, 210, 201, 215, 197, 212, 32, 201, 218, 32, 206, 207, 203, 193, 33];
-// eslint-disable-next-line
-const russianMessageUtf8 = [
-  208, 159, 209, 128, 208, 184, 208, 178, 208, 181, 209, 130, 32, 208, 184, 208, 183, 32, 208, 189, 208, 190, 208, 186,
-  208, 176, 33,
-];
-
-const contentLimitRequest = (contentType: string, contentArray: number[]) => {
-  const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
-  nock(exampleUrl).get('/').reply(200, Buffer.from(contentArray), {
-    'content-type': contentType,
-  });
-  return axiosWithContentLimit(
-    {
-      method: 'get',
-      url: exampleUrl,
-    },
-    CONTENT_SIZE_LIMIT,
-  );
-};
-
-const cookieRequest = (cookieText: string) => {
-  nock(exampleUrl).get('/').reply(302, '', {
-    'set-cookie': cookieText,
-  });
-
-  nock(exampleUrl, {reqheaders: {Cookie: cookieText}})
-    .get('/')
-    .reply(200);
-
-  return axiosWithCookie({
-    method: 'get',
-    url: exampleUrl,
-  });
-};
+const page = (image?: string): string =>
+  `<html><head><meta property="og:title" content="Title"><meta property="og:description" content="Desc">${
+    image ? `<meta property="og:image" content="${image}">` : ''
+  }</head></html>`;
 
 describe('openGraph', () => {
   afterEach(() => cleanAll());
 
-  it('decodes a text encoded with UTF-8', async () => {
-    const result = await contentLimitRequest('text/html; charset=utf-8', defaultMessageUtf8);
-    assert.strictEqual(result, defaultMessage);
+  it('returns metadata with the preview image inlined as base64', async () => {
+    nock(host)
+      .get('/')
+      .reply(200, page(`${host}/a.png`), {'content-type': 'text/html'});
+    nock(host)
+      .get('/a.png')
+      .reply(200, Buffer.from([1, 2, 3]), {'content-type': 'image/png'});
+
+    const result = await getOpenGraphDataAsync(`${host}/`);
+
+    assert.strictEqual(result.title, 'Title');
+    assert.strictEqual(result.description, 'Desc');
+    assert.strictEqual(result.image?.data, 'data:image/png;base64,AQID');
   });
 
-  it('decodes a russian text encoded with koi8-r', async () => {
-    const result = await contentLimitRequest('text/html; charset=koi8-r', russianMessageKoi8r);
-    assert.strictEqual(result, russianMessage);
+  it('decodes pages using the charset from the content type', async () => {
+    const koi8rTitle = Buffer.from([240, 210, 201, 215, 197, 212]);
+    const body = Buffer.concat([
+      Buffer.from('<html><head><meta property="og:title" content="'),
+      koi8rTitle,
+      Buffer.from('"><meta property="og:type" content="website"></head></html>'),
+    ]);
+    nock(host).get('/').reply(200, body, {'content-type': 'text/html; charset=koi8-r'});
+
+    const result = await getOpenGraphDataAsync(`${host}/`);
+
+    assert.strictEqual(result.title, 'Привет');
   });
 
-  it('decodes a russian text encoded with UTF-8', async () => {
-    const result = await contentLimitRequest('text/html; charset=utf-8', russianMessageUtf8);
-    assert.strictEqual(result, russianMessage);
+  it('drops the image when the response is not an image', async () => {
+    nock(host)
+      .get('/')
+      .reply(200, page(`${host}/a.png`), {'content-type': 'text/html'});
+    nock(host).get('/a.png').reply(200, '<html></html>', {'content-type': 'text/html'});
+
+    const result = await getOpenGraphDataAsync(`${host}/`);
+
+    assert.strictEqual(result.title, 'Title');
+    assert.strictEqual(result.image, undefined);
   });
 
-  it('defaults to utf8 on invalid charsets', async () => {
-    const result = await contentLimitRequest('text/html; charset=invalid', defaultMessageUtf8);
-    assert.strictEqual(result, defaultMessage);
+  it('drops the image when it points at a private address', async () => {
+    nock(host).get('/').reply(200, page('https://10.0.0.9/a.png'), {'content-type': 'text/html'});
+
+    const result = await getOpenGraphDataAsync(`${host}/`);
+
+    assert.strictEqual(result.title, 'Title');
+    assert.strictEqual(result.image, undefined);
   });
 
-  it('defaults to utf8 on missing charset', async () => {
-    const result = await contentLimitRequest('text/html', defaultMessageUtf8);
-    assert.strictEqual(result, defaultMessage);
+  it('rejects http URLs', async () => {
+    await assert.rejects(getOpenGraphDataAsync('http://93.184.216.34/'), /https/);
   });
 
-  it('throws on missing content type', async () => {
-    try {
-      await contentLimitRequest('', []);
-      assert.fail(`Request didn't throw`);
-    } catch (error: any) {
-      assert.strictEqual(true, error.message.includes('Could not parse content type'));
-    }
+  it('rejects private addresses', async () => {
+    await assert.rejects(getOpenGraphDataAsync('https://127.0.0.1/'), /private/);
   });
 
-  it('saves cookies on requests', async () => {
-    const cookieText = 'my-cookie';
-    const result = await cookieRequest(cookieText);
-    assert.strictEqual(result.config.headers['Cookie'], cookieText);
+  it('throws when the page carries no open graph data', async () => {
+    nock(host).get('/').reply(200, '<html><head><title>x</title></head></html>', {'content-type': 'text/html'});
+
+    await assert.rejects(getOpenGraphDataAsync(`${host}/`), /No openGraph data found/);
   });
 });

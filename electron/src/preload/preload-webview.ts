@@ -18,7 +18,6 @@
  */
 
 import {ipcRenderer, webFrame} from 'electron';
-import type {Data as OpenGraphResult} from 'open-graph';
 
 import * as path from 'path';
 
@@ -28,6 +27,7 @@ import {WebAppEvents} from '@wireapp/webapp-events';
 import {createDesktopAppConfig} from '../lib/desktopAppConfig';
 import {EVENT_TYPE} from '../lib/eventType';
 import {forwardWrapperReloadRequest} from '../lib/forwardWrapperReloadRequest';
+import type {OpenGraphResult} from '../lib/openGraph';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 

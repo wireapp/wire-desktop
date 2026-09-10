@@ -17,187 +17,48 @@
  *
  */
 
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
-import {parse as parseContentType, ParsedMediaType} from 'content-type';
-import {decode as iconvDecode} from 'iconv-lite';
-import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
-
-import {IncomingMessage} from 'http';
 import * as path from 'path';
-import {URL} from 'url';
+
+import {fetchOpenGraphData, fetchResource, OpenGraphImage, OpenGraphMetadata} from '@wireapp/open-graph';
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
 const logger = getLogger(path.basename(__filename));
 
-axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
+const CONTENT_SIZE_LIMIT = 1e6;
+const IMAGE_SIZE_LIMIT = 5e6;
+
+export type OpenGraphResult = OpenGraphMetadata & {image?: OpenGraphImage & {data?: string}};
 
 const arrayify = <T>(value: T[] | T = []): T[] => (Array.isArray(value) ? value : [value]);
 
-const bufferToBase64 = (buffer: Buffer, mimeType: string): string => {
-  const bufferBase64encoded = Buffer.from(buffer).toString('base64');
-  return `data:${mimeType};base64,${bufferBase64encoded}`;
+const userAgentFor = (url: string): string => {
+  try {
+    const {hostname} = new URL(url.includes('://') ? url : `https://${url}`);
+    if (hostname === 'twitter.com' || hostname.endsWith('.twitter.com')) {
+      return 'Twitterbot/1.0';
+    }
+  } catch {}
+  return config.userAgent;
 };
 
-const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
-  const IMAGE_SIZE_LIMIT = 5e6; // 5MB
-  const parsedUrl = new URL(encodeURI(url));
-  const normalizedUrl = parsedUrl.protocol ? parsedUrl : new URL(`http://${url}`);
+const fetchImageAsBase64 = async (url: string): Promise<string> => {
+  const {body, contentType} = await fetchResource(url, config.userAgent, {maxBodyLength: IMAGE_SIZE_LIMIT});
+  const mimeType = contentType.split(';')[0].trim().toLowerCase();
 
-  const axiosConfig: AxiosRequestConfig = {
-    headers: {
-      'User-Agent': config.userAgent,
-    },
-    maxContentLength: IMAGE_SIZE_LIMIT,
-    method: 'get',
-    responseType: 'arraybuffer',
-    url: normalizedUrl.href,
-  };
-
-  let response;
-
-  try {
-    response = await axiosWithCookie<Buffer>(axiosConfig);
-  } catch (error: any) {
-    if (error.response?.status && error?.response?.statusText) {
-      throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
-    }
-    throw new Error(`Request failed: ${error.message}`);
-  }
-
-  let contentType;
-
-  try {
-    contentType = parseContentType(response.headers['content-type']);
-  } catch (error: any) {
-    throw new Error(`Could not parse content type: "${error.message}"`);
-  }
-
-  const isImageContentType = contentType.type.match(/.*image\/.*/);
-
-  if (!isImageContentType) {
+  if (!mimeType.startsWith('image/')) {
     throw new Error(`Unhandled format for open graph image ('${contentType}')`);
   }
 
-  return bufferToBase64(response.data, contentType.type);
-};
-
-export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> => {
-  try {
-    const response = await axios.request<T>({...config, maxRedirects: 0, withCredentials: true});
-    return response;
-  } catch (error: any) {
-    const response = error.response;
-    if (!response) {
-      throw error;
-    }
-    if (response.status === 301 || response.status === 302) {
-      const setCookie = response.headers['set-cookie'];
-      if (setCookie) {
-        const Cookie = Array.isArray(setCookie) ? setCookie.join('; ') : setCookie;
-        config.headers = {...config.headers, Cookie};
-      }
-    }
-    return await axios.request(config);
-  }
-};
-
-export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
-  const cancelSource = axios.CancelToken.source();
-
-  config.responseType = 'stream';
-  config.cancelToken = cancelSource.token;
-
-  try {
-    const response = await axiosWithCookie<IncomingMessage>(config);
-    let contentType: ParsedMediaType;
-
-    try {
-      contentType = parseContentType(response.headers['content-type']);
-    } catch (error: any) {
-      throw new Error(`Could not parse content type: "${error.message}"`);
-    }
-
-    if (!contentType.type.includes('text/html')) {
-      throw new Error(`Unhandled format for open graph generation (Content-Type is "${contentType}")`);
-    }
-
-    const charset = contentType.parameters.charset;
-
-    const body = await new Promise<string>((resolve, reject) => {
-      let partialBody = '';
-
-      // Info: The 'end' event handler must be first: https://github.com/electron/electron/issues/12545#issuecomment-380478350
-      response.data
-        .on('end', () => resolve(partialBody))
-        .on('error', error => reject(error))
-        .on('data', (buffer: Buffer) => {
-          let chunk = buffer.toString('utf8');
-
-          if (charset) {
-            try {
-              chunk = iconvDecode(buffer, charset);
-            } catch (error: any) {
-              logger.error(`Could not decode content: "${error.message}."`);
-            }
-          }
-
-          partialBody += chunk;
-
-          if (chunk.match('</head>') || partialBody.length > contentLimit) {
-            cancelSource.cancel();
-            resolve(partialBody);
-          }
-        });
-    });
-
-    return body;
-  } catch (error: any) {
-    if (axios.isCancel(error)) {
-      return '';
-    }
-
-    const mappedError = error.isAxiosError ? new Error(`Request failed with code "${error.code}"`) : error;
-    throw mappedError;
-  }
-};
-
-const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
-  const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
-  const parsedUrl = new URL(encodeURI(url));
-  const normalizedUrl = parsedUrl.protocol ? parsedUrl : new URL(`http://${url}`);
-
-  if (normalizedUrl.host?.endsWith('twitter.com')) {
-    config.userAgent = 'Twitterbot/1.0';
-  }
-
-  const axiosConfig: AxiosRequestConfig = {
-    headers: {
-      'User-Agent': config.userAgent,
-    },
-    method: 'get',
-    url: normalizedUrl.href,
-  };
-
-  const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  return openGraphParse(body);
-};
-
-const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
-  meta.image ??= {};
-
-  if (imageData && typeof meta.image === 'object' && !Array.isArray(meta.image)) {
-    meta.image.data = imageData;
-  } else {
-    delete meta.image;
-  }
-
-  return meta;
+  return `data:${mimeType};base64,${body.toString('base64')}`;
 };
 
 export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
-  const metadata = await fetchOpenGraphData(url);
+  const metadata: OpenGraphResult = await fetchOpenGraphData(url, {
+    maxBodyLength: CONTENT_SIZE_LIMIT,
+    userAgent: userAgentFor(url),
+  });
 
   if (!metadata.description && !metadata.image && !metadata.type && !metadata.url) {
     throw new Error('No openGraph data found');
@@ -207,12 +68,12 @@ export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResul
     metadata.image = metadata.image[0];
   }
 
-  if (typeof metadata.image === 'object' && metadata.image.url) {
-    const [imageUrl] = arrayify(metadata.image.url);
+  const imageUrl = typeof metadata.image === 'object' ? arrayify(metadata.image.url)[0] : undefined;
 
+  if (imageUrl) {
     try {
-      const uri = await fetchImageAsBase64(imageUrl);
-      return updateMetaDataWithImage(metadata, uri);
+      metadata.image!.data = await fetchImageAsBase64(imageUrl);
+      return metadata;
     } catch (error: any) {
       logger.warn(error);
     }
