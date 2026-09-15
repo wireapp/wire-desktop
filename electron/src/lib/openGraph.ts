@@ -20,11 +20,12 @@
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {parse as parseContentType, ParsedMediaType} from 'content-type';
 import {decode as iconvDecode} from 'iconv-lite';
-import {Data as OpenGraphResult, parse as openGraphParse} from 'open-graph';
 
 import {IncomingMessage} from 'http';
 import * as path from 'path';
 import {URL} from 'url';
+
+import {parseHTML, OpenGraphMetadata} from '@wireapp/open-graph';
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
@@ -163,7 +164,7 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
   }
 };
 
-const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
+const fetchOpenGraphData = async (url: string) => {
   const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
   const parsedUrl = new URL(encodeURI(url));
   const normalizedUrl = parsedUrl.protocol ? parsedUrl : new URL(`http://${url}`);
@@ -181,14 +182,14 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphResult> => {
   };
 
   const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
-  return openGraphParse(body);
+  return parseHTML(body);
 };
 
-const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): OpenGraphResult => {
+const updateMetaDataWithImage = (meta: OpenGraphMetadata, url?: string) => {
   meta.image ??= {};
 
-  if (imageData && typeof meta.image === 'object' && !Array.isArray(meta.image)) {
-    meta.image.data = imageData;
+  if (url && typeof meta.image === 'object' && !Array.isArray(meta.image)) {
+    meta.image.url = url;
   } else {
     delete meta.image;
   }
@@ -196,7 +197,7 @@ const updateMetaDataWithImage = (meta: OpenGraphResult, imageData?: string): Ope
   return meta;
 };
 
-export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphResult> => {
+export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphMetadata> => {
   const metadata = await fetchOpenGraphData(url);
 
   if (!metadata.description && !metadata.image && !metadata.type && !metadata.url) {
