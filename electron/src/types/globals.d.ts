@@ -18,8 +18,8 @@
  */
 
 import type {Static as amplify} from 'amplify';
-import type {Data as OpenGraphResult} from 'open-graph';
 
+import type {Data as OpenGraphResult} from '@wireapp/open-graph';
 import type {WebAppEvents} from '@wireapp/webapp-events';
 
 import type {DesktopAppConfig} from '../lib/desktopAppConfig';

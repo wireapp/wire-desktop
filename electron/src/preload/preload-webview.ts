@@ -18,7 +18,6 @@
  */
 
 import {ipcRenderer, webFrame} from 'electron';
-import type {Data as OpenGraphResult} from 'open-graph';
 
 import * as path from 'path';
 
@@ -251,7 +250,7 @@ const subscribeToMainProcessEvents = (): void => {
   );
 };
 
-function getOpenGraphDataViaChannel(url: string): Promise<OpenGraphResult> {
+function getOpenGraphDataViaChannel(url: string) {
   return ipcRenderer.invoke(EVENT_TYPE.ACTION.GET_OG_DATA, url);
 }
 
