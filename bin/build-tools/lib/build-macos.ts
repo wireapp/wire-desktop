@@ -42,14 +42,13 @@ export async function buildMacOSConfig(
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   signManually?: boolean,
   architecture: ArchOption = 'universal',
-  resourcesDirectory: string = path.join(mainDir, 'resources/macos'),
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const plistInfoResolved = path.resolve(resourcesDirectory, 'Info.plist.json');
+  const plistInfoResolved = path.join(mainDir, 'resources/macos/Info.plist.json');
   const plistEntries = await fs.readJson(plistInfoResolved);
-  const icon = path.resolve(resourcesDirectory, 'logo.icns');
-  const assetCatalog = path.resolve(resourcesDirectory, 'Assets.car');
+  const icon = path.join(mainDir, 'resources/macos/logo.icns');
+  const assetCatalog = path.join(mainDir, 'resources/macos/Assets.car');
   const iconName: unknown = plistEntries.CFBundleIconName;
   const hasAssetCatalog = await fs.pathExists(assetCatalog);
   if (iconName !== undefined || hasAssetCatalog) {

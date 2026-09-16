@@ -18,6 +18,7 @@
  */
 
 import fs from 'fs-extra';
+import {restore, stub} from 'sinon';
 
 import * as assert from 'assert';
 import {exec} from 'child_process';
@@ -66,8 +67,9 @@ describe('build-macos', () => {
   describe('app icons', () => {
     let directory: string;
     let plistPath: string;
+    const resourcesDirectory = path.resolve(__dirname, '../../../resources/macos');
     const legacyPlist = {CFBundleIconFile: 'Legacy.icns', LSMinimumSystemVersion: '12.0'};
-    const configure = () => buildMacOSConfig(wireJsonPath, envFilePath, true, 'universal', directory);
+    const configure = () => buildMacOSConfig(wireJsonPath, envFilePath, true);
 
     beforeEach(async () => {
       directory = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-macos-icon-'));
@@ -75,15 +77,29 @@ describe('build-macos', () => {
       await fs.writeJson(plistPath, legacyPlist);
       // Fixtures test packaging configuration; native rendering requires macOS.
       await fs.writeFile(path.join(directory, 'logo.icns'), 'legacy icon');
+      const {readJson, stat, pathExists} = fs;
+      stub(fs, 'readJson')
+        .callThrough()
+        .withArgs(path.join(resourcesDirectory, 'Info.plist.json'))
+        .callsFake(() => readJson(plistPath));
+      const statStub = stub(fs, 'stat').callThrough();
+      const existsStub = stub(fs, 'pathExists').callThrough();
+      for (const name of ['logo.icns', 'Assets.car']) {
+        statStub.withArgs(path.join(resourcesDirectory, name)).callsFake(() => stat(path.join(directory, name)));
+        existsStub
+          .withArgs(path.join(resourcesDirectory, name))
+          .callsFake(() => pathExists(path.join(directory, name)));
+      }
     });
 
     afterEach(async () => {
+      restore();
       await fs.remove(directory);
     });
 
     it('keeps legacy-only branding and its deployment target unchanged', async () => {
       const {packagerConfig} = await configure();
-      assert.strictEqual(packagerConfig.icon, path.join(directory, 'logo.icns'));
+      assert.strictEqual(packagerConfig.icon, path.join(resourcesDirectory, 'logo.icns'));
       assert.deepStrictEqual(packagerConfig.extendInfo, legacyPlist);
       assert.deepStrictEqual(packagerConfig.extraResource, []);
     });
@@ -95,8 +111,8 @@ describe('build-macos', () => {
       await fs.writeFile(catalog, 'compiled catalog');
 
       const {packagerConfig} = await configure();
-      assert.strictEqual(packagerConfig.icon, path.join(directory, 'logo.icns'));
-      assert.deepStrictEqual(packagerConfig.extraResource, [catalog]);
+      assert.strictEqual(packagerConfig.icon, path.join(resourcesDirectory, 'logo.icns'));
+      assert.deepStrictEqual(packagerConfig.extraResource, [path.join(resourcesDirectory, 'Assets.car')]);
       assert.deepStrictEqual(packagerConfig.extendInfo, plist);
       assert.strictEqual(packagerConfig.arch, 'universal');
       assert.deepStrictEqual(packagerConfig.osxUniversal, {mergeASARs: true});
