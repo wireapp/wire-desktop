@@ -20,11 +20,13 @@
 import {flatAsync as buildPkg} from '@electron/osx-sign';
 import electronPackager, {ArchOption} from 'electron-packager';
 import fs from 'fs-extra';
+
 import path from 'path';
 
-import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
 import {flipElectronFuses, getCommonConfig} from './commonConfig';
 import {CommonConfig, MacOSConfig} from './Config';
+
+import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
@@ -40,11 +42,26 @@ export async function buildMacOSConfig(
   envFilePath: string = path.join(mainDir, '.env.defaults'),
   signManually?: boolean,
   architecture: ArchOption = 'universal',
+  resourcesDirectory: string = path.join(mainDir, 'resources/macos'),
 ): Promise<MacOSConfigResult> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const envFileResolved = path.resolve(envFilePath);
-  const plistInfoResolved = path.resolve('resources/macos/Info.plist.json');
+  const plistInfoResolved = path.resolve(resourcesDirectory, 'Info.plist.json');
   const plistEntries = await fs.readJson(plistInfoResolved);
+  const icon = path.resolve(resourcesDirectory, 'logo.icns');
+  const assetCatalog = path.resolve(resourcesDirectory, 'Assets.car');
+  await requireIconFile(icon);
+
+  const iconName: unknown = plistEntries.CFBundleIconName;
+  const hasAssetCatalog = await fs.pathExists(assetCatalog);
+  if (iconName !== undefined) {
+    if (typeof iconName !== 'string' || !iconName.trim() || /[/\\]|\.(icon|icns)$/i.test(iconName)) {
+      throw new Error('CFBundleIconName must name the compiled macOS icon without a path or file extension.');
+    }
+    await requireIconFile(assetCatalog);
+  } else if (hasAssetCatalog) {
+    throw new Error('Assets.car requires CFBundleIconName in resources/macos/Info.plist.json. Run yarn configure.');
+  }
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
@@ -85,16 +102,25 @@ export async function buildMacOSConfig(
     darwinDarkModeSupport: true,
     dir: '.',
     extendInfo: plistEntries,
+    // Reuse one precompiled catalog for both universal slices, before either signing path.
+    extraResource: hasAssetCatalog ? [assetCatalog] : [],
     helperBundleId: `${macOSConfig.bundleId}.helper`,
-    icon: 'resources/macos/logo.icns',
-    ignore: [/\/electron\/renderer\/src$/, /\/\.yarn$/, /\$electron\/src$/, /\/bin$/, /\/jenkins$/],
+    icon,
+    ignore: [
+      /\/electron\/renderer\/src$/,
+      /\/\.yarn$/,
+      /\$electron\/src$/,
+      /\/bin$/,
+      /\/jenkins$/,
+      /\/resources\/macos$/,
+    ],
     name: commonConfig.name,
     osxUniversal: {
       mergeASARs: true,
     },
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas', //  Mac App Store 
+    platform: 'mas', //  Mac App Store
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
@@ -129,6 +155,23 @@ export async function buildMacOSConfig(
   return {macOSConfig, packagerConfig};
 }
 
+/**
+ * Fail before packaging when a configured icon is missing or empty.
+ * @param {string} filePath - Configured icon resource.
+ * @returns {Promise<void>} Resolves when the resource is a non-empty file.
+ */
+async function requireIconFile(filePath: string): Promise<void> {
+  const file = await fs.stat(filePath).catch(error => {
+    if (error.code === 'ENOENT') {
+      throw new Error(`Missing macOS icon resource: ${filePath}. Run yarn configure.`);
+    }
+    throw error;
+  });
+  if (!file.isFile() || file.size === 0) {
+    throw new Error(`macOS icon resource must be a non-empty file: ${filePath}`);
+  }
+}
+
 export async function buildMacOSWrapper(
   packagerConfig: electronPackager.Options,
   macOSConfig: MacOSConfig,
@@ -147,14 +190,14 @@ export async function buildMacOSWrapper(
   const backup = await backupFiles([packageJsonResolved, wireJsonResolved]);
   const packageJsonContent = await fs.readJson(packageJsonResolved);
 
-  await fs.writeJson(
-    packageJsonResolved,
-    {...packageJsonContent, productName: commonConfig.name, version: commonConfig.version},
-    {spaces: 2},
-  );
-  await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
-
   try {
+    await fs.writeJson(
+      packageJsonResolved,
+      {...packageJsonContent, productName: commonConfig.name, version: commonConfig.version},
+      {spaces: 2},
+    );
+    await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
+
     const [buildDir] = await electronPackager(packagerConfig);
 
     logger.log(`Built app in "${buildDir}".`);
@@ -181,9 +224,10 @@ export async function buildMacOSWrapper(
     }
   } catch (error) {
     logger.error(error);
+    throw error;
+  } finally {
+    await restoreFiles(backup);
   }
-
-  await restoreFiles(backup);
 }
 
 export async function manualMacOSSign(

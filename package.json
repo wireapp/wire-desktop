@@ -186,7 +186,7 @@
     "clear:coverage": "rimraf coverage",
     "clear:ts": "rimraf electron/dist",
     "clear:wrap": "rimraf wrap",
-    "configure": "copy-config",
+    "configure": "rimraf resources/macos/Assets.car && copy-config",
     "coverage": "yarn clear:coverage && nyc report",
     "fix": "yarn fix:code && yarn fix:other",
     "fix:code": "yarn lint:code --fix",
