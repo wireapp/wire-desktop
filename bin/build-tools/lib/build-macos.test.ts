@@ -78,12 +78,11 @@ describe('build-macos', () => {
       // Fixtures test packaging configuration; native rendering requires macOS.
       await fs.writeFile(path.join(directory, 'logo.icns'), 'legacy icon');
       const {readJson, stat, pathExists} = fs;
-      const fixtures = new Map(
-        ['Info.plist.json', 'logo.icns', 'Assets.car'].map(name => [
-          path.join(resourcesDirectory, name),
-          path.join(directory, name),
-        ]),
-      );
+      const fixtures = new Map([
+        [path.join(resourcesDirectory, 'Info.plist.json'), plistPath],
+        [path.join(resourcesDirectory, 'logo.icns'), path.join(directory, 'logo.icns')],
+        [path.join(resourcesDirectory, 'Assets.car'), path.join(directory, 'Assets.car')],
+      ]);
       mock.method(fs, 'readJson', (file: string) => readJson(fixtures.get(file) ?? file));
       mock.method(fs, 'stat', (file: string) => stat(fixtures.get(file) ?? file));
       mock.method(fs, 'pathExists', (file: string) => pathExists(fixtures.get(file) ?? file));
