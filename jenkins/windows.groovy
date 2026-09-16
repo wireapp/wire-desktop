@@ -126,7 +126,7 @@ node('windows') {
   stage('verify') {
     if (production || wireGov) {
       try {
-        bat 'for /r "wrap\\build" %%f in (*.exe) do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
+        bat 'for /r "wrap\\build" %%f in (*.exe) do (if /I not "%%~nxf"=="Squirrel.exe" (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1))'
         bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
         bat 'for %%f in ("wrap\\dist\\*.msi") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
       } catch (e) {

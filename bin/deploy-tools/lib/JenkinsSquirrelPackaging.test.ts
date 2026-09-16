@@ -45,7 +45,7 @@ describe('Jenkins Squirrel packaging', () => {
     );
   });
 
-  it('signs and verifies every production Windows artifact', () => {
+  it('signs and verifies production Windows artifacts while excluding the Squirrel staging copy', () => {
     assert.doesNotMatch(windowsPipeline, /--failfast/);
     assert.doesNotMatch(windowsPipeline, /--exit-non-zero-on-fail/);
 
@@ -74,7 +74,10 @@ describe('Jenkins Squirrel packaging', () => {
     );
 
     assert.match(finalVerificationStage, /stage\('verify'\)/);
-    assert.match(finalVerificationStage, /for \/r "wrap\\\\build" %%f in \(\*\.exe\)/);
+    assert.match(
+      finalVerificationStage,
+      /for \/r "wrap\\\\build" %%f in \(\*\.exe\) do \(if \/i not "%%~nxf"=="Squirrel\.exe" \(signtool\.exe verify \/v \/pa \/all \/tw "%%~ff" \|\| exit \/b 1\)\)/i,
+    );
     assert.match(finalVerificationStage, /wrap\\\\dist\\\\\*-Setup\.exe/);
     assert.match(finalVerificationStage, /wrap\\\\dist\\\\\*\.msi/);
     assert.match(finalVerificationStage, /signtool\.exe verify \/v \/pa \/all \/tw/);
