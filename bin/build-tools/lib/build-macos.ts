@@ -50,17 +50,16 @@ export async function buildMacOSConfig(
   const plistEntries = await fs.readJson(plistInfoResolved);
   const icon = path.resolve(resourcesDirectory, 'logo.icns');
   const assetCatalog = path.resolve(resourcesDirectory, 'Assets.car');
-  await requireIconFile(icon);
-
   const iconName: unknown = plistEntries.CFBundleIconName;
   const hasAssetCatalog = await fs.pathExists(assetCatalog);
-  if (iconName !== undefined) {
-    if (typeof iconName !== 'string' || !iconName.trim() || /[/\\]|\.(icon|icns)$/i.test(iconName)) {
-      throw new Error('CFBundleIconName must name the compiled macOS icon without a path or file extension.');
+  if (iconName !== undefined || hasAssetCatalog) {
+    if (typeof iconName !== 'string' || !iconName.trim() || !hasAssetCatalog) {
+      throw new Error('Tahoe icons require both Assets.car and its CFBundleIconName in Info.plist.json.');
     }
-    await requireIconFile(assetCatalog);
-  } else if (hasAssetCatalog) {
-    throw new Error('Assets.car requires CFBundleIconName in resources/macos/Info.plist.json. Run yarn configure.');
+    const files = await Promise.all([fs.stat(icon), fs.stat(assetCatalog)]);
+    if (files.some(file => !file.isFile() || file.size === 0)) {
+      throw new Error('Tahoe icons require non-empty logo.icns and Assets.car files.');
+    }
   }
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
@@ -112,7 +111,7 @@ export async function buildMacOSConfig(
       /\$electron\/src$/,
       /\/bin$/,
       /\/jenkins$/,
-      /\/resources\/macos$/,
+      /\/resources\/macos\/Assets\.car$/,
     ],
     name: commonConfig.name,
     osxUniversal: {
@@ -155,23 +154,6 @@ export async function buildMacOSConfig(
   return {macOSConfig, packagerConfig};
 }
 
-/**
- * Fail before packaging when a configured icon is missing or empty.
- * @param {string} filePath - Configured icon resource.
- * @returns {Promise<void>} Resolves when the resource is a non-empty file.
- */
-async function requireIconFile(filePath: string): Promise<void> {
-  const file = await fs.stat(filePath).catch(error => {
-    if (error.code === 'ENOENT') {
-      throw new Error(`Missing macOS icon resource: ${filePath}. Run yarn configure.`);
-    }
-    throw error;
-  });
-  if (!file.isFile() || file.size === 0) {
-    throw new Error(`macOS icon resource must be a non-empty file: ${filePath}`);
-  }
-}
-
 export async function buildMacOSWrapper(
   packagerConfig: electronPackager.Options,
   macOSConfig: MacOSConfig,
@@ -190,14 +172,14 @@ export async function buildMacOSWrapper(
   const backup = await backupFiles([packageJsonResolved, wireJsonResolved]);
   const packageJsonContent = await fs.readJson(packageJsonResolved);
 
-  try {
-    await fs.writeJson(
-      packageJsonResolved,
-      {...packageJsonContent, productName: commonConfig.name, version: commonConfig.version},
-      {spaces: 2},
-    );
-    await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
+  await fs.writeJson(
+    packageJsonResolved,
+    {...packageJsonContent, productName: commonConfig.name, version: commonConfig.version},
+    {spaces: 2},
+  );
+  await fs.writeJson(wireJsonResolved, commonConfig, {spaces: 2});
 
+  try {
     const [buildDir] = await electronPackager(packagerConfig);
 
     logger.log(`Built app in "${buildDir}".`);
@@ -224,10 +206,9 @@ export async function buildMacOSWrapper(
     }
   } catch (error) {
     logger.error(error);
-    throw error;
-  } finally {
-    await restoreFiles(backup);
   }
+
+  await restoreFiles(backup);
 }
 
 export async function manualMacOSSign(
