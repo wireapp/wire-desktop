@@ -44,4 +44,39 @@ describe('Jenkins Squirrel packaging', () => {
       /if \(production \|\| custom\) \{\s+bat 'yarn build:win:installers'\s+\} else \{\s+bat 'yarn build:win:installers:manual'/,
     );
   });
+
+  it('signs and verifies every production Windows artifact', () => {
+    assert.doesNotMatch(windowsPipeline, /--failfast/);
+    assert.doesNotMatch(windowsPipeline, /--exit-non-zero-on-fail/);
+
+    const signApplicationStageStart = windowsPipeline.indexOf("stage('Sign application')");
+    const buildInstallersStageStart = windowsPipeline.indexOf("stage('Build installers')");
+    const signInstallerStageStart = windowsPipeline.indexOf("stage('Sign installer')");
+    const verifyStageStart = windowsPipeline.indexOf("stage('verify')");
+    const signApplicationStage = windowsPipeline
+      .slice(signApplicationStageStart, buildInstallersStageStart)
+      .replace(/\s+/g, ' ');
+    const signInstallerStage = windowsPipeline.slice(signInstallerStageStart, verifyStageStart).replace(/\s+/g, ' ');
+    const finalVerificationStage = windowsPipeline.slice(verifyStageStart).replace(/\s+/g, ' ');
+
+    assert.match(
+      signApplicationStage,
+      /for \/r "wrap\\\\build" %%f in \(\*\.exe\) do \(smctl sign .*?--digalg SHA256 --timestamp -v \|\| exit \/b 1 & signtool\.exe verify \/v \/pa \/all \/tw "%%~ff" \|\| exit \/b 1\)/,
+    );
+
+    assert.match(
+      signInstallerStage,
+      /for %%f in \("wrap\\\\dist\\\\\*-Setup\.exe"\) do \(smctl sign .*?--digalg SHA256 --timestamp -v \|\| exit \/b 1 & signtool\.exe verify \/v \/pa \/all \/tw "%%~ff" \|\| exit \/b 1\)/,
+    );
+    assert.match(
+      signInstallerStage,
+      /for %%f in \("wrap\\\\dist\\\\\*\.msi"\) do \(smctl sign .*?--digalg SHA256 --timestamp -v \|\| exit \/b 1 & signtool\.exe verify \/v \/pa \/all \/tw "%%~ff" \|\| exit \/b 1\)/,
+    );
+
+    assert.match(finalVerificationStage, /stage\('verify'\)/);
+    assert.match(finalVerificationStage, /for \/r "wrap\\\\build" %%f in \(\*\.exe\)/);
+    assert.match(finalVerificationStage, /wrap\\\\dist\\\\\*-Setup\.exe/);
+    assert.match(finalVerificationStage, /wrap\\\\dist\\\\\*\.msi/);
+    assert.match(finalVerificationStage, /signtool\.exe verify \/v \/pa \/all \/tw/);
+  });
 });

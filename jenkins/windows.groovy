@@ -66,7 +66,7 @@ node('windows') {
         string(credentialsId: 'SM_KEYPAIR_ALIAS',         variable: 'SM_KEYPAIR_ALIAS')
       ]) {
         try {
-          bat 'for /r "wrap\\build" %%f in (*.exe) do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp --failfast --exit-non-zero-on-fail -v || exit /b 1)'
+          bat 'for /r "wrap\\build" %%f in (*.exe) do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp -v || exit /b 1 & signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
         } catch (e) {
           currentBuild.result = 'FAILED'
           wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing application failed**\n${BUILD_URL}"
@@ -110,8 +110,8 @@ node('windows') {
         string(credentialsId: 'SM_KEYPAIR_ALIAS',         variable: 'SM_KEYPAIR_ALIAS')
       ]) {
         try {
-          bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp --failfast --exit-non-zero-on-fail -v || exit /b 1)'
-          bat 'for %%f in ("wrap\\dist\\*.msi") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp --failfast --exit-non-zero-on-fail -v || exit /b 1)'
+          bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp -v || exit /b 1 & signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
+          bat 'for %%f in ("wrap\\dist\\*.msi") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp -v || exit /b 1 & signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
         } catch (e) {
           currentBuild.result = 'FAILED'
           wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
