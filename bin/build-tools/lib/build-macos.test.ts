@@ -18,10 +18,10 @@
  */
 
 import fs from 'fs-extra';
-import {restore, stub} from 'sinon';
 
 import * as assert from 'assert';
 import {exec} from 'child_process';
+import {mock} from 'node:test';
 import * as os from 'os';
 import * as path from 'path';
 import {promisify} from 'util';
@@ -78,22 +78,19 @@ describe('build-macos', () => {
       // Fixtures test packaging configuration; native rendering requires macOS.
       await fs.writeFile(path.join(directory, 'logo.icns'), 'legacy icon');
       const {readJson, stat, pathExists} = fs;
-      stub(fs, 'readJson')
-        .callThrough()
-        .withArgs(path.join(resourcesDirectory, 'Info.plist.json'))
-        .callsFake(() => readJson(plistPath));
-      const statStub = stub(fs, 'stat').callThrough();
-      const existsStub = stub(fs, 'pathExists').callThrough();
-      for (const name of ['logo.icns', 'Assets.car']) {
-        statStub.withArgs(path.join(resourcesDirectory, name)).callsFake(() => stat(path.join(directory, name)));
-        existsStub
-          .withArgs(path.join(resourcesDirectory, name))
-          .callsFake(() => pathExists(path.join(directory, name)));
-      }
+      const fixtures = new Map(
+        ['Info.plist.json', 'logo.icns', 'Assets.car'].map(name => [
+          path.join(resourcesDirectory, name),
+          path.join(directory, name),
+        ]),
+      );
+      mock.method(fs, 'readJson', (file: string) => readJson(fixtures.get(file) ?? file));
+      mock.method(fs, 'stat', (file: string) => stat(fixtures.get(file) ?? file));
+      mock.method(fs, 'pathExists', (file: string) => pathExists(fixtures.get(file) ?? file));
     });
 
     afterEach(async () => {
-      restore();
+      mock.restoreAll();
       await fs.remove(directory);
     });
 
