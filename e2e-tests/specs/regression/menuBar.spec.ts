@@ -1,0 +1,247 @@
+/*
+ * Wire
+ * Copyright (C) 2026 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
+import {conversationsList} from './../../poms/webapp/conversationList.page';
+
+import {connectWithUser} from '../../actions/connectWithUser';
+import {createGroup} from '../../actions/createGroup';
+import {loginUser} from '../../actions/loginUser';
+import {test, expect, Page} from '../../fixtures';
+import {menuBar} from '../../poms/app/menuBar.page';
+import {callCell} from '../../poms/webapp/callCell.page';
+import {conversation} from '../../poms/webapp/conversation.page';
+import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
+import {loginPage} from '../../poms/webapp/login.page';
+import {settingsPage} from '../../poms/webapp/settings.page';
+
+test.describe('Menu Bar', () => {
+  test(
+    'Open preferences/settings with menu bar',
+    {tag: ['@TC-11010', '@regression']},
+    async ({os, app, createUser}) => {
+      const user = await createUser();
+      await loginUser(app.page, user);
+
+      // Access the native Electron application menu and click the appropriate item
+      const menuItem = await menuBar(app).clickItem(os === 'macOS' ? 'Preferences' : 'Settings');
+
+      expect(menuItem.accelerator).toMatch(/^(Command\+,|Ctrl\+,)$/);
+      await expect(settingsPage(app.page).accountButton).toBeVisible();
+    },
+  );
+
+  test(
+    'Verify switching to next and previous conversation using menu bar',
+    {tag: ['@TC-11068', '@regression']},
+    async ({app, createUser}) => {
+      const user = await createUser();
+      await loginUser(app.page, user);
+
+      await test.step('Create multiple group conversations', async () => {
+        await createGroup(app.page, 'Group 1', []);
+        await createGroup(app.page, 'Group 2', []);
+        await expect(conversationsList(app.page).items).toHaveCount(2);
+      });
+
+      await test.step('Verify navigation to the next conversation and validate its keyboard shortcut', async () => {
+        await conversationsList(app.page).getConversation('Group 1').open();
+        const menuItem = await menuBar(app).clickItem('Next Conversation');
+
+        expect(menuItem.accelerator).toMatch(/^(Alt\+(Cmd|Shift)\+Up)$/);
+        await expect(conversation(app.page).conversationTitle).toContainText('Group 2');
+      });
+
+      await test.step('Navigate to the previous conversation via the application menu', async () => {
+        const menuItem = await menuBar(app).clickItem('Previous Conversation');
+
+        expect(menuItem.accelerator).toMatch(/^(Alt\+(Cmd|Shift)\+Down)$/);
+        await expect(conversation(app.page).conversationTitle).toContainText('Group 1');
+      });
+    },
+  );
+
+  test(
+    'Verify I can create a group conversation with menu bar',
+    {tag: ['@TC-11066', '@regression']},
+    async ({app, createUser}) => {
+      const user = await createUser();
+      await loginUser(app.page, user);
+
+      const menuItem = await menuBar(app).clickItem('Create Group');
+
+      expect(menuItem.accelerator).toBe('CmdOrCtrl+N');
+      await expect(app.page.getByRole('dialog').getByText('Create group')).toBeVisible();
+    },
+  );
+
+  test('Sign out with menu bar', {tag: ['@TC-11041', '@regression']}, async ({app, createUser}) => {
+    const user = await createUser();
+    await loginUser(app.page, user);
+
+    await menuBar(app).clickItem('Log Out');
+    await app.page.getByRole('dialog').getByRole('button', {name: 'Log out'}).click();
+    await expect(loginPage(app.page).loginButton).toBeVisible();
+  });
+
+  test(
+    'Verify adding people to the conversation with menu bar',
+    {tag: ['@TC-11046', '@regression']},
+    async ({app, createUser}) => {
+      const user = await createUser();
+      await loginUser(app.page, user);
+
+      await createGroup(app.page, 'Test group', []);
+      await conversationsList(app.page).getConversation('Test group').open();
+
+      const menuItem = await menuBar(app).clickItem('Add People...');
+
+      expect(menuItem.accelerator).toBe('Shift+CmdOrCtrl+K');
+      await expect(app.page.getByRole('complementary').filter({hasText: 'Add participants'})).toBeVisible();
+    },
+  );
+
+  test(
+    'Archive a 1:1 and a group conversation with menu bar',
+    {tag: ['@TC-11067', '@regression']},
+    async ({app, createUser, createTeam, createPage}) => {
+      const userB = await createUser();
+      const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+      const userAPage = app.page;
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
+      await connectWithUser(userAPage, userB);
+
+      await createGroup(userAPage, 'Test group', []);
+      await expect(conversationsList(userAPage).items).toHaveCount(2);
+
+      await test.step('Archive in 1:1 conversation', async () => {
+        await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
+        const menuItem = await menuBar(app).clickItem('Archive');
+
+        expect(menuItem.accelerator).toBe('CmdOrCtrl+D');
+        await expect(conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
+        await expect(conversationsList(userAPage).items).toHaveCount(1);
+      });
+
+      await test.step('Archive group conversation', async () => {
+        await conversationsList(userAPage).getConversation('Test group').open();
+        await menuBar(app).clickItem('Archive');
+        await expect(conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'})).not.toBeVisible();
+        await expect(conversationsList(userAPage).items).toHaveCount(0);
+      });
+
+      await test.step('Confirm that conversations were moved to archive folder', async () => {
+        await conversationsSidebar(userAPage).archiveButton.click();
+        await expect(conversationsList(userAPage).items).toHaveCount(2);
+      });
+    },
+  );
+
+  const testCases = [
+    {
+      name: 'Delete conversation content with menu bar',
+      tag: '@TC-11042',
+      menuItem: 'Delete Content...',
+      verifyDirect: async (page: Page) => {
+        await expect(page.getByRole('dialog').getByText('Clear content?')).toBeVisible();
+        await page.getByRole('dialog').getByRole('button', {name: 'Cancel'}).click();
+      },
+      verifyGroup: async (page: Page) => {
+        await expect(page.getByRole('dialog').getByText('Clear content?')).toBeVisible();
+      },
+    },
+    {
+      name: 'Verify I can ping 1:1 and group conversation using the menu bar',
+      tag: '@TC-11043',
+      menuItem: 'Ping',
+      verifyDirect: async (page: Page) => {
+        await expect(conversation(page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
+      },
+      verifyGroup: async (page: Page) => {
+        await expect(conversation(page).systemMessages.filter({hasText: 'You pinged'})).toBeVisible();
+      },
+    },
+    {
+      name: 'Verify starting a call via the menu bar',
+      tag: '@TC-11044',
+      menuItem: 'Call',
+      verifyDirect: async (page: Page) => {
+        await expect(callCell(page)).toBeVisible();
+        await callCell(page).declineButton.click();
+      },
+      verifyGroup: async (page: Page) => {
+        await expect(callCell(page)).toBeVisible();
+      },
+    },
+  ];
+
+  testCases.forEach(({name, tag, menuItem, verifyDirect, verifyGroup}) => {
+    test(name, {tag: [tag, '@regression']}, async ({app, createUser, createTeam, createPage}) => {
+      const userB = await createUser();
+      const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+      const userAPage = app.page;
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
+      await connectWithUser(userAPage, userB);
+
+      await test.step('User A actions in 1:1 conversation', async () => {
+        await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
+        await menuBar(app).clickItem(menuItem);
+        await verifyDirect(userAPage);
+      });
+
+      await test.step('User A actions in group conversation', async () => {
+        await createGroup(userAPage, 'Test group', [userB]);
+        await conversationsList(userAPage).getConversation('Test group').open();
+        await menuBar(app).clickItem(menuItem);
+        await verifyGroup(userAPage);
+      });
+    });
+  });
+
+  test(
+    'Verify opening people popover with menu bar in the conversation',
+    {tag: ['@TC-11045', '@regression']},
+    async ({app, createUser, createTeam, createPage}) => {
+      const userB = await createUser();
+      const {owner: userA} = await createTeam('Test Team', {users: [userB]});
+      const userAPage = app.page;
+      const userBPage = await createPage();
+
+      await Promise.all([loginUser(userAPage, userA), loginUser(userBPage, userB)]);
+      await connectWithUser(userAPage, userB);
+
+      await test.step('User A can open people popover in 1:1 conversation', async () => {
+        await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
+        const menuResult = await menuBar(app).clickItem('People');
+        expect(menuResult?.accelerator).toBe('CmdOrCtrl+I');
+        await expect(userAPage.getByTestId('status-profile-picture')).toBeVisible();
+      });
+
+      await test.step('User A can open conversation details in group conversation', async () => {
+        await createGroup(userAPage, 'Test group', [userB]);
+        await conversationsList(userAPage).getConversation('Test group').open();
+        await menuBar(app).clickItem('People');
+        await expect(userAPage.getByTestId('list-users')).toBeVisible();
+      });
+    },
+  );
+});
