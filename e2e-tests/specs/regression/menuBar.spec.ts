@@ -31,6 +31,56 @@ import {loginPage} from '../../poms/webapp/login.page';
 import {settingsPage} from '../../poms/webapp/settings.page';
 
 test.describe('Menu Bar', () => {
+  test.describe('Windows auto-hidden menu', () => {
+    test.skip(({os}) => os !== 'windows' || process.platform !== 'win32', 'Requires the native Windows menu bar');
+
+    test('Restore hidden menu with Alt', {tag: ['@TC-11970', '@regression']}, async ({app, createUser}) => {
+      const user = await createUser();
+      await loginUser(app.page, user);
+
+      const mainWindow = await app.browserWindow(app.wrapper);
+      const getMenuState = () =>
+        mainWindow.evaluate(window => ({
+          visible: window.isMenuBarVisible(),
+          autoHide: window.isMenuBarAutoHide(),
+        }));
+
+      await expect.poll(getMenuState).toEqual({visible: true, autoHide: false});
+      await menuBar(app).clickItem('Show Menu');
+      await expect.poll(getMenuState).toEqual({visible: false, autoHide: true});
+
+      // Send input through Electron so both before-input-event and native menu handling run.
+      // A DOM KeyboardEvent would miss the duplicate toggle that caused WPB-20189.
+      await mainWindow.evaluate(window => window.focus());
+      await app.evaluate(({webContents}) => {
+        const guest = webContents.getAllWebContents().find(contents => contents.getType() === 'webview');
+        if (!guest) {
+          throw new Error('Logged-in webview not found');
+        }
+        guest.focus();
+        guest.sendInputEvent({type: 'keyDown', keyCode: 'Alt', modifiers: ['alt']});
+        guest.sendInputEvent({type: 'keyUp', keyCode: 'Alt'});
+      });
+
+      // Require consecutive visible samples so a brief flicker cannot satisfy the assertion.
+      let visibleSamples = 0;
+      await expect
+        .poll(
+          async () => {
+            const state = await getMenuState();
+            visibleSamples = state.visible && state.autoHide ? visibleSamples + 1 : 0;
+            return visibleSamples;
+          },
+          {intervals: [100]},
+        )
+        .toBe(5);
+
+      // Revealing with Alt must still allow the user to pin the menu again.
+      await menuBar(app).clickItem('Show Menu');
+      await expect.poll(getMenuState).toEqual({visible: true, autoHide: false});
+    });
+  });
+
   test(
     'Open preferences/settings with menu bar',
     {tag: ['@TC-11010', '@regression']},
