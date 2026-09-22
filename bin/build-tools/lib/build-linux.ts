@@ -130,7 +130,15 @@ export async function buildLinuxWrapper(
   packageJsonPath: string,
   wireJsonPath: string,
   envFilePath: string,
-  architecture: electronBuilder.Arch = electronBuilder.Arch.x64,
+  architecture: electronBuilder.Arch = (() => {
+    const archMap: { [key: string]: electronBuilder.Arch } = {
+      'arm64': electronBuilder.Arch.arm64,
+      'armv7l': electronBuilder.Arch.armv7l,
+      'ia32': electronBuilder.Arch.ia32,
+      'x64': electronBuilder.Arch.x64
+    };
+    return archMap[process.env.ARCH?.toLowerCase() || 'x64'];
+  })(),
 ): Promise<void> {
   const wireJsonResolved = path.resolve(wireJsonPath);
   const packageJsonResolved = path.resolve(packageJsonPath);
