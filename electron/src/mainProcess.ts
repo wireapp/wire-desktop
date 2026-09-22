@@ -793,19 +793,22 @@ class ElectronWrapperInit {
 
           contents.session.setCertificateVerifyProc(setCertificateVerifyProc);
 
-          contents.on('before-input-event', (_event, input) => {
-            if (input.type === 'keyUp' && input.key === 'Alt') {
-              const mainBrowserWindow = WindowManager.getPrimaryWindow();
+          // Windows handles Alt natively; toggling here as well immediately hides the menu again.
+          if (!EnvironmentUtil.platform.IS_WINDOWS) {
+            contents.on('before-input-event', (_event, input) => {
+              if (input.type === 'keyUp' && input.key === 'Alt') {
+                const mainBrowserWindow = WindowManager.getPrimaryWindow();
 
-              if (mainBrowserWindow) {
-                const isAutoHide = mainBrowserWindow.isMenuBarAutoHide();
-                const isVisible = mainBrowserWindow.isMenuBarVisible();
-                if (isAutoHide) {
-                  mainBrowserWindow.setMenuBarVisibility(!isVisible);
+                if (mainBrowserWindow) {
+                  const isAutoHide = mainBrowserWindow.isMenuBarAutoHide();
+                  const isVisible = mainBrowserWindow.isMenuBarVisible();
+                  if (isAutoHide) {
+                    mainBrowserWindow.setMenuBarVisibility(!isVisible);
+                  }
                 }
               }
-            }
-          });
+            });
+          }
 
           break;
         }
