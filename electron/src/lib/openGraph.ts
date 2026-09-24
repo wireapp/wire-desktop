@@ -21,25 +21,34 @@ import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {parse as parseContentType, ParsedMediaType} from 'content-type';
 import {decode as iconvDecode} from 'iconv-lite';
 
-import {IncomingMessage} from 'http';
-import * as path from 'path';
+import {lookup as dnsLookup} from 'dns';
+import {basename} from 'path';
 import {URL} from 'url';
 
 import {parseHTML, OpenGraphMetadata} from '@wireapp/open-graph';
 
+import {normalizeAndValidateUrl, requestLinkPreviewStream} from './linkPreviewRequest';
+import type {LinkPreviewRequestDependencies} from './linkPreviewRequest';
+
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
 
-const logger = getLogger(path.basename(__filename));
+const logger = getLogger(basename(__filename));
+const linkPreviewRequestDependencies: LinkPreviewRequestDependencies = {dnsLookup};
 
-axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
+function arrayify<T>(value: T[] | T = []): T[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
 
-const arrayify = <T>(value: T[] | T = []): T[] => (Array.isArray(value) ? value : [value]);
+  return [value];
+}
 
-const bufferToBase64 = (buffer: Buffer, mimeType: string): string => {
-  const bufferBase64encoded = Buffer.from(buffer).toString('base64');
-  return `data:${mimeType};base64,${bufferBase64encoded}`;
-};
+function bufferToBase64(buffer: Buffer, mimeType: string): string {
+  const encodedBuffer = Buffer.from(buffer).toString('base64');
+
+  return `data:${mimeType};base64,${encodedBuffer}`;
+}
 
 const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
   const IMAGE_SIZE_LIMIT = 5e6; // 5MB
@@ -104,20 +113,26 @@ export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<Ax
   }
 };
 
-export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentLimit: number): Promise<string> => {
-  const cancelSource = axios.CancelToken.source();
-
-  config.responseType = 'stream';
-  config.cancelToken = cancelSource.token;
-
+export async function fetchOpenGraphHtml(url: string, userAgent: string, contentLimit: number): Promise<string> {
   try {
-    const response = await axiosWithCookie<IncomingMessage>(config);
+    const response = await requestLinkPreviewStream(
+      {
+        responseType: 'stream',
+        url,
+        userAgent,
+      },
+      linkPreviewRequestDependencies,
+    );
     let contentType: ParsedMediaType;
 
     try {
       contentType = parseContentType(response.headers['content-type']);
-    } catch (error: any) {
-      throw new Error(`Could not parse content type: "${error.message}"`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`Could not parse content type: "${error.message}"`);
+      }
+
+      throw new Error('Could not parse content type: unknown error');
     }
 
     if (!contentType.type.includes('text/html')) {
@@ -131,59 +146,75 @@ export const axiosWithContentLimit = async (config: AxiosRequestConfig, contentL
 
       // Info: The 'end' event handler must be first: https://github.com/electron/electron/issues/12545#issuecomment-380478350
       response.data
-        .on('end', () => resolve(partialBody))
-        .on('error', error => reject(error))
+        .on('end', () => {
+          return resolve(partialBody);
+        })
+        .on('error', error => {
+          return reject(error);
+        })
         .on('data', (buffer: Buffer) => {
           let chunk = buffer.toString('utf8');
 
-          if (charset) {
+          if (charset !== undefined) {
             try {
               chunk = iconvDecode(buffer, charset);
-            } catch (error: any) {
-              logger.error(`Could not decode content: "${error.message}."`);
+            } catch (error: unknown) {
+              if (error instanceof Error) {
+                logger.error(`Could not decode content: "${error.message}."`);
+              } else {
+                logger.error('Could not decode content: unknown error.');
+              }
             }
           }
 
           partialBody += chunk;
 
-          if (chunk.match('</head>') || partialBody.length > contentLimit) {
-            cancelSource.cancel();
+          if (chunk.includes('</head>') || partialBody.length > contentLimit) {
+            response.data.destroy();
             resolve(partialBody);
           }
         });
     });
 
     return body;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (axios.isCancel(error)) {
       return '';
     }
 
-    const mappedError = error.isAxiosError ? new Error(`Request failed with code "${error.code}"`) : error;
-    throw mappedError;
+    if (axios.isAxiosError(error)) {
+      throw new Error(`Request failed with code "${error.code}"`);
+    }
+
+    throw error;
   }
-};
+}
 
-const fetchOpenGraphData = async (url: string) => {
-  const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
-  const parsedUrl = new URL(encodeURI(url));
-  const normalizedUrl = parsedUrl.protocol ? parsedUrl : new URL(`http://${url}`);
+function isTwitterHost(hostname: string): boolean {
+  return hostname === 'twitter.com' || hostname.endsWith('.twitter.com');
+}
 
-  if (normalizedUrl.host?.endsWith('twitter.com')) {
-    config.userAgent = 'Twitterbot/1.0';
+function getOpenGraphUserAgent(hostname: string): string {
+  if (isTwitterHost(hostname)) {
+    return 'Twitterbot/1.0';
   }
 
-  const axiosConfig: AxiosRequestConfig = {
-    headers: {
-      'User-Agent': config.userAgent,
-    },
-    method: 'get',
-    url: normalizedUrl.href,
-  };
+  return config.userAgent;
+}
 
-  const body = await axiosWithContentLimit(axiosConfig, CONTENT_SIZE_LIMIT);
+async function fetchOpenGraphData(url: string) {
+  const contentSizeLimit = 1e6; // ~1MB
+  const normalizedUrlResult = normalizeAndValidateUrl(url, undefined);
+  if (normalizedUrlResult.isErr) {
+    return Promise.reject(normalizedUrlResult.error);
+  }
+
+  const normalizedUrl = normalizedUrlResult.value;
+  const userAgent = getOpenGraphUserAgent(normalizedUrl.hostname);
+
+  const body = await fetchOpenGraphHtml(normalizedUrl.href, userAgent, contentSizeLimit);
   return parseHTML(body);
-};
+}
 
 const updateMetaDataWithImage = (meta: OpenGraphMetadata, url?: string) => {
   meta.image ??= {};
