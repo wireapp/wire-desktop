@@ -17,10 +17,22 @@
  *
  */
 
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import ipaddr from 'ipaddr.js';
 import {Result} from 'true-myth';
 
+import {lookup as defaultDnsLookup} from 'dns';
+import type {LookupAddress, LookupAllOptions} from 'dns';
+import {Agent as HttpAgent} from 'http';
+import type {IncomingMessage} from 'http';
+import {Agent as HttpsAgent} from 'https';
+import type {LookupFunction} from 'net';
 import {URL} from 'url';
+
+const maxRedirects = 5;
+const redirectStatusCodes = new Set([301, 302, 303, 307, 308]);
+
+axios.defaults.adapter = require('axios/lib/adapters/http'); // always use Node.js adapter
 
 function getHostnameWithoutBrackets(hostname: string): string {
   if (hostname.startsWith('[') && hostname.endsWith(']')) {
@@ -69,4 +81,115 @@ export function normalizeAndValidateUrl(url: string, baseUrl?: URL): Result<URL,
   }
 
   return Result.ok(normalizedUrl);
+}
+
+export type LinkPreviewStreamRequest = {
+  readonly url: string;
+  readonly responseType: 'stream';
+  readonly userAgent: string;
+  readonly maximumContentLength?: number;
+};
+
+export type LinkPreviewImageRequest = {
+  readonly url: string;
+  readonly responseType: 'arraybuffer';
+  readonly userAgent: string;
+  readonly maximumContentLength?: number;
+};
+
+export type LinkPreviewRequest = LinkPreviewStreamRequest | LinkPreviewImageRequest;
+
+export type LinkPreviewDnsLookup = (
+  hostname: string,
+  options: LookupAllOptions,
+  callback: (error: NodeJS.ErrnoException | null, addresses: LookupAddress[]) => void,
+) => void;
+
+export type LinkPreviewRequestDependencies = {
+  readonly dnsLookup?: LinkPreviewDnsLookup;
+};
+
+export type LinkPreviewStreamResponse = AxiosResponse<IncomingMessage>;
+export type LinkPreviewImageResponse = AxiosResponse<Buffer>;
+
+export function createSafeDnsLookup(dnsLookup: LinkPreviewDnsLookup = defaultDnsLookup): LookupFunction {
+  return (hostname, options, callback) => {
+    const lookupOptions: LookupAllOptions = {
+      all: true,
+      family: options.family,
+      hints: options.hints,
+      verbatim: options.verbatim,
+    };
+
+    dnsLookup(hostname, lookupOptions, (error, addresses) => {
+      if (error !== null) {
+        callback(error, '', 0);
+        return;
+      }
+
+      const hasBlockedAddress = addresses.some(({address}) => {
+        return !isPublicNetworkAddress(address);
+      });
+      if (hasBlockedAddress) {
+        callback(new Error(`Blocked non-public network destination for hostname: "${hostname}"`), '', 0);
+        return;
+      }
+
+      if (addresses.length === 0) {
+        callback(new Error(`No network addresses found for hostname: "${hostname}"`), '', 0);
+        return;
+      }
+
+      if (!options.all) {
+        const [address] = addresses;
+        callback(null, address.address, address.family);
+        return;
+      }
+
+      callback(null, addresses);
+    });
+  };
+}
+
+export function requestLinkPreview(
+  request: LinkPreviewStreamRequest,
+  dependencies?: LinkPreviewRequestDependencies,
+): Promise<LinkPreviewStreamResponse>;
+export function requestLinkPreview(
+  request: LinkPreviewImageRequest,
+  dependencies?: LinkPreviewRequestDependencies,
+): Promise<LinkPreviewImageResponse>;
+export function requestLinkPreview(
+  request: LinkPreviewRequest,
+  dependencies: LinkPreviewRequestDependencies = {},
+): Promise<LinkPreviewStreamResponse | LinkPreviewImageResponse> {
+  const normalizedUrlResult = normalizeAndValidateUrl(request.url);
+  if (normalizedUrlResult.isErr) {
+    return Promise.reject(normalizedUrlResult.error);
+  }
+
+  const safeLookup = createSafeDnsLookup(dependencies.dnsLookup);
+  const safeHttpAgent = new HttpAgent({lookup: safeLookup});
+  const safeHttpsAgent = new HttpsAgent({lookup: safeLookup});
+  const normalizedUrl = normalizedUrlResult.value;
+
+  const axiosRequestConfig: AxiosRequestConfig = {
+    headers: {
+      'User-Agent': request.userAgent,
+    },
+    httpAgent: safeHttpAgent,
+    httpsAgent: safeHttpsAgent,
+    maxContentLength: request.maximumContentLength,
+    maxRedirects: 0,
+    method: 'get',
+    proxy: false,
+    responseType: request.responseType,
+    url: normalizedUrl.href,
+  };
+
+  if (request.responseType === 'stream') {
+    return axios.request<IncomingMessage>(axiosRequestConfig);
+  }
+
+  return axios.request<Buffer>(axiosRequestConfig);
 }

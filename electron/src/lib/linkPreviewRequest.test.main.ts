@@ -17,9 +17,16 @@
  *
  */
 
+import nock, {cleanAll} from 'nock';
+
 import assert from 'node:assert';
 
-import {isPublicNetworkAddress, normalizeAndValidateUrl} from './linkPreviewRequest';
+import {
+  isPublicNetworkAddress,
+  LinkPreviewImageRequest,
+  normalizeAndValidateUrl,
+  requestLinkPreview,
+} from './linkPreviewRequest';
 
 describe('link preview request URL policy', () => {
   function testPublicAddress(publicAddress: string): () => void {
@@ -143,5 +150,71 @@ describe('link preview request URL policy', () => {
     const actualResult = normalizeAndValidateUrl('../image.png', baseUrlResult.value);
     assert(actualResult.isOk);
     assert.strictEqual(actualResult.value.href, 'https://example.com/image.png');
+  });
+});
+
+describe('link preview request connection policy', () => {
+  afterEach(() => {
+    cleanAll();
+  });
+
+  it('rejects a hostname when the actual socket lookup returns a private address', async () => {
+    function dnsLookup(
+      _hostname: string,
+      _options: import('dns').LookupAllOptions,
+      callback: (error: NodeJS.ErrnoException | null, addresses: import('dns').LookupAddress[]) => void,
+    ): void {
+      callback(null, [{address: '10.0.0.1', family: 4}]);
+    }
+
+    const request: LinkPreviewImageRequest = {
+      responseType: 'arraybuffer',
+      url: 'https://attacker.example/image.png',
+      userAgent: 'Wire Test',
+    };
+
+    await assert.rejects(() => {
+      return requestLinkPreview(request, {dnsLookup});
+    }, /Blocked non-public network destination/);
+  });
+
+  it('uses the injected lookup for a public hostname connection', async () => {
+    function dnsLookup(
+      _hostname: string,
+      _options: import('dns').LookupAllOptions,
+      callback: (error: NodeJS.ErrnoException | null, addresses: import('dns').LookupAddress[]) => void,
+    ): void {
+      callback(null, [{address: '93.184.216.34', family: 4}]);
+    }
+
+    nock('https://public.example').get('/image.png').reply(200, Buffer.from('image'), {
+      'content-type': 'image/png',
+    });
+
+    const request: LinkPreviewImageRequest = {
+      responseType: 'arraybuffer',
+      url: 'https://public.example/image.png',
+      userAgent: 'Wire Test',
+    };
+
+    const actualResponse = await requestLinkPreview(request, {dnsLookup});
+
+    assert.strictEqual(actualResponse.status, 200);
+  });
+
+  it('does not send cookies or credentials', async () => {
+    nock('https://example.com', {badheaders: ['cookie', 'authorization', 'proxy-authorization']})
+      .get('/')
+      .reply(200, Buffer.from('image'), {'content-type': 'image/png'});
+
+    const request: LinkPreviewImageRequest = {
+      responseType: 'arraybuffer',
+      url: 'https://example.com/',
+      userAgent: 'Wire Test',
+    };
+
+    const actualResponse = await requestLinkPreview(request);
+
+    assert.strictEqual(actualResponse.status, 200);
   });
 });
