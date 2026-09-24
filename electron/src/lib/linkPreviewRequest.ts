@@ -21,7 +21,6 @@ import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import ipaddr from 'ipaddr.js';
 import {Result} from 'true-myth';
 
-import {lookup as defaultDnsLookup} from 'dns';
 import type {LookupAddress, LookupAllOptions} from 'dns';
 import {Agent as HttpAgent} from 'http';
 import type {IncomingMessage} from 'http';
@@ -50,11 +49,11 @@ export function isPublicNetworkAddress(address: string): boolean {
   return ipaddr.process(address).range() === 'unicast';
 }
 
-export function normalizeAndValidateUrl(url: string, baseUrl?: URL): Result<URL, Error> {
+export function normalizeAndValidateUrl(url: string, baseUrl: URL | undefined): Result<URL, Error> {
   let normalizedUrl: URL;
 
   try {
-    if (baseUrl instanceof URL) {
+    if (baseUrl !== undefined) {
       normalizedUrl = new URL(url, baseUrl);
     } else {
       normalizedUrl = new URL(url);
@@ -76,6 +75,7 @@ export function normalizeAndValidateUrl(url: string, baseUrl?: URL): Result<URL,
   }
 
   const hostname = getHostnameWithoutBrackets(normalizedUrl.hostname);
+
   if (ipaddr.isValid(hostname) && !isPublicNetworkAddress(hostname)) {
     return Result.err(new Error(`Blocked non-public network destination: "${hostname}"`));
   }
@@ -106,13 +106,44 @@ export type LinkPreviewDnsLookup = (
 ) => void;
 
 export type LinkPreviewRequestDependencies = {
-  readonly dnsLookup?: LinkPreviewDnsLookup;
+  readonly dnsLookup: LinkPreviewDnsLookup;
 };
 
 export type LinkPreviewStreamResponse = AxiosResponse<IncomingMessage>;
 export type LinkPreviewImageResponse = AxiosResponse<Buffer>;
 
-export function createSafeDnsLookup(dnsLookup: LinkPreviewDnsLookup = defaultDnsLookup): LookupFunction {
+type LinkPreviewResponseData = IncomingMessage | Buffer;
+
+type LinkPreviewResponseExecutor<ResponseData extends LinkPreviewResponseData> = (
+  axiosRequestConfig: AxiosRequestConfig,
+) => Promise<AxiosResponse<ResponseData>>;
+
+type LinkPreviewRedirectRequest<ResponseData extends LinkPreviewResponseData> = {
+  readonly request: LinkPreviewRequest;
+  readonly dependencies: LinkPreviewRequestDependencies;
+  readonly responseExecutor: LinkPreviewResponseExecutor<ResponseData>;
+};
+
+type DestroyableResponseData = {
+  readonly destroy: () => void;
+};
+
+function isDestroyableResponseData(responseData: unknown): responseData is DestroyableResponseData {
+  if (typeof responseData === 'object' && responseData !== null && 'destroy' in responseData) {
+    return typeof responseData.destroy === 'function';
+  }
+
+  return false;
+}
+
+function destroyResponseBody<T>(response: AxiosResponse<T>): void {
+  const responseData = response.data;
+  if (isDestroyableResponseData(responseData)) {
+    responseData.destroy();
+  }
+}
+
+export function createSafeDnsLookup(dnsLookup: LinkPreviewDnsLookup): LookupFunction {
   return (hostname, options, callback) => {
     const lookupOptions: LookupAllOptions = {
       all: true,
@@ -151,19 +182,11 @@ export function createSafeDnsLookup(dnsLookup: LinkPreviewDnsLookup = defaultDns
   };
 }
 
-export function requestLinkPreview(
-  request: LinkPreviewStreamRequest,
-  dependencies?: LinkPreviewRequestDependencies,
-): Promise<LinkPreviewStreamResponse>;
-export function requestLinkPreview(
-  request: LinkPreviewImageRequest,
-  dependencies?: LinkPreviewRequestDependencies,
-): Promise<LinkPreviewImageResponse>;
-export function requestLinkPreview(
-  request: LinkPreviewRequest,
-  dependencies: LinkPreviewRequestDependencies = {},
-): Promise<LinkPreviewStreamResponse | LinkPreviewImageResponse> {
-  const normalizedUrlResult = normalizeAndValidateUrl(request.url);
+async function requestLinkPreviewWithRedirects<ResponseData extends LinkPreviewResponseData>(
+  redirectRequest: LinkPreviewRedirectRequest<ResponseData>,
+): Promise<AxiosResponse<ResponseData>> {
+  const {request, dependencies, responseExecutor} = redirectRequest;
+  const normalizedUrlResult = normalizeAndValidateUrl(request.url, undefined);
   if (normalizedUrlResult.isErr) {
     return Promise.reject(normalizedUrlResult.error);
   }
@@ -171,25 +194,78 @@ export function requestLinkPreview(
   const safeLookup = createSafeDnsLookup(dependencies.dnsLookup);
   const safeHttpAgent = new HttpAgent({lookup: safeLookup});
   const safeHttpsAgent = new HttpsAgent({lookup: safeLookup});
-  const normalizedUrl = normalizedUrlResult.value;
+  let currentUrl = normalizedUrlResult.value;
 
-  const axiosRequestConfig: AxiosRequestConfig = {
-    headers: {
-      'User-Agent': request.userAgent,
-    },
-    httpAgent: safeHttpAgent,
-    httpsAgent: safeHttpsAgent,
-    maxContentLength: request.maximumContentLength,
-    maxRedirects: 0,
-    method: 'get',
-    proxy: false,
-    responseType: request.responseType,
-    url: normalizedUrl.href,
-  };
+  for (let redirectCount = 0; ; redirectCount += 1) {
+    const axiosRequestConfig: AxiosRequestConfig = {
+      headers: {
+        'User-Agent': request.userAgent,
+      },
+      httpAgent: safeHttpAgent,
+      httpsAgent: safeHttpsAgent,
+      maxContentLength: request.maximumContentLength,
+      maxRedirects: 0,
+      method: 'get',
+      proxy: false,
+      responseType: request.responseType,
+      url: currentUrl.href,
+    };
 
-  if (request.responseType === 'stream') {
-    return axios.request<IncomingMessage>(axiosRequestConfig);
+    try {
+      return await responseExecutor(axiosRequestConfig);
+    } catch (error: unknown) {
+      let response: AxiosResponse<IncomingMessage | Buffer> | undefined;
+      if (axios.isAxiosError(error)) {
+        response = error.response;
+      }
+
+      if (response === undefined || !redirectStatusCodes.has(response.status)) {
+        return Promise.reject(error);
+      }
+
+      destroyResponseBody(response);
+
+      if (redirectCount >= maxRedirects) {
+        return Promise.reject(new Error(`Too many redirects while requesting "${currentUrl.href}"`));
+      }
+
+      const redirectLocation = response.headers.location;
+      if (typeof redirectLocation !== 'string' || redirectLocation.length === 0) {
+        return Promise.reject(new Error(`Redirect from "${currentUrl.href}" has no location`));
+      }
+
+      const redirectUrlResult = normalizeAndValidateUrl(redirectLocation, currentUrl);
+      if (redirectUrlResult.isErr) {
+        return Promise.reject(redirectUrlResult.error);
+      }
+
+      currentUrl = redirectUrlResult.value;
+    }
   }
+}
 
-  return axios.request<Buffer>(axiosRequestConfig);
+export function requestLinkPreviewStream(
+  request: LinkPreviewStreamRequest,
+  dependencies: LinkPreviewRequestDependencies,
+): Promise<LinkPreviewStreamResponse> {
+  return requestLinkPreviewWithRedirects({
+    request,
+    dependencies,
+    responseExecutor: axiosRequestConfig => {
+      return axios.request<IncomingMessage>(axiosRequestConfig);
+    },
+  });
+}
+
+export function requestLinkPreviewImage(
+  request: LinkPreviewImageRequest,
+  dependencies: LinkPreviewRequestDependencies,
+): Promise<LinkPreviewImageResponse> {
+  return requestLinkPreviewWithRedirects({
+    request,
+    dependencies,
+    responseExecutor: axiosRequestConfig => {
+      return axios.request<Buffer>(axiosRequestConfig);
+    },
+  });
 }

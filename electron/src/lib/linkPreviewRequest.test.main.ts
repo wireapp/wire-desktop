@@ -19,14 +19,20 @@
 
 import nock, {cleanAll} from 'nock';
 
+import {lookup as dnsLookup} from 'dns';
 import assert from 'node:assert';
 
 import {
   isPublicNetworkAddress,
   LinkPreviewImageRequest,
+  LinkPreviewStreamRequest,
   normalizeAndValidateUrl,
-  requestLinkPreview,
+  requestLinkPreviewImage,
+  requestLinkPreviewStream,
 } from './linkPreviewRequest';
+import type {LinkPreviewRequestDependencies} from './linkPreviewRequest';
+
+const linkPreviewRequestDependencies: LinkPreviewRequestDependencies = {dnsLookup};
 
 describe('link preview request URL policy', () => {
   function testPublicAddress(publicAddress: string): () => void {
@@ -47,7 +53,7 @@ describe('link preview request URL policy', () => {
 
   function testInvalidUrl(url: string): () => void {
     return () => {
-      const actualResult = normalizeAndValidateUrl(url);
+      const actualResult = normalizeAndValidateUrl(url, undefined);
 
       assert.strictEqual(actualResult.isErr, true, url);
     };
@@ -108,13 +114,13 @@ describe('link preview request URL policy', () => {
   it('rejects shorthand IPv4-mapped IPv6 private addresses', testNonPublicAddress('::ffff:c0a8:1'));
 
   it('allows HTTP URLs', () => {
-    const actualResult = normalizeAndValidateUrl('http://8.8.8.8');
+    const actualResult = normalizeAndValidateUrl('http://8.8.8.8', undefined);
 
     assert.strictEqual(actualResult.isOk, true);
   });
 
   it('allows HTTPS IPv6 URLs', () => {
-    const actualResult = normalizeAndValidateUrl('https://[2001:4860:4860::8888]');
+    const actualResult = normalizeAndValidateUrl('https://[2001:4860:4860::8888]', undefined);
 
     assert.strictEqual(actualResult.isOk, true);
   });
@@ -144,7 +150,7 @@ describe('link preview request URL policy', () => {
   it('rejects literal IPv4-mapped IPv6 private URLs', testInvalidUrl('http://[::ffff:10.0.0.1]'));
 
   it('resolves relative URLs against a validated base URL', () => {
-    const baseUrlResult = normalizeAndValidateUrl('https://example.com/path/page');
+    const baseUrlResult = normalizeAndValidateUrl('https://example.com/path/page', undefined);
     assert(baseUrlResult.isOk);
 
     const actualResult = normalizeAndValidateUrl('../image.png', baseUrlResult.value);
@@ -174,7 +180,7 @@ describe('link preview request connection policy', () => {
     };
 
     await assert.rejects(() => {
-      return requestLinkPreview(request, {dnsLookup});
+      return requestLinkPreviewImage(request, {dnsLookup});
     }, /Blocked non-public network destination/);
   });
 
@@ -197,7 +203,120 @@ describe('link preview request connection policy', () => {
       userAgent: 'Wire Test',
     };
 
-    const actualResponse = await requestLinkPreview(request, {dnsLookup});
+    const actualResponse = await requestLinkPreviewImage(request, {dnsLookup});
+
+    assert.strictEqual(actualResponse.status, 200);
+  });
+
+  it('returns a stream for a stream request', async () => {
+    nock('https://public.example').get('/index.html').reply(200, '<html></html>', {
+      'content-type': 'text/html',
+    });
+
+    const request: LinkPreviewStreamRequest = {
+      responseType: 'stream',
+      url: 'https://public.example/index.html',
+      userAgent: 'Wire Test',
+    };
+
+    const actualResponse = await requestLinkPreviewStream(request, linkPreviewRequestDependencies);
+
+    assert.strictEqual(actualResponse.status, 200);
+    assert.strictEqual(typeof actualResponse.data.pipe, 'function');
+    actualResponse.data.destroy();
+  });
+
+  it('follows a relative public redirect', async () => {
+    nock('https://example.com').get('/redirect').reply(302, '', {location: '/target'});
+    nock('https://example.com').get('/target').reply(200, Buffer.from('image'), {'content-type': 'image/png'});
+
+    const request: LinkPreviewImageRequest = {
+      responseType: 'arraybuffer',
+      url: 'https://example.com/redirect',
+      userAgent: 'Wire Test',
+    };
+
+    const actualResponse = await requestLinkPreviewImage(request, linkPreviewRequestDependencies);
+
+    assert.strictEqual(actualResponse.status, 200);
+  });
+
+  it('rejects a redirect to a literal private address', async () => {
+    nock('https://example.com').get('/redirect').reply(302, '', {location: 'http://169.254.169.254/latest'});
+
+    const request: LinkPreviewImageRequest = {
+      responseType: 'arraybuffer',
+      url: 'https://example.com/redirect',
+      userAgent: 'Wire Test',
+    };
+
+    await assert.rejects(() => {
+      return requestLinkPreviewImage(request, linkPreviewRequestDependencies);
+    }, /Blocked non-public network destination/);
+  });
+
+  it('rejects a redirect hostname when its socket lookup returns a private address', async () => {
+    nock('https://example.com').get('/redirect').reply(302, '', {location: 'https://attacker.example/latest'});
+
+    function dnsLookup(
+      hostname: string,
+      _options: import('dns').LookupAllOptions,
+      callback: (error: NodeJS.ErrnoException | null, addresses: import('dns').LookupAddress[]) => void,
+    ): void {
+      if (hostname === 'attacker.example') {
+        callback(null, [{address: '10.0.0.1', family: 4}]);
+        return;
+      }
+
+      callback(null, [{address: '93.184.216.34', family: 4}]);
+    }
+
+    const request: LinkPreviewImageRequest = {
+      responseType: 'arraybuffer',
+      url: 'https://example.com/redirect',
+      userAgent: 'Wire Test',
+    };
+
+    await assert.rejects(() => {
+      return requestLinkPreviewImage(request, {dnsLookup});
+    }, /Blocked non-public network destination/);
+  });
+
+  it('enforces the redirect limit', async () => {
+    nock('https://example.com').get('/redirect-0').reply(302, '', {location: '/redirect-1'});
+    nock('https://example.com').get('/redirect-1').reply(302, '', {location: '/redirect-2'});
+    nock('https://example.com').get('/redirect-2').reply(302, '', {location: '/redirect-3'});
+    nock('https://example.com').get('/redirect-3').reply(302, '', {location: '/redirect-4'});
+    nock('https://example.com').get('/redirect-4').reply(302, '', {location: '/redirect-5'});
+    nock('https://example.com').get('/redirect-5').reply(302, '', {location: '/redirect-6'});
+
+    const request: LinkPreviewImageRequest = {
+      responseType: 'arraybuffer',
+      url: 'https://example.com/redirect-0',
+      userAgent: 'Wire Test',
+    };
+
+    await assert.rejects(() => {
+      return requestLinkPreviewImage(request, linkPreviewRequestDependencies);
+    }, /Too many redirects/);
+  });
+
+  it('does not forward cookies or credentials across redirects', async () => {
+    nock('https://example.com').get('/cookie-redirect').reply(302, '', {
+      location: '/cookie-target',
+      'set-cookie': 'session=secret',
+    });
+    nock('https://example.com', {badheaders: ['cookie', 'authorization', 'proxy-authorization']})
+      .get('/cookie-target')
+      .reply(200, Buffer.from('image'), {'content-type': 'image/png'});
+
+    const request: LinkPreviewImageRequest = {
+      responseType: 'arraybuffer',
+      url: 'https://example.com/cookie-redirect',
+      userAgent: 'Wire Test',
+    };
+
+    const actualResponse = await requestLinkPreviewImage(request, linkPreviewRequestDependencies);
 
     assert.strictEqual(actualResponse.status, 200);
   });
@@ -213,7 +332,7 @@ describe('link preview request connection policy', () => {
       userAgent: 'Wire Test',
     };
 
-    const actualResponse = await requestLinkPreview(request);
+    const actualResponse = await requestLinkPreviewImage(request, linkPreviewRequestDependencies);
 
     assert.strictEqual(actualResponse.status, 200);
   });
