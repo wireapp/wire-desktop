@@ -17,18 +17,17 @@
  *
  */
 
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios from 'axios';
 import {parse as parseContentType, ParsedMediaType} from 'content-type';
 import {decode as iconvDecode} from 'iconv-lite';
 
 import {lookup as dnsLookup} from 'dns';
 import {basename} from 'path';
-import {URL} from 'url';
 
-import {parseHTML, OpenGraphMetadata} from '@wireapp/open-graph';
+import {parseHTML, OpenGraphImage, OpenGraphMetadata} from '@wireapp/open-graph';
 
-import {normalizeAndValidateUrl, requestLinkPreviewStream} from './linkPreviewRequest';
-import type {LinkPreviewRequestDependencies} from './linkPreviewRequest';
+import {normalizeAndValidateUrl, requestLinkPreviewImage, requestLinkPreviewStream} from './linkPreviewRequest';
+import type {LinkPreviewImageResponse, LinkPreviewRequestDependencies} from './linkPreviewRequest';
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
@@ -36,82 +35,60 @@ import {config} from '../settings/config';
 const logger = getLogger(basename(__filename));
 const linkPreviewRequestDependencies: LinkPreviewRequestDependencies = {dnsLookup};
 
-function arrayify<T>(value: T[] | T = []): T[] {
-  if (Array.isArray(value)) {
-    return value;
-  }
-
-  return [value];
-}
-
 function bufferToBase64(buffer: Buffer, mimeType: string): string {
   const encodedBuffer = Buffer.from(buffer).toString('base64');
 
   return `data:${mimeType};base64,${encodedBuffer}`;
 }
 
-const fetchImageAsBase64 = async (url: string): Promise<string | undefined> => {
-  const IMAGE_SIZE_LIMIT = 5e6; // 5MB
-  const parsedUrl = new URL(encodeURI(url));
-  const normalizedUrl = parsedUrl.protocol ? parsedUrl : new URL(`http://${url}`);
-
-  const axiosConfig: AxiosRequestConfig = {
-    headers: {
-      'User-Agent': config.userAgent,
-    },
-    maxContentLength: IMAGE_SIZE_LIMIT,
-    method: 'get',
-    responseType: 'arraybuffer',
-    url: normalizedUrl.href,
-  };
-
-  let response;
+async function fetchImageAsBase64(url: string, userAgent: string): Promise<string> {
+  const imageSizeLimit = 5e6; // 5MB
+  let response: LinkPreviewImageResponse;
 
   try {
-    response = await axiosWithCookie<Buffer>(axiosConfig);
-  } catch (error: any) {
-    if (error.response?.status && error?.response?.statusText) {
-      throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
+    response = await requestLinkPreviewImage(
+      {
+        maximumContentLength: imageSizeLimit,
+        responseType: 'arraybuffer',
+        url,
+        userAgent,
+      },
+      linkPreviewRequestDependencies,
+    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response !== undefined) {
+      if (error.response.status !== undefined && typeof error.response.statusText === 'string') {
+        throw new Error(`Request failed with status code "${error.response.status}": "${error.response.statusText}".`);
+      }
     }
-    throw new Error(`Request failed: ${error.message}`);
+
+    if (error instanceof Error) {
+      throw new Error(`Request failed: ${error.message}`);
+    }
+
+    throw new Error('Request failed: unknown error');
   }
 
-  let contentType;
+  let contentType: ParsedMediaType;
 
   try {
     contentType = parseContentType(response.headers['content-type']);
-  } catch (error: any) {
-    throw new Error(`Could not parse content type: "${error.message}"`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Could not parse content type: "${error.message}"`);
+    }
+
+    throw new Error('Could not parse content type: unknown error');
   }
 
-  const isImageContentType = contentType.type.match(/.*image\/.*/);
+  const isImageContentType = contentType.type.startsWith('image/');
 
   if (!isImageContentType) {
     throw new Error(`Unhandled format for open graph image ('${contentType}')`);
   }
 
   return bufferToBase64(response.data, contentType.type);
-};
-
-export const axiosWithCookie = async <T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> => {
-  try {
-    const response = await axios.request<T>({...config, maxRedirects: 0, withCredentials: true});
-    return response;
-  } catch (error: any) {
-    const response = error.response;
-    if (!response) {
-      throw error;
-    }
-    if (response.status === 301 || response.status === 302) {
-      const setCookie = response.headers['set-cookie'];
-      if (setCookie) {
-        const Cookie = Array.isArray(setCookie) ? setCookie.join('; ') : setCookie;
-        config.headers = {...config.headers, Cookie};
-      }
-    }
-    return await axios.request(config);
-  }
-};
+}
 
 export async function fetchOpenGraphHtml(url: string, userAgent: string, contentLimit: number): Promise<string> {
   try {
@@ -202,7 +179,60 @@ function getOpenGraphUserAgent(hostname: string): string {
   return config.userAgent;
 }
 
-async function fetchOpenGraphData(url: string) {
+type OpenGraphPage = {
+  metadata: OpenGraphMetadata;
+  userAgent: string;
+};
+
+function isNonEmptyString(value: unknown): value is string {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  return value.length > 0;
+}
+
+function isOpenGraphImage(image: OpenGraphMetadata['image']): image is OpenGraphImage {
+  if (typeof image !== 'object') {
+    return false;
+  }
+
+  if (image === null) {
+    return false;
+  }
+
+  if (Array.isArray(image)) {
+    return false;
+  }
+
+  return true;
+}
+
+function hasOpenGraphImageUrl(image: OpenGraphMetadata['image']): image is OpenGraphImage & {url: string} {
+  if (isOpenGraphImage(image)) {
+    return isNonEmptyString(image.url);
+  }
+
+  return false;
+}
+
+function hasOpenGraphData(metadata: OpenGraphMetadata): boolean {
+  if (isNonEmptyString(metadata.description)) {
+    return true;
+  }
+
+  if (metadata.image !== undefined) {
+    return true;
+  }
+
+  if (isNonEmptyString(metadata.type)) {
+    return true;
+  }
+
+  return isNonEmptyString(metadata.url);
+}
+
+async function fetchOpenGraphData(url: string): Promise<OpenGraphPage> {
   const contentSizeLimit = 1e6; // ~1MB
   const normalizedUrlResult = normalizeAndValidateUrl(url, undefined);
   if (normalizedUrlResult.isErr) {
@@ -213,25 +243,27 @@ async function fetchOpenGraphData(url: string) {
   const userAgent = getOpenGraphUserAgent(normalizedUrl.hostname);
 
   const body = await fetchOpenGraphHtml(normalizedUrl.href, userAgent, contentSizeLimit);
-  return parseHTML(body);
+  return {
+    metadata: parseHTML(body),
+    userAgent,
+  };
 }
 
-const updateMetaDataWithImage = (meta: OpenGraphMetadata, url?: string) => {
-  meta.image ??= {};
-
-  if (url && typeof meta.image === 'object' && !Array.isArray(meta.image)) {
-    meta.image.url = url;
-  } else {
-    delete meta.image;
+function updateMetaDataWithImage(metadata: OpenGraphMetadata, imageDataUrl: string): OpenGraphMetadata {
+  if (isOpenGraphImage(metadata.image)) {
+    metadata.image.url = imageDataUrl;
+    return metadata;
   }
 
-  return meta;
-};
+  delete metadata.image;
+  return metadata;
+}
 
-export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphMetadata> => {
-  const metadata = await fetchOpenGraphData(url);
+export async function getOpenGraphDataAsync(url: string): Promise<OpenGraphMetadata> {
+  const openGraphPage = await fetchOpenGraphData(url);
+  const metadata = openGraphPage.metadata;
 
-  if (!metadata.description && !metadata.image && !metadata.type && !metadata.url) {
+  if (!hasOpenGraphData(metadata)) {
     throw new Error('No openGraph data found');
   }
 
@@ -239,17 +271,15 @@ export const getOpenGraphDataAsync = async (url: string): Promise<OpenGraphMetad
     metadata.image = metadata.image[0];
   }
 
-  if (typeof metadata.image === 'object' && metadata.image.url) {
-    const [imageUrl] = arrayify(metadata.image.url);
-
+  if (hasOpenGraphImageUrl(metadata.image)) {
     try {
-      const uri = await fetchImageAsBase64(imageUrl);
-      return updateMetaDataWithImage(metadata, uri);
-    } catch (error: any) {
+      const imageDataUrl = await fetchImageAsBase64(metadata.image.url, openGraphPage.userAgent);
+      return updateMetaDataWithImage(metadata, imageDataUrl);
+    } catch (error: unknown) {
       logger.warn(error);
     }
   }
 
   delete metadata.image;
   return metadata;
-};
+}

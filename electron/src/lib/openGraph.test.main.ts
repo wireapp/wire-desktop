@@ -120,4 +120,61 @@ describe('openGraph', () => {
 
     assert.strictEqual(config.userAgent, configuredUserAgent);
   });
+
+  it('fetches OpenGraph images through the protected requester', async () => {
+    nock(exampleUrl)
+      .get('/image-page')
+      .reply(200, '<html><head><meta property="og:image" content="https://example.com/image"></head></html>', {
+        'content-type': 'text/html',
+      });
+    nock(exampleUrl).get('/image').reply(200, Buffer.from('image'), {'content-type': 'image/png'});
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/image-page`);
+    const actualImage = actualMetadata.image;
+    if (typeof actualImage !== 'object' || actualImage === null || Array.isArray(actualImage)) {
+      assert.fail('Expected an OpenGraph image object');
+    }
+
+    assert.strictEqual(actualImage.url, 'data:image/png;base64,aW1hZ2U=');
+  });
+
+  it('ignores an OpenGraph image with a private literal destination', async () => {
+    nock(exampleUrl)
+      .get('/private-image-page')
+      .reply(200, '<html><head><meta property="og:image" content="http://169.254.169.254/latest"></head></html>', {
+        'content-type': 'text/html',
+      });
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/private-image-page`);
+
+    assert.strictEqual(actualMetadata.image, undefined);
+  });
+
+  it('ignores an OpenGraph image redirected to a private destination', async () => {
+    nock(exampleUrl)
+      .get('/redirected-image-page')
+      .reply(200, '<html><head><meta property="og:image" content="https://example.com/image-redirect"></head></html>', {
+        'content-type': 'text/html',
+      });
+    nock(exampleUrl).get('/image-redirect').reply(302, '', {
+      location: 'http://169.254.169.254/latest/meta-data/',
+    });
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/redirected-image-page`);
+
+    assert.strictEqual(actualMetadata.image, undefined);
+  });
+
+  it('ignores an OpenGraph image with an unsupported content type', async () => {
+    nock(exampleUrl)
+      .get('/not-an-image-page')
+      .reply(200, '<html><head><meta property="og:image" content="https://example.com/not-an-image"></head></html>', {
+        'content-type': 'text/html',
+      });
+    nock(exampleUrl).get('/not-an-image').reply(200, 'not an image', {'content-type': 'text/plain'});
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/not-an-image-page`);
+
+    assert.strictEqual(actualMetadata.image, undefined);
+  });
 });
