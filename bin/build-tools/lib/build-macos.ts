@@ -56,6 +56,7 @@ export async function buildMacOSConfig(
     electronMirror: null,
     notarizeAppleId: null,
     notarizeApplePassword: null,
+    provisioningProfile: null,
   };
 
   const macOSConfig: MacOSConfig = {
@@ -67,7 +68,19 @@ export async function buildMacOSConfig(
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
+    provisioningProfile: process.env.MACOS_PROVISIONING_PROFILE || macOSDefaultConfig.provisioningProfile,
   };
+
+  if (macOSConfig.certNameApplication) {
+    if (!macOSConfig.provisioningProfile) {
+      throw new Error(
+        'MACOS_PROVISIONING_PROFILE is required when signing the app because the WebAuthn keychain access group is a restricted entitlement.',
+      );
+    }
+    if (!(await fs.pathExists(macOSConfig.provisioningProfile))) {
+      throw new Error(`macOS provisioning profile not found at "${macOSConfig.provisioningProfile}".`);
+    }
+  }
 
   if (macOSConfig.appleExportComplianceCode) {
     plistEntries['ITSAppUsesNonExemptEncryption'] = true;
@@ -94,7 +107,7 @@ export async function buildMacOSConfig(
     },
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas', //  Mac App Store 
+    platform: 'mas', //  Mac App Store
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
@@ -115,6 +128,7 @@ export async function buildMacOSConfig(
           entitlements: 'resources/macos/entitlements/parent.plist',
         }),
         identity: macOSConfig.certNameApplication,
+        provisioningProfile: macOSConfig.provisioningProfile || undefined,
       };
     }
 
@@ -181,9 +195,10 @@ export async function buildMacOSWrapper(
     }
   } catch (error) {
     logger.error(error);
+    throw error;
+  } finally {
+    await restoreFiles(backup);
   }
-
-  await restoreFiles(backup);
 }
 
 export async function manualMacOSSign(
@@ -196,6 +211,14 @@ export async function manualMacOSSign(
   const mainEntitlements = 'resources/macos/entitlements/parent.plist';
 
   if (macOSConfig.certNameApplication) {
+    if (!macOSConfig.provisioningProfile) {
+      throw new Error('Cannot sign the macOS app without MACOS_PROVISIONING_PROFILE.');
+    }
+
+    const embeddedProvisioningProfile = path.join(appFile, 'Contents', 'embedded.provisionprofile');
+    await fs.copy(macOSConfig.provisioningProfile, embeddedProvisioningProfile);
+    logger.log(`Embedded provisioning profile in "${embeddedProvisioningProfile}".`);
+
     const filesToSign = [
       'Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libEGL.dylib',

@@ -129,6 +129,12 @@ yarn build:win
 yarn build:linux
 ```
 
+Signed macOS builds require a provisioning profile because WebAuthn uses a restricted keychain-access-group entitlement. Provide the profile through `MACOS_PROVISIONING_PROFILE`; the build embeds it in the application before applying the final signature. Jenkins expects Secret file credentials named `MACOS_PROVISIONING_PROFILE` and `MACOS_PROVISIONING_PROFILE_INTERNAL` for the corresponding bundle identifiers.
+
+For passkey diagnostics, search Jenkins **Console Output** for `[Passkeys]`. Both pipelines log the Node/Electron versions and fail on an incompatible Node version. Jenkins needs a NodeJS tool named `node-v22.22.3` under **Manage Jenkins → Tools**. The macOS job also checks the built app's signature, runtime keychain group, signed entitlements, embedded profile authorization, bundle identifier, and profile expiry. `BUILD CHECKS PASSED` confirms these build prerequisites; it does not confirm a successful login. A `FAIL` message identifies the failed check. If credentials or Node setup fail earlier, follow the setup message immediately above that failure.
+
+To test authentication, launch the signed app with `--enable-logging` and search its `logs/electron.log` (inside Electron's user-data directory) for `[Passkeys]`. Startup logs confirm configuration, and account-picker logs show requests, selection, cancellation, or failure without account names or credential IDs. An account-selection event only occurs when the authenticator needs a choice: its absence does not prove WebAuthn failed. Complete login against the intended identity provider to verify the result. Touch ID credentials configured here are device-bound; existing iCloud/Safari passkeys are not validated by the Jenkins checks.
+
 ### Other Linux targets
 
 If you would like to build for another Linux target, run the following command:

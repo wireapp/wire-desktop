@@ -46,6 +46,7 @@ import {URL, pathToFileURL} from 'url';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
+import {registerWebAuthnAccountPicker} from './auth/WebAuthn';
 import {getPictureInPictureCallWindowOptions, isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
 import {initializeFirstInstance} from './lib/applicationBootstrap';
 import {
@@ -139,6 +140,24 @@ const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMEN
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
 const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
 const isInternalBuild = (): boolean => config.environment === 'internal';
+
+const configureWebAuthn = (): void => {
+  if (!EnvironmentUtil.platform.IS_MAC_OS) {
+    logger.info(`[Passkeys] Skipping macOS Touch ID configuration on ${process.platform}; using platform defaults.`);
+    return;
+  }
+
+  logger.info(
+    `[Passkeys] Configuring Touch ID: Electron ${process.versions.electron}; keychain group ${config.webAuthnKeychainAccessGroup}.`,
+  );
+  app.configureWebAuthn({
+    touchID: {
+      keychainAccessGroup: config.webAuthnKeychainAccessGroup,
+      promptReason: 'sign in to $1',
+    },
+  });
+  logger.info('[Passkeys] Touch ID configuration applied. This does not verify keychain access or a successful login.');
+};
 
 if (customDownloadPath) {
   electronDl({
@@ -514,6 +533,7 @@ const handleAppEvents = (): void => {
 
   // System Menu, Tray Icon & Show window
   app.on('ready', async () => {
+    configureWebAuthn();
     let regionalLocale: string | undefined;
     try {
       regionalLocale = app.getSystemLocale();
@@ -699,6 +719,7 @@ class ElectronWrapperInit {
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
     app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
+      registerWebAuthnAccountPicker(contents.session);
       remoteMain.enable(contents);
       // disable new Windows by default on everything
       contents.setWindowOpenHandler(() => {

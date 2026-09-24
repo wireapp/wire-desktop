@@ -8,8 +8,10 @@ node("macos") {
   def custom = params.CUSTOM
   def wireGov = params.WIRE_GOV
   def skipNotarization = params.containsKey('SKIP_NOTARIZATION') ? params.SKIP_NOTARIZATION : true  
-  def NODE = tool name: 'node-v18.18.0', type: 'nodejs'
+  echo '[Passkeys] Resolving Jenkins NodeJS tool node-v23.0.0. If missing, configure it under Manage Jenkins > Tools.'
+  def NODE = tool name: 'node-v23.0.0', type: 'nodejs'
   def privateAPIResult = ''
+  def provisioningProfileCredential = (!production && !custom && !wireGov) ? 'MACOS_PROVISIONING_PROFILE_INTERNAL' : 'MACOS_PROVISIONING_PROFILE'
 
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: "${params.JENKINSBOT_SECRET}", variable: 'JENKINSBOT_SECRET')]) {
@@ -39,40 +41,51 @@ node("macos") {
 
   stage('Build') {
     try {
-      withCredentials([string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD')]) {
+      echo "[Passkeys] Using provisioning credential ${provisioningProfileCredential}. If binding fails, add this Secret file credential in Jenkins."
+      withCredentials([
+        string(credentialsId: 'MACOS_KEYCHAIN_PASSWORD', variable: 'MACOS_KEYCHAIN_PASSWORD'),
+        file(credentialsId: provisioningProfileCredential, variable: 'MACOS_PROVISIONING_PROFILE'),
+      ]) {
         sh 'security unlock-keychain -p \"$MACOS_KEYCHAIN_PASSWORD\" /Users/jenkins/Library/Keychains/login.keychain-db'
-      }
-      withEnv(["PATH+NODE=${NODE}/bin"]) {
-        sh 'node -v'
-        sh 'npm -v'
-        sh 'npm install -g yarn'
-        sh 'yarn'
-        if (production) {
-          withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
+        withEnv(["PATH+NODE=${NODE}/bin"]) {
+          sh 'node bin/passkey-diagnostics.cjs'
+          sh 'npm -v'
+          sh 'npm install -g yarn'
+          sh 'yarn'
+          echo '[Passkeys] Checking that the supplied provisioning profile can be decoded.'
+          sh 'security cms -D -i "$MACOS_PROVISIONING_PROFILE" >/dev/null'
+          echo '[Passkeys] PASS: Provisioning profile decoded. Building and signing the app next.'
+          if (production) {
+            withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
+              sh 'yarn build:macos'
+            }
+
+            echo 'Checking for private Apple APIs ...'
+            privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-universal/Wire.app"', returnStdout: true
+            echo privateAPIResult
+          } else if (custom) {
             sh 'yarn build:macos'
+          } else if (wireGov) {
+            sh 'yarn build:macos:wire-gov'
+
+            echo 'Checking for private Apple APIs ...'
+            privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireGov-mas-universal/WireGov.app"', returnStdout: true
+            echo privateAPIResult
+          } else {
+            // internal
+            sh 'yarn build:macos:internal'
+
+            echo 'Checking for private Apple APIs ...'
+            privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-universal/WireInternal.app"', returnStdout: true
+            echo privateAPIResult
           }
 
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/Wire-mas-universal/Wire.app"', returnStdout: true
-          echo privateAPIResult
-        } else if (custom) {
-          sh 'yarn build:macos'
-        } else if (wireGov) {
-          sh 'yarn build:macos:wire-gov'
-
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireGov-mas-universal/WireGov.app"', returnStdout: true
-          echo privateAPIResult
-        } else {
-          // internal
-          sh 'yarn build:macos:internal'
-
-          echo 'Checking for private Apple APIs ...'
-          privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireInternal-mas-universal/WireInternal.app"', returnStdout: true
-          echo privateAPIResult
+          echo '[Passkeys] Verifying the built app, embedded profile, and signed keychain entitlement.'
+          sh 'node bin/passkey-diagnostics.cjs macos'
         }
       }
     } catch(e) {
+      echo '[Passkeys] BUILD FAILED: See the first failed command or [Passkeys] FAIL above. Passkey readiness has not been established.'
       currentBuild.result = 'FAILED'
       wireSend secret: "${jenkinsbot_secret}", message: "🍏 **${JOB_NAME} ${version} build failed**\n${BUILD_URL}"
       throw e
