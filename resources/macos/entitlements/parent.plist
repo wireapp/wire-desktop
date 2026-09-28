@@ -16,5 +16,9 @@
     <true/>
     <key>com.apple.security.application-groups</key>
     <string>EDF3JCE8BC.com.wearezeta.zclient.mac</string>
+    <key>keychain-access-groups</key>
+    <array>
+      <string>EDF3JCE8BC.com.wearezeta.zclient.mac.webauthn</string>
+    </array>
   </dict>
 </plist>

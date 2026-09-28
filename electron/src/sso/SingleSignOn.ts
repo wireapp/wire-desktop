@@ -17,23 +17,13 @@
  *
  */
 
-import {
-  BrowserWindow,
-  BrowserWindowConstructorOptions,
-  Event as ElectronEvent,
-  ProtocolRequest,
-  Session,
-  session,
-  WebContents,
-  HandlerDetails,
-} from 'electron';
+import {app, BrowserWindow, Event as ElectronEvent, Session, session, WebContents, HandlerDetails} from 'electron';
 import {Maybe} from 'true-myth';
 
-import * as crypto from 'crypto';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {executeJavaScriptWithoutResult} from '../lib/ElectronUtil';
+import {registerTextPrompt} from '../auth/TextPrompt';
 import {writeBoundedLogMessage} from '../logging/desktopLogWriter';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
 import {getLogDirectory, getSsoLogPath} from '../logging/logPaths';
@@ -47,10 +37,9 @@ const argv = minimist(process.argv.slice(1));
 export class SingleSignOn {
   private static readonly ALLOWED_BACKEND_ORIGINS = config.backendOrigins;
   private static readonly SINGLE_SIGN_ON_FRAME_NAME = 'WIRE_SSO';
-  private static readonly SSO_PROTOCOL = `${config.customProtocolName}-sso`;
-  private static readonly SSO_PROTOCOL_HOST = 'response';
-  private static readonly SSO_PROTOCOL_RESPONSE_SIZE_LIMIT = 255;
-  private static readonly SSO_SESSION_NAME = 'sso';
+  // Shared across accounts, but separate from their removable webview partitions.
+  // Electron stores the Touch ID metadata secret in this persistent session.
+  private static readonly SSO_SESSION_NAME = 'persist:wire-sso';
   private static readonly MAX_LENGTH_ORIGIN_DOMAIN = 255;
   private static readonly MAX_LENGTH_ORIGIN = 'https://'.length + SingleSignOn.MAX_LENGTH_ORIGIN_DOMAIN;
   private static readonly logger = getLogger(path.basename(__filename));
@@ -61,24 +50,20 @@ export class SingleSignOn {
     AUTH_SUCCESS: 'AUTH_SUCCESS',
   };
 
-  public static loginAuthorizationSecret: string | undefined;
-
   private session: Session | undefined;
   private ssoWindow: BrowserWindow | undefined;
   private readonly senderWebContents: WebContents;
   private readonly accountId: Maybe<string>;
-  private readonly windowOptions: BrowserWindowConstructorOptions;
   private readonly windowOriginUrl: URL;
   public onClose = () => {};
+  private completion: Promise<void> | undefined;
 
   constructor(
     ssoWindow: BrowserWindow,
     senderWebContents: WebContents,
     accountId: Maybe<string>,
     windowOriginURL: string,
-    windowOptions: BrowserWindowConstructorOptions,
   ) {
-    this.windowOptions = windowOptions;
     this.ssoWindow = ssoWindow;
     this.senderWebContents = senderWebContents;
     this.accountId = accountId;
@@ -86,8 +71,14 @@ export class SingleSignOn {
   }
 
   public readonly init = async (): Promise<SingleSignOn> => {
-    // Create a ephemeral and isolated session
-    this.session = session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false});
+    // Configure the actual popup session and cookie cleanup.
+    this.session = this.ssoWindow!.webContents.session;
+    if (this.session === this.senderWebContents.session || !this.session.isPersistent()) {
+      throw new Error('SSO requires a separate persistent session.');
+    }
+    SingleSignOn.logger.info('[Passkeys] Using shared persistent SSO session, separate from account data.');
+    // Discard website state left by an interrupted login, retaining preferences.
+    await this.session.clearStorageData();
 
     // Disable browser permissions (microphone, camera...)
     this.session.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
@@ -99,13 +90,34 @@ export class SingleSignOn {
     });
 
     this.setupBrowserWindow();
-
-    // Register protocol
-    // Note: we need to create the window before otherwise it does not work
-    await SingleSignOn.registerProtocol(this.session, type => this.finalizeLogin(type));
+    registerTextPrompt(this.ssoWindow!);
+    const popup = this.ssoWindow!;
+    popup.webContents.ipc.handle('wire:sso-complete', async (event, type: unknown) => {
+      if (
+        event.senderFrame !== popup.webContents.mainFrame ||
+        typeof type !== 'string' ||
+        !['AUTH_SUCCESS', 'AUTH_ERROR', 'AUTH_ERROR_COOKIE'].includes(type)
+      ) {
+        return false;
+      }
+      if (new URL(event.senderFrame.url).origin !== this.windowOriginUrl.origin) {
+        SingleSignOn.logger.warn('[Passkeys] Rejected SSO result from an unexpected origin.');
+        return false;
+      }
+      this.completion ??= this.finalizeLogin(type);
+      await this.completion;
+      return true;
+    });
+    popup.webContents.ipc.on('wire:sso-close', event => {
+      if (event.senderFrame === popup.webContents.mainFrame) {
+        this.close();
+      }
+    });
+    this.senderWebContents.once('destroyed', this.close);
 
     // Show the window(s)
     await this.ssoWindow?.loadURL(this.windowOriginUrl.toString());
+    this.ssoWindow?.show();
 
     if (typeof argv[config.ARGUMENT.DEVTOOLS] !== 'undefined') {
       this.ssoWindow?.webContents.openDevTools({mode: 'detach'});
@@ -120,22 +132,19 @@ export class SingleSignOn {
     }
 
     const ssoWindow = this.ssoWindow;
-    if (this.windowOptions.webPreferences) {
-      // Discard old preload URL
-      delete this.windowOptions.webPreferences.preload;
-    }
-
     ssoWindow.once('closed', async () => {
-      if (this.session) {
-        await this.wipeSessionData();
-        const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
-        if (!unregisterSuccess) {
-          throw new Error('Failed to unregister protocol');
+      this.senderWebContents.removeListener('destroyed', this.close);
+      try {
+        if (this.session) {
+          await this.wipeSessionData();
         }
+      } catch {
+        SingleSignOn.logger.warn('Unable to clear SSO website data. It will be cleared before the next login.');
+      } finally {
+        this.session = undefined;
+        this.ssoWindow = undefined;
+        this.onClose();
       }
-      this.onClose();
-      this.session = undefined;
-      this.ssoWindow = undefined;
     });
 
     // Prevent title updates
@@ -178,20 +187,7 @@ export class SingleSignOn {
   }
 
   close = () => {
-    (async () => {
-      if (this.session) {
-        await this.wipeSessionData();
-        const unregisterSuccess = SingleSignOn.unregisterProtocol(this.session);
-        if (!unregisterSuccess) {
-          console.error('Failed to unregister protocol');
-        }
-      }
-      this.ssoWindow?.close();
-      this.session = undefined;
-      this.ssoWindow = undefined;
-    })()
-      .then(console.info)
-      .catch(console.info);
+    this.ssoWindow?.close();
   };
 
   focus = () => {
@@ -204,88 +200,45 @@ export class SingleSignOn {
   public static getSingleSignOnLoginWindowOptions = (
     parent: BrowserWindow,
     origin: string,
-  ): Electron.BrowserWindowConstructorOptions =>
-    WindowUtil.getNewWindowOptions({
+  ): Electron.BrowserWindowConstructorOptions => {
+    const options = WindowUtil.getNewWindowOptions({
       title: SingleSignOn.getWindowTitle(origin),
       parent,
       width: 480,
       height: 600,
     });
+    return {
+      ...options,
+      show: false,
+      webPreferences: {
+        ...options.webPreferences,
+        session: session.fromPartition(SingleSignOn.SSO_SESSION_NAME, {cache: false}),
+        partition: SingleSignOn.SSO_SESSION_NAME,
+        preload: path.join(app.getAppPath(), config.electronDirectory, 'dist/preload/preload-sso.js'),
+      },
+    };
+  };
 
   // Returns an empty string if the origin is a Wire backend
   public static getWindowTitle = (origin: string): string =>
     SingleSignOn.ALLOWED_BACKEND_ORIGINS.includes(origin) ? '' : origin;
 
   private static async copyCookies(fromSession: Session, toSession: Session, url: URL): Promise<void> {
-    const cookies = await fromSession.cookies.get({name: 'zuid'});
+    // Use /access, since the login cookie may have a path that excludes /sso.
+    const cookieUrl = new URL('/access', url.origin).toString();
+    const cookies = await fromSession.cookies.get({name: 'zuid', url: cookieUrl});
+    if (cookies.length === 0) {
+      throw new Error('SSO completed without a Wire authentication cookie.');
+    }
 
     for (const cookie of cookies) {
       if (cookie.domain) {
-        await toSession.cookies.set({url: url.toString(), ...cookie});
+        await toSession.cookies.set({url: cookieUrl, ...cookie});
       }
     }
 
     await toSession.cookies.flushStore();
-  }
-
-  private static generateSecret(length: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-      crypto.randomBytes(length, (error, bytes) => (error ? reject(error) : resolve(bytes.toString('hex'))));
-    });
-  }
-
-  private static async registerProtocol(session: Session, finalizeLogin: (type: string) => void): Promise<void> {
-    // Generate a new secret to authenticate the custom protocol (wire-sso)
-    SingleSignOn.loginAuthorizationSecret = await SingleSignOn.generateSecret(24);
-
-    const handleRequest = (request: ProtocolRequest): void => {
-      try {
-        const requestURL = new URL(request.url);
-
-        if (requestURL.protocol !== `${SingleSignOn.SSO_PROTOCOL}:`) {
-          throw new Error('Protocol is invalid');
-        }
-
-        if (requestURL.hostname !== SingleSignOn.SSO_PROTOCOL_HOST) {
-          throw new Error('Host is invalid');
-        }
-
-        if (typeof SingleSignOn.loginAuthorizationSecret !== 'string') {
-          throw new Error('Secret has not be set or has been consumed');
-        }
-
-        if (requestURL.searchParams.get('secret') !== SingleSignOn.loginAuthorizationSecret) {
-          throw new Error('Secret is invalid');
-        }
-
-        const type = requestURL.searchParams.get('type');
-
-        if (typeof type !== 'string') {
-          throw new Error('Response is empty');
-        }
-
-        if (type.length > SingleSignOn.SSO_PROTOCOL_RESPONSE_SIZE_LIMIT) {
-          throw new Error('Response type is too long');
-        }
-
-        finalizeLogin(type);
-      } catch (error) {
-        SingleSignOn.logger.error(error);
-      }
-    };
-
-    const isRegistered = session.protocol.isProtocolRegistered(SingleSignOn.SSO_PROTOCOL);
-
-    if (!isRegistered) {
-      const registerSuccess = session.protocol.registerStringProtocol(SingleSignOn.SSO_PROTOCOL, handleRequest);
-      if (!registerSuccess) {
-        throw new Error('Failed to register protocol.');
-      }
-    }
-  }
-
-  private static unregisterProtocol(session: Session): boolean {
-    return session.protocol.unregisterProtocol(SingleSignOn.SSO_PROTOCOL);
+    SingleSignOn.logger.info('[Passkeys] Wire authentication cookie transferred to the requesting account.');
   }
 
   private readonly finalizeLogin = async (type: string): Promise<void> => {
@@ -296,7 +249,7 @@ export class SingleSignOn {
         return;
       }
 
-      // Set cookies from ephemeral session to the default one
+      // Copy the Wire authentication cookies to the requesting account's session.
       try {
         await SingleSignOn.copyCookies(this.session, this.senderWebContents.session, this.windowOriginUrl);
       } catch (error) {
@@ -317,12 +270,29 @@ export class SingleSignOn {
       throw new Error('Invalid type detected, aborting.');
     }
 
-    // Fake postMessage to the webview
-    const snippet = `window.dispatchEvent(new MessageEvent('message', {origin: '${this.windowOriginUrl.origin}', data: {type: '${type}'}}))`;
-    await executeJavaScriptWithoutResult(snippet, this.senderWebContents);
+    if (this.senderWebContents.isDestroyed()) {
+      return;
+    }
+    // Preserve the backend base URL format used by the webapp (which may include
+    // a trailing slash). Native origin checks above always use URL.origin.
+    const marker = '/sso/initiate-login/';
+    const originalUrl = this.windowOriginUrl.toString();
+    const index = originalUrl.indexOf(marker);
+    const origin = index >= 0 ? originalUrl.slice(0, index) : this.windowOriginUrl.origin;
+    this.senderWebContents.send('wire:sso-result', {origin, type});
   }
 
   private async wipeSessionData() {
+    // Chromium's native window.open popup can inherit the opener's session even
+    // when BrowserWindow options request another partition. Never wipe account
+    // storage here: doing so removes the login cookie immediately after success.
+    if (this.senderWebContents && this.session === this.senderWebContents.session) {
+      SingleSignOn.logger.info('[Passkeys] Preserved account session when closing native SSO popup.');
+      return;
+    }
+    // Remove website storage/cookies, preserving session preferences (including
+    // Electron's WebAuthn metadata secret) and the keychain credentials.
     await this.session?.clearStorageData(undefined);
+    SingleSignOn.logger.info('[Passkeys] Cleared SSO website data; retained shared passkey session preferences.');
   }
 }
