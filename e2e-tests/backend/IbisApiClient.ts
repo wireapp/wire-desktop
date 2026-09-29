@@ -70,7 +70,7 @@ export class IbisApiClient {
         `Failed to upgrade team with id ${teamOwner.teamId}, retrying in ${1 * (i + 1)} seconds...`,
         res.data,
       );
-      await new Promise(res => setTimeout(res, 1_000 * (i + 1)));
+      await new Promise(res => setTimeout(res, 3_000 * (i + 1)));
     }
 
     await this.axiosInstance.put(
