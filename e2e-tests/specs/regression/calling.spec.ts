@@ -24,6 +24,7 @@ import {test, expect} from '../../fixtures';
 import {callCell} from '../../poms/webapp/callCell.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
+import { microphonePermissionModal } from '../../poms/webapp/microphonePermission.modal';
 
 test.describe('Calling - Feature Functionality', () => {
   test(
@@ -108,7 +109,9 @@ test.describe('Calling - Negative Scenarios / Permissions', () => {
       await conversationsList(userAPage).getConversation(userB.fullName, {protocol: 'mls'}).open();
       await conversation(userAPage).startCallButton.click();
 
-      await expect(app.page.getByText('No camera access')).toBeVisible();
+      await expect(microphonePermissionModal(userAPage).title).toHaveText('Microphone disabled');
+      await expect(microphonePermissionModal(userAPage).secondaryButton).toHaveText('Go to preferences');
+      await expect(microphonePermissionModal(userAPage).actionButton).toHaveText('Ok');
     },
   );
 });
