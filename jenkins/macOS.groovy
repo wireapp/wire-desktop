@@ -41,14 +41,20 @@ node("macos") {
 
   stage('Build') {
     try {
-      // Optional String parameter: exact SHA-1 of an installed app-signing identity.
+      // Supports existing certificate-name dropdowns and exact SHA-1 choices.
       def applicationCertificate = (params.MACOS_CERTIFICATE_NAME_APPLICATION ?: '').trim()
       def buildEnvironment = ["PATH+NODE=${NODE}/bin"]
       if (applicationCertificate) {
-        if (!(applicationCertificate ==~ /[0-9a-fA-F]{40}/)) {
-          error('[Passkeys] MACOS_CERTIFICATE_NAME_APPLICATION must be a 40-character SHA-1 fingerprint, or blank to use the existing configuration.')
+        def isFingerprint = applicationCertificate ==~ /[0-9a-fA-F]{40}/
+        // Signing commands currently quote the identity in a shell command.
+        // Keep dropdown names intact while excluding quotes and control characters.
+        def isCertificateName = applicationCertificate ==~ /(?:Apple Distribution|Apple Development|Mac Developer|Mac App Distribution|3rd Party Mac Developer Application|Developer ID Application): [A-Za-z0-9 .,&_-]+ \([A-Z0-9]{10}\)/
+        if (!isFingerprint && !isCertificateName) {
+          error('[Passkeys] MACOS_CERTIFICATE_NAME_APPLICATION must be an app-signing certificate name, a 40-character SHA-1 fingerprint, or blank to use the existing configuration.')
         }
-        applicationCertificate = applicationCertificate.toUpperCase()
+        if (isFingerprint) {
+          applicationCertificate = applicationCertificate.toUpperCase()
+        }
         buildEnvironment.add("MACOS_CERTIFICATE_NAME_APPLICATION=${applicationCertificate}")
         echo "[Passkeys] App-signing certificate override: ${applicationCertificate} (installed identity)."
       }
