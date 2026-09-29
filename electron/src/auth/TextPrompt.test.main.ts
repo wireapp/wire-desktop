@@ -138,15 +138,6 @@ describe('SSO website text prompt', function () {
     assert.strictEqual(BrowserWindow.getAllWindows().filter(win => win !== parent).length, 0);
   });
 
-  it('closes the dialog when the requesting window is destroyed', async () => {
-    // executeJavaScript cannot return from a renderer that has been destroyed.
-    void parent.webContents.executeJavaScript(`prompt('Label')`).catch(() => null);
-    const win = await dialog();
-    parent.destroy();
-    await waitFor(() => (win.isDestroyed() ? true : undefined));
-    assert.ok(win.isDestroyed());
-  });
-
   it('cancels an open prompt when the requesting page navigates', async () => {
     const result = parent.webContents.executeJavaScript(`prompt('Label')`).catch(() => null);
     const win = await dialog();

@@ -201,6 +201,34 @@ export async function buildMacOSWrapper(
   }
 }
 
+export async function embedProvisioningProfile(appFile: string, profile: string, buildDir: string): Promise<string> {
+  const buildRoot = await fs.realpath(buildDir);
+  const contents = await fs.realpath(path.join(appFile, 'Contents'));
+  const relative = path.relative(buildRoot, contents);
+  if (!relative || relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+    throw new Error('Provisioning profile destination must be inside the build directory.');
+  }
+
+  const destination = path.join(contents, 'embedded.provisionprofile');
+  // Do not follow a pre-existing destination link when copying or changing permissions.
+  if (await fs.pathExists(destination)) {
+    if (!(await fs.lstat(destination)).isFile()) {
+      throw new Error('Provisioning profile destination must be a regular file.');
+    }
+  }
+  // Replace the directory entry rather than following it (including dangling symlinks).
+  const temporary = await fs.mkdtemp(path.join(contents, '.provisionprofile-'));
+  try {
+    const stagedProfile = path.join(temporary, 'profile');
+    await fs.copyFile(profile, stagedProfile);
+    await fs.chmod(stagedProfile, 0o644);
+    await fs.rename(stagedProfile, destination);
+  } finally {
+    await fs.remove(temporary);
+  }
+  return destination;
+}
+
 export async function manualMacOSSign(
   appFile: string,
   pkgFile: string,
@@ -215,10 +243,11 @@ export async function manualMacOSSign(
       throw new Error('Cannot sign the macOS app without MACOS_PROVISIONING_PROFILE.');
     }
 
-    const embeddedProvisioningProfile = path.join(appFile, 'Contents', 'embedded.provisionprofile');
-    await fs.copy(macOSConfig.provisioningProfile, embeddedProvisioningProfile);
-    // Jenkins secret files are owner-only; the installed profile must be readable by app users.
-    await fs.chmod(embeddedProvisioningProfile, 0o644);
+    const embeddedProvisioningProfile = await embedProvisioningProfile(
+      appFile,
+      macOSConfig.provisioningProfile,
+      commonConfig.buildDir,
+    );
     logger.log(`Embedded provisioning profile in "${embeddedProvisioningProfile}".`);
 
     const filesToSign = [

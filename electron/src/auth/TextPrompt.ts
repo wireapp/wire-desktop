@@ -78,11 +78,18 @@ export function registerTextPrompt(parent: BrowserWindow): void {
       contents.removeListener('did-start-navigation', navigated);
       contents.removeListener('render-process-gone', cancelled);
       parent.removeListener('closed', cancelled);
-      // Never deliver a value to a different document after navigation.
-      event.returnValue = !contents.isDestroyed() && !frame.detached && frame.url === requestUrl ? value : null;
-      if (prompt && !prompt.isDestroyed()) {
-        prompt.destroy();
+      // A synchronous IPC reply must not target a renderer/frame being torn down.
+      if (!contents.isDestroyed() && !frame.detached && frame.url === requestUrl) {
+        event.returnValue = value;
       }
+      // Parent destruction can also close this modal. Avoid re-entering native
+      // window destruction from a closed/render-process-gone callback on Linux.
+      const dialog = prompt;
+      setImmediate(() => {
+        if (dialog && !dialog.isDestroyed()) {
+          dialog.destroy();
+        }
+      });
       logger.info('[Passkeys] Website text prompt closed.');
     };
     const cancelled = (): void => finish();
