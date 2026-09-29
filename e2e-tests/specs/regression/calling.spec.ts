@@ -24,7 +24,7 @@ import {test, expect} from '../../fixtures';
 import {callCell} from '../../poms/webapp/callCell.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
-import { microphonePermissionModal } from '../../poms/webapp/microphonePermission.modal';
+import {microphonePermissionModal} from '../../poms/webapp/microphonePermission.modal';
 
 test.describe('Calling - Feature Functionality', () => {
   test(
