@@ -52,7 +52,7 @@ export class IbisApiClient {
       country: 'DE',
     };
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       const res = await this.axiosInstance.put(`/teams/${teamOwner.teamId}/billing/info`, billingInfo, {
         headers: {Authorization: `Bearer ${teamOwner.token}`},
         validateStatus: _status => true, // Since we want the request to be retried we need to prevent axios from throwing automatically
@@ -61,7 +61,7 @@ export class IbisApiClient {
         break;
       }
 
-      if (i === 4) {
+      if (i === 9) {
         throw new Error(`Failed to set billing information for team with id ${teamOwner.teamId}`);
       }
 
@@ -70,7 +70,7 @@ export class IbisApiClient {
         `Failed to upgrade team with id ${teamOwner.teamId}, retrying in ${1 * (i + 1)} seconds...`,
         res.data,
       );
-      await new Promise(res => setTimeout(res, 3_000 * (i + 1)));
+      await new Promise(res => setTimeout(res, 1_000 * (i + 1)));
     }
 
     await this.axiosInstance.put(
