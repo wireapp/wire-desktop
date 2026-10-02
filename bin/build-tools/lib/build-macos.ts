@@ -20,11 +20,16 @@
 import {flatAsync as buildPkg} from '@electron/osx-sign';
 import electronPackager, {ArchOption} from 'electron-packager';
 import fs from 'fs-extra';
-import path from 'path';
+import globby from 'globby';
 
-import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
+import {execFile} from 'child_process';
+import path from 'path';
+import {promisify} from 'util';
+
 import {flipElectronFuses, getCommonConfig} from './commonConfig';
 import {CommonConfig, MacOSConfig} from './Config';
+
+import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
@@ -93,17 +98,29 @@ export async function buildMacOSConfig(
     appCopyright: commonConfig.copyright,
     appVersion: commonConfig.version,
     arch: architecture,
-    asar: commonConfig.enableAsar,
+    asar: commonConfig.enableAsar ? {unpack: '**/*.node'} : false,
     buildVersion: commonConfig.buildNumber,
     darwinDarkModeSupport: true,
     dir: '.',
     extendInfo: plistEntries,
     helperBundleId: `${macOSConfig.bundleId}.helper`,
     icon: 'resources/macos/logo.icns',
-    ignore: [/\/electron\/renderer\/src$/, /\/\.yarn$/, /\$electron\/src$/, /\/bin$/, /\/jenkins$/],
+    ignore: [
+      /\/electron\/renderer\/src$/,
+      /\/\.yarn$/,
+      /\$electron\/src$/,
+      /\/bin$/,
+      /\/jenkins$/,
+      // Local signing inputs are not runtime resources. The selected profile is
+      // embedded explicitly in Contents before signing.
+      /\/resources\/macos\/.*\.(?:p12|pfx|cer|provisionprofile|mobileprovision|key|p8)$/i,
+    ],
     name: commonConfig.name,
     osxUniversal: {
       mergeASARs: true,
+      // Both input apps contain the same two architecture-specific prebuilds.
+      // Preserve them as-is; node-gyp-build selects the appropriate one at runtime.
+      x64ArchFiles: '**/objc-js/prebuilds/**/*.node',
     },
     out: commonConfig.buildDir,
     overwrite: true,
@@ -249,6 +266,22 @@ export async function manualMacOSSign(
       commonConfig.buildDir,
     );
     logger.log(`Embedded provisioning profile in "${embeddedProvisioningProfile}".`);
+
+    // Native addons must be signed before the outer app signature. ASAR cannot
+    // hold loadable Mach-O binaries; packaging extracts these to app.asar.unpacked.
+    const addons = await globby('Contents/Resources/{app.asar.unpacked,app}/node_modules/**/*.node', {
+      cwd: appFile,
+      followSymbolicLinks: false,
+    });
+    for (const addon of addons) {
+      await promisify(execFile)('codesign', [
+        '--force',
+        '--sign',
+        macOSConfig.certNameApplication,
+        path.join(appFile, addon),
+      ]);
+    }
+    logger.log(`[SSO] Signed ${addons.length} native addon binaries.`);
 
     const filesToSign = [
       'Frameworks/Electron Framework.framework/Versions/A/Electron Framework',

@@ -15772,12 +15772,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-addon-api@npm:^8.5.0":
+  version: 8.9.2
+  resolution: "node-addon-api@npm:8.9.2"
+  dependencies:
+    node-gyp: latest
+  checksum: 820b3099b7d27c555fd9d98c986feab52d7eaf2e4dac1bce927857368baa0f2a3f31db5bd5112acd45222fd33a453b3baf8bf78771a0643a4b712e09a33f0fdf
+  languageName: node
+  linkType: hard
+
 "node-api-version@npm:^0.2.0":
   version: 0.2.1
   resolution: "node-api-version@npm:0.2.1"
   dependencies:
     semver: ^7.3.5
   checksum: 78a3056873a8a15c4b0f3ed1f64d294fe4e0ba4a4d08b5f9cfa06a8586ff9bc7c942ef17648171b000d7343d216b7e07dc4787d6ba98307f0a2de9ef13722f3a
+  languageName: node
+  linkType: hard
+
+"node-gyp-build@npm:^4.8.4":
+  version: 4.8.4
+  resolution: "node-gyp-build@npm:4.8.4"
+  bin:
+    node-gyp-build: bin.js
+    node-gyp-build-optional: optional.js
+    node-gyp-build-test: build-test.js
+  checksum: 8b81ca8ffd5fa257ad8d067896d07908a36918bc84fb04647af09d92f58310def2d2b8614d8606d129d9cd9b48890a5d2bec18abe7fcff54818f72bedd3a7d74
   languageName: node
   linkType: hard
 
@@ -16037,6 +16057,17 @@ __metadata:
   bin:
     oazapfts: dist/cli.js
   checksum: 147e5efad28f5e7511cf8a0dbe5d8d72c2e5d4ad49710c6eeeec7ac3b8925725e93fb573ba7f5a178b94ea9f7226ac02d7d56c25907b6688afaa5ab074cc0d3e
+  languageName: node
+  linkType: hard
+
+"objc-js@npm:1.5.0":
+  version: 1.5.0
+  resolution: "objc-js@npm:1.5.0"
+  dependencies:
+    node-addon-api: ^8.5.0
+    node-gyp: latest
+    node-gyp-build: ^4.8.4
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
@@ -21248,6 +21279,7 @@ __metadata:
     nock: 13.5.6
     nyc: 15.1.0
     oazapfts: 7.5.0
+    objc-js: 1.5.0
     prettier: 2.8.8
     react: 18.3.1
     react-dom: 18.3.1
@@ -21267,6 +21299,8 @@ __metadata:
     webpack: 5.106.2
     webpack-cli: 5.1.4
   dependenciesMeta:
+    objc-js:
+      optional: true
     registry-js:
       optional: true
   languageName: unknown

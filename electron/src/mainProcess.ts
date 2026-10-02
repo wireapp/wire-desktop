@@ -80,6 +80,7 @@ import {OriginValidator} from './runtime/OriginValidator';
 import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import {BrowserSingleSignOn} from './sso/BrowserSingleSignOn';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {initMacAutoUpdater} from './update/macosAutoUpdater';
 import {AboutWindow} from './window/AboutWindow';
@@ -614,7 +615,7 @@ const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: E
 
 class ElectronWrapperInit {
   logger: logdown.Logger;
-  ssoWindow: SingleSignOn | null;
+  ssoWindow: SingleSignOn | BrowserSingleSignOn | null;
 
   constructor() {
     this.logger = getLogger('ElectronWrapperInit');
@@ -657,11 +658,15 @@ class ElectronWrapperInit {
           this.ssoWindow.focus();
           return {action: 'deny'};
         }
-        // Native window.open inherits the account's Chromium session. Create an
-        // independent window so every account uses the same passkey partition.
-        const options = SingleSignOn.getSingleSignOnLoginWindowOptions(main, details.url);
-        const popup = new BrowserWindow(options);
-        const flow = new SingleSignOn(popup, sender, lifecycle.getAccountId(sender), details.url);
+        const flow =
+          process.platform === 'darwin'
+            ? new BrowserSingleSignOn(main, sender, details.url)
+            : new SingleSignOn(
+                new BrowserWindow(SingleSignOn.getSingleSignOnLoginWindowOptions(main, details.url)),
+                sender,
+                lifecycle.getAccountId(sender),
+                details.url,
+              );
         this.ssoWindow = flow;
         flow.onClose = () => {
           this.sendSSOWindowCloseEvent();

@@ -59,6 +59,13 @@ describe('dispatchDeepLink', () => {
     assert.ok(sendActionSpy.calledWith(EVENT_TYPE.ACCOUNT.SSO_LOGIN, 'wire-13266298-4ac8-44b5-8281-dfb9e95fab5c'));
   });
 
+  it('does not forward system authentication cookie callbacks to the renderer', async () => {
+    sendActionSpy.resetHistory();
+    await protocolHandler['dispatchDeepLink']('wire://login/success?cookie=zuid%3Dsecret&validation_token=state');
+    assert.strictEqual(sendActionSpy.called, false);
+    assert.strictEqual(protocolHandler.hashLocation, '');
+  });
+
   it('forwards start login events', async () => {
     await protocolHandler['dispatchDeepLink']('wire://start-login');
     assert.ok(sendActionSpy.calledWith(EVENT_TYPE.ACTION.START_LOGIN));
