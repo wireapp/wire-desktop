@@ -46,6 +46,7 @@ import {URL, pathToFileURL} from 'url';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import * as ProxyAuth from './auth/ProxyAuth';
+import {registerWebAuthnAccountPicker} from './auth/WebAuthn';
 import {getPictureInPictureCallWindowOptions, isPictureInPictureCallWindow} from './calling/PictureInPictureCall';
 import {initializeFirstInstance} from './lib/applicationBootstrap';
 import {
@@ -79,6 +80,7 @@ import {OriginValidator} from './runtime/OriginValidator';
 import {config} from './settings/config';
 import {settings} from './settings/ConfigurationPersistence';
 import {SettingsType} from './settings/SettingsType';
+import {BrowserSingleSignOn} from './sso/BrowserSingleSignOn';
 import {SingleSignOn} from './sso/SingleSignOn';
 import {initMacAutoUpdater} from './update/macosAutoUpdater';
 import {AboutWindow} from './window/AboutWindow';
@@ -100,15 +102,6 @@ const mainProcessFireAndForgetInvoker = createFireAndForgetInvoker({
   },
 });
 const configuredUserDataPath = getConfiguredPortableUserDataPath();
-
-type OpenLinkInNewWindowParameters = {
-  accountId: Maybe<string>;
-  browserWindow: BrowserWindow;
-  frameName: string;
-  options: BrowserWindowConstructorOptions;
-  senderWebContents: WebContents;
-  url: string;
-};
 
 remoteMain.initialize();
 
@@ -139,6 +132,24 @@ const startHidden = Boolean(argv[config.ARGUMENT.STARTUP] || argv[config.ARGUMEN
 const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOWNLOAD_PATH);
 const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
 const isInternalBuild = (): boolean => config.environment === 'internal';
+
+const configureWebAuthn = (): void => {
+  if (!EnvironmentUtil.platform.IS_MAC_OS) {
+    logger.info(`[Passkeys] Skipping macOS Touch ID configuration on ${process.platform}; using platform defaults.`);
+    return;
+  }
+
+  logger.info(
+    `[Passkeys] Configuring Touch ID: Electron ${process.versions.electron}; keychain group ${config.webAuthnKeychainAccessGroup}.`,
+  );
+  app.configureWebAuthn({
+    touchID: {
+      keychainAccessGroup: config.webAuthnKeychainAccessGroup,
+      promptReason: 'sign in to $1',
+    },
+  });
+  logger.info('[Passkeys] Touch ID configuration applied. This does not verify keychain access or a successful login.');
+};
 
 if (customDownloadPath) {
   electronDl({
@@ -514,6 +525,7 @@ const handleAppEvents = (): void => {
 
   // System Menu, Tray Icon & Show window
   app.on('ready', async () => {
+    configureWebAuthn();
     let regionalLocale: string | undefined;
     try {
       regionalLocale = app.getSystemLocale();
@@ -603,7 +615,7 @@ const applyProxySettings = async (authenticatedProxyDetails: URL, webContents: E
 
 class ElectronWrapperInit {
   logger: logdown.Logger;
-  ssoWindow: SingleSignOn | null;
+  ssoWindow: SingleSignOn | BrowserSingleSignOn | null;
 
   constructor() {
     this.logger = getLogger('ElectronWrapperInit');
@@ -620,7 +632,6 @@ class ElectronWrapperInit {
   closeSSOWindow = () => {
     if (this.ssoWindow) {
       this.ssoWindow?.close();
-      this.ssoWindow = null;
     }
   };
 
@@ -640,12 +651,34 @@ class ElectronWrapperInit {
   webviewProtection(): void {
     const openLinkInNewWindowHandler = (
       details: HandlerDetails,
+      sender: WebContents,
     ): {action: 'deny'} | {action: 'allow'; overrideBrowserWindowOptions?: BrowserWindowConstructorOptions} => {
       if (SingleSignOn.isSingleSignOnLoginWindow(details.frameName)) {
-        return {
-          action: 'allow',
-          overrideBrowserWindowOptions: SingleSignOn.getSingleSignOnLoginWindowOptions(main, details.url),
+        if (this.ssoWindow) {
+          this.ssoWindow.focus();
+          return {action: 'deny'};
+        }
+        const flow =
+          process.platform === 'darwin'
+            ? new BrowserSingleSignOn(main, sender, details.url)
+            : new SingleSignOn(
+                new BrowserWindow(SingleSignOn.getSingleSignOnLoginWindowOptions(main, details.url)),
+                sender,
+                lifecycle.getAccountId(sender),
+                details.url,
+              );
+        this.ssoWindow = flow;
+        flow.onClose = () => {
+          this.sendSSOWindowCloseEvent();
+          if (this.ssoWindow === flow) {
+            this.ssoWindow = null;
+          }
         };
+        void flow.init().catch(() => {
+          this.logger.warn('Unable to initialize SSO window.');
+          flow.close();
+        });
+        return {action: 'deny'};
       }
 
       if (isPictureInPictureCallWindow(details.frameName)) {
@@ -661,30 +694,6 @@ class ElectronWrapperInit {
       return {action: 'deny'};
     };
 
-    function openLinkInNewWindow(
-      electronWrapperInitialization: ElectronWrapperInit,
-      parameters: OpenLinkInNewWindowParameters,
-    ): Promise<void> | void {
-      if (SingleSignOn.isSingleSignOnLoginWindow(parameters.frameName)) {
-        const singleSignOn = new SingleSignOn(
-          parameters.browserWindow,
-          parameters.senderWebContents,
-          parameters.accountId,
-          parameters.url,
-          parameters.options,
-        ).init();
-
-        return new Promise(() => {
-          singleSignOn
-            .then(sso => {
-              electronWrapperInitialization.ssoWindow = sso;
-              electronWrapperInitialization.ssoWindow.onClose = electronWrapperInitialization.sendSSOWindowCloseEvent;
-            })
-            .catch(error => console.info(error));
-        });
-      }
-    }
-
     // Keeping this Function for future use
     const willNavigateInWebview = (event: ElectronEvent, url: string, baseUrl: string): void => {
       // Ensure navigation is to an allowed domain
@@ -699,6 +708,7 @@ class ElectronWrapperInit {
     const enableSpellChecking = settings.restore(SettingsType.ENABLE_SPELL_CHECKING, true);
 
     app.on('web-contents-created', async (_webviewEvent: ElectronEvent, contents: WebContents) => {
+      registerWebAuthnAccountPicker(contents.session);
       remoteMain.enable(contents);
       // disable new Windows by default on everything
       contents.setWindowOpenHandler(() => {
@@ -728,19 +738,7 @@ class ElectronWrapperInit {
             await applyProxySettings(proxyInfoArg, contents);
           }
           // Open webview links outside of the app
-          contents.setWindowOpenHandler(openLinkInNewWindowHandler);
-          contents.on('did-create-window', async (win, windowCreationDetails) => {
-            const {frameName, options, url} = windowCreationDetails;
-
-            await openLinkInNewWindow(this, {
-              accountId: lifecycle.getAccountId(contents),
-              browserWindow: win,
-              frameName,
-              options,
-              senderWebContents: contents,
-              url,
-            });
-          });
+          contents.setWindowOpenHandler(details => openLinkInNewWindowHandler(details, contents));
           contents.on('will-navigate', (event: ElectronEvent, url: string) => {
             willNavigateInWebview(event, url, contents.getURL());
           });

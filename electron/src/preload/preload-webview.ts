@@ -47,6 +47,13 @@ type Theme = 'dark' | 'default';
 
 const logger = getLogger(path.basename(__filename));
 
+// Only the main process sends this after validating the SSO backend and copying
+// its authentication cookie into this account's session.
+ipcRenderer.on('wire:sso-result', (_event, result: {origin: string; type: string}) => {
+  logger.info('[Passkeys] Received verified SSO result after cookie handoff.');
+  window.dispatchEvent(new MessageEvent('message', {origin: result.origin, data: {type: result.type}}));
+});
+
 function subscribeToThemeChange(): void {
   function updateWebAppTheme(): void {
     if (WebAppEvents.PROPERTIES.UPDATE.INTERFACE) {

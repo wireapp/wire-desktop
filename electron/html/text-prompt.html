@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'self'; form-action 'none'; base-uri 'none'"
+    />
+    <title></title>
+    <link rel="stylesheet" href="../css/proxy-prompt.css" />
+    <link rel="stylesheet" href="../css/text-prompt.css" />
+  </head>
+  <body>
+    <form aria-labelledby="title" aria-describedby="origin">
+      <h1 id="title"></h1>
+      <p id="origin"></p>
+      <label id="message" for="value"></label>
+      <input id="value" type="text" maxlength="4096" autocomplete="off" aria-describedby="origin" />
+      <div class="buttons">
+        <button id="cancel" type="button"></button>
+        <button id="ok" type="submit"></button>
+      </div>
+    </form>
+  </body>
+</html>
