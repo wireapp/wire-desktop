@@ -19,9 +19,11 @@
 
 import nock, {cleanAll} from 'nock';
 
-import * as assert from 'assert';
+import assert from 'node:assert';
 
-import {axiosWithContentLimit, axiosWithCookie} from './openGraph';
+import {fetchOpenGraphHtml, getOpenGraphDataAsync} from './openGraph';
+
+import {config} from '../settings/config';
 
 const exampleUrl = 'https://example.com';
 const defaultMessage = 'Hello from nock!';
@@ -35,37 +37,18 @@ const russianMessageUtf8 = [
   208, 176, 33,
 ];
 
-const contentLimitRequest = (contentType: string, contentArray: number[]) => {
-  const CONTENT_SIZE_LIMIT = 1e6; // ~1MB
+function contentLimitRequest(contentType: string, contentArray: number[]) {
+  const contentSizeLimit = 1e6; // ~1MB
   nock(exampleUrl).get('/').reply(200, Buffer.from(contentArray), {
     'content-type': contentType,
   });
-  return axiosWithContentLimit(
-    {
-      method: 'get',
-      url: exampleUrl,
-    },
-    CONTENT_SIZE_LIMIT,
-  );
-};
-
-const cookieRequest = (cookieText: string) => {
-  nock(exampleUrl).get('/').reply(302, '', {
-    'set-cookie': cookieText,
-  });
-
-  nock(exampleUrl, {reqheaders: {Cookie: cookieText}})
-    .get('/')
-    .reply(200);
-
-  return axiosWithCookie({
-    method: 'get',
-    url: exampleUrl,
-  });
-};
+  return fetchOpenGraphHtml(exampleUrl, config.userAgent, contentSizeLimit);
+}
 
 describe('openGraph', () => {
-  afterEach(() => cleanAll());
+  afterEach(() => {
+    cleanAll();
+  });
 
   it('decodes a text encoded with UTF-8', async () => {
     const result = await contentLimitRequest('text/html; charset=utf-8', defaultMessageUtf8);
@@ -96,14 +79,102 @@ describe('openGraph', () => {
     try {
       await contentLimitRequest('', []);
       assert.fail(`Request didn't throw`);
-    } catch (error: any) {
-      assert.strictEqual(true, error.message.includes('Could not parse content type'));
+    } catch (error: unknown) {
+      assert(error instanceof Error);
+      assert.strictEqual(error.message.includes('Could not parse content type'), true);
     }
   });
 
-  it('saves cookies on requests', async () => {
-    const cookieText = 'my-cookie';
-    const result = await cookieRequest(cookieText);
-    assert.strictEqual(result.config.headers['Cookie'], cookieText);
+  it('fetches normal OpenGraph metadata through the protected requester', async () => {
+    nock(exampleUrl)
+      .get('/metadata')
+      .reply(200, '<html><head><meta property="og:description" content="A preview"></head></html>', {
+        'content-type': 'text/html',
+      });
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/metadata`);
+
+    assert.strictEqual(actualMetadata.description, 'A preview');
+  });
+
+  it('selects Twitter user agents per request without changing later requests', async () => {
+    const configuredUserAgent = config.userAgent;
+    const htmlResponse = '<html><head><meta property="og:description" content="A preview"></head></html>';
+
+    nock('https://twitter.com')
+      .get('/')
+      .matchHeader('user-agent', 'Twitterbot/1.0')
+      .reply(200, htmlResponse, {'content-type': 'text/html'});
+    nock(exampleUrl)
+      .get('/')
+      .matchHeader('user-agent', configuredUserAgent)
+      .reply(200, htmlResponse, {'content-type': 'text/html'});
+    nock('https://eviltwitter.com')
+      .get('/')
+      .matchHeader('user-agent', configuredUserAgent)
+      .reply(200, htmlResponse, {'content-type': 'text/html'});
+
+    await getOpenGraphDataAsync('https://twitter.com');
+    await getOpenGraphDataAsync(exampleUrl);
+    await getOpenGraphDataAsync('https://eviltwitter.com');
+
+    assert.strictEqual(config.userAgent, configuredUserAgent);
+  });
+
+  it('fetches OpenGraph images through the protected requester', async () => {
+    nock(exampleUrl)
+      .get('/image-page')
+      .reply(200, '<html><head><meta property="og:image" content="https://example.com/image"></head></html>', {
+        'content-type': 'text/html',
+      });
+    nock(exampleUrl).get('/image').reply(200, Buffer.from('image'), {'content-type': 'image/png'});
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/image-page`);
+    const actualImage = actualMetadata.image;
+    if (typeof actualImage !== 'object' || actualImage === null || Array.isArray(actualImage)) {
+      assert.fail('Expected an OpenGraph image object');
+    }
+
+    assert.strictEqual(actualImage.url, 'data:image/png;base64,aW1hZ2U=');
+  });
+
+  it('ignores an OpenGraph image with a private literal destination', async () => {
+    nock(exampleUrl)
+      .get('/private-image-page')
+      .reply(200, '<html><head><meta property="og:image" content="http://169.254.169.254/latest"></head></html>', {
+        'content-type': 'text/html',
+      });
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/private-image-page`);
+
+    assert.strictEqual(actualMetadata.image, undefined);
+  });
+
+  it('ignores an OpenGraph image redirected to a private destination', async () => {
+    nock(exampleUrl)
+      .get('/redirected-image-page')
+      .reply(200, '<html><head><meta property="og:image" content="https://example.com/image-redirect"></head></html>', {
+        'content-type': 'text/html',
+      });
+    nock(exampleUrl).get('/image-redirect').reply(302, '', {
+      location: 'http://169.254.169.254/latest/meta-data/',
+    });
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/redirected-image-page`);
+
+    assert.strictEqual(actualMetadata.image, undefined);
+  });
+
+  it('ignores an OpenGraph image with an unsupported content type', async () => {
+    nock(exampleUrl)
+      .get('/not-an-image-page')
+      .reply(200, '<html><head><meta property="og:image" content="https://example.com/not-an-image"></head></html>', {
+        'content-type': 'text/html',
+      });
+    nock(exampleUrl).get('/not-an-image').reply(200, 'not an image', {'content-type': 'text/plain'});
+
+    const actualMetadata = await getOpenGraphDataAsync(`${exampleUrl}/not-an-image-page`);
+
+    assert.strictEqual(actualMetadata.image, undefined);
   });
 });
