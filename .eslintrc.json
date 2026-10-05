@@ -20,6 +20,12 @@
       }
     },
     {
+      "files": ["bin/**/*.test.ts", "bin/**/*.test.main.ts", "electron/src/**/*.test.ts", "electron/src/**/*.test.main.ts", "electron/src/**/*.test.renderer.ts"],
+      "rules": {
+        "jest/expect-expect": "off"
+      }
+    },
+    {
       "files": ["e2e-tests/**/*.ts"],
       "rules": {
         "no-restricted-syntax": [
