@@ -61,7 +61,6 @@ export async function buildMacOSConfig(
     electronMirror: null,
     notarizeAppleId: null,
     notarizeApplePassword: null,
-    provisioningProfile: null,
   };
 
   const macOSConfig: MacOSConfig = {
@@ -73,19 +72,7 @@ export async function buildMacOSConfig(
     electronMirror: process.env.MACOS_ELECTRON_MIRROR_URL || macOSDefaultConfig.electronMirror,
     notarizeAppleId: process.env.MACOS_NOTARIZE_APPLE_ID || macOSDefaultConfig.notarizeAppleId,
     notarizeApplePassword: process.env.MACOS_NOTARIZE_APPLE_PASSWORD || macOSDefaultConfig.notarizeApplePassword,
-    provisioningProfile: process.env.MACOS_PROVISIONING_PROFILE || macOSDefaultConfig.provisioningProfile,
   };
-
-  if (macOSConfig.certNameApplication) {
-    if (!macOSConfig.provisioningProfile) {
-      throw new Error(
-        'MACOS_PROVISIONING_PROFILE is required when signing the app because the WebAuthn keychain access group is a restricted entitlement.',
-      );
-    }
-    if (!(await fs.pathExists(macOSConfig.provisioningProfile))) {
-      throw new Error(`macOS provisioning profile not found at "${macOSConfig.provisioningProfile}".`);
-    }
-  }
 
   if (macOSConfig.appleExportComplianceCode) {
     plistEntries['ITSAppUsesNonExemptEncryption'] = true;
@@ -111,8 +98,7 @@ export async function buildMacOSConfig(
       /\$electron\/src$/,
       /\/bin$/,
       /\/jenkins$/,
-      // Local signing inputs are not runtime resources. The selected profile is
-      // embedded explicitly in Contents before signing.
+      // Signing inputs are not runtime resources.
       /\/resources\/macos\/.*\.(?:p12|pfx|cer|provisionprofile|mobileprovision|key|p8)$/i,
     ],
     name: commonConfig.name,
@@ -145,7 +131,6 @@ export async function buildMacOSConfig(
           entitlements: 'resources/macos/entitlements/parent.plist',
         }),
         identity: macOSConfig.certNameApplication,
-        provisioningProfile: macOSConfig.provisioningProfile || undefined,
       };
     }
 
@@ -218,34 +203,6 @@ export async function buildMacOSWrapper(
   }
 }
 
-export async function embedProvisioningProfile(appFile: string, profile: string, buildDir: string): Promise<string> {
-  const buildRoot = await fs.realpath(buildDir);
-  const contents = await fs.realpath(path.join(appFile, 'Contents'));
-  const relative = path.relative(buildRoot, contents);
-  if (!relative || relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
-    throw new Error('Provisioning profile destination must be inside the build directory.');
-  }
-
-  const destination = path.join(contents, 'embedded.provisionprofile');
-  // Do not follow a pre-existing destination link when copying or changing permissions.
-  if (await fs.pathExists(destination)) {
-    if (!(await fs.lstat(destination)).isFile()) {
-      throw new Error('Provisioning profile destination must be a regular file.');
-    }
-  }
-  // Replace the directory entry rather than following it (including dangling symlinks).
-  const temporary = await fs.mkdtemp(path.join(contents, '.provisionprofile-'));
-  try {
-    const stagedProfile = path.join(temporary, 'profile');
-    await fs.copyFile(profile, stagedProfile);
-    await fs.chmod(stagedProfile, 0o644);
-    await fs.rename(stagedProfile, destination);
-  } finally {
-    await fs.remove(temporary);
-  }
-  return destination;
-}
-
 export async function manualMacOSSign(
   appFile: string,
   pkgFile: string,
@@ -256,17 +213,6 @@ export async function manualMacOSSign(
   const mainEntitlements = 'resources/macos/entitlements/parent.plist';
 
   if (macOSConfig.certNameApplication) {
-    if (!macOSConfig.provisioningProfile) {
-      throw new Error('Cannot sign the macOS app without MACOS_PROVISIONING_PROFILE.');
-    }
-
-    const embeddedProvisioningProfile = await embedProvisioningProfile(
-      appFile,
-      macOSConfig.provisioningProfile,
-      commonConfig.buildDir,
-    );
-    logger.log(`Embedded provisioning profile in "${embeddedProvisioningProfile}".`);
-
     // Native addons must be signed before the outer app signature. ASAR cannot
     // hold loadable Mach-O binaries; packaging extracts these to app.asar.unpacked.
     const addons = await globby('Contents/Resources/{app.asar.unpacked,app}/node_modules/**/*.node', {

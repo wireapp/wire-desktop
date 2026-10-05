@@ -37,7 +37,6 @@ interface WireJson {
   supportUrl: string;
   updateUrl: string;
   version: string;
-  webAuthnKeychainAccessGroup: string;
   websiteUrl: string;
 }
 

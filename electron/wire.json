@@ -21,6 +21,5 @@
   "supportUrl": "https://support.wire.com",
   "updateUrl": "https://wire-app.wire.com/win/prod/",
   "version": "3.44.0",
-  "webAuthnKeychainAccessGroup": "EDF3JCE8BC.com.wearezeta.zclient.mac.webauthn",
   "websiteUrl": "https://wire.com"
 }

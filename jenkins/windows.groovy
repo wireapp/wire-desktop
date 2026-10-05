@@ -8,7 +8,6 @@ node('windows') {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
   def wireGov = params.WIRE_GOV
-  echo '[Passkeys] Resolving Jenkins NodeJS tool node-v23.0.0. If missing, configure it under Manage Jenkins > Tools.'
   def NODE = tool name: 'node-v23.0.0', type: 'nodejs'
 
   def jenkinsbot_secret = ''
@@ -38,8 +37,7 @@ node('windows') {
   stage('Build') {
     try {
       withEnv(["PATH+NODE=${NODE}", 'npm_config_target_arch=x64']) {
-        bat 'node bin/passkey-diagnostics.cjs'
-        echo '[Passkeys] Windows uses the OS authenticator; macOS provisioning and Touch ID checks do not apply.'
+        bat 'node -v'
         bat 'npm -v'
         bat 'npm install -g yarn'
         bat 'yarn'
@@ -50,7 +48,6 @@ node('windows') {
         } else {
           bat 'yarn build:win:internal'
         }
-        echo '[Passkeys] App build completed. MANUAL TEST REQUIRED: Test passkey login on Windows; a successful build does not verify authentication.'
       }
     } catch (e) {
       currentBuild.result = 'FAILED'

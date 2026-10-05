@@ -133,24 +133,6 @@ const customDownloadPath = settings.restore<string | undefined>(SettingsType.DOW
 const appHomePath = (path: string) => `${app.getPath('home')}\\${path}`;
 const isInternalBuild = (): boolean => config.environment === 'internal';
 
-const configureWebAuthn = (): void => {
-  if (!EnvironmentUtil.platform.IS_MAC_OS) {
-    logger.info(`[Passkeys] Skipping macOS Touch ID configuration on ${process.platform}; using platform defaults.`);
-    return;
-  }
-
-  logger.info(
-    `[Passkeys] Configuring Touch ID: Electron ${process.versions.electron}; keychain group ${config.webAuthnKeychainAccessGroup}.`,
-  );
-  app.configureWebAuthn({
-    touchID: {
-      keychainAccessGroup: config.webAuthnKeychainAccessGroup,
-      promptReason: 'sign in to $1',
-    },
-  });
-  logger.info('[Passkeys] Touch ID configuration applied. This does not verify keychain access or a successful login.');
-};
-
 if (customDownloadPath) {
   electronDl({
     directory: appHomePath(customDownloadPath),
@@ -525,7 +507,6 @@ const handleAppEvents = (): void => {
 
   // System Menu, Tray Icon & Show window
   app.on('ready', async () => {
-    configureWebAuthn();
     let regionalLocale: string | undefined;
     try {
       regionalLocale = app.getSystemLocale();

@@ -41,7 +41,6 @@ export interface CommonConfig {
   supportUrl: string;
   updateUrl?: string;
   version: string;
-  webAuthnKeychainAccessGroup: string;
   websiteUrl: string;
 }
 
@@ -63,7 +62,6 @@ export interface MacOSConfig {
   electronMirror: string | null;
   notarizeAppleId: string | null;
   notarizeApplePassword: string | null;
-  provisioningProfile: string | null;
 }
 
 export interface WindowsConfig {
