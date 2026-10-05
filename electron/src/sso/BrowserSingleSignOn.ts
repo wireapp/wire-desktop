@@ -138,9 +138,11 @@ export class BrowserSingleSignOn {
   }
 
   public focus = (): void => {
-    // AuthenticationServices owns the browser window and its presentation.
-    if (!this.parent.isDestroyed()) {
-      this.parent.focus();
+    if (this.closed) {
+      return;
+    }
+    if (this.request && !this.request.focus()) {
+      logger.warn('[SSO] Unable to bring the authentication browser forward. Switch to the browser to continue.');
     }
   };
 }

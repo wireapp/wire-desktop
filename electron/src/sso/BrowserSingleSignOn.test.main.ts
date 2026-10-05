@@ -66,6 +66,10 @@ function setup(failCookie = false) {
         cancel: () => {
           events.push('cancel');
         },
+        focus: () => {
+          events.push('focus browser');
+          return true;
+        },
       };
     },
   );
@@ -93,6 +97,19 @@ describe('browser SSO lifecycle', () => {
     await pending;
     flow.close();
     assert.deepStrictEqual(events, ['set', 'flush', 'AUTH_SUCCESS', 'cancel', 'close']);
+  });
+
+  it('focuses the existing browser request without restarting authentication', async () => {
+    const {flow, complete, events} = setup();
+    const pending = flow.init();
+    flow.focus();
+    flow.focus();
+    assert.deepStrictEqual(events, ['focus browser', 'focus browser']);
+    complete();
+    await pending;
+    flow.focus();
+    assert.strictEqual(events.filter(event => event === 'focus browser').length, 2);
+    assert.strictEqual(events.filter(event => event === 'AUTH_SUCCESS').length, 1);
   });
 
   it('does not write cookies for an uncorrelated callback', async () => {

@@ -27,6 +27,7 @@ const presentationAnchors = new Map<string, NobjcObject>();
 export interface WebAuthenticationRequest {
   result: Promise<string>;
   cancel: () => void;
+  focus: () => boolean;
 }
 
 // Lazy-load the macOS-only addon. Only public AuthenticationServices APIs are used.
@@ -38,10 +39,29 @@ export function startMacWebAuthentication(
 ): WebAuthenticationRequest {
   const {NobjcLibrary, NobjcClass, getPointer, fromPointer, typedBlock} = require('objc-js');
   const foundation = new NobjcLibrary('/System/Library/Frameworks/Foundation.framework/Foundation');
+  const appKit = new NobjcLibrary('/System/Library/Frameworks/AppKit.framework/AppKit');
   const authentication = new NobjcLibrary(
     '/System/Library/Frameworks/AuthenticationServices.framework/AuthenticationServices',
   );
   const nsWindow = fromPointer(parent.getNativeWindowHandle()).window();
+  // Resolve the browser once, so changing the default during login cannot send
+  // the continue action to a different app. This reads metadata only.
+  let browserIdentifier: NobjcObject | undefined;
+  try {
+    const browserURL = appKit.NSWorkspace.sharedWorkspace().URLForApplicationToOpenURL$(
+      foundation.NSURL.URLWithString$(foundation.NSString.stringWithUTF8String$(url)),
+    );
+    const bundle = browserURL ? foundation.NSBundle.bundleWithURL$(browserURL) : null;
+    const capabilities = bundle?.objectForInfoDictionaryKey$(
+      foundation.NSString.stringWithUTF8String$('ASWebAuthenticationSessionWebBrowserSupportCapabilities'),
+    );
+    const supported = capabilities?.objectForKey$(foundation.NSString.stringWithUTF8String$('IsSupported'));
+    browserIdentifier = supported?.boolValue()
+      ? bundle.bundleIdentifier()
+      : foundation.NSString.stringWithUTF8String$('com.apple.Safari');
+  } catch {
+    // A focus lookup failure must not prevent authentication from starting.
+  }
   // presentationContextProvider is weak on the Apple side. Retain the provider,
   // session and block in this closure until completion/cancellation.
   // objc-js protocol delegates always dispatch through a TSFN in Electron,
@@ -100,6 +120,36 @@ export function startMacWebAuthentication(
   });
   return {
     result,
+    focus: () => {
+      if (finished || parent.isDestroyed()) {
+        return false;
+      }
+      try {
+        // Before the browser opens, macOS may be asking for consent on Wire.
+        if (nsWindow.attachedSheet()) {
+          parent.focus();
+          return true;
+        }
+        if (!browserIdentifier) {
+          return false;
+        }
+        const browsers = appKit.NSRunningApplication.runningApplicationsWithBundleIdentifier$(browserIdentifier);
+        if (!browsers.count()) {
+          return false;
+        }
+        const browser = browsers.objectAtIndex$(0);
+        const application = appKit.NSApplication.sharedApplication();
+        // Cooperative activation on macOS 14+, legacy activation on older OSs.
+        if (application.respondsToSelector$('yieldActivationToApplication:')) {
+          application.yieldActivationToApplication$(browser);
+        }
+        // NSApplicationActivateAllWindows | NSApplicationActivateIgnoringOtherApps.
+        // Do not reopen the login URL or start a second authentication request.
+        return Boolean(browser.activateWithOptions$(3));
+      } catch {
+        return false;
+      }
+    },
     cancel: () => {
       // Reference provider explicitly so it remains alive for the entire request.
       nativeSession?.setPresentationContextProvider$(provider);
