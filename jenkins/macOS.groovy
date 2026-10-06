@@ -3,6 +3,48 @@ def parseJson(def text) {
   new groovy.json.JsonSlurperClassic().parseText(text)
 }
 
+def withWireGovConfig(boolean wireGov, Closure body) {
+  if (!wireGov) {
+    body()
+    return
+  }
+
+  withCredentials([sshUserPrivateKey(
+    credentialsId: 'wiregov-config-deploy-key',
+    keyFileVariable: 'WIREGOV_DEPLOY_KEY',
+    passphraseVariable: 'WIREGOV_DEPLOY_KEY_PASSPHRASE'
+  )]) {
+    def askpass = sh(script: 'mktemp /tmp/wiregov-ssh-askpass.XXXXXX', returnStdout: true).trim()
+    withEnv(["WIREGOV_ASKPASS_FILE=${askpass}"]) {
+      try {
+        // The helper reads the bound secret at runtime; it contains no secret itself.
+        writeFile file: askpass, text: '''#!/bin/sh
+case "$1" in
+  *passphrase*) printf '%s\\n' "$WIREGOV_DEPLOY_KEY_PASSPHRASE" ;;
+  *) exit 1 ;;
+esac
+'''
+        sh 'chmod 700 "$WIREGOV_ASKPASS_FILE"'
+        withEnv([
+          "SSH_ASKPASS=${askpass}",
+          'SSH_ASKPASS_REQUIRE=force',
+          // Older macOS OpenSSH uses ASKPASS without a terminal only when DISPLAY is set.
+          'DISPLAY=wiregov:0',
+          'LC_ALL=C'
+        ]) {
+          sh label: 'Validate WireGov deploy-key passphrase', script: '''
+            set +x
+            ssh-keygen -y -f "$WIREGOV_DEPLOY_KEY" </dev/null >/dev/null
+          '''
+          body()
+        }
+      } finally {
+        sh 'rm -f "$WIREGOV_ASKPASS_FILE"'
+      }
+    }
+  }
+}
+
 node("macos") {
   def production = params.PRODUCTION
   def custom = params.CUSTOM
@@ -46,7 +88,10 @@ node("macos") {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm install -g yarn'
-        sh 'yarn'
+        withWireGovConfig(wireGov) {
+          sh 'yarn'
+        }
+        
         if (production) {
           withCredentials([string(credentialsId: 'APPLE_EXPORT_COMPLIANCE_CODE', variable: 'APPLE_EXPORT_COMPLIANCE_CODE')]) {
             sh 'yarn build:macos'
@@ -58,7 +103,9 @@ node("macos") {
         } else if (custom) {
           sh 'yarn build:macos'
         } else if (wireGov) {
-          sh 'yarn build:macos:wire-gov'
+          withWireGovConfig(wireGov) {
+            sh 'yarn build:macos:wire-gov'
+          }
 
           echo 'Checking for private Apple APIs ...'
           privateAPIResult = sh script: 'bin/macos-check_private_apis.sh "wrap/build/WireGov-mas-universal/WireGov.app"', returnStdout: true

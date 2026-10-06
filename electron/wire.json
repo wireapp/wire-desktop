@@ -14,7 +14,7 @@
   "environment": "internal",
   "legalUrl": "https://wire.com/legal/",
   "licensesUrl": "https://wire.com/legal/licenses/",
-  "maximumAccounts": "3",
+  "maximumAccounts": "1",
   "name": "WireInternal",
   "nameShort": "WireInternal",
   "privacyUrl": "https://wire.com/privacy/",
