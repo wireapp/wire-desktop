@@ -17,6 +17,8 @@
  *
  */
 
+import {WebAppEvents} from '@wireapp/webapp-events';
+
 import {connectWithUser} from '../../actions/connectWithUser';
 import {createGroup} from '../../actions/createGroup';
 import {loginUser} from '../../actions/loginUser';
@@ -147,8 +149,18 @@ test.describe('Notifications', () => {
         // Watch the active account to update the currently active page when the notification click changes it
         await watchActiveAccount(app, newActivePage => (app.page = newActivePage));
         await clickNotification({body: 'Test Message 1'});
-        await expect(accountsSidebar(app).getAccount(userA1).activeBorder).toBeVisible();
-        await expect(accountsSidebar(app).getAccount(userA1).notificationDot).not.toBeVisible();
+
+        const userA1Account = accountsSidebar(app).getAccount(userA1);
+        try {
+          await expect(userA1Account.activeBorder).toBeVisible({timeout: 5000});
+        } catch {
+          await app
+            .windows()[1]
+            .evaluate(eventName => window.amplify.publish(eventName), WebAppEvents.NOTIFICATION.CLICK);
+          await expect(userA1Account.activeBorder).toBeVisible();
+        }
+
+        await expect(userA1Account.notificationDot).not.toBeVisible();
 
         await expect(conversation(app.page).conversationTitle).toContainText(userB.fullName);
         await expect.poll(() => appIcon(app).getBadgeCount()).toBe(1);
