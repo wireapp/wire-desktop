@@ -137,7 +137,7 @@ jobs:
           fi
 
           FAILED=$(jq '.stats.unexpected' "$REPORT_FILE")
-          MESSAGE=$(jq -c '
+          MESSAGE=$(jq -r '
             # Recursively find all objects that have a non-empty "specs" array
             # Capture the suite title and prepend it to the test title
             [.. | objects | select(has("specs") and (.specs | length > 0)) | .title as $suite | .specs[] | .title as $title | .tests[] | {title: ($suite + " > " + $title), status: .status}] as $tests |
@@ -168,7 +168,11 @@ jobs:
           ' $REPORT_FILE)
 
           echo "failed_tests=$FAILED" >> $GITHUB_OUTPUT
-          echo "report_message=$MESSAGE" >> $GITHUB_OUTPUT
+          {
+            echo 'report_message<<EOF'
+            echo "$MESSAGE"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Notify on Wire about failed tests
         if: ${{ github.event_name != 'pull_request' && !cancelled() && steps.generate-description.outputs.failed_tests > 0 }}
