@@ -22,8 +22,8 @@ import {contextBridge, ipcRenderer} from 'electron';
 
 let completion: Promise<unknown> = Promise.resolve();
 contextBridge.exposeInMainWorld('__wireSsoOpener', {
-  postMessage: (message: {type?: unknown}) => {
-    completion = ipcRenderer.invoke('wire:sso-complete', message?.type).catch(() => false);
+  postMessage: (message: {type?: unknown; payload?: unknown}) => {
+    completion = ipcRenderer.invoke('wire:sso-complete', message?.type, message?.payload).catch(() => false);
     return completion;
   },
   close: () => {

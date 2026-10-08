@@ -23,6 +23,7 @@ import * as assert from 'assert';
 
 import {CustomProtocolHandler} from './CoreProtocol';
 import {EVENT_TYPE} from './eventType';
+import * as dialogs from './showDialog';
 
 let protocolHandler: CustomProtocolHandler;
 
@@ -64,6 +65,18 @@ describe('dispatchDeepLink', () => {
     await protocolHandler['dispatchDeepLink']('wire://login/success?cookie=zuid%3Dsecret&validation_token=state');
     assert.strictEqual(sendActionSpy.called, false);
     assert.strictEqual(protocolHandler.hashLocation, '');
+  });
+
+  it('silently ignores oversized system callbacks while rejecting oversized ordinary links', async () => {
+    sendActionSpy.resetHistory();
+    const errorDialog = spy();
+    replace(dialogs, 'showErrorDialog', errorDialog);
+    await protocolHandler['dispatchDeepLink'](`wire://login/success?cookie=${'x'.repeat(16000)}`);
+    assert.strictEqual(errorDialog.called, false);
+    assert.strictEqual(sendActionSpy.called, false);
+    assert.strictEqual(protocolHandler.hashLocation, '');
+    await protocolHandler['dispatchDeepLink'](`wire://conversation/${'x'.repeat(1100)}`);
+    assert.strictEqual(errorDialog.calledOnce, true);
   });
 
   it('forwards start login events', async () => {

@@ -23,18 +23,24 @@ import * as assert from 'assert';
 import {EventEmitter} from 'events';
 
 import {BrowserSingleSignOn} from './BrowserSingleSignOn';
+import {BrowserAuthenticationError} from './MacWebAuthentication';
 
 const loginUrl = 'https://backend.example/sso/initiate-login/11111111-1111-1111-1111-111111111111';
 
 function setup(failCookie = false) {
   const events: string[] = [];
   let callback: (value: string) => void = () => {};
+  let reject: (error: Error) => void = () => {};
+  const results: unknown[] = [];
   let callbackUrl = '';
   let scheme = '';
   const parent = Object.assign(new EventEmitter(), {isDestroyed: () => false, focus: () => {}});
   const sender = Object.assign(new EventEmitter(), {
     isDestroyed: () => false,
-    send: (_channel: string, result: {type: string}) => events.push(result.type),
+    send: (_channel: string, result: {type: string}) => {
+      results.push(result);
+      events.push(result.type);
+    },
     session: {
       cookies: {
         set: async () => {
@@ -60,7 +66,8 @@ function setup(failCookie = false) {
       callbackUrl = new URL(url).searchParams.get('success_redirect')!;
       scheme = callbackScheme;
       return {
-        result: new Promise<string>(resolve => {
+        result: new Promise<string>((resolve, rejectResult) => {
+          reject = rejectResult;
           callback = resolve;
         }),
         cancel: () => {
@@ -76,7 +83,7 @@ function setup(failCookie = false) {
   flow.onClose = () => {
     events.push('close');
   };
-  const complete = (wrongState = false) => {
+  const complete = (wrongState = false, failure = false) => {
     const url = new URL(callbackUrl);
     url.searchParams.set('cookie', 'zuid=secret; Path=/access; HttpOnly; Secure');
     url.searchParams.set('userid', '11111111-1111-1111-1111-111111111111');
@@ -84,12 +91,45 @@ function setup(failCookie = false) {
       url.searchParams.set('validation_token', 'wrong');
     }
     assert.strictEqual(url.protocol, `${scheme}:`);
+    if (failure) {
+      url.pathname = '/failure';
+      url.searchParams.set('label', 'forbidden');
+    }
     callback(url.toString());
   };
-  return {flow, complete, events, sender};
+  return {
+    flow,
+    complete,
+    events,
+    sender,
+    results,
+    fail: (code: number) => reject(new BrowserAuthenticationError(code)),
+  };
 }
 
 describe('browser SSO lifecycle', () => {
+  it('closes cancellation without reporting an authentication error, but reports other native errors', async () => {
+    for (const code of [1, 2]) {
+      const {flow, fail, events} = setup();
+      const pending = flow.init();
+      fail(code);
+      await pending;
+      assert.strictEqual(events.includes('AUTH_ERROR'), code !== 1);
+      assert.strictEqual(events.filter(event => event === 'close').length, 1);
+    }
+  });
+
+  it('forwards a correlated backend failure label without installing a cookie', async () => {
+    const {flow, complete, events, results} = setup();
+    const pending = flow.init();
+    complete(false, true);
+    await pending;
+    assert.deepStrictEqual(results, [
+      {origin: 'https://backend.example', type: 'AUTH_ERROR', payload: {label: 'forbidden'}},
+    ]);
+    assert.ok(!events.includes('set'));
+  });
+
   it('flushes the account cookie before reporting success and closes once', async () => {
     const {flow, complete, events} = setup();
     const pending = flow.init();

@@ -25,6 +25,8 @@ import {EventEmitter} from 'events';
 
 import {registerWebAuthnAccountPicker} from './WebAuthn';
 
+import * as locale from '../locale';
+
 describe('WebAuthn account picker', () => {
   let session: EventEmitter;
   let showDialog: SinonStub;
@@ -72,6 +74,27 @@ describe('WebAuthn account picker', () => {
     assert.deepStrictEqual(options.buttons.slice(0, 2), ['Alice — alice@example.com', 'Bob — bob@example.com']);
     assert.strictEqual(options.cancelId, 2);
     assert.strictEqual(options.defaultId, 2);
+  });
+
+  it('uses locale keys for the title, relying-party message and unnamed account', async () => {
+    const translate = stub(locale, 'getText').callsFake(
+      (key, replacements) => `${key}:${Object.values(replacements || {}).join(',')}`,
+    );
+    const callback = spy();
+    await session.listeners('select-webauthn-account')[0](
+      {},
+      {
+        frame,
+        relyingPartyId: 'example.com',
+        accounts: [{credentialId: 'unnamed'}],
+      },
+      callback,
+    );
+    const options = showDialog.firstCall.args[1];
+    assert.strictEqual(options.title, 'passkeyPickerTitle:');
+    assert.strictEqual(options.message, 'passkeyPickerMessage:example.com');
+    assert.deepStrictEqual(options.buttons, ['passkeyPickerAccount:1', 'promptCancel:']);
+    assert.ok(translate.called);
   });
 
   it('cancels when the user dismisses the picker', async () => {

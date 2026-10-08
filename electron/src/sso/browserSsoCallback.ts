@@ -19,6 +19,8 @@
 
 import type {CookiesSetDetails} from 'electron';
 
+import {parseSsoPayload, SsoPayload} from './ssoResult';
+
 export const SSO_TIMEOUT_MS = 30 * 60 * 1000;
 
 export function createBrowserSsoRequest(loginUrl: string, scheme: string, state: string): URL {
@@ -56,7 +58,7 @@ export function parseBrowserSsoCallback(
   scheme: string,
   state: string,
   expiresAt: number,
-): CookiesSetDetails {
+): CookiesSetDetails | {type: 'AUTH_ERROR'; payload: SsoPayload} {
   if (Date.now() >= expiresAt || callback.length > 16384) {
     throw new Error('Expired or oversized SSO callback.');
   }
@@ -71,6 +73,13 @@ export function parseBrowserSsoCallback(
     url.searchParams.get('validation_token') !== state
   ) {
     throw new Error('Invalid SSO callback.');
+  }
+  if (url.pathname === '/failure') {
+    const payload = parseSsoPayload({label: url.searchParams.get('label')});
+    if (url.searchParams.getAll('label').length !== 1 || !payload) {
+      throw new Error('Invalid SSO failure callback.');
+    }
+    return {type: 'AUTH_ERROR', payload};
   }
   if (url.pathname !== '/success') {
     throw new Error('SSO authentication failed.');

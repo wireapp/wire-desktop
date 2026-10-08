@@ -58,6 +58,7 @@ describe('build-macos', () => {
             ),
           );
           assert.strictEqual(packagerConfig.platform, 'mas');
+          assert.ok((packagerConfig.extendInfo as Record<string, unknown>).NSAudioCaptureUsageDescription);
         }
       } finally {
         for (const key of Object.keys(process.env)) {

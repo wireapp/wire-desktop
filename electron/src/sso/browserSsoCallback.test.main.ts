@@ -46,6 +46,16 @@ describe('browser SSO callback', () => {
     assert.strictEqual(success.host, 'login');
   });
 
+  it('preserves validated failure labels and rejects duplicate labels or wrong state', () => {
+    const url = new URL(`wire://login/failure?label=forbidden&validation_token=${state}`);
+    assert.deepStrictEqual(parse(url), {type: 'AUTH_ERROR', payload: {label: 'forbidden'}});
+    url.searchParams.set('validation_token', 'wrong');
+    assert.throws(() => parse(url));
+    url.searchParams.set('validation_token', state);
+    url.searchParams.append('label', 'other');
+    assert.throws(() => parse(url));
+  });
+
   it('rejects non-HTTPS, credentials and non-SSO initiation URLs', () => {
     for (const url of [
       'http://backend.example/sso/initiate-login/x',
@@ -58,6 +68,9 @@ describe('browser SSO callback', () => {
 
   it('accepts only the Wire cookie and scopes it to the initiating backend', () => {
     const cookie = parse(callback());
+    if ('type' in cookie) {
+      throw new Error('Expected a success cookie');
+    }
     assert.strictEqual(cookie.url, 'https://backend.example/access');
     assert.strictEqual(cookie.value, 'test-session');
     assert.strictEqual(cookie.domain, undefined);

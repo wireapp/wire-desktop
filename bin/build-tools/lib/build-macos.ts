@@ -50,6 +50,8 @@ export async function buildMacOSConfig(
   const envFileResolved = path.resolve(envFilePath);
   const plistInfoResolved = path.resolve('resources/macos/Info.plist.json');
   const plistEntries = await fs.readJson(plistInfoResolved);
+  // Brand configuration can replace Info.plist.json during yarn configure.
+  plistEntries.NSAudioCaptureUsageDescription ||= 'Allow Wire to share system audio during screen sharing.';
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
@@ -220,12 +222,14 @@ export async function manualMacOSSign(
       followSymbolicLinks: false,
     });
     for (const addon of addons) {
-      await promisify(execFile)('codesign', [
-        '--force',
-        '--sign',
-        macOSConfig.certNameApplication,
-        path.join(appFile, addon),
-      ]);
+      if (path.isAbsolute(addon) || addon.split(/[\\/]/).includes('..') || !addon.startsWith('Contents/Resources/')) {
+        throw new Error('Native addon must be inside the app resources directory.');
+      }
+      // globby returns relative paths without following directory symlinks.
+      // Sign within the app instead of joining a discovered path to the build root.
+      await promisify(execFile)('codesign', ['--force', '--sign', macOSConfig.certNameApplication, addon], {
+        cwd: appFile,
+      });
     }
     logger.log(`[SSO] Signed ${addons.length} native addon binaries.`);
 

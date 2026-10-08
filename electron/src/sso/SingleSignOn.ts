@@ -23,6 +23,8 @@ import {Maybe} from 'true-myth';
 import * as path from 'path';
 import {URL} from 'url';
 
+import {parseSsoPayload, SsoPayload} from './ssoResult';
+
 import {registerTextPrompt} from '../auth/TextPrompt';
 import {writeBoundedLogMessage} from '../logging/desktopLogWriter';
 import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
@@ -71,6 +73,7 @@ export class SingleSignOn {
   }
 
   public readonly init = async (): Promise<SingleSignOn> => {
+    this.setupBrowserWindow();
     // Configure the actual popup session and cookie cleanup.
     this.session = this.ssoWindow!.webContents.session;
     if (this.session === this.senderWebContents.session || !this.session.isPersistent()) {
@@ -89,10 +92,9 @@ export class SingleSignOn {
       callback({cancel: false, requestHeaders});
     });
 
-    this.setupBrowserWindow();
     registerTextPrompt(this.ssoWindow!);
     const popup = this.ssoWindow!;
-    popup.webContents.ipc.handle('wire:sso-complete', async (event, type: unknown) => {
+    popup.webContents.ipc.handle('wire:sso-complete', async (event, type: unknown, rawPayload: unknown) => {
       if (
         event.senderFrame !== popup.webContents.mainFrame ||
         typeof type !== 'string' ||
@@ -104,7 +106,11 @@ export class SingleSignOn {
         SingleSignOn.logger.warn('[Passkeys] Rejected SSO result from an unexpected origin.');
         return false;
       }
-      this.completion ??= this.finalizeLogin(type);
+      const payload = parseSsoPayload(rawPayload);
+      if (rawPayload !== undefined && !payload) {
+        return false;
+      }
+      this.completion ??= this.finalizeLogin(type, payload);
       await this.completion;
       return true;
     });
@@ -232,16 +238,15 @@ export class SingleSignOn {
     }
 
     for (const cookie of cookies) {
-      if (cookie.domain) {
-        await toSession.cookies.set({url: cookieUrl, ...cookie});
-      }
+      const {name, value, path, secure, httpOnly, expirationDate, sameSite} = cookie;
+      await toSession.cookies.set({url: cookieUrl, name, value, path, secure, httpOnly, expirationDate, sameSite});
     }
 
     await toSession.cookies.flushStore();
     SingleSignOn.logger.info('[Passkeys] Wire authentication cookie transferred to the requesting account.');
   }
 
-  private readonly finalizeLogin = async (type: string): Promise<void> => {
+  private readonly finalizeLogin = async (type: string, payload?: SsoPayload): Promise<void> => {
     if (type === SingleSignOn.RESPONSE_TYPES.AUTH_SUCCESS) {
       if (!this.session) {
         await this.dispatchResponse(SingleSignOn.RESPONSE_TYPES.AUTH_ERROR_SESS_NOT_AVAILABLE);
@@ -260,10 +265,10 @@ export class SingleSignOn {
       }
     }
 
-    await this.dispatchResponse(type);
+    await this.dispatchResponse(type, payload);
   };
 
-  private async dispatchResponse(type: string): Promise<void> {
+  private async dispatchResponse(type: string, payload?: SsoPayload): Promise<void> {
     // Ensure guest window provided type is valid
     const isTypeValid = /^[A-Z_]{1,255}$/g;
     if (isTypeValid.test(type) === false) {
@@ -279,7 +284,7 @@ export class SingleSignOn {
     const originalUrl = this.windowOriginUrl.toString();
     const index = originalUrl.indexOf(marker);
     const origin = index >= 0 ? originalUrl.slice(0, index) : this.windowOriginUrl.origin;
-    this.senderWebContents.send('wire:sso-result', {origin, type});
+    this.senderWebContents.send('wire:sso-result', {origin, type, ...(payload ? {payload} : {})});
   }
 
   private async wipeSessionData() {

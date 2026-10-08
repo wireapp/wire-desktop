@@ -47,6 +47,36 @@ describe('SingleSignOn', () => {
         });
     });
 
+    it('releases a failed initialization so another login can open', async () => {
+      const parent = createWindow({});
+      const popup = createWindow(SingleSignOn.getSingleSignOnLoginWindowOptions(parent, 'https://idp.test'));
+      const flow = new SingleSignOn(popup, parent.webContents, Maybe.nothing(), 'https://idp.test');
+      let active: SingleSignOn | null = flow;
+      const closed = new Promise<void>(resolve => {
+        flow.onClose = () => {
+          active = null;
+          resolve();
+        };
+      });
+      const clear = stub(popup.webContents.session, 'clearStorageData').rejects(new Error('storage unavailable'));
+      try {
+        await assert.rejects(flow.init(), /storage unavailable/);
+        flow.close();
+        await closed;
+        assert.strictEqual(active, null);
+      } finally {
+        clear.restore();
+      }
+      const nextPopup = createWindow(SingleSignOn.getSingleSignOnLoginWindowOptions(parent, 'data:text/html,login'));
+      const next = new SingleSignOn(nextPopup, parent.webContents, Maybe.nothing(), 'data:text/html,login');
+      const nextClosed = new Promise<void>(resolve => {
+        next.onClose = resolve;
+      });
+      await next.init();
+      next.close();
+      await nextClosed;
+    });
+
     it('uses the same persistent SSO session for windows opened by separate accounts', async () => {
       const firstAccount = createWindow({webPreferences: {partition: 'sso-test-account-one'}});
       const secondAccount = createWindow({webPreferences: {partition: 'sso-test-account-two'}});
@@ -136,6 +166,47 @@ describe('SingleSignOn', () => {
   });
 
   describe('independent SSO callback validation', () => {
+    it('preserves validated backend errors through the popup preload', async function () {
+      this.timeout(15000);
+      const server = createServer((_request, response) => response.end('<title>SSO</title>'));
+      await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+      const backend = `http://127.0.0.1:${(server.address() as {port: number}).port}`;
+      const appPath = stub(app, 'getAppPath').returns(path.resolve(__dirname, '../../..'));
+      const parent = new BrowserWindow({show: false});
+      const popup = new BrowserWindow(SingleSignOn.getSingleSignOnLoginWindowOptions(parent, backend));
+      const send = stub(parent.webContents, 'send');
+      const flow = new SingleSignOn(popup, parent.webContents, Maybe.nothing(), `${backend}/sso/initiate-login/test`);
+      const closed = new Promise<void>(resolve => {
+        flow.onClose = resolve;
+      });
+      try {
+        await flow.init();
+        assert.strictEqual(
+          await popup.webContents.executeJavaScript(
+            "__wireSsoOpener.postMessage({type:'AUTH_ERROR', payload:{label:'forbidden', errors:[42]}})",
+          ),
+          false,
+        );
+        await popup.webContents.executeJavaScript(
+          "__wireSsoOpener.postMessage({type:'AUTH_ERROR', payload:{label:'forbidden', errors:['denied'], extra:'discard'}})",
+        );
+        assert.ok(
+          send.calledOnceWithExactly('wire:sso-result', {
+            origin: backend,
+            type: 'AUTH_ERROR',
+            payload: {label: 'forbidden', errors: ['denied']},
+          }),
+        );
+      } finally {
+        flow.close();
+        await closed;
+        parent.destroy();
+        send.restore();
+        appPath.restore();
+        await new Promise<void>(resolve => server.close(() => resolve()));
+      }
+    });
+
     it('rejects other origins and invalid result types, and reports a missing login cookie', async function () {
       this.timeout(15000);
       const server = createServer((_request, response) => response.end('<title>SSO test</title>'));
@@ -214,6 +285,8 @@ describe('SingleSignOn', () => {
       assert.strictEqual(cookies[0].name, 'zuid');
       assert.strictEqual(cookies[0].value, 'test-login');
       assert.strictEqual(cookies[0].httpOnly, true);
+      assert.strictEqual(cookies[0].hostOnly, true);
+      assert.strictEqual((await target().cookies.get({url: 'https://child.backend.test/access'})).length, 0);
       assert.strictEqual((await target().cookies.get({url: 'https://other.test'})).length, 0);
     });
 

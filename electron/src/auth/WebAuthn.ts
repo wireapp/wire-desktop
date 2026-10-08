@@ -57,12 +57,13 @@ export function registerWebAuthnAccountPicker(session: Session): void {
       logger.info('[Passkeys] Showing account picker.');
       const {response} = await dialog.showMessageBox(parent, {
         type: 'question',
-        title: 'Sign in with a passkey',
-        message: `Choose an account for ${relyingPartyId}`,
+        title: getText('passkeyPickerTitle'),
+        message: getText('passkeyPickerMessage', {domain: relyingPartyId}),
         buttons: [
           ...accounts.map(
             (account, index) =>
-              [account.displayName, account.name].filter(Boolean).join(' — ') || `Account ${index + 1}`,
+              [account.displayName, account.name].filter(Boolean).join(' — ') ||
+              getText('passkeyPickerAccount', {number: String(index + 1)}),
           ),
           getText('promptCancel'),
         ],

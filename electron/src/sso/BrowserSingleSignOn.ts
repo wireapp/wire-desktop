@@ -22,7 +22,8 @@ import {BrowserWindow, WebContents} from 'electron';
 import {randomUUID} from 'crypto';
 
 import {createBrowserSsoRequest, parseBrowserSsoCallback, SSO_TIMEOUT_MS} from './browserSsoCallback';
-import {startMacWebAuthentication, WebAuthenticationRequest} from './MacWebAuthentication';
+import {BrowserAuthenticationError, startMacWebAuthentication, WebAuthenticationRequest} from './MacWebAuthentication';
+import type {SsoPayload} from './ssoResult';
 
 import {getLogger} from '../logging/getLogger';
 import {config} from '../settings/config';
@@ -65,6 +66,10 @@ export class BrowserSingleSignOn {
         return;
       }
       const cookie = parseBrowserSsoCallback(callback, url, scheme, state, expiresAt);
+      if ('type' in cookie) {
+        this.sendResult(cookie.type, cookie.payload);
+        return;
+      }
       // The system session delivers the callback directly to this request. Never
       // accept these cookies via generic open-url or renderer IPC handlers.
       stage = 'installing session cookie';
@@ -88,7 +93,10 @@ export class BrowserSingleSignOn {
       }
       logger.info('[SSO] Wire session cookie installed in the requesting account.');
       this.sendResult('AUTH_SUCCESS');
-    } catch {
+    } catch (error) {
+      if (error instanceof BrowserAuthenticationError && error.cancelled) {
+        return;
+      }
       // Callback and native errors can include reusable credentials: log neither.
       if (!this.closed) {
         logger.warn(`[SSO] Browser authentication failed or was cancelled while ${stage}.`);
@@ -100,10 +108,10 @@ export class BrowserSingleSignOn {
     }
   }
 
-  private sendResult(type: string): void {
+  private sendResult(type: string, payload?: SsoPayload): void {
     if (!this.sender.isDestroyed()) {
       const index = this.loginUrl.indexOf('/sso/initiate-login/');
-      this.sender.send('wire:sso-result', {origin: this.loginUrl.slice(0, index), type});
+      this.sender.send('wire:sso-result', {origin: this.loginUrl.slice(0, index), type, ...(payload ? {payload} : {})});
     }
   }
 

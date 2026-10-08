@@ -30,6 +30,17 @@ export interface WebAuthenticationRequest {
   focus: () => boolean;
 }
 
+export class BrowserAuthenticationError extends Error {
+  constructor(public readonly code?: number) {
+    super('Browser authentication cancelled or failed.');
+  }
+
+  get cancelled(): boolean {
+    // ASWebAuthenticationSessionErrorCodeCanceledLogin.
+    return this.code === 1;
+  }
+}
+
 // Lazy-load the macOS-only addon. Only public AuthenticationServices APIs are used.
 // Electron already runs the main Cocoa event loop; do not start a second run loop.
 export function startMacWebAuthentication(
@@ -96,7 +107,7 @@ export function startMacWebAuthentication(
         finished = true;
         if (error || !callback) {
           // Never propagate NSError text: it can contain the authentication URL.
-          reject(new Error('Browser authentication cancelled or failed.'));
+          reject(new BrowserAuthenticationError(error ? Number(error.code()) : undefined));
         } else {
           try {
             resolve(callback.absoluteString().toString());

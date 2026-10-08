@@ -45,11 +45,7 @@ export class CustomProtocolHandler {
   private async dispatchDeepLink(url?: string): Promise<void> {
     logger.info('Dispatching deep link ...');
     try {
-      if (
-        typeof url === 'undefined' ||
-        !url.startsWith(CORE_PROTOCOL_PREFIX) ||
-        url.length > CORE_PROTOCOL_MAX_LENGTH
-      ) {
+      if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX)) {
         showErrorDialog('Invalid deep link.');
         logger.info('Invalid deep link, ignoring');
         return;
@@ -61,6 +57,11 @@ export class CustomProtocolHandler {
         // ASWebAuthenticationSession owns SSO callbacks. Never forward a cookie
         // callback to a renderer/hash route or log its query string.
         logger.info('Ignoring SSO callback outside the system authentication session.');
+        return;
+      }
+
+      if (url.length > CORE_PROTOCOL_MAX_LENGTH) {
+        showErrorDialog('Invalid deep link.');
         return;
       }
 
