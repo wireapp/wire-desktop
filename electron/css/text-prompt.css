@@ -1,0 +1,66 @@
+/* Match the existing desktop proxy dialog, with space for provider-supplied text. */
+body {
+  box-sizing: border-box;
+  padding: 24px;
+  text-align: left;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100%;
+  overflow: auto;
+}
+h1 {
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+#origin {
+  flex-shrink: 0;
+  overflow-wrap: anywhere;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e1e7eb;
+}
+#message {
+  display: block;
+  width: auto;
+  margin: 0;
+  text-align: left;
+  max-height: 90px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+input {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: 16px;
+  font: inherit;
+}
+.buttons {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: flex-end;
+  gap: 8px;
+}
+button {
+  width: auto;
+  min-width: 80px;
+  min-height: 32px;
+  margin: 0;
+  padding: 8px 16px;
+}
+#ok {
+  background-color: #3879d9;
+  color: #fff;
+}
+#cancel {
+  background-color: #ddd;
+  color: #000;
+}
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid #3879d9;
+  outline-offset: 2px;
+}

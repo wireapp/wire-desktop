@@ -22,7 +22,6 @@ import {app, ipcMain} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 
-import {shortenText} from './ElectronUtil';
 import {EVENT_TYPE} from './eventType';
 
 import {showErrorDialog} from '../lib/showDialog';
@@ -46,17 +45,25 @@ export class CustomProtocolHandler {
   private async dispatchDeepLink(url?: string): Promise<void> {
     logger.info('Dispatching deep link ...');
     try {
-      if (
-        typeof url === 'undefined' ||
-        !url.startsWith(CORE_PROTOCOL_PREFIX) ||
-        url.length > CORE_PROTOCOL_MAX_LENGTH
-      ) {
-        showErrorDialog(`Invalid deep link "${shortenText(url || '', CORE_PROTOCOL_MAX_LENGTH)}."`);
+      if (typeof url === 'undefined' || !url.startsWith(CORE_PROTOCOL_PREFIX)) {
+        showErrorDialog('Invalid deep link.');
         logger.info('Invalid deep link, ignoring');
         return;
       }
 
       const route = new URL(url);
+
+      if (route.host === 'login') {
+        // ASWebAuthenticationSession owns SSO callbacks. Never forward a cookie
+        // callback to a renderer/hash route or log its query string.
+        logger.info('Ignoring SSO callback outside the system authentication session.');
+        return;
+      }
+
+      if (url.length > CORE_PROTOCOL_MAX_LENGTH) {
+        showErrorDialog('Invalid deep link.');
+        return;
+      }
 
       if (route.host === START_SSO_FLOW) {
         logger.info('Deep link is a SSO link, triggering SSO login ...');
@@ -72,8 +79,8 @@ export class CustomProtocolHandler {
         logger.info('Triggering hash location change ...');
         this.forwardHashLocation(route);
       }
-    } catch (error: any) {
-      logger.error(error);
+    } catch {
+      logger.warn('Unable to process deep link.');
     }
   }
 

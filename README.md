@@ -129,6 +129,18 @@ yarn build:win
 yarn build:linux
 ```
 
+On macOS, desktop SSO uses `ASWebAuthenticationSession` through the optional `objc-js` bridge. Authentication runs in a supporting default browser, with Safari as fallback. Windows and Linux retain embedded SSO; the standalone webapp is unchanged.
+
+The macOS flow follows Wire iOS's existing backend contract: a validated callback returns a session cookie to the initiating account. Callback URLs and cookies must not be logged. This is not a single-use-code/PKCE exchange.
+
+macOS packaging unpacks and signs the native bridge using the existing app-signing identity. Browser SSO does not require the former WebAuthn keychain-group entitlement or additional provisioning-profile credentials. Both Jenkins jobs use the configured `node-v23.0.0` tool for the upgraded Electron runtime.
+
+Embedded SSO windows support website `window.prompt()` requests through a local text dialog. This covers passkey labels requested by Keycloak and other providers using the same browser API, without changing the identity provider's theme. The dialog shows the requesting origin, returns entered text on OK and `null` on cancellation, and closes when the requesting page navigates or closes. Prompt messages and entered values are not logged. This addresses prompt compatibility; each provider's complete login flow still needs testing.
+
+On Windows and Linux, SSO opens in an independent window using the shared persistent `persist:wire-sso` session. The backend completion callback is checked against the expected origin before copying its Wire login cookie into the requesting account. SSO website storage is cleared on close and before a new login, while passkey session preferences remain. Removing one sub-app/account does not remove this shared session. Reuse requires the same identity-provider account and relying-party ID; unrelated providers still need separate credentials. Deleting the entire desktop user-data directory or the credential in Keycloak is different. In a signed build, test registration, restart, account removal/re-addition, and login from another sub-app.
+
+To test authentication, launch the signed app with `--enable-logging` and search its `logs/YYYY-MM-DD/electron.log` (inside Electron's user-data directory) for `[Passkeys]`. For macOS browser SSO, search for `[SSO]` to follow session startup, callback validation failures, and cookie installation. Browser authentication does not use the embedded account picker. For embedded WebAuthn, account-picker logs show requests, selection, cancellation, or failure without account names or credential IDs. An account-selection event only occurs when the authenticator needs a choice: its absence does not prove WebAuthn failed. Complete login against the intended identity provider to verify the result. Build checks do not establish authenticator compatibility; test the signed app against the intended IdP.
+
 ### Other Linux targets
 
 If you would like to build for another Linux target, run the following command:
