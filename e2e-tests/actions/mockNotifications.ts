@@ -23,6 +23,7 @@ import {App} from './createApp';
 
 declare global {
   interface Window {
+    amplify: {publish: (eventName: string) => void};
     // Declare the custom variable used to store the intercepted notifications on the window object
     __wireNotifications: Notification[];
     // Declare type of notification repository available globally within the webapps window
@@ -101,8 +102,12 @@ const clickNotification = async (app: App, notification: {title?: string; body?:
     );
 
     if (index >= 0) {
-      // If found trigger its "onclick" callback
-      await page.evaluate(index => window.__wireNotifications.at(index)?.onclick?.(new Event('click')), index);
+      // Reproduce the browser notification adapter: announce the click to the desktop wrapper,
+      // then trigger the notification callback that opens the conversation.
+      await page.evaluate(index => {
+        window.amplify.publish('wire.webapp.notification.click');
+        window.__wireNotifications.at(index)?.onclick?.(new Event('click'));
+      }, index);
       return;
     }
   }
