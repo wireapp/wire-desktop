@@ -110,7 +110,7 @@
   "wrapperAddAccountErrorMessageSingular": "Sie können nur mit einem Konten angemeldet sein. Melden Sie sich von diesem Konto ab, um ein anderes hinzuzufügen.",
   "passkeyPickerTitle": "Sign in with a passkey",
   "passkeyPickerMessage": "Choose an account for {domain}",
-  "passkeyPickerAccount": "Account {number}",
+  "passkeyPickerAccount": "Benutzerkonto {number}",
   "textPromptTitle": "Website prompt",
   "promptOK": "OK",
   "promptCancel": "Abbrechen",
