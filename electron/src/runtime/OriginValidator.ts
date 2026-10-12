@@ -21,6 +21,31 @@ import {Maybe} from 'true-myth';
 
 import {URL} from 'url';
 
+type NavigationEvent = {
+  preventDefault(): void;
+};
+
+type PreventNavigationOutsideTrustedOriginParameters = {
+  destinationUrl: string;
+  event: NavigationEvent;
+  trustedOrigin: Maybe<string>;
+};
+
+type InitializeTrustedOriginParameters = {
+  accountId: string;
+  configuredUrls: readonly string[];
+  confirmOriginChange: (origin: string) => boolean;
+  destinationUrl: string;
+  trustedOriginsByAccountId: Map<string, string>;
+};
+
+type AuthorizeOriginChangeParameters = {
+  accountId: string;
+  confirmOriginChange: (origin: string) => boolean;
+  destinationUrl: string;
+  trustedOriginsByAccountId: Map<string, string>;
+};
+
 function getHttpOrigin(urlString: string): Maybe<string> {
   try {
     const url = new URL(urlString);
@@ -44,11 +69,7 @@ export const OriginValidator = {
     return destinationOrigin.isJust && trustedOrigin.isJust && destinationOrigin.value === trustedOrigin.value;
   },
 
-  preventNavigationOutsideTrustedOrigin(parameters: {
-    destinationUrl: string;
-    event: {preventDefault(): void};
-    trustedOrigin: Maybe<string>;
-  }): boolean {
+  preventNavigationOutsideTrustedOrigin(parameters: PreventNavigationOutsideTrustedOriginParameters): boolean {
     if (OriginValidator.isMatchingOrigin(parameters.destinationUrl, parameters.trustedOrigin)) {
       return true;
     }
@@ -57,13 +78,7 @@ export const OriginValidator = {
     return false;
   },
 
-  initializeTrustedOrigin(parameters: {
-    accountId: string;
-    configuredUrls: readonly string[];
-    confirmOriginChange: (origin: string) => boolean;
-    destinationUrl: string;
-    trustedOriginsByAccountId: Map<string, string>;
-  }): boolean {
+  initializeTrustedOrigin(parameters: InitializeTrustedOriginParameters): boolean {
     const destinationOrigin = getHttpOrigin(parameters.destinationUrl);
     const configuredOrigins = parameters.configuredUrls
       .map(configuredUrl => {
@@ -95,12 +110,7 @@ export const OriginValidator = {
     return true;
   },
 
-  authorizeOriginChange(parameters: {
-    accountId: string;
-    confirmOriginChange: (origin: string) => boolean;
-    destinationUrl: string;
-    trustedOriginsByAccountId: Map<string, string>;
-  }): boolean {
+  authorizeOriginChange(parameters: AuthorizeOriginChangeParameters): boolean {
     const destinationOrigin = getHttpOrigin(parameters.destinationUrl);
     const currentTrustedOrigin = Maybe.of(parameters.trustedOriginsByAccountId.get(parameters.accountId));
 
