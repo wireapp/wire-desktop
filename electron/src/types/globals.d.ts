@@ -23,6 +23,7 @@ import type {Data as OpenGraphResult} from '@wireapp/open-graph';
 import type {WebAppEvents} from '@wireapp/webapp-events';
 
 import type {DesktopAppConfig} from '../lib/desktopAppConfig';
+import type {WebviewNavigationRequest} from '../lib/WebviewNavigationTypes';
 import type {i18nStrings, SupportedI18nLanguage} from '../locale';
 import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
@@ -49,7 +50,7 @@ export declare global {
 
   interface Window {
     amplify: amplify;
-    authorizeWebviewNavigation(accountId: string, destinationUrl: string): Promise<boolean>;
+    navigateWebview(request: WebviewNavigationRequest): Promise<boolean>;
     isMac: boolean;
     locale: SupportedI18nLanguage;
     locStrings: i18nStrings;

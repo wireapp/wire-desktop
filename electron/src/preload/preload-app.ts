@@ -25,6 +25,7 @@ import * as path from 'path';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import {EVENT_TYPE} from '../lib/eventType';
+import type {WebviewNavigationRequest} from '../lib/WebviewNavigationTypes';
 import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
@@ -107,8 +108,8 @@ const subscribeToMainProcessEvents = (): void => {
 };
 
 const setupIpcInterface = (): void => {
-  window.authorizeWebviewNavigation = (accountId: string, destinationUrl: string): Promise<boolean> => {
-    return ipcRenderer.invoke(EVENT_TYPE.WRAPPER.AUTHORIZE_WEBVIEW_NAVIGATION, accountId, destinationUrl);
+  window.navigateWebview = async function navigateWebview(request: WebviewNavigationRequest): Promise<boolean> {
+    return await ipcRenderer.invoke(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW_TO_URL, request);
   };
 
   window.sendBadgeCount = (count: number, ignoreFlash: boolean): void => {

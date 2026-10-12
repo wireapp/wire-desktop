@@ -54,6 +54,8 @@ export enum SettingsType {
    * https://www.electronjs.org/docs/api/command-line-switches#--proxy-serveraddressport
    */
   PROXY_SERVER_URL = 'proxyServerURL',
+  /** Desktop-approved application origins stored per account. */
+  TRUSTED_WEBAPP_ORIGINS = 'trustedWebappOrigins',
   /** Show menu bar for desktop application? */
   SHOW_MENU_BAR = 'showMenu',
   /** At which part of the screen shall the app be initially rendered? */
