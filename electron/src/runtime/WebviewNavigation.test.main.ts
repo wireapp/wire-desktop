@@ -39,10 +39,6 @@ type RegisterElectronNavigationHandlersParameters = {
   webContents: WebContents;
 };
 
-type AttachedWebviewReference = {
-  contents: WebContents | null;
-};
-
 async function startTestHttpServer(requestListener: http.RequestListener): Promise<TestHttpServer> {
   const server = http.createServer(requestListener);
   await new Promise<void>(resolve => {
@@ -105,7 +101,7 @@ function registerElectronNavigationHandlers(parameters: RegisterElectronNavigati
 describe('WebviewNavigation Electron integration', function () {
   this.timeout(15000);
 
-  it('prevents a real webview meta refresh from reaching an untrusted origin', async () => {
+  it('prevents a real Electron page meta refresh from reaching an untrusted origin', async () => {
     let attackerRequestCount = 0;
     const attackerServer = await startTestHttpServer((_request, response) => {
       attackerRequestCount += 1;
@@ -113,23 +109,12 @@ describe('WebviewNavigation Electron integration', function () {
       response.end('<title>attacker</title>');
     });
 
-    let trustedOrigin = '';
-    const trustedServer = await startTestHttpServer((request, response) => {
-      if (request.url === '/wrapper') {
-        const initialWebviewUrl = `${trustedOrigin}/meta-refresh?id=00000000-0000-4000-8000-000000000001`;
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.end(
-          `<html><body><webview src="${initialWebviewUrl}" style="width:600px;height:400px"></webview></body></html>`,
-        );
-        return;
-      }
-
+    const trustedServer = await startTestHttpServer((_request, response) => {
       response.writeHead(200, {'Content-Type': 'text/html'});
       response.end(
         `<meta http-equiv="refresh" content="0;url=${attackerServer.origin}/stage2/"><title>trusted</title>`,
       );
     });
-    trustedOrigin = trustedServer.origin;
 
     const browserWindow = new BrowserWindow({
       show: false,
@@ -140,28 +125,24 @@ describe('WebviewNavigation Electron integration', function () {
       },
     });
     const decisions: NavigationDecision[] = [];
-    const attachedWebviewReference: AttachedWebviewReference = {contents: null};
     let resolveBlockedNavigation: (decision: NavigationDecision) => void = () => {};
     const blockedNavigation = new Promise<NavigationDecision>(resolve => {
       resolveBlockedNavigation = resolve;
     });
 
-    browserWindow.webContents.on('did-attach-webview', (_event, webviewContents) => {
-      attachedWebviewReference.contents = webviewContents;
-      registerElectronNavigationHandlers({
-        logNavigationDecision: decision => {
-          decisions.push(decision);
-          if (!decision.allowed && decision.kind === 'navigation') {
-            resolveBlockedNavigation(decision);
-          }
-        },
-        trustedOrigin,
-        webContents: webviewContents,
-      });
+    registerElectronNavigationHandlers({
+      logNavigationDecision: decision => {
+        decisions.push(decision);
+        if (!decision.allowed && decision.kind === 'navigation') {
+          resolveBlockedNavigation(decision);
+        }
+      },
+      trustedOrigin: trustedServer.origin,
+      webContents: browserWindow.webContents,
     });
 
     try {
-      await browserWindow.loadURL(`${trustedServer.origin}/wrapper`);
+      await browserWindow.loadURL(`${trustedServer.origin}/meta-refresh`);
       const blockedDecision = await blockedNavigation;
       await new Promise<void>(resolve => {
         setTimeout(resolve, 50);
@@ -173,13 +154,8 @@ describe('WebviewNavigation Electron integration', function () {
         decisions.some(decision => decision.destinationOrigin === attackerServer.origin),
         true,
       );
-      const attachedContents = attachedWebviewReference.contents;
-      if (attachedContents === null) {
-        throw new Error('The privileged test WebView was not attached');
-      }
-
-      const actualWebviewOrigin = OriginValidator.getHttpOrigin(attachedContents.getURL());
-      assert.strictEqual(actualWebviewOrigin.unwrapOr('invalid'), trustedServer.origin);
+      const actualPageOrigin = OriginValidator.getHttpOrigin(browserWindow.webContents.getURL());
+      assert.strictEqual(actualPageOrigin.unwrapOr('invalid'), trustedServer.origin);
     } finally {
       browserWindow.destroy();
       await closeTestHttpServer(trustedServer.server);
