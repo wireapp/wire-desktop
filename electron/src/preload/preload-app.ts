@@ -107,6 +107,10 @@ const subscribeToMainProcessEvents = (): void => {
 };
 
 const setupIpcInterface = (): void => {
+  window.authorizeWebviewNavigation = (accountId: string, destinationUrl: string): Promise<boolean> => {
+    return ipcRenderer.invoke(EVENT_TYPE.WRAPPER.AUTHORIZE_WEBVIEW_NAVIGATION, accountId, destinationUrl);
+  };
+
   window.sendBadgeCount = (count: number, ignoreFlash: boolean): void => {
     ipcRenderer.send(EVENT_TYPE.UI.BADGE_COUNT, {count, ignoreFlash});
   };

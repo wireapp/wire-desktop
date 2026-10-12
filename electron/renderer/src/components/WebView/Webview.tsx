@@ -92,20 +92,21 @@ interface WebviewProps {
 const ON_IPC_MESSAGE = 'ipc-message';
 const ON_WEBVIEW_ERROR = 'did-fail-load';
 
-const Webview = ({
-  abortAccountCreation,
-  account,
-  accountIndex,
-  accountLifecycle,
-  conversationJoinData,
-  onUnreadCountUpdated,
-  resetIdentity,
-  setConversationJoinData,
-  switchWebview,
-  updateAccountData,
-  updateAccountLifecycle,
-  updateAccountDarkMode,
-}: WebviewProps) => {
+const Webview = (webviewProps: WebviewProps) => {
+  const {
+    abortAccountCreation,
+    account,
+    accountIndex,
+    accountLifecycle,
+    conversationJoinData,
+    onUnreadCountUpdated,
+    resetIdentity,
+    setConversationJoinData,
+    switchWebview,
+    updateAccountData,
+    updateAccountLifecycle,
+    updateAccountDarkMode,
+  } = webviewProps;
   const noUrlConfigured = isNoUrlConfigured();
   const webviewRef = useRef<WebviewTag | null>(null);
   const [canDelete, setCanDelete] = useState(false);
@@ -117,17 +118,47 @@ const Webview = ({
       return;
     }
     const newUrl = getEnvironmentUrl(account);
-    console.info(`Loading WebApp URL "${newUrl}" ...`);
-    if (url !== newUrl && webviewRef.current) {
-      setUrl(newUrl);
+    const webview = webviewRef.current;
+    if (url === newUrl || webview === null) {
+      return;
+    }
+
+    let isCurrentNavigation = true;
+    async function authorizeAndLoadWebapp(attachedWebview: WebviewTag): Promise<void> {
+      let isAuthorized: boolean;
       try {
-        webviewRef.current
-          .loadURL(newUrl)
-          .catch((error: any) => console.error(`Navigating to ${newUrl} failed`, error));
+        isAuthorized = await window.authorizeWebviewNavigation(account.id, newUrl);
+      } catch (error) {
+        console.warn(`Could not authorize WebApp URL "${newUrl}"`, error);
+        return;
+      }
+
+      if (!isCurrentNavigation || !isAuthorized) {
+        return;
+      }
+
+      console.info(`Loading WebApp URL "${newUrl}" ...`);
+      setUrl(newUrl);
+      let navigationPromise: Promise<void>;
+      try {
+        navigationPromise = attachedWebview.loadURL(newUrl);
       } catch (error) {
         console.warn('Can not #loadURL before attaching webview to DOM', error);
+        return;
+      }
+
+      try {
+        await navigationPromise;
+      } catch (error) {
+        console.error(`Navigating to ${newUrl} failed`, error);
       }
     }
+
+    void authorizeAndLoadWebapp(webview);
+
+    return () => {
+      isCurrentNavigation = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
@@ -193,7 +224,29 @@ const Webview = ({
   }, [webviewRef, account, noUrlConfigured]);
 
   useEffect(() => {
-    const onIpcMessage = ({channel, args}: {args: unknown[]; channel: string}) => {
+    async function authorizeWebappNavigation(accountId: string, customUrl: string): Promise<void> {
+      let updatedWebapp: string;
+      try {
+        updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
+      } catch (error) {
+        console.warn(`Ignoring invalid WebApp navigation URL "${customUrl}"`, error);
+        return;
+      }
+
+      try {
+        const isAuthorized = await window.authorizeWebviewNavigation(accountId, updatedWebapp);
+        if (isAuthorized) {
+          updateAccountData(accountId, {
+            webappUrl: updatedWebapp,
+          });
+        }
+      } catch (error) {
+        console.warn(`Could not authorize WebApp URL "${updatedWebapp}"`, error);
+      }
+    }
+
+    const onIpcMessage = (ipcMessage: {args: unknown[]; channel: string}) => {
+      const {channel, args} = ipcMessage;
       const accountId = account.id;
 
       switch (channel) {
@@ -201,14 +254,7 @@ const Webview = ({
           const [customUrl] = args;
 
           if (isString(customUrl)) {
-            try {
-              const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
-              updateAccountData(accountId, {
-                webappUrl: updatedWebapp,
-              });
-            } catch (error) {
-              console.warn(`Ignoring invalid WebApp navigation URL "${customUrl}"`, error);
-            }
+            void authorizeWebappNavigation(accountId, customUrl);
           }
           break;
         }

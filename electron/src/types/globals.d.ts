@@ -49,6 +49,7 @@ export declare global {
 
   interface Window {
     amplify: amplify;
+    authorizeWebviewNavigation(accountId: string, destinationUrl: string): Promise<boolean>;
     isMac: boolean;
     locale: SupportedI18nLanguage;
     locStrings: i18nStrings;
