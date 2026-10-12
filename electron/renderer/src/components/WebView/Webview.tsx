@@ -22,6 +22,7 @@ import {useEffect, useRef, useState} from 'react';
 import {SVGIcon} from '@wireapp/react-ui-kit/lib/Icon/SVGIcon';
 import {connect} from 'react-redux';
 
+import {LogFactory} from '@wireapp/commons';
 import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 
 import './Webview.css';
@@ -48,16 +49,26 @@ import {NoUrlConfigured} from '../NoUrlConfigured/NoUrlConfigured';
 
 type WebviewTag = Electron.WebviewTag;
 type DidFailLoadEvent = Electron.DidFailLoadEvent;
+const logger = LogFactory.getLogger('Webview', {
+  forceEnable: true,
+  namespace: '@wireapp/desktop',
+  separator: '/',
+});
 
 const isNoUrlConfigured = () => {
   const currentLocation = new URL(window.location.href);
   return currentLocation.searchParams.get('noUrlConfigured') === 'true';
 };
 
-const getEnvironmentUrl = (account: Account) => {
+function getEnvironmentUrl(account: Account): string {
   const currentLocation = new URL(window.location.href);
-  const envParam = account.webappUrl || currentLocation.searchParams.get('env');
-  const decodedEnvParam = decodeURIComponent(envParam!);
+  const environmentUrlParameter =
+    typeof account.webappUrl === 'string' ? account.webappUrl : currentLocation.searchParams.get('env');
+  if (environmentUrlParameter === null) {
+    throw new Error('The configured WebApp environment URL is missing');
+  }
+
+  const decodedEnvParam = decodeURIComponent(environmentUrlParameter);
   const url = new URL(decodedEnvParam);
 
   // pass account id to webview, so we can access it in the preload script
@@ -66,13 +77,21 @@ const getEnvironmentUrl = (account: Account) => {
   // set the current language
   url.searchParams.set('hl', wrapperLocale);
 
-  if (account.ssoCode && account.isAdding) {
+  if (typeof account.ssoCode === 'string' && account.ssoCode.length > 0 && account.isAdding) {
     url.pathname = '/auth';
     url.hash = `#sso/${account.ssoCode}`;
   }
 
   return url.href;
-};
+}
+
+function getInitialWebviewUrl(account: Account, noUrlConfigured: boolean): string {
+  if (noUrlConfigured) {
+    return '';
+  }
+
+  return getEnvironmentUrl(account);
+}
 
 interface WebviewProps {
   abortAccountCreation: (accountId: string) => void;
@@ -92,42 +111,60 @@ interface WebviewProps {
 const ON_IPC_MESSAGE = 'ipc-message';
 const ON_WEBVIEW_ERROR = 'did-fail-load';
 
-const Webview = ({
-  abortAccountCreation,
-  account,
-  accountIndex,
-  accountLifecycle,
-  conversationJoinData,
-  onUnreadCountUpdated,
-  resetIdentity,
-  setConversationJoinData,
-  switchWebview,
-  updateAccountData,
-  updateAccountLifecycle,
-  updateAccountDarkMode,
-}: WebviewProps) => {
+const Webview = (webviewProps: WebviewProps) => {
+  const {
+    abortAccountCreation,
+    account,
+    accountIndex,
+    accountLifecycle,
+    conversationJoinData,
+    onUnreadCountUpdated,
+    resetIdentity,
+    setConversationJoinData,
+    switchWebview,
+    updateAccountData,
+    updateAccountLifecycle,
+    updateAccountDarkMode,
+  } = webviewProps;
   const noUrlConfigured = isNoUrlConfigured();
   const webviewRef = useRef<WebviewTag | null>(null);
   const [canDelete, setCanDelete] = useState(false);
-  const [url, setUrl] = useState(noUrlConfigured ? '' : getEnvironmentUrl(account));
+  const [initialUrl] = useState(() => {
+    return getInitialWebviewUrl(account, noUrlConfigured);
+  });
+  const lastNavigatedUrl = useRef(initialUrl);
   const [webviewError, setWebviewError] = useState<DidFailLoadEvent | null>(null);
 
   useEffect(() => {
     if (noUrlConfigured) {
       return;
     }
-    const newUrl = getEnvironmentUrl(account);
-    console.info(`Loading WebApp URL "${newUrl}" ...`);
-    if (url !== newUrl && webviewRef.current) {
-      setUrl(newUrl);
+    const destinationUrl = getEnvironmentUrl(account);
+    if (lastNavigatedUrl.current === destinationUrl) {
+      return;
+    }
+
+    async function navigateAfterAccountChange(): Promise<void> {
+      const attachedWebview = webviewRef.current;
+      if (attachedWebview === null) {
+        return;
+      }
+
       try {
-        webviewRef.current
-          .loadURL(newUrl)
-          .catch((error: any) => console.error(`Navigating to ${newUrl} failed`, error));
+        const isNavigated = await window.navigateWebview({
+          accountId: account.id,
+          destinationUrl,
+          webContentsId: attachedWebview.getWebContentsId(),
+        });
+        if (isNavigated) {
+          lastNavigatedUrl.current = destinationUrl;
+        }
       } catch (error) {
-        console.warn('Can not #loadURL before attaching webview to DOM', error);
+        logger.warn('Could not navigate WebView to account URL.');
       }
     }
+
+    void navigateAfterAccountChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
@@ -177,9 +214,17 @@ const Webview = ({
       return;
     }
     const listener = (error: DidFailLoadEvent) => {
-      const urlOrigin = new URL(getEnvironmentUrl(account)).origin;
-      console.warn(`Webview fired "did-fail-load" for URL "${error.validatedURL}" and account ID "${account.id}"`);
-      if (error.validatedURL.startsWith(urlOrigin)) {
+      let expectedOrigin: string;
+      let failedOrigin: string;
+      try {
+        expectedOrigin = new URL(getEnvironmentUrl(account)).origin;
+        failedOrigin = new URL(error.validatedURL).origin;
+      } catch {
+        return;
+      }
+
+      logger.warn('WebView navigation failed.', failedOrigin, account.id);
+      if (failedOrigin === expectedOrigin) {
         setWebviewError(error);
       }
     };
@@ -193,7 +238,44 @@ const Webview = ({
   }, [webviewRef, account, noUrlConfigured]);
 
   useEffect(() => {
-    const onIpcMessage = ({channel, args}: {args: unknown[]; channel: string}) => {
+    async function navigateWebappToUrl(customUrl: string): Promise<void> {
+      let updatedWebapp: string;
+      try {
+        updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
+      } catch (error) {
+        logger.warn('Ignored an invalid WebApp navigation URL.');
+        return;
+      }
+
+      const accountWithUpdatedWebapp: Account = {
+        ...account,
+        webappUrl: updatedWebapp,
+      };
+      const destinationUrl = getEnvironmentUrl(accountWithUpdatedWebapp);
+      const attachedWebview = webviewRef.current;
+      if (attachedWebview === null) {
+        return;
+      }
+
+      try {
+        const isNavigated = await window.navigateWebview({
+          accountId: account.id,
+          destinationUrl,
+          webContentsId: attachedWebview.getWebContentsId(),
+        });
+        if (isNavigated) {
+          lastNavigatedUrl.current = destinationUrl;
+          updateAccountData(account.id, {
+            webappUrl: updatedWebapp,
+          });
+        }
+      } catch (error) {
+        logger.warn('Could not navigate WebView to WebApp URL.');
+      }
+    }
+
+    const onIpcMessage = (ipcMessage: {args: unknown[]; channel: string}) => {
+      const {channel, args} = ipcMessage;
       const accountId = account.id;
 
       switch (channel) {
@@ -201,14 +283,7 @@ const Webview = ({
           const [customUrl] = args;
 
           if (isString(customUrl)) {
-            try {
-              const updatedWebapp = WindowUrl.createWebAppUrl(window.location.toString(), customUrl);
-              updateAccountData(accountId, {
-                webappUrl: updatedWebapp,
-              });
-            } catch (error) {
-              console.warn(`Ignoring invalid WebApp navigation URL "${customUrl}"`, error);
-            }
+            void navigateWebappToUrl(customUrl);
           }
           break;
         }
@@ -216,7 +291,9 @@ const Webview = ({
         case EVENT_TYPE.ACCOUNT.UPDATE_INFO: {
           const [accountData] = args;
           if (isAccount(accountData)) {
-            updateAccountData(account.id, accountData);
+            const accountDataFromWebApp: Account = {...accountData};
+            delete accountDataFromWebApp.webappUrl;
+            updateAccountData(account.id, accountDataFromWebApp);
           }
           break;
         }
@@ -325,7 +402,7 @@ const Webview = ({
         data-accountid={account.id}
         // @ts-ignore Type doesn't exist there, keep it to not broke functionality
         visible={String(!!account.visible)}
-        src={url}
+        src={initialUrl}
         partition={account.sessionID ? `persist:${account.sessionID}` : ''}
         webpreferences="backgroundThrottling=false"
         ref={webviewRef}

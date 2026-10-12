@@ -85,7 +85,20 @@ export class WindowUrl {
       );
     }
 
-    const envUrl = decodeURIComponent(localFileParams.get('env')!);
+    if (
+      (customBackendUrlParsed.protocol !== 'http:' && customBackendUrlParsed.protocol !== 'https:') ||
+      customBackendUrlParsed.username !== '' ||
+      customBackendUrlParsed.password !== ''
+    ) {
+      throw new Error('Invalid WebApp URL: destinations must use HTTP(S) and must not contain credentials');
+    }
+
+    const environmentUrlParameter = localFileParams.get('env');
+    if (environmentUrlParameter === null) {
+      throw new Error('Invalid WebApp URL: the configured environment URL is missing');
+    }
+
+    const envUrl = decodeURIComponent(environmentUrlParameter);
     const envUrlParams = new URL(envUrl).searchParams;
 
     // replace hl with current locale
