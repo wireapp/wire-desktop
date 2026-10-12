@@ -547,7 +547,8 @@ const handleAppEvents = (): void => {
         return callback(username, password);
       }
 
-      if (proxyInfoArg) {
+      if (proxyInfoArg !== undefined) {
+        const authenticatedProxyUrl = proxyInfoArg;
         ipcMain.once(
           EVENT_TYPE.PROXY_PROMPT.SUBMITTED,
           async (_event, promptData: {password: string; username: string}) => {
@@ -555,7 +556,7 @@ const handleAppEvents = (): void => {
 
             const {username, password} = promptData;
             // remove the colon from the protocol to align it with other usages of `generateProxyURL`
-            const protocol = proxyInfoArg?.protocol?.replace(':', '');
+            const protocol = authenticatedProxyUrl.protocol.replace(':', '');
             proxyInfoArg = ProxyAuth.generateProxyURL(
               {host, port},
               {
@@ -870,7 +871,7 @@ class ElectronWrapperInit {
             );
           });
 
-          if (proxyInfoArg?.origin && contents.session) {
+          if (proxyInfoArg !== undefined) {
             this.logger.log('Found proxy settings in arguments, applying settings on the webview...');
             await applyProxySettings(proxyInfoArg, contents);
           }
