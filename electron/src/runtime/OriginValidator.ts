@@ -37,7 +37,13 @@ export type TrustedWebviewAccount = {
   trustedOrigin: string;
 };
 
-type GetInitialTrustedOriginParameters = {
+export type InitialOriginAuthorization = {
+  initialOriginToPersist: Maybe<string>;
+  pendingOrigin: Maybe<string>;
+  trustedOrigin: Maybe<string>;
+};
+
+type GetInitialOriginAuthorizationParameters = {
   accountId: string;
   configuredUrl: Maybe<string>;
   confirmOriginChange: (origin: string) => boolean;
@@ -84,6 +90,18 @@ export function getHttpOrigin(urlString: string): Maybe<string> {
     return Maybe.just(url.origin);
   } catch {
     return Maybe.nothing<string>();
+  }
+}
+
+export function isMatchingWebviewUrl(candidateUrl: string, expectedUrl: string): boolean {
+  try {
+    const candidate = new URL(candidateUrl);
+    const expected = new URL(expectedUrl);
+    candidate.hash = '';
+    expected.hash = '';
+    return candidate.href === expected.href;
+  } catch {
+    return false;
   }
 }
 
@@ -151,10 +169,12 @@ export function removeTrustedOrigin(accountId: string, trustedOriginsValue: unkn
   return trustedOrigins;
 }
 
-export function getInitialTrustedOrigin(parameters: GetInitialTrustedOriginParameters): Maybe<string> {
+export function getInitialOriginAuthorization(
+  parameters: GetInitialOriginAuthorizationParameters,
+): Maybe<InitialOriginAuthorization> {
   const destinationOrigin = getHttpOrigin(parameters.destinationUrl);
   if (destinationOrigin.isNothing) {
-    return Maybe.nothing<string>();
+    return Maybe.nothing<InitialOriginAuthorization>();
   }
 
   const currentTrustedOrigin = getTrustedOriginForAccount({
@@ -164,26 +184,42 @@ export function getInitialTrustedOrigin(parameters: GetInitialTrustedOriginParam
 
   if (currentTrustedOrigin.isJust) {
     if (currentTrustedOrigin.value === destinationOrigin.value) {
-      return destinationOrigin;
+      return Maybe.just({
+        initialOriginToPersist: Maybe.nothing<string>(),
+        pendingOrigin: Maybe.nothing<string>(),
+        trustedOrigin: currentTrustedOrigin,
+      });
     }
 
     if (!parameters.confirmOriginChange(destinationOrigin.value)) {
-      return Maybe.nothing<string>();
+      return Maybe.nothing<InitialOriginAuthorization>();
     }
 
-    return destinationOrigin;
+    return Maybe.just({
+      initialOriginToPersist: destinationOrigin,
+      pendingOrigin: destinationOrigin,
+      trustedOrigin: currentTrustedOrigin,
+    });
   }
 
   const configuredOrigin = parameters.configuredUrl.andThen(getHttpOrigin);
   if (configuredOrigin.isJust && configuredOrigin.value === destinationOrigin.value) {
-    return destinationOrigin;
+    return Maybe.just({
+      initialOriginToPersist: Maybe.nothing<string>(),
+      pendingOrigin: Maybe.nothing<string>(),
+      trustedOrigin: configuredOrigin,
+    });
   }
 
   if (!parameters.confirmOriginChange(destinationOrigin.value)) {
-    return Maybe.nothing<string>();
+    return Maybe.nothing<InitialOriginAuthorization>();
   }
 
-  return destinationOrigin;
+  return Maybe.just({
+    initialOriginToPersist: destinationOrigin,
+    pendingOrigin: destinationOrigin,
+    trustedOrigin: configuredOrigin,
+  });
 }
 
 export function authorizeOriginChange(parameters: AuthorizeOriginChangeParameters): Maybe<string> {

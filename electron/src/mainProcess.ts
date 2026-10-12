@@ -79,9 +79,10 @@ import {getConfiguredPortableUserDataPath} from './runtime/configurePortableUser
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import * as lifecycle from './runtime/lifecycle';
 import * as OriginValidator from './runtime/OriginValidator';
-import type {NavigationOrigins} from './runtime/OriginValidator';
+import type {InitialOriginAuthorization, NavigationOrigins} from './runtime/OriginValidator';
 import type {NavigationDecision} from './runtime/WebviewNavigation';
 import {
+  commitInitialOriginAfterSuccessfulLoad,
   createWebviewNavigationQueue,
   navigateWebviewDestination,
   registerNavigationEventHandlers,
@@ -199,9 +200,15 @@ let desktopAppConfig: DesktopAppConfig | undefined;
 type WebviewNavigationContext = {
   accountId: string;
   contents: WebContents;
+  initialOriginToPersist: Maybe<string>;
   navigationQueue: ReturnType<typeof createWebviewNavigationQueue>;
   pendingOrigin: Maybe<string>;
-  trustedOrigin: string;
+  trustedOrigin: Maybe<string>;
+};
+
+type InitialWebviewAttachmentAuthorization = {
+  authorization: InitialOriginAuthorization;
+  initialUrl: string;
 };
 
 type AssociateWebviewWithAccountParameters = {
@@ -211,6 +218,8 @@ type AssociateWebviewWithAccountParameters = {
 };
 
 const webviewNavigationContextsById = new Map<number, WebviewNavigationContext>();
+// Electron supplies the guest WebContents only after will-attach-webview has authorized its initial src.
+const initialWebviewAuthorizationsByAccountId = new Map<string, InitialWebviewAttachmentAuthorization>();
 
 function getAccountIdFromWebviewUrl(urlString: string): Maybe<string> {
   try {
@@ -240,6 +249,7 @@ function persistTrustedOrigin(accountId: string, origin: string): void {
 }
 
 function forgetTrustedOriginForAccount(accountId: string): void {
+  initialWebviewAuthorizationsByAccountId.delete(accountId);
   const trustedOrigins = OriginValidator.removeTrustedOrigin(accountId, getTrustedOrigins());
   settings.save(SettingsType.TRUSTED_WEBAPP_ORIGINS, trustedOrigins);
   settings.persistToFile();
@@ -295,7 +305,7 @@ function getNavigationOrigins(webviewContentsId: number): NavigationOrigins {
 
   return {
     pendingOrigin: context.value.pendingOrigin,
-    trustedOrigin: Maybe.just(context.value.trustedOrigin),
+    trustedOrigin: context.value.trustedOrigin,
   };
 }
 
@@ -304,29 +314,45 @@ function logNavigationDecision(decision: NavigationDecision): void {
 }
 
 function associateWebviewWithAccount(parameters: AssociateWebviewWithAccountParameters): boolean {
-  const trustedAccount = OriginValidator.getTrustedWebviewAccount({
-    accountId: parameters.accountId,
-    candidateUrl: parameters.candidateUrl,
-    trustedOrigins: getTrustedOrigins(),
-  });
-  if (trustedAccount.isNothing) {
+  if (parameters.accountId.isNothing) {
     return false;
   }
 
   const existingContext = Maybe.of(webviewNavigationContextsById.get(parameters.webviewContents.id));
   if (existingContext.isJust) {
-    return (
-      existingContext.value.accountId === trustedAccount.value.accountId &&
-      existingContext.value.trustedOrigin === trustedAccount.value.trustedOrigin
+    const accountMatches = existingContext.value.accountId === parameters.accountId.value;
+    const destinationIsAllowed = OriginValidator.isAllowedNavigation(
+      parameters.candidateUrl,
+      getNavigationOrigins(parameters.webviewContents.id),
     );
+    return accountMatches && destinationIsAllowed;
   }
 
+  const initialAuthorization = Maybe.of(initialWebviewAuthorizationsByAccountId.get(parameters.accountId.value));
+  if (
+    initialAuthorization.isNothing ||
+    !OriginValidator.isMatchingWebviewUrl(parameters.candidateUrl, initialAuthorization.value.initialUrl)
+  ) {
+    return false;
+  }
+
+  const authorization = initialAuthorization.value.authorization;
+  const initialOrigins: NavigationOrigins = {
+    pendingOrigin: authorization.pendingOrigin,
+    trustedOrigin: authorization.trustedOrigin,
+  };
+  if (!OriginValidator.isAllowedNavigation(parameters.candidateUrl, initialOrigins)) {
+    return false;
+  }
+
+  initialWebviewAuthorizationsByAccountId.delete(parameters.accountId.value);
   const context: WebviewNavigationContext = {
-    accountId: trustedAccount.value.accountId,
+    accountId: parameters.accountId.value,
     contents: parameters.webviewContents,
+    initialOriginToPersist: authorization.initialOriginToPersist,
     navigationQueue: createWebviewNavigationQueue(),
-    pendingOrigin: Maybe.nothing<string>(),
-    trustedOrigin: trustedAccount.value.trustedOrigin,
+    pendingOrigin: authorization.pendingOrigin,
+    trustedOrigin: authorization.trustedOrigin,
   };
   webviewNavigationContextsById.set(parameters.webviewContents.id, context);
 
@@ -379,7 +405,12 @@ async function handleWebviewNavigationRequest(
   const context = webviewContext.value;
   async function navigateWebview(): Promise<boolean> {
     const currentContext = Maybe.of(webviewNavigationContextsById.get(validatedNavigationRequest.webContentsId));
-    if (currentContext.isNothing || currentContext.value !== context) {
+    if (
+      currentContext.isNothing ||
+      currentContext.value !== context ||
+      context.trustedOrigin.isNothing ||
+      context.initialOriginToPersist.isJust
+    ) {
       return false;
     }
 
@@ -395,7 +426,7 @@ async function handleWebviewNavigationRequest(
       const activeContext = Maybe.of(webviewNavigationContextsById.get(validatedNavigationRequest.webContentsId));
       if (activeContext.isJust && activeContext.value === context) {
         persistTrustedOrigin(context.accountId, origin);
-        context.trustedOrigin = origin;
+        context.trustedOrigin = Maybe.just(origin);
       }
     }
 
@@ -412,7 +443,7 @@ async function handleWebviewNavigationRequest(
     }
 
     return await navigateWebviewDestination({
-      currentTrustedOrigin: context.trustedOrigin,
+      currentTrustedOrigin: context.trustedOrigin.value,
       dependencies: {
         authorizeOriginChange: authorizeDestinationOrigin,
         commitTrustedOrigin: commitAccountTrustedOrigin,
@@ -941,9 +972,12 @@ class ElectronWrapperInit {
             const initialUrl = typeof params.src === 'string' ? params.src : '';
             const initialOrigin = OriginValidator.getHttpOrigin(initialUrl).unwrapOr('invalid');
             const accountId = getAccountIdFromWebviewUrl(initialUrl);
+            if (accountId.isJust) {
+              initialWebviewAuthorizationsByAccountId.delete(accountId.value);
+            }
 
-            const initialTrustedOrigin = accountId.andThen(accountIdValue => {
-              return OriginValidator.getInitialTrustedOrigin({
+            const initialAuthorization = accountId.andThen(accountIdValue => {
+              return OriginValidator.getInitialOriginAuthorization({
                 accountId: accountIdValue,
                 configuredUrl: getConfiguredWebappUrl(),
                 confirmOriginChange: confirmWebviewOriginChange,
@@ -952,13 +986,16 @@ class ElectronWrapperInit {
               });
             });
 
-            if (accountId.isNothing || initialTrustedOrigin.isNothing) {
+            if (accountId.isNothing || initialAuthorization.isNothing) {
               _event.preventDefault();
               this.logger.warn('Blocked initial <webview> attachment for origin', initialOrigin);
               return;
             }
 
-            persistTrustedOrigin(accountId.value, initialTrustedOrigin.value);
+            initialWebviewAuthorizationsByAccountId.set(accountId.value, {
+              authorization: initialAuthorization.value,
+              initialUrl,
+            });
 
             // Use secure defaults
             params.autosize = 'false';
@@ -974,18 +1011,6 @@ class ElectronWrapperInit {
             webPreferences.sandbox = false;
           });
 
-          contents.on('did-attach-webview', (_event, webviewContents) => {
-            const initialUrl = webviewContents.getURL();
-            const accountId = getAccountIdFromWebviewUrl(initialUrl);
-            const wasAssociated = associateWebviewWithAccount({
-              accountId,
-              candidateUrl: initialUrl,
-              webviewContents,
-            });
-            if (!wasAssociated) {
-              logger.warn('Could not associate attached <webview> with its configured account origin.');
-            }
-          });
           break;
         }
         case 'webview': {
@@ -1019,22 +1044,43 @@ class ElectronWrapperInit {
             }
           });
 
+          contents.on('did-finish-load', () => {
+            const activeContext = Maybe.of(webviewNavigationContextsById.get(contents.id));
+            if (activeContext.isNothing || activeContext.value.initialOriginToPersist.isNothing) {
+              return;
+            }
+
+            const contextForInitialNavigation = activeContext.value;
+            function persistLoadedInitialOrigin(origin: string): void {
+              const currentContext = Maybe.of(webviewNavigationContextsById.get(contents.id));
+              if (currentContext.isNothing || currentContext.value !== contextForInitialNavigation) {
+                return;
+              }
+
+              persistTrustedOrigin(currentContext.value.accountId, origin);
+              currentContext.value.trustedOrigin = Maybe.just(origin);
+              currentContext.value.pendingOrigin = Maybe.nothing<string>();
+              currentContext.value.initialOriginToPersist = Maybe.nothing<string>();
+            }
+
+            commitInitialOriginAfterSuccessfulLoad({
+              commitTrustedOrigin: persistLoadedInitialOrigin,
+              currentUrl: contents.getURL(),
+              destinationOrigin: contextForInitialNavigation.initialOriginToPersist,
+              didLoadSuccessfully: true,
+            });
+          });
+
           registerNavigationEventHandlers({
             getNavigationOrigins: () => {
               return getNavigationOrigins(contents.id);
             },
             logNavigationDecision,
-            onDidStartNavigation: listener => {
-              contents.on('did-start-navigation', listener);
-            },
             onWillNavigate: listener => {
               contents.on('will-navigate', listener);
             },
             onWillRedirect: listener => {
               contents.on('will-redirect', listener);
-            },
-            stopNavigation: () => {
-              contents.stop();
             },
           });
 

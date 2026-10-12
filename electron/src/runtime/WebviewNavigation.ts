@@ -22,7 +22,7 @@ import {Maybe} from 'true-myth';
 import * as OriginValidator from './OriginValidator';
 import type {NavigationEvent, NavigationOrigins} from './OriginValidator';
 
-export type NavigationKind = 'navigation' | 'programmatic-navigation' | 'redirect';
+export type NavigationKind = 'navigation' | 'redirect';
 
 export type NavigationDecision = {
   allowed: boolean;
@@ -33,14 +33,17 @@ export type NavigationDecision = {
 export type RegisterNavigationEventHandlersParameters = {
   getNavigationOrigins(): NavigationOrigins;
   logNavigationDecision(decision: NavigationDecision): void;
-  onDidStartNavigation(
-    listener: (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void,
-  ): void;
   onWillNavigate(listener: (event: NavigationEvent, destinationUrl: string) => void): void;
   onWillRedirect(
     listener: (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void,
   ): void;
-  stopNavigation(): void;
+};
+
+export type CommitInitialOriginParameters = {
+  currentUrl: string;
+  destinationOrigin: Maybe<string>;
+  didLoadSuccessfully: boolean;
+  commitTrustedOrigin(origin: string): void;
 };
 
 export type NavigationTransactionDependencies = {
@@ -95,34 +98,22 @@ export function registerNavigationEventHandlers(parameters: RegisterNavigationEv
     handleNavigation(event, destinationUrl, 'redirect');
   }
 
-  function onDidStartNavigation(
-    _event: NavigationEvent,
-    destinationUrl: string,
-    isInPlace: boolean,
-    isMainFrame: boolean,
-  ): void {
-    if (!isMainFrame || isInPlace) {
-      return;
-    }
-
-    const origins = parameters.getNavigationOrigins();
-    const allowed = OriginValidator.isAllowedNavigation(destinationUrl, origins);
-    if (!allowed) {
-      parameters.stopNavigation();
-    }
-
-    const destinationOrigin = OriginValidator.getHttpOrigin(destinationUrl);
-    const loggedOrigin = destinationOrigin.isJust ? destinationOrigin.value : 'invalid';
-    parameters.logNavigationDecision({
-      allowed,
-      destinationOrigin: loggedOrigin,
-      kind: 'programmatic-navigation',
-    });
-  }
-
   parameters.onWillNavigate(onWillNavigate);
   parameters.onWillRedirect(onWillRedirect);
-  parameters.onDidStartNavigation(onDidStartNavigation);
+}
+
+export function commitInitialOriginAfterSuccessfulLoad(parameters: CommitInitialOriginParameters): boolean {
+  if (!parameters.didLoadSuccessfully || parameters.destinationOrigin.isNothing) {
+    return false;
+  }
+
+  const didLoadAuthorizedOrigin = OriginValidator.isMatchingOrigin(parameters.currentUrl, parameters.destinationOrigin);
+  if (!didLoadAuthorizedOrigin) {
+    return false;
+  }
+
+  parameters.commitTrustedOrigin(parameters.destinationOrigin.value);
+  return true;
 }
 
 export async function navigateWebviewDestination(parameters: NavigateWebviewDestinationParameters): Promise<boolean> {

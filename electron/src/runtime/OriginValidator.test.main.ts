@@ -24,6 +24,7 @@ import * as assert from 'assert';
 import * as OriginValidator from './OriginValidator';
 import type {NavigationEvent} from './OriginValidator';
 import {
+  commitInitialOriginAfterSuccessfulLoad,
   createWebviewNavigationQueue,
   navigateWebviewDestination,
   registerNavigationEventHandlers,
@@ -172,6 +173,28 @@ describe('OriginValidator', () => {
       });
     });
 
+    it('requires the guest to begin with the exact desktop-authorized WebView URL', () => {
+      const expectedUrl = 'https://app.example.test/login?id=account-a&hl=en';
+      const sameInitialUrl = OriginValidator.isMatchingWebviewUrl(
+        'https://app.example.test/login?id=account-a&hl=en#sso/code',
+        expectedUrl,
+      );
+      const redirectedAccountUrl = OriginValidator.isMatchingWebviewUrl(
+        'https://app.example.test/login?id=account-b&hl=en',
+        expectedUrl,
+      );
+      const redirectedPath = OriginValidator.isMatchingWebviewUrl(
+        'https://app.example.test/other?id=account-a&hl=en',
+        expectedUrl,
+      );
+      const malformedUrl = OriginValidator.isMatchingWebviewUrl('https://[invalid', expectedUrl);
+
+      assert.strictEqual(sameInitialUrl, true);
+      assert.strictEqual(redirectedAccountUrl, false);
+      assert.strictEqual(redirectedPath, false);
+      assert.strictEqual(malformedUrl, false);
+    });
+
     it('updates and removes only the selected account origin', () => {
       const firstTrustedOrigins = OriginValidator.updateTrustedOrigin({
         accountId: 'account-a',
@@ -184,11 +207,11 @@ describe('OriginValidator', () => {
     });
   });
 
-  describe('getInitialTrustedOrigin', () => {
-    it('accepts the desktop-configured origin without a confirmation', () => {
+  describe('getInitialOriginAuthorization', () => {
+    it('trusts the desktop-configured origin without persisting it', () => {
       let wasConfirmationRequested = false;
 
-      const actual = OriginValidator.getInitialTrustedOrigin({
+      const actual = OriginValidator.getInitialOriginAuthorization({
         accountId: 'account-a',
         configuredUrl: Maybe.just('https://app.example.test'),
         confirmOriginChange() {
@@ -199,14 +222,17 @@ describe('OriginValidator', () => {
         trustedOrigins: {},
       });
 
-      assert.strictEqual(actual.unwrapOr('missing'), 'https://app.example.test');
+      assert.strictEqual(actual.isJust, true);
+      assert.strictEqual(actual.value.trustedOrigin.unwrapOr('missing'), 'https://app.example.test');
+      assert.strictEqual(actual.value.pendingOrigin.isNothing, true);
+      assert.strictEqual(actual.value.initialOriginToPersist.isNothing, true);
       assert.strictEqual(wasConfirmationRequested, false);
     });
 
     it('continues to trust a previously approved self-hosted account after restart', () => {
       let wasConfirmationRequested = false;
 
-      const actual = OriginValidator.getInitialTrustedOrigin({
+      const actual = OriginValidator.getInitialOriginAuthorization({
         accountId: 'account-a',
         configuredUrl: Maybe.just('https://app.example.test'),
         confirmOriginChange() {
@@ -217,14 +243,17 @@ describe('OriginValidator', () => {
         trustedOrigins: {'account-a': 'https://chat.customer.example'},
       });
 
-      assert.strictEqual(actual.unwrapOr('missing'), 'https://chat.customer.example');
+      assert.strictEqual(actual.isJust, true);
+      assert.strictEqual(actual.value.trustedOrigin.unwrapOr('missing'), 'https://chat.customer.example');
+      assert.strictEqual(actual.value.pendingOrigin.isNothing, true);
+      assert.strictEqual(actual.value.initialOriginToPersist.isNothing, true);
       assert.strictEqual(wasConfirmationRequested, false);
     });
 
-    it('requires explicit confirmation for an account-specific self-hosted origin', () => {
+    it('keeps an approved self-hosted initial origin pending until it loads', () => {
       const confirmedOrigins: string[] = [];
 
-      const actual = OriginValidator.getInitialTrustedOrigin({
+      const actual = OriginValidator.getInitialOriginAuthorization({
         accountId: 'account-a',
         configuredUrl: Maybe.just('https://app.example.test'),
         confirmOriginChange(origin) {
@@ -235,14 +264,17 @@ describe('OriginValidator', () => {
         trustedOrigins: {},
       });
 
-      assert.strictEqual(actual.unwrapOr('missing'), 'https://chat.customer.example');
+      assert.strictEqual(actual.isJust, true);
+      assert.strictEqual(actual.value.trustedOrigin.unwrapOr('missing'), 'https://app.example.test');
+      assert.strictEqual(actual.value.pendingOrigin.unwrapOr('missing'), 'https://chat.customer.example');
+      assert.strictEqual(actual.value.initialOriginToPersist.unwrapOr('missing'), 'https://chat.customer.example');
       assert.deepStrictEqual(confirmedOrigins, ['https://chat.customer.example']);
     });
 
     it('rejects a declined or malformed initial destination', () => {
       let wasConfirmationRequested = false;
 
-      const declined = OriginValidator.getInitialTrustedOrigin({
+      const declined = OriginValidator.getInitialOriginAuthorization({
         accountId: 'account-a',
         configuredUrl: Maybe.nothing<string>(),
         confirmOriginChange() {
@@ -252,7 +284,7 @@ describe('OriginValidator', () => {
         destinationUrl: 'https://custom.example.test',
         trustedOrigins: {},
       });
-      const malformed = OriginValidator.getInitialTrustedOrigin({
+      const malformed = OriginValidator.getInitialOriginAuthorization({
         accountId: 'account-a',
         configuredUrl: Maybe.nothing<string>(),
         confirmOriginChange() {
@@ -322,23 +354,62 @@ describe('OriginValidator', () => {
 });
 
 describe('WebviewNavigation', () => {
+  it('persists a newly approved initial origin only after a successful load at that origin', () => {
+    const committedOrigins: string[] = [];
+
+    const didCommitAuthorizedOrigin = commitInitialOriginAfterSuccessfulLoad({
+      commitTrustedOrigin(origin) {
+        committedOrigins.push(origin);
+      },
+      currentUrl: 'https://chat.customer.example/login?id=account-a',
+      destinationOrigin: Maybe.just('https://chat.customer.example'),
+      didLoadSuccessfully: true,
+    });
+
+    assert.strictEqual(didCommitAuthorizedOrigin, true);
+    assert.deepStrictEqual(committedOrigins, ['https://chat.customer.example']);
+  });
+
+  it('does not persist a failed initial navigation', () => {
+    const committedOrigins: string[] = [];
+
+    const didCommitAuthorizedOrigin = commitInitialOriginAfterSuccessfulLoad({
+      commitTrustedOrigin(origin) {
+        committedOrigins.push(origin);
+      },
+      currentUrl: 'https://app.example.test/login?id=account-a',
+      destinationOrigin: Maybe.just('https://chat.customer.example'),
+      didLoadSuccessfully: false,
+    });
+
+    assert.strictEqual(didCommitAuthorizedOrigin, false);
+    assert.deepStrictEqual(committedOrigins, []);
+  });
+
+  it('does not persist an initial origin after a rejected cross-origin redirect', () => {
+    const committedOrigins: string[] = [];
+
+    const didCommitAuthorizedOrigin = commitInitialOriginAfterSuccessfulLoad({
+      commitTrustedOrigin(origin) {
+        committedOrigins.push(origin);
+      },
+      currentUrl: 'https://attacker.example/stage2/',
+      destinationOrigin: Maybe.just('https://chat.customer.example'),
+      didLoadSuccessfully: true,
+    });
+
+    assert.strictEqual(didCommitAuthorizedOrigin, false);
+    assert.deepStrictEqual(committedOrigins, []);
+  });
+
   it('prevents a meta-refresh navigation to an untrusted origin', () => {
     const willNavigateListeners: Array<(event: NavigationEvent, destinationUrl: string) => void> = [];
-    const didStartNavigationListeners: Array<
-      (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void
-    > = [];
     const decisions: NavigationDecision[] = [];
     const fakeNavigationSource = {
-      onDidStartNavigation(
-        listener: (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void,
-      ): void {
-        didStartNavigationListeners.push(listener);
-      },
       onWillNavigate(listener: (event: NavigationEvent, destinationUrl: string) => void): void {
         willNavigateListeners.push(listener);
       },
       onWillRedirect(): void {},
-      stopNavigation(): void {},
     };
     const wasPrevented = {value: false};
 
@@ -352,10 +423,8 @@ describe('WebviewNavigation', () => {
       logNavigationDecision(decision) {
         decisions.push(decision);
       },
-      onDidStartNavigation: fakeNavigationSource.onDidStartNavigation,
       onWillNavigate: fakeNavigationSource.onWillNavigate,
       onWillRedirect: fakeNavigationSource.onWillRedirect,
-      stopNavigation: fakeNavigationSource.stopNavigation,
     });
     willNavigateListeners[0](createNavigationEvent(wasPrevented), 'https://attacker.example/stage2/');
     const actualDecision = decisions[0];
@@ -370,17 +439,8 @@ describe('WebviewNavigation', () => {
     const willRedirectListeners: Array<
       (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void
     > = [];
-    const didStartNavigationListeners: Array<
-      (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void
-    > = [];
     const loggedDecisions: NavigationDecision[] = [];
-    let wasProgrammaticNavigationStopped = false;
     const fakeNavigationSource = {
-      onDidStartNavigation(
-        listener: (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void,
-      ): void {
-        didStartNavigationListeners.push(listener);
-      },
       onWillNavigate(listener: (event: NavigationEvent, destinationUrl: string) => void): void {
         willNavigateListeners.push(listener);
       },
@@ -388,9 +448,6 @@ describe('WebviewNavigation', () => {
         listener: (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void,
       ): void {
         willRedirectListeners.push(listener);
-      },
-      stopNavigation() {
-        wasProgrammaticNavigationStopped = true;
       },
     };
 
@@ -404,10 +461,8 @@ describe('WebviewNavigation', () => {
       logNavigationDecision(decision) {
         loggedDecisions.push(decision);
       },
-      onDidStartNavigation: fakeNavigationSource.onDidStartNavigation,
       onWillNavigate: fakeNavigationSource.onWillNavigate,
       onWillRedirect: fakeNavigationSource.onWillRedirect,
-      stopNavigation: fakeNavigationSource.stopNavigation,
     });
 
     const navigationWasPrevented = {value: false};
@@ -424,13 +479,6 @@ describe('WebviewNavigation', () => {
       createNavigationEvent(allowedNavigationWasPrevented),
       'https://app.example.test/settings?tab=privacy#keys',
     );
-    didStartNavigationListeners[0](
-      createNavigationEvent({value: false}),
-      'https://previously-trusted.example/back-navigation',
-      false,
-      true,
-    );
-
     assert.strictEqual(navigationWasPrevented.value, true);
     assert.strictEqual(redirectWasPrevented.value, true);
     assert.strictEqual(allowedNavigationWasPrevented.value, false);
@@ -439,30 +487,20 @@ describe('WebviewNavigation', () => {
       actualAllowedDecisions.push(decision.allowed);
     }
 
-    assert.deepStrictEqual(actualAllowedDecisions, [false, false, true, false]);
-    assert.strictEqual(wasProgrammaticNavigationStopped, true);
+    assert.deepStrictEqual(actualAllowedDecisions, [false, false, true]);
   });
 
   it('does not prevent subframe redirects', () => {
     const willRedirectListeners: Array<
       (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void
     > = [];
-    const didStartNavigationListeners: Array<
-      (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void
-    > = [];
     const fakeNavigationSource = {
-      onDidStartNavigation(
-        listener: (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void,
-      ): void {
-        didStartNavigationListeners.push(listener);
-      },
       onWillNavigate(): void {},
       onWillRedirect(
         listener: (event: NavigationEvent, destinationUrl: string, isInPlace: boolean, isMainFrame: boolean) => void,
       ): void {
         willRedirectListeners.push(listener);
       },
-      stopNavigation(): void {},
     };
     const wasPrevented = {value: false};
 
@@ -474,18 +512,10 @@ describe('WebviewNavigation', () => {
         };
       },
       logNavigationDecision(): void {},
-      onDidStartNavigation: fakeNavigationSource.onDidStartNavigation,
       onWillNavigate: fakeNavigationSource.onWillNavigate,
       onWillRedirect: fakeNavigationSource.onWillRedirect,
-      stopNavigation: fakeNavigationSource.stopNavigation,
     });
     willRedirectListeners[0](createNavigationEvent(wasPrevented), 'https://tracker.example/pixel', false, false);
-    didStartNavigationListeners[0](
-      createNavigationEvent({value: false}),
-      'https://tracker.example/pixel',
-      false,
-      false,
-    );
 
     assert.strictEqual(wasPrevented.value, false);
   });
