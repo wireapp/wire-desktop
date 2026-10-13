@@ -20,9 +20,9 @@
 import {useEffect, useRef, useState} from 'react';
 
 import {SVGIcon} from '@wireapp/react-ui-kit/lib/Icon/SVGIcon';
+import Logdown from 'logdown';
 import {connect} from 'react-redux';
 
-import {LogFactory} from '@wireapp/commons';
 import {ContainerSM, COLOR, H1, Logo, Text, TextLink} from '@wireapp/react-ui-kit';
 
 import './Webview.css';
@@ -49,11 +49,8 @@ import {NoUrlConfigured} from '../NoUrlConfigured/NoUrlConfigured';
 
 type WebviewTag = Electron.WebviewTag;
 type DidFailLoadEvent = Electron.DidFailLoadEvent;
-const logger = LogFactory.getLogger('Webview', {
-  forceEnable: true,
-  namespace: '@wireapp/desktop',
-  separator: '/',
-});
+const logger = Logdown('@wireapp/desktop/Webview');
+logger.state.isEnabled = true;
 
 const isNoUrlConfigured = () => {
   const currentLocation = new URL(window.location.href);
