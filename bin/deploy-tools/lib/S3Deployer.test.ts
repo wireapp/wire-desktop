@@ -48,9 +48,8 @@ describe('S3Deployer', () => {
     it('selects the requested native MSI when Squirrel artifacts are also present', async () => {
       const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-msi-deployer-'));
       temporaryDirectories.push(basePath);
-      const fileName = 'Wire-3.42.123-x64.msi';
+      const fileName = 'Wire-x64-Setup.msi';
       await fs.ensureFile(path.join(basePath, fileName));
-      await fs.ensureFile(path.join(basePath, 'Wire-3.42.122-x64.msi'));
       await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
       await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
       await fs.ensureFile(path.join(basePath, 'RELEASES'));
@@ -64,7 +63,7 @@ describe('S3Deployer', () => {
     it('selects Squirrel artifacts when an MSI is also present', async () => {
       const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-squirrel-deployer-'));
       temporaryDirectories.push(basePath);
-      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-x64.msi'));
+      await fs.ensureFile(path.join(basePath, 'Wire-x64-Setup.msi'));
       await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
       await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
       await fs.ensureFile(path.join(basePath, 'RELEASES'));
@@ -85,7 +84,7 @@ describe('S3Deployer', () => {
     it('rejects ambiguous automatic selection when both Windows installer families are present', async () => {
       const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-ambiguous-deployer-'));
       temporaryDirectories.push(basePath);
-      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-x64.msi'));
+      await fs.ensureFile(path.join(basePath, 'Wire-x64-Setup.msi'));
       await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
       await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
       await fs.ensureFile(path.join(basePath, 'RELEASES'));

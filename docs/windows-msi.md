@@ -21,7 +21,7 @@ Interactive installation uses the standard assisted Windows Installer flow with 
 
 The standard Wire environments have permanent MSI upgrade codes in `build-windows-msi.ts`. Never change an upgrade code after its first release. A custom-branded build must set `WIN_MSI_UPGRADE_CODE` to its own permanent GUID so that it cannot collide with a standard Wire installation. The MSI manufacturer defaults to `Wire Swiss GmbH`; an OEM build can override it with `WIN_MSI_MANUFACTURER`.
 
-The production job builds and archives both installer families during migration. Squirrel artifacts remain published under `win/<environment>` and MSI artifacts are published separately under `win/msi/<environment>`; an MSI must never replace the `RELEASES` metadata used by existing Squirrel installations.
+The production job builds and archives both installer families during migration. Both Squirrel and MSI artifacts are published under `win/<environment>`; an MSI must never replace the `RELEASES` metadata used by existing Squirrel installations.
 
 Before promoting the first MSI release, add MSI selection and installation coverage to the download-page consumer and the external Windows smoke tests without removing the existing Squirrel release coverage.
 
@@ -32,14 +32,14 @@ MSI installations are updated by deploying a newer signed MSI with the same upgr
 For unattended deployment, use standard Windows Installer commands and retain a verbose log:
 
 ```powershell
-msiexec.exe /i Wire-<version>-x64.msi /qn /norestart /l*v Wire-install.log
-msiexec.exe /x Wire-<version>-x64.msi /qn /norestart /l*v Wire-uninstall.log
+msiexec.exe /i Wire-x64-Setup.msi /qn /norestart /l*v Wire-install.log
+msiexec.exe /x Wire-x64-Setup.msi /qn /norestart /l*v Wire-uninstall.log
 ```
 
 An organization can set the web application endpoint while installing or upgrading the MSI:
 
 ```powershell
-msiexec.exe /i Wire-<version>-x64.msi WIRE_WEBAPP_URL="https://wire.example.com" /qn /norestart
+msiexec.exe /i Wire-x64-Setup.msi WIRE_WEBAPP_URL="https://wire.example.com" /qn /norestart
 ```
 
 `WIRE_WEBAPP_URL` is a secure public Windows Installer property. The MSI stores it machine-wide as `WebAppUrl` under `HKLM\Software\Wire\<product name>`, retains it when a later MSI is deployed without the property, and removes the MSI-owned value on uninstall. Supply a new value to change the endpoint during an upgrade, or `WIRE_CLEAR_WEBAPP_URL=1` to return to the application's normal environment selection.

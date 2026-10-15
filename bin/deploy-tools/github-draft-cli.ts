@@ -62,7 +62,7 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
     extensions.push(FileExtension.APPIMAGE, FileExtension.DEB);
   } else if (platform.includes('windows')) {
     PLATFORM = 'Windows';
-    extensions.push(FileExtension.EXE);
+    extensions.push(FileExtension.EXE, FileExtension.MSI);
   } else if (platform.includes('macos')) {
     PLATFORM = 'macOS';
     extensions.push(FileExtension.PKG);

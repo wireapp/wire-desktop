@@ -173,7 +173,7 @@ export async function buildWindowsMsiConfig(
 
   const windowsMsiConfig: WindowsMsiConfig = {
     appId,
-    artifactName: '${productName}-${version}-${arch}.${ext}',
+    artifactName: '${productName}-${arch}-Setup.msi',
     manufacturer,
     upgradeCode,
   };

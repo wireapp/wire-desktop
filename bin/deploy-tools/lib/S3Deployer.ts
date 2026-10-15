@@ -109,7 +109,7 @@ export class S3Deployer {
         throw new Error(`Invalid Windows artifact type "${windowsArtifact}"`);
       }
 
-      const msi = await find(`*-${version}-*.msi`, {cwd: basePath, safeGuard: false});
+      const msi = await find('*-Setup.msi', {cwd: basePath, safeGuard: false});
       if (windowsArtifact === 'msi' && !msi) {
         throw new Error(`Could not find an MSI for version "${version}".`);
       }

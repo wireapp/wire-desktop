@@ -39,6 +39,7 @@ export enum FileExtension {
   ASC = '.asc',
   DEB = '.deb',
   EXE = '.exe',
+  MSI = '.msi',
   PKG = '.pkg',
   SIG = '.sig',
 }

@@ -26,7 +26,7 @@ const windowsPipeline = fs.readFileSync(path.resolve(process.cwd(), 'jenkins/win
 
 describe('Jenkins Windows build artifacts', () => {
   it('fails the build unless both complete installer families were produced', () => {
-    for (const artifact of ['*-Setup.exe', '*-full.nupkg', 'RELEASES', '*.msi']) {
+    for (const artifact of ['*-Setup.exe', '*-full.nupkg', 'RELEASES', '*-Setup.msi']) {
       assert.ok(
         windowsPipeline.includes(`if not exist "wrap\\\\dist\\\\${artifact}"`),
         `Missing an explicit Jenkins artifact gate for ${artifact}`,
