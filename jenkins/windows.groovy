@@ -91,7 +91,7 @@ node('windows') {
         bat 'if not exist "wrap\\dist\\*-Setup.exe" (echo Missing Squirrel Setup executable & exit /b 1)'
         bat 'if not exist "wrap\\dist\\*-full.nupkg" (echo Missing Squirrel package & exit /b 1)'
         bat 'if not exist "wrap\\dist\\RELEASES" (echo Missing Squirrel RELEASES file & exit /b 1)'
-        bat 'if not exist "wrap\\dist\\*-Setup.msi" (echo Missing MSI package & exit /b 1)'
+        bat 'if not exist "wrap\\dist\\*.msi" (echo Missing MSI package & exit /b 1)'
       }
     } catch (e) {
       currentBuild.result = 'FAILED'
@@ -111,7 +111,7 @@ node('windows') {
       ]) {
         try {
           bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp -v || exit /b 1 & signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
-          bat 'for %%f in ("wrap\\dist\\*-Setup.msi") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp -v || exit /b 1 & signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
+          bat 'for %%f in ("wrap\\dist\\*.msi") do (smctl sign --keypair-alias "%SM_KEYPAIR_ALIAS%" --config-file "%SM_CLIENT_CERT_FILE%" --input "%%~ff" --digalg SHA256 --timestamp -v || exit /b 1 & signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
         } catch (e) {
           currentBuild.result = 'FAILED'
           wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} signing installer failed**\n${BUILD_URL}"
@@ -128,7 +128,7 @@ node('windows') {
       try {
         bat 'for /r "wrap\\build" %%f in (*.exe) do (if /I not "%%~nxf"=="Squirrel.exe" (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1))'
         bat 'for %%f in ("wrap\\dist\\*-Setup.exe") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
-        bat 'for %%f in ("wrap\\dist\\*-Setup.msi") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
+        bat 'for %%f in ("wrap\\dist\\*.msi") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
       } catch (e) {
         currentBuild.result = 'FAILED'
         wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} verifying installer failed**\n${BUILD_URL}"
@@ -146,7 +146,7 @@ node('windows') {
   stage('Print hash') {
     try {
       if (production) {
-        bat 'for %%f in ("wrap\\dist\\*-Setup.exe" "wrap\\dist\\*-Setup.msi") do (certUtil -hashfile "%%~ff" SHA256)'
+        bat 'for %%f in ("wrap\\dist\\*-Setup.exe" "wrap\\dist\\*.msi") do (certUtil -hashfile "%%~ff" SHA256)'
       }
     } catch (e) {
       currentBuild.result = 'FAILED'

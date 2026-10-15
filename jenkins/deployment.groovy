@@ -23,6 +23,14 @@ Production
 Wire-Gov
 Custom (needs special env variables)
 */
+def windowsMsiSetupAlias(def artifactName) {
+  def matcher = artifactName =~ /^(.+)-[0-9.]+-(x64|ia32|arm64)\.msi$/
+  if (!matcher.matches()) {
+    return null
+  }
+  return "${matcher[0][1]}-${matcher[0][2]}-Setup.msi"
+}
+
 node('built-in') {
   def jenkinsbot_secret = ''
   withCredentials([string(credentialsId: 'JENKINSBOT_WRAPPER_CHAT', variable: 'JENKINSBOT_SECRET')]) {
@@ -61,7 +69,7 @@ node('built-in') {
     }
   }
 
-  hasWindowsMsi = projectName.contains('Windows') && findFiles(glob: 'wrap/dist/*-Setup.msi').length > 0
+  hasWindowsMsi = projectName.contains('Windows') && findFiles(glob: 'wrap/dist/*.msi').length > 0
   hasWindowsSquirrel = projectName.contains('Windows') &&
     findFiles(glob: 'wrap/dist/*-Setup.exe').length > 0 &&
     findFiles(glob: 'wrap/dist/*-full.nupkg').length > 0 &&
@@ -322,13 +330,20 @@ node('built-in') {
           sh "rm -f ${presignedFile}"
 
           artifacts.each { fileObj ->
-            def presignedUrl = sh(
-              script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
-              """,
-              returnStdout: true
-            ).trim()
-            sh "echo '${fileObj.name}: ${presignedUrl}' >> ${presignedFile}"
+            def artifactNames = [fileObj.name]
+            def msiSetupAlias = windowsMsiSetupAlias(fileObj.name)
+            if (msiSetupAlias) {
+              artifactNames << msiSetupAlias
+            }
+            artifactNames.each { artifactName ->
+              def presignedUrl = sh(
+                script: """
+                  /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
+                """,
+                returnStdout: true
+              ).trim()
+              sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
+            }
           }
 
           // Upload to private on-prem or specialized bucket, no Jenkins archiving
@@ -349,13 +364,20 @@ node('built-in') {
           sh "rm -f ${presignedFile}"
 
           artifacts.each { fileObj ->
-            def presignedUrl = sh(
-              script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${fileObj.name} --expires-in 604800
-              """,
-              returnStdout: true
-            ).trim()
-            sh "echo '${fileObj.name}: ${presignedUrl}' >> ${presignedFile}"
+            def artifactNames = [fileObj.name]
+            def msiSetupAlias = windowsMsiSetupAlias(fileObj.name)
+            if (msiSetupAlias) {
+              artifactNames << msiSetupAlias
+            }
+            artifactNames.each { artifactName ->
+              def presignedUrl = sh(
+                script: """
+                  /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
+                """,
+                returnStdout: true
+              ).trim()
+              sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
+            }
           }
 
           s3Upload(

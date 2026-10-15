@@ -70,7 +70,7 @@ describe('Jenkins Squirrel packaging', () => {
     );
     assert.match(
       signInstallerStage,
-      /for %%f in \("wrap\\\\dist\\\\\*-Setup\.msi"\) do \(smctl sign .*?--digalg SHA256 --timestamp -v \|\| exit \/b 1 & signtool\.exe verify \/v \/pa \/all \/tw "%%~ff" \|\| exit \/b 1\)/,
+      /for %%f in \("wrap\\\\dist\\\\\*\.msi"\) do \(smctl sign .*?--digalg SHA256 --timestamp -v \|\| exit \/b 1 & signtool\.exe verify \/v \/pa \/all \/tw "%%~ff" \|\| exit \/b 1\)/,
     );
 
     assert.match(finalVerificationStage, /stage\('verify'\)/);
@@ -79,7 +79,7 @@ describe('Jenkins Squirrel packaging', () => {
       /for \/r "wrap\\\\build" %%f in \(\*\.exe\) do \(if \/i not "%%~nxf"=="Squirrel\.exe" \(signtool\.exe verify \/v \/pa \/all \/tw "%%~ff" \|\| exit \/b 1\)\)/i,
     );
     assert.match(finalVerificationStage, /wrap\\\\dist\\\\\*-Setup\.exe/);
-    assert.match(finalVerificationStage, /wrap\\\\dist\\\\\*-Setup\.msi/);
+    assert.match(finalVerificationStage, /wrap\\\\dist\\\\\*\.msi/);
     assert.match(finalVerificationStage, /signtool\.exe verify \/v \/pa \/all \/tw/);
   });
 });

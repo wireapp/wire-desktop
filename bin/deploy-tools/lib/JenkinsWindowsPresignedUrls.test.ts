@@ -25,12 +25,14 @@ import assert from 'node:assert';
 const deploymentPipeline = fs.readFileSync(path.resolve(process.cwd(), 'jenkins/deployment.groovy'), 'utf8');
 
 describe('Jenkins Windows presigned URLs', () => {
-  it('uses the shared Windows release path when generating presigned URLs', () => {
+  it('uses the shared Windows release path and exposes the stable MSI alias', () => {
     assert.ok(!deploymentPipeline.includes('s3PathForArtifact'));
+    assert.match(deploymentPipeline, /def windowsMsiSetupAlias\(def artifactName\)/);
+    assert.match(deploymentPipeline, /artifactNames << msiSetupAlias/);
     assert.strictEqual(
       (
         deploymentPipeline.match(
-          /aws s3 presign s3:\/\/\$\{env\.S3_BUCKET\}\/\$\{env\.S3_PATH\}\/\$\{fileObj\.name\}/g,
+          /aws s3 presign s3:\/\/\$\{env\.S3_BUCKET\}\/\$\{env\.S3_PATH\}\/\$\{artifactName\}/g,
         ) || []
       ).length,
       2,

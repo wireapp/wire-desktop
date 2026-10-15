@@ -23,7 +23,7 @@ import assert from 'node:assert';
 import os from 'node:os';
 import path from 'node:path';
 
-import {S3Deployer} from './S3Deployer';
+import {getWindowsMsiSetupFileName, S3Deployer} from './S3Deployer';
 
 describe('S3Deployer', () => {
   const temporaryDirectories: string[] = [];
@@ -48,7 +48,7 @@ describe('S3Deployer', () => {
     it('selects the requested native MSI when Squirrel artifacts are also present', async () => {
       const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-msi-deployer-'));
       temporaryDirectories.push(basePath);
-      const fileName = 'Wire-x64-Setup.msi';
+      const fileName = 'Wire-3.42.123-x64.msi';
       await fs.ensureFile(path.join(basePath, fileName));
       await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
       await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
@@ -63,7 +63,7 @@ describe('S3Deployer', () => {
     it('selects Squirrel artifacts when an MSI is also present', async () => {
       const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-squirrel-deployer-'));
       temporaryDirectories.push(basePath);
-      await fs.ensureFile(path.join(basePath, 'Wire-x64-Setup.msi'));
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-x64.msi'));
       await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
       await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
       await fs.ensureFile(path.join(basePath, 'RELEASES'));
@@ -84,7 +84,7 @@ describe('S3Deployer', () => {
     it('rejects ambiguous automatic selection when both Windows installer families are present', async () => {
       const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-ambiguous-deployer-'));
       temporaryDirectories.push(basePath);
-      await fs.ensureFile(path.join(basePath, 'Wire-x64-Setup.msi'));
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-x64.msi'));
       await fs.ensureFile(path.join(basePath, 'Wire-Setup.exe'));
       await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-full.nupkg'));
       await fs.ensureFile(path.join(basePath, 'RELEASES'));
@@ -93,6 +93,22 @@ describe('S3Deployer', () => {
       await assert.rejects(
         s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123'),
         /contains both Squirrel and MSI artifacts; select one explicitly/,
+      );
+    });
+  });
+
+  describe('getWindowsMsiSetupFileName', () => {
+    it('creates an architecture-specific latest MSI alias', () => {
+      assert.strictEqual(
+        getWindowsMsiSetupFileName('Wire-3.42.123-x64.msi', '3.42.123'),
+        'Wire-x64-Setup.msi',
+      );
+    });
+
+    it('rejects an unexpected MSI filename', () => {
+      assert.throws(
+        () => getWindowsMsiSetupFileName('Wire-x64-Setup.msi', '3.42.123'),
+        /Could not derive the stable MSI name/,
       );
     });
   });

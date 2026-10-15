@@ -63,7 +63,7 @@ describe('build-windows-msi', () => {
       const {builderConfig, windowsMsiConfig} = await buildWindowsMsiConfig(wireJsonPath, envFilePath, true);
 
       assert.strictEqual(windowsMsiConfig.appId, 'com.squirrel.wire.wire');
-      assert.strictEqual(windowsMsiConfig.artifactName, '${productName}-${arch}-Setup.msi');
+      assert.strictEqual(windowsMsiConfig.artifactName, '${productName}-${version}-${arch}.msi');
       assert.strictEqual(windowsMsiConfig.manufacturer, 'Wire Swiss GmbH');
       assert.strictEqual(windowsMsiConfig.upgradeCode, '620FCDDD-30CB-4241-A347-D34CF682A358');
       assert.deepStrictEqual(builderConfig.extraMetadata?.author, {name: windowsMsiConfig.manufacturer});
