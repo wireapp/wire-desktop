@@ -109,7 +109,7 @@
   "wrapperAddAccountErrorMessagePlural": "Sie können nur mit {{maximumAccounts}} Konten gleichzeitig angemeldet sein. Melden Sie sich von einem Konto ab, um ein weiteres hinzuzufügen.",
   "wrapperAddAccountErrorMessageSingular": "Sie können nur mit einem Konten angemeldet sein. Melden Sie sich von diesem Konto ab, um ein anderes hinzuzufügen.",
   "passkeyPickerTitle": "Sign in with a passkey",
-  "passkeyPickerMessage": "Choose an account for {domain}",
+  "passkeyPickerMessage": "Wählen Sie ein Konto für {domain}",
   "passkeyPickerAccount": "Benutzerkonto {number}",
   "textPromptTitle": "Website prompt",
   "promptOK": "OK",
