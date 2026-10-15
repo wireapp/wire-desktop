@@ -8,7 +8,7 @@ node("macos") {
   def custom = params.CUSTOM
   def wireGov = params.WIRE_GOV
   def skipNotarization = params.containsKey('SKIP_NOTARIZATION') ? params.SKIP_NOTARIZATION : true  
-  def NODE = tool name: 'node-v18.18.0', type: 'nodejs'
+  def NODE = tool name: 'node-v23.0.0', type: 'nodejs'
   def privateAPIResult = ''
 
   def jenkinsbot_secret = ''

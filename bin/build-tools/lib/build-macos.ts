@@ -20,11 +20,16 @@
 import {flatAsync as buildPkg} from '@electron/osx-sign';
 import electronPackager, {ArchOption} from 'electron-packager';
 import fs from 'fs-extra';
-import path from 'path';
+import globby from 'globby';
 
-import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
+import {execFile} from 'child_process';
+import path from 'path';
+import {promisify} from 'util';
+
 import {flipElectronFuses, getCommonConfig} from './commonConfig';
 import {CommonConfig, MacOSConfig} from './Config';
+
+import {backupFiles, execAsync, getLogger, restoreFiles} from '../../bin-utils';
 
 const libraryName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('build-tools', libraryName);
@@ -45,6 +50,8 @@ export async function buildMacOSConfig(
   const envFileResolved = path.resolve(envFilePath);
   const plistInfoResolved = path.resolve('resources/macos/Info.plist.json');
   const plistEntries = await fs.readJson(plistInfoResolved);
+  // Brand configuration can replace Info.plist.json during yarn configure.
+  plistEntries.NSAudioCaptureUsageDescription ||= 'Allow Wire to share system audio during screen sharing.';
   const {commonConfig} = await getCommonConfig(envFileResolved, wireJsonResolved);
 
   const macOSDefaultConfig: MacOSConfig = {
@@ -80,21 +87,32 @@ export async function buildMacOSConfig(
     appCopyright: commonConfig.copyright,
     appVersion: commonConfig.version,
     arch: architecture,
-    asar: commonConfig.enableAsar,
+    asar: commonConfig.enableAsar ? {unpack: '**/*.node'} : false,
     buildVersion: commonConfig.buildNumber,
     darwinDarkModeSupport: true,
     dir: '.',
     extendInfo: plistEntries,
     helperBundleId: `${macOSConfig.bundleId}.helper`,
     icon: 'resources/macos/logo.icns',
-    ignore: [/\/electron\/renderer\/src$/, /\/\.yarn$/, /\$electron\/src$/, /\/bin$/, /\/jenkins$/],
+    ignore: [
+      /\/electron\/renderer\/src$/,
+      /\/\.yarn$/,
+      /\$electron\/src$/,
+      /\/bin$/,
+      /\/jenkins$/,
+      // Signing inputs are not runtime resources.
+      /\/resources\/macos\/.*\.(?:p12|pfx|cer|provisionprofile|mobileprovision|key|p8)$/i,
+    ],
     name: commonConfig.name,
     osxUniversal: {
       mergeASARs: true,
+      // Both input apps contain the same two architecture-specific prebuilds.
+      // Preserve them as-is; node-gyp-build selects the appropriate one at runtime.
+      x64ArchFiles: '**/objc-js/prebuilds/**/*.node',
     },
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas', //  Mac App Store 
+    platform: 'mas', //  Mac App Store
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
@@ -181,9 +199,10 @@ export async function buildMacOSWrapper(
     }
   } catch (error) {
     logger.error(error);
+    throw error;
+  } finally {
+    await restoreFiles(backup);
   }
-
-  await restoreFiles(backup);
 }
 
 export async function manualMacOSSign(
@@ -196,13 +215,29 @@ export async function manualMacOSSign(
   const mainEntitlements = 'resources/macos/entitlements/parent.plist';
 
   if (macOSConfig.certNameApplication) {
+    // Native addons must be signed before the outer app signature. ASAR cannot
+    // hold loadable Mach-O binaries; packaging extracts these to app.asar.unpacked.
+    const addons = await globby('Contents/Resources/{app.asar.unpacked,app}/node_modules/**/*.node', {
+      cwd: appFile,
+      followSymbolicLinks: false,
+    });
+    for (const addon of addons) {
+      if (path.isAbsolute(addon) || addon.split(/[\\/]/).includes('..') || !addon.startsWith('Contents/Resources/')) {
+        throw new Error('Native addon must be inside the app resources directory.');
+      }
+      // globby returns relative paths without following directory symlinks.
+      // Sign within the app instead of joining a discovered path to the build root.
+      await promisify(execFile)('codesign', ['--force', '--sign', macOSConfig.certNameApplication, addon], {
+        cwd: appFile,
+      });
+    }
+    logger.log(`[SSO] Signed ${addons.length} native addon binaries.`);
+
     const filesToSign = [
       'Frameworks/Electron Framework.framework/Versions/A/Electron Framework',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libEGL.dylib',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libGLESv2.dylib',
-      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libEGL.dylib',
-      'Frameworks/Electron Framework.framework/Versions/A/Libraries/libswiftshader_libGLESv2.dylib',
       'Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib',
       'Frameworks/Electron Framework.framework/',
       `Frameworks/${commonConfig.name} Helper.app/Contents/MacOS/${commonConfig.name} Helper`,

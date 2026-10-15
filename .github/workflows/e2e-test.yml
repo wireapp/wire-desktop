@@ -137,7 +137,7 @@ jobs:
           fi
 
           FAILED=$(jq '.stats.unexpected' "$REPORT_FILE")
-          MESSAGE=$(jq -c '
+          MESSAGE=$(jq -r '
             # Recursively find all objects that have a non-empty "specs" array
             # Capture the suite title and prepend it to the test title
             [.. | objects | select(has("specs") and (.specs | length > 0)) | .title as $suite | .specs[] | .title as $title | .tests[] | {title: ($suite + " > " + $title), status: .status}] as $tests |
@@ -168,17 +168,17 @@ jobs:
           ' $REPORT_FILE)
 
           echo "failed_tests=$FAILED" >> $GITHUB_OUTPUT
-          echo "report_message=$MESSAGE" >> $GITHUB_OUTPUT
+          {
+            echo 'report_message<<EOF'
+            echo "$MESSAGE"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Notify on Wire about failed tests
         if: ${{ github.event_name != 'pull_request' && !cancelled() && steps.generate-description.outputs.failed_tests > 0 }}
-        uses: 8398a7/action-slack@293f8dc0f9731ac35321056641cdef895f4f65f8
+        uses: wireapp/github-app/.github/actions/notify-wire@3a9c9d7e71d96d391951429c1d1bfbbee081ed8c
         continue-on-error: true
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.WIRE_E2E_TEST_BOT_WEBHOOK_URL }}
         with:
-          status: custom
-          custom_payload: |
-            {
-              "text": ${{ steps.generate-description.outputs.report_message }},
-            }
+          webhook-url: ${{ secrets.WIRE_WEBHOOK_URL }}
+          token: ${{ secrets.WIRE_ACTIONS_TOKEN }}
+          text: ${{ steps.generate-description.outputs.report_message }}

@@ -51,6 +51,14 @@ describe('build-windows-msi', () => {
   });
 
   describe('buildWindowsMsiConfig', () => {
+    beforeEach(() => {
+      // Keep production defaults independent of local branding and prior tests.
+      process.env.APP_ENV = 'production';
+      process.env.APP_NAME = 'Wire';
+      process.env.WIN_MSI_MANUFACTURER = '';
+      process.env.WIN_MSI_UPGRADE_CODE = '';
+    });
+
     it('builds a per-machine MSI with a stable production upgrade identity', async () => {
       const {builderConfig, windowsMsiConfig} = await buildWindowsMsiConfig(wireJsonPath, envFilePath, true);
 

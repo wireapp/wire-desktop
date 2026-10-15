@@ -52,5 +52,28 @@ describe('WindowUrl', () => {
         'Invalid WebApp URL: static resource URLs cannot be used as WebApp navigation URLs',
       );
     });
+
+    it.each([
+      'javascript:alert(1)',
+      'data:text/html,unsafe',
+      'file:///tmp/unsafe.html',
+      'ftp://example.com/app',
+      'https://user:password@example.com/app',
+    ])('rejects unsupported or credentialed WebApp destinations: %s', customWebApp => {
+      const rendererPage =
+        'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=https%3A%2F%2Fwire-webapp-dev.zinfra.io';
+
+      expect(() => WindowUrl.createWebAppUrl(rendererPage, customWebApp)).toThrow();
+    });
+
+    it('preserves an explicitly configured local development destination', () => {
+      const rendererPage =
+        'file:///D:/dev/projects/wireapp/wire-desktop/electron/renderer/index.html?env=https%3A%2F%2Fwire-webapp-dev.zinfra.io%3Fhl%3Den';
+      const customWebApp = 'http://localhost:8081/path';
+
+      const actual = WindowUrl.createWebAppUrl(rendererPage, customWebApp);
+
+      expect(actual).toBe('http://localhost:8081/path?hl=en');
+    });
   });
 });

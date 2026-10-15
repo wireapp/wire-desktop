@@ -21,6 +21,8 @@ import {app, BrowserWindow} from 'electron';
 
 import * as path from 'path';
 
+import {activatePrimaryWindow} from './activatePrimaryWindow';
+
 import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
@@ -49,13 +51,7 @@ export class WindowManager {
     const browserWindow = WindowManager.getPrimaryWindow();
 
     if (browserWindow) {
-      if (browserWindow.isMinimized()) {
-        browserWindow.restore();
-      } else if (!browserWindow.isVisible()) {
-        browserWindow.show();
-      }
-
-      browserWindow.focus();
+      activatePrimaryWindow(browserWindow, app, process.platform);
     }
   }
 
