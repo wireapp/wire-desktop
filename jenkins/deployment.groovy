@@ -23,14 +23,12 @@ Production
 Wire-Gov
 Custom (needs special env variables)
 */
-def s3PathForArtifact(def projectName, def artifactName, def defaultPath, def windowsMsiPath) {
-  if (projectName.contains('Windows') && artifactName.toLowerCase().endsWith('.msi')) {
-    if (!windowsMsiPath) {
-      throw new IllegalStateException('Windows MSI S3 path is not configured')
-    }
-    return windowsMsiPath
+def windowsMsiSetupAlias(def artifactName) {
+  def matcher = artifactName =~ /^(.+)-[0-9.]+-(x64|ia32|arm64)\.msi$/
+  if (!matcher.matches()) {
+    return null
   }
-  return defaultPath
+  return "${matcher[0][1]}-${matcher[0][2]}-Setup.msi"
 }
 
 node('built-in') {
@@ -103,30 +101,25 @@ node('built-in') {
         // 1) Windows S3 Upload
         // -----------------------------
         env.S3_PATH = ''
-        env.MSI_S3_PATH = ''
         def AWS_ACCESS_KEY_CREDENTIALS_ID = ''
         def AWS_SECRET_CREDENTIALS_ID = ''
 
         if (params.Release == 'Production') {
           env.S3_PATH = 'win/prod'
-          env.MSI_S3_PATH = 'win/msi/prod'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Internal') {
           env.S3_PATH = 'win/internal'
-          env.MSI_S3_PATH = 'win/msi/internal'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Wire-Gov') {
           env.S3_PATH = 'win/wire-gov'
-          env.MSI_S3_PATH = 'win/msi/wire-gov'
           env.S3_BUCKET = 'wire-taco'
           AWS_ACCESS_KEY_CREDENTIALS_ID = 'AWS_ACCESS_KEY_ID'
           AWS_SECRET_CREDENTIALS_ID = 'AWS_SECRET_ACCESS_KEY'
         } else if (params.Release == 'Custom') {
           env.S3_BUCKET = params.WIN_S3_BUCKET
           env.S3_PATH = params.WIN_S3_PATH
-          env.MSI_S3_PATH = params.WIN_S3_PATH
           AWS_ACCESS_KEY_CREDENTIALS_ID = params.AWS_CUSTOM_ACCESS_KEY_ID
           AWS_SECRET_CREDENTIALS_ID = params.AWS_CUSTOM_SECRET_ACCESS_KEY
         }
@@ -157,7 +150,7 @@ node('built-in') {
               sh '''
                 jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
                   --bucket "$S3_BUCKET" \
-                  --s3path "$MSI_S3_PATH" \
+                  --s3path "$S3_PATH" \
                   --windows-artifact msi \
                   --key-id "$AWS_ACCESS_KEY_ID" \
                   --secret-key "$AWS_SECRET_ACCESS_KEY" \
@@ -337,14 +330,20 @@ node('built-in') {
           sh "rm -f ${presignedFile}"
 
           artifacts.each { fileObj ->
-            def artifactS3Path = s3PathForArtifact(projectName, fileObj.name, env.S3_PATH, env.MSI_S3_PATH)
-            def presignedUrl = sh(
-              script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${artifactS3Path}/${fileObj.name} --expires-in 604800
-              """,
-              returnStdout: true
-            ).trim()
-            sh "echo '${fileObj.name}: ${presignedUrl}' >> ${presignedFile}"
+            def artifactNames = [fileObj.name]
+            def msiSetupAlias = windowsMsiSetupAlias(fileObj.name)
+            if (msiSetupAlias) {
+              artifactNames << msiSetupAlias
+            }
+            artifactNames.each { artifactName ->
+              def presignedUrl = sh(
+                script: """
+                  /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
+                """,
+                returnStdout: true
+              ).trim()
+              sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
+            }
           }
 
           // Upload to private on-prem or specialized bucket, no Jenkins archiving
@@ -365,14 +364,20 @@ node('built-in') {
           sh "rm -f ${presignedFile}"
 
           artifacts.each { fileObj ->
-            def artifactS3Path = s3PathForArtifact(projectName, fileObj.name, env.S3_PATH, env.MSI_S3_PATH)
-            def presignedUrl = sh(
-              script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${artifactS3Path}/${fileObj.name} --expires-in 604800
-              """,
-              returnStdout: true
-            ).trim()
-            sh "echo '${fileObj.name}: ${presignedUrl}' >> ${presignedFile}"
+            def artifactNames = [fileObj.name]
+            def msiSetupAlias = windowsMsiSetupAlias(fileObj.name)
+            if (msiSetupAlias) {
+              artifactNames << msiSetupAlias
+            }
+            artifactNames.each { artifactName ->
+              def presignedUrl = sh(
+                script: """
+                  /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
+                """,
+                returnStdout: true
+              ).trim()
+              sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
+            }
           }
 
           s3Upload(

@@ -53,6 +53,16 @@ export interface S3CopyOptions {
 
 export type WindowsArtifactType = 'auto' | 'msi' | 'squirrel';
 
+export function getWindowsMsiSetupFileName(fileName: string, version: string): string {
+  const match = /^(.+?)-([0-9.]+)-(x64|ia32|arm64)\.msi$/.exec(fileName);
+
+  if (!match || match[2] !== version) {
+    throw new Error(`Could not derive the stable MSI name from "${fileName}".`);
+  }
+
+  return `${match[1]}-${match[3]}-Setup.msi`;
+}
+
 export class S3Deployer {
   private readonly options: Required<S3DeployerOptions>;
   private readonly S3Instance: S3;

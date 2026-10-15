@@ -21,7 +21,7 @@ import {program as commander} from 'commander';
 
 import path from 'path';
 
-import {S3Deployer, WindowsArtifactType} from './lib/S3Deployer';
+import {getWindowsMsiSetupFileName, S3Deployer, WindowsArtifactType} from './lib/S3Deployer';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';
 
@@ -78,6 +78,17 @@ if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
       filePath,
       s3Path,
     });
+
+    if (windowsArtifact === 'msi') {
+      const setupFileName = getWindowsMsiSetupFileName(fileName, version);
+      const setupS3Path = `${s3BasePath}${setupFileName}`.replace('//', '/');
+
+      await s3Deployer.copyOnS3({
+        bucket,
+        s3FromPath: `${bucket}/${s3Path}`,
+        s3ToPath: setupS3Path,
+      });
+    }
   }
 
   logger.log('Done uploading to AWS S3 bucket.');

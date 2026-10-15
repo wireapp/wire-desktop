@@ -21,7 +21,7 @@ Interactive installation uses the standard assisted Windows Installer flow with 
 
 The standard Wire environments have permanent MSI upgrade codes in `build-windows-msi.ts`. Never change an upgrade code after its first release. A custom-branded build must set `WIN_MSI_UPGRADE_CODE` to its own permanent GUID so that it cannot collide with a standard Wire installation. The MSI manufacturer defaults to `Wire Swiss GmbH`; an OEM build can override it with `WIN_MSI_MANUFACTURER`.
 
-The production job builds and archives both installer families during migration. Squirrel artifacts remain published under `win/<environment>` and MSI artifacts are published separately under `win/msi/<environment>`; an MSI must never replace the `RELEASES` metadata used by existing Squirrel installations.
+The production job builds and archives both installer families during migration. Both Squirrel and MSI artifacts are published under `win/<environment>`. Versioned MSI files such as `Wire-<version>-x64.msi` remain available for reproducibility, while `Wire-x64-Setup.msi` is updated as the latest-release alias. An MSI must never replace the `RELEASES` metadata used by existing Squirrel installations.
 
 Before promoting the first MSI release, add MSI selection and installation coverage to the download-page consumer and the external Windows smoke tests without removing the existing Squirrel release coverage.
 
