@@ -17,12 +17,10 @@
  *
  */
 
-import {App} from '../../actions/createApp';
+import {Page} from '@playwright/test';
 
-export const logoutModal = (app: App) => ({
-  title: app.page.getByTestId('status-modal-title'),
-  clearDataCheckbox: app.page.getByTestId('modal-option-checkbox'),
-  cancelButton: app.page.getByTestId('do-secondary'),
-  logoutButton: app.page.getByTestId('do-action'),
-  closeButton: app.page.getByTestId('do-close'),
+export const microphonePermissionModal = (page: Page) => ({
+  title: page.getByTestId('status-modal-title'),
+  actionButton: page.getByTestId('do-action'),
+  secondaryButton: page.getByTestId('do-secondary'),
 });

@@ -28,7 +28,7 @@ import {accountsSidebar} from '../../poms/app/accountsSidebar.page';
 import {conversation} from '../../poms/webapp/conversation.page';
 import {conversationsList} from '../../poms/webapp/conversationList.page';
 import {conversationsSidebar} from '../../poms/webapp/conversationsSidebar.page';
-import {logoutModal} from '../../poms/webapp/logoutModal.page';
+import {logoutModal} from '../../poms/webapp/logout.modal';
 
 test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, createUser, createTeam, createPage}) => {
   test.setTimeout(120_000);
@@ -55,12 +55,12 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
 
   await test.step("User clicks 'Log out' option", async () => {
     await accountsSidebar(app).logoutButton.click();
-    await expect(logoutModal(app).title).toHaveText('Clear Data?');
+    await expect(logoutModal(app.page).title).toHaveText('Clear Data?');
   });
 
   await test.step("User clicks 'Cancel' button on the popup", async () => {
-    await logoutModal(app).cancelButton.click();
-    await expect(logoutModal(app).title).toBeHidden();
+    await logoutModal(app.page).cancelButton.click();
+    await expect(logoutModal(app.page).title).toBeHidden();
   });
 
   await test.step("User clicks 'Log out' option again and click close button (cross icon)", async () => {
@@ -70,8 +70,8 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
     await accountsSidebar(app).accountItems.first().click({button: 'right'});
     await accountsSidebar(app).logoutButton.click();
 
-    await logoutModal(app).closeButton.click();
-    await expect(logoutModal(app).title).toBeHidden();
+    await logoutModal(app.page).closeButton.click();
+    await expect(logoutModal(app.page).title).toBeHidden();
   });
 
   await test.step("User clicks 'Log out' option again and User clicks 'Log Out' button on the popup", async () => {
@@ -81,7 +81,7 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
     await accountsSidebar(app).accountItems.first().click({button: 'right'});
     await accountsSidebar(app).logoutButton.click();
 
-    await logoutModal(app).logoutButton.click();
+    await logoutModal(app.page).logoutButton.click();
     await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
   });
 
@@ -105,11 +105,11 @@ test('Logout flow', {tag: ['@TC-11286', '@crit-flow-desktop']}, async ({app, cre
     await accountsSidebar(app).sidebar.click();
 
     await accountsSidebar(app).logOut(0);
-    const clearDataCheckbox = logoutModal(app).clearDataCheckbox;
+    const clearDataCheckbox = logoutModal(app.page).clearDataCheckbox;
     await expect(clearDataCheckbox).toBeVisible();
     await app.page.getByText('Delete all your personal information').click();
     await expect(clearDataCheckbox).toBeChecked();
-    const logoutModalButton = logoutModal(app).logoutButton;
+    const logoutModalButton = logoutModal(app.page).logoutButton;
 
     const [newWindow] = await Promise.all([app.waitForEvent('window'), logoutModalButton.click()]);
     app.page = newWindow;
@@ -149,7 +149,7 @@ test(
     });
 
     await test.step("User clicks 'Log Out' button on the popup", async () => {
-      await logoutModal(app).logoutButton.click();
+      await logoutModal(app.page).logoutButton.click();
       await expect(app.page.getByText('Welcome to Wire!')).toBeVisible();
     });
 
