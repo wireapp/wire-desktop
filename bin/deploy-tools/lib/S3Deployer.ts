@@ -27,6 +27,7 @@ import {Logger} from '@wireapp/commons';
 import {find, FindResult, logDry} from './deploy-utils';
 
 import {getLogger} from '../../bin-utils';
+import {getWindowsMsiSetupAliasNames} from '../../windows-msi-artifacts';
 
 export interface S3DeployerOptions {
   accessKeyId: string;
@@ -54,13 +55,41 @@ export interface S3CopyOptions {
 export type WindowsArtifactType = 'auto' | 'msi' | 'squirrel';
 
 export function getWindowsMsiSetupFileName(fileName: string, version: string): string {
-  const match = /^(.+?)-([0-9.]+)-(x64|ia32|arm64)\.msi$/.exec(fileName);
+  return getWindowsMsiSetupAliasNames({expectedVersion: version, fileName}).architectureSpecificFileName;
+}
 
-  if (!match || match[2] !== version) {
-    throw new Error(`Could not derive the stable MSI name from "${fileName}".`);
+export interface WindowsMsiAliasCopyOptionsInput {
+  bucket: string;
+  fileName: string;
+  version: string;
+  versionedS3Path: string;
+}
+
+export function getWindowsMsiAliasCopyOptions({
+  bucket,
+  fileName,
+  version,
+  versionedS3Path,
+}: WindowsMsiAliasCopyOptionsInput): S3CopyOptions[] {
+  const {architectureSpecificFileName, genericFileName} = getWindowsMsiSetupAliasNames({
+    expectedVersion: version,
+    fileName,
+  });
+  const sourceFileName = versionedS3Path.slice(versionedS3Path.lastIndexOf('/') + 1);
+  if (sourceFileName !== fileName) {
+    throw new Error(`Windows MSI S3 source "${versionedS3Path}" does not match artifact "${fileName}".`);
   }
+  const sourceDirectory = versionedS3Path.slice(0, versionedS3Path.lastIndexOf('/') + 1);
+  const aliasFileNames = [
+    architectureSpecificFileName,
+    ...(genericFileName.isJust ? [genericFileName.value] : []),
+  ];
 
-  return `${match[1]}-${match[3]}-Setup.msi`;
+  return aliasFileNames.map(aliasFileName => ({
+    bucket,
+    s3FromPath: `${bucket}/${versionedS3Path}`,
+    s3ToPath: `${sourceDirectory}${aliasFileName}`,
+  }));
 }
 
 export class S3Deployer {
