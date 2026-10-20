@@ -31,6 +31,7 @@ import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-wi
 import {buildWindowsMsi, buildWindowsMsiConfig} from './lib/build-windows-msi';
 
 import {logEntries} from '../bin-utils';
+import {createWindowsMsiGenericSetupAlias} from '../windows-msi-artifacts';
 
 const toolName = path.basename(__filename).replace('.ts', '');
 const logger = LogFactory.getLogger(toolName, {forceEnable: true, namespace: '@wireapp/build-tools'});
@@ -39,7 +40,7 @@ const appSource = path.join(__dirname, '../../');
 commander
   .name(toolName)
   .description(
-    'Build the Wire wrapper for your platform.\n\nValid values for platform are: "windows", "windows-installer", "windows-msi", "macos", "linux".',
+    'Build the Wire wrapper for your platform.\n\nValid values for platform are: "windows", "windows-installer", "windows-msi", "windows-msi-alias", "macos", "linux".',
   )
   .option('-e, --env-file <path>', 'Specify the env file path', path.join(appSource, '.env.defaults'))
   .option(
@@ -47,6 +48,7 @@ commander
     `Manually sign and package the app (i.e. don't use electron-packager, macOS and Windows only)`,
   )
   .option('-a, --architecture <arch>', 'Specify build architecture (e.g. x64, arm64, ...)')
+  .option('--expected-version <version>', 'Specify the expected version when creating a Windows MSI alias')
   .option('-p, --package-json <path>', 'Specify the package.json path', path.join(appSource, 'package.json'))
   .option('-w, --wire-json <path>', 'Specify the wire.json path', path.join(appSource, 'electron/wire.json'))
   .arguments('<platform>')
@@ -55,7 +57,7 @@ commander
 const platform = (commander.args[0] || '').toLowerCase();
 
 (async () => {
-  const {architecture, envFile, manualSign, wireJson, packageJson} = commander.opts();
+  const {architecture, envFile, expectedVersion, manualSign, wireJson, packageJson} = commander.opts();
 
   switch (platform) {
     case 'win':
@@ -84,6 +86,13 @@ const platform = (commander.args[0] || '').toLowerCase();
       logEntries(builderConfig, 'builderConfig', toolName);
 
       return buildWindowsMsi(builderConfig, packageJson, wireJson, envFile, msiArchitecture);
+    }
+
+    case 'windows-msi-alias': {
+      if (expectedVersion === undefined) {
+        throw new Error('An expected version is required when creating a Windows MSI alias.');
+      }
+      return createWindowsMsiGenericSetupAlias({distDirectory: path.join(appSource, 'wrap/dist'), expectedVersion});
     }
 
     case 'mac':
