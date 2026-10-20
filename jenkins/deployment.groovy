@@ -309,6 +309,14 @@ node('built-in') {
       }
 
       def presignedFile
+      def presignedArtifactNames = new LinkedHashSet()
+      artifacts.each { fileObj ->
+        presignedArtifactNames.add(fileObj.name)
+        def msiSetupAlias = windowsMsiSetupAlias(fileObj.name)
+        if (msiSetupAlias) {
+          presignedArtifactNames.add(msiSetupAlias)
+        }
+      }
 
       sh '''
         if ! command -v aws >/dev/null 2>&1; then
@@ -329,21 +337,14 @@ node('built-in') {
           presignedFile = 'custom-presigned-urls.txt'
           sh "rm -f ${presignedFile}"
 
-          artifacts.each { fileObj ->
-            def artifactNames = [fileObj.name]
-            def msiSetupAlias = windowsMsiSetupAlias(fileObj.name)
-            if (msiSetupAlias) {
-              artifactNames << msiSetupAlias
-            }
-            artifactNames.each { artifactName ->
-              def presignedUrl = sh(
-                script: """
-                  /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
-                """,
-                returnStdout: true
-              ).trim()
-              sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
-            }
+          presignedArtifactNames.each { artifactName ->
+            def presignedUrl = sh(
+              script: """
+                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
+              """,
+              returnStdout: true
+            ).trim()
+            sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
           }
 
           // Upload to private on-prem or specialized bucket, no Jenkins archiving
@@ -363,21 +364,14 @@ node('built-in') {
           presignedFile = "${fileSuffix}-presigned-urls.txt"
           sh "rm -f ${presignedFile}"
 
-          artifacts.each { fileObj ->
-            def artifactNames = [fileObj.name]
-            def msiSetupAlias = windowsMsiSetupAlias(fileObj.name)
-            if (msiSetupAlias) {
-              artifactNames << msiSetupAlias
-            }
-            artifactNames.each { artifactName ->
-              def presignedUrl = sh(
-                script: """
-                  /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
-                """,
-                returnStdout: true
-              ).trim()
-              sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
-            }
+          presignedArtifactNames.each { artifactName ->
+            def presignedUrl = sh(
+              script: """
+                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
+              """,
+              returnStdout: true
+            ).trim()
+            sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
           }
 
           s3Upload(

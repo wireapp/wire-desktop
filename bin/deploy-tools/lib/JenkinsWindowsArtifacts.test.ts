@@ -23,6 +23,7 @@ import path from 'node:path';
 import assert from 'node:assert';
 
 const windowsPipeline = fs.readFileSync(path.resolve(process.cwd(), 'jenkins/windows.groovy'), 'utf8');
+const githubDraftCli = fs.readFileSync(path.resolve(process.cwd(), 'bin/deploy-tools/github-draft-cli.ts'), 'utf8');
 
 describe('Jenkins Windows build artifacts', () => {
   it('fails the build unless both complete installer families were produced', () => {
@@ -32,5 +33,23 @@ describe('Jenkins Windows build artifacts', () => {
         `Missing an explicit Jenkins artifact gate for ${artifact}`,
       );
     }
+  });
+
+  it('creates and verifies the generic MSI alias after installer verification and before archiving', () => {
+    const verificationStagePosition = windowsPipeline.indexOf("stage('verify')");
+    const aliasCreationPosition = windowsPipeline.indexOf('windows-msi-alias');
+    const aliasVerificationPosition = windowsPipeline.indexOf('signtool.exe verify', aliasCreationPosition);
+    const archiveStagePosition = windowsPipeline.indexOf("stage('Archive build artifacts')");
+
+    assert.ok(verificationStagePosition < aliasCreationPosition);
+    assert.ok(aliasCreationPosition < aliasVerificationPosition);
+    assert.ok(aliasVerificationPosition < archiveStagePosition);
+    assert.ok(windowsPipeline.includes('windows-msi-alias --expected-version ${version}'));
+    assert.ok(windowsPipeline.includes('Missing generic MSI Setup alias'));
+  });
+
+  it('allows the existing GitHub release uploader to attach MSI build artifacts', () => {
+    assert.ok(githubDraftCli.includes('extensions.push(FileExtension.EXE, FileExtension.MSI)'));
+    assert.ok(githubDraftCli.includes('files.filter(fileName => endsWithAny(extensions, fileName))'));
   });
 });

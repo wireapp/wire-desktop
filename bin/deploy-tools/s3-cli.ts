@@ -21,7 +21,7 @@ import {program as commander} from 'commander';
 
 import path from 'path';
 
-import {getWindowsMsiSetupFileName, S3Deployer, WindowsArtifactType} from './lib/S3Deployer';
+import {getWindowsMsiAliasCopyOptions, S3Deployer, WindowsArtifactType} from './lib/S3Deployer';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';
 
@@ -79,15 +79,22 @@ if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
       s3Path,
     });
 
-    if (windowsArtifact === 'msi') {
-      const setupFileName = getWindowsMsiSetupFileName(fileName, version);
-      const setupS3Path = `${s3BasePath}${setupFileName}`.replace('//', '/');
-
-      await s3Deployer.copyOnS3({
+    if (fileName.endsWith('.msi')) {
+      const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
         bucket,
-        s3FromPath: `${bucket}/${s3Path}`,
-        s3ToPath: setupS3Path,
+        fileName,
+        version,
+        versionedS3Path: s3Path,
       });
+
+      for (const copyOptions of aliasCopyOptions) {
+        try {
+          await s3Deployer.copyOnS3(copyOptions);
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          throw new Error(`Failed to publish required Windows MSI alias "${copyOptions.s3ToPath}": ${errorMessage}`);
+        }
+      }
     }
   }
 

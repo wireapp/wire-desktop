@@ -23,7 +23,11 @@ import assert from 'node:assert';
 import os from 'node:os';
 import path from 'node:path';
 
-import {getWindowsMsiSetupFileName, S3Deployer} from './S3Deployer';
+import {
+  getWindowsMsiAliasCopyOptions,
+  getWindowsMsiSetupFileName,
+  S3Deployer,
+} from './S3Deployer';
 
 describe('S3Deployer', () => {
   const temporaryDirectories: string[] = [];
@@ -39,8 +43,16 @@ describe('S3Deployer', () => {
         dryRun: true,
         secretAccessKey: '',
       });
+      const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
+        bucket: 'wire-taco',
+        fileName: 'Wire-3.44.5380-x64.msi',
+        version: '3.44.5380',
+        versionedS3Path: 'win/prod/Wire-3.44.5380-x64.msi',
+      });
 
-      await assert.doesNotReject(() => s3Deployer.copyOnS3({bucket: '', s3FromPath: '', s3ToPath: ''}));
+      await assert.doesNotReject(() =>
+        Promise.all(aliasCopyOptions.map(copyOptions => s3Deployer.copyOnS3(copyOptions))),
+      );
     });
   });
 
@@ -109,6 +121,118 @@ describe('S3Deployer', () => {
       assert.throws(
         () => getWindowsMsiSetupFileName('Wire-x64-Setup.msi', '3.42.123'),
         /Could not derive the stable MSI name/,
+      );
+    });
+
+    function assertX64AliasesMatchProductName(productName: string): void {
+      const fileName = `${productName}-3.44.5380-x64.msi`;
+      const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
+        bucket: 'wire-taco',
+        fileName,
+        version: '3.44.5380',
+        versionedS3Path: `win/prod/${fileName}`,
+      });
+      const actualAliasFileNames = aliasCopyOptions.map(copyOptions =>
+        copyOptions.s3ToPath.slice(copyOptions.s3ToPath.lastIndexOf('/') + 1),
+      );
+      const expectedAliasFileNames = [`${productName}-x64-Setup.msi`, `${productName}-Setup.msi`];
+
+      assert.deepStrictEqual(actualAliasFileNames, expectedAliasFileNames);
+      assert.strictEqual(getWindowsMsiSetupFileName(fileName, '3.44.5380'), `${productName}-x64-Setup.msi`);
+    }
+
+    it('derives the production Wire aliases', () => {
+      assertX64AliasesMatchProductName('Wire');
+    });
+    it('derives the Internal aliases', () => {
+      assertX64AliasesMatchProductName('WireInternal');
+    });
+    it('derives the Wire-Gov aliases', () => {
+      assertX64AliasesMatchProductName('WireGov');
+    });
+    it('derives aliases for a custom product name', () => {
+      assertX64AliasesMatchProductName('Example-Company');
+    });
+
+    function assertOnlyArchitectureSpecificAlias(architecture: 'ia32' | 'arm64'): void {
+      const fileName = `Wire-3.44.5380-${architecture}.msi`;
+      const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
+        bucket: 'wire-taco',
+        fileName,
+        version: '3.44.5380',
+        versionedS3Path: `win/prod/${fileName}`,
+      });
+
+      assert.strictEqual(aliasCopyOptions.length, 1);
+      assert.strictEqual(aliasCopyOptions[0].s3ToPath, `win/prod/Wire-${architecture}-Setup.msi`);
+    }
+
+    it('does not derive a generic alias for ia32 installers', () => {
+      assertOnlyArchitectureSpecificAlias('ia32');
+    });
+    it('does not derive a generic alias for arm64 installers', () => {
+      assertOnlyArchitectureSpecificAlias('arm64');
+    });
+
+    it('rejects an MSI filename whose version does not match the deployment', () => {
+      assert.throws(
+        () => getWindowsMsiSetupFileName('Wire-3.44.5379-x64.msi', '3.44.5380'),
+        /Could not derive the stable MSI name/,
+      );
+    });
+  });
+
+  describe('getWindowsMsiAliasCopyOptions', () => {
+    it('copies the x64 aliases from the versioned S3 artifact under the same prefix', () => {
+      const actualCopyOptions = getWindowsMsiAliasCopyOptions({
+        bucket: 'wire-taco',
+        fileName: 'Wire-3.44.5380-x64.msi',
+        version: '3.44.5380',
+        versionedS3Path: 'win/prod/Wire-3.44.5380-x64.msi',
+      });
+      const expectedCopyOptions = [
+        {
+          bucket: 'wire-taco',
+          s3FromPath: 'wire-taco/win/prod/Wire-3.44.5380-x64.msi',
+          s3ToPath: 'win/prod/Wire-x64-Setup.msi',
+        },
+        {
+          bucket: 'wire-taco',
+          s3FromPath: 'wire-taco/win/prod/Wire-3.44.5380-x64.msi',
+          s3ToPath: 'win/prod/Wire-Setup.msi',
+        },
+      ];
+
+      assert.deepStrictEqual(actualCopyOptions, expectedCopyOptions);
+    });
+
+    it('keeps only the architecture-specific alias for non-x64 MSI copies', () => {
+      const actualCopyOptions = getWindowsMsiAliasCopyOptions({
+        bucket: 'wire-taco',
+        fileName: 'WireInternal-3.44.5380-ia32.msi',
+        version: '3.44.5380',
+        versionedS3Path: 'win/internal/WireInternal-3.44.5380-ia32.msi',
+      });
+
+      assert.deepStrictEqual(actualCopyOptions, [
+        {
+          bucket: 'wire-taco',
+          s3FromPath: 'wire-taco/win/internal/WireInternal-3.44.5380-ia32.msi',
+          s3ToPath: 'win/internal/WireInternal-ia32-Setup.msi',
+        },
+      ]);
+    });
+
+    it('rejects a versioned S3 source path that names a different artifact', () => {
+      assert.throws(
+        () =>
+          getWindowsMsiAliasCopyOptions({
+            bucket: 'wire-taco',
+            fileName: 'Wire-3.44.5380-x64.msi',
+            version: '3.44.5380',
+            versionedS3Path: 'win/prod/Wire-3.44.5379-x64.msi',
+          }),
+        /does not match artifact/,
       );
     });
   });

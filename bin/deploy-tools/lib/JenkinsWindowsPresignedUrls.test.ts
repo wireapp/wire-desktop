@@ -28,7 +28,10 @@ describe('Jenkins Windows presigned URLs', () => {
   it('uses the shared Windows release path and exposes the stable MSI alias', () => {
     assert.ok(!deploymentPipeline.includes('s3PathForArtifact'));
     assert.match(deploymentPipeline, /def windowsMsiSetupAlias\(def artifactName\)/);
-    assert.match(deploymentPipeline, /artifactNames << msiSetupAlias/);
+    assert.match(deploymentPipeline, /def presignedArtifactNames = new LinkedHashSet\(\)/);
+    assert.match(deploymentPipeline, /presignedArtifactNames\.add\(fileObj\.name\)/);
+    assert.match(deploymentPipeline, /presignedArtifactNames\.add\(msiSetupAlias\)/);
+    assert.match(deploymentPipeline, /presignedArtifactNames\.each \{ artifactName ->/);
     assert.strictEqual(
       (
         deploymentPipeline.match(

@@ -139,6 +139,23 @@ node('windows') {
     }
   }
 
+  stage('Create generic MSI alias') {
+    try {
+      withEnv(["PATH+NODE=${NODE}"]) {
+        // Copy the already signed and verified x64 MSI so the alias keeps the same bytes and Authenticode signature.
+        bat "yarn ts-node -P tsconfig.bin.json ./bin/build-tools/build-cli.ts windows-msi-alias --expected-version ${version}"
+        bat 'if not exist "wrap\\dist\\*-Setup.msi" (echo Missing generic MSI Setup alias & exit /b 1)'
+        if (production || wireGov) {
+          bat 'for %%f in ("wrap\\dist\\*-Setup.msi") do (signtool.exe verify /v /pa /all /tw "%%~ff" || exit /b 1)'
+        }
+      }
+    } catch (e) {
+      currentBuild.result = 'FAILED'
+      wireSend secret: "${jenkinsbot_secret}", message: "🏞 **${JOB_NAME} ${version} creating or verifying MSI alias failed**\n${BUILD_URL}"
+      throw e
+    }
+  }
+
   stage('Archive build artifacts') {
     archiveArtifacts 'package.json,wrap\\dist\\**'
   }
