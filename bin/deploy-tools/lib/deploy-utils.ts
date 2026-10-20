@@ -35,13 +35,23 @@ export interface FindResult {
 }
 
 export enum FileExtension {
-  APPIMAGE = '.AppImage',
   ASC = '.asc',
-  DEB = '.deb',
   EXE = '.exe',
   MSI = '.msi',
   PKG = '.pkg',
   SIG = '.sig',
+}
+
+export type SupportedDeploymentPlatform = 'macos' | 'windows';
+
+export function parseSupportedDeploymentPlatform(platform: string): SupportedDeploymentPlatform {
+  if (platform.includes('windows')) {
+    return 'windows';
+  }
+  if (platform.includes('macos')) {
+    return 'macos';
+  }
+  throw new Error(`Invalid platform "${platform}"`);
 }
 
 export const THREE_HUNDRED_MB_IN_BYTES = 314572800;

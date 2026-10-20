@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';
-import {find, FindResult, zip} from './lib/deploy-utils';
+import {find, FindResult, parseSupportedDeploymentPlatform, SupportedDeploymentPlatform, zip} from './lib/deploy-utils';
 import {HockeyDeployer} from './lib/HockeyDeployer';
 
 const toolName = path.basename(__filename).replace('.ts', '');
@@ -34,7 +34,7 @@ commander
   .option('-i, --hockey-id <id>', 'Specify the Hockey app ID')
   .option('-p, --path <path>', 'Specify the local path to search for files (e.g. "../../wrap")')
   .option('-t, --hockey-token <token>', 'Specify the Hockey API token')
-  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
+  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
   .parse(process.argv);
 
 const commanderOptions = commander.opts();
@@ -47,20 +47,17 @@ if (!commanderOptions.wrapperBuild.includes('#')) {
   process.exit(1);
 }
 
-function getUploadFile(platform: string, basePath: string): Promise<FindResult> {
-  if (platform.includes('linux')) {
-    return find('*.deb', {cwd: basePath});
-  } else if (platform.includes('windows')) {
+function getUploadFile(platform: SupportedDeploymentPlatform, basePath: string): Promise<FindResult> {
+  if (platform === 'windows') {
     return find('*-Setup.exe', {cwd: basePath});
-  } else if (platform.includes('macos')) {
-    return find('*.pkg', {cwd: basePath});
   }
-  throw new Error(`Invalid platform "${platform}"`);
+  return find('*.pkg', {cwd: basePath});
 }
 
 (async () => {
   const {hockeyId, hockeyToken, wrapperBuild} = commanderOptions;
-  const [platform, version] = wrapperBuild.toLowerCase().split('#');
+  const [wrapperPlatform, version] = wrapperBuild.toLowerCase().split('#');
+  const platform = parseSupportedDeploymentPlatform(wrapperPlatform);
   const searchBasePath = commanderOptions.path || path.resolve('.');
   const [majorVersion, minorVersion] = version.split('.');
 

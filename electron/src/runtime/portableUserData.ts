@@ -25,7 +25,6 @@ export type PortableUserDataPathParameters = {
   executablePath: string;
   portableModeEnabled: boolean;
   userDataDirectoryArgument: Maybe<string>;
-  appImagePath: Maybe<string>;
 };
 
 export function resolvePortableUserDataPath(parameters: PortableUserDataPathParameters): Maybe<string> {
@@ -34,9 +33,7 @@ export function resolvePortableUserDataPath(parameters: PortableUserDataPathPara
   }
 
   if (parameters.portableModeEnabled) {
-    const executablePath = parameters.appImagePath.unwrapOr(parameters.executablePath);
-
-    return Maybe.just(path.join(executablePath, '../Data'));
+    return Maybe.just(path.join(parameters.executablePath, '../Data'));
   }
 
   return Maybe.nothing<string>();

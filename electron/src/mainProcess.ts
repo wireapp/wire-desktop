@@ -836,21 +836,6 @@ const handleAppEvents = (): void => {
   });
 };
 
-const addLinuxWorkarounds = (): void => {
-  if (EnvironmentUtil.platform.IS_LINUX) {
-    // Fix indicator icon on Unity
-    // Source: https://bugs.launchpad.net/ubuntu/+bug/1559249
-
-    if (
-      EnvironmentUtil.linuxDesktop.isUbuntuUnity ||
-      EnvironmentUtil.linuxDesktop.isPopOS ||
-      EnvironmentUtil.linuxDesktop.isGnomeX11
-    ) {
-      process.env.XDG_CURRENT_DESKTOP = 'Unity';
-    }
-  }
-};
-
 const handlePortableFlags = (): void => {
   configuredUserDataPath.match({
     Just: logConfiguredUserDataPath,
@@ -1180,7 +1165,6 @@ lifecycle.addRelaunchListeners(async () => {
 
 // Stop further execution on update to prevent second tray icon
 if (lifecycle.isFirstInstance) {
-  addLinuxWorkarounds();
   initializeFirstInstance({
     bindIpcEvents,
     ensureMainProcessLogFile() {

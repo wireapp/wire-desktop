@@ -18,7 +18,7 @@
  */
 
 import {BrowserWindow, Tray} from 'electron';
-import {match, spy, assert as sinonAssert} from 'sinon';
+import {match, spy, stub, assert as sinonAssert} from 'sinon';
 
 import * as assert from 'assert';
 import * as path from 'path';
@@ -49,6 +49,7 @@ describe('TrayHandler', () => {
         tray.initTray(TrayMock);
 
         const appWindow = new BrowserWindow();
+        const isFocused = stub(appWindow, 'isFocused').returns(true);
         const flashFrameSpy = spy(appWindow, 'flashFrame');
 
         await appWindow.loadURL('about:blank');
@@ -59,6 +60,7 @@ describe('TrayHandler', () => {
         assert.ok(flashFrameSpy.firstCall.calledWith(false));
         assert.strictEqual(tray['lastUnreadCount'], 1);
 
+        isFocused.restore();
         flashFrameSpy.restore();
       });
     });
@@ -69,6 +71,7 @@ describe('TrayHandler', () => {
         tray.initTray(TrayMock);
 
         const appWindow = new BrowserWindow();
+        const isFocused = stub(appWindow, 'isFocused').returns(true);
         const flashFrameSpy = spy(appWindow, 'flashFrame');
 
         await appWindow.loadFile(path.join(fixturesDir, 'badge.html'));
@@ -77,6 +80,7 @@ describe('TrayHandler', () => {
         tray.showUnreadCount(appWindow, 10);
         assert.ok(flashFrameSpy.firstCall.calledWith(false));
         assert.strictEqual(tray['lastUnreadCount'], 10);
+        isFocused.restore();
         flashFrameSpy.restore();
       });
 

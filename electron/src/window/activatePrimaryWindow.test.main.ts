@@ -55,10 +55,10 @@ describe('activatePrimaryWindow', () => {
     assert.deepStrictEqual(calls, ['show', 'focus']);
   });
 
-  it('restores a minimized window before showing it', () => {
+  it('restores a minimized Windows window before showing it', () => {
     const {calls, window, application} = createWindow(true);
 
-    activatePrimaryWindow(window, application, 'linux');
+    activatePrimaryWindow(window, application, 'win32');
 
     assert.deepStrictEqual(calls, ['restore', 'show', 'focus']);
   });

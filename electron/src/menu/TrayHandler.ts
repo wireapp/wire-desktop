@@ -22,7 +22,6 @@ import {app, BrowserWindow, Menu, NativeImage, nativeImage, Tray} from 'electron
 import * as path from 'path';
 
 import * as locale from '../locale';
-import {linuxDesktop, platform} from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
 import {WindowManager} from '../window/WindowManager';
@@ -43,18 +42,10 @@ export class TrayHandler {
   initTray(trayIcon = new Tray(nativeImage.createEmpty())): void {
     const IMAGE_ROOT = path.join(app.getAppPath(), config.electronDirectory, 'img');
 
-    let trayPng = 'tray.png';
-    let trayBadgePng = 'tray.badge.png';
-
-    if (platform.IS_LINUX) {
-      trayPng = `tray${linuxDesktop.isGnomeX11 ? '.gnome' : '@3x'}.png`;
-      trayBadgePng = `tray.badge${linuxDesktop.isGnomeX11 ? '.gnome' : '@3x'}.png`;
-    }
-
     const iconPaths = {
       badge: path.join(IMAGE_ROOT, 'taskbar.overlay.png'),
-      tray: path.join(IMAGE_ROOT, 'tray-icon/tray', trayPng),
-      trayWithBadge: path.join(IMAGE_ROOT, 'tray-icon/tray-with-badge', trayBadgePng),
+      tray: path.join(IMAGE_ROOT, 'tray-icon/tray/tray.png'),
+      trayWithBadge: path.join(IMAGE_ROOT, 'tray-icon/tray-with-badge/tray.badge.png'),
     };
 
     this.icons = {

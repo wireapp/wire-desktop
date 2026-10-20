@@ -35,6 +35,3 @@ export const APPLOCK_OVERRIDE_KEY = 'applockOverride';
 export const WINDOWS_POLICY_KEY = 'SOFTWARE\\Policies\\Wire';
 
 // macOS reads `APPLOCK_OVERRIDE_KEY` from the app's defaults domain (pushed via an MDM AppConfig profile).
-
-/** Linux: machine-wide managed config file holding the `APPLOCK_OVERRIDE_KEY` flag. */
-export const LINUX_MANAGED_CONFIG_PATH = '/etc/wire/managed.json';

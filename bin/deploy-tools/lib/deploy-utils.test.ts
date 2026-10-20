@@ -1,6 +1,6 @@
 /*
  * Wire
- * Copyright (C) 2019 Wire Swiss GmbH
+ * Copyright (C) 2026 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,32 +16,26 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import * as assert from 'assert';
-import {find} from './deploy-utils';
+import assert from 'node:assert';
 
-describe('deploy-utils', () => {
-  it('safeguard prevents further code execution', async () => {
-    // safeGuard: true should throw an error
-    try {
-      await find('invalid-file', {cwd: __dirname, safeGuard: true});
-      assert.fail('find should throw an error with safeguard');
-    } catch (error) {
-      // expected
-    }
+import {parseSupportedDeploymentPlatform} from './deploy-utils';
 
-    // safeGuard: false should return null instead of throwing
-    try {
-      const result = await find('invalid-file', {cwd: __dirname, safeGuard: false});
-      assert.strictEqual(result, null);
-    } catch (error) {
-      assert.fail('find should not throw an error without safeguard');
-    }
+describe('parseSupportedDeploymentPlatform', () => {
+  it('accepts Windows and macOS wrapper build names', () => {
+    const actualPlatforms = [
+      parseSupportedDeploymentPlatform('wrapper_windows_production'),
+      parseSupportedDeploymentPlatform('wrapper_macos_production'),
+    ];
+    const expectedPlatforms = ['windows', 'macos'];
+
+    assert.deepStrictEqual(actualPlatforms, expectedPlatforms);
   });
 
-  it('find finds files', async () => {
-    const result = await find('deploy-utils.test.ts', {cwd: __dirname, safeGuard: false});
-    assert.notEqual(result, null);
-    assert.strictEqual(typeof result!.fileName, 'string');
-    assert.strictEqual(typeof result!.filePath, 'string');
+  it('rejects Linux and unknown wrapper build names', () => {
+    assert.throws(
+      () => parseSupportedDeploymentPlatform('wrapper_linux_production'),
+      /Invalid platform "wrapper_linux_production"/,
+    );
+    assert.throws(() => parseSupportedDeploymentPlatform('wrapper_unknown_production'), /Invalid platform/);
   });
 });

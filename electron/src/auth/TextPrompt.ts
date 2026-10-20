@@ -83,7 +83,7 @@ export function registerTextPrompt(parent: BrowserWindow): void {
         event.returnValue = value;
       }
       // Parent destruction can also close this modal. Avoid re-entering native
-      // window destruction from a closed/render-process-gone callback on Linux.
+      // window destruction from a closed/render-process-gone callback.
       const dialog = prompt;
       setImmediate(() => {
         if (dialog && !dialog.isDestroyed()) {

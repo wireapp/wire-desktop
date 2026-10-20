@@ -18,7 +18,7 @@
  */
 
 import type {BrowserWindow} from 'electron';
-// Keep the optional macOS addon out of Linux/Windows TypeScript resolution.
+// Keep the optional macOS addon out of Windows TypeScript resolution.
 type NobjcObject = {[selector: string]: (...args: any[]) => any};
 
 let presentationProviderClass: NobjcObject | undefined;

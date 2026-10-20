@@ -24,7 +24,7 @@ import path from 'path';
 
 import {LogFactory} from '@wireapp/commons';
 
-import {buildLinuxConfig, buildLinuxWrapper} from './lib/build-linux';
+import {normalizeBuildPlatform} from './lib/build-platform';
 import {buildMacOSConfig, buildMacOSWrapper} from './lib/build-macos';
 import {buildWindowsConfig, buildWindowsWrapper} from './lib/build-windows';
 import {buildWindowsInstaller, buildWindowsInstallerConfig} from './lib/build-windows-installer';
@@ -40,7 +40,7 @@ const appSource = path.join(__dirname, '../../');
 commander
   .name(toolName)
   .description(
-    'Build the Wire wrapper for your platform.\n\nValid values for platform are: "windows", "windows-installer", "windows-msi", "windows-msi-alias", "macos", "linux".',
+    'Build the Wire wrapper for your platform.\n\nValid values for platform are: "win" or "windows", "windows-installer", "windows-msi", "windows-msi-alias", "mac" or "macos".',
   )
   .option('-e, --env-file <path>', 'Specify the env file path', path.join(appSource, '.env.defaults'))
   .option(
@@ -54,13 +54,12 @@ commander
   .arguments('<platform>')
   .parse(process.argv);
 
-const platform = (commander.args[0] || '').toLowerCase();
+const platform = normalizeBuildPlatform((commander.args[0] || '').toLowerCase());
 
 (async () => {
   const {architecture, envFile, expectedVersion, manualSign, wireJson, packageJson} = commander.opts();
 
   switch (platform) {
-    case 'win':
     case 'windows': {
       const {windowsConfig, packagerConfig} = await buildWindowsConfig(wireJson, envFile, architecture);
 
@@ -95,7 +94,6 @@ const platform = (commander.args[0] || '').toLowerCase();
       return createWindowsMsiGenericSetupAlias({distDirectory: path.join(appSource, 'wrap/dist'), expectedVersion});
     }
 
-    case 'mac':
     case 'macos': {
       const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJson, envFile, manualSign, architecture);
 
@@ -103,15 +101,6 @@ const platform = (commander.args[0] || '').toLowerCase();
       logEntries(packagerConfig, 'packagerConfig', toolName);
 
       return buildMacOSWrapper(packagerConfig, macOSConfig, packageJson, wireJson, envFile, manualSign);
-    }
-
-    case 'linux': {
-      const {linuxConfig, builderConfig} = await buildLinuxConfig(wireJson, envFile);
-
-      logEntries(linuxConfig, 'linuxConfig', toolName);
-      logEntries(builderConfig, 'builderConfig', toolName);
-
-      return buildLinuxWrapper(builderConfig, linuxConfig, packageJson, wireJson, envFile, architecture);
     }
 
     default: {

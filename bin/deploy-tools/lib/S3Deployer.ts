@@ -24,7 +24,7 @@ import path from 'path';
 
 import {Logger} from '@wireapp/commons';
 
-import {find, FindResult, logDry} from './deploy-utils';
+import {find, FindResult, logDry, parseSupportedDeploymentPlatform} from './deploy-utils';
 
 import {getLogger} from '../../bin-utils';
 import {getWindowsMsiSetupAliasNames} from '../../windows-msi-artifacts';
@@ -111,39 +111,14 @@ export class S3Deployer {
   }
 
   async findUploadFiles(
-    platform: string,
+    platformName: string,
     basePath: string,
     version: string,
     windowsArtifact: WindowsArtifactType = 'auto',
   ): Promise<FindResult[]> {
-    if (platform.includes('linux')) {
-      const appImage = await find('*.AppImage', {cwd: basePath});
-      const debImage = await find('*.deb', {cwd: basePath});
-      const repositoryFiles = [
-        `debian/pool/main/${debImage.fileName}`,
-        'debian/dists/stable/Contents-amd64',
-        'debian/dists/stable/Contents-amd64.bz2',
-        'debian/dists/stable/Contents-amd64.gz',
-        'debian/dists/stable/InRelease',
-        'debian/dists/stable/Release',
-        'debian/dists/stable/Release.gpg',
-        'debian/dists/stable/main/binary-amd64/Packages',
-        'debian/dists/stable/main/binary-amd64/Packages.bz2',
-        'debian/dists/stable/main/binary-amd64/Packages.gz',
-      ].map(fileName => ({fileName, filePath: path.join(basePath, fileName)}));
+    const platform = parseSupportedDeploymentPlatform(platformName);
 
-      return [
-        ...repositoryFiles,
-        {
-          fileName: appImage.fileName,
-          filePath: path.join(basePath, appImage.fileName),
-        },
-        {
-          fileName: debImage.fileName,
-          filePath: path.join(basePath, debImage.fileName),
-        },
-      ];
-    } else if (platform.includes('windows')) {
+    if (platform === 'windows') {
       if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
         throw new Error(`Invalid Windows artifact type "${windowsArtifact}"`);
       }
@@ -195,11 +170,10 @@ export class S3Deployer {
           filePath: path.join(basePath, setupExe.fileName),
         },
       ];
-    } else if (platform.includes('macos')) {
-      const setupPkg = await find('*.pkg', {cwd: basePath});
-      return [setupPkg];
     }
-    throw new Error(`Invalid platform "${platform}"`);
+
+    const setupPkg = await find('*.pkg', {cwd: basePath});
+    return [{...setupPkg, filePath: path.join(basePath, setupPkg.fileName)}];
   }
 
   async uploadToS3(uploadOptions: S3UploadOptions): Promise<void> {
