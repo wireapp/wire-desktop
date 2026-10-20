@@ -124,40 +124,54 @@ describe('S3Deployer', () => {
       );
     });
 
-    it('derives a generic alias from x64 production, internal, government, and custom product names', () => {
-      const productNames = ['Wire', 'WireInternal', 'WireGov', 'Example-Company'];
+    function assertX64AliasesMatchProductName(productName: string): void {
+      const fileName = `${productName}-3.44.5380-x64.msi`;
+      const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
+        bucket: 'wire-taco',
+        fileName,
+        version: '3.44.5380',
+        versionedS3Path: `win/prod/${fileName}`,
+      });
+      const actualAliasFileNames = aliasCopyOptions.map(copyOptions =>
+        copyOptions.s3ToPath.slice(copyOptions.s3ToPath.lastIndexOf('/') + 1),
+      );
+      const expectedAliasFileNames = [`${productName}-x64-Setup.msi`, `${productName}-Setup.msi`];
 
-      for (const productName of productNames) {
-        const fileName = `${productName}-3.44.5380-x64.msi`;
-        const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
-          bucket: 'wire-taco',
-          fileName,
-          version: '3.44.5380',
-          versionedS3Path: `win/prod/${fileName}`,
-        });
-        const actualAliasFileNames = aliasCopyOptions.map(copyOptions =>
-          copyOptions.s3ToPath.slice(copyOptions.s3ToPath.lastIndexOf('/') + 1),
-        );
-        const expectedAliasFileNames = [`${productName}-x64-Setup.msi`, `${productName}-Setup.msi`];
+      assert.deepStrictEqual(actualAliasFileNames, expectedAliasFileNames);
+      assert.strictEqual(getWindowsMsiSetupFileName(fileName, '3.44.5380'), `${productName}-x64-Setup.msi`);
+    }
 
-        assert.deepStrictEqual(actualAliasFileNames, expectedAliasFileNames);
-        assert.strictEqual(getWindowsMsiSetupFileName(fileName, '3.44.5380'), `${productName}-x64-Setup.msi`);
-      }
+    it('derives the production Wire aliases', () => {
+      assertX64AliasesMatchProductName('Wire');
+    });
+    it('derives the Internal aliases', () => {
+      assertX64AliasesMatchProductName('WireInternal');
+    });
+    it('derives the Wire-Gov aliases', () => {
+      assertX64AliasesMatchProductName('WireGov');
+    });
+    it('derives aliases for a custom product name', () => {
+      assertX64AliasesMatchProductName('Example-Company');
     });
 
-    it('does not derive an architecture-neutral alias for non-x64 installers', () => {
-      for (const architecture of ['ia32', 'arm64']) {
-        const fileName = `Wire-3.44.5380-${architecture}.msi`;
-        const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
-          bucket: 'wire-taco',
-          fileName,
-          version: '3.44.5380',
-          versionedS3Path: `win/prod/${fileName}`,
-        });
+    function assertOnlyArchitectureSpecificAlias(architecture: 'ia32' | 'arm64'): void {
+      const fileName = `Wire-3.44.5380-${architecture}.msi`;
+      const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
+        bucket: 'wire-taco',
+        fileName,
+        version: '3.44.5380',
+        versionedS3Path: `win/prod/${fileName}`,
+      });
 
-        assert.strictEqual(aliasCopyOptions.length, 1);
-        assert.strictEqual(aliasCopyOptions[0].s3ToPath, `win/prod/Wire-${architecture}-Setup.msi`);
-      }
+      assert.strictEqual(aliasCopyOptions.length, 1);
+      assert.strictEqual(aliasCopyOptions[0].s3ToPath, `win/prod/Wire-${architecture}-Setup.msi`);
+    }
+
+    it('does not derive a generic alias for ia32 installers', () => {
+      assertOnlyArchitectureSpecificAlias('ia32');
+    });
+    it('does not derive a generic alias for arm64 installers', () => {
+      assertOnlyArchitectureSpecificAlias('arm64');
     });
 
     it('rejects an MSI filename whose version does not match the deployment', () => {
