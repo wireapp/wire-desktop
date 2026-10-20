@@ -38,7 +38,7 @@ commander
   .option('-p, --path <path>', 'Specify the local path to search for files (e.g. "../../wrap")')
   .option('-s, --s3path <path>', 'Specify the base path on S3 (e.g. "apps/windows")')
   .option('--windows-artifact <type>', 'Select Windows artifacts: auto, squirrel, or msi', 'auto')
-  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
+  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
   .parse(process.argv);
 
 const commanderOptions = commander.opts();

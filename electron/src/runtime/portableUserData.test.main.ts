@@ -31,21 +31,19 @@ describe('portable user-data path', () => {
       executablePath: '/Applications/Wire.app/Contents/MacOS/Wire',
       portableModeEnabled: false,
       userDataDirectoryArgument: Maybe.just('custom-user-data'),
-      appImagePath: Maybe.nothing<string>(),
     });
     const expectedPath = path.resolve('custom-user-data');
 
     assert.strictEqual(actualPath.unwrapOr(''), expectedPath);
   });
 
-  it('resolves portable mode below the AppImage path', () => {
+  it('resolves portable mode next to the executable', () => {
     const actualPath = resolvePortableUserDataPath({
       executablePath: '/opt/Wire/Wire',
       portableModeEnabled: true,
       userDataDirectoryArgument: Maybe.nothing<string>(),
-      appImagePath: Maybe.just('/opt/Wire/Wire.AppImage'),
     });
-    const expectedPath = path.join('/opt/Wire/Wire.AppImage', '../Data');
+    const expectedPath = path.join('/opt/Wire/Wire', '../Data');
 
     assert.strictEqual(actualPath.unwrapOr(''), expectedPath);
   });
@@ -55,7 +53,6 @@ describe('portable user-data path', () => {
       executablePath: '/opt/Wire/Wire',
       portableModeEnabled: false,
       userDataDirectoryArgument: Maybe.nothing<string>(),
-      appImagePath: Maybe.nothing<string>(),
     });
 
     assert.strictEqual(actualPath.isNothing, true);
@@ -69,7 +66,6 @@ describe('portable user-data path', () => {
         executablePath: '/Applications/Wire.app/Contents/MacOS/Wire',
         portableModeEnabled: false,
         userDataDirectoryArgument: Maybe.just('custom-user-data'),
-        appImagePath: Maybe.nothing<string>(),
       },
       setUserDataPath: userDataPath => configuredUserDataPaths.push(userDataPath),
     });

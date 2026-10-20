@@ -20,7 +20,7 @@ import {program as commander} from 'commander';
 import path from 'path';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';
-import {find} from './lib/deploy-utils';
+import {find, parseSupportedDeploymentPlatform} from './lib/deploy-utils';
 import {S3Deployer} from './lib/S3Deployer';
 
 const toolName = path.basename(__filename).replace('.ts', '');
@@ -35,7 +35,7 @@ commander
   .option('-k, --secret-key <id>', 'Specify the AWS secret access key ID')
   .option('-p, --path <path>', 'Specify the local path to search for files (e.g. "../../wrap")')
   .option('-s, --s3path <path>', 'Specify the base path on S3 (e.g. "apps/windows")')
-  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
+  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
   .parse(process.argv);
 
 const commanderOptions = commander.opts();
@@ -49,9 +49,10 @@ if (!commanderOptions.wrapperBuild.includes('#')) {
 }
 
 (async () => {
-  const [platform, version] = commanderOptions.wrapperBuild.toLowerCase().split('#');
+  const [wrapperPlatform, version] = commanderOptions.wrapperBuild.toLowerCase().split('#');
+  const platform = parseSupportedDeploymentPlatform(wrapperPlatform);
 
-  if (!platform.includes('windows')) {
+  if (platform !== 'windows') {
     throw new Error('Copying release files on S3 is supported only for Windows');
   }
 

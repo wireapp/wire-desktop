@@ -44,15 +44,6 @@ export interface CommonConfig {
   websiteUrl: string;
 }
 
-export interface LinuxConfig {
-  artifactName: string;
-  categories: string;
-  executableName: string;
-  genericName: string;
-  keywords: string;
-  targets: string[];
-}
-
 export interface MacOSConfig {
   appleExportComplianceCode: string | null;
   bundleId: string;

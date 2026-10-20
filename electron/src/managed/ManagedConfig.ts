@@ -17,7 +17,6 @@
  *
  */
 
-import {isDeviceManagedLinux} from './backends/linux';
 import {isDeviceManagedMacOS} from './backends/macos';
 import {isDeviceManagedWindows} from './backends/windows';
 
@@ -43,9 +42,6 @@ function detectApplockOverride(): boolean {
   }
   if (EnvironmentUtil.platform.IS_MAC_OS) {
     return isDeviceManagedMacOS();
-  }
-  if (EnvironmentUtil.platform.IS_LINUX) {
-    return isDeviceManagedLinux();
   }
   return false;
 }

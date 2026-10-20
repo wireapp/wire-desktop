@@ -101,7 +101,7 @@ class CertificateVerifyProcManager {
       });
       await goBack();
     } else {
-      // For Linux and Windows, use a message box with the ability to save the certificate
+      // On Windows, use a message box with the ability to save the certificate
       const {response} = await dialog.showMessageBox(this.mainWindow, {
         buttons: [this.LOCALE.SHOW_DETAILS_GO_BACK, this.LOCALE.SHOW_DETAILS_SAVE_CERTIFICATE],
         cancelId: RESPONSE.GO_BACK,

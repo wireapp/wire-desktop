@@ -18,23 +18,16 @@ No license is granted to the Wire trademark and its associated logos, all of whi
 
 ## Wire Desktop
 
-Cross platform desktop app, wrapping the [wire-webapp](https://github.com/wireapp/wire-webapp). Based on [Electron](https://electronjs.org).
+Wire Desktop supports macOS and Windows. It wraps the [wire-webapp](https://github.com/wireapp/wire-webapp) and is based on [Electron](https://electronjs.org).
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) matching the version defined in `.node-version`
 - Npm
 - Git
-- Yarn (Install using the official instructions at https://yarnpkg.com/lang/en/docs/install/, and not using the package recommended by apt-get)
+- Yarn (install it using the [official instructions](https://yarnpkg.com/lang/en/docs/install/))
 
-### Install Dependencies
-
-```shell
-sudo apt install git npm nodejs
-npm install --global yarn
-```
-
-### Clone
+### Clone and install dependencies
 
 ```shell
 git clone https://github.com/wireapp/wire-desktop.git
@@ -64,7 +57,6 @@ The flag is read from organization-agnostic, Wire-vendor locations (no customer/
 | :-- | :-- | :-- |
 | Windows | Registry `…\SOFTWARE\Policies\Wire` (HKLM, HKCU fallback) | `applockOverride` value = `1`, **or** the device is MDM-enrolled / Azure-AD joined |
 | macOS | App's managed preferences domain (MDM AppConfig profile) | `applockOverride` boolean = `true` |
-| Linux | `/etc/wire/managed.json` | `{"applockOverride": true}` (presence means managed unless explicitly `false`) |
 
 #### Testing locally
 
@@ -94,14 +86,6 @@ To validate the real MDM path (managed-preferences domain):
 sudo defaults write "/Library/Managed Preferences/com.wearezeta.zclient.mac.plist" applockOverride -bool true
 ```
 
-**Linux**:
-
-```shell
-echo '{"applockOverride": true}' | sudo tee /etc/wire/managed.json
-# relaunch app -> applockOverride === true
-sudo rm /etc/wire/managed.json
-```
-
 ### Deployment
 
 | Stage | Branch | Action | Version |
@@ -124,39 +108,25 @@ yarn build:macos
 
 # Build for Windows
 yarn build:win
-
-# Build for Linux
-yarn build:linux
 ```
 
-On macOS, desktop SSO uses `ASWebAuthenticationSession` through the optional `objc-js` bridge. Authentication runs in a supporting default browser, with Safari as fallback. Windows and Linux retain embedded SSO; the standalone webapp is unchanged.
+On macOS, desktop SSO uses `ASWebAuthenticationSession` through the optional `objc-js` bridge. Authentication runs in a supporting default browser, with Safari as fallback. Windows uses embedded SSO; the standalone webapp is unchanged.
 
 The macOS flow follows Wire iOS's existing backend contract: a validated callback returns a session cookie to the initiating account. Callback URLs and cookies must not be logged. This is not a single-use-code/PKCE exchange.
 
 macOS packaging unpacks and signs the native bridge using the existing app-signing identity. Browser SSO does not require the former WebAuthn keychain-group entitlement or additional provisioning-profile credentials. Both Jenkins jobs use the configured `node-v23.0.0` tool for the upgraded Electron runtime.
 
-Embedded SSO windows support website `window.prompt()` requests through a local text dialog. This covers passkey labels requested by Keycloak and other providers using the same browser API, without changing the identity provider's theme. The dialog shows the requesting origin, returns entered text on OK and `null` on cancellation, and closes when the requesting page navigates or closes. Prompt messages and entered values are not logged. This addresses prompt compatibility; each provider's complete login flow still needs testing.
+Windows embedded SSO windows support website `window.prompt()` requests through a local text dialog. This covers passkey labels requested by Keycloak and other providers using the same browser API, without changing the identity provider's theme. The dialog shows the requesting origin, returns entered text on OK and `null` on cancellation, and closes when the requesting page navigates or closes. Prompt messages and entered values are not logged. This addresses prompt compatibility; each provider's complete login flow still needs testing.
 
-On Windows and Linux, SSO opens in an independent window using the shared persistent `persist:wire-sso` session. The backend completion callback is checked against the expected origin before copying its Wire login cookie into the requesting account. SSO website storage is cleared on close and before a new login, while passkey session preferences remain. Removing one sub-app/account does not remove this shared session. Reuse requires the same identity-provider account and relying-party ID; unrelated providers still need separate credentials. Deleting the entire desktop user-data directory or the credential in Keycloak is different. In a signed build, test registration, restart, account removal/re-addition, and login from another sub-app.
+On Windows, SSO opens in an independent window using the shared persistent `persist:wire-sso` session. The backend completion callback is checked against the expected origin before copying its Wire login cookie into the requesting account. SSO website storage is cleared on close and before a new login, while passkey session preferences remain. Removing one sub-app/account does not remove this shared session. Reuse requires the same identity-provider account and relying-party ID; unrelated providers still need separate credentials. Deleting the entire desktop user-data directory or the credential in Keycloak is different. In a signed build, test registration, restart, account removal/re-addition, and login from another sub-app.
 
-To test authentication, launch the signed app with `--enable-logging` and search its `logs/YYYY-MM-DD/electron.log` (inside Electron's user-data directory) for `[Passkeys]`. For macOS browser SSO, search for `[SSO]` to follow session startup, callback validation failures, and cookie installation. Browser authentication does not use the embedded account picker. For embedded WebAuthn, account-picker logs show requests, selection, cancellation, or failure without account names or credential IDs. An account-selection event only occurs when the authenticator needs a choice: its absence does not prove WebAuthn failed. Complete login against the intended identity provider to verify the result. Build checks do not establish authenticator compatibility; test the signed app against the intended IdP.
+To test authentication, launch the signed app with `--enable-logging` and search its `logs/YYYY-MM-DD/electron.log` (inside Electron's user-data directory) for `[Passkeys]`. For macOS browser SSO, search for `[SSO]` to follow session startup, callback validation failures, and cookie installation. Browser authentication does not use the embedded account picker. On Windows, account-picker logs show embedded WebAuthn requests, selection, cancellation, or failure without account names or credential IDs. An account-selection event only occurs when the authenticator needs a choice: its absence does not prove WebAuthn failed. Complete login against the intended identity provider to verify the result. Build checks do not establish authenticator compatibility; test the signed app against the intended IdP.
 
-### Other Linux targets
-
-If you would like to build for another Linux target, run the following command:
-
-```shell
-export LINUX_TARGET=<target>
-yarn build:linux
-```
-
-Replace `<target>` with your desired target (e.g. `rpm`). Have a look at the [documentation for `electron-builder`](https://www.electron.build/configuration/linux) for the available targets. Multiple targets can be combined by comma separation (e.g. `rpm,deb`). Note that we cannot offer support for uncommon targets.
-
-Furthermore, you can disable [asar packaging](https://www.electronjs.org/docs/latest/tutorial/application-distribution/) (not recommended, but e.g. needed for target `dir`) by setting `ENABLE_ASAR="false"` before building. Example:
+For a package that needs unpacked files, you can disable [asar packaging](https://www.electronjs.org/docs/latest/tutorial/application-distribution/) (not recommended) by setting `ENABLE_ASAR="false"` before building.
 
 ```shell
 export ENABLE_ASAR="false"
-yarn build:linux
+yarn build:macos # or yarn build:win
 ```
 
 ### Troubleshooting
@@ -166,9 +136,3 @@ If you are having troubles building Wire for Desktop, then [our troubleshooting 
 ### Translations
 
 All Wire translations are crowdsourced via [Crowdin](https://crowdin.com/projects/wire).
-
-### Install wire-desktop under Linux
-
-You can of course use the webapp in your browser, but if you prefer to install wire-desktop, continue reading here:
-
-https://github.com/wireapp/wire-desktop/wiki/How-to-install-Wire-for-Desktop-on-Linux

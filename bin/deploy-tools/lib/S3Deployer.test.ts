@@ -107,6 +107,27 @@ describe('S3Deployer', () => {
         /contains both Squirrel and MSI artifacts; select one explicitly/,
       );
     });
+
+    it('selects the macOS package', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-macos-deployer-'));
+      temporaryDirectories.push(basePath);
+      const fileName = 'Wire-3.42.123.pkg';
+      await fs.ensureFile(path.join(basePath, fileName));
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      const files = await s3Deployer.findUploadFiles('wrapper_macos_production', basePath, '3.42.123');
+
+      assert.deepStrictEqual(files, [{fileName, filePath: path.join(basePath, fileName)}]);
+    });
+
+    it('rejects Linux artifacts', async () => {
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      await assert.rejects(
+        s3Deployer.findUploadFiles('wrapper_linux_production', '/unused', '3.42.123'),
+        /Invalid platform "wrapper_linux_production"/,
+      );
+    });
   });
 
   describe('getWindowsMsiSetupFileName', () => {

@@ -75,27 +75,9 @@ export const app = {
   UPDATE_URL_WIN: config.updateUrl,
 };
 
-const isEnvVar = (envVar: string, value: string, caseSensitive = false): boolean => {
-  let envVarContent = process.env[envVar] || '';
-
-  if (!caseSensitive) {
-    envVar = envVar.toLowerCase();
-    envVarContent = envVarContent.toLowerCase();
-  }
-
-  return envVarContent.includes(value);
-};
-
 export const platform = {
-  IS_LINUX: process.platform === 'linux',
   IS_MAC_OS: process.platform === 'darwin',
   IS_WINDOWS: process.platform === 'win32',
-};
-
-export const linuxDesktop = {
-  isGnomeX11: isEnvVar('XDG_CURRENT_DESKTOP', 'gnome') && isEnvVar('XDG_SESSION_TYPE', 'x11'),
-  isPopOS: isEnvVar('XDG_CURRENT_DESKTOP', 'pop'),
-  isUbuntuUnity: isEnvVar('XDG_CURRENT_DESKTOP', 'Unity'),
 };
 
 export const setEnvironment = (env: ServerType): void => {

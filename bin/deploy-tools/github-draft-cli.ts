@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import {checkCommanderOptions, execAsync, getLogger} from '../bin-utils';
-import {FileExtension} from './lib/deploy-utils';
+import {FileExtension, parseSupportedDeploymentPlatform} from './lib/deploy-utils';
 import {GitHubDraftDeployer} from './lib/GitHubDraftDeployer';
 
 const toolName = path.basename(__filename).replace('.ts', '');
@@ -33,7 +33,7 @@ commander
   .option('-d, --dry-run', 'Just log without actually uploading')
   .option('-p, --path <path>', 'Specify the local path to look for files (e.g. "../../wrap")')
   .option('-t, --github-token <token>', 'Specify the GitHub access token')
-  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Linux#3.7.1234")')
+  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
   .parse(process.argv);
 
 const commanderOptions = commander.opts();
@@ -51,23 +51,19 @@ const repoSlug = 'wireapp/wire-desktop';
 const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix => str.endsWith(suffix));
 
 (async () => {
-  let PLATFORM: string;
   const extensions = [FileExtension.ASC, FileExtension.SIG];
 
-  const [platform, version] = commanderOptions.wrapperBuild.toLowerCase().split('#');
+  const [wrapperPlatform, version] = commanderOptions.wrapperBuild.toLowerCase().split('#');
+  const platform = parseSupportedDeploymentPlatform(wrapperPlatform);
   const basePath = commanderOptions.path || path.resolve('.');
 
-  if (platform.includes('linux')) {
-    PLATFORM = 'Linux';
-    extensions.push(FileExtension.APPIMAGE, FileExtension.DEB);
-  } else if (platform.includes('windows')) {
-    PLATFORM = 'Windows';
+  let releasePlatformName: string;
+  if (platform === 'windows') {
+    releasePlatformName = 'Windows';
     extensions.push(FileExtension.EXE, FileExtension.MSI);
-  } else if (platform.includes('macos')) {
-    PLATFORM = 'macOS';
-    extensions.push(FileExtension.PKG);
   } else {
-    throw new Error(`Invalid platform "${platform}"`);
+    releasePlatformName = 'macOS';
+    extensions.push(FileExtension.PKG);
   }
 
   const {stdout: commitId} = await execAsync('git rev-parse HEAD');
@@ -85,8 +81,8 @@ const endsWithAny = (suffixes: string[], str: string) => suffixes.some(suffix =>
   const {id: draftId} = await githubDraftDeployer.createDraft({
     changelog,
     commitOrBranch: commitId,
-    tagName: `${PLATFORM.toLowerCase()}/${version}`,
-    title: `${version} - ${PLATFORM}`,
+    tagName: `${releasePlatformName.toLowerCase()}/${version}`,
+    title: `${version} - ${releasePlatformName}`,
   });
 
   logger.log('Draft created.');

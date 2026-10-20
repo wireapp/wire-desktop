@@ -38,7 +38,6 @@ function getPortableUserDataPathParameters(): PortableUserDataPathParameters {
   const commandLineArguments = getCommandLineArguments();
 
   return {
-    appImagePath: Maybe.of(process.env.APPIMAGE),
     executablePath: process.execPath,
     portableModeEnabled: Boolean(commandLineArguments[config.ARGUMENT.PORTABLE]),
     userDataDirectoryArgument: getStringCommandLineArgument(commandLineArguments, config.ARGUMENT.USER_DATA_DIR),

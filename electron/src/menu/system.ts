@@ -36,14 +36,12 @@ import {SettingsType} from '../settings/SettingsType';
 import {WindowManager} from '../window/WindowManager';
 import {openExternal, sendToWebContents} from '../window/WindowUtil';
 
-const launchCmd = process.env.APPIMAGE || process.execPath;
-
 const logger = getLogger(path.basename(__filename));
 
 const launcher = new autoLaunch({
   isHidden: true,
   name: config.name,
-  path: launchCmd,
+  path: process.execPath,
 });
 
 const separatorTemplate: MenuItemConstructorOptions = {
@@ -357,24 +355,6 @@ const win32Template: MenuItemConstructorOptions = {
   ],
 };
 
-const linuxTemplate: MenuItemConstructorOptions = {
-  label: `&${config.name}`,
-  submenu: [
-    toggleAutoLaunchTemplate,
-    separatorTemplate,
-    localeTemplate,
-    separatorTemplate,
-    spellingTemplate,
-    separatorTemplate,
-    signOutTemplate,
-    {
-      accelerator: 'Ctrl+Q',
-      click: () => lifecycle.quit(),
-      label: locale.getText('menuQuit'),
-    },
-  ],
-};
-
 const processMenu = (template: Iterable<MenuItemConstructorOptions>, language: locale.SupportedI18nLanguage): void => {
   for (const item of template) {
     if (item.submenu) {
@@ -427,48 +407,6 @@ export function createMenu(isFullScreen: boolean, wallClock: WallClock): Menu {
     }
   }
 
-  if (EnvironmentUtil.platform.IS_LINUX && Array.isArray(windowTemplate.submenu)) {
-    const muteAccelerator = 'Ctrl+Alt+M';
-
-    const muteShortcut: MenuItemConstructorOptions = {
-      accelerator: muteAccelerator,
-      click: (_menuItem, baseWindow) =>
-        sendToWebContents(baseWindow, EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
-      label: 'Toggle mute',
-      visible: false,
-    };
-
-    const switchShortcuts: MenuItemConstructorOptions[] = Array.from(
-      {length: config.maximumAccounts},
-      (_key, index) => {
-        const switchAccelerator = `Ctrl+${index + 1}`;
-
-        return {
-          accelerator: switchAccelerator,
-          click: (_menuItem, baseWindow) => sendToWebContents(baseWindow, EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index),
-          label: `Switch to Account ${index + 1}`,
-          visible: false,
-        };
-      },
-    );
-
-    windowTemplate.submenu.push(muteShortcut, ...switchShortcuts);
-
-    menuTemplate.unshift(linuxTemplate);
-    if (Array.isArray(editTemplate.submenu)) {
-      editTemplate.submenu.push(separatorTemplate, {
-        accelerator: 'Ctrl+,',
-        click: (_menuItem, baseWindow) =>
-          sendToWebContents(baseWindow, EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.PREFERENCES.SHOW),
-        label: locale.getText('menuPreferences'),
-      });
-    }
-    if (Array.isArray(windowTemplate.submenu)) {
-      windowTemplate.submenu.push(separatorTemplate, toggleMenuTemplate, separatorTemplate, toggleFullScreenTemplate);
-    }
-    toggleFullScreenTemplate.checked = isFullScreen;
-  }
-
   if (!EnvironmentUtil.platform.IS_MAC_OS) {
     if (Array.isArray(helpTemplate.submenu)) {
       helpTemplate.submenu.push(separatorTemplate, aboutTemplate);
@@ -497,28 +435,24 @@ export const toggleSpellChecking = async (): Promise<void> => {
 };
 
 export const registerGlobalShortcuts = (): void => {
-  if (!EnvironmentUtil.platform.IS_LINUX) {
-    const muteAccelerator = 'CmdOrCtrl+Alt+M';
-    logger.info(`Registering global mute shortcut "${muteAccelerator}" ...`);
+  const muteAccelerator = 'CmdOrCtrl+Alt+M';
+  logger.info(`Registering global mute shortcut "${muteAccelerator}" ...`);
 
-    globalShortcut.register(muteAccelerator, () =>
-      WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
-    );
+  globalShortcut.register(muteAccelerator, () =>
+    WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.UI.SYSTEM_MENU, EVENT_TYPE.CONVERSATION.TOGGLE_MUTE),
+  );
 
-    Array.from({length: config.maximumAccounts}, (_key, index) => {
-      const switchAccelerator = `CmdOrCtrl+${index + 1}`;
-      logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
+  Array.from({length: config.maximumAccounts}, (_key, index) => {
+    const switchAccelerator = `CmdOrCtrl+${index + 1}`;
+    logger.info(`Registering global account switching shortcut "${switchAccelerator}" ...`);
 
-      globalShortcut.register(switchAccelerator, () => {
-        WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index);
-      });
+    globalShortcut.register(switchAccelerator, () => {
+      WindowManager.sendActionToPrimaryWindow(EVENT_TYPE.ACTION.SWITCH_ACCOUNT, index);
     });
-  }
+  });
 };
 
 export const unregisterGlobalShortcuts = (): void => {
-  if (!EnvironmentUtil.platform.IS_LINUX) {
-    logger.info('Unregistering all global shortcuts ...');
-    globalShortcut.unregisterAll();
-  }
+  logger.info('Unregistering all global shortcuts ...');
+  globalShortcut.unregisterAll();
 };

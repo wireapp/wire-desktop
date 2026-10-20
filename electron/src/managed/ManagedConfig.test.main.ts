@@ -21,7 +21,6 @@ import {fake, replace, restore} from 'sinon';
 
 import * as assert from 'assert';
 
-import * as linuxBackend from './backends/linux';
 import * as macosBackend from './backends/macos';
 import * as windowsBackend from './backends/windows';
 import {clearManagedConfigCache, getManagedConfig} from './ManagedConfig';
@@ -38,58 +37,40 @@ describe('getManagedConfig', () => {
     clearManagedConfigCache();
   });
 
-  it('enables the override when a managed config payload is present', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: true});
-    replace(linuxBackend, 'isDeviceManagedLinux', fake.returns(true) as any);
-    assert.deepStrictEqual(getManagedConfig(), {applockOverride: true});
-  });
-
-  it('disables the override when no managed config is present', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: true});
-    replace(linuxBackend, 'isDeviceManagedLinux', fake.returns(false) as any);
-    assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
-  });
-
-  it('treats a present payload as enabled unless it explicitly opts out', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: true});
-    replace(linuxBackend, 'isDeviceManagedLinux', fake.returns(false) as any);
-    assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
-  });
-
   it('memoizes the result and reads the underlying source only once', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: true});
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: true, IS_MAC_OS: false});
     const backendCall = fake.returns(false);
-    replace(linuxBackend, 'isDeviceManagedLinux', backendCall as any);
+    replace(windowsBackend, 'isDeviceManagedWindows', backendCall as any);
     getManagedConfig();
     getManagedConfig();
     assert.strictEqual(backendCall.callCount, 1);
   });
 
   it('never throws and defaults to disabled on an unrecognized platform', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false, IS_LINUX: false});
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: false});
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 
   it('enables the override on Windows when a managed config payload is present', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: true, IS_MAC_OS: false, IS_LINUX: false});
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: true, IS_MAC_OS: false});
     replace(windowsBackend, 'isDeviceManagedWindows', fake.returns(true) as any);
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: true});
   });
 
   it('disables the override on Windows when no managed config is present', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: true, IS_MAC_OS: false, IS_LINUX: false});
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: true, IS_MAC_OS: false});
     replace(windowsBackend, 'isDeviceManagedWindows', fake.returns(false) as any);
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });
 
   it('enables the override on macOS when a managed config payload is present', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: true, IS_LINUX: false});
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: true});
     replace(macosBackend, 'isDeviceManagedMacOS', fake.returns(true) as any);
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: true});
   });
 
   it('disables the override on macOS when no managed config is present', () => {
-    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: true, IS_LINUX: false});
+    replace(EnvironmentUtil, 'platform', {IS_WINDOWS: false, IS_MAC_OS: true});
     replace(macosBackend, 'isDeviceManagedMacOS', fake.returns(false) as any);
     assert.deepStrictEqual(getManagedConfig(), {applockOverride: false});
   });

@@ -25,7 +25,7 @@ const logger = getLogger('ManagedConfig/windows');
 /**
  * Minimal local typing for `registry-js`. The dependency is a Windows-only native module, so it is
  * required lazily (below) rather than imported at the top level: this keeps it out of type-checking
- * and out of the macOS/Linux runtime, where it is neither installed nor loadable.
+ * and out of the macOS runtime, where it is neither installed nor loadable.
  */
 interface RegistryValue {
   name: string;
