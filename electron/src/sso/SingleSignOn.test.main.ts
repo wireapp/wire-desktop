@@ -27,6 +27,8 @@ import * as path from 'path';
 
 import {SingleSignOn} from './SingleSignOn';
 
+import {config} from '../settings/config';
+
 describe('SingleSignOn', () => {
   describe('shared passkey session', () => {
     const windows: BrowserWindow[] = [];
@@ -45,6 +47,24 @@ describe('SingleSignOn', () => {
             window.destroy();
           }
         });
+    });
+
+    it('captures SSO console messages in every build environment', () => {
+      const originalEnvironment = config.environment;
+      const parent = createWindow({});
+      const login = createWindow({});
+      const flow = new SingleSignOn(login, parent.webContents, Maybe.nothing(), 'https://idp.test');
+      const initialConsoleListenerCount = login.webContents.listenerCount('console-message');
+
+      try {
+        config.environment = 'production';
+        flow['setupBrowserWindow']();
+
+        const actualConsoleListenerCount = login.webContents.listenerCount('console-message');
+        assert.strictEqual(actualConsoleListenerCount, initialConsoleListenerCount + 1);
+      } finally {
+        config.environment = originalEnvironment;
+      }
     });
 
     it('releases a failed initialization so another login can open', async () => {

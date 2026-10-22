@@ -27,7 +27,7 @@ import {parseSsoPayload, SsoPayload} from './ssoResult';
 
 import {registerTextPrompt} from '../auth/TextPrompt';
 import {writeBoundedLogMessage} from '../logging/desktopLogWriter';
-import {ENABLE_LOGGING, getLogger} from '../logging/getLogger';
+import {getLogger} from '../logging/getLogger';
 import {getLogDirectory, getSsoLogPath} from '../logging/logPaths';
 import {config} from '../settings/config';
 import * as WindowUtil from '../window/WindowUtil';
@@ -172,24 +172,22 @@ export class SingleSignOn {
       ssoWindow.setTitle(SingleSignOn.getWindowTitle(origin));
     });
 
-    if (ENABLE_LOGGING) {
-      ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
-        if (this.accountId.isJust) {
-          const logFilePath = getSsoLogPath({
-            accountId: this.accountId.value,
-            date: new Date(),
-            logDirectory: getLogDirectory(),
-          });
-          try {
-            await writeBoundedLogMessage({logFilePath, message});
-          } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+    ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
+      if (this.accountId.isJust) {
+        const logFilePath = getSsoLogPath({
+          accountId: this.accountId.value,
+          date: new Date(),
+          logDirectory: getLogDirectory(),
+        });
+        try {
+          await writeBoundedLogMessage({logFilePath, message});
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
 
-            console.error('Cannot write to log file:', logFilePath, errorMessage, error);
-          }
+          console.error('Cannot write to log file:', logFilePath, errorMessage, error);
         }
-      });
-    }
+      }
+    });
   }
 
   close = () => {
