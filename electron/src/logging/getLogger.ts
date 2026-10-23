@@ -24,14 +24,7 @@ import {LogFactory, LoggerOptions} from '@wireapp/commons';
 import {fireAndForgetDesktopLogOperation, writeBoundedLogMessage} from './desktopLogWriter';
 import {getLogDirectory, getMainProcessLogPath} from './logPaths';
 
-import {config} from '../settings/config';
-
-const mainProcess = process || require('@electron/remote').process;
-const isDevelopment = config.environment !== 'production';
-const forceLogging = mainProcess.argv.includes('--enable-logging');
-
 export const LOGGER_NAMESPACE = '@wireapp/desktop';
-export const ENABLE_LOGGING = isDevelopment || forceLogging;
 
 function writeMainProcessLog(transportOptions: logdown.TransportOptions): void {
   const logFilePath = getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()});
@@ -51,14 +44,11 @@ function configureLogTransports(): void {
 
 export function getLogger(name: string): logdown.Logger {
   const options: LoggerOptions = {
+    forceEnable: true,
     logFilePath: getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}),
     namespace: LOGGER_NAMESPACE,
     separator: '/',
   };
-
-  if (ENABLE_LOGGING) {
-    options.forceEnable = true;
-  }
 
   configureLogTransports();
 

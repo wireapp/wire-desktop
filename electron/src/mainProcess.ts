@@ -67,7 +67,7 @@ import {showErrorDialog} from './lib/showDialog';
 import type {WebviewNavigationRequest} from './lib/WebviewNavigationTypes';
 import * as locale from './locale';
 import {runDesktopLogCleanup, writeBoundedLogMessage} from './logging/desktopLogWriter';
-import {ENABLE_LOGGING, getLogger} from './logging/getLogger';
+import {getLogger} from './logging/getLogger';
 import {scheduleLogCleanup} from './logging/logCleanupScheduler';
 import {getLogDirectory, getMainProcessLogPath, getWebViewLogPath} from './logging/logPaths';
 import {initializeDesktopLogLifecycle} from './logging/logStartup';
@@ -574,10 +574,7 @@ function getMainWindowUrl() {
 
   const webappURL = new URL(baseUrl);
   webappURL.searchParams.set('hl', currentLocale);
-
-  if (ENABLE_LOGGING) {
-    webappURL.searchParams.set('enableLogging', '@wireapp/*');
-  }
+  webappURL.searchParams.set('enableLogging', '@wireapp/*');
 
   if (customProtocolHandler.hashLocation) {
     webappURL.hash = customProtocolHandler.hashLocation;
@@ -1077,36 +1074,34 @@ class ElectronWrapperInit {
             await applyProxySettings(proxyInfoArg, contents);
           }
 
-          if (ENABLE_LOGGING) {
-            const colorCodeRegex = /%c(.+?)%c/gm;
-            const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
-            const accessTokenRegex = /access_token=[^ &]+/gm;
+          const colorCodeRegex = /%c(.+?)%c/gm;
+          const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
+          const accessTokenRegex = /access_token=[^ &]+/gm;
 
-            contents.on('console-message', async (_event, _level, message) => {
-              const accountId = lifecycle.getAccountId(contents);
+          contents.on('console-message', async (_event, _level, message) => {
+            const accountId = lifecycle.getAccountId(contents);
 
-              if (accountId.isJust) {
-                const logFilePath = getWebViewLogPath({
-                  accountId: accountId.value,
-                  date: new Date(),
-                  logDirectory: getLogDirectory(),
+            if (accountId.isJust) {
+              const logFilePath = getWebViewLogPath({
+                accountId: accountId.value,
+                date: new Date(),
+                logDirectory: getLogDirectory(),
+              });
+              try {
+                await writeBoundedLogMessage({
+                  logFilePath,
+                  message: message
+                    .replace(colorCodeRegex, '$1')
+                    .replace(stylingRegex, '')
+                    .replace(accessTokenRegex, ''),
                 });
-                try {
-                  await writeBoundedLogMessage({
-                    logFilePath,
-                    message: message
-                      .replace(colorCodeRegex, '$1')
-                      .replace(stylingRegex, '')
-                      .replace(accessTokenRegex, ''),
-                  });
-                } catch (error) {
-                  const errorMessage = error instanceof Error ? error.message : String(error);
+              } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
 
-                  logger.error(`Cannot write to log file "${logFilePath}": ${errorMessage}`, error);
-                }
+                logger.error(`Cannot write to log file "${logFilePath}": ${errorMessage}`, error);
               }
-            });
-          }
+            }
+          });
 
           if (enableSpellChecking) {
             try {
