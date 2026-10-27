@@ -108,7 +108,7 @@
   "wrapperAddAccountErrorTitleSingular": "Konto bereits aktiv",
   "wrapperAddAccountErrorMessagePlural": "Sie können nur mit {{maximumAccounts}} Konten gleichzeitig angemeldet sein. Melden Sie sich von einem Konto ab, um ein weiteres hinzuzufügen.",
   "wrapperAddAccountErrorMessageSingular": "Sie können nur mit einem Konten angemeldet sein. Melden Sie sich von diesem Konto ab, um ein anderes hinzuzufügen.",
-  "passkeyPickerTitle": "Mit Passkey anmelden",
+  "passkeyPickerTitle": "Mit Hauptschlüssel anmelden",
   "passkeyPickerMessage": "Wählen Sie ein Konto für {domain}",
   "passkeyPickerAccount": "Benutzerkonto {number}",
   "textPromptTitle": "Eingabeaufforderung",
