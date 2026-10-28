@@ -21,7 +21,7 @@ import {program as commander} from 'commander';
 
 import path from 'path';
 
-import {getWindowsMsiAliasCopyOptions, S3Deployer, WindowsArtifactType} from './lib/S3Deployer';
+import {copyWindowsMsiAliases, getWindowsMsiAliasCopyOptions, S3Deployer, WindowsArtifactType} from './lib/S3Deployer';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';
 
@@ -37,6 +37,7 @@ commander
   .option('-k, --secret-key <id>', 'Specify the AWS secret access key ID')
   .option('-p, --path <path>', 'Specify the local path to search for files (e.g. "../../wrap")')
   .option('-s, --s3path <path>', 'Specify the base path on S3 (e.g. "apps/windows")')
+  .option('--expected-windows-msi <fileName>', 'Require this exact Windows MSI artifact filename')
   .option('--windows-artifact <type>', 'Select Windows artifacts: auto, squirrel, or msi', 'auto')
   .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
   .parse(process.argv);
@@ -58,6 +59,13 @@ if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
   process.exit(1);
 }
 
+const expectedWindowsMsiFileName = commanderOptions.expectedWindowsMsi || undefined;
+if (expectedWindowsMsiFileName && windowsArtifact !== 'msi') {
+  logger.error('The expected Windows MSI filename can only be used with --windows-artifact msi.');
+  commander.outputHelp();
+  process.exit(1);
+}
+
 (async () => {
   const searchBasePath = commanderOptions.path || path.join(__dirname, '../../wrap');
   const s3BasePath = `${commanderOptions.s3path || ''}/`;
@@ -66,7 +74,10 @@ if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
 
   const s3Deployer = new S3Deployer({accessKeyId, dryRun: commanderOptions.dryRun || false, secretAccessKey});
 
-  const files = await s3Deployer.findUploadFiles(platform, searchBasePath, version, windowsArtifact);
+  const artifactSelection = expectedWindowsMsiFileName
+    ? {expectedMsiFileName: expectedWindowsMsiFileName, type: windowsArtifact}
+    : windowsArtifact;
+  const files = await s3Deployer.findUploadFiles(platform, searchBasePath, version, artifactSelection);
 
   for (let index = 0; index < files.length; index++) {
     const file = files[index];
@@ -87,14 +98,12 @@ if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
         versionedS3Path: s3Path,
       });
 
-      for (const copyOptions of aliasCopyOptions) {
-        try {
-          await s3Deployer.copyOnS3(copyOptions);
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          throw new Error(`Failed to publish required Windows MSI alias "${copyOptions.s3ToPath}": ${errorMessage}`);
-        }
-      }
+      await copyWindowsMsiAliases({
+        aliasCopyOptions,
+        copyOnS3: copyOptions => {
+          return s3Deployer.copyOnS3(copyOptions);
+        },
+      });
     }
   }
 

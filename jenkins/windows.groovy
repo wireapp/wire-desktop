@@ -157,6 +157,13 @@ node('windows') {
   }
 
   stage('Archive build artifacts') {
+    if (production) {
+      def productionMsiFileName = "Wire-${version}-x64.msi"
+      if (!fileExists("wrap/dist/${productionMsiFileName}")) {
+        error("Missing production x64 MSI ${productionMsiFileName}")
+      }
+      writeFile file: 'wrap/dist/windows-msi-required', text: productionMsiFileName
+    }
     archiveArtifacts 'package.json,wrap\\dist\\**'
   }
 

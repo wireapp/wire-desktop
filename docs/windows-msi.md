@@ -25,6 +25,32 @@ The production job builds and archives both installer families during migration.
 
 Before promoting the first MSI release, add MSI selection and installation coverage to the download-page consumer and the external Windows smoke tests without removing the existing Squirrel release coverage.
 
+## Production deployment
+
+Production Windows builds write `wrap/dist/windows-msi-required` after the versioned x64 MSI and its aliases have passed the existing signing and verification stages. The deployment job copies this manifest with the selected Jenkins build artifacts. A production deployment that receives the manifest must find exactly `Wire-<version>-x64.msi` for the selected build and publish it with the existing S3 uploader. It fails if the manifest, version, artifact, upload, or either alias copy is invalid. Production builds without the manifest remain compatible with historical Squirrel-only artifacts.
+
+The build and deployment jobs each check out their own `GIT_BRANCH`; the deployment job does not implicitly use the branch that produced `WRAPPER_BUILD`. Configure the deployment job to use a `dev` revision that understands the MSI manifest before promoting a manifest-bearing build. The repository does not record Jenkins' current job parameter values, so confirm the deployment checkout and selected `WRAPPER_BUILD` in Jenkins before release.
+
+To publish the MSI from an already approved production build without rebuilding or touching the Squirrel feed, use a deployment workspace that has copied the exact build's archived artifacts. First confirm that the production signing checks and external Windows smoke tests passed for that build. Then use the existing MSI-only S3 CLI path with production credentials from Jenkins; it uploads the selected versioned MSI and copies both aliases from that same signed S3 object:
+
+For a production MSI build archived before the requirement manifest was added, use the explicit expected filename below. The normal deployment pipeline can only enforce MSI presence for builds carrying the manifest.
+
+```shell
+WINDOWS_MSI_VERSION="<exact-approved-version>"
+jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
+  --bucket wire-taco \
+  --s3path win/prod \
+  --windows-artifact msi \
+  --expected-windows-msi "Wire-${WINDOWS_MSI_VERSION}-x64.msi" \
+  --wrapper-build "Wrapper_Windows_Production#${WINDOWS_MSI_VERSION}" \
+  --path ./wrap/dist \
+  --key-id "$AWS_ACCESS_KEY_ID" \
+  --secret-key "$AWS_SECRET_ACCESS_KEY" \
+  --dry-run
+```
+
+Review the dry-run artifact and destination paths, then rerun the same command without `--dry-run`. The MSI-only command does not upload `Setup.exe`, Squirrel packages, or `RELEASES`, and it does not change the Squirrel update feed. Use the exact Jenkins display version of the approved build; do not select a newer build or rebuild to repair the missing object.
+
 ## Updates
 
 MSI installations are updated by deploying a newer signed MSI with the same upgrade code and a higher product version. The application only starts the Squirrel updater when a sibling Squirrel `Update.exe` is present, so an MSI installation does not perform application-managed updates.

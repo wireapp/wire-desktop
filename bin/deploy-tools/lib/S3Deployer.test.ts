@@ -24,16 +24,22 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {
+  copyWindowsMsiAliases,
   getWindowsMsiAliasCopyOptions,
   getWindowsMsiSetupFileName,
   S3Deployer,
 } from './S3Deployer';
+import type {S3Client} from './S3Deployer';
 
 describe('S3Deployer', () => {
   const temporaryDirectories: string[] = [];
 
   afterEach(async () => {
-    await Promise.all(temporaryDirectories.splice(0).map(directory => fs.remove(directory)));
+    await Promise.all(
+      temporaryDirectories.splice(0).map(directory => {
+        return fs.remove(directory);
+      }),
+    );
   });
 
   describe('copyOnS3', () => {
@@ -50,8 +56,90 @@ describe('S3Deployer', () => {
         versionedS3Path: 'win/prod/Wire-3.44.5380-x64.msi',
       });
 
-      await assert.doesNotReject(() =>
-        Promise.all(aliasCopyOptions.map(copyOptions => s3Deployer.copyOnS3(copyOptions))),
+      await assert.doesNotReject(() => {
+        return Promise.all(
+          aliasCopyOptions.map(copyOptions => {
+            return s3Deployer.copyOnS3(copyOptions);
+          }),
+        );
+      });
+    });
+
+    it('propagates a failed S3 alias copy', async () => {
+      const s3Client: S3Client = {
+        copyObject: () => {
+          return {
+            promise: async () => {
+              throw new Error('S3 copy failed');
+            },
+          };
+        },
+        deleteObject: () => {
+          return {
+            promise: async () => {
+              return Promise.resolve();
+            },
+          };
+        },
+        upload: () => {
+          return {
+            promise: async () => {
+              return Promise.resolve();
+            },
+          };
+        },
+      };
+      const s3Deployer = new S3Deployer({accessKeyId: '', secretAccessKey: ''}, s3Client);
+
+      await assert.rejects(
+        s3Deployer.copyOnS3({
+          bucket: 'wire-taco',
+          s3FromPath: 'wire-taco/win/prod/Wire-3.44.5380-x64.msi',
+          s3ToPath: 'win/prod/Wire-Setup.msi',
+        }),
+        /S3 copy failed/,
+      );
+    });
+  });
+
+  describe('uploadToS3', () => {
+    it('propagates a failed S3 artifact upload', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-failed-msi-upload-'));
+      temporaryDirectories.push(basePath);
+      const filePath = path.join(basePath, 'Wire-3.44.5380-x64.msi');
+      await fs.writeFile(filePath, 'signed MSI bytes');
+      const s3Client: S3Client = {
+        copyObject: () => {
+          return {
+            promise: async () => {
+              return Promise.resolve();
+            },
+          };
+        },
+        deleteObject: () => {
+          return {
+            promise: async () => {
+              return Promise.resolve();
+            },
+          };
+        },
+        upload: () => {
+          return {
+            promise: async () => {
+              throw new Error('S3 upload failed');
+            },
+          };
+        },
+      };
+      const s3Deployer = new S3Deployer({accessKeyId: '', secretAccessKey: ''}, s3Client);
+
+      await assert.rejects(
+        s3Deployer.uploadToS3({
+          bucket: 'wire-taco',
+          filePath,
+          s3Path: 'win/prod/Wire-3.44.5380-x64.msi',
+        }),
+        /S3 upload failed/,
       );
     });
   });
@@ -70,6 +158,65 @@ describe('S3Deployer', () => {
       const files = await s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123', 'msi');
 
       assert.deepStrictEqual(files, [{fileName, filePath: path.join(basePath, fileName)}]);
+    });
+
+    it('requires an MSI when the deployment explicitly selects MSI artifacts', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-missing-msi-deployer-'));
+      temporaryDirectories.push(basePath);
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      await assert.rejects(
+        s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123', 'msi'),
+        /Could not find an MSI for version "3.42.123"/,
+      );
+    });
+
+    it('fails when the exact expected production MSI is missing', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-missing-production-msi-'));
+      temporaryDirectories.push(basePath);
+      const expectedMsiFileName = 'Wire-3.42.123-x64.msi';
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      await assert.rejects(
+        s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123', {
+          expectedMsiFileName,
+          type: 'msi',
+        }),
+        /Could not find required Windows MSI artifact "Wire-3\.42\.123-x64\.msi"/,
+      );
+    });
+
+    it('selects the exact expected production MSI when other MSI architectures are present', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-production-msi-deployer-'));
+      temporaryDirectories.push(basePath);
+      const expectedWindowsMsiFileName = 'Wire-3.42.123-x64.msi';
+      await fs.ensureFile(path.join(basePath, expectedWindowsMsiFileName));
+      await fs.ensureFile(path.join(basePath, 'Wire-3.42.123-ia32.msi'));
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      const actualFiles = await s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123', {
+        expectedMsiFileName: expectedWindowsMsiFileName,
+        type: 'msi',
+      });
+      const expectedFiles = [
+        {fileName: expectedWindowsMsiFileName, filePath: path.join(basePath, expectedWindowsMsiFileName)},
+      ];
+
+      assert.deepStrictEqual(actualFiles, expectedFiles);
+    });
+
+    it('rejects an expected production MSI filename for another version', async () => {
+      const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-wrong-version-msi-deployer-'));
+      temporaryDirectories.push(basePath);
+      const s3Deployer = new S3Deployer({accessKeyId: '', dryRun: true, secretAccessKey: ''});
+
+      await assert.rejects(
+        s3Deployer.findUploadFiles('wrapper_windows_production', basePath, '3.42.123', {
+          expectedMsiFileName: 'Wire-3.42.122-x64.msi',
+          type: 'msi',
+        }),
+        /Could not derive the stable MSI name/,
+      );
     });
 
     it('selects Squirrel artifacts when an MSI is also present', async () => {
@@ -132,17 +279,13 @@ describe('S3Deployer', () => {
 
   describe('getWindowsMsiSetupFileName', () => {
     it('creates an architecture-specific latest MSI alias', () => {
-      assert.strictEqual(
-        getWindowsMsiSetupFileName('Wire-3.42.123-x64.msi', '3.42.123'),
-        'Wire-x64-Setup.msi',
-      );
+      assert.strictEqual(getWindowsMsiSetupFileName('Wire-3.42.123-x64.msi', '3.42.123'), 'Wire-x64-Setup.msi');
     });
 
     it('rejects an unexpected MSI filename', () => {
-      assert.throws(
-        () => getWindowsMsiSetupFileName('Wire-x64-Setup.msi', '3.42.123'),
-        /Could not derive the stable MSI name/,
-      );
+      assert.throws(() => {
+        return getWindowsMsiSetupFileName('Wire-x64-Setup.msi', '3.42.123');
+      }, /Could not derive the stable MSI name/);
     });
 
     function assertX64AliasesMatchProductName(productName: string): void {
@@ -153,9 +296,9 @@ describe('S3Deployer', () => {
         version: '3.44.5380',
         versionedS3Path: `win/prod/${fileName}`,
       });
-      const actualAliasFileNames = aliasCopyOptions.map(copyOptions =>
-        copyOptions.s3ToPath.slice(copyOptions.s3ToPath.lastIndexOf('/') + 1),
-      );
+      const actualAliasFileNames = aliasCopyOptions.map(copyOptions => {
+        return copyOptions.s3ToPath.slice(copyOptions.s3ToPath.lastIndexOf('/') + 1);
+      });
       const expectedAliasFileNames = [`${productName}-x64-Setup.msi`, `${productName}-Setup.msi`];
 
       assert.deepStrictEqual(actualAliasFileNames, expectedAliasFileNames);
@@ -196,10 +339,9 @@ describe('S3Deployer', () => {
     });
 
     it('rejects an MSI filename whose version does not match the deployment', () => {
-      assert.throws(
-        () => getWindowsMsiSetupFileName('Wire-3.44.5379-x64.msi', '3.44.5380'),
-        /Could not derive the stable MSI name/,
-      );
+      assert.throws(() => {
+        return getWindowsMsiSetupFileName('Wire-3.44.5379-x64.msi', '3.44.5380');
+      }, /Could not derive the stable MSI name/);
     });
   });
 
@@ -245,16 +387,39 @@ describe('S3Deployer', () => {
     });
 
     it('rejects a versioned S3 source path that names a different artifact', () => {
-      assert.throws(
-        () =>
-          getWindowsMsiAliasCopyOptions({
-            bucket: 'wire-taco',
-            fileName: 'Wire-3.44.5380-x64.msi',
-            version: '3.44.5380',
-            versionedS3Path: 'win/prod/Wire-3.44.5379-x64.msi',
-          }),
-        /does not match artifact/,
+      assert.throws(() => {
+        return getWindowsMsiAliasCopyOptions({
+          bucket: 'wire-taco',
+          fileName: 'Wire-3.44.5380-x64.msi',
+          version: '3.44.5380',
+          versionedS3Path: 'win/prod/Wire-3.44.5379-x64.msi',
+        });
+      }, /does not match artifact/);
+    });
+
+    it('fails deployment when publishing a required MSI alias fails', async () => {
+      const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
+        bucket: 'wire-taco',
+        fileName: 'Wire-3.44.5380-x64.msi',
+        version: '3.44.5380',
+        versionedS3Path: 'win/prod/Wire-3.44.5380-x64.msi',
+      });
+      const attemptedAliasPaths: string[] = [];
+
+      await assert.rejects(
+        copyWindowsMsiAliases({
+          aliasCopyOptions,
+          copyOnS3: async copyOptions => {
+            attemptedAliasPaths.push(copyOptions.s3ToPath);
+            if (copyOptions.s3ToPath.endsWith('Wire-Setup.msi')) {
+              throw new Error('S3 copy failed');
+            }
+          },
+        }),
+        /Failed to publish required Windows MSI alias "win\/prod\/Wire-Setup\.msi": S3 copy failed/,
       );
+
+      assert.deepStrictEqual(attemptedAliasPaths, ['win/prod/Wire-x64-Setup.msi', 'win/prod/Wire-Setup.msi']);
     });
   });
 });
