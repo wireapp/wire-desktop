@@ -35,6 +35,12 @@ export interface S3DeployerOptions {
   secretAccessKey: string;
 }
 
+export interface S3Client {
+  copyObject(copyOptions: S3.CopyObjectRequest): {promise: () => Promise<unknown>};
+  deleteObject(deleteOptions: S3.DeleteObjectRequest): {promise: () => Promise<unknown>};
+  upload(uploadOptions: S3.PutObjectRequest): {promise: () => Promise<unknown>};
+}
+
 export interface DeleteOptions {
   bucket: string;
   s3Path: string;
@@ -52,7 +58,17 @@ export interface S3CopyOptions {
   s3ToPath: string;
 }
 
+export interface CopyWindowsMsiAliasesOptions {
+  aliasCopyOptions: S3CopyOptions[];
+  copyOnS3: (copyOptions: S3CopyOptions) => Promise<void>;
+}
+
 export type WindowsArtifactType = 'auto' | 'msi' | 'squirrel';
+
+export interface WindowsArtifactSelectionOptions {
+  expectedMsiFileName?: string;
+  type: WindowsArtifactType;
+}
 
 export function getWindowsMsiSetupFileName(fileName: string, version: string): string {
   return getWindowsMsiSetupAliasNames({expectedVersion: version, fileName}).architectureSpecificFileName;
@@ -80,32 +96,44 @@ export function getWindowsMsiAliasCopyOptions({
     throw new Error(`Windows MSI S3 source "${versionedS3Path}" does not match artifact "${fileName}".`);
   }
   const sourceDirectory = versionedS3Path.slice(0, versionedS3Path.lastIndexOf('/') + 1);
-  const aliasFileNames = [
-    architectureSpecificFileName,
-    ...(genericFileName.isJust ? [genericFileName.value] : []),
-  ];
+  const aliasFileNames = [architectureSpecificFileName, ...(genericFileName.isJust ? [genericFileName.value] : [])];
 
-  return aliasFileNames.map(aliasFileName => ({
-    bucket,
-    s3FromPath: `${bucket}/${versionedS3Path}`,
-    s3ToPath: `${sourceDirectory}${aliasFileName}`,
-  }));
+  return aliasFileNames.map(aliasFileName => {
+    return {
+      bucket,
+      s3FromPath: `${bucket}/${versionedS3Path}`,
+      s3ToPath: `${sourceDirectory}${aliasFileName}`,
+    };
+  });
+}
+
+export async function copyWindowsMsiAliases({aliasCopyOptions, copyOnS3}: CopyWindowsMsiAliasesOptions): Promise<void> {
+  for (const copyOptions of aliasCopyOptions) {
+    try {
+      await copyOnS3(copyOptions);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to publish required Windows MSI alias "${copyOptions.s3ToPath}": ${errorMessage}`);
+    }
+  }
 }
 
 export class S3Deployer {
   private readonly options: Required<S3DeployerOptions>;
-  private readonly S3Instance: S3;
+  private readonly s3Client: S3Client;
   private readonly logger: Logger;
 
-  constructor(options: S3DeployerOptions) {
+  constructor(options: S3DeployerOptions, s3Client?: S3Client) {
     this.options = {
       dryRun: false,
       ...options,
     };
-    this.S3Instance = new S3({
-      accessKeyId: options.accessKeyId,
-      secretAccessKey: options.secretAccessKey,
-    });
+    this.s3Client =
+      s3Client ??
+      new S3({
+        accessKeyId: options.accessKeyId,
+        secretAccessKey: options.secretAccessKey,
+      });
     const toolName = path.basename(__filename).replace(/\.[jt]s$/, '');
     this.logger = getLogger('deploy-tools', toolName);
   }
@@ -114,17 +142,32 @@ export class S3Deployer {
     platformName: string,
     basePath: string,
     version: string,
-    windowsArtifact: WindowsArtifactType = 'auto',
+    artifactSelection: WindowsArtifactType | WindowsArtifactSelectionOptions = 'auto',
   ): Promise<FindResult[]> {
     const platform = parseSupportedDeploymentPlatform(platformName);
+    const normalizedArtifactSelection =
+      typeof artifactSelection === 'string'
+        ? {expectedMsiFileName: undefined, type: artifactSelection}
+        : artifactSelection;
+    const {expectedMsiFileName, type: windowsArtifact} = normalizedArtifactSelection;
 
     if (platform === 'windows') {
       if (!['auto', 'msi', 'squirrel'].includes(windowsArtifact)) {
         throw new Error(`Invalid Windows artifact type "${windowsArtifact}"`);
       }
 
-      const msi = await find(`*-${version}-*.msi`, {cwd: basePath, safeGuard: false});
+      if (expectedMsiFileName !== undefined) {
+        if (windowsArtifact !== 'msi') {
+          throw new Error('An expected Windows MSI filename requires MSI artifact selection.');
+        }
+        getWindowsMsiSetupAliasNames({expectedVersion: version, fileName: expectedMsiFileName});
+      }
+
+      const msi = await find(expectedMsiFileName ?? `*-${version}-*.msi`, {cwd: basePath, safeGuard: false});
       if (windowsArtifact === 'msi' && !msi) {
+        if (expectedMsiFileName) {
+          throw new Error(`Could not find required Windows MSI artifact "${expectedMsiFileName}".`);
+        }
         throw new Error(`Could not find an MSI for version "${version}".`);
       }
       if (msi && windowsArtifact === 'auto') {
@@ -200,7 +243,7 @@ export class S3Deployer {
       return;
     }
 
-    await this.S3Instance.upload(uploadConfig).promise();
+    await this.s3Client.upload(uploadConfig).promise();
 
     this.logger.log(`Uploaded "${bucket}/${s3Path}".`);
   }
@@ -216,7 +259,7 @@ export class S3Deployer {
       return;
     }
 
-    await this.S3Instance.deleteObject(deleteConfig).promise();
+    await this.s3Client.deleteObject(deleteConfig).promise();
   }
 
   async copyOnS3(copyOptions: S3CopyOptions): Promise<void> {
@@ -237,6 +280,6 @@ export class S3Deployer {
       return;
     }
 
-    await this.S3Instance.copyObject(copyConfig).promise();
+    await this.s3Client.copyObject(copyConfig).promise();
   }
 }

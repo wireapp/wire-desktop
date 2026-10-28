@@ -48,6 +48,7 @@ node('built-in') {
   def hasWindowsSquirrel = false
   echo("version: ${version}")
   def buildNumber = version.tokenize('.')[2]
+  def expectedWindowsMsiFileName = params.Release == 'Production' ? "Wire-${version}-x64.msi" : ''
   def NODE = tool name: 'node-v20.10.0', type: 'nodejs'
   env.DRY_RUN = params.DRY_RUN ? "--dry-run" : ""
 
@@ -69,11 +70,30 @@ node('built-in') {
     }
   }
 
+  def windowsMsiRequirementManifest = 'wrap/dist/windows-msi-required'
+  def hasWindowsMsiRequirementManifest = fileExists(windowsMsiRequirementManifest)
+  def requiredWindowsMsiFileName = hasWindowsMsiRequirementManifest
+    ? readFile(windowsMsiRequirementManifest).trim()
+    : ''
+  def requiresWindowsMsi = projectName.contains('Windows') &&
+    params.Release == 'Production' &&
+    hasWindowsMsiRequirementManifest
+
+  if (requiresWindowsMsi) {
+    if (requiredWindowsMsiFileName != expectedWindowsMsiFileName) {
+      error("Windows MSI manifest requires '${requiredWindowsMsiFileName}', expected '${expectedWindowsMsiFileName}'")
+    }
+    if (findFiles(glob: "wrap/dist/${expectedWindowsMsiFileName}").length != 1) {
+      error("Required production Windows MSI '${expectedWindowsMsiFileName}' is missing from copied build artifacts")
+    }
+  }
+
   hasWindowsMsi = projectName.contains('Windows') && findFiles(glob: 'wrap/dist/*.msi').length > 0
   hasWindowsSquirrel = projectName.contains('Windows') &&
     findFiles(glob: 'wrap/dist/*-Setup.exe').length > 0 &&
     findFiles(glob: 'wrap/dist/*-full.nupkg').length > 0 &&
     findFiles(glob: 'wrap/dist/RELEASES').length > 0
+  env.EXPECTED_WINDOWS_MSI = expectedWindowsMsiFileName
 
   currentBuild.displayName = "Deploy ${projectName} ${version}"
 
@@ -146,12 +166,13 @@ node('built-in') {
                   $DRY_RUN
               '''
             }
-            if (hasWindowsMsi) {
+            if (hasWindowsMsi || requiresWindowsMsi) {
               sh '''
                 jenkins/ts-node.sh ./bin/deploy-tools/s3-cli.ts \
                   --bucket "$S3_BUCKET" \
                   --s3path "$S3_PATH" \
                   --windows-artifact msi \
+                  --expected-windows-msi "$EXPECTED_WINDOWS_MSI" \
                   --key-id "$AWS_ACCESS_KEY_ID" \
                   --secret-key "$AWS_SECRET_ACCESS_KEY" \
                   --wrapper-build "$WRAPPER_BUILD" \

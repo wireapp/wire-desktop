@@ -17,10 +17,9 @@
  *
  */
 
+import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
-
-import assert from 'node:assert';
 
 const windowsPipeline = fs.readFileSync(path.resolve(process.cwd(), 'jenkins/windows.groovy'), 'utf8');
 const githubDraftCli = fs.readFileSync(path.resolve(process.cwd(), 'bin/deploy-tools/github-draft-cli.ts'), 'utf8');
@@ -46,6 +45,20 @@ describe('Jenkins Windows build artifacts', () => {
     assert.ok(aliasVerificationPosition < archiveStagePosition);
     assert.ok(windowsPipeline.includes('windows-msi-alias --expected-version ${version}'));
     assert.ok(windowsPipeline.includes('Missing generic MSI Setup alias'));
+  });
+
+  it('archives a production MSI requirement manifest only after the signed artifact checks', () => {
+    const aliasVerificationPosition = windowsPipeline.indexOf(
+      'signtool.exe verify',
+      windowsPipeline.indexOf('windows-msi-alias'),
+    );
+    const manifestPosition = windowsPipeline.indexOf('windows-msi-required');
+    const archiveCommandPosition = windowsPipeline.indexOf("archiveArtifacts 'package.json,wrap\\\\dist\\\\**'");
+
+    assert.ok(aliasVerificationPosition < manifestPosition);
+    assert.ok(manifestPosition < archiveCommandPosition);
+    assert.match(windowsPipeline, /if \(production\) \{\s+def productionMsiFileName = "Wire-\$\{version\}-x64\.msi"/);
+    assert.match(windowsPipeline, /writeFile file: 'wrap\/dist\/windows-msi-required', text: productionMsiFileName/);
   });
 
   it('allows the existing GitHub release uploader to attach MSI build artifacts', () => {

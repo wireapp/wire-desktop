@@ -17,10 +17,9 @@
  *
  */
 
+import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
-
-import assert from 'node:assert';
 
 const repositoryRoot = path.resolve(process.cwd());
 const deploymentPipeline = fs.readFileSync(path.join(repositoryRoot, 'jenkins/deployment.groovy'), 'utf8');
@@ -36,5 +35,20 @@ describe('Jenkins Windows deployment', () => {
   it('updates the Squirrel feed whenever a complete Squirrel artifact set is present', () => {
     assert.doesNotMatch(deploymentPipeline, /\bisWindowsMsi\b/);
     assert.match(deploymentPipeline, /if \(hasWindowsSquirrel\) \{\s+stage\('Update RELEASES file'\)/);
+  });
+
+  it('requires the exact production MSI only when the copied build carries the MSI requirement manifest', () => {
+    assert.match(deploymentPipeline, /def windowsMsiRequirementManifest = 'wrap\/dist\/windows-msi-required'/);
+    assert.match(deploymentPipeline, /params\.Release == 'Production' &&\s+hasWindowsMsiRequirementManifest/);
+    assert.match(deploymentPipeline, /Wire-\$\{version\}-x64\.msi/);
+    assert.match(
+      deploymentPipeline,
+      /Required production Windows MSI '\$\{expectedWindowsMsiFileName\}' is missing from copied build artifacts/,
+    );
+  });
+
+  it('passes the exact production MSI selection to the uploader and fails the deployment on upload errors', () => {
+    assert.match(deploymentPipeline, /--windows-artifact msi \\\s+--expected-windows-msi "\$EXPECTED_WINDOWS_MSI"/);
+    assert.match(deploymentPipeline, /catch\(e\) \{\s+currentBuild\.result = 'FAILED'[\s\S]*?throw e/);
   });
 });
