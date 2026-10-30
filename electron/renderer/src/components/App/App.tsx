@@ -24,6 +24,7 @@ import {StyledApp, THEME_ID} from '@wireapp/react-ui-kit';
 import actionRoot from '../../actions';
 import {State} from '../../index';
 import {AccountSelector} from '../../selector/AccountSelector';
+import AccountLimitModal from '../AccountLimitModal/AccountLimitModal';
 import {IsOnline} from '../IsOnline';
 import Sidebar from '../Sidebar/Sidebar';
 import WebviewList from '../WebViewList/WebviewList';
@@ -35,6 +36,7 @@ const App = () => {
         <div style={{display: 'flex', height: '100%', width: '100%'}}>
           <Sidebar />
           <WebviewList />
+          <AccountLimitModal />
         </div>
       </IsOnline>
     </StyledApp>
