@@ -17,7 +17,7 @@
  *
  */
 
-import {ACCOUNT_ACTION, addAccount, deleteAccount, updateAccount, updateAccountBadge} from '../';
+import {ACCOUNT_ACTION, addAccount, deleteAccount, updateAccount, updateAccountBadge, updateAccountData} from '../';
 import {generateUUID} from '../../lib/util';
 import {switchAccount} from '../AccountAction';
 
@@ -40,6 +40,21 @@ describe('action creators', () => {
         type: ACCOUNT_ACTION.UPDATE_ACCOUNT,
       };
       expect(updateAccount(id, data)).toEqual(action);
+    });
+
+    it('rejects an empty WebApp URL update before dispatch', () => {
+      const accountId = generateUUID();
+      const dispatch = jest.fn();
+      const warningSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      try {
+        updateAccountData(accountId, {webappUrl: ''})(dispatch);
+
+        expect(dispatch).not.toHaveBeenCalled();
+        expect(warningSpy).toHaveBeenCalledTimes(1);
+      } finally {
+        warningSpy.mockRestore();
+      }
     });
   });
 

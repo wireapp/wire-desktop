@@ -74,6 +74,15 @@ describe('accounts reducer', () => {
     expect(secondAccount.userID).toBeUndefined();
   });
 
+  it('preserves an empty WebApp URL from a direct account action', () => {
+    const accountId = '046da4f1-39be-4b8b-823b-e71f12811454';
+    const initialState = [createAccount({id: accountId})];
+
+    const [updatedAccount] = accountReducer(initialState, updateAccount(accountId, {webappUrl: ''}));
+
+    expect(updatedAccount.webappUrl).toBe('');
+  });
+
   it('should return a state with an updated badge count', () => {
     const initialState = [
       createAccount({id: '046da4f1-39be-4b8b-823b-e71f12811454'}),

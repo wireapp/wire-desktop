@@ -71,6 +71,8 @@ import {getLogger} from './logging/getLogger';
 import {scheduleLogCleanup} from './logging/logCleanupScheduler';
 import {getLogDirectory, getMainProcessLogPath, getWebViewLogPath} from './logging/logPaths';
 import {initializeDesktopLogLifecycle} from './logging/logStartup';
+import {registerRendererDiagnostics} from './logging/rendererDiagnostics';
+import {createWebViewConsoleLogger} from './logging/webViewConsoleLogger';
 import {getManagedConfig} from './managed/ManagedConfig';
 import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -678,15 +680,16 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  app.on('render-process-gone', async (event, _, details) => {
-    logger.error('WebContents crashed. Will reload the window.');
-    logger.error(JSON.stringify(details));
-    try {
+  registerRendererDiagnostics({
+    app,
+    logger,
+    reloadMainWindow() {
       main.reload();
-    } catch (error) {
-      showErrorDialog(`Could not reload the window: ${(error as any).message}`);
-      logger.error('Could not reload the window:', error);
-    }
+    },
+    reportReloadFailure(message) {
+      showErrorDialog(message);
+    },
+    wrapperWebContents: main.webContents,
   });
 
   app.on('child-process-gone', (event, details) => {
@@ -952,7 +955,6 @@ class ElectronWrapperInit {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
             const initialUrl = typeof params.src === 'string' ? params.src : '';
-            const initialOrigin = OriginValidator.getHttpOrigin(initialUrl).unwrapOr('invalid');
             const accountId = getAccountIdFromWebviewUrl(initialUrl);
             if (accountId.isJust) {
               initialWebviewAuthorizationsByAccountId.delete(accountId.value);
@@ -970,7 +972,10 @@ class ElectronWrapperInit {
 
             if (accountId.isNothing || initialAuthorization.isNothing) {
               _event.preventDefault();
-              this.logger.warn('Blocked initial <webview> attachment for origin', initialOrigin);
+              const failureReason = accountId.isNothing
+                ? 'account-context-unavailable'
+                : 'initial-origin-not-authorized';
+              this.logger.warn(`event=embedded-webview-attachment-blocked severity=warning reason=${failureReason}`);
               return;
             }
 
@@ -1074,33 +1079,28 @@ class ElectronWrapperInit {
             await applyProxySettings(proxyInfoArg, contents);
           }
 
-          const colorCodeRegex = /%c(.+?)%c/gm;
-          const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
-          const accessTokenRegex = /access_token=[^ &]+/gm;
-
-          contents.on('console-message', async (_event, _level, message) => {
-            const accountId = lifecycle.getAccountId(contents);
-
-            if (accountId.isJust) {
-              const logFilePath = getWebViewLogPath({
-                accountId: accountId.value,
+          const writeWebViewConsoleMessage = createWebViewConsoleLogger({
+            getAccountId() {
+              const accountId = lifecycle.getAccountId(contents);
+              return accountId.isJust ? accountId.value : undefined;
+            },
+            getLogFilePath(accountId) {
+              return getWebViewLogPath({
+                accountId,
                 date: new Date(),
                 logDirectory: getLogDirectory(),
               });
-              try {
-                await writeBoundedLogMessage({
-                  logFilePath,
-                  message: message
-                    .replace(colorCodeRegex, '$1')
-                    .replace(stylingRegex, '')
-                    .replace(accessTokenRegex, ''),
-                });
-              } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
+            },
+            reportWriteFailure() {
+              logger.error('Could not write an account WebView console message to its account log.');
+            },
+            writeLogMessage(logFilePath, message) {
+              return writeBoundedLogMessage({logFilePath, message});
+            },
+          });
 
-                logger.error(`Cannot write to log file "${logFilePath}": ${errorMessage}`, error);
-              }
-            }
+          contents.on('console-message', messageDetails => {
+            void writeWebViewConsoleMessage(messageDetails);
           });
 
           if (enableSpellChecking) {

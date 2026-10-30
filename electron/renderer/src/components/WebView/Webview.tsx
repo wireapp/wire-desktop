@@ -39,6 +39,7 @@ import {
 } from '../../actions';
 import {accountAction} from '../../actions/AccountAction';
 import {State} from '../../index';
+import {resolveEnvironmentUrl, resolveInitialWebviewUrl} from '../../lib/environmentUrl';
 import {getText, wrapperLocale} from '../../lib/locale';
 import {WindowUrl} from '../../lib/WindowUrl';
 import {AccountSelector} from '../../selector/AccountSelector';
@@ -58,36 +59,11 @@ const isNoUrlConfigured = () => {
 };
 
 function getEnvironmentUrl(account: Account): string {
-  const currentLocation = new URL(window.location.href);
-  const environmentUrlParameter =
-    typeof account.webappUrl === 'string' ? account.webappUrl : currentLocation.searchParams.get('env');
-  if (environmentUrlParameter === null) {
-    throw new Error('The configured WebApp environment URL is missing');
-  }
-
-  const decodedEnvParam = decodeURIComponent(environmentUrlParameter);
-  const url = new URL(decodedEnvParam);
-
-  // pass account id to webview, so we can access it in the preload script
-  url.searchParams.set('id', account.id);
-
-  // set the current language
-  url.searchParams.set('hl', wrapperLocale);
-
-  if (typeof account.ssoCode === 'string' && account.ssoCode.length > 0 && account.isAdding) {
-    url.pathname = '/auth';
-    url.hash = `#sso/${account.ssoCode}`;
-  }
-
-  return url.href;
-}
-
-function getInitialWebviewUrl(account: Account, noUrlConfigured: boolean): string {
-  if (noUrlConfigured) {
-    return '';
-  }
-
-  return getEnvironmentUrl(account);
+  return resolveEnvironmentUrl({
+    account,
+    currentLocation: window.location.href,
+    locale: wrapperLocale,
+  });
 }
 
 interface WebviewProps {
@@ -127,7 +103,12 @@ const Webview = (webviewProps: WebviewProps) => {
   const webviewRef = useRef<WebviewTag | null>(null);
   const [canDelete, setCanDelete] = useState(false);
   const [initialUrl] = useState(() => {
-    return getInitialWebviewUrl(account, noUrlConfigured);
+    return resolveInitialWebviewUrl({
+      account,
+      currentLocation: window.location.href,
+      locale: wrapperLocale,
+      noUrlConfigured,
+    });
   });
   const lastNavigatedUrl = useRef(initialUrl);
   const [webviewError, setWebviewError] = useState<DidFailLoadEvent | null>(null);
