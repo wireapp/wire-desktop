@@ -18,6 +18,7 @@
  */
 
 import {app, BrowserWindow, session} from 'electron';
+import * as fs from 'fs-extra';
 import {stub} from 'sinon';
 import {Maybe} from 'true-myth';
 
@@ -27,7 +28,27 @@ import * as path from 'path';
 
 import {SingleSignOn} from './SingleSignOn';
 
+import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
+import {getLogDirectory, getMainProcessLogPath, getSsoLogPath} from '../logging/logPaths';
 import {config} from '../settings/config';
+
+async function waitForLogMessage(logFilePath: string, expectedMessage: string): Promise<string> {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (await fs.pathExists(logFilePath)) {
+      const logContents = await fs.readFile(logFilePath, 'utf8');
+
+      if (logContents.includes(expectedMessage)) {
+        return logContents;
+      }
+    }
+
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 10);
+    });
+  }
+
+  throw new Error(`Expected log message was not written to "${logFilePath}".`);
+}
 
 describe('SingleSignOn', () => {
   describe('shared passkey session', () => {
@@ -49,23 +70,120 @@ describe('SingleSignOn', () => {
         });
     });
 
-    it('captures SSO console messages in every build environment', () => {
-      const originalEnvironment = config.environment;
-      const parent = createWindow({});
-      const login = createWindow({});
-      const flow = new SingleSignOn(login, parent.webContents, Maybe.nothing(), 'https://idp.test');
-      const initialConsoleListenerCount = login.webContents.listenerCount('console-message');
+    it(
+      'records only structured identity-provider errors in the account SSO log',
+      withTemporaryDirectory('wire-sso-console-log-', async (temporaryDirectory: string) => {
+        const originalEnvironment = config.environment;
+        const originalUserDataDirectory = app.getPath('userData');
+        const accountId = '046da4f1-39be-4b8b-823b-e71f12811454';
+        const parent = createWindow({});
+        const login = createWindow({});
+        const flow = new SingleSignOn(login, parent.webContents, Maybe.just(accountId), 'https://idp.test');
+        const initialConsoleListenerCount = login.webContents.listenerCount('console-message');
 
-      try {
-        config.environment = 'production';
-        flow['setupBrowserWindow']();
+        try {
+          await fs.ensureDir(temporaryDirectory);
+          app.setPath('userData', temporaryDirectory);
+          config.environment = 'production';
+          flow['setupBrowserWindow']();
 
-        const actualConsoleListenerCount = login.webContents.listenerCount('console-message');
-        assert.strictEqual(actualConsoleListenerCount, initialConsoleListenerCount + 1);
-      } finally {
-        config.environment = originalEnvironment;
-      }
-    });
+          const actualConsoleListenerCount = login.webContents.listenerCount('console-message');
+          assert.strictEqual(actualConsoleListenerCount, initialConsoleListenerCount + 1);
+
+          const currentDate = new Date();
+          const ssoLogFilePath = getSsoLogPath({
+            accountId,
+            date: currentDate,
+            logDirectory: getLogDirectory(),
+          });
+          const privateMessage = 'The identity provider returned Alice session-private-data without labeled fields';
+          const privateSource = 'https://idp.test/callback?state=private-state';
+
+          login.webContents.emit('console-message', {
+            level: 'info',
+            lineNumber: 2,
+            message: 'Identity provider informational message',
+            sourceId: privateSource,
+          });
+          assert.strictEqual(await fs.pathExists(ssoLogFilePath), false);
+
+          login.webContents.emit('console-message', {
+            level: 'error',
+            lineNumber: 37,
+            message: privateMessage,
+            sourceId: privateSource,
+          });
+
+          const actualSsoLogContents = await waitForLogMessage(ssoLogFilePath, 'event=identity-provider-console-error');
+          assert.strictEqual(actualSsoLogContents.includes('severity=error line=37'), true);
+          assert.strictEqual(actualSsoLogContents.includes(privateMessage), false);
+          assert.strictEqual(actualSsoLogContents.includes(privateSource), false);
+          assert.strictEqual(actualSsoLogContents.includes('session-private-data'), false);
+          assert.strictEqual(actualSsoLogContents.includes('private-state'), false);
+          assert.strictEqual(actualSsoLogContents.includes(accountId), false);
+          assert.strictEqual(actualSsoLogContents.includes(ssoLogFilePath), false);
+        } finally {
+          config.environment = originalEnvironment;
+          app.setPath('userData', originalUserDataDirectory);
+        }
+      }),
+    );
+
+    it(
+      'reports an SSO log write failure without a path or exception details',
+      withTemporaryDirectory('wire-sso-console-log-failure-', async (temporaryDirectory: string) => {
+        const originalUserDataDirectory = app.getPath('userData');
+        const accountId = 'd01eb964-bf56-4668-8883-dc248b58b1ca';
+        const parent = createWindow({});
+        const login = createWindow({});
+        const flow = new SingleSignOn(login, parent.webContents, Maybe.just(accountId), 'https://idp.test');
+
+        try {
+          await fs.ensureDir(temporaryDirectory);
+          app.setPath('userData', temporaryDirectory);
+
+          const currentDate = new Date();
+          const accountLogDirectory = path.join(
+            temporaryDirectory,
+            'logs',
+            currentDate.toISOString().slice(0, 10),
+            'accounts',
+          );
+          await fs.ensureDir(accountLogDirectory);
+          await fs.outputFile(path.join(accountLogDirectory, accountId), 'blocking file');
+          flow['setupBrowserWindow']();
+
+          const privateMessage = 'Credential response contains private-unstructured-value';
+          const privateSource = 'https://idp.test/callback?code=private-code';
+          login.webContents.emit('console-message', {
+            level: 'error',
+            lineNumber: 18,
+            message: privateMessage,
+            sourceId: privateSource,
+          });
+
+          const mainLogFilePath = getMainProcessLogPath({date: currentDate, logDirectory: getLogDirectory()});
+          const actualMainLogContents = await waitForLogMessage(
+            mainLogFilePath,
+            'Could not write an identity provider console diagnostic to the account SSO log.',
+          );
+          const ssoLogFilePath = getSsoLogPath({
+            accountId,
+            date: currentDate,
+            logDirectory: getLogDirectory(),
+          });
+
+          assert.strictEqual(await fs.pathExists(ssoLogFilePath), false);
+          assert.strictEqual(actualMainLogContents.includes(accountId), false);
+          assert.strictEqual(actualMainLogContents.includes(ssoLogFilePath), false);
+          assert.strictEqual(actualMainLogContents.includes(privateMessage), false);
+          assert.strictEqual(actualMainLogContents.includes(privateSource), false);
+          assert.strictEqual(actualMainLogContents.includes('private-code'), false);
+        } finally {
+          app.setPath('userData', originalUserDataDirectory);
+        }
+      }),
+    );
 
     it('releases a failed initialization so another login can open', async () => {
       const parent = createWindow({});
