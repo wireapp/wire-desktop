@@ -79,6 +79,44 @@ describe('dispatchDeepLink', () => {
     assert.strictEqual(errorDialog.calledOnce, true);
   });
 
+  it('forwards meeting links with their kind, domain and password', async () => {
+    sendActionSpy.resetHistory();
+    await protocolHandler['dispatchDeepLink'](
+      'wire://meeting-join/?domain=example.com&key=key&code=code&password=secret',
+    );
+    assert.ok(
+      sendActionSpy.calledOnceWithExactly(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {
+        kind: 'meeting',
+        domain: 'example.com',
+        key: 'key',
+        code: 'code',
+        password: 'secret',
+      }),
+    );
+  });
+
+  it('rejects a meeting link without its domain', async () => {
+    sendActionSpy.resetHistory();
+    const errorDialog = spy();
+    replace(dialogs, 'showErrorDialog', errorDialog);
+    await protocolHandler['dispatchDeepLink']('wire://meeting-join/?key=key&code=code');
+    assert.strictEqual(errorDialog.calledOnce, true);
+    assert.strictEqual(sendActionSpy.called, false);
+  });
+
+  it('marks conversation join payloads explicitly', async () => {
+    sendActionSpy.resetHistory();
+    await protocolHandler['dispatchDeepLink']('wire://conversation-join/?key=key&code=code&domain=example.com');
+    assert.ok(
+      sendActionSpy.calledOnceWithExactly(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {
+        kind: 'conversation',
+        domain: 'example.com',
+        key: 'key',
+        code: 'code',
+      }),
+    );
+  });
+
   it('forwards start login events', async () => {
     await protocolHandler['dispatchDeepLink']('wire://start-login');
     assert.ok(sendActionSpy.calledWith(EVENT_TYPE.ACTION.START_LOGIN));
