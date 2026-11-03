@@ -283,8 +283,7 @@ const Webview = (webviewProps: WebviewProps) => {
 
         case EVENT_TYPE.LIFECYCLE.SIGNED_IN: {
           if (conversationJoinData) {
-            const {code, key, domain} = conversationJoinData;
-            window.sendConversationJoinToHost(accountId, code, key, domain);
+            window.sendConversationJoinToHost(accountId, conversationJoinData);
             setConversationJoinData(accountId, undefined);
           }
           updateAccountLifecycle(accountId, channel);
@@ -314,7 +313,7 @@ const Webview = (webviewProps: WebviewProps) => {
 
           if (isConversationJoinData(data)) {
             if (accountLifecycle === EVENT_TYPE.LIFECYCLE.SIGNED_IN) {
-              window.sendConversationJoinToHost(accountId, data.code, data.key, data.domain);
+              window.sendConversationJoinToHost(accountId, data);
               setConversationJoinData(accountId, undefined);
             } else {
               setConversationJoinData(accountId, data);

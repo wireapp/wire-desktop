@@ -24,6 +24,11 @@ import thunk from 'redux-thunk';
 
 import {loadState, saveState} from './lib/localStorage';
 import reducers from './reducers';
+import type {ConversationJoinData} from './types/account';
+
+import {withoutMeetingPassword} from '../../src/lib/ConversationJoinData';
+
+import type {State} from './index';
 
 const HALF_SECOND = 500;
 const persistedState = loadState();
@@ -39,6 +44,7 @@ export const configureStore = (thunkArguments: Object) => {
           return {
             ...account,
             badgeCount: 0,
+            conversationJoinData: withoutMeetingPassword(account.conversationJoinData),
             lifecycle: undefined,
           };
         }),
@@ -55,6 +61,10 @@ const createMiddleware = (thunkArguments: Object = {}) => {
   if (process.env.NODE_ENV !== 'production') {
     middlewares.push(
       createLogger({
+        // Meeting links can carry a supplied password while waiting for account sign-in.
+        predicate: (getState: () => State, action: {data?: ConversationJoinData}) =>
+          action.data?.kind !== 'meeting' &&
+          !getState().accounts.some(account => account.conversationJoinData?.kind === 'meeting'),
         collapsed: true,
         diff: true,
         duration: true,

@@ -24,6 +24,7 @@ import * as path from 'path';
 import type {Availability} from '@wireapp/protocol-messaging';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
+import type {ConversationJoinData} from '../../renderer/src/types/account';
 import {createDesktopAppConfig} from '../lib/desktopAppConfig';
 import {EVENT_TYPE} from '../lib/eventType';
 import {forwardWrapperReloadRequest} from '../lib/forwardWrapperReloadRequest';
@@ -249,20 +250,14 @@ const subscribeToMainProcessEvents = (): void => {
     logger.info(`Received event "${WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED}", forwarding to window ...`);
     window.amplify.publish(WebAppEvents.LIFECYCLE.SSO_WINDOW_CLOSED);
   });
-  ipcRenderer.on(
-    EVENT_TYPE.ACTION.JOIN_CONVERSATION,
-    (_event, {code, key, domain}: {code: string; key: string; domain?: string}) => {
-      logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
-      ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key, domain});
-    },
-  );
-  ipcRenderer.on(
-    WebAppEvents.CONVERSATION.JOIN,
-    (_event, {code, key, domain}: {code: string; key: string; domain: string}) => {
-      logger.info(`Received event "${WebAppEvents.CONVERSATION.JOIN}", forwarding to window ...`);
-      window.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: {code, key, domain}}));
-    },
-  );
+  ipcRenderer.on(EVENT_TYPE.ACTION.JOIN_CONVERSATION, (_event, data: ConversationJoinData) => {
+    logger.info(`Received event "${EVENT_TYPE.ACTION.JOIN_CONVERSATION}", forwarding to host ...`);
+    ipcRenderer.sendToHost(EVENT_TYPE.ACTION.JOIN_CONVERSATION, data);
+  });
+  ipcRenderer.on(WebAppEvents.CONVERSATION.JOIN, (_event, data: ConversationJoinData) => {
+    logger.info(`Received event "${WebAppEvents.CONVERSATION.JOIN}", forwarding to window ...`);
+    window.dispatchEvent(new CustomEvent(WebAppEvents.CONVERSATION.JOIN, {detail: data}));
+  });
 };
 
 function getOpenGraphDataViaChannel(url: string) {
