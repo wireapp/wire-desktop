@@ -79,18 +79,15 @@ describe('dispatchDeepLink', () => {
     assert.strictEqual(errorDialog.calledOnce, true);
   });
 
-  it('forwards meeting links with their kind, domain and password', async () => {
+  it('forwards meeting links with their kind and domain', async () => {
     sendActionSpy.resetHistory();
-    await protocolHandler['dispatchDeepLink'](
-      'wire://meeting-join/?domain=example.com&key=key&code=code&password=secret',
-    );
+    await protocolHandler['dispatchDeepLink']('wire://meeting-join/?domain=example.com&key=key&code=code');
     assert.ok(
       sendActionSpy.calledOnceWithExactly(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {
         kind: 'meeting',
         domain: 'example.com',
         key: 'key',
         code: 'code',
-        password: 'secret',
       }),
     );
   });

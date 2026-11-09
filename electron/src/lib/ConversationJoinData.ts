@@ -33,16 +33,5 @@ export function meetingJoinData(route: URL): ConversationJoinData | undefined {
   ) {
     return undefined;
   }
-  const password = route.searchParams.get('password');
-  return {kind: 'meeting', code, key, domain, ...(password === null ? {} : {password})};
-}
-
-// A queued meeting link may survive account-state persistence, but its password must not.
-export function withoutMeetingPassword(data: ConversationJoinData | undefined): ConversationJoinData | undefined {
-  if (data?.kind !== 'meeting') {
-    return data;
-  }
-  const link = {...data};
-  delete link.password;
-  return link;
+  return {kind: 'meeting', code, key, domain};
 }

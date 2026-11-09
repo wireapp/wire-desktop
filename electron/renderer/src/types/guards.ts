@@ -32,17 +32,17 @@ export const isConversationJoinData = (value: any): value is ConversationJoinDat
     return false;
   }
 
-  const {code, key, kind, domain, password} = value;
+  const {code, key, kind, domain} = value;
   if (!isString(code) || !isString(key)) {
     return false;
   }
 
   switch (kind) {
     case 'meeting':
-      return isString(domain) && domain.length > 0 && (password === undefined || isString(password));
+      return isString(domain) && domain.length > 0;
     case 'conversation':
     case undefined:
-      return (domain === undefined || domain === null || isString(domain)) && password === undefined;
+      return domain === undefined || domain === null || isString(domain);
     default:
       return false;
   }

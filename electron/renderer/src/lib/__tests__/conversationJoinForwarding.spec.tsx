@@ -18,14 +18,18 @@
  */
 
 import {ipcRenderer} from 'electron';
+import {flushSync} from 'react-dom';
+import {createRoot, Root} from 'react-dom/client';
+import {Provider} from 'react-redux';
 
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import {CustomProtocolHandler} from '../../../../src/lib/CoreProtocol';
 import {EVENT_TYPE} from '../../../../src/lib/eventType';
-import {getLogger} from '../../../../src/logging/getLogger';
 import '../../../../src/preload/preload-app';
 import {WindowManager} from '../../../../src/window/WindowManager';
+import Webview from '../../components/WebView/Webview';
+import {configureStore} from '../../configureStore';
 
 jest.mock('electron', () => ({
   ipcRenderer: {on: jest.fn()},
@@ -41,10 +45,18 @@ jest.mock('../../../../src/logging/getLogger', () => {
   const logger = {info: jest.fn(), log: jest.fn()};
   return {getLogger: () => logger};
 });
+jest.mock('../../components/WebView/Webview.css', () => ({}));
+jest.mock('../../components/LoadingSpinner', () => ({LoadingSpinner: () => null}));
+jest.mock('redux-logger', () => ({createLogger: () => () => (next: (action: unknown) => unknown) => next}));
 
-const meeting = {kind: 'meeting' as const, domain: 'example.com', key: 'key', code: 'code', password: 'secret'};
+const meeting = {kind: 'meeting' as const, domain: 'example.com', key: 'key', code: 'code'};
+let root: Root | undefined;
 
 afterEach(() => {
+  root?.unmount();
+  root = undefined;
+  jest.useRealTimers();
+  localStorage.clear();
   jest.restoreAllMocks();
   jest.clearAllMocks();
   WindowManager.actionsQueue = [];
@@ -67,6 +79,60 @@ describe('conversation join forwarding', () => {
       code: 'code',
       domain,
     });
+  });
+
+  it('forwards a queued meeting after sign-in', async () => {
+    if (registration === undefined) {
+      throw new Error('Expected the preload to register its conversation join handler');
+    }
+    jest.useFakeTimers();
+    const store = configureStore({});
+    const account = store.getState().accounts[0];
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    root = createRoot(container);
+    flushSync(() => {
+      root?.render(
+        <Provider store={store}>
+          <Webview account={{...account, webappUrl: 'https://example.com'}} onUnreadCountUpdated={jest.fn()} />
+        </Provider>,
+      );
+    });
+
+    const webview = container.querySelector('webview');
+    if (webview === null) {
+      throw new Error('Expected the account webview to render');
+    }
+    const send = jest.fn(async (channel: string, data: unknown) => {
+      if (channel === EVENT_TYPE.ACTION.JOIN_CONVERSATION) {
+        webview.dispatchEvent(Object.assign(new Event('ipc-message'), {channel, args: [data]}));
+      }
+    });
+    Object.assign(webview, {send});
+
+    await flushSync(() => registration[1]({} as Electron.IpcRendererEvent, meeting));
+    expect(store.getState().accounts[0].conversationJoinData).toEqual(meeting);
+    expect(send).not.toHaveBeenCalledWith(WebAppEvents.CONVERSATION.JOIN, expect.anything());
+    jest.advanceTimersByTime(500);
+    const queuedState = JSON.parse(localStorage.getItem('state') ?? '{}');
+    expect(queuedState.accounts[0].conversationJoinData).toEqual({
+      kind: 'meeting',
+      domain: meeting.domain,
+      key: meeting.key,
+      code: meeting.code,
+    });
+
+    flushSync(() => {
+      webview.dispatchEvent(
+        Object.assign(new Event('ipc-message'), {channel: EVENT_TYPE.LIFECYCLE.SIGNED_IN, args: []}),
+      );
+    });
+    expect(send).toHaveBeenCalledWith(WebAppEvents.CONVERSATION.JOIN, meeting);
+    expect(store.getState().accounts[0].conversationJoinData).toBeUndefined();
+
+    jest.advanceTimersByTime(500);
+    const persistedState = JSON.parse(localStorage.getItem('state') ?? '{}');
+    expect(persistedState.accounts[0].conversationJoinData).toBeUndefined();
   });
 
   // Capture the handler registered by the production preload before clearing mock history.
@@ -96,14 +162,13 @@ describe('conversation join forwarding', () => {
     expect(send).toHaveBeenLastCalledWith(WebAppEvents.CONVERSATION.JOIN, data);
   });
 
-  it('delivers a queued meeting password without including it in log arguments', async () => {
+  it('delivers a queued meeting link', async () => {
     const send = jest.fn();
     const primaryWindow = {
       id: 1,
       webContents: {isLoading: () => true, send},
     };
     jest.spyOn(WindowManager, 'getPrimaryWindow').mockReturnValue(primaryWindow as unknown as Electron.BrowserWindow);
-    const logger = getLogger('WindowManager.ts');
 
     await WindowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, meeting);
     expect(send).not.toHaveBeenCalled();
@@ -113,9 +178,5 @@ describe('conversation join forwarding', () => {
 
     expect(send).toHaveBeenCalledWith(EVENT_TYPE.ACTION.JOIN_CONVERSATION, meeting);
     expect(WindowManager.actionsQueue).toHaveLength(0);
-    const logCalls = jest.mocked(logger.info).mock.calls;
-    expect(logCalls.length).toBeGreaterThan(0);
-    expect(JSON.stringify(logCalls)).not.toContain(meeting.password);
-    expect(meeting.password).toBe('secret');
   });
 });
