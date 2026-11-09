@@ -48,4 +48,28 @@ describe('localStorage', () => {
 
     expect(loadState()).toEqual(state);
   });
+
+  it('preserves a legacy queued conversation without adding a kind', () => {
+    const link = {key: 'key', code: 'code', domain: null};
+    const account = {...createAccount(), conversationJoinData: link};
+    localStorage.setItem('state', JSON.stringify({accounts: [account], contextMenuState: initialContextMenuState}));
+
+    expect(loadState()).toEqual({
+      accounts: [account],
+      contextMenuState: initialContextMenuState,
+    });
+  });
+
+  it.each([
+    {kind: 'conversation' as const, key: 'key', code: 'code'},
+    {kind: 'meeting' as const, key: 'key', code: 'code', domain: 'example.com'},
+  ])('preserves an explicit $kind discriminator when loading saved state', conversationJoinData => {
+    const state = {
+      accounts: [{...createAccount(), conversationJoinData}],
+      contextMenuState: initialContextMenuState,
+    };
+    saveState(state);
+
+    expect(loadState()).toEqual(state);
+  });
 });

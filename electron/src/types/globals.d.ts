@@ -22,6 +22,7 @@ import type {Static as amplify} from 'amplify';
 import type {Data as OpenGraphResult} from '@wireapp/open-graph';
 import type {WebAppEvents} from '@wireapp/webapp-events';
 
+import type {ConversationJoinData} from '../../renderer/src/types/account';
 import type {DesktopAppConfig} from '../lib/desktopAppConfig';
 import type {WebviewNavigationRequest} from '../lib/WebviewNavigationTypes';
 import type {i18nStrings, SupportedI18nLanguage} from '../locale';
@@ -56,7 +57,7 @@ export declare global {
     locStrings: i18nStrings;
     locStringsDefault: i18nStrings;
     sendBadgeCount(count: number, ignoreFlash: boolean): void;
-    sendConversationJoinToHost(accountId: string, code: string, key: string, domain?: string): void;
+    sendConversationJoinToHost(accountId: string, data: ConversationJoinData): void;
     sendDeleteAccount(accountId: string, sessionID?: string): Promise<void>;
     sendLogoutAccount(accountId: string): Promise<void>;
     submitDeepLink(url: string): void;

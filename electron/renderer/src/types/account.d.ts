@@ -20,8 +20,7 @@
 export type ConversationJoinData = {
   code: string;
   key: string;
-  domain: string;
-};
+} & ({kind?: 'conversation'; domain?: string | null} | {kind: 'meeting'; domain: string});
 
 export type Account = {
   availability?: number;

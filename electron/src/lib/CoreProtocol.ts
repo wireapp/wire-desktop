@@ -22,6 +22,7 @@ import {app, ipcMain} from 'electron';
 import * as path from 'path';
 import {URL} from 'url';
 
+import {meetingJoinData} from './ConversationJoinData';
 import {EVENT_TYPE} from './eventType';
 
 import {showErrorDialog} from '../lib/showDialog';
@@ -36,6 +37,7 @@ const CORE_PROTOCOL_PREFIX = `${config.customProtocolName}://`;
 const CORE_PROTOCOL_MAX_LENGTH = 1024;
 const START_SSO_FLOW = 'start-sso';
 const JOIN_CONVERSATION_FLOW = 'conversation-join';
+const JOIN_MEETING_FLOW = 'meeting-join';
 const START_LOGIN_FLOW = 'start-login';
 
 export class CustomProtocolHandler {
@@ -68,6 +70,9 @@ export class CustomProtocolHandler {
       if (route.host === START_SSO_FLOW) {
         logger.info('Deep link is a SSO link, triggering SSO login ...');
         await this.handleSSOLogin(route);
+      } else if (route.host === JOIN_MEETING_FLOW) {
+        logger.info('Deep link is a meeting join link, triggering join ...');
+        await this.handleJoinMeeting(route);
       } else if (route.host === JOIN_CONVERSATION_FLOW) {
         logger.info('Deep link is a conversation join link, triggering join ...');
         await this.handleJoinConversation(route);
@@ -103,6 +108,19 @@ export class CustomProtocolHandler {
     }
   }
 
+  private async handleJoinMeeting(route: URL): Promise<void> {
+    const data = meetingJoinData(route);
+    if (data === undefined) {
+      showErrorDialog('Invalid meeting link.');
+      return;
+    }
+    try {
+      await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, data);
+    } catch {
+      logger.error('Cannot join meeting.');
+    }
+  }
+
   private async handleJoinConversation(route: URL): Promise<void> {
     if (typeof route.pathname === 'string') {
       logger.info('Joining conversation ...');
@@ -111,7 +129,12 @@ export class CustomProtocolHandler {
       const domain = route.searchParams.get('domain');
 
       try {
-        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {code, key, domain});
+        await this.windowManager.sendActionAndFocusWindow(EVENT_TYPE.ACTION.JOIN_CONVERSATION, {
+          kind: 'conversation',
+          code,
+          key,
+          domain,
+        });
       } catch (error: any) {
         logger.error(`Cannot join conversation: ${error.message}`, error);
       }
