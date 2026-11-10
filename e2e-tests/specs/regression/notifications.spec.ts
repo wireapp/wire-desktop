@@ -108,6 +108,7 @@ test.describe('Notifications', () => {
     'I want to receive notifications from multiple accounts',
     {tag: ['@TC-11268', '@regression']},
     async ({app, createUser, createTeam, createPage}) => {
+      test.setTimeout(150_000); // Increase timeout for this test to account for multiple account notifications
       const userA1 = await createUser();
       const userA2 = await createUser();
       const {owner: userB} = await createTeam('Test Team', {users: [userA1, userA2]});

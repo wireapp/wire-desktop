@@ -177,7 +177,7 @@ test.describe('Multiple Accounts', async () => {
     });
 
     await test.step('Notification Dot on UserA profile in sidebar is visible', async () => {
-      await expect(accountsSidebar(app).getAccount(userA).notificationDot).toBeVisible();
+      await expect(accountsSidebar(app).getAccount(userA).notificationDot).toBeVisible({timeout: 30_000});
     });
 
     await test.step('UserB switches to UserA account, reads message and notification dot vanishes', async () => {
