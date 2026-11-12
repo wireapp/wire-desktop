@@ -116,6 +116,8 @@
   "accountLimitModalBackupHint": "Logging out deletes the account's conversation history from this device. If you want to keep it, cancel and create a backup in the account's settings first.",
   "accountLimitModalCancel": "Cancel",
   "accountLimitModalLogOut": "Log out",
+  "accountLimitModalLoggedOut": "Logged out",
+  "accountLimitModalLogOutError": "An error occurred while logging out of the accounts. Please try again.",
   "passkeyPickerTitle": "Sign in with a passkey",
   "passkeyPickerMessage": "Choose an account for {domain}",
   "passkeyPickerAccount": "Account {number}",
