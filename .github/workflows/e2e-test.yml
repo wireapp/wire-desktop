@@ -57,6 +57,26 @@ jobs:
         shell: bash
         run: yarn prestart
 
+      - name: Build packaged app for deep link tests
+        if: ${{ matrix.project == 'macOS' }}
+        shell: bash
+        run: |
+          yarn build:macos:internal:arm64
+          APP_PATH=$(find wrap/build -maxdepth 2 -name "*.app" -print -quit)
+          if [ -z "$APP_PATH" ]; then echo "Packaged app not found"; exit 1; fi
+          xattr -cr "$APP_PATH"
+          echo "WIRE_APP_BUNDLE=$PWD/$APP_PATH" >> "$GITHUB_ENV"
+
+      - name: Install SwiftDefaultApps and register wire:// handler
+        if: ${{ matrix.project == 'macOS' }}
+        shell: bash
+        run: |
+          brew install --cask swiftdefaultapps
+          swda setHandler --URL wire --app "$WIRE_APP_BUNDLE"
+          swda getHandler --URL wire
+          EXECUTABLE=$(find "$WIRE_APP_BUNDLE/Contents/MacOS" -type f -perm +111 -print -quit)
+          echo "WIRE_APP_PATH=$EXECUTABLE" >> "$GITHUB_ENV"
+
       - name: Run E2E tests
         shell: bash
         run: yarn test:e2e --project=${{ matrix.project }} --reporter=blob

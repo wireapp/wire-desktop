@@ -31,7 +31,11 @@ export const createApp = async (options: {
     throw new Error(`Can't create app without environment, make sure the env var "WEBAPP_URL" is set`);
   }
 
+  // When set, a packaged build is launched instead of the sources in the working directory (needed for OS level deep links)
+  const executablePath = process.env.WIRE_APP_PATH;
+
   const app = await electron.launch({
+    ...(executablePath ? {executablePath} : {}),
     args: [
       // Chromium launch args
       `--user-data-dir=${options.dataDir}`,
@@ -39,7 +43,7 @@ export const createApp = async (options: {
       ...(options.bypassPermissions ?? true
         ? ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream']
         : []), // Provide fake devices for audio & video device input and bypasses the popup to grant permission and select video / audio input device by automatically selecting the default one
-      '.',
+      ...(executablePath ? [] : ['.']),
       // Wire specific cli flags to set during launch
       `--env=${options.env}`,
       `--lang=${options.lang ?? 'en'}`,
