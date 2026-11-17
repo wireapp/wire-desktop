@@ -70,6 +70,31 @@ describe('build-macos', () => {
       }
     });
 
+    it('builds an unsandboxed darwin app for E2E builds only', async () => {
+      const original = {...process.env};
+      try {
+        process.env.MACOS_CERTIFICATE_NAME_APPLICATION = '';
+        process.env.MACOS_CERTIFICATE_NAME_INSTALLER = '';
+
+        delete process.env.E2E_BUILD;
+        assert.strictEqual((await buildMacOSConfig(wireJsonPath, envFilePath)).packagerConfig.platform, 'mas');
+
+        process.env.E2E_BUILD = 'true';
+        const {macOSConfig, packagerConfig} = await buildMacOSConfig(wireJsonPath, envFilePath);
+        assert.strictEqual(packagerConfig.platform, 'darwin');
+        assert.strictEqual(macOSConfig.certNameApplication, null);
+        assert.strictEqual(macOSConfig.certNameInstaller, null);
+        assert.strictEqual(packagerConfig.osxSign, undefined);
+      } finally {
+        for (const key of Object.keys(process.env)) {
+          if (!(key in original)) {
+            delete process.env[key];
+          }
+        }
+        Object.assign(process.env, original);
+      }
+    });
+
     it('honors environment variables', async () => {
       const bundleId = generateUUID();
       const certNameApplication = generateUUID();
