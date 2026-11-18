@@ -17,7 +17,7 @@
  *
  */
 
-import {ipcRenderer, webFrame} from 'electron';
+import {ipcRenderer, IpcRendererEvent, webFrame} from 'electron';
 import {truncate} from 'lodash';
 
 import * as path from 'path';
@@ -132,7 +132,13 @@ const setupIpcInterface = (): void => {
 
       logger.info(`Processing deletion of "${truncatedId}"`);
       const viewInstanceId = accountWebview.getWebContentsId();
-      ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, () => resolve());
+      const onDataDeleted = (_event: IpcRendererEvent, deletedAccountId: string) => {
+        if (deletedAccountId === accountId) {
+          ipcRenderer.removeListener(EVENT_TYPE.ACCOUNT.DATA_DELETED, onDataDeleted);
+          resolve();
+        }
+      };
+      ipcRenderer.on(EVENT_TYPE.ACCOUNT.DATA_DELETED, onDataDeleted);
       ipcRenderer.send(EVENT_TYPE.ACCOUNT.DELETE_DATA, viewInstanceId, accountId, sessionID);
     });
   };

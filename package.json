@@ -51,6 +51,8 @@
     "@faker-js/faker": "10.4.0",
     "@oazapfts/runtime": "1.2.0",
     "@playwright/test": "1.60.0",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.3",
     "@types/adm-zip": "0.5.8",
     "@types/amplify": "1.1.28",
     "@types/archiver": "8.0.0",
