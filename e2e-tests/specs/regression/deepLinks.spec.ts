@@ -39,6 +39,9 @@ const expectLoginPageVisible = async (page: Page) => {
 };
 
 test.describe('Deep Links', async () => {
+  // OS level deep links need the packaged app registered as handler, all other specs run from the sources
+  test.use({appOptions: {env: process.env.WEBAPP_URL, lang: 'en', executablePath: process.env.WIRE_APP_PATH}});
+
   test('Open a profile via deep link', {tag: ['@TC-11273', '@regression']}, async ({app, createUser, createPage}) => {
     const userA = await createUser();
     const userB = await createUser();

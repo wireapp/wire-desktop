@@ -17,7 +17,7 @@
  *
  */
 
-import {_electron as electron} from '@playwright/test';
+import {_electron as electron, Page} from '@playwright/test';
 
 export type App = Awaited<ReturnType<typeof createApp>>;
 
@@ -26,13 +26,14 @@ export const createApp = async (options: {
   lang?: string;
   dataDir: string;
   bypassPermissions?: boolean;
+  /* When set, a packaged build is launched instead of the sources in the working directory (needed for OS level deep links) */
+  executablePath?: string;
 }) => {
   if (!options.env) {
     throw new Error(`Can't create app without environment, make sure the env var "WEBAPP_URL" is set`);
   }
 
-  // When set, a packaged build is launched instead of the sources in the working directory (needed for OS level deep links)
-  const executablePath = process.env.WIRE_APP_PATH;
+  const {executablePath} = options;
 
   const app = await electron.launch({
     ...(executablePath ? {executablePath} : {}),
@@ -50,22 +51,58 @@ export const createApp = async (options: {
     ],
   });
 
+  // Register the listener right away, windows opening while we await something else would be missed otherwise
+  const windows: Page[] = [];
+  const windowListeners = new Set<() => void>();
+  app.on('window', window => {
+    windows.push(window);
+    windowListeners.forEach(listener => listener());
+  });
+
+  const mainProcessLogs: string[] = [];
+
   // Forward all logs from the electron apps main thread to the terminal
   app.on('console', async msg => {
     const args = (await Promise.allSettled(msg.args().map(arg => arg.jsonValue())))
       .filter(result => result.status === 'fulfilled')
       .map(arg => arg.value);
 
+    mainProcessLogs.push(args.map(String).join(' '));
     // eslint-disable-next-line no-console
     console.log(...args);
   });
+  app.process().stdout?.on('data', data => mainProcessLogs.push(String(data)));
+  app.process().stderr?.on('data', data => mainProcessLogs.push(String(data)));
 
   /**
    * The webview element isn't treated as a regular webcomponent / iframe by electron but as individual window.
    * So in order to access the contents of the application we need to use the second window.
    */
-  const wrapper = await app.waitForEvent('window');
-  const page = await app.waitForEvent('window');
+  const timeout = 30_000;
+  let timer: NodeJS.Timeout | undefined;
+  let onWindow: (() => void) | undefined;
+  try {
+    await new Promise<void>((resolve, reject) => {
+      onWindow = () => windows.length >= 2 && resolve();
+      windowListeners.add(onWindow);
+      onWindow();
+      timer = setTimeout(() => {
+        const urls = windows.map(window => window.url());
+        reject(
+          new Error(
+            `Expected 2 windows (wrapper and webapp) within ${timeout}ms but got ${windows.length}: ${JSON.stringify(urls)}\n` +
+              `Main process output (last 50 lines):\n${mainProcessLogs.join('\n').split('\n').slice(-50).join('\n')}`,
+          ),
+        );
+      }, timeout);
+    });
+  } finally {
+    clearTimeout(timer);
+    if (onWindow) {
+      windowListeners.delete(onWindow);
+    }
+  }
+  const [wrapper, page] = windows;
 
   return Object.assign(app, {
     /* The playwright page for the main electron window wrapping the webapp */
