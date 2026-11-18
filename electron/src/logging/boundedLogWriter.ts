@@ -43,6 +43,7 @@ export type CreateBoundedLogWriterParameters = {
 export type WriteLogMessageParameters = {
   logFilePath: string;
   message: string;
+  lineEnding?: '\n';
 };
 
 export type BoundedLogWriter = {
@@ -116,7 +117,7 @@ async function rotateLogFile(parameters: RotateLogFileParameters): Promise<void>
 }
 
 async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<WriteLogEntryResult> {
-  const logEntry = `${parameters.writeParameters.message}${os.EOL}`;
+  const logEntry = `${parameters.writeParameters.message}${parameters.writeParameters.lineEnding ?? os.EOL}`;
   const logEntrySizeBytes = Buffer.byteLength(logEntry);
 
   await parameters.dependencies.ensureDirectory(path.dirname(parameters.writeParameters.logFilePath));

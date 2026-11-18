@@ -17,6 +17,7 @@
  *
  */
 
+import * as fs from 'fs-extra';
 import {Result} from 'true-myth';
 
 import * as assert from 'assert';
@@ -28,13 +29,50 @@ import {
   parseLegacyAccountLogDirectory,
 } from './accountLogDeletion';
 
+import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
 import {LogDirectoryCleanupResult} from '../logging/logDirectoryCleanup';
+import {getLogFilenames} from '../logging/logFiles';
 
 const logDirectory = path.join('user-data', 'logs');
 const accountId = '11111111-1111-4111-8111-111111111111';
 const otherAccountId = '22222222-2222-4222-8222-222222222222';
 
 describe('account log deletion', () => {
+  it(
+    'deletes structured-only account directories without removing another account or historical diagnostics',
+    withTemporaryDirectory('wire-account-jsonl-deletion-', async rootDirectory => {
+      const accountsDirectory = path.join(rootDirectory, '2026-07-10', 'accounts');
+      const removedAccountDirectory = path.join(accountsDirectory, accountId);
+      const removedApplicationLog = path.join(removedAccountDirectory, 'application.jsonl');
+      const previousAccountDirectory = path.join(rootDirectory, '2026-07-09', 'accounts', accountId);
+      const retainedApplicationLog = path.join(accountsDirectory, otherAccountId, 'application.jsonl');
+      const retainedLegacyLog = path.join(rootDirectory, 'legacy.old');
+      await fs.outputFile(removedApplicationLog, '{}\n');
+      await fs.outputFile(path.join(previousAccountDirectory, 'application.jsonl.123-0.old'), '{}\n');
+      await fs.outputFile(retainedApplicationLog, '{}\n');
+      await fs.outputFile(retainedLegacyLog, 'diagnostics\n');
+
+      await deleteAccountLogDirectories({
+        accountId,
+        filePaths: getLogFilenames({absolute: true, baseDirectory: rootDirectory}),
+        logDirectory: rootDirectory,
+        dependencies: {
+          isSafeDirectory: fs.pathExists,
+          removeDirectory: fs.remove,
+          async removeEmptyDirectoryAncestors() {
+            return Result.ok();
+          },
+          reportFailure: assert.fail,
+        },
+      });
+
+      assert.strictEqual(await fs.pathExists(removedAccountDirectory), false);
+      assert.strictEqual(await fs.pathExists(previousAccountDirectory), false);
+      assert.strictEqual(await fs.pathExists(retainedApplicationLog), true);
+      assert.strictEqual(await fs.pathExists(retainedLegacyLog), true);
+    }),
+  );
+
   it('matches new daily and supported legacy layouts by exact account identity', () => {
     const filePaths = [
       path.join(logDirectory, '2026-07-10', 'accounts', accountId, 'console.log'),

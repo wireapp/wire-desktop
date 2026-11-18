@@ -1,0 +1,272 @@
+/*
+ * Wire
+ * Copyright (C) 2026 Wire Swiss GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
+
+import {Maybe} from 'true-myth';
+
+import * as assert from 'assert';
+import * as path from 'path';
+
+import {getWebViewApplicationLogPath} from './logPaths';
+import {createDesktopApplicationLogs, STRUCTURED_LOG_LIMITS} from './structuredLogBatch';
+import {createStructuredWebappLogger} from './structuredWebappLogger';
+import {createWebViewConsoleLogger} from './webViewConsoleLogger';
+
+const allowedOrigin = 'https://app.example.com';
+const wrapper = {};
+const accountId = '11111111-1111-4111-8111-111111111111';
+const otherAccountId = '22222222-2222-4222-8222-222222222222';
+const record =
+  '{"level":30,"time":42,"component":"@wireapp/core/Account","msg":"Connected","error":{"detail":"\\u0025"}}\n';
+const recordWithoutMessage = '{"level":40,"time":42,"component":"@wireapp/core/Account","count":2}\n';
+
+type CreateGuestOptions = {
+  id?: number;
+  url?: string;
+  hostWebContents?: object;
+};
+
+function createGuest({id = 1, url = allowedOrigin, hostWebContents = wrapper}: CreateGuestOptions = {}) {
+  const mainFrame = {url};
+  const sender = {id, mainFrame, hostWebContents, isDestroyed: () => false};
+  return {sender, senderFrame: mainFrame};
+}
+
+type TestDependencies = Parameters<typeof createStructuredWebappLogger>[0];
+
+function createContext(contents: ReturnType<typeof createGuest>['sender'], identifier = accountId) {
+  return {
+    accountId: identifier,
+    contents,
+    pendingOrigin: Maybe.nothing<string>(),
+    structuredLoggingRevoked: false,
+    trustedOrigin: Maybe.just(allowedOrigin),
+  };
+}
+
+function createReceiver(overrides: Partial<TestDependencies> = {}) {
+  const guest = createGuest();
+  const context = createContext(guest.sender);
+  const writes: Parameters<TestDependencies['writeBatch']>[0][] = [];
+  const receiver = createStructuredWebappLogger({
+    getWebViewContext: () => context,
+    getWrapperWebContents: () => wrapper,
+    getCurrentDate: () => new Date('2026-07-10T23:59:59.999Z'),
+    async writeBatch(batch) {
+      writes.push(batch);
+    },
+    ...overrides,
+  });
+
+  return {guest, receiver, writes, context};
+}
+
+describe('structured Webapp logging', () => {
+  it('accepts a batch without rewriting Webapp JSON', async () => {
+    const {guest, receiver, writes} = createReceiver();
+    const records = [record, recordWithoutMessage];
+
+    assert.strictEqual(await receiver.receive(guest, records), 'written');
+    assert.deepStrictEqual(writes, [{accountId, date: new Date('2026-07-10T23:59:59.999Z'), records}]);
+  });
+
+  it('rejects the entire batch when a record is unsupported or malformed', async () => {
+    const {guest, receiver, writes} = createReceiver();
+    const invalidRecords = [
+      'null\n',
+      '[]\n',
+      '{}\n',
+      '{"level":60,"time":42,"component":"Account"}\n',
+      '{"level":30,"time":"42","component":"Account"}\n',
+      '{"level":30,"time":-1,"component":"Account"}\n',
+      '{"level":30,"time":42,"component":false}\n',
+      '{"level":30,"time":42,"component":"Account","msg":42}\n',
+      '{"level":30,\n"time":42,"component":"Account"}\n',
+      record.replace('\n', '\r\n'),
+      record.trimEnd(),
+      record + record,
+      '{"level":30,"time":42,"component":"Account"\n',
+      null,
+    ];
+
+    for (const invalidRecord of invalidRecords) {
+      assert.strictEqual(await receiver.receive(guest, [record, invalidRecord]), 'rejected');
+    }
+    assert.strictEqual(await receiver.receive(guest, []), 'rejected');
+    assert.strictEqual(await receiver.receive(guest, {accountId: otherAccountId, records: [record]}), 'rejected');
+    assert.deepStrictEqual(writes, []);
+  });
+
+  it('bounds UTF-8 record and batch sizes and the number of records', async () => {
+    const {guest, receiver, writes} = createReceiver();
+    const oversizedRecord = record.replace('Connected', 'é'.repeat(STRUCTURED_LOG_LIMITS.maximumRecordBytes / 2));
+    const largeRecord = record.replace('Connected', 'é'.repeat(STRUCTURED_LOG_LIMITS.maximumBatchBytes / 4));
+
+    assert.strictEqual(await receiver.receive(guest, [oversizedRecord]), 'rejected');
+    assert.strictEqual(await receiver.receive(guest, [largeRecord, largeRecord]), 'rejected');
+    assert.strictEqual(
+      await receiver.receive(
+        guest,
+        Array.from({length: STRUCTURED_LOG_LIMITS.maximumBatchRecords + 1}, () => record),
+      ),
+      'rejected',
+    );
+    assert.deepStrictEqual(writes, []);
+    assert.strictEqual(await receiver.receive(guest, [largeRecord]), 'written');
+  });
+
+  it('requires the registered guest, wrapper, top frame, and authorized origin', async () => {
+    const untrusted = createGuest({id: 2, url: 'https://untrusted.example.com'});
+    const foreignHost = createGuest({id: 3, hostWebContents: {}});
+    const guest = createGuest({id: 4});
+    const contexts = new Map([untrusted, foreignHost, guest].map(({sender}) => [sender.id, createContext(sender)]));
+    const {receiver, writes} = createReceiver({
+      getWebViewContext: senderId => contexts.get(senderId),
+    });
+
+    for (const unauthorized of [
+      untrusted,
+      foreignHost,
+      createGuest(),
+      createGuest({id: guest.sender.id}),
+      {sender: guest.sender, senderFrame: null},
+      {sender: guest.sender, senderFrame: {url: allowedOrigin}},
+    ]) {
+      assert.strictEqual(await receiver.receive(unauthorized, [record]), 'rejected');
+    }
+
+    assert.deepStrictEqual(writes, []);
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+  });
+
+  it('groups batches by receipt day and uses account identity from the guest context', async () => {
+    const firstGuest = createGuest();
+    const secondGuest = createGuest({id: 2});
+    const contexts = new Map([
+      [firstGuest.sender.id, createContext(firstGuest.sender)],
+      [secondGuest.sender.id, createContext(secondGuest.sender, otherAccountId)],
+    ]);
+    let receivedAt = new Date('2026-07-11T01:59:59.999+02:00');
+    const outputPaths: string[] = [];
+    const {receiver} = createReceiver({
+      getWebViewContext: senderId => contexts.get(senderId),
+      getCurrentDate: () => receivedAt,
+      async writeBatch({accountId: authorizedAccountId, date}) {
+        outputPaths.push(getWebViewApplicationLogPath({accountId: authorizedAccountId, date, logDirectory: 'logs'}));
+      },
+    });
+    const recordWithForeignAccount = record.replace('"msg"', `"accountId":"${otherAccountId}","msg"`);
+
+    assert.strictEqual(await receiver.receive(firstGuest, [recordWithForeignAccount]), 'written');
+    assert.strictEqual(await receiver.receive(secondGuest, [record]), 'written');
+    receivedAt = new Date('2026-07-11T02:00:00.000+02:00');
+    assert.strictEqual(await receiver.receive(firstGuest, [record]), 'written');
+
+    assert.deepStrictEqual(outputPaths, [
+      path.join('logs', '2026-07-10', 'accounts', accountId, 'application.jsonl'),
+      path.join('logs', '2026-07-10', 'accounts', otherAccountId, 'application.jsonl'),
+      path.join('logs', '2026-07-11', 'accounts', accountId, 'application.jsonl'),
+    ]);
+  });
+
+  it('bounds pending work, returns write failures, and accepts further batches', async () => {
+    const guests = Array.from({length: STRUCTURED_LOG_LIMITS.maximumPendingBatches + 1}, (_, index) =>
+      createGuest({id: index + 1}),
+    );
+    const contexts = new Map(guests.map(({sender}) => [sender.id, createContext(sender)]));
+    const blockedWrites = Promise.withResolvers<void>();
+    let completion = blockedWrites.promise;
+    const {receiver} = createReceiver({
+      getWebViewContext: senderId => contexts.get(senderId),
+      writeBatch: () => completion,
+    });
+    const pending = guests.slice(0, -1).map(guest => receiver.receive(guest, [record]));
+    const lastGuest = guests[guests.length - 1];
+
+    assert.strictEqual(await receiver.receive(guests[0], [record]), 'busy');
+    assert.strictEqual(await receiver.receive(lastGuest, [record]), 'busy');
+    blockedWrites.reject(new Error('disk full'));
+    const results = await Promise.all(pending);
+    assert.deepStrictEqual(
+      results,
+      pending.map(() => 'failed'),
+    );
+
+    completion = Promise.resolve();
+    assert.strictEqual(await receiver.receive(lastGuest, [record]), 'written');
+  });
+
+  it('drains accepted writes before account deletion and rejects writes during deletion', async () => {
+    const activeWrite = Promise.withResolvers<void>();
+    const {guest, receiver, context} = createReceiver({writeBatch: () => activeWrite.promise});
+    const pendingWrite = receiver.receive(guest, [record]);
+    let deletionStarted = false;
+    const deletion = receiver.runAccountDeletion(accountId, async () => {
+      deletionStarted = true;
+    });
+
+    assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+    assert.strictEqual(deletionStarted, false);
+    activeWrite.resolve();
+    assert.strictEqual(await pendingWrite, 'written');
+    await deletion;
+    assert.strictEqual(deletionStarted, true);
+
+    context.structuredLoggingRevoked = true;
+    assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+  });
+
+  it('drops excess preload calls and recovers from an IPC rejection', async () => {
+    const firstWrite = Promise.withResolvers<'written'>();
+    const batches: (readonly string[])[] = [];
+    const capability = createDesktopApplicationLogs(async records => {
+      batches.push(records);
+      return batches.length === 1 ? firstWrite.promise : 'written';
+    });
+
+    assert.strictEqual(capability.version, 1);
+    assert.strictEqual(await capability.write([]), 'rejected');
+    const result = capability.write([record]);
+    assert.strictEqual(await capability.write([record]), 'busy');
+
+    firstWrite.reject(new Error('IPC unavailable'));
+    assert.strictEqual(await result, 'failed');
+    assert.strictEqual(await capability.write([record]), 'written');
+    assert.deepStrictEqual(batches, [[record], [record]]);
+  });
+
+  it('still captures and sanitizes console messages alongside structured records', async () => {
+    const {guest, receiver, writes} = createReceiver();
+    const consoleWrites: string[] = [];
+    const logConsoleMessage = createWebViewConsoleLogger({
+      getAccountId: () => accountId,
+      getLogFilePath: () => 'console.log',
+      async writeLogMessage(filePath, message) {
+        consoleWrites.push(`${filePath}: ${message}`);
+      },
+      reportWriteFailure: assert.fail,
+    });
+
+    await logConsoleMessage({message: '%clegacy message%c access_token=private'});
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    await logConsoleMessage({message: 'still captured'});
+
+    assert.deepStrictEqual(consoleWrites, ['console.log: legacy message ', 'console.log: still captured']);
+    assert.deepStrictEqual(writes[0].records, [record]);
+  });
+});

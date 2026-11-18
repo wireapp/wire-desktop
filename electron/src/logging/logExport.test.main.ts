@@ -381,16 +381,21 @@ describe('desktop log export', () => {
   );
 
   it(
-    'streams current, rotated, and legacy logs into a valid archive',
+    'streams current, rotated, and legacy logs, including JSONL, into a valid archive',
     withTemporaryDirectory('wire-log-export-archive-', async (temporaryLogDirectory: string) => {
       const currentLogRelativePath = '2026-08-27/electron.log';
       const nestedLogRelativePath = '2026-08-27/accounts/account-id/console.log';
       const rotatedLogRelativePath = '2026-08-27/accounts/account-id/console.log.123-0.old';
       const legacyLogRelativePath = 'legacy.old';
+      const applicationLogRelativePath = '2026-08-27/accounts/account-id/application.jsonl';
+      const rotatedApplicationLogRelativePath = `${applicationLogRelativePath}.123-1.old`;
+      const applicationLogContent = '{"level":30,"time":42,"component":"Account","msg":"Connected"}\n';
       await fs.outputFile(path.join(temporaryLogDirectory, currentLogRelativePath), 'current\n');
       await fs.outputFile(path.join(temporaryLogDirectory, nestedLogRelativePath), 'nested\n');
       await fs.outputFile(path.join(temporaryLogDirectory, rotatedLogRelativePath), 'rotated\n');
       await fs.outputFile(path.join(temporaryLogDirectory, legacyLogRelativePath), 'legacy\n');
+      await fs.outputFile(path.join(temporaryLogDirectory, applicationLogRelativePath), applicationLogContent);
+      await fs.outputFile(path.join(temporaryLogDirectory, rotatedApplicationLogRelativePath), applicationLogContent);
       const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
       const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
       const archiveDependencies = createLogArchiveDependencies(noop);
@@ -460,9 +465,11 @@ describe('desktop log export', () => {
         })
         .toSorted();
       const expectedEntryPaths = [
+        applicationLogRelativePath,
         currentLogRelativePath,
         legacyLogRelativePath,
         nestedLogRelativePath,
+        rotatedApplicationLogRelativePath,
         rotatedLogRelativePath,
       ].toSorted();
 
@@ -471,6 +478,8 @@ describe('desktop log export', () => {
       assert.strictEqual(getArchiveEntryContents(archive, nestedLogRelativePath), 'nested\n');
       assert.strictEqual(getArchiveEntryContents(archive, rotatedLogRelativePath), 'rotated\n');
       assert.strictEqual(getArchiveEntryContents(archive, legacyLogRelativePath), 'legacy\n');
+      assert.strictEqual(getArchiveEntryContents(archive, applicationLogRelativePath), applicationLogContent);
+      assert.strictEqual(getArchiveEntryContents(archive, rotatedApplicationLogRelativePath), applicationLogContent);
     }),
   );
 
