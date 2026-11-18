@@ -417,7 +417,7 @@ node('built-in') {
       try {
         withEnv(["PATH+NODE=${NODE}/bin"]) {
           def S3_PATH = ''
-          def SEARCH_PATH = './wrap/dist/'
+          def S3_NAME = ''
           def AWS_ACCESS_KEY_CREDENTIALS_ID = ''
           def AWS_SECRET_CREDENTIALS_ID = ''
 
@@ -450,26 +450,23 @@ node('built-in') {
             string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
             withAWS(region:'eu-west-1', credentials: 'wire-taco') {
-              echo('Delete old RELEASE file and setup executable')
-              files = findFiles(glob: 'wrap/dist/*Setup.exe')
-
-              // Remove old RELEASES
-              s3Delete bucket: S3_BUCKET, path: S3_PATH + '/RELEASES'
-              // Remove old Setup
-              s3Delete bucket: S3_BUCKET, path: S3_PATH + '/' + files[0].name
-
-              echo('Copy new RELEASE file and setup executable to default position')
-              s3Copy acl: 'PublicRead',
-                     fromBucket: S3_BUCKET,
-                     fromPath: S3_PATH + '/' + S3_NAME + '-RELEASES',
-                     toBucket: S3_BUCKET,
-                     toPath: S3_PATH + '/RELEASES'
-
-              s3Copy acl: 'PublicRead',
-                     fromBucket: S3_BUCKET,
-                     fromPath: S3_PATH + '/' + S3_NAME + '.exe',
-                     toBucket: S3_BUCKET,
-                     toPath: S3_PATH + '/' + files[0].name
+              def files = findFiles(glob: 'wrap/dist/*Setup.exe')
+              withEnv([
+                "SQUIRREL_BUCKET=${S3_BUCKET}",
+                "SQUIRREL_PREFIX=${S3_PATH}",
+                "SQUIRREL_VERSIONED_NAME=${S3_NAME}",
+                "SQUIRREL_SETUP_NAME=${files[0].name}"
+              ]) {
+                sh '''
+                  jenkins/ts-node.sh ./bin/deploy-tools/s3-win-releases-cli.ts \
+                    --bucket "$SQUIRREL_BUCKET" \
+                    --s3path "$SQUIRREL_PREFIX" \
+                    --versioned-name "$SQUIRREL_VERSIONED_NAME" \
+                    --setup-name "$SQUIRREL_SETUP_NAME" \
+                    --wrapper-build "$WRAPPER_BUILD" \
+                    $DRY_RUN
+                '''
+              }
             }
           }
         }
