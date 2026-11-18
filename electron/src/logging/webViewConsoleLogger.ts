@@ -17,12 +17,14 @@
  *
  */
 
+import type {Maybe} from 'true-myth';
+
 import type {WriteConsoleLogMessageParameters} from './boundedLogWriter';
 
 export type WebViewConsoleMessageDetails = Pick<Electron.WebContentsConsoleMessageEventParams, 'message'>;
 
 export type WebViewConsoleLogParameters = {
-  getAccountId(): string | undefined;
+  getAccountId(): Maybe<string>;
   getLogFilePath(accountId: string): string;
   reportWriteFailure(logFilePath: string, error: unknown): void;
   writeLogMessage(parameters: WriteConsoleLogMessageParameters): Promise<void>;
@@ -40,11 +42,12 @@ export function createWebViewConsoleLogger(
   parameters: WebViewConsoleLogParameters,
 ): (messageDetails: WebViewConsoleMessageDetails) => Promise<void> {
   return async (messageDetails: WebViewConsoleMessageDetails): Promise<void> => {
-    const accountId = parameters.getAccountId();
-    if (accountId === undefined) {
+    const activeAccountId = parameters.getAccountId();
+    if (activeAccountId.isNothing) {
       return;
     }
 
+    const accountId = activeAccountId.value;
     const logFilePath = parameters.getLogFilePath(accountId);
     const sanitizedMessage = sanitizeWebViewConsoleMessage(messageDetails.message);
 
@@ -53,7 +56,8 @@ export function createWebViewConsoleLogger(
         logFilePath,
         message: sanitizedMessage,
         shouldWrite() {
-          return parameters.getAccountId() === accountId;
+          const currentAccountId = parameters.getAccountId();
+          return currentAccountId.isJust && currentAccountId.value === accountId;
         },
       });
     } catch (error) {

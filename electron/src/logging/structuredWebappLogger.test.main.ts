@@ -24,8 +24,10 @@ import * as path from 'path';
 
 import {getWebViewApplicationLogPath} from './logPaths';
 import {createDesktopApplicationLogs, structuredLogLimits} from './structuredLogBatch';
-import {createStructuredWebappLogger} from './structuredWebappLogger';
+import {createStructuredWebappLogger, StructuredWebappLogger} from './structuredWebappLogger';
 import {createWebViewConsoleLogger} from './webViewConsoleLogger';
+
+import {NavigationOrigins} from '../runtime/OriginValidator';
 
 const allowedOrigin = 'https://app.example.com';
 const wrapper = {};
@@ -41,7 +43,22 @@ type CreateGuestOptions = {
   hostWebContents?: object;
 };
 
-function createGuest({id = 1, url = allowedOrigin, hostWebContents = wrapper}: CreateGuestOptions = {}) {
+type TestGuest = Parameters<StructuredWebappLogger['receive']>[0];
+type TestDependencies = Parameters<typeof createStructuredWebappLogger>[0];
+type TestWebViewContext = NavigationOrigins & {
+  accountId: string;
+  contents: TestGuest['sender'];
+  loggingRevoked: boolean;
+};
+type RecordedBatch = Parameters<TestDependencies['writeBatch']>[0];
+type TestReceiver = {
+  guest: TestGuest;
+  receiver: StructuredWebappLogger;
+  writes: RecordedBatch[];
+  context: TestWebViewContext;
+};
+
+function createGuest({id = 1, url = allowedOrigin, hostWebContents = wrapper}: CreateGuestOptions = {}): TestGuest {
   const mainFrame = {url};
   const sender = {
     id,
@@ -54,9 +71,7 @@ function createGuest({id = 1, url = allowedOrigin, hostWebContents = wrapper}: C
   return {sender, senderFrame: mainFrame};
 }
 
-type TestDependencies = Parameters<typeof createStructuredWebappLogger>[0];
-
-function createContext(contents: ReturnType<typeof createGuest>['sender'], identifier = accountId) {
+function createContext(contents: TestGuest['sender'], identifier = accountId): TestWebViewContext {
   return {
     accountId: identifier,
     contents,
@@ -66,16 +81,16 @@ function createContext(contents: ReturnType<typeof createGuest>['sender'], ident
   };
 }
 
-function createReceiver(overrides: Partial<TestDependencies> = {}) {
+function createReceiver(overrides: Partial<TestDependencies> = {}): TestReceiver {
   const guest = createGuest();
   const context = createContext(guest.sender);
-  const writes: Parameters<TestDependencies['writeBatch']>[0][] = [];
+  const writes: RecordedBatch[] = [];
   const receiver = createStructuredWebappLogger({
     getWebViewContext() {
-      return context;
+      return Maybe.just(context);
     },
     getWrapperWebContents() {
-      return wrapper;
+      return Maybe.just(wrapper);
     },
     getCurrentDate() {
       return new Date('2026-07-10T23:59:59.999Z');
@@ -174,7 +189,7 @@ describe('structured Webapp logging', () => {
     );
     const {receiver, writes} = createReceiver({
       getWebViewContext(senderId) {
-        return contexts.get(senderId);
+        return Maybe.of(contexts.get(senderId));
       },
     });
 
@@ -204,7 +219,7 @@ describe('structured Webapp logging', () => {
     const outputPaths: string[] = [];
     const {receiver} = createReceiver({
       getWebViewContext(senderId) {
-        return contexts.get(senderId);
+        return Maybe.of(contexts.get(senderId));
       },
       getCurrentDate() {
         return receivedAt;
@@ -240,7 +255,7 @@ describe('structured Webapp logging', () => {
     let completion = blockedWrites.promise;
     const {receiver} = createReceiver({
       getWebViewContext(senderId) {
-        return contexts.get(senderId);
+        return Maybe.of(contexts.get(senderId));
       },
       writeBatch() {
         return completion;
@@ -274,14 +289,14 @@ describe('structured Webapp logging', () => {
       },
     });
     const pendingWrite = receiver.receive(guest, [record]);
-    assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender), accountId);
+    assert.deepStrictEqual(receiver.getConsoleLogAccountId(guest.sender), Maybe.just(accountId));
     let deletionStarted = false;
     const deletion = receiver.runAccountDeletion(accountId, async () => {
       deletionStarted = true;
     });
 
     assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
-    assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender), undefined);
+    assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender).isNothing, true);
     assert.strictEqual(deletionStarted, false);
     activeWrite.resolve();
     assert.strictEqual(await pendingWrite, 'written');
@@ -290,7 +305,7 @@ describe('structured Webapp logging', () => {
 
     context.loggingRevoked = true;
     assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
-    assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender), undefined);
+    assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender).isNothing, true);
   });
 
   it('drops excess preload calls and recovers from an IPC rejection', async () => {

@@ -18,6 +18,7 @@
  */
 
 import * as fs from 'fs-extra';
+import {Maybe} from 'true-myth';
 
 import * as assert from 'assert';
 import * as path from 'path';
@@ -363,9 +364,9 @@ describe('bounded desktop log writer', () => {
       const accountDirectory = path.join(temporaryLogDirectory, 'deleted-account');
       const accountLogPath = path.join(accountDirectory, 'console.log');
       const otherAccountLogPath = path.join(temporaryLogDirectory, 'other-account', 'console.log');
-      let formerWebViewAccountId: string | undefined = 'deleted-account';
+      let formerWebViewAccountId: Maybe<string> = Maybe.just('deleted-account');
 
-      function createConsoleCapture(getAccountId: () => string | undefined) {
+      function createConsoleCapture(getAccountId: () => Maybe<string>): ReturnType<typeof createWebViewConsoleLogger> {
         return createWebViewConsoleLogger({
           getAccountId,
           getLogFilePath(accountId) {
@@ -380,7 +381,7 @@ describe('bounded desktop log writer', () => {
         return formerWebViewAccountId;
       });
       const otherWebView = createConsoleCapture(() => {
-        return 'other-account';
+        return Maybe.just('other-account');
       });
       await formerWebView({message: 'before deletion'});
       assert.strictEqual(await fs.pathExists(accountLogPath), true);
@@ -394,7 +395,7 @@ describe('bounded desktop log writer', () => {
       await maintenanceStarted.promise;
 
       const queuedWrite = formerWebView({message: 'queued before deletion'});
-      formerWebViewAccountId = undefined;
+      formerWebViewAccountId = Maybe.nothing();
       const deletion = boundedLogWriter.runMaintenance(() => {
         return fs.remove(accountDirectory);
       });
@@ -408,7 +409,7 @@ describe('bounded desktop log writer', () => {
       assert.strictEqual((await fs.readFile(otherAccountLogPath, 'utf8')).trimEnd(), 'other account stays active');
 
       const replacementWebView = createConsoleCapture(() => {
-        return 'deleted-account';
+        return Maybe.just('deleted-account');
       });
       await replacementWebView({message: 'newly authorized WebView'});
       assert.strictEqual((await fs.readFile(accountLogPath, 'utf8')).trimEnd(), 'newly authorized WebView');

@@ -233,10 +233,10 @@ type AssociateWebviewWithAccountParameters = {
 const webviewNavigationContextsById = new Map<number, WebviewNavigationContext>();
 const structuredWebappLogger = createStructuredWebappLogger({
   getWebViewContext(senderId) {
-    return webviewNavigationContextsById.get(senderId);
+    return Maybe.of(webviewNavigationContextsById.get(senderId));
   },
   getWrapperWebContents() {
-    return main?.webContents;
+    return Maybe.of(main?.webContents);
   },
   getCurrentDate() {
     return new Date();

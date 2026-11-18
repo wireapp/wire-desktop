@@ -51,18 +51,24 @@ type AuthorizedWebView = NavigationOrigins & {
 };
 
 type StructuredWebappLoggerDependencies = {
-  getWebViewContext(senderId: number): AuthorizedWebView | undefined;
-  getWrapperWebContents(): object | undefined;
+  getWebViewContext(senderId: number): Maybe<AuthorizedWebView>;
+  getWrapperWebContents(): Maybe<object>;
   getCurrentDate(): Date;
   writeBatch(batch: {accountId: string; date: Date; records: readonly string[]}): Promise<void>;
 };
 
-export function createStructuredWebappLogger(dependencies: StructuredWebappLoggerDependencies) {
+export type StructuredWebappLogger = {
+  getConsoleLogAccountId(sender: WebViewLogSender): Maybe<string>;
+  receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult>;
+  runAccountDeletion(accountId: string, deleteAccount: () => Promise<void>): Promise<void>;
+};
+
+export function createStructuredWebappLogger(dependencies: StructuredWebappLoggerDependencies): StructuredWebappLogger {
   const pendingWrites = new Map<WebViewLogSender, {accountId: string; completion: Promise<void>}>();
   const accountDeletions = new Map<string, Promise<void>>();
 
   function getActiveWebViewContext(sender: WebViewLogSender): Maybe<AuthorizedWebView> {
-    const context = Maybe.of(dependencies.getWebViewContext(sender.id));
+    const context = dependencies.getWebViewContext(sender.id);
     if (
       context.isNothing ||
       context.value.contents !== sender ||
@@ -78,14 +84,15 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
   function getAuthorizedAccountId({sender, senderFrame}: WebViewLogEvent): Maybe<string> {
     const context = getActiveWebViewContext(sender);
     const wrapper = dependencies.getWrapperWebContents();
+    const frame = Maybe.of(senderFrame);
     if (
       context.isNothing ||
-      wrapper === undefined ||
-      sender.hostWebContents !== wrapper ||
+      wrapper.isNothing ||
+      sender.hostWebContents !== wrapper.value ||
       sender.isDestroyed() ||
-      senderFrame === null ||
-      senderFrame !== sender.mainFrame ||
-      !isAllowedNavigation(senderFrame.url, context.value)
+      frame.isNothing ||
+      frame.value !== sender.mainFrame ||
+      !isAllowedNavigation(frame.value.url, context.value)
     ) {
       return Maybe.nothing();
     }
@@ -122,9 +129,10 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
   }
 
   return {
-    getConsoleLogAccountId(sender: WebViewLogSender): string | undefined {
-      const context = getActiveWebViewContext(sender);
-      return context.isJust ? context.value.accountId : undefined;
+    getConsoleLogAccountId(sender) {
+      return getActiveWebViewContext(sender).map(context => {
+        return context.accountId;
+      });
     },
     async receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
       try {
