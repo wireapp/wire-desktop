@@ -57,15 +57,15 @@ export async function removeEmptyLogDirectory(
     const directoryMetadata = await parameters.dependencies.getDirectoryMetadata(parameters.directoryPath);
 
     if (directoryMetadata.isSymbolicLink || directoryMetadata.isDirectory === false) {
-      return Result.ok<Unit, unknown>();
+      return Result.ok<Unit, unknown>(Unit);
     }
 
     await parameters.dependencies.removeDirectory(parameters.directoryPath);
 
-    return Result.ok<Unit, unknown>();
+    return Result.ok<Unit, unknown>(Unit);
   } catch (error) {
     if (isMissingPathError(error) || isNonEmptyDirectoryError(error)) {
-      return Result.ok<Unit, unknown>();
+      return Result.ok<Unit, unknown>(Unit);
     }
 
     return Result.err<Unit, unknown>(error);
@@ -85,5 +85,5 @@ export async function removeEmptyLogDirectoryAncestors(
     }
   }
 
-  return Result.ok<Unit, unknown>();
+  return Result.ok<Unit, unknown>(Unit);
 }

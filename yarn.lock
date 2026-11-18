@@ -4320,7 +4320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sindresorhus/is@npm:^4.0.0":
+"@sindresorhus/is@npm:4.6.0, @sindresorhus/is@npm:^4.0.0":
   version: 4.6.0
   resolution: "@sindresorhus/is@npm:4.6.0"
   checksum: 83839f13da2c29d55c97abc3bc2c55b250d33a0447554997a85c539e058e57b8da092da396e252b11ec24a0279a0bed1f537fa26302209327060643e327f81d2
@@ -19809,10 +19809,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"true-myth@npm:7.4.0":
-  version: 7.4.0
-  resolution: "true-myth@npm:7.4.0"
-  checksum: 2f94f5d73d8109be27797ef91e106b5bca3aca25a8db793f89e189d8e311749b84eea52e35a9dc17a7827161aa90b42644b7c17a68bb3e1518e2193b93669968
+"true-myth@npm:8.6.0":
+  version: 8.6.0
+  resolution: "true-myth@npm:8.6.0"
+  checksum: e4c7d5f1f862197ffb2ae672beb424c52888f25cc4248656022a58dd6ea078d1de1abd5beb9af13b174632bae2cb41d09b929fed906e15754cb2bd2807d8a138
   languageName: node
   linkType: hard
 
@@ -21192,6 +21192,7 @@ __metadata:
     "@hapi/joi": 17.1.1
     "@oazapfts/runtime": 1.2.0
     "@playwright/test": 1.60.0
+    "@sindresorhus/is": 4.6.0
     "@types/adm-zip": 0.5.8
     "@types/amplify": 1.1.28
     "@types/archiver": 8.0.0
@@ -21300,7 +21301,7 @@ __metadata:
     sinon: 17.0.2
     sort-json: 2.0.1
     style-loader: 4.0.0
-    true-myth: 7.4.0
+    true-myth: 8.6.0
     ts-node: 10.9.2
     typescript: 5.7.3
     uuid: 9.0.1

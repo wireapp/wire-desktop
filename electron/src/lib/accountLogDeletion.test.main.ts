@@ -18,7 +18,7 @@
  */
 
 import * as fs from 'fs-extra';
-import {Result} from 'true-myth';
+import {Result, Unit} from 'true-myth';
 
 import * as assert from 'assert';
 import * as path from 'path';
@@ -60,7 +60,7 @@ describe('account log deletion', () => {
           isSafeDirectory: fs.pathExists,
           removeDirectory: fs.remove,
           async removeEmptyDirectoryAncestors() {
-            return Result.ok();
+            return Result.ok(Unit);
           },
           reportFailure: assert.fail,
         },
@@ -133,7 +133,7 @@ describe('account log deletion', () => {
         async removeEmptyDirectoryAncestors(): Promise<LogDirectoryCleanupResult> {
           // Account directory pruning is covered by the filesystem boundary tests.
 
-          return Result.ok();
+          return Result.ok(Unit);
         },
         async removeDirectory(directoryPath: string): Promise<void> {
           if (directoryPath === path.join(logDirectory, accountId)) {
@@ -171,7 +171,7 @@ describe('account log deletion', () => {
         async removeEmptyDirectoryAncestors(directoryPath: string): Promise<LogDirectoryCleanupResult> {
           prunedDirectories.push(directoryPath);
 
-          return Result.ok();
+          return Result.ok(Unit);
         },
         async removeDirectory(directoryPath: string): Promise<void> {
           removedDirectories.push(directoryPath);
