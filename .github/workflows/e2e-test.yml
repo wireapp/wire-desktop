@@ -79,7 +79,7 @@ jobs:
         if: ${{ matrix.project == 'macOS' }}
         shell: bash
         run: |
-          brew install --cask swiftdefaultapps
+          brew install --cask swiftdefaultappsprefpane
           swda setHandler --URL wire --app "$WIRE_APP_BUNDLE"
           swda getHandler --URL wire
           EXECUTABLE=$(find "$WIRE_APP_BUNDLE/Contents/MacOS" -type f -perm +111 -print -quit)
