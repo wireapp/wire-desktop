@@ -17,8 +17,7 @@
  *
  */
 
-import is from '@sindresorhus/is';
-import {Maybe, Task} from 'true-myth';
+import {Maybe} from 'true-myth';
 
 import {
   isStructuredLogRecord,
@@ -69,10 +68,10 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
       context.isNothing ||
       context.value.contents !== sender ||
       context.value.structuredLoggingRevoked === true ||
-      is.undefined(wrapper) ||
+      wrapper === undefined ||
       sender.hostWebContents !== wrapper ||
       sender.isDestroyed() ||
-      is.null_(senderFrame) ||
+      senderFrame === null ||
       senderFrame !== sender.mainFrame ||
       !isAllowedNavigation(senderFrame.url, context.value)
     ) {
@@ -83,8 +82,11 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
   }
 
   async function receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
-    const result = await Task.tryOr(writeAuthorizedBatch(event, payload), 'failed');
-    return result.unwrapOr('failed');
+    try {
+      return await writeAuthorizedBatch(event, payload);
+    } catch {
+      return 'failed';
+    }
   }
 
   async function writeAuthorizedBatch(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {

@@ -18,7 +18,7 @@
  */
 
 import * as fs from 'fs-extra';
-import {Result, Unit} from 'true-myth';
+import {Result} from 'true-myth';
 
 import * as assert from 'assert';
 import * as path from 'path';
@@ -80,7 +80,7 @@ function createCleanupTestDependencies(
     async removeEmptyDirectory(directoryPath: string): Promise<LogDirectoryCleanupResult> {
       state.removedDirectories.push(directoryPath);
 
-      return Result.ok(Unit);
+      return Result.ok();
     },
     async removeFile(filePath: string): Promise<void> {
       state.removedFiles.push(filePath);

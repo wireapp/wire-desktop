@@ -17,8 +17,7 @@
  *
  */
 
-import is from '@sindresorhus/is';
-import {Maybe, ResultNS, Task} from 'true-myth';
+import {Maybe} from 'true-myth';
 
 import {Buffer} from 'buffer';
 
@@ -41,12 +40,8 @@ export type DesktopApplicationLogs = {
   readonly write: (records: readonly string[]) => Promise<StructuredLogWriteResult>;
 };
 
-const parseLogRecord = ResultNS.safe((line: string): unknown => {
-  return JSON.parse(line);
-});
-
 export function readBoundedLogBatch(batch: unknown): Maybe<readonly string[]> {
-  if (!is.nonEmptyArray(batch) || batch.length > structuredLogLimits.maximumBatchRecords) {
+  if (!Array.isArray(batch) || batch.length === 0 || batch.length > structuredLogLimits.maximumBatchRecords) {
     return Maybe.nothing();
   }
 
@@ -55,7 +50,7 @@ export function readBoundedLogBatch(batch: unknown): Maybe<readonly string[]> {
   let batchBytes = 0;
   for (let recordIndex = 0; recordIndex < recordCount; recordIndex += 1) {
     const record: unknown = batch[recordIndex];
-    if (!is.string(record) || record.length >= structuredLogLimits.maximumRecordBytes) {
+    if (typeof record !== 'string' || record.length >= structuredLogLimits.maximumRecordBytes) {
       return Maybe.nothing();
     }
 
@@ -76,18 +71,25 @@ export function isStructuredLogRecord(line: string): boolean {
     return false;
   }
 
-  const parsed = parseLogRecord(line);
-  if (parsed.isErr || !is.plainObject(parsed.value)) {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(line);
+  } catch {
     return false;
   }
 
-  const {level, time, component, msg} = parsed.value;
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    return false;
+  }
+
+  const {level, time, component, msg} = parsed as Record<string, unknown>;
   return (
     (level === 20 || level === 30 || level === 40 || level === 50) &&
-    is.safeInteger(time) &&
+    typeof time === 'number' &&
+    Number.isSafeInteger(time) &&
     time >= 0 &&
-    is.string(component) &&
-    (is.undefined(msg) || is.string(msg))
+    typeof component === 'string' &&
+    (msg === undefined || typeof msg === 'string')
   );
 }
 
@@ -96,15 +98,6 @@ export function createDesktopApplicationLogs(
 ): DesktopApplicationLogs {
   let writeInProgress = false;
 
-  async function invokeBoundedBatch(records: unknown): Promise<StructuredLogWriteResult> {
-    const batch = readBoundedLogBatch(records);
-    if (batch.isNothing) {
-      return 'rejected';
-    }
-
-    return invoke(batch.value);
-  }
-
   async function write(records: readonly string[]): Promise<StructuredLogWriteResult> {
     if (writeInProgress) {
       return 'busy';
@@ -112,8 +105,14 @@ export function createDesktopApplicationLogs(
 
     writeInProgress = true;
     try {
-      const result = await Task.tryOr(invokeBoundedBatch(records), 'failed');
-      return result.unwrapOr('failed');
+      const batch = readBoundedLogBatch(records);
+      if (batch.isNothing) {
+        return 'rejected';
+      }
+
+      return await invoke(batch.value);
+    } catch {
+      return 'failed';
     } finally {
       writeInProgress = false;
     }

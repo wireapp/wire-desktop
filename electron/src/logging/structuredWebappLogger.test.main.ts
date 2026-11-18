@@ -309,6 +309,32 @@ describe('structured Webapp logging', () => {
     assert.deepStrictEqual(batches, [[record], [record]]);
   });
 
+  it('returns failed for synchronous write or IPC errors and accepts subsequent batches', async () => {
+    let shouldThrow = true;
+    const {guest, receiver} = createReceiver({
+      writeBatch() {
+        if (shouldThrow) {
+          throw new Error('write unavailable');
+        }
+
+        return Promise.resolve();
+      },
+    });
+    const capability = createDesktopApplicationLogs(records => {
+      if (shouldThrow) {
+        throw new Error('IPC unavailable');
+      }
+
+      return receiver.receive(guest, records);
+    });
+
+    assert.strictEqual(await receiver.receive(guest, [record]), 'failed');
+    assert.strictEqual(await capability.write([record]), 'failed');
+
+    shouldThrow = false;
+    assert.strictEqual(await capability.write([record]), 'written');
+  });
+
   it('still captures and sanitizes console messages alongside structured records', async () => {
     const {guest, receiver, writes} = createReceiver();
     const consoleWrites: string[] = [];
