@@ -56,6 +56,11 @@ export function parseSupportedDeploymentPlatform(platform: string): SupportedDep
 
 export const THREE_HUNDRED_MB_IN_BYTES = 314572800;
 
+export function normalizeS3DirectoryPrefix(s3Prefix?: string): string {
+  const prefix = s3Prefix?.replace(/\/+$/, '') ?? '';
+  return prefix === '' ? '' : `${prefix}/`;
+}
+
 export async function find(fileGlob: string, options: {cwd?: string; safeGuard: false}): Promise<FindResult | null>;
 export async function find(fileGlob: string, options: {cwd?: string; safeGuard?: boolean}): Promise<FindResult>;
 export async function find(fileGlob: string, options?: FindOptions): Promise<FindResult | null> {

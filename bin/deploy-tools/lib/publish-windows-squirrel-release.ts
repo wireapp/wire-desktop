@@ -17,6 +17,7 @@
  *
  */
 
+import {normalizeS3DirectoryPrefix} from './deploy-utils';
 import {S3CopyOptions, windowsReleaseAliasCacheControl} from './S3Deployer';
 
 interface PublishWindowsSquirrelReleaseOptions {
@@ -27,14 +28,9 @@ interface PublishWindowsSquirrelReleaseOptions {
   versionedName: string;
 }
 
-export async function publishWindowsSquirrelRelease({
-  bucket,
-  copyOnS3,
-  s3Prefix,
-  setupName,
-  versionedName,
-}: PublishWindowsSquirrelReleaseOptions): Promise<void> {
-  const directory = s3Prefix === undefined ? '' : `${s3Prefix}/`.replace('//', '/');
+export async function publishWindowsSquirrelRelease(options: PublishWindowsSquirrelReleaseOptions): Promise<void> {
+  const {bucket, copyOnS3, s3Prefix, setupName, versionedName} = options;
+  const directory = normalizeS3DirectoryPrefix(s3Prefix);
   const copyOptions = {bucket, cacheControl: windowsReleaseAliasCacheControl};
   const versionedSource = `${bucket}/${directory}${versionedName}`;
 

@@ -355,16 +355,22 @@ node('built-in') {
       withAWS(region: 'eu-west-1', credentials: 'wire-taco') {
         if (params.Release == 'Custom') {
           // Custom (on-prem)
+          def releaseDirectory = "${env.S3_PATH}/"
+          if (projectName.contains('Windows')) {
+            def prefix = (env.S3_PATH ?: '').replaceFirst(/\/+$/, '')
+            releaseDirectory = prefix ? "${prefix}/" : ''
+          }
           presignedFile = 'custom-presigned-urls.txt'
           sh "rm -f ${presignedFile}"
 
           presignedArtifactNames.each { artifactName ->
-            def presignedUrl = sh(
-              script: """
-                /var/lib/jenkins/bin/aws s3 presign s3://${env.S3_BUCKET}/${env.S3_PATH}/${artifactName} --expires-in 604800
-              """,
-              returnStdout: true
-            ).trim()
+            def presignedUrl
+            withEnv(["PRESIGNED_ARTIFACT_URI=s3://${env.S3_BUCKET}/${releaseDirectory}${artifactName}"]) {
+              presignedUrl = sh(
+                script: '/var/lib/jenkins/bin/aws s3 presign "$PRESIGNED_ARTIFACT_URI" --expires-in 604800',
+                returnStdout: true
+              ).trim()
+            }
             sh "echo '${artifactName}: ${presignedUrl}' >> ${presignedFile}"
           }
 
@@ -373,7 +379,7 @@ node('built-in') {
             acl: 'Private',
             bucket: S3_BUCKET,
             file: presignedFile,
-            path: "${env.S3_PATH}/${presignedFile}"
+            path: "${releaseDirectory}${presignedFile}"
           )
 
           // We do NOT want this file in Jenkins artifacts -> removing local file

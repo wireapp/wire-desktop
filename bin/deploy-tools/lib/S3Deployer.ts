@@ -85,12 +85,8 @@ export interface WindowsMsiAliasCopyOptionsInput {
   versionedS3Path: string;
 }
 
-export function getWindowsMsiAliasCopyOptions({
-  bucket,
-  fileName,
-  version,
-  versionedS3Path,
-}: WindowsMsiAliasCopyOptionsInput): S3CopyOptions[] {
+export function getWindowsMsiAliasCopyOptions(options: WindowsMsiAliasCopyOptionsInput): S3CopyOptions[] {
+  const {bucket, fileName, version, versionedS3Path} = options;
   const {architectureSpecificFileName, genericFileName} = getWindowsMsiSetupAliasNames({
     expectedVersion: version,
     fileName,
@@ -112,7 +108,8 @@ export function getWindowsMsiAliasCopyOptions({
   });
 }
 
-export async function copyWindowsMsiAliases({aliasCopyOptions, copyOnS3}: CopyWindowsMsiAliasesOptions): Promise<void> {
+export async function copyWindowsMsiAliases(options: CopyWindowsMsiAliasesOptions): Promise<void> {
+  const {aliasCopyOptions, copyOnS3} = options;
   for (const copyOptions of aliasCopyOptions) {
     try {
       await copyOnS3(copyOptions);
