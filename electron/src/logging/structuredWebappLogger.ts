@@ -17,6 +17,9 @@
  *
  */
 
+import is from '@sindresorhus/is';
+import {Maybe, Task} from 'true-myth';
+
 import {
   isStructuredLogRecord,
   readBoundedLogBatch,
@@ -59,61 +62,63 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
   const pendingWrites = new Map<WebViewLogSender, {accountId: string; completion: Promise<void>}>();
   const accountDeletions = new Map<string, Promise<void>>();
 
-  function getAuthorizedAccount({sender, senderFrame}: WebViewLogEvent): string | undefined {
-    const context = dependencies.getWebViewContext(sender.id);
+  function getAuthorizedAccountId({sender, senderFrame}: WebViewLogEvent): Maybe<string> {
+    const context = Maybe.of(dependencies.getWebViewContext(sender.id));
     const wrapper = dependencies.getWrapperWebContents();
     if (
-      context === undefined ||
-      context.contents !== sender ||
-      context.structuredLoggingRevoked === true ||
-      wrapper === undefined ||
+      context.isNothing ||
+      context.value.contents !== sender ||
+      context.value.structuredLoggingRevoked === true ||
+      is.undefined(wrapper) ||
       sender.hostWebContents !== wrapper ||
       sender.isDestroyed() ||
-      senderFrame === null ||
+      is.null_(senderFrame) ||
       senderFrame !== sender.mainFrame ||
-      isAllowedNavigation(senderFrame.url, context) === false
+      !isAllowedNavigation(senderFrame.url, context.value)
     ) {
-      return undefined;
+      return Maybe.nothing();
     }
 
-    return context.accountId;
+    return Maybe.just(context.value.accountId);
   }
 
   async function receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
+    const result = await Task.tryOr(writeAuthorizedBatch(event, payload), 'failed');
+    return result.unwrapOr('failed');
+  }
+
+  async function writeAuthorizedBatch(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
+    const authorizedAccountId = getAuthorizedAccountId(event);
+    if (authorizedAccountId.isNothing || accountDeletions.has(authorizedAccountId.value)) {
+      return 'rejected';
+    }
+
+    if (pendingWrites.has(event.sender) || pendingWrites.size >= structuredLogLimits.maximumPendingBatches) {
+      return 'busy';
+    }
+
+    const records = readBoundedLogBatch(payload);
+    if (records.isNothing || !records.value.every(isStructuredLogRecord)) {
+      return 'rejected';
+    }
+
+    const accountId = authorizedAccountId.value;
+    const date = dependencies.getCurrentDate();
+    const completion = dependencies.writeBatch({accountId, date, records: records.value});
+    pendingWrites.set(event.sender, {accountId, completion});
+
     try {
-      const accountId = getAuthorizedAccount(event);
-      if (accountId === undefined || accountDeletions.has(accountId)) {
-        return 'rejected';
-      }
-
-      if (pendingWrites.has(event.sender) || pendingWrites.size >= structuredLogLimits.maximumPendingBatches) {
-        return 'busy';
-      }
-
-      const records = readBoundedLogBatch(payload);
-      if (records === undefined || records.every(isStructuredLogRecord) === false) {
-        return 'rejected';
-      }
-
-      const date = dependencies.getCurrentDate();
-      const completion = dependencies.writeBatch({accountId, date, records});
-      pendingWrites.set(event.sender, {accountId, completion});
-
-      try {
-        await completion;
-        return 'written';
-      } finally {
-        pendingWrites.delete(event.sender);
-      }
-    } catch {
-      return 'failed';
+      await completion;
+      return 'written';
+    } finally {
+      pendingWrites.delete(event.sender);
     }
   }
 
   async function runAccountDeletion(accountId: string, deleteAccount: () => Promise<void>): Promise<void> {
-    const existingDeletion = accountDeletions.get(accountId);
-    if (existingDeletion !== undefined) {
-      return existingDeletion;
+    const existingDeletion = Maybe.of(accountDeletions.get(accountId));
+    if (existingDeletion.isJust) {
+      return existingDeletion.value;
     }
 
     const writesForAccount = [...pendingWrites.values()]

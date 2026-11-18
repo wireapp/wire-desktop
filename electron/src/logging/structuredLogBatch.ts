@@ -17,6 +17,9 @@
  *
  */
 
+import is from '@sindresorhus/is';
+import {Maybe, ResultNS, Task} from 'true-myth';
+
 import {Buffer} from 'buffer';
 
 export const structuredLogLimits = {
@@ -33,9 +36,13 @@ export type DesktopApplicationLogs = {
   readonly write: (records: readonly string[]) => Promise<StructuredLogWriteResult>;
 };
 
-export function readBoundedLogBatch(batch: unknown): readonly string[] | undefined {
-  if (Array.isArray(batch) === false || batch.length === 0 || batch.length > structuredLogLimits.maximumBatchRecords) {
-    return undefined;
+const parseLogRecord = ResultNS.safe((line: string): unknown => {
+  return JSON.parse(line);
+});
+
+export function readBoundedLogBatch(batch: unknown): Maybe<readonly string[]> {
+  if (!is.nonEmptyArray(batch) || batch.length > structuredLogLimits.maximumBatchRecords) {
+    return Maybe.nothing();
   }
 
   const recordCount = batch.length;
@@ -43,20 +50,20 @@ export function readBoundedLogBatch(batch: unknown): readonly string[] | undefin
   let batchBytes = 0;
   for (let recordIndex = 0; recordIndex < recordCount; recordIndex += 1) {
     const record: unknown = batch[recordIndex];
-    if (typeof record !== 'string' || record.length > structuredLogLimits.maximumRecordBytes) {
-      return undefined;
+    if (!is.string(record) || record.length > structuredLogLimits.maximumRecordBytes) {
+      return Maybe.nothing();
     }
 
     const recordBytes = Buffer.byteLength(record, 'utf8');
     batchBytes += recordBytes;
     if (recordBytes > structuredLogLimits.maximumRecordBytes || batchBytes > structuredLogLimits.maximumBatchBytes) {
-      return undefined;
+      return Maybe.nothing();
     }
 
     records.push(record);
   }
 
-  return records;
+  return Maybe.just(records);
 }
 
 export function isStructuredLogRecord(line: string): boolean {
@@ -64,30 +71,34 @@ export function isStructuredLogRecord(line: string): boolean {
     return false;
   }
 
-  try {
-    const record: unknown = JSON.parse(line);
-    if (typeof record !== 'object' || record === null || Array.isArray(record)) {
-      return false;
-    }
-
-    const {level, time, component, msg} = record as Record<string, unknown>;
-    return (
-      (level === 20 || level === 30 || level === 40 || level === 50) &&
-      typeof time === 'number' &&
-      Number.isSafeInteger(time) &&
-      time >= 0 &&
-      typeof component === 'string' &&
-      (msg === undefined || typeof msg === 'string')
-    );
-  } catch {
+  const parsed = parseLogRecord(line);
+  if (parsed.isErr || !is.plainObject(parsed.value)) {
     return false;
   }
+
+  const {level, time, component, msg} = parsed.value;
+  return (
+    (level === 20 || level === 30 || level === 40 || level === 50) &&
+    is.safeInteger(time) &&
+    time >= 0 &&
+    is.string(component) &&
+    (is.undefined(msg) || is.string(msg))
+  );
 }
 
 export function createDesktopApplicationLogs(
   invoke: (records: readonly string[]) => Promise<StructuredLogWriteResult>,
 ): DesktopApplicationLogs {
   let writeInProgress = false;
+
+  async function invokeBoundedBatch(records: unknown): Promise<StructuredLogWriteResult> {
+    const batch = readBoundedLogBatch(records);
+    if (batch.isNothing) {
+      return 'rejected';
+    }
+
+    return invoke(batch.value);
+  }
 
   async function write(records: readonly string[]): Promise<StructuredLogWriteResult> {
     if (writeInProgress) {
@@ -96,10 +107,8 @@ export function createDesktopApplicationLogs(
 
     writeInProgress = true;
     try {
-      const batch = readBoundedLogBatch(records);
-      return batch === undefined ? 'rejected' : await invoke(batch);
-    } catch {
-      return 'failed';
+      const result = await Task.tryOr(invokeBoundedBatch(records), 'failed');
+      return result.unwrapOr('failed');
     } finally {
       writeInProgress = false;
     }
