@@ -19,9 +19,10 @@
 import {program as commander} from 'commander';
 import path from 'path';
 
-import {checkCommanderOptions, getLogger} from '../bin-utils';
+import {getLogger} from '../bin-utils';
 import {find, parseSupportedDeploymentPlatform} from './lib/deploy-utils';
-import {S3Deployer, windowsInstallerAliasCacheControl} from './lib/S3Deployer';
+import {publishWindowsSquirrelRelease} from './lib/publish-windows-squirrel-release';
+import {S3Deployer} from './lib/S3Deployer';
 
 const toolName = path.basename(__filename).replace('.ts', '');
 const logger = getLogger('deploy-tools', toolName);
@@ -29,20 +30,18 @@ const logger = getLogger('deploy-tools', toolName);
 commander
   .name(toolName)
   .description('Copy releases files on S3')
-  .option('-b, --bucket <bucket>', 'Specify the S3 bucket to upload to')
+  .requiredOption('-b, --bucket <bucket>', 'Specify the S3 bucket to upload to')
   .option('-d, --dry-run', 'Just log without actually uploading')
-  .option('-i, --key-id <id>', 'Specify the AWS access key ID')
-  .option('-k, --secret-key <id>', 'Specify the AWS secret access key ID')
+  .requiredOption('-i, --key-id <id>', 'Specify the AWS access key ID')
+  .requiredOption('-k, --secret-key <id>', 'Specify the AWS secret access key')
   .option('-p, --path <path>', 'Specify the local path to search for files (e.g. "../../wrap")')
   .option('-s, --s3path <path>', 'Specify the base path on S3 (e.g. "apps/windows")')
   .option('--versioned-name <name>', 'Specify the S3 filename stem of the versioned Squirrel artifacts')
   .option('--setup-name <name>', 'Specify the stable Squirrel setup filename')
-  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
+  .requiredOption('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
   .parse(process.argv);
 
 const commanderOptions = commander.opts();
-
-checkCommanderOptions(commanderOptions, logger, ['bucket', 'wrapperBuild']);
 
 if (!commanderOptions.wrapperBuild.includes('#')) {
   logger.error(`Invalid wrapper build id "${commanderOptions.wrapperBuild}"`);
@@ -58,9 +57,11 @@ if (!commanderOptions.wrapperBuild.includes('#')) {
     throw new Error('Copying release files on S3 is supported only for Windows');
   }
 
-  const bucket = commanderOptions.bucket;
+  const {bucket, secretKey: secretAccessKey, keyId: accessKeyId} = commanderOptions;
+  if (accessKeyId === '' || secretAccessKey === '') {
+    throw new Error('Both AWS credential options must be nonempty.');
+  }
   const searchBasePath = commanderOptions.path || path.resolve('.');
-  const s3BasePath = commanderOptions.s3path ? `${commanderOptions.s3path.replace(/\/$/, '')}/` : '';
 
   let versionedName = commanderOptions.versionedName;
   if (versionedName === undefined) {
@@ -73,35 +74,17 @@ if (!commanderOptions.wrapperBuild.includes('#')) {
   }
 
   const setupName = commanderOptions.setupName ?? (await find('*-Setup.exe', {cwd: searchBasePath})).fileName;
-  const staticReleaseKey = `${s3BasePath}RELEASES`;
-  const staticExeKey = `${s3BasePath}${setupName}`;
-
-  const latestReleaseKey = `${s3BasePath}${versionedName}-RELEASES`;
-  const latestExeKey = `${s3BasePath}${versionedName}.exe`;
-
-  const {secretKey: secretAccessKey, keyId: accessKeyId} = commanderOptions;
-  if ((accessKeyId === undefined) !== (secretAccessKey === undefined)) {
-    throw new Error('Provide both AWS credential options or use the default AWS credential chain.');
-  }
-
   const s3Deployer = new S3Deployer({accessKeyId, dryRun: commanderOptions.dryRun || false, secretAccessKey});
 
-  logger.log(`Deleting "${staticReleaseKey}" from S3 ...`);
-  await s3Deployer.deleteFromS3({bucket, s3Path: staticReleaseKey});
-
-  logger.log(`Copying "${bucket}/${latestReleaseKey}" to "${staticReleaseKey}" on S3 ...`);
-  await s3Deployer.copyOnS3({
+  await publishWindowsSquirrelRelease({
     bucket,
-    s3FromPath: `${bucket}/${latestReleaseKey}`,
-    s3ToPath: staticReleaseKey,
-  });
-
-  logger.log(`Copying "${bucket}/${latestExeKey}" to "${staticExeKey}" on S3 ...`);
-  await s3Deployer.copyOnS3({
-    bucket,
-    cacheControl: windowsInstallerAliasCacheControl,
-    s3FromPath: `${bucket}/${latestExeKey}`,
-    s3ToPath: staticExeKey,
+    copyOnS3: async copyOptions => {
+      logger.log(`Copying "${copyOptions.s3FromPath}" to "${copyOptions.s3ToPath}" on S3 ...`);
+      await s3Deployer.copyOnS3(copyOptions);
+    },
+    s3Prefix: commanderOptions.s3path,
+    setupName,
+    versionedName,
   });
 
   logger.log('Done updating releases on S3.');

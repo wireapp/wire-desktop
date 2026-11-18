@@ -23,12 +23,13 @@ import assert from 'node:assert';
 import os from 'node:os';
 import path from 'node:path';
 
+import {publishWindowsSquirrelRelease} from './publish-windows-squirrel-release';
 import {
   copyWindowsMsiAliases,
   getWindowsMsiAliasCopyOptions,
   getWindowsMsiSetupFileName,
   S3Deployer,
-  windowsInstallerAliasCacheControl,
+  windowsReleaseAliasCacheControl,
 } from './S3Deployer';
 import type {S3Client} from './S3Deployer';
 
@@ -44,7 +45,7 @@ describe('S3Deployer', () => {
   });
 
   describe('copyOnS3', () => {
-    it('preserves source metadata and the public ACL on stable Windows installer copies', async () => {
+    it('preserves source metadata and the public ACL on stable Windows MSI copies', async () => {
       const metadataRequests: Parameters<S3Client['headObject']>[0][] = [];
       const copyRequests: Parameters<S3Client['copyObject']>[0][] = [];
       const s3Client: S3Client = {
@@ -68,15 +69,8 @@ describe('S3Deployer', () => {
       };
       const s3Deployer = new S3Deployer({accessKeyId: '', secretAccessKey: ''}, s3Client);
       const bucket = 'wire-taco';
-      const versionedExePath = 'win/prod/wire-3.44.5380.exe';
       const versionedMsiPath = 'win/prod/Wire-3.44.5380-x64.msi';
 
-      await s3Deployer.copyOnS3({
-        bucket,
-        cacheControl: windowsInstallerAliasCacheControl,
-        s3FromPath: `${bucket}/${versionedExePath}`,
-        s3ToPath: 'win/prod/Wire-Setup.exe',
-      });
       await copyWindowsMsiAliases({
         aliasCopyOptions: getWindowsMsiAliasCopyOptions({
           bucket,
@@ -88,7 +82,6 @@ describe('S3Deployer', () => {
       });
 
       assert.deepStrictEqual(metadataRequests, [
-        {Bucket: bucket, Key: versionedExePath},
         {Bucket: bucket, Key: versionedMsiPath},
         {Bucket: bucket, Key: versionedMsiPath},
       ]);
@@ -106,28 +99,27 @@ describe('S3Deployer', () => {
         WebsiteRedirectLocation: undefined,
       };
       assert.deepStrictEqual(copyRequests, [
-        {...expectedMetadata, CopySource: `${bucket}/${versionedExePath}`, Key: 'win/prod/Wire-Setup.exe'},
         {...expectedMetadata, CopySource: `${bucket}/${versionedMsiPath}`, Key: 'win/prod/Wire-x64-Setup.msi'},
         {...expectedMetadata, CopySource: `${bucket}/${versionedMsiPath}`, Key: 'win/prod/Wire-Setup.msi'},
       ]);
 
       await s3Deployer.copyOnS3({
         bucket,
-        s3FromPath: `${bucket}/win/prod/wire-3.44.5380-RELEASES`,
-        s3ToPath: 'win/prod/RELEASES',
+        s3FromPath: `${bucket}/mac/prod/Source.pkg`,
+        s3ToPath: 'mac/prod/Copy.pkg',
       });
-      assert.strictEqual(metadataRequests.length, 3);
-      assert.deepStrictEqual(copyRequests[3], {
+      assert.strictEqual(metadataRequests.length, 2);
+      assert.deepStrictEqual(copyRequests[2], {
         ACL: 'public-read',
         Bucket: bucket,
-        CopySource: `${bucket}/win/prod/wire-3.44.5380-RELEASES`,
-        Key: 'win/prod/RELEASES',
+        CopySource: `${bucket}/mac/prod/Source.pkg`,
+        Key: 'mac/prod/Copy.pkg',
       });
     });
 
     it('skips S3 requests for cached and ordinary copies during a dry run', async () => {
       const s3Deployer = new S3Deployer(
-        {dryRun: true},
+        {accessKeyId: '', dryRun: true, secretAccessKey: ''},
         {
           copyObject: () => assert.fail('Unexpected copy'),
           deleteObject: () => assert.fail('Unexpected delete'),
@@ -151,8 +143,15 @@ describe('S3Deployer', () => {
       });
       await s3Deployer.copyOnS3({
         bucket: 'wire-taco',
-        s3FromPath: 'wire-taco/win/prod/wire-3.44.5380-RELEASES',
-        s3ToPath: 'win/prod/RELEASES',
+        s3FromPath: 'wire-taco/mac/prod/Source.pkg',
+        s3ToPath: 'mac/prod/Copy.pkg',
+      });
+      await publishWindowsSquirrelRelease({
+        bucket: 'wire-taco',
+        copyOnS3: copyOptions => s3Deployer.copyOnS3(copyOptions),
+        s3Prefix: 'win/prod',
+        setupName: 'Wire-Setup.exe',
+        versionedName: 'wire-3.44.5380',
       });
     });
 
@@ -186,7 +185,7 @@ describe('S3Deployer', () => {
       await assert.rejects(
         s3Deployer.copyOnS3({
           bucket: 'wire-taco',
-          cacheControl: windowsInstallerAliasCacheControl,
+          cacheControl: windowsReleaseAliasCacheControl,
           s3FromPath: 'wire-taco/win/prod/Wire-3.44.5380-x64.msi',
           s3ToPath: 'win/prod/Wire-Setup.msi',
         }),
@@ -196,7 +195,7 @@ describe('S3Deployer', () => {
 
     it('fails the alias publication when source metadata cannot be read', async () => {
       const s3Deployer = new S3Deployer(
-        {},
+        {accessKeyId: '', secretAccessKey: ''},
         {
           copyObject: () => assert.fail('Unexpected copy after failed metadata lookup'),
           deleteObject: () => assert.fail('Unexpected delete'),
@@ -212,12 +211,165 @@ describe('S3Deployer', () => {
       await assert.rejects(
         s3Deployer.copyOnS3({
           bucket: 'wire-taco',
-          cacheControl: windowsInstallerAliasCacheControl,
+          cacheControl: windowsReleaseAliasCacheControl,
           s3FromPath: 'wire-taco/win/prod/wire-3.44.5380.exe',
           s3ToPath: 'win/prod/Wire-Setup.exe',
         }),
         /S3 metadata lookup failed/,
       );
+    });
+  });
+
+  describe('publishWindowsSquirrelRelease', () => {
+    const releaseEnvironments = [
+      {
+        bucket: 'wire-taco',
+        s3Prefix: 'win/prod',
+        expectedDirectory: 'win/prod/',
+        encodedDirectory: 'win/prod/',
+        setupName: 'Wire-Setup.exe',
+        versionedName: 'wire-3.44.5380',
+      },
+      {
+        bucket: 'wire-taco',
+        s3Prefix: 'win/internal',
+        expectedDirectory: 'win/internal/',
+        encodedDirectory: 'win/internal/',
+        setupName: 'WireInternal-Setup.exe',
+        versionedName: 'wireinternal-3.44.5380',
+      },
+      {
+        bucket: 'wire-taco',
+        s3Prefix: 'win/wire-gov',
+        expectedDirectory: 'win/wire-gov/',
+        encodedDirectory: 'win/wire-gov/',
+        setupName: 'WireGov-Setup.exe',
+        versionedName: 'wiregov-3.44.5380',
+      },
+      {
+        bucket: 'custom-windows-bucket',
+        s3Prefix: 'windows/custom releases/',
+        expectedDirectory: 'windows/custom releases/',
+        encodedDirectory: 'windows/custom%20releases/',
+        setupName: 'WireEY-Setup.exe',
+        versionedName: 'wire-ey-3.44.5380',
+      },
+      {
+        bucket: 'custom-windows-bucket',
+        s3Prefix: '',
+        expectedDirectory: '/',
+        encodedDirectory: '/',
+        setupName: 'WireEY-Setup.exe',
+        versionedName: 'wire-ey-3.44.5380',
+      },
+    ];
+
+    for (const {
+      bucket,
+      s3Prefix,
+      expectedDirectory,
+      encodedDirectory,
+      setupName,
+      versionedName,
+    } of releaseEnvironments) {
+      it(`overwrites the stable feed and setup alias in order for ${bucket}/${s3Prefix}`, async () => {
+        const feedMetadata = {
+          ContentType: 'text/plain',
+          ContentDisposition: 'inline',
+          Metadata: {artifact: 'squirrel-feed'},
+        };
+        const setupMetadata = {
+          ContentType: 'application/octet-stream',
+          ContentDisposition: `attachment; filename="${setupName}"`,
+          Metadata: {artifact: 'squirrel-setup'},
+        };
+        const metadataRequests: Parameters<S3Client['headObject']>[0][] = [];
+        const copyRequests: Parameters<S3Client['copyObject']>[0][] = [];
+        const s3Deployer = new S3Deployer(
+          {accessKeyId: '', secretAccessKey: ''},
+          {
+            headObject: request => {
+              metadataRequests.push(request);
+              return {promise: async () => (request.Key.endsWith('-RELEASES') ? feedMetadata : setupMetadata)};
+            },
+            copyObject: request => {
+              copyRequests.push(request);
+              return {promise: async () => ({})};
+            },
+            deleteObject: () => assert.fail('Expected in-place replacement'),
+            upload: () => assert.fail('Expected versioned artifacts to be read only'),
+          },
+        );
+
+        await publishWindowsSquirrelRelease({
+          bucket,
+          copyOnS3: copyOptions => s3Deployer.copyOnS3(copyOptions),
+          s3Prefix,
+          setupName,
+          versionedName,
+        });
+
+        assert.deepStrictEqual(metadataRequests, [
+          {Bucket: bucket, Key: `${expectedDirectory}${versionedName}-RELEASES`},
+          {Bucket: bucket, Key: `${expectedDirectory}${versionedName}.exe`},
+        ]);
+        const expectedCopyOptions = {
+          ACL: 'public-read',
+          Bucket: bucket,
+          CacheControl: 'public, max-age=300, s-maxage=300',
+          ContentEncoding: undefined,
+          ContentLanguage: undefined,
+          Expires: undefined,
+          MetadataDirective: 'REPLACE',
+          WebsiteRedirectLocation: undefined,
+        };
+        assert.deepStrictEqual(copyRequests, [
+          {
+            ...expectedCopyOptions,
+            ...feedMetadata,
+            CopySource: `${bucket}/${encodedDirectory}${versionedName}-RELEASES`,
+            Key: `${expectedDirectory}RELEASES`,
+          },
+          {
+            ...expectedCopyOptions,
+            ...setupMetadata,
+            CopySource: `${bucket}/${encodedDirectory}${versionedName}.exe`,
+            Key: `${expectedDirectory}${setupName}`,
+          },
+        ]);
+      });
+    }
+
+    it('propagates a failed feed copy and stops before publishing the setup alias', async () => {
+      const attemptedKeys: string[] = [];
+      const s3Deployer = new S3Deployer(
+        {accessKeyId: '', secretAccessKey: ''},
+        {
+          headObject: () => ({promise: async () => ({ContentType: 'text/plain'})}),
+          copyObject: request => {
+            attemptedKeys.push(request.Key);
+            return {
+              promise: async () => {
+                throw new Error('S3 copy failed');
+              },
+            };
+          },
+          deleteObject: () => assert.fail('The previous feed must stay available'),
+          upload: () => assert.fail('Unexpected upload'),
+        },
+      );
+
+      await assert.rejects(
+        publishWindowsSquirrelRelease({
+          bucket: 'wire-taco',
+          copyOnS3: copyOptions => s3Deployer.copyOnS3(copyOptions),
+          s3Prefix: 'win/prod',
+          setupName: 'Wire-Setup.exe',
+          versionedName: 'wire-3.44.5380',
+        }),
+        /S3 copy failed/,
+      );
+      assert.deepStrictEqual(attemptedKeys, ['win/prod/RELEASES']);
     });
   });
 

@@ -449,24 +449,26 @@ node('built-in') {
             string(credentialsId: AWS_ACCESS_KEY_CREDENTIALS_ID, variable: 'AWS_ACCESS_KEY_ID'),
             string(credentialsId: AWS_SECRET_CREDENTIALS_ID, variable: 'AWS_SECRET_ACCESS_KEY')
           ]) {
-            withAWS(region:'eu-west-1', credentials: 'wire-taco') {
-              def files = findFiles(glob: 'wrap/dist/*Setup.exe')
-              withEnv([
-                "SQUIRREL_BUCKET=${S3_BUCKET}",
-                "SQUIRREL_PREFIX=${S3_PATH}",
-                "SQUIRREL_VERSIONED_NAME=${S3_NAME}",
-                "SQUIRREL_SETUP_NAME=${files[0].name}"
-              ]) {
-                sh '''
-                  jenkins/ts-node.sh ./bin/deploy-tools/s3-win-releases-cli.ts \
-                    --bucket "$SQUIRREL_BUCKET" \
-                    --s3path "$SQUIRREL_PREFIX" \
-                    --versioned-name "$SQUIRREL_VERSIONED_NAME" \
-                    --setup-name "$SQUIRREL_SETUP_NAME" \
-                    --wrapper-build "$WRAPPER_BUILD" \
-                    $DRY_RUN
-                '''
-              }
+            def files = findFiles(glob: 'wrap/dist/*Setup.exe')
+            withEnv([
+              'AWS_REGION=eu-west-1',
+              "SQUIRREL_BUCKET=${S3_BUCKET}",
+              "SQUIRREL_PREFIX=${S3_PATH}",
+              "SQUIRREL_VERSIONED_NAME=${S3_NAME}",
+              "SQUIRREL_SETUP_NAME=${files[0].name}"
+            ]) {
+              sh '''
+                set +x
+                jenkins/ts-node.sh ./bin/deploy-tools/s3-win-releases-cli.ts \
+                  --bucket "$SQUIRREL_BUCKET" \
+                  --s3path "$SQUIRREL_PREFIX" \
+                  --versioned-name "$SQUIRREL_VERSIONED_NAME" \
+                  --setup-name "$SQUIRREL_SETUP_NAME" \
+                  --key-id "$AWS_ACCESS_KEY_ID" \
+                  --secret-key "$AWS_SECRET_ACCESS_KEY" \
+                  --wrapper-build "$WRAPPER_BUILD" \
+                  $DRY_RUN
+              '''
             }
           }
         }

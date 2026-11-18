@@ -30,9 +30,9 @@ import {getLogger} from '../../bin-utils';
 import {getWindowsMsiSetupAliasNames} from '../../windows-msi-artifacts';
 
 export interface S3DeployerOptions {
-  accessKeyId?: string;
+  accessKeyId: string;
   dryRun?: boolean;
-  secretAccessKey?: string;
+  secretAccessKey: string;
 }
 
 export interface S3Client {
@@ -67,7 +67,7 @@ export interface CopyWindowsMsiAliasesOptions {
 
 export type WindowsArtifactType = 'auto' | 'msi' | 'squirrel';
 
-export const windowsInstallerAliasCacheControl = 'public, max-age=300, s-maxage=300';
+export const windowsReleaseAliasCacheControl = 'public, max-age=300, s-maxage=300';
 
 export interface WindowsArtifactSelectionOptions {
   expectedMsiFileName?: string;
@@ -105,7 +105,7 @@ export function getWindowsMsiAliasCopyOptions({
   return aliasFileNames.map(aliasFileName => {
     return {
       bucket,
-      cacheControl: windowsInstallerAliasCacheControl,
+      cacheControl: windowsReleaseAliasCacheControl,
       s3FromPath: `${bucket}/${versionedS3Path}`,
       s3ToPath: `${sourceDirectory}${aliasFileName}`,
     };
@@ -124,7 +124,7 @@ export async function copyWindowsMsiAliases({aliasCopyOptions, copyOnS3}: CopyWi
 }
 
 export class S3Deployer {
-  private readonly options: S3DeployerOptions;
+  private readonly options: Required<S3DeployerOptions>;
   private readonly s3Client: S3Client;
   private readonly logger: Logger;
 
@@ -272,7 +272,10 @@ export class S3Deployer {
     const copyConfig: S3.CopyObjectRequest = {
       ACL: 'public-read',
       Bucket: copyOptions.bucket,
-      CopySource: copyOptions.s3FromPath,
+      CopySource:
+        cacheControl === undefined
+          ? copyOptions.s3FromPath
+          : copyOptions.s3FromPath.split('/').map(encodeURIComponent).join('/'),
       Key: copyOptions.s3ToPath,
       ...(cacheControl === undefined ? {} : {CacheControl: cacheControl, MetadataDirective: 'REPLACE'}),
     };
@@ -287,7 +290,7 @@ export class S3Deployer {
       return;
     }
 
-    const copySource = copyConfig.CopySource.replace(/^\//, '');
+    const copySource = copyOptions.s3FromPath.replace(/^\//, '');
     const bucketSeparator = copySource.indexOf('/');
     const {
       ContentDisposition,
