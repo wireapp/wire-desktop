@@ -30,14 +30,15 @@ import {getLogger} from '../../bin-utils';
 import {getWindowsMsiSetupAliasNames} from '../../windows-msi-artifacts';
 
 export interface S3DeployerOptions {
-  accessKeyId: string;
+  accessKeyId?: string;
   dryRun?: boolean;
-  secretAccessKey: string;
+  secretAccessKey?: string;
 }
 
 export interface S3Client {
   copyObject(copyOptions: S3.CopyObjectRequest): {promise: () => Promise<unknown>};
   deleteObject(deleteOptions: S3.DeleteObjectRequest): {promise: () => Promise<unknown>};
+  headObject(headOptions: S3.HeadObjectRequest): {promise: () => Promise<S3.HeadObjectOutput>};
   upload(uploadOptions: S3.PutObjectRequest): {promise: () => Promise<unknown>};
 }
 
@@ -54,6 +55,7 @@ export interface S3UploadOptions {
 
 export interface S3CopyOptions {
   bucket: string;
+  cacheControl?: string;
   s3FromPath: string;
   s3ToPath: string;
 }
@@ -64,6 +66,8 @@ export interface CopyWindowsMsiAliasesOptions {
 }
 
 export type WindowsArtifactType = 'auto' | 'msi' | 'squirrel';
+
+export const windowsInstallerAliasCacheControl = 'public, max-age=300, s-maxage=300';
 
 export interface WindowsArtifactSelectionOptions {
   expectedMsiFileName?: string;
@@ -101,6 +105,7 @@ export function getWindowsMsiAliasCopyOptions({
   return aliasFileNames.map(aliasFileName => {
     return {
       bucket,
+      cacheControl: windowsInstallerAliasCacheControl,
       s3FromPath: `${bucket}/${versionedS3Path}`,
       s3ToPath: `${sourceDirectory}${aliasFileName}`,
     };
@@ -119,7 +124,7 @@ export async function copyWindowsMsiAliases({aliasCopyOptions, copyOnS3}: CopyWi
 }
 
 export class S3Deployer {
-  private readonly options: Required<S3DeployerOptions>;
+  private readonly options: S3DeployerOptions;
   private readonly s3Client: S3Client;
   private readonly logger: Logger;
 
@@ -263,23 +268,50 @@ export class S3Deployer {
   }
 
   async copyOnS3(copyOptions: S3CopyOptions): Promise<void> {
-    const copyConfig = {
+    const {cacheControl} = copyOptions;
+    const copyConfig: S3.CopyObjectRequest = {
       ACL: 'public-read',
       Bucket: copyOptions.bucket,
       CopySource: copyOptions.s3FromPath,
       Key: copyOptions.s3ToPath,
+      ...(cacheControl === undefined ? {} : {CacheControl: cacheControl, MetadataDirective: 'REPLACE'}),
     };
 
     if (this.options.dryRun) {
-      logDry('copyOnS3', {
-        ACL: copyConfig.ACL,
-        Bucket: copyConfig.Bucket,
-        CopySource: copyConfig.CopySource,
-        Key: copyConfig.Key,
-      });
+      this.logger.log('Dry run: copyOnS3', copyConfig);
       return;
     }
 
-    await this.s3Client.copyObject(copyConfig).promise();
+    if (cacheControl === undefined) {
+      await this.s3Client.copyObject(copyConfig).promise();
+      return;
+    }
+
+    const copySource = copyConfig.CopySource.replace(/^\//, '');
+    const bucketSeparator = copySource.indexOf('/');
+    const {
+      ContentDisposition,
+      ContentEncoding,
+      ContentLanguage,
+      ContentType,
+      Expires,
+      Metadata,
+      WebsiteRedirectLocation,
+    } = await this.s3Client
+      .headObject({Bucket: copySource.slice(0, bucketSeparator), Key: copySource.slice(bucketSeparator + 1)})
+      .promise();
+
+    await this.s3Client
+      .copyObject({
+        ...copyConfig,
+        ContentDisposition,
+        ContentEncoding,
+        ContentLanguage,
+        ContentType,
+        Expires,
+        Metadata,
+        WebsiteRedirectLocation,
+      })
+      .promise();
   }
 }

@@ -28,6 +28,7 @@ import {
   getWindowsMsiAliasCopyOptions,
   getWindowsMsiSetupFileName,
   S3Deployer,
+  windowsInstallerAliasCacheControl,
 } from './S3Deployer';
 import type {S3Client} from './S3Deployer';
 
@@ -43,12 +44,97 @@ describe('S3Deployer', () => {
   });
 
   describe('copyOnS3', () => {
-    it(`doesn't upload anything if dry run is set`, async () => {
-      const s3Deployer = new S3Deployer({
-        accessKeyId: '',
-        dryRun: true,
-        secretAccessKey: '',
+    it('preserves source metadata and the public ACL on stable Windows installer copies', async () => {
+      const metadataRequests: Parameters<S3Client['headObject']>[0][] = [];
+      const copyRequests: Parameters<S3Client['copyObject']>[0][] = [];
+      const s3Client: S3Client = {
+        copyObject: request => {
+          copyRequests.push(request);
+          return {promise: async () => ({})};
+        },
+        headObject: request => {
+          metadataRequests.push(request);
+          return {
+            promise: async () => ({
+              CacheControl: 'public, max-age=86400',
+              ContentType: 'application/octet-stream',
+              ContentDisposition: 'attachment',
+              Metadata: {release: '3.44.5380'},
+            }),
+          };
+        },
+        deleteObject: () => assert.fail('Unexpected delete'),
+        upload: () => assert.fail('Unexpected upload'),
+      };
+      const s3Deployer = new S3Deployer({accessKeyId: '', secretAccessKey: ''}, s3Client);
+      const bucket = 'wire-taco';
+      const versionedExePath = 'win/prod/wire-3.44.5380.exe';
+      const versionedMsiPath = 'win/prod/Wire-3.44.5380-x64.msi';
+
+      await s3Deployer.copyOnS3({
+        bucket,
+        cacheControl: windowsInstallerAliasCacheControl,
+        s3FromPath: `${bucket}/${versionedExePath}`,
+        s3ToPath: 'win/prod/Wire-Setup.exe',
       });
+      await copyWindowsMsiAliases({
+        aliasCopyOptions: getWindowsMsiAliasCopyOptions({
+          bucket,
+          fileName: 'Wire-3.44.5380-x64.msi',
+          version: '3.44.5380',
+          versionedS3Path: versionedMsiPath,
+        }),
+        copyOnS3: copyOptions => s3Deployer.copyOnS3(copyOptions),
+      });
+
+      assert.deepStrictEqual(metadataRequests, [
+        {Bucket: bucket, Key: versionedExePath},
+        {Bucket: bucket, Key: versionedMsiPath},
+        {Bucket: bucket, Key: versionedMsiPath},
+      ]);
+      const expectedMetadata = {
+        ACL: 'public-read',
+        Bucket: bucket,
+        CacheControl: 'public, max-age=300, s-maxage=300',
+        ContentDisposition: 'attachment',
+        ContentEncoding: undefined,
+        ContentLanguage: undefined,
+        ContentType: 'application/octet-stream',
+        Expires: undefined,
+        Metadata: {release: '3.44.5380'},
+        MetadataDirective: 'REPLACE',
+        WebsiteRedirectLocation: undefined,
+      };
+      assert.deepStrictEqual(copyRequests, [
+        {...expectedMetadata, CopySource: `${bucket}/${versionedExePath}`, Key: 'win/prod/Wire-Setup.exe'},
+        {...expectedMetadata, CopySource: `${bucket}/${versionedMsiPath}`, Key: 'win/prod/Wire-x64-Setup.msi'},
+        {...expectedMetadata, CopySource: `${bucket}/${versionedMsiPath}`, Key: 'win/prod/Wire-Setup.msi'},
+      ]);
+
+      await s3Deployer.copyOnS3({
+        bucket,
+        s3FromPath: `${bucket}/win/prod/wire-3.44.5380-RELEASES`,
+        s3ToPath: 'win/prod/RELEASES',
+      });
+      assert.strictEqual(metadataRequests.length, 3);
+      assert.deepStrictEqual(copyRequests[3], {
+        ACL: 'public-read',
+        Bucket: bucket,
+        CopySource: `${bucket}/win/prod/wire-3.44.5380-RELEASES`,
+        Key: 'win/prod/RELEASES',
+      });
+    });
+
+    it('skips S3 requests for cached and ordinary copies during a dry run', async () => {
+      const s3Deployer = new S3Deployer(
+        {dryRun: true},
+        {
+          copyObject: () => assert.fail('Unexpected copy'),
+          deleteObject: () => assert.fail('Unexpected delete'),
+          headObject: () => assert.fail('Unexpected metadata lookup'),
+          upload: () => assert.fail('Unexpected upload'),
+        },
+      );
       const aliasCopyOptions = getWindowsMsiAliasCopyOptions({
         bucket: 'wire-taco',
         fileName: 'Wire-3.44.5380-x64.msi',
@@ -63,10 +149,16 @@ describe('S3Deployer', () => {
           }),
         );
       });
+      await s3Deployer.copyOnS3({
+        bucket: 'wire-taco',
+        s3FromPath: 'wire-taco/win/prod/wire-3.44.5380-RELEASES',
+        s3ToPath: 'win/prod/RELEASES',
+      });
     });
 
     it('propagates a failed S3 alias copy', async () => {
       const s3Client: S3Client = {
+        headObject: () => ({promise: async () => ({ContentType: 'application/octet-stream'})}),
         copyObject: () => {
           return {
             promise: async () => {
@@ -94,21 +186,50 @@ describe('S3Deployer', () => {
       await assert.rejects(
         s3Deployer.copyOnS3({
           bucket: 'wire-taco',
+          cacheControl: windowsInstallerAliasCacheControl,
           s3FromPath: 'wire-taco/win/prod/Wire-3.44.5380-x64.msi',
           s3ToPath: 'win/prod/Wire-Setup.msi',
         }),
         /S3 copy failed/,
       );
     });
+
+    it('fails the alias publication when source metadata cannot be read', async () => {
+      const s3Deployer = new S3Deployer(
+        {},
+        {
+          copyObject: () => assert.fail('Unexpected copy after failed metadata lookup'),
+          deleteObject: () => assert.fail('Unexpected delete'),
+          headObject: () => ({
+            promise: async () => {
+              throw new Error('S3 metadata lookup failed');
+            },
+          }),
+          upload: () => assert.fail('Unexpected upload'),
+        },
+      );
+
+      await assert.rejects(
+        s3Deployer.copyOnS3({
+          bucket: 'wire-taco',
+          cacheControl: windowsInstallerAliasCacheControl,
+          s3FromPath: 'wire-taco/win/prod/wire-3.44.5380.exe',
+          s3ToPath: 'win/prod/Wire-Setup.exe',
+        }),
+        /S3 metadata lookup failed/,
+      );
+    });
   });
 
   describe('uploadToS3', () => {
-    it('propagates a failed S3 artifact upload', async () => {
+    it('keeps versioned artifact upload metadata and propagates a failed S3 upload', async () => {
       const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'wire-failed-msi-upload-'));
       temporaryDirectories.push(basePath);
       const filePath = path.join(basePath, 'Wire-3.44.5380-x64.msi');
       await fs.writeFile(filePath, 'signed MSI bytes');
+      const uploadRequests: Parameters<S3Client['upload']>[0][] = [];
       const s3Client: S3Client = {
+        headObject: () => assert.fail('Unexpected metadata lookup'),
         copyObject: () => {
           return {
             promise: async () => {
@@ -123,7 +244,8 @@ describe('S3Deployer', () => {
             },
           };
         },
-        upload: () => {
+        upload: request => {
+          uploadRequests.push(request);
           return {
             promise: async () => {
               throw new Error('S3 upload failed');
@@ -141,6 +263,14 @@ describe('S3Deployer', () => {
         }),
         /S3 upload failed/,
       );
+      assert.strictEqual(uploadRequests.length, 1);
+      const {Body, ...actualUploadOptions} = uploadRequests[0];
+      assert.ok(Body);
+      assert.deepStrictEqual(actualUploadOptions, {
+        ACL: 'public-read',
+        Bucket: 'wire-taco',
+        Key: 'win/prod/Wire-3.44.5380-x64.msi',
+      });
     });
   });
 
@@ -356,11 +486,13 @@ describe('S3Deployer', () => {
       const expectedCopyOptions = [
         {
           bucket: 'wire-taco',
+          cacheControl: 'public, max-age=300, s-maxage=300',
           s3FromPath: 'wire-taco/win/prod/Wire-3.44.5380-x64.msi',
           s3ToPath: 'win/prod/Wire-x64-Setup.msi',
         },
         {
           bucket: 'wire-taco',
+          cacheControl: 'public, max-age=300, s-maxage=300',
           s3FromPath: 'wire-taco/win/prod/Wire-3.44.5380-x64.msi',
           s3ToPath: 'win/prod/Wire-Setup.msi',
         },
@@ -380,6 +512,7 @@ describe('S3Deployer', () => {
       assert.deepStrictEqual(actualCopyOptions, [
         {
           bucket: 'wire-taco',
+          cacheControl: 'public, max-age=300, s-maxage=300',
           s3FromPath: 'wire-taco/win/internal/WireInternal-3.44.5380-ia32.msi',
           s3ToPath: 'win/internal/WireInternal-ia32-Setup.msi',
         },
