@@ -80,6 +80,10 @@ jobs:
         shell: bash
         run: |
           brew install --cask swiftdefaultappsprefpane
+
+          # The freshly built app is unknown to LaunchServices, swda can only select apps that are registered there
+          /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f -R -trusted "$WIRE_APP_BUNDLE"
+
           swda setHandler --URL wire --app "$WIRE_APP_BUNDLE"
           swda getHandler --URL wire
           EXECUTABLE=$(find "$WIRE_APP_BUNDLE/Contents/MacOS" -type f -perm +111 -print -quit)
