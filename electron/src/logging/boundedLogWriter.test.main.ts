@@ -239,9 +239,9 @@ describe('bounded desktop log writer', () => {
       });
 
       await fs.outputFile(existingRotation, `${secondRecord}\n`);
-      await boundedLogWriter.write({logFilePath, message: batch.join('\n'), lineEnding: '\n'});
+      await boundedLogWriter.writeJsonl({logFilePath, message: batch.join('\n')});
       assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), expectedJsonl);
-      await boundedLogWriter.write({logFilePath, message: firstRecord, lineEnding: '\n'});
+      await boundedLogWriter.writeJsonl({logFilePath, message: firstRecord});
 
       assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), `${firstRecord}\n`);
       assert.strictEqual(await fs.readFile(`${logFilePath}.3-1.old`, 'utf8'), expectedJsonl);
@@ -372,7 +372,7 @@ describe('bounded desktop log writer', () => {
             return path.join(temporaryLogDirectory, accountId, 'console.log');
           },
           reportWriteFailure: assert.fail,
-          writeLogMessage: boundedLogWriter.write,
+          writeLogMessage: boundedLogWriter.writeConsoleMessage,
         });
       }
 

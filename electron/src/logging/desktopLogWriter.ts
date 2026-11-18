@@ -24,6 +24,7 @@ import {
   BoundedLogWriter,
   BoundedLogWriterDependencies,
   createBoundedLogWriter,
+  WriteConsoleLogMessageParameters,
   WriteLogMessageParameters,
 } from './boundedLogWriter';
 import {cleanupDesktopLogs, DESKTOP_LOG_RETENTION_POLICY} from './logCleanup';
@@ -126,6 +127,14 @@ export function runDesktopLogMaintenance<Result>(operation: () => Promise<Result
 
 export function writeBoundedLogMessage(parameters: WriteLogMessageParameters): Promise<void> {
   return desktopBoundedLogWriter.write(parameters);
+}
+
+export function writeBoundedConsoleLogMessage(parameters: WriteConsoleLogMessageParameters): Promise<void> {
+  return desktopBoundedLogWriter.writeConsoleMessage(parameters);
+}
+
+export function writeBoundedJsonlLogMessage(parameters: WriteLogMessageParameters): Promise<void> {
+  return desktopBoundedLogWriter.writeJsonl(parameters);
 }
 
 export function fireAndForgetDesktopLogOperation(asyncAction: () => Promise<unknown>): void {

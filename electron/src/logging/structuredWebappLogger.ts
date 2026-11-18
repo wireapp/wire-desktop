@@ -47,7 +47,7 @@ type WebViewLogEvent = {
 type AuthorizedWebView = NavigationOrigins & {
   readonly accountId: string;
   readonly contents: WebViewLogSender;
-  readonly loggingRevoked?: boolean;
+  readonly loggingRevoked: boolean;
 };
 
 type StructuredWebappLoggerDependencies = {
@@ -75,11 +75,6 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
     return context;
   }
 
-  function getConsoleLogAccountId(sender: WebViewLogSender): string | undefined {
-    const context = getActiveWebViewContext(sender);
-    return context.isJust ? context.value.accountId : undefined;
-  }
-
   function getAuthorizedAccountId({sender, senderFrame}: WebViewLogEvent): Maybe<string> {
     const context = getActiveWebViewContext(sender);
     const wrapper = dependencies.getWrapperWebContents();
@@ -96,14 +91,6 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
     }
 
     return Maybe.just(context.value.accountId);
-  }
-
-  async function receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
-    try {
-      return await writeAuthorizedBatch(event, payload);
-    } catch {
-      return 'failed';
-    }
   }
 
   async function writeAuthorizedBatch(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
@@ -134,28 +121,39 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
     }
   }
 
-  async function runAccountDeletion(accountId: string, deleteAccount: () => Promise<void>): Promise<void> {
-    const existingDeletion = Maybe.of(accountDeletions.get(accountId));
-    if (existingDeletion.isJust) {
-      return existingDeletion.value;
-    }
+  return {
+    getConsoleLogAccountId(sender: WebViewLogSender): string | undefined {
+      const context = getActiveWebViewContext(sender);
+      return context.isJust ? context.value.accountId : undefined;
+    },
+    async receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
+      try {
+        return await writeAuthorizedBatch(event, payload);
+      } catch {
+        return 'failed';
+      }
+    },
+    async runAccountDeletion(accountId: string, deleteAccount: () => Promise<void>): Promise<void> {
+      const existingDeletion = Maybe.of(accountDeletions.get(accountId));
+      if (existingDeletion.isJust) {
+        return existingDeletion.value;
+      }
 
-    const writesForAccount = [...pendingWrites.values()]
-      .filter(write => {
-        return write.accountId === accountId;
-      })
-      .map(write => {
-        return write.completion;
-      });
-    const deletion = Promise.allSettled(writesForAccount).then(deleteAccount);
-    accountDeletions.set(accountId, deletion);
+      const writesForAccount = [...pendingWrites.values()]
+        .filter(write => {
+          return write.accountId === accountId;
+        })
+        .map(write => {
+          return write.completion;
+        });
+      const deletion = Promise.allSettled(writesForAccount).then(deleteAccount);
+      accountDeletions.set(accountId, deletion);
 
-    try {
-      await deletion;
-    } finally {
-      accountDeletions.delete(accountId);
-    }
-  }
-
-  return {getConsoleLogAccountId, receive, runAccountDeletion};
+      try {
+        await deletion;
+      } finally {
+        accountDeletions.delete(accountId);
+      }
+    },
+  };
 }

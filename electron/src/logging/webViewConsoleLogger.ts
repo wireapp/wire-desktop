@@ -17,7 +17,7 @@
  *
  */
 
-import type {WriteLogMessageParameters} from './boundedLogWriter';
+import type {WriteConsoleLogMessageParameters} from './boundedLogWriter';
 
 export type WebViewConsoleMessageDetails = Pick<Electron.WebContentsConsoleMessageEventParams, 'message'>;
 
@@ -25,7 +25,7 @@ export type WebViewConsoleLogParameters = {
   getAccountId(): string | undefined;
   getLogFilePath(accountId: string): string;
   reportWriteFailure(logFilePath: string, error: unknown): void;
-  writeLogMessage(parameters: WriteLogMessageParameters): Promise<void>;
+  writeLogMessage(parameters: WriteConsoleLogMessageParameters): Promise<void>;
 };
 
 const COLOR_CODE_PATTERN = /%c(.+?)%c/gm;

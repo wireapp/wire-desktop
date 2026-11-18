@@ -66,7 +66,11 @@ import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
 import type {WebviewNavigationRequest} from './lib/WebviewNavigationTypes';
 import * as locale from './locale';
-import {runDesktopLogCleanup, writeBoundedLogMessage} from './logging/desktopLogWriter';
+import {
+  runDesktopLogCleanup,
+  writeBoundedConsoleLogMessage,
+  writeBoundedJsonlLogMessage,
+} from './logging/desktopLogWriter';
 import {getLogger} from './logging/getLogger';
 import {scheduleLogCleanup} from './logging/logCleanupScheduler';
 import {
@@ -211,7 +215,7 @@ type WebviewNavigationContext = {
   initialOriginToPersist: Maybe<string>;
   navigationQueue: ReturnType<typeof createWebviewNavigationQueue>;
   pendingOrigin: Maybe<string>;
-  loggingRevoked?: boolean;
+  loggingRevoked: boolean;
   trustedOrigin: Maybe<string>;
 };
 
@@ -238,8 +242,7 @@ const structuredWebappLogger = createStructuredWebappLogger({
     return new Date();
   },
   writeBatch({accountId, date, records}) {
-    return writeBoundedLogMessage({
-      lineEnding: '\n',
+    return writeBoundedJsonlLogMessage({
       logFilePath: getWebViewApplicationLogPath({accountId, date, logDirectory: getLogDirectory()}),
       message: records.join('\n'),
     });
@@ -377,6 +380,7 @@ function associateWebviewWithAccount(parameters: AssociateWebviewWithAccountPara
     accountId: parameters.accountId.value,
     contents: parameters.webviewContents,
     initialOriginToPersist: authorization.initialOriginToPersist,
+    loggingRevoked: false,
     navigationQueue: createWebviewNavigationQueue(),
     pendingOrigin: authorization.pendingOrigin,
     trustedOrigin: authorization.trustedOrigin,
@@ -1132,7 +1136,7 @@ class ElectronWrapperInit {
             reportWriteFailure() {
               logger.error('Could not write an account WebView console message to its account log.');
             },
-            writeLogMessage: writeBoundedLogMessage,
+            writeLogMessage: writeBoundedConsoleLogMessage,
           });
 
           contents.on('console-message', messageDetails => {

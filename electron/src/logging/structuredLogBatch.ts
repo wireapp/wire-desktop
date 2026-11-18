@@ -98,25 +98,26 @@ export function createDesktopApplicationLogs(
 ): DesktopApplicationLogs {
   let writeInProgress = false;
 
-  async function write(records: readonly string[]): Promise<StructuredLogWriteResult> {
-    if (writeInProgress) {
-      return 'busy';
-    }
-
-    writeInProgress = true;
-    try {
-      const batch = readBoundedLogBatch(records);
-      if (batch.isNothing) {
-        return 'rejected';
+  return {
+    version: 1,
+    async write(records): Promise<StructuredLogWriteResult> {
+      if (writeInProgress) {
+        return 'busy';
       }
 
-      return await invoke(batch.value);
-    } catch {
-      return 'failed';
-    } finally {
-      writeInProgress = false;
-    }
-  }
+      writeInProgress = true;
+      try {
+        const batch = readBoundedLogBatch(records);
+        if (batch.isNothing) {
+          return 'rejected';
+        }
 
-  return {version: 1, write};
+        return await invoke(batch.value);
+      } catch {
+        return 'failed';
+      } finally {
+        writeInProgress = false;
+      }
+    },
+  };
 }
