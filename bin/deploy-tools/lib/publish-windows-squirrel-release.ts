@@ -31,16 +31,17 @@ interface PublishWindowsSquirrelReleaseOptions {
 export async function publishWindowsSquirrelRelease(options: PublishWindowsSquirrelReleaseOptions): Promise<void> {
   const {bucket, copyOnS3, s3Prefix, setupName, versionedName} = options;
   const directory = normalizeS3DirectoryPrefix(s3Prefix);
-  const copyOptions = {bucket, cacheControl: windowsReleaseAliasCacheControl};
   const versionedSource = `${bucket}/${directory}${versionedName}`;
 
   await copyOnS3({
-    ...copyOptions,
+    bucket,
+    cacheControl: windowsReleaseAliasCacheControl,
     s3FromPath: `${versionedSource}-RELEASES`,
     s3ToPath: `${directory}RELEASES`,
   });
   await copyOnS3({
-    ...copyOptions,
+    bucket,
+    cacheControl: windowsReleaseAliasCacheControl,
     s3FromPath: `${versionedSource}.exe`,
     s3ToPath: `${directory}${setupName}`,
   });

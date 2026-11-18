@@ -97,23 +97,25 @@ describe('S3Deployer', () => {
         {Bucket: bucket, Key: versionedMsiPath},
         {Bucket: bucket, Key: versionedMsiPath},
       ]);
-      const expectedMetadata = {
-        ACL: 'public-read',
-        Bucket: bucket,
-        CacheControl: 'public, max-age=300, s-maxage=300',
-        ContentDisposition: 'attachment',
-        ContentEncoding: undefined,
-        ContentLanguage: undefined,
-        ContentType: 'application/octet-stream',
-        Expires: undefined,
-        Metadata: {release: '3.44.5380'},
-        MetadataDirective: 'REPLACE',
-        WebsiteRedirectLocation: undefined,
-      };
-      assert.deepStrictEqual(copyRequests, [
-        {...expectedMetadata, CopySource: `${bucket}/${versionedMsiPath}`, Key: 'win/prod/Wire-x64-Setup.msi'},
-        {...expectedMetadata, CopySource: `${bucket}/${versionedMsiPath}`, Key: 'win/prod/Wire-Setup.msi'},
-      ]);
+      const expectedAliasKeys = ['win/prod/Wire-x64-Setup.msi', 'win/prod/Wire-Setup.msi'];
+      assert.strictEqual(copyRequests.length, expectedAliasKeys.length);
+      for (const [index, aliasKey] of expectedAliasKeys.entries()) {
+        assert.deepStrictEqual(copyRequests[index], {
+          ACL: 'public-read',
+          Bucket: bucket,
+          CacheControl: 'public, max-age=300, s-maxage=300',
+          ContentDisposition: 'attachment',
+          ContentEncoding: undefined,
+          ContentLanguage: undefined,
+          ContentType: 'application/octet-stream',
+          CopySource: `${bucket}/${versionedMsiPath}`,
+          Expires: undefined,
+          Key: aliasKey,
+          Metadata: {release: '3.44.5380'},
+          MetadataDirective: 'REPLACE',
+          WebsiteRedirectLocation: undefined,
+        });
+      }
 
       await s3Deployer.copyOnS3({
         bucket,
@@ -371,30 +373,36 @@ describe('S3Deployer', () => {
           {Bucket: bucket, Key: `${expectedDirectory}${versionedName}-RELEASES`},
           {Bucket: bucket, Key: `${expectedDirectory}${versionedName}.exe`},
         ]);
-        const expectedCopyOptions = {
-          ACL: 'public-read',
-          Bucket: bucket,
-          CacheControl: 'public, max-age=300, s-maxage=300',
-          ContentEncoding: undefined,
-          ContentLanguage: undefined,
-          Expires: undefined,
-          MetadataDirective: 'REPLACE',
-          WebsiteRedirectLocation: undefined,
-        };
-        assert.deepStrictEqual(copyRequests, [
+        const expectedAliases = [
           {
-            ...expectedCopyOptions,
-            ...feedMetadata,
-            CopySource: `${bucket}/${encodedDirectory}${versionedName}-RELEASES`,
-            Key: `${expectedDirectory}RELEASES`,
+            aliasFileName: 'RELEASES',
+            metadata: feedMetadata,
+            versionedFileName: `${versionedName}-RELEASES`,
           },
           {
-            ...expectedCopyOptions,
-            ...setupMetadata,
-            CopySource: `${bucket}/${encodedDirectory}${versionedName}.exe`,
-            Key: `${expectedDirectory}${setupName}`,
+            aliasFileName: setupName,
+            metadata: setupMetadata,
+            versionedFileName: `${versionedName}.exe`,
           },
-        ]);
+        ];
+        assert.strictEqual(copyRequests.length, expectedAliases.length);
+        for (const [index, alias] of expectedAliases.entries()) {
+          assert.deepStrictEqual(copyRequests[index], {
+            ACL: 'public-read',
+            Bucket: bucket,
+            CacheControl: 'public, max-age=300, s-maxage=300',
+            ContentDisposition: alias.metadata.ContentDisposition,
+            ContentEncoding: undefined,
+            ContentLanguage: undefined,
+            ContentType: alias.metadata.ContentType,
+            CopySource: `${bucket}/${encodedDirectory}${alias.versionedFileName}`,
+            Expires: undefined,
+            Key: `${expectedDirectory}${alias.aliasFileName}`,
+            Metadata: alias.metadata.Metadata,
+            MetadataDirective: 'REPLACE',
+            WebsiteRedirectLocation: undefined,
+          });
+        }
       });
     }
 
@@ -488,10 +496,11 @@ describe('S3Deployer', () => {
         /S3 upload failed/,
       );
       assert.strictEqual(uploadRequests.length, 1);
-      const {Body, ...actualUploadOptions} = uploadRequests[0];
+      const {Body} = uploadRequests[0];
       assert.ok(Body);
-      assert.deepStrictEqual(actualUploadOptions, {
+      assert.deepStrictEqual(uploadRequests[0], {
         ACL: 'public-read',
+        Body,
         Bucket: 'wire-taco',
         Key: 'win/prod/Wire-3.44.5380-x64.msi',
       });
