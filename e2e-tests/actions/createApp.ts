@@ -90,7 +90,9 @@ export const createApp = async (options: {
         const urls = windows.map(window => window.url());
         reject(
           new Error(
-            `Expected 2 windows (wrapper and webapp) within ${timeout}ms but got ${windows.length}: ${JSON.stringify(urls)}\n` +
+            `Expected 2 windows (wrapper and webapp) within ${timeout}ms but got ${windows.length}: ${JSON.stringify(
+              urls,
+            )}\n` +
               `Main process output (last 50 lines):\n${mainProcessLogs.join('\n').split('\n').slice(-50).join('\n')}`,
           ),
         );
