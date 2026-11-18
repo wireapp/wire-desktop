@@ -267,7 +267,9 @@ describe('desktop log cleanup', () => {
       const currentTime = new Date(currentTimeMilliseconds);
       const cleanup = createLogCleanup({
         ...createLogCleanupFileSystemDependencies(assert.fail),
-        getCurrentTimeMilliseconds: () => currentTimeMilliseconds,
+        getCurrentTimeMilliseconds() {
+          return currentTimeMilliseconds;
+        },
       });
 
       for (const expiredPath of expiredPaths) {

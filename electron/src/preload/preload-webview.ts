@@ -287,9 +287,9 @@ const _setImmediate = setImmediate;
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
   if (process.isMainFrame) {
-    window.desktopApplicationLogs = createDesktopApplicationLogs(records =>
-      ipcRenderer.invoke(EVENT_TYPE.DESKTOP.WRITE_APPLICATION_LOGS, records),
-    );
+    window.desktopApplicationLogs = createDesktopApplicationLogs(records => {
+      return ipcRenderer.invoke(EVENT_TYPE.DESKTOP.WRITE_APPLICATION_LOGS, records);
+    });
   }
   /**
    * @todo: This can be improved by polyfilling getDisplayMedia function

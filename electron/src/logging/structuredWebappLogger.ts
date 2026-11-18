@@ -20,7 +20,7 @@
 import {
   isStructuredLogRecord,
   readBoundedLogBatch,
-  STRUCTURED_LOG_LIMITS,
+  structuredLogLimits,
   StructuredLogWriteResult,
 } from './structuredLogBatch';
 
@@ -86,7 +86,7 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
         return 'rejected';
       }
 
-      if (pendingWrites.has(event.sender) || pendingWrites.size >= STRUCTURED_LOG_LIMITS.maximumPendingBatches) {
+      if (pendingWrites.has(event.sender) || pendingWrites.size >= structuredLogLimits.maximumPendingBatches) {
         return 'busy';
       }
 
@@ -117,8 +117,12 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
     }
 
     const writesForAccount = [...pendingWrites.values()]
-      .filter(write => write.accountId === accountId)
-      .map(write => write.completion);
+      .filter(write => {
+        return write.accountId === accountId;
+      })
+      .map(write => {
+        return write.completion;
+      });
     const deletion = Promise.allSettled(writesForAccount).then(deleteAccount);
     accountDeletions.set(accountId, deletion);
 

@@ -93,7 +93,9 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     }
   }
 
-  await runDesktopLogMaintenance(() => deleteAccountLogs(accountId));
+  await runDesktopLogMaintenance(() => {
+    return deleteAccountLogs(accountId);
+  });
 }
 
 async function deleteAccountLogs(accountId: string): Promise<void> {

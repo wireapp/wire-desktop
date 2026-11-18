@@ -19,7 +19,7 @@
 
 import {Buffer} from 'buffer';
 
-export const STRUCTURED_LOG_LIMITS = {
+export const structuredLogLimits = {
   maximumRecordBytes: 256 * 1024,
   maximumBatchBytes: 256 * 1024,
   maximumBatchRecords: 1024,
@@ -34,11 +34,7 @@ export type DesktopApplicationLogs = {
 };
 
 export function readBoundedLogBatch(batch: unknown): readonly string[] | undefined {
-  if (
-    Array.isArray(batch) === false ||
-    batch.length === 0 ||
-    batch.length > STRUCTURED_LOG_LIMITS.maximumBatchRecords
-  ) {
+  if (Array.isArray(batch) === false || batch.length === 0 || batch.length > structuredLogLimits.maximumBatchRecords) {
     return undefined;
   }
 
@@ -47,16 +43,13 @@ export function readBoundedLogBatch(batch: unknown): readonly string[] | undefin
   let batchBytes = 0;
   for (let recordIndex = 0; recordIndex < recordCount; recordIndex += 1) {
     const record: unknown = batch[recordIndex];
-    if (typeof record !== 'string' || record.length > STRUCTURED_LOG_LIMITS.maximumRecordBytes) {
+    if (typeof record !== 'string' || record.length > structuredLogLimits.maximumRecordBytes) {
       return undefined;
     }
 
     const recordBytes = Buffer.byteLength(record, 'utf8');
     batchBytes += recordBytes;
-    if (
-      recordBytes > STRUCTURED_LOG_LIMITS.maximumRecordBytes ||
-      batchBytes > STRUCTURED_LOG_LIMITS.maximumBatchBytes
-    ) {
+    if (recordBytes > structuredLogLimits.maximumRecordBytes || batchBytes > structuredLogLimits.maximumBatchBytes) {
       return undefined;
     }
 

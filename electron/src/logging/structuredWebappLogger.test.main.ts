@@ -23,7 +23,7 @@ import * as assert from 'assert';
 import * as path from 'path';
 
 import {getWebViewApplicationLogPath} from './logPaths';
-import {createDesktopApplicationLogs, STRUCTURED_LOG_LIMITS} from './structuredLogBatch';
+import {createDesktopApplicationLogs, structuredLogLimits} from './structuredLogBatch';
 import {createStructuredWebappLogger} from './structuredWebappLogger';
 import {createWebViewConsoleLogger} from './webViewConsoleLogger';
 
@@ -43,7 +43,14 @@ type CreateGuestOptions = {
 
 function createGuest({id = 1, url = allowedOrigin, hostWebContents = wrapper}: CreateGuestOptions = {}) {
   const mainFrame = {url};
-  const sender = {id, mainFrame, hostWebContents, isDestroyed: () => false};
+  const sender = {
+    id,
+    mainFrame,
+    hostWebContents,
+    isDestroyed() {
+      return false;
+    },
+  };
   return {sender, senderFrame: mainFrame};
 }
 
@@ -64,9 +71,15 @@ function createReceiver(overrides: Partial<TestDependencies> = {}) {
   const context = createContext(guest.sender);
   const writes: Parameters<TestDependencies['writeBatch']>[0][] = [];
   const receiver = createStructuredWebappLogger({
-    getWebViewContext: () => context,
-    getWrapperWebContents: () => wrapper,
-    getCurrentDate: () => new Date('2026-07-10T23:59:59.999Z'),
+    getWebViewContext() {
+      return context;
+    },
+    getWrapperWebContents() {
+      return wrapper;
+    },
+    getCurrentDate() {
+      return new Date('2026-07-10T23:59:59.999Z');
+    },
     async writeBatch(batch) {
       writes.push(batch);
     },
@@ -114,15 +127,17 @@ describe('structured Webapp logging', () => {
 
   it('bounds UTF-8 record and batch sizes and the number of records', async () => {
     const {guest, receiver, writes} = createReceiver();
-    const oversizedRecord = record.replace('Connected', 'é'.repeat(STRUCTURED_LOG_LIMITS.maximumRecordBytes / 2));
-    const largeRecord = record.replace('Connected', 'é'.repeat(STRUCTURED_LOG_LIMITS.maximumBatchBytes / 4));
+    const oversizedRecord = record.replace('Connected', 'é'.repeat(structuredLogLimits.maximumRecordBytes / 2));
+    const largeRecord = record.replace('Connected', 'é'.repeat(structuredLogLimits.maximumBatchBytes / 4));
 
     assert.strictEqual(await receiver.receive(guest, [oversizedRecord]), 'rejected');
     assert.strictEqual(await receiver.receive(guest, [largeRecord, largeRecord]), 'rejected');
     assert.strictEqual(
       await receiver.receive(
         guest,
-        Array.from({length: STRUCTURED_LOG_LIMITS.maximumBatchRecords + 1}, () => record),
+        Array.from({length: structuredLogLimits.maximumBatchRecords + 1}, () => {
+          return record;
+        }),
       ),
       'rejected',
     );
@@ -134,9 +149,15 @@ describe('structured Webapp logging', () => {
     const untrusted = createGuest({id: 2, url: 'https://untrusted.example.com'});
     const foreignHost = createGuest({id: 3, hostWebContents: {}});
     const guest = createGuest({id: 4});
-    const contexts = new Map([untrusted, foreignHost, guest].map(({sender}) => [sender.id, createContext(sender)]));
+    const contexts = new Map(
+      [untrusted, foreignHost, guest].map(({sender}) => {
+        return [sender.id, createContext(sender)];
+      }),
+    );
     const {receiver, writes} = createReceiver({
-      getWebViewContext: senderId => contexts.get(senderId),
+      getWebViewContext(senderId) {
+        return contexts.get(senderId);
+      },
     });
 
     for (const unauthorized of [
@@ -164,8 +185,12 @@ describe('structured Webapp logging', () => {
     let receivedAt = new Date('2026-07-11T01:59:59.999+02:00');
     const outputPaths: string[] = [];
     const {receiver} = createReceiver({
-      getWebViewContext: senderId => contexts.get(senderId),
-      getCurrentDate: () => receivedAt,
+      getWebViewContext(senderId) {
+        return contexts.get(senderId);
+      },
+      getCurrentDate() {
+        return receivedAt;
+      },
       async writeBatch({accountId: authorizedAccountId, date}) {
         outputPaths.push(getWebViewApplicationLogPath({accountId: authorizedAccountId, date, logDirectory: 'logs'}));
       },
@@ -185,17 +210,27 @@ describe('structured Webapp logging', () => {
   });
 
   it('bounds pending work, returns write failures, and accepts further batches', async () => {
-    const guests = Array.from({length: STRUCTURED_LOG_LIMITS.maximumPendingBatches + 1}, (_, index) =>
-      createGuest({id: index + 1}),
+    const guests = Array.from({length: structuredLogLimits.maximumPendingBatches + 1}, (_, index) => {
+      return createGuest({id: index + 1});
+    });
+    const contexts = new Map(
+      guests.map(({sender}) => {
+        return [sender.id, createContext(sender)];
+      }),
     );
-    const contexts = new Map(guests.map(({sender}) => [sender.id, createContext(sender)]));
     const blockedWrites = Promise.withResolvers<void>();
     let completion = blockedWrites.promise;
     const {receiver} = createReceiver({
-      getWebViewContext: senderId => contexts.get(senderId),
-      writeBatch: () => completion,
+      getWebViewContext(senderId) {
+        return contexts.get(senderId);
+      },
+      writeBatch() {
+        return completion;
+      },
     });
-    const pending = guests.slice(0, -1).map(guest => receiver.receive(guest, [record]));
+    const pending = guests.slice(0, -1).map(guest => {
+      return receiver.receive(guest, [record]);
+    });
     const lastGuest = guests[guests.length - 1];
 
     assert.strictEqual(await receiver.receive(guests[0], [record]), 'busy');
@@ -204,7 +239,9 @@ describe('structured Webapp logging', () => {
     const results = await Promise.all(pending);
     assert.deepStrictEqual(
       results,
-      pending.map(() => 'failed'),
+      pending.map(() => {
+        return 'failed';
+      }),
     );
 
     completion = Promise.resolve();
@@ -213,7 +250,11 @@ describe('structured Webapp logging', () => {
 
   it('drains accepted writes before account deletion and rejects writes during deletion', async () => {
     const activeWrite = Promise.withResolvers<void>();
-    const {guest, receiver, context} = createReceiver({writeBatch: () => activeWrite.promise});
+    const {guest, receiver, context} = createReceiver({
+      writeBatch() {
+        return activeWrite.promise;
+      },
+    });
     const pendingWrite = receiver.receive(guest, [record]);
     let deletionStarted = false;
     const deletion = receiver.runAccountDeletion(accountId, async () => {
@@ -254,8 +295,12 @@ describe('structured Webapp logging', () => {
     const {guest, receiver, writes} = createReceiver();
     const consoleWrites: string[] = [];
     const logConsoleMessage = createWebViewConsoleLogger({
-      getAccountId: () => accountId,
-      getLogFilePath: () => 'console.log',
+      getAccountId() {
+        return accountId;
+      },
+      getLogFilePath() {
+        return 'console.log';
+      },
       async writeLogMessage(filePath, message) {
         consoleWrites.push(`${filePath}: ${message}`);
       },
