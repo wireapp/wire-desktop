@@ -47,7 +47,7 @@ type WebViewLogEvent = {
 type AuthorizedWebView = NavigationOrigins & {
   readonly accountId: string;
   readonly contents: WebViewLogSender;
-  readonly structuredLoggingRevoked?: boolean;
+  readonly loggingRevoked?: boolean;
 };
 
 type StructuredWebappLoggerDependencies = {
@@ -61,13 +61,30 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
   const pendingWrites = new Map<WebViewLogSender, {accountId: string; completion: Promise<void>}>();
   const accountDeletions = new Map<string, Promise<void>>();
 
-  function getAuthorizedAccountId({sender, senderFrame}: WebViewLogEvent): Maybe<string> {
+  function getActiveWebViewContext(sender: WebViewLogSender): Maybe<AuthorizedWebView> {
     const context = Maybe.of(dependencies.getWebViewContext(sender.id));
-    const wrapper = dependencies.getWrapperWebContents();
     if (
       context.isNothing ||
       context.value.contents !== sender ||
-      context.value.structuredLoggingRevoked === true ||
+      context.value.loggingRevoked === true ||
+      accountDeletions.has(context.value.accountId)
+    ) {
+      return Maybe.nothing();
+    }
+
+    return context;
+  }
+
+  function getConsoleLogAccountId(sender: WebViewLogSender): string | undefined {
+    const context = getActiveWebViewContext(sender);
+    return context.isJust ? context.value.accountId : undefined;
+  }
+
+  function getAuthorizedAccountId({sender, senderFrame}: WebViewLogEvent): Maybe<string> {
+    const context = getActiveWebViewContext(sender);
+    const wrapper = dependencies.getWrapperWebContents();
+    if (
+      context.isNothing ||
       wrapper === undefined ||
       sender.hostWebContents !== wrapper ||
       sender.isDestroyed() ||
@@ -91,7 +108,7 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
 
   async function writeAuthorizedBatch(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
     const authorizedAccountId = getAuthorizedAccountId(event);
-    if (authorizedAccountId.isNothing || accountDeletions.has(authorizedAccountId.value)) {
+    if (authorizedAccountId.isNothing) {
       return 'rejected';
     }
 
@@ -140,5 +157,5 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
     }
   }
 
-  return {receive, runAccountDeletion};
+  return {getConsoleLogAccountId, receive, runAccountDeletion};
 }

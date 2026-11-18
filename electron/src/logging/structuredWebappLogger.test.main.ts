@@ -61,7 +61,7 @@ function createContext(contents: ReturnType<typeof createGuest>['sender'], ident
     accountId: identifier,
     contents,
     pendingOrigin: Maybe.nothing<string>(),
-    structuredLoggingRevoked: false,
+    loggingRevoked: false,
     trustedOrigin: Maybe.just(allowedOrigin),
   };
 }
@@ -274,20 +274,23 @@ describe('structured Webapp logging', () => {
       },
     });
     const pendingWrite = receiver.receive(guest, [record]);
+    assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender), accountId);
     let deletionStarted = false;
     const deletion = receiver.runAccountDeletion(accountId, async () => {
       deletionStarted = true;
     });
 
     assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+    assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender), undefined);
     assert.strictEqual(deletionStarted, false);
     activeWrite.resolve();
     assert.strictEqual(await pendingWrite, 'written');
     await deletion;
     assert.strictEqual(deletionStarted, true);
 
-    context.structuredLoggingRevoked = true;
+    context.loggingRevoked = true;
     assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+    assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender), undefined);
   });
 
   it('drops excess preload calls and recovers from an IPC rejection', async () => {
@@ -340,13 +343,13 @@ describe('structured Webapp logging', () => {
     const consoleWrites: string[] = [];
     const logConsoleMessage = createWebViewConsoleLogger({
       getAccountId() {
-        return accountId;
+        return receiver.getConsoleLogAccountId(guest.sender);
       },
       getLogFilePath() {
         return 'console.log';
       },
-      async writeLogMessage(filePath, message) {
-        consoleWrites.push(`${filePath}: ${message}`);
+      async writeLogMessage({logFilePath, message}) {
+        consoleWrites.push(`${logFilePath}: ${message}`);
       },
       reportWriteFailure: assert.fail,
     });

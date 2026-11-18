@@ -242,7 +242,7 @@ describe('desktop renderer diagnostics', () => {
       reportWriteFailure(): void {
         throw new Error('Unexpected console log write failure');
       },
-      async writeLogMessage(logFilePath: string, message: string): Promise<void> {
+      async writeLogMessage({logFilePath, message}): Promise<void> {
         writtenMessages.push({logFilePath, message});
       },
     });

@@ -17,13 +17,15 @@
  *
  */
 
+import type {WriteLogMessageParameters} from './boundedLogWriter';
+
 export type WebViewConsoleMessageDetails = Pick<Electron.WebContentsConsoleMessageEventParams, 'message'>;
 
 export type WebViewConsoleLogParameters = {
   getAccountId(): string | undefined;
   getLogFilePath(accountId: string): string;
   reportWriteFailure(logFilePath: string, error: unknown): void;
-  writeLogMessage(logFilePath: string, message: string): Promise<void>;
+  writeLogMessage(parameters: WriteLogMessageParameters): Promise<void>;
 };
 
 const COLOR_CODE_PATTERN = /%c(.+?)%c/gm;
@@ -47,7 +49,13 @@ export function createWebViewConsoleLogger(
     const sanitizedMessage = sanitizeWebViewConsoleMessage(messageDetails.message);
 
     try {
-      await parameters.writeLogMessage(logFilePath, sanitizedMessage);
+      await parameters.writeLogMessage({
+        logFilePath,
+        message: sanitizedMessage,
+        shouldWrite() {
+          return parameters.getAccountId() === accountId;
+        },
+      });
     } catch (error) {
       parameters.reportWriteFailure(logFilePath, error);
     }

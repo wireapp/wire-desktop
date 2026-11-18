@@ -44,6 +44,7 @@ export type WriteLogMessageParameters = {
   logFilePath: string;
   message: string;
   lineEnding?: '\n';
+  shouldWrite?: () => boolean;
 };
 
 export type BoundedLogWriter = {
@@ -165,6 +166,12 @@ async function runQueuedWrite(parameters: RunQueuedWriteParameters): Promise<voi
   }
 
   const writeResult = await parameters.maintenanceCoordinator.runWrite(() => {
+    // Deletion can revoke an accepted console write while it is queued behind maintenance.
+    const {shouldWrite} = parameters.writeParameters;
+    if (shouldWrite !== undefined && !shouldWrite()) {
+      return Promise.resolve({requiresPostWriteCleanup: false});
+    }
+
     return writeLogEntry({
       dependencies: parameters.dependencies,
       maximumFileSizeBytes: parameters.maximumFileSizeBytes,

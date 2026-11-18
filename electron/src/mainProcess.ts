@@ -211,7 +211,7 @@ type WebviewNavigationContext = {
   initialOriginToPersist: Maybe<string>;
   navigationQueue: ReturnType<typeof createWebviewNavigationQueue>;
   pendingOrigin: Maybe<string>;
-  structuredLoggingRevoked?: boolean;
+  loggingRevoked?: boolean;
   trustedOrigin: Maybe<string>;
 };
 
@@ -529,9 +529,10 @@ const bindIpcEvents = (): void => {
       return;
     }
 
+    initialWebviewAuthorizationsByAccountId.delete(accountId);
     for (const context of webviewNavigationContextsById.values()) {
       if (context.accountId === accountId) {
-        context.structuredLoggingRevoked = true;
+        context.loggingRevoked = true;
       }
     }
 
@@ -1119,8 +1120,7 @@ class ElectronWrapperInit {
 
           const writeWebViewConsoleMessage = createWebViewConsoleLogger({
             getAccountId() {
-              const accountId = lifecycle.getAccountId(contents);
-              return accountId.isJust ? accountId.value : undefined;
+              return structuredWebappLogger.getConsoleLogAccountId(contents);
             },
             getLogFilePath(accountId) {
               return getWebViewLogPath({
@@ -1132,9 +1132,7 @@ class ElectronWrapperInit {
             reportWriteFailure() {
               logger.error('Could not write an account WebView console message to its account log.');
             },
-            writeLogMessage(logFilePath, message) {
-              return writeBoundedLogMessage({logFilePath, message});
-            },
+            writeLogMessage: writeBoundedLogMessage,
           });
 
           contents.on('console-message', messageDetails => {
