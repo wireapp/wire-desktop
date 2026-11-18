@@ -19,8 +19,9 @@
 import {program as commander} from 'commander';
 import path from 'path';
 
-import {checkCommanderOptions, getLogger} from '../bin-utils';
+import {getLogger} from '../bin-utils';
 import {find, parseSupportedDeploymentPlatform} from './lib/deploy-utils';
+import {publishWindowsSquirrelRelease} from './lib/publish-windows-squirrel-release';
 import {S3Deployer} from './lib/S3Deployer';
 
 const toolName = path.basename(__filename).replace('.ts', '');
@@ -29,18 +30,18 @@ const logger = getLogger('deploy-tools', toolName);
 commander
   .name(toolName)
   .description('Copy releases files on S3')
-  .option('-b, --bucket <bucket>', 'Specify the S3 bucket to upload to')
+  .requiredOption('-b, --bucket <bucket>', 'Specify the S3 bucket to upload to')
   .option('-d, --dry-run', 'Just log without actually uploading')
-  .option('-i, --key-id <id>', 'Specify the AWS access key ID')
-  .option('-k, --secret-key <id>', 'Specify the AWS secret access key ID')
+  .requiredOption('-i, --key-id <id>', 'Specify the AWS access key ID')
+  .requiredOption('-k, --secret-key <id>', 'Specify the AWS secret access key')
   .option('-p, --path <path>', 'Specify the local path to search for files (e.g. "../../wrap")')
   .option('-s, --s3path <path>', 'Specify the base path on S3 (e.g. "apps/windows")')
-  .option('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
+  .option('--versioned-name <name>', 'Specify the S3 filename stem of the versioned Squirrel artifacts')
+  .option('--setup-name <name>', 'Specify the stable Squirrel setup filename')
+  .requiredOption('-w, --wrapper-build <build>', 'Specify the wrapper build (e.g. "Windows#3.7.1234")')
   .parse(process.argv);
 
 const commanderOptions = commander.opts();
-
-checkCommanderOptions(commanderOptions, logger, ['bucket', 'keyId', 'secretKey', 'wrapperBuild']);
 
 if (!commanderOptions.wrapperBuild.includes('#')) {
   logger.error(`Invalid wrapper build id "${commanderOptions.wrapperBuild}"`);
@@ -56,51 +57,34 @@ if (!commanderOptions.wrapperBuild.includes('#')) {
     throw new Error('Copying release files on S3 is supported only for Windows');
   }
 
-  const bucket = commanderOptions.bucket;
+  const {bucket, secretKey: secretAccessKey, keyId: accessKeyId} = commanderOptions;
+  if (accessKeyId === '' || secretAccessKey === '') {
+    throw new Error('Both AWS credential options must be nonempty.');
+  }
   const searchBasePath = commanderOptions.path || path.resolve('.');
-  const s3BasePath = `${commanderOptions.s3path || ''}/`.replace('//', '/');
 
-  const nupkgFile = await find('*-full.nupkg', {cwd: searchBasePath});
-  const setupExe = await find('*-Setup.exe', {cwd: searchBasePath});
-  const [, appShortName] = new RegExp('(.+)-[\\d.]+-full\\.nupkg').exec(nupkgFile.fileName) || ['', ''];
-  const [, appFullName] = new RegExp('(.+)-Setup\\.exe').exec(setupExe.fileName) || ['', ''];
-
-  if (!appShortName) {
-    throw new Error('App short name not found');
+  let versionedName = commanderOptions.versionedName;
+  if (versionedName === undefined) {
+    const nupkgFile = await find('*-full.nupkg', {cwd: searchBasePath});
+    const appShortName = /(.+)-[\d.]+-full\.nupkg/.exec(nupkgFile.fileName)?.[1];
+    if (appShortName === undefined) {
+      throw new Error('App short name not found');
+    }
+    versionedName = `${appShortName}-${version}`;
   }
 
-  if (!appFullName) {
-    throw new Error('App full name not found');
-  }
-
-  const staticReleaseKey = `${s3BasePath}/RELEASES`;
-  const staticExeKey = `${s3BasePath}/${appFullName}-Setup.exe`;
-
-  const latestReleaseKey = `${s3BasePath}/${appShortName}-${version}-RELEASES`;
-  const latestExeKey = `${s3BasePath}/${appShortName}-${version}.exe`;
-
-  const {secretKey: secretAccessKey, keyId: accessKeyId} = commanderOptions;
-
+  const setupName = commanderOptions.setupName ?? (await find('*-Setup.exe', {cwd: searchBasePath})).fileName;
   const s3Deployer = new S3Deployer({accessKeyId, dryRun: commanderOptions.dryRun || false, secretAccessKey});
 
-  logger.log(`Deleting "${staticReleaseKey}" from S3 ...`);
-  await s3Deployer.deleteFromS3({bucket, s3Path: `${bucket}/${staticReleaseKey}`});
-
-  logger.log(`Deleting "${staticExeKey}" from S3 ...`);
-  await s3Deployer.deleteFromS3({bucket, s3Path: `${bucket}/${staticExeKey}`});
-
-  logger.log(`Copying "${bucket}/${latestReleaseKey}" to "${staticReleaseKey}" on S3 ...`);
-  await s3Deployer.copyOnS3({
+  await publishWindowsSquirrelRelease({
     bucket,
-    s3FromPath: `${bucket}/${latestReleaseKey}`,
-    s3ToPath: `${bucket}/${staticReleaseKey}`,
-  });
-
-  logger.log(`Copying "${bucket}/${latestExeKey}" to "${staticExeKey}" on S3 ...`);
-  await s3Deployer.copyOnS3({
-    bucket,
-    s3FromPath: `${bucket}/${latestExeKey}`,
-    s3ToPath: `${bucket}/${staticExeKey}`,
+    copyOnS3: async copyOptions => {
+      logger.log(`Copying "${copyOptions.s3FromPath}" to "${copyOptions.s3ToPath}" on S3 ...`);
+      await s3Deployer.copyOnS3(copyOptions);
+    },
+    s3Prefix: commanderOptions.s3path,
+    setupName,
+    versionedName,
   });
 
   logger.log('Done updating releases on S3.');

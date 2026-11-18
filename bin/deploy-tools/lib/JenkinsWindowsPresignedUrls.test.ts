@@ -32,13 +32,19 @@ describe('Jenkins Windows presigned URLs', () => {
     assert.match(deploymentPipeline, /presignedArtifactNames\.add\(fileObj\.name\)/);
     assert.match(deploymentPipeline, /presignedArtifactNames\.add\(msiSetupAlias\)/);
     assert.match(deploymentPipeline, /presignedArtifactNames\.each \{ artifactName ->/);
-    assert.strictEqual(
-      (
-        deploymentPipeline.match(
-          /aws s3 presign s3:\/\/\$\{env\.S3_BUCKET\}\/\$\{env\.S3_PATH\}\/\$\{artifactName\}/g,
-        ) || []
-      ).length,
-      2,
+    assert.match(
+      deploymentPipeline,
+      /aws s3 presign s3:\/\/\$\{env\.S3_BUCKET\}\/\$\{env\.S3_PATH\}\/\$\{artifactName\}/,
     );
+  });
+
+  it('presigns Custom Windows artifacts and stores the list under the normalized release directory', () => {
+    assert.match(deploymentPipeline, /releaseDirectory = prefix \? "\$\{prefix\}\/" : ''/);
+    assert.match(
+      deploymentPipeline,
+      /PRESIGNED_ARTIFACT_URI=s3:\/\/\$\{env\.S3_BUCKET\}\/\$\{releaseDirectory\}\$\{artifactName\}/,
+    );
+    assert.match(deploymentPipeline, /aws s3 presign "\$PRESIGNED_ARTIFACT_URI"/);
+    assert.match(deploymentPipeline, /path: "\$\{releaseDirectory\}\$\{presignedFile\}"/);
   });
 });

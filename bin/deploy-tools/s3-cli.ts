@@ -21,6 +21,7 @@ import {program as commander} from 'commander';
 
 import path from 'path';
 
+import {normalizeS3DirectoryPrefix} from './lib/deploy-utils';
 import {copyWindowsMsiAliases, getWindowsMsiAliasCopyOptions, S3Deployer, WindowsArtifactType} from './lib/S3Deployer';
 
 import {checkCommanderOptions, getLogger} from '../bin-utils';
@@ -68,7 +69,7 @@ if (expectedWindowsMsiFileName && windowsArtifact !== 'msi') {
 
 (async () => {
   const searchBasePath = commanderOptions.path || path.join(__dirname, '../../wrap');
-  const s3BasePath = `${commanderOptions.s3path || ''}/`;
+  const s3BasePath = normalizeS3DirectoryPrefix(commanderOptions.s3path);
   const [platform, version] = commanderOptions.wrapperBuild.toLowerCase().split('#');
   const {bucket, secretKey: secretAccessKey, keyId: accessKeyId} = commanderOptions;
 
@@ -82,7 +83,7 @@ if (expectedWindowsMsiFileName && windowsArtifact !== 'msi') {
   for (let index = 0; index < files.length; index++) {
     const file = files[index];
     const {fileName, filePath} = file;
-    const s3Path = `${s3BasePath}${fileName}`.replace('//', '/');
+    const s3Path = `${s3BasePath}${fileName}`;
 
     await s3Deployer.uploadToS3({
       bucket,
