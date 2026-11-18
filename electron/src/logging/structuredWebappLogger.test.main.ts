@@ -32,8 +32,8 @@ const wrapper = {};
 const accountId = '11111111-1111-4111-8111-111111111111';
 const otherAccountId = '22222222-2222-4222-8222-222222222222';
 const record =
-  '{"level":30,"time":42,"component":"@wireapp/core/Account","msg":"Connected","error":{"detail":"\\u0025"}}\n';
-const recordWithoutMessage = '{"level":40,"time":42,"component":"@wireapp/core/Account","count":2}\n';
+  '{"level":30,"time":42,"component":"@wireapp/core/Account","msg":"Connected\\nRetry complete","error":{"detail":"\\u0025"}}';
+const recordWithoutMessage = '{"level":40,"time":42,"component":"@wireapp/core/Account","count":2}';
 
 type CreateGuestOptions = {
   id?: number;
@@ -101,19 +101,21 @@ describe('structured Webapp logging', () => {
   it('rejects the entire batch when a record is unsupported or malformed', async () => {
     const {guest, receiver, writes} = createReceiver();
     const invalidRecords = [
-      'null\n',
-      '[]\n',
-      '{}\n',
-      '{"level":60,"time":42,"component":"Account"}\n',
-      '{"level":30,"time":"42","component":"Account"}\n',
-      '{"level":30,"time":-1,"component":"Account"}\n',
-      '{"level":30,"time":42,"component":false}\n',
-      '{"level":30,"time":42,"component":"Account","msg":42}\n',
-      '{"level":30,\n"time":42,"component":"Account"}\n',
-      record.replace('\n', '\r\n'),
-      record.trimEnd(),
+      '',
+      'null',
+      '[]',
+      '{}',
+      '{"level":60,"time":42,"component":"Account"}',
+      '{"level":30,"time":"42","component":"Account"}',
+      '{"level":30,"time":-1,"component":"Account"}',
+      '{"level":30,"time":42,"component":false}',
+      '{"level":30,"time":42,"component":"Account","msg":42}',
+      '{"level":30,\n"time":42,"component":"Account"}',
+      '{"level":30,\r"time":42,"component":"Account"}',
+      `${record}\n`,
+      `${record}\r\n`,
       record + record,
-      '{"level":30,"time":42,"component":"Account"\n',
+      '{"level":30,"time":42,"component":"Account"',
       null,
     ];
 
@@ -125,13 +127,30 @@ describe('structured Webapp logging', () => {
     assert.deepStrictEqual(writes, []);
   });
 
-  it('bounds UTF-8 record and batch sizes and the number of records', async () => {
+  it('counts stored LF delimiters in UTF-8 record and batch limits', async () => {
     const {guest, receiver, writes} = createReceiver();
-    const oversizedRecord = record.replace('Connected', 'é'.repeat(structuredLogLimits.maximumRecordBytes / 2));
-    const largeRecord = record.replace('Connected', 'é'.repeat(structuredLogLimits.maximumBatchBytes / 4));
+    const multibyteRecord = record.replace('Connected', 'éééé');
+    const multibyteRecordBytes = Buffer.byteLength(multibyteRecord, 'utf8');
+    const largestRecord =
+      multibyteRecord + ' '.repeat(structuredLogLimits.maximumRecordBytes - multibyteRecordBytes - 1);
+    const lastBatchRecord =
+      recordWithoutMessage +
+      ' '.repeat(
+        structuredLogLimits.maximumBatchBytes -
+          multibyteRecordBytes -
+          Buffer.byteLength(recordWithoutMessage, 'utf8') -
+          2,
+      );
 
-    assert.strictEqual(await receiver.receive(guest, [oversizedRecord]), 'rejected');
-    assert.strictEqual(await receiver.receive(guest, [largeRecord, largeRecord]), 'rejected');
+    assert.strictEqual(await receiver.receive(guest, [`${largestRecord} `]), 'rejected');
+    assert.strictEqual(await receiver.receive(guest, [multibyteRecord, `${lastBatchRecord} `]), 'rejected');
+    assert.deepStrictEqual(writes, []);
+    assert.strictEqual(await receiver.receive(guest, [largestRecord]), 'written');
+    assert.strictEqual(await receiver.receive(guest, [multibyteRecord, lastBatchRecord]), 'written');
+  });
+
+  it('bounds the number of records in a batch', async () => {
+    const {guest, receiver, writes} = createReceiver();
     assert.strictEqual(
       await receiver.receive(
         guest,
@@ -142,7 +161,6 @@ describe('structured Webapp logging', () => {
       'rejected',
     );
     assert.deepStrictEqual(writes, []);
-    assert.strictEqual(await receiver.receive(guest, [largeRecord]), 'written');
   });
 
   it('requires the registered guest, wrapper, top frame, and authorized origin', async () => {

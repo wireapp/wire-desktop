@@ -33,6 +33,11 @@ export type StructuredLogWriteResult = 'written' | 'rejected' | 'busy' | 'failed
 
 export type DesktopApplicationLogs = {
   readonly version: 1;
+  /**
+   * Submit sanitized Pino JSON strings as emitted by Webapp's encodeLogOutput.
+   * Records exclude raw CR and LF characters. Escaped newlines in JSON values are allowed.
+   * Desktop preserves each string and adds an LF whose byte counts toward both UTF-8 limits.
+   */
   readonly write: (records: readonly string[]) => Promise<StructuredLogWriteResult>;
 };
 
@@ -50,11 +55,11 @@ export function readBoundedLogBatch(batch: unknown): Maybe<readonly string[]> {
   let batchBytes = 0;
   for (let recordIndex = 0; recordIndex < recordCount; recordIndex += 1) {
     const record: unknown = batch[recordIndex];
-    if (!is.string(record) || record.length > structuredLogLimits.maximumRecordBytes) {
+    if (!is.string(record) || record.length >= structuredLogLimits.maximumRecordBytes) {
       return Maybe.nothing();
     }
 
-    const recordBytes = Buffer.byteLength(record, 'utf8');
+    const recordBytes = Buffer.byteLength(record, 'utf8') + 1;
     batchBytes += recordBytes;
     if (recordBytes > structuredLogLimits.maximumRecordBytes || batchBytes > structuredLogLimits.maximumBatchBytes) {
       return Maybe.nothing();
@@ -67,7 +72,7 @@ export function readBoundedLogBatch(batch: unknown): Maybe<readonly string[]> {
 }
 
 export function isStructuredLogRecord(line: string): boolean {
-  if (line.indexOf('\n') !== line.length - 1 || line.includes('\r')) {
+  if (line.includes('\n') || line.includes('\r')) {
     return false;
   }
 

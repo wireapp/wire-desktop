@@ -226,22 +226,24 @@ describe('bounded desktop log writer', () => {
     withTemporaryDirectory('wire-bounded-jsonl-rotation-', async (temporaryLogDirectory: string) => {
       const logFilePath = path.join(temporaryLogDirectory, 'application.jsonl');
       const existingRotation = `${logFilePath}.3-0.old`;
-      const firstRecord = '{"level":30,"time":42,"component":"Account"}';
+      const firstRecord = '{"level":30,"time":42,"component":"Account","msg":"first\\nsecond"}';
       const secondRecord = '{"level":40,"time":43,"component":"Account"}';
-      const batchMessage = `${firstRecord}\n${secondRecord}`;
+      const batch = [firstRecord, secondRecord];
+      const expectedJsonl = `${firstRecord}\n${secondRecord}\n`;
       const boundedLogWriter = createBoundedLogWriter({
         afterWrite: ignorePostWriteCleanup,
         dependencies: createTestFileSystemDependencies(3),
         maintenanceCoordinator: createTestMaintenanceCoordinator(),
-        maximumFileSizeBytes: Buffer.byteLength(`${batchMessage}\n`),
+        maximumFileSizeBytes: Buffer.byteLength(expectedJsonl),
       });
 
       await fs.outputFile(existingRotation, `${secondRecord}\n`);
-      await boundedLogWriter.write({logFilePath, message: batchMessage, lineEnding: '\n'});
+      await boundedLogWriter.write({logFilePath, message: batch.join('\n'), lineEnding: '\n'});
+      assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), expectedJsonl);
       await boundedLogWriter.write({logFilePath, message: firstRecord, lineEnding: '\n'});
 
       assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), `${firstRecord}\n`);
-      assert.strictEqual(await fs.readFile(`${logFilePath}.3-1.old`, 'utf8'), `${batchMessage}\n`);
+      assert.strictEqual(await fs.readFile(`${logFilePath}.3-1.old`, 'utf8'), expectedJsonl);
       assert.strictEqual(await fs.readFile(existingRotation, 'utf8'), `${secondRecord}\n`);
     }),
   );

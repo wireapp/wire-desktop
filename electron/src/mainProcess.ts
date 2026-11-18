@@ -241,7 +241,7 @@ const structuredWebappLogger = createStructuredWebappLogger({
     return writeBoundedLogMessage({
       lineEnding: '\n',
       logFilePath: getWebViewApplicationLogPath({accountId, date, logDirectory: getLogDirectory()}),
-      message: records.join('').slice(0, -1),
+      message: records.join('\n'),
     });
   },
 });
