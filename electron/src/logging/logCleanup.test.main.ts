@@ -254,6 +254,43 @@ describe('desktop log cleanup', () => {
   });
 
   it(
+    'expires current and rotated JSONL alongside historical logs',
+    withTemporaryDirectory('wire-log-cleanup-jsonl-', async (temporaryLogDirectory: string) => {
+      const accountDirectory = path.join(temporaryLogDirectory, '2026-08-20', 'accounts', 'account');
+      const expiredPaths = [
+        path.join(accountDirectory, 'application.jsonl'),
+        path.join(accountDirectory, 'application.jsonl.123-0.old'),
+      ];
+      const retainedPath = path.join(temporaryLogDirectory, 'legacy.log');
+      const currentTimeMilliseconds = Date.parse('2026-09-01T12:00:00.000Z');
+      const expiredTime = new Date('2026-08-20T12:00:00.000Z');
+      const currentTime = new Date(currentTimeMilliseconds);
+      const cleanup = createLogCleanup({
+        ...createLogCleanupFileSystemDependencies(assert.fail),
+        getCurrentTimeMilliseconds() {
+          return currentTimeMilliseconds;
+        },
+      });
+
+      for (const expiredPath of expiredPaths) {
+        await fs.outputFile(expiredPath, '{}\n');
+        await fs.utimes(expiredPath, expiredTime, expiredTime);
+      }
+      await fs.outputFile(retainedPath, 'diagnostics\n');
+      await fs.utimes(retainedPath, currentTime, currentTime);
+
+      await cleanup.run({
+        activeFilePaths: new Set(),
+        logDirectory: temporaryLogDirectory,
+        policy: DESKTOP_LOG_RETENTION_POLICY,
+      });
+
+      assert.strictEqual(await fs.pathExists(accountDirectory), false);
+      assert.strictEqual(await fs.pathExists(retainedPath), true);
+    }),
+  );
+
+  it(
     'removes empty ancestors without removing the log root or following symbolic links',
     withTemporaryDirectory('wire-log-cleanup-directories-', async (temporaryLogDirectory: string) => {
       const reportFailure = (): void => {

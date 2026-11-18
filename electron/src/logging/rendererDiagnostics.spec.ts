@@ -17,6 +17,8 @@
  *
  */
 
+import {Maybe} from 'true-myth';
+
 import {EventEmitter} from 'events';
 
 import {
@@ -235,14 +237,16 @@ describe('desktop renderer diagnostics', () => {
   it('preserves account WebView console logging and access-token filtering', async () => {
     const writtenMessages: Array<{logFilePath: string; message: string}> = [];
     const logAccountConsoleMessage = createWebViewConsoleLogger({
-      getAccountId: (): string => 'account-123',
+      getAccountId() {
+        return Maybe.just('account-123');
+      },
       getLogFilePath(accountId: string): string {
         return `/logs/accounts/${accountId}/console.log`;
       },
       reportWriteFailure(): void {
         throw new Error('Unexpected console log write failure');
       },
-      async writeLogMessage(logFilePath: string, message: string): Promise<void> {
+      async writeLogMessage({logFilePath, message}): Promise<void> {
         writtenMessages.push({logFilePath, message});
       },
     });

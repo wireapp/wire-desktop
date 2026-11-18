@@ -18,6 +18,7 @@
  */
 
 import * as fs from 'fs-extra';
+import {Maybe} from 'true-myth';
 
 import * as assert from 'assert';
 import * as path from 'path';
@@ -26,6 +27,7 @@ import {BoundedLogWriter, BoundedLogWriterDependencies, createBoundedLogWriter} 
 import {createLogCleanup, createLogCleanupFileSystemDependencies} from './logCleanup';
 import {createLogMaintenanceCoordinator} from './logMaintenance';
 import {LogRetentionPolicy} from './logRetention';
+import {createWebViewConsoleLogger} from './webViewConsoleLogger';
 
 import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
 import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
@@ -222,6 +224,33 @@ describe('bounded desktop log writer', () => {
   );
 
   it(
+    'rotates structured batches intact and preserves LF and existing rotations',
+    withTemporaryDirectory('wire-bounded-jsonl-rotation-', async (temporaryLogDirectory: string) => {
+      const logFilePath = path.join(temporaryLogDirectory, 'application.jsonl');
+      const existingRotation = `${logFilePath}.3-0.old`;
+      const firstRecord = '{"level":30,"time":42,"component":"Account","msg":"first\\nsecond"}';
+      const secondRecord = '{"level":40,"time":43,"component":"Account"}';
+      const batch = [firstRecord, secondRecord];
+      const expectedJsonl = `${firstRecord}\n${secondRecord}\n`;
+      const boundedLogWriter = createBoundedLogWriter({
+        afterWrite: ignorePostWriteCleanup,
+        dependencies: createTestFileSystemDependencies(3),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
+        maximumFileSizeBytes: Buffer.byteLength(expectedJsonl),
+      });
+
+      await fs.outputFile(existingRotation, `${secondRecord}\n`);
+      await boundedLogWriter.writeJsonl({logFilePath, message: batch.join('\n')});
+      assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), expectedJsonl);
+      await boundedLogWriter.writeJsonl({logFilePath, message: firstRecord});
+
+      assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), `${firstRecord}\n`);
+      assert.strictEqual(await fs.readFile(`${logFilePath}.3-1.old`, 'utf8'), expectedJsonl);
+      assert.strictEqual(await fs.readFile(existingRotation, 'utf8'), `${secondRecord}\n`);
+    }),
+  );
+
+  it(
     'allows an individual entry larger than the configured file size',
     withTemporaryDirectory('wire-bounded-log-large-entry-', async (temporaryLogDirectory: string) => {
       const logFilePath = path.join(temporaryLogDirectory, 'electron.log');
@@ -320,6 +349,70 @@ describe('bounded desktop log writer', () => {
       assert.strictEqual(cleanupStartedAfterWriteCriticalSection, true);
       assert.strictEqual(cleanupFailureMessages.length, 0);
       assert.strictEqual(await fs.pathExists(logFilePath), false);
+    }),
+  );
+
+  it(
+    'keeps queued console writes from recreating a deleted account directory',
+    withTemporaryDirectory('wire-account-console-deletion-', async temporaryLogDirectory => {
+      const boundedLogWriter = createBoundedLogWriter({
+        afterWrite: ignorePostWriteCleanup,
+        dependencies: createTestFileSystemDependencies(1),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
+        maximumFileSizeBytes: 1024,
+      });
+      const accountDirectory = path.join(temporaryLogDirectory, 'deleted-account');
+      const accountLogPath = path.join(accountDirectory, 'console.log');
+      const otherAccountLogPath = path.join(temporaryLogDirectory, 'other-account', 'console.log');
+      let formerWebViewAccountId: Maybe<string> = Maybe.just('deleted-account');
+
+      function createConsoleCapture(getAccountId: () => Maybe<string>): ReturnType<typeof createWebViewConsoleLogger> {
+        return createWebViewConsoleLogger({
+          getAccountId,
+          getLogFilePath(accountId) {
+            return path.join(temporaryLogDirectory, accountId, 'console.log');
+          },
+          reportWriteFailure: assert.fail,
+          writeLogMessage: boundedLogWriter.writeConsoleMessage,
+        });
+      }
+
+      const formerWebView = createConsoleCapture(() => {
+        return formerWebViewAccountId;
+      });
+      const otherWebView = createConsoleCapture(() => {
+        return Maybe.just('other-account');
+      });
+      await formerWebView({message: 'before deletion'});
+      assert.strictEqual(await fs.pathExists(accountLogPath), true);
+
+      const maintenanceStarted = Promise.withResolvers<void>();
+      const releaseMaintenance = Promise.withResolvers<void>();
+      const earlierMaintenance = boundedLogWriter.runMaintenance(() => {
+        maintenanceStarted.resolve();
+        return releaseMaintenance.promise;
+      });
+      await maintenanceStarted.promise;
+
+      const queuedWrite = formerWebView({message: 'queued before deletion'});
+      formerWebViewAccountId = Maybe.nothing();
+      const deletion = boundedLogWriter.runMaintenance(() => {
+        return fs.remove(accountDirectory);
+      });
+      const writeDuringDeletion = formerWebView({message: 'during deletion'});
+      const otherAccountWrite = otherWebView({message: 'other account stays active'});
+      releaseMaintenance.resolve();
+      await Promise.all([earlierMaintenance, deletion, queuedWrite, writeDuringDeletion, otherAccountWrite]);
+      await formerWebView({message: 'after deletion'});
+
+      assert.strictEqual(await fs.pathExists(accountDirectory), false);
+      assert.strictEqual((await fs.readFile(otherAccountLogPath, 'utf8')).trimEnd(), 'other account stays active');
+
+      const replacementWebView = createConsoleCapture(() => {
+        return Maybe.just('deleted-account');
+      });
+      await replacementWebView({message: 'newly authorized WebView'});
+      assert.strictEqual((await fs.readFile(accountLogPath, 'utf8')).trimEnd(), 'newly authorized WebView');
     }),
   );
 

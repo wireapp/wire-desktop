@@ -28,11 +28,12 @@ import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
 
 describe('desktop log file discovery', () => {
   it(
-    'discovers nested log and old files without following symbolic links',
+    'discovers nested JSONL, log, and old files without following symbolic links',
     withTemporaryDirectory('wire-log-files-', async (temporaryLogDirectory: string) => {
       await fs.outputFile(path.join(temporaryLogDirectory, 'electron.log'), 'main');
       await fs.outputFile(path.join(temporaryLogDirectory, 'account', 'console.log'), 'webview');
       await fs.outputFile(path.join(temporaryLogDirectory, 'account', 'console.old'), 'legacy');
+      await fs.outputFile(path.join(temporaryLogDirectory, 'account', 'application.jsonl'), '{}\n');
       await fs.outputFile(path.join(temporaryLogDirectory, 'account', 'notes.txt'), 'ignore');
 
       const symbolicLinkTarget = path.join(temporaryLogDirectory, 'account');
@@ -40,7 +41,7 @@ describe('desktop log file discovery', () => {
       await fs.symlink(symbolicLinkTarget, symbolicLinkPath, 'dir');
 
       const actualPaths = getLogFilenames({absolute: false, baseDirectory: temporaryLogDirectory}).toSorted();
-      const expectedPaths = ['account/console.log', 'account/console.old', 'electron.log'];
+      const expectedPaths = ['account/application.jsonl', 'account/console.log', 'account/console.old', 'electron.log'];
 
       assert.deepStrictEqual(actualPaths, expectedPaths);
     }),

@@ -66,20 +66,18 @@ export function getMainProcessLogPath(parameters: MainProcessLogPathParameters):
   return path.join(getDailyLogDirectory(parameters), MAIN_PROCESS_LOG_FILE_NAME);
 }
 
+function getDailyAccountLogDirectory(parameters: WebViewLogPathParameters): string {
+  return path.join(getDailyLogDirectory(parameters), ACCOUNT_LOG_DIRECTORY_NAME, parameters.accountId);
+}
+
 export function getWebViewLogPath(parameters: WebViewLogPathParameters): string {
-  return path.join(
-    getDailyLogDirectory(parameters),
-    ACCOUNT_LOG_DIRECTORY_NAME,
-    parameters.accountId,
-    config.logFileName,
-  );
+  return path.join(getDailyAccountLogDirectory(parameters), config.logFileName);
+}
+
+export function getWebViewApplicationLogPath(parameters: WebViewLogPathParameters): string {
+  return path.join(getDailyAccountLogDirectory(parameters), 'application.jsonl');
 }
 
 export function getSsoLogPath(parameters: SsoLogPathParameters): string {
-  return path.join(
-    getDailyLogDirectory(parameters),
-    ACCOUNT_LOG_DIRECTORY_NAME,
-    parameters.accountId,
-    SSO_LOG_FILE_NAME,
-  );
+  return path.join(getDailyAccountLogDirectory(parameters), SSO_LOG_FILE_NAME);
 }

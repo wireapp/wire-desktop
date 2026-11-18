@@ -45,9 +45,20 @@ export type WriteLogMessageParameters = {
   message: string;
 };
 
+export type WriteConsoleLogMessageParameters = WriteLogMessageParameters & {
+  shouldWrite(): boolean;
+};
+
 export type BoundedLogWriter = {
   runMaintenance<Result>(operation: () => Promise<Result>): Promise<Result>;
   write: (parameters: WriteLogMessageParameters) => Promise<void>;
+  writeConsoleMessage: (parameters: WriteConsoleLogMessageParameters) => Promise<void>;
+  writeJsonl: (parameters: WriteLogMessageParameters) => Promise<void>;
+};
+
+type QueuedLogMessage = WriteLogMessageParameters & {
+  lineEnding: string;
+  shouldWrite(): boolean;
 };
 
 type PendingWrites = Map<string, Promise<void>>;
@@ -69,7 +80,7 @@ type RotateLogFileParameters = {
 type WriteLogEntryParameters = {
   dependencies: BoundedLogWriterDependencies;
   maximumFileSizeBytes: number;
-  writeParameters: WriteLogMessageParameters;
+  writeParameters: QueuedLogMessage;
 };
 
 type WriteLogEntryResult = {
@@ -116,7 +127,7 @@ async function rotateLogFile(parameters: RotateLogFileParameters): Promise<void>
 }
 
 async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<WriteLogEntryResult> {
-  const logEntry = `${parameters.writeParameters.message}${os.EOL}`;
+  const logEntry = `${parameters.writeParameters.message}${parameters.writeParameters.lineEnding}`;
   const logEntrySizeBytes = Buffer.byteLength(logEntry);
 
   await parameters.dependencies.ensureDirectory(path.dirname(parameters.writeParameters.logFilePath));
@@ -152,7 +163,7 @@ type RunQueuedWriteParameters = {
   maintenanceCoordinator: LogMaintenanceCoordinator;
   maximumFileSizeBytes: number;
   previousWrite: Promise<void>;
-  writeParameters: WriteLogMessageParameters;
+  writeParameters: QueuedLogMessage;
   dependencies: BoundedLogWriterDependencies;
 };
 
@@ -164,6 +175,11 @@ async function runQueuedWrite(parameters: RunQueuedWriteParameters): Promise<voi
   }
 
   const writeResult = await parameters.maintenanceCoordinator.runWrite(() => {
+    // Deletion can revoke an accepted console write while it is queued behind maintenance.
+    if (!parameters.writeParameters.shouldWrite()) {
+      return Promise.resolve({requiresPostWriteCleanup: false});
+    }
+
     return writeLogEntry({
       dependencies: parameters.dependencies,
       maximumFileSizeBytes: parameters.maximumFileSizeBytes,
@@ -176,10 +192,14 @@ async function runQueuedWrite(parameters: RunQueuedWriteParameters): Promise<voi
   }
 }
 
+function alwaysWrite(): boolean {
+  return true;
+}
+
 export function createBoundedLogWriter(parameters: CreateBoundedLogWriterParameters): BoundedLogWriter {
   const pendingWrites: PendingWrites = new Map();
 
-  function writeLogMessage(writeParameters: WriteLogMessageParameters): Promise<void> {
+  function queueLogMessage(writeParameters: QueuedLogMessage): Promise<void> {
     const previousWrite = Maybe.of(pendingWrites.get(writeParameters.logFilePath)).unwrapOr(Promise.resolve());
     const writeOperation = runQueuedWrite({
       afterWrite: parameters.afterWrite,
@@ -208,6 +228,14 @@ export function createBoundedLogWriter(parameters: CreateBoundedLogWriterParamet
 
   return {
     runMaintenance: parameters.maintenanceCoordinator.runMaintenance,
-    write: writeLogMessage,
+    write(writeParameters) {
+      return queueLogMessage({...writeParameters, lineEnding: os.EOL, shouldWrite: alwaysWrite});
+    },
+    writeConsoleMessage(writeParameters) {
+      return queueLogMessage({...writeParameters, lineEnding: os.EOL});
+    },
+    writeJsonl(writeParameters) {
+      return queueLogMessage({...writeParameters, lineEnding: '\n', shouldWrite: alwaysWrite});
+    },
   };
 }

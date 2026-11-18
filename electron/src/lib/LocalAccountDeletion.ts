@@ -27,6 +27,7 @@ import {ValidationUtil} from '@wireapp/commons';
 
 import {deleteAccountLogDirectories} from './accountLogDeletion';
 
+import {runDesktopLogMaintenance} from '../logging/desktopLogWriter';
 import {getLogger} from '../logging/getLogger';
 import {
   LogDirectoryCleanupDependencies,
@@ -92,7 +93,14 @@ export async function deleteAccount(id: number, accountId: string, partitionId?:
     }
   }
 
-  // Delete logs for this account
+  await runDesktopLogMaintenance(() => {
+    return deleteAccountLogs(accountId);
+  });
+}
+
+async function deleteAccountLogs(accountId: string): Promise<void> {
+  const truncatedId = truncate(accountId, {length: 5});
+
   try {
     if (!ValidationUtil.isUUIDv4(accountId)) {
       throw new Error('Account is not an UUID');

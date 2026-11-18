@@ -66,12 +66,22 @@ import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
 import type {WebviewNavigationRequest} from './lib/WebviewNavigationTypes';
 import * as locale from './locale';
-import {runDesktopLogCleanup, writeBoundedLogMessage} from './logging/desktopLogWriter';
+import {
+  runDesktopLogCleanup,
+  writeBoundedConsoleLogMessage,
+  writeBoundedJsonlLogMessage,
+} from './logging/desktopLogWriter';
 import {getLogger} from './logging/getLogger';
 import {scheduleLogCleanup} from './logging/logCleanupScheduler';
-import {getLogDirectory, getMainProcessLogPath, getWebViewLogPath} from './logging/logPaths';
+import {
+  getLogDirectory,
+  getMainProcessLogPath,
+  getWebViewApplicationLogPath,
+  getWebViewLogPath,
+} from './logging/logPaths';
 import {initializeDesktopLogLifecycle} from './logging/logStartup';
 import {registerRendererDiagnostics} from './logging/rendererDiagnostics';
+import {createStructuredWebappLogger} from './logging/structuredWebappLogger';
 import {createWebViewConsoleLogger} from './logging/webViewConsoleLogger';
 import {getManagedConfig} from './managed/ManagedConfig';
 import {developerMenu, openDevTools} from './menu/developer';
@@ -205,6 +215,7 @@ type WebviewNavigationContext = {
   initialOriginToPersist: Maybe<string>;
   navigationQueue: ReturnType<typeof createWebviewNavigationQueue>;
   pendingOrigin: Maybe<string>;
+  loggingRevoked: boolean;
   trustedOrigin: Maybe<string>;
 };
 
@@ -220,6 +231,23 @@ type AssociateWebviewWithAccountParameters = {
 };
 
 const webviewNavigationContextsById = new Map<number, WebviewNavigationContext>();
+const structuredWebappLogger = createStructuredWebappLogger({
+  getWebViewContext(senderId) {
+    return Maybe.of(webviewNavigationContextsById.get(senderId));
+  },
+  getWrapperWebContents() {
+    return Maybe.of(main?.webContents);
+  },
+  getCurrentDate() {
+    return new Date();
+  },
+  writeBatch({accountId, date, records}) {
+    return writeBoundedJsonlLogMessage({
+      logFilePath: getWebViewApplicationLogPath({accountId, date, logDirectory: getLogDirectory()}),
+      message: records.join('\n'),
+    });
+  },
+});
 // Electron supplies the guest WebContents only after will-attach-webview has authorized its initial src.
 const initialWebviewAuthorizationsByAccountId = new Map<string, InitialWebviewAttachmentAuthorization>();
 
@@ -352,6 +380,7 @@ function associateWebviewWithAccount(parameters: AssociateWebviewWithAccountPara
     accountId: parameters.accountId.value,
     contents: parameters.webviewContents,
     initialOriginToPersist: authorization.initialOriginToPersist,
+    loggingRevoked: false,
     navigationQueue: createWebviewNavigationQueue(),
     pendingOrigin: authorization.pendingOrigin,
     trustedOrigin: authorization.trustedOrigin,
@@ -499,9 +528,22 @@ const bindIpcEvents = (): void => {
     tray.showUnreadCount(main, count, ignoreFlash);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
-    await deleteAccount(id, accountId, partitionId);
-    forgetTrustedOriginForAccount(accountId);
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (event, id: number, accountId: string, partitionId?: string) => {
+    if (event.sender !== main?.webContents || event.senderFrame !== event.sender.mainFrame) {
+      return;
+    }
+
+    initialWebviewAuthorizationsByAccountId.delete(accountId);
+    for (const context of webviewNavigationContextsById.values()) {
+      if (context.accountId === accountId) {
+        context.loggingRevoked = true;
+      }
+    }
+
+    await structuredWebappLogger.runAccountDeletion(accountId, async () => {
+      await deleteAccount(id, accountId, partitionId);
+      forgetTrustedOriginForAccount(accountId);
+    });
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELOAD, () => forwardWrapperReloadRequest(main.webContents));
@@ -518,6 +560,7 @@ const bindIpcEvents = (): void => {
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
 
   ipcMain.handle(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW_TO_URL, handleWebviewNavigationRequest);
+  ipcMain.handle(EVENT_TYPE.DESKTOP.WRITE_APPLICATION_LOGS, structuredWebappLogger.receive);
 
   ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
     if (EnvironmentUtil.platform.IS_WINDOWS) {
@@ -1081,8 +1124,7 @@ class ElectronWrapperInit {
 
           const writeWebViewConsoleMessage = createWebViewConsoleLogger({
             getAccountId() {
-              const accountId = lifecycle.getAccountId(contents);
-              return accountId.isJust ? accountId.value : undefined;
+              return structuredWebappLogger.getConsoleLogAccountId(contents);
             },
             getLogFilePath(accountId) {
               return getWebViewLogPath({
@@ -1094,9 +1136,7 @@ class ElectronWrapperInit {
             reportWriteFailure() {
               logger.error('Could not write an account WebView console message to its account log.');
             },
-            writeLogMessage(logFilePath, message) {
-              return writeBoundedLogMessage({logFilePath, message});
-            },
+            writeLogMessage: writeBoundedConsoleLogMessage,
           });
 
           contents.on('console-message', messageDetails => {
