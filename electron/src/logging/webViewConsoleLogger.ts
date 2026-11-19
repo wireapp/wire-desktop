@@ -32,10 +32,39 @@ export type WebViewConsoleLogParameters = {
 
 const COLOR_CODE_PATTERN = /%c(.+?)%c/gm;
 const STYLING_PATTERN = /(color:#|font-weight:)[^;]+; /gm;
-const ACCESS_TOKEN_PATTERN = /access_token=[^ &]+/gm;
+const REDACTED = '[REDACTED]';
+const WEB_URL_PATTERN = /\b(?:wss?|https?):\/\/[^\s"'<>\\)]+/gi;
+const CREDENTIAL_VALUE_PATTERN =
+  /\b(access[_-]?token|refresh[_-]?token|asset[_-]?token|sync_marker|marker_token|client_id|token|password)=([^&\s"'\\]*)/gi;
+const AUTHORIZATION_PATTERN = /\b(Bearer|Basic)\s+[^\s,;"'\\]+/gi;
+const COOKIE_HEADER_PATTERN = /\b((?:set-)?cookie)\s*:\s*[^\r\n"'\\]*/gi;
+const CREDENTIAL_FIELD_PATTERN =
+  /("(?:authorization|cookie|set-cookie|sessionCookie|password|(?:access|refresh|asset)[_-]?token(?:Prefix)?|token(?:Prefix)?|cookiePrefix)"\s*:\s*)"(?:\\.|[^"\\])*"/gi;
+const LEGACY_ASSET_TOKEN_PATTERN = /(Expected token )\\?"[^"\r\n]*\\?"(?= \(redacted\))/g;
+const JSON_WEB_TOKEN_PATTERN = /\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g;
+
+function sanitizeWebUrl(value: string): string {
+  try {
+    const url = new URL(value);
+    const redactedQuery = url.search === '' ? '' : `?${REDACTED}`;
+    const redactedFragment = url.hash === '' ? '' : `#${REDACTED}`;
+    return `${url.origin}${value === url.origin ? '' : url.pathname}${redactedQuery}${redactedFragment}`;
+  } catch {
+    return value;
+  }
+}
 
 export function sanitizeWebViewConsoleMessage(message: string): string {
-  return message.replace(COLOR_CODE_PATTERN, '$1').replace(STYLING_PATTERN, '').replace(ACCESS_TOKEN_PATTERN, '');
+  return message
+    .replace(COLOR_CODE_PATTERN, '$1')
+    .replace(STYLING_PATTERN, '')
+    .replace(LEGACY_ASSET_TOKEN_PATTERN, '$1[REDACTED]')
+    .replace(CREDENTIAL_FIELD_PATTERN, `$1"${REDACTED}"`)
+    .replace(WEB_URL_PATTERN, sanitizeWebUrl)
+    .replace(CREDENTIAL_VALUE_PATTERN, `$1=${REDACTED}`)
+    .replace(AUTHORIZATION_PATTERN, `$1 ${REDACTED}`)
+    .replace(COOKIE_HEADER_PATTERN, `$1: ${REDACTED}`)
+    .replace(JSON_WEB_TOKEN_PATTERN, REDACTED);
 }
 
 export function createWebViewConsoleLogger(

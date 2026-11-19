@@ -21,6 +21,7 @@ import {Maybe} from 'true-myth';
 
 import {
   isStructuredLogRecord,
+  isPinoConsoleRecord,
   readBoundedLogBatch,
   structuredLogLimits,
   StructuredLogWriteResult,
@@ -59,12 +60,15 @@ type StructuredWebappLoggerDependencies = {
 
 export type StructuredWebappLogger = {
   getConsoleLogAccountId(sender: WebViewLogSender): Maybe<string>;
+  shouldCaptureConsoleMessage(sender: WebViewLogSender, message: string): boolean;
+  resetConsoleCapture(sender: WebViewLogSender): void;
   receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult>;
   runAccountDeletion(accountId: string, deleteAccount: () => Promise<void>): Promise<void>;
 };
 
 export function createStructuredWebappLogger(dependencies: StructuredWebappLoggerDependencies): StructuredWebappLogger {
   const pendingWrites = new Map<WebViewLogSender, {accountId: string; completion: Promise<void>}>();
+  const consoleCapture = new Map<WebViewLogSender, {context: AuthorizedWebView; confirmed: boolean}>();
   const accountDeletions = new Map<string, Promise<void>>();
 
   function getActiveWebViewContext(sender: WebViewLogSender): Maybe<AuthorizedWebView> {
@@ -81,7 +85,7 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
     return context;
   }
 
-  function getAuthorizedAccountId({sender, senderFrame}: WebViewLogEvent): Maybe<string> {
+  function getAuthorizedContext({sender, senderFrame}: WebViewLogEvent): Maybe<AuthorizedWebView> {
     const context = getActiveWebViewContext(sender);
     const wrapper = dependencies.getWrapperWebContents();
     const frame = Maybe.of(senderFrame);
@@ -97,34 +101,56 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
       return Maybe.nothing();
     }
 
-    return Maybe.just(context.value.accountId);
+    return context;
+  }
+
+  function resetConsoleCapture(sender: WebViewLogSender): void {
+    consoleCapture.delete(sender);
   }
 
   async function writeAuthorizedBatch(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
-    const authorizedAccountId = getAuthorizedAccountId(event);
-    if (authorizedAccountId.isNothing) {
+    const authorizedContext = getAuthorizedContext(event);
+    if (authorizedContext.isNothing) {
       return 'rejected';
     }
+    const context = authorizedContext.value;
+    const {sender} = event;
 
-    if (pendingWrites.has(event.sender) || pendingWrites.size >= structuredLogLimits.maximumPendingBatches) {
+    if (pendingWrites.has(sender) || pendingWrites.size >= structuredLogLimits.maximumPendingBatches) {
+      resetConsoleCapture(sender);
       return 'busy';
     }
 
     const records = readBoundedLogBatch(payload);
     if (records.isNothing || !records.value.every(isStructuredLogRecord)) {
+      resetConsoleCapture(sender);
       return 'rejected';
     }
 
-    const accountId = authorizedAccountId.value;
+    const previousCapture = consoleCapture.get(sender);
+    const capture = previousCapture?.context === context ? previousCapture : {context, confirmed: false};
+    consoleCapture.set(sender, capture);
+    const accountId = context.accountId;
     const date = dependencies.getCurrentDate();
-    const completion = dependencies.writeBatch({accountId, date, records: records.value});
-    pendingWrites.set(event.sender, {accountId, completion});
 
     try {
+      const completion = dependencies.writeBatch({accountId, date, records: records.value});
+      pendingWrites.set(sender, {accountId, completion});
       await completion;
+      if (consoleCapture.get(sender) === capture) {
+        const activeContext = getAuthorizedContext(event);
+        if (activeContext.isJust && activeContext.value === context) {
+          capture.confirmed = true;
+        }
+      }
       return 'written';
+    } catch {
+      if (consoleCapture.get(sender) === capture) {
+        resetConsoleCapture(sender);
+      }
+      return 'failed';
     } finally {
-      pendingWrites.delete(event.sender);
+      pendingWrites.delete(sender);
     }
   }
 
@@ -134,10 +160,27 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
         return context.accountId;
       });
     },
+    shouldCaptureConsoleMessage(sender, message) {
+      // The renderer can observe timeouts and missing replies which the main process cannot.
+      if (isStructuredTransportWarning(message)) {
+        resetConsoleCapture(sender);
+        return true;
+      }
+      const capture = consoleCapture.get(sender);
+      if (capture?.confirmed !== true) {
+        return true;
+      }
+      // Confirmation applies to the transport, not to an individual console record.
+      // Console events precede the outcome of the batch carrying their records.
+      const context = getActiveWebViewContext(sender);
+      return context.isNothing || capture.context !== context.value || !isPinoConsoleRecord(message);
+    },
+    resetConsoleCapture,
     async receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
       try {
         return await writeAuthorizedBatch(event, payload);
       } catch {
+        resetConsoleCapture(event.sender);
         return 'failed';
       }
     },
@@ -145,6 +188,12 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
       const existingDeletion = Maybe.of(accountDeletions.get(accountId));
       if (existingDeletion.isJust) {
         return existingDeletion.value;
+      }
+
+      for (const [sender, capture] of consoleCapture) {
+        if (capture.context.accountId === accountId) {
+          resetConsoleCapture(sender);
+        }
       }
 
       const writesForAccount = [...pendingWrites.values()]
@@ -164,4 +213,14 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
       }
     },
   };
+}
+
+function isStructuredTransportWarning(message: string): boolean {
+  return (
+    /^Desktop structured log write did not receive a successful acknowledgement \((?:rejected|busy|failed|timeout)\)$/.test(
+      message,
+    ) ||
+    message === 'Desktop structured log batch dropped while a previous write is still pending' ||
+    message === 'Desktop structured log flush failed'
+  );
 }
