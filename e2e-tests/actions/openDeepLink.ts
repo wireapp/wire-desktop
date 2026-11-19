@@ -17,21 +17,65 @@
  *
  */
 
-import {execFile} from 'node:child_process';
+import {execFile, spawn} from 'node:child_process';
 import {promisify} from 'node:util';
 
 import {App} from './createApp';
 
-// Open a deep link from outside of the application.
-// On macOS the link is handed to the OS, which forwards it to the app registered for the `wire://` protocol (see README).
-// On other platforms the link is delivered to the running app through its main process.
+const SECOND_INSTANCE_LOG = 'Second instance detected';
+
+// Open a deep link from outside of the application, the same way the operating system delivers it.
+// - macOS: the link is handed to the OS via `open`, which forwards it to the app registered for the `wire://` protocol
+//   (the packaged build under test, see README) and arrives in the app as `open-url` event.
+// - Windows: the OS starts a second instance of the registered executable with the link as argument, the running app
+//   receives it through the `second-instance` event (see `CoreProtocol.ts`). We start that second instance ourselves with
+//   the same executable and user data dir, so the real single instance lock & `second-instance` handling is exercised.
+//   What isn't covered is the protocol registration in the Windows registry itself.
 export const openDeepLink = async (app: App, url: string) => {
   if (process.platform === 'darwin') {
     await promisify(execFile)('open', [url]);
     return;
   }
 
-  await app.evaluate(({app}, deepLink) => {
-    app.emit('open-url', {preventDefault: () => {}}, deepLink);
-  }, url);
+  await openDeepLinkViaSecondInstance(app, url);
+};
+
+const openDeepLinkViaSecondInstance = async (app: App, url: string) => {
+  const timeout = 30_000;
+  let timer: NodeJS.Timeout | undefined;
+  let removeListeners = () => {};
+
+  // Listen before starting the second instance, the running app may handle it right away
+  const handled = new Promise<void>((resolve, reject) => {
+    const onOutput = (text: string) => text.includes(SECOND_INSTANCE_LOG) && resolve();
+    const onConsole = (msg: {text: () => string}) => onOutput(msg.text());
+    const onData = (data: unknown) => onOutput(String(data));
+    app.on('console', onConsole);
+    app.process().stdout?.on('data', onData);
+    removeListeners = () => {
+      app.off('console', onConsole);
+      app.process().stdout?.off('data', onData);
+    };
+    timer = setTimeout(
+      () =>
+        reject(
+          new Error(`The running app didn't receive the deep link "${url}" from a second instance within ${timeout}ms`),
+        ),
+      timeout,
+    );
+  });
+
+  const {executable, args} = app.launchCommand;
+  const secondInstance = spawn(executable, [...args, url], {stdio: 'ignore'});
+
+  try {
+    await Promise.race([handled, new Promise<never>((_, reject) => secondInstance.once('error', reject))]);
+  } finally {
+    clearTimeout(timer);
+    removeListeners();
+    // The second instance has done its job once the running app got the link, make sure it doesn't linger
+    if (secondInstance.exitCode === null && secondInstance.signalCode === null) {
+      secondInstance.kill();
+    }
+  }
 };

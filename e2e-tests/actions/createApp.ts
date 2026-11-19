@@ -17,7 +17,26 @@
  *
  */
 
-import {_electron as electron, Page} from '@playwright/test';
+import {_electron as electron, ElectronApplication, Page} from '@playwright/test';
+
+import {createRequire} from 'node:module';
+
+// Outside of the electron runtime the electron package exports the path to its executable
+const electronExecutable = createRequire(__filename)('electron') as string;
+
+const closeOrKill = async (app: ElectronApplication) => {
+  const closeTimeout = 10_000;
+  const closed = await Promise.race([
+    app.close().then(
+      () => true,
+      () => false,
+    ),
+    new Promise<false>(resolve => setTimeout(() => resolve(false), closeTimeout).unref()),
+  ]);
+  if (!closed) {
+    app.process().kill('SIGKILL');
+  }
+};
 
 export type App = Awaited<ReturnType<typeof createApp>>;
 
@@ -104,6 +123,11 @@ export const createApp = async (options: {
         );
       }, timeout);
     });
+  } catch (error) {
+    // The fixture never receives the app when this throws, so its teardown can't close it. Leftover instances would hold the
+    // single instance lock and interfere with retries and subsequent tests.
+    await closeOrKill(app);
+    throw error;
   } finally {
     clearTimeout(timer);
     if (onWindow) {
@@ -119,6 +143,11 @@ export const createApp = async (options: {
     wrapper,
     /* The playwright page for the currently shown webapp */
     page,
+    /* How the app was launched, used to start a second instance e.g. to deliver deep links the way Windows does */
+    launchCommand: {
+      executable: executablePath ?? electronExecutable,
+      args: [...(executablePath ? [] : ['.']), `--user-data-dir=${options.dataDir}`],
+    },
     /**
      * Utility function to re-open the application re-using the existing storage state
      * **Important:** the existing app won't be updated by this, instead the variable needs to be re-assigned

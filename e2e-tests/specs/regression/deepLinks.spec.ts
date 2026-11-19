@@ -42,6 +42,16 @@ test.describe('Deep Links', async () => {
   // OS level deep links need the packaged app registered as handler, all other specs run from the sources
   test.use({appOptions: {env: process.env.WEBAPP_URL, lang: 'en', executablePath: process.env.WIRE_APP_PATH}});
 
+  test.beforeAll(() => {
+    // On macOS the OS dispatches the link to the registered handler. Falling back to the sources would let the link go to a
+    // different installed Wire while the tests observe the app started from the sources, which is hard to diagnose.
+    if (process.platform === 'darwin' && !process.env.WIRE_APP_PATH) {
+      throw new Error(
+        'Missing env var WIRE_APP_PATH: deep link tests on macOS need the packaged app registered as "wire://" handler, see e2e-tests/README.md',
+      );
+    }
+  });
+
   test('Open a profile via deep link', {tag: ['@TC-11273', '@regression']}, async ({app, createUser, createPage}) => {
     const userA = await createUser();
     const userB = await createUser();
