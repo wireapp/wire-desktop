@@ -64,6 +64,7 @@ import {forwardWrapperReloadRequest} from './lib/forwardWrapperReloadRequest';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
+import {createWebappUrlWithLoggingCompatibility} from './lib/webappLoggingCompatibility';
 import type {WebviewNavigationRequest} from './lib/WebviewNavigationTypes';
 import * as locale from './locale';
 import {
@@ -617,9 +618,8 @@ function getMainWindowUrl() {
     return mainURL;
   }
 
-  const webappURL = new URL(baseUrl);
+  const webappURL = createWebappUrlWithLoggingCompatibility(baseUrl);
   webappURL.searchParams.set('hl', currentLocale);
-  webappURL.searchParams.set('enableLogging', '@wireapp/*');
 
   if (customProtocolHandler.hashLocation) {
     webappURL.hash = customProtocolHandler.hashLocation;
