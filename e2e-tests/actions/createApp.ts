@@ -54,10 +54,16 @@ export const createApp = async (options: {
   // Register the listener right away, windows opening while we await something else would be missed otherwise
   const windows: Page[] = [];
   const windowListeners = new Set<() => void>();
-  app.on('window', window => {
-    windows.push(window);
-    windowListeners.forEach(listener => listener());
-  });
+  const addWindow = (window: Page) => {
+    if (!windows.includes(window)) {
+      windows.push(window);
+      windowListeners.forEach(listener => listener());
+    }
+  };
+  app.on('window', addWindow);
+  // Playwright only injects its loader (which holds back the app's "ready" event until it's attached) when launching from the sources.
+  // A packaged build (executablePath) can therefore open windows before Playwright is connected, those never emit a "window" event.
+  app.windows().forEach(addWindow);
 
   const mainProcessLogs: string[] = [];
 
@@ -104,7 +110,9 @@ export const createApp = async (options: {
       windowListeners.delete(onWindow);
     }
   }
-  const [wrapper, page] = windows;
+  // Windows that already existed when Playwright attached aren't guaranteed to be in creation order, the wrapper is the local renderer
+  const wrapper = windows.find(window => window.url().startsWith('file:')) ?? windows[0];
+  const page = windows.find(window => window !== wrapper)!;
 
   return Object.assign(app, {
     /* The playwright page for the main electron window wrapping the webapp */
