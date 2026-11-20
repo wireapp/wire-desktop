@@ -189,8 +189,13 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
       }
       // Confirmation applies to the transport, not to an individual console record.
       // Console events precede the outcome of the batch carrying their records.
-      const context = getActiveWebViewContext(sender);
-      return context.isNothing || capture.context !== context.value || !isPinoConsoleRecord(message);
+      const context = getAuthorizedContext(event);
+      if (context.isNothing || capture.context !== context.value) {
+        resetConsoleCapture(sender);
+        return true;
+      }
+
+      return !isPinoConsoleRecord(message);
     },
     resetConsoleCapture,
     async receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {

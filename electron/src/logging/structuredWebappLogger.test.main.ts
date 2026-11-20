@@ -446,12 +446,29 @@ describe('structured Webapp logging', () => {
 
     context.trustedOrigin = Maybe.just('https://different.example.com');
     assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+    assert.deepStrictEqual(receiver.getConsoleLogAccountId(guest.sender), Maybe.just(accountId));
+    assert.strictEqual(writes.length, 1);
+
+    context.trustedOrigin = Maybe.just(allowedOrigin);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    assert.strictEqual(writes.length, 1);
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+  });
+
+  it('restores legacy capture when a console event detects authorization loss without IPC', async () => {
+    const {guest, receiver, context, writes} = createReceiver();
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+
+    context.trustedOrigin = Maybe.just('https://different.example.com');
     assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
     assert.deepStrictEqual(receiver.getConsoleLogAccountId(guest.sender), Maybe.just(accountId));
     assert.strictEqual(writes.length, 1);
 
     context.trustedOrigin = Maybe.just(allowedOrigin);
     assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    assert.strictEqual(writes.length, 1);
     assert.strictEqual(await receiver.receive(guest, [record]), 'written');
     assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
   });
