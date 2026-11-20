@@ -57,6 +57,38 @@ jobs:
         shell: bash
         run: yarn prestart
 
+      - name: Build packaged app for deep link tests
+        if: ${{ matrix.project == 'macOS' }}
+        shell: bash
+        env:
+          # Unsigned build with the inspect fuse enabled so Playwright can attach to it.
+          # The signing identities from .env.defaults don't exist on the runner, empty values disable signing.
+          E2E_BUILD: 'true'
+          MACOS_CERTIFICATE_NAME_APPLICATION: ''
+          MACOS_CERTIFICATE_NAME_INSTALLER: ''
+        run: |
+          yarn build:macos:internal:arm64
+          APP_PATH=$(find wrap/build -maxdepth 2 -name "*.app" -print -quit)
+          if [ -z "$APP_PATH" ]; then echo "Packaged app not found"; exit 1; fi
+          xattr -cr "$APP_PATH"
+          # Editing the bundle invalidates the original signature, arm64 only runs it with a (ad hoc) signature
+          codesign --force --deep --sign - "$APP_PATH"
+          echo "WIRE_APP_BUNDLE=$PWD/$APP_PATH" >> "$GITHUB_ENV"
+
+      - name: Install SwiftDefaultApps and register wire:// handler
+        if: ${{ matrix.project == 'macOS' }}
+        shell: bash
+        run: |
+          brew install --cask swiftdefaultappsprefpane
+
+          # The freshly built app is unknown to LaunchServices, swda can only select apps that are registered there
+          /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f -R -trusted "$WIRE_APP_BUNDLE"
+
+          swda setHandler --URL wire --app "$WIRE_APP_BUNDLE"
+          swda getHandler --URL wire
+          EXECUTABLE=$(find "$WIRE_APP_BUNDLE/Contents/MacOS" -type f -perm +111 -print -quit)
+          echo "WIRE_APP_PATH=$EXECUTABLE" >> "$GITHUB_ENV"
+
       - name: Run E2E tests
         shell: bash
         run: yarn test:e2e --project=${{ matrix.project }} --reporter=blob
