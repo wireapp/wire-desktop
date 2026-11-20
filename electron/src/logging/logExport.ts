@@ -25,6 +25,8 @@ import * as path from 'path';
 import {Writable} from 'stream';
 import {finished} from 'stream/promises';
 
+import {logFileIdentityChangedErrorCode} from './logPermissions';
+
 export type LogSnapshotFile = {
   absolutePath: string;
   relativePath: string;
@@ -36,15 +38,20 @@ export type LogSnapshot = {
 };
 
 export type LogSnapshotFileMetadata = {
+  linkCount: number;
+  isDirectory: boolean;
   isFile: boolean;
   isSymbolicLink: boolean;
+  mode: number;
+  ownerId: number;
 };
 
 export type LogSnapshotFileSystemDependencies = {
   copyFile: (sourceFilePath: string, destinationFilePath: string) => Promise<void>;
   createTemporaryDirectory: (temporaryDirectoryPrefix: string) => Promise<string>;
-  ensureDirectory: (directoryPath: string) => Promise<void>;
+  ensureDirectory: (rootDirectoryPath: string, directoryPath: string) => Promise<void>;
   getFileMetadata: (filePath: string) => Promise<LogSnapshotFileMetadata>;
+  protectFile: (filePath: string) => Promise<void>;
   removeDirectory: (directoryPath: string) => Promise<void>;
 };
 
@@ -65,8 +72,9 @@ export type StreamLogFilesToZipOptions = {
 export type LogArchiveDependencies = {
   createArchive: () => ZipArchive;
   createOutputStream: (destinationPath: string) => Writable;
-  pathExists: (filePath: string) => Promise<boolean>;
-  removeFile: (filePath: string) => Promise<void>;
+  createTemporaryArchiveDirectory: (destinationPath: string) => Promise<string>;
+  commitArchive: (sourcePath: string, destinationPath: string) => Promise<void>;
+  removeDirectory: (directoryPath: string) => Promise<void>;
   reportFailure: (message: string, error: unknown) => void;
 };
 
@@ -91,24 +99,34 @@ type ResolvePathWithinDirectoryOptions = {
 type CopyLogFileToSnapshotOptions = {
   logDirectory: string;
   relativePath: string;
+  snapshotDirectoryPath: string;
   sourceFilePath: string;
   snapshotFilePath: string;
-} & Pick<LogSnapshotFileSystemDependencies, 'copyFile' | 'ensureDirectory' | 'getFileMetadata'>;
+} & Pick<LogSnapshotFileSystemDependencies, 'copyFile' | 'ensureDirectory' | 'getFileMetadata' | 'protectFile'>;
 
 type GetSafeSourceFileMetadataOptions = {
+  ensureDirectory: LogSnapshotFileSystemDependencies['ensureDirectory'];
   logDirectory: string;
   sourceFilePath: string;
   getFileMetadata: LogSnapshotFileSystemDependencies['getFileMetadata'];
 };
 
-type RemoveIncompleteDestinationFileOptions = {
-  destinationPath: string;
-  destinationAlreadyExisted: boolean;
-  outputStreamCreated: boolean;
-} & Pick<LogArchiveDependencies, 'removeFile' | 'reportFailure'>;
+export const logSourceChangedErrorCode = 'ERR_WIRE_LOG_SOURCE_CHANGED';
 
 function isMissingFileError(error: unknown): boolean {
   return error instanceof Error && 'code' in error && error.code === 'ENOENT';
+}
+
+function createLogSourceChangedError(sourceFilePath: string, cause: unknown): Error {
+  const error = new Error(`Log source changed while creating its snapshot: ${sourceFilePath}`);
+
+  Object.assign(error, {cause, code: logSourceChangedErrorCode});
+
+  return error;
+}
+
+function isLogSourceChangedError(error: unknown): boolean {
+  return error instanceof Error && 'code' in error && error.code === logSourceChangedErrorCode;
 }
 
 export function resolvePathWithinDirectory(options: ResolvePathWithinDirectoryOptions): string {
@@ -140,13 +158,36 @@ function getArchiveRelativePath(relativePath: string): string {
 async function getSafeSourceFileMetadata(
   options: GetSafeSourceFileMetadataOptions,
 ): Promise<Maybe<LogSnapshotFileMetadata>> {
-  const {getFileMetadata} = options;
+  const {ensureDirectory, getFileMetadata} = options;
   const resolvedLogDirectory = path.resolve(options.logDirectory);
   const sourceRelativePath = path.relative(resolvedLogDirectory, options.sourceFilePath);
+  const sourcePathParts = sourceRelativePath.split(path.sep);
+
+  if (
+    sourceRelativePath.length === 0 ||
+    sourceRelativePath === '..' ||
+    sourceRelativePath.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(sourceRelativePath)
+  ) {
+    throw new Error(`Log source file is outside the Desktop log root: ${options.sourceFilePath}`);
+  }
+
+  const rootMetadata = await getFileMetadata(resolvedLogDirectory);
+
+  if (rootMetadata.isSymbolicLink || !rootMetadata.isDirectory) {
+    throw new Error(`Desktop log root is not a real directory: ${resolvedLogDirectory}`);
+  }
+
+  if (process.platform !== 'win32' && rootMetadata.ownerId !== process.getuid?.()) {
+    throw new Error(`Desktop log root is not owned by the current user: ${resolvedLogDirectory}`);
+  }
+
+  await ensureDirectory(resolvedLogDirectory, resolvedLogDirectory);
+
   let currentPath = resolvedLogDirectory;
   let sourceFileMetadata: Maybe<LogSnapshotFileMetadata> = Maybe.nothing<LogSnapshotFileMetadata>();
 
-  for (const pathPart of sourceRelativePath.split(path.sep)) {
+  for (const [pathIndex, pathPart] of sourcePathParts.entries()) {
     currentPath = path.join(currentPath, pathPart);
     const currentFileMetadata = await getFileMetadata(currentPath);
     sourceFileMetadata = Maybe.just(currentFileMetadata);
@@ -154,17 +195,58 @@ async function getSafeSourceFileMetadata(
     if (currentFileMetadata.isSymbolicLink === true) {
       return Maybe.nothing<LogSnapshotFileMetadata>();
     }
+
+    if (pathIndex < sourcePathParts.length - 1 && currentFileMetadata.isDirectory) {
+      await ensureDirectory(resolvedLogDirectory, currentPath);
+    }
+
+    if (currentFileMetadata.isFile && currentFileMetadata.linkCount > 1) {
+      throw new Error(`Log file has multiple hard links: ${currentPath}`);
+    }
+
+    if (process.platform !== 'win32' && currentFileMetadata.ownerId !== process.getuid?.()) {
+      throw new Error(`Log file is not owned by the current user: ${currentPath}`);
+    }
+
+    if (pathIndex < sourcePathParts.length - 1 && !currentFileMetadata.isDirectory) {
+      return Maybe.nothing<LogSnapshotFileMetadata>();
+    }
   }
 
   return sourceFileMetadata;
 }
 
+async function canSkipChangedLogSource(options: GetSafeSourceFileMetadataOptions): Promise<boolean> {
+  try {
+    const currentSourceMetadata = await getSafeSourceFileMetadata(options);
+
+    if (currentSourceMetadata.isNothing) {
+      throw new Error(`Log source is no longer a regular file: ${options.sourceFilePath}`);
+    }
+
+    return true;
+  } catch (error) {
+    if (isMissingFileError(error)) {
+      return true;
+    }
+
+    throw error;
+  }
+}
+
 async function copyLogFileToSnapshot(options: CopyLogFileToSnapshotOptions): Promise<Maybe<LogSnapshotFile>> {
-  const {copyFile, ensureDirectory, getFileMetadata} = options;
+  const {copyFile, ensureDirectory, getFileMetadata, protectFile} = options;
   const sourceFileMetadata = await getSafeSourceFileMetadata({
     getFileMetadata,
+    ensureDirectory,
     logDirectory: options.logDirectory,
     sourceFilePath: options.sourceFilePath,
+  }).catch(error => {
+    if (isMissingFileError(error)) {
+      throw createLogSourceChangedError(options.sourceFilePath, error);
+    }
+
+    throw error;
   });
 
   if (sourceFileMetadata.isJust === false) {
@@ -175,8 +257,21 @@ async function copyLogFileToSnapshot(options: CopyLogFileToSnapshotOptions): Pro
     return Maybe.nothing<LogSnapshotFile>();
   }
 
-  await ensureDirectory(path.dirname(options.snapshotFilePath));
+  await ensureDirectory(options.snapshotDirectoryPath, path.dirname(options.snapshotFilePath));
+  try {
+    await protectFile(options.sourceFilePath);
+  } catch (error) {
+    if (
+      isMissingFileError(error) ||
+      (error instanceof Error && 'code' in error && error.code === logFileIdentityChangedErrorCode)
+    ) {
+      throw createLogSourceChangedError(options.sourceFilePath, error);
+    }
+
+    throw error;
+  }
   await copyFile(options.sourceFilePath, options.snapshotFilePath);
+  await protectFile(options.snapshotFilePath);
 
   return Maybe.just({
     absolutePath: options.snapshotFilePath,
@@ -202,7 +297,7 @@ async function removeSnapshotDirectoryAfterFailure(
 }
 
 export async function createLogSnapshot(options: CreateLogSnapshotOptions): Promise<LogSnapshot> {
-  const {copyFile, createTemporaryDirectory, ensureDirectory, getFileMetadata} = options;
+  const {copyFile, createTemporaryDirectory, ensureDirectory, getFileMetadata, protectFile} = options;
   let snapshotDirectoryPath: Maybe<string> = Maybe.nothing<string>();
 
   try {
@@ -226,13 +321,27 @@ export async function createLogSnapshot(options: CreateLogSnapshotOptions): Prom
           ensureDirectory,
           getFileMetadata,
           logDirectory: options.logDirectory,
+          protectFile,
           relativePath,
+          snapshotDirectoryPath: createdSnapshotDirectoryPath,
           sourceFilePath,
           snapshotFilePath,
-        }).catch(error => {
+        }).catch(async error => {
           options.reportFailure(`Failed to copy log file "${relativePath}" to the temporary snapshot`, error);
 
-          return Maybe.nothing<LogSnapshotFile>();
+          if (
+            isLogSourceChangedError(error) &&
+            (await canSkipChangedLogSource({
+              ensureDirectory,
+              getFileMetadata,
+              logDirectory: options.logDirectory,
+              sourceFilePath,
+            }))
+          ) {
+            return Maybe.nothing<LogSnapshotFile>();
+          }
+
+          throw error;
         });
 
         if (snapshotFile.isJust) {
@@ -248,21 +357,24 @@ export async function createLogSnapshot(options: CreateLogSnapshotOptions): Prom
   }
 }
 
-async function removeIncompleteDestinationFile(options: RemoveIncompleteDestinationFileOptions): Promise<void> {
-  const {removeFile, reportFailure} = options;
+type RemoveTemporaryArchiveDirectoryOptions = {
+  temporaryDirectoryPath: Maybe<string>;
+  message: string;
+} & Pick<LogArchiveDependencies, 'removeDirectory' | 'reportFailure'>;
 
-  if (options.destinationAlreadyExisted || options.outputStreamCreated === false) {
+async function removeTemporaryArchiveDirectory(options: RemoveTemporaryArchiveDirectoryOptions): Promise<void> {
+  if (options.temporaryDirectoryPath.isNothing) {
     return;
   }
 
   try {
-    await removeFile(options.destinationPath);
+    await options.removeDirectory(options.temporaryDirectoryPath.value);
   } catch (error) {
     if (isMissingFileError(error)) {
       return;
     }
 
-    reportFailure(`Failed to remove incomplete log archive "${options.destinationPath}"`, error);
+    options.reportFailure(options.message, error);
   }
 }
 
@@ -282,17 +394,25 @@ async function waitForPromiseToSettle(promise: Promise<void>): Promise<void> {
 }
 
 export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): Promise<void> {
-  const {createArchive, createOutputStream, pathExists, removeFile, reportFailure} = options;
-  const destinationAlreadyExisted = await pathExists(options.destinationPath);
+  const {
+    createArchive,
+    createOutputStream,
+    createTemporaryArchiveDirectory,
+    commitArchive,
+    removeDirectory,
+    reportFailure,
+  } = options;
   let outputStream: Maybe<Writable> = Maybe.nothing<Writable>();
-  let outputStreamCreated = false;
   let archive: Maybe<ZipArchive> = Maybe.nothing<ZipArchive>();
   let outputCompletion: Maybe<Promise<void>> = Maybe.nothing<Promise<void>>();
+  let temporaryDirectoryPath: Maybe<string> = Maybe.nothing<string>();
 
   try {
-    const createdOutputStream = createOutputStream(options.destinationPath);
+    const createdTemporaryDirectoryPath = await createTemporaryArchiveDirectory(options.destinationPath);
+    temporaryDirectoryPath = Maybe.just(createdTemporaryDirectoryPath);
+    const temporaryArchivePath = path.join(createdTemporaryDirectoryPath, 'logs.zip');
+    const createdOutputStream = await createOutputStream(temporaryArchivePath);
     outputStream = Maybe.just(createdOutputStream);
-    outputStreamCreated = true;
     const createdOutputCompletion = finished(createdOutputStream);
     outputCompletion = Maybe.just(createdOutputCompletion);
     const createdArchive = createArchive();
@@ -308,6 +428,7 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
     await Promise.race([createdArchiveFinalization, archiveFailure, createdOutputCompletion]);
     await createdArchiveFinalization;
     await createdOutputCompletion;
+    await commitArchive(temporaryArchivePath, options.destinationPath);
   } catch (error) {
     if (archive.isJust) {
       archive.value.abort();
@@ -321,16 +442,22 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
       await waitForPromiseToSettle(outputCompletion.value);
     }
 
-    await removeIncompleteDestinationFile({
-      destinationPath: options.destinationPath,
-      destinationAlreadyExisted,
-      outputStreamCreated,
-      removeFile,
+    await removeTemporaryArchiveDirectory({
+      temporaryDirectoryPath,
+      message: 'Failed to remove incomplete log archive staging directory.',
+      removeDirectory,
       reportFailure,
     });
 
     throw error;
   }
+
+  await removeTemporaryArchiveDirectory({
+    temporaryDirectoryPath,
+    message: 'Failed to remove log archive staging directory.',
+    removeDirectory,
+    reportFailure,
+  });
 }
 
 export async function exportLogFiles(options: ExportLogFilesOptions): Promise<void> {

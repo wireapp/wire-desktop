@@ -48,7 +48,9 @@ type CreateSnapshotTestOptions = {
   maintenanceCoordinator: ReturnType<typeof createLogMaintenanceCoordinator>;
   reportFailure: (message: string, error: unknown) => void;
   temporaryDirectoryPrefix: string;
-} & LogSnapshotFileSystemDependencies;
+} & Omit<LogSnapshotFileSystemDependencies, 'protectFile'> & {
+    protectFile?: LogSnapshotFileSystemDependencies['protectFile'];
+  };
 
 function runNoopCleanup(): Promise<void> {
   return Promise.resolve();
@@ -74,7 +76,14 @@ function createTestMaintenanceCoordinator(): ReturnType<typeof createLogMaintena
 }
 
 function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLogSnapshotOptions {
-  const {copyFile, createTemporaryDirectory, ensureDirectory, getFileMetadata, removeDirectory} = options;
+  const {
+    copyFile,
+    createTemporaryDirectory,
+    ensureDirectory,
+    getFileMetadata,
+    protectFile = createLogSnapshotFileSystemDependencies().protectFile,
+    removeDirectory,
+  } = options;
 
   return {
     copyFile,
@@ -83,6 +92,7 @@ function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLo
     discoverLogFilePaths: options.discoverLogFilePaths,
     ensureDirectory,
     getFileMetadata,
+    protectFile,
     logDirectory: options.logDirectory,
     reportFailure: options.reportFailure,
     removeDirectory,
@@ -154,6 +164,11 @@ describe('desktop log export', () => {
         const actualSnapshotContents = await fs.readFile(snapshot.files[0].absolutePath, 'utf8');
 
         assert.strictEqual(actualSnapshotContents, 'complete entry\n');
+
+        if (process.platform !== 'win32') {
+          assert.strictEqual((await fs.stat(snapshot.directoryPath)).mode & 0o777, 0o700);
+          assert.strictEqual((await fs.stat(snapshot.files[0].absolutePath)).mode & 0o777, 0o600);
+        }
       } finally {
         await fs.remove(snapshot.directoryPath);
       }
@@ -175,6 +190,7 @@ describe('desktop log export', () => {
         createTemporaryDirectory: defaultDependencies.createTemporaryDirectory,
         ensureDirectory: defaultDependencies.ensureDirectory,
         getFileMetadata: defaultDependencies.getFileMetadata,
+        protectFile: defaultDependencies.protectFile,
         removeDirectory: defaultDependencies.removeDirectory,
       };
       const snapshot = await createLogSnapshot(
@@ -206,6 +222,191 @@ describe('desktop log export', () => {
       } finally {
         await fs.remove(snapshot.directoryPath);
       }
+    }),
+  );
+
+  it(
+    'skips a log that disappears after discovery and keeps stable files in the snapshot',
+    withTemporaryDirectory('wire-log-export-disappearing-source-', async (temporaryLogDirectory: string) => {
+      const disappearingLogPath = path.join(temporaryLogDirectory, 'rotating.log');
+      const stableLogPath = path.join(temporaryLogDirectory, 'electron.log');
+      await fs.outputFile(disappearingLogPath, 'rotated away\n');
+      await fs.outputFile(stableLogPath, 'stable native log\n');
+      const snapshotDependencies = createLogSnapshotFileSystemDependencies();
+      const reportedFailures: string[] = [];
+      const snapshot = await createLogSnapshot(
+        createSnapshotTestOptions({
+          cleanup: runNoopCleanup,
+          copyFile: snapshotDependencies.copyFile,
+          createTemporaryDirectory: snapshotDependencies.createTemporaryDirectory,
+          discoverLogFilePaths() {
+            const discoveredPaths = getLogFilenames({absolute: false, baseDirectory: temporaryLogDirectory});
+            fs.removeSync(disappearingLogPath);
+
+            return discoveredPaths;
+          },
+          ensureDirectory: snapshotDependencies.ensureDirectory,
+          getFileMetadata: snapshotDependencies.getFileMetadata,
+          logDirectory: temporaryLogDirectory,
+          maintenanceCoordinator: createTestMaintenanceCoordinator(),
+          protectFile: snapshotDependencies.protectFile,
+          reportFailure(message) {
+            reportedFailures.push(message);
+          },
+          removeDirectory: snapshotDependencies.removeDirectory,
+          temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
+        }),
+      );
+
+      try {
+        const actualRelativePaths = snapshot.files.map(file => file.relativePath);
+
+        assert.deepStrictEqual(actualRelativePaths, ['electron.log']);
+        assert.strictEqual(await fs.readFile(snapshot.files[0].absolutePath, 'utf8'), 'stable native log\n');
+        assert.strictEqual(reportedFailures.length, 1);
+      } finally {
+        await fs.remove(snapshot.directoryPath);
+      }
+    }),
+  );
+
+  it(
+    'skips source-open ENOENT and safe inode changes when a log path is recreated',
+    withTemporaryDirectory('wire-log-export-recreated-source-', async (temporaryLogDirectory: string) => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const missingDuringOpenPath = path.join(temporaryLogDirectory, 'missing-during-open.log');
+      const replacedDuringOpenPath = path.join(temporaryLogDirectory, 'replaced-during-open.log');
+      const stableLogPath = path.join(temporaryLogDirectory, 'electron.log');
+      await fs.outputFile(missingDuringOpenPath, 'original contents\n');
+      await fs.outputFile(replacedDuringOpenPath, 'original contents\n');
+      await fs.outputFile(stableLogPath, 'stable native log\n');
+
+      const originalFileHandles = await Promise.all([
+        fs.promises.open(missingDuringOpenPath, 'r'),
+        fs.promises.open(replacedDuringOpenPath, 'r'),
+      ]);
+      let missingDuringOpenHandled = false;
+      let replacedDuringOpenHandled = false;
+      const snapshotDependencies = createLogSnapshotFileSystemDependencies({
+        async openSourceFile(sourceFilePath, flags) {
+          if (sourceFilePath === missingDuringOpenPath && missingDuringOpenHandled === false) {
+            missingDuringOpenHandled = true;
+            fs.removeSync(sourceFilePath);
+            fs.writeFileSync(sourceFilePath, 'replacement contents\n');
+            const openFailure = Object.assign(new Error('source disappeared before open'), {
+              code: 'ENOENT',
+              path: sourceFilePath,
+            });
+
+            throw openFailure;
+          }
+
+          if (sourceFilePath === replacedDuringOpenPath && replacedDuringOpenHandled === false) {
+            replacedDuringOpenHandled = true;
+            fs.removeSync(sourceFilePath);
+            fs.writeFileSync(sourceFilePath, 'replacement contents\n');
+          }
+
+          return fs.promises.open(sourceFilePath, flags);
+        },
+      });
+      const reportedFailures: string[] = [];
+      let snapshotDirectoryPath: string | undefined;
+
+      try {
+        const snapshot = await createLogSnapshot(
+          createSnapshotTestOptions({
+            cleanup: runNoopCleanup,
+            copyFile: snapshotDependencies.copyFile,
+            createTemporaryDirectory: snapshotDependencies.createTemporaryDirectory,
+            discoverLogFilePaths() {
+              return ['missing-during-open.log', 'replaced-during-open.log', 'electron.log'];
+            },
+            ensureDirectory: snapshotDependencies.ensureDirectory,
+            getFileMetadata: snapshotDependencies.getFileMetadata,
+            logDirectory: temporaryLogDirectory,
+            maintenanceCoordinator: createTestMaintenanceCoordinator(),
+            protectFile: snapshotDependencies.protectFile,
+            reportFailure(message) {
+              reportedFailures.push(message);
+            },
+            removeDirectory: snapshotDependencies.removeDirectory,
+            temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
+          }),
+        );
+        snapshotDirectoryPath = snapshot.directoryPath;
+
+        assert.deepStrictEqual(
+          snapshot.files.map(file => file.relativePath),
+          ['electron.log'],
+        );
+        assert.strictEqual(await fs.readFile(snapshot.files[0].absolutePath, 'utf8'), 'stable native log\n');
+        assert.strictEqual(reportedFailures.length, 2);
+      } finally {
+        await Promise.all(originalFileHandles.map(fileHandle => fileHandle.close()));
+
+        if (snapshotDirectoryPath !== undefined) {
+          await fs.remove(snapshotDirectoryPath);
+        }
+      }
+    }),
+  );
+
+  it(
+    'rejects a symbolic link that replaces a missing source during copy',
+    withTemporaryDirectory('wire-log-export-replaced-source-link-', async (temporaryLogDirectory: string) => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const sourceLogPath = path.join(temporaryLogDirectory, 'electron.log');
+      const outsideLogPath = path.join(temporaryLogDirectory, 'outside.log');
+      await fs.outputFile(sourceLogPath, 'original contents\n');
+      await fs.outputFile(outsideLogPath, 'outside contents\n');
+      const snapshotDependencies = createLogSnapshotFileSystemDependencies({
+        async openSourceFile(filePath, flags) {
+          fs.removeSync(filePath);
+          fs.symlinkSync(outsideLogPath, filePath, 'file');
+          const openFailure = Object.assign(new Error('source disappeared before open'), {
+            code: 'ENOENT',
+            path: filePath,
+          });
+
+          throw openFailure;
+        },
+      });
+
+      await assert.rejects(
+        createLogSnapshot(
+          createSnapshotTestOptions({
+            cleanup: runNoopCleanup,
+            copyFile: snapshotDependencies.copyFile,
+            createTemporaryDirectory: snapshotDependencies.createTemporaryDirectory,
+            discoverLogFilePaths() {
+              return ['electron.log'];
+            },
+            ensureDirectory: snapshotDependencies.ensureDirectory,
+            getFileMetadata: snapshotDependencies.getFileMetadata,
+            logDirectory: temporaryLogDirectory,
+            maintenanceCoordinator: createTestMaintenanceCoordinator(),
+            protectFile: snapshotDependencies.protectFile,
+            reportFailure: noop,
+            removeDirectory: snapshotDependencies.removeDirectory,
+            temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
+          }),
+        ),
+        /no longer a regular file/,
+      );
+
+      assert.strictEqual((await fs.lstat(sourceLogPath)).isSymbolicLink(), true);
+      assert.strictEqual(await fs.readFile(outsideLogPath, 'utf8'), 'outside contents\n');
+      assert.strictEqual(
+        (await fs.readdir(temporaryLogDirectory)).some(entryName => entryName.startsWith('snapshot-')),
+        false,
+      );
     }),
   );
 
@@ -291,6 +492,7 @@ describe('desktop log export', () => {
         createTemporaryDirectory: defaultDependencies.createTemporaryDirectory,
         ensureDirectory: defaultDependencies.ensureDirectory,
         getFileMetadata: defaultDependencies.getFileMetadata,
+        protectFile: defaultDependencies.protectFile,
       };
 
       try {
@@ -386,19 +588,53 @@ describe('desktop log export', () => {
       const currentLogRelativePath = '2026-08-27/electron.log';
       const nestedLogRelativePath = '2026-08-27/accounts/account-id/console.log';
       const rotatedLogRelativePath = '2026-08-27/accounts/account-id/console.log.123-0.old';
+      const ssoLogRelativePath = '2026-08-27/accounts/account-id/sso.log';
       const legacyLogRelativePath = 'legacy.old';
       const applicationLogRelativePath = '2026-08-27/accounts/account-id/application.jsonl';
       const rotatedApplicationLogRelativePath = `${applicationLogRelativePath}.123-1.old`;
       const applicationLogContent = '{"level":30,"time":42,"component":"Account","msg":"Connected"}\n';
+      const sourceContents = new Map<string, string>([
+        [currentLogRelativePath, 'current\n'],
+        [nestedLogRelativePath, 'nested\n'],
+        [rotatedLogRelativePath, 'rotated\n'],
+        [legacyLogRelativePath, 'legacy\n'],
+        [applicationLogRelativePath, applicationLogContent],
+        [rotatedApplicationLogRelativePath, applicationLogContent],
+        [ssoLogRelativePath, 'sso diagnostic\n'],
+      ]);
       await fs.outputFile(path.join(temporaryLogDirectory, currentLogRelativePath), 'current\n');
       await fs.outputFile(path.join(temporaryLogDirectory, nestedLogRelativePath), 'nested\n');
       await fs.outputFile(path.join(temporaryLogDirectory, rotatedLogRelativePath), 'rotated\n');
       await fs.outputFile(path.join(temporaryLogDirectory, legacyLogRelativePath), 'legacy\n');
       await fs.outputFile(path.join(temporaryLogDirectory, applicationLogRelativePath), applicationLogContent);
       await fs.outputFile(path.join(temporaryLogDirectory, rotatedApplicationLogRelativePath), applicationLogContent);
+      await fs.outputFile(path.join(temporaryLogDirectory, ssoLogRelativePath), 'sso diagnostic\n');
       const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
+      await fs.outputFile(archivePath, 'existing archive contents');
+      await fs.chmod(archivePath, 0o644);
       const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
-      const archiveDependencies = createLogArchiveDependencies(noop);
+      const productionArchiveDependencies = createLogArchiveDependencies(noop);
+      const archiveDependencies = {
+        ...productionArchiveDependencies,
+        async createTemporaryArchiveDirectory(destinationPath: string) {
+          const directoryPath = await productionArchiveDependencies.createTemporaryArchiveDirectory(destinationPath);
+
+          if (process.platform !== 'win32') {
+            assert.strictEqual((await fs.stat(directoryPath)).mode & 0o777, 0o700);
+          }
+
+          return directoryPath;
+        },
+        createOutputStream(destinationPath: string) {
+          const outputStream = productionArchiveDependencies.createOutputStream(destinationPath);
+
+          if (process.platform !== 'win32') {
+            assert.strictEqual(fs.statSync(destinationPath).mode & 0o777, 0o600);
+          }
+
+          return outputStream;
+        },
+      };
       const exportFireAndForgetInvoker = createFireAndForgetInvoker({reportFailure: noop});
       let createdSnapshot: Maybe<LogSnapshot> = Maybe.nothing<LogSnapshot>();
 
@@ -430,12 +666,8 @@ describe('desktop log export', () => {
         reportFailure: noop,
         async streamSnapshot({destinationPath, snapshotFiles}) {
           await streamLogFilesToZip({
-            createArchive: archiveDependencies.createArchive,
-            createOutputStream: archiveDependencies.createOutputStream,
+            ...archiveDependencies,
             destinationPath,
-            pathExists: archiveDependencies.pathExists,
-            removeFile: archiveDependencies.removeFile,
-            reportFailure: archiveDependencies.reportFailure,
             snapshotFiles,
           });
         },
@@ -471,6 +703,7 @@ describe('desktop log export', () => {
         nestedLogRelativePath,
         rotatedApplicationLogRelativePath,
         rotatedLogRelativePath,
+        ssoLogRelativePath,
       ].toSorted();
 
       assert.deepStrictEqual(actualEntryPaths, expectedEntryPaths);
@@ -480,6 +713,29 @@ describe('desktop log export', () => {
       assert.strictEqual(getArchiveEntryContents(archive, legacyLogRelativePath), 'legacy\n');
       assert.strictEqual(getArchiveEntryContents(archive, applicationLogRelativePath), applicationLogContent);
       assert.strictEqual(getArchiveEntryContents(archive, rotatedApplicationLogRelativePath), applicationLogContent);
+      assert.strictEqual(getArchiveEntryContents(archive, ssoLogRelativePath), 'sso diagnostic\n');
+
+      if (process.platform !== 'win32') {
+        assert.strictEqual((await fs.stat(archivePath)).mode & 0o777, 0o600);
+
+        for (const [relativePath, expectedContents] of sourceContents) {
+          const sourcePath = path.join(temporaryLogDirectory, relativePath);
+          const sourceMetadata = await fs.stat(sourcePath);
+
+          assert.strictEqual(sourceMetadata.mode & 0o777, 0o600);
+          assert.strictEqual(await fs.readFile(sourcePath, 'utf8'), expectedContents);
+        }
+
+        for (const directoryPath of ['2026-08-27', '2026-08-27/accounts', '2026-08-27/accounts/account-id']) {
+          assert.strictEqual((await fs.stat(path.join(temporaryLogDirectory, directoryPath))).mode & 0o777, 0o700);
+        }
+      }
+
+      const remainingEntries = await fs.readdir(temporaryLogDirectory);
+      assert.strictEqual(
+        remainingEntries.some(entryName => entryName.startsWith('.wire-log-export-')),
+        false,
+      );
     }),
   );
 
@@ -518,19 +774,16 @@ describe('desktop log export', () => {
 
           return createdOutputStream;
         },
-        pathExists: archiveDependencies.pathExists,
-        removeFile: archiveDependencies.removeFile,
+        createTemporaryArchiveDirectory: archiveDependencies.createTemporaryArchiveDirectory,
+        commitArchive: archiveDependencies.commitArchive,
+        removeDirectory: archiveDependencies.removeDirectory,
         reportFailure: archiveDependencies.reportFailure,
       };
 
       await assert.rejects(
         streamLogFilesToZip({
-          createArchive: failingArchiveDependencies.createArchive,
-          createOutputStream: failingArchiveDependencies.createOutputStream,
+          ...failingArchiveDependencies,
           destinationPath: archivePath,
-          pathExists: failingArchiveDependencies.pathExists,
-          removeFile: failingArchiveDependencies.removeFile,
-          reportFailure: failingArchiveDependencies.reportFailure,
           snapshotFiles: [],
         }),
         archiveFailure,
@@ -540,9 +793,77 @@ describe('desktop log export', () => {
   );
 
   it(
+    'rejects a symbolic-link destination without writing through it',
+    withTemporaryDirectory('wire-log-export-destination-link-', async (temporaryDirectory: string) => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const existingFilePath = path.join(temporaryDirectory, 'existing.zip');
+      const destinationPath = path.join(temporaryDirectory, 'selected.zip');
+      await fs.writeFile(existingFilePath, 'existing destination contents\n');
+      await fs.symlink(existingFilePath, destinationPath, 'file');
+      const archiveDependencies = createLogArchiveDependencies(noop);
+
+      await assert.rejects(
+        streamLogFilesToZip({
+          ...archiveDependencies,
+          destinationPath,
+          snapshotFiles: [],
+        }),
+        /regular file/,
+      );
+
+      assert.strictEqual((await fs.lstat(destinationPath)).isSymbolicLink(), true);
+      assert.strictEqual(await fs.readFile(existingFilePath, 'utf8'), 'existing destination contents\n');
+      assert.strictEqual(
+        (await fs.readdir(temporaryDirectory)).some(name => name.startsWith('.wire-log-export-')),
+        false,
+      );
+    }),
+  );
+
+  it(
+    'rejects a read-only regular destination before preparing an archive replacement',
+    withTemporaryDirectory('wire-log-export-read-only-destination-', async (temporaryDirectory: string) => {
+      if (process.platform === 'win32' || process.getuid?.() === 0) {
+        return;
+      }
+
+      const destinationPath = path.join(temporaryDirectory, 'selected.zip');
+      const originalContents = 'preserve the selected file\n';
+      await fs.writeFile(destinationPath, originalContents, {mode: 0o444});
+      await fs.chmod(destinationPath, 0o444);
+      const archiveDependencies = createLogArchiveDependencies(noop);
+
+      await assert.rejects(
+        streamLogFilesToZip({
+          ...archiveDependencies,
+          destinationPath,
+          snapshotFiles: [],
+        }),
+        error => {
+          return error instanceof Error && 'code' in error && (error.code === 'EACCES' || error.code === 'EPERM');
+        },
+      );
+
+      assert.strictEqual(await fs.readFile(destinationPath, 'utf8'), originalContents);
+      assert.strictEqual((await fs.stat(destinationPath)).mode & 0o777, 0o444);
+      assert.strictEqual(
+        (await fs.readdir(temporaryDirectory)).some(name => name.startsWith('.wire-log-export-')),
+        false,
+      );
+    }),
+  );
+
+  it(
     'propagates output failure before archive finalization completes',
     withTemporaryDirectory('wire-log-export-output-error-', async (temporaryLogDirectory: string) => {
       const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
+      await fs.writeFile(archivePath, 'existing destination contents\n', {mode: 0o644});
+      if (process.platform !== 'win32') {
+        await fs.chmod(archivePath, 0o644);
+      }
       const outputFailure = new Error('output failed before archive finalization');
       const archiveFinalization = createDeferredCompletion();
       const archiveDependencies = createLogArchiveDependencies(noop);
@@ -572,24 +893,29 @@ describe('desktop log export', () => {
 
           return createdOutputStream;
         },
-        pathExists: archiveDependencies.pathExists,
-        removeFile: archiveDependencies.removeFile,
+        createTemporaryArchiveDirectory: archiveDependencies.createTemporaryArchiveDirectory,
+        commitArchive: archiveDependencies.commitArchive,
+        removeDirectory: archiveDependencies.removeDirectory,
         reportFailure: archiveDependencies.reportFailure,
       };
 
       await assert.rejects(
         streamLogFilesToZip({
-          createArchive: failingArchiveDependencies.createArchive,
-          createOutputStream: failingArchiveDependencies.createOutputStream,
+          ...failingArchiveDependencies,
           destinationPath: archivePath,
-          pathExists: failingArchiveDependencies.pathExists,
-          removeFile: failingArchiveDependencies.removeFile,
-          reportFailure: failingArchiveDependencies.reportFailure,
           snapshotFiles: [],
         }),
         outputFailure,
       );
-      assert.strictEqual(await fs.pathExists(archivePath), false);
+      assert.strictEqual(await fs.readFile(archivePath, 'utf8'), 'existing destination contents\n');
+
+      if (process.platform !== 'win32') {
+        assert.strictEqual((await fs.stat(archivePath)).mode & 0o777, 0o644);
+      }
+      assert.strictEqual(
+        (await fs.readdir(temporaryLogDirectory)).some(name => name.startsWith('.wire-log-export-')),
+        false,
+      );
     }),
   );
 
@@ -621,20 +947,21 @@ describe('desktop log export', () => {
       const archiveDependencies = createLogArchiveDependencies(noop);
       const failingArchiveDependencies = {
         createArchive: archiveDependencies.createArchive,
-        createOutputStream() {
+        createOutputStream(destinationPath: string) {
           return new Writable({
             write(chunk: Buffer, _encoding: BufferEncoding, callback: (error?: Error) => void): void {
               if (wrotePartialArchive === false) {
                 wrotePartialArchive = true;
-                fs.writeFileSync(archivePath, chunk);
+                fs.writeFileSync(destinationPath, chunk, {mode: 0o600});
               }
 
               callback(outputFailure);
             },
           });
         },
-        pathExists: archiveDependencies.pathExists,
-        removeFile: archiveDependencies.removeFile,
+        createTemporaryArchiveDirectory: archiveDependencies.createTemporaryArchiveDirectory,
+        commitArchive: archiveDependencies.commitArchive,
+        removeDirectory: archiveDependencies.removeDirectory,
         reportFailure: archiveDependencies.reportFailure,
       };
 
@@ -648,12 +975,8 @@ describe('desktop log export', () => {
           reportFailure: noop,
           async streamSnapshot({destinationPath, snapshotFiles}) {
             await streamLogFilesToZip({
-              createArchive: failingArchiveDependencies.createArchive,
-              createOutputStream: failingArchiveDependencies.createOutputStream,
+              ...failingArchiveDependencies,
               destinationPath,
-              pathExists: failingArchiveDependencies.pathExists,
-              removeFile: failingArchiveDependencies.removeFile,
-              reportFailure: failingArchiveDependencies.reportFailure,
               snapshotFiles,
             });
           },

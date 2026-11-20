@@ -58,6 +58,7 @@ export async function exportLogs(destinationPath: string): Promise<void> {
           createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
           ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
           getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
+          protectFile: snapshotFileSystemDependencies.protectFile,
           removeDirectory: snapshotFileSystemDependencies.removeDirectory,
         });
       },
@@ -68,12 +69,8 @@ export async function exportLogs(destinationPath: string): Promise<void> {
       },
       streamSnapshot({destinationPath: snapshotDestinationPath, snapshotFiles}) {
         return streamLogFilesToZip({
-          createArchive: archiveDependencies.createArchive,
-          createOutputStream: archiveDependencies.createOutputStream,
+          ...archiveDependencies,
           destinationPath: snapshotDestinationPath,
-          pathExists: archiveDependencies.pathExists,
-          removeFile: archiveDependencies.removeFile,
-          reportFailure: archiveDependencies.reportFailure,
           snapshotFiles,
         });
       },
