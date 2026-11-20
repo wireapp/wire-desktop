@@ -195,19 +195,24 @@ describe('structured Webapp logging', () => {
       },
     });
 
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+
+    const unrelatedFrame = {sender: guest.sender, senderFrame: {url: allowedOrigin}};
     for (const unauthorized of [
       untrusted,
       foreignHost,
       createGuest(),
       createGuest({id: guest.sender.id}),
       {sender: guest.sender, senderFrame: null},
-      {sender: guest.sender, senderFrame: {url: allowedOrigin}},
+      unrelatedFrame,
     ]) {
       assert.strictEqual(await receiver.receive(unauthorized, [record]), 'rejected');
     }
 
-    assert.deepStrictEqual(writes, []);
-    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(unrelatedFrame, transportTimeout), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+    assert.strictEqual(writes.length, 1);
   });
 
   it('groups batches by receipt day and uses account identity from the guest context', async () => {
@@ -372,7 +377,7 @@ describe('structured Webapp logging', () => {
     });
 
     async function captureMessage(message: string): Promise<void> {
-      if (receiver.shouldCaptureConsoleMessage(guest.sender, message)) {
+      if (receiver.shouldCaptureConsoleMessage(guest, message)) {
         await logConsoleMessage({message});
       }
     }
@@ -410,13 +415,13 @@ describe('structured Webapp logging', () => {
       },
     });
     assert.strictEqual(await receiver.receive(guest, [record]), 'written');
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), false);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
     assert.strictEqual(await receiver.receive(guest, ['invalid']), 'rejected');
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
     assert.strictEqual(await receiver.receive(guest, [record]), 'written');
     completion = Promise.reject(new Error('Maintenance failed after append'));
     assert.strictEqual(await receiver.receive(guest, [record]), 'failed');
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
 
     completion = Promise.resolve();
     assert.strictEqual(await receiver.receive(guest, [record]), 'written');
@@ -424,14 +429,51 @@ describe('structured Webapp logging', () => {
     completion = pendingCompletion.promise;
     const pendingWrite = receiver.receive(guest, [record]);
     assert.strictEqual(await receiver.receive(guest, [record]), 'busy');
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
     pendingCompletion.resolve();
     assert.strictEqual(await pendingWrite, 'written');
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
 
     assert.strictEqual(await receiver.receive(guest, [record]), 'written');
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, transportTimeout), true);
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, transportTimeout), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+  });
+
+  it('restores legacy capture after the current main frame loses structured write authorization', async () => {
+    const {guest, receiver, context, writes} = createReceiver();
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+
+    context.trustedOrigin = Maybe.just('https://different.example.com');
+    assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    assert.deepStrictEqual(receiver.getConsoleLogAccountId(guest.sender), Maybe.just(accountId));
+    assert.strictEqual(writes.length, 1);
+
+    context.trustedOrigin = Maybe.just(allowedOrigin);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+  });
+
+  it('clears confirmation if authorization is lost while an accepted batch is writing', async () => {
+    const pendingCompletion = Promise.withResolvers<void>();
+    let completion = Promise.resolve();
+    const {guest, receiver, context} = createReceiver({
+      writeBatch() {
+        return completion;
+      },
+    });
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+
+    completion = pendingCompletion.promise;
+    const pendingWrite = receiver.receive(guest, [record]);
+    context.trustedOrigin = Maybe.just('https://different.example.com');
+    pendingCompletion.resolve();
+
+    assert.strictEqual(await pendingWrite, 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
   });
 
   it('keeps confirmation local to the document and account even when an earlier write completes late', async () => {
@@ -455,12 +497,12 @@ describe('structured Webapp logging', () => {
     receiver.resetConsoleCapture(guest.sender);
     earlierDocument.resolve();
     assert.strictEqual(await navigationWrite, 'written');
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
     completion = Promise.resolve();
     assert.strictEqual(await receiver.receive(guest, [record]), 'written');
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), false);
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(otherGuest.sender, pinoConsoleRecord), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(otherGuest, pinoConsoleRecord), true);
     contexts.set(guest.sender.id, createContext(guest.sender, otherAccountId));
-    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest.sender, pinoConsoleRecord), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
   });
 });

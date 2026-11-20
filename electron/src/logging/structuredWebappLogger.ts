@@ -60,11 +60,18 @@ type StructuredWebappLoggerDependencies = {
 
 export type StructuredWebappLogger = {
   getConsoleLogAccountId(sender: WebViewLogSender): Maybe<string>;
-  shouldCaptureConsoleMessage(sender: WebViewLogSender, message: string): boolean;
+  shouldCaptureConsoleMessage(event: WebViewLogEvent, message: string): boolean;
   resetConsoleCapture(sender: WebViewLogSender): void;
   receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult>;
   runAccountDeletion(accountId: string, deleteAccount: () => Promise<void>): Promise<void>;
 };
+
+function isCurrentMainFrame(
+  event: WebViewLogEvent,
+): event is WebViewLogEvent & {readonly senderFrame: WebViewLogFrame} {
+  const {sender, senderFrame} = event;
+  return senderFrame !== null && !sender.isDestroyed() && senderFrame === sender.mainFrame;
+}
 
 export function createStructuredWebappLogger(dependencies: StructuredWebappLoggerDependencies): StructuredWebappLogger {
   const pendingWrites = new Map<WebViewLogSender, {accountId: string; completion: Promise<void>}>();
@@ -85,18 +92,19 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
     return context;
   }
 
-  function getAuthorizedContext({sender, senderFrame}: WebViewLogEvent): Maybe<AuthorizedWebView> {
+  function getAuthorizedContext(event: WebViewLogEvent): Maybe<AuthorizedWebView> {
+    if (!isCurrentMainFrame(event)) {
+      return Maybe.nothing();
+    }
+
+    const {sender, senderFrame} = event;
     const context = getActiveWebViewContext(sender);
     const wrapper = dependencies.getWrapperWebContents();
-    const frame = Maybe.of(senderFrame);
     if (
       context.isNothing ||
       wrapper.isNothing ||
       sender.hostWebContents !== wrapper.value ||
-      sender.isDestroyed() ||
-      frame.isNothing ||
-      frame.value !== sender.mainFrame ||
-      !isAllowedNavigation(frame.value.url, context.value)
+      !isAllowedNavigation(senderFrame.url, context.value)
     ) {
       return Maybe.nothing();
     }
@@ -109,12 +117,15 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
   }
 
   async function writeAuthorizedBatch(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
+    const {sender} = event;
     const authorizedContext = getAuthorizedContext(event);
     if (authorizedContext.isNothing) {
+      if (isCurrentMainFrame(event)) {
+        resetConsoleCapture(sender);
+      }
       return 'rejected';
     }
     const context = authorizedContext.value;
-    const {sender} = event;
 
     if (pendingWrites.has(sender) || pendingWrites.size >= structuredLogLimits.maximumPendingBatches) {
       resetConsoleCapture(sender);
@@ -141,6 +152,8 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
         const activeContext = getAuthorizedContext(event);
         if (activeContext.isJust && activeContext.value === context) {
           capture.confirmed = true;
+        } else {
+          resetConsoleCapture(sender);
         }
       }
       return 'written';
@@ -160,7 +173,11 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
         return context.accountId;
       });
     },
-    shouldCaptureConsoleMessage(sender, message) {
+    shouldCaptureConsoleMessage(event, message) {
+      if (!isCurrentMainFrame(event)) {
+        return true;
+      }
+      const {sender} = event;
       // The renderer can observe timeouts and missing replies which the main process cannot.
       if (isStructuredTransportWarning(message)) {
         resetConsoleCapture(sender);

@@ -1149,7 +1149,8 @@ class ElectronWrapperInit {
           });
 
           contents.on('console-message', messageDetails => {
-            if (structuredWebappLogger.shouldCaptureConsoleMessage(contents, messageDetails.message)) {
+            const source = {sender: contents, senderFrame: messageDetails.frame};
+            if (structuredWebappLogger.shouldCaptureConsoleMessage(source, messageDetails.message)) {
               void writeWebViewConsoleMessage(messageDetails);
             }
           });
