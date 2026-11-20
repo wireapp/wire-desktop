@@ -19,13 +19,37 @@
 
 import globby from 'globby';
 
+import * as fs from 'fs';
+
 export type LogFileDiscoveryOptions = {
   absolute: boolean;
   baseDirectory: string;
 };
 
+export function isLogRootPresentAndSafe(baseDirectory: string): boolean {
+  const rootMetadata = fs.lstatSync(baseDirectory, {throwIfNoEntry: false});
+
+  if (rootMetadata === undefined) {
+    return false;
+  }
+
+  if (rootMetadata.isSymbolicLink() || !rootMetadata.isDirectory()) {
+    throw new Error(`Desktop log root is not a real directory: ${baseDirectory}`);
+  }
+
+  if (process.platform !== 'win32' && rootMetadata.uid !== process.getuid?.()) {
+    throw new Error(`Desktop log root is not owned by the current user: ${baseDirectory}`);
+  }
+
+  return true;
+}
+
 export function getLogFilenames(parameters: LogFileDiscoveryOptions): string[] {
   const {absolute, baseDirectory} = parameters;
+
+  if (isLogRootPresentAndSafe(baseDirectory) === false) {
+    return [];
+  }
 
   return globby.sync('**/*.{jsonl,log,old}', {
     absolute,

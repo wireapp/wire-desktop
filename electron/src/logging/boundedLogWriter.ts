@@ -23,6 +23,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 import {LogMaintenanceCoordinator} from './logMaintenance';
+import {logFileIdentityChangedErrorCode} from './logPermissions';
 
 export type BoundedLogWriterDependencies = {
   appendFile: (filePath: string, content: string) => Promise<void>;
@@ -83,12 +84,25 @@ type WriteLogEntryParameters = {
   writeParameters: QueuedLogMessage;
 };
 
+type WriteLogEntryExecutionState = {
+  didRotate: boolean;
+};
+
+type WriteLogEntryOnceParameters = {
+  executionState: WriteLogEntryExecutionState;
+  writeParameters: WriteLogEntryParameters;
+};
+
 type WriteLogEntryResult = {
   requiresPostWriteCleanup: boolean;
 };
 
 function isExistingFileError(error: unknown): boolean {
   return error instanceof Error && 'code' in error && (error.code === 'EEXIST' || error.code === 'ENOTEMPTY');
+}
+
+function isLogFileIdentityChangedError(error: unknown): boolean {
+  return error instanceof Error && 'code' in error && error.code === logFileIdentityChangedErrorCode;
 }
 
 async function findRotatedLogPath(parameters: FindRotatedLogPathParameters): Promise<string> {
@@ -126,7 +140,8 @@ async function rotateLogFile(parameters: RotateLogFileParameters): Promise<void>
   }
 }
 
-async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<WriteLogEntryResult> {
+async function writeLogEntryOnce(options: WriteLogEntryOnceParameters): Promise<WriteLogEntryResult> {
+  const {executionState, writeParameters: parameters} = options;
   const logEntry = `${parameters.writeParameters.message}${parameters.writeParameters.lineEnding}`;
   const logEntrySizeBytes = Buffer.byteLength(logEntry);
 
@@ -135,7 +150,6 @@ async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<Write
   const currentFileSizeBytes = await parameters.dependencies.getFileSize(parameters.writeParameters.logFilePath);
   const wouldExceedMaximumFileSize =
     currentFileSizeBytes > 0 && currentFileSizeBytes + logEntrySizeBytes > parameters.maximumFileSizeBytes;
-  let didRotate = false;
 
   if (wouldExceedMaximumFileSize) {
     await rotateLogFile({
@@ -144,12 +158,29 @@ async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<Write
       dependencies: parameters.dependencies,
       logFilePath: parameters.writeParameters.logFilePath,
     });
-    didRotate = true;
+    executionState.didRotate = true;
   }
 
   await parameters.dependencies.appendFile(parameters.writeParameters.logFilePath, logEntry);
 
-  return {requiresPostWriteCleanup: didRotate || logEntrySizeBytes > parameters.maximumFileSizeBytes};
+  return {
+    requiresPostWriteCleanup: executionState.didRotate || logEntrySizeBytes > parameters.maximumFileSizeBytes,
+  };
+}
+
+async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<WriteLogEntryResult> {
+  const executionState: WriteLogEntryExecutionState = {didRotate: false};
+  const singleAttemptParameters: WriteLogEntryOnceParameters = {executionState, writeParameters: parameters};
+
+  try {
+    return await writeLogEntryOnce(singleAttemptParameters);
+  } catch (error) {
+    if (isLogFileIdentityChangedError(error) === false) {
+      throw error;
+    }
+
+    return writeLogEntryOnce(singleAttemptParameters);
+  }
 }
 
 function removePendingWrite(pendingWrites: PendingWrites, logFilePath: string, pendingWrite: Promise<void>): void {

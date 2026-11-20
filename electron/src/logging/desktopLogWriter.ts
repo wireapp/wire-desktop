@@ -30,6 +30,12 @@ import {
 import {cleanupDesktopLogs, DESKTOP_LOG_RETENTION_POLICY} from './logCleanup';
 import {createLogMaintenanceCoordinator, LogMaintenanceCoordinator} from './logMaintenance';
 import {getLogDirectory} from './logPaths';
+import {
+  appendPrivateLogFile,
+  createLogFileIdentityChangedError,
+  ensurePrivateLogDirectory,
+  protectPrivateFile,
+} from './logPermissions';
 
 import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
 
@@ -37,20 +43,55 @@ function isMissingFileError(error: unknown): boolean {
   return error instanceof Error && 'code' in error && error.code === 'ENOENT';
 }
 
-function createFileSystemDependencies(): BoundedLogWriterDependencies {
+function createFileSystemDependencies(getCurrentLogDirectory: () => string): BoundedLogWriterDependencies {
   return {
     async appendFile(filePath: string, content: string): Promise<void> {
-      await fs.appendFile(filePath, content);
+      await appendPrivateLogFile(filePath, content);
     },
     async ensureDirectory(directoryPath: string): Promise<void> {
-      await fs.ensureDir(directoryPath);
+      await ensurePrivateLogDirectory(getCurrentLogDirectory(), directoryPath);
     },
     getCurrentTimeMilliseconds: (): number => {
       return Date.now();
     },
     async getFileSize(filePath: string): Promise<number> {
       try {
-        const fileStatistics = await fs.stat(filePath);
+        const fileStatistics = await fs.lstat(filePath);
+
+        if (fileStatistics.isSymbolicLink()) {
+          throw new Error(`Log file cannot be a symbolic link: ${filePath}`);
+        }
+
+        if (fileStatistics.isFile() && fileStatistics.nlink > 1) {
+          throw new Error(`Log file has multiple hard links: ${filePath}`);
+        }
+
+        if (process.platform !== 'win32' && fileStatistics.isFile() && fileStatistics.uid !== process.getuid?.()) {
+          throw new Error(`Log file is not owned by the current user: ${filePath}`);
+        }
+
+        if (fileStatistics.isFile()) {
+          await protectPrivateFile(filePath);
+          const currentFileStatistics = await fs.lstat(filePath);
+
+          if (currentFileStatistics.isSymbolicLink() || !currentFileStatistics.isFile()) {
+            throw new Error(`Log file has an unexpected filesystem type: ${filePath}`);
+          }
+
+          if (currentFileStatistics.nlink > 1) {
+            throw new Error(`Log file has multiple hard links: ${filePath}`);
+          }
+
+          if (process.platform !== 'win32' && currentFileStatistics.uid !== process.getuid?.()) {
+            throw new Error(`Log file is not owned by the current user: ${filePath}`);
+          }
+
+          if (fileStatistics.dev !== currentFileStatistics.dev || fileStatistics.ino !== currentFileStatistics.ino) {
+            throw createLogFileIdentityChangedError(filePath);
+          }
+
+          return currentFileStatistics.size;
+        }
 
         return fileStatistics.isFile() ? fileStatistics.size : 0;
       } catch (error) {
@@ -84,7 +125,7 @@ const desktopBoundedLogWriter: BoundedLogWriter = createBoundedLogWriter({
   async afterWrite(): Promise<void> {
     await runDesktopLogCleanup();
   },
-  dependencies: createFileSystemDependencies(),
+  dependencies: createFileSystemDependencies(getLogDirectory),
   maintenanceCoordinator: desktopLogMaintenanceCoordinator,
   maximumFileSizeBytes: 10 * 1024 * 1024,
 });
@@ -139,4 +180,8 @@ export function writeBoundedJsonlLogMessage(parameters: WriteLogMessageParameter
 
 export function fireAndForgetDesktopLogOperation(asyncAction: () => Promise<unknown>): void {
   desktopLogFireAndForgetInvoker.fireAndForget(asyncAction);
+}
+
+export async function waitForDesktopLogOperations(): Promise<void> {
+  await desktopLogFireAndForgetInvoker.waitUntilAllSettled();
 }

@@ -34,7 +34,7 @@ import {
   LogDirectoryCleanupResult,
   removeEmptyLogDirectoryAncestors,
 } from '../logging/logDirectoryCleanup';
-import {getLogFilenames} from '../logging/logFiles';
+import {getLogFilenames, isLogRootPresentAndSafe} from '../logging/logFiles';
 import {getLogDirectory} from '../logging/logPaths';
 
 const logger = getLogger(path.basename(__filename));
@@ -120,6 +120,10 @@ async function deleteAccountLogs(accountId: string): Promise<void> {
         await fs.rmdir(directoryPath);
       },
     };
+
+    if (isLogRootPresentAndSafe(logDirectory) === false) {
+      return;
+    }
 
     await deleteAccountLogDirectories({
       accountId,

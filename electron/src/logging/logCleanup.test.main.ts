@@ -291,6 +291,38 @@ describe('desktop log cleanup', () => {
   );
 
   it(
+    'does not traverse or mutate files outside a symbolic-link log root',
+    withTemporaryDirectory('wire-log-cleanup-root-symlink-', async (temporaryDirectory: string) => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const outsideLogDirectory = path.join(temporaryDirectory, 'outside-logs');
+      const logDirectory = path.join(temporaryDirectory, 'logs');
+      const outsideLogPath = path.join(outsideLogDirectory, 'old.log');
+      const reportedFailures: string[] = [];
+      await fs.outputFile(outsideLogPath, 'must remain unchanged\n');
+      await fs.utimes(outsideLogPath, new Date(0), new Date(0));
+      await fs.symlink(outsideLogDirectory, logDirectory, 'dir');
+      const cleanup = createLogCleanup(
+        createLogCleanupFileSystemDependencies(message => {
+          reportedFailures.push(message);
+        }),
+      );
+
+      await cleanup.run({
+        activeFilePaths: new Set(),
+        logDirectory,
+        policy: DESKTOP_LOG_RETENTION_POLICY,
+      });
+
+      assert.strictEqual(await fs.readFile(outsideLogPath, 'utf8'), 'must remain unchanged\n');
+      assert.strictEqual((await fs.lstat(logDirectory)).isSymbolicLink(), true);
+      assert.strictEqual(reportedFailures.length, 1);
+    }),
+  );
+
+  it(
     'removes empty ancestors without removing the log root or following symbolic links',
     withTemporaryDirectory('wire-log-cleanup-directories-', async (temporaryLogDirectory: string) => {
       const reportFailure = (): void => {

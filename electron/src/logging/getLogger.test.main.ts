@@ -23,6 +23,7 @@ import * as fs from 'fs-extra';
 import * as assert from 'assert';
 import * as path from 'path';
 
+import {waitForDesktopLogOperations} from './desktopLogWriter';
 import {getLogger} from './getLogger';
 import {getLogDirectory, getMainProcessLogPath} from './logPaths';
 
@@ -56,6 +57,7 @@ describe('desktop application logger', () => {
 
       try {
         await fs.ensureDir(temporaryDirectory);
+        await waitForDesktopLogOperations();
         app.setPath('userData', temporaryDirectory);
         config.environment = 'production';
 
@@ -79,8 +81,15 @@ describe('desktop application logger', () => {
 
         assert.strictEqual(logFilePath, expectedLogFilePath);
         assert.strictEqual(actualLogContents.includes(expectedMessage), true);
+
+        if (process.platform !== 'win32') {
+          assert.strictEqual((await fs.stat(path.join(temporaryDirectory, 'logs'))).mode & 0o777, 0o700);
+          assert.strictEqual((await fs.stat(path.dirname(logFilePath))).mode & 0o777, 0o700);
+          assert.strictEqual((await fs.stat(logFilePath)).mode & 0o777, 0o600);
+        }
       } finally {
         config.environment = originalEnvironment;
+        await waitForDesktopLogOperations();
         app.setPath('userData', originalUserDataDirectory);
       }
     }),

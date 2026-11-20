@@ -46,4 +46,27 @@ describe('desktop log file discovery', () => {
       assert.deepStrictEqual(actualPaths, expectedPaths);
     }),
   );
+
+  it(
+    'treats a missing log root as empty and rejects a symbolic-link log root',
+    withTemporaryDirectory('wire-log-files-root-safety-', async (temporaryDirectory: string) => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const missingLogRoot = path.join(temporaryDirectory, 'missing-logs');
+      const outsideDirectory = path.join(temporaryDirectory, 'outside-logs');
+      const symbolicLogRoot = path.join(temporaryDirectory, 'logs');
+      await fs.outputFile(path.join(outsideDirectory, 'electron.log'), 'outside diagnostics\n');
+      await fs.symlink(outsideDirectory, symbolicLogRoot, 'dir');
+
+      assert.deepStrictEqual(getLogFilenames({absolute: true, baseDirectory: missingLogRoot}), []);
+      assert.throws(() => getLogFilenames({absolute: true, baseDirectory: symbolicLogRoot}), /real directory/);
+      assert.strictEqual(
+        await fs.readFile(path.join(outsideDirectory, 'electron.log'), 'utf8'),
+        'outside diagnostics\n',
+      );
+      assert.strictEqual((await fs.lstat(symbolicLogRoot)).isSymbolicLink(), true);
+    }),
+  );
 });

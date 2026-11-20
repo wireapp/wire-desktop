@@ -26,6 +26,12 @@ import * as path from 'path';
 import {BoundedLogWriter, BoundedLogWriterDependencies, createBoundedLogWriter} from './boundedLogWriter';
 import {createLogCleanup, createLogCleanupFileSystemDependencies} from './logCleanup';
 import {createLogMaintenanceCoordinator} from './logMaintenance';
+import {
+  appendPrivateLogFile,
+  createLogFileIdentityChangedError,
+  ensurePrivateLogDirectory,
+  protectPrivateFile,
+} from './logPermissions';
 import {LogRetentionPolicy} from './logRetention';
 import {createWebViewConsoleLogger} from './webViewConsoleLogger';
 
@@ -51,6 +57,84 @@ function createTestFileSystemDependencies(currentTimeMilliseconds: number): Boun
       const fileStatistics = await fs.stat(filePath);
 
       return fileStatistics.size;
+    },
+    async moveFile(sourceFilePath: string, destinationFilePath: string): Promise<void> {
+      await fs.move(sourceFilePath, destinationFilePath, {overwrite: false});
+    },
+    async pathExists(filePath: string): Promise<boolean> {
+      return fs.pathExists(filePath);
+    },
+  };
+}
+
+type CreatePrivateFileSystemDependenciesParameters = {
+  currentTimeMilliseconds: number;
+  logDirectory: string;
+  openLogFile?: (filePath: string, flags: number, mode?: number) => Promise<fs.promises.FileHandle>;
+};
+
+function createPrivateFileSystemDependencies(
+  parameters: CreatePrivateFileSystemDependenciesParameters,
+): BoundedLogWriterDependencies {
+  return {
+    async appendFile(filePath: string, content: string): Promise<void> {
+      await appendPrivateLogFile(filePath, content, parameters.openLogFile);
+    },
+    async ensureDirectory(directoryPath: string): Promise<void> {
+      await ensurePrivateLogDirectory(parameters.logDirectory, directoryPath);
+    },
+    getCurrentTimeMilliseconds(): number {
+      return parameters.currentTimeMilliseconds;
+    },
+    async getFileSize(filePath: string): Promise<number> {
+      let fileStatistics: fs.Stats;
+
+      try {
+        fileStatistics = await fs.lstat(filePath);
+      } catch (error) {
+        if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+          return 0;
+        }
+
+        throw error;
+      }
+
+      if (fileStatistics.isSymbolicLink()) {
+        throw new Error(`Log file cannot be a symbolic link: ${filePath}`);
+      }
+
+      if (fileStatistics.isFile() === false) {
+        return 0;
+      }
+
+      if (fileStatistics.nlink > 1) {
+        throw new Error(`Log file has multiple hard links: ${filePath}`);
+      }
+
+      if (process.platform !== 'win32' && fileStatistics.uid !== process.getuid?.()) {
+        throw new Error(`Log file is not owned by the current user: ${filePath}`);
+      }
+
+      await protectPrivateFile(filePath);
+      const currentFileStatistics = await fs.lstat(filePath);
+
+      if (currentFileStatistics.isSymbolicLink() || !currentFileStatistics.isFile()) {
+        throw new Error(`Log file has an unexpected filesystem type: ${filePath}`);
+      }
+
+      if (currentFileStatistics.nlink > 1) {
+        throw new Error(`Log file has multiple hard links: ${filePath}`);
+      }
+
+      if (process.platform !== 'win32' && currentFileStatistics.uid !== process.getuid?.()) {
+        throw new Error(`Log file is not owned by the current user: ${filePath}`);
+      }
+
+      if (fileStatistics.dev !== currentFileStatistics.dev || fileStatistics.ino !== currentFileStatistics.ino) {
+        throw createLogFileIdentityChangedError(filePath);
+      }
+
+      return currentFileStatistics.size;
     },
     async moveFile(sourceFilePath: string, destinationFilePath: string): Promise<void> {
       await fs.move(sourceFilePath, destinationFilePath, {overwrite: false});
@@ -197,6 +281,98 @@ describe('bounded desktop log writer', () => {
       assert.strictEqual(actualCurrentLogContent, '6789\n');
       assert.strictEqual(actualRotatedLogContent, '12345\n');
       assert.strictEqual(rotationCount, 1);
+    }),
+  );
+
+  it(
+    'retries once when another writer rotates the active file before append',
+    withTemporaryDirectory('wire-bounded-log-concurrent-rotation-', async (temporaryLogDirectory: string) => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const logDirectory = path.join(temporaryLogDirectory, 'logs');
+      const logFilePath = path.join(logDirectory, 'electron.log');
+      const rotatedLogPath = `${logFilePath}.external.old`;
+      await ensurePrivateLogDirectory(logDirectory, logDirectory);
+      await appendPrivateLogFile(logFilePath, 'previous process entry\n');
+      let appendOpenCount = 0;
+      const boundedLogWriter = createBoundedLogWriter({
+        afterWrite: ignorePostWriteCleanup,
+        dependencies: createPrivateFileSystemDependencies({
+          currentTimeMilliseconds: 12,
+          logDirectory,
+          async openLogFile(filePath, flags, mode) {
+            appendOpenCount += 1;
+
+            if (appendOpenCount === 1) {
+              await fs.move(filePath, rotatedLogPath, {overwrite: false});
+              await fs.writeFile(filePath, 'replacement process entry\n', {mode: 0o600});
+              await fs.chmod(filePath, 0o600);
+            }
+
+            return fs.promises.open(filePath, flags, mode);
+          },
+        }),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
+        maximumFileSizeBytes: 1024,
+      });
+
+      await boundedLogWriter.write({logFilePath, message: 'record from this process'});
+
+      const actualCurrentLogContent = await fs.readFile(logFilePath, 'utf8');
+      const actualRotatedLogContent = await fs.readFile(rotatedLogPath, 'utf8');
+
+      assert.strictEqual(actualCurrentLogContent, 'replacement process entry\nrecord from this process\n');
+      assert.strictEqual(actualRotatedLogContent, 'previous process entry\n');
+      assert.strictEqual(appendOpenCount, 2);
+    }),
+  );
+
+  it(
+    'does not retry when a hard link replaces the active file before append',
+    withTemporaryDirectory('wire-bounded-log-unsafe-replacement-', async (temporaryLogDirectory: string) => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const logDirectory = path.join(temporaryLogDirectory, 'logs');
+      const logFilePath = path.join(logDirectory, 'electron.log');
+      const rotatedLogPath = `${logFilePath}.external.old`;
+      const outsideFilePath = path.join(temporaryLogDirectory, 'outside.log');
+      await ensurePrivateLogDirectory(logDirectory, logDirectory);
+      await appendPrivateLogFile(logFilePath, 'previous process entry\n');
+      await fs.writeFile(outsideFilePath, 'outside contents\n', {mode: 0o600});
+      let appendOpenCount = 0;
+      const boundedLogWriter = createBoundedLogWriter({
+        afterWrite: ignorePostWriteCleanup,
+        dependencies: createPrivateFileSystemDependencies({
+          currentTimeMilliseconds: 13,
+          logDirectory,
+          async openLogFile(filePath, flags, mode) {
+            appendOpenCount += 1;
+
+            if (appendOpenCount === 1) {
+              await fs.move(filePath, rotatedLogPath, {overwrite: false});
+              await fs.link(outsideFilePath, filePath);
+            }
+
+            return fs.promises.open(filePath, flags, mode);
+          },
+        }),
+        maintenanceCoordinator: createTestMaintenanceCoordinator(),
+        maximumFileSizeBytes: 1024,
+      });
+
+      await assert.rejects(
+        boundedLogWriter.write({logFilePath, message: 'must not be appended'}),
+        /multiple hard links/,
+      );
+
+      assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), 'outside contents\n');
+      assert.strictEqual(await fs.readFile(outsideFilePath, 'utf8'), 'outside contents\n');
+      assert.strictEqual(await fs.readFile(rotatedLogPath, 'utf8'), 'previous process entry\n');
+      assert.strictEqual(appendOpenCount, 1);
     }),
   );
 

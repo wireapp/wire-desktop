@@ -17,9 +17,22 @@
  *
  */
 
+import {app} from 'electron';
+
+import * as path from 'path';
+
+import {protectLogDirectoryAtStartup} from './logging/logPermissions';
 import {configurePortableUserDataAtStartup} from './runtime/configurePortableUserData';
 
 configurePortableUserDataAtStartup();
+try {
+  protectLogDirectoryAtStartup(path.join(app.getPath('userData'), 'logs'));
+} catch (error) {
+  const failureCode = error instanceof Error && 'code' in error ? String(error.code) : 'unknown';
+  process.stderr.write(
+    `Unable to protect existing Desktop logs (error ${failureCode}); writes and exports will fail closed where unsafe.\n`,
+  );
+}
 
 function loadMainProcess(): void {
   require('./mainProcess');

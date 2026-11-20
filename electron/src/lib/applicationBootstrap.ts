@@ -19,7 +19,6 @@
 
 export type InitializeFirstInstanceOptions = {
   bindIpcEvents: () => void;
-  ensureMainProcessLogFile: () => void;
   handleAppEvents: () => void;
   initializeElectronWrapper: () => void;
   startDesktopLogLifecycle: () => void;
@@ -27,7 +26,6 @@ export type InitializeFirstInstanceOptions = {
 
 export function initializeFirstInstance(options: InitializeFirstInstanceOptions): void {
   options.bindIpcEvents();
-  options.ensureMainProcessLogFile();
   // Electron does not replay web-contents-created, so handlers must be registered before app events can create windows.
   options.initializeElectronWrapper();
   options.handleAppEvents();
