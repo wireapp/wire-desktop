@@ -93,6 +93,19 @@ export function isStructuredLogRecord(line: string): boolean {
   );
 }
 
+export function isPinoConsoleRecord(message: string): boolean {
+  // The browser encoder writes this compact header in order. Keep unrelated JSON and
+  // unstructured console diagnostics, even when Electron reports a matching severity.
+  const pinoHeader = /^\{"time":\d+,"level":(?:20|30|40|50),"component":"@wireapp\/[a-z0-9_./-]+"/i;
+
+  return (
+    message.length < structuredLogLimits.maximumRecordBytes &&
+    pinoHeader.test(message) &&
+    Buffer.byteLength(message, 'utf8') < structuredLogLimits.maximumRecordBytes &&
+    isStructuredLogRecord(message)
+  );
+}
+
 export function createDesktopApplicationLogs(
   invoke: (records: readonly string[]) => Promise<StructuredLogWriteResult>,
 ): DesktopApplicationLogs {

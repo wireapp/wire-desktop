@@ -538,6 +538,7 @@ const bindIpcEvents = (): void => {
     for (const context of webviewNavigationContextsById.values()) {
       if (context.accountId === accountId) {
         context.loggingRevoked = true;
+        structuredWebappLogger.resetConsoleCapture(context.contents);
       }
     }
 
@@ -1058,8 +1059,12 @@ class ElectronWrapperInit {
           // Electron emits did-start-navigation before will-navigate. Associate the initial
           // destination first so the cancellable navigation handlers can apply account trust.
           contents.on('did-start-navigation', (_event, url, isInPlace, isMainFrame) => {
+            if (isInPlace || !isMainFrame) {
+              return;
+            }
+            structuredWebappLogger.resetConsoleCapture(contents);
             const existingContext = Maybe.of(webviewNavigationContextsById.get(contents.id));
-            if (existingContext.isJust || isInPlace || !isMainFrame) {
+            if (existingContext.isJust) {
               return;
             }
 
@@ -1073,6 +1078,10 @@ class ElectronWrapperInit {
               logger.warn('Could not associate initial WebView navigation with a trusted account origin.');
             }
           });
+
+          // Also invalidate attempts started by the outgoing document during navigation.
+          contents.on('did-navigate', () => structuredWebappLogger.resetConsoleCapture(contents));
+          contents.once('destroyed', () => structuredWebappLogger.resetConsoleCapture(contents));
 
           contents.on('did-finish-load', () => {
             const activeContext = Maybe.of(webviewNavigationContextsById.get(contents.id));
@@ -1140,7 +1149,10 @@ class ElectronWrapperInit {
           });
 
           contents.on('console-message', messageDetails => {
-            void writeWebViewConsoleMessage(messageDetails);
+            const source = {sender: contents, senderFrame: messageDetails.frame};
+            if (structuredWebappLogger.shouldCaptureConsoleMessage(source, messageDetails.message)) {
+              void writeWebViewConsoleMessage(messageDetails);
+            }
           });
 
           if (enableSpellChecking) {

@@ -36,6 +36,8 @@ const otherAccountId = '22222222-2222-4222-8222-222222222222';
 const record =
   '{"level":30,"time":42,"component":"@wireapp/core/Account","msg":"Connected\\nRetry complete","error":{"detail":"\\u0025"}}';
 const recordWithoutMessage = '{"level":40,"time":42,"component":"@wireapp/core/Account","count":2}';
+const pinoConsoleRecord = '{"time":42,"level":30,"component":"@wireapp/core/Account","msg":"Connected"}';
+const transportTimeout = 'Desktop structured log write did not receive a successful acknowledgement (timeout)';
 
 type CreateGuestOptions = {
   id?: number;
@@ -193,19 +195,24 @@ describe('structured Webapp logging', () => {
       },
     });
 
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+
+    const unrelatedFrame = {sender: guest.sender, senderFrame: {url: allowedOrigin}};
     for (const unauthorized of [
       untrusted,
       foreignHost,
       createGuest(),
       createGuest({id: guest.sender.id}),
       {sender: guest.sender, senderFrame: null},
-      {sender: guest.sender, senderFrame: {url: allowedOrigin}},
+      unrelatedFrame,
     ]) {
       assert.strictEqual(await receiver.receive(unauthorized, [record]), 'rejected');
     }
 
-    assert.deepStrictEqual(writes, []);
-    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(unrelatedFrame, transportTimeout), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+    assert.strictEqual(writes.length, 1);
   });
 
   it('groups batches by receipt day and uses account identity from the guest context', async () => {
@@ -353,7 +360,7 @@ describe('structured Webapp logging', () => {
     assert.strictEqual(await capability.write([record]), 'written');
   });
 
-  it('still captures and sanitizes console messages alongside structured records', async () => {
+  it('captures the old console transport until a write and keeps exceptional diagnostics after it', async () => {
     const {guest, receiver, writes} = createReceiver();
     const consoleWrites: string[] = [];
     const logConsoleMessage = createWebViewConsoleLogger({
@@ -369,11 +376,150 @@ describe('structured Webapp logging', () => {
       reportWriteFailure: assert.fail,
     });
 
-    await logConsoleMessage({message: '%clegacy message%c access_token=private'});
-    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
-    await logConsoleMessage({message: 'still captured'});
+    async function captureMessage(message: string): Promise<void> {
+      if (receiver.shouldCaptureConsoleMessage(guest, message)) {
+        await logConsoleMessage({message});
+      }
+    }
 
-    assert.deepStrictEqual(consoleWrites, ['console.log: legacy message ', 'console.log: still captured']);
-    assert.deepStrictEqual(writes[0].records, [record]);
+    await captureMessage('%clegacy message%c access_token=private-query');
+    await captureMessage(pinoConsoleRecord);
+    assert.strictEqual(await receiver.receive(guest, [pinoConsoleRecord]), 'written');
+    await captureMessage(pinoConsoleRecord);
+    const unrelatedJson = '{"time":42,"level":30,"component":"third-party","msg":"Different producer"}';
+    await captureMessage(unrelatedJson);
+    await captureMessage('panicked at worker.rs:42 Bearer private-bearer');
+    await captureMessage('Unhandled exception\nCookie: example=private-cookie');
+    await captureMessage('Error fetching https://user:private-password@example.com/?arbitrary=private-url');
+    await captureMessage('{"time":42,"level":30,"component":"third-party","accessToken":"private-token"}');
+    await captureMessage('TypeError: Expected token "private-prefix..." (redacted) to be base64 encoded string.');
+
+    assert.deepStrictEqual(consoleWrites, [
+      'console.log: legacy message access_token=[REDACTED]',
+      `console.log: ${pinoConsoleRecord}`,
+      `console.log: ${unrelatedJson}`,
+      'console.log: panicked at worker.rs:42 Bearer [REDACTED]',
+      'console.log: Unhandled exception\nCookie: [REDACTED]',
+      'console.log: Error fetching https://example.com/?[REDACTED]',
+      'console.log: {"time":42,"level":30,"component":"third-party","accessToken":"[REDACTED]"}',
+      'console.log: TypeError: Expected token [REDACTED] (redacted) to be base64 encoded string.',
+    ]);
+    assert.deepStrictEqual(writes[0].records, [pinoConsoleRecord]);
+  });
+
+  it('restores fallback after rejection, writer failure, busy delivery, and renderer timeout', async () => {
+    let completion = Promise.resolve();
+    const {guest, receiver} = createReceiver({
+      writeBatch() {
+        return completion;
+      },
+    });
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+    assert.strictEqual(await receiver.receive(guest, ['invalid']), 'rejected');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    completion = Promise.reject(new Error('Maintenance failed after append'));
+    assert.strictEqual(await receiver.receive(guest, [record]), 'failed');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+
+    completion = Promise.resolve();
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    const pendingCompletion = Promise.withResolvers<void>();
+    completion = pendingCompletion.promise;
+    const pendingWrite = receiver.receive(guest, [record]);
+    assert.strictEqual(await receiver.receive(guest, [record]), 'busy');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    pendingCompletion.resolve();
+    assert.strictEqual(await pendingWrite, 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, transportTimeout), true);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+  });
+
+  it('restores legacy capture after the current main frame loses structured write authorization', async () => {
+    const {guest, receiver, context, writes} = createReceiver();
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+
+    context.trustedOrigin = Maybe.just('https://different.example.com');
+    assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+    assert.deepStrictEqual(receiver.getConsoleLogAccountId(guest.sender), Maybe.just(accountId));
+    assert.strictEqual(writes.length, 1);
+
+    context.trustedOrigin = Maybe.just(allowedOrigin);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    assert.strictEqual(writes.length, 1);
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+  });
+
+  it('restores legacy capture when a console event detects authorization loss without IPC', async () => {
+    const {guest, receiver, context, writes} = createReceiver();
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+
+    context.trustedOrigin = Maybe.just('https://different.example.com');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    assert.deepStrictEqual(receiver.getConsoleLogAccountId(guest.sender), Maybe.just(accountId));
+    assert.strictEqual(writes.length, 1);
+
+    context.trustedOrigin = Maybe.just(allowedOrigin);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    assert.strictEqual(writes.length, 1);
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+  });
+
+  it('clears confirmation if authorization is lost while an accepted batch is writing', async () => {
+    const pendingCompletion = Promise.withResolvers<void>();
+    let completion = Promise.resolve();
+    const {guest, receiver, context} = createReceiver({
+      writeBatch() {
+        return completion;
+      },
+    });
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+
+    completion = pendingCompletion.promise;
+    const pendingWrite = receiver.receive(guest, [record]);
+    context.trustedOrigin = Maybe.just('https://different.example.com');
+    pendingCompletion.resolve();
+
+    assert.strictEqual(await pendingWrite, 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+  });
+
+  it('keeps confirmation local to the document and account even when an earlier write completes late', async () => {
+    const guest = createGuest();
+    const otherGuest = createGuest({id: 2});
+    const contexts = new Map([
+      [guest.sender.id, createContext(guest.sender)],
+      [otherGuest.sender.id, createContext(otherGuest.sender, otherAccountId)],
+    ]);
+    const earlierDocument = Promise.withResolvers<void>();
+    let completion = earlierDocument.promise;
+    const {receiver} = createReceiver({
+      getWebViewContext(senderId) {
+        return Maybe.of(contexts.get(senderId));
+      },
+      writeBatch() {
+        return completion;
+      },
+    });
+    const navigationWrite = receiver.receive(guest, [record]);
+    receiver.resetConsoleCapture(guest.sender);
+    earlierDocument.resolve();
+    assert.strictEqual(await navigationWrite, 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
+    completion = Promise.resolve();
+    assert.strictEqual(await receiver.receive(guest, [record]), 'written');
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(otherGuest, pinoConsoleRecord), true);
+    contexts.set(guest.sender.id, createContext(guest.sender, otherAccountId));
+    assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), true);
   });
 });

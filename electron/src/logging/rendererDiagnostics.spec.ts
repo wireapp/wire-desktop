@@ -258,7 +258,7 @@ describe('desktop renderer diagnostics', () => {
     expect(writtenMessages).toEqual([
       {
         logFilePath: '/logs/accounts/account-123/console.log',
-        message: 'WebApp warning ',
+        message: 'WebApp warning access_token=[REDACTED]',
       },
     ]);
   });
