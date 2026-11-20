@@ -330,6 +330,62 @@ describe('bounded desktop log writer', () => {
   );
 
   it(
+    'retries when a competing first append rotates the file before fallback lookup or open',
+    withTemporaryDirectory('wire-bounded-log-first-append-rotation-', async temporaryLogDirectory => {
+      for (const rotationPoint of ['beforeFallbackLookup', 'beforeFallbackOpen'] as const) {
+        const logDirectory = path.join(temporaryLogDirectory, rotationPoint);
+        const logFilePath = path.join(logDirectory, 'electron.log');
+        const rotatedLogPath = `${logFilePath}.external.old`;
+        let appendOpenCount = 0;
+        const boundedLogWriter = createBoundedLogWriter({
+          afterWrite: ignorePostWriteCleanup,
+          dependencies: createPrivateFileSystemDependencies({
+            currentTimeMilliseconds: 14,
+            logDirectory,
+            async openLogFile(filePath, flags, mode) {
+              appendOpenCount += 1;
+
+              if (appendOpenCount === 1) {
+                assert.notStrictEqual(flags & fs.constants.O_CREAT, 0);
+                assert.notStrictEqual(flags & fs.constants.O_EXCL, 0);
+                await fs.writeFile(filePath, 'competing process entry\n', {mode: 0o600});
+
+                try {
+                  return await fs.promises.open(filePath, flags, mode);
+                } catch (error) {
+                  assert.ok(error instanceof Error && 'code' in error && error.code === 'EEXIST');
+
+                  if (rotationPoint === 'beforeFallbackLookup') {
+                    await fs.rename(filePath, rotatedLogPath);
+                  }
+
+                  throw error;
+                }
+              }
+
+              if (rotationPoint === 'beforeFallbackOpen' && appendOpenCount === 2) {
+                assert.strictEqual(flags & fs.constants.O_CREAT, 0);
+                assert.strictEqual(flags & fs.constants.O_EXCL, 0);
+                await fs.rename(filePath, rotatedLogPath);
+              }
+
+              return fs.promises.open(filePath, flags, mode);
+            },
+          }),
+          maintenanceCoordinator: createTestMaintenanceCoordinator(),
+          maximumFileSizeBytes: 1024,
+        });
+
+        await boundedLogWriter.write({logFilePath, message: 'record from this process'});
+
+        assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), 'record from this process\n');
+        assert.strictEqual(await fs.readFile(rotatedLogPath, 'utf8'), 'competing process entry\n');
+        assert.strictEqual(appendOpenCount, rotationPoint === 'beforeFallbackLookup' ? 2 : 3);
+      }
+    }),
+  );
+
+  it(
     'does not retry when a hard link replaces the active file before append',
     withTemporaryDirectory('wire-bounded-log-unsafe-replacement-', async (temporaryLogDirectory: string) => {
       if (process.platform === 'win32') {

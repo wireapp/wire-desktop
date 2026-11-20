@@ -30,12 +30,7 @@ import {
 import {cleanupDesktopLogs, DESKTOP_LOG_RETENTION_POLICY} from './logCleanup';
 import {createLogMaintenanceCoordinator, LogMaintenanceCoordinator} from './logMaintenance';
 import {getLogDirectory} from './logPaths';
-import {
-  appendPrivateLogFile,
-  createLogFileIdentityChangedError,
-  ensurePrivateLogDirectory,
-  protectPrivateFile,
-} from './logPermissions';
+import {appendPrivateLogFile, ensurePrivateLogDirectory, protectPrivateFile} from './logPermissions';
 
 import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
 
@@ -56,44 +51,7 @@ function createFileSystemDependencies(getCurrentLogDirectory: () => string): Bou
     },
     async getFileSize(filePath: string): Promise<number> {
       try {
-        const fileStatistics = await fs.lstat(filePath);
-
-        if (fileStatistics.isSymbolicLink()) {
-          throw new Error(`Log file cannot be a symbolic link: ${filePath}`);
-        }
-
-        if (fileStatistics.isFile() && fileStatistics.nlink > 1) {
-          throw new Error(`Log file has multiple hard links: ${filePath}`);
-        }
-
-        if (process.platform !== 'win32' && fileStatistics.isFile() && fileStatistics.uid !== process.getuid?.()) {
-          throw new Error(`Log file is not owned by the current user: ${filePath}`);
-        }
-
-        if (fileStatistics.isFile()) {
-          await protectPrivateFile(filePath);
-          const currentFileStatistics = await fs.lstat(filePath);
-
-          if (currentFileStatistics.isSymbolicLink() || !currentFileStatistics.isFile()) {
-            throw new Error(`Log file has an unexpected filesystem type: ${filePath}`);
-          }
-
-          if (currentFileStatistics.nlink > 1) {
-            throw new Error(`Log file has multiple hard links: ${filePath}`);
-          }
-
-          if (process.platform !== 'win32' && currentFileStatistics.uid !== process.getuid?.()) {
-            throw new Error(`Log file is not owned by the current user: ${filePath}`);
-          }
-
-          if (fileStatistics.dev !== currentFileStatistics.dev || fileStatistics.ino !== currentFileStatistics.ino) {
-            throw createLogFileIdentityChangedError(filePath);
-          }
-
-          return currentFileStatistics.size;
-        }
-
-        return fileStatistics.isFile() ? fileStatistics.size : 0;
+        return await protectPrivateFile(filePath);
       } catch (error) {
         if (isMissingFileError(error)) {
           return 0;

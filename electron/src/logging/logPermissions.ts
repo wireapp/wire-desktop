@@ -151,7 +151,7 @@ function protectFileSync(filePath: string): void {
 export async function protectPrivateFile(
   filePath: string,
   openLogFile: OpenLogFile = (filePath, flags) => fs.promises.open(filePath, flags),
-): Promise<void> {
+): Promise<number> {
   const pathMetadata = await fs.promises.lstat(filePath);
 
   if (pathMetadata.isSymbolicLink() || !pathMetadata.isFile()) {
@@ -161,32 +161,45 @@ export async function protectPrivateFile(
   assertOwnedByCurrentUser(pathMetadata, filePath);
   assertSingleLinkFile(pathMetadata, filePath);
 
-  if (process.platform === 'win32') {
-    return;
+  if (process.platform !== 'win32') {
+    const fileHandle = await openLogFile(filePath, getFileReadOpenFlags());
+
+    try {
+      const openedFileMetadata = await fileHandle.stat();
+
+      if (!openedFileMetadata.isFile()) {
+        throw new Error(`Log file has an unexpected filesystem type: ${filePath}`);
+      }
+
+      assertOwnedByCurrentUser(openedFileMetadata, filePath);
+      assertSingleLinkFile(openedFileMetadata, filePath);
+
+      if (!hasSameFileIdentity(pathMetadata, openedFileMetadata)) {
+        throw createLogFileIdentityChangedError(filePath);
+      }
+
+      if (!hasPrivateMode(openedFileMetadata, privateFileMode)) {
+        await fileHandle.chmod(privateFileMode);
+      }
+    } finally {
+      await fileHandle.close();
+    }
   }
 
-  const fileHandle = await openLogFile(filePath, getFileReadOpenFlags());
+  const currentPathMetadata = await fs.promises.lstat(filePath);
 
-  try {
-    const openedFileMetadata = await fileHandle.stat();
-
-    if (!openedFileMetadata.isFile()) {
-      throw new Error(`Log file has an unexpected filesystem type: ${filePath}`);
-    }
-
-    assertOwnedByCurrentUser(openedFileMetadata, filePath);
-    assertSingleLinkFile(openedFileMetadata, filePath);
-
-    if (!hasSameFileIdentity(pathMetadata, openedFileMetadata)) {
-      throw createLogFileIdentityChangedError(filePath);
-    }
-
-    if (!hasPrivateMode(openedFileMetadata, privateFileMode)) {
-      await fileHandle.chmod(privateFileMode);
-    }
-  } finally {
-    await fileHandle.close();
+  if (currentPathMetadata.isSymbolicLink() || !currentPathMetadata.isFile()) {
+    throw new Error(`Log file has an unexpected filesystem type: ${filePath}`);
   }
+
+  assertOwnedByCurrentUser(currentPathMetadata, filePath);
+  assertSingleLinkFile(currentPathMetadata, filePath);
+
+  if (!hasSameFileIdentity(pathMetadata, currentPathMetadata)) {
+    throw createLogFileIdentityChangedError(filePath);
+  }
+
+  return currentPathMetadata.size;
 }
 
 function protectDirectoryTreeSync(directoryPath: string): void {
@@ -326,7 +339,7 @@ export async function appendPrivateLogFile(
   content: string,
   openLogFile: OpenLogFile = (filePath, flags, mode) => fs.promises.open(filePath, flags, mode),
 ): Promise<void> {
-  const pathMetadata = await fs.promises.lstat(filePath).catch(error => {
+  let pathMetadata = await fs.promises.lstat(filePath).catch(error => {
     if (isMissingPathError(error)) {
       return undefined;
     }
@@ -334,30 +347,44 @@ export async function appendPrivateLogFile(
     throw error;
   });
 
-  if (pathMetadata?.isSymbolicLink() === true || (pathMetadata !== undefined && !pathMetadata.isFile())) {
-    throw new Error(`Log file has an unexpected filesystem type: ${filePath}`);
-  }
-
-  if (pathMetadata !== undefined) {
-    assertOwnedByCurrentUser(pathMetadata, filePath);
-    assertSingleLinkFile(pathMetadata, filePath);
-  }
-
-  const flags =
-    fs.constants.O_WRONLY |
-    fs.constants.O_APPEND |
-    fs.constants.O_CREAT |
-    (pathMetadata === undefined ? fs.constants.O_EXCL : 0) |
-    (process.platform === 'win32' ? 0 : fs.constants.O_NOFOLLOW ?? 0);
+  const appendFlags =
+    fs.constants.O_WRONLY | fs.constants.O_APPEND | (process.platform === 'win32' ? 0 : fs.constants.O_NOFOLLOW ?? 0);
   let fileHandle: fs.promises.FileHandle;
 
-  try {
-    fileHandle = await openLogFile(filePath, flags, privateFileMode);
-  } catch (error) {
-    if (pathMetadata === undefined && isAlreadyExistsError(error)) {
-      await appendPrivateLogFile(filePath, content, openLogFile);
+  async function openExistingLogFile(existingMetadata?: fs.Stats): Promise<fs.promises.FileHandle> {
+    pathMetadata = existingMetadata ?? (await fs.promises.lstat(filePath));
 
-      return;
+    if (pathMetadata.isSymbolicLink() || !pathMetadata.isFile()) {
+      throw new Error(`Log file has an unexpected filesystem type: ${filePath}`);
+    }
+
+    assertOwnedByCurrentUser(pathMetadata, filePath);
+    assertSingleLinkFile(pathMetadata, filePath);
+
+    return openLogFile(filePath, appendFlags, privateFileMode);
+  }
+
+  try {
+    if (pathMetadata === undefined) {
+      try {
+        fileHandle = await openLogFile(
+          filePath,
+          appendFlags | fs.constants.O_CREAT | fs.constants.O_EXCL,
+          privateFileMode,
+        );
+      } catch (error) {
+        if (isAlreadyExistsError(error) === false) {
+          throw error;
+        }
+
+        fileHandle = await openExistingLogFile();
+      }
+    } else {
+      fileHandle = await openExistingLogFile(pathMetadata);
+    }
+  } catch (error) {
+    if (isMissingPathError(error)) {
+      throw createLogFileIdentityChangedError(filePath);
     }
 
     throw error;
@@ -377,10 +404,8 @@ export async function appendPrivateLogFile(
       throw createLogFileIdentityChangedError(filePath);
     }
 
-    if (process.platform !== 'win32') {
-      if (!hasPrivateMode(openedFileMetadata, privateFileMode)) {
-        await fileHandle.chmod(privateFileMode);
-      }
+    if (process.platform !== 'win32' && !hasPrivateMode(openedFileMetadata, privateFileMode)) {
+      await fileHandle.chmod(privateFileMode);
     }
 
     await fileHandle.writeFile(content);

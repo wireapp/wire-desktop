@@ -37,6 +37,7 @@ import {
 import {createLogArchiveDependencies, createLogSnapshotFileSystemDependencies} from './logExportDependencies';
 import {getLogFilenames} from './logFiles';
 import {createLogMaintenanceCoordinator} from './logMaintenance';
+import {protectLogDirectoryAtStartup} from './logPermissions';
 
 import {withTemporaryDirectory} from '../../test/withTemporaryDirectory';
 import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
@@ -48,9 +49,7 @@ type CreateSnapshotTestOptions = {
   maintenanceCoordinator: ReturnType<typeof createLogMaintenanceCoordinator>;
   reportFailure: (message: string, error: unknown) => void;
   temporaryDirectoryPrefix: string;
-} & Omit<LogSnapshotFileSystemDependencies, 'protectFile'> & {
-    protectFile?: LogSnapshotFileSystemDependencies['protectFile'];
-  };
+} & LogSnapshotFileSystemDependencies;
 
 function runNoopCleanup(): Promise<void> {
   return Promise.resolve();
@@ -76,14 +75,7 @@ function createTestMaintenanceCoordinator(): ReturnType<typeof createLogMaintena
 }
 
 function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLogSnapshotOptions {
-  const {
-    copyFile,
-    createTemporaryDirectory,
-    ensureDirectory,
-    getFileMetadata,
-    protectFile = createLogSnapshotFileSystemDependencies().protectFile,
-    removeDirectory,
-  } = options;
+  const {copyFile, createTemporaryDirectory, ensureDirectory, getFileMetadata, removeDirectory} = options;
 
   return {
     copyFile,
@@ -92,7 +84,6 @@ function createSnapshotTestOptions(options: CreateSnapshotTestOptions): CreateLo
     discoverLogFilePaths: options.discoverLogFilePaths,
     ensureDirectory,
     getFileMetadata,
-    protectFile,
     logDirectory: options.logDirectory,
     reportFailure: options.reportFailure,
     removeDirectory,
@@ -190,7 +181,6 @@ describe('desktop log export', () => {
         createTemporaryDirectory: defaultDependencies.createTemporaryDirectory,
         ensureDirectory: defaultDependencies.ensureDirectory,
         getFileMetadata: defaultDependencies.getFileMetadata,
-        protectFile: defaultDependencies.protectFile,
         removeDirectory: defaultDependencies.removeDirectory,
       };
       const snapshot = await createLogSnapshot(
@@ -249,7 +239,6 @@ describe('desktop log export', () => {
           getFileMetadata: snapshotDependencies.getFileMetadata,
           logDirectory: temporaryLogDirectory,
           maintenanceCoordinator: createTestMaintenanceCoordinator(),
-          protectFile: snapshotDependencies.protectFile,
           reportFailure(message) {
             reportedFailures.push(message);
           },
@@ -329,7 +318,6 @@ describe('desktop log export', () => {
             getFileMetadata: snapshotDependencies.getFileMetadata,
             logDirectory: temporaryLogDirectory,
             maintenanceCoordinator: createTestMaintenanceCoordinator(),
-            protectFile: snapshotDependencies.protectFile,
             reportFailure(message) {
               reportedFailures.push(message);
             },
@@ -392,7 +380,6 @@ describe('desktop log export', () => {
             getFileMetadata: snapshotDependencies.getFileMetadata,
             logDirectory: temporaryLogDirectory,
             maintenanceCoordinator: createTestMaintenanceCoordinator(),
-            protectFile: snapshotDependencies.protectFile,
             reportFailure: noop,
             removeDirectory: snapshotDependencies.removeDirectory,
             temporaryDirectoryPrefix: path.join(temporaryLogDirectory, 'snapshot-'),
@@ -492,7 +479,6 @@ describe('desktop log export', () => {
         createTemporaryDirectory: defaultDependencies.createTemporaryDirectory,
         ensureDirectory: defaultDependencies.ensureDirectory,
         getFileMetadata: defaultDependencies.getFileMetadata,
-        protectFile: defaultDependencies.protectFile,
       };
 
       try {
@@ -609,6 +595,7 @@ describe('desktop log export', () => {
       await fs.outputFile(path.join(temporaryLogDirectory, applicationLogRelativePath), applicationLogContent);
       await fs.outputFile(path.join(temporaryLogDirectory, rotatedApplicationLogRelativePath), applicationLogContent);
       await fs.outputFile(path.join(temporaryLogDirectory, ssoLogRelativePath), 'sso diagnostic\n');
+      protectLogDirectoryAtStartup(temporaryLogDirectory);
       const archivePath = path.join(temporaryLogDirectory, 'logs.zip');
       await fs.outputFile(archivePath, 'existing archive contents');
       await fs.chmod(archivePath, 0o644);

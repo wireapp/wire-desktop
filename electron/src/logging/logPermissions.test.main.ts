@@ -261,6 +261,53 @@ describe('desktop log filesystem permissions', () => {
   );
 
   it(
+    'detects a file replacement after the opened file metadata is inspected',
+    withTemporaryDirectory('wire-log-permissions-post-open-replacement-', async (profileDirectory: string) => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const logFilePath = path.join(profileDirectory, 'electron.log');
+      const rotatedFilePath = `${logFilePath}.rotated.old`;
+      await fs.writeFile(logFilePath, 'original contents\n', {mode: 0o600});
+      await fs.chmod(logFilePath, 0o600);
+
+      await assert.rejects(
+        protectPrivateFile(logFilePath, async (filePath, flags) => {
+          const openedFileHandle = await fs.promises.open(filePath, flags);
+
+          return new Proxy(openedFileHandle, {
+            get(target, property) {
+              if (property === 'stat') {
+                return async () => {
+                  const openedFileMetadata = await target.stat();
+                  await fs.rename(filePath, rotatedFilePath);
+                  await fs.writeFile(filePath, 'replacement contents\n', {mode: 0o644});
+                  await fs.chmod(filePath, 0o644);
+
+                  return openedFileMetadata;
+                };
+              }
+
+              const propertyValue = Reflect.get(target, property, target);
+
+              return typeof propertyValue === 'function' ? propertyValue.bind(target) : propertyValue;
+            },
+          });
+        }),
+        error => {
+          return error instanceof Error && 'code' in error && error.code === logFileIdentityChangedErrorCode;
+        },
+      );
+
+      assert.strictEqual(await fs.readFile(logFilePath, 'utf8'), 'replacement contents\n');
+      assert.strictEqual(await getPermissionBits(logFilePath), 0o644);
+      assert.strictEqual(await fs.readFile(rotatedFilePath, 'utf8'), 'original contents\n');
+      assert.strictEqual(await getPermissionBits(rotatedFilePath), 0o600);
+    }),
+  );
+
+  it(
     'keeps rotated and newly active files private and refuses to rotate a hard link',
     withTemporaryDirectory('wire-log-permissions-rotation-', async (profileDirectory: string) => {
       if (process.platform === 'win32') {

@@ -58,7 +58,6 @@ export async function exportLogs(destinationPath: string): Promise<void> {
           createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
           ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
           getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
-          protectFile: snapshotFileSystemDependencies.protectFile,
           removeDirectory: snapshotFileSystemDependencies.removeDirectory,
         });
       },

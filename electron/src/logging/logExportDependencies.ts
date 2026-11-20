@@ -25,7 +25,7 @@ import {pipeline} from 'stream/promises';
 
 import {logSourceChangedErrorCode} from './logExport';
 import type {LogArchiveDependencies, LogSnapshotFileSystemDependencies} from './logExport';
-import {ensurePrivateLogDirectory, protectPrivateDirectoryAtPathSync, protectPrivateFile} from './logPermissions';
+import {ensurePrivateLogDirectory, protectPrivateDirectoryAtPathSync} from './logPermissions';
 
 const privateFileMode = 0o600;
 
@@ -113,8 +113,14 @@ async function copyPrivateLogFile(options: CopyPrivateLogFileParameters): Promis
     const destinationFileMetadata = await destinationFileHandle.stat();
     assertRegularSingleLinkFile(destinationFileMetadata, destinationFilePath);
 
-    if (process.platform !== 'win32' && (destinationFileMetadata.mode & 0o777) !== privateFileMode) {
-      await destinationFileHandle.chmod(privateFileMode);
+    if (process.platform !== 'win32') {
+      if ((sourceFileMetadata.mode & 0o777) !== privateFileMode) {
+        await sourceFileHandle.chmod(privateFileMode);
+      }
+
+      if ((destinationFileMetadata.mode & 0o777) !== privateFileMode) {
+        await destinationFileHandle.chmod(privateFileMode);
+      }
     }
 
     await pipeline(sourceFileHandle.createReadStream(), destinationFileHandle.createWriteStream());
@@ -205,12 +211,8 @@ export function createLogSnapshotFileSystemDependencies(
         isFile: fileStatistics.isFile(),
         isSymbolicLink: fileStatistics.isSymbolicLink(),
         linkCount: fileStatistics.nlink,
-        mode: fileStatistics.mode,
         ownerId: fileStatistics.uid,
       };
-    },
-    async protectFile(filePath: string) {
-      await protectPrivateFile(filePath);
     },
     async removeDirectory(directoryPath: string) {
       await fs.remove(directoryPath);
@@ -265,7 +267,7 @@ export function createLogArchiveDependencies(
       assertRegularSingleLinkFile(archiveMetadata, sourcePath);
 
       if (process.platform !== 'win32' && (archiveMetadata.mode & 0o777) !== privateFileMode) {
-        await protectPrivateFile(sourcePath);
+        throw new Error(`Generated debug log archive does not have private permissions: ${sourcePath}`);
       }
 
       await validateArchiveDestination(destinationPath);
