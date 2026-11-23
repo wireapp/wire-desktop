@@ -30,6 +30,7 @@ import {
 import {cleanupDesktopLogs, DESKTOP_LOG_RETENTION_POLICY} from './logCleanup';
 import {createLogMaintenanceCoordinator, LogMaintenanceCoordinator} from './logMaintenance';
 import {getLogDirectory} from './logPaths';
+import {appendPrivateLogFile, ensurePrivateLogDirectory, getPrivateLogFileSize} from './logPermissions';
 
 import {createFireAndForgetInvoker} from '../lib/fireAndForgetInvoker';
 
@@ -40,7 +41,12 @@ function isMissingFileError(error: unknown): boolean {
 function createFileSystemDependencies(): BoundedLogWriterDependencies {
   return {
     async appendFile(filePath: string, content: string): Promise<void> {
-      await fs.appendFile(filePath, content);
+      if (process.platform === 'win32') {
+        await fs.appendFile(filePath, content);
+        return;
+      }
+
+      await appendPrivateLogFile(filePath, content);
     },
     async ensureDirectory(directoryPath: string): Promise<void> {
       await fs.ensureDir(directoryPath);
@@ -50,6 +56,10 @@ function createFileSystemDependencies(): BoundedLogWriterDependencies {
     },
     async getFileSize(filePath: string): Promise<number> {
       try {
+        if (process.platform !== 'win32') {
+          return await getPrivateLogFileSize(filePath);
+        }
+
         const fileStatistics = await fs.stat(filePath);
 
         return fileStatistics.isFile() ? fileStatistics.size : 0;
@@ -68,6 +78,21 @@ function createFileSystemDependencies(): BoundedLogWriterDependencies {
       return fs.pathExists(filePath);
     },
   };
+}
+
+function withPrivateLogDirectory<Parameters extends WriteLogMessageParameters>(parameters: Parameters): Parameters {
+  if (process.platform === 'win32') {
+    return parameters;
+  }
+
+  const logDirectory = getLogDirectory();
+
+  return {
+    ...parameters,
+    prepareDirectory(directoryPath: string): Promise<void> {
+      return ensurePrivateLogDirectory(logDirectory, directoryPath);
+    },
+  } as Parameters;
 }
 
 const desktopLogFireAndForgetInvoker = createFireAndForgetInvoker({
@@ -126,15 +151,15 @@ export function runDesktopLogMaintenance<Result>(operation: () => Promise<Result
 }
 
 export function writeBoundedLogMessage(parameters: WriteLogMessageParameters): Promise<void> {
-  return desktopBoundedLogWriter.write(parameters);
+  return desktopBoundedLogWriter.write(withPrivateLogDirectory(parameters));
 }
 
 export function writeBoundedConsoleLogMessage(parameters: WriteConsoleLogMessageParameters): Promise<void> {
-  return desktopBoundedLogWriter.writeConsoleMessage(parameters);
+  return desktopBoundedLogWriter.writeConsoleMessage(withPrivateLogDirectory(parameters));
 }
 
 export function writeBoundedJsonlLogMessage(parameters: WriteLogMessageParameters): Promise<void> {
-  return desktopBoundedLogWriter.writeJsonl(parameters);
+  return desktopBoundedLogWriter.writeJsonl(withPrivateLogDirectory(parameters));
 }
 
 export function fireAndForgetDesktopLogOperation(asyncAction: () => Promise<unknown>): void {

@@ -17,9 +17,17 @@
  *
  */
 
+import {getLogDirectory} from './logging/logPaths';
+import {protectLogDirectoryAtStartup} from './logging/logPermissions';
 import {configurePortableUserDataAtStartup} from './runtime/configurePortableUserData';
 
 configurePortableUserDataAtStartup();
+try {
+  protectLogDirectoryAtStartup(getLogDirectory());
+} catch (error) {
+  const errorCode = error instanceof Error && 'code' in error ? String(error.code) : 'unknown';
+  process.stderr.write(`Unable to protect existing Desktop logs (error ${errorCode}).\n`);
+}
 
 function loadMainProcess(): void {
   require('./mainProcess');
