@@ -58,9 +58,7 @@ const openDeepLinkViaSecondInstance = async (app: App, url: string) => {
     };
     timer = setTimeout(
       () =>
-        reject(
-          new Error(`The running app didn't receive the deep link "${url}" from a second instance within ${timeout}ms`),
-        ),
+        reject(new Error(`The running app didn't receive the deep link from a second instance within ${timeout}ms`)),
       timeout,
     );
   });
