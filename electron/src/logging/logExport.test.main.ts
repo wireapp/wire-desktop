@@ -23,6 +23,7 @@ import noop from 'lodash/noop';
 import {Maybe} from 'true-myth';
 
 import * as assert from 'assert';
+import * as os from 'os';
 import * as path from 'path';
 import {Writable} from 'stream';
 
@@ -32,6 +33,7 @@ import {
   exportLogFiles,
   LogSnapshot,
   LogSnapshotFileSystemDependencies,
+  streamLogFilesToPrivateZip,
   streamLogFilesToZip,
 } from './logExport';
 import {createLogArchiveDependencies, createLogSnapshotFileSystemDependencies} from './logExportDependencies';
@@ -274,6 +276,52 @@ describe('desktop log export', () => {
   );
 
   it(
+    'skips a symbolic-link log root without copying files from its target',
+    withTemporaryDirectory('wire-log-export-root-link-', async temporaryDirectory => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const externalLogDirectory = path.join(temporaryDirectory, 'external');
+      const externalLogPath = path.join(externalLogDirectory, 'electron.log');
+      const logDirectory = path.join(temporaryDirectory, 'logs');
+      const retainedLogContent = 'external log content\n';
+
+      await fs.ensureDir(externalLogDirectory);
+      await fs.outputFile(externalLogPath, retainedLogContent);
+      await fs.chmod(externalLogPath, 0o644);
+      await fs.symlink(externalLogDirectory, logDirectory, 'dir');
+
+      const snapshotFileSystemDependencies = createLogSnapshotFileSystemDependencies();
+      const snapshot = await createLogSnapshot(
+        createSnapshotTestOptions({
+          cleanup: runNoopCleanup,
+          copyFile: snapshotFileSystemDependencies.copyFile,
+          createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
+          discoverLogFilePaths() {
+            return ['electron.log'];
+          },
+          ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+          getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
+          logDirectory,
+          maintenanceCoordinator: createTestMaintenanceCoordinator(),
+          reportFailure: noop,
+          removeDirectory: snapshotFileSystemDependencies.removeDirectory,
+          temporaryDirectoryPrefix: path.join(temporaryDirectory, 'snapshot-'),
+        }),
+      );
+
+      try {
+        assert.deepStrictEqual(snapshot.files, []);
+        assert.strictEqual(await fs.readFile(externalLogPath, 'utf8'), retainedLogContent);
+        assert.strictEqual((await fs.stat(externalLogPath)).mode & 0o7777, 0o644);
+      } finally {
+        await fs.remove(snapshot.directoryPath);
+      }
+    }),
+  );
+
+  it(
     'rejects paths that escape the log and snapshot directories and removes the partial snapshot',
     withTemporaryDirectory('wire-log-export-safety-', async (temporaryLogDirectory: string) => {
       const outsideFileName = `${path.basename(temporaryLogDirectory)}-outside.log`;
@@ -429,13 +477,9 @@ describe('desktop log export', () => {
         removeSnapshotDirectory: snapshotFileSystemDependencies.removeDirectory,
         reportFailure: noop,
         async streamSnapshot({destinationPath, snapshotFiles}) {
-          await streamLogFilesToZip({
-            createArchive: archiveDependencies.createArchive,
-            createOutputStream: archiveDependencies.createOutputStream,
+          await streamLogFilesToPrivateZip({
+            ...archiveDependencies,
             destinationPath,
-            pathExists: archiveDependencies.pathExists,
-            removeFile: archiveDependencies.removeFile,
-            reportFailure: archiveDependencies.reportFailure,
             snapshotFiles,
           });
         },
@@ -456,6 +500,9 @@ describe('desktop log export', () => {
       });
 
       assert.strictEqual(await fs.pathExists(createdSnapshotDirectoryPath), false);
+      if (process.platform !== 'win32') {
+        assert.strictEqual((await fs.stat(archivePath)).mode & 0o7777, 0o600);
+      }
 
       const archive = new AdmZip(archivePath);
       const actualEntryPaths = archive
@@ -480,6 +527,136 @@ describe('desktop log export', () => {
       assert.strictEqual(getArchiveEntryContents(archive, legacyLogRelativePath), 'legacy\n');
       assert.strictEqual(getArchiveEntryContents(archive, applicationLogRelativePath), applicationLogContent);
       assert.strictEqual(getArchiveEntryContents(archive, rotatedApplicationLogRelativePath), applicationLogContent);
+    }),
+  );
+
+  it(
+    'keeps snapshots private and atomically replaces a permissive ZIP with a private readable archive',
+    withTemporaryDirectory('wire-log-export-private-archive-', async temporaryDirectory => {
+      if (process.platform === 'win32') {
+        return;
+      }
+
+      const logDirectory = path.join(temporaryDirectory, 'logs');
+      const sourceLogPath = path.join(logDirectory, '2026-11-23', 'accounts', 'account-id', 'console.log');
+      const archivePath = path.join(temporaryDirectory, 'logs.zip');
+      const snapshotDependencies = createLogSnapshotFileSystemDependencies();
+      const archiveDependencies = createLogArchiveDependencies(noop);
+      const existingArchiveContents = 'existing archive sentinel bytes';
+
+      await fs.outputFile(sourceLogPath, 'first archive entry\n');
+      await fs.chmod(sourceLogPath, 0o644);
+      await fs.outputFile(archivePath, existingArchiveContents);
+      await fs.chmod(archivePath, 0o644);
+      const originalArchiveInode = (await fs.stat(archivePath)).ino;
+
+      const snapshot = await createLogSnapshot(
+        createSnapshotTestOptions({
+          cleanup: runNoopCleanup,
+          copyFile: snapshotDependencies.copyFile,
+          createTemporaryDirectory: snapshotDependencies.createTemporaryDirectory,
+          discoverLogFilePaths() {
+            return ['2026-11-23/accounts/account-id/console.log'];
+          },
+          ensureDirectory: snapshotDependencies.ensureDirectory,
+          getFileMetadata: snapshotDependencies.getFileMetadata,
+          logDirectory,
+          maintenanceCoordinator: createTestMaintenanceCoordinator(),
+          reportFailure: noop,
+          removeDirectory: snapshotDependencies.removeDirectory,
+          temporaryDirectoryPrefix: path.join(temporaryDirectory, 'snapshot-'),
+        }),
+      );
+      const snapshotFilePath = snapshot.files[0].absolutePath;
+      const snapshotAccountDirectory = path.dirname(snapshotFilePath);
+
+      assert.strictEqual((await fs.stat(snapshot.directoryPath)).mode & 0o7777, 0o700);
+      assert.strictEqual((await fs.stat(snapshotAccountDirectory)).mode & 0o7777, 0o700);
+      assert.strictEqual((await fs.stat(snapshotFilePath)).mode & 0o7777, 0o600);
+
+      let stagingDirectoryModeBeforeWrite = 0;
+      let stagedArchiveModeBeforePublish = 0;
+      const instrumentedArchiveDependencies = {
+        ...archiveDependencies,
+        createOutputStream(destinationPath: string) {
+          return archiveDependencies.createOutputStream(destinationPath);
+        },
+        async createTemporaryArchiveDirectory(destinationPath: string) {
+          const stagingDirectoryPath = await archiveDependencies.createTemporaryArchiveDirectory(destinationPath);
+          stagingDirectoryModeBeforeWrite = (await fs.stat(stagingDirectoryPath)).mode & 0o7777;
+          return stagingDirectoryPath;
+        },
+        async publishStagedArchive(stagedArchivePath: string, destinationPath: string) {
+          stagedArchiveModeBeforePublish = (await fs.stat(stagedArchivePath)).mode & 0o7777;
+          await archiveDependencies.publishStagedArchive(stagedArchivePath, destinationPath);
+        },
+      };
+
+      try {
+        await streamLogFilesToPrivateZip({
+          ...instrumentedArchiveDependencies,
+          destinationPath: archivePath,
+          snapshotFiles: snapshot.files,
+        });
+
+        const actualArchive = new AdmZip(archivePath);
+        assert.strictEqual(
+          getArchiveEntryContents(actualArchive, '2026-11-23/accounts/account-id/console.log'),
+          'first archive entry\n',
+        );
+        assert.notStrictEqual(await fs.readFile(archivePath, 'utf8'), existingArchiveContents);
+        assert.strictEqual((await fs.stat(archivePath)).mode & 0o7777, 0o600);
+        assert.notStrictEqual((await fs.stat(archivePath)).ino, originalArchiveInode);
+        assert.strictEqual(stagingDirectoryModeBeforeWrite, 0o700);
+        assert.strictEqual(stagedArchiveModeBeforePublish, 0o600);
+      } finally {
+        await fs.remove(snapshot.directoryPath);
+      }
+    }),
+  );
+
+  it(
+    'publishes through the selected destination when its parent denies sibling staging',
+    withTemporaryDirectory('wire-log-export-selected-file-', async temporaryDirectory => {
+      if (process.platform === 'win32' || process.getuid?.() === 0) {
+        return;
+      }
+
+      const destinationDirectory = path.join(temporaryDirectory, 'selected-destination');
+      const destinationPath = path.join(destinationDirectory, 'logs.zip');
+      const sourceFilePath = path.join(temporaryDirectory, 'electron.log');
+      const existingArchiveContents = 'archive replaced through selected file access';
+      const archiveDependencies = createLogArchiveDependencies(noop);
+      let stagingDirectoryPath = '';
+
+      await fs.ensureDir(destinationDirectory);
+      await fs.outputFile(destinationPath, existingArchiveContents);
+      await fs.chmod(destinationPath, 0o644);
+      await fs.outputFile(sourceFilePath, 'selected destination export\n');
+      await fs.chmod(destinationDirectory, 0o555);
+
+      try {
+        await streamLogFilesToPrivateZip({
+          ...archiveDependencies,
+          async createTemporaryArchiveDirectory(selectedDestinationPath: string) {
+            stagingDirectoryPath = await archiveDependencies.createTemporaryArchiveDirectory(selectedDestinationPath);
+            return stagingDirectoryPath;
+          },
+          destinationPath,
+          snapshotFiles: [{absolutePath: sourceFilePath, relativePath: 'electron.log'}],
+        });
+
+        const actualArchive = new AdmZip(destinationPath);
+        const actualStagingParent = path.resolve(path.dirname(stagingDirectoryPath));
+        const expectedStagingParent = path.resolve(os.tmpdir());
+
+        assert.strictEqual(actualStagingParent, expectedStagingParent);
+        assert.strictEqual(getArchiveEntryContents(actualArchive, 'electron.log'), 'selected destination export\n');
+        assert.notStrictEqual(await fs.readFile(destinationPath, 'utf8'), existingArchiveContents);
+        assert.strictEqual((await fs.stat(destinationPath)).mode & 0o7777, 0o600);
+      } finally {
+        await fs.chmod(destinationDirectory, 0o700);
+      }
     }),
   );
 
