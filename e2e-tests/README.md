@@ -27,6 +27,14 @@ Before attempting to execute the E2E tests make sure to run the script `yarn run
 
 To then execute the e2e tests run `yarn run test:e2e` which will execute all of them. To only run specific tests you can pass the file containing them e.g. `yarn run test:e2e e2e-tests/specs/example.spec.ts`.
 
+### Deep link tests on macOS
+
+Deep link tests open `wire://` links from outside of the app, so macOS must route the protocol to the build under test. This needs the third-party tool [SwiftDefaultApps](https://github.com/Lord-Kamina/SwiftDefaultApps) (`brew install --cask swiftdefaultappsprefpane`).
+
+1. Build the app, e.g. `yarn build:macos:internal:arm64`
+2. Register it as the handler: `swda setHandler --URL wire --app <path to the built .app>` (or via System Settings > SwiftDefaultApps > URL Schemes > `wire` when Internal and Production are both installed)
+3. Run the tests with `WIRE_APP_PATH=<path to the executable inside the .app>` so the packaged app is launched instead of the sources
+
 ## Architecture
 
 ### Directory structure

@@ -112,7 +112,8 @@ export async function buildMacOSConfig(
     },
     out: commonConfig.buildDir,
     overwrite: true,
-    platform: 'mas', //  Mac App Store
+    // Mac App Store, except for E2E builds which run unsigned and can't use the sandboxed variant
+    platform: process.env.E2E_BUILD === 'true' ? 'darwin' : 'mas',
     protocols: [{name: `${commonConfig.name} Core Protocol`, schemes: [commonConfig.customProtocolName]}],
     prune: true,
     quiet: false,
@@ -178,7 +179,8 @@ export async function buildMacOSWrapper(
     logger.log(`Built app in "${buildDir}".`);
 
     const appFile = path.join(buildDir, `${commonConfig.name}.app`);
-    await flipElectronFuses(appFile);
+    // E2E builds keep the inspect fuse enabled, it's required by Playwright to attach to the app
+    await flipElectronFuses(appFile, {enableInspect: process.env.E2E_BUILD === 'true'});
 
     if (macOSConfig.certNameInstaller) {
       await fs.ensureDir(commonConfig.distDir);

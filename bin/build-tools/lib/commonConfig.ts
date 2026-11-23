@@ -86,7 +86,7 @@ export async function getCommonConfig(envFile: string, wireJson: string): Promis
   return {commonConfig, defaultConfig};
 }
 
-export async function flipElectronFuses(pathToElectron: string) {
+export async function flipElectronFuses(pathToElectron: string, options: {enableInspect?: boolean} = {}) {
   logger.log(`Flipping fuses in "${pathToElectron}".`);
   await flipFuses(pathToElectron, {
     // see also https://www.electronjs.org/docs/latest/tutorial/fuses
@@ -118,7 +118,8 @@ export async function flipElectronFuses(pathToElectron: string) {
     // The nodeCliInspect fuse toggles whether the --inspect, --inspect-brk, etc. flags are respected or not.
     // When disabled it also ensures that SIGUSR1 signal does not initialize the main process inspector.
     // Most apps can safely disable this fuse.
-    [FuseV1Options.EnableNodeCliInspectArguments]: false,
+    // Only enabled for E2E builds, so Playwright can attach to the app.
+    [FuseV1Options.EnableNodeCliInspectArguments]: options.enableInspect ?? false,
     // Electron-Default: Disabled
     // The embeddedAsarIntegrityValidation fuse toggles an experimental feature on macOS that validates the
     // content of the app.asar file when it is loaded. This feature is designed to have a minimal performance
