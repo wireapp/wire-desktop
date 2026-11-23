@@ -541,7 +541,7 @@ const bindIpcEvents = (): void => {
       await deleteAccount(id, accountId, partitionId);
       forgetTrustedOriginForAccount(accountId);
     });
-    main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED);
+    main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED, accountId);
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELOAD, () => forwardWrapperReloadRequest(main.webContents));
   ipcMain.on(EVENT_TYPE.WRAPPER.RELAUNCH, () => lifecycle.relaunch());
