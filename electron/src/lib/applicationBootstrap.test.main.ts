@@ -29,9 +29,6 @@ describe('first-instance application bootstrap', () => {
       bindIpcEvents() {
         events.push('bind-ipc-events');
       },
-      ensureMainProcessLogFile() {
-        events.push('ensure-main-process-log-file');
-      },
       handleAppEvents() {
         events.push('handle-app-events');
       },

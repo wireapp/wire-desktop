@@ -62,6 +62,14 @@ export type StreamLogFilesToZipOptions = {
   snapshotFiles: readonly LogSnapshotFile[];
 } & LogArchiveDependencies;
 
+export type PrivateZipStagingDependencies = {
+  createTemporaryArchiveDirectory: (destinationPath: string) => Promise<string>;
+  publishStagedArchive: (stagedArchivePath: string, destinationPath: string) => Promise<void>;
+  removeStagingDirectory: (directoryPath: string) => Promise<void>;
+};
+
+export type StreamLogFilesToPrivateZipOptions = StreamLogFilesToZipOptions & PrivateZipStagingDependencies;
+
 export type LogArchiveDependencies = {
   createArchive: () => ZipArchive;
   createOutputStream: (destinationPath: string) => Writable;
@@ -143,6 +151,12 @@ async function getSafeSourceFileMetadata(
   const {getFileMetadata} = options;
   const resolvedLogDirectory = path.resolve(options.logDirectory);
   const sourceRelativePath = path.relative(resolvedLogDirectory, options.sourceFilePath);
+  const logDirectoryMetadata = await getFileMetadata(resolvedLogDirectory);
+
+  if (process.platform !== 'win32' && logDirectoryMetadata.isSymbolicLink === true) {
+    return Maybe.nothing<LogSnapshotFileMetadata>();
+  }
+
   let currentPath = resolvedLogDirectory;
   let sourceFileMetadata: Maybe<LogSnapshotFileMetadata> = Maybe.nothing<LogSnapshotFileMetadata>();
 
@@ -330,6 +344,27 @@ export async function streamLogFilesToZip(options: StreamLogFilesToZipOptions): 
     });
 
     throw error;
+  }
+}
+
+export async function streamLogFilesToPrivateZip(options: StreamLogFilesToPrivateZipOptions): Promise<void> {
+  if (process.platform === 'win32') {
+    await streamLogFilesToZip(options);
+    return;
+  }
+
+  const stagingDirectory = await options.createTemporaryArchiveDirectory(options.destinationPath);
+  const stagedArchivePath = path.join(stagingDirectory, 'logs.zip');
+
+  try {
+    await streamLogFilesToZip({...options, destinationPath: stagedArchivePath});
+    await options.publishStagedArchive(stagedArchivePath, options.destinationPath);
+  } finally {
+    try {
+      await options.removeStagingDirectory(stagingDirectory);
+    } catch (error) {
+      options.reportFailure(`Failed to remove temporary ZIP staging directory "${stagingDirectory}"`, error);
+    }
   }
 }
 

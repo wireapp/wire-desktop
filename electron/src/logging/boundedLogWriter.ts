@@ -43,6 +43,7 @@ export type CreateBoundedLogWriterParameters = {
 export type WriteLogMessageParameters = {
   logFilePath: string;
   message: string;
+  prepareDirectory?: (directoryPath: string) => Promise<void>;
 };
 
 export type WriteConsoleLogMessageParameters = WriteLogMessageParameters & {
@@ -130,7 +131,8 @@ async function writeLogEntry(parameters: WriteLogEntryParameters): Promise<Write
   const logEntry = `${parameters.writeParameters.message}${parameters.writeParameters.lineEnding}`;
   const logEntrySizeBytes = Buffer.byteLength(logEntry);
 
-  await parameters.dependencies.ensureDirectory(path.dirname(parameters.writeParameters.logFilePath));
+  const prepareDirectory = parameters.writeParameters.prepareDirectory ?? parameters.dependencies.ensureDirectory;
+  await prepareDirectory(path.dirname(parameters.writeParameters.logFilePath));
 
   const currentFileSizeBytes = await parameters.dependencies.getFileSize(parameters.writeParameters.logFilePath);
   const wouldExceedMaximumFileSize =

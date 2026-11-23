@@ -74,12 +74,7 @@ import {
 } from './logging/desktopLogWriter';
 import {getLogger} from './logging/getLogger';
 import {scheduleLogCleanup} from './logging/logCleanupScheduler';
-import {
-  getLogDirectory,
-  getMainProcessLogPath,
-  getWebViewApplicationLogPath,
-  getWebViewLogPath,
-} from './logging/logPaths';
+import {getLogDirectory, getWebViewApplicationLogPath, getWebViewLogPath} from './logging/logPaths';
 import {initializeDesktopLogLifecycle} from './logging/logStartup';
 import {registerRendererDiagnostics} from './logging/rendererDiagnostics';
 import {createStructuredWebappLogger} from './logging/structuredWebappLogger';
@@ -1214,9 +1209,6 @@ lifecycle.addRelaunchListeners(async () => {
 if (lifecycle.isFirstInstance) {
   initializeFirstInstance({
     bindIpcEvents,
-    ensureMainProcessLogFile() {
-      fs.ensureFileSync(getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}));
-    },
     handleAppEvents,
     initializeElectronWrapper() {
       try {

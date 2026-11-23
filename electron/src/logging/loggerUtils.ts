@@ -22,7 +22,7 @@ import * as path from 'path';
 
 import {runDesktopLogCleanupWithinMaintenance, runDesktopLogMaintenance} from './desktopLogWriter';
 import {getLogger} from './getLogger';
-import {createLogSnapshot, exportLogFiles, streamLogFilesToZip} from './logExport';
+import {createLogSnapshot, exportLogFiles, streamLogFilesToPrivateZip} from './logExport';
 import {createLogArchiveDependencies, createLogSnapshotFileSystemDependencies} from './logExportDependencies';
 import {getLogFilenames as getLogFilenamesFromRoot, LogFileDiscoveryOptions} from './logFiles';
 import {getLogDirectory} from './logPaths';
@@ -67,13 +67,9 @@ export async function exportLogs(destinationPath: string): Promise<void> {
         logger.error(message, error);
       },
       streamSnapshot({destinationPath: snapshotDestinationPath, snapshotFiles}) {
-        return streamLogFilesToZip({
-          createArchive: archiveDependencies.createArchive,
-          createOutputStream: archiveDependencies.createOutputStream,
+        return streamLogFilesToPrivateZip({
+          ...archiveDependencies,
           destinationPath: snapshotDestinationPath,
-          pathExists: archiveDependencies.pathExists,
-          removeFile: archiveDependencies.removeFile,
-          reportFailure: archiveDependencies.reportFailure,
           snapshotFiles,
         });
       },
