@@ -27,7 +27,7 @@ export type LogFileDiscoveryOptions = {
 export function getLogFilenames(parameters: LogFileDiscoveryOptions): string[] {
   const {absolute, baseDirectory} = parameters;
 
-  return globby.sync('**/*.{log,old}', {
+  return globby.sync('**/*.{jsonl,log,old}', {
     absolute,
     cwd: baseDirectory,
     followSymbolicLinks: false,

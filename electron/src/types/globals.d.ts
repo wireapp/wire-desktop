@@ -25,6 +25,7 @@ import type {WebAppEvents} from '@wireapp/webapp-events';
 import type {DesktopAppConfig} from '../lib/desktopAppConfig';
 import type {WebviewNavigationRequest} from '../lib/WebviewNavigationTypes';
 import type {i18nStrings, SupportedI18nLanguage} from '../locale';
+import type {DesktopApplicationLogs} from '../logging/structuredLogBatch';
 import type * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 export declare global {
@@ -50,6 +51,7 @@ export declare global {
 
   interface Window {
     amplify: amplify;
+    desktopApplicationLogs?: DesktopApplicationLogs;
     navigateWebview(request: WebviewNavigationRequest): Promise<boolean>;
     isMac: boolean;
     locale: SupportedI18nLanguage;

@@ -36,4 +36,16 @@ describe('localStorage', () => {
 
     expect(loadState()).toEqual(state);
   });
+
+  it('restores an empty account WebApp URL without migrating it', () => {
+    const account = {...createAccount(), webappUrl: ''};
+    const state = {
+      accounts: [account],
+      contextMenuState: initialContextMenuState,
+    };
+
+    saveState(state);
+
+    expect(loadState()).toEqual(state);
+  });
 });

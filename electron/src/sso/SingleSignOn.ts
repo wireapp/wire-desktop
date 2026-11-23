@@ -172,20 +172,23 @@ export class SingleSignOn {
       ssoWindow.setTitle(SingleSignOn.getWindowTitle(origin));
     });
 
-    ssoWindow.webContents.on('console-message', async (_event, _level, message) => {
-      if (this.accountId.isJust) {
-        const logFilePath = getSsoLogPath({
-          accountId: this.accountId.value,
-          date: new Date(),
-          logDirectory: getLogDirectory(),
-        });
-        try {
-          await writeBoundedLogMessage({logFilePath, message});
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : String(error);
+    ssoWindow.webContents.on('console-message', async messageDetails => {
+      if (messageDetails.level !== 'error' || this.accountId.isNothing) {
+        return;
+      }
 
-          console.error('Cannot write to log file:', logFilePath, errorMessage, error);
-        }
+      const hasValidLineNumber = Number.isSafeInteger(messageDetails.lineNumber) && messageDetails.lineNumber > 0;
+      const lineMetadata = hasValidLineNumber ? ` line=${messageDetails.lineNumber}` : '';
+      const message = `event=identity-provider-console-error severity=error${lineMetadata}`;
+      const logFilePath = getSsoLogPath({
+        accountId: this.accountId.value,
+        date: new Date(),
+        logDirectory: getLogDirectory(),
+      });
+      try {
+        await writeBoundedLogMessage({logFilePath, message});
+      } catch {
+        SingleSignOn.logger.error('Could not write an identity provider console diagnostic to the account SSO log.');
       }
     });
   }

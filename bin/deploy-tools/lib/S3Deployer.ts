@@ -38,6 +38,7 @@ export interface S3DeployerOptions {
 export interface S3Client {
   copyObject(copyOptions: S3.CopyObjectRequest): {promise: () => Promise<unknown>};
   deleteObject(deleteOptions: S3.DeleteObjectRequest): {promise: () => Promise<unknown>};
+  headObject(headOptions: S3.HeadObjectRequest): {promise: () => Promise<S3.HeadObjectOutput>};
   upload(uploadOptions: S3.PutObjectRequest): {promise: () => Promise<unknown>};
 }
 
@@ -54,6 +55,7 @@ export interface S3UploadOptions {
 
 export interface S3CopyOptions {
   bucket: string;
+  cacheControl?: string;
   s3FromPath: string;
   s3ToPath: string;
 }
@@ -64,6 +66,8 @@ export interface CopyWindowsMsiAliasesOptions {
 }
 
 export type WindowsArtifactType = 'auto' | 'msi' | 'squirrel';
+
+export const windowsReleaseAliasCacheControl = 'public, max-age=300, s-maxage=300';
 
 export interface WindowsArtifactSelectionOptions {
   expectedMsiFileName?: string;
@@ -81,12 +85,8 @@ export interface WindowsMsiAliasCopyOptionsInput {
   versionedS3Path: string;
 }
 
-export function getWindowsMsiAliasCopyOptions({
-  bucket,
-  fileName,
-  version,
-  versionedS3Path,
-}: WindowsMsiAliasCopyOptionsInput): S3CopyOptions[] {
+export function getWindowsMsiAliasCopyOptions(options: WindowsMsiAliasCopyOptionsInput): S3CopyOptions[] {
+  const {bucket, fileName, version, versionedS3Path} = options;
   const {architectureSpecificFileName, genericFileName} = getWindowsMsiSetupAliasNames({
     expectedVersion: version,
     fileName,
@@ -96,18 +96,22 @@ export function getWindowsMsiAliasCopyOptions({
     throw new Error(`Windows MSI S3 source "${versionedS3Path}" does not match artifact "${fileName}".`);
   }
   const sourceDirectory = versionedS3Path.slice(0, versionedS3Path.lastIndexOf('/') + 1);
-  const aliasFileNames = [architectureSpecificFileName, ...(genericFileName.isJust ? [genericFileName.value] : [])];
+  const aliasFileNames = genericFileName.isJust
+    ? [architectureSpecificFileName, genericFileName.value]
+    : [architectureSpecificFileName];
 
   return aliasFileNames.map(aliasFileName => {
     return {
       bucket,
+      cacheControl: windowsReleaseAliasCacheControl,
       s3FromPath: `${bucket}/${versionedS3Path}`,
       s3ToPath: `${sourceDirectory}${aliasFileName}`,
     };
   });
 }
 
-export async function copyWindowsMsiAliases({aliasCopyOptions, copyOnS3}: CopyWindowsMsiAliasesOptions): Promise<void> {
+export async function copyWindowsMsiAliases(options: CopyWindowsMsiAliasesOptions): Promise<void> {
+  const {aliasCopyOptions, copyOnS3} = options;
   for (const copyOptions of aliasCopyOptions) {
     try {
       await copyOnS3(copyOptions);
@@ -124,15 +128,17 @@ export class S3Deployer {
   private readonly logger: Logger;
 
   constructor(options: S3DeployerOptions, s3Client?: S3Client) {
+    const {accessKeyId, dryRun = false, secretAccessKey} = options;
     this.options = {
-      dryRun: false,
-      ...options,
+      accessKeyId,
+      dryRun,
+      secretAccessKey,
     };
     this.s3Client =
       s3Client ??
       new S3({
-        accessKeyId: options.accessKeyId,
-        secretAccessKey: options.secretAccessKey,
+        accessKeyId,
+        secretAccessKey,
       });
     const toolName = path.basename(__filename).replace(/\.[jt]s$/, '');
     this.logger = getLogger('deploy-tools', toolName);
@@ -183,7 +189,7 @@ export class S3Deployer {
         }
       }
       if (msi && windowsArtifact !== 'squirrel') {
-        return [{...msi, filePath: path.join(basePath, msi.fileName)}];
+        return [{fileName: msi.fileName, filePath: path.join(basePath, msi.fileName)}];
       }
 
       const setupExe = await find('*-Setup.exe', {cwd: basePath});
@@ -196,27 +202,24 @@ export class S3Deployer {
         throw new Error('App short name not found');
       }
 
-      const setupExeRenamed = {...setupExe, fileName: `${appShortName}-${version}.exe`};
-      const releasesRenamed = {...releasesFile, fileName: `${appShortName}-${version}-RELEASES`};
-
       return [
         {
           fileName: nupkgFile.fileName,
           filePath: path.join(basePath, nupkgFile.fileName),
         },
         {
-          fileName: releasesRenamed.fileName,
+          fileName: `${appShortName}-${version}-RELEASES`,
           filePath: path.join(basePath, releasesFile.fileName),
         },
         {
-          fileName: setupExeRenamed.fileName,
+          fileName: `${appShortName}-${version}.exe`,
           filePath: path.join(basePath, setupExe.fileName),
         },
       ];
     }
 
     const setupPkg = await find('*.pkg', {cwd: basePath});
-    return [{...setupPkg, filePath: path.join(basePath, setupPkg.fileName)}];
+    return [{fileName: setupPkg.fileName, filePath: path.join(basePath, setupPkg.fileName)}];
   }
 
   async uploadToS3(uploadOptions: S3UploadOptions): Promise<void> {
@@ -263,22 +266,43 @@ export class S3Deployer {
   }
 
   async copyOnS3(copyOptions: S3CopyOptions): Promise<void> {
-    const copyConfig = {
+    const {bucket, cacheControl, s3FromPath, s3ToPath} = copyOptions;
+    const copyConfig: S3.CopyObjectRequest = {
       ACL: 'public-read',
-      Bucket: copyOptions.bucket,
-      CopySource: copyOptions.s3FromPath,
-      Key: copyOptions.s3ToPath,
+      Bucket: bucket,
+      CopySource: s3FromPath,
+      Key: s3ToPath,
     };
 
+    if (cacheControl !== undefined) {
+      copyConfig.CopySource = s3FromPath.split('/').map(encodeURIComponent).join('/');
+      copyConfig.CacheControl = cacheControl;
+      copyConfig.MetadataDirective = 'REPLACE';
+    }
+
     if (this.options.dryRun) {
-      logDry('copyOnS3', {
-        ACL: copyConfig.ACL,
-        Bucket: copyConfig.Bucket,
-        CopySource: copyConfig.CopySource,
-        Key: copyConfig.Key,
-      });
+      this.logger.log('Dry run: copyOnS3', copyConfig);
       return;
     }
+
+    if (cacheControl === undefined) {
+      await this.s3Client.copyObject(copyConfig).promise();
+      return;
+    }
+
+    const copySource = s3FromPath.replace(/^\//, '');
+    const bucketSeparator = copySource.indexOf('/');
+    const sourceMetadata = await this.s3Client
+      .headObject({Bucket: copySource.slice(0, bucketSeparator), Key: copySource.slice(bucketSeparator + 1)})
+      .promise();
+
+    copyConfig.ContentDisposition = sourceMetadata.ContentDisposition;
+    copyConfig.ContentEncoding = sourceMetadata.ContentEncoding;
+    copyConfig.ContentLanguage = sourceMetadata.ContentLanguage;
+    copyConfig.ContentType = sourceMetadata.ContentType;
+    copyConfig.Expires = sourceMetadata.Expires;
+    copyConfig.Metadata = sourceMetadata.Metadata;
+    copyConfig.WebsiteRedirectLocation = sourceMetadata.WebsiteRedirectLocation;
 
     await this.s3Client.copyObject(copyConfig).promise();
   }

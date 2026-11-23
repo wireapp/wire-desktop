@@ -28,6 +28,7 @@ import {createDesktopAppConfig} from '../lib/desktopAppConfig';
 import {EVENT_TYPE} from '../lib/eventType';
 import {forwardWrapperReloadRequest} from '../lib/forwardWrapperReloadRequest';
 import {getLogger} from '../logging/getLogger';
+import {createDesktopApplicationLogs} from '../logging/structuredLogBatch';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 
 const remote = require('@electron/remote');
@@ -285,6 +286,11 @@ const _setImmediate = setImmediate;
 
 process.once('loaded', () => {
   global.clearImmediate = _clearImmediate;
+  if (process.isMainFrame) {
+    window.desktopApplicationLogs = createDesktopApplicationLogs(records => {
+      return ipcRenderer.invoke(EVENT_TYPE.DESKTOP.WRITE_APPLICATION_LOGS, records);
+    });
+  }
   /**
    * @todo: This can be improved by polyfilling getDisplayMedia function
    * Example: https://github.com/electron/electron/issues/16513#issuecomment-602070250

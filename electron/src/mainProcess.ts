@@ -64,13 +64,21 @@ import {forwardWrapperReloadRequest} from './lib/forwardWrapperReloadRequest';
 import {deleteAccount} from './lib/LocalAccountDeletion';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
+import {createWebappUrlWithLoggingCompatibility} from './lib/webappLoggingCompatibility';
 import type {WebviewNavigationRequest} from './lib/WebviewNavigationTypes';
 import * as locale from './locale';
-import {runDesktopLogCleanup, writeBoundedLogMessage} from './logging/desktopLogWriter';
+import {
+  runDesktopLogCleanup,
+  writeBoundedConsoleLogMessage,
+  writeBoundedJsonlLogMessage,
+} from './logging/desktopLogWriter';
 import {getLogger} from './logging/getLogger';
 import {scheduleLogCleanup} from './logging/logCleanupScheduler';
-import {getLogDirectory, getMainProcessLogPath, getWebViewLogPath} from './logging/logPaths';
+import {getLogDirectory, getWebViewApplicationLogPath, getWebViewLogPath} from './logging/logPaths';
 import {initializeDesktopLogLifecycle} from './logging/logStartup';
+import {registerRendererDiagnostics} from './logging/rendererDiagnostics';
+import {createStructuredWebappLogger} from './logging/structuredWebappLogger';
+import {createWebViewConsoleLogger} from './logging/webViewConsoleLogger';
 import {getManagedConfig} from './managed/ManagedConfig';
 import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
@@ -203,6 +211,7 @@ type WebviewNavigationContext = {
   initialOriginToPersist: Maybe<string>;
   navigationQueue: ReturnType<typeof createWebviewNavigationQueue>;
   pendingOrigin: Maybe<string>;
+  loggingRevoked: boolean;
   trustedOrigin: Maybe<string>;
 };
 
@@ -218,6 +227,23 @@ type AssociateWebviewWithAccountParameters = {
 };
 
 const webviewNavigationContextsById = new Map<number, WebviewNavigationContext>();
+const structuredWebappLogger = createStructuredWebappLogger({
+  getWebViewContext(senderId) {
+    return Maybe.of(webviewNavigationContextsById.get(senderId));
+  },
+  getWrapperWebContents() {
+    return Maybe.of(main?.webContents);
+  },
+  getCurrentDate() {
+    return new Date();
+  },
+  writeBatch({accountId, date, records}) {
+    return writeBoundedJsonlLogMessage({
+      logFilePath: getWebViewApplicationLogPath({accountId, date, logDirectory: getLogDirectory()}),
+      message: records.join('\n'),
+    });
+  },
+});
 // Electron supplies the guest WebContents only after will-attach-webview has authorized its initial src.
 const initialWebviewAuthorizationsByAccountId = new Map<string, InitialWebviewAttachmentAuthorization>();
 
@@ -350,6 +376,7 @@ function associateWebviewWithAccount(parameters: AssociateWebviewWithAccountPara
     accountId: parameters.accountId.value,
     contents: parameters.webviewContents,
     initialOriginToPersist: authorization.initialOriginToPersist,
+    loggingRevoked: false,
     navigationQueue: createWebviewNavigationQueue(),
     pendingOrigin: authorization.pendingOrigin,
     trustedOrigin: authorization.trustedOrigin,
@@ -497,9 +524,23 @@ const bindIpcEvents = (): void => {
     tray.showUnreadCount(main, count, ignoreFlash);
   });
 
-  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (_event, id: number, accountId: string, partitionId?: string) => {
-    await deleteAccount(id, accountId, partitionId);
-    forgetTrustedOriginForAccount(accountId);
+  ipcMain.on(EVENT_TYPE.ACCOUNT.DELETE_DATA, async (event, id: number, accountId: string, partitionId?: string) => {
+    if (event.sender !== main?.webContents || event.senderFrame !== event.sender.mainFrame) {
+      return;
+    }
+
+    initialWebviewAuthorizationsByAccountId.delete(accountId);
+    for (const context of webviewNavigationContextsById.values()) {
+      if (context.accountId === accountId) {
+        context.loggingRevoked = true;
+        structuredWebappLogger.resetConsoleCapture(context.contents);
+      }
+    }
+
+    await structuredWebappLogger.runAccountDeletion(accountId, async () => {
+      await deleteAccount(id, accountId, partitionId);
+      forgetTrustedOriginForAccount(accountId);
+    });
     main.webContents.send(EVENT_TYPE.ACCOUNT.DATA_DELETED, accountId);
   });
   ipcMain.on(EVENT_TYPE.WRAPPER.RELOAD, () => forwardWrapperReloadRequest(main.webContents));
@@ -516,6 +557,7 @@ const bindIpcEvents = (): void => {
   ipcMain.handle(EVENT_TYPE.ACTION.GET_OG_DATA, (_event, url) => getOpenGraphDataAsync(url));
 
   ipcMain.handle(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW_TO_URL, handleWebviewNavigationRequest);
+  ipcMain.handle(EVENT_TYPE.DESKTOP.WRITE_APPLICATION_LOGS, structuredWebappLogger.receive);
 
   ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
     if (EnvironmentUtil.platform.IS_WINDOWS) {
@@ -572,9 +614,8 @@ function getMainWindowUrl() {
     return mainURL;
   }
 
-  const webappURL = new URL(baseUrl);
+  const webappURL = createWebappUrlWithLoggingCompatibility(baseUrl);
   webappURL.searchParams.set('hl', currentLocale);
-  webappURL.searchParams.set('enableLogging', '@wireapp/*');
 
   if (customProtocolHandler.hashLocation) {
     webappURL.hash = customProtocolHandler.hashLocation;
@@ -678,15 +719,16 @@ const showMainWindow = async (mainWindowState: windowStateKeeper.State): Promise
     }
   });
 
-  app.on('render-process-gone', async (event, _, details) => {
-    logger.error('WebContents crashed. Will reload the window.');
-    logger.error(JSON.stringify(details));
-    try {
+  registerRendererDiagnostics({
+    app,
+    logger,
+    reloadMainWindow() {
       main.reload();
-    } catch (error) {
-      showErrorDialog(`Could not reload the window: ${(error as any).message}`);
-      logger.error('Could not reload the window:', error);
-    }
+    },
+    reportReloadFailure(message) {
+      showErrorDialog(message);
+    },
+    wrapperWebContents: main.webContents,
   });
 
   app.on('child-process-gone', (event, details) => {
@@ -952,7 +994,6 @@ class ElectronWrapperInit {
         case 'window': {
           contents.on('will-attach-webview', (_event, webPreferences, params) => {
             const initialUrl = typeof params.src === 'string' ? params.src : '';
-            const initialOrigin = OriginValidator.getHttpOrigin(initialUrl).unwrapOr('invalid');
             const accountId = getAccountIdFromWebviewUrl(initialUrl);
             if (accountId.isJust) {
               initialWebviewAuthorizationsByAccountId.delete(accountId.value);
@@ -970,7 +1011,10 @@ class ElectronWrapperInit {
 
             if (accountId.isNothing || initialAuthorization.isNothing) {
               _event.preventDefault();
-              this.logger.warn('Blocked initial <webview> attachment for origin', initialOrigin);
+              const failureReason = accountId.isNothing
+                ? 'account-context-unavailable'
+                : 'initial-origin-not-authorized';
+              this.logger.warn(`event=embedded-webview-attachment-blocked severity=warning reason=${failureReason}`);
               return;
             }
 
@@ -1010,8 +1054,12 @@ class ElectronWrapperInit {
           // Electron emits did-start-navigation before will-navigate. Associate the initial
           // destination first so the cancellable navigation handlers can apply account trust.
           contents.on('did-start-navigation', (_event, url, isInPlace, isMainFrame) => {
+            if (isInPlace || !isMainFrame) {
+              return;
+            }
+            structuredWebappLogger.resetConsoleCapture(contents);
             const existingContext = Maybe.of(webviewNavigationContextsById.get(contents.id));
-            if (existingContext.isJust || isInPlace || !isMainFrame) {
+            if (existingContext.isJust) {
               return;
             }
 
@@ -1025,6 +1073,10 @@ class ElectronWrapperInit {
               logger.warn('Could not associate initial WebView navigation with a trusted account origin.');
             }
           });
+
+          // Also invalidate attempts started by the outgoing document during navigation.
+          contents.on('did-navigate', () => structuredWebappLogger.resetConsoleCapture(contents));
+          contents.once('destroyed', () => structuredWebappLogger.resetConsoleCapture(contents));
 
           contents.on('did-finish-load', () => {
             const activeContext = Maybe.of(webviewNavigationContextsById.get(contents.id));
@@ -1074,32 +1126,27 @@ class ElectronWrapperInit {
             await applyProxySettings(proxyInfoArg, contents);
           }
 
-          const colorCodeRegex = /%c(.+?)%c/gm;
-          const stylingRegex = /(color:#|font-weight:)[^;]+; /gm;
-          const accessTokenRegex = /access_token=[^ &]+/gm;
-
-          contents.on('console-message', async (_event, _level, message) => {
-            const accountId = lifecycle.getAccountId(contents);
-
-            if (accountId.isJust) {
-              const logFilePath = getWebViewLogPath({
-                accountId: accountId.value,
+          const writeWebViewConsoleMessage = createWebViewConsoleLogger({
+            getAccountId() {
+              return structuredWebappLogger.getConsoleLogAccountId(contents);
+            },
+            getLogFilePath(accountId) {
+              return getWebViewLogPath({
+                accountId,
                 date: new Date(),
                 logDirectory: getLogDirectory(),
               });
-              try {
-                await writeBoundedLogMessage({
-                  logFilePath,
-                  message: message
-                    .replace(colorCodeRegex, '$1')
-                    .replace(stylingRegex, '')
-                    .replace(accessTokenRegex, ''),
-                });
-              } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
+            },
+            reportWriteFailure() {
+              logger.error('Could not write an account WebView console message to its account log.');
+            },
+            writeLogMessage: writeBoundedConsoleLogMessage,
+          });
 
-                logger.error(`Cannot write to log file "${logFilePath}": ${errorMessage}`, error);
-              }
+          contents.on('console-message', messageDetails => {
+            const source = {sender: contents, senderFrame: messageDetails.frame};
+            if (structuredWebappLogger.shouldCaptureConsoleMessage(source, messageDetails.message)) {
+              void writeWebViewConsoleMessage(messageDetails);
             }
           });
 
@@ -1162,9 +1209,6 @@ lifecycle.addRelaunchListeners(async () => {
 if (lifecycle.isFirstInstance) {
   initializeFirstInstance({
     bindIpcEvents,
-    ensureMainProcessLogFile() {
-      fs.ensureFileSync(getMainProcessLogPath({date: new Date(), logDirectory: getLogDirectory()}));
-    },
     handleAppEvents,
     initializeElectronWrapper() {
       try {

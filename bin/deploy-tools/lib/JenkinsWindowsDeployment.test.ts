@@ -37,6 +37,17 @@ describe('Jenkins Windows deployment', () => {
     assert.match(deploymentPipeline, /if \(hasWindowsSquirrel\) \{\s+stage\('Update RELEASES file'\)/);
   });
 
+  it('passes bound credentials and dry-run mode to the Squirrel publisher with shell tracing disabled', () => {
+    const publisherScript = deploymentPipeline.match(
+      /set \+x\s+jenkins\/ts-node\.sh .*s3-win-releases-cli\.ts[\s\S]*?(?='''\s*\})/,
+    )?.[0];
+
+    assert.ok(publisherScript);
+    assert.match(publisherScript, /--key-id "\$AWS_ACCESS_KEY_ID"/);
+    assert.match(publisherScript, /--secret-key "\$AWS_SECRET_ACCESS_KEY"/);
+    assert.match(publisherScript, /\$DRY_RUN/);
+  });
+
   it('requires the exact production MSI only when the copied build carries the MSI requirement manifest', () => {
     assert.match(deploymentPipeline, /def windowsMsiRequirementManifest = 'wrap\/dist\/windows-msi-required'/);
     assert.match(deploymentPipeline, /params\.Release == 'Production' &&\s+hasWindowsMsiRequirementManifest/);
