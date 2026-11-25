@@ -17,7 +17,6 @@
  *
  */
 
-import type {WallClock} from '@enormora/wall-clock/wall-clock';
 import {globalShortcut, Menu, MenuItemConstructorOptions} from 'electron';
 import {fake, replace, restore} from 'sinon';
 
@@ -76,7 +75,7 @@ describe('system menu shortcuts', () => {
     const buildMenu = fake();
     replace(Menu, 'buildFromTemplate', buildMenu as any);
 
-    createMenu(false, {currentDate: new Date()} as WallClock);
+    createMenu(false, async () => 'cancelled');
 
     const actualAccelerators = collectMenuAccelerators(buildMenu.firstCall.args[0] as MenuItemConstructorOptions[]);
     if (EnvironmentUtil.platform.IS_MAC_OS) {

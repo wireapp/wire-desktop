@@ -59,6 +59,7 @@ type StructuredWebappLoggerDependencies = {
 };
 
 export type StructuredWebappLogger = {
+  isAuthorizedWebView(event: WebViewLogEvent): boolean;
   getConsoleLogAccountId(sender: WebViewLogSender): Maybe<string>;
   shouldCaptureConsoleMessage(event: WebViewLogEvent, message: string): boolean;
   resetConsoleCapture(sender: WebViewLogSender): void;
@@ -168,6 +169,9 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
   }
 
   return {
+    isAuthorizedWebView(event) {
+      return getAuthorizedContext(event).isJust;
+    },
     getConsoleLogAccountId(sender) {
       return getActiveWebViewContext(sender).map(context => {
         return context.accountId;

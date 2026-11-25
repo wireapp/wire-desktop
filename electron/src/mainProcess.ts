@@ -57,7 +57,7 @@ import {
 import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {createDesktopAppConfig} from './lib/desktopAppConfig';
 import type {DesktopAppConfig} from './lib/desktopAppConfig';
-import {downloadImage} from './lib/download';
+import {chooseLogDownloadPath, createLogArchiveDownloadAction, downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {createFireAndForgetInvoker} from './lib/fireAndForgetInvoker';
 import {forwardWrapperReloadRequest} from './lib/forwardWrapperReloadRequest';
@@ -74,6 +74,7 @@ import {
 } from './logging/desktopLogWriter';
 import {getLogger} from './logging/getLogger';
 import {scheduleLogCleanup} from './logging/logCleanupScheduler';
+import {exportLogs} from './logging/loggerUtils';
 import {getLogDirectory, getWebViewApplicationLogPath, getWebViewLogPath} from './logging/logPaths';
 import {initializeDesktopLogLifecycle} from './logging/logStartup';
 import {registerRendererDiagnostics} from './logging/rendererDiagnostics';
@@ -114,6 +115,12 @@ type WallClockModule = {
 };
 const wallClockModule = require('./runtime/wallClockLoader.mjs') as WallClockModule;
 const wallClock = wallClockModule.createDesktopWallClock();
+const downloadDesktopLogArchive = createLogArchiveDownloadAction({
+  chooseDestinationPath() {
+    return chooseLogDownloadPath(wallClock.currentDate);
+  },
+  writeArchive: exportLogs,
+});
 const mainProcessFireAndForgetInvoker = createFireAndForgetInvoker({
   reportFailure(error: unknown): void {
     logger.error('Failed to execute a main-process background operation.', error);
@@ -558,6 +565,13 @@ const bindIpcEvents = (): void => {
 
   ipcMain.handle(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW_TO_URL, handleWebviewNavigationRequest);
   ipcMain.handle(EVENT_TYPE.DESKTOP.WRITE_APPLICATION_LOGS, structuredWebappLogger.receive);
+  ipcMain.handle(EVENT_TYPE.DESKTOP.DOWNLOAD_LOG_ARCHIVE, event => {
+    if (!structuredWebappLogger.isAuthorizedWebView(event)) {
+      return 'failed';
+    }
+
+    return downloadDesktopLogArchive();
+  });
 
   ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
     if (EnvironmentUtil.platform.IS_WINDOWS) {
@@ -841,7 +855,7 @@ const handleAppEvents = (): void => {
     });
 
     const mainWindowState = initWindowStateKeeper();
-    const appMenu = systemMenu.createMenu(isFullScreen, wallClock);
+    const appMenu = systemMenu.createMenu(isFullScreen, downloadDesktopLogArchive);
     if (EnvironmentUtil.app.IS_DEVELOPMENT) {
       app.commandLine.appendSwitch('enable-webrtc-internals');
       appMenu.append(developerMenu);
@@ -856,7 +870,7 @@ const handleAppEvents = (): void => {
 
     app.on('ready', async () => {
       const mainWindowState = initWindowStateKeeper();
-      const appMenu = systemMenu.createMenu(isFullScreen, wallClock);
+      const appMenu = systemMenu.createMenu(isFullScreen, downloadDesktopLogArchive);
       if (EnvironmentUtil.app.IS_DEVELOPMENT) {
         appMenu.append(developerMenu);
       }

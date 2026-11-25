@@ -17,17 +17,15 @@
  *
  */
 
-import type {WallClock} from '@enormora/wall-clock/wall-clock';
 import autoLaunch from 'auto-launch';
 import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 'electron';
 
 import * as path from 'path';
 
-import {chooseLogDownloadPath, downloadLogArchive} from '../lib/download';
+import type {LogArchiveDownloadAction} from '../lib/download';
 import {EVENT_TYPE} from '../lib/eventType';
 import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
-import {exportLogs} from '../logging/loggerUtils';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
 import * as lifecycle from '../runtime/lifecycle';
 import {config} from '../settings/config';
@@ -247,21 +245,16 @@ const windowTemplate: MenuItemConstructorOptions = {
   ],
 };
 
-function createDownloadLogsTemplate(wallClock: WallClock): MenuItemConstructorOptions {
+function createDownloadLogsTemplate(downloadLogArchive: LogArchiveDownloadAction): MenuItemConstructorOptions {
   return {
     click() {
-      return downloadLogArchive({
-        chooseDestinationPath() {
-          return chooseLogDownloadPath(wallClock.currentDate);
-        },
-        writeArchive: exportLogs,
-      });
+      return downloadLogArchive();
     },
     label: locale.getText('menuDownloadDebugLogs'),
   };
 }
 
-function createHelpTemplate(wallClock: WallClock): MenuItemConstructorOptions {
+function createHelpTemplate(downloadLogArchive: LogArchiveDownloadAction): MenuItemConstructorOptions {
   return {
     label: `&${locale.getText('menuHelp')}`,
     role: 'help',
@@ -284,7 +277,7 @@ function createHelpTemplate(wallClock: WallClock): MenuItemConstructorOptions {
         },
         label: locale.getText('menuAppURL'),
       },
-      createDownloadLogsTemplate(wallClock),
+      createDownloadLogsTemplate(downloadLogArchive),
     ],
   };
 }
@@ -387,8 +380,8 @@ const changeLocale = async (language: locale.SupportedI18nLanguage): Promise<voi
   await showRestartMessageBox();
 };
 
-export function createMenu(isFullScreen: boolean, wallClock: WallClock): Menu {
-  const helpTemplate = createHelpTemplate(wallClock);
+export function createMenu(isFullScreen: boolean, downloadLogArchive: LogArchiveDownloadAction): Menu {
+  const helpTemplate = createHelpTemplate(downloadLogArchive);
   const menuTemplate = [conversationTemplate, editTemplate, windowTemplate, helpTemplate];
 
   if (EnvironmentUtil.platform.IS_MAC_OS) {

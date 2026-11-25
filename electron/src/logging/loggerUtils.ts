@@ -76,5 +76,7 @@ export async function exportLogs(destinationPath: string): Promise<void> {
     });
   } catch (error) {
     logger.error('Failed to export desktop logs.', error);
+
+    throw error;
   }
 }

@@ -23,6 +23,7 @@ import type {Data as OpenGraphResult} from '@wireapp/open-graph';
 import type {WebAppEvents} from '@wireapp/webapp-events';
 
 import type {DesktopAppConfig} from '../lib/desktopAppConfig';
+import type {DesktopLogExportCapability} from '../lib/desktopLogExport';
 import type {WebviewNavigationRequest} from '../lib/WebviewNavigationTypes';
 import type {i18nStrings, SupportedI18nLanguage} from '../locale';
 import type {DesktopApplicationLogs} from '../logging/structuredLogBatch';
@@ -52,6 +53,7 @@ export declare global {
   interface Window {
     amplify: amplify;
     desktopApplicationLogs?: DesktopApplicationLogs;
+    desktopLogExport?: DesktopLogExportCapability;
     navigateWebview(request: WebviewNavigationRequest): Promise<boolean>;
     isMac: boolean;
     locale: SupportedI18nLanguage;

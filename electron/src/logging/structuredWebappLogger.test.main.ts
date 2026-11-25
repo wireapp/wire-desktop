@@ -197,6 +197,7 @@ describe('structured Webapp logging', () => {
 
     assert.strictEqual(await receiver.receive(guest, [record]), 'written');
     assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
+    assert.strictEqual(receiver.isAuthorizedWebView(guest), true);
 
     const unrelatedFrame = {sender: guest.sender, senderFrame: {url: allowedOrigin}};
     for (const unauthorized of [
@@ -208,6 +209,7 @@ describe('structured Webapp logging', () => {
       unrelatedFrame,
     ]) {
       assert.strictEqual(await receiver.receive(unauthorized, [record]), 'rejected');
+      assert.strictEqual(receiver.isAuthorizedWebView(unauthorized), false);
     }
 
     assert.strictEqual(receiver.shouldCaptureConsoleMessage(unrelatedFrame, transportTimeout), true);

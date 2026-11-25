@@ -20,7 +20,7 @@
 import {dialog, SaveDialogOptions} from 'electron';
 import * as fs from 'fs-extra';
 import imageType from 'image-type';
-import {Maybe} from 'true-myth';
+import {Maybe, Result} from 'true-myth';
 
 import * as path from 'path';
 
@@ -30,7 +30,66 @@ import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
 
-export async function chooseLogDownloadPath(timestamp: Date): Promise<Maybe<string>> {
+export type LogArchiveDownloadOutcome = 'saved' | 'cancelled' | 'failed';
+
+export type LogArchiveDownloadAction = () => Promise<LogArchiveDownloadOutcome>;
+
+export type CreateLogArchiveDownloadActionOptions = {
+  readonly chooseDestinationPath: () => Promise<Result<string, 'cancelled' | 'failed'>>;
+  readonly writeArchive: (destinationPath: string) => Promise<void>;
+};
+
+export function createLogArchiveDownloadAction(
+  options: CreateLogArchiveDownloadActionOptions,
+): LogArchiveDownloadAction {
+  let activeDownload: Maybe<Promise<LogArchiveDownloadOutcome>> = Maybe.nothing();
+
+  function downloadLogArchive(): Promise<LogArchiveDownloadOutcome> {
+    if (activeDownload.isJust) {
+      return activeDownload.value;
+    }
+
+    const download = completeLogArchiveDownload();
+    activeDownload = Maybe.just(download);
+
+    return download;
+  }
+
+  async function completeLogArchiveDownload(): Promise<LogArchiveDownloadOutcome> {
+    // Register the shared promise before opening the native save dialog.
+    await Promise.resolve();
+
+    try {
+      const downloadOutcome = await runLogArchiveDownload();
+
+      return downloadOutcome;
+    } finally {
+      activeDownload = Maybe.nothing();
+    }
+  }
+
+  async function runLogArchiveDownload(): Promise<LogArchiveDownloadOutcome> {
+    try {
+      const destinationResult = await options.chooseDestinationPath();
+
+      if (destinationResult.isErr) {
+        return destinationResult.error;
+      }
+
+      await options.writeArchive(destinationResult.value);
+
+      return 'saved';
+    } catch (error: unknown) {
+      logger.error('Failed to download the desktop log archive.', error);
+
+      return 'failed';
+    }
+  }
+
+  return downloadLogArchive;
+}
+
+export async function chooseLogDownloadPath(timestamp: Date): Promise<Result<string, 'cancelled' | 'failed'>> {
   const options: SaveDialogOptions = {
     filters: [{extensions: ['zip'], name: 'Archives (*.zip)'}],
   };
@@ -41,26 +100,18 @@ export async function chooseLogDownloadPath(timestamp: Date): Promise<Maybe<stri
   const filename = `wire-logs-${formattedDate}-${formattedTimeShort}.zip`;
 
   try {
-    const {filePath: chosenPath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
+    const {canceled, filePath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
+    const chosenPath = Maybe.of(filePath);
 
-    return Maybe.of(chosenPath);
+    if (canceled || chosenPath.isNothing) {
+      return Result.err('cancelled');
+    }
+
+    return Result.ok(chosenPath.value);
   } catch (error) {
     logger.error(error);
 
-    return Maybe.nothing<string>();
-  }
-}
-
-export type DownloadLogArchiveOptions = {
-  chooseDestinationPath: () => Promise<Maybe<string>>;
-  writeArchive: (destinationPath: string) => Promise<void>;
-};
-
-export async function downloadLogArchive(options: DownloadLogArchiveOptions): Promise<void> {
-  const destinationPath = await options.chooseDestinationPath();
-
-  if (destinationPath.isJust) {
-    await options.writeArchive(destinationPath.value);
+    return Result.err('failed');
   }
 }
 
