@@ -59,7 +59,7 @@ export class WindowManager {
     const primaryWindow = WindowManager.getPrimaryWindow();
 
     if (primaryWindow) {
-      logger.info(`Sending action "${action}" to window with ID "${primaryWindow.id}":`, {args});
+      logger.info(`Sending action "${action}" to window with ID "${primaryWindow.id}".`);
       primaryWindow.webContents.send(action, ...args);
     } else {
       logger.warn(`Got no primary window, can't send action "${action}".`);

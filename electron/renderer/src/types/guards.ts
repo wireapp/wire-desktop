@@ -27,5 +27,23 @@ export const isBoolean = (value: any): value is boolean => typeof value === 'boo
 
 export const isAccount = (value: any): value is Account => value.hasOwnProperty('userID');
 
-export const isConversationJoinData = (value: any): value is ConversationJoinData =>
-  value.hasOwnProperty('code') && value.hasOwnProperty('key');
+export const isConversationJoinData = (value: any): value is ConversationJoinData => {
+  if (value === null || typeof value !== 'object') {
+    return false;
+  }
+
+  const {code, key, kind, domain} = value;
+  if (!isString(code) || !isString(key)) {
+    return false;
+  }
+
+  switch (kind) {
+    case 'meeting':
+      return isString(domain) && domain.length > 0;
+    case 'conversation':
+    case undefined:
+      return domain === undefined || domain === null || isString(domain);
+    default:
+      return false;
+  }
+};
