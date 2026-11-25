@@ -17,15 +17,18 @@
  *
  */
 
-import type {WallClock} from '@enormora/wall-clock/wall-clock';
 import {globalShortcut, Menu, MenuItemConstructorOptions} from 'electron';
 import {fake, replace, restore} from 'sinon';
+import {Result} from 'true-myth';
 
 import * as assert from 'assert';
 
 import {createMenu, registerGlobalShortcuts, unregisterGlobalShortcuts} from './system';
 
+import {createLogArchiveDownloadAction, createWebViewLogArchiveDownloadHandler} from '../lib/logArchiveDownload';
+import * as locale from '../locale';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';
+import type {WebViewIpcEvent} from '../runtime/webViewIpcAuthorization';
 import {config} from '../settings/config';
 
 const supportedPlatforms = [
@@ -76,7 +79,7 @@ describe('system menu shortcuts', () => {
     const buildMenu = fake();
     replace(Menu, 'buildFromTemplate', buildMenu as any);
 
-    createMenu(false, {currentDate: new Date()} as WallClock);
+    createMenu(false, async () => 'cancelled');
 
     const actualAccelerators = collectMenuAccelerators(buildMenu.firstCall.args[0] as MenuItemConstructorOptions[]);
     if (EnvironmentUtil.platform.IS_MAC_OS) {
@@ -88,5 +91,58 @@ describe('system menu shortcuts', () => {
     }
     assert.strictEqual(actualAccelerators.includes('Ctrl+Q'), false);
     assert.strictEqual(actualAccelerators.includes('Ctrl+Alt+M'), false);
+  });
+
+  it('shares one archive action between the real Help menu and an authorized WebView request', async () => {
+    const archiveWriteStarted = Promise.withResolvers<void>();
+    const archiveWriteCompletion = Promise.withResolvers<void>();
+    let chooserCount = 0;
+    let archiveWriteCount = 0;
+    const downloadArchive = createLogArchiveDownloadAction({
+      chooseDestinationPath() {
+        chooserCount += 1;
+        return Promise.resolve(Result.ok('logs.zip'));
+      },
+      writeArchive() {
+        archiveWriteCount += 1;
+        archiveWriteStarted.resolve();
+        return archiveWriteCompletion.promise;
+      },
+      reportFailure() {
+        assert.fail('The shared export should not fail.');
+      },
+    });
+    const sender = {
+      id: 1,
+      hostWebContents: {},
+      mainFrame: {url: 'https://app.example.com'},
+      isDestroyed() {
+        return false;
+      },
+    };
+    const trustedEvent: WebViewIpcEvent = {sender, senderFrame: sender.mainFrame};
+    const handleWebViewRequest = createWebViewLogArchiveDownloadHandler({
+      authorizeWebView(event) {
+        return event === trustedEvent;
+      },
+      downloadArchive,
+    });
+    const menu = createMenu(false, downloadArchive);
+    const helpMenuItem = menu.items.find(menuItem => menuItem.role === 'help');
+    assert.ok(helpMenuItem?.submenu);
+    const downloadMenuItem = helpMenuItem.submenu.items.find(
+      menuItem => menuItem.label === locale.getText('menuDownloadDebugLogs'),
+    );
+    assert.ok(downloadMenuItem);
+
+    downloadMenuItem.click(undefined, undefined, {} as KeyboardEvent);
+    await archiveWriteStarted.promise;
+    const webViewRequest = handleWebViewRequest(trustedEvent);
+    assert.strictEqual(webViewRequest, downloadArchive());
+
+    archiveWriteCompletion.resolve();
+    assert.strictEqual(await webViewRequest, 'saved');
+    assert.strictEqual(chooserCount, 1);
+    assert.strictEqual(archiveWriteCount, 1);
   });
 });

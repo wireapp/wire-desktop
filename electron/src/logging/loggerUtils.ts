@@ -40,41 +40,37 @@ export async function exportLogs(destinationPath: string): Promise<void> {
     logger.error(message, error);
   });
 
-  try {
-    await exportLogFiles({
-      createSnapshot() {
-        return createLogSnapshot({
-          cleanup: runDesktopLogCleanupWithinMaintenance,
-          discoverLogFilePaths() {
-            return getLogFilenames({absolute: false, baseDirectory: logDirectory});
-          },
-          logDirectory,
-          reportFailure(message: string, error: unknown) {
-            logger.error(message, error);
-          },
-          runMaintenance: runDesktopLogMaintenance,
-          temporaryDirectoryPrefix: path.join(os.tmpdir(), 'wire-log-snapshot-'),
-          copyFile: snapshotFileSystemDependencies.copyFile,
-          createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
-          ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
-          getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
-          removeDirectory: snapshotFileSystemDependencies.removeDirectory,
-        });
-      },
-      destinationPath,
-      removeSnapshotDirectory: snapshotFileSystemDependencies.removeDirectory,
-      reportFailure(message: string, error: unknown) {
-        logger.error(message, error);
-      },
-      streamSnapshot({destinationPath: snapshotDestinationPath, snapshotFiles}) {
-        return streamLogFilesToPrivateZip({
-          ...archiveDependencies,
-          destinationPath: snapshotDestinationPath,
-          snapshotFiles,
-        });
-      },
-    });
-  } catch (error) {
-    logger.error('Failed to export desktop logs.', error);
-  }
+  await exportLogFiles({
+    createSnapshot() {
+      return createLogSnapshot({
+        cleanup: runDesktopLogCleanupWithinMaintenance,
+        discoverLogFilePaths() {
+          return getLogFilenames({absolute: false, baseDirectory: logDirectory});
+        },
+        logDirectory,
+        reportFailure(message: string, error: unknown) {
+          logger.error(message, error);
+        },
+        runMaintenance: runDesktopLogMaintenance,
+        temporaryDirectoryPrefix: path.join(os.tmpdir(), 'wire-log-snapshot-'),
+        copyFile: snapshotFileSystemDependencies.copyFile,
+        createTemporaryDirectory: snapshotFileSystemDependencies.createTemporaryDirectory,
+        ensureDirectory: snapshotFileSystemDependencies.ensureDirectory,
+        getFileMetadata: snapshotFileSystemDependencies.getFileMetadata,
+        removeDirectory: snapshotFileSystemDependencies.removeDirectory,
+      });
+    },
+    destinationPath,
+    removeSnapshotDirectory: snapshotFileSystemDependencies.removeDirectory,
+    reportFailure(message: string, error: unknown) {
+      logger.error(message, error);
+    },
+    streamSnapshot({destinationPath: snapshotDestinationPath, snapshotFiles}) {
+      return streamLogFilesToPrivateZip({
+        ...archiveDependencies,
+        destinationPath: snapshotDestinationPath,
+        snapshotFiles,
+      });
+    },
+  });
 }

@@ -20,7 +20,7 @@
 import {dialog, SaveDialogOptions} from 'electron';
 import * as fs from 'fs-extra';
 import imageType from 'image-type';
-import {Maybe} from 'true-myth';
+import {Maybe, Result} from 'true-myth';
 
 import * as path from 'path';
 
@@ -30,7 +30,7 @@ import {getLogger} from '../logging/getLogger';
 
 const logger = getLogger(path.basename(__filename));
 
-export async function chooseLogDownloadPath(timestamp: Date): Promise<Maybe<string>> {
+export async function chooseLogDownloadPath(timestamp: Date): Promise<Result<string, 'cancelled'>> {
   const options: SaveDialogOptions = {
     filters: [{extensions: ['zip'], name: 'Archives (*.zip)'}],
   };
@@ -40,28 +40,14 @@ export async function chooseLogDownloadPath(timestamp: Date): Promise<Maybe<stri
   const formattedTimeShort = formattedTime.replace(/:/g, '-').substr(0, 5);
   const filename = `wire-logs-${formattedDate}-${formattedTimeShort}.zip`;
 
-  try {
-    const {filePath: chosenPath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
+  const {canceled, filePath} = await dialog.showSaveDialog({defaultPath: filename, ...options});
+  const chosenPath = Maybe.of(filePath);
 
-    return Maybe.of(chosenPath);
-  } catch (error) {
-    logger.error(error);
-
-    return Maybe.nothing<string>();
+  if (canceled || chosenPath.isNothing) {
+    return Result.err('cancelled');
   }
-}
 
-export type DownloadLogArchiveOptions = {
-  chooseDestinationPath: () => Promise<Maybe<string>>;
-  writeArchive: (destinationPath: string) => Promise<void>;
-};
-
-export async function downloadLogArchive(options: DownloadLogArchiveOptions): Promise<void> {
-  const destinationPath = await options.chooseDestinationPath();
-
-  if (destinationPath.isJust) {
-    await options.writeArchive(destinationPath.value);
-  }
+  return Result.ok(chosenPath.value);
 }
 
 export async function downloadImage(bytes: Uint8Array, timestamp: Maybe<string>): Promise<void> {

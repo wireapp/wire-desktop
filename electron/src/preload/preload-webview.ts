@@ -25,6 +25,7 @@ import type {Availability} from '@wireapp/protocol-messaging';
 import {WebAppEvents} from '@wireapp/webapp-events';
 
 import {createDesktopAppConfig} from '../lib/desktopAppConfig';
+import type {DesktopLogExportOutcome} from '../lib/desktopLogExport';
 import {EVENT_TYPE} from '../lib/eventType';
 import {forwardWrapperReloadRequest} from '../lib/forwardWrapperReloadRequest';
 import {getLogger} from '../logging/getLogger';
@@ -290,6 +291,14 @@ process.once('loaded', () => {
     window.desktopApplicationLogs = createDesktopApplicationLogs(records => {
       return ipcRenderer.invoke(EVENT_TYPE.DESKTOP.WRITE_APPLICATION_LOGS, records);
     });
+    window.desktopLogExport = {
+      version: 1,
+      async download(): Promise<DesktopLogExportOutcome> {
+        const downloadOutcome = await ipcRenderer.invoke(EVENT_TYPE.DESKTOP.DOWNLOAD_LOG_ARCHIVE);
+
+        return downloadOutcome as DesktopLogExportOutcome;
+      },
+    };
   }
   /**
    * @todo: This can be improved by polyfilling getDisplayMedia function

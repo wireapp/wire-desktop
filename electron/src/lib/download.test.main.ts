@@ -21,7 +21,7 @@ import {Maybe} from 'true-myth';
 
 import * as assert from 'assert';
 
-import {downloadLogArchive, suggestFileName} from './download';
+import {suggestFileName} from './download';
 
 describe('download', () => {
   it('converts colons to dashes because colons cannot be used in filenames on Windows', async () => {
@@ -30,37 +30,5 @@ describe('download', () => {
     const expected = `Wire 2020-05-04 at 13-42-00`;
 
     assert.equal(actual, expected);
-  });
-
-  it('does no export work when the save dialog is cancelled', async () => {
-    let exportWorkCount = 0;
-
-    await downloadLogArchive({
-      async chooseDestinationPath() {
-        return Maybe.nothing<string>();
-      },
-      async writeArchive() {
-        exportWorkCount += 1;
-      },
-    });
-
-    assert.strictEqual(exportWorkCount, 0);
-  });
-
-  it('writes the archive only after a destination has been selected', async () => {
-    const events: string[] = [];
-
-    await downloadLogArchive({
-      async chooseDestinationPath() {
-        events.push('choose-destination');
-
-        return Maybe.just('logs.zip');
-      },
-      async writeArchive() {
-        events.push('write-archive');
-      },
-    });
-
-    assert.deepStrictEqual(events, ['choose-destination', 'write-archive']);
   });
 });
