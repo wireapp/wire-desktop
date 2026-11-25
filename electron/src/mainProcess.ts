@@ -57,11 +57,12 @@ import {
 import {CustomProtocolHandler} from './lib/CoreProtocol';
 import {createDesktopAppConfig} from './lib/desktopAppConfig';
 import type {DesktopAppConfig} from './lib/desktopAppConfig';
-import {chooseLogDownloadPath, createLogArchiveDownloadAction, downloadImage} from './lib/download';
+import {chooseLogDownloadPath, downloadImage} from './lib/download';
 import {EVENT_TYPE} from './lib/eventType';
 import {createFireAndForgetInvoker} from './lib/fireAndForgetInvoker';
 import {forwardWrapperReloadRequest} from './lib/forwardWrapperReloadRequest';
 import {deleteAccount} from './lib/LocalAccountDeletion';
+import {createLogArchiveDownloadAction, createWebViewLogArchiveDownloadHandler} from './lib/logArchiveDownload';
 import {getOpenGraphDataAsync} from './lib/openGraph';
 import {showErrorDialog} from './lib/showDialog';
 import {createWebappUrlWithLoggingCompatibility} from './lib/webappLoggingCompatibility';
@@ -84,11 +85,14 @@ import {getManagedConfig} from './managed/ManagedConfig';
 import {developerMenu, openDevTools} from './menu/developer';
 import * as systemMenu from './menu/system';
 import {TrayHandler} from './menu/TrayHandler';
+import {createAccountRemovalCoordinator} from './runtime/accountRemovalCoordinator';
 import {getConfiguredPortableUserDataPath} from './runtime/configurePortableUserData';
 import * as EnvironmentUtil from './runtime/EnvironmentUtil';
 import * as lifecycle from './runtime/lifecycle';
 import * as OriginValidator from './runtime/OriginValidator';
 import type {InitialOriginAuthorization, NavigationOrigins} from './runtime/OriginValidator';
+import {createWebViewIpcAuthorization} from './runtime/webViewIpcAuthorization';
+import type {RegisteredWebViewContext} from './runtime/webViewIpcAuthorization';
 import type {NavigationDecision} from './runtime/WebviewNavigation';
 import {
   commitInitialOriginAfterSuccessfulLoad,
@@ -120,6 +124,9 @@ const downloadDesktopLogArchive = createLogArchiveDownloadAction({
     return chooseLogDownloadPath(wallClock.currentDate);
   },
   writeArchive: exportLogs,
+  reportFailure(error: unknown) {
+    logger.error('Failed to download the desktop log archive.', error);
+  },
 });
 const mainProcessFireAndForgetInvoker = createFireAndForgetInvoker({
   reportFailure(error: unknown): void {
@@ -212,14 +219,11 @@ let isFullScreen = false;
 let isQuitting = false;
 let main: BrowserWindow;
 let desktopAppConfig: DesktopAppConfig | undefined;
-type WebviewNavigationContext = {
-  accountId: string;
+type WebviewNavigationContext = Omit<RegisteredWebViewContext, 'accountAccessRevoked' | 'contents'> & {
   contents: WebContents;
+  accountAccessRevoked: boolean;
   initialOriginToPersist: Maybe<string>;
   navigationQueue: ReturnType<typeof createWebviewNavigationQueue>;
-  pendingOrigin: Maybe<string>;
-  loggingRevoked: boolean;
-  trustedOrigin: Maybe<string>;
 };
 
 type InitialWebviewAttachmentAuthorization = {
@@ -234,13 +238,18 @@ type AssociateWebviewWithAccountParameters = {
 };
 
 const webviewNavigationContextsById = new Map<number, WebviewNavigationContext>();
-const structuredWebappLogger = createStructuredWebappLogger({
-  getWebViewContext(senderId) {
+const accountRemovalCoordinator = createAccountRemovalCoordinator();
+const webViewIpcAuthorization = createWebViewIpcAuthorization({
+  getRegisteredWebViewContext(senderId) {
     return Maybe.of(webviewNavigationContextsById.get(senderId));
   },
   getWrapperWebContents() {
     return Maybe.of(main?.webContents);
   },
+  isAccountRemovalInProgress: accountRemovalCoordinator.isAccountRemovalInProgress,
+});
+const structuredWebappLogger = createStructuredWebappLogger({
+  authorization: webViewIpcAuthorization,
   getCurrentDate() {
     return new Date();
   },
@@ -250,6 +259,12 @@ const structuredWebappLogger = createStructuredWebappLogger({
       message: records.join('\n'),
     });
   },
+});
+const handleWebViewLogArchiveDownload = createWebViewLogArchiveDownloadHandler({
+  authorizeWebView(event) {
+    return webViewIpcAuthorization.authorizeWebView(event).isJust;
+  },
+  downloadArchive: downloadDesktopLogArchive,
 });
 // Electron supplies the guest WebContents only after will-attach-webview has authorized its initial src.
 const initialWebviewAuthorizationsByAccountId = new Map<string, InitialWebviewAttachmentAuthorization>();
@@ -383,7 +398,7 @@ function associateWebviewWithAccount(parameters: AssociateWebviewWithAccountPara
     accountId: parameters.accountId.value,
     contents: parameters.webviewContents,
     initialOriginToPersist: authorization.initialOriginToPersist,
-    loggingRevoked: false,
+    accountAccessRevoked: false,
     navigationQueue: createWebviewNavigationQueue(),
     pendingOrigin: authorization.pendingOrigin,
     trustedOrigin: authorization.trustedOrigin,
@@ -539,12 +554,13 @@ const bindIpcEvents = (): void => {
     initialWebviewAuthorizationsByAccountId.delete(accountId);
     for (const context of webviewNavigationContextsById.values()) {
       if (context.accountId === accountId) {
-        context.loggingRevoked = true;
+        context.accountAccessRevoked = true;
         structuredWebappLogger.resetConsoleCapture(context.contents);
       }
     }
 
-    await structuredWebappLogger.runAccountDeletion(accountId, async () => {
+    await accountRemovalCoordinator.runAccountRemoval(accountId, async () => {
+      await structuredWebappLogger.prepareAccountRemoval(accountId);
       await deleteAccount(id, accountId, partitionId);
       forgetTrustedOriginForAccount(accountId);
     });
@@ -565,13 +581,7 @@ const bindIpcEvents = (): void => {
 
   ipcMain.handle(EVENT_TYPE.WRAPPER.NAVIGATE_WEBVIEW_TO_URL, handleWebviewNavigationRequest);
   ipcMain.handle(EVENT_TYPE.DESKTOP.WRITE_APPLICATION_LOGS, structuredWebappLogger.receive);
-  ipcMain.handle(EVENT_TYPE.DESKTOP.DOWNLOAD_LOG_ARCHIVE, event => {
-    if (!structuredWebappLogger.isAuthorizedWebView(event)) {
-      return 'failed';
-    }
-
-    return downloadDesktopLogArchive();
-  });
+  ipcMain.handle(EVENT_TYPE.DESKTOP.DOWNLOAD_LOG_ARCHIVE, handleWebViewLogArchiveDownload);
 
   ipcMain.on(EVENT_TYPE.ACTION.CHANGE_DOWNLOAD_LOCATION, (_event, downloadPath?: string) => {
     if (EnvironmentUtil.platform.IS_WINDOWS) {

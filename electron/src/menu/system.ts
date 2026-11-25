@@ -22,8 +22,8 @@ import {dialog, globalShortcut, ipcMain, Menu, MenuItemConstructorOptions} from 
 
 import * as path from 'path';
 
-import type {LogArchiveDownloadAction} from '../lib/download';
 import {EVENT_TYPE} from '../lib/eventType';
+import type {LogArchiveDownloadAction} from '../lib/logArchiveDownload';
 import * as locale from '../locale';
 import {getLogger} from '../logging/getLogger';
 import * as EnvironmentUtil from '../runtime/EnvironmentUtil';

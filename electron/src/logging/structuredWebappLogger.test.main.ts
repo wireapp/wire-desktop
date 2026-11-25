@@ -20,6 +20,7 @@
 import {Maybe} from 'true-myth';
 
 import * as assert from 'assert';
+import {setImmediate} from 'node:timers/promises';
 import * as path from 'path';
 
 import {getWebViewApplicationLogPath} from './logPaths';
@@ -27,7 +28,9 @@ import {createDesktopApplicationLogs, structuredLogLimits} from './structuredLog
 import {createStructuredWebappLogger, StructuredWebappLogger} from './structuredWebappLogger';
 import {createWebViewConsoleLogger} from './webViewConsoleLogger';
 
+import {createAccountRemovalCoordinator} from '../runtime/accountRemovalCoordinator';
 import {NavigationOrigins} from '../runtime/OriginValidator';
+import {createWebViewIpcAuthorization, WebViewIpcAuthorization} from '../runtime/webViewIpcAuthorization';
 
 const allowedOrigin = 'https://app.example.com';
 const wrapper = {};
@@ -47,15 +50,19 @@ type CreateGuestOptions = {
 
 type TestGuest = Parameters<StructuredWebappLogger['receive']>[0];
 type TestDependencies = Parameters<typeof createStructuredWebappLogger>[0];
+type TestAuthorizationDependencies = Parameters<typeof createWebViewIpcAuthorization>[0];
+type TestOverrides = Partial<Pick<TestDependencies, 'getCurrentDate' | 'writeBatch'>> &
+  Partial<TestAuthorizationDependencies>;
 type TestWebViewContext = NavigationOrigins & {
   accountId: string;
   contents: TestGuest['sender'];
-  loggingRevoked: boolean;
+  accountAccessRevoked: boolean;
 };
 type RecordedBatch = Parameters<TestDependencies['writeBatch']>[0];
 type TestReceiver = {
   guest: TestGuest;
   receiver: StructuredWebappLogger;
+  authorization: WebViewIpcAuthorization;
   writes: RecordedBatch[];
   context: TestWebViewContext;
 };
@@ -78,32 +85,42 @@ function createContext(contents: TestGuest['sender'], identifier = accountId): T
     accountId: identifier,
     contents,
     pendingOrigin: Maybe.nothing<string>(),
-    loggingRevoked: false,
+    accountAccessRevoked: false,
     trustedOrigin: Maybe.just(allowedOrigin),
   };
 }
 
-function createReceiver(overrides: Partial<TestDependencies> = {}): TestReceiver {
+function createReceiver(overrides: TestOverrides = {}): TestReceiver {
   const guest = createGuest();
   const context = createContext(guest.sender);
   const writes: RecordedBatch[] = [];
-  const receiver = createStructuredWebappLogger({
-    getWebViewContext() {
+  const authorization = createWebViewIpcAuthorization({
+    getRegisteredWebViewContext() {
       return Maybe.just(context);
     },
     getWrapperWebContents() {
       return Maybe.just(wrapper);
     },
-    getCurrentDate() {
-      return new Date('2026-07-10T23:59:59.999Z');
-    },
-    async writeBatch(batch) {
-      writes.push(batch);
+    isAccountRemovalInProgress() {
+      return false;
     },
     ...overrides,
   });
+  const receiver = createStructuredWebappLogger({
+    authorization,
+    getCurrentDate:
+      overrides.getCurrentDate ??
+      (() => {
+        return new Date('2026-07-10T23:59:59.999Z');
+      }),
+    writeBatch:
+      overrides.writeBatch ??
+      (async batch => {
+        writes.push(batch);
+      }),
+  });
 
-  return {guest, receiver, writes, context};
+  return {guest, receiver, authorization, writes, context};
 }
 
 describe('structured Webapp logging', () => {
@@ -189,15 +206,15 @@ describe('structured Webapp logging', () => {
         return [sender.id, createContext(sender)];
       }),
     );
-    const {receiver, writes} = createReceiver({
-      getWebViewContext(senderId) {
+    const {receiver, authorization, writes} = createReceiver({
+      getRegisteredWebViewContext(senderId) {
         return Maybe.of(contexts.get(senderId));
       },
     });
 
     assert.strictEqual(await receiver.receive(guest, [record]), 'written');
     assert.strictEqual(receiver.shouldCaptureConsoleMessage(guest, pinoConsoleRecord), false);
-    assert.strictEqual(receiver.isAuthorizedWebView(guest), true);
+    assert.strictEqual(authorization.authorizeWebView(guest).isJust, true);
 
     const unrelatedFrame = {sender: guest.sender, senderFrame: {url: allowedOrigin}};
     for (const unauthorized of [
@@ -209,7 +226,7 @@ describe('structured Webapp logging', () => {
       unrelatedFrame,
     ]) {
       assert.strictEqual(await receiver.receive(unauthorized, [record]), 'rejected');
-      assert.strictEqual(receiver.isAuthorizedWebView(unauthorized), false);
+      assert.strictEqual(authorization.authorizeWebView(unauthorized).isNothing, true);
     }
 
     assert.strictEqual(receiver.shouldCaptureConsoleMessage(unrelatedFrame, transportTimeout), true);
@@ -227,7 +244,7 @@ describe('structured Webapp logging', () => {
     let receivedAt = new Date('2026-07-11T01:59:59.999+02:00');
     const outputPaths: string[] = [];
     const {receiver} = createReceiver({
-      getWebViewContext(senderId) {
+      getRegisteredWebViewContext(senderId) {
         return Maybe.of(contexts.get(senderId));
       },
       getCurrentDate() {
@@ -263,7 +280,7 @@ describe('structured Webapp logging', () => {
     const blockedWrites = Promise.withResolvers<void>();
     let completion = blockedWrites.promise;
     const {receiver} = createReceiver({
-      getWebViewContext(senderId) {
+      getRegisteredWebViewContext(senderId) {
         return Maybe.of(contexts.get(senderId));
       },
       writeBatch() {
@@ -290,31 +307,80 @@ describe('structured Webapp logging', () => {
     assert.strictEqual(await receiver.receive(lastGuest, [record]), 'written');
   });
 
-  it('drains accepted writes before account deletion and rejects writes during deletion', async () => {
+  it('waits for accepted writes before account removal starts disk deletion', async () => {
     const activeWrite = Promise.withResolvers<void>();
-    const {guest, receiver, context} = createReceiver({
+    const accountRemovalCoordinator = createAccountRemovalCoordinator();
+    const contexts = new Map<number, TestWebViewContext>();
+    const {guest, receiver, authorization, context} = createReceiver({
+      getRegisteredWebViewContext(senderId) {
+        return Maybe.of(contexts.get(senderId));
+      },
+      isAccountRemovalInProgress: accountRemovalCoordinator.isAccountRemovalInProgress,
       writeBatch() {
         return activeWrite.promise;
       },
     });
+    const replacementGuest = createGuest({id: 2});
+    contexts.set(guest.sender.id, context);
+    contexts.set(replacementGuest.sender.id, createContext(replacementGuest.sender));
     const pendingWrite = receiver.receive(guest, [record]);
     assert.deepStrictEqual(receiver.getConsoleLogAccountId(guest.sender), Maybe.just(accountId));
-    let deletionStarted = false;
-    const deletion = receiver.runAccountDeletion(accountId, async () => {
-      deletionStarted = true;
+    context.accountAccessRevoked = true;
+    let diskDeletionStarted = false;
+    const accountRemoval = accountRemovalCoordinator.runAccountRemoval(accountId, async () => {
+      await receiver.prepareAccountRemoval(accountId);
+      diskDeletionStarted = true;
     });
 
-    assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+    await setImmediate();
+    assert.strictEqual(diskDeletionStarted, false);
     assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender).isNothing, true);
-    assert.strictEqual(deletionStarted, false);
+    assert.strictEqual(receiver.getConsoleLogAccountId(replacementGuest.sender).isNothing, true);
+    assert.strictEqual(
+      authorization.authorizeWebView({sender: replacementGuest.sender, senderFrame: replacementGuest.senderFrame})
+        .isNothing,
+      true,
+    );
+    assert.strictEqual(
+      await receiver.receive({sender: replacementGuest.sender, senderFrame: replacementGuest.senderFrame}, [record]),
+      'rejected',
+    );
+
     activeWrite.resolve();
     assert.strictEqual(await pendingWrite, 'written');
-    await deletion;
-    assert.strictEqual(deletionStarted, true);
-
-    context.loggingRevoked = true;
-    assert.strictEqual(await receiver.receive(guest, [record]), 'rejected');
+    await accountRemoval;
+    assert.strictEqual(diskDeletionStarted, true);
     assert.strictEqual(receiver.getConsoleLogAccountId(guest.sender).isNothing, true);
+  });
+
+  it('continues account deletion after an accepted write fails', async () => {
+    const failedWrite = Promise.withResolvers<void>();
+    const accountRemovalCoordinator = createAccountRemovalCoordinator();
+    const contexts = new Map<number, TestWebViewContext>();
+    const {guest, receiver, context} = createReceiver({
+      getRegisteredWebViewContext(senderId) {
+        return Maybe.of(contexts.get(senderId));
+      },
+      isAccountRemovalInProgress: accountRemovalCoordinator.isAccountRemovalInProgress,
+      writeBatch() {
+        return failedWrite.promise;
+      },
+    });
+    contexts.set(guest.sender.id, context);
+    const pendingWrite = receiver.receive(guest, [record]);
+    context.accountAccessRevoked = true;
+    let diskDeletionStarted = false;
+    const accountRemoval = accountRemovalCoordinator.runAccountRemoval(accountId, async () => {
+      await receiver.prepareAccountRemoval(accountId);
+      diskDeletionStarted = true;
+    });
+
+    await setImmediate();
+    assert.strictEqual(diskDeletionStarted, false);
+    failedWrite.reject(new Error('The structured log append failed'));
+    assert.strictEqual(await pendingWrite, 'failed');
+    await accountRemoval;
+    assert.strictEqual(diskDeletionStarted, true);
   });
 
   it('drops excess preload calls and recovers from an IPC rejection', async () => {
@@ -505,7 +571,7 @@ describe('structured Webapp logging', () => {
     const earlierDocument = Promise.withResolvers<void>();
     let completion = earlierDocument.promise;
     const {receiver} = createReceiver({
-      getWebViewContext(senderId) {
+      getRegisteredWebViewContext(senderId) {
         return Maybe.of(contexts.get(senderId));
       },
       writeBatch() {

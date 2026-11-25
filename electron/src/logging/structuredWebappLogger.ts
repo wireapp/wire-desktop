@@ -27,101 +27,40 @@ import {
   StructuredLogWriteResult,
 } from './structuredLogBatch';
 
-import {isAllowedNavigation, NavigationOrigins} from '../runtime/OriginValidator';
-
-type WebViewLogFrame = {
-  readonly url: string;
-};
-
-type WebViewLogSender = {
-  readonly id: number;
-  readonly hostWebContents: object | null;
-  readonly mainFrame: WebViewLogFrame;
-  isDestroyed(): boolean;
-};
-
-type WebViewLogEvent = {
-  readonly sender: WebViewLogSender;
-  readonly senderFrame: WebViewLogFrame | null;
-};
-
-type AuthorizedWebView = NavigationOrigins & {
-  readonly accountId: string;
-  readonly contents: WebViewLogSender;
-  readonly loggingRevoked: boolean;
-};
+import type {
+  RegisteredWebViewContext,
+  WebViewIpcAuthorization,
+  WebViewIpcEvent,
+  WebViewIpcSender,
+} from '../runtime/webViewIpcAuthorization';
 
 type StructuredWebappLoggerDependencies = {
-  getWebViewContext(senderId: number): Maybe<AuthorizedWebView>;
-  getWrapperWebContents(): Maybe<object>;
+  authorization: WebViewIpcAuthorization;
   getCurrentDate(): Date;
   writeBatch(batch: {accountId: string; date: Date; records: readonly string[]}): Promise<void>;
 };
 
 export type StructuredWebappLogger = {
-  isAuthorizedWebView(event: WebViewLogEvent): boolean;
-  getConsoleLogAccountId(sender: WebViewLogSender): Maybe<string>;
-  shouldCaptureConsoleMessage(event: WebViewLogEvent, message: string): boolean;
-  resetConsoleCapture(sender: WebViewLogSender): void;
-  receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult>;
-  runAccountDeletion(accountId: string, deleteAccount: () => Promise<void>): Promise<void>;
+  getConsoleLogAccountId(sender: WebViewIpcSender): Maybe<string>;
+  shouldCaptureConsoleMessage(event: WebViewIpcEvent, message: string): boolean;
+  resetConsoleCapture(sender: WebViewIpcSender): void;
+  receive(event: WebViewIpcEvent, payload: unknown): Promise<StructuredLogWriteResult>;
+  prepareAccountRemoval(accountId: string): Promise<void>;
 };
 
-function isCurrentMainFrame(
-  event: WebViewLogEvent,
-): event is WebViewLogEvent & {readonly senderFrame: WebViewLogFrame} {
-  const {sender, senderFrame} = event;
-  return senderFrame !== null && !sender.isDestroyed() && senderFrame === sender.mainFrame;
-}
-
 export function createStructuredWebappLogger(dependencies: StructuredWebappLoggerDependencies): StructuredWebappLogger {
-  const pendingWrites = new Map<WebViewLogSender, {accountId: string; completion: Promise<void>}>();
-  const consoleCapture = new Map<WebViewLogSender, {context: AuthorizedWebView; confirmed: boolean}>();
-  const accountDeletions = new Map<string, Promise<void>>();
+  const pendingWrites = new Map<WebViewIpcSender, {accountId: string; completion: Promise<void>}>();
+  const consoleCapture = new Map<WebViewIpcSender, {context: RegisteredWebViewContext; confirmed: boolean}>();
 
-  function getActiveWebViewContext(sender: WebViewLogSender): Maybe<AuthorizedWebView> {
-    const context = dependencies.getWebViewContext(sender.id);
-    if (
-      context.isNothing ||
-      context.value.contents !== sender ||
-      context.value.loggingRevoked === true ||
-      accountDeletions.has(context.value.accountId)
-    ) {
-      return Maybe.nothing();
-    }
-
-    return context;
-  }
-
-  function getAuthorizedContext(event: WebViewLogEvent): Maybe<AuthorizedWebView> {
-    if (!isCurrentMainFrame(event)) {
-      return Maybe.nothing();
-    }
-
-    const {sender, senderFrame} = event;
-    const context = getActiveWebViewContext(sender);
-    const wrapper = dependencies.getWrapperWebContents();
-    if (
-      context.isNothing ||
-      wrapper.isNothing ||
-      sender.hostWebContents !== wrapper.value ||
-      !isAllowedNavigation(senderFrame.url, context.value)
-    ) {
-      return Maybe.nothing();
-    }
-
-    return context;
-  }
-
-  function resetConsoleCapture(sender: WebViewLogSender): void {
+  function resetConsoleCapture(sender: WebViewIpcSender): void {
     consoleCapture.delete(sender);
   }
 
-  async function writeAuthorizedBatch(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
+  async function writeAuthorizedBatch(event: WebViewIpcEvent, payload: unknown): Promise<StructuredLogWriteResult> {
     const {sender} = event;
-    const authorizedContext = getAuthorizedContext(event);
+    const authorizedContext = dependencies.authorization.authorizeWebView(event);
     if (authorizedContext.isNothing) {
-      if (isCurrentMainFrame(event)) {
+      if (dependencies.authorization.isCurrentMainFrame(event)) {
         resetConsoleCapture(sender);
       }
       return 'rejected';
@@ -150,7 +89,7 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
       pendingWrites.set(sender, {accountId, completion});
       await completion;
       if (consoleCapture.get(sender) === capture) {
-        const activeContext = getAuthorizedContext(event);
+        const activeContext = dependencies.authorization.authorizeWebView(event);
         if (activeContext.isJust && activeContext.value === context) {
           capture.confirmed = true;
         } else {
@@ -169,16 +108,13 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
   }
 
   return {
-    isAuthorizedWebView(event) {
-      return getAuthorizedContext(event).isJust;
-    },
     getConsoleLogAccountId(sender) {
-      return getActiveWebViewContext(sender).map(context => {
+      return dependencies.authorization.getActiveWebViewContext(sender).map(context => {
         return context.accountId;
       });
     },
     shouldCaptureConsoleMessage(event, message) {
-      if (!isCurrentMainFrame(event)) {
+      if (!dependencies.authorization.isCurrentMainFrame(event)) {
         return true;
       }
       const {sender} = event;
@@ -193,7 +129,7 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
       }
       // Confirmation applies to the transport, not to an individual console record.
       // Console events precede the outcome of the batch carrying their records.
-      const context = getAuthorizedContext(event);
+      const context = dependencies.authorization.authorizeWebView(event);
       if (context.isNothing || capture.context !== context.value) {
         resetConsoleCapture(sender);
         return true;
@@ -202,7 +138,7 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
       return !isPinoConsoleRecord(message);
     },
     resetConsoleCapture,
-    async receive(event: WebViewLogEvent, payload: unknown): Promise<StructuredLogWriteResult> {
+    async receive(event: WebViewIpcEvent, payload: unknown): Promise<StructuredLogWriteResult> {
       try {
         return await writeAuthorizedBatch(event, payload);
       } catch {
@@ -210,12 +146,7 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
         return 'failed';
       }
     },
-    async runAccountDeletion(accountId: string, deleteAccount: () => Promise<void>): Promise<void> {
-      const existingDeletion = Maybe.of(accountDeletions.get(accountId));
-      if (existingDeletion.isJust) {
-        return existingDeletion.value;
-      }
-
+    async prepareAccountRemoval(accountId: string): Promise<void> {
       for (const [sender, capture] of consoleCapture) {
         if (capture.context.accountId === accountId) {
           resetConsoleCapture(sender);
@@ -229,14 +160,7 @@ export function createStructuredWebappLogger(dependencies: StructuredWebappLogge
         .map(write => {
           return write.completion;
         });
-      const deletion = Promise.allSettled(writesForAccount).then(deleteAccount);
-      accountDeletions.set(accountId, deletion);
-
-      try {
-        await deletion;
-      } finally {
-        accountDeletions.delete(accountId);
-      }
+      await Promise.allSettled(writesForAccount);
     },
   };
 }
